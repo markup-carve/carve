@@ -451,7 +451,52 @@ element is gone cannot tell a harmless structural event from content that may
 be in the wrong language entirely, and that is the one signal it could act on.
 
 Diagnostics have `code`, `message`, `severity` (`info`, `warning`, or `error`),
-and optional `path`, `line`, and `column`. Their order follows document order.
+and optional `path`, `line`, and `column`.
+
+## The order of the diagnostic list
+
+A diagnostic list MUST be ordered by the document position of the LOSING
+ELEMENT (carve#1586). The losing element is the one the diagnostic is about:
+the element that was dropped or unwrapped, the element the attribute was
+written on, the element whose structure could not be spelled. Where two
+diagnostics name the same element - two attributes on one tag - they follow the
+order that element spells them.
+
+The basis is stated because "ordered" on its own is not a rule. This page said
+the list is ordered for as long as it has existed and never said ordered by
+what, so each implementation answered with whatever order its own walk produced,
+and two of the three disagreed with the third on a `<table>` losing something on
+both its `<caption>` and a cell.
+
+TWO THINGS THE BASIS IS NOT, and both of them coincide with it in some
+implementations, which is why naming them is worth a paragraph:
+
+- It is NOT the position at which the diagnostic was CONSTRUCTED. An importer
+  that lifts footnote definitions out of the end of a document and imports them
+  before the body builds those rows first; they belong last, where the author
+  wrote the notes.
+- It is NOT the traversal order of whatever shape the importer reads the parent
+  through. An importer that fills a table's caption slot on the finished table
+  reads the cells first; the caption still comes first if that is where it
+  stands in the source.
+
+An element the HTML parser IMPLIED - a `<tbody>` around rows nobody wrote one
+for - is not in the source and has no position of its own. It takes the
+position of the nearest ancestor that has one, and ties with it.
+
+`diagnostics-truncated` is last. It reports the state of the report rather than
+a loss at a place, so it has no element to be ordered by.
+
+WHY THIS IS A REQUIREMENT RATHER THAN A QUALITY OF IMPLEMENTATION. The shared
+fixture runners compare diagnostics POSITIONALLY. With no defined order, a
+fixture holding more than one diagnostic was safe only where the implementations
+happened to agree anyway - which they do when the losses sit in separate
+top-level blocks, and did not when two sit under one parent. Such a fixture
+would pin whichever order its author's engine produced, and that is why
+`table-caption-index` had to be kept to a single row (carve#1560). The runners
+stay positional: they are the check, and comparing unordered as well would state
+a rule that nothing enforces. The `diagnostic-order` fixture is the case this
+opens - two losses in one `<table>`, in the order the document spells them.
 
 ## The `path` of a diagnostic
 
@@ -630,6 +675,7 @@ The shared set is deliberately small and each directory has one subject:
 | `table-caption-index` | the same table caption written across lines, where it is the SECOND child and no exemption applies to it |
 | `container-nesting` | containers two and three deep, whose fences widen INWARD because that is the form `carve fmt` writes |
 | `attribute-less-div` | a bare `<div>` unwrapped to its content beside an id-bearing one that keeps its fence, which is where that boundary sits |
+| `diagnostic-order` | two losses in one table, whose rows follow the document and not the order the importer builds them in |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one
