@@ -46,3 +46,20 @@ tail</p>
   </li>
 </ul>
 ```
+
+```
+- ::: d
+  b
+
+  tail
+  :::
+.
+<ul>
+  <li>
+    <div class="d">
+      <p>b</p>
+      <p>tail</p>
+    </div>
+  </li>
+</ul>
+```
