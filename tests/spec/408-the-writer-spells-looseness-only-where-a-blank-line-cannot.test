@@ -10,3 +10,15 @@ The writer spells looseness only where a blank line cannot
   <li><p>beta</p></li>
 </ul>
 ```
+
+```
+- alpha
+
+  beta
+.
+<ul>
+  <li><p>alpha</p>
+    <p>beta</p>
+  </li>
+</ul>
+```

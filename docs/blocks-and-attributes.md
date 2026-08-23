@@ -327,6 +327,38 @@ the looseness**. On a multi-item loose list the blank lines already say it, so
 the key would be an idle mark, and emitting it everywhere would rewrite every
 document anyone has written.
 
+The test is a **re-parse**, and it is taken over the document rather than over
+the rendered HTML: write the body without the key, read it back, and emit the
+key only where the container's looseness did not survive the trip.
+
+::: warning The item count is not the test
+"Two or more items already say it" is true, and the converse is not. A **one-item**
+list is loose whenever the blank line sits inside that item:
+
+```carve
+- alpha
+
+  beta
+```
+
+is one item, already loose, and needs no key. A writer that decorates every list
+with fewer than two items rewrites that document, and `parse(fmt(x)) == parse(x)`
+fails on source that was never lossy.
+
+The count is wrong in the other direction too: a definition list's entries count
+as two or more, and a blank line between entries does not loosen a `<dl>` at any
+count - so the same writer omits the key from the container that needs it most.
+It is a sound shortcut in one direction only, on lists: two or more items always
+re-parse loose, so the extra read can be skipped there.
+:::
+
+On a **definition list** the answer is unconditional: `carve fmt` writes the key
+on every definition list that carries it. `definition_list.loose` is published
+only where the looseness was spelled, so a body written without the key can never
+read back with it - the re-parse test says "emit" every time. A description that
+already holds two blocks is no exception: the key is redundant in the render
+there and not in the tree, and the tree is what the round trip is about.
+
 ## The one outlier: list items
 
 Every block takes its attributes on the preceding line and every inline takes them trailing - with a single exception: a list item's attribute block **abuts its marker**.

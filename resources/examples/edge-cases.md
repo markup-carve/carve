@@ -26857,6 +26857,41 @@ identical under both spellings, so no HTML fixture can see the difference.
 
 :::
 
+**THE ITEM COUNT IS NOT THE TEST**, and this is where an implementation of the
+rule above goes wrong. "Two or more items already say it" is true, so the
+tempting converse - fewer than two items, therefore decorate - looks like the
+same rule read backwards. It is not: a list with one item can be loose because
+the blank line sits INSIDE that item, and then the blank-line spelling did
+express the looseness after all. The list below is that shape. So is corpus
+document `05-lists-11`, which is a one-item ordered list whose item holds two
+paragraphs - a writer keyed on the item count rewrites it, and
+`parse(fmt(x)) == parse(x)` fails on a document that was never lossy.
+
+The decidable test is a RE-PARSE, over the document rather than over the render:
+write the body without the key, read it back, and emit the key only where the
+container's own looseness field did not survive the trip. The item count is
+sound as a shortcut in ONE direction only - two or more items always re-parse
+loose, so the extra read can be skipped there, which keeps it off almost every
+list in this corpus.
+
+::: compare
+
+```carve
+- alpha
+
+  beta
+```
+
+```html
+<ul>
+  <li><p>alpha</p>
+    <p>beta</p>
+  </li>
+</ul>
+```
+
+:::
+
 ## A blank line loosens an item only when a paragraph follows it
 
 PART 9 §17 L1 loosens a list when "some item holds a blank-line-separated second
