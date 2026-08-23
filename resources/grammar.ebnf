@@ -6276,6 +6276,51 @@ EOF = (* end of file *) ;
          rewrite a large share of the corpus and of every document anyone has
          written, for nothing gained.
 
+         THE TEST IS A RE-PARSE, AND IT IS OVER THE DOCUMENT (markup-carve/carve-rs#1305).
+         Write the container's body without the key, read it back, and emit the
+         key exactly where the container's own looseness field did not survive
+         that trip. The equality is PART 11 §1's, taken over the re-parsed
+         document; taking it over the RENDER instead answers a different
+         question and gets the definition list wrong, below.
+
+         THE ITEM COUNT IS NOT THE TEST. "Two or more items already say it" is
+         true, so the converse -- fewer than two items, therefore write the key
+         -- reads like the same rule backwards, and it is not: a ONE-ITEM list
+         is loose whenever the blank line sits INSIDE that item, and there the
+         blank-line spelling did express the looseness. Corpus document
+         `05-lists-11` is exactly that shape -- one ordered item holding two
+         paragraphs -- so a writer keyed on the item count rewrites it and fails
+         `parse(fmt(x)) == parse(x)` on a document that was never lossy. The
+         count is sound as a SHORTCUT IN ONE DIRECTION ONLY: two or more items
+         always re-parse loose, so the read may be skipped there, which keeps it
+         off almost every list in the corpus. Corpus
+         `408-the-writer-spells-looseness-only-where-a-blank-line-cannot` pins
+         the multi-item case and `-2` the one-item case, both through a `.fmt`
+         sidecar, because the HTML is identical under both spellings and no HTML
+         fixture can see the difference.
+
+         THE COUNT IS ALSO WRONG IN THE OTHER DIRECTION, which is why it is a
+         different rule rather than a shortcut to be repaired. A definition
+         list's entries count as two or more on any list worth writing, and a
+         blank line between two ENTRIES does not loosen a `<dl>` at any count -
+         so a writer keyed on the count OMITS the key from the container that
+         needs it most. Corpus
+         `407-one-consumed-boolean-spells-the-looseness-no-blank-line-can-2` is
+         that document: two entries, and unspellable without the key.
+
+         ON A DEFINITION LIST THE ANSWER IS UNCONDITIONAL: the writer emits the
+         key on every definition list carrying `loose`. PART 12 §8 publishes
+         `definition_list.loose` ONLY where the looseness was SPELLED, so a body
+         written without the key can never read back with the field set, and the
+         re-parse test says "emit" every time. A description that already holds
+         two blocks does not change it. There the key is redundant in the RENDER
+         -- both spellings wrap the `<dd>`, which is why redundant use is a
+         no-op above -- and it is not redundant in the TREE, and the tree is what
+         the equality is taken over. That is the same asymmetry the two fields
+         have: `list.tight` is total and derived from the source, so the writer
+         has a real question to answer, while a definition list's field records
+         only what its own derivation misses.
+
          ORDERED AND NESTED CONTAINERS TAKE THE SAME KEY AT THE SAME PLACEMENT,
          at the nested container's own indent, so this needs no rediscovering:
          `{loose}` before `1.` loosens an `<ol>`, and an attribute line written
