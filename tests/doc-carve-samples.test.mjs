@@ -17,44 +17,24 @@
  */
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { carveToHtml } from '@markup-carve/carve'
+/*
+ * The page list and the fence scanner are SHARED with
+ * tests/the-oracle-reads-the-authored-documents.test.mjs, which compares the
+ * same samples against the executable spec. Two copies of a scanning rule is
+ * the defect scripts/lib/corpus-targets.mjs exists to prevent: the two runners
+ * would drift on what counts as a sample and each would be right about a
+ * different population.
+ */
+import { authoredPages, samplesIn } from '../scripts/lib/authored-documents.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, '..')
 
-const files = execFileSync('git', ['ls-files', 'docs'], { cwd: repoRoot, encoding: 'utf8' })
-  .split('\n')
-  .filter((path) => path.endsWith('.md') && !path.startsWith('docs/examples/'))
-
-/*
- * Only fences opened exactly ```carve are samples. A widened fence (````carve)
- * is usually a sample ABOUT fences, whose body is deliberately not a document
- * on its own.
- */
-const samplesIn = (text) => {
-  const out = []
-  let open = false
-  let buffer = []
-  for (const line of text.split('\n')) {
-    if (!open && /^```carve\s*$/.test(line)) {
-      open = true
-      buffer = []
-      continue
-    }
-    if (open && /^```\s*$/.test(line)) {
-      out.push(buffer.join('\n'))
-      open = false
-      continue
-    }
-    if (open) buffer.push(line)
-  }
-
-  return out
-}
+const files = authoredPages()
 
 /*
  * A line that OPENS a block, at column 0 where the language requires it.

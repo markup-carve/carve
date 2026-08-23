@@ -1,0 +1,34 @@
+# Authored documents the executable spec and the pinned engine read differently.
+#
+# `tests/the-oracle-reads-the-authored-documents.test.mjs` renders every
+# document in `scripts/lib/authored-documents.mjs` twice - once through
+# `scripts/spec` (the layout automaton plus the PART 9R/PART 10 renderer) and
+# once through the `@markup-carve/carve` build package.json pins - and compares
+# the HTML. These documents carry no expected-output file, so unlike the corpus
+# neither reading is pinned to a fixture and a disagreement is a real question.
+#
+# A disagreement is NOT automatically the engine's fault, and it is not
+# automatically the oracle's either. Both directions have happened:
+#
+#   - markup-carve/carve#1517: three engines folded a later list marker into an
+#     open paragraph, the oracle read the clause correctly, and nothing in this
+#     repository went red for months.
+#   - the two entries below: three engines agree with each other AND with the
+#     normative text, and the oracle is the one that is wrong.
+#
+# So the reason field says which way the finding points, and names the clause it
+# was decided against. That is what makes the entry retirable: the gate fails on
+# a line that no longer reproduces, so the declaration comes out in the commit
+# that fixes it rather than aging into folklore.
+#
+# The gate fails in BOTH directions:
+#
+#   - a document diverges and is not listed  -> a new finding. Red immediately,
+#     which is the point of the comparison.
+#   - a document is listed and now agrees    -> the declaration is STALE.
+#     Delete the line in the same commit as the fix.
+#
+# Format: <document id><space><space><reason>
+
+docs/cheatsheet.md#7  The oracle ends a caption at its own line; PART 2 MULTI-LINE CAPTIONS says a caption is multi-line inline content whose text spills onto following lines exactly like a paragraph, which is what all three engines do. Oracle defect, markup-carve/carve#1561.
+docs/migrate-from-markdown.md#7  The oracle numbers an inline `^[...]` note ahead of an earlier `[^label]` use; PART 10 R2 numbers by FIRST-REFERENCE order from one shared footnoteSeq, which is what all three engines do. Oracle defect, markup-carve/carve#1562.

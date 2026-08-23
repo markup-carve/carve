@@ -54,7 +54,8 @@ test('the combinatorial inventory names and counts every curated family', () => 
       'ordered-marker       8',
       'caption-position     10',
       'attached-block       6',
-      'total                304',
+      'repeated-child       42',
+      'total                346',
       '',
     ].join('\n'),
   )

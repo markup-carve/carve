@@ -286,6 +286,76 @@ function* attachedBlockDocuments() {
   }
 }
 
+/*
+ * The SECOND occurrence of a construct in the same container body.
+ *
+ * markup-carve/carve#1517 is the reason this family exists, and the reason it
+ * generalizes rather than pinning the one document. All three engines gave an
+ * item's FIRST marker the content-column answer and every later one a different
+ * one, because each hands the sub-list off to the list parser and the rest of
+ * the body back as a further chunk: the first marker met no open paragraph, and
+ * every later one met PART 9 section 10 I2 with one open and folded. Two
+ * documents differing only by a sub-list the blank line had already closed then
+ * disagreed about what their shared last line was.
+ *
+ * The oracle read the clause correctly throughout and nothing in this repository
+ * went red for months. Measured while adding this (markup-carve/carve#1552): of
+ * the 1359 corpus documents that predate markup-carve/carve#1548, their
+ * formatted forms, the 24 round-trip documents, the 63 `.fmt` fixtures, the 85
+ * authored docs samples and 20,000 documents from the fuzz generator, NOT ONE
+ * moves under carve-js 49fa045b. The shape was absent from every document the
+ * project held, so no participant could disagree about it - adding the oracle to
+ * a comparison is necessary and, on its own, was never going to be sufficient.
+ *
+ * So the axis is POSITION-IN-THE-BODY, which is the general form of "handled
+ * once, then differently": the same child twice, with a paragraph between them,
+ * in each container that collects a body. Two of the 42 documents below move
+ * under that fix, which is what makes this family the half that closes the
+ * class rather than a restatement of the fixture.
+ */
+const REPEATED_CHILDREN = [
+  { name: 'bullet', source: '- s' },
+  { name: 'ordered', source: '1. s' },
+  { name: 'heading', source: '# H' },
+  { name: 'table', source: '| a | b |' },
+  { name: 'quote', source: '> q' },
+  { name: 'fence', source: '```\nx\n```' },
+  { name: 'div', source: ':::\nd\n:::' },
+]
+
+// Every container that collects a BODY and re-lexes it, which is where the
+// hand-off this family probes happens.
+const REPEATING_CONTAINERS = [
+  { name: 'list-item', wrap: (body) => `- ${indentContinuation(body, '  ')}` },
+  { name: 'blockquote', wrap: (body) => prefixLines(body, '> ') },
+  { name: 'definition-body', wrap: (body) => `:: t\n:  ${indentContinuation(body, '   ')}` },
+]
+
+/*
+ * Two separations, because they ask different questions. `blank` closes the
+ * first child before the paragraph opens, so the later marker is reached with a
+ * container that has already ended - the exact reading markup-carve/carve#1548
+ * ruled cannot be depended on. `tight` never closes it, so the paragraph and
+ * the second child meet with no blank between them at all.
+ */
+const REPEAT_SEPARATIONS = [
+  { name: 'blank', join: (child) => `${child}\n\npara\n${child}` },
+  { name: 'tight', join: (child) => `${child}\npara\n${child}` },
+]
+
+function* repeatedChildDocuments() {
+  for (const child of REPEATED_CHILDREN) {
+    for (const container of REPEATING_CONTAINERS) {
+      for (const separation of REPEAT_SEPARATIONS) {
+        yield {
+          id: `repeated-child/${child.name}/${container.name}/${separation.name}`,
+          source: `${container.wrap(separation.join(child.source))}\n`,
+        }
+      }
+    }
+  }
+}
+
 const FAMILIES = [
   {
     name: 'heading-attributes',
@@ -318,13 +388,39 @@ const FAMILIES = [
     expected: ATTACHED_BLOCK_POSITIONS.length,
     generate: attachedBlockDocuments,
   },
+  {
+    name: 'repeated-child',
+    expected: REPEATED_CHILDREN.length * REPEATING_CONTAINERS.length * REPEAT_SEPARATIONS.length,
+    generate: repeatedChildDocuments,
+  },
 ]
 
 // A declared finding is still printed, counted and linked; it simply does not
 // keep the weekly job permanently red while its focused issue is being fixed.
 // The declaration is exact by document id. Remove entries with the fix: a
 // declaration that no longer reproduces is stale and is rejected below.
-const DECLARED_DIVERGENCES = new Map()
+const DECLARED_DIVERGENCES = new Map([
+  /*
+   * The two documents in `repeated-child` that markup-carve/carve#1517 moved.
+   * carve-js is driven here as the PINNED build, and package.json pins a commit
+   * older than markup-carve/carve-js#1328 - so it still folds a later marker in
+   * an item body into the open paragraph, while the executable spec, carve-rs
+   * and carve-php all open the sub-list PART 9 section 24 C3 requires.
+   *
+   * Declared rather than waived: this IS the finding this family was added for,
+   * and it reproduces against the build this repo currently pins. Both lines
+   * come out with `npm run bump-carve-pin`, and the stale check below fails
+   * until they do.
+   */
+  [
+    'repeated-child/bullet/list-item/blank',
+    'the pinned carve-js build predates markup-carve/carve-js#1328 (markup-carve/carve#1517); remove when the pin advances past it',
+  ],
+  [
+    'repeated-child/ordered/list-item/blank',
+    'the pinned carve-js build predates markup-carve/carve-js#1328 (markup-carve/carve#1517); remove when the pin advances past it',
+  ],
+])
 
 function* documents() {
   for (const family of FAMILIES) {
