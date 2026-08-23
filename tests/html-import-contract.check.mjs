@@ -101,6 +101,13 @@ const PIN_LAG = new Map([
   // so it writes neither container. carve-php already reproduces this fixture.
   // Clears with markup-carve/carve-js#1316.
   ['container-round-trip', 'unwraps a rendered callout and keeps a container as a div (carve-js#1316)'],
+  // The same pin, on the NESTED shape: it writes `{.tabs}` over a bare `:::`
+  // for every level instead of the container, so it disagrees about the source,
+  // the AST and the report at once. All three engines now write the
+  // inward-widening form - carve-js#1334, carve-rs#1256 and carve-php#1583,
+  // the last of which is why this fixture could not be written before. Clears
+  // with the same pin bump as the row above.
+  ['container-nesting', 'writes a nested container as attribute lines over bare fences (carve-js#1316)'],
   // The pin drops the `<figcaption>`'s event handler and says nothing, so its
   // report is empty where the fixture has one row. carve-php and carve-rs both
   // reproduce this fixture. Clears with markup-carve/carve-js#1332.

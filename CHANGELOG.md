@@ -36,6 +36,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **An imported nested container widens INWARD, and a fixture pins it**
+  (carve-php#1583, PART 9 §12). `docs/html-import.md` names the direction a
+  writer takes where the grammar leaves both parsing: `carve fmt` widens on the
+  way down, so an importer does. `container-nesting` pins two and three levels;
+  it could not be written while one engine inverted them.
+
 - **PART 12 §16 names the three exemptions from a diagnostic path's index
   basis, and closes the list** (carve#1556). An `<li>`, a `<tr>` and a
   `<td>`/`<th>` are numbered among their own kind because the traversal
