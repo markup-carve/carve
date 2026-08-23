@@ -1,0 +1,50 @@
+A blank line loosens an item only when a paragraph follows it
+
+```
+- x
+
+  y
+- z
+.
+<ul>
+  <li><p>x</p>
+    <p>y</p>
+  </li>
+  <li><p>z</p></li>
+</ul>
+```
+
+```
+- x
+
+  ::: d
+  a
+
+  b
+  :::
+- z
+.
+<ul>
+  <li>x
+    <div class="d">
+      <p>a</p>
+      <p>b</p>
+    </div>
+  </li>
+  <li>z</li>
+</ul>
+```
+
+```
+- x
+
+  > q
+- z
+.
+<ul>
+  <li>x
+    <blockquote><p>q</p></blockquote>
+  </li>
+  <li>z</li>
+</ul>
+```
