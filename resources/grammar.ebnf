@@ -12545,3 +12545,45 @@ EOF = (* end of file *) ;
       importer passes a raw NUL straight through into its Carve output, which
       is not a substitution and BBCode has no clause to follow, but is the same
       missing normalization arriving by a third door.
+
+   22. AN INGESTED VALUE THE SCHEMA CALLS ABSENT IS NORMALIZED AWAY --
+      NORMATIVE (carve#1615). `resources/ast-schema.json` describes a list's
+      `start` as "First number of an ordered list, when it is not 1". That
+      sentence is a statement about what a CONFORMANT TREE looks like, and an
+      encoder is the thing that has to honor it. So when an ingested tree
+      carries `start: 1`, the encoder MUST NOT re-emit it: the field is dropped,
+      and every tree the implementation publishes matches the documented shape.
+
+      §6 GIVES NO COVER TO PRESERVING IT. The round trip §6 promises is scoped
+      to `parse(x)` -- a parsed tree, which never carries `start: 1`, and which
+      all three engines already comply with. Reading §6 as "JSON to JSON is an
+      identity" extends it past what it says, onto a payload no parser produced.
+      An editor, a patch tool or a hand-built payload can hand an encoder the
+      value; §6 never promised to hand it back.
+
+      THE DECIDING ASYMMETRY IS THAT NORMALIZING IS LOSSLESS. `start: 1` and no
+      `start` describe the same document -- the field is inert, and the renderer
+      emits no `start` attribute for either, `1` being the HTML default.
+      Nothing an author wrote is discarded. Preserving the value keeps a field
+      that makes the encoder's output depend on WHERE THE TREE CAME FROM, which
+      is the property §6's round trip exists to remove.
+
+      REFUSING THE PAYLOAD IS NOT THE ANSWER, though §11 refuses an unnamed
+      property and §12 refuses a deviant root. `start` is a property the schema
+      NAMES, and its value is in range; what is out of contract is only that the
+      value happens to be the default. Refusing would break editors that
+      round-trip a tree they did not author, and no engine does it today. This
+      clause is about a NAMED field carrying the value the schema describes as
+      absent, which is a narrower thing than either refusal clause covers.
+
+      WHAT THE RULE IS NOT. It is not "drop `start` always". `start: 0` and
+      `start: 2` are carried through unchanged, and an implementation that
+      drops them has broken the field rather than normalized it.
+
+      NOTHING IN A PARSE-DRIVEN CORPUS CAN COVER THIS. The value is unreachable
+      from Carve source -- `1. a` produces no `start` at all -- so the pin has to
+      be a hand-built payload, which is exactly why three engines drifted apart
+      here unnoticed: carve-php drops the field, carve-js and carve-rs preserve
+      it, and carve-rs additionally spells it as `<ol start="1">`
+      (markup-carve/carve-js#1391, markup-carve/carve-rs#1293). The pin is
+      tests/an-ingested-default-start-is-not-re-emitted.test.mjs.
