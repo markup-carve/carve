@@ -351,6 +351,21 @@ elements and five whitespace text nodes, so it is reported at
 and not at `kbd[2]`, its position among the `kbd` elements, nor at `kbd[6]`,
 its position among the elements.
 
+The two rules meet where a wrapper is dropped, and they are one rule: an index
+counts among the children of the parent the step it prints SITS UNDER. Where a
+bare inline run is wrapped in a paragraph the importer synthesized, the wrapper
+contributes no step, so the run is numbered among the fragment's body children
+and not among the nodes of the wrapper.
+
+```html
+<p>z</p><kbd onclick="x()">K</kbd>
+```
+
+The `<kbd>` is the second body child, so it is reported at `/kbd[2]`. `/kbd[1]`
+is its position inside the synthesized paragraph, a parent no step names, which
+makes the index unreadable at the level it is printed at
+(markup-carve/carve#1554).
+
 A path names the importer's traversal, not the raw DOM. Table sections are
 flattened and rows are renumbered across the whole table, so a `<td>` inside a
 `<tbody>` that follows a `<thead>` carries no `tbody` step.
@@ -410,6 +425,7 @@ The shared set is deliberately small and each directory has one subject:
 | `figure-caption` | a `<figure>` with a `<figcaption>`, which imports as the image and a caption line |
 | `blockquote-cite` | a `<blockquote cite>`, whose attribute is kept on a block-attribute line |
 | `derived-accessible-name` | a diagram fence's derived `role` and name, dropped, beside an authored name that is kept |
+| `synthesized-wrapper-path` | a bare inline run wrapped in a paragraph the importer added, whose diagnostic is numbered among the body children rather than inside the wrapper |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one

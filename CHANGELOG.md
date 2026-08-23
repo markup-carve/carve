@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A diagnostic on a bare inline run is numbered among the body children, not
+  inside the paragraph the importer wrapped it in** (carve#1554, PART 12 §16).
+  The index basis and the dropped-wrapper rule are one rule, and the
+  `math-block-and-mathml` fixture pinned the wrong answer, so carve-js and
+  carve-rs were green on a shared fixture carve-php answered correctly.
+  `synthesized-wrapper-path` pins the general case on a non-math shape.
 - **A marker at an item's content column opens a sublist, first in the item or
   not** (carve#1517, PART 9 §24 C3). All three engines applied the clause to an
   item's first marker only, so whether a later one opened a sublist or folded

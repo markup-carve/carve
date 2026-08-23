@@ -87,6 +87,15 @@ const PIN_LAG = new Map([
   // already match, which is the measurement behind that clause's sentence that
   // carve-js never wrote a trailing delimiter. Clears with the pin bump.
   ['math-block-and-mathml', 'imports a math div as a colon fence (carve#1514)'],
+  // BOTH declared for markup-carve/carve#1554, and both clear with the same
+  // carve-js fix. The pin numbers a diagnostic on a bare inline run among the
+  // nodes of the paragraph the importer synthesized around it, instead of among
+  // the body children the step it prints sits in - so it says `/kbd[1]` and
+  // `/math[1]` where the clause's index basis makes them `/kbd[2]` and
+  // `/math[2]`. `math-block-and-mathml` was already declared above for an
+  // unrelated reason, and carried the wrong path in its own fixture until this
+  // commit, which is why nothing caught the numbering.
+  ['synthesized-wrapper-path', 'numbers a wrapped inline run inside its wrapper (carve#1554)'],
 ])
 
 /*
