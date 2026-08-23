@@ -448,6 +448,82 @@ is nothing for a looseness key to say about it, and the answer here is the
 diagnostic rather than a second spelling
 (markup-carve/carve#1607, markup-carve/carve#1612).
 
+### The ceiling has a second side: an entry after the dropped one
+
+Writing the term alone is enough only while the dropped entry is the last one.
+Put an entry AFTER it and the same import breaks the ceiling in the other
+direction (markup-carve/carve#1636):
+
+```html
+<dl><dt>t1</dt><dd></dd><dt>t2</dt><dd>d2</dd></dl>
+```
+
+Consecutive `::` lines SHARE the description written below them - that is the
+`<dl>` model the syntax mirrors - so dropping the empty description and writing
+both terms into one list gives `t1` the description `d2`, which it never had.
+
+**An ADDITION is not a loss, and no row can declare it.** A loss that stays
+inside a declared ceiling is acceptable because the reader is told what is
+missing; an addition changes what the surviving term MEANS rather than what it
+fails to say, and a reader who is told the empty description was dropped has
+been told nothing about `t1` acquiring `d2`. So the ceiling binds in both
+directions: an importer may lose what it declares AND NO MORE, and it may add
+nothing at all.
+
+The import BREAKS THE LIST at the dropped entry. `t1` keeps having no
+description, `t2` keeps exactly `d2`, and nothing gains meaning it did not have:
+
+```
+:: t1
+
+%%
+
+:: t2
+:  d2
+```
+
+```html
+<dl>
+  <dt>t1</dt>
+</dl>
+<dl>
+  <dt>t2</dt>
+  <dd>d2</dd>
+</dl>
+```
+
+**A BLANK LINE IS NOT THE BREAK, and the separator has to be written.** A blank
+line between two entries does not loosen a definition list and does not end one
+either - `:: t1`, a blank line, `:: t2`, `:  d2` is ONE list with two terms
+sharing `d2`, which is the outcome this rule forbids, and the canonical writer
+removes the blank line again. The comment line is what ends the first list, and
+it is the only construct that can: the separator has to render nothing where it
+stands AND stay where it was written, and of the kinds that render nothing,
+`comment` is the only one that does both. Frontmatter is document-start only. A
+link-reference definition and a footnote definition are hoisted to the end of
+the document by the canonical writer, which puts the two lists back together, so
+they do not survive `carve fmt`. An abbreviation definition stays put and is a
+fixed point, but it defines an abbreviation the input never had - an addition,
+which is the thing being avoided.
+
+**The grouping is a real loss and takes its own row.** `structure-split` says
+one source structure was written as more than one, because writing it as one
+would have changed what its parts mean. It is NOT `structure-unspellable`: that
+code is for a shape the syntax cannot spell at all, and here every part is
+spellable and every part is present and exact - what the source cannot say is
+that they were one list. Both rows are reported, in the document order the list
+section requires: `structure-split` on the `<dl>`, then `structure-unspellable`
+on the `<dd>` that is gone.
+
+A spelling for a term with no description would settle this shape and the
+one-entry shape at once, and it is the only answer that loses nothing. It is a
+language change, declined once already (markup-carve/carve#1608), and it stays
+on the table for 0.2; this rule is what holds until then.
+
+`empty-definition-description-not-last` pins the shape. The one-entry fixture
+cannot see it - both readings of a dropped LAST entry write the same source -
+which is why it passed throughout while both engines merged the two terms.
+
 ## An endnotes section keeps the position it was written at
 
 A `role="doc-endnotes"` section's POSITION is meaning, and an import keeps it.
@@ -839,6 +915,12 @@ lossy decision should be observable. The common diagnostic codes are:
   no spelling for, so it survives in the AST and not in written Carve. The
   AST-returning entry point loses nothing and reports nothing; the one that
   writes source reports this.
+- `structure-split`: one source structure was written as more than one,
+  because writing it as one would have changed what its parts mean. Everything
+  inside is kept exactly and every part is spellable; what is lost is the
+  grouping. It is not `structure-unspellable`, which is for a shape the syntax
+  cannot spell at all. The AST-returning entry point loses nothing and reports
+  nothing; the one that writes source reports this.
 - `encoding-assumed`: the source did not declare how to read a value, and the
   importer assumed an encoding to map it. An importer MUST emit this whenever
   the node it produced is only correct if that assumption holds. The motivating
@@ -1085,6 +1167,7 @@ The shared set is deliberately small and each directory has one subject:
 | `detached-caption-caret` | a paragraph that looks like a caption line under an image, escaped so it stays a paragraph |
 | `note-reference-in-a-span` | a span whose text opens a note-reference label, escaped beside the unlabeled caret that needs no escape |
 | `empty-definition-description` | an empty `<dd>`, dropped with a row that declares it, where the bare colon line would have taken the `<dt>` too |
+| `empty-definition-description-not-last` | the same empty `<dd>` with an entry after it, where the list is broken rather than letting the next term inherit the description below |
 | `endnotes-section-not-last` | an endnotes section with a paragraph after it, which keeps its position through `::: footnotes` |
 | `whitespace-only-block` | a `<p>` holding one no-break space, kept as itself, beside the ASCII-space and tab spellings that carry nothing and are dropped with a row |
 
