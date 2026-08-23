@@ -249,31 +249,30 @@ test('a malformed declaration line is an error, never a silent skip', () => {
  * one taken because the previous one had stopped being true, and a seventh the
  * next day that replaced the surviving row with a different one.
  */
-// The POST-FIX run, 2026-08-22, from fresh clones of every main after
-// markup-carve/carve-php#1564 merged: 27,915 spans, SIX rows across TWO
-// documents. `paragraph` fell from 4 to 2, `code` from 2 to 1, and
-// `text (presence)` AGREED and is gone - all three are the NUL fixtures
-// leaving, and nothing else moved. The two surviving documents are the two the
-// previous block predicted would survive.
+// The POST-FIX run, 2026-08-23, from fresh clones of every main after
+// markup-carve/carve-js#1318 merged: carve-js cc5726c, carve-rs 6f36d9d and
+// carve-php d21336c, 27,915 spans, TWO rows across ONE document. `list`,
+// `list_item`, `soft_break` and `text` all AGREED and are gone, and
+// `paragraph` fell from 2 to 1 - one document leaving the panel, and it
+// carried five of the six rows.
 //
-// ONE DEFECT ACCOUNTED FOR EVERY MOVED ROW THIS TIME, which is the unusual
-// outcome here and the reason to say so: subtract its +2, +1 and +1 and the
-// declared counts become the measured ones exactly. The runs above are mostly
-// the other shape, where a row survives with a different document behind it.
+// THE SPAN COUNT DID NOT MOVE, which is the tell for what kind of fix this
+// was: 27,915 before and after. The engine published the same nodes with the
+// same offsets throughout and named the wrong LINE for them, so nothing was
+// added or dropped, only relocated. A run whose total moves is a fix that
+// changed what gets a position; this one is not that.
 //
-// The count also UNDERSTATED the defect rather than sizing it. Both of its
-// symptoms were properties of carve-php's document-wide offset table, so one
-// NUL moved every later offset in its document and cost every later text node
-// its position; the panel saw two documents because those are the only two
-// fixtures with a NUL. This map pins what was measured, and what was measured
-// is a floor - see resources/ast-span-divergence.txt.
+// WHAT SURVIVES IS carve-php ALONE ON `380-a-terminal-comment-line-still-
+// leaves-an-empty-verse-line`, naming line 2 column 3 for an end offset all
+// three agree is 8 - a column that line does not have
+// (markup-carve/carve-php#1457). Before this run the same two keys ALSO
+// covered a carve-js offset defect on the same document, so one key stood for
+// two faults in two engines and its count moved by neither when the first was
+// fixed. A key says which type moved; it does not say how many faults are
+// standing behind it - see resources/ast-span-divergence.txt.
 const LAST_MEASURED = new Map([
-  ['list (extent)', 1],
-  ['list_item (extent)', 1],
-  ['paragraph (extent)', 2],
+  ['paragraph (extent)', 1],
   ['code (extent)', 1],
-  ['soft_break (extent)', 1],
-  ['text (extent)', 1],
 ])
 
 const asMeasured = (counts) =>
