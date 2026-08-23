@@ -51,11 +51,12 @@ and whose source disagree is green twice over. That is how three shapes arrived
 here at once (markup-carve/carve#1601) - a table cell, an anchor and a text run,
 each of which leaves `htmlToCarve` meaning something the `htmlToAst` tree never
 said. Writing the check found two more in fixtures that had been read and
-reviewed. One is settled: a `<figure>` whose target the tree wrapped in a
+reviewed. Both are settled now: a `<figure>` whose target the tree wrapped in a
 paragraph no source spells (markup-carve/carve#1606), where the TREE was the
-wrong exit and the fixtures now record the target itself. The other is a
-one-item `<li><p>` list whose tree says loose where its own source says tight
-(markup-carve/carve#1607, which needs a call rather than a derivation).
+wrong exit and the fixtures now record the target itself, and a one-item
+`<li><p>` list whose tree said loose where its own source said tight
+(markup-carve/carve#1607, which needed a call rather than a derivation - the
+call is PART 9 section 17 L7's `{loose}`, and the importer now writes it).
 
 THE SOURCE IS THE ARTIFACT A MIGRATION KEEPS, which is what makes the invariant
 worth more than either exit alone. A reader who runs `carve migrate` keeps
@@ -445,6 +446,42 @@ paragraph that item spelled, which is the loss this rule exists to prevent.
 ```
 
 The three shapes are pinned as converter-corpus cases 27, 28 and 23.
+
+### The one-item and one-block shapes take `{loose}`
+
+A blank line needs two things to stand between, so two loose shapes had no Carve
+spelling at all until PART 9 section 17 L7 gave them the consumed `{loose}`
+boolean. Both arrive from ordinary HTML - `<li><p>...</p></li>` is what
+WordPress, TinyMCE and Google Docs export emit - so the importer meets them on
+routine input rather than on a corner case, which is why they earned syntax
+instead of a `structure-unspellable` diagnostic.
+
+```html
+<ul><li><p>only</p></li></ul>
+```
+
+```
+{loose}
+- only
+```
+
+```html
+<dl><dt>Term</dt><dd><p>Definition.</p></dd></dl>
+```
+
+```
+{loose}
+:: Term
+:  Definition.
+```
+
+The definition list is the worse case: a blank line between two **entries** does
+not loosen a `<dl>` in Carve at all, so a `<dd>` holding one paragraph was
+unspellable at every entry count, not only at one.
+
+The importer writes the key **only where the blank-line spelling cannot express
+the looseness** - a multi-item loose list keeps the blank lines and takes no
+attribute line - which is the same rule the canonical writer follows.
 
 ## A derived attribute does not come back
 

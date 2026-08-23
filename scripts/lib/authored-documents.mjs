@@ -103,10 +103,13 @@ export function authoredDocuments() {
 /*
  * THE POPULATION, PINNED.
  *
- * Measured on 2026-08-23 over the tree these numbers were written in: 85
- * authored documents, 84 of which the executable spec answers for. The one it
+ * Measured on 2026-08-23 over the tree these numbers were written in: 87
+ * authored documents, 86 of which the executable spec answers for. The one it
  * does not is a citation definition, which is Tier-2 and outside the subset
  * `scripts/spec` models at all.
+ *
+ * The last move was 85 -> 87: the two `{loose}` samples PART 9 section 17 L7
+ * added to docs/blocks-and-attributes.md.
  *
  * Pinned EXACTLY and in both directions, which is the whole point of writing
  * them down. A floor would let the population shrink - a docs rewrite that
@@ -120,5 +123,5 @@ export function authoredDocuments() {
  * message says which way it moved and what to do, because a red gate whose fix
  * is "look up how this file works" is a red gate that gets deleted.
  */
-export const AUTHORED_POPULATION = 85
-export const AUTHORED_ANSWERED = 84
+export const AUTHORED_POPULATION = 87
+export const AUTHORED_ANSWERED = 86

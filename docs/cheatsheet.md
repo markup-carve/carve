@@ -73,6 +73,12 @@ Bare delimiters work only at word boundaries; force one intraword with the brace
 :: term                      (definition list)
 :  definition
 
+{loose}                      (consumed boolean: the container's children
+- one-item loose list         render as blocks. The one shape a blank
+                              line cannot spell - a one-item list, or a
+                              one-block <dd>. No {tight} twin: tight is
+                              always spellable by removing the blanks.)
+
 > blockquote
 ^ Attribution                (caption: ^ prefix; wraps the quote in a figure)
 
@@ -228,6 +234,12 @@ continues on the next line.
 
 ```text
 {#id .class key=value}        (attach to the preceding/following element)
+{loose}                       (consumed structural keys: they change the
+{header-rows=N footer-rows=N}  rendered structure and are NOT emitted as
+{aligns=… valigns=… widths=…}  HTML attributes. loose makes a list's or a
+                               definition list's children render as blocks;
+                               the rest are pipe-table row groups and
+                               columns)
 {:fr}  {:de-CH}  {:}          (language: short for lang="fr"; {:} = unknown)
 [Tab]{kbd}                    (semantic span: <kbd>Tab</kbd>; core names are
 [HTML]{abbr="HyperText …"}     kbd, abbr, time — samp/var/cite/dfn need the

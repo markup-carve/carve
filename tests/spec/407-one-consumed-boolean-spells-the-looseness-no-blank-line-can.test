@@ -1,0 +1,21 @@
+One consumed boolean spells the looseness no blank line can
+
+```
+{loose}
+- Note text.
+.
+<ul>
+  <li><p>Note text.</p></li>
+</ul>
+```
+
+```
+{loose}
+:: Term
+:  Definition.
+.
+<dl>
+  <dt>Term</dt>
+  <dd><p>Definition.</p></dd>
+</dl>
+```

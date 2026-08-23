@@ -1591,6 +1591,40 @@ function parseBlocks(lines, state, top, inItem = false, meas = undefined, stop =
   }
 }
 
+/*
+ * PART 9 SS17 L7: `loose` on the preceding block-attribute line is a CONSUMED
+ * boolean, the way SS15's `header-rows` is. It states a rendering fact about the
+ * container and never reaches the output as an attribute, so it is taken off the
+ * attribute lists here - at the one site that attaches them - and the caller
+ * records what it said on the node.
+ *
+ * A bare boolean and an EMPTY-valued key are the same attribute (PART 4), so
+ * both spellings are consumed. `loose=x` names a value this key does not take,
+ * so it is left alone and renders as the ordinary attribute it is.
+ *
+ * Returns whether the key was there. Emptied lists are dropped rather than kept
+ * as empty arrays, so a container whose ONLY attribute was this one renders with
+ * no attribute string at all.
+ */
+function consumeLooseKey(node) {
+  if (!node.battrs) return false
+  let found = false
+  const kept = []
+  for (const list of node.battrs) {
+    const keep = []
+    for (const a of list) {
+      if (a[1] === 'loose' && (a[0] === 'bool' || (a[0] === 'kv' && a[2] === ''))) {
+        found = true
+        continue
+      }
+      keep.push(a)
+    }
+    if (keep.length) kept.push(keep)
+  }
+  if (found) node.battrs = kept.length ? kept : undefined
+  return found
+}
+
 function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, stop = undefined) {
   const blocks = []
   let i = 0
@@ -2106,6 +2140,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       }
       if (node.items.length === 0) throw new Refuse('malformed definition list')
       push(node)
+      // PART 9 SS17 L7: the same boolean, on the other container that has the
+      // axis. A `<dd>` has no per-list tightness flag to move, so the node
+      // carries the answer and the renderer wraps every description.
+      if (consumeLooseKey(node)) node.loose = true
       continue
     }
 
@@ -2546,7 +2584,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     if (matchMarkerAt(ind(i))) {
       const before = blocks.length
       i = parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas)
-      if (pending.length && blocks.length > before) flushAttrs(blocks[before])
+      if (blocks.length > before) {
+        if (pending.length) flushAttrs(blocks[before])
+        // PART 9 SS17 L7: the consumed boolean loosens the list it rides.
+        if (consumeLooseKey(blocks[before])) blocks[before].tight = false
+      }
       continue
     }
 
