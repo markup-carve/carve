@@ -15,7 +15,7 @@ import assert from 'node:assert/strict'
 import { readFileSync, readdirSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { parse } from '@markup-carve/carve'
+import { parse, toAstJson } from '@markup-carve/carve'
 import { replaceNulls } from '../scripts/spec/layout.mjs'
 import {
   ENDS_AT_LAST_CHILD,
@@ -729,6 +729,73 @@ test('a container holding an unplaced child is skipped rather than guessed at', 
   assert.deepEqual(stopFindings(doc, source), [])
 })
 
+test('a definition list reaching an attribute line no child covers is reported', () => {
+  // carve#1530. The line is INSIDE the list for scope - a floating attribute
+  // does not escape the container that holds it - and outside its span, because
+  // it attaches to nothing and yields no child. Both readings are live at once,
+  // and only one of them is about the extent.
+  const source = ':: t\n:  d\n   {.k}\ntail\n'
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'definition_list',
+        pos: pos(0, 17),
+        items: [
+          { type: 'definition_term', pos: pos(0, 4), children: [] },
+          { type: 'definition_description', pos: pos(5, 9), children: [] },
+        ],
+      },
+    ],
+  }
+  const findings = stopFindings(doc, source)
+  assert.equal(findings.length, 1, findings.join('\n'))
+  assert.match(findings[0], /reaches past its last child on "definition_list"/)
+  assert.match(findings[0], /it ends at 17, its last child ends at 9/)
+})
+
+test('a definition list that stops at its last description is accepted', () => {
+  // The other direction, so the finding above is the RULE and not the document.
+  // Deleting `definition_list` from the type set makes the pair above pass and
+  // this one pass too, which is the state carve#1530 ended.
+  const source = ':: t\n:  d\n   {.k}\ntail\n'
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'definition_list',
+        pos: pos(0, 9),
+        items: [
+          { type: 'definition_term', pos: pos(0, 4), children: [] },
+          { type: 'definition_description', pos: pos(5, 9), children: [] },
+        ],
+      },
+    ],
+  }
+  assert.deepEqual(stopFindings(doc, source), [])
+  assert.ok(ENDS_AT_LAST_CHILD.has('definition_list'))
+})
+
+test('the parse tree cannot answer for a definition list, so the corpus pass reads the wire shape', () => {
+  // The reason the corpus pass below serializes before it checks, pinned so it
+  // cannot be simplified back. carve-js parses a definition list into bare
+  // records with no `type` and no `pos`; the rule finds no children in one,
+  // takes the empty-container branch and falls out, so naming the type would
+  // buy nothing. `toAstJson` is what gives the items spans to be measured
+  // against.
+  const source = ':: t\n:  d\n   {.k}\ntail\n'
+  const parsed = parse(source)
+  const list = parsed.children[0]
+  assert.equal(list.type, 'definition_list')
+  assert.ok(list.items.every((item) => typeof item.type !== 'string'))
+  assert.deepEqual(stopFindings(parsed, source), [])
+
+  const wire = toAstJson(parse(source))
+  const findings = stopFindings(wire, source)
+  assert.equal(findings.length, 1, findings.join('\n'))
+  assert.match(findings[0], /"definition_list"/)
+})
+
 test('a container with a closer is not reached by this rule', () => {
   // A div ends at `:::`, not at its last child, and section 4 says so. The rule
   // is a type set for the same reason OPENING_MARKUP is one: only the type says
@@ -752,10 +819,10 @@ test('a container with a closer is not reached by this rule', () => {
 /*
  * THE CORPUS, DECLARED RED.
  *
- * Measured 2026-08-22 against the carve-js this repository pins, over every
- * corpus document: 98 findings across 91 documents, out of 2846 containers
- * examined. Until the engines land carve#1522 and carve#1524 that is the state
- * this file RECORDS rather than hides - the same discipline
+ * Measured 2026-08-23 against the carve-js this repository pins, over every
+ * corpus document: 104 findings across 97 documents, out of 2928 containers
+ * examined. Until the engines land carve#1522, carve#1524 and carve#1530 that
+ * is the state this file RECORDS rather than hides - the same discipline
  * resources/ast-span-divergence.txt applies one layer up.
  *
  * IT FAILS IN BOTH DIRECTIONS, which is the point. A document that starts
@@ -765,12 +832,20 @@ test('a container with a closer is not reached by this rule', () => {
  * When the list empties, the assertion becomes a plain "no findings" and both
  * issues are done.
  *
- * WHAT THE 98 ARE: 74 a `list` reaching past its last item, 4 a `block_quote`
- * doing the same, and 20 a container a collected definition emptied, which the
- * ruling reached separately (markup-carve/carve-rs#1233). Forty-five of the
- * first group are a list reaching over the line terminator that ends it -
+ * WHAT THE 104 ARE: 74 a `list` reaching past its last item, 4 a `block_quote`
+ * doing the same, 20 a container a collected definition emptied, which the
+ * ruling reached separately (markup-carve/carve-rs#1233), and 6 a
+ * `definition_list` reaching past its last description (carve#1530). Forty-five
+ * of the first group are a list reaching over the line terminator that ends it -
  * markup-carve/carve-js#1304 and markup-carve/carve-rs#1232, filed separately
  * and subsumed by this rule rather than excluded from it.
+ *
+ * THE SIX ARE THE SAME THREE SHAPES ONE CONTAINER OVER, which is the evidence
+ * that nothing about a definition list's shape was doing the work: two are the
+ * unattached attribute block of carve#1524 (`329-...-5`, `329-...-6`), one is
+ * the hoisted definition of carve#1522 (`350-...-5`), one is the trailing
+ * whitespace the same rule excludes (`268-...-5`), and two are the pair added
+ * to pin it (`399-...`).
  */
 const DECLARED_OVER_REACH = [
   '05-lists-10.crv 1',
@@ -805,6 +880,7 @@ const DECLARED_OVER_REACH = [
   '266-a-reference-definition-is-anchored-at-end-of-line-14.crv 1',
   '266-a-reference-definition-is-anchored-at-end-of-line-15.crv 1',
   '268-trailing-whitespace-on-a-content-line-is-dropped-4.crv 2',
+  '268-trailing-whitespace-on-a-content-line-is-dropped-5.crv 1',
   '279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-7.crv 1',
   '290-adjacent-sibling-lists-survive-the-round-trip-2.crv 2',
   '290-adjacent-sibling-lists-survive-the-round-trip-3.crv 1',
@@ -818,6 +894,8 @@ const DECLARED_OVER_REACH = [
   '329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-2.crv 1',
   '329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-3.crv 1',
   '329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-4.crv 1',
+  '329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-5.crv 1',
+  '329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-6.crv 1',
   '329-a-floating-attribute-is-scoped-to-the-container-that-holds-it.crv 1',
   '335-a-comment-fence-at-an-item-s-content-column-registers-nothing-either.crv 1',
   '336-a-footnote-definition-inside-an-item-s-comment-registers-nothing.crv 1',
@@ -827,6 +905,7 @@ const DECLARED_OVER_REACH = [
   '347-a-comment-fence-reached-through-a-quote-registers-nothing-either-3.crv 1',
   '350-a-definition-at-a-container-s-content-column-2.crv 1',
   '350-a-definition-at-a-container-s-content-column-3.crv 1',
+  '350-a-definition-at-a-container-s-content-column-5.crv 1',
   '350-a-definition-at-a-container-s-content-column.crv 1',
   '356-a-quote-inside-a-quote-is-asked-what-it-ends-on-5.crv 1',
   '357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders-4.crv 1',
@@ -860,6 +939,8 @@ const DECLARED_OVER_REACH = [
   '384-a-continuation-marker-attaches-only-a-flush-left-block-3.crv 1',
   '398-a-container-s-span-ends-at-its-last-placed-child-2.crv 1',
   '398-a-container-s-span-ends-at-its-last-placed-child.crv 1',
+  '399-a-definition-list-ends-at-its-last-placed-child-too-2.crv 1',
+  '399-a-definition-list-ends-at-its-last-placed-child-too.crv 1',
   '82-blockquote-lazy-continuation-6.crv 1',
   '86-list-lazy-continuation-5.crv 1',
   '87-compact-list-blocks-5.crv 1',
@@ -887,7 +968,17 @@ test('STOPS AT ITS CHILDREN, over every corpus document', () => {
     // check that is only accidentally right is one carve#1531 is about.
     const source = replaceNulls(raw)
     const findings = []
-    examined += checkStopsAtChildren(parse(raw), [...source], findings)
+    // THE PART 12 WIRE SHAPE, NOT THE PARSE TREE, and the rule needs it. §4 is
+    // normative about the interchange document, and the two shapes agree for
+    // every container this rule names EXCEPT `definition_list`: carve-js parses
+    // one into bare `{ terms, definitions, ... }` records with no `type` and no
+    // `pos`, so the rule finds no children in it, takes the empty-container
+    // branch and falls out. Naming the type without reading this shape would
+    // have been a check that cannot fail - the carve#755 family, inside the
+    // check written to close one. Measured: over the parse tree the pass
+    // reports 98 findings and examines 2846 nodes with `definition_list` in the
+    // type set and 98 out of 2846 with it removed, which is the tell.
+    examined += checkStopsAtChildren(toAstJson(parse(raw)), [...source], findings)
     if (findings.length > 0) measured.set(name, findings.length)
   }
   assert.deepEqual(

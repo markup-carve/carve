@@ -248,6 +248,19 @@ offset to one node cannot recover an answer from two overlapping spans. Ruled at
 attribute block the sentence above excludes is the same rule reached from the
 other side ([carve#1524](https://github.com/markup-carve/carve/issues/1524)).
 
+**A `definition_list` is not an exception**, and it is named here because it
+used to be one. It has no closer, so it ends at its last placed
+`definition_term` or `definition_description`. A floating attribute is *scoped*
+to the container that holds it, so an attribute line at a description's content
+column is one the definition list consumed - but scope and extent are different
+questions. Scope decides which blocks an attribute may reach; extent decides
+which source a node claims. The bullet list one construct over already answers
+it that way: `- a` / `  {.x}` / `tail` scopes the attribute to the item and
+still excludes the line from the list's span. Ruled at
+[carve#1530](https://github.com/markup-carve/carve/issues/1530), superseding
+the extent half of
+[carve#1281](https://github.com/markup-carve/carve/issues/1281).
+
 **A container with no placed child at all spans its own markup and stops
 there.** "Ends at its last placed child" says nothing when there is none, and a
 container can be emptied - a definition written as an item's only content is
