@@ -18,11 +18,14 @@ that a miss was caught only by accident - four of them inside this escaper.
 
 ## What the cases pin
 
-| engine | function |
-| --- | --- |
-| carve-js | `escapePlainCarveInlineSyntax` in `src/carve-escape.ts` |
-| carve-php | `escapePlainCarveInlineSyntax` in the `EscapesCarveConstructs` trait |
-| carve-rs | no shared entry point - see "carve-rs" below |
+| engine | function | consumer |
+| --- | --- | --- |
+| carve-js | `escapePlainCarveInlineSyntax` in `src/carve-escape.ts` | `test/escape-corpus.test.ts` |
+| carve-php | `escapePlainCarveInlineSyntax` in the `EscapesCarveConstructs` trait | `tests/TestCase/Converter/EscaperCorpusTest.php` |
+| carve-rs | `escape_plain_carve_syntax` in `src/djot_migrate.rs` | the `escape_corpus` module in the same file |
+
+All three read `cases.json` itself, so the corpus has one set of expectations
+rather than three transcriptions of it.
 
 ## Profiles
 
@@ -46,11 +49,13 @@ one and return one. A rule that only shows across lines is still stated in the
 case comment - see `braced-unclosed` - but the fixture stays line-shaped.
 
 **No input carries a backslash.** This function escapes CONSTRUCTS. A literal
-backslash in the source text is a separate stage, which carve-php spells
-`escapeLiteralBackslashes` and carve-js does not have at all
-(markup-carve/carve-js#1085). Feeding backslash-bearing text to this function
-asks a question it does not answer, and the two engines answer it differently
-because of that gap, not because of this one.
+backslash in the source text is a separate stage, spelled
+`escapeLiteralBackslashes` in carve-js and carve-php and called only by the
+converters whose own language has no backslash escape - HTML and BBCode text,
+where a backslash is a character the author typed. carve-rs has no such stage,
+because its HTML and Markdown importers build an AST and let the canonical
+writer emit the source. Feeding backslash-bearing text to this function asks a
+question it does not answer, and which stage would answer it differs by engine.
 
 The check in `tests/escape-corpus.check.mjs` enforces both, plus the invariant
 that makes a fabricated expectation impossible to hide: an expected string with
@@ -75,41 +80,49 @@ already skips a target an engine does not implement.
 
 ## carve-rs
 
-carve-rs cannot consume this corpus today. Its escaper is a fourth spelling of
-the rule - `escape_plain_carve_syntax`, private inside `src/djot_migrate.rs`,
-with the Djot handled set hardwired rather than passed in - and its Markdown
-importer builds an AST instead, so it never escapes text at all.
+carve-rs consumes the corpus the same way the other two do. Its escaper takes
+the handled set as a parameter, the `escape_corpus` module in
+`src/djot_migrate.rs` reads `tests/spec/tests/corpus-escape/cases.json`
+directly, and all three profiles are declared, so every case runs under every
+profile (markup-carve/carve-rs#995).
 
-It was still measured for this corpus, end to end through
-`carve migrate --from djot`: it agrees with carve-php on every `djot`-profile
-case whose input is inert in Djot (46 of 55; the other 9 inputs are Djot markup,
-so what came back was conversion rather than escaping). Exposing the function
-and passing the handled set in is tracked in markup-carve/carve-rs#995.
+What is still one-sided is the CALLER set, not the corpus: `djot_to_carve` is
+the crate's only text-level converter, so `djot` is the only profile with a call
+site today. `markdown` and `plain` are declared anyway, because the handled set
+is a parameter now, and the engine's own
+`a_profile_with_no_caller_is_named` test says which profile is proven ahead of
+its caller and asserts the parameter is load-bearing - a hardwired set would
+make every profile return the same answer and every case would still pass.
 
-## Known divergences
+## Divergences
 
-Where the engines disagree, `cases.json` carries the answer that survives a
-render, not a transcript of what an engine happens to print. Both open
-divergences are carve-js:
+No engine diverges from the corpus today. Measured at carve-js `1568546`,
+carve-php `5d8d9ab` and carve-rs `d948992`, each pinning this repo at
+`3fdfd6e`: all three run the whole file, 57 cases under 3 profiles, and all 171
+comparisons agree.
 
-| case | profile | carve-js | corpus | why |
+Where the engines DID disagree, `cases.json` carried the answer that survives a
+render rather than a transcript of what an engine happened to print, and the
+reasoning is what the fixtures still encode. All three below are settled; the
+rows are kept because they say why the expectation is what it is, not because a
+divergence is open.
+
+| case | profile | the answer that lost | corpus | why |
 | --- | --- | --- | --- | --- |
-| `braced-highlight` | `djot` | `a {\=x=} b` | `a {=x=} b` | `{=x=}` is a highlight in Djot too, which is why the profile names `=` as handled. carve-js leaves the brace and escapes the inner `=` anyway, and the result renders `a {=x=} b` where the source meant `a <mark>x</mark> b`. carve-php and carve-rs both leave it alone. |
+| `braced-highlight` | `djot` | `a {\=x=} b` | `a {=x=} b` | `{=x=}` is a highlight in Djot too, which is why the profile names `=` as handled. Escaping the inner `=` behind the brace renders `a {=x=} b` where the source meant `a <mark>x</mark> b`. |
 | `braced-unclosed` | `plain`, `markdown` | `a {^x b` | `a \{^x b` | A braced run spans a soft break: `a {^x` on one line and `y^} b` on the next renders `a <sup>x\ny</sup> b`. A line-oriented escaper that leaves an unclosed opener bare therefore lets the NEXT line close it, turning two lines of literal text into a superscript. |
+| `a-symbol-shortcode` | all | `a :rocket: b` | `a \:rocket: b` | `:name:` is a construct opener, so the bare form re-parses as a `symbol` node and, under a configured symbol map, renders the glyph where the source held text. PART 11 §5 lists `:` in the candidate set. Pinned end to end by the `symbol-sigil-escape` HTML import fixture. |
 
-Both are filed as markup-carve/carve-js#1084.
+`a-colon-that-closes-no-shortcode` is the last row's negative: a colon that opens
+nothing is left bare, because escaping it would be the over-escaping PART 11 §2
+calls a defect rather than a safe default.
 
-One divergence is not carve-js's alone. `a-symbol-shortcode` was measured on
-carve-js and carve-php, which agree on the bare form. carve-rs was not measured
-for it, so its row is open rather than assumed:
-
-| case | profile | measured | corpus | why |
-| --- | --- | --- | --- | --- |
-| `a-symbol-shortcode` | all | `a :rocket: b` (js, php) | `a \:rocket: b` | `:name:` is a construct opener, so the bare form re-parses as a `symbol` node and, under a configured symbol map, renders the glyph where the source held text. PART 11 §5 already lists `:` in the candidate set; neither measured escaper spends it. Filed as markup-carve/carve-js#1371, markup-carve/carve-php#1605 and markup-carve/carve-rs#1279, and pinned end to end by the `symbol-sigil-escape` HTML import fixture. |
-
-`a-colon-that-closes-no-shortcode` is its negative: a colon that opens nothing is
-left bare, because escaping it would be the over-escaping PART 11 §2 calls a
-defect rather than a safe default.
+A row here is history, and a claim about an engine's current behavior is not.
+Anything about what an engine does today belongs in a ledger a run can fail on -
+`resources/converter-drift.txt` is the pattern - rather than in this page, which
+went on saying that carve-rs could not read the corpus and that carve-js was the
+divergent engine for a week after both were fixed, because a page has no run to
+fail.
 
 ## The escaper is not idempotent
 
