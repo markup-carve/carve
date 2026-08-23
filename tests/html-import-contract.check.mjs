@@ -105,6 +105,12 @@ const PIN_LAG = new Map([
   // report is empty where the fixture has one row. carve-php and carve-rs both
   // reproduce this fixture. Clears with markup-carve/carve-js#1332.
   ['caption-attributes', 'drops a figcaption attribute without reporting it (carve-js#1332)'],
+  // The same silence on the other spelling of a caption line: the pin drops the
+  // table `<caption>`'s event handler and says nothing. carve-php reproduces
+  // this fixture and carve-rs does with markup-carve/carve-rs#1257. Clears with
+  // the same pin bump as the row above - markup-carve/carve-js#1335 fixed both
+  // caption sites at once.
+  ['table-caption-attributes', 'drops a table caption attribute without reporting it (carve-js#1332)'],
 ])
 
 /*
