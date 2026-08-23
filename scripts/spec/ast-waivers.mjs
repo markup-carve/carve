@@ -138,6 +138,37 @@ export function extentFinding(text) {
   return null
 }
 
+/*
+ * THE ONE CLASS THAT IS REPORTED AND DELIBERATELY NOT GATED.
+ *
+ * `checkShapeParity` diffs a satellite's tree against carve-js's. It is the
+ * only finding in this list that is an ENGINE-AGAINST-ENGINE comparison rather
+ * than a statement about the source, and `reportEngineDisagreement` in
+ * scripts/ast-conformance.mjs states the policy for that whole family in its
+ * own words: NOT A GATE, deliberately, because in this fleet a fix lands in one
+ * engine first, so the engine that is RIGHT is routinely the odd one out for a
+ * few days and failing on that would make the fix for a red run "wait".
+ *
+ * It is worse than that here. A reference checkout that is behind or locally
+ * modified turns every satellite's line into a statement about the operator's
+ * working copy - `referenceProvenance` exists because that measured 70 findings
+ * once - so this is the one class whose count is not even about the engine it
+ * names.
+ *
+ * COUNTED AND NAMED, not dropped. That distinction is the whole point of
+ * carve#1637: the bucket it replaces was silent, and a run could print thirty
+ * findings while reporting nothing about them. This one is reported on the
+ * engine's own summary line and rolled up at the end of the run, and the panel
+ * that DOES own it reconciles it against resources/ast-span-divergence.txt and
+ * the shape comparison beside it.
+ */
+const REFERENCE_SHAPE = /^tree differs from the reference at /
+
+/** True where a finding is the cross-engine shape diff, which has its own panel. */
+export function isReferenceShapeFinding(text) {
+  return REFERENCE_SHAPE.test(text)
+}
+
 const extentKeyOf = (engine, rule, type) => `${engine}\t${rule}\t${type}`
 
 /** `<engine>  <rule>  <type>  <count>  <owner/repo#N>` - the extent ledger. */
@@ -265,6 +296,10 @@ export function parseWaivers(text) {
  *   `permitted` category because §4 exempts a reassembled node.
  *   §4 EXTENT       -> `resources/ast-extent-findings.txt`, issue-only, no
  *   permitted category at all.
+ *   REFERENCE SHAPE -> `reference`, counted and named on the summary line and
+ *   rolled up at the end of the run, and gated by NEITHER ledger. It is the one
+ *   ENGINE-AGAINST-ENGINE finding in this list and the run's own policy for that
+ *   family is not to gate it - see the note above `REFERENCE_SHAPE`.
  *   ANYTHING ELSE   -> `ungated`, which fails on sight. There is no ledger for
  *   a wrong slice, a span outside its parent or a §1a run, and there should not
  *   be: those are defects to fix, not numbers to record.
@@ -277,6 +312,7 @@ export function partitionFindings(engine, findings, declared, extentDeclared = n
   const measured = new Map()
   const extentMeasured = new Map()
   const ungated = []
+  let reference = 0
   for (const finding of findings) {
     const { document, text } = splitFinding(finding)
     const type = document === null ? null : waivableType(text)
@@ -289,6 +325,10 @@ export function partitionFindings(engine, findings, declared, extentDeclared = n
     if (found !== null) {
       const key = extentKeyOf(engine, found.rule, found.type)
       extentMeasured.set(key, (extentMeasured.get(key) ?? 0) + 1)
+      continue
+    }
+    if (isReferenceShapeFinding(text)) {
+      reference += 1
       continue
     }
     ungated.push(finding)
@@ -371,6 +411,7 @@ export function partitionFindings(engine, findings, declared, extentDeclared = n
     outstanding,
     undeclared,
     extent,
+    reference,
     ungated: ungated.length,
     problems,
     extentProblems,
