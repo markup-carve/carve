@@ -92,3 +92,98 @@ test('an orphan caption line with nothing captionable above it stays text', () =
   assert.ok(!out.includes('<figcaption>'), out)
   assert.match(out, /\^ not a caption/, out)
 })
+
+/*
+ * WHERE THE CAPTION ENDS -- PART 2, MULTI-LINE CAPTIONS
+ * (markup-carve/carve#1561).
+ *
+ * The clause has been explicit since it was written: "A caption is multi-line
+ * inline CONTENT, so its text spills onto following lines exactly like a
+ * PARAGRAPH (section 10), NOT like a heading", and "Continuation lines join
+ * with a newline, so `^ cap` + `more` yields the caption text `cap\nmore`".
+ *
+ * The oracle read exactly one line at all FIVE of its caption sites, so the
+ * continuation line became a second block. No corpus document holds a caption
+ * with a continuation line, and the authored docs sample that does
+ * (`docs/cheatsheet.md`) had no reader until
+ * markup-carve/carve#1552 gave it one - so four readers held two answers with
+ * nothing red.
+ *
+ * PINNED PER HOST, not once. The five sites each had their own copy of the
+ * slot read, which is what let one rule be wrong in five places; a single
+ * assertion would leave four of them free to drift back. The pinned engine is
+ * asserted beside the oracle on the same source for the same reason the
+ * comparison exists at all: agreement is the claim, not the oracle's output
+ * in isolation.
+ */
+
+const CONTINUED = {
+  image: '![alt](/i.png)\n^ cap\nmore\n',
+  table: '| a | b |\n^ cap\nmore\n',
+  quote: '> q\n^ cap\nmore\n',
+  code: '```\nx\n```\n^ cap\nmore\n',
+  math: '$$`x`\n^ cap\nmore\n',
+}
+
+for (const [host, source] of Object.entries(CONTINUED)) {
+  test(`a caption on a ${host} folds its continuation line in`, () => {
+    const out = html(source)
+    assert.match(out, /cap\nmore</, out)
+    assert.ok(!out.includes('<p>more</p>'), out)
+  })
+}
+
+test('the pinned engine folds it the same way, on every host', async () => {
+  const { carveToHtml } = await import('@markup-carve/carve')
+  for (const [host, source] of Object.entries(CONTINUED)) {
+    assert.match(carveToHtml(source), /cap\nmore</, host)
+  }
+})
+
+test('a caption folds three continuation lines, joined with newlines', () => {
+  assert.match(html('![alt](/i.png)\n^ cap\ntwo\nthree\n'), /<figcaption>cap\ntwo\nthree<\/figcaption>/)
+})
+
+test('a blank line ends the caption (item 1)', () => {
+  const out = html('![alt](/i.png)\n^ cap\n\nafter\n')
+  assert.match(out, /<figcaption>cap<\/figcaption>/, out)
+  assert.match(out, /<p>after<\/p>/, out)
+})
+
+test('a paragraph interrupter ends the caption (item 2)', () => {
+  // Section 10's relation, one member per kind it names.
+  for (const [what, line] of Object.entries({
+    heading: '# H',
+    quote: '> q',
+    table: '| a | b |',
+    fence: '```\nc\n```',
+    div: '::: note\nx\n:::',
+    thematic: '---',
+    comment: '%% c',
+  })) {
+    const out = html(`![alt](/i.png)\n^ cap\n${line}\n`)
+    assert.match(out, /<figcaption>cap<\/figcaption>/, `${what}: ${out}`)
+  }
+})
+
+test('a list marker does NOT end the caption (item 3)', () => {
+  // The one paragraph end condition the clause overrides: a list needs a blank
+  // line to interrupt, so the marker line folds in as literal caption text.
+  assert.match(html('![alt](/i.png)\n^ cap\n- x\n'), /<figcaption>cap\n- x<\/figcaption>/)
+})
+
+test('a second caret line does NOT continue the caption (item 4)', () => {
+  // No repeated marker. The second line ends this caption and, with nothing
+  // captionable above it, is ordinary paragraph text.
+  const out = html('![alt](/i.png)\n^ cap\n^ two\n')
+  assert.match(out, /<figcaption>cap<\/figcaption>/, out)
+  assert.match(out, /<p>\^ two<\/p>/, out)
+})
+
+test('an unresolved reference image gives every caption line back', () => {
+  // The unwrap appends the caption's SOURCE to the paragraph. Reading one line
+  // where the caption held three would silently drop two of them.
+  const out = html('![alt][r]\n^ cap\nmore\nyet\n')
+  assert.ok(!out.includes('<figure>'), out)
+  assert.match(out, /\^ cap\nmore\nyet/, out)
+})

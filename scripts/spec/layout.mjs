@@ -1471,7 +1471,7 @@ export function parse(src) {
       if (b === null || typeof b !== 'object') continue
       if (b.t === 'para' && b.pendingRef !== undefined) {
         if (!state.linkDefs.has(b.pendingRef)) {
-          b.lines = [...b.lines, b.captionSrc]
+          b.lines = [...b.lines, ...b.captionSrc]
           delete b.caption
         }
         delete b.pendingRef
@@ -1593,6 +1593,78 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     return node
   }
   const push = (node) => blocks.push(flushAttrs(node))
+
+  /*
+   * A CAPTION SLOT, WITH THE CONTINUATION LINES IT SPILLS ONTO -- PART 2,
+   * MULTI-LINE CAPTIONS.
+   *
+   * `from` is the index just past the captionable host. The return value is
+   * `null` when no caption line follows, or `{ text, next, src }`: the folded
+   * caption text, the index to resume the block loop at, and the caption's
+   * SOURCE lines for the one caller that may have to put them back
+   * (`pendingRef`, an unresolved reference image, unwraps the figure and the
+   * caption returns to the paragraph as literal text).
+   *
+   * ONE HELPER RATHER THAN FIVE COPIES, for the reason the `CAPTION` pattern
+   * gives above it: five sites read this slot -- code block, figure group,
+   * table, block quote and image/display-math paragraph -- and each carried
+   * its own three-line spelling that read exactly one line. So the caption
+   * ENDED at its own line in all five, and no corpus document holds a caption
+   * with a continuation line, which is how the oracle held a reading no engine
+   * and no clause shares (markup-carve/carve#1561).
+   *
+   * WHERE IT ENDS is the clause's own list, and the clause says outright that
+   * the list is a paragraph's: "It ends the same way an open paragraph does".
+   * So the ends are read from `peekInterrupts`, the §10 I1/I4/I5 predicate the
+   * paragraph collector already uses, plus the two the clause names on its
+   * own account:
+   *
+   *   - a further `^ ` line does NOT continue the caption (item 4). There is
+   *     no repeated marker, so the second caret line ends this caption and,
+   *     with nothing captionable above it, becomes paragraph text.
+   *   - a LIST MARKER does NOT end it (item 3), which is why no marker test
+   *     appears here. A caption folds `- x` in as literal text exactly as a
+   *     paragraph does.
+   *
+   * WHAT IT DOES NOT NORMALIZE. A continuation line keeps its leading run and
+   * drops only its trailing whitespace, the same treatment the caption's own
+   * line gets from `CAPTION`. The clause's paragraph comparison is about the
+   * EXTENT -- which lines belong to the caption -- and it enumerates the ends
+   * to say so; nothing in it, and nothing in `caption_continuation_line =
+   * inline_content, newline`, dedents the line. So the indented spelling is
+   * left as written rather than given a normalization the text does not state.
+   */
+  const captionSlot = (from) => {
+    let j = from
+    if (j < n && isBlank(lines[j] ?? '') && CAPTION.test(lines[j + 1] ?? '')) j++
+    const cap = j < n && lines[j] !== undefined ? CAPTION.exec(lines[j]) : null
+    if (!cap) return null
+    const text = [cap[1]]
+    const src = [stripIndent(lines[j]).replace(/[ \t]+$/, '')]
+    let k = j + 1
+    while (k < n && !isBlank(lines[k])) {
+      // A LAZY line is a paragraph continuation by construction (PART 1 S4),
+      // so it folds without asking the interruption predicate anything - the
+      // same short-circuit the paragraph collector takes, and for the same
+      // reason: the marker it is missing is what made it lazy.
+      if (lines[k].startsWith(LAZY)) {
+        text.push(lines[k].slice(LAZY.length).replace(/[ \t]+$/, ''))
+        src.push(lines[k].slice(LAZY.length).replace(/[ \t]+$/, ''))
+        k++
+        continue
+      }
+      for (const [re, what] of REFUSERS) {
+        if (re.test(lines[k])) throw new Refuse(`${what} interrupting a caption`)
+      }
+      if (CAPTION.test(lines[k])) break // item 4: no repeated marker
+      if (ind(k).rest.startsWith('%%')) break // §10 I5
+      if (peekInterrupts(k)) break // §10 I1/I4/I5
+      text.push(lines[k].replace(/[ \t]+$/, ''))
+      src.push(stripIndent(lines[k]).replace(/[ \t]+$/, ''))
+      k++
+    }
+    return { text: text.join('\n'), next: k, src }
+  }
 
   while (i < n) {
     // SS17 L3 asks this parser where the FIRST block ends (see firstBlockEnd).
@@ -1794,12 +1866,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           text: lines.slice(i + 1, close).map(stripLazy).join('\n') + (close > i + 1 ? '\n' : ''),
         }
         i = close + 1
-        let j = i
-        if (j < n && isBlank(lines[j] ?? '') && CAPTION.test(lines[j + 1] ?? '')) j++
-        const cap = j < n && lines[j] !== undefined ? CAPTION.exec(lines[j]) : null
+        const cap = captionSlot(i)
         if (cap) {
-          node.caption = cap[1] // a captioned code block is a LISTING (SS4)
-          i = j + 1
+          node.caption = cap.text // a captioned code block is a LISTING (SS4)
+          i = cap.next
         }
         push(node)
         continue
@@ -2049,12 +2119,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
                 // caption at the CLOSER (SS4's sixth host; one blank allowed).
                 // A group closed by end of input has no closer line to host
                 // the slot.
-                let j = i
-                if (j < n && isBlank(lines[j] ?? '') && CAPTION.test(lines[j + 1] ?? '')) j++
-                const cap = j < n && lines[j] !== undefined ? CAPTION.exec(lines[j]) : null
+                const cap = captionSlot(i)
                 if (cap) {
-                  node.caption = cap[1]
-                  i = j + 1
+                  node.caption = cap.text
+                  i = cap.next
                 }
               }
               push(node)
@@ -2177,12 +2245,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }
       }
       // caption (SS4; one blank line allowed)
-      let j = i
-      if (j < n && isBlank(lines[j] ?? '') && CAPTION.test(lines[j + 1] ?? '')) j++
-      const cap = j < n && lines[j] !== undefined ? CAPTION.exec(lines[j]) : null
+      const cap = captionSlot(i)
       if (cap) {
-        node.caption = cap[1]
-        i = j + 1
+        node.caption = cap.text
+        i = cap.next
       }
       push(node)
       continue
@@ -2416,12 +2482,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const children = parseBlocks(inner, state, false)
       const node = { t: 'quote', children }
       // caption -> <figure><blockquote/><figcaption> (PART 9 SS4)
-      let j = i
-      if (j < n && isBlank(lines[j]) && CAPTION.test(lines[j + 1] ?? '')) j++
-      const cap = j < n ? CAPTION.exec(lines[j]) : null
+      const cap = captionSlot(i)
       if (cap) {
-        node.caption = cap[1]
-        i = j + 1
+        node.caption = cap.text
+        i = cap.next
       }
       push(node)
       continue
@@ -2495,9 +2559,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     }
     const pnode = { t: 'para', lines: para }
     // image paragraph caption -> figure (PART 9 SS4; one blank line allowed)
-    let j = i
-    if (j < n && isBlank(lines[j] ?? '') && CAPTION.test(lines[j + 1] ?? '')) j++
-    const cap = j < n && lines[j] !== undefined ? CAPTION.exec(lines[j]) : null
+    const cap = captionSlot(i)
     if (cap) {
       // A REFERENCE image is an image: the bracket form takes a caption
       // exactly as the parenthesis form does. Only the inline form was
@@ -2506,7 +2568,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // figure - and nothing caught it, because every captioned-image case
       // in the corpus uses the inline form.
       if (isCaptionableParagraph(para)) {
-        pnode.caption = cap[1]
+        pnode.caption = cap.text
         // A reference image is captionable ONLY IF IT RESOLVES, and the
         // definition may sit below it - so the decision cannot be made
         // here, in a single forward pass. Record what an unwrap would need
@@ -2534,9 +2596,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // put a figure around literal text in one case and dropped a caption
           // from a resolving image in the other.
           pnode.pendingRef = refImage[1] === '' ? para[0].slice(2, altEnd - 1) : refImage[1]
-          pnode.captionSrc = stripIndent(lines[j]).replace(/[ \t]+$/, '')
+          // EVERY line of the caption, not the marker line alone. The unwrap
+          // appends these to the paragraph, so a caption that spilled onto a
+          // continuation line has to give all of them back or the document
+          // loses a line (PART 2, MULTI-LINE CAPTIONS).
+          pnode.captionSrc = cap.src
         }
-        i = j + 1
+        i = cap.next
       }
       // a caption after a non-captionable block stays literal paragraph
       // text (handled by the paragraph collector on the next pass)
