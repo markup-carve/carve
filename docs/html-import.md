@@ -176,12 +176,17 @@ side.
 
 ## The escaping reaches the imported source
 
-Two of the three shapes markup-carve/carve#1601 found are not import policy at
-all. They are PART 11 §2 applied to the source an importer writes, and §2
-already rules them: a character is escaped IF AND ONLY IF omitting the escape
-would change the re-parsed AST. They are recorded here because the importer is
-where they were found and where a shared fixture can hold them, not because this
-page adds a rule.
+Four of the shapes the import meaning sweep found are not import policy at all.
+They are PART 11 §2 applied to the source an importer writes, and §2 already
+rules them: a character is escaped IF AND ONLY IF omitting the escape would
+change the re-parsed AST. They are recorded here because the importer is where
+they were found and where a shared fixture can hold them, not because this page
+adds a rule.
+
+§2's test names the RE-PARSED source, and that is the operative word: it has to
+be evaluated against the source the writer will emit, not against the tree the
+writer emits from. The two differ, because a writer normalizes, and the caption
+row below is a miss that lives in the gap between them.
 
 A TABLE CELL WHOSE WHOLE PAYLOAD IS A SPAN MARKER. `<td>^</td>` in an ordinary
 two-by-two table comes back as `| ^ |`, which re-reads as a rowspan marker: the
@@ -200,7 +205,58 @@ the pinned build writes `a \#t b` for `<p>a #t b</p>` - so this too is a miss
 rather than a question. `tests/corpus-escape` carries the case for the escaper
 itself.
 
-`marker-shaped-cell` and `symbol-sigil-escape` pin the import direction.
+A DETACHED CAPTION LINE. An image followed by a paragraph whose text begins
+`^ ` comes back as the image line, a blank line, and that text unchanged:
+
+```html
+<img src="g.jpg" alt="G">
+<p>^ c</p>
+```
+
+```
+![G](g.jpg)
+
+^ c
+```
+
+which re-reads as a CAPTION - the two blocks fuse into a `<figure>` and the
+caret is consumed as the marker, so the paragraph the HTML held is gone. The
+escape is `\^ c`, it renders the image and the paragraph back, and it is a
+writer fixed point in carve-js and carve-php alike. A caption attaches across a
+blank line to exactly four targets, and the pinned build hardens the caret
+before three of them - a table, a quote and a code block - so this is one
+production spelled four times with one half missing, the same shape as the table
+cell above. carve-php hardens it before none of the four.
+
+The missing half is worth stating precisely, because it is not "an image". With
+no whitespace between the two elements the escape IS written. The difference is
+a whitespace-only text node: inter-element whitespace leaves the image in a
+paragraph beside a text node holding a space, the escaper reads that tree and
+judges the paragraph no caption target, and the writer then DROPS the text node
+and writes a bare image line, which is one. That is the gap §2's wording closes
+above. The trailing text node is a second finding of its own - no Carve source
+spells it, which is why `detached-caption-caret` records the image unwrapped.
+
+A BRACKETED SPAN WHOSE TEXT OPENS A NOTE REFERENCE. A semantic span takes the
+compact form, and its bracket run plus a caret is a note reference:
+
+```html
+<p><abbr title="y">^1</abbr></p>
+```
+
+```
+[^1]{abbr=y}
+```
+
+That re-reads as the note reference `[^1]` followed by a literal attribute
+block, so the span is gone and the paragraph renders `[^1]`. The escape is
+`[\^1]{abbr=y}`. Only the LABELED half collides - `[^]` is not a note
+reference, so `<abbr title="y">^</abbr>` needs no escape and must not get one -
+and the fixture carries both halves so that a fix cannot over-escape its way to
+green.
+
+`marker-shaped-cell`, `symbol-sigil-escape`, `detached-caption-caret` and
+`note-reference-in-a-span` pin the import direction.
 
 ## Block structure Carve can spell
 
@@ -861,6 +917,8 @@ The shared set is deliberately small and each directory has one subject:
 | `destination-less-link` | an anchor and an image with no destination the source can carry, which come back as their content rather than as `[t]()` |
 | `marker-shaped-cell` | a table cell whose whole payload is a span marker, escaped so the cell survives |
 | `symbol-sigil-escape` | a symbol sigil in imported text, escaped so it stays the text the HTML held |
+| `detached-caption-caret` | a paragraph that looks like a caption line under an image, escaped so it stays a paragraph |
+| `note-reference-in-a-span` | a span whose text opens a note-reference label, escaped beside the unlabeled caret that needs no escape |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one
