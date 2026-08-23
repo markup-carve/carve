@@ -1,0 +1,1 @@
+{"mode":"safe","adapter":"generic","diagnostics":[{"code":"element-dropped","message":"Dropped whitespace-only <p> holding no content character","severity":"warning","path":"/p[4]"},{"code":"element-dropped","message":"Dropped whitespace-only <p> holding no content character","severity":"warning","path":"/p[6]"}]}
