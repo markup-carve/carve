@@ -165,6 +165,44 @@ export function checkContainment(doc, findings) {
  *   `table` reaches past its last row over the alignment row, which produces no
  *   node in any engine (carve#1344) and is the table's own markup rather than a
  *   child's.
+ *   `table_cell` runs BETWEEN the pipes, which is the same fact `OPENING_MARKUP`
+ *   states one rule over: the `|` opens the row rather than the cell, so the
+ *   pipes and not the content are what bound a cell's span, and the padding on
+ *   BOTH sides of the content sits inside it. 382 of the 400 cells the corpus
+ *   places reach past their last child, all of them over spaces, and the same
+ *   sentence that puts the leading run inside the span puts the trailing one
+ *   there. Adding the type would report the cell's own source as nobody's.
+ *   `definition_description` reaches past its last child on NOTHING measured -
+ *   36 placed on the corpus, none of them over-reaching - because every trailing
+ *   run a description line carries lands on the enclosing `definition_list`
+ *   instead, which IS in this set: `:: t` / `:  a` / blank / `   b<SP><SP>` ends
+ *   the description at `b` and the list two codepoints later. Adding it would be
+ *   a type that cannot fire, which this file already refused once below.
+ *
+ * THE CLAIM ABOVE WAS FALSE FOR THREE TYPES UNTIL carve#1574, and they are in
+ * the set now rather than excused in this comment. `footnote` (27 of 73 placed),
+ * `definition_term` (2 of 43) and `heading` (1 of 136) each reached past their
+ * last child on real corpus documents while being named by none of the
+ * categories above - so a reader auditing the guard was told they had been
+ * considered and excluded when they had not been. What they reach over is
+ * source §4 and PART 2 exclude BY NAME, which is why this is the clause applied
+ * rather than a new ruling:
+ *
+ *   26 of the 27 footnotes reach over the blank line that ends the definition,
+ *   and §4 says "a following newline, blank line, or unattached attribute block
+ *   is not" included. The 27th (`202-...`) reaches over a definition hoisted out
+ *   of its own body, and §4 says "a hoisted sibling is not a child"
+ *   (carve#1522).
+ *   The `definition_term` and `heading` rows reach over trailing whitespace on
+ *   a content line, and PART 2's NO TRAILING WHITESPACE clause is normative that
+ *   such a run "does not reach the output, and it is not content" - naming a
+ *   heading and a definition term among the lines it holds for (carve#926).
+ *   A construct cannot own source that is not content.
+ *
+ * None of the three has a closer, so §4 ends each at its last placed child like
+ * every other closerless container. The 30 documents this newly reports are
+ * declared red with the rest in tests/ast-positions.test.mjs and close when the
+ * engines move.
  *
  * `definition_list` IS PRESENT, AND IT USED TO BE THE ONE EXCEPTION. It has no
  * closer, so §4 ends it at its last placed `definition_term` or
@@ -221,7 +259,10 @@ export function checkContainment(doc, findings) {
 export const ENDS_AT_LAST_CHILD = new Set([
   'block_quote',
   'definition_list',
+  'definition_term',
   'figure',
+  'footnote',
+  'heading',
   'list',
   'list_item',
   'paragraph',
