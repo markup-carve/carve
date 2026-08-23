@@ -409,6 +409,24 @@
       }
     },
     {
+      "name": "a-symbol-shortcode",
+      "input": "a :rocket: b",
+      "expected": {
+        "plain": "a \\:rocket: b",
+        "markdown": "a \\:rocket: b",
+        "djot": "a \\:rocket: b"
+      }
+    },
+    {
+      "name": "a-colon-that-closes-no-shortcode",
+      "input": "a : b : c",
+      "expected": {
+        "plain": "a : b : c",
+        "markdown": "a : b : c",
+        "djot": "a : b : c"
+      }
+    },
+    {
       "name": "a-word-after-a-hash-is-a-tag",
       "input": "a #y b",
       "expected": {

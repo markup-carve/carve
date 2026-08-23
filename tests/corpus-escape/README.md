@@ -99,6 +99,18 @@ divergences are carve-js:
 
 Both are filed as markup-carve/carve-js#1084.
 
+One divergence is not carve-js's alone. `a-symbol-shortcode` was measured on
+carve-js and carve-php, which agree on the bare form. carve-rs was not measured
+for it, so its row is open rather than assumed:
+
+| case | profile | measured | corpus | why |
+| --- | --- | --- | --- | --- |
+| `a-symbol-shortcode` | all | `a :rocket: b` (js, php) | `a \:rocket: b` | `:name:` is a construct opener, so the bare form re-parses as a `symbol` node and, under a configured symbol map, renders the glyph where the source held text. PART 11 §5 already lists `:` in the candidate set; neither measured escaper spends it. Filed as markup-carve/carve-js#1371, markup-carve/carve-php#1605 and markup-carve/carve-rs#1279, and pinned end to end by the `symbol-sigil-escape` HTML import fixture. |
+
+`a-colon-that-closes-no-shortcode` is its negative: a colon that opens nothing is
+left bare, because escaping it would be the over-escaping PART 11 §2 calls a
+defect rather than a safe default.
+
 ## The escaper is not idempotent
 
 Escaped output is not safe to feed back in. `a {=x=} b` escapes to

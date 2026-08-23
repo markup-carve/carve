@@ -8943,8 +8943,9 @@ EOF = (* end of file *) ;
         `@ #`                mentions and tags (§7 boundary rules); `#` also
                              opens a heading at column 0
         `> + - . ) : | % !`  block openers at column 0, plus the inline forms
-                             `%%` and `::` (the inline-footnote `^[` is covered
-                             by the unconditional caret above)
+                             `%%`, `::` and the symbol shortcode `:name:` (the
+                             inline-footnote `^[` is covered by the
+                             unconditional caret above)
         `$`                  math
 
       A character in neither set is never escaped.
@@ -9245,6 +9246,39 @@ EOF = (* end of file *) ;
       this clause and come back with the engine pin bump, because a fixture
       carrying the new bytes fails in every engine that has not shipped the
       clause yet and one carrying the old bytes fails in every engine that has.
+
+   6f. PADDING IS NOT AN ESCAPE WHERE THE PRODUCTION ADMITS PADDING --
+      NORMATIVE (carve#1601). §6e retires the writer's `<`/`>`/`~`/`{` guards
+      because those three slots are read GLUED to the opening pipe, so one
+      space in front of the content puts it out of their reach. That argument
+      holds only where the construct's OWN production forbids the padding, and
+      one class of cell construct is written WITH the padding inside it:
+
+        span_cell      = rowspan_marker | colspan_marker ;
+        rowspan_marker = {space}, '^', {space} ;
+        colspan_marker = {space}, '<', {space} ;
+
+      A cell whose whole payload is `^` or `<` therefore re-reads as a SPAN
+      however it is padded, and §6e's space does nothing for it. §2 is what
+      applies, by its own test: omitting the escape changes the re-parsed AST,
+      so the payload is escaped and the writer emits `| \^ |` and `| \< |`.
+
+      THE RULE IS THE TEST, NOT THE TWO CHARACTERS. A cell payload is escaped
+      wherever omitting the escape would make the cell re-read as something
+      other than content, which is §2 run over the CELL rather than over the
+      line. Naming `^` and `<` here would be an enumeration that goes stale the
+      next time a cell-level marker is added, and §6e's own history is what
+      that costs: each writer answered the alignment-sigil class with its own
+      slightly different list of characters.
+
+      MEASURED, AND THE ASYMMETRY IS THE POINT (carve#1601). The pinned
+      carve-js build writes `| \< |` for a cell holding `<` and `| ^ |` for a
+      cell holding `^` -- one production, two halves, one of them escaped. The
+      unescaped half loses the cell outright: `| a | b |` over `| ^ | c |`
+      renders `<td rowspan="2">a</td>` and no cell for the caret at all, which
+      is a §1 failure rather than an over- or under-escaped byte. The shape
+      reached this section through an HTML import, where an ordinary
+      `<td>^</td>` is the everyday way to produce it.
 
    7. NO WHITESPACE-ONLY LINE -- NORMATIVE. `fmt` never emits a line whose only
       content is ASCII spaces or tabs. Such a line is emitted EMPTY.
