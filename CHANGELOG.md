@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **HTML import coverage is measured as a population and across engines**
+  (carve#1600). Every grammar construct has one coverage classification, the
+  complete render corpus is re-imported through the pinned JavaScript engine,
+  and all normative HTML fixtures run through Rust, JavaScript, and PHP with a
+  bidirectional drift ledger.
+- **Built-in render/import routes have a corpus round-trip ratchet**
+  (carve#1604). Exact current HTML and Markdown counts are pinned and must be
+  reviewed when either improves or regresses.
+- **Bindings owe the complete output surface plus the AST** (carve#1599).
+  Importers remain optional but must be explicitly implemented or declared out
+  of scope; a machine-readable binding contract checks the inventory.
+
 - **An explicit closer is a spelling change, so it cannot move a list's
   tightness** (carve#1602). Corpus
   `362-an-unterminated-container-does-not-extend-the-item-past-a-blank-line-4`

@@ -48,8 +48,6 @@ export const UNIMPLEMENTED_IMPORTERS = {
   rust: {
     bbcode: 'carve-rs has no BBCode importer (carve#1130 coverage table); `carve migrate --from bbcode` rejects the format',
   },
-  js: {
-    djot: 'carve-js has no Djot importer - only the applyMigrationFixes linter (carve#1130 coverage table)',
-  },
+  js: {},
   php: {},
 }

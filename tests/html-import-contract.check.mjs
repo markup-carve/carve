@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict'
 import { readdir, readFile } from 'node:fs/promises'
 import { test } from 'node:test'
+import './binding-contract.check-helper.mjs'
+import './html-import-construct-coverage.check-helper.mjs'
+import './import-roundtrip-ratchets.check-helper.mjs'
 
 const root = new URL('./html-import/', import.meta.url)
 

@@ -85,6 +85,13 @@ Carve's - a node, never in silence.
 
 ## A round trip is an expressiveness test for the AST
 
+The corpus now records this measurement directly for built-in import routes.
+At the current JavaScript engine pin, 605 of 1,384 documents return to their
+canonical Carve source through HTML, and 374 through Markdown. The exact counts
+are a bidirectional ratchet in `resources/import-roundtrip-baseline.json`: a
+regression and an improvement both require inspection rather than silently
+changing the published baseline.
+
 Bridges are usually justified by reach: one conversion unlocks a whole family of
 outputs. That is true, and it is not the most interesting property.
 
