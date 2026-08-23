@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A marker at an item's content column opens a sublist, first in the item or
+  not** (carve#1517, PART 9 §24 C3). All three engines applied the clause to an
+  item's first marker only, so whether a later one opened a sublist or folded
+  into the paragraph above it depended on a sub-list that had already closed.
+  The clause is unchanged - the executable spec has always read it this way -
+  and the engines move to it. Corpus 401.
 - **A blank verbatim line inside a block quote has a canonical spelling, and it
   is pinned** (carve#1544, PART 11 §7/§7a). The three engines wrote three
   documents for four core corpus cases with every other gate green. `.fmt`

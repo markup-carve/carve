@@ -820,7 +820,7 @@ test('a container with a closer is not reached by this rule', () => {
  * THE CORPUS, DECLARED RED.
  *
  * Measured 2026-08-23 against the carve-js this repository pins, over every
- * corpus document: 104 findings across 97 documents, out of 2928 containers
+ * corpus document: 105 findings across 98 documents, out of 2943 containers
  * examined. Until the engines land carve#1522, carve#1524 and carve#1530 that
  * is the state this file RECORDS rather than hides - the same discipline
  * resources/ast-span-divergence.txt applies one layer up.
@@ -832,7 +832,7 @@ test('a container with a closer is not reached by this rule', () => {
  * When the list empties, the assertion becomes a plain "no findings" and both
  * issues are done.
  *
- * WHAT THE 104 ARE: 74 a `list` reaching past its last item, 4 a `block_quote`
+ * WHAT THE 105 ARE: 75 a `list` reaching past its last item, 4 a `block_quote`
  * doing the same, 20 a container a collected definition emptied, which the
  * ruling reached separately (markup-carve/carve-rs#1233), and 6 a
  * `definition_list` reaching past its last description (carve#1530). Forty-five
@@ -845,7 +845,10 @@ test('a container with a closer is not reached by this rule', () => {
  * unattached attribute block of carve#1524 (`329-...-5`, `329-...-6`), one is
  * the hoisted definition of carve#1522 (`350-...-5`), one is the trailing
  * whitespace the same rule excludes (`268-...-5`), and two are the pair added
- * to pin it (`399-...`).
+ * to pin it (`399-...`). The 75th `list` row is `401-...`, the fixture added for
+ * markup-carve/carve#1517: its item holds a sub-list the blank line closed, and
+ * the pinned build reaches over that blank run - markup-carve/carve-js#1304, the
+ * same defect this rule subsumes rather than excludes.
  */
 const DECLARED_OVER_REACH = [
   '05-lists-10.crv 1',
@@ -941,6 +944,7 @@ const DECLARED_OVER_REACH = [
   '398-a-container-s-span-ends-at-its-last-placed-child.crv 1',
   '399-a-definition-list-ends-at-its-last-placed-child-too-2.crv 1',
   '399-a-definition-list-ends-at-its-last-placed-child-too.crv 1',
+  '401-a-marker-at-an-item-content-column-opens-a-sublist-first-in-the-item-or-not.crv 1',
   '82-blockquote-lazy-continuation-6.crv 1',
   '86-list-lazy-continuation-5.crv 1',
   '87-compact-list-blocks-5.crv 1',
