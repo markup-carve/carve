@@ -115,6 +115,72 @@ const SOURCE_LAYOUT_FIELDS = new Set([
   'termSpans',
 ])
 
+/*
+ * AND THE SKIP IS ONLY SAFE BECAUSE AN IMPORT RECORDS NONE OF THEM
+ * (markup-carve/carve#1647).
+ *
+ * The comment above states that as the reason the skip is not a hole. Nothing
+ * checked it, and the skip is precisely what makes it uncheckable ABOVE: a
+ * fixture that records `bulletChar` is skipped over by `disagreement` on the
+ * one key that would have shown it. So the claim held the whole file up and had
+ * no reader.
+ *
+ * It was false. `tests/html-import/whitespace-only-block/expected.ast.json`
+ * recorded `"bulletChar": "-"` on both of its lists while
+ * `traversal-shaped-index` and `derived-endnotes-section` - the same construct,
+ * the same importer, the same run - recorded none, so no implementation could
+ * pass both. `docs/ast-json.md` settles which is wrong twice over: a
+ * source-layout field is filled in by a PARSE, and `list.bulletChar` "records
+ * `*` while absence means `-`", so `-` is the value that is spelled by leaving
+ * the field out even where a source WAS read.
+ *
+ * Nothing else could have caught it. tests/html-import-contract.check.mjs
+ * compares the AST whole, but that fixture is declared pin lag there, and a
+ * pin-lag entry asserts only that SOME failure remains - never which - so a
+ * wrong field inside one is invisible for as long as the entry stands.
+ */
+const sourceLayoutKeys = (value, path = '') => {
+  if (Array.isArray(value)) return value.flatMap((item, i) => sourceLayoutKeys(item, `${path}[${i}]`))
+  if (value === null || typeof value !== 'object') return []
+  return Object.entries(value).flatMap(([key, inner]) =>
+    SOURCE_LAYOUT_FIELDS.has(key) ? [`${path}.${key}`] : sourceLayoutKeys(inner, `${path}.${key}`),
+  )
+}
+
+test('no fixture records a source-layout field, because an import read no source', async () => {
+  const fixtures = (await readdir(root, { withFileTypes: true })).filter((entry) => entry.isDirectory())
+  assert.ok(fixtures.length > 0)
+  for (const { name } of fixtures) {
+    const ast = JSON.parse(await readFile(new URL(`${name}/expected.ast.json`, root), 'utf8'))
+    assert.deepEqual(
+      sourceLayoutKeys(ast),
+      [],
+      `tests/html-import/${name}/expected.ast.json records a source-layout field. ` +
+        `An import reads HTML and has no source to read one off, which is the ground ` +
+        `SOURCE_LAYOUT_FIELDS is skipped on above - so recording one states a spelling ` +
+        `the import never saw, and no implementation can satisfy it alongside the ` +
+        `fixtures that omit it (markup-carve/carve#1647).`,
+    )
+  }
+})
+
+/*
+ * THE CHECK ABOVE CAN DETECT WHAT IT CLAIMS TO DETECT.
+ *
+ * Every fixture is correct once #1647 lands, so the check passes over all of
+ * them and that proves nothing. The literal below is the tree the fixture
+ * actually held, kept here rather than read back from a fixture so that a later
+ * fixture edit cannot quietly retire the proof.
+ */
+test('the source-layout scan finds the field the fixture recorded', () => {
+  const recorded = {
+    type: 'document',
+    children: [{ type: 'list', ordered: false, tight: true, items: [], bulletChar: '-' }],
+  }
+  assert.deepEqual(sourceLayoutKeys(recorded), ['.children[0].bulletChar'])
+  assert.deepEqual(sourceLayoutKeys({ type: 'document', children: [{ type: 'list', items: [] }] }), [])
+})
+
 const disagreement = (parsed, recorded, path = '') => {
   if (Array.isArray(parsed) || Array.isArray(recorded)) {
     if (!Array.isArray(parsed) || !Array.isArray(recorded)) return `${path}: array against non-array`
