@@ -129,3 +129,29 @@ test('every manifest entry names a policy and a guard the reporter understands',
     assert.ok(entry.owner, `${entry.path} :: ${entry.name} names no owner - an entry nobody owns cannot be retired`)
   }
 })
+
+test('a staleness anchor belongs only to a guard that claims to be two-directional', () => {
+  // The field VERIFIES the `two-way` claim, so naming one beside `one-way` or
+  // `none` would read as evidence for a claim the same row denies.
+  for (const entry of MANIFEST) {
+    if (entry.staleness === undefined) continue
+    assert.equal(
+      entry.guard,
+      'two-way',
+      `${entry.path} :: ${entry.name} names a staleness anchor but declares guard ${entry.guard}`,
+    )
+    assert.ok(
+      entry.staleness.length > 12,
+      `${entry.path} :: ${entry.name} has an anchor too short to identify one assertion`,
+    )
+  }
+})
+
+test('at least one guard is verified rather than merely claimed', () => {
+  // The non-vacuity guard on the verification itself. If every entry lost its
+  // anchor the run would report "0 verified, N claimed" and still pass every
+  // other assertion here - a check that cannot fail, which is the whole
+  // subject of this file.
+  const anchored = MANIFEST.filter((entry) => entry.staleness !== undefined)
+  assert.ok(anchored.length > 0, 'no manifest entry verifies its guard claim against the file')
+})

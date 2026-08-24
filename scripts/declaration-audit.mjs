@@ -112,6 +112,26 @@ const REPOS = {
  * about this script: `two-way` means the file itself asserts that a declared
  * row still reproduces, so a stale row goes red there. Anything else means it
  * cannot, and this script says so on every run.
+ *
+ * `staleness` is what stops that claim from being the very thing this script
+ * exists to find. A `guard` field alone is an ASSERTION NOBODY CHECKS - the
+ * carve#755 shape, sitting inside the gate written to catch it. Measured:
+ * after markup-carve/carve-js#1449 and markup-carve/carve-php#1689 wired three
+ * lists in both directions, this file still reported all three as unwired,
+ * because flipping the word was a separate manual step nothing tied to the
+ * code.
+ *
+ * So where `staleness` is present it names a LITERAL STRING that must appear
+ * in the file - the assertion providing the reverse direction. Deleting or
+ * renaming that assertion now fails here, which is the regression mode that
+ * actually happens. It does NOT prove the assertion FIRES; only a mutation run
+ * does that, and each of these carries one in its own PR.
+ *
+ * Where `staleness` is ABSENT the guard is reported as CLAIMED rather than
+ * verified, and the run says how many of each there are. That is deliberate:
+ * back-filling every entry at once would mean inventing anchors for two dozen
+ * files in one commit, and a wrong anchor is a false failure on the pre-tag
+ * gate. The honest intermediate state is to say which claims are checked.
  */
 const MANIFEST = [
   // -- the spec repo's own ledgers ------------------------------------------
@@ -168,10 +188,10 @@ const MANIFEST = [
   { repo: 'carve-js', path: 'test/html-import-conformance.test.ts', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'mirrors spec PIN_LAG' },
   { repo: 'carve-js', path: 'test/the-report-answers-to-the-published-schema.test.ts', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'test/the-report-answers-to-the-published-schema.test.ts' },
   { repo: 'carve-js', path: 'test/an-import-s-two-exits-say-the-same-thing.test.ts', name: 'UNMET', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'mirrors spec UNMET' },
-  { repo: 'carve-js', path: 'test/no-whitespace-only-line.test.ts', name: 'KNOWN_REMAINING', kind: 'js', policy: 'owed', guard: 'one-way', owner: 'orphan guard only - no staleness half' },
+  { repo: 'carve-js', path: 'test/no-whitespace-only-line.test.ts', name: 'KNOWN_REMAINING', kind: 'js', policy: 'owed', guard: 'two-way', staleness: "it('is behind only what it is still behind on'", owner: 'markup-carve/carve-js#1449' },
   // ONE-WAY, and it hid four stale rows. Nothing asserts a listed document
   // still loses, so a document that STOPS losing sits here reading as coverage.
-  { repo: 'carve-js', path: 'test/ast-round-trip-preserves-source.test.ts', name: 'KNOWN_LOSSES', kind: 'js', policy: 'owed', guard: 'one-way', owner: 'markup-carve/carve#817' },
+  { repo: 'carve-js', path: 'test/ast-round-trip-preserves-source.test.ts', name: 'KNOWN_LOSSES', kind: 'js', policy: 'owed', guard: 'two-way', staleness: "it('still loses what it says it loses'", owner: 'markup-carve/carve-js#1449' },
 
   // -- carve-php -------------------------------------------------------------
   { repo: 'carve-php', path: 'tests/CarveCorpusTest.php', name: 'KNOWN_GAPS', kind: 'php', policy: 'owed', guard: 'two-way', owner: 'tests/CarveCorpusTest.php' },
@@ -186,7 +206,7 @@ const MANIFEST = [
   // ONE-WAY, like its carve-js twin, and its single row names a corpus
   // document that upstream renumbered - so it excuses nothing and no check
   // reports it.
-  { repo: 'carve-php', path: 'tests/TestCase/Renderer/NoWhitespaceOnlyLineTest.php', name: 'KNOWN_REMAINING', kind: 'php', policy: 'owed', guard: 'none', owner: 'no orphan guard, no staleness half' },
+  { repo: 'carve-php', path: 'tests/TestCase/Renderer/NoWhitespaceOnlyLineTest.php', name: 'KNOWN_REMAINING', kind: 'php', policy: 'owed', guard: 'two-way', staleness: 'public function testKnownRemainingIsStillBehindOnWhatItClaims', owner: 'markup-carve/carve-php#1689' },
 
   // -- carve-rs --------------------------------------------------------------
   { repo: 'carve-rs', path: 'tests/corpus.rs', name: 'KNOWN_GAPS', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/corpus.rs' },
@@ -499,6 +519,8 @@ if (doFetch) {
 
 let failed = 0
 const unwired = []
+const verifiedGuards = []
+const claimedGuards = []
 const manualRows = []
 const rowsFor = new Map()
 
@@ -547,6 +569,16 @@ for (const entry of MANIFEST) {
   }
   if (entry.policy === 'manual' && rows.length > 0) manualRows.push({ entry, rows })
   if (entry.guard !== 'two-way') unwired.push({ entry, count: rows.length })
+  // THE CLAIM, CHECKED. `guard` describes the file; `staleness` is the string
+  // that proves it is still there. A named anchor that has gone is a guard that
+  // was removed, and the manifest would otherwise keep vouching for it.
+  else if (entry.staleness !== undefined) {
+    if (src.includes(entry.staleness)) verifiedGuards.push(entry)
+    else {
+      console.log(`${' '.repeat(12)}GUARD GONE: ${entry.path} no longer contains ${JSON.stringify(entry.staleness)}`)
+      failed += 1
+    }
+  } else claimedGuards.push(entry)
 }
 
 /* ------ the sweep that keeps the manifest itself from going stale --------- */
@@ -592,6 +624,12 @@ if (unwired.length > 0) {
   // audit exists to find, so it fails rather than warns.
   for (const { count } of unwired) if (count > 0) failed += 1
 }
+
+console.log(
+  `GUARDS: ${verifiedGuards.length} verified against a named assertion, ` +
+    `${claimedGuards.length} claimed but unverified, ${unwired.length} not two-directional.`,
+)
+console.log()
 
 if (undeclared.length > 0) {
   console.log('UNDECLARED - declaration-shaped constants this manifest does not name:')
