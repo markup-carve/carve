@@ -31,8 +31,25 @@ import { chmodSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:f
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { parseShard, selectShard } from '../scripts/lib/shard.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+
+test('four formatter shards partition the corpus exactly once', () => {
+  const corpus = Array.from({ length: 1384 }, (_, index) => index)
+  const shards = Array.from({ length: 4 }, (_, index) =>
+    selectShard(corpus, parseShard(`${index}/4`)),
+  )
+  assert.deepEqual(shards.map((shard) => shard.length), [346, 346, 346, 346])
+  assert.deepEqual(shards.flat().sort((a, b) => a - b), corpus)
+  assert.deepEqual(selectShard([1, 2, 3], parseShard()), [1, 2, 3])
+})
+
+test('invalid and empty formatter shards are rejected', () => {
+  assert.throws(() => parseShard('4/4'), /INDEX must be between/)
+  assert.throws(() => parseShard('0/0'), /TOTAL must be positive/)
+  assert.throws(() => parseShard('one\/four'), /Use --shard/)
+})
 
 /** A shell stub at `path`, executable. */
 const stub = (path, body) => {

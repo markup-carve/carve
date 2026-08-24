@@ -93,6 +93,9 @@ if (mode.corpus !== 'core') {
 if (mode.limit !== null && mode.limit !== undefined) {
   narrowed.push(`--limit=${mode.limit} compared part of the corpus`)
 }
+if (mode.shard && !/^\d+\/\d+$/.test(mode.shard)) {
+  narrowed.push(`invalid shard metadata: ${mode.shard}`)
+}
 const missingTargets = COMPARISON_TARGETS.filter((t) => !(mode.targets ?? []).includes(t))
 if (missingTargets.length > 0) {
   narrowed.push(`target(s) not compared: ${missingTargets.join(', ')}`)

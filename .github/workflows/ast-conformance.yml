@@ -22,6 +22,12 @@ on:
     - cron: '0 4 * * 1-6'
     - cron: '0 4 * * 0'
   workflow_dispatch:
+    inputs:
+      depth:
+        description: Run the daily gates or include the weekly exploratory sweeps
+        type: choice
+        options: [daily, full]
+        default: daily
 
 permissions:
   contents: read
@@ -32,17 +38,71 @@ permissions:
   issues: write
   actions: read
 
-# Two runs at once - the 04:00 schedule and a dispatch someone wanted NOW - would
-# reach the verdict step together and each find no open ticket, filing two. The
-# group serializes them; `cancel-in-progress: false` because a run that is 30
-# minutes into building four engines is worth finishing.
+# Scheduled and manual runs use separate groups: a diagnostic dispatch must not
+# queue behind the daily run. A newer manual dispatch supersedes an older one;
+# scheduled evidence is allowed to finish.
 concurrency:
-  group: ast-conformance
-  cancel-in-progress: false
+  group: ast-conformance-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name == 'workflow_dispatch' }}
 
 jobs:
+  formatter:
+    name: formatter (shard ${{ matrix.shard }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ['0/4', '1/4', '2/4', '3/4']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: actions/checkout@v4
+        with:
+          repository: markup-carve/carve-js
+          path: carve-js
+          submodules: recursive
+      - name: Build carve-js
+        working-directory: carve-js
+        run: npm ci && npm run build
+      - uses: actions/checkout@v4
+        with:
+          repository: markup-carve/carve-rs
+          path: carve-rs
+          submodules: recursive
+      - name: Build carve-rs
+        working-directory: carve-rs
+        run: cargo build --release
+      - uses: actions/checkout@v4
+        with:
+          repository: markup-carve/carve-php
+          path: carve-php
+          submodules: recursive
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+      - name: Install carve-php
+        working-directory: carve-php
+        run: composer install --no-interaction --no-progress
+      - name: PART 11 formatter and render conformance
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+        run: npm run compare:impls -- --roundtrip --fail-on-diff --shard=${{ matrix.shard }} --report=/tmp/compare-impls.json
+      - name: Cross-engine render comparison
+        if: always()
+        run: npm run compare:report -- /tmp/compare-impls.json
+
   conformance:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Check out carve
         uses: actions/checkout@v4
@@ -154,88 +214,8 @@ jobs:
         # are the ones most likely to catch drift.
         run: npm run ast:check
 
-      # PART 11: the formatter must not change what a document says. The
-      # `--roundtrip` mode formats each corpus document and re-reads the result,
-      # which is the only automated check of that invariant across engines - and
-      # it had never run. It caught carve-rs#432, where `carve fmt` on a
-      # blockquote containing a comment emitted source in which the hidden text
-      # rendered as a visible paragraph: content the author hid, published by
-      # running the formatter. Green by not running, while that shipped.
-      #
-      # GATES, because a formatter that changes the document is wrong under every
-      # reading of PART 11 - there is no design question to settle first.
-      - name: PART 11 formatter round trip
-        # ALWAYS, because this gate is independent of the one above it. The
-        # first run of this workflow had PART 12 fail, which SKIPPED this step -
-        # so a formatter that changed what a document says would have gone
-        # unmeasured because of an unrelated AST finding, and the job would have
-        # reported one failure while silently not performing the other check.
-        if: always()
-        env:
-          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
-          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
-          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
-        # `--report` makes this the ONLY pass over the corpus. The step below
-        # used to be a second full invocation of this same script, over the same
-        # corpus with the same three engines, purely to apply a different subset
-        # of the gate; `--roundtrip` is additive, so this run already computes
-        # the cross-engine and fixture counts it needs. It now writes them out
-        # and the step below gates them. See the note there.
-        run: npm run compare:impls -- --roundtrip --fail-on-diff --report=/tmp/compare-impls.json
-
-      # EVERY render target, gated.
-      #
-      # This was report-only because its remaining differences needed language
-      # decisions, all of which lived on `carve`, the canonical writer
-      # (carve#478, carve#481). Both are now closed and that target compares
-      # clean: 536 documents, 0 diffs, in all three engines. markdown, plain and
-      # ansi reached the same state earlier and were gated first.
-      #
-      # Leaving a target in a job that cannot fail means agreement, once
-      # reached, is observed rather than defended. That is not hypothetical:
-      # carve#516 was a Markdown divergence on a line block whose input the
-      # corpus already contained - the fixture existed, the target was compared,
-      # and nothing was allowed to go red. It stayed open until someone read the
-      # report by hand.
-      #
-      # A corpus fixture carries an HTML expectation only, so for every other
-      # target this engine-against-engine comparison IS the check.
-      #
-      # If a target starts diverging for a reason that turns out to need a
-      # language decision, move THAT target back to a reporting step
-      # (`--targets=` takes a list) rather than deleting the gate. Gating on an
-      # unresolved question teaches people to ignore the job, which is how both
-      # of these checkers came to be unwired in the first place; gating on a
-      # settled one is what keeps them settled.
-      #
-      # THIS STEP NO LONGER RE-RUNS THE COMPARISON. It used to be
-      # `compare:impls -- --fail-on-diff`, a second walk of the whole corpus
-      # with the same three engines, and at 669s it was 29% of this job. The
-      # step above already computed everything it needed: `--roundtrip` does not
-      # narrow the targets, the corpus or the comparison loop, it only adds a
-      # pass on top. What differed was the GATE - compare-impls hands each mode
-      # a different subset of the failing conditions and zeroes the other's
-      # counts - so the second invocation existed for its gate, not its work.
-      #
-      # Deleting it was therefore not an option: it carries the only gate on an
-      # engine disagreeing with a FIXTURE, the check whose comment in
-      # compare-impls records that it "could not fail the job" until it was
-      # added. So the run above writes its counts and this reads them. Both
-      # conditions still fail the job; the corpus is walked once.
-      #
-      # It stays a SEPARATE STEP rather than being folded into the one above
-      # because the verdict step at the end of this job reports failures by STEP
-      # NAME. One merged step would tell the tracking ticket that "conformance"
-      # broke without saying whether the formatter changed a document or the
-      # engines disagree about a render target, which is most of what makes that
-      # ticket worth reading.
-      #
-      # `if: always()`, for the reason the step above documents: this gate is
-      # independent of that one, and a round-trip failure must not skip it.
-      # A missing report is a failure here, not a pass - see the script.
-      - name: Cross-engine render comparison (all targets)
-        if: always()
-        run: npm run compare:report -- /tmp/compare-impls.json
+      # Formatter and render conformance run concurrently in the sharded
+      # formatter matrix above; this job retains AST and the short auxiliary gates.
 
       # The converters run the OTHER direction - foreign source to Carve - and
       # sat outside every gate: carve#1130 lists six converter fixes in one
@@ -337,7 +317,7 @@ jobs:
       # this needs all three engine mains built. A dispatch runs it too, so a
       # finding can be re-measured immediately.
       - name: Curated combinatorial seam families
-        if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 4 * * 0'
+        if: github.event.schedule == '0 4 * * 0' || inputs.depth == 'full'
         env:
           CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
@@ -349,7 +329,7 @@ jobs:
       # remains a hard failure; exit 1 stays visible without making the whole
       # weekly conformance verdict permanently red while adjudication proceeds.
       - name: Differential fuzz sweep
-        if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 4 * * 0'
+        if: github.event.schedule == '0 4 * * 0' || inputs.depth == 'full'
         env:
           CARVE_JS_DIR: ${{ github.workspace }}/carve-js
           CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
@@ -462,12 +442,24 @@ jobs:
           TITLE="AST conformance is failing on $REF_NAME"
           MARKER="<!-- ast-conformance-verdict ref=$REF_NAME -->"
 
+          # Formatter shards run beside this job. Wait for them before reading
+          # the run so one verdict covers every independent gate.
+          for attempt in $(seq 1 80); do
+            pending="$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs" --paginate \
+              --jq '[.jobs[] | select(.name != "conformance" and .status != "completed")] | length')"
+            [ "$pending" -eq 0 ] && break
+            sleep 15
+          done
+
           # Which steps failed, read back from the run itself. A hand-kept list
           # of step ids would go stale the first time a step is added, and a
           # step this report forgot to name is a step whose failure is invisible
           # again.
           failed="$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs" --paginate \
             --jq '.jobs[].steps[] | select(.conclusion == "failure") | "- `" + .name + "`"')"
+          bad_jobs="$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs" --paginate \
+            --jq '.jobs[] | select(.conclusion == "cancelled" or .conclusion == "timed_out") | "- `" + .name + "` (" + .conclusion + ")"')"
+          failed="${failed}${failed:+$'\n'}${bad_jobs}"
 
           # Matched on the marker in the body rather than on the title, so
           # renaming the issue does not fork it into two, and listed rather than
@@ -478,7 +470,7 @@ jobs:
                 '.[] | select(.pull_request == null) | select((.body // "") | contains($m)) | .number')"
           issue="${open_issues%%$'\n'*}"
 
-          if [ "$JOB_STATUS" = "success" ]; then
+          if [ -z "$failed" ] && [ "$pending" -eq 0 ]; then
             echo "AST conformance is green on $HEAD_SHA."
             if [ -n "$issue" ]; then
               gh issue comment "$issue" --repo "$REPO" --body \
