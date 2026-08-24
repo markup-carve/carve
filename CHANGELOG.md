@@ -143,6 +143,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **PART 11 §1c is asked in every container, not only at the top level**
+  (carve#1677). A quote or a list item holding one lone image writes the bare
+  `<img>` too, and four category 411 documents reach a container shape no
+  corpus document reached before (markup-carve/carve-js#1440).
 - **A lone indented image is a paragraph holding an inline image, not a block
   image** (carve#1660). The strict column-0 rule reaches it; the rendered HTML
   is the same bytes, so only the tree moves.
