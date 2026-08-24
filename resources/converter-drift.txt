@@ -115,9 +115,21 @@
 #     rust/html-import--endnotes-section-not-last              carve-rs#1318
 #     rust/html-import--note-reference-in-a-span               carve-rs#1317
 #
-# The three derived-endnotes-section lines are NOT stale: each engine's
-# declared_drift=1 above is that line being used, so all three still describe a
-# live divergence and stay.
-rust/html-import--derived-endnotes-section  the importer does not preserve the derived endnotes list looseness (carve#1612)
-js/html-import--derived-endnotes-section  the importer does not preserve the derived endnotes list looseness (carve#1612)
-php/html-import--derived-endnotes-section  the importer does not preserve the derived endnotes list looseness (carve#1612)
+# The three derived-endnotes-section lines were NOT stale in that run: each
+# engine's declared_drift=1 above is that line being used.
+#
+# AND THEN ALL THREE LANDED, together. carve#1612 gave the one-item loose list a
+# consumed `{loose}` boolean, and every importer now preserves the derived
+# endnotes list's looseness. Measured in AST conformance run 32750910101, at
+# carve 6044cba0, which builds every engine from a fresh checkout of its own
+# default branch:
+#
+#     rust: convert_pass=69/69 declared_drift=0 mismatch=0 error=0 skipped=2
+#     js:   convert_pass=71/71 declared_drift=0 mismatch=0 error=0 skipped=0
+#     php:  convert_pass=71/71 declared_drift=0 mismatch=0 error=0 skipped=0
+#     cross_convert_diffs=0
+#
+# declared_drift=0 on every engine, with these three still declared, is the
+# stale shape: the run named each of them and failed on nothing else.
+#
+# THIS FILE IS EMPTY OF DECLARATIONS AGAIN, which is the intended end state.
