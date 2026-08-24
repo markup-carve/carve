@@ -80,6 +80,12 @@ test('every expected.crv is a fixed point of the canonical writer', async () => 
  */
 const PIN_LAG = new Map([
   [
+    'auto-text-link',
+    'the source exit omits an authored heading ID that differs from its generated slug; ' +
+      'fixed upstream by markup-carve/carve-js#1416, but the spec pin cannot advance ' +
+      'until the unrelated round-trip regressions in that newer engine are resolved',
+  ],
+  [
     'marker-shaped-cell',
     'the writer escapes the colspan half of `span_cell` and not the rowspan half, ' +
       'so a cell holding a caret comes back as a rowspan marker and is deleted ' +

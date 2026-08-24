@@ -4,7 +4,7 @@
     "ordered_list", "definition_list", "table", "admonition", "div", "paragraph",
     "block_attributes", "code_span", "inline_link", "inline_span", "inline_image",
     "math_inline", "math_display", "emphasis", "highlight", "forced_emphasis",
-    "forced_highlight"
+    "forced_highlight", "forced_strong", "forced_underline", "forced_strike"
   ],
   "engineTestsOnly": [
     "strong", "bold_italic", "underline", "strikethrough", "hard_break",
@@ -14,9 +14,9 @@
     "raw_inline", "smart_quote", "reference_definition", "reference_link",
     "collapsed_reference_link", "reference_image", "collapsed_reference_image"
   ],
-  "uncoveredImportable": [
-    "forced_strong", "forced_underline", "forced_strike", "local_hard_break_block",
-    "auto_text_link", "extension_inline", "substitution", "editorial_comment"
+  "degradedFixtures": [
+    "local_hard_break_block", "auto_text_link", "extension_inline", "substitution",
+    "editorial_comment"
   ],
   "notImportable": [
     "comment_block", "comment_line", "inline_comment", "braced_comment",
