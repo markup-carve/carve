@@ -615,5 +615,75 @@
 # resources/ast-position-waivers.txt owes nothing. Shape is unanimous over all
 # 1359 documents and the value panel declares nothing that still diverges.
 
-paragraph (extent) 1
-code (extent) 1
+
+# AND THE POST-FIX MEASUREMENT, 2026-08-24, from FRESH CLONES of every main
+# taken at run time rather than from a pin: carve-js 5101a7c, carve-rs 236b5d3
+# and carve-php 10e3854, against carve aac95ba1, over 1384 corpus documents plus
+# 3 synthetic samples. Of 28,578 comparable spans, NOTHING disagrees. The panel
+# reads "the engines place every node identically", so BOTH remaining rows came
+# back AGREED and both lines are deleted, leaving no declaration at all.
+#
+#   paragraph (extent)   1 -> 0   AGREED, and the line is deleted.
+#   code (extent)        1 -> 0   AGREED, and the line is deleted.
+#
+# https://github.com/markup-carve/carve/actions/runs/32674741449, PART 12
+# conformance at 2026-08-24T00:29:18Z. The run was dispatched for this edit
+# rather than rerun from an older one, because a rerun overwrites the evidence.
+#
+# BOTH ROWS WERE ONE DOCUMENT AND ONE ENGINE, and one fix closed them. The two
+# lines named `380-a-terminal-comment-line-still-leaves-an-empty-verse-line`,
+# where carve-php named an end line 2 column 3 for an offset all three agreed
+# was 8, on a line that has no column 3. markup-carve/carve-php#1639 is that
+# issue and markup-carve/carve-php#1647 is the fix: a position is spelled on the
+# line its own offset is on. The block above attributed the same document to
+# carve-php#1457 and expected that issue to close it; the defect outlived that
+# attribution and was refiled, so the closing step belongs to #1639.
+#
+# THE ROWS THAT NEVER REACHED THIS FILE ARE THE LARGER HALF OF THE STORY, and a
+# reader looking for deleted lines will not find them. Run 32668375087 at
+# 2026-08-23T21:53Z read EIGHT rows across 35 documents, six of them NEW and
+# undeclared rather than declared here:
+#
+#   footnote (extent)          27 doc(s)   NEW, never declared
+#   paragraph (extent)          5 doc(s)   COUNT against the 1 declared
+#   text (extent)               4 doc(s)   NEW, never declared
+#   definition_term (extent)    2 doc(s)   NEW, never declared
+#   heading (extent)            1 doc(s)   NEW, never declared
+#   code (extent)               1 doc(s)   declared, and matched
+#   list (extent)               1 doc(s)   NEW, never declared
+#   list_item (extent)          1 doc(s)   NEW, never declared
+#
+# `footnote`, `definition_term` and `heading` are the thirty PART 12 §4 extent
+# violations markup-carve/carve#1637 found a run printing in full while exiting
+# green: a container with no closer ending one codepoint past its last child.
+# markup-carve/carve-rs#1303 (fixed by carve-rs#1308) and
+# markup-carve/carve-php#1638 (fixed by carve-php#1645) closed them within an
+# hour of each other, both after that run measured and both before this one did,
+# so they were never written down here. Deleting a line was never the work; the
+# work was the two engine fixes, and this file records that they landed.
+#
+# `text`, `list`, `list_item` and FOUR of that paragraph count were a different
+# defect on new corpus ground: the `410-a-footnote-continuation-survives-a-blank-run`
+# category that markup-carve/carve#1633 added at 21:32, where carve-php ended the
+# note at the blank run and the continuation escaped it. markup-carve/carve-php#1643
+# (fixed by carve-php#1651) closed all four documents, which is why `paragraph`
+# fell from 5 to 0 rather than from 5 to 4.
+#
+# A ROW COUNT STILL DOES NOT SEPARATE DEFECTS, which is the same reading the
+# block above kept. `paragraph (extent)` carried the `380` line-and-column fault
+# and four `410` shape faults under one key, owned by two different issues in two
+# different engines, and no number here said so.
+#
+# EVERY ENGINE'S OWN §4 REPORT IS IDENTICAL AND CLEAN: 57 findings, 3 distinct,
+# 57 waived, 0 outstanding on each of the three, so
+# resources/ast-position-waivers.txt owes nothing and
+# resources/ast-extent-findings.txt stays empty. Shape is unanimous over all
+# 1387 documents. The value panel still declares three fields, which this file
+# does not speak for.
+#
+# carve-rb remains outside this panel, as the block above says. Its own §4
+# report still shows `span reaches past its last child` on `footnote` and
+# `definition_term` because it serializes an embedded carve-rs that predates
+# carve-rs#1308, and the same run reports BINDING PARITY differing from carve-rs
+# on the four `410` documents. That is a stale `ext/carve/Cargo.toml` pin in
+# carve-rb, not a span this file could declare.

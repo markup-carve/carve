@@ -249,31 +249,26 @@ test('a malformed declaration line is an error, never a silent skip', () => {
  * one taken because the previous one had stopped being true, and a seventh the
  * next day that replaced the surviving row with a different one.
  */
-// The POST-FIX run, 2026-08-23, from fresh clones of every main after
-// markup-carve/carve-js#1318 merged: carve-js cc5726c, carve-rs 6f36d9d and
-// carve-php d21336c, 27,915 spans, TWO rows across ONE document. `list`,
-// `list_item`, `soft_break` and `text` all AGREED and are gone, and
-// `paragraph` fell from 2 to 1 - one document leaving the panel, and it
-// carried five of the six rows.
+// The POST-FIX run, 2026-08-24, from fresh clones of every main taken at run
+// time: carve-js 5101a7c, carve-rs 236b5d3 and carve-php 10e3854, over 1384
+// corpus documents plus 3 synthetic samples, 28,578 spans, and NO row at all.
+// The panel reads "the engines place every node identically", so both surviving
+// rows came back AGREED and the ledger is now empty
+// (https://github.com/markup-carve/carve/actions/runs/32674741449).
 //
-// THE SPAN COUNT DID NOT MOVE, which is the tell for what kind of fix this
-// was: 27,915 before and after. The engine published the same nodes with the
-// same offsets throughout and named the wrong LINE for them, so nothing was
-// added or dropped, only relocated. A run whose total moves is a fix that
-// changed what gets a position; this one is not that.
+// BOTH ROWS WERE ONE DOCUMENT AND ONE ENGINE. `380-a-terminal-comment-line-
+// still-leaves-an-empty-verse-line` is closed by markup-carve/carve-php#1639,
+// not by the #1457 the block above expected: a position is now spelled on the
+// line its own offset is on, so carve-php stops naming line 2 column 3 for an
+// end offset all three agree is 8.
 //
-// WHAT SURVIVES IS carve-php ALONE ON `380-a-terminal-comment-line-still-
-// leaves-an-empty-verse-line`, naming line 2 column 3 for an end offset all
-// three agree is 8 - a column that line does not have
-// (markup-carve/carve-php#1457). Before this run the same two keys ALSO
-// covered a carve-js offset defect on the same document, so one key stood for
-// two faults in two engines and its count moved by neither when the first was
-// fixed. A key says which type moved; it does not say how many faults are
-// standing behind it - see resources/ast-span-divergence.txt.
-const LAST_MEASURED = new Map([
-  ['paragraph (extent)', 1],
-  ['code (extent)', 1],
-])
+// AN EMPTY MAP HERE IS NOT A WEAKER TEST. The AGREED direction is exercised by
+// its own unit test above, against a literal one-row declaration, and the NEW
+// direction is exercised below by adding a row this file does not declare. What
+// this map pins is only that the shipped ledger matches the last run, and the
+// last run measured nothing - see resources/ast-span-divergence.txt for the six
+// undeclared rows that were closed in the engines before they ever reached it.
+const LAST_MEASURED = new Map()
 
 const asMeasured = (counts) =>
   new Map(
