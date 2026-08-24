@@ -11,6 +11,7 @@ import {
   expectedFileFor,
   targetOf,
 } from './lib/corpus-targets.mjs'
+import { parseShard, selectShard } from './lib/shard.mjs'
 import { parseConverterLedger } from './lib/drift-ledger.mjs'
 import { phpDir, rustBinary, rustDir } from './lib/engine-locations.mjs'
 import { miscount, shortfall } from './spec/participants.mjs'
@@ -73,6 +74,15 @@ let staleUnreachable = []
 const manifestFeatures = new Set()
 const limitArg = process.argv.find((a) => a.startsWith('--limit='))
 const limit = limitArg ? Number(limitArg.slice('--limit='.length)) : Infinity
+const shardArg = process.argv.find((a) => a.startsWith('--shard='))
+let shard
+try {
+  shard = parseShard(shardArg?.slice('--shard='.length))
+} catch (error) {
+  console.error(error.message)
+  process.exit(2)
+}
+const { index: shardIndex, total: shardTotal } = shard
 const corpusArg = process.argv.find((a) => a.startsWith('--corpus='))
 const corpusName = corpusArg ? corpusArg.slice('--corpus='.length) : 'core'
 
@@ -727,10 +737,10 @@ function availableCaseCount() {
 
 function loadPairs() {
   if (!isOptional) {
-    return readdirSync(corpusDir)
+    return selectShard(readdirSync(corpusDir)
       .filter((f) => f.endsWith('.crv'))
       .sort()
-      .slice(0, limit)
+      .slice(0, limit), shard)
       .map((f) => ({
         slug: basename(f, '.crv'),
         feature: 'core',
@@ -746,7 +756,7 @@ function loadPairs() {
   for (const entry of manifest.cases) {
     if (entry.feature) manifestFeatures.add(entry.feature)
   }
-  return manifest.cases.slice(0, limit).map((entry) => {
+  return selectShard(manifest.cases.slice(0, limit), shard).map((entry) => {
     const slug = basename(entry.slug)
     const target = targetOf(entry)
     // Surfaces a manifest typo here rather than as a confusing missing-file
@@ -1049,6 +1059,11 @@ async function runConvertMode() {
 }
 
 const pairs = loadPairs()
+const offeredCases = availableCaseCount()
+const selectedCases = Number.isFinite(limit) ? Math.min(limit, offeredCases) : offeredCases
+const expectedShardCases = selectedCases <= shardIndex
+  ? 0
+  : Math.floor((selectedCases - 1 - shardIndex) / shardTotal) + 1
 
 /*
  * And how many CASES it saw. Without `--limit` the run must cover the corpus it
@@ -1056,18 +1071,18 @@ const pairs = loadPairs()
  * typo rather than a sample size - it used to run the engines over nothing and
  * report `pass=0/0 mismatch=0`.
  */
-const casePopulation = Number.isFinite(limit)
+const casePopulation = expectedShardCases === 0
   ? shortfall({
       label: 'CASES',
       actual: pairs.length,
       atLeast: 1,
       of: 'case(s)',
-      hint: 'Raise --limit, or drop it to compare the whole corpus.',
+      hint: 'Choose a populated shard, raise --limit, or drop it to compare the whole corpus.',
     })
   : miscount({
       label: 'CASES',
       actual: pairs.length,
-      expected: availableCaseCount(),
+      expected: expectedShardCases,
       of: 'case(s)',
     })
 if (casePopulation !== null) {
@@ -1402,7 +1417,7 @@ if (roundtrip) {
 console.log('\nImplementation summary')
 const profile = corpusName === 'optional' ? 'optional/opt-in' : 'default/no-opt-in'
 console.log(
-  `profile=${profile} corpus=${corpusName} corpus_pairs=${pairs.length} targets=${activeTargets.join(',')}`,
+  `profile=${profile} corpus=${corpusName} corpus_pairs=${pairs.length} shard=${shardIndex}/${shardTotal} targets=${activeTargets.join(',')}`,
 )
 if (targetNote) console.log(`target_note=${targetNote}`)
 // A `--targets` subset can exclude a case's pinned target outright. Saying so
@@ -1554,7 +1569,7 @@ if (isOptional) {
     // A LIMITED run covers a slice, so "this feature reached two engines" is not
     // knowable from it and a documented entry outside the slice is not stale.
     // Skipped rather than guessed, and printed so the skip is visible.
-    staleUnreachable = limit === Infinity
+    staleUnreachable = limit === Infinity && shardTotal === 1
       ? Object.keys(UNREACHABLE_REASONS).filter((feature) => !unreachable.has(feature))
       : []
     if (limit !== Infinity) {
@@ -1623,6 +1638,7 @@ if (reportPath) {
           countsOnly,
           corpus: corpusName,
           limit: limit === Infinity ? null : limit,
+          shard: `${shardIndex}/${shardTotal}`,
           targets: activeTargets,
           engines: active.map((impl) => impl.name),
         },

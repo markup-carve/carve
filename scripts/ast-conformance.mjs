@@ -36,7 +36,7 @@
  *   ../carve-php   (serializes through `bin/carve --json`)
  */
 
-import { execFileSync } from 'node:child_process'
+import { execFileSync as nodeExecFileSync } from 'node:child_process'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -151,6 +151,17 @@ const phpDir = process.env.CARVE_PHP_DIR ?? resolve(root, '../carve-php')
 const UNKNOWN_PROPERTY_SAMPLE = Number(process.env.CARVE_UNKNOWN_PROBE_SAMPLE ?? 6)
 
 const MAX_SUBPROCESS_OUTPUT = 256 * 1024 * 1024
+const SUBPROCESS_TIMEOUT_MS = 15_000
+const execFileSync = (file, args, options = {}) => nodeExecFileSync(file, args, {
+  timeout: SUBPROCESS_TIMEOUT_MS,
+  ...options,
+})
+
+function progress(engine, index, total, name) {
+  if (index === 0 || (index + 1) % 100 === 0 || index + 1 === total) {
+    console.log(`[${engine}] ${index + 1}/${total}: ${name}`)
+  }
+}
 
 const DISPLAY_LIMIT = Number(process.env.CARVE_DISPLAY_LIMIT ?? 8)
 
@@ -1098,7 +1109,8 @@ if (rsBinary) {
   const rsFindings = []
 let rsProbed = 0
 let rsRootShaped = false
-  for (const { name, source } of satelliteSamples) {
+  for (const [index, { name, source }] of satelliteSamples.entries()) {
+    progress('rust', index, satelliteSamples.length, name)
     let doc
     try {
       doc = JSON.parse(
@@ -1177,7 +1189,8 @@ let rsRootShaped = false
 const rbShapes = new Map()
 if (existsSync(resolve(rbDir, 'lib/carve'))) {
   const rbFindings = []
-  for (const { name, source } of satelliteSamples) {
+  for (const [index, { name, source }] of satelliteSamples.entries()) {
+    progress('ruby', index, satelliteSamples.length, name)
     let doc
     try {
       const out = execFileSync(
@@ -1295,7 +1308,8 @@ if (existsSync(resolve(phpDir, 'bin/carve'))) {
   const phpFindings = []
 let phpProbed = 0
 let phpRootShaped = false
-  for (const { name, source } of satelliteSamples) {
+  for (const [index, { name, source }] of satelliteSamples.entries()) {
+    progress('php', index, satelliteSamples.length, name)
     let doc
     try {
       const out = execFileSync('php', ['bin/carve', '--json'], {
