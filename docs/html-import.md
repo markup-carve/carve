@@ -126,7 +126,7 @@ are ONE shape: the element names no destination the source can carry. For any of
 them the importer produces NO link or image node, and writes what the element's
 CONTENT and its SURVIVING attributes would produce without it - the span where
 an attribute survives, the bare content where none does. That is the
-attribute-less `<div>` boundary one layer down, and it is the same boundary
+unwrapped `<div>` boundary one layer down, and it is the same boundary
 because it is the same question: what is the element still needed to hold?
 
 ```html
@@ -622,22 +622,57 @@ The class the fence word consumes must be one a fence opener can spell,
 `2col` - would be written after the colons and read back as a paragraph, so
 that element keeps the generic `div` node where the class survives as a class.
 
-**A `<div>` that carries no attribute at all is UNWRAPPED to its content, and
-no `div` node is produced** (markup-carve/carve#1578). A bare `<div>` carries
-nothing the container is needed for, so the fence would cost a reader two lines
-of markup and tell them nothing. The element not surviving the round trip is
-the honest outcome, because there is nothing in it to survive, and nothing is
-diagnosed: a diagnostic announces a loss, and no attribute lost its carrier
-here.
+**A `<div>` that carries nothing only a container can hold is UNWRAPPED to its
+content, and no `:::` fence is written** (markup-carve/carve#1578,
+markup-carve/carve-rs#1315). Such a `<div>` carries nothing the container is
+needed for, so the fence would cost a reader two lines of markup and tell them
+nothing. The element not surviving the round trip is the honest outcome, because
+there is nothing in it to survive, and nothing is diagnosed: a diagnostic
+announces a loss, and nothing lost its carrier here.
 
-The boundary is the ATTRIBUTE rather than the tag, and it is the attribute that
-SURVIVES rather than the one the markup spelled. One attribute the language can
-hold brings the container back, because then there is something only the
-container can hold; a `style` whose declarations the CSS policy above refuses
-leaves the element carrying nothing, so it unwraps like any other bare `<div>`
-and the refusal is still reported as `style-unmapped`. A class naming a
-container is answered earlier by the family above and never reaches this rule.
-`attribute-less-div` pins both sides.
+WHAT ONLY A CONTAINER CAN HOLD IS THE WHOLE BOUNDARY, and it is the boundary
+rather than the tag. Today it means two things - an attribute the language can
+hold, or a grouping label - and the moment a div carries either, the fence comes
+back. markup-carve/carve#1578 wrote the test as the attribute, which was a proxy
+for that principle and turned out narrower than the principle it stood in for: a
+grouping label has no spelling anywhere but on an opener, so it is exactly as
+much "only a container can hold it" as an attribute is.
+
+Nor was the narrow reading a loss that could be declared instead. `::: [g]`
+renders to a `<div>` with no attribute and a `<p class="div-label">`, and under
+the attribute test it came back as a `{.div-label}` PARAGRAPH: the container was
+gone and the label had become body content. That is an ADDITION, and this page's
+diagnostics announce losses - so "keep the attribute test and declare it"
+collapses into dropping the label outright, which throws away content the author
+wrote on every round trip.
+
+THE TEST IS WHAT THE ELEMENT KEPT, not what its markup looked like. A `style`
+whose declarations the CSS policy above refuses leaves the div carrying nothing,
+so it unwraps like any other bare `<div>` and the refusal is still reported as
+`style-unmapped`. A label paragraph the LIFT REFUSES is likewise nothing kept,
+and without that half the widened boundary would read as "any
+`<p class="div-label">` resurrects the fence" and put a fence around a document
+that never had a label. The lift refuses four shapes:
+
+- one holding markup, because the label is raw text on the opener and
+  flattening it would lose the markup without a word;
+- one whose text holds `]` or a line break, because every reader of that run
+  takes it up to the first `]` with no balance and no escape, so writing it back
+  would take the opener line with it;
+- one that is not the container's FIRST ELEMENT;
+- one with visible text ahead of it, because lifting it onto the opener would
+  move it in front of that text - the reorder the first-element rule exists to
+  prevent, arriving by the one route an element search cannot see. Whitespace
+  between tags is not text an author wrote, so a pretty-printed container still
+  lifts.
+
+Anything the label paragraph carried besides its `div-label` class has no slot
+on an opener and is reported as `attribute-dropped`.
+
+A class naming a container is answered earlier by the family above and never
+reaches this rule. `attribute-less-div` pins the attribute half of the boundary
+and `container-label-keeps-the-fence` pins the label half, including a label the
+lift refuses.
 
 A TITLED callout's `<p class="admonition-title">` is the container's title, not
 its first body block, and the `aria-labelledby` pointing at that paragraph is
@@ -1173,6 +1208,7 @@ The shared set is deliberately small and each directory has one subject:
 | `table-caption-index` | the same table caption written across lines, where it is the SECOND child and no exemption applies to it |
 | `container-nesting` | containers two and three deep, whose fences widen INWARD because that is the form `carve fmt` writes |
 | `attribute-less-div` | a bare `<div>` unwrapped to its content beside an id-bearing one that keeps its fence, which is where that boundary sits |
+| `container-label-keeps-the-fence` | a `<div>` kept by its grouping label alone, an id-bearing one whose label comes back on the opener, and one whose label the lift refuses so it unwraps after all |
 | `diagnostic-order` | two losses in one table, whose rows follow the document and not the order the importer builds them in |
 | `destination-less-link` | an anchor and an image with no destination the source can carry, which come back as their content rather than as `[t]()` |
 | `marker-shaped-cell` | a table cell whose whole payload is a span marker, escaped so the cell survives |
