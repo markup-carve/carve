@@ -336,9 +336,97 @@ available source, and it is diagnosed rather than silent:
 ^ cap
 ```
 
-with `structure-unspellable` on the `<figure>`. Every other captionable target
-- an image, a quote, a code block, a paragraph - keeps its figure and reports
-nothing.
+with `structure-unspellable` on the `<figure>`. An image, a quote and a code
+block keep their figure and report nothing, because for those three the caption
+line re-parses to the figure it was written from.
+
+**A PARAGRAPH TARGET IS NOT A FOURTH SUCH CASE, and reads like one.** A caption
+line does not attach to prose (PART 9 §4's enumeration is closed), so the `^ `
+line written under a paragraph re-reads as literal text INSIDE it, and the
+figure is gone:
+
+```html
+<figure id="g"><p>x</p><figcaption>Cap</figcaption></figure>
+```
+
+```
+{#g}
+x
+^ Cap
+```
+
+which renders back as:
+
+```html
+<p id="g">x
+^ Cap</p>
+```
+
+The caption is not merely lost; it has become prose the document never said. In
+`safe` and `semantic` that import is permitted anyway - being lossy is what
+those modes are - and the section below is where it is not.
+
+## `roundtrip` rebuilds a figure only when a Carve spelling reproduces it
+
+**In `roundtrip`, rebuild a figure when a Carve spelling reproduces the element,
+preserve the element as raw HTML with `raw-preserved` when none does, and never
+lose anything silently** (markup-carve/carve#1704).
+
+`semantic` is unaffected. Being lossy is what distinguishes the two modes, and
+`roundtrip` is the one whose whole job is fidelity: a mode that turns the figure
+above into a paragraph carrying a stray caret line is spending the only thing it
+has to offer, and spending it in silence.
+
+THIS IS A PROPERTY AND NOT A LIST OF BLESSED TAG NAMES. An implementation may
+answer it with a target table - the set is small and stable - but what a test
+pins is the property, so a caption target added later inherits the rule instead
+of needing another sweep of every element name to discover it. A name list is
+the shape that drifted into the ticket this rule came from: it opened as a
+119-tag survey asking which engine's `<figure>` behavior was right, and the
+answer turned out not to be about tag names at all - each engine was right on
+one side of a predicate neither had written down.
+
+The predicate is one question asked of the whole family, and it points in both
+directions:
+
+| shape | rebuild round trips? | `roundtrip` writes |
+| --- | --- | --- |
+| a figure around an image | yes | the image and a `^ ` line, no diagnostic |
+| a figure around a code block | yes | the fence and a `^ ` line, no diagnostic |
+| a figure around a quote | yes | the quote and a `^ ` line, no diagnostic |
+| a figure around a table | no (see below) | the table and a `^ ` line, with `structure-unspellable` |
+| a figure around a list | no | the `<figure>` preserved, with `raw-preserved` |
+| a figure around a paragraph | no | the `<figure>` preserved, with `raw-preserved` |
+| an orphan `<td>`, `<tr>`, `<thead>` and the rest of the table parts | no | the element preserved, with `raw-preserved` |
+
+An orphan table part is the same predicate pointing the other way, and it is
+settled here rather than left to a later sweep: at document top level with no
+`<table>` around it, `<td id="x"><h1>H</h1></td>` has no Carve spelling at all,
+so rebuilding it as `# H` drops the element and its id. It is degenerate input -
+no Carve renderer emits it - and that is why it is stated rather than fixtured.
+
+The rule binds an importer whose parser HANDS THE ELEMENT OVER. Both reference
+engines' do, which is why the ticket could measure an `id` surviving into one
+engine's output and being dropped by the other's. Where a host parser discards it
+instead - HTML5's in-body insertion mode ignores a stray `<td>` outright, and a
+fragment parsed in that context never builds the node - there is nothing to
+preserve and nothing to report, and this section asks for neither.
+
+**One carve-out, deliberate.** A figure around a TABLE has no spelling that
+reproduces it either: as the section above shows, the rebuild writes the caption
+on the table and renders `<table id="t"><caption>Cap</caption>`, so strictly this
+row would preserve the element. It rebuilds anyway, with the
+`structure-unspellable` row it already owes, because `<table><caption>` is the
+idiomatic HTML for a captioned table and preserving the element would throw the
+`| a |` spelling away for a common shape. This is the one place the rule bends,
+it bends on purpose, and it is recorded here so a later sweep reads it as an
+exception rather than as a bug.
+
+A `<figure>` carrying no `<figcaption>`, or one whose caption spells nothing,
+never reaches this decision. A figure is the CAPTIONED wrapper (PART 9 §4b), so
+such an element is not a figure to rebuild or to preserve: it unwraps to its
+content with `element-unwrapped`, in every mode, which is the behavior this rule
+leaves untouched.
 
 ## A whitespace-only block keeps its content and drops its layout
 
@@ -937,7 +1025,9 @@ The shape is pinned as the `derived-endnotes-section` fixture.
   explicit CSS mappings and editor adapter metadata defined by the importer.
 - `roundtrip` is only for HTML emitted by a Carve implementation. It may honor
   Carve provenance metadata and preserve otherwise unsupported markup as raw
-  HTML. It is not safe for untrusted input.
+  HTML. It is not safe for untrusted input. What "unsupported" means for a
+  captioned wrapper is a property rather than a tag list, and it is stated under
+  ["`roundtrip` rebuilds a figure only when a Carve spelling reproduces it"](#roundtrip-rebuilds-a-figure-only-when-a-carve-spelling-reproduces-it).
 
 All modes remove `script`, `style`, `template`, `noscript`, and event-handler
 attributes. `roundtrip` may recover source embedded by a Carve renderer, but
