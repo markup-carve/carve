@@ -1041,6 +1041,20 @@ lossy decision should be observable. The common diagnostic codes are:
 - `element-dropped`: an element and its contents were removed.
 - `element-unwrapped`: an unsupported element was replaced by its children.
 - `attribute-dropped`: an attribute was not represented.
+- `attribute-preserved`: an attribute the importer would not represent as a
+  Carve attribute reached the output anyway, inside the bytes of an element
+  kept whole under `raw-preserved`. Nothing was lost, so it is NOT
+  `attribute-dropped`: a consumer that filters on the code rather than reading
+  the prose would be told a drop happened that did not. An importer that
+  preserves an element as raw HTML MUST report the element's own refused
+  attributes under this code instead. Its severity MUST be `error` where the
+  attribute is one a renderer refuses for safety - an event handler, an
+  injection sink, a value carrying a denied URL scheme - and `info` otherwise.
+  The `error` is not a failed import; it is the strongest thing the report can
+  say, and this row earns it because `roundtrip` is the mode that is not safe
+  for untrusted input and this is the row saying such an attribute is LIVE in
+  the output. A dropped handler already spends `warning`, so spending `warning`
+  here too would tell a filter nothing about which of the two it is looking at.
 - `style-unmapped`: CSS had no explicit semantic mapping.
 - `table-degraded`: a table could not be represented structurally.
 - `raw-preserved`: unsupported trusted markup was retained as raw HTML.
