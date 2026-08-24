@@ -156,4 +156,15 @@
 #
 # Measured over 1397 samples at carve-js 99b28ab, carve-rs 661d4ff and carve-php
 # 38de559, each built from a fresh clone of main.
-list.tight  1  carve-rs alone; tracked at markup-carve/carve-rs#1358
+#
+# AND EMPTY AGAIN, within the day. markup-carve/carve-rs#1358 landed, so
+# carve-rs publishes `tight: false` for the flush spelling like the other two
+# engines and the executable spec. Measured in AST conformance run 32751456715,
+# at carve b971f2d6, which builds every engine from a fresh checkout of its own
+# default branch, over 1394 corpus documents plus 3 synthetic samples:
+#
+#   THREE-WAY VALUE COMPARISON does not match resources/ast-value-divergence.txt:
+#     FIXED      list.tight no longer diverges - delete its line
+#
+# which is the FIXED direction the pair exists to report. The row and
+# `LAST_MEASURED` in tests/ast-values.test.mjs go together, as their notes say.
