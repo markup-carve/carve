@@ -133,3 +133,27 @@
 # panel reports, not this one: a node that is not in the tree publishes no
 # scalar to disagree about. So the emptiness here is about scalars across 1134
 # samples, and says nothing about that gap.
+
+# NOT EMPTY ANY MORE, and the row arrived with the document that reaches it.
+# `411-...-6` is the flush half of the list-item pair added under carve#1677:
+#
+#   - t
+#
+#     ![Apollo](a.jpg)
+#
+# carve-rs publishes `tight: true` for that list; carve-js, carve-php and the
+# executable spec publish `tight: false`. The engines agree about the SECOND
+# block - it collapses to a bare `<img>` in all three, which is the half
+# carve#1677 ruled - so what differs is the LIST's looseness, and only for an
+# image written at the item's own content column. One column further in, and
+# with a text second block, carve-rs agrees.
+#
+# DECLARED RATHER THAN LEFT RED, and declared in the same commit that adds the
+# document, which is what "update it in the commit that moves the number" asks
+# for. The alternative was to leave the flush spelling unpinned, and that is the
+# spelling the divergence lives on - a corpus that only holds the shapes the
+# engines already agree about cannot report the ones they do not.
+#
+# Measured over 1397 samples at carve-js 99b28ab, carve-rs 661d4ff and carve-php
+# 38de559, each built from a fresh clone of main.
+list.tight  1  carve-rs alone; tracked at markup-carve/carve-rs#1358

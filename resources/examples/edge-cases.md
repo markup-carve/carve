@@ -27196,6 +27196,110 @@ reason.
 
 :::
 
+### Inside a container, where the pair above cannot reach
+
+The two examples above are both TOP-LEVEL, and that is the whole extent of what
+this category pinned. Measured across every `.crv` in the corpus: the only
+container-hosted image anywhere was `405-a-captioned-image-inside-a-container`,
+which is flush AND captioned - so a caption line keeps the lone-image promotion
+from firing at all, and no document indented an image past a container's content
+column. That is why `npm run ast:check` passed 1393 documents unanimous while
+carve-js emitted `<blockquote><p><img></p></blockquote>`: no check failed,
+because no document reached the shape (markup-carve/carve-js#1440, carve#1677).
+
+The four pairs below reach it. They also settle two places where the oracle
+answered §1c differently depending on which container the shape sat in - a
+quote framed its lone-image child on one line where a div indents it, and a list
+item kept the `<p>` this section's own prose says is not written. Both were
+oracle defects, ruled at carve#1677; all three engines already emitted what is
+recorded here.
+
+A QUOTE HOLDING NOTHING ELSE. The child is spelled as a paragraph and is not one
+by the time it is serialized, so the quote takes the same expanded frame a `<div>`
+takes for the identical child. The one-line form is for a child that stays a
+paragraph, which `> t` still is.
+
+::: compare
+
+```carve
+>   ![Apollo](a.jpg)
+```
+
+```html
+<blockquote>
+  <img src="a.jpg" alt="Apollo">
+</blockquote>
+```
+
+:::
+
+The flush spelling is the control, and it carries the weight here: the quote's
+content column is where the image is ORDINARY, so a change that framed every
+quoted paragraph the same way would show up on this pair rather than on the
+indented one. Both fold to the same bytes, for the reason the top-level pair
+already gives - the HTML cannot see which reading produced the image.
+
+::: compare
+
+```carve
+> ![Apollo](a.jpg)
+```
+
+```html
+<blockquote>
+  <img src="a.jpg" alt="Apollo">
+</blockquote>
+```
+
+:::
+
+A LIST ITEM, INDENTED PAST ITS CONTENT COLUMN. The item's second block is a
+paragraph whose whole content is one image, so it renders as a bare `<img>` -
+the rule stated at the top of this section, applied in the one container the
+oracle used to exempt. The item is loose, so its first block keeps its `<p>`.
+
+::: compare
+
+```carve
+- t
+
+   ![Apollo](a.jpg)
+```
+
+```html
+<ul>
+  <li><p>t</p>
+    <img src="a.jpg" alt="Apollo">
+  </li>
+</ul>
+```
+
+:::
+
+And the flush control for the item, at the content column. carve-rs publishes
+`tight: true` for this list where carve-js, carve-php and the oracle publish
+`tight: false`, so its first block loses the `<p>` - a looseness bug the blank
+line settles on its own, unrelated to §1c and tracked at markup-carve/carve-rs#1358. This
+pair is what makes it visible; the indented spelling above does not reach it.
+
+::: compare
+
+```carve
+- t
+
+  ![Apollo](a.jpg)
+```
+
+```html
+<ul>
+  <li><p>t</p>
+    <img src="a.jpg" alt="Apollo">
+  </li>
+</ul>
+```
+
+:::
+
 ## A lone reference image at column 0, in every spelling
 
 `411-a-lone-indented-image-is-a-paragraph-and-its-html-cannot-say-so` pins what an
