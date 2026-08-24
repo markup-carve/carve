@@ -158,6 +158,24 @@ const PIN_LAG = new Map([
       'that hold nothing but layout are neither dropped nor reported ' +
       '(PART 11 §7; markup-carve/carve#1628)',
   ],
+  // THE TREE IS RIGHT AND THE IMPORT IS BEHIND, on both halves of
+  // markup-carve/carve#1650. The pinned build tests the unwrap boundary as
+  // `attrs` literally, so a div kept alive only by its grouping label unwraps
+  // and the label lands in the body as a `{.div-label}` paragraph; and its
+  // label lift never reached the plain `<div>` arm at all, so even the
+  // id-bearing div comes back with its label inside its own fence. The third
+  // document - a label holding `]`, which the lift refuses - already imports
+  // the way the fixture says, which is the half that pins "what the element
+  // KEPT" rather than what its markup looked like.
+  [
+    'container-label-keeps-the-fence',
+    'the unwrap boundary is tested as `attrs` rather than as what only a ' +
+      'container can hold, so a div kept by its grouping label alone unwraps ' +
+      'and the label becomes body content; and the label lift never reaches ' +
+      'the plain `<div>` arm, so an id-bearing div keeps its label inside its ' +
+      'own fence (PART 9 section 10; markup-carve/carve-js#1413, ' +
+      'markup-carve/carve-php#1661)',
+  ],
   [
     'endnotes-section-not-last',
     'the importer moves a `role="doc-endnotes"` section to the end of the ' +
