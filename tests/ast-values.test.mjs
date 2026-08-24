@@ -96,8 +96,24 @@ const shippedDeclaration = () =>
  * NO FLOOR either way. An empty map against an empty ledger reconciles to
  * nothing, which is the state the panel is trying to reach, and a row that
  * appears in either place alone still fails.
+ *
+ * NOT EMPTY since 2026-08-24, and this is the commit that measures it. Corpus
+ * `411-...-6` - the flush half of the list-item pair added under carve#1677 -
+ * is the first document to put a lone image at a list item's own content
+ * column, and carve-rs publishes `tight: true` for that list where carve-js,
+ * carve-php and the executable spec publish `tight: false`. Measured over 1397
+ * samples at carve-js 99b28ab, carve-rs 661d4ff and carve-php 38de559, each
+ * built from a fresh clone of main; `npm run ast:check` reports
+ *
+ *   THREE-WAY VALUE COMPARISON: 1 field(s) disagree, across 1 document(s)
+ *        1 doc(s)  list.tight
+ *           carve-js=false  carve-rs=true  carve-php=false
+ *
+ * Tracked at markup-carve/carve-rs#1358. Both this row and the ledger's clear
+ * together, in whichever carve-rs PR ships the fix - the run reports FIXED and
+ * fails until they go, which is the reminder this pair exists for.
  */
-const LAST_MEASURED = new Map([])
+const LAST_MEASURED = new Map([['list.tight', 1]])
 
 /** A measurement of `count` distinct documents - the reconciler counts them. */
 const documents = (count) =>
