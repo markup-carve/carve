@@ -1151,9 +1151,16 @@ false says *loose* - the opposite of the default, in the one place a consumer is
 most likely to write `if (node.tight)`.
 
 ::: info Engine support
-No engine has shipped `{loose}` yet, so none emits this field. The corpus
-documents that spell it are declared in `resources/engine-pin-drift.txt` until a
-pin catches up.
+carve-rs emits this field on its `main` as of markup-carve/carve-rs#1304 and
+markup-carve/carve-rs#1314. carve-js and carve-php render `{loose}` correctly and
+do not publish the field yet (markup-carve/carve-js#1410,
+markup-carve/carve-php#1660), so a three-way AST comparison still parts them:
+measured on [run 32678870595](https://github.com/markup-carve/carve/actions/runs/32678870595),
+`carve-js=(absent) carve-rs=true carve-php=(absent)`.
+
+The PINNED build is a separate window and is further behind: it still renders the
+key literally as `<dl loose="">`, which is what the corpus documents declared in
+`resources/engine-pin-drift.txt` are declared for.
 :::
 
 ## Composite figures
