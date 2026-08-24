@@ -79,11 +79,23 @@ test('every expected.crv is a fixed point of the canonical writer', async () => 
  * red too, so the line goes out with the pin bump that fixed it.
  */
 const PIN_LAG = new Map([
+  // THE SOURCE EXIT ONLY, and the tree beside it is NOT lagging - it is right,
+  // and the engine that fixes the source exit breaks it. The id here EQUALS its
+  // generated slug rather than differing from it, which is the whole reason the
+  // pinned build drops it; markup-carve/carve-js#1416 keeps it, and keeps it by
+  // recording an `#id` SLOT in the imported tree. A slot is a source-layout
+  // field, and markup-carve/carve#1647 ruled that an import records none of
+  // them, so the bump past #1416 turns `expected.ast.json` red for a defect in
+  // the engine rather than in the fixture. tests/the-two-import-exits-agree.test.mjs
+  // holds that line on both sides; do not re-record the tree to clear it
+  // (markup-carve/carve#1671).
   [
     'auto-text-link',
-    'the source exit omits an authored heading ID that differs from its generated slug; ' +
-      'fixed upstream by markup-carve/carve-js#1416, but the spec pin cannot advance ' +
-      'until the unrelated round-trip regressions in that newer engine are resolved',
+    'the source exit drops an authored heading ID whose value EQUALS its ' +
+      'generated slug; kept upstream by markup-carve/carve-js#1416, but the ' +
+      'spec pin cannot advance until the unrelated round-trip regressions in ' +
+      'that newer engine are resolved - and that engine keeps the id by ' +
+      'recording an `#id` slot the imported tree may not carry',
   ],
   [
     'marker-shaped-cell',
