@@ -8691,6 +8691,79 @@ EOF = (* end of file *) ;
       tests/corpus-convert cases 29, 30 and 31 pin the three shapes, declared
       in resources/converter-drift.txt until each engine lands it.)
 
+   1c. A WRAPPER ITS OWN CONTENT SPELLS AWAY IS A DECLARED CEILING --
+      NORMATIVE (carve#1658). §1b settles what a producer owes where an
+      inline-only slot forces a flatten. This settles the other place §1's
+      invariant cannot hold, and it is the mirror image: not a slot that
+      cannot HOLD what it was handed, but a wrapper whose own content, written
+      out, IS the thing the block layer reads instead of it.
+
+      THE RULE. Where a block's whole content is a single node, and that node's
+      own spelling AT THE BLOCK'S OWN COLUMN is read back as a block opener of
+      that node's kind, the writer emits that spelling and the wrapper is LOST.
+      `parse(fmt(x)) == parse(x)` is unattainable for such a document, so §1 is
+      not the rule that applies and §1a's smallest-departure licence has
+      nothing smaller to reach for -- every spelling of the content is the
+      content's own. What the producer owes instead is that the loss is
+      DECLARED and not silent:
+
+        - A PRODUCER WITH A DIAGNOSTIC CHANNEL REPORTS IT. The code is
+          `structure-unspellable`, which `docs/html-import.md` already defines
+          for exactly this and already makes the single carve-out to that
+          page's own `parse(htmlToCarve(h)) == htmlToAst(h)`. The AST-returning
+          exit loses nothing and reports nothing; the source-writing exit
+          reports the row.
+        - A PRODUCER WITH NO CHANNEL STATES THE CEILING IN ITS CONTRACT.
+          `carve fmt` and the `carve` render target have no diagnostic list and
+          can only throw, so what they owe is that their stated contract NAMES
+          this shape as one it does not cover. A contract that promises the
+          invariant without qualification, while carrying an exception nothing
+          declares, is worse than a narrower contract that is true as written:
+          every reader of the first one is entitled to rely on it.
+
+      STATED OVER WHAT THE SHAPE SPELLS, never over the node type, the same way
+      §10j is. Two shapes have the property today, and they share no node type,
+      no vocabulary list and no reason beyond the spelling: a `paragraph` whose
+      whole content is one `image`, which writes `![a](u)` and reads back as
+      the standalone image (PART 9 §4's image-paragraph host is a condition on
+      a paragraph's inline content, so the two trees have ONE spelling between
+      them); and a `paragraph` whose whole content is one `comment`, which
+      writes `%% c` and reads back as the block comment. `image` is in the
+      INLINE vocabulary and `comment` is in the BLOCK one (docs/profiles.md),
+      so a rule written over the types would have had to name them one at a
+      time and would not reach the next one. A block whose content spells
+      anything ELSE -- a second node beside it, a text run, a NO-BREAK SPACE
+      (§7) -- keeps its wrapper and no ceiling is reached.
+
+      THE CEILING IS UNIFORM AND NOT POSITIONAL, which is the half that decides
+      the shape rather than merely describing it. At top level the image
+      paragraph does have a spelling -- one leading space, which the block
+      layer reads as a paragraph and not as a standalone image -- and the
+      writer still does not use it. Inside a list item or a definition
+      description there is no such spelling at any width: the marker's own
+      content column absorbs the padding, so `- ![a](u)` and `-       ![a](u)`
+      are the same tree, and `:  ` behaves the same way. A writer preserving
+      the shape at one nesting level and losing it at the next, with nothing
+      declaring the difference, is not a preservation rule; and the indented
+      form emits meaning-bearing leading whitespace, which editors and
+      pipelines strip. So the wrapper is lost EVERYWHERE, and one sentence
+      describes the writer at every depth.
+
+      WHY NOT REFUSE. §1's KNOWN GAP and the refusal a writer already owes for
+      a value no source can carry make refusal the honest-looking answer, and
+      it is what an implementation does for an empty raw inline. It loses on
+      two counts. It would fail an editor's round trip on a tree the renderer
+      accepts -- §10j's own reason for bounding a loss rather than rejecting
+      the document, on the path that can least afford it -- and it contradicts
+      a clause that already exists, since `docs/html-import.md` says this exit
+      REPORTS the loss rather than failing. Overturning that needs its own
+      fallback story and is a larger change than the shape asks for.
+
+      THE WRAPPER IS STILL LOST, and this clause does not pretend otherwise. It
+      bounds the loss TO the wrapper -- the content, its attributes and its
+      neighbours all survive as themselves -- and it puts the loss on the
+      record, which is the whole of what §1 can be held to here.
+
    2. THE ESCAPING RULE -- NORMATIVE. A character is escaped IF AND ONLY IF
       omitting the escape would change the re-parsed AST.
 

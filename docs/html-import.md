@@ -40,7 +40,10 @@ positions, which imported nodes do not carry at all.
 ONE CARVE-OUT, and it is one this page already names. `structure-unspellable`
 exists for a tree Carve source cannot spell, and it is reported on the exit that
 writes source. Where a row carries it the two exits differ by exactly the
-structure that row names, and this invariant is not the rule that applies.
+structure that row names, and this invariant is not the rule that applies. The
+carve-out is not this page's own: PART 11 §1c states the writer-side ceiling it
+sits inside, over what a shape SPELLS rather than over a node type, and names
+this code as what a producer with a diagnostic channel owes for one.
 Everywhere else a difference is a defect. Which of the two exits is the wrong
 one is a separate question, and the invariant deliberately does not answer it.
 
