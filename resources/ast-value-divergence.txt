@@ -156,4 +156,3 @@
 #
 # Measured over 1397 samples at carve-js 99b28ab, carve-rs 661d4ff and carve-php
 # 38de559, each built from a fresh clone of main.
-list.tight  1  carve-rs alone; tracked at markup-carve/carve-rs#1358
