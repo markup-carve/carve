@@ -180,6 +180,7 @@ under the same semantic-span rule,
 `409-a-blank-line-loosens-an-item-only-when-a-paragraph-follows-it`,
 `410-a-footnote-continuation-survives-a-blank-run`,
 `411-a-lone-indented-image-is-a-paragraph-and-its-html-cannot-say-so`,
+`412-a-lone-reference-image-at-column-0-in-every-spelling`,
 `05-lists-25`,
 `05-lists-26`,
 `05-lists-27`,
@@ -279,6 +280,21 @@ whoever retakes the run has to delete the line. The engine half closes when
 those two tickets land, and `ast:check` is what says so; a line still naming an
 engine somebody has fixed reads as verified while being false, which is the
 failure this device exists to prevent.
+
+`412` IS DECLARED FOR THE ORDINARY REASON - the quoted run predates the category -
+and it is worth saying what it does NOT mean. All four of its documents pass on
+all three engines and on the oracle, so the mismatch counts above would not move
+if the run were retaken; the declaration is about which corpus the numbers
+describe, not about an engine owing anything.
+
+The category exists because nothing in the corpus held a lone reference image at
+column 0, so what the reference spellings do there was unpinned while the direct
+spelling was pinned many times over (carve#1663). The three engines agree, and
+`412` is the record of that agreement. Three of its four pairs are invisible to
+this page by construction - a paragraph whose whole content is one image renders
+as a bare `<img>` with no `<p>` wrapper, so they pass whatever the tree holds -
+and the reader that can tell those trees apart is `npm run ast:check`'s SHAPE
+comparison.
 
 A CATEGORY THAT ALREADY EXISTED CAN GO STALE TOO, and the declaration above
 cannot say so - it names categories ADDED since the run, and its count is

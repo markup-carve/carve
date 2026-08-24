@@ -1424,7 +1424,7 @@
     "image": {
       "type": "object",
       "title": "image (block or inline)",
-      "description": "Also valid in BLOCK position: a lone image paragraph is a block-level image.",
+      "description": "Also valid in BLOCK position: a lone image paragraph is a block-level image. This covers the DIRECT spelling `![alt](src)` and both reference spellings, `![alt][ref]` and the collapsed `![alt][]`, once they resolve - a reference that resolves to nothing has no destination and stays inside its paragraph. Read the PUBLISHED tree when checking this: an engine may promote during reference resolution rather than in its block pass, so a parse-only tree can still show the paragraph (carve#1663).",
       "required": [
         "type",
         "src",
