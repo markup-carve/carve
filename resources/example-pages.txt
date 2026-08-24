@@ -486,6 +486,7 @@ index: examples/edge-cases/index.md
   indented-image-and-caption-stay-literal
   a-lone-indented-image-is-a-paragraph-and-its-html-cannot-say-so
   a-lone-reference-image-at-column-0-in-every-spelling
+  an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not
   indented-reference-and-footnote-definitions-stay-literal
   a-repeated-definition-which-one-wins
   a-collapsed-reference-is-matched-by-the-label-the-author-wrote

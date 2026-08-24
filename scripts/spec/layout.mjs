@@ -2964,8 +2964,16 @@ function matchMarkerAt(meas) {
       task: m[5],
       text: m[6],
       // The task box is item CONTENT, not marker (PART 9 SS24 C3), so extra
-      // spaces before it do not move the item content column.
-      markerWidth: m[5] !== undefined ? m[2].length + 1 : m[2].length + whitespaceWidth,
+      // spaces before it do not move the item content column. AN ATTRIBUTE
+      // BLOCK DOES: it is part of the marker that introduces the item, not
+      // content, so a column that skipped it landed INSIDE the block, where no
+      // content can begin. `-{#k} [x] a` is the marker `-{#k} ` and then the
+      // checkbox, so its content column is 6 and not 2 (carve#1692); `-{#k} a`
+      // is 6 for the same reason with the box absent.
+      markerWidth:
+        m[2].length +
+        (m[3] !== undefined ? m[3].length : 0) +
+        (m[5] !== undefined ? 1 : whitespaceWidth),
     }
   }
   m = ORDERED.exec(line)
@@ -2984,7 +2992,9 @@ function matchMarkerAt(meas) {
       attrs: m[4] ?? null,
       dialects,
       text: m[5],
-      markerWidth: m[2].length + m[3].length + 1,
+      // The block counts here for the same reason it does for a bullet: it is
+      // marker, not content, so `1.{#k} a` puts its content column at 7.
+      markerWidth: m[2].length + m[3].length + (m[4] !== undefined ? m[4].length : 0) + 1,
     }
   }
   return null
