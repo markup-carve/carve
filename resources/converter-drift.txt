@@ -98,11 +98,26 @@
 # Full HTML-import fixture sweep added by carve#1600, measured 2026-08-24 on
 # clean current mains: carve-rs 9cf16d05, carve-js 05e1cc27, carve-php 06c27aaa.
 # Each entry is removed when that engine reproduces the normative fixture.
+#
+# FIVE OF THE EIGHT LANDED, and the ledger's stale half is what said so. Measured
+# 2026-08-24 in AST conformance run 32683876950, at carve 4f911379, which builds
+# every engine from a fresh checkout of its own default branch:
+#
+#     rust: convert_pass=60/61 declared_drift=1 mismatch=0 error=0 skipped=2
+#     js:   convert_pass=61/63 declared_drift=1 mismatch=1 error=0 skipped=0
+#     php:  convert_pass=61/63 declared_drift=1 mismatch=1 error=0 skipped=0
+#
+# and it named exactly these five as STALE, one failure line each:
+#
+#     rust/html-import--empty-definition-description           carve-rs#1319
+#     rust/html-import--empty-definition-description-not-last  carve-rs#1319
+#     php/html-import--empty-definition-description-not-last   carve-php#1646
+#     rust/html-import--endnotes-section-not-last              carve-rs#1318
+#     rust/html-import--note-reference-in-a-span               carve-rs#1317
+#
+# The three derived-endnotes-section lines are NOT stale: each engine's
+# declared_drift=1 above is that line being used, so all three still describe a
+# live divergence and stay.
 rust/html-import--derived-endnotes-section  the importer does not preserve the derived endnotes list looseness (carve#1612)
 js/html-import--derived-endnotes-section  the importer does not preserve the derived endnotes list looseness (carve#1612)
 php/html-import--derived-endnotes-section  the importer does not preserve the derived endnotes list looseness (carve#1612)
-rust/html-import--empty-definition-description  an empty description is not reproduced as the fixture's definition-list row (carve#1636)
-rust/html-import--empty-definition-description-not-last  dropping the empty description changes the following definition-list structure (carve#1636)
-php/html-import--empty-definition-description-not-last  dropping the empty description changes the following definition-list structure (carve#1636)
-rust/html-import--endnotes-section-not-last  the importer relocates a non-final endnotes section (carve#1600)
-rust/html-import--note-reference-in-a-span  the note reference consumes the surrounding span boundary (carve#1600)
