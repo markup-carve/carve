@@ -184,6 +184,7 @@ under the same semantic-span rule,
 `410-a-footnote-continuation-survives-a-blank-run`,
 `411-a-lone-indented-image-is-a-paragraph-and-its-html-cannot-say-so`,
 `412-a-lone-reference-image-at-column-0-in-every-spelling`,
+`413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not`,
 `05-lists-25`,
 `05-lists-26`,
 `05-lists-27`,
@@ -298,6 +299,18 @@ this page by construction - a paragraph whose whole content is one image renders
 as a bare `<img>` with no `<p>` wrapper, so they pass whatever the tree holds -
 and the reader that can tell those trees apart is `npm run ast:check`'s SHAPE
 comparison.
+
+`413` IS DECLARED THE SAME WAY, and it is the one place on this page where the
+declaration hides a real movement rather than none. The quoted run predates the
+category, so its numbers describe a corpus without it - but unlike `412`, the
+three engines did NOT agree when it was written: each read exactly one of its two
+spellings as an item continuation and they disagreed about which (carve#1692).
+carve-rs and carve-php moved to carve-js's reading in the same release, so a
+retaken run would find all four documents conformant; a run taken BEFORE those
+two landed would have found two of them failing on two engines each. The
+declaration says which corpus the numbers describe and nothing about which
+engines were right, which is exactly why the movement has to be stated here in
+words.
 
 A CATEGORY THAT ALREADY EXISTED CAN GO STALE TOO, and the declaration above
 cannot say so - it names categories ADDED since the run, and its count is

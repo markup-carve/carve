@@ -27402,3 +27402,154 @@ construct renders as the text the author typed.
 ```
 
 :::
+## An item's attribute block moves its content column; its checkbox does not
+
+`90-list-item-attributes-4` is the only document that puts attributes on a task
+item, and it is a single line, so it has no continuation and cannot say where
+the item's content begins. `06-task-lists` and
+`363-a-task-item-s-checkbox-is-not-decided-by-its-first-block` carry
+continuations but no attributes, so they cannot say it either. Between them the
+two halves of `-{#k} [x] ` were each pinned alone and the combination was pinned
+nowhere - which is how three engines came to read it three ways with every gate
+green (carve#1692).
+
+The rule is one rule applied twice. A checkbox is CONTENT (carve#1690), so it
+does not move the column; an attribute block is part of the MARKER that
+introduces the item, so it does. `-{#k} [x] a` is therefore the marker `-{#k} `
+and then content beginning at the checkbox, and the item's content column is 6.
+A line written there is inside the item.
+
+::: compare
+
+```carve
+-{#k} [x] a
+      # h
+```
+
+```html
+<ul>
+  <li id="k"><input type="checkbox" checked disabled aria-label="a"> a
+    <h1 id="h">h</h1>
+  </li>
+</ul>
+```
+
+:::
+
+Column 2 is the other spelling, and it has to be pinned beside the first rather
+than instead of it: reading the column as the bare bullet width puts it there,
+which is INSIDE the attribute block, and each engine used to read exactly one of
+the two as a continuation. A document holding only one of them passes on the
+engine that reads the other. Below the content column the line is lazy paragraph
+text, so the `#` survives literally.
+
+::: compare
+
+```carve
+-{#k} [x] a
+  # h
+```
+
+```html
+<ul>
+  <li id="k"><input type="checkbox" checked disabled aria-label="a # h"> a
+# h</li>
+</ul>
+```
+
+:::
+
+The two neighbours a wrong fix breaks. Without the attribute block the column is
+the bullet's alone, so column 2 is where the content is and the heading lands
+inside the item - the checkbox still moves nothing.
+
+::: compare
+
+```carve
+- [x] a
+  # h
+```
+
+```html
+<ul>
+  <li><input type="checkbox" checked disabled aria-label="a"> a
+    <h1 id="h">h</h1>
+  </li>
+</ul>
+```
+
+:::
+
+And without the checkbox the block still moves the column, exactly as it always
+has for an ordinary item: the column is the marker's measured width, so 6 is
+where the content is.
+
+::: compare
+
+```carve
+-{#k} a
+      # h
+```
+
+```html
+<ul>
+  <li id="k">a
+    <h1 id="h">h</h1>
+  </li>
+</ul>
+```
+
+:::
+
+The ordered spelling is the same rule again, and it is here because the
+executable spec got it wrong in both places at once: `1.{#k} ` is seven wide, so
+that is where an ordered item's content begins. No document pinned it, which is
+how a reader could skip the block for every marker shape and still pass.
+
+::: compare
+
+```carve
+1.{#k} a
+       # h
+```
+
+```html
+<ol>
+  <li id="k">a
+    <h1 id="h">h</h1>
+  </li>
+</ol>
+```
+
+:::
+
+A SUB-LIST READS THE COLUMN THROUGH ANOTHER DOOR, and this pair is here because
+the four above cannot open it. A blank line followed by a paragraph BELOW a
+sub-list's content column is internal to the outer item and loosens it, so where
+the inner column sits decides whether the OUTER item's blocks are wrapped. `after`
+is written two columns into the sub-list; the inner item's column is 6, so it
+falls below and the outer item is loose. Read as 2, the paragraph would not fall
+below it and the outer item would come back tight - which is what carve-rs
+emitted, with no pair in the corpus able to report it.
+
+::: compare
+
+```carve
+- outer
+  -{#k} [x] inner
+
+    after
+```
+
+```html
+<ul>
+  <li><p>outer</p>
+    <ul>
+      <li id="k"><input type="checkbox" checked disabled aria-label="inner"> inner</li>
+    </ul>
+    <p>after</p>
+  </li>
+</ul>
+```
+
+:::
