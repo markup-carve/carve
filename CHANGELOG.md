@@ -9,343 +9,202 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **PART 9 §17 L7: a consumed `loose` boolean spells the looseness a blank line
-  cannot** (carve#1623). The preceding block-attribute line may carry `loose`, so
-  `<li><p>x</p></li>` and `<dd><p>x</p></dd>` become writable Carve; the key is
-  consumed, not emitted. Corpus 407.
+- **PART 9 §17 L7: a block-attribute `loose` boolean spells the looseness a
+  blank line cannot** (carve#1623). It is consumed, not emitted.
 - **A definition list's spelled looseness is a field** (carve#1624, PART 12 §8).
-  `definition_list` gains an optional `loose: true`, because the `<dd>` wrapper is
-  derived from the description's block count and cannot see the key.
+  `definition_list` gains an optional `loose: true`.
 - **HTML import coverage is measured as a population and across engines**
-  (carve#1600). Every grammar construct has one coverage classification, the
-  complete render corpus is re-imported through the pinned JavaScript engine,
-  and all normative HTML fixtures run through Rust, JavaScript, and PHP with a
-  bidirectional drift ledger.
-- **Built-in render/import routes have a corpus round-trip ratchet**
-  (carve#1604). Exact current HTML and Markdown counts are pinned and must be
-  reviewed when either improves or regresses.
+  (carve#1600), with a bidirectional drift ledger over Rust, JavaScript and PHP.
+- **Built-in render and import routes have a corpus round-trip ratchet**
+  (carve#1604).
 - **Bindings owe the complete output surface plus the AST** (carve#1599).
-  Importers remain optional but must be explicitly implemented or declared out
-  of scope; a machine-readable binding contract checks the inventory.
+  Importers stay optional but must be implemented or declared out of scope.
 - **An explicit closer is a spelling change, so it cannot move a list's
-  tightness** (carve#1602). Corpus
-  `362-an-unterminated-container-does-not-extend-the-item-past-a-blank-line-4`
-  is the closed spelling of `-3`, and the pair is pinned at the PARSE level
-  because their HTML is byte-identical: no fixture over rendered output can see
-  the rule. Which of tight or loose the two spellings agree on stays open.
-- **An import's two exits say the same thing** (carve#1601).
-  `parse(htmlToCarve(h))` equals `htmlToAst(h)`, modulo escaping and source
-  positions, with a `structure-unspellable` row as the only carve-out. Nothing
-  compared the tree an importer returns against the source it writes before.
+  tightness** (carve#1602). Which answer the two spellings agree on stays open.
+- **An import's two exits say the same thing** (carve#1601):
+  `parse(htmlToCarve(h))` equals `htmlToAst(h)` modulo escaping and positions.
 - **A destination Carve cannot carry is not a destination** (carve#1601). An
-  `<a>` with no `href`, an `<a href="">` and an `<img>` whose `src` is either
-  build no link or image node and come back as their content, instead of the
-  literal `[t]()` that four punctuation characters make. The importer must not
-  rebuild a destination PART 9 §25's denylist blanked. Fixture
-  `destination-less-link`.
+  `<a href="">` or a `src`-less `<img>` comes back as its content.
 - **PART 11 §6f: padding is not an escape where the production admits padding**
-  (carve#1601). `span_cell` is written with its padding inside it, so a cell
-  whose whole payload is `^` or `<` is escaped by §2's own test. Fixtures
-  `marker-shaped-cell`, `symbol-sigil-escape`; escaper cases
-  `a-symbol-shortcode`, `a-colon-that-closes-no-shortcode`.
+  (carve#1601). A cell whose whole payload is `^` or `<` is escaped.
 - **Table column metadata and two-axis cell alignment** (carve#1344).
-  `table.columns[]` carries horizontal alignment, vertical alignment and a
-  fractional width; `table_cell` gains `valign`; `aligns`, `valigns` and
-  `widths` set them; a cell marker run may write both axes (`|>^`, `|<v`). HTML
-  gains cell styles and `colgroup` widths, and three lints check the result.
-  Corpus 370, 371.
-- **A table cell can inherit its column's horizontal alignment** (carve#1408).
-  `?^`, `?~` and `?v` keep the column's horizontal alignment while setting the
-  cell's vertical one; `?`, `v?` and `?<` stay literal. Corpus 375.
-- **A pipe table can state its head and foot row counts** (carve#1413).
-  `header-rows=N` and `footer-rows=N` partition the table into `thead`, `tbody`
-  and `tfoot`; a ListTable cell's own `align`/`valign` outranks its column's.
-  Corpus 376.
+  `table.columns[]` carries both alignments and a fractional width, `table_cell`
+  gains `valign`, and a cell marker run may write both axes (`|>^`).
+- **A table cell can inherit its column's horizontal alignment** (carve#1408):
+  `?^`, `?~` and `?v` set only the vertical axis.
+- **A pipe table can state its head and foot row counts** (carve#1413) with
+  `header-rows=N` and `footer-rows=N`.
 - **ListTable declares local headers and body row groups** (carve#1248,
-  carve#1337). A body group may carry its own header row, and a row group's span
-  boundaries are defined. Optional corpus 45.
+  carve#1337). A body group may carry its own header row.
 - **PART 9 §12 states what a colon fence's width costs, and why the widening is
-  kept** (carve#1553). One colon per level buys an O(1) writer with no subtree
-  scan, at `d^2 + 5d` bytes of fence marker for a nest `d` deep. No canonical
-  output moves; `docs/divergence-from-djot.md` §13 carries the same trade.
+  kept** (carve#1553). No canonical output moves.
 - **PART 9 §16a names what makes a value DERIVED, and reaches the wrapper**
-  (carve#1580, ruling carve#1500). Reconstructability is the property, so the rule covers the
-  endnotes `<section>` itself. Fixture `derived-endnotes-section`.
+  (carve#1580, ruling carve#1500). The rule covers the endnotes `<section>`.
 - **PART 12 §16 names the three exemptions from a diagnostic path's index basis,
-  and closes the list** (carve#1556). An `<li>`, a `<tr>` and a `<td>`/`<th>`
-  are numbered among their own kind; every other kind counts among all the
-  parent's child nodes. Fixture `traversal-shaped-index`.
-- **An imported nested container widens INWARD, and a fixture pins it**
-  (carve#1569, PART 9 §12). `carve fmt` widens on the way down, so an importer
-  does. `container-nesting` pins two and three levels.
-- **An importer rebuilds the container the renderer wrote** (carve#1558).
-  `docs/html-import.md` states the inverse of the renderer rather than a list of
-  names, so a callout, a tab set and a code group come back as containers
-  instead of generic divs. Fixtures `container-round-trip`,
-  `caption-attributes`.
+  and closes the list** (carve#1556): `<li>`, `<tr>` and `<td>`/`<th>`.
+- **An imported nested container widens INWARD** (carve#1569, PART 9 §12),
+  matching what `carve fmt` does on the way down.
+- **An importer rebuilds the container the renderer wrote** (carve#1558), so a
+  callout, a tab set and a code group come back as containers, not generic divs.
 - **An attribute-less div unwraps to its content on an HTML import**
-  (carve#1578). A bare `<div>` carries nothing a container is named by, so it
-  produces no `div` node. Fixture `attribute-less-div`.
-- **The table-of-contents nav carries an accessible name** (carve#1509).
-  `<nav class="toc">` takes an `aria-label` from a new `tocNav` label, read by
-  both TOC extensions; an authored `aria-label` outranks it. Extensions §8b.1,
-  §1.5.
-- **Tabs and code-group panels get an accessible name, and code-group gets a
-  mode** (carve#1468, extensions §13). CodeGroup grows the
-  `mode: 'css' | 'aria'` option Tabs already has, with `css` the default in
-  both. Optional corpus 46, 47.
+  (carve#1578). A bare `<div>` produces no `div` node.
+- **The table-of-contents nav carries an accessible name** (carve#1509,
+  Extensions §8b.1, §1.5) from a new `tocNav` label.
+- **Tabs and code-group panels get an accessible name, and CodeGroup gains the
+  `mode: 'css' | 'aria'` option Tabs has** (carve#1468, extensions §13).
 - **An extension block matcher is a pure predicate, and a definition probe may
   ask it** (carve#1432, R1a); **its coordinates are local, not absolute**
   (carve#1437, R1b).
 - **A blank line between two ordered items loosens the list** (carve#1498). The
-  corpus pinned the bullet spelling four times and the ordered spelling never,
-  and the engines disagreed on it. Corpus `05-lists-22`.
+  corpus pinned only the bullet spelling and the engines disagreed.
 - **The AST span-divergence ledger records what the engines actually do**
-  (carve#1451). Two rows were carve-php and are fixed
-  (markup-carve/carve-php#1556); the six carve-js and carve-rs rows that remain
-  are declared, each with the issue that closes it.
+  (carve#1451, markup-carve/carve-php#1556), each row naming its closing issue.
 
 ### Changed
 
 - **The canonical writer spells `loose` only where a blank line cannot**
-  (markup-carve/carve-rs#1305, carve#1639). The criterion is decided by a re-parse
-  of the blank-line spelling, not by an item count: a one-item list already
-  loosened by a blank line inside the item keeps its source. Corpus 408.
+  (markup-carve/carve-rs#1305, carve#1639).
 - **An ingested value the schema calls absent is normalized away** (carve#1615,
-  PART 12 §22). The encoder drops an ingested `start: 1`; `start: 0` and
-  `start: 2` are carried through unchanged.
-- **The same line decides what an import keeps** (carve#1628, PART 11 §7). A block
-  whose text is entirely whitespace keeps exactly the characters §7 calls content:
-  `<p>&nbsp;</p>` imports as a paragraph holding U+00A0, an ASCII-space or
-  tab-only block builds no node and reports `element-dropped`. The divider is
-  PART 2's whitespace terminal, not the entity.
+  PART 12 §22). The encoder drops an ingested `start: 1`.
+- **The same line decides what an import keeps** (carve#1628, PART 11 §7).
+  `<p>&nbsp;</p>` keeps its U+00A0; a space- or tab-only block builds no node.
 - **PART 11 §10j: an unspellable block does not cancel the list adjacency it
-  cannot spell** (carve#1621). Where every block between two sibling lists leaves
-  no character on the page, §10i decides the run as if nothing stood there.
-- **A declared loss is a ceiling, not a license, and an endnotes section keeps its
-  position** (carve#1608). An empty `<dd>` is dropped with `structure-unspellable`
-  rather than writing a bare colon line that damages the term above it; an
-  endnotes section that is not last is imported where it sits.
+  cannot spell** (carve#1621).
+- **A declared loss is a ceiling, not a license, and an endnotes section keeps
+  its position** (carve#1608). An empty `<dd>` is dropped, not written.
 - **A dropped empty description breaks the definition list rather than lending
-  it** (carve#1636). With an entry after it, writing both terms into one list
-  would give the surviving term a description it never had, so the import writes
-  two lists.
+  it** (carve#1636). With an entry after it, the import writes two lists.
 - **An attached container's closer is a spelling change the HTML can see**
-  (carve#1613). Corpus 362-5 and 362-6 put the container below a lead block, where
-  a tight item's paragraph suppression does reach it; both spellings read tight.
+  (carve#1613). Below a lead block, both spellings read tight.
 - **A blank line above an attached block loosens the item only when a paragraph
-  follows it** (carve#1622). A container has an opener to absorb the separation
-  and a paragraph has none. Corpus 409.
+  follows it** (carve#1622).
 - **U+0000 is replaced before the document is read** (carve#1523, PART 0 INPUT,
-  PART 9 §29). Every NUL becomes U+FFFD at the parse boundary; every other C0
-  control stays content. Corpus 397.
-- **The AST-JSON ingest replaces U+0000 too** (carve#1523, PART 12 §21), raw or
-  escaped, before the value is read for anything else. Engine follow-ups:
-  markup-carve/carve-js#1294, markup-carve/carve-rs#1217.
+  PART 9 §29). Every other C0 control stays content.
+- **The AST-JSON ingest replaces U+0000 too, raw or escaped** (carve#1523,
+  PART 12 §21, markup-carve/carve-js#1294, markup-carve/carve-rs#1217).
 - **A container's span ends at its last placed child** (carve#1522, carve#1524,
-  PART 12 §4). A hoisted definition is a document-level sibling, so the
-  container stops before it; an unattached attribute block is excluded for the
-  same reason. Published spans move in all three engines. Corpus 398.
+  PART 12 §4). Published spans move in all three engines.
 - **A definition list ends at its last placed child too** (carve#1530,
-  PART 12 §4). It was the one container that reached an attribute line no child
-  covers; carve#1281's extent half is superseded. Corpus 399.
+  PART 12 §4). carve#1281's extent half is superseded.
 - **A container starts at its opening markup even where its first child is
-  unplaced** (markup-carve/carve-rs#1247, PART 12 §4). The start rule names
-  where the construct begins and does not mirror the end rule. Corpus 400.
+  unplaced** (markup-carve/carve-rs#1247, PART 12 §4).
 - **A container ends at the markup that closes it even where its last child is
-  unplaced** (carve#1551, PART 12 §4). The mirror of the start rule; it locates
-  carve#1522 rather than overturning it. Corpus 402.
+  unplaced** (carve#1551, PART 12 §4).
 - **An importer does not bake a derived accessible name into source**
-  (carve#1500, PART 9 §16a). An attribute whose value equals what the renderer
-  derives is dropped and every other one is kept, which is what keeps the
-  `labels` map reaching an imported document. Fixture
-  `derived-accessible-name`.
-- **A table cell's marker run ends at a space** (carve#1259, PART 9 §5 T11). The
-  kind marker, the alignment run and the attribute block are one run and must be
-  followed by a space; without one every character of it is content. A canonical
-  writer already pads every cell. Corpus 390.
+  (carve#1500, PART 9 §16a). Every other attribute is kept.
+- **A table cell's marker run ends at a space** (carve#1259, PART 9 §5 T11).
+  Without one every character of it is content; canonical output already pads.
 - **A vertical table-cell marker requires a horizontal partner, written first**
-  (carve#1405, carve#1407). `|^ x`, `|v x` and a reversed `|v>` stay content;
-  `|<^` and `|>^` carry both axes. Corpus 373.
+  (carve#1405, carve#1407). `|^ x`, `|v x` and a reversed `|v>` stay content.
 - **A row is a row, in every table section** (carve#1459). `thead`, `tbody` and
-  `tfoot` all write one row per line, where a head and a foot used to be compact
-  and a body expanded.
+  `tfoot` all write one row per line.
 - **`table-marker-run-padding` is one lint id for the whole marker run**
-  (carve#1464, PART 9 §5 T11). It supersedes `table-alignment-run-padding`,
-  which named only the middle part; `fmt --migrate` inserts the missing space.
+  (carve#1464, PART 9 §5 T11); `fmt --migrate` inserts the missing space.
 - **An empty brace pair is not a construct** (carve#1447). `{//}`, `{**}`,
-  `{__}`, `{~~}`, `{^^}`, `{,,}`, `{==}`, `{++}` and `{##}` render literally; a
-  fully empty substitution is unchanged. Corpus 388.
+  `{__}`, `{~~}`, `{^^}`, `{,,}`, `{==}`, `{++}` and `{##}` render literally.
 - **`{--}` is an en dash, not an empty deletion** (carve#1447). It converts in
-  the flag position the bare hyphen run refuses. Corpus 387.
+  the flag position the bare hyphen run refuses.
 - **A hyphen run opening a word after whitespace is a flag, not a dash**
-  (carve#1443). `--oneline` stays literal; `1--10`, `Mon--Fri` and a spaced `--`
-  still convert. Corpus 385.
-- **The doubled run is the canonical arrow, in both families** (carve#1442).
-  `<--`, `-->`, `<-->` and the `=` family are canonical; the single-hyphen
-  spellings are deprecated and still render. Corpus 386.
+  (carve#1443). `--oneline` stays literal; `1--10` and `Mon--Fri` convert.
+- **The doubled run is the canonical arrow, in both families** (carve#1442). The
+  single-hyphen spellings are deprecated and still render.
 - **A boolean attribute does not start with an underscore** (carve#1450). A lone
-  `{_x_}` line is a forced underline, not a block attribute line; `{#_id}`,
-  `{._c}` and `{_k=1}` are unaffected. Corpus 389.
+  `{_x_}` line is a forced underline, not a block attribute line.
 - **The source-layout sidecar defines every optional fact it declares**
-  (carve#1431, PART 12 §13 F1-F9). Twelve of the thirteen optional `nodeLayout`
-  properties say what they measure and in which unit, columns are zero-based so
-  the schema minimum moves from 1 to 0, and the fence pair is
-  `dependentRequired`. Version stays 1.
+  (carve#1431, PART 12 §13 F1-F9). Columns are zero-based; version stays 1.
 - **A collected definition closes the item paragraph, and only a comment keeps
-  the below-column path open** (carve#1376). Item prose reopens at the content
-  column; a footnote body starts two columns beyond its definition. Corpus 374.
+  the below-column path open** (carve#1376).
 - **A quote is reached by its marker, and a column never reaches into one**
-  (carve#1384). A line writing no `>` is in no quote whatever column it lands
-  on. Corpus 369.
+  (carve#1384). A line writing no `>` is in no quote.
 - **An unterminated fence at a container's content column opens no block**
   (carve#1387, §10 I4). The line is paragraph text and the paragraph stays open.
-  Corpus 367.
 - **A raw block keeps the blank line at the end of its payload** (carve#1389).
-  The payload is every line between the delimiters. Corpus 366.
+  The payload is every line between the delimiters.
 - **A heading at an item's content column leaves no paragraph open**
-  (carve#1377). An enclosing item's paragraph survives past a nested heading.
-  Corpus 368.
-- **An all-blank raw payload still emits its line** (carve#1401). Corpus 372.
+  (carve#1377).
+- **An all-blank raw payload still emits its line** (carve#1401).
 - **A resumed lazy run belongs to the innermost marker-line item** (carve#1424).
-  Corpus 381.
 - **A marker-line link definition is collected where no paragraph is open**
-  (carve#1425); with a paragraph open above it the marker line is lazy text and
-  the definition defines nothing. Corpus 382.
+  (carve#1425); with a paragraph open above it the marker line is lazy text.
 - **A lazy marker line's definition defines nothing, in any container**
-  (carve#1428). The corpus said this only at the document level, so the quote
-  and div spellings had three answers. Corpus 383.
-- **ASCII-folding is available in all three engines, in two modes**
-  (carve#1470). Best-effort keeps what the table cannot map, strict drops it so
-  an id matches `[0-9A-Za-z-]`; carve-rs gains `ascii_heading_ids`.
+  (carve#1428).
+- **ASCII-folding is available in all three engines, in best-effort and strict
+  modes** (carve#1470); carve-rs gains `ascii_heading_ids`.
 
 ### Fixed
 
 - **A figure's imported target is the captioned block, not a paragraph around
-  it** (carve#1606, PART 9 §4b). Two shared fixtures recorded a wrapped tree
-  beside source that parses to the image directly; only a display-math host is a
-  paragraph. Filed as markup-carve/carve-js#1381.
+  it** (carve#1606, PART 9 §4b, markup-carve/carve-js#1381).
 - **The escape test reads the source the writer will emit, not the tree**
-  (carve#1601, PART 11 §2). A detached caption line and a span whose text opens a
-  note reference are escaped; both engines wrote source that re-parsed to
-  something else.
-- **A footnote definition's body survives a run of blank lines** (carve#1620). The
-  continuation test looked one line past the blank, so a blank run ended the body
-  and relocated its content into the endnotes section. Corpus 410.
+  (carve#1601, PART 11 §2).
+- **A footnote definition's body survives a run of blank lines rather than
+  ending at the second one** (carve#1620).
 - **A diagnostic list is ordered by the losing element's document position**
-  (carve#1586). The basis is now stated, and the `diagnostic-order` fixture pins
-  two losses under one parent. carve-php already answered this way;
-  markup-carve/carve-js#1358 and markup-carve/carve-rs#1271 change.
+  (carve#1586, markup-carve/carve-js#1358, markup-carve/carve-rs#1271).
 - **A diagnostic on a bare inline run is numbered among the body children, not
   inside the paragraph the importer wrapped it in** (carve#1554, PART 12 §16).
-  `math-block-and-mathml` pinned the wrong answer;
-  `synthesized-wrapper-path` pins the general case.
-- **A table `<caption>` is worked through PART 12 §16, and pinned by a fixture**
-  (carve#1560). "Among the captions" is always `[1]`, which agrees with the
-  child index only for a one-line table. `table-caption-index` pins the
-  multi-line spelling at `caption[2]`.
-- **A heading's marker separator is a run, and none of it is content**
-  (carve#1581, PART 2 / PART 11 §1). The executable spec published `##  h` as
-  `<SP>h` where all three engines publish `h`. A tab is still content; the JS
-  writer dropped it (markup-carve/carve-js#1356) and
-  markup-carve/carve-js#1359 fixed it. Corpus 406.
+- **A table `<caption>` is worked through PART 12 §16** (carve#1560), so "among
+  the captions" is always `[1]`.
+- **A heading's marker separator is a run, and none of it is content; a tab is
+  still content** (carve#1581, PART 2 / PART 11 §1, markup-carve/carve-js#1356,
+  markup-carve/carve-js#1359).
 - **A caption's marker separator is a run, and none of it is content**
-  (carve#1575, PART 2 / PART 11 §1), the correction carve#892 made at the
-  definition markers. A caret followed by whitespace alone now opens no caption.
-  Corpus 404.
+  (carve#1575, carve#892, PART 2 / PART 11 §1). A caret followed by whitespace
+  alone opens no caption.
 - **A quote holding a captioned block indents it like any other nested block**
-  (carve#1575, PART 10 §4). A quoted figure was the one multi-line child the
-  executable spec left un-indented. Corpus 405.
-- **A caption spills onto its continuation lines in the oracle too**
-  (carve#1561). PART 2 MULTI-LINE CAPTIONS has always said a caption ends the
-  way an open paragraph does; the oracle ended it at its own line and made the
-  continuation a second block.
+  (carve#1575, PART 10 §4).
+- **A caption spills onto its continuation lines in the reference oracle too**
+  (carve#1561).
 - **The oracle numbers a note where it sits, not by which form it wears**
-  (carve#1562, PART 9R R2). One shared `footnoteSeq` walked in document order,
-  so a `[^label]` use and an inline `^[content]` note draw from the same
-  counter.
+  (carve#1562, PART 9R R2).
 - **A comment fence is opaque to a quote's paragraph tracking, an unclosed
   inline literal keeps its terminal newline, and a reference definition needs
   its destination on its own line** (carve#1418, carve#1419, carve#1420,
-  carve#1421). Four families minimized out of the combinatorial and seeded-fuzz
-  gates, with nine mandatory pairs. Corpus 377, 378, 379, 380.
+  carve#1421).
 - **A marker at an item's content column opens a sublist, first in the item or
-  not** (carve#1517, PART 9 §24 C3). The clause is unchanged and the engines
-  move to it. Corpus 401.
-- **A blank verbatim line inside a block quote has a canonical spelling, and it
-  is pinned** (carve#1544, PART 11 §7/§7a). `.fmt` sidecars pin all four cases,
-  and a failed engine run is now named instead of being folded into
-  `errors=N`.
+  not** (carve#1517, PART 9 §24 C3).
+- **A blank verbatim line inside a block quote has a canonical spelling**
+  (carve#1544, PART 11 §7/§7a), and a failed engine run is named, not counted.
 - **The writer escapes per opener occurrence, not per unit** (carve#1533,
-  PART 11 §2, §4). All three writers read §2 as one knob per unit and wrote a
-  failing unit conservatively in full. Swept at one corpus pin, the reading goes
-  from 25 documents / 59 escapes to 5 / 12. Corpus 403.
+  PART 11 §2, §4).
 - **An escape escalation reaches the block that failed, not the document**
-  (carve#1507, PART 11 §2b, §4). One needed escape was taken as license to
-  escape every candidate in the document, inventing 72 idle escapes across 28
-  corpus documents (carve#1532, carve#1549). Corpus 396.
+  (carve#1507, PART 11 §2b, §4, carve#1532, carve#1549).
 - **A hard list boundary is written as exactly three blank lines** (carve#1505,
-  PART 11 §10i). All three engines collapse a longer run to three and nothing
-  said so, and the pairs carve#1499 added spell the boundary with a three-blank
-  source. Corpus 395 has six in and three out.
-- **The canonical writer's two disputed spellings were already decided, and now
-  say so** (carve#1472). `{^^}` is written BARE per PART 11 §4/§2, and PART 9
-  §23's comment clause reaches the writer, so an unclosed verbatim run's closer
-  takes the emptied last verse line. Corpus 380 and 388 gain `.fmt` fixtures,
-  and new corpus 394 pins the near miss.
+  PART 11 §10i, carve#1499).
+- **The canonical writer's two disputed spellings are settled** (carve#1472,
+  PART 11 §4/§2, PART 9 §23): `{^^}` is written bare, and an unclosed verbatim
+  run's closer takes the emptied last verse line.
 - **An attributed cell keeps its attributes, and its marker stays literal**
-  (carve#1463, PART 9 §5 T4). `|{.x} < |` is `<td class="x">&lt;</td>`; the
-  executable spec cleared the attributes and re-read the whole segment. Corpus
-  392.
+  (carve#1463, PART 9 §5 T4). `|{.x} < |` is `<td class="x">&lt;</td>`.
 - **An attribute line below a list item interrupts it**
-  (markup-carve/carve-rs#1167). At column 0 below an item a `{...}` line ends
-  the item and floats forward, like a comment or a reference definition. Corpus
-  391.
+  (markup-carve/carve-rs#1167). At column 0 it ends the item and floats forward.
 - **A continuation marker attaches only a flush-left block** (carve#1436,
-  carve#1437, §17 L3). The clause always said flush-left and no reader
-  implemented it. Corpus 384.
-- **The hyphen-run flanking test reads PART 7's spaces, not the host language's**
-  (carve#1448). It was spelled with JavaScript's `\s`, which takes a vertical
-  tab and a form feed that Carve reads as content.
-- **An HTML import of block math writes the core `$$` form** (carve#1514,
-  PART 9 §18). The math fence is an extension, so an importer emitting it
-  produces a document whose meaning depends on the consumer. Converter corpus
-  33.
+  carve#1437, §17 L3).
+- **The hyphen-run flanking test reads PART 7's spaces, not the host
+  language's** (carve#1448). A vertical tab and a form feed are content.
+- **An HTML import of block math writes the core `$$` form, not an extension
+  fence** (carve#1514, PART 9 §18).
 - **The `labels` admission rule stops reading on two strings that have no key**
-  (carve#1510, Extensions §1.5, PART 9 §16a). A string an extension already
-  exposes as an option does not get a key as well.
+  (carve#1510, Extensions §1.5, PART 9 §16a).
 - **An extension writes into the same `labels` map, and every key is checked**
-  (carve#1508, PART 9 §16a, extensions §1.5). All thirteen keys had been
-  verified at their English defaults only; each is now rendered with a sentinel
-  that has to reach the output.
+  (carve#1508, PART 9 §16a, extensions §1.5).
 - **The index back-link says where it goes, and the extension-written strings
-  get one map** (carve#1469, carve#1468). The k-th back-link renders
-  `↩<sup>k</sup>` and is named for it, mirroring PART 9 §16; new Extensions §1.5
-  states where an extension's own strings live.
-- **The footnote backlink says where it goes, and the engine's own words are an
-  option** (carve#1457, PART 9 §16). A lone backlink is named by its label, the
-  k-th is named for its reference ordinal, and the English string is a render
-  option.
-- **Four engine-written shapes now carry an accessible name** (carve#1468). A
-  task checkbox, an admonition, the endnotes section and a math span; the
-  `labels` map grows from one key to ten.
-- **A tab control is `type="button"`, and two marked items select one tab**
-  (markup-carve/carve-php#1537, extensions §13.3, §13.5). A control with no
-  `type` submitted its enclosing form; the first `{selected}` mark now wins.
-  Optional corpus 47, 48, 49.
-- **The position checker's closerless-container set no longer claims to be
-  complete while three types are missing from it** (carve#1574, PART 12 §4).
-  `footnote`, `definition_term` and `heading` are in the set now, declaring 30
-  more documents red: markup-carve/carve-js#1347, markup-carve/carve-js#1348,
-  markup-carve/carve-js#1349.
-- **The sibling non-overlap rule's hoisted-definition exemption is a pair test,
-  and PART 12 §4 states the exception it applies** (carve#1571). Dropping every
-  definition kind out of the comparison hid two definitions claiming the same
-  source. 296 pairs newly reach the rule and none is a finding.
+  get one map** (carve#1469, carve#1468). The k-th renders `↩<sup>k</sup>`.
+- **The footnote backlink says where it goes, and the engine's own words are a
+  render option** (carve#1457, PART 9 §16).
+- **Four engine-written shapes now carry an accessible name** (carve#1468), and
+  the `labels` map grows from one key to ten.
+- **A tab control is `type="button"` so a tab set inside a form no longer
+  submits it, and the first `{selected}` mark wins**
+  (markup-carve/carve-php#1537, extensions §13.3, §13.5).
+- **The position checker's closerless-container set gains `footnote`,
+  `definition_term` and `heading`** (carve#1574, PART 12 §4,
+  markup-carve/carve-js#1347, markup-carve/carve-js#1348,
+  markup-carve/carve-js#1349).
+- **The sibling non-overlap rule's hoisted-definition exemption is a pair test**
+  (carve#1571, PART 12 §4).
 - **A break is exempt from the overlap rule against another break, not against
-  everything** (carve#1566, carve#1576). The same per-node exemption set hid a
-  break overlapping a non-break sibling, and the backslash escape hatch beside
-  it excused a text-span difference larger than the backslash count.
+  everything** (carve#1566, carve#1576).
 
 ## [0.1.3] - 2026-08-18
 
