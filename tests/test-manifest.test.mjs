@@ -71,3 +71,26 @@ test('the expensive differential sweeps run weekly against provisioned engines',
   assert.match(workflow, /github\.event\.schedule == '0 4 \* \* 0'/)
   assert.match(workflow, /if \[ "\$status" -eq 2 \]; then/)
 })
+
+test('the AST verdict cannot close on narrower or disposable evidence', () => {
+  const workflow = readFileSync(resolve(repo, '.github/workflows/ast-conformance.yml'), 'utf8')
+
+  assert.match(workflow, /DEFAULT_BRANCH: \$\{\{ github\.event\.repository\.default_branch \}\}/)
+  assert.match(workflow, /if \[ "\$REF_NAME" != "\$DEFAULT_BRANCH" \]; then/)
+  assert.match(
+    workflow,
+    /\.conclusion == "cancelled" or \.conclusion == "timed_out" or \.conclusion == "skipped"/,
+  )
+  assert.match(workflow, /<!-- ast-conformance-gates/)
+  assert.match(
+    workflow,
+    /sort -u \/tmp\/ast-conformance-current-gates\.txt \\\n+\s+\/tmp\/ast-conformance-previous-gates\.txt/,
+    'red runs retain the union rather than replacing it with narrower evidence',
+  )
+  assert.match(
+    workflow,
+    /comm -23 \/tmp\/ast-conformance-required-gates\.txt \/tmp\/ast-conformance-current-gates\.txt/,
+    'green computes which required gates its run skipped',
+  )
+  assert.match(workflow, /if \[ -n "\$missing" \]; then[\s\S]*?#\$issue remains open/)
+})
