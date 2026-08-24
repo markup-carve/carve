@@ -12,10 +12,18 @@ description: A task-oriented guide for Markdown and GFM authors switching to Car
 This guide is for authors who already know CommonMark or GitHub-Flavored Markdown (GFM) and want to rewrite documents in Carve. It focuses on what to change, not on why Carve differs from Markdown - for the design rationale see [Carve vs Markdown/Djot/MDX](/comparison).
 
 ::: tip Automated conversion
-The Rust CLI converts a file directly with `carve migrate --from markdown
-input.md`. In carve-js call `markdownToCarve` (exported from
-`@markup-carve/carve`); in carve-php use
-`MarkupCarve\Carve\Converter\MarkdownToCarve`:
+The carve-js, carve-rs and carve-php CLIs share the same command. It reads a
+named file (or standard input when the file is omitted) and writes Carve to
+standard output:
+
+```sh
+carve migrate --from markdown input.md > input.crv
+```
+
+For library use, call `markdownToCarve` from `@markup-carve/carve`,
+`carve::markdown_to_carve` in Rust, or
+`(new \MarkupCarve\Carve\Converter\MarkdownToCarve())->convert()` in PHP. For
+example:
 
 ```js
 import { markdownToCarve } from '@markup-carve/carve'
@@ -49,7 +57,7 @@ The table below covers the constructs you use most often. Items marked **same** 
 | Underline | (not standard) | `_underline_` | Carve adds this |
 | Strikethrough | `~~strike~~` (GFM) | `~strike~` | Single tilde in Carve |
 | Tables | GFM pipe tables with a `\|---\|` row | `\|=` header cells | **Changed** - see below (GFM delimiter row also accepted) |
-| Footnotes | `[^label]` + `[^label]: text` (GFM ext.) | same | Plus inline `^[...]` |
+| Footnotes | `[^label]` + `[^label]: text` (GitHub extension) | same | Plus inline `^[...]` |
 | Raw HTML | Inline and block, on by default | Bare tags are literal; explicit `=html` passthrough only | See below |
 | Keys, abbreviations, dates | raw `<kbd>`, `<abbr title="…">`, `<time datetime="…">` | `[Tab]{kbd}`, `[HTML]{abbr="…"}`, `[today]{time="…"}` | Carve adds this - raw HTML is off, so a span attribute is how you reach those elements. Three are core (`abbr`, `time`, `kbd`); `samp`, `var`, `cite` and `dfn` need the SemanticSpan extension |
 
@@ -288,7 +296,11 @@ import { carveToHtml } from '@markup-carve/carve'
 const html = carveToHtml(source, { allowRawHtml: false })
 ```
 
-The equivalent switch exists per engine (carve-rs `Options::with_raw_html(false)`, etc.). See [Security](/security) for the full model.
+The equivalent switch exists in each full implementation: carve-js uses
+`allowRawHtml: false`, carve-rs uses `Options::with_raw_html(false)`, and
+carve-php enables a `SafeMode` (its default safe mode escapes raw HTML). All
+three CLIs accept `--safe`; the JS and Rust CLIs also spell the narrower switch
+`--no-raw-html`. See [Security](/security) for the full model.
 
 ::: warning Trust boundary
 Bare tags are safe (literal) regardless. The setting above only governs the explicit ```` ```=html ```` / `{=html}` passthrough - leave it disabled for user-generated content.
@@ -312,7 +324,15 @@ A Markdown renderer emits headings flat. Carve wraps each heading, and the conte
 </section>
 ```
 
-Fragment links are unaffected: `#Page-Heading` resolves to the `<section>` exactly as it resolved to the `<h2>`. What breaks is CSS and JS that assume rendered blocks are **direct children** of their container. The common casualty is the owl/stack spacing idiom, because the paragraphs are now grandchildren:
+Moving an id from the heading to its `<section>` does not by itself affect a
+fragment link: once the Carve id is `Page-Heading`, `#Page-Heading` resolves to
+the wrapper exactly as it would to the heading. Migration can still change the
+id itself. Many Markdown renderers lowercase this example to `page-heading`,
+while Carve preserves case by default, so audit existing inbound links or give
+the heading an explicit id. What the wrapper additionally breaks is CSS and JS
+that assume rendered blocks are **direct children** of their container. The
+common casualty is the owl/stack spacing idiom, because the paragraphs are now
+grandchildren:
 
 ```css
 /* Stops matching: the section is the only direct child. */
@@ -343,12 +363,12 @@ Two related shapes are worth knowing while you audit selectors. A heading **insi
 
 When moving a document from Markdown to Carve:
 
-- [ ] Run the library converter (`markdownToCarve` in carve-js, `MarkdownToCarve` in carve-php) for a first-pass conversion
+- [ ] Run `carve migrate --from markdown input.md > input.crv` for a first-pass conversion (or use the equivalent JS, Rust or PHP library API)
 - [ ] Review all emphasis: `*italic*` -> `/italic/`, `**bold**` -> `*bold*`
 - [ ] Check `_underline_` occurrences - these render as `<u>` in Carve, not `<em>`
-- [ ] Convert GFM table delimiter rows to `|=` header cells
-- [ ] Replace `~~strike~~` with `~strike~` (single tilde)
+- [ ] Verify GFM table delimiter rows became `|=` header cells
+- [ ] Verify `~~strike~~` became `~strike~` (single tilde)
 - [ ] Move any heading `{#id}` onto the line above the heading - `carve lint` finds them, and left in place the `#id` becomes a tag AND changes the heading's anchor
 - [ ] Check the indentation of top-level block markers: a leading-indented `#`, `>`, `-`, `` ``` ``, or `:::` is literal paragraph text in Carve, not a block. Markdown tolerates 0-3 spaces of indent; Carve requires a block marker at column 0 (or, inside a list, at the item's content column)
-- [ ] Decide on raw HTML: bare `<tags>` become literal text, so replace them with Carve constructs (or use the explicit `{=html}` passthrough for trusted content; disable it with `allowRawHtml: false` for untrusted input)
+- [ ] Decide on raw HTML: bare `<tags>` become literal text, so replace them with Carve constructs (or use an explicit `` `...`{=html} `` / ```` ```=html ```` passthrough for trusted content; use the engine's safe mode for untrusted input)
 - [ ] Audit CSS and JS for direct-child assumptions - headings now nest their content in `<section>` (see [Headings are wrapped in `<section>`](#headings-are-wrapped-in-section))

@@ -26,6 +26,14 @@ const page = readFileSync(resolve(root, 'docs/migrate-from-markdown.md'), 'utf8'
 
 const html = (source) => carveToHtml(source).replace(/\s+/g, ' ').trim()
 
+test('the automated path names the shared CLI before language APIs', () => {
+  assert.match(page, /carve-js, carve-rs and carve-php CLIs share the same command/)
+  assert.match(page, /carve migrate --from markdown input\.md > input\.crv/)
+  assert.match(page, /carve::markdown_to_carve/)
+  assert.match(page, /new \\MarkupCarve\\Carve\\Converter\\MarkdownToCarve/)
+  assert.doesNotMatch(page, /The Rust CLI converts/)
+})
+
 test('a Markdown + bullet is not a Carve bullet', () => {
   assert.equal(html('+ item\n'), '<p>+ item</p>')
   assert.match(html('- item\n'), /<ul>/)
@@ -75,6 +83,12 @@ test('the linter reports the trailing heading attribute', () => {
 
 test('the attribute-on-the-line-above form works', () => {
   assert.match(html('{#intro}\n## Introduction\n'), /<section id="intro">/)
+})
+
+test('the guide warns that the default Carve slug preserves case', () => {
+  assert.match(html('## Page Heading\n'), /<section id="Page-Heading">/)
+  assert.match(page, /Markdown renderers lowercase this example to `page-heading`/)
+  assert.match(page, /Carve preserves case by default/)
 })
 
 test('each pinned claim still appears on the page', () => {
