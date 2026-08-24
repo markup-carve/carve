@@ -60,6 +60,20 @@ test('HTML import and render/import round trips cannot drift silently', async ()
       htmlImportPopulation: baseline.htmlImportPopulation,
       renderImportRoundTrips: baseline.renderImportRoundTrips,
     },
-    'the import population changed; inspect every changed count and update the pinned baseline only with the engine pin',
+    // TWO CAUSES MOVE THESE NUMBERS, and only one of them is drift.
+    //
+    //  - THE ENGINE changed what it imports or writes. Then the counts moved for
+    //    a document set that did not, and the baseline is bumped WITH the engine
+    //    pin, after inspecting every changed count.
+    //  - THE CORPUS GREW. Then every count moves by construction and the pin has
+    //    not moved at all. Bump the baseline in the same commit that adds the
+    //    documents, and say in it which of them did NOT contribute to each
+    //    round-trip count and why - an insertion that lands on `completed` but
+    //    not on `renderImportRoundTrips.html` is telling you something about the
+    //    new document.
+    //
+    // The message named only the first, so the first corpus insertion after this
+    // ratchet landed (carve#1662) was told to do nothing (carve#1660).
+    'the import population changed; if the engine pin moved, inspect every changed count and bump this with the pin - if the CORPUS grew instead, bump it in the commit that adds the documents and account for each count that did not move with it',
   )
 })
