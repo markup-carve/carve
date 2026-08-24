@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The AST schema names which image spellings reach block position**
+  (carve#1663). At column 0 the direct spelling and both reference spellings
+  promote to a block image once resolved; an unresolved reference stays in its
+  paragraph. Read the published tree, not the parse tree.
 - **PART 11 §1c: a wrapper its own content spells away is a declared
   ceiling** (carve#1658). A paragraph holding only an image or only a comment
   writes the child's spelling, and the producer declares the loss.
