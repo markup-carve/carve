@@ -22,7 +22,7 @@
  * HTML fixtures compare the FIRST render and nothing re-renders the formatter's
  * output. The documents were there; the property was not checked.
  *
- * Two properties, both from PART 11 §1:
+ * Three properties, all from PART 11 §1:
  *
  *   toHtml(fmt(x)) == toHtml(x)   formatting does not change what the document
  *                                 says. This is the one that catches content
@@ -32,6 +32,16 @@
  *   fmt(fmt(x)) == fmt(x)         formatting settles. A writer that does not
  *                                 is worse than one that loses a field: every
  *                                 run produces a diff.
+ *
+ *   parse(fmt(x)) == parse(x)     the one §1 states FIRST, and the one the two
+ *                                 above are consequences of. §1a says so in as
+ *                                 many words: the HTML form is "strictly
+ *                                 weaker", so a writer satisfying only it still
+ *                                 fails §1. It is asserted here since carve#1679
+ *                                 - until then each engine decided on its own
+ *                                 both whether to assert it AND how to state
+ *                                 PART 11 §1c's carve-out, which is how one rule
+ *                                 acquired two spellings.
  *
  * This checks the REFERENCE engine only, because that is what this repo pins.
  * The same properties across the other engines are `compare:impls --roundtrip`,
@@ -54,7 +64,7 @@ import assert from 'node:assert/strict'
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { carveToCarve, carveToHtml } from '@markup-carve/carve'
+import { carveToAstJson, carveToCarve, carveToHtml } from '@markup-carve/carve'
 import { parse as parseSpec } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 import { loadDeclaredFmtDrift, loadWriterOnlyDrift } from './fmt-drift.mjs'
@@ -134,6 +144,346 @@ test('formatting a corpus document settles on the first pass', () => {
   )
 })
 
+/*
+ * parse(fmt(x)) == parse(x) - PART 11 §1's FIRST invariant, bounded by §1c.
+ *
+ * The two sweeps above are its CONSEQUENCES and §1a says so in as many words:
+ * `to_html(fmt(x)) == to_html(x)` is "strictly weaker", so a writer satisfying
+ * only it still fails §1. Until carve#1679 this file asserted only the two
+ * weaker forms, and the strong one lived inside each engine - which meant every
+ * engine decided on its own both WHETHER to assert it and HOW to state the one
+ * carve-out §1c makes. Two engines got there first and wrote two different
+ * mechanisms. Stating the bound HERE is what stops a third.
+ *
+ * THE COMPARISON IS THE PUBLISHED AST, not the oracle's block layout, and the
+ * difference is not a preference. `scripts/spec/layout.mjs` keeps a paragraph's
+ * inline content as its RAW SOURCE LINES and a table's cells as their raw
+ * spans, so comparing its trees compares the bytes for everything inline - and
+ * §1 explicitly licenses the writer to normalize exactly those bytes
+ * ("indentation, marker alignment, escape form"). Measured on this corpus: the
+ * layout oracle reports 231 of 1404 documents changed, almost all of them a
+ * quote form, a cell's padding or a brace the writer legitimately respelled. §1
+ * is stated over the AST - "The first is about the AST, not the bytes" - and
+ * `carveToAstJson` is the pinned engine's published AST exit, which PART 12 and
+ * resources/ast-schema.json pin the shape of.
+ *
+ * EQUALITY IS MODULO ESCAPING, which is §1's own clause and not a loosening
+ * invented here: §5 requires the writer to escape `"` and `'` unconditionally,
+ * so a text node holding a quote MUST come back as `escaped_text` and a literal
+ * comparison would call every such document changed. `canonicalAst` below
+ * implements that clause, and it is load-bearing rather than decorative -
+ * without the coalescing half, 71 of 1404 documents differ; with it, 4 do.
+ *
+ * KEY ORDER IS IGNORED for the same reason §4's own procedure ignores it (W3:
+ * "compare the resulting documents, ignoring source positions and key order").
+ * A JSON object is unordered, `attrs.order` is where an authored sequence is
+ * recorded, and five of the 1404 documents differ by nothing but the order the
+ * two parses happened to insert `attrs`' own keys in.
+ */
+
+// The two node kinds PART 11 §1c is stated over. STATED OVER WHAT THE SHAPE
+// SPELLS, never over a vocabulary: an `image` is INLINE and a `comment` is
+// BLOCK (docs/profiles.md), so the clause names them one at a time precisely
+// because no type test reaches both.
+const SPELLS_ITS_OWN_WRAPPER_AWAY = new Set(['image', 'comment'])
+
+/**
+ * A document's published tree, canonical enough for §1's equality to be asked.
+ *
+ * Source positions go, because §1 is about the AST and not the bytes. Escaping
+ * goes, because §1 says it must: `escaped_text` becomes `text` and adjacent
+ * text runs coalesce, so `a\-b` and `a-b` are the same document. Object keys
+ * are sorted, because §4 W3 compares "ignoring source positions and key order".
+ *
+ * `attrs` IS DESCENDED INTO here, unlike in the engines' own versions, and the
+ * reason the two differ is the reason it is safe: those versions skip `attrs`
+ * to avoid RENAMING an author-controlled key that happens to be spelled `type`
+ * or `pos`, and this one deletes nothing and renames nothing outside a node
+ * whose own `type` says `escaped_text`. Sorting a map's keys cannot change the
+ * map, and an attribute's authored ORDER is carried by `attrs.order`, which is
+ * an array and stays put.
+ */
+const canonicalAst = (value) => {
+  if (Array.isArray(value)) {
+    const out = []
+    for (const item of value) {
+      const child = canonicalAst(item)
+      const isPlainText = (node) =>
+        node !== null &&
+        typeof node === 'object' &&
+        !Array.isArray(node) &&
+        node.type === 'text' &&
+        typeof node.value === 'string' &&
+        Object.keys(node).length === 2
+      const last = out.length > 0 ? out[out.length - 1] : null
+      if (last !== null && isPlainText(last) && isPlainText(child)) {
+        last.value += child.value
+        continue
+      }
+      out.push(child)
+    }
+    return out
+  }
+  if (value !== null && typeof value === 'object') {
+    const out = {}
+    for (const key of Object.keys(value).sort()) {
+      if (key === 'pos' || key === 'srcByteLength') continue
+      out[key] = canonicalAst(value[key])
+    }
+    if (out.type === 'escaped_text') out.type = 'text'
+    return out
+  }
+  return value
+}
+
+/**
+ * True where a node is the wrapper PART 11 §1c permits losing, and nothing else.
+ *
+ * THE BOUND, and it is the whole of what carve#1679 made canonical: only the
+ * dissolution of a BARE single-child wrapper is forgiven. Bare means `type` and
+ * `children` and no third key - the node carries no attributes, no label and no
+ * value that dissolving it would take with it, which is exactly what §1c
+ * promises survives ("the content, its attributes and its neighbours all
+ * survive as themselves"). A paragraph carrying an attribute block is not bare,
+ * and a writer that dropped it still fails.
+ *
+ * The wrapper is a `paragraph` and its single child is a node whose own
+ * spelling at the block's column reads back as a block opener of that node's
+ * kind. Both halves are load-bearing, and each is pinned below by the assertion
+ * that goes red when it is dropped. Drop the first and a quote holding one
+ * image dissolves exactly as the paragraph does, so `> ![a](u)` and ` ![a](u)`
+ * compare equal and a CHANGED NODE TYPE stops failing. Drop the second and
+ * EVERY single-child paragraph dissolves, so a writer that lost the paragraph
+ * around a text run or a link is forgiven a loss §1c never licensed.
+ */
+const isBareWrapper = (node) => {
+  if (node === null || typeof node !== 'object' || Array.isArray(node)) return false
+  const keys = Object.keys(node)
+  if (keys.length !== 2 || !keys.includes('type') || !keys.includes('children')) return false
+  if (node.type !== 'paragraph') return false
+  if (!Array.isArray(node.children) || node.children.length !== 1) return false
+  const only = node.children[0]
+  return (
+    only !== null &&
+    typeof only === 'object' &&
+    !Array.isArray(only) &&
+    SPELLS_ITS_OWN_WRAPPER_AWAY.has(only.type)
+  )
+}
+
+/**
+ * The tree with every wrapper §1c may dissolve dissolved into its child.
+ *
+ * EVERY LIST-VALUED SLOT is walked, not just `children`: a list reaches its
+ * entries through `items`, a table through `rows` and `cells`, and a ceiling
+ * reached inside a list item is still a ceiling (corpus 411-5 is exactly that
+ * shape). Keyed on the SHAPE of the value rather than on a list of key names,
+ * so a new child-bearing slot is covered the day it appears. `attrs` is an
+ * object rather than a list and is therefore never walked, which is also what
+ * keeps this out of author-controlled data.
+ *
+ * Never applied to the node it is handed, which has no parent to dissolve into.
+ */
+const withoutBareWrappers = (node) => {
+  if (node === null || typeof node !== 'object' || Array.isArray(node)) return node
+  const out = {}
+  for (const [key, value] of Object.entries(node)) {
+    if (!Array.isArray(value)) {
+      out[key] = value
+      continue
+    }
+    out[key] = value.map((child) => {
+      if (child === null || typeof child !== 'object' || Array.isArray(child)) return child
+      const walked = withoutBareWrappers(child)
+      return isBareWrapper(walked) ? walked.children[0] : walked
+    })
+  }
+  return out
+}
+
+// MEMOIZED because four sweeps in this file ask for the same three answers over
+// the same 1404 documents, and a parse is the expensive part of every one of
+// them. Keyed on the source text, so a memo can only ever return what a fresh
+// call would have.
+const memo = (compute) => {
+  const seen = new Map()
+  return (source) => {
+    if (!seen.has(source)) seen.set(source, compute(source))
+    return seen.get(source)
+  }
+}
+
+/** fmt(x), computed once per distinct source. */
+const written = memo(carveToCarve)
+
+/** The canonical published tree of a document, as one comparable string. */
+const astTree = memo((source) => JSON.stringify(canonicalAst(carveToAstJson(source))))
+
+/** The same tree with the wrappers §1c may dissolve taken out of both sides. */
+const astShape = memo((source) => JSON.stringify(withoutBareWrappers(canonicalAst(carveToAstJson(source)))))
+
+test('formatting a corpus document re-parses to the same tree (PART 11 §1, bounded by §1c)', () => {
+  const beyond = []
+  for (const { slug, source } of documents) {
+    if (declaredDrift.has(slug)) continue
+    const formatted = written(source)
+    if (astTree(formatted) === astTree(source)) continue
+    // THE DIFFERENCE MUST BE A §1c WRAPPER LOSS AND NOTHING ELSE. Without this
+    // bound the carve-out would key on "the tree came back different", which
+    // forgives a dropped node as readily as a lost wrapper. There is no
+    // allowlist here and there is not to be one: a slug would silence a whole
+    // document, where this states the one difference §1c licenses and leaves
+    // every other difference failing.
+    if (astShape(formatted) !== astShape(source)) beyond.push(slug)
+  }
+  assert.deepEqual(
+    beyond,
+    [],
+    `fmt(x) does not re-parse to parse(x) for these documents, and the difference is more than the ` +
+      `PART 11 §1c wrapper loss that clause forgives:\n  ${beyond.join('\n  ')}`,
+  )
+})
+
+// THE CARVE-OUT IS REACHED, so it cannot rot unnoticed. The sweep above takes
+// the §1c branch silently: if the corpus or the pin changed so that no document
+// re-parsed differently at all, the branch would stop executing, the bound
+// would stop being exercised and nothing would say so. Asked once, over the
+// corpus, because it is a question about the corpus - and it fails in the
+// direction a per-document assertion cannot: the day a lone indented image
+// round-trips cleanly, this goes red and the branch and this test are deleted
+// together. The message names the documents, so a renumbering reads as the
+// rename it is.
+test('a corpus document still reaches the PART 11 §1c ceiling', () => {
+  const reached = documents
+    .filter(({ slug }) => !declaredDrift.has(slug))
+    .filter(({ source }) => astTree(written(source)) !== astTree(source))
+    .map(({ slug }) => slug)
+  assert.notDeepEqual(
+    reached,
+    [],
+    'no corpus document re-parses differently after formatting: the PART 11 §1c bound in the sweep ' +
+      'above is dead and should be deleted along with this test',
+  )
+})
+
+// THE BOUND'S WIDTH IS PINNED HERE OR NOWHERE, and that is not a stylistic
+// choice. `withoutBareWrappers` is applied to BOTH trees, so WIDENING it can
+// only ever hide a difference and never create one: whatever extra shape it
+// swallows, it swallows identically on each side and the two still agree. The
+// sweep above therefore stays green under any widening whatsoever.
+//
+// MEASURED, not assumed (carve#1679), on the pinned build over all 1404 corpus
+// documents and their 10986 canonical nodes. Each row widens `isBareWrapper`
+// one way; every row leaves the sweep above passing, and the second column is
+// what separates a real loosening from a no-op:
+//
+//   widened to dissolve                   nodes decided differently   documents failing
+//   any single-child paragraph                                 1166                   0
+//   any bare single-child node                                   25                   0
+//   a paragraph carrying attributes                               0                   0
+//
+// The third row is why the second column is reported. It is a genuine
+// loosening, it is the one carve-php's own bound test was written against, and
+// against THIS predicate on THIS corpus it decides nothing - so a green sweep
+// under it would have been evidence in neither direction. The near misses have
+// to be asserted directly, which is what this test does. Each `false` below is
+// a shape §1c does not reach: "a block whose content spells anything ELSE -- a
+// second node beside it, a text run, a NO-BREAK SPACE (§7) -- keeps its wrapper
+// and no ceiling is reached."
+test('the PART 11 §1c bound reaches a bare single-child wrapper and no other shape', () => {
+  const image = { type: 'image', src: 'a.jpg', alt: 'Apollo' }
+  // ASKED AS "DID THE WRAPPER SURVIVE", not as "did the IMAGE come out", and
+  // the difference is a check that can fail versus one that cannot. Comparing
+  // the result against the image makes every negative assertion below pass by
+  // construction for a candidate whose child is NOT the image - so a predicate
+  // widened to dissolve any single-child paragraph would leave this whole test
+  // green. Compared by VALUE, because `withoutBareWrappers` rebuilds every node
+  // it walks and never returns the same object it was given.
+  const dissolves = (candidate) => {
+    const kept = withoutBareWrappers(candidate)
+    const only = withoutBareWrappers({ type: 'document', children: [candidate] }).children[0]
+    return JSON.stringify(only) !== JSON.stringify(kept)
+  }
+
+  assert.ok(
+    dissolves({ type: 'paragraph', children: [image] }),
+    'a bare single-child wrapper is the one loss PART 11 §1c permits',
+  )
+  assert.ok(
+    withoutBareWrappers({
+      type: 'document',
+      children: [{ type: 'paragraph', children: [{ type: 'comment', value: 'c' }] }],
+    }).children[0].type === 'comment',
+    'the second shape §1c names is a paragraph holding one comment',
+  )
+
+  // ATTRIBUTES ARE CONTENT. Dissolving this wrapper would take them with it,
+  // which is the opposite of "its attributes survive as themselves".
+  assert.ok(
+    !dissolves({ type: 'paragraph', attrs: { classes: ['k'] }, children: [image] }),
+    'a wrapper carrying attributes is not bare: dissolving it would drop them',
+  )
+  // A KEY OF ITS OWN, of any kind. carve-php measured its own widened predicate
+  // swallowing exactly these - a heading with `attrs`, a link with an `href`, a
+  // footnote with a `label` - on 1107 nodes across the same 1404 documents. The
+  // predicate here is narrower, so the same widening decides nothing on this
+  // corpus, which is precisely why each shape is asserted rather than swept.
+  for (const [kind, node] of Object.entries({
+    footnote: { type: 'footnote', label: '1', children: [image] },
+    link: { type: 'link', href: 'u', children: [image] },
+    heading: { type: 'heading', level: 1, children: [image] },
+    admonition: { type: 'admonition', kind: 'note', children: [image] },
+    table_cell: { type: 'table_cell', header: true, children: [image] },
+  })) {
+    assert.ok(!dissolves(node), `a ${kind} owns a key beyond its child, so it is not a wrapper §1c may dissolve`)
+  }
+  // NOT A PARAGRAPH. `> ![a](u)` reads back as the quote, so the quote keeps its
+  // wrapper - and this is the half that keeps a CHANGED NODE TYPE failing.
+  assert.ok(!dissolves({ type: 'block_quote', children: [image] }), 'a quote holding one image keeps its wrapper')
+  // A CONTENT NODE THAT SPELLS NOTHING. §1c reaches a block whose content, at
+  // that block's own column, reads back as a block opener of its own kind; a
+  // text run reads back as the paragraph. Without this half EVERY single-child
+  // paragraph dissolves, and a writer that lost the paragraph around a text run
+  // or a link would be forgiven a loss the clause never licensed.
+  assert.ok(
+    !dissolves({ type: 'paragraph', children: [{ type: 'text', value: 'x' }] }),
+    'a paragraph holding a text run keeps its wrapper',
+  )
+  // A SECOND NODE BESIDE IT, which is not a block whose WHOLE content is one node.
+  assert.ok(
+    !dissolves({ type: 'paragraph', children: [image, { type: 'text', value: 'x' }] }),
+    'a wrapper holding a neighbour beside its child is not a lone-content block',
+  )
+  // NO CHILDREN AT ALL, which has nothing to dissolve into.
+  assert.ok(!dissolves({ type: 'paragraph', children: [] }), 'an empty block dissolves into nothing')
+
+  // THE ROOT IS NEVER DISSOLVED - it has no parent to dissolve into.
+  const root = { type: 'document', children: [image] }
+  assert.deepEqual(withoutBareWrappers(root), root, 'the root keeps its wrapper')
+})
+
+// THE PROPERTY IS LIVE, proven on the four differences carve#1679 names as the
+// ones the bound must NOT forgive. Each arm is a writer output that differs from
+// its input by exactly one of them, and each must survive the dissolution and
+// still compare unequal - otherwise the sweep above would be a check that
+// cannot fail, which carve#755 catalogs eleven of.
+test('the strong property still fails on every difference PART 11 §1c does not forgive', () => {
+  const arms = [
+    ['a dropped node', 'a\n\n![x](u)\n', 'a\n'],
+    ['a reordering', 'a\n\nb\n', 'b\n\na\n'],
+    ['a changed attribute', '{.c}\n# H\n', '{.d}\n# H\n'],
+    ['a changed node type', 'x\n', '> x\n'],
+  ]
+  for (const [what, source, output] of arms) {
+    assert.notEqual(astShape(source), astShape(output), `${what} survived the PART 11 §1c bound`)
+  }
+  // THE CONTROL, without which every arm above would pass a comparison that
+  // simply never forgives anything. The ceiling itself IS forgiven: the two
+  // spellings of a lone image differ as trees and agree as shapes.
+  assert.notEqual(astTree(' ![Apollo](a.jpg)\n'), astTree('![Apollo](a.jpg)\n'))
+  assert.equal(astShape(' ![Apollo](a.jpg)\n'), astShape('![Apollo](a.jpg)\n'))
+})
+
 // THE RATCHET ON THE EXCUSE ITSELF. Every other declared-drift file in this
 // repo is checked in both directions; this one was checked in neither, because
 // a slug in it can only ever turn a failure into a pass. So a line that the
@@ -175,7 +525,16 @@ test('every writer-drift line still names a document the pin writes wrongly', ()
     // describes could not actually be used (carve#1507).
     const fixture = resolve(corpusDir, `${slug}.fmt`)
     const fmtBytesDiffer = existsSync(fixture) && once !== readFileSync(fixture, 'utf8')
-    if (!changesMeaning && !unsettled && !oracleChanges && !fmtBytesDiffer) stale.push(`${slug} (round-trips clean)`)
+    // A FOURTH WAY, for the same reason as the third: the sweep for
+    // `parse(fmt(x)) == parse(x)` consults this file too since carve#1679, so a
+    // line declared for a document the pin re-parses wrongly - and only for
+    // that - would be called stale here while it was the only thing keeping
+    // that sweep green. A PART 11 §1c wrapper loss is NOT drift, it is what the
+    // clause forgives, so the SHAPE and not the tree is what is asked.
+    const reparseDiffers = astShape(once) !== astShape(source)
+    if (!changesMeaning && !unsettled && !oracleChanges && !fmtBytesDiffer && !reparseDiffers) {
+      stale.push(`${slug} (round-trips clean)`)
+    }
   }
   assert.deepEqual(
     stale,
