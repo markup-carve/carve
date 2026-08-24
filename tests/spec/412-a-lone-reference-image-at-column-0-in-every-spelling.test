@@ -1,0 +1,29 @@
+A lone reference image at column 0, in every spelling
+
+```
+![Apollo][moon]
+
+[moon]: a.jpg
+.
+<img src="a.jpg" alt="Apollo">
+```
+
+```
+![Apollo][]
+
+[Apollo]: a.jpg
+.
+<img src="a.jpg" alt="Apollo">
+```
+
+```
+![Apollo](a.jpg)
+.
+<img src="a.jpg" alt="Apollo">
+```
+
+```
+![Apollo][nope]
+.
+<p>![Apollo][nope]</p>
+```
