@@ -38,11 +38,11 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const grammar = readFileSync(resolve(root, 'resources/grammar.ebnf'), 'utf8')
 
 // Declared lag against the `@markup-carve/carve` build package.json pins.
-// Delete this in the commit that moves the pin past markup-carve/carve-js#1422.
-const PIN_LAG =
-  'the importer writes a paragraph holding one image as a block image and ' +
-  'reports nothing, so the declared loss §1c requires is not on the record ' +
-  '(markup-carve/carve-js#1422)'
+// EMPTY IS THE GOAL. The pin moved past markup-carve/carve-js#1422, the engine
+// now reports the row, and the declaration came out with the bump. A new lag is
+// declared here as a one-sentence reason; the assertion below fails in both
+// directions, so it cannot age into folklore.
+const PIN_LAG = ''
 
 const types = (source) => parse(source).children.map((block) => block.type)
 

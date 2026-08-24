@@ -677,11 +677,35 @@ test('a footnote hosts the definition hoisted out of its body', () => {
   // a type that is not a definition kind: both nodes here are hoisted
   // definition kinds, and the footnote is still the container the reference
   // definition was written inside.
+  //
+  // HAND-BUILT SINCE THE PIN CARRIES THE FIX. The footnote used to end at the
+  // hoisted line and the pair overlapped for real; the pinned build now ends it
+  // at its last child, so reading the pair off `parse` would hand the exemption
+  // a pair that does not overlap and the rule would be exercised against
+  // nothing. The engine's answer to the same document is asserted below, so
+  // this still fails if either half moves.
   const source = '[^a]: note\n  [r]: /u\n\nsee[^a] [t][r]\n'
-  const wire = toAstJson(parse(source))
-  const footnote = wire.children.find((c) => c.type === 'footnote')
-  const definition = wire.children.find((c) => c.type === 'link_reference_definition')
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'footnote',
+        pos: span(0, 20),
+        children: [{ type: 'paragraph', pos: span(6, 10), children: [] }],
+      },
+      { type: 'link_reference_definition', label: 'r', href: '/u', pos: span(11, 20) },
+    ],
+  }
+  const footnote = doc.children[0]
+  const definition = doc.children[1]
   assert.ok(footnote.pos.endOffset > definition.pos.startOffset, 'the pair must actually overlap')
+  assert.deepEqual(overlaps(doc, source), [])
+
+  // The engine no longer publishes the overlap: the footnote ends at its last
+  // child, which is what retired the `202-...` row from DECLARED_OVER_REACH.
+  const wire = toAstJson(parse(source))
+  const parsed = wire.children.find((c) => c.type === 'footnote')
+  assert.equal(parsed.pos.endOffset, parsed.children.at(-1).pos.endOffset)
   assert.deepEqual(overlaps(wire, source), [])
 })
 
@@ -1330,19 +1354,32 @@ test('a footnote definition ending past the newline that ends it is reported', (
 })
 
 test('a footnote definition ending past the definition hoisted out of it is reported', () => {
-  // The one row that survives the bump (`202-...`), and carve#1522's
-  // arrangement one container down: §7 hoists the reference definition to the
-  // document, §4 says a hoisted sibling is not a child, so the source it covers
-  // is not the footnote's.
+  // carve#1522's arrangement one container down: §7 hoists the reference
+  // definition to the document, §4 says a hoisted sibling is not a child, so
+  // the source it covers is not the footnote's.
   //
-  // markup-carve/carve-js#1354 shortened the span - the footnote no longer
-  // reaches over the newline that ends it - and it goes on reaching over the
-  // hoisted line, which is a different defect with no carve-js ticket yet.
+  // HAND-BUILT SINCE THE PIN CARRIES THE FIX, the same shape as the newline
+  // pass above. This was the last row in DECLARED_OVER_REACH (`202-...`); the
+  // pinned build now ends the footnote at its last child, so the rule has to
+  // stay able to report the span when it is handed one, and the engine's answer
+  // to the same document is asserted below.
   const source = '[^a]: note\n  [r]: /u\n\nsee[^a] [t][r]\n'
-  const findings = stopFindings(toAstJson(parse(source)), source)
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'footnote',
+        pos: pos(0, 20),
+        children: [{ type: 'paragraph', pos: pos(6, 10), children: [] }],
+      },
+    ],
+  }
+  const findings = stopFindings(doc, source)
   assert.equal(findings.length, 1, findings.join('\n'))
   assert.match(findings[0], /"footnote"/)
   assert.match(findings[0], /"\\n {2}\[r\]: \/u" belongs to no child of it/)
+  assert.ok(ENDS_AT_LAST_CHILD.has('footnote'))
+  assert.deepEqual(stopFindings(toAstJson(parse(source)), source), [])
 })
 
 test('a heading ending past the trailing whitespace its line drops is reported', () => {
@@ -1445,9 +1482,8 @@ test('a definition description has nothing after its last child, which is why it
 /*
  * THE CORPUS, DECLARED RED.
  *
- * Measured 2026-08-23 against the carve-js this repository pins
- * (71add23f80f1884684cea2c8bf46de08d0b64e5c), over every corpus document: 1
- * finding across 1 document, out of 3225 containers examined. That is the state
+ * Measured against the carve-js this repository pins, over every corpus
+ * document: NO findings, out of 3225 containers examined. That is the state
  * this file RECORDS rather than hides - the same discipline
  * resources/ast-span-divergence.txt applies one layer up.
  *
@@ -1458,10 +1494,11 @@ test('a definition description has nothing after its last child, which is why it
  * When the list empties, the assertion becomes a plain "no findings" and both
  * issues are done.
  *
- * WHAT THE ONE IS: a `footnote` reaching over a reference definition hoisted
- * out of its own body - carve#1522's arrangement, the same defect the emptied
- * containers were - on `202-...`. There is no carve-js ticket for that half
- * yet.
+ * WHAT THE LAST ONE WAS: a `footnote` reaching over a reference definition
+ * hoisted out of its own body - carve#1522's arrangement, the same defect the
+ * emptied containers were - on `202-...`. The pin bump past 71add23 clears it,
+ * and the two passes above that used to read the over-reach off `parse` are
+ * hand-built for that reason: the rule still has to be able to report the span.
  *
  * WHAT THE OTHER 134 WERE, and why they are gone. The list carried 135 findings
  * across 125 documents while the pin sat at carve-js d9cb2c71: 75 a `list`
@@ -1474,9 +1511,7 @@ test('a definition description has nothing after its last child, which is why it
  * carve-js main before the last three merged, which is why the list was
  * re-measured wholesale rather than struck row by row (carve#1589).
  */
-const DECLARED_OVER_REACH = [
-  '202-a-definition-on-a-footnote-body-s-continuation-line-is-collected.crv 1',
-]
+const DECLARED_OVER_REACH = []
 
 test('STOPS AT ITS CHILDREN, over every corpus document', () => {
   // Declared as `<document> <count>`, so a document growing a second

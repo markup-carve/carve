@@ -71,7 +71,7 @@ import { marked } from 'marked'
 import { parse as djotParse, renderHTML as djotRenderHTML } from '@djot/djot'
 import { FORMAT_EXTENSIONS } from '../scripts/lib/converter-formats.mjs'
 
-const { bbcodeToCarve, carveToHtml, htmlToCarve, markdownToCarve } = pinned
+const { bbcodeToCarve, carveToHtml, djotToCarve, htmlToCarve, markdownToCarve } = pinned
 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, 'corpus-convert')
@@ -107,18 +107,17 @@ const FORMATS = {
   },
   djot: {
     /*
-     * The pinned build has NO Djot importer - carve#1130's coverage table, and
-     * the declared gap in scripts/lib/converter-formats.mjs. The BYTES
-     * assertion therefore skips these cases here (visibly - see the skip test
-     * below); the cross-engine runner (`compare:impls -- --corpus=convert`)
-     * drives them through carve-php and carve-rs, which both import Djot.
+     * The pinned build gained `djotToCarve`, so the BYTES assertion runs here
+     * now - it used to be the one declared gap in PINNED_UNIMPLEMENTED, and it
+     * came out with the pin bump. The cross-engine runner
+     * (`compare:impls -- --corpus=convert`) still drives the same cases through
+     * carve-php and carve-rs.
      *
-     * The MEANING assertion still runs: it reads expected.html against the
-     * SOURCE language's own reader, and needs no Carve importer at all. That
-     * keeps a Djot expectation answerable on every PR even though nothing here
-     * can regenerate it.
+     * The MEANING assertion reads expected.html against the SOURCE language's
+     * own reader and needs no Carve importer at all, which is what kept a Djot
+     * expectation answerable while nothing here could regenerate it.
      */
-    convert: null,
+    convert: (source) => djotToCarve(source),
     oracle: (source) => djotRenderHTML(djotParse(source)),
   },
 }
@@ -129,9 +128,7 @@ const FORMATS = {
  * so the skip is a DECLARED state with prose attached - and asserted in both
  * directions below, so the entry cannot outlive the gap.
  */
-const PINNED_UNIMPLEMENTED = {
-  djot: 'the pinned @markup-carve/carve exports no djotToCarve; the cross-engine gate covers this format',
-}
+const PINNED_UNIMPLEMENTED = {}
 
 /*
  * Cases whose expectation encodes a ruling the PINNED build has not shipped -
