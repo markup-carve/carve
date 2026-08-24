@@ -31,6 +31,7 @@ The corner cases: precise boundary rules, table alignment variants, lazy continu
 
 :::
 
+
 ## Table per-cell alignment override
 
 ::: compare
@@ -27413,63 +27414,45 @@ two halves of `-{#k} [x] ` were each pinned alone and the combination was pinned
 nowhere - which is how three engines came to read it three ways with every gate
 green (carve#1692).
 
-The rule is stated, not inferred. PART 9 §15 A8 says what the block binds to -
-"a `-{…} text` with no space after the marker attributes the LIST ITEM" - and
-`docs/divergence-from-djot.md` §17 puts it in as many words: "the attribute
-block binds to the MARKER". Part of the marker counts toward the marker's width,
-so `-{#k} [x] a` is the marker `-{#k} ` and then the checkbox, and the item's
-content column is 6. A line written there is inside the item.
-
-DJOT SETTLES NOTHING HERE, which is the first thing a reader asks of a rule
-about attributed markers. Djot has no such construct: `-{#k} [x] item` is a
-PARAGRAPH there, the `{#k}` an inline attribute on a literal `-`, because a
-bullet needs its separator before anything else. A djot list is attributed
-through a preceding attribute line, and that line attaches to the LIST rather
-than to an item. §17 records Carve's marker-glued form as a deliberate extension
-and a source break, so the question can only be answered from Carve's own
-grammar.
-
-The other half is carve#1690: a checkbox is CONTENT, so it does not move the
-column. The two together are why the column is the bullet plus the block and
-nothing else - not the bullet alone, and not the full width of what the marker
-line carries.
+The normative rule is the bare marker width plus its separator. A checkbox is
+CONTENT (carve#1690), so it does not move the column; the attribute block is
+item metadata, so it does not move the column either. `-{#k} [x] a` therefore
+has the same content column as `- a`: column 2. A line written there is inside
+the item.
 
 ::: compare
 
 ```carve
--{#k} [x] a
-      # h
+-{#k} [x] bare
+  # inside
 ```
 
 ```html
 <ul>
-  <li id="k"><input type="checkbox" checked disabled aria-label="a"> a
-    <h1 id="h">h</h1>
+  <li id="k"><input type="checkbox" checked disabled aria-label="bare"> bare
+    <h1 id="inside">inside</h1>
   </li>
 </ul>
 ```
 
 :::
 
-Column 2 is the other spelling, and it has to be pinned beside the first rather
-than instead of it: reading the column as the bare bullet width treats the block
-as though it were not there and puts the column INSIDE it - which A8 also rules
-out from the other side, since the marker still needs content of its own. Each
-engine used to read exactly one of the two as a continuation. A document holding only one of them passes on the
-engine that reads the other. Below the content column the line is lazy paragraph
-text, so the `#` survives literally.
+The old full-prefix column is pinned beside it as a migration case. It is now
+past the content column, so the line is lazy paragraph text and the `#` survives
+literally. The metadata spelling can no longer silently select between these
+two structures.
 
 ::: compare
 
 ```carve
--{#k} [x] a
-  # h
+-{#k} [x] old
+      # outside
 ```
 
 ```html
 <ul>
-  <li id="k"><input type="checkbox" checked disabled aria-label="a # h"> a
-# h</li>
+  <li id="k"><input type="checkbox" checked disabled aria-label="old # outside"> old
+# outside</li>
 </ul>
 ```
 
@@ -27496,15 +27479,14 @@ inside the item - the checkbox still moves nothing.
 
 :::
 
-And without the checkbox the block still moves the column, exactly as it always
-has for an ordinary item: the column is the marker's measured width, so 6 is
-where the content is.
+Without the checkbox the answer is unchanged: marker-attached attributes are
+metadata, so the bare bullet still puts the content at column 2.
 
 ::: compare
 
 ```carve
 -{#k} a
-      # h
+  # h
 ```
 
 ```html
@@ -27517,16 +27499,15 @@ where the content is.
 
 :::
 
-The ordered spelling is the same rule again, and it is here because the
-executable spec got it wrong in both places at once: `1.{#k} ` is seven wide, so
-that is where an ordered item's content begins. No document pinned it, which is
-how a reader could skip the block for every marker shape and still pass.
+The ordered spelling is the same rule again. The attributes contribute zero,
+but the ordered marker itself remains variable: `1.` puts content at column 3,
+while `10.` puts it at column 4.
 
 ::: compare
 
 ```carve
 1.{#k} a
-       # h
+   # h
 ```
 
 ```html
@@ -27540,13 +27521,9 @@ how a reader could skip the block for every marker shape and still pass.
 :::
 
 A SUB-LIST READS THE COLUMN THROUGH ANOTHER DOOR, and this pair is here because
-the four above cannot open it. A blank line followed by a paragraph BELOW a
-sub-list's content column is internal to the outer item and loosens it, so where
-the inner column sits decides whether the OUTER item's blocks are wrapped. `after`
-is written two columns into the sub-list; the inner item's column is 6, so it
-falls below and the outer item is loose. Read as 2, the paragraph would not fall
-below it and the outer item would come back tight - which is what carve-rs
-emitted, with no pair in the corpus able to report it.
+the four above cannot open it. The attributed task's bare bullet column is 2,
+so `after` reaches the inner item's content column. Metadata and checkbox text
+do not change the nesting or looseness calculation.
 
 ::: compare
 
@@ -27554,7 +27531,7 @@ emitted, with no pair in the corpus able to report it.
 - outer
   -{#k} [x] inner
 
-    after
+  after
 ```
 
 ```html
@@ -27564,6 +27541,94 @@ emitted, with no pair in the corpus able to report it.
       <li id="k"><input type="checkbox" checked disabled aria-label="inner"> inner</li>
     </ul>
     <p>after</p>
+  </li>
+</ul>
+```
+
+:::
+
+Two sibling items with different-length metadata now share the same body
+column. Renaming a class cannot move either heading.
+
+::: compare
+
+```carve
+-{.x} a
+  # one
+-{.averylongclass} b
+  # two
+```
+
+```html
+<ul>
+  <li class="x">a
+    <h1 id="one">one</h1>
+  </li>
+  <li class="averylongclass">b
+    <h1 id="two">two</h1>
+  </li>
+</ul>
+```
+
+:::
+
+The old full-prefix column is over-indented under the bare-marker rule. It stays
+inside the item but the residual indentation makes the heading marker text.
+
+::: compare
+
+```carve
+-{.x1} a
+       # h
+```
+
+```html
+<ul>
+  <li class="x1">a
+# h</li>
+</ul>
+```
+
+:::
+
+Unicode metadata is an explicit non-effect. Its UTF-8, UTF-16 and codepoint
+lengths never enter the column calculation, and the task checkbox remains
+content rather than marker width.
+
+::: compare
+
+```carve
+-{title="😀"} [x] a
+  # h
+```
+
+```html
+<ul>
+  <li title="😀"><input type="checkbox" checked disabled aria-label="a"> a
+    <h1 id="h">h</h1>
+  </li>
+</ul>
+```
+
+:::
+
+An attributed outer item uses the same bare column to open a nested list. This
+pins the direct shape separately from an attributed task nested inside a plain
+outer item.
+
+::: compare
+
+```carve
+-{.outer} parent
+  - child
+```
+
+```html
+<ul>
+  <li class="outer">parent
+    <ul>
+      <li>child</li>
+    </ul>
   </li>
 </ul>
 ```
