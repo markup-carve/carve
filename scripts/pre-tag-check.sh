@@ -231,6 +231,34 @@ if [ -f resources/engine-pin-drift.txt ]; then
   fi
 fi
 
+# 8. EVERY declaration list is clear, not only resources/engine-pin-drift.txt.
+#
+# Step 7 gates ONE ledger. It is not the only place a release can carry a
+# silenced comparison: this repo has a dozen more (resources/*.txt plus the
+# declaration constants in tests/), and each engine carries its OWN constants
+# against the spec submodule it vendors - AHEAD_OF_PIN, KNOWN_GAPS,
+# BEHIND_THE_RULING, KNOWN_LOSSES. Nothing compared the two populations, which
+# is exactly where a stale entry survives a corpus bump: the ledger here gets
+# cleaned and the vendored constant does not.
+#
+# Measured 2026-08-24, before this step existed: four rows in carve-js's
+# KNOWN_LOSSES no longer reproduced, and one row in carve-php's KNOWN_REMAINING
+# named a corpus document upstream had renumbered. Both lists lack a staleness
+# half, so neither could ever have said so.
+#
+# Engine halves are read from each sibling checkout's origin/main, since a local
+# engine checkout is usually parked on a feature branch.
+# It reads text and shells out to git only, so unlike step 7 it needs no
+# installed build and no node_modules.
+if [ -f scripts/declaration-audit.mjs ]; then
+  if AUDIT_OUT="$(node scripts/declaration-audit.mjs 2>&1)"; then
+    ok "every owed declaration list is empty"
+  else
+    bad "declaration lists are not clear - see below"
+    printf '%s\n' "$AUDIT_OUT" | sed 's/^/         /'
+  fi
+fi
+
 echo
 if [ "$fail" -ne 0 ]; then
   echo "PRE-TAG CHECK FAILED - do not tag $VERSION yet."
