@@ -34,9 +34,9 @@ features:
     details: "|= for headers, ^ for rowspan, < for colspan, + for multi-line cells. No separator row required."
   - title: Built-in Extensions
     details: ":type[content]{attrs} for video embeds and the rest of the handler family. Keyboard hints and the other semantic spans are core attributes instead — [Tab]{kbd}. @mentions and #tags as you'd expect from social platforms."
-  - title: Safe With Untrusted Input
-    details: "Always-on URL-scheme and attribute hardening, Trojan-Source stripping in presentation targets, and linear-time DoS limits neutralize the common Markdown attack classes with no separate sanitizer. Canonical Carve preserves source and warns through lint. Raw HTML passthrough is the one switch you own: on by default, off with a single flag or a safe mode. Carve never executes embedded code (unlike MDX)."
-description: Carve is a post-Markdown markup language with visual mnemonics, a formal grammar, and safe-by-default rendering.
+  - title: Hardened Rendering
+    details: "Always-on URL-scheme and attribute hardening, Trojan-Source stripping in presentation targets, and linear-time DoS limits neutralize common Markdown attack classes. For untrusted documents, disable the one trusted-content feature: explicit raw HTML passthrough. Carve never executes embedded code (unlike MDX)."
+description: Carve is a post-Markdown markup language with visual mnemonics, a formal grammar, and hardened rendering.
 ---
 
 ## What it looks like

@@ -73,6 +73,13 @@ in the sense that matters here: the construct is not editable, and an editor
 that hands the document back has to reproduce a blob it does not understand. It
 belongs in the report.
 
+Built-in HTML, Markdown, and Djot migration entry points in carve-js and
+carve-rs return a shared migration-result shape: converted Carve source plus a
+machine-readable report with the source format and diagnostics whose entries
+carry fidelity and confidence. Prefer that result over
+a bare string when importing stored content, so degraded or dropped constructs
+can become a review gate instead of a log message.
+
 The reverse direction has a stricter rule: a name the bridge does not know is an
 **error**, not a skip. An editor that grew a node type nobody mapped is exactly
 the case where a quiet skip destroys the most content.

@@ -222,7 +222,7 @@ export default defineConfig({
             { text: 'Implementation Comparison', link: '/implementation-comparison' },
             { text: 'Security', link: '/security' },
             { text: 'Graceful Degradation', link: '/graceful-degradation' },
-              { text: 'Static Rendering Recipes', link: '/static-rendering-recipes' },
+            { text: 'Static Rendering Recipes', link: '/static-rendering-recipes' },
             { text: 'Performance', link: '/performance' },
             { text: 'Parsing Ambiguities', link: '/parsing-ambiguities' },
             { text: 'Versioning & Changelog', link: '/versioning' },

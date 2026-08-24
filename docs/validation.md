@@ -172,9 +172,8 @@ as core, so the scoping described here is what to expect from an engine at or
 after that ruling rather than from every build in circulation.
 
 Whether an engine can register `SemanticSpan` at all is a separate question from
-the scoping, and the [extension catalog](./extensions) is where it is tracked -
-the reference engine does not export it yet, so its four names are what the
-scoping is for rather than something every caller can switch on today.
+the scoping. The [extension catalog](./extensions) tracks availability; current
+carve-js and carve-rs APIs both expose it.
 
 #### The block quote exception
 
@@ -334,18 +333,12 @@ implement part of it, and `carve lint` is not the same command everywhere:
 |---|---|---|
 | carve-js | yes | every rule above, plus the Djot/Markdown migration checks |
 | carve-php | yes | both semantic span attribute rules, both platform autolink rules, `bidi-control-in-source`, and Markdown-habit checks of its own (`markdown-strong-asterisks`, `markdown-strong-underscores`, `markdown-strikethrough`); none of the other rules above |
-| carve-rs | no | both semantic span attribute rules, through the library entry points `lint_carve` and `lint_carve_with_options`; the binary has no `lint` command |
+| carve-rs | yes | library lint rules through `lint_carve` / `lint_carve_with_options`, also exposed by the `carve lint` command |
 
 `semantic-attribute-value-ignored` and `semantic-attribute-outside-span` are the
-first two rules all three engines carry. They share their ids, their triggers and
-the block quote exception above. Their **messages** are not aligned yet: the tail
-of the `semantic-attribute-outside-span` sentence quotes the attribute the
-renderer actually emits in carve-php, and a fixed empty value in carve-js and
-carve-rs, which is untrue whenever the author wrote one. Which spelling the
-engines converge on is open and tracked in
-[carve-js#1058](https://github.com/markup-carve/carve-js/issues/1058), so neither
-form is canonical here. A consumer keys on the rule id, which the next section
-makes binding, rather than on the sentence.
+first two rules all three engines carry. They share their ids, triggers, block
+quote exception, and message semantics. A consumer should still key on the rule
+id rather than human-facing message text.
 
 The two platform autolink rules are in carve-js and carve-php, and not in
 carve-rs. They are specified here rather than left to one engine because the ids
@@ -366,11 +359,17 @@ This does NOT require every engine to implement every rule. Coverage differs and
 that is fine; the table above says so. What it forbids is two engines detecting
 the same thing under different names.
 
-Ids do not line up today: carve-php and carve-js both flag `**bold**` and
-`~~strike~~`, under different names, so a suppression written against one is
-silently inert against the other. Aligning them is a breaking change to any
-existing config and is tracked in
-[carve#268](https://github.com/markup-carve/carve/issues/268).
+Some older carve-php Markdown-habit checks still use different ids from the
+migration checks for the same delimiter families. Treat those engine-specific
+ids as non-portable until they are unified.
+
+### Accessibility checks
+
+carve-js and carve-rs expose an initial AST-based accessibility pass with two
+stable ids: `a11y/image-alt` for missing or blank image alternatives and
+`a11y/heading-jump` for skipped heading levels. These checks catch focused
+document-structure problems; they are not a claim of WCAG conformance or a
+replacement for testing the rendered page with accessibility tools.
 
 The CLI also reports Djot/Markdown delimiter collisions from the migration
 checker — mis-rendering constructs by default, plus the Djot semantic shifts

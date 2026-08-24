@@ -41,6 +41,7 @@ and that every importer has exactly one declaration.
 | [carve-rb](https://github.com/markup-carve/carve-rb) | Ruby | Native gem via magnus over carve-rs. |
 | [carve-components](https://github.com/markup-carve/carve-components) | React / Vue | UI components for rendering Carve markup in the browser. |
 | [carve-wysiwyg](https://github.com/markup-carve/carve-wysiwyg) | TypeScript | WYSIWYG editor / live sandbox (Tiptap + carve-grammars). |
+| [carve-css](https://github.com/markup-carve/carve-css) | CSS | Shared styles for semantic Carve HTML such as admonitions and tabs. |
 
 ## Editor support
 
@@ -57,6 +58,8 @@ Syntax highlighting, structural editing, and diagnostics inside editors.
 | [intellij-carve](https://github.com/markup-carve/intellij-carve) | JetBrains IDEs | Highlighting, live preview, and export for IntelliJ, PhpStorm, etc. |
 | [zed-carve](https://github.com/markup-carve/zed-carve) | Zed | Editor support. |
 | [tree-sitter-carve](https://github.com/markup-carve/tree-sitter-carve) | Tree-sitter | Grammar for highlighting and structural editing. |
+| [highlightjs-carve](https://github.com/markup-carve/highlightjs-carve) | Highlight.js | Syntax grammar for highlighted Carve source. |
+| [pygments-carve](https://github.com/markup-carve/pygments-carve) | Pygments | Lexer for Python documentation and highlighting tools. |
 | [carve-lsp](https://github.com/markup-carve/carve-lsp) | LSP | Language server - syntax diagnostics, Djot/Markdown collision hints. *Early.* |
 
 ## Framework integrations
@@ -81,6 +84,8 @@ Carve embedded in another tool or framework.
 | [wp-carve](https://github.com/markup-carve/wp-carve) | WordPress | Plugin on the carve-php engine - live preview, multi-format paste, REST API. |
 | [carve-grammars](https://github.com/markup-carve/carve-grammars) | Tiptap | Editor kit and Carve serializer. |
 | [vite-plugin-carve](https://github.com/markup-carve/vite-plugin-carve) | Vite | Import `.crv` documents as rendered HTML. *Early.* |
+| [carve-press](https://github.com/markup-carve/carve-press) | Static sites | Carve-native static site generator. |
+| [zensical-carve](https://github.com/markup-carve/zensical-carve) | Zensical | Carve integration for Zensical documentation sites. |
 
 ## PDF / output
 
@@ -91,6 +96,8 @@ Render Carve documents to formats beyond HTML.
 | [carve-pdf](https://github.com/markup-carve/carve-pdf) | PDF | Render `.crv` documents to clean, paginated PDFs. |
 | [carve-hexapdf](https://github.com/markup-carve/carve-hexapdf) | PDF | Carve to PDF via the pure-Ruby HexaPDF engine (over carve-lang / carve-rb). |
 | [pandoc-carve](https://github.com/markup-carve/pandoc-carve) | LaTeX, Typst, DOCX, PDF, ... | Carve AST to Pandoc JSON bridge; reaches every pandoc writer and makes `{=latex}`-style raw spans fire. |
+| [carve-sile](https://github.com/markup-carve/carve-sile) | PDF | SILE input support for typesetting Carve documents. |
+| [pdf-to-carve](https://github.com/markup-carve/pdf-to-carve) | Carve source | Extract PDF text and layout into validated `.crv` documents. |
 
 ## Format bridges
 
@@ -144,6 +151,7 @@ Skills and context packs that teach AI coding agents to author Carve.
 | Project | Description |
 |---|---|
 | [awesome-carve](https://github.com/markup-carve/awesome-carve) | Curated list of Carve tools, libraries, and resources. |
+| [homebrew-carve](https://github.com/markup-carve/homebrew-carve) | Homebrew tap for installing Carve tools. |
 | [PHP Sandbox](https://sandbox.dereuromark.de/sandbox/carve) | Powerful live sandbox on the carve-php engine - explore syntax and extensions, inspect output, and share snippets via pastebin-style links. |
 
 ---

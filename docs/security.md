@@ -1,12 +1,13 @@
 ---
-description: The normative defenses that make Carve safe to render from untrusted input without a separate sanitizer.
+description: Carve's rendering defenses and the one option to disable for untrusted input.
 ---
 
 # Security
 
-Carve is designed to be safe to render from untrusted input by default. This
-page documents what the renderer guarantees, what you still own, and how to
-tighten the policy.
+Carve hardens rendering against unsafe URLs, attributes, invisible controls,
+and resource-exhaustion attacks. Explicit raw HTML is a trusted-content feature
+and is enabled by default, so untrusted documents require one additional
+setting. This page documents the guarantees and that boundary.
 
 ## HTML is text, not markup
 
@@ -70,18 +71,19 @@ The behavior is controlled through `RenderOptions` (passed to `renderHtml` or
 ```js
 import { carveToHtml } from '@markup-carve/carve'
 
-// Safe by default - nothing to configure.
-carveToHtml(userInput)
+// Untrusted input: disable explicit raw HTML passthrough.
+carveToHtml(userInput, { allowRawHtml: false })
 
 // Extend the allowlist (e.g. allow tel: links).
 carveToHtml(userInput, { allowedUrlSchemes: ['http', 'https', 'mailto', 'tel'] })
 
-// Trusted input only: pass authored URLs through verbatim.
-carveToHtml(trustedInput, { sanitizeUrls: false })
+// Fully trusted input only: permit raw HTML and authored URLs verbatim.
+carveToHtml(trustedInput, { allowRawHtml: true, sanitizeUrls: false })
 ```
 
 | Option | Default | Effect |
 |---|---|---|
+| `allowRawHtml` | `true` | Emit explicit `=html` raw content. Set `false` for untrusted documents. |
 | `sanitizeUrls` | `true` | Filter link/image URL schemes. Set `false` only for fully trusted input. |
 | `allowedUrlSchemes` | unset (denylist mode) | Unset by default: a denylist blocks dangerous schemes (`javascript:`, `data:`, etc.) while others (`tel:`, `ftp:`, `sms:`) pass. An allowlist is enforced only when this is explicitly set. Case-insensitive. |
 
