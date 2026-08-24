@@ -69,6 +69,8 @@ const TRIGGERS = {
   'blockquote-marker-without-space': '>quoted\n',
   'block-marker-as-text': '  ::: note\n',
   'fence-delimiter-indentation': '  ```\n  x\n  ```\n',
+  'list-item-body-detached': '1. item\n\n  # heading\n',
+  'list-item-block-overindented': '-{.x1} item\n\n       # heading\n',
   'carve-version-unsupported': '---\ncarve-version: 99.0\n---\n\nx\n',
   'unclosed-container-fence': '::: note\nbody\n',
   'figure-group-nested': ':::: figure\n::: figure\n![a](a.png)\n^ (a) A\n:::\n::::\n^ Figure #: G\n',

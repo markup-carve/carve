@@ -6995,6 +6995,15 @@ EOF = (* end of file *) ;
              longer a block opener -- exactly as ` # h` with a leading space is
              a paragraph, not a heading, at the top level -- so it folds in as
              lazy paragraph text.
+             A processor with lint diagnostics SHOULD report this ambiguous
+             block-shaped spelling and name both semantics-preserving author
+             choices: dedent to content_column to make the block structural, or
+             escape the opener to preserve literal text. It SHOULD likewise
+             report a block-shaped line between the marker and content_column
+             that detached after a blank. The stable rule ids and exact scopes
+             are `list-item-block-overindented` and `list-item-body-detached`
+             in docs/validation.md. The default formatter MUST NOT choose one
+             intention for the author (carve#1702, experiment carve#1705).
          This is an INTENTIONAL divergence from djot, which attaches a block
          opener at any indent past the marker; carve requires the content
          column, consistent with its column-0 block-opener rule

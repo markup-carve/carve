@@ -106,6 +106,8 @@ the command-line and editor behavior stay aligned.
 | `blockquote-marker-without-space` | a line starting with `>` that is neither a bare quote marker nor `> `; it renders as prose, not a block quote |
 | `block-marker-as-text` | a line that opens like a block (`:::`, `{#`, `{.`) but parsed as plain text |
 | `fence-delimiter-indentation` | an indented fenced-code delimiter (`` ``` `` / `~~~`); a Carve fence is column-exact and must sit at its container's content column (column 0 at the top level), so an indented run does not open a code block |
+| `list-item-body-detached` | a block-shaped line indented past the item's marker column but below its exact content column; after a blank it has left the item, so the diagnostic offers the two explicit intentions: indent to the content column to make it structural, or escape the opener to preserve literal text |
+| `list-item-block-overindented` | a block-shaped line past an item's exact content column, including the pre-#1701 full-prefix column of an attributed marker; it is literal item text, not a nested block. Dedent to make it structural or escape the opener to make the literal intent explicit; default `fmt` does not guess |
 | `carve-version-unsupported` | a document declaring a Carve spec version the processor does not implement, so constructs added after that version render as something else without any error |
 | `unclosed-container-fence` | a `:::` opener with no matching closer; the container runs to end of input, which is legal (PART 9 §12) and rarely what was meant |
 | `fence-title-syntax` | text after a fence type word that is neither a quoted `"title"` nor a `[label]`, which makes the whole opener line plain text |
@@ -345,6 +347,15 @@ carve-rs. They are specified here rather than left to one engine because the ids
 are shared surface: a second engine implementing the same condition takes the
 same two ids, the same `platforms` selection, and the same token tables, or a
 `--platform` config stops being portable the moment it moves between engines.
+
+The two list-item indentation rules deliberately preserve PART 9 §24 C3's
+exact-column parse. Accepting every over-indented opener was measured against
+the complete mandatory corpus under #1705: thirteen documents changed AST and
+HTML, including one reference definition that began resolving nonlocally.
+Indentation cannot distinguish a deliberately literal example from a misplaced
+block, so neither the parser nor default formatter guesses. A linter can name
+both safe edits without changing the document: dedent for structure, escape for
+literal text.
 
 ### A rule id is a contract
 
