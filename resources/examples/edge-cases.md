@@ -27413,11 +27413,26 @@ two halves of `-{#k} [x] ` were each pinned alone and the combination was pinned
 nowhere - which is how three engines came to read it three ways with every gate
 green (carve#1692).
 
-The rule is one rule applied twice. A checkbox is CONTENT (carve#1690), so it
-does not move the column; an attribute block is part of the MARKER that
-introduces the item, so it does. `-{#k} [x] a` is therefore the marker `-{#k} `
-and then content beginning at the checkbox, and the item's content column is 6.
-A line written there is inside the item.
+The rule is stated, not inferred. PART 9 §15 A8 says what the block binds to -
+"a `-{…} text` with no space after the marker attributes the LIST ITEM" - and
+`docs/divergence-from-djot.md` §17 puts it in as many words: "the attribute
+block binds to the MARKER". Part of the marker counts toward the marker's width,
+so `-{#k} [x] a` is the marker `-{#k} ` and then the checkbox, and the item's
+content column is 6. A line written there is inside the item.
+
+DJOT SETTLES NOTHING HERE, which is the first thing a reader asks of a rule
+about attributed markers. Djot has no such construct: `-{#k} [x] item` is a
+PARAGRAPH there, the `{#k}` an inline attribute on a literal `-`, because a
+bullet needs its separator before anything else. A djot list is attributed
+through a preceding attribute line, and that line attaches to the LIST rather
+than to an item. §17 records Carve's marker-glued form as a deliberate extension
+and a source break, so the question can only be answered from Carve's own
+grammar.
+
+The other half is carve#1690: a checkbox is CONTENT, so it does not move the
+column. The two together are why the column is the bullet plus the block and
+nothing else - not the bullet alone, and not the full width of what the marker
+line carries.
 
 ::: compare
 
@@ -27437,9 +27452,10 @@ A line written there is inside the item.
 :::
 
 Column 2 is the other spelling, and it has to be pinned beside the first rather
-than instead of it: reading the column as the bare bullet width puts it there,
-which is INSIDE the attribute block, and each engine used to read exactly one of
-the two as a continuation. A document holding only one of them passes on the
+than instead of it: reading the column as the bare bullet width treats the block
+as though it were not there and puts the column INSIDE it - which A8 also rules
+out from the other side, since the marker still needs content of its own. Each
+engine used to read exactly one of the two as a continuation. A document holding only one of them passes on the
 engine that reads the other. Below the content column the line is lazy paragraph
 text, so the `#` survives literally.
 
