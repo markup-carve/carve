@@ -826,6 +826,23 @@ Run `node scripts/ast-conformance.mjs` in this repo against sibling checkouts of
 the engines. It reports two things a schema cannot: nodes with no position, and
 spans that do not cover the text they claim.
 
+BUILDING A CROSS-ENGINE TABLE: READ THE PUBLISHED EXIT, and say so in the table.
+`npm run shape:table -- '<source>'` prints one for any source across all three
+engines, reading each through the tree a consumer receives and classifying it with
+the same `classifyShapeDisagreement` this page's panel uses. Prefer it to a
+hand-rolled probe.
+
+The reason is carve-js specific and it has cost two rulings. carve-js is the only
+engine that exposes a PRE-RESOLVE stage: `parse()` returns it, `resolve()` promotes
+and degrades on top of it, and `resolve()` MUTATES IN PLACE - so reading
+`parse(x).children` after calling `resolve` on the same tree reports the resolved
+shape while looking like the parse one. carve-rs and carve-php resolve inside their
+own parse and have no such stage, so a table built from `parse()` compares carve-js
+at a stage the others cannot reach and reports the difference as theirs. That is
+carve#486; it produced carve#1660's premise test, which described carve-js rather
+than the language, and carve#1663, whose ruling had to be withdrawn once the
+published trees were measured and found unanimous.
+
 The rows below are MEASURED state, so they are reconciled rather than trusted.
 `tests/ast-json-claims.test.mjs` measures the carve-js row against the pinned
 engine, and holds every row to the two ledgers that run's satellites fill in -
