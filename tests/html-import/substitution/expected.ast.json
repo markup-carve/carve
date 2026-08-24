@@ -1,0 +1,1 @@
+{"type":"document","children":[{"type":"paragraph","children":[{"type":"delete","children":[{"type":"text","value":"old"}]},{"type":"insert","children":[{"type":"text","value":"new"}]}]}],"srcByteLength":0}
