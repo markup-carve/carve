@@ -43,11 +43,11 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const grammar = readFileSync(resolve(root, 'resources/grammar.ebnf'), 'utf8')
 
 // Declared lag against the `@markup-carve/carve` build package.json pins.
-// Delete this in the commit that moves the pin past markup-carve/carve-js#1400.
-const PIN_LAG =
-  'the writer lets a whitespace-only paragraph cancel list adjacency, so the ' +
-  'PART 9 §11 N1a boundary is never written and the two lists come back as ' +
-  'one loose list (PART 11 §10j; markup-carve/carve#1621)'
+// EMPTY IS THE GOAL. The pin moved past markup-carve/carve-js#1400, the writer
+// writes the PART 9 §11 N1a boundary across a whitespace-only paragraph, and the
+// declaration came out with the bump. A new lag is declared here as a
+// one-sentence reason; the assertion below fails in both directions.
+const PIN_LAG = ''
 
 const list = (text) => ({
   type: 'list',

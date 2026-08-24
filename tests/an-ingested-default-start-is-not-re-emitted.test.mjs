@@ -33,11 +33,11 @@ const schema = JSON.parse(readFileSync(resolve(root, 'resources/ast-schema.json'
 const grammar = readFileSync(resolve(root, 'resources/grammar.ebnf'), 'utf8')
 
 // Declared lag against the `@markup-carve/carve` build package.json pins.
-// Delete this in the commit that moves the pin past markup-carve/carve-js#1391.
-const PIN_LAG =
-  'the encoder re-emits an ingested `start: 1`, so it publishes a tree that ' +
-  'does not match the shape resources/ast-schema.json describes ' +
-  '(PART 12 §22; markup-carve/carve-js#1391, markup-carve/carve-rs#1293)'
+// EMPTY IS THE GOAL. The pin moved past markup-carve/carve-js#1391, the encoder
+// no longer re-emits an ingested `start: 1`, and the declaration came out with
+// the bump. A new lag is declared here as a one-sentence reason; the assertion
+// below fails in both directions, so it cannot age into folklore.
+const PIN_LAG = ''
 
 // A one-item ordered list whose `start` spells out the default. Hand-built,
 // with no `pos` anywhere: this is the payload an editor hands back, not
