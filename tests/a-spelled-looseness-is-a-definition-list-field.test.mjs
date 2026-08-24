@@ -24,9 +24,11 @@
  *
  * The oracle is the measurement here rather than an engine, for the reason the
  * corpus test gives: the spec repo proves its own fixtures without waiting for
- * an implementation to ship a rule. No engine has shipped L7 at all yet, which
- * is why `definition_list.loose` is declared in
- * `tests/schema-fields-are-produced.test.mjs` as engine-rollout-pending.
+ * an implementation to ship a rule. carve-rs has shipped L7 on its main and
+ * carve-js and carve-php have not, and the PINNED build has not either, which is
+ * why `definition_list.loose` is still declared in
+ * `tests/schema-fields-are-produced.test.mjs` as engine-rollout-pending - that
+ * exemption is measured against the pin, not against any engine's main.
  */
 
 import { test } from 'node:test'
