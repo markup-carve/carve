@@ -484,6 +484,7 @@ index: examples/edge-cases/index.md
   link-reference-definition-separator-must-be-a-space
   a-reference-definition-cannot-take-its-destination-from-the-next-line
   indented-image-and-caption-stay-literal
+  a-lone-indented-image-is-a-paragraph-and-its-html-cannot-say-so
   indented-reference-and-footnote-definitions-stay-literal
   a-repeated-definition-which-one-wins
   a-collapsed-reference-is-matched-by-the-label-the-author-wrote

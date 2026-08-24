@@ -179,6 +179,7 @@ under the same semantic-span rule,
 `408-the-writer-spells-looseness-only-where-a-blank-line-cannot`,
 `409-a-blank-line-loosens-an-item-only-when-a-paragraph-follows-it`,
 `410-a-footnote-continuation-survives-a-blank-run`,
+`411-a-lone-indented-image-is-a-paragraph-and-its-html-cannot-say-so`,
 `05-lists-25`,
 `05-lists-26`,
 `05-lists-27`,
@@ -253,6 +254,31 @@ own choosing, not the three this page quotes, and the five-target transcript
 above was not retaken. Editing the denominators on that evidence would publish
 a run nobody made, which is the objection stated two paragraphs up. So the
 category is declared and the numbers stand as measured.
+
+`411` IS DECLARED FOR A WINDOW THE HTML COLUMN CANNOT SHOW, which is a first on
+this page and worth stating plainly. carve#1660 ruled that an indented lone
+image is a paragraph holding an inline image and not a block image, against the
+engine split two to one: `docs/divergence-from-djot.md` section 15 says a
+top-level block opener must start at column 0, so an indented one cannot be a
+block image whatever two engines do. carve-js is right, and carve-rs and
+carve-php promote it (markup-carve/carve-rs#1341,
+markup-carve/carve-php#1681).
+
+The two documents in this category nevertheless PASS on all three engines and
+on the oracle. A paragraph whose whole content is one image renders as a bare
+`<img>` with no `<p>` wrapper, so the indented reading and the promoted one emit
+the same bytes; what differs is the tree, `paragraph > image` against a
+top-level `image`. So the mismatch counts above would not move even if the run
+were retaken today, and the reader that fails is `npm run ast:check`'s SHAPE
+comparison, which is where this window is visible.
+
+The declaration is kept for the ordinary reason - the quoted run predates the
+category - and it names the two engines rather than the corpus, so it fails from
+both sides: it goes red here if either category stops contributing fixtures, and
+whoever retakes the run has to delete the line. The engine half closes when
+those two tickets land, and `ast:check` is what says so; a line still naming an
+engine somebody has fixed reads as verified while being false, which is the
+failure this device exists to prevent.
 
 A CATEGORY THAT ALREADY EXISTED CAN GO STALE TOO, and the declaration above
 cannot say so - it names categories ADDED since the run, and its count is

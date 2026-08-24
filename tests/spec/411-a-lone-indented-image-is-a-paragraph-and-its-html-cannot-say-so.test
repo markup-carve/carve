@@ -1,0 +1,15 @@
+A lone indented image is a paragraph, and its HTML cannot say so
+
+```
+ ![Apollo](a.jpg)
+.
+<img src="a.jpg" alt="Apollo">
+```
+
+```
+ ![Apollo][moon]
+
+[moon]: a.jpg
+.
+<img src="a.jpg" alt="Apollo">
+```

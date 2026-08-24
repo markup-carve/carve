@@ -27139,3 +27139,59 @@ See[^1].
 ```
 
 :::
+
+## A lone indented image is a paragraph, and its HTML cannot say so
+
+PART 9 §15's strict column-0 rule says a top-level block opener must start at
+column 0, and `docs/divergence-from-djot.md` gives the worked example: ` # H`
+renders `<p># H</p>`. A block image is a top-level block construct, so an
+indented one is not one - the leading space cannot be inert for an image and
+decisive for a heading.
+
+`158-indented-image-and-caption-stay-literal` pins the indented image WITH its
+caption, `-2` the same pair under a block-attribute line, and `-3` the flush-left
+figure. All three carry a SECOND line, and that is the whole reason this section
+exists. The lone-image promotion only fires on a paragraph whose entire content
+is one image, so a caption line under the image keeps it from firing at all -
+which left the one shape it does fire on pinned nowhere. carve-rs and carve-php
+promoted an indented lone image to a block image, carve-js did not, and every
+corpus document passed on all three while they disagreed (carve#1660).
+
+THE HTML CANNOT SEE THE DIFFERENCE, and that is stated here rather than left for
+a reader to rediscover. A paragraph whose whole content is one image renders as a
+bare `<img>` with no `<p>` wrapper - the same rule `-3` leans on - so the
+indented reading and the promoted one emit the same bytes. What differs is the
+tree: `paragraph > image` against a top-level `image`. The pair below is
+therefore an HTML control that every engine already satisfies, and the shape
+comparison in `npm run ast:check` is the reader that fails on it.
+
+::: compare
+
+```carve
+ ![Apollo](a.jpg)
+```
+
+```html
+<img src="a.jpg" alt="Apollo">
+```
+
+:::
+
+The reference spelling reaches the same promotion path by a different route: it
+is never a syntactic block image, so it arrives as a paragraph and is promoted
+afterwards or not at all. Indenting it must fold the same way, for the same
+reason.
+
+::: compare
+
+```carve
+ ![Apollo][moon]
+
+[moon]: a.jpg
+```
+
+```html
+<img src="a.jpg" alt="Apollo">
+```
+
+:::
