@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **PART 9 §17 L7: a consumed `loose` boolean spells the looseness a blank line
+  cannot** (carve#1623). The preceding block-attribute line may carry `loose`, so
+  `<li><p>x</p></li>` and `<dd><p>x</p></dd>` become writable Carve; the key is
+  consumed, not emitted. Corpus 407.
+- **A definition list's spelled looseness is a field** (carve#1624, PART 12 §8).
+  `definition_list` gains an optional `loose: true`, because the `<dd>` wrapper is
+  derived from the description's block count and cannot see the key.
 - **HTML import coverage is measured as a population and across engines**
   (carve#1600). Every grammar construct has one coverage classification, the
   complete render corpus is re-imported through the pinned JavaScript engine,
@@ -20,7 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Bindings owe the complete output surface plus the AST** (carve#1599).
   Importers remain optional but must be explicitly implemented or declared out
   of scope; a machine-readable binding contract checks the inventory.
-
 - **An explicit closer is a spelling change, so it cannot move a list's
   tightness** (carve#1602). Corpus
   `362-an-unterminated-container-does-not-extend-the-item-past-a-blank-line-4`
@@ -101,6 +107,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **The canonical writer spells `loose` only where a blank line cannot**
+  (markup-carve/carve-rs#1305, carve#1639). The criterion is decided by a re-parse
+  of the blank-line spelling, not by an item count: a one-item list already
+  loosened by a blank line inside the item keeps its source. Corpus 408.
+- **An ingested value the schema calls absent is normalized away** (carve#1615,
+  PART 12 §22). The encoder drops an ingested `start: 1`; `start: 0` and
+  `start: 2` are carried through unchanged.
+- **The same line decides what an import keeps** (carve#1628, PART 11 §7). A block
+  whose text is entirely whitespace keeps exactly the characters §7 calls content:
+  `<p>&nbsp;</p>` imports as a paragraph holding U+00A0, an ASCII-space or
+  tab-only block builds no node and reports `element-dropped`. The divider is
+  PART 2's whitespace terminal, not the entity.
+- **PART 11 §10j: an unspellable block does not cancel the list adjacency it
+  cannot spell** (carve#1621). Where every block between two sibling lists leaves
+  no character on the page, §10i decides the run as if nothing stood there.
+- **A declared loss is a ceiling, not a license, and an endnotes section keeps its
+  position** (carve#1608). An empty `<dd>` is dropped with `structure-unspellable`
+  rather than writing a bare colon line that damages the term above it; an
+  endnotes section that is not last is imported where it sits.
+- **A dropped empty description breaks the definition list rather than lending
+  it** (carve#1636). With an entry after it, writing both terms into one list
+  would give the surviving term a description it never had, so the import writes
+  two lists.
+- **An attached container's closer is a spelling change the HTML can see**
+  (carve#1613). Corpus 362-5 and 362-6 put the container below a lead block, where
+  a tight item's paragraph suppression does reach it; both spellings read tight.
+- **A blank line above an attached block loosens the item only when a paragraph
+  follows it** (carve#1622). A container has an opener to absorb the separation
+  and a paragraph has none. Corpus 409.
 - **U+0000 is replaced before the document is read** (carve#1523, PART 0 INPUT,
   PART 9 §29). Every NUL becomes U+FFFD at the parse boundary; every other C0
   control stays content. Corpus 397.
@@ -186,6 +221,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A figure's imported target is the captioned block, not a paragraph around
+  it** (carve#1606, PART 9 §4b). Two shared fixtures recorded a wrapped tree
+  beside source that parses to the image directly; only a display-math host is a
+  paragraph. Filed as markup-carve/carve-js#1381.
+- **The escape test reads the source the writer will emit, not the tree**
+  (carve#1601, PART 11 §2). A detached caption line and a span whose text opens a
+  note reference are escaped; both engines wrote source that re-parsed to
+  something else.
+- **A footnote definition's body survives a run of blank lines** (carve#1620). The
+  continuation test looked one line past the blank, so a blank run ended the body
+  and relocated its content into the endnotes section. Corpus 410.
 - **A diagnostic list is ordered by the losing element's document position**
   (carve#1586). The basis is now stated, and the `diagnostic-order` fixture pins
   two losses under one parent. carve-php already answered this way;
@@ -284,9 +330,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   task checkbox, an admonition, the endnotes section and a math span; the
   `labels` map grows from one key to ten.
 - **A tab control is `type="button"`, and two marked items select one tab**
-  (carve#1537, extensions §13.3, §13.5). A control with no `type` submitted its
-  enclosing form; the first `{selected}` mark now wins. Optional corpus 47, 48,
-  49.
+  (markup-carve/carve-php#1537, extensions §13.3, §13.5). A control with no
+  `type` submitted its enclosing form; the first `{selected}` mark now wins.
+  Optional corpus 47, 48, 49.
 - **The position checker's closerless-container set no longer claims to be
   complete while three types are missing from it** (carve#1574, PART 12 §4).
   `footnote`, `definition_term` and `heading` are in the set now, declaring 30
