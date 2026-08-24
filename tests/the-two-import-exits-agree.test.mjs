@@ -181,6 +181,48 @@ test('the source-layout scan finds the field the fixture recorded', () => {
   assert.deepEqual(sourceLayoutKeys({ type: 'document', children: [{ type: 'list', items: [] }] }), [])
 })
 
+/*
+ * AND THE ENGINE IS HELD TO IT TOO, not only the fixtures
+ * (markup-carve/carve#1671).
+ *
+ * The check above reads FIXTURE BYTES, which is all it could read when the rule
+ * was written. That leaves the rule stated on the recordings and unstated on
+ * the thing that produces them - so an importer may start recording a
+ * source-layout field, and the only way to notice is a fixture someone
+ * re-records to match it. That is the wrong direction to fix it in, and it is
+ * the direction markup-carve/carve#1671 proposed: the fixture was reported as
+ * stale because its tree carries no `#id` slot while a newer engine's import
+ * does. The fixture is right; the slot is the thing that may not be there.
+ *
+ * The pinned build is in this repository, so the rule can be read off the
+ * IMPORT rather than off a recording of one. It is green at `71add23f`, which
+ * records no source-layout field for any of the fixtures, and it goes red the
+ * moment the pin passes markup-carve/carve-js#1416 - which keeps an authored
+ * heading id by pushing an `#id` slot into the tree it publishes, and is the
+ * only arm of either importer that does. Measured on carve-js `dd75592`: one
+ * hit, `auto-text-link -> .children[0].attrs.order`, and none anywhere else.
+ *
+ * So a bump that trips this is naming an ENGINE defect. Fix it there; do not
+ * re-record a fixture to accept a spelling the import never read.
+ */
+test('the pinned build records no source-layout field on any import either', async () => {
+  const { htmlToAst, toAstJson } = await import('@markup-carve/carve')
+  const fixtures = (await readdir(root, { withFileTypes: true })).filter((entry) => entry.isDirectory())
+  assert.ok(fixtures.length > 0)
+  for (const { name } of fixtures) {
+    const html = await readFile(new URL(`${name}/input.html`, root), 'utf8')
+    assert.deepEqual(
+      sourceLayoutKeys(toAstJson(htmlToAst(html).value)),
+      [],
+      `the pinned build's htmlToAst records a source-layout field for ` +
+        `tests/html-import/${name}. An import reads HTML and has no source to read one ` +
+        `off (markup-carve/carve#1647), so the field states a spelling it never saw. ` +
+        `Fix the importer - re-recording the fixture to match would retire the rule ` +
+        `rather than the defect (markup-carve/carve#1671).`,
+    )
+  }
+})
+
 const disagreement = (parsed, recorded, path = '') => {
   if (Array.isArray(parsed) || Array.isArray(recorded)) {
     if (!Array.isArray(parsed) || !Array.isArray(recorded)) return `${path}: array against non-array`
