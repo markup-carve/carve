@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **PART 11 §1c: a wrapper its own content spells away is a declared
+  ceiling** (carve#1658). A paragraph holding only an image or only a comment
+  writes the child's spelling, and the producer declares the loss.
 - **PART 9 §17 L7: a block-attribute `loose` boolean spells the looseness a
   blank line cannot** (carve#1623). It is consumed, not emitted.
 - **A definition list's spelled looseness is a field** (carve#1624, PART 12 §8).
@@ -62,6 +65,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **A div unwraps when it kept nothing only a container can hold**
+  (carve#1650, markup-carve/carve-rs#1315). This widens carve#1578 past a bare
+  attribute test: a grouping label keeps the fence too.
 - **The canonical writer spells `loose` only where a blank line cannot**
   (markup-carve/carve-rs#1305, carve#1639).
 - **An ingested value the schema calls absent is normalized away** (carve#1615,
@@ -133,6 +139,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A lone indented image is a paragraph holding an inline image, not a block
+  image** (carve#1660). The strict column-0 rule reaches it; the rendered HTML
+  is the same bytes, so only the tree moves.
 - **A figure's imported target is the captioned block, not a paragraph around
   it** (carve#1606, PART 9 §4b, markup-carve/carve-js#1381).
 - **The escape test reads the source the writer will emit, not the tree**
