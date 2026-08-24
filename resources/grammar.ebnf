@@ -5780,7 +5780,10 @@ EOF = (* end of file *) ;
       A8 ON A LIST-ITEM MARKER LINE, ALONE MEANS ATTRIBUTE LINE. A
          `-{…} text` with no space after the marker attributes the LIST
          ITEM (PART 2, list items; the marker still needs content, so a
-         bare `-{…}` is not a list item at all). WITH a space, what follows
+         bare `-{…}` is not a list item at all). THE BLOCK DOES NOT MOVE THE
+         ITEM'S CONTENT COLUMN: it is metadata on the item, not marker width;
+         `-{.x1} text`, `-{.averylongclass} text` and `- text` all put the
+         item body's column 0 at source column 2 (§24 C3). WITH a space, what follows
          the brace run on that line decides:
            - {.c} text      -> literal: <li>{.c} text</li>
            - {a=b .c}       -> an A1 attribute line, floating (A2) to the
@@ -6865,7 +6868,11 @@ EOF = (* end of file *) ;
          indentation. `-<TAB>a` is NOT a list item (paragraph text).
       C3 CONTENT COLUMN. content_column(item) := the visual column where
          the item's content starts (marker width + separator: `- ` -> 2,
-         `1. ` -> 3, `10. ` -> 4). A child -- a LIST MARKER (bullet `-`/`*`,
+         `1. ` -> 3, `10. ` -> 4). A marker-attached attribute block (§15 A8)
+         is metadata and contributes ZERO: `-{.x} ` -> 2 and `1.{.x} ` -> 3,
+         irrespective of the block's spelling, length or Unicode encoding. A
+         task checkbox is content and contributes zero for the same coordinate:
+         `-{.x} [x] ` -> 2. A child -- a LIST MARKER (bullet `-`/`*`,
          task, or ordered, SYMMETRIC) opening a sublist, OR any OTHER block
          opener -- must reach the parent item's content_column to belong to the
          item. The block-opener set is UNIFORM and closed: block quote (`>` or

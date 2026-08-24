@@ -735,6 +735,8 @@ loud one - the braces stay visible rather than turning into an element.
 bullet needs its separator before anything else.
 
 **Carve:** the attribute block binds to the MARKER and the line is a list item.
+It is item metadata, not marker width: continuations use the bare marker's
+content column (`- ` -> 2, `1. ` -> 3) regardless of the attribute spelling.
 
 ```
 -{.c} x         Djot:  <p><span class="c">-</span> x</p>
