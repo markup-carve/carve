@@ -269,10 +269,22 @@ function renderBlock(b, depth, ctx) {
       // - a div, a list item, a quote holding a captioned CODE block - already
       // indents it, so this was the quote contradicting the rest of the file
       // rather than a reading of the clause.
+      //
+      // AND THE COMPACT ARM ASKS ABOUT A CHILD THAT MAY NO LONGER EXIST. PART
+      // 11 §1c collapses a paragraph whose whole content is one image into a
+      // block image, so `> ![Apollo](a.jpg)` holds no paragraph by the time it
+      // is serialized - and this asked only for the node's TYPE, which is still
+      // `para`, and framed it compactly. Give a `<div>` the identical child and
+      // this renderer indents it on its own line, as all three engines do for
+      // both containers, so the quote was applying "renders on one line" to a
+      // shape the div arm does not - the oracle contradicting itself rather
+      // than reading the clause (carve#1677). `isBlockImageParagraph` asks the
+      // §1c question the same way the `para` arm above answers it.
       const compact =
         b.children.length === 1 &&
         b.children[0].t === 'para' &&
-        b.children[0].caption === undefined
+        b.children[0].caption === undefined &&
+        !isBlockImageParagraph(b.children[0], ctx)
       // Depth-first and synchronous, so a saved/restored flag is a stack. The
       // children are rendered ONCE, under `inBlockquote`, which is what keeps a
       // quoted heading out of the implicit-reference index.
@@ -549,6 +561,32 @@ function renderBlock(b, depth, ctx) {
   }
 }
 
+/**
+ * PART 11 §1c, asked as a question about a NODE rather than about a string: is
+ * this paragraph one whose whole content is a single image, and therefore not a
+ * paragraph any more by the time it reaches HTML?
+ *
+ * The `para` arm of `renderBlock` answers this by rendering; two other sites
+ * need the answer BEFORE they render - a quote deciding its frame, and a list
+ * item deciding whether to build a `<p>` by hand - and both got it wrong by
+ * asking for the node's type instead (carve#1677). §1c is phrased over what a
+ * shape SPELLS rather than over the context it sits in, so one predicate serves
+ * every container.
+ *
+ * The probe render is discarded, and that is safe for the same reason the
+ * `para` arm's own call is: `renderStandaloneImage` reads `ctx.linkDefs` and
+ * writes nothing, and `renderInline` restores the inline state it saves. A
+ * captioned paragraph is excluded here rather than at each call site, since a
+ * caption makes the host a `figure` and the figure is what gets framed.
+ */
+function isBlockImageParagraph(b, ctx) {
+  return (
+    b.t === 'para' &&
+    b.caption === undefined &&
+    renderStandaloneImage(b.lines.join('\n'), '', ctx) !== null
+  )
+}
+
 function renderStandaloneImage(line, attrs, ctx) {
   // Resolve reference images before paragraph serialization, so PART 10's
   // standalone-image shape is a block decision rather than a final HTML rewrite.
@@ -660,7 +698,17 @@ function renderItem(item, list, depth, ctx) {
     // duplicates the top-level paragraph logic instead of delegating, and
     // carve#626 was `battrs` going the same way. Delegating is the fix in both
     // cases; the inline path stays only for the plain shape it exists for.
-    if (b.t === 'para' && b.caption === undefined) {
+    //
+    // This is the THIRD field this site has dropped, and the first one that is
+    // not a field at all: a paragraph whose whole content is one image is not a
+    // paragraph by the time it is serialized (PART 11 §1c), so the hand-built
+    // `<p>` wrapped a shape the document level and the `<div>` arm both leave
+    // bare. Category 411's own prose states that rule without qualification and
+    // this site contradicted it - the oracle disagreeing with text it already
+    // ships, rather than a content model a list item has been shown to have
+    // (carve#1677). Delegating is the fix here for the same reason it was for
+    // carve#693 and carve#626.
+    if (b.t === 'para' && b.caption === undefined && !isBlockImageParagraph(b, ctx)) {
       // render the whole paragraph in one inline pass (lines joined by soft
       // breaks) so an inline construct spanning a soft break -- e.g. a
       // multi-line `` ``` ``-run folded in as lazy text -- is one span, not one

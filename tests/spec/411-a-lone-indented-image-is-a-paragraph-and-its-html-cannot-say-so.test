@@ -13,3 +13,43 @@ A lone indented image is a paragraph, and its HTML cannot say so
 .
 <img src="a.jpg" alt="Apollo">
 ```
+
+```
+>   ![Apollo](a.jpg)
+.
+<blockquote>
+  <img src="a.jpg" alt="Apollo">
+</blockquote>
+```
+
+```
+> ![Apollo](a.jpg)
+.
+<blockquote>
+  <img src="a.jpg" alt="Apollo">
+</blockquote>
+```
+
+```
+- t
+
+   ![Apollo](a.jpg)
+.
+<ul>
+  <li><p>t</p>
+    <img src="a.jpg" alt="Apollo">
+  </li>
+</ul>
+```
+
+```
+- t
+
+  ![Apollo](a.jpg)
+.
+<ul>
+  <li><p>t</p>
+    <img src="a.jpg" alt="Apollo">
+  </li>
+</ul>
+```
