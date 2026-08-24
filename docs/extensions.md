@@ -10,6 +10,10 @@ authority for Tier-1 output; the optional Tier-2 corpus
 This document defines the feature taxonomy and the extension mechanism every
 implementation realizes.
 
+If you only need to decide whether a feature is core, optional, or app-specific,
+use the [quick-reference table](#feature-tiers-quick-reference). The numbered
+sections that follow are the detailed contract for extension implementers.
+
 ::: tip Hands-on
 For a worked, end-to-end walkthrough of building a Tier-3 extension (a `qr`
 fenced block, in both carve-js and carve-php), see

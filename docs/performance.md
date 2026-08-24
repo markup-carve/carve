@@ -72,8 +72,12 @@ take a different shape:
   and identifier, plus a `Vec` per container node. That allocation count, not
   copy volume, is the dominant cost once the render hot path is tuned.
 
-So carve's ceiling, short of an architectural rewrite, sits below the pull
-parsers by design.
+The default path therefore remains more expensive than a pull parser. carve-rs
+and carve-js also expose a conservative streaming boundary
+(`try_render_html_streaming` / `tryRenderHtmlStreaming`) for render-only callers.
+It reports when a document needs the full AST and falls back without emitting
+partial output. The initial API returns one completed HTML chunk, so it defines
+the safe fast-path boundary but does not yet improve time to first byte.
 
 ## Regression guards
 

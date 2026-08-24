@@ -4,6 +4,11 @@ description: The contract for converting HTML into Carve - a migration boundary,
 
 # HTML import contract
 
+> [!TIP]
+> For application integration, start with the API, mode, and result sections.
+> The pipeline, element mapping, and fixture rules are the implementation
+> contract for importer authors.
+
 HTML import is a migration boundary, not an HTML serializer. Implementations
 parse HTML with an HTML5 parser, map supported semantics to the Carve AST, and
 use the normal Carve writer for source output.

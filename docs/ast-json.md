@@ -5,6 +5,11 @@ description: The JSON encoding of a parsed Carve document - one shape across eve
 
 # AST Exchange Format
 
+> [!TIP]
+> Application authors usually need the five interoperability rules and the API
+> examples. The complete node and field catalog is reference material for
+> engine, binding, and editor implementers.
+
 A parsed Carve document is **exchangeable**. One implementation serializes it,
 another reads it, and neither has to know which produced it.
 
@@ -22,6 +27,18 @@ engine called a link's destination `href`, another `destination`, and nothing
 noticed until a consumer read the wrong one.
 
 The encoding turns an N×M integration problem into N+M.
+
+## Editing APIs
+
+carve-js and carve-rs can create and apply JSON-Pointer AST patches, including
+reversible patches with document fingerprints that reject stale input. Use
+these for undoable structural edits and review workflows; validate untrusted
+patch JSON through the provided decoders rather than mutating arbitrary values.
+
+carve-rs also exposes `parse_snapshot` and `reparse` for editor integrations.
+The current snapshot API validates text changes and returns updated source,
+AST, and change ranges, but still reparses the full document. It establishes a
+stable incremental API boundary, not an incremental-performance claim.
 
 ## The shape in one document
 

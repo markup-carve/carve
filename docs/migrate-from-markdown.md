@@ -12,7 +12,10 @@ description: A task-oriented guide for Markdown and GFM authors switching to Car
 This guide is for authors who already know CommonMark or GitHub-Flavored Markdown (GFM) and want to rewrite documents in Carve. It focuses on what to change, not on why Carve differs from Markdown - for the design rationale see [Carve vs Markdown/Djot/MDX](/comparison).
 
 ::: tip Automated conversion
-There is no `migrate` CLI command; the Markdown converter is a library API. In carve-js call `markdownToCarve` (exported from `@markup-carve/carve`); in carve-php use `MarkupCarve\Carve\Converter\MarkdownToCarve`:
+The Rust CLI converts a file directly with `carve migrate --from markdown
+input.md`. In carve-js call `markdownToCarve` (exported from
+`@markup-carve/carve`); in carve-php use
+`MarkupCarve\Carve\Converter\MarkdownToCarve`:
 
 ```js
 import { markdownToCarve } from '@markup-carve/carve'

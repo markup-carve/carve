@@ -46,6 +46,9 @@ implementation exposes.
 
 Spec commit: `2cde4a1`, plus the three corpus cases this change adds
 
+<details>
+<summary>Corpus changes and engine windows since this snapshot</summary>
+
 Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `255-colon-fence-metadata-slots-must-be-a-space-too`,
 `256-table-cell-padding-must-be-a-space`,
@@ -447,6 +450,8 @@ the two that carry the rule: each DROPS the definition-shaped line at the
 quote's content column, rendering nothing and defining nothing, which is the
 outcome carve#624 forbids. This category will not match those two until that
 lands.
+</details>
+
 The run above predates carve#891, which rewrote `86-list-lazy-continuation-9`
 to the answer PART 1 S4 gives. `npm run engine:report` measures the pinned JS
 build (`52da7be`) reproducing 671 of the 672 documents, missing exactly that
@@ -492,37 +497,6 @@ expected-output fixtures, so agreement between engines was its only check
 > This run shared a loaded machine, so its per-file times run high and mean
 > little against the previous snapshot's. The counts are what this table is
 > for.
-
-## The render ceiling is per-engine, deliberately
-
-Nothing above measures the depth at which a renderer refuses, and the three
-engines refuse at three different depths. That is by design rather than by
-neglect, and it is worth stating because the numbers look like a disagreement.
-
-PART 9 §25 requires each implementation to DERIVE its render-ceiling margin from
-the worst per-level cost of **its own unit**, and forbids adopting another
-implementation's number without redoing that derivation. The units differ: two
-engines count container depth (one step per nesting level), one counts AST node
-levels, where a single list level costs two. A margin sized for one unit does not
-carry to the other - copying one across is what silently truncated a 120-level
-list in [carve#650](https://github.com/markup-carve/carve/issues/650). So three
-derivations produce three ceilings, and all three are conformant.
-
-The constants are not quoted here on purpose. Each lives in its own engine, next
-to the derivation it came from, and a table of them in this repository would be a
-number nobody checks - the same way this page once claimed 302 corpus pairs when
-there were 529.
-
-**What it means in practice.** No tree the parser produces can reach any of them:
-the parse path caps containers at `MAX_NESTING_DEPTH`, and every ceiling exceeds
-that cap by construction in its own unit. Only a programmatically built tree - an
-AST-JSON ingest, an editor bridge, a formatter driving a rewritten tree - reaches
-the band where the engines differ, and there the same document can be rendered by
-one engine and refused by another. Every refusal is typed and names its bound, so
-a caller is told which one it hit; none of them truncates.
-
-A host that needs one answer across engines should bound its own trees rather
-than rely on the ceilings agreeing, because §25 says they will not.
 
 ## The render ceiling is per-engine, deliberately
 
@@ -913,6 +887,9 @@ rather than a parser one.
 
 Optional raw output:
 
+<details>
+<summary>Optional corpus changes since this snapshot</summary>
+
 Optional corpus added since this run: `42-list-table-header-rows-cols`,
 `43-citations-at-label-in-reference-position`, `46-tabs-css-panel-name`,
 `47-tabs-aria-panel-binding`, `48-tabs-aria-single-selection`,
@@ -929,6 +906,8 @@ declaration is the same device the core block uses: it names the cases and
 carries no count, so there is nothing in it to fabricate, and
 `tests/implementation-comparison-counts.test.mjs` fails both when a named case
 stops existing and when the run is retaken without deleting the line.
+
+</details>
 
 Timings are from one machine and mean nothing across rows; the counts are the
 point. `tests/implementation-comparison-counts.test.mjs` fails if the
@@ -1013,7 +992,7 @@ every run:
 
 - **A missing importer** is a capability gap: it lives in
   `scripts/lib/converter-formats.mjs` with the reason (today: carve-rs has no
-  BBCode importer, carve-js has no Djot importer). A format an engine can
+  BBCode importer). A format an engine can
   neither convert nor explain fails the run; a declared gap the engine has
   quietly closed is a stale entry and fails too - the runner probes the engine
   itself rather than trusting the table.
