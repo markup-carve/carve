@@ -416,11 +416,11 @@ jobs:
       # labels this org's automation reads as "do not touch", and an alert that
       # lands pre-silenced is no alert.
       #
-      # THE TICKET IS SCOPED TO THE REF. `workflow_dispatch` can be aimed at any
-      # branch, so without the scope a green dispatch from a feature branch would
-      # CLOSE a ticket about `main` - silencing the alarm by testing something
-      # else, which is this issue's own failure mode wearing a different hat.
-      # A branch keeps its own ticket, and it self-closes the same way.
+      # TICKETS BELONG TO THE DEFAULT BRANCH ONLY. `workflow_dispatch` can be
+      # aimed at any branch, but a ticket scoped to a branch that is later
+      # deleted can never receive the green run that would close it. Branch
+      # runs still have their Actions verdict; only the durable backlog alert
+      # is restricted to the durable ref (carve#1656).
       #
       # This step FAILS if it cannot file. A reporter that swallows its own
       # errors is exactly the defect it exists to fix, so a missing permission
@@ -436,11 +436,19 @@ jobs:
           HEAD_SHA: ${{ github.sha }}
           REF_NAME: ${{ github.ref_name }}
           EVENT_NAME: ${{ github.event_name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           set -euo pipefail
 
+          if [ "$REF_NAME" != "$DEFAULT_BRANCH" ]; then
+            echo "AST conformance verdict tickets are scoped to $DEFAULT_BRANCH; $REF_NAME keeps its Actions verdict only."
+            echo "AST conformance on \`$REF_NAME\` is reported by this run; backlog tickets are scoped to \`$DEFAULT_BRANCH\`." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
           TITLE="AST conformance is failing on $REF_NAME"
           MARKER="<!-- ast-conformance-verdict ref=$REF_NAME -->"
+          GATES_MARKER="<!-- ast-conformance-gates"
 
           # Formatter shards run beside this job. Wait for them before reading
           # the run so one verdict covers every independent gate.
@@ -458,8 +466,17 @@ jobs:
           failed="$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs" --paginate \
             --jq '.jobs[].steps[] | select(.conclusion == "failure") | "- `" + .name + "`"')"
           bad_jobs="$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs" --paginate \
-            --jq '.jobs[] | select(.conclusion == "cancelled" or .conclusion == "timed_out") | "- `" + .name + "` (" + .conclusion + ")"')"
+            --jq '.jobs[] | select(.conclusion == "cancelled" or .conclusion == "timed_out" or .conclusion == "skipped") | "- `" + .name + "` (" + .conclusion + ")"')"
           failed="${failed}${failed:+$'\n'}${bad_jobs}"
+
+          # Discover the gate set from the run instead of keeping a second list
+          # beside the workflow. A Sunday/full run executes gates a daily run
+          # skips, and a daily green must not close a ticket one of those gates
+          # opened. Red runs retain their union, so evidence can widen the
+          # requirement but cannot silently narrow it (carve#1656).
+          gh api "repos/$REPO/actions/runs/$RUN_ID/jobs" --paginate \
+            --jq '.jobs[].steps[] | select(.name != "File the verdict where someone reads it") | select(.conclusion == "success" or .conclusion == "failure") | .name' \
+            | sort -u > /tmp/ast-conformance-current-gates.txt
 
           # Matched on the marker in the body rather than on the title, so
           # renaming the issue does not fork it into two, and listed rather than
@@ -470,9 +487,32 @@ jobs:
                 '.[] | select(.pull_request == null) | select((.body // "") | contains($m)) | .number')"
           issue="${open_issues%%$'\n'*}"
 
+          if [ -n "$issue" ]; then
+            gh issue view "$issue" --repo "$REPO" --json body --jq .body \
+              | sed -n '/^<!-- ast-conformance-gates$/,/^-->$/p' \
+              | sed '1d;$d' > /tmp/ast-conformance-previous-gates.txt
+          else
+            : > /tmp/ast-conformance-previous-gates.txt
+          fi
+          sort -u /tmp/ast-conformance-current-gates.txt \
+            /tmp/ast-conformance-previous-gates.txt \
+            > /tmp/ast-conformance-required-gates.txt
+
           if [ -z "$failed" ] && [ "$pending" -eq 0 ]; then
             echo "AST conformance is green on $HEAD_SHA."
             if [ -n "$issue" ]; then
+              missing="$(comm -23 /tmp/ast-conformance-required-gates.txt /tmp/ast-conformance-current-gates.txt)"
+              if [ -n "$missing" ]; then
+                missing_list="$(printf '%s\n' "$missing" | sed 's/^/- `/; s/$/`/')"
+                gh issue comment "$issue" --repo "$REPO" --body \
+                  $'This run is green for the gates it executed, but it did not close the ticket because it skipped gates measured by an earlier red run:\n\n'"$missing_list"$'\n\nA green full-depth run that executes them can close it.'
+                {
+                  echo "AST conformance is green on \`$HEAD_SHA\` for the gates this run executed, but #$issue remains open because this run skipped:"
+                  echo
+                  printf '%s\n' "$missing_list"
+                } >> "$GITHUB_STEP_SUMMARY"
+                exit 0
+              fi
               gh issue comment "$issue" --repo "$REPO" --body \
                 "Green again: run $RUN_URL on \`$HEAD_SHA\`. Closing. The next red run opens a fresh ticket rather than reopening this one, so a closed ticket always means the last run passed."
               gh issue close "$issue" --repo "$REPO"
@@ -484,6 +524,9 @@ jobs:
 
           {
             echo "$MARKER"
+            echo "$GATES_MARKER"
+            cat /tmp/ast-conformance-required-gates.txt
+            echo "-->"
             echo
             echo "\`AST conformance\` is failing on \`$REF_NAME\`. This workflow builds four"
             echo "engines and runs on a daily schedule, so no pull request gate sees it and"
