@@ -24,3 +24,6 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+24-generic-divs-4  carve#1725 permits an ASCII digit to start an explicit class
+71-attribute-edge-cases-15  carve#1725 permits ASCII digits to start explicit IDs and classes
+71-attribute-edge-cases-17  carve#1725 permits an ASCII digit to start an explicit class
