@@ -1575,31 +1575,38 @@ definition_body = (':', definition_separator, first_block_content)
                    | (blank_line+, definition_continuation)
                    | continuation_marker_block
                    | lazy_continuation_line }) ;
-definition_separator = space, [space] ;
+definition_separator = space, {space} ;
 (* FIRST-BLOCK (`:  +`): when the sole content is a lone `+`, the body is the
    FOLLOWING flush-left block, with no indentation -- the definition-list twin
    of the list-item `- +` opener (`first_block_content`). `:  \+` is a literal
    `+`. *)
 
-(* SEPARATOR WIDTH SETS THE BODY'S COLUMN (carve#1755). The separator is ONE or
-   TWO spaces, and the body's content column is `1 + separator width`: `: x`
-   establishes column 2, `:  x` column 3. A continuation line qualifies by
-   REACHING that column (PART 9 SS24 C1), so the two spellings differ only in
-   how far their continuations indent, never in what they mean.
+(* SEPARATOR WIDTH SETS THE BODY'S COLUMN (carve#1755). The separator is a run
+   of ONE OR MORE spaces, and the body's content column is `1 + separator
+   width`: `: x` establishes column 2, `:  x` column 3, `:    x` column 5. A
+   continuation line qualifies by REACHING its own body's column (PART 9 SS24
+   C1), so the spellings differ only in how far their continuations indent,
+   never in what they mean.
 
-   ONE SPACE IS CANONICAL. Every other marker in the language takes exactly one
-   separator space -- `- item`, `1. item`, `> quote`, `:: term` -- and the
-   definition body was the only construct requiring two. Two spaces remain valid
-   because they align the `dd` under the `dt`'s text.
+   This is the rule a BULLET already follows: `-   first` puts its content
+   column at 4 and a continuation at 2 does not reach it. The definition body
+   was the one construct that measured its separator against a fixed width
+   instead, and the one that demanded two spaces where every other marker in
+   the language takes one -- `- item`, `1. item`, `> quote`, `:: term`.
 
-   This is not a leniency the reader may extend. A THIRD space is not a third
-   column: `:    x` is a two-space marker whose body begins with two columns of
-   content indent, exactly as it did before this clause. What changed is that
-   the one-space spelling now HAS a meaning; it used to have none, and the three
-   engines disagreed about what to do with a line that had none -- carve-js
-   folded `: x` after a term into the `<dt>`, the oracle left it a stray
-   paragraph. A colon line inside a definition context has exactly one reading
-   now. *)
+   ONE SPACE IS CANONICAL. A wider separator is accepted and the formatter
+   narrows it, which is what a formatter is for; nothing about the document's
+   meaning depends on the author having picked the canonical width. Narrowing
+   the separator narrows the body's column, so a canonical rewrite carries every
+   continuation inside that body down by the same amount. A formatter that
+   trims the separator and leaves the body where it was changes what the
+   document says.
+
+   What changed for the one-space spelling is that it now HAS a meaning. It used
+   to have none, and the engines disagreed about what to do with a line that had
+   none -- carve-js folded `: x` after a term into the `<dt>`, the oracle left it
+   a stray paragraph. A colon line inside a definition context has exactly one
+   reading now. *)
 definition_continuation = (definition_indent, inline_content, newline)
                         | (backslash, newline, definition_indent, inline_content, newline) ;
 definition_indent = whitespace, {whitespace} ;

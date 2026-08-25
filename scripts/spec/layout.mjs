@@ -620,15 +620,16 @@ function footnoteBlankRunEnd(lines, i, n) {
 }
 
 // A definition body's column is the one its OWN marker establishes: `:` plus
-// the separator, so `: ` gives 2 and `:  ` gives 3 (grammar.ebnf,
-// `definition_separator`). It is never read off the first continuation line,
-// and a wider separator than the two the grammar admits does not widen it --
-// `:    x` is a two-space marker with two columns of content indent.
+// the separator run, so `: ` gives 2, `:  ` gives 3 and `:    ` gives 5
+// (grammar.ebnf, `definition_separator`). It is never read off the first
+// continuation line. This is the bullet's rule -- `-   first` sits at column 4
+// -- and the definition body used to be the one construct measuring its
+// separator against a fixed width instead.
 //
-// One space is the CANONICAL spelling: every other marker in the language takes
-// exactly one separator space (`- item`, `1. item`, `:: term`), and the body
-// was the sole exception. Two spaces stay valid because they align a `dd` under
-// its `dt`'s text, which is what the corpus and most authored documents use.
+// One space is the CANONICAL spelling; every other marker in the language takes
+// exactly one separator space. A wider run is accepted and the formatter
+// narrows it, which narrows this column with it, so a canonical rewrite has to
+// carry the body's continuations down by the same amount.
 const DEFINITION_BODY_COLUMN = 3
 
 // PART 9 SS24 C1/carve#893: a definition-body continuation line qualifies by
@@ -2206,7 +2207,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           node.items.push({ dt })
           continue
         }
-        if ((dm = /^:( {1,2})(.*)$/.exec(cur0))) {
+        if ((dm = /^:( +)(.*)$/.exec(cur0))) {
           const bodyColumn = 1 + dm[1].length
           // definition (dd): collect its full body, then parse it to blocks. A
           // definition body continues like a list item (SS17): lazy
