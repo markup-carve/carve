@@ -24,11 +24,3 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not  carve#1701: the released reference build still counts marker attributes
-413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not-10  carve#1701: attributed-parent sublist uses the new bare-marker column
-413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not-2  carve#1701: the old full-prefix task body now demotes
-413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not-4  carve#1701: plain attributed item uses the bare-marker column
-413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not-5  carve#1701: ordered attributed item uses the bare-marker column
-413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not-7  carve#1701: different-length attributes share a body column
-413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not-8  carve#1701: legacy full-prefix indentation demotes under the new rule
-413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not-9  carve#1701/#1698: Unicode attribute spelling contributes zero
