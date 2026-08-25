@@ -1,0 +1,40 @@
+A sigil fence takes its attribute line
+
+```
+{#poem .verse}
+::: |
+Roses are red,
+  Violets are blue.
+:::
+.
+<div id="poem" class="verse line-block">
+  <p>Roses are red,<br>
+&nbsp;&nbsp;Violets are blue.</p>
+</div>
+```
+
+```
+{#poem}
+::: |
+one
+two
+:::
+.
+<div id="poem" class="line-block">
+  <p>one<br>
+two</p>
+</div>
+```
+
+```
+{#addr .contact}
+::: \
+one
+two
+:::
+.
+<div id="addr" class="contact hardbreaks">
+  <p>one<br>
+two</p>
+</div>
+```

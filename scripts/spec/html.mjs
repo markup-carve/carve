@@ -525,7 +525,19 @@ function renderBlock(b, depth, ctx) {
         const source = body.map((l) => renderLineBlockLine(l)).join('\n')
         return `${pad2}  <p>${renderInlineHardBreaks(source)}</p>`
       })
-      return `${pad2}<div class="line-block">\n${ps.join('\n')}\n${pad2}</div>`
+      // A SIGIL FENCE TAKES ITS ATTRIBUTE LINE LIKE EVERY OTHER BLOCK
+      // (docs/blocks-and-attributes.md: the rule is uniform, and names
+      // line-blocks). This renderer dropped them: the class string was a
+      // literal, so `{#x .y}` above the opener reached the node as `battrs`
+      // and was never read. All three engines apply them, so the oracle was
+      // alone (markup-carve/carve#1764).
+      //
+      // The base class goes LAST, which is what the engines emit -
+      // `class="y line-block"`. renderBlockAttrs merges classes at the FIRST
+      // class position, so appending the synthetic class IS that rule, and an
+      // id-only attribute line still yields `id="x" class="line-block"`.
+      const lbAttrs = renderBlockAttrs([...(b.battrs ?? []), [['class', 'line-block']]])
+      return `${pad2}<div${lbAttrs}>\n${ps.join('\n')}\n${pad2}</div>`
     }
     case 'hardbreaks': {
       const pad2 = '  '.repeat(depth)
@@ -538,8 +550,10 @@ function renderBlock(b, depth, ctx) {
         }
         return renderBlock(c, depth + 1, ctx)
       })
-      if (parts.length === 0) return `${pad2}<div class="hardbreaks"></div>`
-      return `${pad2}<div class="hardbreaks">\n${parts.join('\n')}\n${pad2}</div>`
+      // Same rule as the line block above, same defect, same fix.
+      const hbAttrs = renderBlockAttrs([...(b.battrs ?? []), [['class', 'hardbreaks']]])
+      if (parts.length === 0) return `${pad2}<div${hbAttrs}></div>`
+      return `${pad2}<div${hbAttrs}>\n${parts.join('\n')}\n${pad2}</div>`
     }
     case 'deflist': {
       // A DEFINITION LIST TAKES ITS ATTRIBUTES LIKE ANY BLOCK (PART 9 §15 A2),
