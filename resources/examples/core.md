@@ -768,7 +768,7 @@ After a blank line the **same content-column rule** applies: a continuation belo
 
 :::
 
-*Above* the content column the residual indentation means the line is no longer a block opener — just as ` # h` is a paragraph, not a heading, at the top level — so it folds in as a second paragraph and turns the item loose (§17 L1).
+*Past* the content column, a recognized opener uses its authored column as a temporary block base. Extra indentation is accepted inside list items and canonical output moves the opener back to the content column.
 
 ::: compare
 
@@ -780,8 +780,8 @@ After a blank line the **same content-column rule** applies: a continuation belo
 
 ```html
 <ol>
-  <li><p>one</p>
-    <p>&gt; q</p>
+  <li>one
+    <blockquote><p>q</p></blockquote>
   </li>
 </ol>
 ```

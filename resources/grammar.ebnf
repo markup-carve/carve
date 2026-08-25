@@ -6886,8 +6886,8 @@ EOF = (* end of file *) ;
          task checkbox is content and contributes zero for the same coordinate:
          `-{.x} [x] ` -> 2. A child -- a LIST MARKER (bullet `-`/`*`,
          task, or ordered, SYMMETRIC) opening a sublist, OR any OTHER block
-         opener -- must reach the parent item's content_column to belong to the
-         item. The block-opener set is UNIFORM and closed: block quote (`>` or
+         opener -- must reach AT LEAST the parent item's content_column to belong
+         to the item. The block-opener set is UNIFORM and closed: block quote (`>` or
          `> `), heading (`#`), thematic break, fenced code, colon fence / admonition
          (`:::`), TABLE (a `|`-delimited row), and DEFINITION LIST (a `:: term`
          opener; the two-line `:: `/`:  ` marker is recognized by the same
@@ -6895,8 +6895,7 @@ EOF = (* end of file *) ;
          block). None of these is special-cased: a def-list or table interrupts
          at column 0 and nests at content_column exactly as a quote or heading
          does (carve#295). The content_column is
-         the item body's COLUMN 0: a block opener is recognized there exactly
-         as a block opener is recognized only at column 0 at the top level.
+         the item body's CANONICAL COLUMN 0 and its minimum containment column.
          This one rule holds whether or not a blank line precedes the child;
          the blank only decides tight vs loose (§17), and there is no relaxed
          `base_column + 2` channel.
@@ -6991,23 +6990,30 @@ EOF = (* end of file *) ;
              (carve#677).
            - AT content_column: dedented to the body's column 0, a block
              opener nests and a list marker opens a sublist.
-           - ABOVE content_column: the residual indent means the line is no
-             longer a block opener -- exactly as ` # h` with a leading space is
-             a paragraph, not a heading, at the top level -- so it folds in as
-             lazy paragraph text.
+           - ABOVE content_column: a recognized block opener also nests. Its
+             authored visual column becomes that ONE block's temporary
+             `block_base`; the opener, its structural continuation/body and its
+             closer are interpreted relative to that base. Indentation beyond
+             `block_base` remains authored content. The canonical writer ignores
+             the temporary base and emits the block at content_column. Plain
+             paragraph indentation is unchanged, and a sublist marker keeps its
+             existing at-or-past containment rule rather than being rebased.
              A processor with lint diagnostics SHOULD report this ambiguous
-             block-shaped spelling and name both semantics-preserving author
-             choices: dedent to content_column to make the block structural, or
-             escape the opener to preserve literal text. It SHOULD likewise
+             compatibility spelling and name both author choices: dedent to
+             content_column for the canonical structural spelling, or escape
+             the opener to preserve the literal meaning older readers assigned
+             to it. It SHOULD likewise
              report a block-shaped line between the marker and content_column
              that detached after a blank. The stable rule ids and exact scopes
              are `list-item-block-overindented` and `list-item-body-detached`
              in docs/validation.md. The default formatter MUST NOT choose one
-             intention for the author (carve#1702, experiment carve#1705).
-         This is an INTENTIONAL divergence from djot, which attaches a block
-         opener at any indent past the marker; carve requires the content
-         column, consistent with its column-0 block-opener rule
-         (docs/divergence-from-djot, carve#295).
+             intention for the author while migrating an older spelling
+             (carve#1702, carve#1705).
+         This is intentionally SIMILAR TO DJOT'S LENIENCY inside list items:
+         any authored column at or beyond Carve's minimum content_column may
+         open the block. Top-level block openers remain column-strict, and a
+         line below content_column is unchanged (docs/divergence-from-djot,
+         carve#295, carve#1705).
       C4 RULE B (TOP LEVEL, ANY INDENT). A bullet (`-`/`*` + space +
          content) opens a list at ANY indentation at the TOP LEVEL -- no
          column-0 restriction (unlike CommonMark, `    - x` is a list, not

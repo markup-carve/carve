@@ -25,13 +25,12 @@ See [r][].
   <li>
     <blockquote>
       <ul>
-        <li>x
-[r]: /url</li>
+        <li>x</li>
       </ul>
     </blockquote>
   </li>
 </ul>
-<p>See [r][].</p>
+<p>See <a href="/url">r</a>.</p>
 ```
 
 ```

@@ -36,7 +36,7 @@ A lone indented image is a paragraph, and its HTML cannot say so
    ![Apollo](a.jpg)
 .
 <ul>
-  <li><p>t</p>
+  <li>t
     <img src="a.jpg" alt="Apollo">
   </li>
 </ul>
@@ -48,7 +48,7 @@ A lone indented image is a paragraph, and its HTML cannot say so
   ![Apollo](a.jpg)
 .
 <ul>
-  <li><p>t</p>
+  <li>t
     <img src="a.jpg" alt="Apollo">
   </li>
 </ul>

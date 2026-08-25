@@ -120,7 +120,8 @@ b
     # H
 .
 <ul>
-  <li><input type="checkbox" disabled aria-label="item # H"> item
-# H</li>
+  <li><input type="checkbox" disabled aria-label="item"> item
+    <h1 id="H">H</h1>
+  </li>
 </ul>
 ```

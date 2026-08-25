@@ -1451,9 +1451,9 @@ from the marker rather than assumed.
 
 :::
 
-A task item is the exception: its content column stays at 2. The checkbox is
-content rather than marker, and extra spaces before it do not move the column
-either, so neither 6 nor 8 is where the body starts.
+A task item's content column stays at 2. The checkbox is content rather than
+marker, and extra spaces before it do not move the minimum column. A recognized
+heading at column 4 therefore uses column 4 as its authored base.
 
 ::: compare
 
@@ -1464,8 +1464,9 @@ either, so neither 6 nor 8 is where the body starts.
 
 ```html
 <ul>
-  <li><input type="checkbox" disabled aria-label="item # H"> item
-# H</li>
+  <li><input type="checkbox" disabled aria-label="item"> item
+    <h1 id="H">H</h1>
+  </li>
 </ul>
 ```
 
@@ -2707,7 +2708,8 @@ On its own, though, an attribute line leaves the item **tight** — it renders n
 
 :::
 
-One column further in it is not an attribute line at all: §15 makes it column-strict, so it is literal paragraph text. It renders, and it loosens like any other paragraph — the one place where an attribute line and a comment part company, since a comment renders nothing at any indent.
+One column further in, the recognized attribute opener uses that authored column
+as a temporary block base. It remains invisible and the item remains tight.
 
 ::: compare
 
@@ -2719,9 +2721,7 @@ One column further in it is not an attribute line at all: §15 makes it column-s
 
 ```html
 <ul>
-  <li><p>a</p>
-    <p>{.c}</p>
-  </li>
+  <li>a</li>
 </ul>
 ```
 
@@ -5249,7 +5249,7 @@ And an unclosed line does not swallow a following well-formed row: the row still
 
 ## Post-blank list continuation (content-column model)
 
-A block opener or sublist marker attaches to a list item only when it reaches the item's *content column* (§24 C3): `- ` -> column 2, `1. ` -> column 3. One rule, blank line or not - the blank only decides tight vs loose. Below the content column a line lazily continues the item paragraph (no blank) or, after a blank, ends the item and parses at document level; above the content column the residual indent means it is no longer a block opener, so it folds in as lazy paragraph text. This is an intentional divergence from djot, which attaches at any indent past the marker (see #295).
+A block opener or sublist marker attaches to a list item when it reaches at least the item's *content column* (§24 C3): `- ` -> column 2, `1. ` -> column 3. One rule, blank line or not - the blank only decides tight vs loose. Below the content column a line lazily continues the item paragraph (no blank) or, after a blank, ends the item and parses at document level. Past the column, a recognized opener establishes its authored block base and remains structural; canonical output returns it to the content column. This is intentionally similar to Djot's deeper-indent leniency while retaining Carve's minimum column.
 
 Below the content column, after a blank line, the block opener ends the item and parses at the document level.
 
@@ -5290,7 +5290,7 @@ At the content column, it nests into the item.
 
 :::
 
-Above the content column, the residual indent makes it lazy paragraph text inside the item, not a block opener.
+Past the content column, a recognized opener remains structural and uses its authored column as a temporary block base.
 
 ::: compare
 
@@ -5302,8 +5302,8 @@ Above the content column, the residual indent makes it lazy paragraph text insid
 
 ```html
 <ul>
-  <li><p>one</p>
-    <p># h</p>
+  <li>one
+    <h1 id="h">h</h1>
   </li>
 </ul>
 ```
@@ -5603,7 +5603,7 @@ A `|`-delimited table row is a block opener under the same content-column rule: 
 
 ## Colon-fence as a block opener in a list item
 
-A `:::` colon-fence (admonition / div) is a block opener like every other (§24 C3): it nests only when it reaches the item's content column, and folds as lazy text below or above it.
+A `:::` colon-fence (admonition / div) is a block opener like every other (§24 C3): it must reach the item's content column, and a deeper authored column becomes the fence's temporary block base.
 
 :::: compare
 
@@ -5658,9 +5658,10 @@ b
 ```html
 <ul>
   <li>one
-::: note
-b
-:::</li>
+    <aside class="admonition note" aria-label="Note">
+      <p>b</p>
+    </aside>
+  </li>
 </ul>
 ```
 
@@ -5668,7 +5669,7 @@ b
 
 ## Fence folds as lazy inline code above the content column
 
-A fenced code block indented past the content column is no longer a block opener; its lines fold as lazy paragraph text, so the backtick run becomes an inline code span (with its content's leading indentation stripped like any inline verbatim span).
+A fenced code block indented past the content column remains a block opener. Its opener column is the temporary block base, so structural over-indent is removed while payload indentation beyond that base survives. Canonical output writes the fence at the content column.
 
 :::: compare
 
@@ -5682,10 +5683,9 @@ A fenced code block indented past the content column is no longer a block opener
 
 ```html
 <ul>
-  <li><p>one</p>
-    <p><code>
-c
-</code></p>
+  <li>one
+    <pre><code>c
+</code></pre>
   </li>
 </ul>
 ```
@@ -6184,10 +6184,9 @@ opener line - folds into the item as literal text rather than an admonition.
 
 ## Outer item with an internal blank before an attached block is loose
 
-An outer list item that contains its own blank line before a block attached
-below its nested list is loose: the item's leading text is wrapped in a `<p>`.
-The blank line separates the item's own content from the trailing blockquote-like
-paragraph, so the item is not tight even though its nested child list is.
+An over-indented recognized block after a nested list remains an attached block.
+Its authored quote column is temporary; it does not turn the quote into a
+paragraph or make the outer item loose.
 
 ::: compare
 
@@ -6200,11 +6199,11 @@ paragraph, so the item is not tight even though its nested child list is.
 
 ```html
 <ul>
-  <li><p>a</p>
+  <li>a
     <ul>
       <li>b</li>
     </ul>
-    <p>&gt; q</p>
+    <blockquote><p>q</p></blockquote>
   </li>
 </ul>
 ```
@@ -9703,7 +9702,7 @@ following paragraph
 
 ## A tab indent is the column it reaches, whatever the line holds
 
-§24 C1 makes indentation a column claim: a space advances one column, a tab advances to the next multiple of 4. `1. ` claims columns 0-2, so the item's content column is 3 and a tab reaches column 4 - one column PAST it, which is what four spaces reach too. A block opener at the content column nests; one column past it is text, and the tab spelling has to say the same thing as the space spelling of the same column.
+§24 C1 makes indentation a column claim: a space advances one column, a tab advances to the next multiple of 4. `1. ` claims columns 0-2, so the item's content column is 3 and a tab reaches column 4 - one column PAST it, which is what four spaces reach too. Both spellings establish the same authored block base and open the quote.
 
 The corpus pinned neither, so two engines read the tab as if it stopped at the content column and nested a block quote no space spelling of column 4 produces (carve-js#767, carve-php#890).
 
@@ -9717,7 +9716,8 @@ The corpus pinned neither, so two engines read the tab as if it stopped at the c
 ```html
 <ol>
   <li>a
-&gt; quote</li>
+    <blockquote><p>quote</p></blockquote>
+  </li>
 </ol>
 ```
 
@@ -9745,8 +9745,8 @@ At the content column itself it nests, which is the boundary the rule above is d
 ## The same column, written with four spaces
 
 The control for the rule above, and the half that was stated rather than
-checked. That pair pins the tab against the THREE-space spelling, which shows
-the two DIFFER. What makes the tab case decidable is the other comparison: a
+checked. That pair pins the tab against the THREE-space spelling. What makes
+the tab case decidable is the other comparison: a
 tab reaches column 4, four spaces reach column 4, so the two are the same claim
 and must get the same answer.
 
@@ -9765,7 +9765,8 @@ carve-php#890).
 ```html
 <ol>
   <li>a
-&gt; quote</li>
+    <blockquote><p>quote</p></blockquote>
+  </li>
 </ol>
 ```
 
@@ -18736,11 +18737,9 @@ list below it is left plain:
 
 :::
 
-The braces have to be FLUSH in the item's body. One space past the content
-column is a paragraph, exactly as `87-compact-list-blocks-10` pins for the form
-with nothing after it - and the nested list that follows is then plain. An
-implementation that trims the indentation before looking for the brace deletes
-this paragraph and re-tightens the item:
+The braces may establish an authored block base past the canonical column. The
+attribute remains structural and attaches to the nested list that follows at
+the same authored base:
 
 ::: compare
 
@@ -18753,9 +18752,8 @@ this paragraph and re-tightens the item:
 
 ```html
 <ul>
-  <li><p>a</p>
-    <p>{.c}</p>
-    <ul>
+  <li>a
+    <ul class="c">
       <li>b</li>
     </ul>
   </li>
@@ -24421,7 +24419,9 @@ See [r][].
 
 :::
 
-The same shape one container deeper, which is the spelling the ticket reported.
+The same shape one container deeper now has a live outer list item even though
+the line does not re-enter the quote. At column 4 it is an over-indented
+definition in that outer item, so it registers under the authored-base rule.
 
 ::: compare
 
@@ -24437,13 +24437,12 @@ See [r][].
   <li>
     <blockquote>
       <ul>
-        <li>x
-[r]: /url</li>
+        <li>x</li>
       </ul>
     </blockquote>
   </li>
 </ul>
-<p>See [r][].</p>
+<p>See <a href="/url">r</a>.</p>
 ```
 
 :::
@@ -26387,7 +26386,8 @@ not a blank line precedes the child". §10 I2 defers to it by name rather than
 competing with it - "TIGHT NESTED LISTS UNAFFECTED: an indented marker inside an
 open list ITEM opens a sublist with no blank line - that is §24 C3 (content
 column), not this relation" - and the clause closes by calling the content-column
-model an intentional divergence from djot.
+model's minimum-column boundary while deeper block bases now follow Djot-style
+leniency.
 
 All three engines applied it to the FIRST marker in an item and no other. Each
 hands the sub-list off to the list parser and the rest of the body back as a
@@ -27254,10 +27254,8 @@ already gives - the HTML cannot see which reading produced the image.
 
 :::
 
-A LIST ITEM, INDENTED PAST ITS CONTENT COLUMN. The item's second block is a
-paragraph whose whole content is one image, so it renders as a bare `<img>` -
-the rule stated at the top of this section, applied in the one container the
-oracle used to exempt. The item is loose, so its first block keeps its `<p>`.
+A LIST ITEM, INDENTED PAST ITS CONTENT COLUMN. The lone image is a recognized
+block opener, so its authored column is temporary and the item stays tight.
 
 ::: compare
 
@@ -27269,7 +27267,7 @@ oracle used to exempt. The item is loose, so its first block keeps its `<p>`.
 
 ```html
 <ul>
-  <li><p>t</p>
+  <li>t
     <img src="a.jpg" alt="Apollo">
   </li>
 </ul>
@@ -27277,11 +27275,8 @@ oracle used to exempt. The item is loose, so its first block keeps its `<p>`.
 
 :::
 
-And the flush control for the item, at the content column. carve-rs publishes
-`tight: true` for this list where carve-js, carve-php and the oracle publish
-`tight: false`, so its first block loses the `<p>` - a looseness bug the blank
-line settles on its own, unrelated to §1c and tracked at markup-carve/carve-rs#1358. This
-pair is what makes it visible; the indented spelling above does not reach it.
+And the flush control for the item, at the content column. It has the same
+structure and tightness as the authored-base spelling above.
 
 ::: compare
 
@@ -27293,7 +27288,7 @@ pair is what makes it visible; the indented spelling above does not reach it.
 
 ```html
 <ul>
-  <li><p>t</p>
+  <li>t
     <img src="a.jpg" alt="Apollo">
   </li>
 </ul>
@@ -27437,10 +27432,9 @@ the item.
 
 :::
 
-The old full-prefix column is pinned beside it as a migration case. It is now
-past the content column, so the line is lazy paragraph text and the `#` survives
-literally. The metadata spelling can no longer silently select between these
-two structures.
+The old full-prefix column is pinned beside it as a migration case. It is past
+the canonical content column but remains structural under the authored-base
+rule. The metadata spelling can no longer silently select between structures.
 
 ::: compare
 
@@ -27451,8 +27445,9 @@ two structures.
 
 ```html
 <ul>
-  <li id="k"><input type="checkbox" checked disabled aria-label="old # outside"> old
-# outside</li>
+  <li id="k"><input type="checkbox" checked disabled aria-label="old"> old
+    <h1 id="outside">outside</h1>
+  </li>
 </ul>
 ```
 
@@ -27573,7 +27568,8 @@ column. Renaming a class cannot move either heading.
 :::
 
 The old full-prefix column is over-indented under the bare-marker rule. It stays
-inside the item but the residual indentation makes the heading marker text.
+inside the item and establishes an authored block base, so the heading remains
+structural and canonical output moves it to column 2.
 
 ::: compare
 
@@ -27585,7 +27581,8 @@ inside the item but the residual indentation makes the heading marker text.
 ```html
 <ul>
   <li class="x1">a
-# h</li>
+    <h1 id="h">h</h1>
+  </li>
 </ul>
 ```
 

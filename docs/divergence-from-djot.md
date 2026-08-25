@@ -421,13 +421,13 @@ pandoc-carve doc.crv -t typst -o doc.typ
 With the bridge in play, `{=latex}` and friends are no longer inert: they are
 authored for the pandoc writer that will eventually consume the document.
 
-## 11. List continuation requires the content column
+## 11. List continuation has Carve's minimum content column
 
 **Djot:** a block indented anywhere past a list marker belongs to the item -
 even a single space under a `-`, or two spaces under `1. ` (whose content
 starts at column 3).
 
-**Carve:** a block belongs to a list item only if it reaches the item's
+**Carve:** a block belongs to a list item only if it reaches at least the item's
 **content column** - the column where the item's own text starts (`- ` -> 2,
 `1. ` -> 3, `10. ` -> 4). This is the same rule with or without a blank line
 before the block; the blank only decides whether the item is tight or loose.
@@ -442,15 +442,12 @@ before the block; the blank only decides whether the item is tight or loose.
   > this stops at column 2 - it detaches to document level
 ```
 
-**Why.** Carve recognizes a block opener only at **column 0 of its context**.
-At the top level ` # h` (a leading space) is a paragraph, not a heading; the
-content column is simply column 0 for the item's body, so the same rule
-applies there. A block below the content column is outside the body (it
-detaches, or lazily continues the paragraph); a block indented *past* it keeps
-its residual spaces and, like ` # h`, is paragraph text rather than a block.
-Djot instead attaches at any indent, which means a block one space under the
-marker - visually left of the item's own text - still becomes a child. The
-`+` continuation marker (§3) still attaches a flush-left block regardless.
+**Difference.** Like Djot, Carve accepts a recognized opener at any deeper
+indent and treats its authored column as that block's temporary base. Unlike
+Djot, Carve still requires the line to reach its canonical content column: a
+block one space under `-` is below column 2 and does not nest. Top-level
+openers remain column-strict. The `+` continuation marker (§3) still attaches a
+flush-left block regardless.
 
 ## 12. Smart punctuation is one leaf node, not three container types
 

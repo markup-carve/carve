@@ -7,11 +7,11 @@ Outer item with an internal blank before an attached block is loose
    > q
 .
 <ul>
-  <li><p>a</p>
+  <li>a
     <ul>
       <li>b</li>
     </ul>
-    <p>&gt; q</p>
+    <blockquote><p>q</p></blockquote>
   </li>
 </ul>
 ```
