@@ -820,3 +820,17 @@ test('section 12(d) does NOT reach a srcByteLength that is merely wrong', () => 
   d.srcByteLength = 99999
   assert.ok(validate(d), `a wrong-but-present srcByteLength must still validate: ${firstErrors()}`)
 })
+
+test('the checked-render loss report has the shared closed shape', () => {
+  const reportSchema = JSON.parse(readFileSync(resolve(root, 'resources/render-loss-report.schema.json'), 'utf8'))
+  const validateReport = new Ajv2020({ strict: true }).compile(reportSchema)
+  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 12, startOffset: 0, endOffset: 11 }
+  const report = {
+    losses: [{ code: 'raw-format-dropped', format: 'latex', target: 'html', nodeType: 'inline', message: 'Dropped inline raw format "latex" while rendering html', pos }],
+    totalLosses: 1,
+    truncated: false,
+  }
+  assert.equal(validateReport(report), true, JSON.stringify(validateReport.errors))
+  assert.equal(validateReport({ ...report, unknown: true }), false)
+  assert.equal(validateReport({ ...report, losses: [{ ...report.losses[0], code: 'other' }] }), false)
+})
