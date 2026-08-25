@@ -14,3 +14,4 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
+419-a-definition-list-inside-a-footnote-body-carries-its-authored-base-2  the pin READS this correctly and writes it back with a different meaning (carve#1761): canonicalizing the definition opener from column 3 to the body minimum carries the quote from 6 to 5, and the quote then leaves the `dd`. carve#1752 requires the canonical form to preserve what the document says.

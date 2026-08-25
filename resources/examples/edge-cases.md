@@ -28060,3 +28060,117 @@ list looseness is decided.
 ```
 
 :::
+
+## A definition list inside a footnote body carries its authored base
+
+A definition list is a recognized opener, so it belongs to the footnote body at
+or past that body's minimum column (PART 9 SS17, carve#1752). Written AT the
+column, the body's own minimum governs what follows it, and a quote below the
+definition is the note's next block.
+
+::: compare
+
+```carve
+[^n]: intro
+
+  :: term
+  :  definition
+
+     > quote
+
+see[^n]
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>intro</p>
+      <dl>
+        <dt>term</dt>
+        <dd>definition</dd>
+      </dl>
+      <blockquote><p>quote</p></blockquote>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+Written PAST the column, the opener's own column becomes the definition's local
+base, and a quote reaching that base is the definition's block rather than the
+note's.
+
+::: compare
+
+```carve
+[^n]: intro
+
+   :: term
+   :  definition
+
+      > quote
+
+see[^n]
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>intro</p>
+      <dl>
+        <dt>term</dt>
+        <dd>
+          <p>definition</p>
+          <blockquote><p>quote</p></blockquote>
+        </dd>
+      </dl>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+Below that base the quote reaches neither: it is inside the note, past the
+definition, and its marker is text.
+
+::: compare
+
+```carve
+[^n]: intro
+
+   :: term
+   :  definition
+
+     > quote
+
+see[^n]
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>intro</p>
+      <dl>
+        <dt>term</dt>
+        <dd>definition</dd>
+      </dl>
+      <p>&gt; quote<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::

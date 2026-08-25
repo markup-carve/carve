@@ -561,6 +561,7 @@ index: examples/edge-cases/index.md
   22-footnotes-3
   22-footnotes-6
 
+  a-definition-list-inside-a-footnote-body-carries-its-authored-base
 [edge-definitions] Definition lists and abbreviations
 > Terms and descriptions, abbreviation definitions and the document levels that may declare them.
 out: examples/edge-cases/definitions.md
