@@ -5467,11 +5467,26 @@ EOF = (* end of file *) ;
       a valid closer, the bullet/ordered marker lines are the admonition's
       body and the block wraps the nested `<ul>`/`<ol>`. A blank line
       between the opener and the nested list still opens the block, and an
-      empty body (opener immediately followed by its closer) opens too. With
-      NO matching closer, the opener degrades to literal text and the marker
-      lines form an ordinary nested list. The corpus pins these
+      empty body (opener immediately followed by its closer) opens too. A
+      MISSING closer changes none of this: PART 2's UNCLOSED rule governs
+      unqualified, the opener opens and the container closes at end of input.
+      The corpus pins these
       (resources/examples/edge-cases.md "Fence opener with a nested-list body inside a list
       item").
+
+      THIS PARAGRAPH ALSO SAID THAT WITH NO MATCHING CLOSER THE OPENER
+      DEGRADES TO LITERAL TEXT AND THE MARKER LINES FORM AN ORDINARY NESTED
+      LIST. That is the retired literal-text reading carve#1719 removed from
+      this section three screens up, wearing a list item. PART 2 grants it no
+      such carve-out: it names ONE exception and it is LAZY FOLDING, a
+      different shape (`- ::: d` over a flush-left `tail`, which opens
+      nothing), not a missing closer. carve-js, carve-php and carve-rs all
+      wrap the nested list in the container, byte for byte what the same
+      document produces WITH a closer at the item content column. It survived
+      the carve#770 pass, and it survived carve#1719 because the corpus pinned
+      the right bytes under a NEGATIVE label that described the removed rule --
+      a gate cannot fail on prose. The label is corrected with this sentence
+      (carve#1722).
 
       The two tiers for a typed block:
 

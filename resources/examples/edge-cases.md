@@ -4094,11 +4094,12 @@ its cells hold* below - so "no body row yet" would answer that document wrongly
 ## Fence opener with a nested-list body inside a list item
 
 A `:::` opener inside a list item opens its block even when its body is a
-nested list, provided the matching closer sits at the item content column
-(PART 9 §12). A bullet (`-`) or ordered marker (`1.`) on the next line is part
-of the admonition body, not a sibling list that swallows the opener as literal
-text. The closer must align with the opener's content column; a `:::` at column
-zero (outside the item) does not close it.
+nested list (PART 9 §12). A bullet (`-`) or ordered marker (`1.`) on the next
+line is part of the admonition body, not a sibling list that swallows the
+opener as literal text. The matching closer sits at the item content column; a
+`:::` at column zero (outside the item) does not close it. The closer is
+OPTIONAL here as everywhere (PART 2): an opener with none ahead of it still
+opens, and the container closes at end of input.
 
 A nested unordered list body is wrapped by the admonition:
 
@@ -4199,8 +4200,10 @@ A blank line between the opener and the nested list still opens the block:
 
 ::::
 
-NEGATIVE: with no closer, the opener stays literal text and the bullet starts an
-ordinary nested list:
+With NO closer, the opener still opens and the container closes at end of
+input, so the nested list is wrapped exactly as it is with a closer at the item
+content column. This label used to read the other way, calling the opener
+literal text under bytes that show it opening (carve#1722):
 
 :::: compare
 
