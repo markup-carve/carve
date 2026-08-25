@@ -69,8 +69,6 @@ const TRIGGERS = {
   'blockquote-marker-without-space': '>quoted\n',
   'block-marker-as-text': '  ::: note\n',
   'fence-delimiter-indentation': '  ```\n  x\n  ```\n',
-  'list-item-body-detached': '1. item\n\n  # heading\n',
-  'list-item-block-overindented': '-{.x1} item\n\n       # heading\n',
   'carve-version-unsupported': '---\ncarve-version: 99.0\n---\n\nx\n',
   'unclosed-container-fence': '::: note\nbody\n',
   'figure-group-nested': ':::: figure\n::: figure\n![a](a.png)\n^ (a) A\n:::\n::::\n^ Figure #: G\n',
@@ -147,6 +145,15 @@ const NOT_IN_THE_PIN_YET = new Map([
     'table-marker-run-padding',
     'specified by markup-carve/carve#1464; no engine emits it yet, and it ' +
       'supersedes table-alignment-run-padding once they do',
+  ],
+  [
+    'list-item-body-detached',
+    'specified by markup-carve/carve#1707; no engine implements it yet',
+  ],
+  [
+    'list-item-block-overindented',
+    'specified by markup-carve/carve#1705 and markup-carve/carve#1707; no ' +
+      'engine implements it yet',
   ],
 ])
 

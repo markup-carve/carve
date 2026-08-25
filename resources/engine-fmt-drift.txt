@@ -15,3 +15,16 @@
 #
 # Format: <slug><space><space><reason>
 415-a-floating-attribute-does-not-widen-a-list-item-s-content-column-7  pinned writer moves an empty task marker across its detached paragraph
+05-lists-11  oracle reads the lenient list content column of carve#1705 / carve#1707 / carve#1732; the pinned writer still emits the pre-clause indentation
+143-post-blank-list-continuation-content-column-model-3  oracle reads the lenient list content column of carve#1705 / carve#1707 / carve#1732; the pinned writer still emits the pre-clause indentation
+148-colon-fence-as-a-block-opener-in-a-list-item-3  oracle reads the lenient list content column of carve#1705 / carve#1707 / carve#1732; the pinned writer still emits the pre-clause indentation
+149-fence-folds-as-lazy-inline-code-above-the-content-column  oracle reads the lenient list content column of carve#1705 / carve#1707 / carve#1732; the pinned writer still emits the pre-clause indentation
+162-outer-item-with-an-internal-blank-before-an-attached-block-is-loose  oracle reads the lenient list content column of carve#1705 / carve#1707 / carve#1732; the pinned writer still emits the pre-clause indentation
+243-a-tab-indent-is-the-column-it-reaches-whatever-the-line-holds  oracle reads the lenient list content column of carve#1705 / carve#1707 / carve#1732; the pinned writer still emits the pre-clause indentation
+244-the-same-column-written-with-four-spaces  oracle reads the lenient list content column of carve#1705 / carve#1707 / carve#1732; the pinned writer still emits the pre-clause indentation
+322-an-attribute-block-reaches-the-nested-list-it-precedes-9  oracle reads the lenient list content column of carve#1705 / carve#1707 / carve#1732; the pinned writer still emits the pre-clause indentation
+369-a-quote-is-reached-by-its-marker-and-a-column-never-reaches-into-one-2  oracle reads the lenient list content column of carve#1705 / carve#1707 / carve#1732; the pinned writer still emits the pre-clause indentation
+413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not-2  oracle reads the lenient list content column of carve#1705 / carve#1707 / carve#1732; the pinned writer still emits the pre-clause indentation
+413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not-8  oracle reads the lenient list content column of carve#1705 / carve#1707 / carve#1732; the pinned writer still emits the pre-clause indentation
+75-list-nesting-and-looseness-9  oracle reads the lenient list content column of carve#1705 / carve#1707 / carve#1732; the pinned writer still emits the pre-clause indentation
+87-compact-list-blocks-10  oracle reads the lenient list content column of carve#1705 / carve#1707 / carve#1732; the pinned writer still emits the pre-clause indentation
