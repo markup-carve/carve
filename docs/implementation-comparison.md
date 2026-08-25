@@ -21,15 +21,15 @@ implementation exposes.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>735 / 763</strong>
+    <strong>735 / 765</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>735 / 763</strong>
+    <strong>735 / 765</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>737 / 763</strong>
+    <strong>737 / 765</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -40,11 +40,11 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `5b03787` | `735 / 763` | `0` | `0` | `3.01` |
-| JS | `8105210` | `735 / 763` | `0` | `0` | `76.02` |
-| PHP | `a5f18fb` | `737 / 763` | `0` | `0` | `68.54` |
+| Rust | `5b03787` | `735 / 765` | `0` | `0` | `3.01` |
+| JS | `8105210` | `735 / 765` | `0` | `0` | `76.02` |
+| PHP | `a5f18fb` | `737 / 765` | `0` | `0` | `68.54` |
 
-Spec commit: `2cde4a1`, plus the three corpus cases this change adds
+Spec commit: `2cde4a1`, plus the corpus cases added since
 
 <details>
 <summary>Corpus changes and engine windows since this snapshot</summary>
@@ -859,7 +859,7 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=763 targets=html,markdown,plain,carve,ansi
+profile=default/no-opt-in corpus=core corpus_pairs=765 targets=html,markdown,plain,carve,ansi
 rust: pass=690/690 mismatch=0 error=0 skipped=0 runs=3375 avg_ms=3.01
   mismatching documents: 0
 js: pass=690/690 mismatch=0 error=0 skipped=0 runs=3375 avg_ms=76.02

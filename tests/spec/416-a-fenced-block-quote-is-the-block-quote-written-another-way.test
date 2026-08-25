@@ -40,3 +40,23 @@ x
 x
 :::</p>
 ```
+
+```
+::: >
+Stay hungry, stay foolish.
+:::
+^ Steve Jobs
+.
+<figure>
+  <blockquote><p>Stay hungry, stay foolish.</p></blockquote>
+  <figcaption>Steve Jobs</figcaption>
+</figure>
+```
+
+```
+::: >
+hello
+:::
+.
+<blockquote><p>hello</p></blockquote>
+```
