@@ -1906,6 +1906,23 @@ admonition = admonition_open, newline,
    quote a container fence, so this is the path every document that describes
    Carve in Carve takes.
 
+   TOOLING FOR NEAR MATCHES (PART 9 §12). Exact length remains a parse rule,
+   not a recoverable syntax error. A processor with diagnostics SHOULD report
+   `colon-fence-length-mismatch` when a bare colon run does not close the
+   innermost open container, would close it after resizing, and plausibly
+   expresses closing intent. The finding names the authored and expected
+   widths, the opener position, and the line's actual parse outcome (a nested
+   container or literal text). It MUST NOT fire for typed openers, escaped
+   colons, opaque code/raw/comment payloads, or a different-width child fence
+   that has its own exact closer.
+
+   A tool MAY offer separate fixes to resize the run or preserve it as literal
+   content. Neither is a canonical-formatting decision: `carve fmt` MUST NOT
+   choose an intention. Editors SHOULD pair and highlight exact opener/closer
+   ranges from parser structure. Automatic paired edits stop after either side
+   is independently changed; proximity alone never licenses resizing a nested
+   fence. (carve#1727)
+
    A CLOSER IS REQUIRED. Only a fence that closes is opaque. A ``` or ~~~
    opener with no closer ahead opens NO span: the container's own closer
    stays structural, and the lines after it are parsed normally. This is the

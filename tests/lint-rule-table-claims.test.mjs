@@ -140,6 +140,10 @@ const UNPRODUCIBLE_IN_BUILD = new Set(['portable-quote-marker-space'])
  */
 const NOT_IN_THE_PIN_YET = new Map([
   [
+    'colon-fence-length-mismatch',
+    'specified by markup-carve/carve#1727; the carve-js implementation is landing alongside this spec change',
+  ],
+  [
     'unattached-block-attribute',
     'specified by markup-carve/carve#1281; no engine implements it yet',
   ],

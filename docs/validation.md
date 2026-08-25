@@ -33,6 +33,9 @@ and pre-commit hooks:
 carve lint docs/**/*.crv
 ```
 
+Use `carve lint --json` when an editor, CI job, or migration tool needs stable
+rule IDs, source ranges, and rule-specific details rather than display text.
+
 By default `carve lint` reports the semantic rules below plus the
 Djot/Markdown constructs that actually mis-render in Carve (`**bold**`,
 `~~strike~~`, `^sup^`, and `+` bullets). It does **not** flag valid Carve
@@ -110,6 +113,7 @@ the command-line and editor behavior stay aligned.
 | `list-item-block-overindented` | a recognized block opener past an item's canonical content column, including the pre-#1701 full-prefix column of an attributed marker; under #1705 it is structural and `fmt` canonicalizes it. Dedent for the canonical structural spelling or escape the opener to preserve the literal meaning older readers assigned to it |
 | `carve-version-unsupported` | a document declaring a Carve spec version the processor does not implement, so constructs added after that version render as something else without any error |
 | `unclosed-container-fence` | a `:::` opener with no matching closer; the container runs to end of input, which is legal (PART 9 §12) and rarely what was meant |
+| `colon-fence-length-mismatch` | a bare colon run plausibly intended to close the innermost container has a different width; reports both widths, the opener location, and whether the line actually opens a nested container or remains text |
 | `fence-title-syntax` | text after a fence type word that is neither a quoted `"title"` nor a `[label]`, which makes the whole opener line plain text |
 | `footnote-labels-differ-only-in-whitespace` | two footnote definitions whose labels differ only in whitespace; labels are matched exactly, so they are two separate footnotes and a reader comparing them sees no reason why |
 | `table-cell-attribute-before-marker` | a table cell whose `{...}` block is written directly before a `<`, `>` or `~`, which is the order PART 9 §5 T10 retired; the block still attaches to the cell, but the marker is now literal content and the cell is not aligned. Reported and not rewritten: the retired order and the current one render different documents, so only the author can say which was meant |
