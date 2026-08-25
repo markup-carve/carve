@@ -10784,6 +10784,18 @@ EOF = (* end of file *) ;
        would make a tight item loose and change its rendered structure.
        (carve#1033)
 
+  10d. MULTIPLE CARVE HEADER ROWS SURVIVE THE MARKDOWN TARGET -- NORMATIVE.
+       Markdown pipe tables can identify only one header row. The first Carve
+       header row therefore becomes that row, and every later Carve header row
+       is emitted as an ordinary Markdown body row. Their header semantics are
+       lost, but no authored cell content is dropped.
+
+       The Markdown delimiter uses the final effective column alignment from
+       the Carve header rows: a later explicit header marker wins, while an
+       omitted marker does not reset an earlier one. A body-cell alignment is
+       local to that cell and MUST NOT become the Markdown column alignment,
+       including when that body row precedes the first header row.
+
   10e. A PRESENTATION TARGET KEEPS A CAPTION, A FENCE TITLE AND A FENCE
       LABEL -- NORMATIVE. `docs/graceful-degradation.md` states the floor for
       every non-interactive target: a renderer MUST preserve the construct's

@@ -399,28 +399,7 @@ const FAMILIES = [
 // keep the weekly job permanently red while its focused issue is being fixed.
 // The declaration is exact by document id. Remove entries with the fix: a
 // declaration that no longer reproduces is stale and is rejected below.
-const DECLARED_DIVERGENCES = new Map([
-  /*
-   * The two documents in `repeated-child` that markup-carve/carve#1517 moved.
-   * carve-js is driven here as the PINNED build, and package.json pins a commit
-   * older than markup-carve/carve-js#1328 - so it still folds a later marker in
-   * an item body into the open paragraph, while the executable spec, carve-rs
-   * and carve-php all open the sub-list PART 9 section 24 C3 requires.
-   *
-   * Declared rather than waived: this IS the finding this family was added for,
-   * and it reproduces against the build this repo currently pins. Both lines
-   * come out with `npm run bump-carve-pin`, and the stale check below fails
-   * until they do.
-   */
-  [
-    'repeated-child/bullet/list-item/blank',
-    'the pinned carve-js build predates markup-carve/carve-js#1328 (markup-carve/carve#1517); remove when the pin advances past it',
-  ],
-  [
-    'repeated-child/ordered/list-item/blank',
-    'the pinned carve-js build predates markup-carve/carve-js#1328 (markup-carve/carve#1517); remove when the pin advances past it',
-  ],
-])
+const DECLARED_DIVERGENCES = new Map()
 
 function* documents() {
   for (const family of FAMILIES) {
