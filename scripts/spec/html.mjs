@@ -59,6 +59,51 @@ function hasAuthoredName(battrs) {
   return false
 }
 
+const TEXT_ALIGN_ELEMENTS = new Set(['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
+const TEXT_ALIGN_VALUES = new Set(['left', 'right', 'center'])
+
+/*
+ * carve#1755: on a text block, the legacy `align` key is semantic rather than
+ * a raw HTML pass-through. Work on the parsed tuples before renderBlockAttrs
+ * merges them so its source-order, last-value and hardening rules stay shared.
+ * A table is deliberately absent: its `align` means placement, not text
+ * alignment, and rewriting it would change the document.
+ */
+function renderTextBlockAttrs(lists, tag) {
+  if (!lists || !TEXT_ALIGN_ELEMENTS.has(tag)) return lists ? renderBlockAttrs(lists) : ''
+  const copied = lists.map((list) => list.map((a) => [...a]))
+  const aligns = []
+  let style = null
+  for (const list of copied) {
+    for (const a of list) {
+      if (a[0] !== 'kv') continue
+      const name = a[1].toLowerCase()
+      if (name === 'align') aligns.push(a)
+      if (name === 'style') style = a
+    }
+  }
+  const align = aligns.at(-1) ?? null
+  if (align === null) return renderBlockAttrs(copied)
+  const value = align[2].trim().toLowerCase()
+  if (!TEXT_ALIGN_VALUES.has(value)) return renderBlockAttrs(copied)
+  const declaration = `text-align: ${value};`
+  if (style === null) {
+    aligns[0][1] = 'style'
+    aligns[0][2] = declaration
+  } else {
+    const current = style[2].trim()
+    style[2] = current === ''
+      ? declaration
+      : `${current}${current.endsWith(';') ? '' : ';'} ${declaration}`
+  }
+  for (const list of copied) {
+    for (let i = list.length - 1; i >= 0; i--) {
+      if (aligns.includes(list[i]) && (style !== null || list[i] !== aligns[0])) list.splice(i, 1)
+    }
+  }
+  return renderBlockAttrs(copied)
+}
+
 export function renderDoc(doc) {
   const ctx = {
     slug: makeSlugger(),
@@ -102,7 +147,7 @@ export function renderDoc(doc) {
           }
           if (keep.length) rest.push(keep)
         }
-        hAttrs = renderBlockAttrs(rest)
+        hAttrs = renderTextBlockAttrs(rest, `h${b.level}`)
       }
       if (id === null) id = ctx.slug(slugText(b.text))
       ctx.headingIds.set(id.toLowerCase(), { id, html })
@@ -215,7 +260,7 @@ function renderBlock(b, depth, ctx) {
         const cap = numberCaption(b.caption, ctx, id)
         return `${pad}<figure${ba}>\n${pad}  <p>${html}</p>\n${pad}  <figcaption>${renderInline(cap)}</figcaption>\n${pad}</figure>`
       }
-      return `${pad}<p${ba}>${html}</p>`
+      return `${pad}<p${renderTextBlockAttrs(b.battrs, 'p')}>${html}</p>`
     }
     case 'hr':
       return `${pad}<hr${ba}>`
@@ -318,7 +363,7 @@ function renderBlock(b, depth, ctx) {
       let attrStr
       if (b.type === null) {
         // generic div: attribute-line attrs apply verbatim in SOURCE order
-        attrStr = b.battrs ? renderBlockAttrs(b.battrs) : ''
+        attrStr = renderTextBlockAttrs(b.battrs, 'div')
       } else {
         // typed block: the type class leads; attribute-line classes merge
         // into it, everything else follows in source order (PART 9 SS15)
@@ -333,7 +378,8 @@ function renderBlock(b, depth, ctx) {
           }
           if (keep.length) rest.push(keep)
         }
-        attrStr = ` class="${[...baseCls, ...extra].join(' ')}"` + renderBlockAttrs(rest)
+        attrStr = ` class="${[...baseCls, ...extra].join(' ')}"` +
+          (tag === 'div' ? renderTextBlockAttrs(rest, tag) : renderBlockAttrs(rest))
       }
       // PART 9 SS12 AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME
       // (carve#1468). An `<aside>` is a COMPLEMENTARY LANDMARK, and a landmark
@@ -548,7 +594,7 @@ function renderBlock(b, depth, ctx) {
       for (const list of b.battrs ?? []) {
         for (const a of list) if (a[0] === 'id') authored = a[1]
       }
-      const attrStr = b.battrs ? renderBlockAttrs(b.battrs) : ''
+      const attrStr = renderTextBlockAttrs(b.battrs, `h${b.level}`)
       const id = authored ?? ctx.slug(slugText(b.text))
       ctx.headingIds.set(id.toLowerCase(), { id, html })
       noteHeadingRef(ctx, derivedText(b.text), id)
@@ -736,7 +782,7 @@ function renderItem(item, list, depth, ctx) {
       // `inlineable` stays true either way: the item layout below puts a wrapped
       // paragraph on its own indented line when it is not the first part, which
       // is exactly what the engines emit.
-      const pattrs = b.battrs ? renderBlockAttrs(b.battrs) : ''
+      const pattrs = renderTextBlockAttrs(b.battrs, 'p')
       const bare = list.tight && pattrs === ''
       parts.push({ inlineable: true, html: bare ? html : `<p${pattrs}>${html}</p>` })
     } else {

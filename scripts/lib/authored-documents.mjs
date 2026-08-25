@@ -8,7 +8,7 @@
  * committed `.html`, and `tests/corpus.test.mjs` holds the executable spec to
  * it - so on the corpus an oracle-against-engine comparison cannot fail while
  * the corpus test is green. Measured, not argued: the oracle reproduces all
- * 1362 corpus fixtures byte for byte, so its answer there is already pinned to
+ * 1430 corpus fixtures byte for byte, so its answer there is already pinned to
  * the same file the engines are scored against.
  *
  * That is the scoping carve#1552 asked for. The oracle is the only reader in
@@ -125,5 +125,5 @@ export function authoredDocuments() {
  * message says which way it moved and what to do, because a red gate whose fix
  * is "look up how this file works" is a red gate that gets deleted.
  */
-export const AUTHORED_POPULATION = 88
-export const AUTHORED_ANSWERED = 87
+export const AUTHORED_POPULATION = 89
+export const AUTHORED_ANSWERED = 88

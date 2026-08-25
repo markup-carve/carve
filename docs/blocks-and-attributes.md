@@ -293,10 +293,37 @@ the block below them.
 | `loose` | a list, a definition list | the container's children render as **blocks** rather than inline runs |
 | `header-rows=N`, `footer-rows=N` | a pipe table | the leading / trailing row ranges become `<thead>` / `<tfoot>` |
 | `aligns`, `valigns`, `widths` | a pipe table | per-column alignment and width, as positional comma-separated lists |
+| `align=left\|right\|center` | a paragraph, div, or heading | renders the modern `text-align` CSS declaration instead of the legacy HTML attribute |
 
 Everything else on that line is an ordinary attribute and reaches the output as
-one, `loose` included when it sits on a block with nothing to loosen: `{loose}`
-before a block quote is just `<blockquote loose="">`.
+one, including a consumed name outside its stated element or value. Thus
+`{loose}` before a block quote is `<blockquote loose="">`, and
+`{align=justify}` before a paragraph stays `<p align="justify">`.
+
+### `{align=…}`: text alignment uses the CSS declaration
+
+On a paragraph, div, or heading (`h1` through `h6`), `align=left`, `right`, or
+`center` means text alignment. The HTML renderer consumes the attribute and
+writes `style="text-align: VALUE;"`:
+
+```carve
+{align=right}
+Aligned text.
+```
+
+```html
+<p style="text-align: right;">Aligned text.</p>
+```
+
+If the element already has a `style`, the declaration is appended to that one
+attribute rather than producing a duplicate. The authored `align` wins when the
+existing style also names `text-align`, because it is written last.
+
+The element is part of the rule. On a table, the legacy `align` attribute means
+placement of the table, not alignment of its cell text; rewriting it to
+`text-align` would change the document. A table therefore keeps `align` as an
+ordinary attribute. The same is true for every element outside the text-block
+set, and for every value outside `left`, `right`, and `center`.
 
 ### `{loose}`: the looseness a blank line cannot spell
 
