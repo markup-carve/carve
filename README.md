@@ -88,10 +88,23 @@ cargo install carve-lang             # Rust, incl. the `carve` CLI
 ```
 
 ```ts
-import { carveToHtml } from '@markup-carve/carve'
+import { carveToHtml, carveToHtmlWithReport } from '@markup-carve/carve'
 
 const html = carveToHtml('/italic/, *bold*, and _underline_')
 ```
+
+Raw nodes are routed to a named output format. Use the checked render API when
+content must not disappear silently on another target:
+
+```ts
+const result = carveToHtmlWithReport('`x`{=latex}')
+// result.losses[0].code === 'raw-format-dropped'
+```
+
+The compatible string APIs remain available. Checked APIs return the rendered
+value plus bounded, source-positioned losses; strict mode refuses to publish a
+value when a renderer would drop one. The CLI provides the same policy through
+`--strict-losses`, `--report-losses`, and `--allow-loss raw-format-dropped`.
 
 Full instructions, including the Python, Ruby, Go, and WebAssembly bindings, are
 in [Get Started](https://markup-carve.github.io/carve/get-started).
