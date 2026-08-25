@@ -73,6 +73,7 @@ const TRIGGERS = {
   'list-item-block-overindented': '-{.x1} item\n\n       # heading\n',
   'carve-version-unsupported': '---\ncarve-version: 99.0\n---\n\nx\n',
   'unclosed-container-fence': '::: note\nbody\n',
+  'colon-fence-length-mismatch': ':::: note\nbody\n:::\n',
   'figure-group-nested': ':::: figure\n::: figure\n![a](a.png)\n^ (a) A\n:::\n::::\n^ Figure #: G\n',
   'figure-group-opener-metadata': '::: figure "Title"\n![a](a.png)\n^ (a) A\n:::\n',
   'figure-group-panel-number': '::: figure\n![a](a.png)\n^ Figure #: panel\n:::\n^ Figure #: G\n',
@@ -139,10 +140,6 @@ const UNPRODUCIBLE_IN_BUILD = new Set(['portable-quote-marker-space'])
  *   - listed here and absent from the page -> a declaration about nothing.
  */
 const NOT_IN_THE_PIN_YET = new Map([
-  [
-    'colon-fence-length-mismatch',
-    'specified by markup-carve/carve#1727; the carve-js implementation is landing alongside this spec change',
-  ],
   [
     'unattached-block-attribute',
     'specified by markup-carve/carve#1281; no engine implements it yet',
