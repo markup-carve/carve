@@ -902,6 +902,12 @@ as more than restyled Djot:
 - **Tables with rowspan / colspan / multi-line cells** and captions on images,
   quotes, and tables.
 - **Native admonitions**, editorial/critic markup, `@mentions`, and `#tags`.
+- **A fenced block quote** - `::: >` is the block quote written without a marker
+  on every line. Same node, same HTML, and `carve fmt` writes back whichever
+  spelling the author used. Djot has only the marker form; the proposal for a
+  fenced one is jgm/djot#401, still open there. It nests at CONSTANT width,
+  which Carve's exact-length closer allows and Djot's greedy one does not: in
+  Djot each wrap would need a fence one colon wider than the one it wraps.
 - **Inline footnotes** - `^[content]` carries a note in place (pandoc-style),
   numbered into the same endnotes as a reference `[^label]`. Canonical djot has
   only reference footnotes; `^[…]` is a carve addition (grammar §16).

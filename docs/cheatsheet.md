@@ -86,6 +86,13 @@ Bare delimiters work only at word boundaries; force one intraword with the brace
 +                             block to the quote - no > prefixing)
 - list now lives inside the quote
 
+::: >                        (the SAME block quote, fenced: no marker on
+notes:                        every line. `fmt` writes back whichever
+                              spelling you used. Nests at constant width,
+- a                           so re-quoting is prepend-and-append. Takes
+- b                           the ^ caption on its CLOSING fence.)
+:::
+
 ```language "Header" [Label]
 code block
 ```
