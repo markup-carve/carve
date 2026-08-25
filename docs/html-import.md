@@ -428,6 +428,58 @@ such an element is not a figure to rebuild or to preserve: it unwraps to its
 content with `element-unwrapped`, in every mode, which is the behavior this rule
 leaves untouched.
 
+## The last newline of a code block is its terminator, not a line
+
+A code block's content is bytes the author wrote, so gaining or losing a line
+is a CONTENT change and not a formatting one (markup-carve/carve#1708).
+
+**Strip exactly one newline immediately before `</code>`, or before `</pre>`
+where there is no `<code>`. Any further newline is content, and so is any
+trailing space or tab on the last line.**
+
+The renderer settles this rather than taste. A Carve renderer writes exactly
+one newline before the closing tag for a code block whose content is `x`, and
+two for one whose content ends in a blank line:
+
+````
+```
+x
+```
+````
+
+```html
+<pre><code>x
+</code></pre>
+```
+
+````
+```
+x
+
+```
+````
+
+```html
+<pre><code>x
+
+</code></pre>
+```
+
+An importer that strips NO newline reads the first back as content ending in a
+blank line, so the document gains a line every time it goes round. One that
+strips them ALL reads both back as `x`, so the second loses the line the author
+wrote and the two documents arrive indistinguishable. Only removing exactly one
+makes the importer the inverse of the renderer, and `roundtrip` on an engine's
+OWN output is what that mode is defined by.
+
+The asymmetry mirrors HTML's own at the other end, where a newline immediately
+after `<pre>` is stripped and one before `</pre>` is not.
+
+**Nothing is reported**, in any mode. The newline removed was the terminator,
+so no content was lost and there is nothing to declare. The correction applies
+in `safe` and `semantic` as well; only `roundtrip` can be checked by a round
+trip, but the content question is the same in all three.
+
 ## A whitespace-only block keeps its content and drops its layout
 
 An element whose text is entirely whitespace is two different documents
