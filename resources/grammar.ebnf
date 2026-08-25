@@ -2171,7 +2171,34 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    contribute nothing; one blank payload line contributes one newline. An
    implementation MUST NOT encode those two source shapes identically. Corpus
    372 pins the distinction with a following paragraph so end trimming cannot
-   hide the newline (carve#1401). *)
+   hide the newline (carve#1401).
+
+   RENDER-LOSS REPORTING -- NORMATIVE. Target routing may intentionally omit a
+   raw node, but a checked renderer MUST make that omission observable. Its
+   result has `value`, `losses`, `totalLosses`, and `truncated`. Each omitted
+   raw node contributes one loss in document order with the stable code
+   `raw-format-dropped`, its verbatim `format`, the selected `target`, a
+   `nodeType` of `inline` or `block`, its source `pos` when recorded, and a
+   short human-readable `message`. `losses` is bounded (100 entries by default),
+   `totalLosses` counts the complete render, and `truncated` says whether the
+   bounded array omitted entries.
+
+   A loss records WHAT THE SELECTED RENDERER ACTUALLY DROPS, not every raw node
+   in the tree. Matching HTML passes through (or is visibly escaped by a safe
+   policy) with no loss. Markdown visibly escapes HTML raw content with no loss.
+   ANSI visibly degrades a raw BLOCK to `[raw:format] content` with no loss, but
+   reports a raw INLINE it omits. Plain text reports every raw node it omits.
+   The canonical Carve writer preserves raw nodes and reports none.
+
+   A strict checked render MUST finish collecting the complete bounded report,
+   then fail without returning or publishing `value` when `totalLosses > 0`.
+   Existing string-returning APIs MAY remain compatibility conveniences, but
+   every binding MUST expose the checked result and strict form. A CLI MUST keep
+   rendered stdout pure, summarize losses on stderr, fail with
+   `--strict-losses`, offer a machine-readable JSON report, and permit the
+   explicit exception `--allow-loss raw-format-dropped`. Import-loss reports
+   are separate: they describe source-to-AST migration, while this report
+   describes AST-to-target rendering (carve#1728). *)
 
 format_name = "html" | "latex" | identifier ;
 raw_content = (* any content until closing fence *) ;
