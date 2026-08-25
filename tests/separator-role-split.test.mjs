@@ -89,7 +89,7 @@ import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { carveToHtml } from '@markup-carve/carve'
-import { parse } from '../scripts/spec/layout.mjs'
+import { normalizeAuthoredBodyBases, parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -1656,26 +1656,16 @@ test('the definition body dedent reaches column 0 (a column-3 line arrives flush
   )
 })
 
-test('the definition body dedent strips no further than column 3', () => {
-  // A tab reaches column 4. Stripping column 3 leaves the one column it bought
-  // past the margin, so this line arrives at column 1 - NOT flush - and a link
-  // definition one column in is paragraph text. `[a][]` below is the witness:
-  // it stays unresolved because no definition ever registered.
+test('a tab past the definition minimum establishes an authored opener base', () => {
+  // A tab reaches column 4. The body minimum remains column 3, then the
+  // recognized definition opener establishes column 4 as its local base.
   const doc = ':: t\n:  d\n\n\t[a]: /u\n\n[a][]\n'
   const out = renderDoc(parse(doc))
   assert.match(
     out,
-    /<p>\[a\]: \/u<\/p>/,
-    `a tab-indented definition body line was stripped past the column it reached.\n` +
-      `  doc: ${JSON.stringify(doc)}\n` +
-      `  A tab that straddles the margin keeps the columns it bought past it ` +
-      `(PART 9 §24 C5), so this arrives at column 1 and stays paragraph text.`,
-  )
-  assert.doesNotMatch(
-    out,
     /<a href="\/u">/,
-    `an over-stripped body line registered a link definition that the correct ` +
-      `strip leaves as text.\n  doc: ${JSON.stringify(doc)}`,
+    `the tab-indented opener did not register from its authored base.\n` +
+      `  doc: ${JSON.stringify(doc)}`,
   )
 })
 
@@ -1737,4 +1727,63 @@ test('a run before an incompatible marker is not a boundary case', () => {
   const source = '- a\n\n\n\n* b\n'
   assert.equal(siblingLists(source).length, 2)
   assert.equal(compactHtml(source), '<ul><li>a</li></ul><ul><li>b</li></ul>')
+})
+
+const authoredBaseHtml = (source, authoredBodyBases) =>
+  renderDoc(parse(source, { authoredBodyBases })).trim()
+
+const authoredBaseBodies = [
+  ['heading', ['# heading']],
+  ['quote', ['> quote']],
+  ['code fence', ['``` js', '  payload', '```']],
+  ['raw fence', ['```=html', '  <b>x</b>', '```']],
+  ['colon fence', ['::: note', 'inside', ':::']],
+  ['table', ['| h |', '|---|', '| b |']],
+  ['definition list', [':: term', ':  description']],
+  ['attributes and target', ['{.marked}', '# heading']],
+  ['comment and target', ['%% hidden', '# heading']],
+  ['nested list', ['- one', '  - two']],
+]
+
+const authoredBaseSpelling = (kind, lines, extra, blank = false) => {
+  const minimum = kind === 'footnote' ? 2 : 3
+  const prefix = ' '.repeat(minimum + extra)
+  const head = kind === 'footnote' ? '[^f]: lead' : ':: term\n:  lead'
+  const tail = kind === 'footnote' ? '\n\nsee[^f]' : ''
+  return `${head}\n${blank ? '\n' : ''}${lines.map((line) => prefix + line).join('\n')}${tail}\n`
+}
+
+for (const kind of ['footnote', 'definition']) {
+  for (const [name, lines] of authoredBaseBodies) {
+    for (const blank of [false, true]) {
+      test(`${kind}: ${name} uses its authored local base${blank ? ' after a blank' : ''}`, () => {
+        const exact = authoredBaseSpelling(kind, lines, 0, blank)
+        const over = authoredBaseSpelling(kind, lines, 3, blank)
+        assert.equal(authoredBaseHtml(over, true), authoredBaseHtml(exact, true))
+      })
+    }
+  }
+}
+
+test('tabs establish the same definition and footnote authored bases by visual column', () => {
+  assert.equal(
+    authoredBaseHtml('[^f]: lead\n\t# heading\n\nsee[^f]\n', true),
+    authoredBaseHtml('[^f]: lead\n  # heading\n\nsee[^f]\n', true),
+  )
+  assert.equal(
+    authoredBaseHtml(':: term\n:  lead\n\t# heading\n', true),
+    authoredBaseHtml(':: term\n:  lead\n   # heading\n', true),
+  )
+})
+
+test('authored body bases preserve payload indentation beyond the opener', () => {
+  assert.deepEqual(
+    normalizeAuthoredBodyBases(['   ```', '     two', '   ```']),
+    ['```', '  two', '```'],
+  )
+})
+
+test('the authored-body experiment keeps the released reading behind its switch', () => {
+  const source = ':: term\n:  body\n     > quote\n'
+  assert.notEqual(authoredBaseHtml(source, false), authoredBaseHtml(source, true))
 })

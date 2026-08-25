@@ -7,8 +7,10 @@ A definition body continuation indented past its column is lazy text
 .
 <dl>
   <dt>t</dt>
-  <dd>body
-&gt; q</dd>
+  <dd>
+    <p>body</p>
+    <blockquote><p>q</p></blockquote>
+  </dd>
 </dl>
 ```
 

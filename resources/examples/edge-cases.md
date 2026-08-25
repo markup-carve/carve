@@ -8735,7 +8735,7 @@ The id is the heading's text with each run of non-alphanumeric ASCII replaced by
 
 ## A footnote body's own column is two, and a third column is its text
 
-The body's column is fixed by §16's `space, space`, not read off the first continuation line. A reader consumes exactly two columns and hands the rest to the body's blocks, so a body written one column in has ONE residual column - and there a block opener is paragraph text, the same way it is above a list item's content column (§24 C3). The same rows at two spaces are a table ("A footnote body holds blocks" pins that); a third column makes them a paragraph. carve-js derived the column from the first continuation line and read a table, alone against the other two engines and this spec (carve-js#677).
+The body's minimum column is fixed by §16's `space, space`, not read off the first continuation line. A recognized block opener at or beyond that minimum establishes its own authored base, so these rows remain a table when written one column farther in. Canonical output returns the table to the body's minimum column.
 
 ::: compare
 
@@ -8756,9 +8756,15 @@ see[^a]
   <ol>
     <li id="fn1">
       <p>intro</p>
-      <p>| a |
-| - |
-| b |<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <table>
+        <thead>
+          <tr><th scope="col">a</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>b</td></tr>
+        </tbody>
+      </table>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -8796,7 +8802,7 @@ see[^a] and [t][r]
 
 ## A definition past a footnote body's column is the body's own text
 
-Three spaces IS a continuation, so the line belongs to the note - but the body's column is two and the third column is residual indent its blocks read, so the definition never reaches an opener position and stays paragraph text inside the note. Visible and inert again, and for the opposite reason to the case above: there the line was outside the body, here it is inside it. Beside "A footnote body's own column is two", this is what makes the column load-bearing in both directions.
+Three spaces is a continuation, so the line belongs to the note. Because a recognized opener may establish an authored base past the minimum column, the link definition registers from there and remains invisible. The one-space control above still leaves the body and stays literal.
 
 ::: compare
 
@@ -8808,13 +8814,12 @@ see[^a] and [t][r]
 ```
 
 ```html
-<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and [t][r]</p>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and <a href="/u">t</a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>note
-[r]: /u<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -12785,17 +12790,10 @@ them.
 
 ## A definition body continuation indented past its column is lazy text
 
-`definition_indent` (`resources/grammar.ebnf`, PART 2) is a whitespace run REACHING
-the body's column - the one `:  ` establishes. REACHING it is what makes a line
-the body's own content; going past it does not make the line something else,
-because there is nothing past that column for indentation to mean. So a line
-indented further is a continuation of the body's OPEN PARAGRAPH, its content is
-inline, and a `>` on it is a greater-than sign rather than a block quote opener.
-
-The alternative reading - extra indentation opens a nested block, the way it
-does inside a list item - makes indentation depth mean two different things one
-line apart: the line above continues a paragraph lazily and this one would open
-a block. carve-js and carve-php read it that way and both move (carve#918).
+`definition_indent` reaches the body's minimum column. A recognized block opener
+at or beyond that column establishes its authored position as a local block
+base, matching list items and footnote bodies. The `>` here therefore opens a
+quote. Ordinary over-indented text still continues the paragraph.
 
 The two documents after it are CONTROLS. They pin the columns on either side of
 the boundary, which do not change and are not what was ruled: at the body's own
@@ -12814,8 +12812,10 @@ never a quote", which is not what it says.
 ```html
 <dl>
   <dt>t</dt>
-  <dd>body
-&gt; q</dd>
+  <dd>
+    <p>body</p>
+    <blockquote><p>q</p></blockquote>
+  </dd>
 </dl>
 ```
 

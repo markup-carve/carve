@@ -24,3 +24,6 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+218-a-footnote-body-s-own-column-is-two-and-a-third-column-is-its-text  pinned writer still preserves the pre-1729 literal over-indent
+220-a-definition-past-a-footnote-body-s-column-is-the-body-s-own-text  pinned writer still preserves the pre-1729 literal over-indent
+269-a-definition-body-continuation-indented-past-its-column-is-lazy-text  pinned writer still preserves the pre-1729 literal over-indent

@@ -1456,6 +1456,32 @@ const opensAuthoredBase = (line) => opensSubBlock(line) || isLinkDef(line) ||
   FOOTNOTE_DEF.test(line) || COMMENT_LINE.test(line) ||
   parseAttrList(line) !== null || isCaptionableParagraph([line])
 
+/**
+ * Rebase an authored block opener inside a definition or footnote body.
+ * `lines` have already been stripped to the body's minimum column. A
+ * recognized opener farther right establishes one local base; subsequent
+ * lines at or beyond it are stripped relative to that base until a line
+ * returns left of it. This measures every leading run once and preserves any
+ * payload indentation beyond the opener.
+ */
+export function normalizeAuthoredBodyBases(lines) {
+  const out = []
+  let blockBase = null
+  for (const line of lines) {
+    if (isBlank(line)) {
+      out.push(line)
+      continue
+    }
+    const measured = indentCols(line)
+    if (blockBase !== null && measured.col < blockBase) blockBase = null
+    if (blockBase === null && measured.col > 0 && opensAuthoredBase(measured.rest)) {
+      blockBase = measured.col
+    }
+    out.push(blockBase === null ? line : dedentMeasured(measured, line, blockBase).text)
+  }
+  return out
+}
+
 /*
  * The LENGTH-PRESERVING half of PART 0 INPUT, exported on its own.
  *
@@ -1504,7 +1530,7 @@ function normalizeSource(src) {
   return src
 }
 
-export function parse(src) {
+export function parse(src, { authoredBodyBases = true } = {}) {
   src = normalizeSource(src)
   const lines = src.split('\n')
   if (lines[lines.length - 1] === '') lines.pop()
@@ -1512,6 +1538,7 @@ export function parse(src) {
     linkDefs: new Map(),
     footnoteDefs: new Map(),
     abbrDefs: new Map(),
+    authoredBodyBases,
   }
   // frontmatter (PART 1): consumed; renders nothing. The closer-lookahead
   // guard: with no closing --- the line is an ordinary thematic break.
@@ -1575,6 +1602,7 @@ export function parse(src) {
   // inFigureGroup is the same kind of transient recursion bookkeeping (the
   // PART 9 SS4c no-nesting demotion); it is false again here, so drop it too.
   delete state.inFigureGroup
+  delete state.authoredBodyBases
   // Unwrap a figure whose reference image never resolved (see the
   // `pendingRef` note above). Iterative, because a figure can sit inside
   // any container and the tree is as deep as the document.
@@ -1924,7 +1952,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const key = labelKey(label)
       if (!state.footnoteDefs.has(key)) {
         // FIRST definition wins (PART 9R state)
-        const bodyBlocks = parseBlocks(bodyLines, state, false)
+        const normalizedBody = state.authoredBodyBases
+          ? normalizeAuthoredBodyBases(bodyLines)
+          : bodyLines
+        const bodyBlocks = parseBlocks(normalizedBody, state, false)
         if (bodyBlocks.length === 0) {
           // A body holding NO BLOCKS and a body holding one block that RENDERS
           // NOTHING are two different documents, and PART 9R R2 spells their
@@ -2192,7 +2223,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             }
             break
           }
-          node.items.push({ ddBlocks: bodyLines.length ? parseBlocks(bodyLines, state, false) : [] })
+          const normalizedBody = state.authoredBodyBases
+            ? normalizeAuthoredBodyBases(bodyLines)
+            : bodyLines
+          node.items.push({ ddBlocks: normalizedBody.length ? parseBlocks(normalizedBody, state, false) : [] })
           continue
         }
         if (isBlank(cur0)) {

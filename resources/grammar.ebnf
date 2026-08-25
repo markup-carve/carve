@@ -1626,7 +1626,9 @@ definition_indent = whitespace, {whitespace} ;
        same thing here as it does for a list item and for a footnote body.
      - AT the column, the line is the body's own block content, so a block
        opener opens inside the `dd`.
-     - PAST the column, the line is lazy text -- the clause below (carve#918).
+     - PAST the column, a recognized block opener establishes its authored
+       column as that block's local base; ordinary text keeps the existing
+       paragraph-continuation behavior.
 
    `definition_indent` states the floor as column arithmetic; this states what
    happens on the other side of it. Nothing else in the language gives a
@@ -1655,32 +1657,34 @@ definition_indent = whitespace, {whitespace} ;
    own pass (carve#932); until they land this clause is the only thing that
    makes the floor observable.
 
-   A CONTINUATION INDENTED PAST THE BODY'S COLUMN IS LAZY TEXT -- NORMATIVE
-   (carve#918). `definition_indent` REACHES the body's column; it does not
-   measure how far past it a line went, because there is nothing past that
-   column for indentation to mean. A line indented further is therefore a
-   continuation of the body's OPEN PARAGRAPH and its content is `inline_content`
-   -- so the `>` on
+   AUTHORED BLOCK BASES APPLY TO DEFINITIONS AND FOOTNOTES -- NORMATIVE
+   (carve#1729). The list-item rule in PART 9 §24 C3 applies to every body with
+   a minimum content column. A recognized block opener AT OR PAST a definition
+   body's column 3 or a footnote body's column 2 belongs to that body. Its
+   authored visual column is the local `block_base` for that one block; the
+   block's payload, continuations and closer are measured relative to that
+   base. Canonical output returns the opener to the body's minimum column.
+
+   Thus the `>` on
 
        :: t
        :  body
            > q
 
-   is a greater-than sign and not a block quote opener. AT the column the line
-   is the body's own block content and the quote opens; below it the body ends.
-   Those two columns do not change and are pinned as CONTROLS beside the rule.
+   opens a block quote. The same rule covers headings, lists, tables, code/raw/
+   colon fences, definitions, attributes followed by their target and comments,
+   with or without a preceding blank. Tabs participate by visual column.
 
-   THE ALTERNATIVE was that extra indentation opens a nested block, the way it
-   does inside a list item. It is rejected because it makes indentation depth
-   mean two different things one line apart: `lazy_continuation_line` already
-   governs the line above, folding it into the same paragraph, and a stray
-   four-space indent would silently become a block quote. carve-js and carve-php
-   read it the other way and both move; carve-rs and the oracle already answer
-   as written here.
+   An ordinary over-indented line which is not a recognized opener remains
+   paragraph text. A line below the minimum column keeps the existing ownership
+   result. The leading run is measured once; implementations MUST NOT probe
+   every possible dedent. Opaque payload indentation beyond `block_base` is
+   authored data, and a closer belongs to the base established by its opener.
 
-   A legitimately nested construct inside a body now needs some other spelling:
-   the blank-line-then-indented-block form (FORM A) below, which is how a `<dd>`
-   already holds more than one paragraph. *)
+   MIGRATION. This changes released 0.1.3 documents whose over-indented literal
+   text begins with a block opener. A diagnostic SHOULD offer two safe fixes:
+   dedent to make the structural intent explicit, or escape the opener to keep
+   literal text. *)
 (* The term marker is TWO colons. A single-colon `: term` line is NOT a
    definition list -- it is ordinary paragraph text. (Deliberate: djot uses a
    single colon, but `::` keeps the term marker distinct from the `:::` div
@@ -3426,17 +3430,11 @@ footnote_indent = whitespace, {whitespace} ;
    (carve-rs#611).
 
    THE BODY'S OWN COLUMN IS TWO -- NOT the first continuation line's actual
-   indent. A reader consumes exactly two columns of every continuation line
-   (PART 9 §24 C5: a tab straddling that boundary is consumed WHOLE) and hands
-   the rest to the body's blocks, so a body written at three leaves ONE
-   residual column, and at that column a block opener is lazy paragraph text
-   rather than a block, exactly as it is inside a list item above the content
-   column (PART 9 §24 C3). Deriving the column from the first continuation
-   line instead makes a whole body written one column in land at relative
-   zero, so an indented table opens a table that no other reader sees
-   (carve-js#677, which was alone against the other two engines and this
-   spec). Two is a FLOOR for the body, not a ceiling for its blocks: a nested
-   list's inner item still sits at four and still nests. *)
+   indent. A reader first consumes that minimum and then applies the shared
+   authored `block_base` rule above. Thus a body written farther right does not
+   move the body's column, but a recognized opener there is structural and its
+   relative payload indentation is preserved. Two is a floor for the body, not
+   a ceiling for its blocks. *)
 
 (* DISMISSED (not reserved, no production): a sidenote form
      sidenote = "[>", inline_content, ']' ;
