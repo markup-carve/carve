@@ -112,7 +112,7 @@ body
 ```
 [x]{.ok .1}
 .
-<p>[x]{.ok .1}</p>
+<p><span class="ok 1">x</span></p>
 ```
 
 ```

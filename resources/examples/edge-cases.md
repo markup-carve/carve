@@ -1126,7 +1126,7 @@ bad name leaves the whole block literal even alongside a valid class.
 ```
 
 ```html
-<p>[x]{.ok .1}</p>
+<p><span class="ok 1">x</span></p>
 ```
 
 :::
