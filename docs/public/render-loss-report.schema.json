@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://markup-carve.github.io/carve/render-loss-report.schema.json",
+  "title": "Carve render loss report",
+  "$defs": {
+    "pos": {
+      "type": "object",
+      "required": ["startLine", "endLine", "startColumn", "endColumn", "startOffset", "endOffset"],
+      "properties": {
+        "startLine": { "type": "integer", "minimum": 1 },
+        "endLine": { "type": "integer", "minimum": 1 },
+        "startColumn": { "type": "integer", "minimum": 1 },
+        "endColumn": { "type": "integer", "minimum": 1 },
+        "startOffset": { "type": "integer", "minimum": 0 },
+        "endOffset": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": ["losses", "totalLosses", "truncated"],
+  "properties": {
+    "file": { "type": "string" },
+    "losses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "format", "target", "nodeType", "message"],
+        "properties": {
+          "code": { "const": "raw-format-dropped" },
+          "format": { "type": "string" },
+          "target": { "enum": ["html", "markdown", "plain", "ansi", "carve"] },
+          "nodeType": { "enum": ["inline", "block"] },
+          "message": { "type": "string" },
+          "pos": { "$ref": "#/$defs/pos" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "totalLosses": { "type": "integer", "minimum": 0 },
+    "truncated": { "type": "boolean" }
+  },
+  "additionalProperties": false
+}
