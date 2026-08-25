@@ -872,12 +872,20 @@ function parseColonOpener(tail) {
   // so for spaces long before the tab question arose. Narrowing to one here
   // would newly break `:::<SP><SP>note`, which every engine reads as an
   // admonition. Which side gives is a question for the production.
+  // THE SIGIL OPENERS NEED THE SEPARATOR TOO. The guard above rejects a GLUED
+  // TYPE WORD, but a glued sigil is not alphanumeric and sailed past it, and
+  // the strip below then removed nothing - so `:::|`, a backslash glued the
+  // same way, and `:::>` all opened their block where every engine reads the
+  // line as a paragraph. The separator is one `space` in the grammar for all
+  // four openers alike, so whether one was actually there has to be part of
+  // the test rather than assumed by the strip.
+  const separated = /^ /.test(s)
   s = s.replace(/^ +/, '')
-  if (/^\|[ \t]*$/.test(s)) return { ...out, mode: 'line-block' }
-  if (/^\\[ \t]*$/.test(s)) return { ...out, mode: 'hardbreaks' }
+  if (separated && /^\|[ \t]*$/.test(s)) return { ...out, mode: 'line-block' }
+  if (separated && /^\\[ \t]*$/.test(s)) return { ...out, mode: 'hardbreaks' }
   // A bare `>` is the fenced block-quote opener: a second SPELLING of the
   // block quote, whose body is ordinary block content (markup-carve/carve#1718).
-  if (/^>[ \t]*$/.test(s)) return { ...out, mode: 'quote' }
+  if (separated && /^>[ \t]*$/.test(s)) return { ...out, mode: 'quote' }
   const ty = /^([A-Za-z0-9_][A-Za-z0-9_-]*)/.exec(s)
   if (ty) {
     out.type = ty[1]
