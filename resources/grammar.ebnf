@@ -4941,8 +4941,8 @@ EOF = (* end of file *) ;
 
    6. REFERENCE RESOLUTION -- FORMAL STATEMENT MOVED TO PART 9R (rules
       R1-R3; this §-anchor stays for existing references). Summary: link
-      labels match EXACTLY (case-sensitive, no whitespace folding; corpus
-      78-reference-labels-are-case-sensitive); LAST link definition wins
+      labels match case-sensitively after ASCII whitespace normalization
+      (PART 9R R1; corpus 78-reference-labels-are-case-sensitive); LAST link definition wins
       vs FIRST footnote definition (deliberate asymmetry, §16); collapsed
       references [text][] use their text as the label; abbreviations match
       at word boundaries only; ALL definitions (link / footnote /
@@ -8016,10 +8016,16 @@ EOF = (* end of file *) ;
 
    RULES (PASS 2):
    R1 LINK REFERENCES. [text][label] and [text][] (label := text) resolve
-      against linkDefs. Matching is EXACT: case-sensitive, no whitespace
-      folding (corpus 78-reference-labels-are-case-sensitive). Definition
+      against linkDefs by a shared label key: trim leading and trailing ASCII
+      whitespace and collapse each internal run of U+0020, tab, line feed,
+      form feed or carriage return to one U+0020. Matching remains
+      case-sensitive and preserves every non-whitespace code point (corpus
+      78-reference-labels-are-case-sensitive). Definition
       attributes transfer to the link OR IMAGE that resolves the label; the
       reference site's own attributes override per key.
+      If multiple definitions normalize to one key, the LAST link definition
+      wins. A diagnostic on every later colliding definition names both raw
+      spellings and the normalized key; raw spelling remains source metadata.
       Unresolved -> the bracketed run renders as literal source text. Carve
       has NO shortcut reference: a bare [label] never resolves (PART 9 §14).
       IMPLICIT HEADING FALLBACK: a [text][] whose label matches no
@@ -8207,12 +8213,16 @@ EOF = (* end of file *) ;
       extension, so this is tested by an engine's own suite asserting that a
       matcher inside a container body receives a re-based array.
 
-   R2 FOOTNOTES (rendering in PART 9 §16). A [^label] use with a matching
-      footnoteDefs entry is numbered by FIRST-REFERENCE order from
+   R2 FOOTNOTES (rendering in PART 9 §16). Footnote labels use the same
+      ASCII-whitespace-normalized, case-sensitive key as R1. A [^label] use
+      with a matching footnoteDefs entry is numbered by FIRST-REFERENCE order from
       footnoteSeq; repeat references reuse the number (k-th repeat gets
       refId fnref{n}-{k} and an extra backlink). An inline ^[content] note
       draws a fresh anonymous number from the SAME footnoteSeq (it cannot
-      be re-referenced). Unresolved reference -> literal source text;
+      be re-referenced). If definitions normalize to one key, the FIRST
+      footnote definition wins and every later collision receives the same
+      raw-spellings-and-key diagnostic required by R1.
+      Unresolved reference -> literal source text;
       unreferenced definition -> dropped.
       A NOTE INSIDE AN UNRESOLVED REFERENCE IS NOT A REFERENCE -- NORMATIVE
       (carve#1198). R1 degrades an unresolved reference to its literal
