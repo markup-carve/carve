@@ -8549,6 +8549,22 @@ EOF = (* end of file *) ;
       divergence that used to need a blockquote would have shown up on
       ordinary documents.
 
+      TEXT-BLOCK ALIGNMENT IS A SEMANTIC ATTRIBUTE. On `<p>`, `<div>` and
+      `<h1>` through `<h6>`, an authored `align` key whose trimmed,
+      ASCII-case-folded value is `left`, `right` or `center` serializes as
+      `style="text-align: VALUE;"`, not as the deprecated `align` attribute.
+      The declaration takes the authored `align` slot. If the author also
+      supplied `style`, emit one `style` attribute at its authored slot and
+      append the declaration there; the appended declaration wins if that
+      style already named `text-align`.
+
+      The element and value sets are closed. On `<table>`, `align` means block
+      placement rather than alignment of cell text, so it remains an ordinary
+      attribute. Every element outside the text-block set, and every value
+      outside the three named values, likewise keeps the authored attribute.
+      Rewriting a table's placement as `text-align` would change the document,
+      not modernize an equivalent spelling. (carve#1755.)
+
    2. ATTRIBUTE QUOTING + ESCAPING. Attribute values are double-quoted.
       In an attribute value escape `&`->&amp;, `<`->&lt;, `>`->&gt;,
       `"`->&quot;, `'`->&apos;. In text/content escape `&`,`<`,`>` (NOT

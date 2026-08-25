@@ -69,6 +69,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Text-block alignment renders the modern CSS declaration** (carve#1755).
+  `{align=left|right|center}` on a paragraph, div, or heading now renders
+  `style="text-align: …;"` instead of the deprecated `align` attribute. Tables
+  remain unchanged because their `align` attribute describes placement. This
+  is an output-byte compatibility change from 0.1.3.
 - **Authored block bases carry the complete structural group.** Opaque fence payloads, attached captions, fenced block quotes, and nested footnote metadata keep their owner; an invisible fenced percent block does not loosen a list.
 - **Explicit ids and classes may start with an ASCII digit** (carve#1725).
   Imported/authored HTML-valid values are preserved, while attribute keys,

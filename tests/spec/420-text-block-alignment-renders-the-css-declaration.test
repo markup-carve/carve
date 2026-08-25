@@ -1,0 +1,44 @@
+Text-block alignment renders the CSS declaration
+
+```
+{align=right}
+Aligned text.
+.
+<p style="text-align: right;">Aligned text.</p>
+```
+
+```
+{align=center}
+::: box
+Aligned text.
+:::
+.
+<div class="box" style="text-align: center;">
+  <p>Aligned text.</p>
+</div>
+```
+
+```
+{align=right style="color: red"}
+Aligned text.
+.
+<p style="color: red; text-align: right;">Aligned text.</p>
+```
+
+```
+{align=right}
+| a |
+.
+<table align="right">
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
+```
+
+```
+{align=justify}
+Aligned text.
+.
+<p align="justify">Aligned text.</p>
+```
