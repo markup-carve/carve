@@ -272,7 +272,9 @@ test('an opt-in rule reports nothing until it is asked for', () => {
  * kebab string appears, and that entry is visible where an unmatched form is
  * not. Measured at the pin: 21 literals, all 21 of them rule ids, no noise.
  */
-const NOT_A_RULE = new Set()
+// Internal list-indentation grouping labels in the pinned linter. They merge
+// adjacent diagnostics; neither string is ever emitted as a warning rule id.
+const NOT_A_RULE = new Set(['definition-list', 'footnote-definition'])
 
 function ruleIdsInBuild() {
   const lintSource = readFileSync(
