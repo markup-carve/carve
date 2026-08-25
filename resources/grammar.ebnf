@@ -222,7 +222,10 @@
            interruption or lazy folding:
 
              column band                         selected owner
-             below content_column                nearest surviving ancestor
+             past base_column but below          this surviving frame; the
+               content_column                    residue is classified at its
+                                                 local column zero
+             at or below base_column             nearest surviving ancestor
              at content_column                   this frame
              past content_column                 this frame, with the authored
                                                  block base of §24 C3 when the
@@ -253,6 +256,35 @@
            frame, so the column owner was an ancestor". This state definition
            and table take precedence over that shorthand; no later example may
            reverse the dependency.
+
+           COMMENTS ARE CLASSIFIED BEFORE BLOCK OWNERSHIP -- NORMATIVE
+           (carve#1731). For each line, first honor any active code, raw or
+           other opaque payload. Decode the active container prefix and
+           authored indentation once. Then recognize `%%` and a matched `%%%`
+           span as layout-transparent comment tokens BEFORE selecting an owner
+           for visible block classification. Record the comment node, its
+           authored spelling and its complete source extent, but remove it from
+           visible classification and rendering. This is lexical erasure from
+           layout, NEVER erasure from the AST or source map.
+
+           Both comment forms apply the `line_comment` / `fenced_comment` row
+           above: every enclosing container frame remains open and the current
+           paragraph closes. A following blank repeats the blank transition;
+           it does not close the container merely because a comment preceded
+           it. The next VISIBLE line is owned solely by its prefixes and column:
+           past a body's `base_column` that surviving body owns it, at or below
+           the base an ancestor owns it, and at or past `content_column` the
+           body owns it normally. The comment creates no lazy-continuation
+           claim and cannot keep or close a container by parser fallthrough.
+
+           A matched `%%%` token carries its opener, body and exact-width
+           closer as one source extent across authored indentation. Its body is
+           opaque. An opener without an exact-width closer is one `%%` line
+           comment; later lines are classified normally. Comment delimiters
+           inside code, raw content or another opaque payload are literal
+           bytes. Nested containers, quotes, definition bodies and footnote
+           bodies use this same phase ordering and transition without a
+           construct-specific ownership exception.
    STEP (per line L, executed exactly once -- no backtracking, Design
          Principle 1: the contribution a line makes to block structure never
          depends on a future line, the only lookahead being the DECLARED
@@ -5306,15 +5338,19 @@ EOF = (* end of file *) ;
          forward (§15; corpus 89-block-attribute-lines-7). (A small
          deviation from djot, which keeps such a line as paragraph text.)
 
+         Comments in this list are the layout-transparent tokens classified in
+         PART 0 before visible ownership. They close the paragraph without
+         choosing or extending an owner; their AST/source extent is retained.
+
          DEFINITION OWNERSHIP IS COLUMN-SCOPED. A link or footnote definition
          belongs to an open list item only at that item's content_column, or
          when L3's `+` marker explicitly attaches its flush-left block. At
          DOCUMENT column 0 it is a document-level interrupter: it ends the item,
          is collected into the shared symbol table, and the following block is
          a document sibling. At a nonzero column BELOW content_column it is lazy
-         paragraph text and does not register. Comments are the explicit
-         exception in §24 C3: their invisibility is accepted independently of
-         column and they do not by themselves close the item. Pinned by corpus
+         paragraph text and does not register. Comment recognition is not an
+         exception to this opener set: PART 0 has already removed comment
+         tokens from visible block classification. Pinned by corpus
          287-a-column-zero-definition-ends-an-open-list-item (carve#1045).
 
          A DEFINITION COLLECTED AT content_column ENDS THE ITEM'S OPEN

@@ -18,7 +18,7 @@ import { execFileSync } from 'node:child_process'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { extractNormativeClauses, readInventory } from '../scripts/normative-clauses.mjs'
-import { ownershipTransition } from '../scripts/spec/layout.mjs'
+import { classifyLayoutComment, ownershipTransition } from '../scripts/spec/layout.mjs'
 import { bareCitation, eachClause, qualifiedCitation } from '../scripts/lib/citations.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -447,4 +447,20 @@ test('ownership transitions keep container and paragraph state independent', () 
     assert.deepEqual(ownershipTransition(boundary, false), { containerOpen: true, paragraphOpen: false })
     assert.deepEqual(ownershipTransition(boundary, true), { containerOpen: true, paragraphOpen: true })
   }
+})
+
+test('comments are classified as source-bearing tokens before visible ownership', () => {
+  assert.deepEqual(
+    classifyLayoutComment(['  %% note'], 0),
+    { kind: 'line_comment', start: 0, end: 1 },
+  )
+  assert.deepEqual(
+    classifyLayoutComment([' %%%% open', '  body', ' %%% short', ' %%%% close', 'tail'], 0),
+    { kind: 'fenced_comment', start: 0, end: 4 },
+  )
+  assert.deepEqual(
+    classifyLayoutComment(['  %%% unterminated', 'visible'], 0),
+    { kind: 'line_comment', start: 0, end: 1 },
+  )
+  assert.equal(classifyLayoutComment(['ordinary'], 0), null)
 })
