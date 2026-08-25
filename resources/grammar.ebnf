@@ -2055,6 +2055,28 @@ local_hard_break_block = local_hard_break_block_open, newline,
                          [admonition_close, newline] ;
 local_hard_break_block_open = colon_fence:open, space, backslash ;
 
+(* --- Fenced block quote (PART 9 section 12: the container rules govern it) --- *)
+(* A SECOND SPELLING of the block quote, not a second block: a colon fence
+   whose type token is a bare `>` opens a quote whose body is ordinary block
+   content, and the node is the one `blockquote_line` produces. The two forms
+   are the same tree, so every rule that speaks of a block quote reaches both.
+   Third member of the sigil-fence family beside `line_block_open` and
+   `local_hard_break_block_open`, and it takes the same REQUIRED space before
+   its token; `:::>` is not an opener.
+   WHY A SIGIL AND NOT A KEYWORD: `::: quote` is already an admonition kind
+   rendering `<aside class="admonition quote">`, so the keyword is taken and
+   means something else. The `>` is unambiguous because it is already the
+   block-quote marker (markup-carve/carve#1718; jgm/djot#401).
+   WHICH SPELLING AN AUTHOR USED is carried on the node as `fenced` (PART 12),
+   because `carve fmt` must be able to write back what it read: normalizing
+   one spelling to the other would rewrite documents no one asked to change.
+   The flag is ABSENT on a `>`-prefixed quote, so a document that predates
+   this clause serializes exactly as it did. *)
+quote_block = quote_block_open, newline,
+              {block - admonition_close},
+              [admonition_close, newline] ;
+quote_block_open = colon_fence:open, space, ">" ;
+
 (* --- Comments --- *)
 (* A line comment may be indented: optional leading whitespace before `%%` does
    not matter, so an indented line whose first non-whitespace content is `%%` is

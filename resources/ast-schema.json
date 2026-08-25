@@ -643,6 +643,10 @@
             "$ref": "#/$defs/blockNode"
           }
         },
+        "fenced": {
+          "description": "True when the quote was authored as a ::: > container rather than with > line markers. The two spellings are one node; this records which one, so the canonical writer can write back what it read. Absent on a >-prefixed quote.",
+          "const": true
+        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
