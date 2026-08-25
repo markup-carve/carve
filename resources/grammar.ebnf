@@ -251,6 +251,31 @@
         A definition still gets collected from where it was written (SS17 L6);
         ending the item disposes of the FOLLOWING line, not of the definition.
 
+        A FLOATING ATTRIBUTE BLOCK DOES NOT CHANGE THE CONTENT COLUMN --
+        NORMATIVE (carve#1705, carve-rs#1373). In
+
+            -{#item} {#next}
+              # H
+
+        marker-attached `{#item}` is item metadata and contributes zero to the
+        content column (§24 C3), so `# H` at source column 2 is AT the bullet
+        item's content column, not below it. The item therefore survives and
+        the floating `{#next}` attaches to its heading. The task spelling has
+        the same column because the checkbox is content, not marker width; an
+        ordered `1.` marker puts the equivalent heading at column 3.
+
+        Move those headings one column left and S4 gives the opposite answer.
+        A floating attribute opens no paragraph, so the partial prefix match
+        closes the item and re-classifies the heading-shaped residue as literal
+        paragraph text in the document context. The pending attribute is scoped
+        to the item (§15 A4), becomes dangling when that item closes, and MUST
+        NOT escape to the document paragraph. Ordinary marker-line text is the
+        control: it opens a paragraph, so a below-column line lazily folds into
+        it. A task item keeps its authored checkbox even when no block remains;
+        zero width in the column calculation does not erase task state. This is
+        the same open-paragraph rule on both sides; attributes and task
+        checkboxes do not manufacture wider list markers.
+
         The question is asked of a QUOTE recursively. `- > q` / `tail` folds
         because the quote ends on an open paragraph; `- > # H` / `tail` does
         not, because it ends on a heading. Non-emptiness is not the test - a
