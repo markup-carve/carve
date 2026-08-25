@@ -27788,3 +27788,77 @@ does open a paragraph, so the same below-column line lazily continues it.
 ```
 
 :::
+## A fenced block quote is the block quote written another way
+
+A colon fence whose type token is a bare `>` opens a block quote (PART 3,
+`quote_block`). It is a second SPELLING, not a second block: the body is
+ordinary block content and the node is the one the `>`-prefixed form produces,
+so the tree is the same one and every rule that speaks of a block quote reaches
+both. Third member of the sigil-fence family beside `::: |` and the hard-break
+fence, taking the same required space before its token.
+
+:::: compare
+
+```carve
+::: >
+Notes:
+
+- ship the parser
+- then the renderer
+:::
+```
+
+```html
+<blockquote>
+  <p>Notes:</p>
+  <ul>
+    <li>ship the parser</li>
+    <li>then the renderer</li>
+  </ul>
+</blockquote>
+```
+
+::::
+
+The fence nests in itself at CONSTANT width, because a typed opener is never
+bare and only a bare equal-length line closes. Re-quoting is therefore
+prepend-and-append: nothing already inside is renumbered.
+
+:::: compare
+
+```carve
+::: >
+Carol
+::: >
+Bob
+:::
+:::
+```
+
+```html
+<blockquote>
+  <p>Carol</p>
+  <blockquote><p>Bob</p></blockquote>
+</blockquote>
+```
+
+::::
+
+The separator is a SPACE, as it is for every other colon-fence opener, so a
+glued marker opens nothing and the line is paragraph text.
+
+:::: compare
+
+```carve
+:::>
+x
+:::
+```
+
+```html
+<p>:::&gt;
+x
+:::</p>
+```
+
+::::

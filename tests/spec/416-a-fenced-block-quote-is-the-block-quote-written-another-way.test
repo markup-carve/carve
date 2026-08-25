@@ -1,0 +1,42 @@
+A fenced block quote is the block quote written another way
+
+```
+::: >
+Notes:
+
+- ship the parser
+- then the renderer
+:::
+.
+<blockquote>
+  <p>Notes:</p>
+  <ul>
+    <li>ship the parser</li>
+    <li>then the renderer</li>
+  </ul>
+</blockquote>
+```
+
+```
+::: >
+Carol
+::: >
+Bob
+:::
+:::
+.
+<blockquote>
+  <p>Carol</p>
+  <blockquote><p>Bob</p></blockquote>
+</blockquote>
+```
+
+```
+:::>
+x
+:::
+.
+<p>:::&gt;
+x
+:::</p>
+```

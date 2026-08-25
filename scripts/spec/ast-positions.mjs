@@ -278,7 +278,7 @@ export const ENDS_AT_LAST_CHILD = new Set([
  */
 export const EMPTY_CONTAINER_MARKUP = new Map(
   Object.entries({
-    block_quote: /^[ \t]*>[ \t]*$/,
+    block_quote: /^[ \t]*(?:>|:{3,} +>)[ \t]*$/,
     list: /^[ \t]*(?:[-+*]|[0-9]+[.)]|[A-Za-z]+[.)]|\.)[ \t]*$/,
     list_item: /^[ \t]*(?:[-+*]|[0-9]+[.)]|[A-Za-z]+[.)]|\.)[ \t]*$/,
   }),
@@ -434,7 +434,11 @@ export const OPENING_MARKUP = new Map(
     abbreviation_def: /^\*\[/,
     admonition: /^:/,
     autolink: /^</,
-    block_quote: /^>/,
+    // TWO SPELLINGS, one node: the marker form and the colon fence whose type
+    // token is that same marker (markup-carve/carve#1718). A rule that knew only
+    // the marker reported every fenced quote as starting away from its own
+    // opener.
+    block_quote: /^(?:>|:{3,} +>)/,
     caption_number: /^#/,
     code: /^`/,
     code_block: /^[`~]/,
