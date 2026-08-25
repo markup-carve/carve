@@ -133,6 +133,7 @@ the command-line and editor behavior stay aligned.
 | `figure-group-empty` | a `::: figure` group with no captionable panel; the group figure holds only the preserved content (PART 9 §4c) |
 | `figure-group-single-panel` | a `::: figure` group holding a single panel; a plain captioned figure renders the same content without the group wrapper (PART 9 §4c) |
 | `unattached-block-attribute` | a floating `{...}` block attribute that never reaches a block, because the document or the container holding it ended first (PART 9 §15 A4). Nothing is emitted for it, so `> {.k}` on a quote's last line renders neither on the quote nor on anything after it |
+| `quote-fence-ends-the-quote-above` | a `::: >` opener at the column of the quote directly above it. It is a block opener, so it ends that quote and starts a sibling one, and the two render as adjacent blockquotes rather than the nesting the indentation suggests. Nothing is malformed and lint otherwise exits 0, which is why this container kind needs a rule of its own: write `> ::: >` to nest it, or leave a blank line to make two quotes deliberate |
 
 ### Declaring a target version
 
