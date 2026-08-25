@@ -428,6 +428,48 @@ such an element is not a figure to rebuild or to preserve: it unwraps to its
 content with `element-unwrapped`, in every mode, which is the behavior this rule
 leaves untouched.
 
+## An HTML comment imports as a Carve comment
+
+An HTML comment was dropped in every mode with nothing reported, and the usual
+reason for dropping - the language has no spelling for the shape - does not
+apply: **Carve has comments** (markup-carve/carve#1709). Dropping one was
+therefore a choice to lose bytes the format can represent, in a mode whose whole
+job is fidelity, and it was a choice nobody had made.
+
+**An HTML comment imports as a `comment` node, in every mode.** A comment
+renders nothing in either language, so this is invisible in the output and
+lossless in the source.
+
+The POSITION decides the spelling, and it is not relocated:
+
+| where the comment sits | the node | the source a writer spells it as |
+| --- | --- | --- |
+| among blocks | a block comment | the `%%%` fence, widened past any fence line inside it |
+| inside an inline run | a delimited inline comment | `{% … %}` |
+
+The block form always has a spelling: the fence widens the way a code fence
+does, so no payload can close it early. The inline form does not, and where it
+does not the comment is DROPPED with one `element-dropped` row saying so.
+
+**Two payloads have no inline spelling**, and both close the comment early
+rather than being escapable:
+
+- text containing `%}`, which is the closer;
+- text containing a BLANK line, which ends the paragraph the run is in.
+
+**Do not truncate or escape a comment to force it into the inline form.** A
+comment that came back shorter, or with characters the author did not write, is
+a silent content change; the drop plus its row is the honest answer, and the row
+is the point.
+
+**The comment is not relocated to make it spellable.** Moving an inline comment
+out to a block comment would put text somewhere the author did not write it, and
+`roundtrip` reading its own output would then find the document had moved. Where
+only one position can be represented, the other is reported.
+
+**A comment inside an element preserved as raw HTML needs no row.** It is inside
+the preserved bytes and reaches the output with them.
+
 ## The last newline of a code block is its terminator, not a line
 
 A code block's content is bytes the author wrote, so gaining or losing a line
