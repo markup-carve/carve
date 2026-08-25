@@ -1087,20 +1087,19 @@ on a heading it stays part of the heading text rather than being dropped.
 
 :::
 
-An attribute name (id, class, or key) is a grammar `identifier`, so it may
-not start with a digit. A name that violates this makes the whole `{…}` not
-an attribute block, so it stays literal. (A deliberate divergence from djot,
-which accepts digit-first identifiers and `class="123"`; see jgm/djot issue
-399.)
+An explicit id or class may start with an ASCII digit, matching valid imported
+HTML. Attribute keys still use the narrower grammar `identifier`, so a
+digit-leading key makes the whole `{…}` stay literal. No other leading
+character is newly admitted.
 
 ::: compare
 
 ```carve
-[x]{.123} and [y]{12=v}
+[x]{.123} [y]{#7-x} and [z]{12=v}
 ```
 
 ```html
-<p>[x]{.123} and [y]{12=v}</p>
+<p><span class="123">x</span> <span id="7-x">y</span> and [z]{12=v}</p>
 ```
 
 :::
@@ -1127,7 +1126,7 @@ bad name leaves the whole block literal even alongside a valid class.
 ```
 
 ```html
-<p>[x]{.ok .1}</p>
+<p><span class="ok 1">x</span></p>
 ```
 
 :::
@@ -4580,9 +4579,9 @@ deduplicated, keeping first-occurrence order (PART 9 §15). `class="a a"` and
 
 ## Code span and image trailing attributes are strict
 
-A trailing `{...}` on a code span or an image obeys the same strict attribute
-rule as any other inline attribute (PART 9 §14): a digit-first or otherwise
-invalid payload makes the whole block literal, not a bogus attribute.
+A trailing `{...}` on a code span or an image obeys the same attribute rule as
+any other inline attribute (PART 9 §14): digit-leading ids/classes are valid,
+while a digit-leading key or otherwise invalid payload stays literal.
 
 ::: compare
 

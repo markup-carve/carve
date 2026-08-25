@@ -65,6 +65,18 @@ test('a dash is still legal after the first character', () => {
   assert.equal(html('[x]{k-v=1}\n'), '<p><span k-v="1">x</span></p>')
 })
 
+test('an ASCII digit may start only an explicit id or class', () => {
+  assert.equal(html('[x]{.123}\n'), '<p><span class="123">x</span></p>')
+  assert.equal(html('[x]{#7-x}\n'), '<p><span id="7-x">x</span></p>')
+  assert.equal(html('[x]{12=v}\n'), '<p>[x]{12=v}</p>')
+  assert.equal(html('[x]{12}\n'), '<p>[x]{12}</p>')
+  assert.equal(html(':1[x]\n'), '<p>:1[x]</p>')
+})
+
+test('a digit-leading bare colon type is a generic div class', () => {
+  assert.equal(html('::: 123\nbody\n:::\n'), '<div class="123">\n  <p>body</p>\n</div>')
+})
+
 test('an underscore may still start an identifier', () => {
   // PART 7 allows `_` first; only `-` was over-permitted. It still holds for
   // every form that can carry one, which is all of them except the bare word.

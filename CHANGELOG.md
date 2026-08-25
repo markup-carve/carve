@@ -69,6 +69,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Explicit ids and classes may start with an ASCII digit** (carve#1725).
+  Imported/authored HTML-valid values are preserved, while attribute keys,
+  booleans and extension names keep the narrower identifier grammar. Generated
+  digit-leading heading ids continue to receive the `s-` prefix. This is a
+  source-compatibility change from 0.1.3.
 - **A div unwraps when it kept nothing only a container can hold**
   (carve#1650, markup-carve/carve-rs#1315). This widens carve#1578 past a bare
   attribute test: a grouping label keeps the fence too.
@@ -1021,8 +1026,8 @@ advance to `0.1.0` together as the first lockstep minor release.
 - **Generic divs and spans** - bare `:::` / `::: {attrs}` for plain `<div>`;
   `[text]{attrs}` inline span; `:::` nesting with matching closer length rule
 - **Attributes** - `{#id .class key=value}` on any block or inline element;
-  boolean attributes `{disabled}` (renders as `name=""`); strict identifier
-  rule (digit-first or non-identifier chars make the whole block literal)
+  boolean attributes `{disabled}` (renders as `name=""`); explicit ids/classes
+  may start with an ASCII digit, while keys and booleans may not
 - **Editorial / critic markup** - `{+ +}` insert, `{- -}` delete,
   `{~ old~>new ~}` substitute, `{= =}` highlight, `{# #}` comment
 - **Frontmatter** - YAML frontmatter block at document start; safe loader

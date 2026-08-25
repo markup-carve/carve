@@ -823,13 +823,13 @@ const TIER1 = new Set(['note', 'tip', 'warning', 'danger', 'info', 'success', 'e
 
 // parse a `:::` opener tail (STRICT, PART 9 SS12): type word, optional
 // quoted title, optional [label]; a bare pipe / backslash selects the
-// line-block / hard-break block; anything else (inline attrs, digit-first
-// type, ...) makes the line an ordinary paragraph line. null = not a fence.
+// line-block / hard-break block; anything else makes the line an ordinary
+// paragraph line. A bare type is a class, so it admits an ASCII digit first.
 function parseColonOpener(tail) {
   let s = tail
   const out = { type: null, title: null, label: null, mode: 'div' }
   if (/^[ \t]*$/.test(s)) return out // bare generic div
-  if (/^[A-Za-z_-]/.test(s)) return null // type words must be separated
+  if (/^[A-Za-z0-9_-]/.test(s)) return null // type words must be separated
   // The colon fence's ONE separator slot, shared by all four openers. It is a
   // MARKER SEPARATOR (PART 7, MARKER SEPARATORS AND PADDING SLOTS): the token
   // after it selects an admonition, a div, a line block or a local hard-break
@@ -855,7 +855,7 @@ function parseColonOpener(tail) {
   s = s.replace(/^ +/, '')
   if (/^\|[ \t]*$/.test(s)) return { ...out, mode: 'line-block' }
   if (/^\\[ \t]*$/.test(s)) return { ...out, mode: 'hardbreaks' }
-  const ty = /^([A-Za-z_-][A-Za-z0-9_-]*)/.exec(s)
+  const ty = /^([A-Za-z0-9_][A-Za-z0-9_-]*)/.exec(s)
   if (ty) {
     out.type = ty[1]
     s = s.slice(ty[0].length)

@@ -98,9 +98,9 @@ body
 ```
 
 ```
-[x]{.123} and [y]{12=v}
+[x]{.123} [y]{#7-x} and [z]{12=v}
 .
-<p>[x]{.123} and [y]{12=v}</p>
+<p><span class="123">x</span> <span id="7-x">y</span> and [z]{12=v}</p>
 ```
 
 ```
@@ -112,7 +112,7 @@ body
 ```
 [x]{.ok .1}
 .
-<p>[x]{.ok .1}</p>
+<p><span class="ok 1">x</span></p>
 ```
 
 ```

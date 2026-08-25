@@ -2985,23 +2985,23 @@ content
 
 ::::
 
-A grammar identifier cannot start with a digit, so a digit-first token is
-not a valid type word: the opener is an ordinary paragraph (a `class="123"`
-would also be invalid CSS). This is a deliberate divergence from djot,
-which would accept it.
+A bare type word becomes a class, so it may start with an ASCII digit just as
+an explicit class may. This preserves a valid imported HTML class. Generated
+heading ids remain conservative and still prefix digit-leading slugs with
+`s-`.
 
 :::: compare
 
 ```carve
 ::: 123
-not a div
+content
 :::
 ```
 
 ```html
-<p>::: 123
-not a div
-:::</p>
+<div class="123">
+  <p>content</p>
+</div>
 ```
 
 ::::

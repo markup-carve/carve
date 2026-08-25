@@ -553,8 +553,8 @@ CarveCore {
   battrCont  = "\n" battrSp*
   battrSp    = " " | "\t"
   attrItem   = langAttr | idAttr | classAttr | kvAttr | boolAttr
-  idAttr     = "#" ident
-  classAttr  = "." ident
+  idAttr     = "#" explicitIdent
+  classAttr  = "." explicitIdent
   kvAttr     = ident "=" attrVal
   // NO LEADING UNDERSCORE ON THE BARE FORM (carve#1450). `{_x_}` is BOTH a
   // boolean attribute named `_x_` and a forced underline, and the underline is
@@ -599,6 +599,9 @@ CarveCore {
   // `k="a\t.b"` where all three engines give `k="a" class="b"` (carve#878).
   bareVal    = (~(" " | "\t" | "}" | newline) any)+
   ident      = identStart identRest*
+  // Explicit ids/classes preserve digit-leading HTML values. The broader
+  // identifier grammar stays unchanged for keys, booleans and extensions.
+  explicitIdent = (identStart | digit) identRest*
   // No leading `-`: PART 7 (normative) is
   //   identifier = (letter | '_'), {letter | digit | '_' | '-'} ;
   // and all three engines follow it - `{--flag}` and `{#-id}` are literal

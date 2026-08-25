@@ -86,7 +86,7 @@ const CLAIMS = [
   { section: '14', input: '# One\ntwo\n', differs: true, note: 'a heading ends at the newline in Carve, folds in Djot' },
   { section: '15', input: ' # H\n', differs: true, note: 'an indented block opener is prose in Carve, a heading in Djot' },
   { section: '15', input: '>\tq\n', differs: true, note: 'a tab does not satisfy the quote separator in Carve' },
-  { section: '16', input: '[x]{.123}\n', differs: true, note: 'a class may not start with a digit in Carve, so the braces stay literal' },
+  { section: '16', input: '[x]{12=v}\n', differs: true, note: 'a generic attribute name may not start with a digit in Carve, so the braces stay literal' },
   { section: '17', input: '-{.c} x\n', differs: true, note: 'the attribute block binds to the marker in Carve, to a span in Djot' },
   { section: '18', input: 'intro\n{.c}\n# H\n', differs: true, note: 'Djot consumes the attribute line and drops the bytes; Carve applies them to the block below' },
   { section: '19', input: '- a\n\n  > q\n', differs: true, note: 'an attached quote leaves the item tight in Carve, loose in Djot' },

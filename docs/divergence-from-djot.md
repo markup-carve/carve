@@ -708,23 +708,25 @@ reformat. Requiring the column and the byte makes the shape of the source
 decide, not the width of a tab stop. This is a SOURCE break: the bytes mean
 something different, and nothing is silently dropped.
 
-## 16. Attribute identifiers are strict
+## 16. Attribute names are strict
 
 **Djot:** an attribute value is largely unconstrained, so `{.123}` is a class
 named `123`.
 
-**Carve:** a class or id must be an identifier - it may not start with a digit -
-and an attribute block that fails the shape is not an attribute block at all. It
-stays literal text.
+**Carve:** explicit classes and ids accept the same ASCII digit-leading values.
+Attribute keys, boolean names and inline-extension names still have to begin
+with an ASCII letter or underscore. A block that fails those shapes stays
+literal text.
 
 ```
-[x]{.123}       Djot:  <p><span class="123">x</span></p>
-                Carve: <p>[x]{.123}</p>
+[x]{12=v}       Djot:  <p><span 12="v">x</span></p>
+                Carve: <p>[x]{12=v}</p>
 ```
 
-**Why.** A class that cannot be written as a CSS selector is a class nobody can
-style, and accepting it hides the typo that produced it. A SOURCE break, and a
-loud one - the braces stay visible rather than turning into an element.
+**Why.** HTML permits digit-leading class and id values, so Carve preserves
+them. It does not widen the grammar for attribute or extension names, where a
+digit-leading token is more likely to be a typo. Generated heading ids remain
+conservative: a digit-leading slug still receives the `s-` prefix.
 
 ## 17. A list marker takes attributes
 

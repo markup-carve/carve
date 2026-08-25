@@ -1965,7 +1965,7 @@ admonition_close = colon_fence_close ;
 
 admonition_type = "note" | "tip" | "warning" | "danger" | "info"
                 | "success" | "example" | "quote"  (* Tier 1 canonical *)
-                | identifier ;  (* Tier 2 custom types (incl. `details`)
+                | explicit_identifier ;  (* Tier 2 custom types (incl. `details`)
                                    -- see PART 9 §12 for the two-tier
                                    rendering rule *)
 
@@ -2399,10 +2399,9 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
    `<code class="x">c</code>`, and `#id`/`key=value` likewise. (Was an impl
    divergence where carve-js dropped the attributes; RESOLVED -- both now
    apply them identically.) The STRICT attribute rule (§14) applies here and
-   to IMAGE trailing attrs exactly as to any other inline attribute: a
-   digit-first / invalid payload makes the block literal, so `\`c\`{#1a}` and
-   `![a](i){#1a}` keep the braces as text rather than parsing a bogus
-   attribute. *)
+   to IMAGE trailing attrs exactly as to any other inline attribute. Explicit
+   ids and classes admit a leading ASCII digit; a digit-leading key or any
+   otherwise invalid payload makes the block literal. *)
 
 (* --- Raw Inline (inline parallel of raw_block; PART 9 §20) --- *)
 (* A code span whose trailing attribute block is EXACTLY `{=format}` is raw
@@ -3845,8 +3844,8 @@ language_tag       = language_subtag, { '-', language_subtag } ;
 language_subtag    = ( letter | digit ), { letter | digit } ;
 (* One to eight characters per subtag. *)
 
-id_attribute = '#', identifier ;
-class_attribute = '.', identifier ;
+id_attribute = '#', explicit_identifier ;
+class_attribute = '.', explicit_identifier ;
 key_value_attribute = identifier, '=', attribute_value ;
 (* A bare identifier with no value is a BOOLEAN (value-less) attribute,
    rendered `name=""` (a carve extension beyond canonical djot, matching
@@ -4001,6 +4000,11 @@ include_options = {space, '@', identifier, ':', attribute_value}+ ;
 identifier = (letter | '_'), {letter | digit | '_' | '-'} ;
 (* The leading `_` is admitted HERE and refused for `boolean_attribute` alone,
    which is where it collides with forced underline (carve#1450). *)
+explicit_identifier = (letter | digit | '_'), {letter | digit | '_' | '-'} ;
+(* Explicit ids and classes additionally admit an ASCII digit first. This is a
+   preservation rule for authored/imported HTML-valid values; generated heading
+   ids remain conservative and prefix a digit-leading slug with `s-`. Attribute
+   keys, boolean attributes and inline-extension names still use `identifier`. *)
 
 letter = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j'
        | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't'
@@ -5682,13 +5686,13 @@ EOF = (* end of file *) ;
           an attribute block: the `]` and the `{...}` render literally. The
           inner bracket content is still inline-parsed, so `[*x*]{???}` ->
           `[<strong>x</strong>]{???}`.
-        - a name (id, class, or key) that is not a grammar `identifier` (the
-          `identifier` production) is also unrecognized: a DIGIT-FIRST name (`{.123}`, `{#1}`,
-          `{2=v}`) or a name with a non-identifier character (`{.a!b}`).
+        - an id or class that is not an `explicit_identifier`, or a key that is not
+          an `identifier`, is also unrecognized. A leading ASCII digit is valid
+          only for the id/class forms (`{.123}`, `{#1}`), not `{2=v}`.
+          A non-identifier character (`{.a!b}`) remains invalid.
           ONE invalid name makes the WHOLE block not an attribute block, even
           when mixed with valid attributes (`{.ok .1}`), so the run stays
-          literal. (Deliberate strictness beyond djot, which accepts
-          digit-first identifiers / `class="123"`; see jgm/djot issue 399.)
+          literal. No other leading character is newly accepted.
           A digit/`-`/`_` AFTER the first character is valid (`{.a1}`).
       BOOLEAN (value-less) ATTRIBUTES -- NORMATIVE. A bare identifier with no
       value (`[text]{featured}`, `{.note open}`, `{disabled}` on a block line)
