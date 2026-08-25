@@ -619,9 +619,16 @@ function footnoteBlankRunEnd(lines, i, n) {
   return isFootnoteContinuationLine(lines[k]) ? k : -1
 }
 
-// A definition body's own column is fixed at 3 (grammar.ebnf,
-// `definition_indent`) -- the column `:  ` establishes -- regardless of how the
-// first continuation line is actually indented.
+// A definition body's column is the one its OWN marker establishes: `:` plus
+// the separator, so `: ` gives 2 and `:  ` gives 3 (grammar.ebnf,
+// `definition_separator`). It is never read off the first continuation line,
+// and a wider separator than the two the grammar admits does not widen it --
+// `:    x` is a two-space marker with two columns of content indent.
+//
+// One space is the CANONICAL spelling: every other marker in the language takes
+// exactly one separator space (`- item`, `1. item`, `:: term`), and the body
+// was the sole exception. Two spaces stay valid because they align a `dd` under
+// its `dt`'s text, which is what the corpus and most authored documents use.
 const DEFINITION_BODY_COLUMN = 3
 
 // PART 9 SS24 C1/carve#893: a definition-body continuation line qualifies by
@@ -632,10 +639,10 @@ const DEFINITION_BODY_COLUMN = 3
 // ONCE because the character form used to be spelled three times in the
 // definition-body loop below - two tests plus the dedent - and a fix reaching
 // only some of them is the recurring shape catalogued in carve#755.
-function isDefinitionContinuationLine(line) {
+function isDefinitionContinuationLine(line, column = DEFINITION_BODY_COLUMN) {
   if (line === undefined) return false
   const { col, rest } = indentCols(line)
-  return col >= DEFINITION_BODY_COLUMN && rest !== ''
+  return col >= column && rest !== ''
 }
 
 // Roman numeral helpers for the SS11 N2/N3 ordered dialects.
@@ -2199,7 +2206,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           node.items.push({ dt })
           continue
         }
-        if ((dm = /^: {2}(.*)$/.exec(cur0))) {
+        if ((dm = /^:( {1,2})(.*)$/.exec(cur0))) {
+          const bodyColumn = 1 + dm[1].length
           // definition (dd): collect its full body, then parse it to blocks. A
           // definition body continues like a list item (SS17): lazy
           // continuations, a blank-separated indented paragraph, and a `+`
@@ -2214,9 +2222,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // form) opened a pulled-in block: the NEXT flush-left line begins it.
           // This is a distinct signal from an empty definition body, so an empty
           // `:  ` never swallows the following flush-left block.
-          let pullPending = CONT_MARKER.test(dm[1].trim())
+          let pullPending = CONT_MARKER.test(dm[2].trim())
           if (!pullPending) {
-            bodyLines.push(stripIndent(dm[1]).replace(/[ \t]+$/, ''))
+            bodyLines.push(stripIndent(dm[2]).replace(/[ \t]+$/, ''))
           }
           while (i < n) {
             const cur = lines[i] ?? ''
@@ -2224,7 +2232,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (isBlank(cur)) {
               // a blank before an indented line is an internal paragraph break;
               // otherwise the blank ends this definition body.
-              if (isDefinitionContinuationLine(lines[i + 1])) { bodyLines.push(''); i++; continue }
+              if (isDefinitionContinuationLine(lines[i + 1], bodyColumn)) { bodyLines.push(''); i++; continue }
               break
             }
             if (CONT_MARKER.test(cur)) {
@@ -2235,12 +2243,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               i++
               continue
             }
-            if (isDefinitionContinuationLine(cur)) {
+            if (isDefinitionContinuationLine(cur, bodyColumn)) {
               // indented continuation block, dedented by the content margin.
               // `dedent` carries a tab that STRADDLES the margin back as the
               // spaces it bought past column 3, so `<TAB>x` (column 4) arrives
               // one column in, exactly as ` x` after three spaces would.
-              bodyLines.push(dedent(cur, DEFINITION_BODY_COLUMN))
+              bodyLines.push(dedent(cur, bodyColumn))
               pullPending = false
               i++
               continue

@@ -1569,16 +1569,37 @@ term_continuation_line = inline_content, newline ;
    having TWO ways to spill onto the next line, one of them silent -- a term has
    exactly one, so a long key stays wrappable at no cost. §434's follow-up
    question is answered here rather than left open.) *)
-definition_body = (':', space, space, first_block_content)
-                | (':', space, space, inline_content, newline,
+definition_body = (':', definition_separator, first_block_content)
+                | (':', definition_separator, inline_content, newline,
                    { definition_continuation
                    | (blank_line+, definition_continuation)
                    | continuation_marker_block
                    | lazy_continuation_line }) ;
+definition_separator = space, [space] ;
 (* FIRST-BLOCK (`:  +`): when the sole content is a lone `+`, the body is the
    FOLLOWING flush-left block, with no indentation -- the definition-list twin
    of the list-item `- +` opener (`first_block_content`). `:  \+` is a literal
    `+`. *)
+
+(* SEPARATOR WIDTH SETS THE BODY'S COLUMN (carve#1755). The separator is ONE or
+   TWO spaces, and the body's content column is `1 + separator width`: `: x`
+   establishes column 2, `:  x` column 3. A continuation line qualifies by
+   REACHING that column (PART 9 SS24 C1), so the two spellings differ only in
+   how far their continuations indent, never in what they mean.
+
+   ONE SPACE IS CANONICAL. Every other marker in the language takes exactly one
+   separator space -- `- item`, `1. item`, `> quote`, `:: term` -- and the
+   definition body was the only construct requiring two. Two spaces remain valid
+   because they align the `dd` under the `dt`'s text.
+
+   This is not a leniency the reader may extend. A THIRD space is not a third
+   column: `:    x` is a two-space marker whose body begins with two columns of
+   content indent, exactly as it did before this clause. What changed is that
+   the one-space spelling now HAS a meaning; it used to have none, and the three
+   engines disagreed about what to do with a line that had none -- carve-js
+   folded `: x` after a term into the `<dt>`, the oracle left it a stray
+   paragraph. A colon line inside a definition context has exactly one reading
+   now. *)
 definition_continuation = (definition_indent, inline_content, newline)
                         | (backslash, newline, definition_indent, inline_content, newline) ;
 definition_indent = whitespace, {whitespace} ;

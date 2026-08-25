@@ -592,6 +592,7 @@ index: examples/edge-cases/index.md
   25-definition-lists-7
   407-one-consumed-boolean-spells-the-looseness-no-blank-line-can-2
 
+  a-definition-body-s-separator-width-sets-its-content-column
 [edge-attributes] Attributes
 > Attribute lines and inline blocks, names and values, classes, booleans and the semantic/language sugar.
 out: examples/edge-cases/attributes.md
