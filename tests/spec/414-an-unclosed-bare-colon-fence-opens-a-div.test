@@ -1,0 +1,12 @@
+An unclosed bare colon fence opens a div
+
+```
+before
+:::
+after
+.
+<p>before</p>
+<div>
+  <p>after</p>
+</div>
+```

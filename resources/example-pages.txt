@@ -385,6 +385,7 @@ index: examples/edge-cases/index.md
   24-generic-divs-2
   24-generic-divs-3
   24-generic-divs-4
+  an-unclosed-bare-colon-fence-opens-a-div
 
 [edge-blocks] Paragraphs, breaks and captions
 > Paragraph folding, thematic breaks, caption attachment and adjacent block openers.

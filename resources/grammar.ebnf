@@ -5251,8 +5251,8 @@ EOF = (* end of file *) ;
       BARE fence of EXACTLY its opener's length -- the guard the formal
       `colon_fence_close` states as `len(close) = len(open)` -- so a bare
       `:::` inside a `::::` block is content rather than a closer, and a bare
-      `::::` inside a `:::` block is likewise not one. A bare opener with no
-      matching closer ahead is literal text.
+      `::::` inside a `:::` block is likewise not one. AN UNCLOSED OPENER STILL
+      OPENS, bare or labeled, and closes at end of input by PART 2's rule.
 
       EQUAL-LENGTH FENCES DO NEST, because a closer must be BARE: `::: note`
       may hold `::: tip`, the inner line being an opener rather than a closer
@@ -5264,6 +5264,18 @@ EOF = (* end of file *) ;
       `::::` leaves the block open and that `::: note` holds `::: tip`. Recorded
       rather than quietly corrected because the two sentences had been read as
       the rule (carve#770).
+
+      THIS PARAGRAPH ALSO SAID A BARE OPENER WITH NO MATCHING CLOSER AHEAD IS
+      LITERAL TEXT. That was its third wrong sentence, and the one the
+      carve#770 pass left standing three lines above its own correction note.
+      It contradicted PART 2, which states the rule with no such exception and
+      names the literal-text reading as the EARLIER one, dropped because it
+      "turned one wrong character into a corrupted document". All three
+      engines open a div for a bare `:::` with nothing closing it; none
+      produces the literal text this asked for. It survived because the corpus
+      pinned only the LABELED unclosed opener, so the one shape the two
+      clauses disagreed about was the one shape nothing gated. The bare shape
+      is pinned now (carve#1717).
 
       THE CANONICAL WIDTH IS A FUNCTION OF DEPTH, AND THAT COSTS O(depth^2)
       BYTES (carve#1553). The exact-length guard leaves the DIRECTION free --
@@ -7498,10 +7510,14 @@ EOF = (* end of file *) ;
         nests shorter fences and a too-short line is content, not a closer.
       - A `%%%` opener with NO MATCHING CLOSER AHEAD does NOT open a block.
         The line degrades to a `comment_line` (its first two `%` are the line
-        marker), so every FOLLOWING BLOCK STILL RENDERS. This mirrors the
-        `:::` rule (§12: "a bare opener with no matching closer ahead is
-        literal text") and exists for the same reason: an unterminated opener
-        must not swallow the rest of the document. An implementation that
+        marker), so every FOLLOWING BLOCK STILL RENDERS. This DIVERGES from
+        the `:::` rule (§12), where an unclosed opener opens and closes at end
+        of input, and the difference is VISIBILITY: an unclosed div still
+        renders the blocks it swallowed, so a forgotten closer costs the
+        reader a stray wrapper, while an unclosed comment would HIDE them and
+        silently delete the rest of the document. This clause used to claim it
+        MIRRORED §12, quoting a §12 sentence that has since been removed for
+        saying the opposite of what §12 means (carve#1717). An implementation that
         surfaces diagnostics SHOULD report an unterminated comment fence;
         emitting one is OPTIONAL, since not every implementation has a
         warning channel.
