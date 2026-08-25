@@ -636,6 +636,7 @@ index: examples/edge-cases/index.md
   an-engine-written-shape-says-what-it-is-called
   text-block-alignment-renders-the-css-declaration
 
+  a-sigil-fence-takes-its-attribute-line
 [edge-headings] Headings and cross-references
 > Section wrapping, id derivation and normalization, implicit and collapsed heading references.
 out: examples/edge-cases/headings.md
