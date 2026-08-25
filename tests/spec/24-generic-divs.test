@@ -40,12 +40,12 @@ content
 
 ```
 ::: 123
-not a div
+content
 :::
 .
-<p>::: 123
-not a div
-:::</p>
+<div class="123">
+  <p>content</p>
+</div>
 ```
 
 ```
