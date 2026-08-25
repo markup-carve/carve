@@ -45,9 +45,7 @@ export function formatOfExtension(ext) {
  * day) and re-verified against the checkouts when this file was written.
  */
 export const UNIMPLEMENTED_IMPORTERS = {
-  rust: {
-    bbcode: 'carve-rs has no BBCode importer (carve#1130 coverage table); `carve migrate --from bbcode` rejects the format',
-  },
+  rust: {},
   js: {},
   php: {},
 }
