@@ -146,7 +146,6 @@ out: examples/core.md
   41-line-blocks-3
   41-line-blocks-4
   41-line-blocks-5
-  41-line-blocks-6
   41-line-blocks-7
   42-admonitions
   42-admonitions-2
@@ -382,6 +381,7 @@ index: examples/edge-cases/index.md
   a-definition-behind-an-alternating-container-prefix-registers-at-the-innermost-content-column
   41-line-blocks-8
   12-inline-code-5
+  41-line-blocks-6
   24-generic-divs-2
   24-generic-divs-3
   24-generic-divs-4
