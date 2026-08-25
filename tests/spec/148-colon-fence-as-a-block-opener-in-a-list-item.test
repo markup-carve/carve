@@ -37,8 +37,9 @@ b
 .
 <ul>
   <li>one
-::: note
-b
-:::</li>
+    <aside class="admonition note" aria-label="Note">
+      <p>b</p>
+    </aside>
+  </li>
 </ul>
 ```

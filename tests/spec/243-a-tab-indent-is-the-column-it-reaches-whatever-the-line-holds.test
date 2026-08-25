@@ -6,7 +6,8 @@ A tab indent is the column it reaches, whatever the line holds
 .
 <ol>
   <li>a
-&gt; quote</li>
+    <blockquote><p>quote</p></blockquote>
+  </li>
 </ol>
 ```
 

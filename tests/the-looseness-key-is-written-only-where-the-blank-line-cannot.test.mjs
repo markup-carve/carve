@@ -138,12 +138,12 @@ test('the item-count test disagrees, and it fails in both directions', () => {
   assert.equal(reParseSaysWriteTheKey(corpus(`${L7}-2`)), true)
 })
 
-test('05-lists-11 is the corpus document the clause names, and it has the same shape', () => {
+test('05-lists-11 is tight now that its over-indented quote is structural', () => {
   const source = readFileSync(resolve(corpusDir, '05-lists-11.crv'), 'utf8')
   const node = container(source)
-  assert.equal(isLoose(node), true)
+  assert.equal(isLoose(node), false)
   assert.equal(node.items.length, 1)
-  assert.equal(itemCountSaysWriteTheKey(source), true)
+  assert.equal(itemCountSaysWriteTheKey(source), false)
   assert.equal(reParseSaysWriteTheKey(source), false)
 })
 

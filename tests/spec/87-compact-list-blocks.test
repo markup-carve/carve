@@ -122,8 +122,6 @@ Compact list blocks
    {.c}
 .
 <ul>
-  <li><p>a</p>
-    <p>{.c}</p>
-  </li>
+  <li>a</li>
 </ul>
 ```

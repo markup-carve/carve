@@ -106,6 +106,8 @@ the command-line and editor behavior stay aligned.
 | `blockquote-marker-without-space` | a line starting with `>` that is neither a bare quote marker nor `> `; it renders as prose, not a block quote |
 | `block-marker-as-text` | a line that opens like a block (`:::`, `{#`, `{.`) but parsed as plain text |
 | `fence-delimiter-indentation` | an indented fenced-code delimiter (`` ``` `` / `~~~`); a Carve fence is column-exact and must sit at its container's content column (column 0 at the top level), so an indented run does not open a code block |
+| `list-item-body-detached` | a block-shaped line indented past the item's marker column but below its exact content column; after a blank it has left the item, so the diagnostic offers the two explicit intentions: indent to the content column to make it structural, or escape the opener to preserve literal text |
+| `list-item-block-overindented` | a recognized block opener past an item's canonical content column, including the pre-#1701 full-prefix column of an attributed marker; under #1705 it is structural and `fmt` canonicalizes it. Dedent for the canonical structural spelling or escape the opener to preserve the literal meaning older readers assigned to it |
 | `carve-version-unsupported` | a document declaring a Carve spec version the processor does not implement, so constructs added after that version render as something else without any error |
 | `unclosed-container-fence` | a `:::` opener with no matching closer; the container runs to end of input, which is legal (PART 9 §12) and rarely what was meant |
 | `fence-title-syntax` | text after a fence type word that is neither a quoted `"title"` nor a `[label]`, which makes the whole opener line plain text |
@@ -345,6 +347,15 @@ carve-rs. They are specified here rather than left to one engine because the ids
 are shared surface: a second engine implementing the same condition takes the
 same two ids, the same `platforms` selection, and the same token tables, or a
 `--platform` config stops being portable the moment it moves between engines.
+
+The parser accepts PART 9 §24 C3 block openers at every authored column at or
+beyond the item's minimum/canonical content column. The #1705 experiment found
+thirteen mandatory-corpus documents whose AST and HTML change, including a
+reference definition that begins resolving nonlocally; those are the accepted
+compatibility changes. The formatter may canonicalize a block already parsed as
+structural. The compatibility lint still names both migration intentions:
+dedent for the canonical structural spelling, or escape to retain old literal
+meaning.
 
 ### A rule id is a contract
 

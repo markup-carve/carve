@@ -124,8 +124,8 @@ not a list</p>
     > q
 .
 <ol>
-  <li><p>one</p>
-    <p>&gt; q</p>
+  <li>one
+    <blockquote><p>q</p></blockquote>
   </li>
 </ol>
 ```

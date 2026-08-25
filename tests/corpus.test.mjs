@@ -34,6 +34,29 @@ import { parse, Refuse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 import { REFUSED_ALLOW } from '../scripts/spec/refused-allow.mjs'
 
+const oracleHtml = (source) => renderDoc(parse(source)).trim()
+
+test('over-column list block groups match their exact-column spelling', () => {
+  for (const [name, exact, over] of [
+    ['heading', '  # h', '     # h'],
+    ['definition list', '  :: term\n  more\n  :  def', '     :: term\n     more\n     :  def'],
+    ['table caption', '  | a |\n  |---|\n  | 1 |\n  ^ cap', '     | a |\n     |---|\n     | 1 |\n     ^ cap'],
+    ['image caption', '  ![a](u)\n  ^ cap', '     ![a](u)\n     ^ cap'],
+    ['code caption', '  ```\n  code\n  ```\n  ^ cap', '     ```\n     code\n     ```\n     ^ cap'],
+  ]) assert.equal(oracleHtml(`- item\n\n${over}\n`), oracleHtml(`- item\n\n${exact}\n`), name)
+})
+
+test('authored list bases preserve exact looseness, ownership, and fence payload', () => {
+  const exactImage = oracleHtml('- item\n\n  ![a](u)\n')
+  assert.equal(oracleHtml('- item\n\n   ![a](u)\n'), exactImage)
+  assert.match(exactImage, /<li><p>item<\/p>/)
+  assert.match(oracleHtml('- - a\n\n    # child\n'), /<li>a\s*<h1/)
+  assert.match(oracleHtml('- - a\n\n   # parent\n'), /<\/ul>\s*<h1 id="parent">/)
+  const exactFence = '- item\n\n  ```\n  a\n\n   b\n  ```\n'
+  const overFence = '- item\n\n     ```\n     a\n\n   b\n     ```\n'
+  assert.equal(oracleHtml(overFence), oracleHtml(exactFence))
+})
+
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, 'corpus')
 
