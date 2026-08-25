@@ -19,7 +19,7 @@ A block owns a rectangle of the document: it starts on its own line and is separ
 
 - Paragraph
 - Heading - `# … ###### …`
-- Block quote - `> …`
+- Block quote - `> …`, or the same block fenced as `::: >`
 - List (bullet `-` / `*`, ordered `1.` / `1)`, task `- [ ]`) and its list items
 - Code block (fenced) - ` ``` `
 - Generic div / admonition / line-block / local hard-break block - `::: …`
@@ -129,6 +129,29 @@ Both tokens can end up visible, so the distinction is *role*, not visibility:
 | Standalone block | `<p class="admonition-title">` heading line | `<p class="div-label">` caption (the graceful-degradation floor - authored text never vanishes) |
 | tabs / code-group active | stays **inside** the panel | moves **out** to the tab button; the fallback caption disappears |
 | details extension | becomes the `<summary>` | ignored (details has no group to name) |
+
+### The block quote has two spellings
+
+`> …` on every line, or a colon fence whose type token is a bare `>`:
+
+```
+::: >
+Notes from the meeting:
+
+- ship the parser
+- then the renderer
+:::
+```
+
+Same block, same tree, same HTML. The fence earns its place when the quote holds structure a marker would cost a line apiece - a list, a code block, a table, a nested quote - because lazy continuation folds only plain paragraph text into a quote, never new block structure.
+
+Three things follow from the two spellings being one node:
+
+- **`carve fmt` writes back whichever you used.** The node records the authored spelling, so formatting never converts one into the other.
+- **It nests at constant width.** A typed opener is never bare and only a bare equal-length line closes, so `::: >` inside `::: >` needs no widening. Re-quoting is therefore prepend the opener, append the closer, and nothing already inside changes.
+- **It takes the `^` caption on its CLOSING fence**, and a captioned quote is a `<figure>` either way.
+
+The separator is a space: `:::>` opens nothing and stays paragraph text, exactly as `:::|` and a glued backslash do.
 
 Rules of thumb: a standalone admonition wants quotes; a panel in a group wants brackets; use both to have a named tab whose panel also carries a visible heading (`::: tab "Install on Linux" [Linux]`). A title never feeds the tab name - if a tab has no `[label]`, the name falls back to the deprecated `{label="…"}` attribute or first inner heading, then to `Tab N`.
 
