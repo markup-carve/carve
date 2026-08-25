@@ -65,6 +65,7 @@ const OPT_IN_ONLY = {
 const ENGINE_ROLLOUT_PENDING = {
   'figure.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
   'table.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
+  'block_quote.fenced': 'fenced block quote (PART 9 section 12): the ::: > spelling is specified and the pinned engine does not parse it yet, so no corpus document can carry the flag',
 }
 
 /**
