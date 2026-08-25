@@ -1,0 +1,83 @@
+A definition list inside a footnote body carries its authored base
+
+```
+[^n]: intro
+
+  :: term
+  :  definition
+
+     > quote
+
+see[^n]
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>intro</p>
+      <dl>
+        <dt>term</dt>
+        <dd>definition</dd>
+      </dl>
+      <blockquote><p>quote</p></blockquote>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+[^n]: intro
+
+   :: term
+   :  definition
+
+      > quote
+
+see[^n]
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>intro</p>
+      <dl>
+        <dt>term</dt>
+        <dd>
+          <p>definition</p>
+          <blockquote><p>quote</p></blockquote>
+        </dd>
+      </dl>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+[^n]: intro
+
+   :: term
+   :  definition
+
+     > quote
+
+see[^n]
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>intro</p>
+      <dl>
+        <dt>term</dt>
+        <dd>definition</dd>
+      </dl>
+      <p>&gt; quote<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
