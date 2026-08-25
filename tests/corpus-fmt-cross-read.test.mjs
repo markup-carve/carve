@@ -107,7 +107,7 @@ test('the check can actually fail', () => {
   // A gate that sweeps 600 documents and reports nothing is indistinguishable
   // from one whose comparison is broken, so prove the comparison discriminates.
   // `^ cap` written with an escaped caret is a caption to neither reader, and a
-  // three-space footnote body is the shape carve#709 was about.
+  // a line below the footnote minimum is still outside its body.
   const captioned = '![a](/p.png)\n^ cap\n'
   assert.notEqual(
     oracleHtml('![a](/p.png)\n\\^ cap\n'),
@@ -116,10 +116,10 @@ test('the check can actually fail', () => {
   )
 
   const bodyAtTwo = '[^a]: intro\n\n  | a |\n  | - |\n  | b |\n\nsee[^a]\n'
-  const bodyAtThree = '[^a]: intro\n\n   | a |\n   | - |\n   | b |\n\nsee[^a]\n'
+  const bodyAtOne = '[^a]: intro\n\n | a |\n | - |\n | b |\n\nsee[^a]\n'
   assert.notEqual(
-    oracleHtml(bodyAtThree),
+    oracleHtml(bodyAtOne),
     oracleHtml(bodyAtTwo),
-    'the oracle cannot tell a footnote body at three from one at two',
+    'the oracle cannot tell a line below the footnote body from one at its minimum',
   )
 })

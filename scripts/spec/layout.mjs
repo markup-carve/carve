@@ -1530,7 +1530,7 @@ function normalizeSource(src) {
   return src
 }
 
-export function parse(src, { authoredBodyBases = false } = {}) {
+export function parse(src, { authoredBodyBases = true } = {}) {
   src = normalizeSource(src)
   const lines = src.split('\n')
   if (lines[lines.length - 1] === '') lines.pop()

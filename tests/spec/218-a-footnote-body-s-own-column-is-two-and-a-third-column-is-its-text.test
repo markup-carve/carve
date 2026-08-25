@@ -15,9 +15,15 @@ see[^a]
   <ol>
     <li id="fn1">
       <p>intro</p>
-      <p>| a |
-| - |
-| b |<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <table>
+        <thead>
+          <tr><th scope="col">a</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>b</td></tr>
+        </tbody>
+      </table>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
