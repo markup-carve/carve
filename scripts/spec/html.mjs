@@ -12,6 +12,7 @@
  */
 
 import { Refuse, TIER1, bracketRunEnd } from './layout.mjs'
+import { labelKey } from './label-key.mjs'
 
 /*
  * THE WORDS THE ENGINE WRITES ITSELF (PART 9 SS16a, carve#1456).
@@ -982,15 +983,12 @@ function renderTable(node, depth, ctx) {
 function resolveImageRef(parsed, ctx, literal) {
   const { label, alt, attrList, attrSrc } = parsed
   if (typeof alt !== 'string') return literal
-  // Keyed exactly as a link reference is (carve#648): the label AS WRITTEN.
-  // `alt` is the source string here, not the rendered text, so the two paths
-  // agree - which is the point of that change.
-  //
-  // EXACT, not trimmed or collapsed (§6, PART 9R R1: "case-sensitive, no
-  // whitespace folding"). Folding here matched `![ a  b][]` against `[a b]` and
-  // failed to match the identical `[ a  b]` - backwards in both directions from
-  // all three engines (carve#708).
-  const key = label ?? alt
+  // Explicit and collapsed image references share the normalized label key
+  // with links and definitions. `alt` remains the authored source string, and
+  // a newline still prevents the bracket run from becoming an identifier.
+  const rawKey = label ?? alt
+  if (/[\r\n]/.test(rawKey)) return literal
+  const key = labelKey(rawKey)
   const def = ctx.linkDefs.get(key)
   // UNRESOLVED -> LITERAL, attribute block INCLUDED. The block is part of
   // what the author wrote, and dropping it deleted content silently. All
@@ -1036,12 +1034,12 @@ function resolveRefsOnce(html, ctx) {
     // whenever the label carries markup, and keying on it inverted the rule in
     // both directions (carve#648).
     //
-    // AS WRITTEN means EXACT - not trimmed, not collapsed (§6, PART 9R R1:
-    // "case-sensitive, no whitespace folding"). This is the COLLAPSED form only;
-    // the explicit `[text][ref]` form was always exact here, which is how half
-    // the clause drifted unnoticed (carve#708). The heading fallback below stays
-    // deliberately looser - see `refKey`.
-    const key = label ?? (typeof source === 'string' ? source : stripTags(text))
+    // Explicit and collapsed references share the normalized label key. A
+    // newline still makes the bracket label syntactically invalid. The heading
+    // fallback below stays deliberately looser; see `refKey`.
+    const rawKey = label ?? (typeof source === 'string' ? source : stripTags(text))
+    const key = /[\r\n]/.test(rawKey) ? null : labelKey(rawKey)
+    if (key === null) return `[${source ?? text}][${label ?? ''}]${attrSrc ?? ''}`
     const def = ctx.linkDefs.get(key)
     if (!def) {
       // R1 IMPLICIT HEADING FALLBACK. Link definitions win the tie above, so
@@ -1208,14 +1206,16 @@ function resolveFootnotes(html, ctx) {
         return `<a id="fnref${n}" href="#fn${n}" role="doc-noteref"${parsed.attrs}><sup>${n}</sup></a>`
       }
       const label = payload
-      if (!ctx.footnoteDefs.has(label)) return `[^${label}]` // unresolved -> literal
-      let n = order.indexOf(label) + 1
+      if (/[\r\n]/.test(label)) return `[^${label}]`
+      const key = labelKey(label)
+      if (!ctx.footnoteDefs.has(key)) return `[^${label}]` // unresolved -> literal
+      let n = order.indexOf(key) + 1
       if (n === 0) {
-        order.push(label)
+        order.push(key)
         n = order.length
       }
-      const k = (counts.get(label) ?? 0) + 1
-      counts.set(label, k)
+      const k = (counts.get(key) ?? 0) + 1
+      counts.set(key, k)
       const refId = k === 1 ? `fnref${n}` : `fnref${n}-${k}`
       return `<a id="${refId}" href="#fn${n}" role="doc-noteref"${attrs}><sup>${n}</sup></a>`
     })

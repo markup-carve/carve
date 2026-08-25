@@ -18,6 +18,7 @@
  */
 
 import { parseAttrList, parseBlockAttrList, parseAttrBlock } from './render.mjs'
+import { labelKey } from './label-key.mjs'
 
 export { TIER1 }
 
@@ -1892,7 +1893,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // either. The branch silently moved a document paragraph into the note
         // (and, when the note was unreferenced, deleted it outright).
       }
-      if (!state.footnoteDefs.has(label)) {
+      const key = labelKey(label)
+      if (!state.footnoteDefs.has(key)) {
         // FIRST definition wins (PART 9R state)
         const bodyBlocks = parseBlocks(bodyLines, state, false)
         if (bodyBlocks.length === 0) {
@@ -1911,7 +1913,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             (l) => COMMENT_LINE.test(l) || COMMENT_FENCE.test(l),
           )
         }
-        state.footnoteDefs.set(label, bodyBlocks)
+        state.footnoteDefs.set(key, bodyBlocks)
       }
       continue
     }
@@ -1936,7 +1938,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     const [defLine, defAttrText] = splitTrailingAttrBlock(line)
     if ((m = LINK_DEF.exec(defLine))) {
       // LAST definition wins (PART 9R state)
-      state.linkDefs.set(m[1], {
+      state.linkDefs.set(labelKey(m[1]), {
+        rawLabel: m[1],
         url: m[2],
         title: m[3]?.replaceAll('\\"', '"'),
         // Raw list, not a rendered string: R1 merges it with the link site's
