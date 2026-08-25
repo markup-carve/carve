@@ -1,0 +1,7 @@
+[^outer]: intro
+
+     [^inner]: note
+
+     see[^inner]
+
+see[^outer]

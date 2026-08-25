@@ -228,6 +228,7 @@ index: examples/edge-cases/index.md
 > Markers, looseness, the content-column model, continuation markers and block openers inside items.
 out: examples/edge-cases/lists.md
 index: examples/edge-cases/index.md
+  an-invisible-fenced-block-is-not-a-list-paragraph
   05-lists-2
   05-lists-3
   05-lists-7
@@ -554,6 +555,7 @@ index: examples/edge-cases/index.md
   a-footnote-in-reference-link-text-nests-the-anchors-too
   a-note-body-s-own-references-resolve
   a-reference-link-s-text-survives-its-own-frame
+  an-authored-base-carries-opaque-payload-captions-and-nested-metadata
   a-footnote-in-an-unresolved-reference-is-not-a-reference
   an-inline-note-s-content-resolves-after-the-note
   22-footnotes-3
