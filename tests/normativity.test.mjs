@@ -18,6 +18,7 @@ import { execFileSync } from 'node:child_process'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { extractNormativeClauses, readInventory } from '../scripts/normative-clauses.mjs'
+import { ownershipTransition } from '../scripts/spec/layout.mjs'
 import { bareCitation, eachClause, qualifiedCitation } from '../scripts/lib/citations.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -432,4 +433,18 @@ test('the normative inventory does not fall below its floor', () => {
       'language and cannot report this on its own (carve#1163). If clauses were ' +
       'removed deliberately, lower the floor in the same commit and say why.',
   )
+})
+
+test('ownership transitions keep container and paragraph state independent', () => {
+  const closedLeaves = ['blank', 'line_comment', 'fenced_comment', 'definition', 'heading',
+    'code_fence', 'raw_fence', 'colon_fence', 'table']
+  for (const boundary of closedLeaves) {
+    assert.deepEqual(ownershipTransition(boundary), { containerOpen: true, paragraphOpen: false })
+  }
+  assert.deepEqual(ownershipTransition('ordinary'), { containerOpen: true, paragraphOpen: true })
+  assert.deepEqual(ownershipTransition('end'), { containerOpen: false, paragraphOpen: false })
+  for (const boundary of ['quote', 'nested_list', 'continuation']) {
+    assert.deepEqual(ownershipTransition(boundary, false), { containerOpen: true, paragraphOpen: false })
+    assert.deepEqual(ownershipTransition(boundary, true), { containerOpen: true, paragraphOpen: true })
+  }
 })
