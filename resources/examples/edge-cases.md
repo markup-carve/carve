@@ -27254,8 +27254,9 @@ already gives - the HTML cannot see which reading produced the image.
 
 :::
 
-A LIST ITEM, INDENTED PAST ITS CONTENT COLUMN. The lone image is a recognized
-block opener, so its authored column is temporary and the item stays tight.
+A LIST ITEM, INDENTED PAST ITS CONTENT COLUMN. The image uses that authored
+base, but §17 still classifies the same line shape as the exact-column spelling:
+the blank makes the item loose while §1c renders the lone image bare.
 
 ::: compare
 
@@ -27267,7 +27268,7 @@ block opener, so its authored column is temporary and the item stays tight.
 
 ```html
 <ul>
-  <li>t
+  <li><p>t</p>
     <img src="a.jpg" alt="Apollo">
   </li>
 </ul>
@@ -27276,7 +27277,7 @@ block opener, so its authored column is temporary and the item stays tight.
 :::
 
 And the flush control for the item, at the content column. It has the same
-structure and tightness as the authored-base spelling above.
+structure and loose tightness as the authored-base spelling above.
 
 ::: compare
 
@@ -27288,7 +27289,7 @@ structure and tightness as the authored-base spelling above.
 
 ```html
 <ul>
-  <li>t
+  <li><p>t</p>
     <img src="a.jpg" alt="Apollo">
   </li>
 </ul>

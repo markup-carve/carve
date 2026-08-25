@@ -1399,7 +1399,7 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
 // (SS17 L1). Colon fences and table rows count -- they are blocks, not prose.
 function opensSubBlock(line) {
   if (QUOTE.test(line) || HEADING.test(line) || HR.test(line) ||
-      isTableRow(line) || DEFLIST_TERM.test(line) || isCaptionableParagraph([line])) return true
+      isTableRow(line) || DEFLIST_TERM.test(line)) return true
   const f = FENCE.exec(line)
   // an INVALID info string is not a fence at all (PART 2 INVALID-FENCE
   // FALLBACK) -- the line is prose and loosens the item
@@ -3119,7 +3119,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         if (nm2 && nm2.indent <= baseIndent) break
         // A blank followed by a line below the content column ends the item too
         // (carve#1379), and the fence does not reach past it.
-        if (pendingBlanks > 0 && lm2.col < blockBase) break
+        if (pendingBlanks > 0 && lm2.col < contentCol) break
         for (; pendingBlanks > 0; pendingBlanks--) body.push('')
         // A line BELOW the column is not outside the search: §24 C3 folds it as
         // lazy text while a paragraph is open, so a closer written after it is
@@ -3127,7 +3127,11 @@ function collectItems(lines, i, list, state, ind, meas) {
         // circular - the fence opened only if the below-column line folded, and
         // the line folded only if the fence had not opened - and it moved
         // corpus 276-7, which every engine answers the other way.
-        body.push(lm2.col >= blockBase ? dedentMeasured(lm2, raw, blockBase).text : lm2.rest)
+        body.push(lm2.col >= blockBase
+          ? dedentMeasured(lm2, raw, blockBase).text
+          : lm2.col >= contentCol
+            ? dedentMeasured(lm2, raw, contentCol).text
+            : lm2.rest)
       }
       return hasCloser(body, 0)
     }
@@ -3165,7 +3169,9 @@ function collectItems(lines, i, list, state, ind, meas) {
     // not this item, so a descendant's looseness must not propagate up to this
     // item (carve#322).
     const headSubMarker = matchMarkerAt(indentCols(head.text))
-    const headSubCol = headSubMarker ? headSubMarker.indent + headSubMarker.markerWidth : -1
+    const headSubCol = headSubMarker
+      ? contentCol + headSubMarker.indent + headSubMarker.markerWidth
+      : -1
     let subCol = -1
     // Open fence state inside the item's own content, so an interior blank line
     // is fence content, not an item-loosening separator (carve#326 C). This is
@@ -3293,6 +3299,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         continue
       }
       if (lm.rest === '') {
+        if (!insideFence()) authoredBlockBase = null
         // A blank line INSIDE any open fence is fence content: keep it in the
         // item body and stay tight (no looseness decision).
         if (insideFence()) {
@@ -3405,7 +3412,7 @@ function collectItems(lines, i, list, state, ind, meas) {
           break
         }
         if (col >= contentCol && !(nm && nm.indent >= contentCol)) {
-          if (subCol >= 0 && col >= subCol) {
+          if ((subCol >= 0 && col >= subCol) || (headSubCol >= 0 && col >= headSubCol)) {
             // Content at or past the first sub-list's content column belongs to
             // the SUB-LIST, not this item -- a blank inside the sub-list must
             // not loosen this (ancestor) item (carve#322). Attach, stay tight;
@@ -3528,8 +3535,11 @@ function collectItems(lines, i, list, state, ind, meas) {
         // parser, which knows the descendant's content column, rebases it.
         // Rebasing it against this ancestor would hoist the block one level.
         const descendantOwned = (subCol >= 0 && col >= subCol) || (headSubCol >= 0 && col >= headSubCol)
+        if (authoredBlockBase !== null && col < authoredBlockBase && !insideFence()) authoredBlockBase = null
         const openerBase = !descendantOwned && !insideFence() && opensAuthoredBase(lm.rest) ? col : null
-        const localBase = authoredBlockBase ?? openerBase ?? contentCol
+        const localBase = authoredBlockBase !== null && insideFence() && col < authoredBlockBase
+          ? contentCol
+          : authoredBlockBase ?? openerBase ?? contentCol
         const dd = dedentMeasured(lm, line, localBase)
         const dedented = dd.text
         // The body line's own measurement, derived from this one rather than
@@ -3602,7 +3612,6 @@ function collectItems(lines, i, list, state, ind, meas) {
         // above knows whether an interior blank is fence content.
         if (openerBase !== null) authoredBlockBase = openerBase
         trackFence(dedented, bodyFenceOpens(i, dedented, localBase))
-        if (!insideFence()) authoredBlockBase = null
         // A COMMENT IS INVISIBLE, SO IT LEAVES NO PARAGRAPH OPEN. §24 C3 says a
         // comment "does end the open PARAGRAPH" (carve#677), of BOTH spellings
         // - the `%%` line and the `%%%` fence, "whose body and closer travel
