@@ -89,7 +89,7 @@ import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { carveToHtml } from '@markup-carve/carve'
-import { parse } from '../scripts/spec/layout.mjs'
+import { normalizeAuthoredBodyBases, parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -1737,4 +1737,63 @@ test('a run before an incompatible marker is not a boundary case', () => {
   const source = '- a\n\n\n\n* b\n'
   assert.equal(siblingLists(source).length, 2)
   assert.equal(compactHtml(source), '<ul><li>a</li></ul><ul><li>b</li></ul>')
+})
+
+const authoredBaseHtml = (source, authoredBodyBases) =>
+  renderDoc(parse(source, { authoredBodyBases })).trim()
+
+const authoredBaseBodies = [
+  ['heading', ['# heading']],
+  ['quote', ['> quote']],
+  ['code fence', ['``` js', '  payload', '```']],
+  ['raw fence', ['```=html', '  <b>x</b>', '```']],
+  ['colon fence', ['::: note', 'inside', ':::']],
+  ['table', ['| h |', '|---|', '| b |']],
+  ['definition list', [':: term', ':  description']],
+  ['attributes and target', ['{.marked}', '# heading']],
+  ['comment and target', ['%% hidden', '# heading']],
+  ['nested list', ['- one', '  - two']],
+]
+
+const authoredBaseSpelling = (kind, lines, extra, blank = false) => {
+  const minimum = kind === 'footnote' ? 2 : 3
+  const prefix = ' '.repeat(minimum + extra)
+  const head = kind === 'footnote' ? '[^f]: lead' : ':: term\n:  lead'
+  const tail = kind === 'footnote' ? '\n\nsee[^f]' : ''
+  return `${head}\n${blank ? '\n' : ''}${lines.map((line) => prefix + line).join('\n')}${tail}\n`
+}
+
+for (const kind of ['footnote', 'definition']) {
+  for (const [name, lines] of authoredBaseBodies) {
+    for (const blank of [false, true]) {
+      test(`${kind}: ${name} uses its authored local base${blank ? ' after a blank' : ''}`, () => {
+        const exact = authoredBaseSpelling(kind, lines, 0, blank)
+        const over = authoredBaseSpelling(kind, lines, 3, blank)
+        assert.equal(authoredBaseHtml(over, true), authoredBaseHtml(exact, true))
+      })
+    }
+  }
+}
+
+test('tabs establish the same definition and footnote authored bases by visual column', () => {
+  assert.equal(
+    authoredBaseHtml('[^f]: lead\n\t# heading\n\nsee[^f]\n', true),
+    authoredBaseHtml('[^f]: lead\n  # heading\n\nsee[^f]\n', true),
+  )
+  assert.equal(
+    authoredBaseHtml(':: term\n:  lead\n\t# heading\n', true),
+    authoredBaseHtml(':: term\n:  lead\n   # heading\n', true),
+  )
+})
+
+test('authored body bases preserve payload indentation beyond the opener', () => {
+  assert.deepEqual(
+    normalizeAuthoredBodyBases(['   ```', '     two', '   ```']),
+    ['```', '  two', '```'],
+  )
+})
+
+test('the authored-body experiment keeps the released reading behind its switch', () => {
+  const source = ':: term\n:  body\n     > quote\n'
+  assert.notEqual(authoredBaseHtml(source, false), authoredBaseHtml(source, true))
 })
