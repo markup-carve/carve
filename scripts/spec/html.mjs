@@ -682,7 +682,7 @@ function renderItem(item, list, depth, ctx) {
     ? `<input type="checkbox"${item.checked ? ' checked' : ''} disabled${taskName === '' ? '' : ` aria-label="${escapeAttr(taskName)}"`}> `
     : ''
   const blocks = item.blocks
-  if (blocks.length === 0) return `${pad}<li${liAttrs}></li>`
+  if (blocks.length === 0) return `${pad}<li${liAttrs}>${prefix}</li>`
 
   const parts = []
   for (let i = 0; i < blocks.length; i++) {

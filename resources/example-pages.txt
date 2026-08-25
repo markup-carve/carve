@@ -298,6 +298,7 @@ index: examples/edge-cases/index.md
   407-one-consumed-boolean-spells-the-looseness-no-blank-line-can
   408-the-writer-spells-looseness-only-where-a-blank-line-cannot
   408-the-writer-spells-looseness-only-where-a-blank-line-cannot-2
+  a-floating-attribute-does-not-widen-a-list-item-s-content-column
 
 [edge-containers] Containers, quotes and fences
 > Divs, block quotes, code and comment fences: nesting, lazy continuation, absorption and what closes what.
