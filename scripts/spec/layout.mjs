@@ -856,6 +856,9 @@ function parseColonOpener(tail) {
   s = s.replace(/^ +/, '')
   if (/^\|[ \t]*$/.test(s)) return { ...out, mode: 'line-block' }
   if (/^\\[ \t]*$/.test(s)) return { ...out, mode: 'hardbreaks' }
+  // A bare `>` is the fenced block-quote opener: a second SPELLING of the
+  // block quote, whose body is ordinary block content (markup-carve/carve#1718).
+  if (/^>[ \t]*$/.test(s)) return { ...out, mode: 'quote' }
   const ty = /^([A-Za-z0-9_][A-Za-z0-9_-]*)/.exec(s)
   if (ty) {
     out.type = ty[1]
@@ -2223,6 +2226,21 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               push({ t: 'line-block', lines: body.map(stripLazy) })
             } else if (opener.mode === 'hardbreaks') {
               push({ t: 'hardbreaks', children: parseBlocks(body, state, false) })
+            } else if (opener.mode === 'quote') {
+              // The node a `>`-prefixed quote produces; the spelling differs,
+              // the tree does not (markup-carve/carve#1718).
+              const node = { t: 'quote', children: parseBlocks(body, state, false) }
+              if (close !== -1) {
+                // SS4's seventh host: the slot hangs on the CLOSING fence, as
+                // the figure group's does. A quote closed by end of input has
+                // no closer line to host it.
+                const cap = captionSlot(i)
+                if (cap) {
+                  node.caption = cap.text
+                  i = cap.next
+                }
+              }
+              push(node)
             } else if (opener.type === 'footnotes') {
               // placement directive: relocates the endnotes section
               if (body.some((l) => !isBlank(l))) throw new Refuse('non-empty ::: footnotes body')

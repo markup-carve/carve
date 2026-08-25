@@ -1786,9 +1786,10 @@ caption_slot = [blank_line], caption ;
    preceding captionable block, with AT MOST ONE blank line between them --
    the optional blank_line in caption_slot is the whole allowance.
 
-   FOUR OF THE SIX HOSTS REFERENCE THIS SLOT: `code_block`, `blockquote`,
-   `table` and `figure_group` (whose slot hangs on the CLOSING fence -- §4c).
-   §4's other two -- the image paragraph and the standalone
+   FIVE OF THE SEVEN HOSTS REFERENCE THIS SLOT: `code_block`, `blockquote`,
+   `table`, `figure_group` and `quote_block` (the last two hang their slot on
+   the CLOSING fence -- §4c and §4). §4's other two -- the image paragraph and
+   the standalone
    display-math block -- attach the same caption under the same allowance, but
    there is no production to hang the slot on, so for them §4 is the whole
    rule. §4 says which, and why. A `^ ` line that follows neither a slot-
@@ -2006,9 +2007,10 @@ quoted_title = '"', {character - '"'}, '"' ;
    THE CLOSER CARRIES THE CAPTION SLOT. This is §4's sixth host, and the one
    whose allowance is STRUCTURAL on a fence: the slot hangs on the CLOSING
    fence, exactly the `[caption_slot]` that `code_block`, `blockquote` and
-   `table` end in, with the same one-optional-blank-line allowance. Only this
-   container kind takes it -- a `^ ` line after any other `:::` closer is
-   ordinary paragraph content (corpus 318-composite-figures-7). A group left
+   `table` end in, with the same one-optional-blank-line allowance. Two
+   container kinds take it -- this one and `quote_block`, which captions like
+   the block quote it is (§4) -- and a `^ ` line after any OTHER `:::` closer
+   is ordinary paragraph content (corpus 318-composite-figures-7). A group left
    open at END OF INPUT closes there like any container (PART 9 §12) and, its
    closer line never having been written, has no caption position.
 
@@ -2091,7 +2093,7 @@ local_hard_break_block_open = colon_fence:open, space, backslash ;
    this clause serializes exactly as it did. *)
 quote_block = quote_block_open, newline,
               {block - admonition_close},
-              [admonition_close, newline] ;
+              [admonition_close, newline, [caption_slot]] ;
 quote_block_open = colon_fence:open, space, ">" ;
 
 (* --- Comments --- *)
@@ -4388,18 +4390,29 @@ EOF = (* end of file *) ;
         braced-only `^`/`,` are not bare, so `^^x^^` is likewise literal.
 
    4. CAPTION PLACEMENT -- ONE RULE, TWO SPELLINGS (caption_slot in PART 2).
-      A `^ ` caption attaches to exactly six captionable hosts: an image
+      A `^ ` caption attaches to exactly seven captionable hosts: an image
       paragraph, a blockquote, a table, a fenced code block
       (a captioned code block is a numbered LISTING), a standalone
       display-math block (a numbered EQUATION; the block must be solely the
-      `$$`…`` span), or the CLOSING fence of a bare `::: figure` container
-      (a composite FIGURE GROUP -- §4c). The allowance is the same for all
-      six: adjacent OR exactly one blank line attaches, two blank lines
+      `$$`…`` span), the CLOSING fence of a bare `::: figure` container
+      (a composite FIGURE GROUP -- §4c), or the CLOSING fence of a
+      `quote_block`. The allowance is the same for all
+      seven: adjacent OR exactly one blank line attaches, two blank lines
       detach and leave the `^ ` line an ordinary paragraph.
 
+      THE SEVENTH IS THE SECOND SPELLING OF THE SECOND. A `quote_block` IS a
+      block quote (PART 2), so it captions like one and a captioned quote is a
+      FIGURE either way -- the two spellings cannot differ here without the
+      fenced form being a worse quote than the prefixed one, which is the whole
+      premise of admitting it. The slot hangs on the CLOSING fence, as
+      `figure_group`'s does, because that is where a fenced container's last
+      line is. So TWO `:::` kinds now take a closer caption, and a `^ ` line
+      after any OTHER `:::` closer is still ordinary paragraph content.
+
       WHERE THAT ALLOWANCE IS WRITTEN DOWN differs, and saying so is the point
-      of this paragraph. For FOUR hosts it is STRUCTURAL -- `code_block`,
-      `blockquote`, `table` and `figure_group` each end in `[caption_slot]`
+      of this paragraph. For FIVE hosts it is STRUCTURAL -- `code_block`,
+      `blockquote`, `table`, `figure_group` and `quote_block` each end in
+      `[caption_slot]`
       (PART 2; on `figure_group` the slot hangs on the closing fence), and
       caption_slot's single optional blank_line IS the rule. For the IMAGE
       PARAGRAPH and the STANDALONE DISPLAY-MATH BLOCK it is PROSE: this
