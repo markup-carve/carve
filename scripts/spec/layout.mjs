@@ -1007,6 +1007,28 @@ const COMMENT_FENCE = /^[ \t]*(%{3,})(.*)$/
 // enclosing container has already walked.
 const COMMENT_FENCE_BODY = /^(%{3,})(.*)$/
 
+/**
+ * Recognize layout-transparent comments after an opaque payload has had the
+ * first chance to consume the line, but before visible block ownership is
+ * selected. The returned extent remains available to AST/source-layout
+ * consumers even though it contributes no visible block.
+ */
+export function classifyLayoutComment(lines, index) {
+  const opener = COMMENT_FENCE.exec(lines[index] ?? '')
+  if (opener) {
+    for (let i = index + 1; i < lines.length; i++) {
+      const closer = COMMENT_FENCE.exec(lines[i] ?? '')
+      if (closer && closer[1].length === opener[1].length) {
+        return { kind: 'fenced_comment', start: index, end: i + 1 }
+      }
+    }
+  }
+  if (COMMENT_LINE.test(lines[index] ?? '')) {
+    return { kind: 'line_comment', start: index, end: index + 1 }
+  }
+  return null
+}
+
 const CONT_ROW = /^\+.*\|[ \t]*$/ // `+` replaces the leading pipe; must close with one
 const DELIM_CELL = /^ *:?-+:? *$/
 
@@ -1823,25 +1845,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
 
     // --- comments (SS21; invisible) ---
     {
-      const cfm = COMMENT_FENCE.exec(line)
-      if (cfm) {
-        // %%% block: consumed to the EXACT-length closer (the `where`
-        // guard: len(close) = len(open); corpus 91 nested fences)
-        let j = i + 1
-        for (; j < n; j++) {
-          const c = COMMENT_FENCE.exec(lines[j])
-          if (c && c[1].length === cfm[1].length) break
-        }
-        if (j < n) {
-          i = j + 1
-          continue
-        }
-        // No matching closer ahead: the opener does NOT open a block (SS28).
-        // It degrades to a line comment, so the FOLLOWING blocks still render
-        // instead of being swallowed to EOF -- fall through to COMMENT_LINE.
-      }
-      if (COMMENT_LINE.test(line)) {
-        i++
+      const comment = classifyLayoutComment(lines, i)
+      if (comment) {
+        i = comment.end
         continue
       }
     }
@@ -3267,9 +3273,8 @@ function collectItems(lines, i, list, state, ind, meas) {
       const colon = COLON_FENCE.exec(line)
       if (colon && parseColonOpener(colon[2]) !== null) fence.colon.push(colon[1].length)
     }
-    // The item's last collected content was an invisible comment, so the item
-    // is still OPEN - C3 is explicit that a comment "does not close the ITEM
-    // either" (carve#618) - but holds no open paragraph.
+    // A comment closes the leaf paragraph but leaves the item frame available.
+    // This flag records that explicit transition for the next ownership step.
     let afterComment = false
     {
       // A fence can open on the MARKER LINE (`- ``` `), where its opener is the
@@ -3898,33 +3903,18 @@ function collectItems(lines, i, list, state, ind, meas) {
         i++
         continue
       }
-      // C3'S BELOW BRANCH PRESUMES AN OPEN PARAGRAPH, AND AFTER A COMMENT THERE
-      // IS NONE. The branch says the dedented line "folds in as lazy paragraph
-      // text" -- an operation, not a classification, and lazy continuation
-      // continues an open paragraph (§10 I2). A comment ENDS that paragraph and
-      // does NOT end the item (C3's comment exception, carve#677 and
-      // carve#618), so the instruction has nothing to carry out and the marker
-      // is classified in the context that survives: still inside the item, at
-      // its own column 0, where C4 Rule B opens a list.
-      //
-      // carve-js, carve-rs and carve-php all answer this way; the executable
-      // spec was the lone dissenter, folding the marker as text because it read
-      // the comment fence's BODY as prose and thought a paragraph was open
-      // (carve#682).
+      // The comment boundary left the frame open even though it closed the
+      // paragraph. Classify a below-column nested marker in that surviving
+      // frame; this preserves the established #618/#682 ownership result.
       if (nm && nm.indent < contentCol && nm.indent > baseIndent && !openPara &&
           afterComment && itemLines.length > 0) {
         pushLine(lm.rest, { col: 0, rest: lm.rest, tabs: false })
         i++
         continue
       }
-      // A COMMENT IS RECOGNIZED AT ANY COLUMN. Every other construct below the
-      // content column folds as text (SS24 C3), but a comment is invisible by
-      // nature and authors indent one freely, so all three engines find it
-      // after trimming the line wherever it sits. Folding it made `%% c`
-      // VISIBLE - the one outcome a comment may never have. Pushed without the
-      // LAZY frame so the item's own parse sees a comment line, which is what
-      // keeps it invisible and leaves the item open for a following line
-      // (carve#618).
+      // Comments are recognized before visible ownership, at every column.
+      // Keep the token in this collector so the nested parse records its node
+      // and source extent, but never frame it as lazy text.
       // A comment FENCE is a comment too. #624 exempted the `%%` line form
       // and left `%%%` folding as text, so `- a` / ` %%% n` rendered the
       // opener VISIBLY where carve-js and carve-rs drop it - the same
@@ -3952,17 +3942,9 @@ function collectItems(lines, i, list, state, ind, meas) {
           lm.col > 0 ? ' ' + lm.rest : line,
           lm.col > 0 ? { col: 1, rest: lm.rest, tabs: false } : lm,
         )
-        // NOT `closePara()`, and not `afterComment`. C3's comment exception
-        // does say a comment is recognized at ANY column and does end the open
-        // paragraph - but BELOW the content column the item's following line
-        // reaches the item only through the lazy fold, and closing the
-        // paragraph takes that path away: corpus 189 and 192 pin `- - a` /
-        // ` %% c` / ` b` with `b` inside the INNER item, which is carve#618's
-        // "a following line still belongs to the item", and closing here moves
-        // `b` to the outer one. So the below-column spelling answers this
-        // differently from the content-column spelling, on a rule whose text
-        // does not mention the comment's column. Left as it is, and recorded:
-        // deciding it means moving a corpus pin (carve#682).
+        // The lexical token leaves the frame available. The collector records
+        // that ownership fact without turning the invisible line into lazy
+        // paragraph text.
         i++
         continue
       }
@@ -3994,31 +3976,9 @@ function collectItems(lines, i, list, state, ind, meas) {
       // reaches column 0 in any collector, so it still folds as text (corpus
       // 183).
       if (!nm && lm.col === 0 && (FOOTNOTE_DEF.test(line) || isLinkDef(line) || tryAttrLine([line], 0))) break
-      // `afterComment` joins `openPara` here for the other half of the same
-      // clause: a comment ends the paragraph but not the ITEM, so a below-column
-      // NON-marker line still belongs to the item -- it "begins the item's
-      // SECOND paragraph rather than continuing the first" (§24 C3, carve#677).
-      // All three engines fold ` # h`, ` > q`, ` ::: d` and ` | a |` after a
-      // closed comment fence as item text, and only the two MARKER shapes take
-      // the branch above (carve#682).
-      // `afterComment` STOPS AT DOCUMENT COLUMN 0 -- carve#1350's fourth shape.
-      // §24 C3's comment exception keeps the item open, and a line BELOW the
-      // content column reaches the item only through this fold, so taking the
-      // path away would leave it nowhere: that is the case the clause is
-      // written about and all three engines answer it that way. A line at
-      // DOCUMENT column 0 is not below a column - it is AT the enclosing
-      // context's own block position, which is the distinction C3 already
-      // draws for a definition ("column 0 is the surrounding document's own
-      // opener column"). With no paragraph open there is nothing for it to
-      // continue, so PART 1 S4 leaves it to the enclosing parse and the item
-      // ends because the line is at column 0.
-      //
-      // Without the column test the item and the `dd` answered the SAME
-      // construct differently - the `dd` ends on a content-column comment
-      // (carve#1350 part 1) and the item folded - and the item answered the
-      // comment and the definition differently at one column, though §10 I5
-      // makes both interrupters and an ATTRIBUTE BLOCK there already ends the
-      // item in every implementation. Two enumerations, one rule.
+      // A surviving frame after a comment can own a nonzero below-column line,
+      // which begins a new paragraph rather than continuing the closed one.
+      // Document column zero remains owned by the document.
       if (!nm && (openPara || (afterComment && lm.col > 0)) && itemLines.length > 0 && !startsVisibleBlock(line) && !isTableRow(line) && !COLON_FENCE.test(line) && !(FENCE.test(line) && hasCloser(lines, i))) {
         // lazy fold into the open item paragraph (SS10 I2 / SS24 C3). A column-0
         // fence with a closer INTERRUPTS (I4), exactly as a column-0 quote/

@@ -36,6 +36,7 @@ const UNROUTED = new Map([
   ['docs/README.md', 'GitHub-facing orientation for people browsing docs/ source; srcExclude keeps it off the site.'],
   ['docs/index.md', 'The home page itself - it is the route everything else hangs off.'],
   ['docs/experiments/container-ownership.md', 'Compatibility evidence linked from the issue and pull request, not a permanent user guide.'],
+  ['docs/experiments/comment-classification.md', 'Compatibility evidence linked from the issue and pull request, not a permanent user guide.'],
   ['docs/.vitepress/carve-wasm/README.md', 'Build-tooling note inside .vitepress, not a site page.'],
 ])
 
