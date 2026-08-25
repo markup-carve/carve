@@ -33,8 +33,8 @@ turning your content into a JavaScript program.
 | Feature completeness/consistency | ❌ | ❌ | ❌ | ✅ |
 
 \* Inline parsing is single-pass with a delimiter stack; at the block level a
-fence / `:::` opener uses a bounded forward scan for a matching closer
-(closer lookahead, not backtracking) - see
+code or raw fence uses a bounded forward scan for a matching closer. A `:::`
+container opens without that lookahead and may close at end of input. See
 [Technical Rationale](/technical-rationale).
 \*\* Like Markdown for quotes, headings, tables and closed fences; list markers
 (both bullet and ordered) deliberately never interrupt a paragraph - a list
