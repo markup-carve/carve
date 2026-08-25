@@ -79,6 +79,25 @@ export function resetLayoutWork() {
   layoutWork.lineVisits = 0
 }
 
+/**
+ * PART 0's ownership-first transition table. This is intentionally independent
+ * of lazy folding: callers select an owner and apply this boundary before they
+ * decide how an already-owned text line extends its leaf paragraph.
+ */
+export function ownershipTransition(boundary, deepestParagraphOpen = false) {
+  if (boundary === 'end') return { containerOpen: false, paragraphOpen: false }
+  if (boundary === 'ordinary') return { containerOpen: true, paragraphOpen: true }
+  if (boundary === 'quote' || boundary === 'nested_list' || boundary === 'continuation') {
+    return { containerOpen: true, paragraphOpen: Boolean(deepestParagraphOpen) }
+  }
+  if (boundary === 'blank' || boundary === 'line_comment' || boundary === 'fenced_comment' ||
+      boundary === 'definition' || boundary === 'heading' || boundary === 'code_fence' ||
+      boundary === 'raw_fence' || boundary === 'colon_fence' || boundary === 'table') {
+    return { containerOpen: true, paragraphOpen: false }
+  }
+  throw new Refuse(`unknown ownership boundary: ${boundary}`)
+}
+
 // Content after the marker+separator must carry at least one
 // non-ASCII-whitespace character: `#  ` / `#   ` (marker + whitespace only) is
 // NOT a heading, exactly like a caption. A leading tab is content (`# \tx` is a

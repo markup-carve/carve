@@ -170,6 +170,89 @@
              fenced body    (code / raw / comment / admonition / div /
                             line block / hard-break block) -- no per-line
                             prefix; bounded by its where-guarded fence pair
+
+           EVERY FRAME CARRIES OWNERSHIP AND PARAGRAPH STATE SEPARATELY --
+           NORMATIVE (carve#1730). A frame is the record
+
+             owner              document | quote | list_item |
+                                definition_body | footnote_body | fenced_body
+             base_column        authored column at which this frame opened
+             content_column     minimum column of ordinary child blocks
+             container_open     whether the frame may own another line
+             paragraph_open     whether its current leaf accepts lazy text
+             last_boundary_kind ordinary | blank | line_comment |
+                                fenced_comment | definition | heading | quote |
+                                code_fence | raw_fence | colon_fence | table |
+                                nested_list | continuation | end
+
+           `container_open` is NEVER inferred from `paragraph_open`.
+           `paragraph_open` describes an operation available inside a frame
+           that has already survived; it does not keep that frame alive. S1
+           and the transition table below select the surviving frames and the
+           owner first. Only then may S3/S4 continue a paragraph.
+
+           OWNERSHIP TRANSITIONS. `C` means the current container frame stays
+           open after the boundary; `P` independently says whether a paragraph
+           is open. `deepest P` means the last child container is followed to
+           its deepest leaf. These transitions apply to list items, quotes,
+           definition bodies and footnote bodies alike; a fenced body adds the
+           opacity rule in S2.
+
+             preceding boundary       container_open   paragraph_open
+             ordinary line             C                yes
+             blank line                C                no
+             line comment              C                no
+             fenced comment            C                no
+             invisible definition      C                no, for full extent
+             heading                   C                no
+             block quote               C                deepest P
+             closed code/raw fence     C                no
+             closed colon fence        C                no
+             table                     C                no
+             nested list               C                deepest P
+             continuation marker       C                deepest attached P
+             end of input              no               no
+
+           A closed block therefore has ONE effect in every containing frame:
+           it leaves the frame open and leaves no paragraph open. A following
+           line may close the frame because its column is owned by an ancestor;
+           the closed block itself never closes its owner.
+
+           OWNER SELECTION FOR THE NEXT VISIBLE LINE. Determine this before
+           interruption or lazy folding:
+
+             column band                         selected owner
+             below content_column                nearest surviving ancestor
+             at content_column                   this frame
+             past content_column                 this frame, with the authored
+                                                 block base of §24 C3 when the
+                                                 residue is a recognized opener
+
+           The one qualification is a continuation claim already established
+           by the PRECEDING ordinary line: an unblank-separated, noninterrupting
+           line that misses a container prefix is assigned to the owner of that
+           ordinary line. This is stored ownership, not a search for any open
+           paragraph. After the owner is selected, `paragraph_open` decides
+           whether the operation is continuation or a new paragraph. A blank,
+           heading, definition, comment, table or closed fence establishes no
+           such claim.
+
+           Definitions register only in the context selected by this table.
+           In particular, a definition below one body's content column does
+           not register in that body merely because a paragraph used to be
+           open there; column zero belongs to the document or another surviving
+           ancestor and registers there.
+
+           TERMINOLOGY IN THE HISTORICAL CASE NOTES BELOW. Earlier clauses
+           often abbreviate a transition as "the paragraph is open, so the
+           container survives" or "no paragraph is open, so it closes". After
+           carve#1730 those phrases describe the correlated leaf result, not
+           the ownership decision. Formally they mean, respectively, "the
+           preceding ordinary boundary stored a continuation claim, then its
+           paragraph continued" and "no continuation claim selected that
+           frame, so the column owner was an ancestor". This state definition
+           and table take precedence over that shorthand; no later example may
+           reverse the dependency.
    STEP (per line L, executed exactly once -- no backtracking, Design
          Principle 1: the contribution a line makes to block structure never
          depends on a future line, the only lookahead being the DECLARED
@@ -188,33 +271,40 @@
         content_column -> sublist (PART 9 §24 C3); otherwise paragraph /
         lazy item text.
      S4 PARTIAL MATCH. The unmatched containers are candidates to close.
-        LAZY CONTINUATION: if ANY container in the open stack holds an OPEN
-        PARAGRAPH and the residue is NOT an interrupting line (PART 9 §10 --
-        list markers and plain text fold; visible openers interrupt), L
-        folds into the INNERMOST such paragraph and NOTHING closes --
-        regardless of how many containers the line failed to match.
-        Otherwise close the unmatched containers and re-classify the residue
-        in the surviving context (S3).
+        OWNERSHIP FIRST: apply the stored continuation claim and the owner
+        table above. If the line is owned by a surviving unmatched frame,
+        NOTHING closes. Otherwise close unmatched frames through the selected
+        owner and re-classify the residue there (S3). This decision reads
+        `container_open`, `last_boundary_kind`, and columns; it does not read
+        `paragraph_open`.
 
-        NO OPEN PARAGRAPH, NO LAZY LINE -- NORMATIVE. The "otherwise" is not
-        a leftover case, and it binds even where the unmatched container is a
-        LIST ITEM whose last block is a container. In
+        LAZY CONTINUATION SECOND: only after ownership is fixed, if the
+        selected frame holds an OPEN PARAGRAPH and the residue is NOT an
+        interrupting line (PART 9 §10 -- list markers and plain text fold;
+        visible openers interrupt), L folds into that paragraph. With no open
+        paragraph, the same already-owned line begins a new paragraph in that
+        frame. Lazy continuation therefore changes the leaf operation, never
+        which container survives.
+
+        NO STORED CONTINUATION CLAIM, NO LAZY LINE -- NORMATIVE. The ownership
+        decision is not a leftover case, and it binds even where the unmatched
+        container is a LIST ITEM whose last block is a container. In
 
             . >
             X
 
         `. ` opens an item whose content is an EMPTY block quote. `X` sits at
-        column 0, so it does not supply the item's indentation prefix, and
-        there is no open paragraph anywhere in the stack for it to fold into.
-        Both halves of the rule therefore point the same way: the item closes
+        column 0, so it does not supply the item's indentation prefix, and the
+        quote boundary established no continuation claim. The owner table
+        therefore selects the document: the item closes
         and `X` is a new top-level block. The same disposes of
 
             - >
             lazy
 
-        while `- > q` / `lazy` FOLDS, because there the quote holds an open
-        paragraph -- one rule, opposite answers, on whether a paragraph is
-        open.
+        while `- > q` / `lazy` FOLDS, because the ordinary quoted line stored
+        a continuation claim whose selected leaf is an open paragraph. The
+        owner is selected before that leaf is continued.
 
         Three engines gave three answers here and the reference is not among
         the right ones: carve-js and carve-php keep `X` inside the item,
