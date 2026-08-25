@@ -1,0 +1,6 @@
+[^n]: intro
+
+    ![alt](image.png)
+    ^ Caption
+
+see[^n]

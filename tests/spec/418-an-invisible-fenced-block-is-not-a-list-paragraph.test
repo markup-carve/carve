@@ -1,0 +1,13 @@
+An invisible fenced block is not a list paragraph
+
+```
+- intro
+
+   %%%
+   hidden
+   %%%
+.
+<ul>
+  <li>intro</li>
+</ul>
+```

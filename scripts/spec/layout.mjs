@@ -1475,7 +1475,22 @@ const opensAuthoredBase = (line) => opensSubBlock(line) || isLinkDef(line) ||
 export function normalizeAuthoredBodyBases(lines) {
   const out = []
   let blockBase = null
-  for (const line of lines) {
+  let opaque = null
+  for (let index = 0; index < lines.length; index++) {
+    const line = lines[index]
+    if (opaque !== null) {
+      out.push(line)
+      if (opaque.kind === 'code') {
+        const close = PURE_FENCE.exec(line)
+        if (close && close[1][0] === opaque.run[0] && close[1].length >= opaque.run.length) {
+          opaque = null
+        }
+      } else {
+        const close = COMMENT_FENCE_BODY.exec(line)
+        if (close && close[1].length === opaque.run.length) opaque = null
+      }
+      continue
+    }
     if (isBlank(line)) {
       out.push(line)
       continue
@@ -1485,7 +1500,22 @@ export function normalizeAuthoredBodyBases(lines) {
     if (blockBase === null && measured.col > 0 && opensAuthoredBase(measured.rest)) {
       blockBase = measured.col
     }
-    out.push(blockBase === null ? line : dedentMeasured(measured, line, blockBase).text)
+    const normalized = blockBase === null ? line : dedentMeasured(measured, line, blockBase).text
+    out.push(normalized)
+    if (blockBase === null && measured.col === 0) {
+      const code = FENCE.exec(normalized)
+      if (code && parseFenceInfo(code[2]) !== null) {
+        opaque = { kind: 'code', run: code[1] }
+        continue
+      }
+      const comment = COMMENT_FENCE_BODY.exec(normalized)
+      if (comment) {
+        const classified = classifyLayoutComment(lines, index)
+        if (classified && classified.end > index + 1) {
+          opaque = { kind: 'comment', run: comment[1] }
+        }
+      }
+    }
   }
   return out
 }
@@ -3650,6 +3680,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         const dmeas = dd.meas ?? indentCols(dedented)
         if (
           pendingSeparation &&
+          !insideFence() &&
           dmeas.rest !== '' &&
           !opensSubBlock(dedented) &&
           !matchMarkerAt(dmeas) &&
