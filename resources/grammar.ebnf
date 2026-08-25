@@ -8771,6 +8771,61 @@ EOF = (* end of file *) ;
       neighbours all survive as themselves -- and it puts the loss on the
       record, which is the whole of what §1 can be held to here.
 
+      A CHECKER FOR §1 NARROWS TO THIS BOUND AND NO WIDER -- NORMATIVE
+      (carve#1679). The paragraph above says what this clause forgives. This
+      says what it does NOT, because a checker asserting `parse(fmt(x)) ==
+      parse(x)` has to encode both halves, and stated only as a permission the
+      carve-out acquired one mechanism per engine that reached it -- three
+      engines, three exemptions, none of them written where the next reader
+      would look.
+
+      THE RULE. The two trees MUST agree once every wrapper this clause names
+      is dissolved into its content, on BOTH sides. Nothing else is forgiven: a
+      dropped node, a reordering, a changed attribute and a changed node type
+      all still fail, and so does the dissolution of a wrapper that carries
+      anything of its own. A wrapper carrying an attribute block is not BARE --
+      losing it would lose the attributes this clause says survive -- and
+      neither is a node that owns a label, a destination, a level or a kind.
+
+      WHAT DOES NOT CONFORM is a carve-out keyed on the difference EXISTING.
+      "The two trees came back different, and a fixture records the second one,
+      so accept it" forgives a dropped node exactly as readily as a lost
+      wrapper, and the fixture is then evidence of nothing. The clause is the
+      definition; a fixture is at most an instance of it.
+
+      WHERE THE SET IS SOURCED FROM IS FREE, and the two engines that reached
+      this first source it differently: one states a predicate over what the
+      shape spells and is bounded by construction, the other derives the set
+      from the corpus documents whose pinned canonical form re-parses
+      differently and applies the bound explicitly. Both conform. The bound is
+      the rule; the sourcing is not, and neither spelling is owed a conversion
+      to the other.
+
+      A CHECKER THAT WIDENS THE BOUND CANNOT DETECT ITS OWN WIDENING, so the
+      width is pinned separately or it is not pinned at all. The dissolution is
+      applied to BOTH trees, so widening it can only ever HIDE a difference and
+      never create one: whatever extra shape it swallows, it swallows
+      identically on each side and the two still agree. A corpus sweep
+      therefore stays green under any widening whatsoever, and only a direct
+      assertion on the predicate says how wide it is.
+
+      MEASURED ON THE REFERENCE ENGINE over the 1404 corpus documents and the
+      10986 nodes of their canonical trees. Each row is the bounded predicate
+      widened one way; each leaves every document passing, and only the second
+      column separates a widening from a no-op:
+
+        widened to dissolve                nodes it decides differently
+        any single-child paragraph         1166
+        any bare single-child node           25
+        a paragraph carrying attributes       0
+
+      The third row is why the second column is reported at all. It is a
+      genuine loosening -- a wrapper carrying attributes is one this clause
+      does not permit losing -- and against this predicate on this corpus it
+      decides nothing, so a sweep that stayed green under it would have been
+      evidence in neither direction. A mutation that changes no answer is not a
+      test of the bound.
+
    2. THE ESCAPING RULE -- NORMATIVE. A character is escaped IF AND ONLY IF
       omitting the escape would change the re-parsed AST.
 
