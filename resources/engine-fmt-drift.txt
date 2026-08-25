@@ -14,3 +14,7 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
+227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace  the pin has not shipped the one-space canonical definition separator (carve#1757): it still writes `:  ` and leaves the body's continuations at the wider column.
+227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace-2  the pin has not shipped the one-space canonical definition separator (carve#1757): it still writes `:  ` and leaves the body's continuations at the wider column.
+279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-3  the pin has not shipped the one-space canonical definition separator (carve#1757): it still writes `:  ` and leaves the body's continuations at the wider column.
+407-one-consumed-boolean-spells-the-looseness-no-blank-line-can-2  the pin has not shipped the one-space canonical definition separator (carve#1757): it still writes `:  ` and leaves the body's continuations at the wider column.

@@ -1569,16 +1569,44 @@ term_continuation_line = inline_content, newline ;
    having TWO ways to spill onto the next line, one of them silent -- a term has
    exactly one, so a long key stays wrappable at no cost. §434's follow-up
    question is answered here rather than left open.) *)
-definition_body = (':', space, space, first_block_content)
-                | (':', space, space, inline_content, newline,
+definition_body = (':', definition_separator, first_block_content)
+                | (':', definition_separator, inline_content, newline,
                    { definition_continuation
                    | (blank_line+, definition_continuation)
                    | continuation_marker_block
                    | lazy_continuation_line }) ;
+definition_separator = space, {space} ;
 (* FIRST-BLOCK (`:  +`): when the sole content is a lone `+`, the body is the
    FOLLOWING flush-left block, with no indentation -- the definition-list twin
    of the list-item `- +` opener (`first_block_content`). `:  \+` is a literal
    `+`. *)
+
+(* SEPARATOR WIDTH SETS THE BODY'S COLUMN (carve#1755). The separator is a run
+   of ONE OR MORE spaces, and the body's content column is `1 + separator
+   width`: `: x` establishes column 2, `:  x` column 3, `:    x` column 5. A
+   continuation line qualifies by REACHING its own body's column (PART 9 SS24
+   C1), so the spellings differ only in how far their continuations indent,
+   never in what they mean.
+
+   This is the rule a BULLET already follows: `-   first` puts its content
+   column at 4 and a continuation at 2 does not reach it. The definition body
+   was the one construct that measured its separator against a fixed width
+   instead, and the one that demanded two spaces where every other marker in
+   the language takes one -- `- item`, `1. item`, `> quote`, `:: term`.
+
+   ONE SPACE IS CANONICAL. A wider separator is accepted and the formatter
+   narrows it, which is what a formatter is for; nothing about the document's
+   meaning depends on the author having picked the canonical width. Narrowing
+   the separator narrows the body's column, so a canonical rewrite carries every
+   continuation inside that body down by the same amount. A formatter that
+   trims the separator and leaves the body where it was changes what the
+   document says.
+
+   What changed for the one-space spelling is that it now HAS a meaning. It used
+   to have none, and the engines disagreed about what to do with a line that had
+   none -- carve-js folded `: x` after a term into the `<dt>`, the oracle left it
+   a stray paragraph. A colon line inside a definition context has exactly one
+   reading now. *)
 definition_continuation = (definition_indent, inline_content, newline)
                         | (backslash, newline, definition_indent, inline_content, newline) ;
 definition_indent = whitespace, {whitespace} ;
