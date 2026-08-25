@@ -48,6 +48,7 @@ The table reflects the reference engines' renderer behavior.
 | Footnotes | jump links | print-native footnotes; `[^id]` preserved in Markdown | degrades natively |
 | Links / autolinks | clickable | clickable in PDF; URL preserved in plain text | degrades natively |
 | Cross-references / TOC | anchor links | internal PDF links; anchors preserved in Markdown | degrades natively |
+| Multiple table header rows | all rows keep header semantics | Markdown: first header row stays the header; later header rows stay as body rows | header semantics weaken; cell content survives |
 | Composite figure (`::: figure`) | one `<figure>` holding the panel figures directly plus a group `<figcaption>`; layout hints (`columns-2`) pass through as classes | Markdown: panels in order, panel captions as `*(...)*`, group caption last as `**...**`; plain/terminal: group caption first, then each panel's caption + host degradation | normative - PART 9 §4c + the writer/degradation clause in PART 11 |
 
 The composite figure's contract is the floor applied with no exceptions: every
