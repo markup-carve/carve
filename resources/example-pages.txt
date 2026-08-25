@@ -562,6 +562,8 @@ index: examples/edge-cases/index.md
   22-footnotes-6
 
   a-definition-list-inside-a-footnote-body-carries-its-authored-base
+  a-recognized-opener-in-a-body-needs-no-blank-line-above-it
+  the-definition-and-footnote-base-rule-does-not-reach-a-list-item
 [edge-definitions] Definition lists and abbreviations
 > Terms and descriptions, abbreviation definitions and the document levels that may declare them.
 out: examples/edge-cases/definitions.md

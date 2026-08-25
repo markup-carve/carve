@@ -24,3 +24,7 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+422-a-recognized-opener-in-a-body-needs-no-blank-line-above-it-7  the pin does not read a payload written directly under a description line as the description's content (carve-js#1518): it makes the line paragraph text or a sibling of the `dl`, depending on its column. The oracle reads it as description content at any indent above zero.
+422-a-recognized-opener-in-a-body-needs-no-blank-line-above-it-8  same band as -7, inside a list item (carve-js#1518).
+422-a-recognized-opener-in-a-body-needs-no-blank-line-above-it-9  same band as -7, inside a footnote body (carve-js#1518).
+423-the-definition-and-footnote-base-rule-does-not-reach-a-list-item  the pin gives a definition list past a LIST ITEM's content column the authored base carve#1729 states for definition and footnote bodies alone (carve-js#1514), so the quote lands in the `dd` instead of the item. Fixed by carve-js#1520, which is merged and past this pin: delete this line in the commit that moves the pin.
