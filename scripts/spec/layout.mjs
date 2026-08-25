@@ -3242,8 +3242,24 @@ function collectItems(lines, i, list, state, ind, meas) {
     i++
     // FIRST-BLOCK form (SS17 L4): a bare `+` as the sole marker-line content
     // opens an item whose body is the following flush-left block(s)
+    //
+    // A TASK MARKER DOES NOT TAKE THE FORM AWAY. The grammar spells the item as
+    // `bullet_marker, [item_attributes], space, [task_marker], list_item_content`
+    // and `first_block_content` is one of `list_item_content`'s alternatives, so
+    // the form sits AFTER the box exactly as every other marker-line opener
+    // does: `- [x] > q`, `- [x] # h` and `- [x] ---` all open their block past
+    // it, because the box belongs to the ITEM and nothing about its first block
+    // reaches it (carve#1381). This reader excluded task lists from the day the
+    // form landed, with no rule behind the exclusion, and `head.text` is
+    // already the text after the box - so `- [x] +` read the `+` as ITEM TEXT
+    // and named the box `aria-label="+"` while carve-js, carve-php and carve-rs
+    // all opened the form. Nothing in the corpus pinned the seam, so the only
+    // place the disagreement surfaced was the writer side: a canonical writer
+    // spells an EMPTY task item `- [x] +`, this reader read a `+` body out of
+    // it, and the round-trip ratchet carried the document as declared drift
+    // (markup-carve/carve-js#1491).
     let attachNext = false
-    if (!list.task && head.text.trim() === '+') {
+    if (head.text.trim() === '+') {
       itemLines.length = 0
       itemMeas.length = 0
       attachNext = true

@@ -14,4 +14,3 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
-415-a-floating-attribute-does-not-widen-a-list-item-s-content-column-7  pinned writer moves an empty task marker across its detached paragraph
