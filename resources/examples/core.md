@@ -3989,27 +3989,28 @@ plain line.</p>
 
 ::::
 
-The behavior keys off the `|` type token on the opener, not the class. The inline `::: {.line-block}` class form is not a fence at all (strict djot: no inline attributes on the opener), so it renders as an ordinary paragraph (no div, no hard breaks).
+The behavior keys off the `|` type token, not the class name. Writing the class by hand - on an attribute line, the only place a `:::` opener takes attributes - gets the CSS hook and none of the semantics: no hard breaks, no preserved leading whitespace. (An inline `::: {.line-block}` is not a fence at all, and renders as a literal paragraph; that rule belongs to every `:::` opener, and is shown under [Generic divs](#generic-divs).)
 
 :::: compare
 
 ```carve
-::: {.line-block}
+{.line-block}
+:::
 one
 two
 :::
 ```
 
 ```html
-<p>::: {.line-block}
-one
-two
-:::</p>
+<div class="line-block">
+  <p>one
+two</p>
+</div>
 ```
 
 ::::
 
-For a smaller local opt-in to visible line breaks, use `::: \`. It turns soft breaks in direct paragraph children into hard breaks, but it does not preserve leading whitespace and does not affect nested blocks.
+`::: \` is the other line-break block. It turns soft breaks in direct paragraph children into hard breaks and does nothing else - it does not preserve leading whitespace and does not affect nested blocks. That makes it the one to reach for when the goal is only to show the breaks you typed; `::: |` is for the narrower case where the leading whitespace is itself content - verse, addresses, ASCII alignment.
 
 :::: compare
 

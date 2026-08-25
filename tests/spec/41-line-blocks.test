@@ -64,15 +64,16 @@ plain line.</p>
 ```
 
 ```
-::: {.line-block}
+{.line-block}
+:::
 one
 two
 :::
 .
-<p>::: {.line-block}
-one
-two
-:::</p>
+<div class="line-block">
+  <p>one
+two</p>
+</div>
 ```
 
 ```
