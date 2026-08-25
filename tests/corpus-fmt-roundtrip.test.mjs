@@ -195,19 +195,28 @@ const SPELLS_ITS_OWN_WRAPPER_AWAY = new Set(['image', 'comment'])
  * text runs coalesce, so `a\-b` and `a-b` are the same document. Object keys
  * are sorted, because §4 W3 compares "ignoring source positions and key order".
  *
- * `attrs` IS DESCENDED INTO here, unlike in the engines' own versions, and the
- * reason the two differ is the reason it is safe: those versions skip `attrs`
- * to avoid RENAMING an author-controlled key that happens to be spelled `type`
- * or `pos`, and this one deletes nothing and renames nothing outside a node
- * whose own `type` says `escaped_text`. Sorting a map's keys cannot change the
- * map, and an attribute's authored ORDER is carried by `attrs.order`, which is
- * an array and stays put.
+ * NOTHING IS DELETED OR RENAMED INSIDE `attrs`, and the carve-out is not
+ * caution - it is a measured hole. `attrs.keyValues` is an author-controlled
+ * map, so a document may write
+ *
+ *     {pos=x}
+ *     para
+ *
+ * and land the string `x` under the key `pos`. A blanket "drop every `pos`"
+ * applied at arbitrary depth would delete it from both trees, and a writer that
+ * changed that attribute's value would then pass a check written to reject
+ * exactly that. So `pos` and `srcByteLength` are dropped only where they are
+ * NODE fields, and `escaped_text` is renamed only where it is a node's own
+ * `type`. Inside `attrs` the only normalization left is key ORDER, which cannot
+ * change a map, and the authored order is carried by `attrs.order`, an array
+ * that stays put. carve-php's `CarveFmtCorpusTest::canonical()` skips `attrs`
+ * outright for the same reason.
  */
-const canonicalAst = (value) => {
+const canonicalAst = (value, inAttrs = false) => {
   if (Array.isArray(value)) {
     const out = []
     for (const item of value) {
-      const child = canonicalAst(item)
+      const child = canonicalAst(item, inAttrs)
       const isPlainText = (node) =>
         node !== null &&
         typeof node === 'object' &&
@@ -216,7 +225,7 @@ const canonicalAst = (value) => {
         typeof node.value === 'string' &&
         Object.keys(node).length === 2
       const last = out.length > 0 ? out[out.length - 1] : null
-      if (last !== null && isPlainText(last) && isPlainText(child)) {
+      if (!inAttrs && last !== null && isPlainText(last) && isPlainText(child)) {
         last.value += child.value
         continue
       }
@@ -227,10 +236,10 @@ const canonicalAst = (value) => {
   if (value !== null && typeof value === 'object') {
     const out = {}
     for (const key of Object.keys(value).sort()) {
-      if (key === 'pos' || key === 'srcByteLength') continue
-      out[key] = canonicalAst(value[key])
+      if (!inAttrs && (key === 'pos' || key === 'srcByteLength')) continue
+      out[key] = canonicalAst(value[key], inAttrs || key === 'attrs')
     }
-    if (out.type === 'escaped_text') out.type = 'text'
+    if (!inAttrs && out.type === 'escaped_text') out.type = 'text'
     return out
   }
   return value
@@ -473,6 +482,11 @@ test('the strong property still fails on every difference PART 11 §1c does not 
     ['a reordering', 'a\n\nb\n', 'b\n\na\n'],
     ['a changed attribute', '{.c}\n# H\n', '{.d}\n# H\n'],
     ['a changed node type', 'x\n', '> x\n'],
+    // AN ATTRIBUTE SPELLED LIKE A NODE FIELD, because `attrs.keyValues` is an
+    // author-controlled map and `canonicalAst` drops `pos` and `srcByteLength`
+    // from nodes. Dropping them at arbitrary depth would take this attribute
+    // with them and let a changed value through the check written to reject it.
+    ['a changed attribute named like a node field', '{pos=x}\npara\n', '{pos=y}\npara\n'],
   ]
   for (const [what, source, output] of arms) {
     assert.notEqual(astShape(source), astShape(output), `${what} survived the PART 11 §1c bound`)
