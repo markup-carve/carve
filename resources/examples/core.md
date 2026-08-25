@@ -3989,7 +3989,7 @@ plain line.</p>
 
 ::::
 
-The behavior keys off the `|` type token, not the class name. Writing the class by hand - on an attribute line, the only place a `:::` opener takes attributes - gets the CSS hook and none of the semantics: no hard breaks, no preserved leading whitespace. (An inline `::: {.line-block}` is not a fence at all, and renders as a literal paragraph; that rule belongs to every `:::` opener, and is shown under [Generic divs](#generic-divs).)
+The layout preservation comes from the `|` type token on the opener. A plain `:::` block carrying the `line-block` class from an attribute line is an ordinary div that happens to have that class - the class is a CSS hook, and no stylesheet in the toolchain defines it.
 
 :::: compare
 
