@@ -311,7 +311,7 @@ const impls = [
     // declared table in lib/converter-formats.mjs; a format missing here MUST
     // be declared there, and the runner checks both directions.
     convertCommand: (format) =>
-      ['markdown', 'djot', 'html'].includes(format)
+      ['markdown', 'djot', 'html', 'bbcode'].includes(format)
         ? [...rustBaseCommand, 'migrate', '--from', format]
         : null,
     // Exit 0 = the importer exists after all (a DECLARED gap has gone stale).

@@ -1005,8 +1005,8 @@ Absence is declared, never silent, in two files checked in both directions on
 every run:
 
 - **A missing importer** is a capability gap: it lives in
-  `scripts/lib/converter-formats.mjs` with the reason (today: carve-rs has no
-  BBCode importer). A format an engine can
+  `scripts/lib/converter-formats.mjs` with the reason. There are no declared
+  importer gaps today: carve-rs#1275 added the last missing BBCode path. A format an engine can
   neither convert nor explain fails the run; a declared gap the engine has
   quietly closed is a stale entry and fails too - the runner probes the engine
   itself rather than trusting the table.
