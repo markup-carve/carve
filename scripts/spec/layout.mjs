@@ -2181,7 +2181,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             const cc = cur.startsWith(LAZY)
               ? stripIndent(cur.slice(LAZY.length))
               : cur
-            dt += '\n' + cc
+            // The folded line is a CONTENT LINE, so its trailing whitespace run
+            // is dropped before the soft break (PART 2, NO TRAILING WHITESPACE,
+            // which names a definition term). Leading over-indent is a separate
+            // question and is preserved by the branch above.
+            dt += '\n' + cc.replace(/[ \t]+$/, '')
             i++
           }
           node.items.push({ dt })
