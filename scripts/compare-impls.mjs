@@ -14,6 +14,7 @@ import {
 import { parseShard, selectShard } from './lib/shard.mjs'
 import { parseConverterLedger } from './lib/drift-ledger.mjs'
 import { phpDir, rustBinary, rustDir } from './lib/engine-locations.mjs'
+import { comparisonGateHasFailures } from './lib/comparison-gate.mjs'
 import { miscount, shortfall } from './spec/participants.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
@@ -1673,6 +1674,9 @@ if (reportPath) {
 if (failOnDiff) {
   const failing = roundtrip ? roundtripDiffs : crossImplDiffs
   const label = roundtrip ? 'round-trip' : 'cross-implementation'
+  // A round-trip run also compares the engines with each other. Keep that
+  // independent count in the gate instead of reporting it and then exiting 0.
+  const crossImplementationFailures = roundtrip ? crossImplDiffs : 0
   // PART 11 §1's own invariants gate too, and separately from cross-engine
   // agreement. `to_html(fmt(x)) != to_html(x)` means ONE engine's formatter
   // changed what the document says - a corruption whether or not the others
@@ -1714,9 +1718,20 @@ if (failOnDiff) {
     )
     process.exit(1)
   }
-  if (failing > 0 || invariantFailures > 0 || mismatches > 0 || crossRead > 0) {
+  if (comparisonGateHasFailures({
+    selectedMode: failing,
+    crossImplementation: crossImplementationFailures,
+    invariants: invariantFailures,
+    fixtureMismatches: mismatches,
+    crossRead,
+  })) {
     if (failing > 0) {
       console.error(`\n${failing} ${label} difference(s) - see the DIFF lines above.`)
+    }
+    if (crossImplementationFailures > 0) {
+      console.error(
+        `${crossImplementationFailures} cross-implementation difference(s) - see the DIFF lines above.`,
+      )
     }
     if (mismatches > 0) {
       console.error(
@@ -1736,8 +1751,9 @@ if (failOnDiff) {
     }
     process.exit(1)
   }
+  const successLabel = roundtrip ? 'round-trip or cross-implementation' : label
   console.log(
-    `\nNo ${label} differences, no fixture mismatches, no PART 11 §1 invariant failures` +
+    `\nNo ${successLabel} differences, no fixture mismatches, no PART 11 §1 invariant failures` +
       `${roundtrip ? ', and no cross-read failures' : ''}.`,
   )
 }

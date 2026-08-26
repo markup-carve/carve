@@ -32,8 +32,35 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parseShard, selectShard } from '../scripts/lib/shard.mjs'
+import { comparisonGateHasFailures } from '../scripts/lib/comparison-gate.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+
+test('a cross-implementation difference fails the round-trip comparison gate', () => {
+  assert.equal(
+    comparisonGateHasFailures({
+      selectedMode: 0,
+      crossImplementation: 1,
+      invariants: 0,
+      fixtureMismatches: 0,
+      crossRead: 0,
+    }),
+    true,
+  )
+})
+
+test('an entirely clean comparison passes the gate', () => {
+  assert.equal(
+    comparisonGateHasFailures({
+      selectedMode: 0,
+      crossImplementation: 0,
+      invariants: 0,
+      fixtureMismatches: 0,
+      crossRead: 0,
+    }),
+    false,
+  )
+})
 
 test('four formatter shards partition the corpus exactly once', () => {
   const corpus = Array.from({ length: 1384 }, (_, index) => index)
