@@ -338,6 +338,40 @@
            footnote-with-multiple-blocks).
          - DEFINITION DESCRIPTION: the same marker, the same reach, for a
            `<dd>` (`definition_body` carries `continuation_marker_block`).
+
+         THE FIRST-BLOCK FORM IS THE ITEM AND THE DESCRIPTION -- NORMATIVE
+         (carve#1821). The four containers above take the marker; only TWO of
+         them take it in the FIRST-BLOCK position. `- +` and `:  +` open a body
+         whose content is the following flush-left block, and over a line that
+         is not flush-left the marker is refused and the body ends. A FOOTNOTE
+         BODY and a BLOCK QUOTE have no such form: `[^a]: +` and `> +` open a
+         body whose first line is a lone `+`, and there the `+` is NOT A MARKER
+         AT ALL. It is ordinary text, the payload lands wherever the ordinary
+         column rules put it, and no column is read as a marker column --
+
+             [^a]: +
+             flush
+
+         is a note whose text is `+` with `flush` a top-level paragraph, and
+
+             > +
+             flush
+
+         is a quote holding one paragraph `+ flush`, the second line reaching
+         the first by §10 I6's lazy fold. At the body's own column the payload
+         folds into the paragraph the `+` opened, so `[^a]: +` over a column-2
+         line is the single paragraph `+ flush` inside the note.
+
+         That is a DIFFERENT ANSWER from "place the payload by its column", not
+         a narrower one, which is why it is stated rather than left to the
+         reader of L3. The executable spec instead REFUSED the whole document,
+         `stray continuation marker`, at every payload column -- one reader of
+         four, while carve-js, carve-php and carve-rs rendered the text and
+         agreed byte for byte. The refusal was not a conservative version of the
+         shipped form either: it fired at COLUMN 0 too, the one column where the
+         first-block form attaches cleanly in the two containers that have it.
+         Extending the form to the other two was the alternative, and it is not
+         what this clause does. Corpus 437 pins all six documents.
       L5 NOT CONTINUATION CONTAINERS (a lone `+` keeps its plain meaning):
          - fenced containers (admonition / generic div / line block) --
            their bodies already hold flush-left blocks; a lone `+` inside
