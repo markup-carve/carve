@@ -63,17 +63,9 @@
       linkDefs entry is unresolved and renders as literal source text; it
       does not fall through to the heading index at ANY spelling, folded
       or exact.
-      THE ASYMMETRY IS THE ONE THE PARAGRAPH ABOVE ALREADY GIVES: a
-      collapsed label is the author quoting prose from elsewhere in the
-      document, which is why its matching is loose, and an explicit label
-      is an identifier the author wrote twice and can keep identical,
-      which is why its matching is exact. An identifier that names nothing
-      names nothing; it is not retried as prose.
-      If the explicit form SHOULD reach the index, that is a deliberate
-      widening with its own clause, not a retrofit to the engines.
-      THE COMPATIBILITY BREAK, recorded: a document whose
-      `[text][Some Heading]` resolves today renders the bracketed run
-      literally instead.
+      A collapsed label quotes prose, so its matching is loose; an explicit
+      label is an identifier, so its matching is exact. An explicit identifier
+      that names nothing is not retried as heading prose and renders literally.
       ON THIS PATH THE LABEL ENTERS AS ITS RENDERED PLAIN TEXT, the same
       string kind the heading side already enters as. The index is keyed
       by the heading's rendered plain text, so `# *bold* heading` is
@@ -196,11 +188,8 @@
       from footnoteSeq, a definition it was the only use of stays
       unreferenced and is dropped by the sentence above, and no endnotes
       section is written on its account.
-      RESOLUTION ORDER IS NOT THE ANSWER. An implementation that numbers
-      footnotes before it knows whether the reference resolved counts the
-      discarded use, and the numbering then says so out loud. Which pass runs
-      first is a property of a pipeline rather than of the language, and
-      ratifying it would make an ordering artifact into a rule.
+      Footnotes are numbered only after the enclosing reference's resolution
+      outcome is known; pipeline pass order does not change that answer.
       WHAT IS COUNTED IS WHAT THE OUTPUT HOLDS, which decides the cases
       either side of this one the same way. A note in a reference that DOES
       resolve is an ordinary reference, because the resolved link text is

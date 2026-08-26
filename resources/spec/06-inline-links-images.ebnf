@@ -314,9 +314,7 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    `[a]: /u {=}`. `x {#}` in a paragraph keeps its braces as text for the same
    reason.
 
-   THE COMPATIBILITY BREAK THIS ADDS, recorded: a definition line carrying an
-   unparseable attribute block stops defining. A VALID block still defines and
-   still transfers its attributes. *)
+   A valid block still defines and transfers its attributes. *)
 (* TRAILING ATTRIBUTES ON A DEFINITION -- NORMATIVE. A `{...}` block at the end
    of the definition line attaches to the DEFINITION, and PART 9R R1 already
    says what that means: the attributes transfer to every link OR IMAGE that
@@ -519,4 +517,3 @@ image_title = link_title ;
 (* A caption (`^ ` line) may follow a standalone image paragraph on the
    next line, wrapping it in a <figure> -- caption placement is PART 9 §4;
    there is no separate grammar production for the pair. *)
-

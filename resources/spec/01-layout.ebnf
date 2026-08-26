@@ -130,9 +130,8 @@
 
            Definitions register only in the context selected by this table.
            In particular, a definition below one body's content column does
-           not register in that body merely because a paragraph used to be
-           open there; column zero belongs to the document or another surviving
-           ancestor and registers there.
+           not register in that body; column zero belongs to the document or
+           another surviving ancestor and registers there.
 
            COMMENTS ARE CLASSIFIED BEFORE BLOCK OWNERSHIP -- NORMATIVE
            (carve#1731). For each line, first honor any active code, raw or
@@ -354,8 +353,8 @@
                                b
                                tail
 
-        all fold `tail` into the paragraph the prose line opened, for the reason
-        `- a` / `tail` folds. The blocks before that paragraph are spent: they
+        all fold `tail` into the paragraph the prose line opened, as `- a` /
+        `tail` does. The blocks before that paragraph are spent: they
         answered S4 while they were the item's last block and stopped answering
         it when prose reopened one.
 
@@ -427,15 +426,11 @@
         marker line and a heading inside a quote. The line's position changes
         which container owns the heading, not whether the heading is a block.
 
-        WHAT THIS DOES NOT REACH, and both are unchanged. BELOW the content
-        column at a NONZERO column, the following line reaches the container
-        only through S4's lazy fold, and §24 C3's comment exception keeps that
-        path open: `- a` / `  %% c` / ` b` keeps `b` in the item. A line at
-        DOCUMENT column 0
-        is not below a column - it is AT the enclosing context's own block
-        position, the distinction C3 already draws for a definition. And a line
-        AT the content column after the block is the container's own second
-        paragraph, which it was before.
+        BELOW the content column at a NONZERO column, the following line still
+        reaches the container only through S4's lazy fold; §24 C3's comment
+        exception keeps that path open. DOCUMENT column 0 is instead the
+        enclosing context's block position, and a line AT the content column
+        after the block remains the container's second paragraph.
 
         THE BLOCK'S EXTENT IS THE DEFINITION'S, BLANK LINES AND ALL
         (carve#1363). A footnote definition may carry more than one block, and

@@ -461,32 +461,19 @@
          AN ESCAPE REACHES THE OTHER READING where a space cannot. `|\= a |`
          is a data cell whose content is a literal `= a`, unchanged here.
 
-         COMPATIBILITY. The released `|=a |` and `|{#x}=R|` spellings now
-         reinterpret as data-cell content rather than erroring. §6e's writer
-         migrates them by emitting a space after every prefix.
+         `|=a |` and `|{#x}=R|` are data-cell content. §6e's writer emits a
+         space after every prefix.
 
          THE LINTER NAMES IT `table-marker-run-padding` -- NORMATIVE. One id
          for the whole run, because T11 is one rule for the whole run: it
          reports a glued kind marker, a glued alignment run and a glued
          attribute block alike, and `fmt --migrate` repairs any of them by
-         inserting the space. It SUPERSEDES `table-alignment-run-padding`,
-         which named the middle part only. A lint id is spec surface
-         (docs/validation.md carries the row), so it is agreed here BEFORE an
-         engine emits it.
+         inserting the space. It supersedes `table-alignment-run-padding`.
 
-   6. REFERENCE RESOLUTION -- FORMAL STATEMENT MOVED TO PART 9R (rules
-      R1-R3; this §-anchor stays for existing references). Summary: link
-      labels match case-sensitively after ASCII whitespace normalization
-      (PART 9R R1; corpus 78-reference-labels-are-case-sensitive); LAST link definition wins
-      vs FIRST footnote definition (deliberate asymmetry, §16); collapsed
-      references [text][] use their text as the label; abbreviations match
-      at word boundaries only; ALL definitions (link / footnote /
-      abbreviation / heading ids) are collected in the first pass (PART 8)
-      before inline resolution runs -- a definition after its use still
-      resolves; two-pass, O(n), not backtracking. Design Principle 2 ("no
-      dependency on later references") scopes to inline
-      tokenization/highlighting, which never needs the definition table;
-      semantic expansion (abbr, </#id> auto-text, [ref] targets) uses it.
+   6. REFERENCE RESOLUTION -- FORMAL STATEMENT MOVED TO PART 9R R1-R3; this
+      anchor remains for existing references. PART 8 collects all definitions
+      before resolution, including definitions after their uses. Link
+      definitions are LAST-wins while footnote definitions are FIRST-wins.
 
    7. MENTION/TAG BOUNDARIES
       - @ and # only start mentions/tags at word boundaries

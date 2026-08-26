@@ -138,11 +138,9 @@
       an ESCAPING question governed by §2 through §1a. This clause supplies the
       space and nothing else.
 
-      REFUSING TO FLATTEN IS NOT AN ANSWER: the slot cannot hold blocks, so a
-      producer that refuses emits nothing where the author's document has
-      content. NEITHER IS ESCAPING THE COLLISION: `*a*\*b*` writes a character
-      the author did not, against §2's if-and-only-if, and an escape is
-      per-character where the defect is per-boundary.
+      The producer MUST flatten rather than omit the content. It MUST NOT write
+      an escape such as `*a*\*b*`: the defect is per-boundary, not
+      per-character, and §2 permits no invented character.
 
       WHAT IS NOT REQUIRED. The flatten need not be REVERSIBLE. Two paragraphs
       written into a caption come back as one paragraph and no spelling of the
@@ -216,7 +214,9 @@
       form emits meaning-bearing leading whitespace, which editors and
       pipelines strip. So the wrapper is lost EVERYWHERE.
 
-      This exit REPORTS the wrapper loss rather than refusing the tree.
+      This exit REPORTS the wrapper loss rather than refusing the tree, as
+      `docs/html-import.md` requires, preserving an editor round trip through
+      trees the renderer accepts.
 
       THE WRAPPER IS STILL LOST, and this clause does not pretend otherwise. It
       bounds the loss TO the wrapper -- the content, its attributes and its
@@ -323,15 +323,13 @@
       sufficient. Two spellings that render alike are still two spellings, and
       removing that is what a CANONICAL writer is for.
 
-      These counterexamples render identically but re-parse to different ASTs
-      (carve#544):
+      These counterexamples render identically but re-parse to different ASTs:
 
-        source     written as    by        what changed
-        `* %%`     `* +`         carve-rs  a line comment became the
-                                           CONTINUATION MARKER (§17 L3) -- a
-                                           different construct with a body
-        `| %%%`    `| %% %`      carve-js  a comment-block fence (§28) split
-                                           into a line comment plus text
+        source     written as    what changed
+        `* %%`     `* +`         a line comment became the CONTINUATION MARKER
+                                 (§17 L3), a different construct with a body
+        `| %%%`    `| %% %`      a comment-block fence (§28) split into a line
+                                 comment plus text
 
       The second is also what §2's own THE UNIT IS THE OPENER paragraph
       forbids one layer down: `%%%` is an opener run, and half of it plus a

@@ -218,7 +218,8 @@
       collected.
 
       A node carries the definition's required `pos`, attributes and document
-      order; a root map cannot represent those properties directly.
+      order, so document order rather than merge order decides which definition
+      wins; a root map cannot represent those properties directly.
 
       A DEFINITION IS STILL INVISIBLE IN HTML. The node renders nothing on that
       target; it feeds the links and images that resolve its label (PART 9R R1).
@@ -337,8 +338,7 @@
 
       A `srcByteLength` THAT IS PRESENT BUT WRONG IS NOT THIS CLAUSE'S
       BUSINESS. It is derivable from the payload and nothing in the tree
-      depends on it, so all three engines ignore its value; that stays true and
-      is deliberate rather than unnoticed. (a) is about the field's PRESENCE,
+      depends on it, so readers ignore its value. (a) is about its PRESENCE,
       and (d) does not reach it either -- the schema constrains the field's
       TYPE and sign, not whether the number is the right one.
 

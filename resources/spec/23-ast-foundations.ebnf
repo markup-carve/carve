@@ -4,9 +4,7 @@
 
    A parsed document is exchangeable: an implementation MAY serialize its AST
    to JSON, and a consumer written against one implementation MUST be able to
-   read another's output. The engines' INTERNAL field names already differ for
-   the same node - one calls a link's destination `href`, another `destination`
-   - so three dialects were the default outcome rather than a risk.
+   read another's output.
 
    1. THE SHAPE IS carve-js's. It is the reference implementation and its AST
       is already plain data. An implementation whose internals differ MAPS on
@@ -27,9 +25,6 @@
       is ONE text node, not four. An implementation that splits a run wherever a
       delimiter failed to open emphasis publishes its parser's bookkeeping, not
       the document.
-
-      It also makes node-for-node comparison meaningful, which is the only way
-      an engine's divergence from the reference can be MEASURED.
 
       SCOPE. The rule is about `text` nodes only, and only about ADJACENCY
       within one parent's child list. It does not merge across an intervening
@@ -57,10 +52,8 @@
       the two distinct on the wire because an escape is authored form, and
       collapsing them would lose the distinction the type exists to carry.
 
-      The schema cannot express this: a JSON Schema has no way to forbid two
-      adjacent array entries of the same shape. It is checked by the shape
-      comparison in the conformance checker instead, which is why that check is
-      a gate rather than a report.
+      JSON Schema cannot forbid adjacent entries of the same shape, so the
+      conformance check enforces this rule as a gate.
 
    2. EVERY NODE IS AN OBJECT with a `type` holding the node-type identifier
       from profiles.md - the same snake_case strings PART 9 §8 already calls
@@ -204,7 +197,7 @@
         [click](javascript:alert(1))
 
       publishes `{"type":"link","href":"javascript:alert(1)"}` while every render
-      target blanks it, and all three engines already behave this way.
+      target blanks it.
 
       A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST -- NORMATIVE. The
       obligation is PART 9 section 25's URL-scheme denylist, and section 25 already says it
@@ -324,8 +317,7 @@
       breaking the chain -- the comparison is against the nearest ANCESTOR
       that has one.
 
-      A CONSEQUENCE, worth stating because it settled a question of its own:
-      a node whose content is not a contiguous slice of its own source MUST
+      A node whose content is not a contiguous slice of its own source MUST
       omit `pos` rather than publish a PARTIAL span. A `+` continuation cell
       joined from three source lines has no offset pair that equals its value,
       and a span covering only the first fragment leaves the cell's own text
@@ -469,8 +461,8 @@
       container whose span covers it is covering source nothing in it owns.
       (carve#1524.)
 
-      A `definition_list` IS NOT AN EXCEPTION -- NORMATIVE, and it is named
-      because it used to be one. It has no closer, so it ends at its last
+      A `definition_list` IS NOT AN EXCEPTION -- NORMATIVE. It has no closer,
+      so it ends at its last
       placed `definition_term` or `definition_description` like every other
       closerless container:
 

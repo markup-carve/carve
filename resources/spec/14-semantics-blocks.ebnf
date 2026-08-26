@@ -511,8 +511,8 @@
         `abc-2`), and it is a valid `</#id>` crossref target. The one
         exception is the implicit `[Heading][]` reference index, which
         declines headings under a blockquote (PART 11 R1).
-        Consequence worth stating: when the `sections` option below is
-        off, the top-level shape becomes identical to this one, so id
+        When the `sections` option below is off, the top-level shape becomes
+        identical to this one, so id
         placement and attribute placement follow ONE rule everywhere in
         the document.
       - Empty document or doc with no headings: zero <section> elements

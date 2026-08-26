@@ -96,20 +96,13 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
      - a leading-digit result is prefixed `s-` (a bare leading digit is a valid HTML
        id but an invalid CSS selector); an empty result becomes a generated `s-N`;
      - duplicates within a document get a numeric `-2`, `-3`, ... suffix.
-   An explicit {#id} is used verbatim (case preserved). Implementations MAY offer
-   OPT-IN, orthogonal transforms: lowercasing (carve-js `lowercaseHeadingIds`;
-   carve-php `LowercaseHeadingIdsExtension`; carve-rs `lowercase_heading_ids`) and
-   ASCII-folding for URL/CSS-fragment portability (carve-js `asciiHeadingIds`;
-   carve-php `AsciiHeadingIdsExtension`; carve-rs `ascii_heading_ids`). Neither is
-   the default. ASCII-folding has TWO modes, because a transliteration table
-   covers some scripts and not others: BEST-EFFORT keeps what it cannot map, so a
-   CJK heading still has a usable and unique anchor, and STRICT drops that residue
-   so the id is guaranteed to match `[0-9A-Za-z-]`. carve-js spells them `'fold'`
-   and `'strict'`, carve-rs `AsciiHeadingIds::Fold` and `::Strict`; carve-php's
-   extension is the STRICT one. The table itself is not normative -- what is, is
-   that the three engines carry the SAME table. Carve PRESERVES case, matching
-   djot.js / djot-php per #393; cross-references resolve case-insensitively
-   against the case-preserved id table. *)
+   An explicit {#id} is used verbatim (case preserved). Implementations MAY
+   offer OPT-IN, orthogonal lowercasing and ASCII-folding transforms; neither
+   is the default. ASCII-folding has TWO modes: BEST-EFFORT keeps characters
+   its shared transliteration table cannot map, while STRICT drops that residue
+   so the id matches `[0-9A-Za-z-]`. The table is not normative, but engines
+   MUST use the same table. Cross-references resolve case-insensitively against
+   the case-preserved id table. *)
 
 (* --- Thematic Breaks --- *)
 thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})), newline ;
@@ -558,14 +551,13 @@ definition_indent = whitespace, {whitespace} ;
    `block_base` is authored data, and a closer belongs to the base established
    by its opener.
 
-   MIGRATION. This changes released 0.1.3 documents whose over-indented literal
-   text begins with a block opener. A diagnostic SHOULD offer two safe fixes:
-   dedent to make the structural intent explicit, or escape the opener to keep
-   literal text. *)
+   A diagnostic for over-indented literal text that begins with a block opener
+   SHOULD offer two fixes: dedent for structural intent, or escape the opener
+   to keep literal text. *)
 (* The term marker is TWO colons. A single-colon `: term` line is NOT a
    definition list -- it is ordinary paragraph text. (Deliberate: djot uses a
    single colon, but `::` keeps the term marker distinct from the `:::` div
-   fence and from a stray `:` in prose; all three reference impls agree.)
+   fence and from a stray `:` in prose.)
 
    A definition body CONTINUES like a list item (PART 9 §17): a blank line
    followed by an indented block folds in (so a `<dd>` may hold multiple

@@ -83,9 +83,7 @@
 
       NO RENDERED OUTPUT MOVES ON ANY TARGET. The node renders nothing where it
       sits; the entry's text renders in the references list the extension
-      builds, exactly as it did before. That is why the divergence survived so
-      long: HTML is identical whichever way an engine behaves, so no corpus
-      fixture could see it, and the pin has to be an AST-level assertion.
+      builds. Conformance is asserted at the AST level.
 
       TIER-2, SO THE NODE EXISTS ONLY WHERE CITATIONS ARE ENABLED. With the
       extension off, `[@key]: entry` is not a citation definition and it is not
@@ -214,7 +212,7 @@
       U+0000 out of the content class on that basis. An AST is a second door
       into the same renderers; it takes the same doormat.
 
-      A READER DOES NOT REFUSE THE VALUE, which is the choice worth stating.
+      A READER DOES NOT REFUSE THE VALUE.
       §11 and §12 refuse an unknown property and a deviant root, because those
       are structure a producer got wrong. This is different: the replacement is
       what the parse boundary already does to the identical string, so
@@ -234,22 +232,17 @@
       carries `start: 1`, the encoder MUST NOT re-emit it: the field is dropped,
       and every tree the implementation publishes matches the documented shape.
 
-      §6 GIVES NO COVER TO PRESERVING IT. The round trip §6 promises is scoped
-      to `parse(x)` -- a parsed tree, which never carries `start: 1`, and which
-      all three engines already comply with. Reading §6 as "JSON to JSON is an
-      identity" extends it past what it says, onto a payload no parser produced.
-      An editor, a patch tool or a hand-built payload can hand an encoder the
-      value; §6 never promised to hand it back.
+      §6's round trip is scoped to `parse(x)`, whose tree never carries
+      `start: 1`; it does not promise JSON-to-JSON identity for an ingested
+      payload no parser produced.
 
       THE DECIDING ASYMMETRY IS THAT NORMALIZING IS LOSSLESS. `start: 1` and no
       `start` describe the same document, so nothing an author wrote is
       discarded, while preserving the value makes the encoder's output depend
       on WHERE THE TREE CAME FROM.
 
-      REFUSING THE PAYLOAD IS NOT THE ANSWER, though §11 refuses an unnamed
-      property and §12 refuses a deviant root. `start` is a property the schema
-      NAMES, and its value is in range; what is out of contract is only that the
-      value happens to be the default.
+      The encoder accepts this payload: `start` is schema-named and in range;
+      only its default value is non-canonical.
 
       This does not drop `start` generally: `start: 0` and `start: 2` pass
       through unchanged.

@@ -169,23 +169,11 @@ unquoted_value = (letter | digit | '-' | '_' | '.' | ':')+ ;
    quote: `"a\"b"` -> the value `a"b`. *)
 quoted_value = '"', { escaped_char | (character - '"' - '\' - newline) }, '"'
              | "'", { escaped_char | (character - "'" - '\' - newline) }, "'" ;
-(* A QUOTED VALUE STOPS AT THE NEWLINE -- NORMATIVE (carve#888). `character`
-   is any Unicode character, so this production used to admit a line break
-   inside the quotes while `resources/carve-core.ohm` excluded one at the
-   same slot: ONE production, two normative answers, which is this ticket's
-   subject rather than a consequence of any other clause.
-
-   THE BLOCK-ATTRIBUTE LINE FOLLOWS, and that is the part with a cost.
+(* A QUOTED VALUE STOPS AT THE NEWLINE -- NORMATIVE (carve#888).
    `block_attributes` reads the same `quoted_value`, so a line break inside
    a quoted value ends that block too. A block attribute may still span
    lines: `continuation` is where a newline is admitted, and it sits
-   BETWEEN tokens, never inside one. Measured when this landed, on carve-js
-   `0c71c7d`, carve-php `d993758` and carve-rs `2d5de72`: all three accept
-   the block form, and they do not even agree on what it means -- carve-js
-   keeps the newline in the value, carve-php and carve-rs collapse it to a
-   space, which no production describes. Three engines improvising is what
-   an unstated rule looks like; the oracle already answers both forms the
-   narrowed way. carve-js#838, carve-php#986 and carve-rs#758 carry it. *)
+   BETWEEN tokens, never inside one. *)
 
 (* Block-level attributes appear on their own line(s) preceding a block.
    A single attribute block may span multiple physical lines (the `}`
