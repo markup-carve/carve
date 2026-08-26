@@ -55,20 +55,28 @@
  * `owed` list must be EMPTY and the carve-js pin must be current.
  *
  * `--mode=per-pr` answers "is this pull request defective?", which is a
- * different question, and the engine-pin ledger is where the two part company.
- * resources/engine-pin-drift.txt exists to DESCRIBE the window between a spec
- * rule landing and an engine shipping it - its own header says that window "is
- * normal and the report exists to describe it", and that it is "DECLARED
- * rather than tolerated". A release cannot ship with that window open; a PULL
- * REQUEST is how the window opens in the first place. Gating both on the same
- * emptiness made every leading spec ruling red by construction, which is what
- * carve#1811 ruled on.
+ * different question, and the two ENGINE-LAG ledgers are where the two part
+ * company. resources/engine-pin-drift.txt exists to DESCRIBE the window
+ * between a spec rule landing and an engine shipping it - its own header says
+ * that window "is normal and the report exists to describe it", and that it is
+ * "DECLARED rather than tolerated". A release cannot ship with that window
+ * open; a PULL REQUEST is how the window opens in the first place. Gating both
+ * on the same emptiness made every leading spec ruling red by construction,
+ * which is what carve#1811 ruled on.
+ *
+ * resources/engine-fmt-drift.txt describes THE SAME WINDOW from the writer
+ * side - the engine reads the new rule and writes the old spelling - and its
+ * own header points at the pin ledger for its retention rule. A declared
+ * window is declared regardless of which ledger describes it, so it is judged
+ * the same way. It held zero rows when carve#1811 landed, which is the only
+ * reason the omission was invisible: the difference bites the first time a
+ * ruling opens a writer-half window and not before.
  *
  * So in `per-pr` mode:
  *
- *   - the engine-pin ledger is judged as `declared`: a well-formed row PASSES,
- *     and a row that is not a declaration at all (no reason, or a key listed
- *     twice, so one of the two reasons is silently discarded) FAILS.
+ *   - both engine-lag ledgers are judged as `declared`: a well-formed row
+ *     PASSES, and a row that is not a declaration at all (no reason, or a key
+ *     listed twice, so one of the two reasons is silently discarded) FAILS.
  *   - pin staleness REPORTS instead of failing.
  *   - an engine checkout that is simply not there is SKIPPED rather than
  *     counted, because "no sibling clone" is a fact about the machine and not
@@ -78,13 +86,17 @@
  * ledgers and the UNDECLARED sweep are NOT relaxed - they caught real holes
  * (carve#1793, carve#1794) and they stay owed per-PR.
  *
- * WHAT KEEPS THE LENIENCY FROM BEING A HOLE. The other half of the ledger's
+ * WHAT KEEPS THE LENIENCY FROM BEING A HOLE. The other half of each ledger's
  * contract - drift that is NOT declared, the carve#533 state of a pinned build
- * silently behind - is gated per-PR by `npm run engine:report -- --check`,
- * which fails in EITHER direction: an undeclared slug, or a declared slug the
- * pin has caught up on. `per-pr` mode defers to that check by name rather than
- * dropping the question, and tests/the-per-pr-audit-defers-to-a-live-check.test.mjs
- * fails if that step ever leaves the per-PR workflow.
+ * silently behind - is gated per-PR by a LIVE check that fails in EITHER
+ * direction, an undeclared slug or a declared slug the pin has caught up on.
+ * For the pin ledger that is `npm run engine:report -- --check`; for the fmt
+ * ledger it is tests/corpus-fmt-roundtrip.test.mjs, which reports undeclared
+ * writer drift and carries its own staleness ratchet over the writer-only
+ * file, and which runs per-PR under `npm test`. `per-pr` mode defers to those
+ * checks by name rather than dropping the question, and
+ * tests/the-per-pr-audit-defers-to-a-live-check.test.mjs fails if either step
+ * ever leaves the per-PR workflow.
  *
  * Exit 0 in release mode only when every `owed` list is empty, every entry was
  * reachable and parseable, and no declaration-shaped constant exists that this
@@ -196,13 +208,15 @@ const MANIFEST = [
   { repo: 'spec', path: 'resources/ast-span-divergence.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'npm run ast:check' },
   { repo: 'spec', path: 'resources/ast-value-divergence.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'npm run ast:check' },
   { repo: 'spec', path: 'resources/ast-extent-findings.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'npm run ast:check' },
-  { repo: 'spec', path: 'resources/engine-fmt-drift.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'npm run fmt:check' },
+  // ONE OF THE TWO ENGINE-LAG ENTRIES: see the `prPolicy` note on the
+  // engine-pin ledger below. Same window, described from the writer side.
+  { repo: 'spec', path: 'resources/engine-fmt-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run fmt:check' },
   { repo: 'spec', path: 'resources/converter-drift.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'npm run compare:convert' },
-  // THE ONE ENTRY WHOSE VERDICT DEPENDS ON THE QUESTION BEING ASKED. Owed
-  // before a tag, declared inside a pull request: see the two-verdicts note at
-  // the top of this file (carve#1811). `prPolicy` is deliberately a per-entry
-  // opt-in rather than a blanket relaxation of `owed`, so relaxing a second
-  // ledger stays a visible edit here.
+  // THE OTHER ENGINE-LAG ENTRY, AND THE ONE THE RULE WAS WRITTEN FOR. Both
+  // are owed before a tag and declared inside a pull request: see the
+  // two-verdicts note at the top of this file (carve#1811). `prPolicy` is
+  // deliberately a per-entry opt-in rather than a blanket relaxation of
+  // `owed`, so relaxing a third ledger stays a visible edit here.
   { repo: 'spec', path: 'resources/engine-pin-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run engine:report -- --check' },
   { repo: 'spec', path: 'resources/oracle-divergence.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'tests/the-oracle-reads-the-authored-documents.test.mjs' },
   // 132 rows, every one `permitted`: PART 12 §4 exempts a REASSEMBLED node
@@ -859,6 +873,6 @@ console.log(
   `DECLARATION AUDIT PASSED (mode: ${mode}) - ` +
     (strict
       ? 'every owed list is empty, the pin is current, and every guard is two-directional.'
-      : 'every owed list is empty, every engine-pin window is declared, and every guard is two-directional.'),
+      : 'every owed list is empty, every engine-lag window is declared, and every guard is two-directional.'),
 )
 }
