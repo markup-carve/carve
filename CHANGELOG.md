@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A render call can report what a target dropped** (carve#1728). The checked
+  result carries `value`, `losses`, `totalLosses` and `truncated`, a
+  `raw-format-dropped` code names the target that omitted a raw node, and a
+  published `render-loss-report.schema.json` fixes the wire shape for every
+  binding.
+- **`colon-fence-mismatch` diagnoses a near-matching colon fence pair**
+  (carve#1727), naming the opener a stray closer was likeliest written for.
+- **A fenced block quote** (carve#1718, PART 9 §12). A colon fence whose type
+  token is a bare marker opens a block quote, and its closing fence may carry
+  the caption.
+- **`attribute-preserved` is an import-report code of its own** (carve#1710,
+  PART 11). An attribute that reached the output inside preserved bytes is not
+  a dropped one; the severity is `error` where a renderer refuses the attribute
+  for safety and `info` otherwise.
+- **An HTML comment imports as a Carve comment** (carve#1709, PART 11). Block
+  position writes the widened `%%%` fence; an inline payload with no spelling
+  is dropped with one `element-dropped` row.
+- **PART 11 §1c states the bound a §1 checker narrows to, and no wider**
+  (carve#1679). Only the wrappers the clause names dissolve, on both trees; a
+  carve-out keyed on the difference existing does not conform.
 - **The AST schema names which image spellings reach block position**
   (carve#1663). At column 0 the direct spelling and both reference spellings
   promote to a block image once resolved; an unresolved reference stays in its
@@ -69,14 +89,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **The continuation marker is one operation in every container**
+  (carve#1782, PART 9 §17 L3/L4). A list item, a definition body and a footnote
+  body attach a marked block by the same rule rather than by two.
+- **An authored block base is one rule** (carve#1781, PART 2). A recognized
+  opener past a container's content column rebases that one complete block -
+  opener, payload, structural continuations, metadata and closer - and the base
+  belongs to the innermost container the opener reaches, so a nested body's
+  opener is never a fresh sibling base. This unifies the definition- and
+  footnote-body statements of carve#1729.
+- **An unclosed container closes with its host, not at end of input**
+  (carve#1778, PART 9 §12). End of input is the top-level case, not the rule.
+- **An ordered item's separator width sets its content column** (carve#1773).
+  The reference oracle read a fixed 3 where every engine measures from the
+  content.
+- **Below a definition body's column the body ends** (carve#1772), in the
+  reference oracle too.
+- **A sigil fence takes the attribute line written above it** (carve#1764).
+  The line-block and verse spellings dropped it.
+- **A definition body's separator is any run of spaces, and one space is
+  canonical** (carve#1757, PART 9). The separator width sets the body's content
+  column, and the body's indentation reaches that column rather than a fixed 3.
+  Canonical output moves to the one-space separator.
 - **Text-block alignment renders the modern CSS declaration** (carve#1755).
   `{align=left|right|center}` on a paragraph, div, or heading now renders
   `style="text-align: …;"` instead of the deprecated `align` attribute. Tables
   remain unchanged because their `align` attribute describes placement. This
   is an output-byte compatibility change from 0.1.3.
-- Clarify how multiple Carve table header rows degrade to Markdown, and remove
-  two divergence declarations made obsolete by the current JavaScript pin.
-- **Authored block bases carry the complete structural group.** Opaque fence payloads, attached captions, fenced block quotes, and nested footnote metadata keep their owner; an invisible fenced percent block does not loosen a list.
+- **Multiple Carve table header rows survive the Markdown target**
+  (carve#1767). The first becomes the Markdown header row and every later one
+  becomes an ordinary body row; the delimiter takes the final effective header
+  alignment, and a body cell's alignment stays local to that cell.
+- **Authored block bases carry the complete structural group** (carve#1760).
+  Opaque fence payloads, attached captions, fenced block quotes, and nested
+  footnote metadata keep their owner; an invisible fenced percent block does
+  not loosen a list.
+- **The `+` first-block form reaches past a task marker** (carve#1748,
+  PART 9 §17 L4).
+- **A floating attribute does not widen a list item's content column**
+  (carve#1732, markup-carve/carve-rs#1373).
+- **A comment is classified before block ownership is decided** (carve#1731),
+  and **container ownership is modeled separately from paragraph openness**
+  (carve#1730).
+- **A reference label matches on an ASCII-whitespace-normalized key**
+  (carve#1726, PART 9R R1 and R2). Leading and trailing whitespace is trimmed and
+  each internal run collapses to one space; matching stays case-sensitive.
+  Colliding definitions keep the link-last / footnote-first asymmetry, and each
+  later one is diagnosed. This is a source-compatibility change from 0.1.3.
+- **A colon fence in a list item opens without a closer** (carve#1722), and **a
+  bare unclosed colon fence opens a container like a labeled one**
+  (carve#1717). PART 9 §12's literal-text readings are withdrawn; no engine
+  implemented them.
+- **A block opener past a list item's content column is accepted**
+  (carve#1705, carve#1702), and a bare marker's content column is measured from
+  its content (carve#1698, carve#1701).
+- **An item's attribute block moves its content column, and its checkbox does
+  not** (carve#1692).
 - **Explicit ids and classes may start with an ASCII digit** (carve#1725).
   Imported/authored HTML-valid values are preserved, while attribute keys,
   booleans and extension names keep the narrower identifier grammar. Generated
@@ -156,6 +224,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The last newline of a code block is its terminator, not a line**
+  (carve#1708, PART 11). Exactly one newline before the closing tag is
+  stripped; any further newline, space or tab is content.
 - **PART 11 §1c is asked in every container, not only at the top level**
   (carve#1677). A quote or a list item holding one lone image writes the bare
   `<img>` too, and four category 411 documents reach a container shape no
@@ -235,6 +306,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (carve#1571, PART 12 §4).
 - **A break is exempt from the overlap rule against another break, not against
   everything** (carve#1566, carve#1576).
+- **A citation broken by a line wrap no longer escapes the citation gate**
+  (carve#1395), in the reference oracle.
 
 ## [0.1.3] - 2026-08-18
 
