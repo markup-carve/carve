@@ -55,12 +55,24 @@ jobs:
 
       - run: npm ci
 
-      - name: Every declaration is visible and the reference build is current
+      # PER-PR MODE, not the release verdict (carve#1811). The two answer
+      # different questions and the engine-pin ledger is where they part: a
+      # release cannot ship with the spec-ahead window open, but a pull request
+      # is how that window OPENS. `declarations:check` - the strict mode - is
+      # what the release cut runs by hand; gating a spec PR on it made every
+      # ruling that leads the engines red by construction.
+      #
+      # What still fails here: an UNDECLARED engine-pin row, every other owed
+      # ledger, the AST divergence lists, a missing guard anchor, and the
+      # UNDECLARED constant sweep. Undeclared DRIFT - a slug the pin does not
+      # reproduce and nobody wrote down, the carve#533 state - is gated in the
+      # conformance job by `npm run engine:report -- --check`.
+      - name: Every declaration is visible (per-PR verdict)
         env:
           CARVE_JS_DIR: ${{ github.workspace }}/engines/carve-js
           CARVE_PHP_DIR: ${{ github.workspace }}/engines/carve-php
           CARVE_RS_DIR: ${{ github.workspace }}/engines/carve-rs
-        run: npm run declarations:check -- --no-fetch
+        run: npm run declarations:pr -- --no-fetch
 
   conformance:
     name: spec-corpus conformance

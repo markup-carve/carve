@@ -31,6 +31,7 @@
     "core:check": "node scripts/formal-core-check.mjs",
     "engine:report": "node scripts/engine-report.mjs",
     "declarations:check": "node scripts/declaration-audit.mjs",
+    "declarations:pr": "node scripts/declaration-audit.mjs --mode=per-pr",
     "bump-carve-pin": "node scripts/bump-carve-pin.mjs",
     "sync-carve-wasm": "node scripts/sync-carve-wasm.mjs",
     "links:check": "node scripts/check-external-links.mjs",

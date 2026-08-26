@@ -42,21 +42,61 @@
  *   node scripts/declaration-audit.mjs                # engines from origin/main
  *   node scripts/declaration-audit.mjs --ref worktree # engines as checked out
  *   node scripts/declaration-audit.mjs --no-fetch     # skip the git fetch
+ *   node scripts/declaration-audit.mjs --mode=per-pr  # the per-PR verdict
  *
  * The spec repo half is always read from THIS working tree, because that is
  * the tree about to be tagged. The engine half defaults to each engine's
  * `origin/main`, because a local engine checkout is usually parked on a
  * feature branch and describes nothing anyone is about to release.
  *
- * Exit 0 only when every `owed` list is empty, every entry was reachable and
- * parseable, and no declaration-shaped constant exists that this manifest does
- * not name.
+ * TWO VERDICTS, ONE AUDIT (markup-carve/carve#1811).
+ *
+ * `--mode=release` (the default) answers "is this tree clear to tag?": every
+ * `owed` list must be EMPTY and the carve-js pin must be current.
+ *
+ * `--mode=per-pr` answers "is this pull request defective?", which is a
+ * different question, and the engine-pin ledger is where the two part company.
+ * resources/engine-pin-drift.txt exists to DESCRIBE the window between a spec
+ * rule landing and an engine shipping it - its own header says that window "is
+ * normal and the report exists to describe it", and that it is "DECLARED
+ * rather than tolerated". A release cannot ship with that window open; a PULL
+ * REQUEST is how the window opens in the first place. Gating both on the same
+ * emptiness made every leading spec ruling red by construction, which is what
+ * carve#1811 ruled on.
+ *
+ * So in `per-pr` mode:
+ *
+ *   - the engine-pin ledger is judged as `declared`: a well-formed row PASSES,
+ *     and a row that is not a declaration at all (no reason, or a key listed
+ *     twice, so one of the two reasons is silently discarded) FAILS.
+ *   - pin staleness REPORTS instead of failing.
+ *   - an engine checkout that is simply not there is SKIPPED rather than
+ *     counted, because "no sibling clone" is a fact about the machine and not
+ *     a finding about the PR.
+ *
+ * Everything else is identical in both modes. In particular the AST divergence
+ * ledgers and the UNDECLARED sweep are NOT relaxed - they caught real holes
+ * (carve#1793, carve#1794) and they stay owed per-PR.
+ *
+ * WHAT KEEPS THE LENIENCY FROM BEING A HOLE. The other half of the ledger's
+ * contract - drift that is NOT declared, the carve#533 state of a pinned build
+ * silently behind - is gated per-PR by `npm run engine:report -- --check`,
+ * which fails in EITHER direction: an undeclared slug, or a declared slug the
+ * pin has caught up on. `per-pr` mode defers to that check by name rather than
+ * dropping the question, and tests/the-per-pr-audit-defers-to-a-live-check.test.mjs
+ * fails if that step ever leaves the per-PR workflow.
+ *
+ * Exit 0 in release mode only when every `owed` list is empty, every entry was
+ * reachable and parseable, and no declaration-shaped constant exists that this
+ * manifest does not name.
  */
 
 import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
+import { duplicateKeys } from './lib/drift-ledger.mjs'
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -66,6 +106,24 @@ const ref = (() => {
   return i === -1 ? 'origin/main' : argv[i + 1]
 })()
 const doFetch = !argv.includes('--no-fetch') && ref !== 'worktree'
+
+/**
+ * `release` (the default) is the pre-tag verdict; `per-pr` is the per-PR one.
+ * See the two-verdicts note at the top of this file. The default is the STRICT
+ * one on purpose: an unflagged run is the release cut, so forgetting the flag
+ * can only ever be too careful.
+ */
+const MODES = new Set(['release', 'per-pr'])
+const mode = (() => {
+  const flag = argv.find((a) => a.startsWith('--mode='))
+  const raw = flag ? flag.slice('--mode='.length) : (process.env.CARVE_DECL_AUDIT_MODE ?? 'release')
+  if (!MODES.has(raw)) {
+    console.error(`unknown --mode=${raw}; expected one of ${[...MODES].join(', ')}`)
+    process.exit(2)
+  }
+  return raw
+})()
+const strict = mode === 'release'
 
 /* ------------------------------------------------------------------ repos */
 
@@ -140,7 +198,12 @@ const MANIFEST = [
   { repo: 'spec', path: 'resources/ast-extent-findings.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'npm run ast:check' },
   { repo: 'spec', path: 'resources/engine-fmt-drift.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'npm run fmt:check' },
   { repo: 'spec', path: 'resources/converter-drift.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'npm run compare:convert' },
-  { repo: 'spec', path: 'resources/engine-pin-drift.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'npm run engine:report -- --check' },
+  // THE ONE ENTRY WHOSE VERDICT DEPENDS ON THE QUESTION BEING ASKED. Owed
+  // before a tag, declared inside a pull request: see the two-verdicts note at
+  // the top of this file (carve#1811). `prPolicy` is deliberately a per-entry
+  // opt-in rather than a blanket relaxation of `owed`, so relaxing a second
+  // ledger stays a visible edit here.
+  { repo: 'spec', path: 'resources/engine-pin-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run engine:report -- --check' },
   { repo: 'spec', path: 'resources/oracle-divergence.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'tests/the-oracle-reads-the-authored-documents.test.mjs' },
   // 132 rows, every one `permitted`: PART 12 §4 exempts a REASSEMBLED node
   // forever. The last field decides, so a row that stops being permitted is
@@ -440,6 +503,41 @@ function txtRows(src) {
 }
 
 /**
+ * The rows of a drift ledger that are NOT declarations.
+ *
+ * This is what the `declared` policy judges, and it is what keeps the per-PR
+ * leniency from being a check that cannot fail. A ledger row is a declaration
+ * only if it says something: the format is `<slug><two or more spaces><reason>`
+ * and a bare slug is a window TOLERATED rather than declared, which is the
+ * distinction the ledger's own header draws. A key listed twice is worse than
+ * unparseable - both lines parse, and the reason a human wrote first is
+ * discarded unread (carve#1479).
+ *
+ * Duplicate detection comes from scripts/lib/drift-ledger.mjs rather than being
+ * spelled again here, so "what counts as a duplicate" has exactly one
+ * definition in this repo.
+ *
+ * @param {Array<string>} rows
+ * @returns {Array<string>} one line per fault, empty when every row declares.
+ */
+function undeclaredLedgerRows(rows) {
+  const faults = []
+  const keys = []
+  for (const row of rows) {
+    const at = row.search(/\s{2,}/)
+    if (at === -1) {
+      faults.push(`${row}   <- no reason given: a bare slug is a window TOLERATED, not declared`)
+      continue
+    }
+    keys.push(row.slice(0, at))
+  }
+  for (const key of duplicateKeys(keys)) {
+    faults.push(`${key}   <- listed twice: one of the two reasons is discarded unread (carve#1479)`)
+  }
+  return faults
+}
+
+/**
  * A single-string lag constant. The VALUE is the declaration, so a non-empty
  * string is one row and a deleted constant is zero.
  */
@@ -564,6 +662,7 @@ if (doFetch) {
 }
 
 let failed = 0
+const skipped = []
 const unwired = []
 const verifiedGuards = []
 const claimedGuards = []
@@ -573,19 +672,30 @@ const rowsFor = new Map()
 const width = { repo: 9, path: 60, name: 32, rows: 20 }
 const pad = (s, n) => String(s).padEnd(n).slice(0, n)
 
-console.log(`Declaration audit - spec repo from this worktree, engines from ${ref}\n`)
+const MODE_BANNER = strict
+  ? 'RELEASE - is this tree clear to tag? Every owed list must be empty and the pin current.'
+  : 'PER-PR - is this pull request defective? A declared engine-pin window passes; pin staleness reports.'
+console.log(`Declaration audit - mode ${mode.toUpperCase()}`)
+console.log(`  ${MODE_BANNER}`)
+console.log(`  spec repo from this worktree, engines from ${ref}\n`)
 
+// A stale pin is a RELEASE fault and a per-PR fact. It goes stale on every
+// carve-js merge, so gating a spec PR on it makes the pin bump a prerequisite
+// for landing a ruling, and a repo that is red as routine hides a regression in
+// the noise (carve#1811). The pre-tag run still fails on it.
+const pinVerdictIsGated = strict
+const pinNote = pinVerdictIsGated ? '' : ' (reported, not gated in per-PR mode)'
 const pinStatus = carveJsPinStatus(REPOS['carve-js'].dir, ref === 'worktree' ? 'HEAD' : ref)
 if (pinStatus instanceof Error) {
-  console.log(`PIN STALENESS  UNVERIFIABLE - ${pinStatus.message}\n`)
-  failed += 1
+  console.log(`PIN STALENESS  UNVERIFIABLE - ${pinStatus.message}${pinNote}\n`)
+  if (pinVerdictIsGated) failed += 1
 } else if (pinStatus.relation !== 'current') {
   console.log(
     `PIN STALENESS  ${pinStatus.relation.toUpperCase()} - @markup-carve/carve ${pinStatus.pin.slice(0, 8)} ` +
       `vs carve-js ${ref} ${pinStatus.main.slice(0, 8)} ` +
-      `(pin-only ${pinStatus.pinOnly}, main-only ${pinStatus.mainOnly})\n`,
+      `(pin-only ${pinStatus.pinOnly}, main-only ${pinStatus.mainOnly})${pinNote}\n`,
   )
-  failed += 1
+  if (pinVerdictIsGated) failed += 1
 } else {
   console.log(`PIN STALENESS  current at carve-js ${pinStatus.main.slice(0, 8)}\n`)
 }
@@ -596,6 +706,19 @@ for (const entry of MANIFEST) {
   const src = read(entry.repo, entry.path)
   const label = `${pad(entry.repo, width.repo)} ${pad(entry.path, width.path)} ${pad(entry.name ?? '-', width.name)}`
   if (src instanceof Error) {
+    // "There is no sibling clone of carve-rs on this machine" is a fact about
+    // the machine, not a finding about the pull request: without siblings 25 of
+    // the 26 rows below go UNREACHABLE and the run reports 26 findings that
+    // name nothing anyone changed. The pre-tag run still fails - a release
+    // verdict computed from three engines it could not read is worthless -
+    // and a MISSING FILE inside a checkout that IS present still fails in
+    // both modes, which is what CI actually exercises.
+    const checkoutMissing = !existsSync(REPOS[entry.repo].dir)
+    if (!strict && entry.repo !== 'spec' && checkoutMissing) {
+      console.log(`${label} ${pad('--', width.rows)} SKIPPED      no ${entry.repo} checkout at ${REPOS[entry.repo].dir}`)
+      skipped.push(entry.repo)
+      continue
+    }
     console.log(`${label} ${pad('??', width.rows)} UNREACHABLE  ${src.message}`)
     failed += 1
     continue
@@ -608,27 +731,43 @@ for (const entry of MANIFEST) {
   }
   rowsFor.set(`${entry.repo}:${entry.path}:${entry.name ?? '-'}`, rows)
 
+  // The verdict, not the entry, is what the mode changes. `prPolicy` applies
+  // only in `per-pr` mode and only where the manifest opted in (carve#1811).
+  const policy = !strict && entry.prPolicy !== undefined ? entry.prPolicy : entry.policy
+
   let owed = rows.length
   let permitted = 0
-  if (entry.policy === 'split') {
+  let detail = rows
+  if (policy === 'split') {
     permitted = rows.filter((r) => r.trim().split(/\s+/).at(-1) === 'permitted').length
     owed = rows.length - permitted
-  } else if (entry.policy === 'permitted') {
+  } else if (policy === 'permitted') {
     permitted = rows.length
     owed = 0
-  } else if (entry.policy === 'manual') {
+  } else if (policy === 'manual') {
     owed = 0
+  } else if (policy === 'declared') {
+    detail = undeclaredLedgerRows(rows)
+    owed = detail.length
+    permitted = rows.length - owed
   }
 
-  const verdict = entry.policy === 'split' ? `${rows.length} (${permitted} permitted)` : String(rows.length)
+  const verdict = policy === 'split' || policy === 'declared'
+    ? `${rows.length} (${permitted} ${policy === 'declared' ? 'declared' : 'permitted'})`
+    : String(rows.length)
   const bad = owed > 0
-  console.log(`${label} ${pad(verdict, width.rows)} ${pad(entry.policy, 10)} ${entry.guard}${bad ? '   <== OWED' : ''}`)
+  const flag = bad ? (policy === 'declared' ? '   <== UNDECLARED' : '   <== OWED') : ''
+  console.log(`${label} ${pad(verdict, width.rows)} ${pad(policy, 10)} ${entry.guard}${flag}`)
   if (bad) {
     failed += 1
-    for (const row of rows.slice(0, 25)) console.log(`${' '.repeat(12)}| ${row}`)
+    for (const row of detail.slice(0, 25)) console.log(`${' '.repeat(12)}| ${row}`)
     console.log(`${' '.repeat(12)}` + `owner: ${entry.owner}`)
+  } else if (policy === 'declared' && rows.length > 0) {
+    // Say out loud that the other direction is still gated, and by what,
+    // because a declared window otherwise reads as "the audit stopped caring".
+    console.log(`${' '.repeat(12)}declared window of ${rows.length} row(s); undeclared drift is gated by ${entry.owner}`)
   }
-  if (entry.policy === 'manual' && rows.length > 0) manualRows.push({ entry, rows })
+  if (policy === 'manual' && rows.length > 0) manualRows.push({ entry, rows })
   if (entry.guard !== 'two-way') unwired.push({ entry, count: rows.length })
   // THE CLAIM, CHECKED. `guard` describes the file; `staleness` is the string
   // that proves it is still there. A named anchor that has gone is a guard that
@@ -700,9 +839,26 @@ if (undeclared.length > 0) {
   failed += 1
 }
 
+if (skipped.length > 0) {
+  const missing = [...new Set(skipped)].sort()
+  console.log(
+    `SKIPPED - ${missing.join(', ')} not checked out, so their rows were not read. ` +
+      'A per-PR run without sibling engine checkouts is INCOMPLETE, not clean.',
+  )
+  console.log()
+}
+
 if (failed > 0) {
-  console.log(`DECLARATION AUDIT FAILED - ${failed} finding(s). Not clear to tag.`)
+  console.log(
+    `DECLARATION AUDIT FAILED (mode: ${mode}) - ${failed} finding(s). ` +
+      (strict ? 'Not clear to tag.' : 'This pull request has a declaration finding to fix.'),
+  )
   process.exit(1)
 }
-console.log('DECLARATION AUDIT PASSED - every owed list is empty and every guard is two-directional.')
+console.log(
+  `DECLARATION AUDIT PASSED (mode: ${mode}) - ` +
+    (strict
+      ? 'every owed list is empty, the pin is current, and every guard is two-directional.'
+      : 'every owed list is empty, every engine-pin window is declared, and every guard is two-directional.'),
+)
 }
