@@ -24,8 +24,3 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-427-the-continuation-marker-attaches-one-block-in-every-container-4  the pin still lets a quote line after a `+` inside a block quote continue the outer quote instead of attaching as a nested one, so the marker attaches nothing there (carve#1782). The oracle attaches it, like every other kind of block.
-419-a-definition-list-inside-a-footnote-body-carries-its-authored-base  carve#1781 assigns the quote to the innermost definition body
-419-a-definition-list-inside-a-footnote-body-carries-its-authored-base-3  carve#1781 keeps the surviving footnote quote structural
-422-a-recognized-opener-in-a-body-needs-no-blank-line-above-it-9  carve#1781 keeps the surviving footnote quote structural
-423-one-authored-base-rule-reaches-a-definition-nested-in-a-list-item  carve#1781 assigns the quote to the innermost definition body
