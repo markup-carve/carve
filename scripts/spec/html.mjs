@@ -122,6 +122,9 @@ export function renderDoc(doc) {
     captionSeq: new Map(), // caption label word -> counter (R5)
     captionIds: new Map(), // lower-cased id -> "Label N" (R4)
   }
+  // ONE promotion phase, before anything is serialized: it settles every
+  // block-image question in the tree and binds the image captions (carve#1784).
+  promoteBlockImages(doc, ctx)
   const out = []
   const sections = []
   const indent = () => '  '.repeat(sections.length)
@@ -244,9 +247,13 @@ function renderBlock(b, depth, ctx) {
   const ba = b.battrs ? renderBlockAttrs(b.battrs) : ''
   switch (b.t) {
     case 'para': {
-      const image = renderStandaloneImage(b.lines.join('\n'), b.caption === undefined ? ba : '', ctx)
-      if (image !== null) {
+      // PART 11 SS1c IS ALREADY SETTLED WHEN THIS RUNS (carve#1784). `blockImage`
+      // is set by the promotion phase, the one place allowed to ask whether a
+      // paragraph's whole content resolves to a single image, and this arm reads
+      // the answer instead of re-deriving it by rendering and testing the result.
+      if (b.blockImage) {
         // a standalone image paragraph renders as a bare <img> (PART 10)
+        const image = withBlockImageAttrs(b.blockImageHtml, b.caption === undefined ? ba : '')
         if (b.caption !== undefined) {
           const id = / id="([^"]*)"/.exec(ba)?.[1]
           const cap = numberCaption(b.caption, ctx, id)
@@ -324,13 +331,14 @@ function renderBlock(b, depth, ctx) {
       // this renderer indents it on its own line, as all three engines do for
       // both containers, so the quote was applying "renders on one line" to a
       // shape the div arm does not - the oracle contradicting itself rather
-      // than reading the clause (carve#1677). `isBlockImageParagraph` asks the
-      // §1c question the same way the `para` arm above answers it.
+      // than reading the clause (carve#1677). The §1c answer is read off
+      // `blockImage`, which the promotion phase set before anything was
+      // serialized - the same field the `para` arm above reads (carve#1784).
       const compact =
         b.children.length === 1 &&
         b.children[0].t === 'para' &&
         b.children[0].caption === undefined &&
-        !isBlockImageParagraph(b.children[0], ctx)
+        b.children[0].blockImage !== true
       // Depth-first and synchronous, so a saved/restored flag is a stack. The
       // children are rendered ONCE, under `inBlockquote`, which is what keeps a
       // quoted heading out of the implicit-reference index.
@@ -622,33 +630,81 @@ function renderBlock(b, depth, ctx) {
   }
 }
 
-/**
- * PART 11 §1c, asked as a question about a NODE rather than about a string: is
- * this paragraph one whose whole content is a single image, and therefore not a
- * paragraph any more by the time it reaches HTML?
+/*
+ * THE PROMOTION PHASE -- the ONE place that asks whether a paragraph is a block
+ * image, and the only place that binds an image caption (carve#1784).
  *
- * The `para` arm of `renderBlock` answers this by rendering; two other sites
- * need the answer BEFORE they render - a quote deciding its frame, and a list
- * item deciding whether to build a `<p>` by hand - and both got it wrong by
- * asking for the node's type instead (carve#1677). §1c is phrased over what a
- * shape SPELLS rather than over the context it sits in, so one predicate serves
- * every container.
+ * Block-image status is a property of the RESOLVED tree, not of the source line:
+ * `![a][r]` is a block image where `[r]: /u` is written and ordinary prose where
+ * it is not, and the definition may sit anywhere in the document. So the
+ * question cannot be answered in the parser's single forward pass, and it used
+ * to be answered FOUR times instead -- a syntactic pre-filter in the layout, a
+ * post-pass that took apart a figure the layout had speculatively built, a probe
+ * render whose output was discarded, and the `para` arm's own render-and-test.
  *
- * The probe render is discarded, and that is safe for the same reason the
- * `para` arm's own call is: `renderStandaloneImage` reads `ctx.linkDefs` and
- * writes nothing, and `renderInline` restores the inline state it saves. A
- * captioned paragraph is excluded here rather than at each call site, since a
- * caption makes the host a `figure` and the figure is what gets framed.
+ * It is answered once, here, after resolution: every paragraph in the tree whose
+ * whole content resolves to a single image is marked `blockImage`, and only then
+ * does an adjacent caption slot bind to it. A slot on a paragraph that is NOT
+ * promoted gives its source lines back as ordinary paragraph text -- the same
+ * observable result as before, reached without building and dismantling a
+ * figure. A DISPLAY-MATH host has no resolution to wait for and binds outright;
+ * it is captionable and it is not a block image.
+ *
+ * `blockImageHtml` carries the markup the phase already produced, so the `para`
+ * arm renders the image ONCE rather than rendering it again to find out.
+ *
+ * THE WALK IS OVER THE WHOLE PARSE RESULT, not `blocks` alone. A footnote
+ * definition's body is a block list of its own, parsed by the layout pass and
+ * rendered by `renderBlock` like any other, so a standalone image inside one is
+ * the same shape and has to be promoted too. The descent is generic and
+ * iterative for the reason the old post-pass gave: a figure can sit inside any
+ * container and the tree is as deep as the document.
  */
-function isBlockImageParagraph(b, ctx) {
-  return (
-    b.t === 'para' &&
-    b.caption === undefined &&
-    renderStandaloneImage(b.lines.join('\n'), '', ctx) !== null
-  )
+export function promoteBlockImages(doc, ctx) {
+  const seen = new Set()
+  const stack = [doc]
+  while (stack.length > 0) {
+    const node = stack.pop()
+    if (node === null || typeof node !== 'object' || seen.has(node)) continue
+    seen.add(node)
+    if (node.t === 'para') {
+      // Recomputed rather than trusted, so rendering one parse result twice
+      // cannot carry markup built under one context into another.
+      const image = standaloneImage(node.lines.join('\n'), ctx)
+      if (image === null) {
+        delete node.blockImage
+        delete node.blockImageHtml
+      } else {
+        node.blockImage = true
+        node.blockImageHtml = image
+      }
+      const slot = node.captionSlot
+      if (slot !== undefined) {
+        if (image !== null || slot.host === 'math') node.caption = slot.text
+        else node.lines = [...node.lines, ...slot.src]
+        delete node.captionSlot
+      }
+    }
+    if (Array.isArray(node)) {
+      for (const v of node) stack.push(v)
+      continue
+    }
+    if (node instanceof Map) {
+      for (const v of node.values()) stack.push(v)
+      continue
+    }
+    for (const v of Object.values(node)) {
+      if (v !== null && typeof v === 'object') stack.push(v)
+    }
+  }
 }
 
-function renderStandaloneImage(line, attrs, ctx) {
+/*
+ * The standalone-image markup for a paragraph's source, or `null` when its whole
+ * content does not resolve to a single image. THE SEMANTIC PREDICATE, and the
+ * promotion phase above is its only caller -- the renderers read `blockImage`.
+ */
+function standaloneImage(line, ctx) {
   // Resolve reference images before paragraph serialization, so PART 10's
   // standalone-image shape is a block decision rather than a final HTML rewrite.
   // The alt run is scanned, not matched: the close is balanced and a
@@ -675,11 +731,11 @@ function renderStandaloneImage(line, attrs, ctx) {
       attrList,
       attrSrc,
     }, ctx, '')
-    return IMG_ONLY.test(image) ? withBlockImageAttrs(image, attrs) : null
+    return IMG_ONLY.test(image) ? image : null
   }
 
   const html = renderInline(line)
-  return IMG_ONLY.test(html) ? withBlockImageAttrs(html, attrs) : null
+  return IMG_ONLY.test(html) ? html : null
 }
 
 function withBlockImageAttrs(image, attrs) {
@@ -769,7 +825,7 @@ function renderItem(item, list, depth, ctx) {
     // ships, rather than a content model a list item has been shown to have
     // (carve#1677). Delegating is the fix here for the same reason it was for
     // carve#693 and carve#626.
-    if (b.t === 'para' && b.caption === undefined && !isBlockImageParagraph(b, ctx)) {
+    if (b.t === 'para' && b.caption === undefined && b.blockImage !== true) {
       // render the whole paragraph in one inline pass (lines joined by soft
       // breaks) so an inline construct spanning a soft break -- e.g. a
       // multi-line `` ``` ``-run folded in as lazy text -- is one span, not one
