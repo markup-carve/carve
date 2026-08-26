@@ -30789,6 +30789,7 @@ SEPARATORS AND PADDING SLOTS). The tab spelling is therefore refused at the
 separator rather than at the content test, and lands in the same place.
 
 One separator space.
+
 ::: compare
 
 ```carve
