@@ -9704,65 +9704,44 @@ EOF = (* end of file *) ;
         :: t
         : {empty}
 
-      and NOT as the term alone. §7b DECIDED THIS QUESTION ONE CONSTRUCT OVER
-      and this takes its answer: the same sentinel, for the same shape -- a
-      marker-introduced body with nothing in it -- so a reader who has learned
-      `[^f]: {empty}` already knows this one. Everything §7b says about WHY the
-      bare word rather than an id, a class or a key/value applies here
-      unchanged, and is not restated.
+      and NOT as the term alone, which drops the description and fails §1: the
+      bytes re-parse to a `<dl>` with no `<dd>` in it.
 
-      THE WRITER DROPPED THE DESCRIPTION ENTIRELY before this clause, which is
-      the §1 failure it exists to fix. `:: t` / `:  +` / ` flush` renders a
-      `<dl>` with an empty `<dd>` and a following paragraph; the writer emitted
-      `:: t`, a blank line and `flush`, which renders with NO `<dd>` at all, so
-      `parse(fmt(x)) == parse(x)` failed. Measured identical in carve-js,
-      carve-php and carve-rs -- not a divergence, one missing branch in three
-      writers.
+      §7b SPELLS THE SAME SHAPE ONE CONSTRUCT OVER, an empty footnote
+      definition body, with the same sentinel. Everything it says about why the
+      bare word rather than an id, a class or a key/value holds here and is not
+      restated.
 
-      THE SENTINEL IS INERT HERE FOR §7b'S REASON: a block-attribute line with
-      no following block inside its own container is dropped (PART 9 §15 A4),
-      so the attribute reaches neither the `<dd>`, nor the next block, nor the
-      next entry. `: {#i}` reaches the same empty body by the same path and is
+      THE SENTINEL IS INERT, for §7b's reason: a block-attribute line with no
+      following block inside its own container is dropped (PART 9 §15 A4), so
+      the attribute reaches neither the `<dd>`, nor the next block, nor the next
+      entry. `: {#i}` reaches the same empty body by the same path and is
       equally discarded, which is why the choice is among constructs that all
       mean something and §7b's smallest-departure argument settles it.
 
-      TWO OTHER SPELLINGS REACH AN EMPTY `<dd>` AND NEITHER IS PINNED. Both are
-      recorded because both look like the obvious shorter fix:
+      TWO OTHER SPELLINGS REACH AN EMPTY `<dd>` AND NEITHER IS CANONICAL. Both
+      are properties of the language as it stands, not alternatives under
+      consideration:
 
-        : {empty}   body EMPTY, no following block is claimed   -- CANONICAL
-        : +         body EMPTY only when a blank line follows   -- rejected
-        : %%        body holds a `comment` node                 -- rejected
+        : {empty}   claims no line below it at any column        -- CANONICAL
+        : +         claims a following flush-left block          -- not written
+        : %%        holds a `comment` child                      -- not written
 
-      `: +` is the FIRST-BLOCK FORM (PART 9 §17 L4) with nothing flush-left
-      under it, and it does spell an empty body -- corpus
-      436-an-empty-description-body-claims-no-line-below-column-0-2 and -4 are
-      written that way. It is rejected because the marker ATTACHES a following
-      column-0 block: `:: t` / `: +` / `flush` is a description whose body is
-      `flush`, not an empty one. It is therefore correct only with a blank line
-      after it, and a writer emitting it must look ahead at the next block to
-      know whether that blank line is required. The sentinel claims nothing
-      below it at any column, so it needs no lookahead, and a rule that cannot
-      be got wrong is preferred to one that must be got right.
+      `: +` IS THE FIRST-BLOCK FORM (PART 9 §17 L4) with nothing flush-left
+      under it. It ATTACHES a following column-0 block -- `:: t` / `: +` /
+      `flush` is a description whose body is `flush` -- so it spells an empty
+      body only when a blank line follows, and a writer emitting it must look
+      ahead at the next block to know whether that blank line is required. The
+      sentinel needs no lookahead, and a rule that cannot be got wrong is
+      preferred to one that must be got right.
 
-      `: %%` is rejected on §1 rather than on layout. An empty comment renders
-      nothing and re-parses to an empty `<dd>`, so it satisfies the HTML, and
-      the writer already preserves it -- which is exactly why corpus
-      436-...-0 and -3 round-tripped while their `+` twins did not, and why
-      the defect stayed invisible. But its `definition_description` carries a
-      `comment` CHILD the source never had, where the canonical spelling
-      carries an empty children list. PART 10's import ceiling forbids that in
-      its own words -- an importer "may add nothing at all" -- and it is the
-      same objection that already disqualified an abbreviation definition as a
-      list separator. A spelling that round-trips the rendered HTML but not the
-      TREE does not satisfy §1, which quantifies over `parse`.
-
-      THIS RETIRES TWO DECLARED LOSSES. `structure-unspellable` on an empty
-      `<dd>` (carve#1627) rested on the finding that no spelling worked; six
-      were probed and the sentinel was not among them. `structure-split` on the
-      not-last shape (carve#1636) rested on the same absence: with the empty
-      description unspellable, an import had to BREAK the list rather than give
-      the wrong term a description it never had. Both are spellable now, and
-      `docs/html-import.md` states what each shape imports as.
+      `: %%` FAILS §1 RATHER THAN LAYOUT. An empty comment renders nothing and
+      the rendered HTML matches, so the failure is not visible at the HTML. Its
+      `definition_description` carries a `comment` CHILD the source does not
+      have, where the canonical spelling carries an empty children list. PART
+      10's import ceiling forbids that in its own words -- an importer "may add
+      nothing at all" -- and §1 quantifies over `parse`, not over the render, so
+      a spelling that round-trips the HTML and not the TREE does not satisfy it.
 
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE. The Markdown renderer is not
       the canonical writer and does not follow §2. It has a different

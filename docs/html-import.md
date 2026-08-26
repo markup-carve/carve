@@ -604,32 +604,41 @@ that damages a neighbouring construct on the way to the declared loss is wrong
 even though the row is present and honest about its own subject
 (markup-carve/carve#1608).
 
-An empty `<dd>` used to be the shape that made the rule concrete, because Carve
-was thought to have no spelling for it:
+An empty `<dd>` imports exactly, because Carve spells it:
 
 ```html
 <dl><dt>term</dt><dd></dd></dl>
 ```
 
-**IT HAS ONE, AND THE IMPORT USES IT** (markup-carve/carve#1827). The empty
-description body is written with the sentinel `{empty}`, PART 11 §7d:
+is written
 
 ```
 :: term
 : {empty}
 ```
 
-which re-parses to a `definition_description` with no children - the same tree
-the import built - so nothing is lost and NO DIAGNOSTIC IS OWED. The import no
-longer writes the term alone, and `structure-unspellable` is no longer reported
-for this shape.
+which re-parses to a `definition_description` with no children - the tree the
+import built - so nothing is lost and no diagnostic is owed
+(markup-carve/carve#1827, PART 11 §7d). `{empty}` is the sentinel PART 11 §7b
+uses for an empty footnote definition body; it is an attribute block, and PART 9
+§15 A4 drops a block-attribute line with no following block inside its own
+container, so it reaches neither the `<dd>` nor anything after it.
 
-**What the six probed spellings actually did.** They are kept here because the
-list is what made the shape look unspellable, and a later reader should not have
-to re-probe them. `: `, `:  `, a colon followed by three spaces and a tab after
-the colon each leak a `:` into the text or fold into the term above; `: {}`
-leaves the literal text `{}` in the body; and the bare colon line is the worst of
-them, read as a continuation of the term, so the re-render is
+**Two other spellings reach an empty `<dd>` and the import uses neither.**
+
+`: %%` renders an empty `<dd>`, but its `definition_description` carries a
+`comment` child the source does not have, and this section's own rule permits no
+additions.
+
+`: +` is the first-block form (PART 9 §17 L4) with nothing flush-left under it.
+It attaches a following column-0 block - `:: term` / `: +` / `text` is a
+description whose body is `text` - so it spells an empty body only when a blank
+line follows it. The sentinel claims no line below it at any column.
+
+**Nothing that is not an attribute block spells it.** `: `, `:  `, a colon
+followed by three spaces and a tab after the colon each leak a `:` into the text
+or fold into the term above; `: {}` leaves the literal text `{}` in the body; and
+a bare colon line is read as a continuation of the term, so the re-render is
 
 ```html
 <dl>
@@ -638,39 +647,44 @@ them, read as a continuation of the term, so the re-render is
 </dl>
 ```
 
-and the `<dt>` is damaged as well as the `<dd>` lost. What the six had in common
-is that none of them is an ATTRIBUTE BLOCK, and the sentinel is - which is the
-same reason `[^f]: {empty}` spells an empty footnote body and `[^f]: {}` does
-not (PART 11 §7b).
-
-One correction to the record: the entry above previously said a colon followed by
-three spaces renders `<dd>&nbsp;</dd>`. No engine does that today - it renders
-`<p>:</p>` in carve-js and carve-rs and folds into the term in carve-php. The
-conclusion it supported, that none of the six spells an empty description, is
-unaffected; the divergence among them is tracked separately in
+with the `<dt>` damaged as well as the `<dd>` lost. That is the same rule that
+makes `[^f]: {empty}` spell an empty footnote body where `[^f]: {}` does not
+(PART 11 §7b). The first four disagree across engines and are tracked in
 markup-carve/carve#1830.
 
-**No general key was needed after all.** The one-item and one-block `<dd>` shapes
-above take `{loose}`, because what they needed was a way to spell a tightness a
-blank line could not reach. An empty description has no blocks at all, so there
-was nothing for a looseness key to say about it
-(markup-carve/carve#1607, markup-carve/carve#1612) - and the answer was neither a
-looseness key nor a diagnostic, but the sentinel that already existed one
-construct over.
+**A looseness key says nothing here.** The one-item and one-block `<dd>` shapes
+above take `{loose}`, because what they need is a way to spell a tightness a
+blank line cannot reach (markup-carve/carve#1607, markup-carve/carve#1612). An
+empty description has no blocks at all, so there is nothing for such a key to say
+about it.
 
-### The ceiling has a second side: an entry after the dropped one
+### An empty entry that is not the last one
 
-Writing the term alone is enough only while the dropped entry is the last one.
-Put an entry AFTER it and the same import breaks the ceiling in the other
-direction (markup-carve/carve#1636):
+An empty description with an entry AFTER it imports as one list, the same way it
+does as the last entry:
 
 ```html
 <dl><dt>t1</dt><dd></dd><dt>t2</dt><dd>d2</dd></dl>
 ```
 
-Consecutive `::` lines SHARE the description written below them - that is the
-`<dl>` model the syntax mirrors - so dropping the empty description and writing
-both terms into one list gives `t1` the description `d2`, which it never had.
+is written
+
+```
+:: t1
+: {empty}
+:: t2
+: d2
+```
+
+`t1` keeps its own empty description and `t2` keeps exactly `d2`. The sentinel
+takes no blank line after it and needs none: it claims no following line at any
+column, so the next `::` opens the next entry.
+
+**This is the shape that makes the addition half of the rule concrete**
+(markup-carve/carve#1636). Consecutive `::` lines SHARE the description written
+below them - that is the `<dl>` model the syntax mirrors - so an import that drops
+the empty description and writes both terms into one list gives `t1` the
+description `d2`, which it never had.
 
 **An ADDITION is not a loss, and no row can declare it.** A loss that stays
 inside a declared ceiling is acceptable because the reader is told what is
@@ -680,52 +694,8 @@ been told nothing about `t1` acquiring `d2`. So the ceiling binds in both
 directions: an importer may lose what it declares AND NO MORE, and it may add
 nothing at all.
 
-**THE SENTINEL SETTLES THIS SHAPE TOO**, and it is written as ONE list, because
-the empty description is now spellable where it stands:
-
-```
-:: t1
-: {empty}
-:: t2
-: d2
-```
-
-```html
-<dl>
-  <dt>t1</dt>
-  <dd></dd>
-  <dt>t2</dt>
-  <dd>d2</dd>
-</dl>
-```
-
-`t1` keeps its own empty description, `t2` keeps exactly `d2`, the two entries
-stay in one `<dl>`, and nothing gains meaning it did not have. The sentinel needs
-no blank line after it and takes none: it claims no following line at any column,
-so the next `::` opens the next entry exactly as it would have. Verified in the
-executable spec and in carve-js, carve-php and carve-rs, with and without a blank
-line between the entries.
-
-**SO NEITHER ROW IS OWED HERE ANY MORE.** This shape previously reported two:
-`structure-split` on the `<dl>`, because the import had to break one source list
-into two to avoid giving `t1` the description `d2`, and `structure-unspellable`
-on the `<dd>` that was dropped to do it. Both rested on the empty description
-being unspellable. It is spellable, the list is not broken, nothing is lost, and
-the import reports nothing for this shape.
-
-**What the break used to require, kept for the record.** The import wrote `:: t1`,
-a COMMENT LINE, then `:: t2` / `: d2`, producing two `<dl>` elements. A blank line
-could not do it - `:: t1`, a blank line, `:: t2`, `: d2` is ONE list with two
-terms sharing `d2`, and the canonical writer removes the blank line again - so a
-separator was needed that renders nothing where it stands AND stays where it was
-written, and `comment` was the only construct that does both. That machinery is
-retired with the shape it served. It is worth knowing why it is gone rather than
-finding it in the history: the doc reached for a separator only because the entry
-itself could not be spelled.
-
 `empty-definition-description-not-last` pins the shape. The one-entry fixture
-cannot see it - both readings of a dropped LAST entry write the same source -
-which is why it passed throughout while both engines merged the two terms.
+cannot see it - both readings of a dropped LAST entry write the same source.
 
 ## An endnotes section keeps the position it was written at
 

@@ -1,0 +1,64 @@
+An empty description body is written with the empty sentinel
+
+```
+:: t
+: {empty}
+
+flush
+.
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<p>flush</p>
+```
+
+```
+:: t
+: {empty}
+.
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+```
+
+```
+:: t
+: {empty}
+flush
+.
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<p>flush</p>
+```
+
+```
+:: t1
+: {empty}
+:: t2
+: d2
+.
+<dl>
+  <dt>t1</dt>
+  <dd></dd>
+  <dt>t2</dt>
+  <dd>d2</dd>
+</dl>
+```
+
+```
+:: t1
+: {empty}
+:: t2
+: {empty}
+.
+<dl>
+  <dt>t1</dt>
+  <dd></dd>
+  <dt>t2</dt>
+  <dd></dd>
+</dl>
+```
