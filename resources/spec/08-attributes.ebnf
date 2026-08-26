@@ -1,0 +1,260 @@
+(* ============================================================================
+   PART 4: ATTRIBUTES
+   ============================================================================ *)
+
+attributes = '{', attr_pad, attribute_list, attr_pad, '}' ;
+attribute_list = attribute, {space+, attribute} ;
+(* interior padding is accepted: `{ .a }` and `{.a  .b}` are valid inline
+   attribute blocks. The terminal is `space`, NOT `whitespace`: see
+   THE INLINE INTERIOR IS SPACE-ONLY below. block_attributes pads and
+   separates differently, and deliberately. *)
+(* THE INLINE INTERIOR IS SPACE-ONLY, THE BLOCK-ATTRIBUTE LINE IS NOT --
+   NORMATIVE (carve#906). Every whitespace slot of the INLINE block takes
+   `space`: the run after `{`, the run between two attributes, the run
+   before `}`, the boundary after an unquoted value, and the blessed empty
+   block `{ }`. All five sit inline, so no exception has to be written. A TAB
+   IS SYNTAX ONLY IN THE LEADING RUN (PART 7).
+
+   `block_attributes` keeps `whitespace` at its three, and that is the
+   ruling rather than an oversight. It is the one construct in this grammar
+   whose interior can contain a LEADING INDENTATION RUN: after a
+   `continuation`, the next line's leading whitespace IS indentation, and
+   the rule that narrows the inline block is the same rule that protects
+   this one. The distinction is POSITIONAL, not per-construct - inline
+   padding is space-only everywhere, and a continuation line's leading run
+   is indentation like any other leading run.
+
+   `opt_ws` was ONE name for both roles, used at five sites, and the two
+   are split rather than substituted so no site can keep the old meaning by
+   accident: `attr_pad` is the inline one, `opt_ws` now serves only
+   `opt_pad`, `attr_separator` and `continuation`, all three of which are
+   block-level.
+
+   THIS REVERSES PINNED GOLDENS, which is why it needed a decision rather
+   than a correction. Corpus 252, 252-2 and 252-3 pinned a tab as a
+   separator, as padding after an unquoted value, and inside the empty
+   block; all three engines produce them. They are rewritten to the
+   narrowed answer rather than deleted, so the shapes stay pinned - as
+   LITERAL output now. The failure mode is visible rather than silent: a
+   narrowed reader leaves `{.a<TAB>.b}` with its braces showing, which is
+   what this clause already promised. And all three writers normalize the
+   tab away, so no canonically formatted document carries one at any of the
+   five positions; only hand-written source does.
+
+   Two neighbouring questions are explicitly NOT decided here and have
+   their own tickets: a NEWLINE inside a quoted value, where this file and
+   carve-core.ohm split and the engines are 2-1 (carve#888), and
+   carve-php capping a block-attribute block at one line break where the
+   other two engines and the oracle accept N. *)
+(* RENDER ORDER -- NORMATIVE: attributes are emitted in the order they
+   appear in the source, with all classes merged into a single `class`
+   attribute placed at the position of the FIRST class. So `{.a #b k=c}`
+   -> `class="a" id="b" k="c"` and `{k=c .a #b}` -> `k="c" class="a"
+   id="b"`. (Block-attribute merge keeps each slot at its first-appearance
+   position; values are last-wins, PART 9 §15.) Repeated class VALUES are
+   DEDUPLICATED, keeping first-occurrence order: `{.a .a .b}` -> `class="a
+   b"`, and classes accumulated across adjacent/continued attribute blocks
+   dedup the same way. *)
+
+attribute = language_attribute | id_attribute | class_attribute
+          | key_value_attribute | boolean_attribute ;
+
+(* `{:TAG}` is EXACT SUGAR for `key_value_attribute` `lang=TAG`, and the empty
+   `{:}` for `lang=""`. It desugars during attribute parsing, so there is no
+   new AST node, no new AST field, and a consumer that has never heard of the
+   shorthand sees an ordinary `lang` key/value.
+
+   `{:}` is not the same as omitting the attribute. Omitting it leaves the
+   content inheriting a surrounding language; `{:}` declares the language
+   explicitly unknown and stops that inheritance. It is also distinct from
+   `{:und}` (BCP 47 `und`, undetermined) and `{:zxx}` (no linguistic content).
+
+   PARSING CHECKS THE STRUCTURAL ENVELOPE ONLY, never a registry: conformance
+   must not depend on the IANA Language Subtag Registry, which changes. So
+   subtags are ASCII alphanumerics, one to eight characters, hyphen-separated,
+   with no empty subtag and no leading or trailing hyphen. Tags are stored
+   EXACTLY as authored -- BCP 47 comparison is case-insensitive but parsing and
+   formatting do not change case. A candidate that fails this envelope is not
+   a partially consumed attribute: the whole block stays literal (PART 9 §14),
+   so `{:en_US}`, `{:en--GB}`, `{:-en}` and `{:français}` are literal source.
+
+   LANGUAGE NEVER IMPLIES WRITING DIRECTION. A tag need not carry a script
+   subtag, so deriving direction would require changing CLDR likely-subtag and
+   script-direction data and could change unchanged output after a data update.
+   No tag produces `dir` in either direction. Authors use HTML's independent
+   mechanism explicitly where needed: `[…]{:ar dir=rtl}` or `dir=auto`.
+
+   The deferred braced-symbol spelling `{:name:}` stays literal under this
+   production, because a trailing `:` is not a subtag character -- see
+   `docs/dismissed-syntax.md`, which reserves `{:` for that form. The two are
+   distinguishable (a symbol ends `:}` and a language tag cannot), and that
+   entry is amended in the same change rather than read around.
+
+   THE SIGIL TAKES NO PADDING -- NORMATIVE: the tag is optional, not the
+   separator, so `{: fr}` is the empty language attribute followed by a
+   SEPARATE boolean `fr`, giving `lang="" fr=""`. It is not a language
+   attribute reading `fr`, and it does not fail the block. This follows from
+   `':', [ language_tag ]` with no special case, and it is the answer a reader
+   derives from the production; a rule that made a space here fail the whole
+   block would be one the grammar does not say. The cost lands on a typo rather
+   than on a shape anyone writes deliberately.
+
+   COLLISION -- NORMATIVE: `:TAG` and `lang=TAG` ARE THE SAME KEY, so writing
+   both is a repeated key and nothing more. RENDER ORDER above already decides
+   it: the LAST value wins and the slot stays at the FIRST appearance. That
+   holds inside one block and across merged block-attribute lines, because the
+   shorthand desugars before either merge sees it. So `{:fr lang=de}` and
+   `{lang=de :fr}` are `lang="de"` and `lang="fr"`; `{k=1 :fr lang=de}` is
+   `k="1" lang="de"`, with `lang` in the slot `:fr` opened. This clause adds no
+   rule -- it records that the shorthand needed none, which is the whole claim
+   of "exact sugar" and is worth stating where a reader would otherwise look
+   for a special case.
+
+   CANONICAL FORM: the writer COLLAPSES a repeated `lang` to the one attribute
+   that survives the merge, and spells it `:TAG` -- `{:fr lang=de}` formats to
+   `{:de}`. An empty value is `{:}`, which is therefore the canonical spelling
+   of `{lang=""}` too. Both follow from PART 11's rule that the writer emits
+   the canonical spelling of what the AST holds, and the AST holds one `lang`.
+   The `.fmt` byte fixture that pins this lands with the engine bump: those
+   fixtures are read THROUGH the pinned build, which does not know the
+   shorthand yet, and `tests/corpus-fmt-roundtrip.test.mjs` has no drift valve
+   for them.
+
+   A BOOLEAN `lang` IS THE SAME KEY AS WELL: `{lang}` means `lang=""` under
+   PART 4's boolean rule, so `{:fr lang}` ends at `lang=""` and `{lang :fr}` at
+   `lang="fr"`. This paragraph carried a caveat until carve#1125: the executable
+   spec used to emit a boolean unconditionally, so `{a=1 a}` came out as
+   `a="1" a=""` where every engine gave `a=""`. That is fixed, the three
+   spellings of the key now meet in one slot everywhere, and the corpus pins the
+   boolean form beside the other two rather than leaving it to prose. *)
+language_attribute = ':', [ language_tag ] ;
+language_tag       = language_subtag, { '-', language_subtag } ;
+language_subtag    = ( letter | digit ), { letter | digit } ;
+(* One to eight characters per subtag. *)
+
+id_attribute = '#', explicit_identifier ;
+class_attribute = '.', explicit_identifier ;
+key_value_attribute = identifier, '=', attribute_value ;
+(* A bare identifier with no value is a BOOLEAN (value-less) attribute,
+   rendered `name=""` (a carve extension beyond canonical djot, matching
+   djot-php; matched after key_value_attribute so `k=v` is not read as a bare
+   `k`). It mixes freely with the other forms. See PART 9 §14. *)
+boolean_attribute = identifier - ('_', {character}) ;
+(* A FEW BOOLEAN NAMES ARE CONSUMED RATHER THAN EMITTED -- the attribute
+   vocabulary, listed once so a reader looking for "which names mean something"
+   finds them from the production rather than from three separate sections:
+
+     loose         on a LIST or a DEFINITION LIST: the container's children
+                   render as blocks rather than inline runs (PART 9 §17 L7)
+     header-rows   on a PIPE TABLE, with `footer-rows`: the leading and
+     footer-rows   trailing row ranges become `thead` / `tfoot`, boolean
+                   meaning one (PART 12 §15)
+
+   `aligns`, `valigns` and `widths` (PART 12 §19) are the same class in
+   key/value form. Every other name reaches the output as the attribute it is,
+   and each of these does too on a block that has nothing to consume it: the
+   name is not reserved, it is read by the block below it. *)
+(* A BOOLEAN ATTRIBUTE DOES NOT START WITH AN UNDERSCORE -- NORMATIVE
+   (carve#1450). `identifier` admits a leading `_`, so `{_x_}` parsed BOTH as
+   the boolean attribute `_x_` and as a forced underline. Alone on a line the
+   attribute reading won and the underline was unreachable, and with no block
+   beneath it to attach to, the line rendered NOTHING - five characters kept
+   in the source and gone from the output.
+
+   The underline is what an author writing `{_x_}` means, so the BARE form
+   gives the collision up. There is no boolean attribute to lose: HTML's set
+   is `disabled`, `checked`, `readonly`, `required`, `hidden` and their kind,
+   and not one of them starts with `_`.
+
+   ONLY THE BARE FORM IS NARROWED. `{#_id}`, `{._class}` and `{_k=1}` all keep
+   their leading underscore, and none of them can be read as an underline
+   because none of them ends `_}`. The one underscore attribute in the wild,
+   hyperscript's `_="on click …"`, is a key/value and is unaffected.
+
+   The cost is `{_foo}`, which was a boolean attribute and is now text. It has
+   no underline reading either, so it renders literally rather than becoming
+   something else.
+
+   Measured: carve-php already read `{_x_}` as an underline. carve-js,
+   carve-rs and the executable spec produced `<p _x_="">` on the block that
+   followed. *)
+
+attribute_value = unquoted_value | quoted_value ;
+unquoted_value = (letter | digit | '-' | '_' | '.' | ':')+ ;
+(* `.` and `:` are admitted so common unquoted values -- version strings
+   (`v1.2`), paths/data values (`a.b`), and namespaced/pseudo tokens
+   (`xml:lang`, `sm:hover`) -- need no quoting. A value containing any OTHER
+   non-identifier character must be quoted. *)
+(* A backslash escapes ASCII punctuation inside a quoted value (same
+   `escaped_char` rule as inline text), so a value can contain a literal
+   quote: `"a\"b"` -> the value `a"b`. *)
+quoted_value = '"', { escaped_char | (character - '"' - '\' - newline) }, '"'
+             | "'", { escaped_char | (character - "'" - '\' - newline) }, "'" ;
+(* A QUOTED VALUE STOPS AT THE NEWLINE -- NORMATIVE (carve#888). `character`
+   is any Unicode character, so this production used to admit a line break
+   inside the quotes while `resources/carve-core.ohm` excluded one at the
+   same slot: ONE production, two normative answers, which is this ticket's
+   subject rather than a consequence of any other clause.
+
+   It is settled the ohm file's way because the alternative falsifies a
+   sentence this grammar already states. `attributes` cannot span lines --
+   carve#897 ruled that an inline block stops at the newline, and since
+   carve#906 its padding is `attr_pad = {space}` and its separator `space+`,
+   neither of which admits one. The quoted VALUE was the last way through,
+   so `*x*{k="a` + newline + `b"}` was an attribute block under the EBNF
+   and literal text under the ohm. Narrowing here is what makes the note at
+   `block_attributes` -- "an inline block does not span lines in any
+   engine" -- true of the productions as well as of the engines.
+
+   THE BLOCK-ATTRIBUTE LINE FOLLOWS, and that is the part with a cost.
+   `block_attributes` reads the same `quoted_value`, so a line break inside
+   a quoted value ends that block too. A block attribute may still span
+   lines: `continuation` is where a newline is admitted, and it sits
+   BETWEEN tokens, never inside one. Measured when this landed, on carve-js
+   `0c71c7d`, carve-php `d993758` and carve-rs `2d5de72`: all three accept
+   the block form, and they do not even agree on what it means -- carve-js
+   keeps the newline in the value, carve-php and carve-rs collapse it to a
+   space, which no production describes. Three engines improvising is what
+   an unstated rule looks like; the oracle already answers both forms the
+   narrowed way. carve-js#838, carve-php#986 and carve-rs#758 carry it. *)
+
+(* Block-level attributes appear on their own line(s) preceding a block.
+   A single attribute block may span multiple physical lines (the `}`
+   need not be on the opening line): a continuation is a single line
+   break optionally followed by indentation. A BLANK line (two line
+   breaks) ends the block -- it is not interior padding; an attribute
+   block interrupted by a blank line is not a block_attributes (both
+   reference impls treat it as literal text). Merge + reach semantics
+   (including float-across-blank-lines BETWEEN separate blocks): §15. *)
+block_attributes = '{', opt_pad, attribute, {attr_separator, attribute}, opt_pad, '}', newline ;
+(* THE PADDING ADMITS A LINE BREAK TOO, not only the separator. This used
+   `opt_ws` on both sides, which is spaces and tabs alone, so `{` + newline
+   + `.a}` and `{.a` + newline + `}` were outside the production while the
+   interior `{.a` + newline + `.b}` was inside it. All three engines accept
+   every one of the three, and the paragraph below takes `class="a"` or
+   `class="a b"` accordingly. The prose above the production already said a
+   block "may span multiple physical lines (the `}` need not be on the
+   opening line)" - the padding spelling was narrower than the sentence
+   describing it (carve#878). The INLINE `attributes` production does not
+   follow: it pads with `attr_pad = {space}` (carve#906), which admits neither
+   a tab nor a line break, and an inline block does not span lines in any
+   engine. *)
+(* block_attributes requires AT LEAST ONE attribute -- there is NO block-level
+   blessed-empty form (unlike the inline `[text]{}` span, which is blessed).
+   A bare `{}` line is therefore NOT a block-attribute block; it stays a
+   literal paragraph (`<p>{}</p>`). *)
+attr_pad = {space} ;                     (* INLINE attribute-block padding:
+                                            spaces only, no tab and no line
+                                            break -- it sits inline *)
+opt_ws = {whitespace} ;                  (* spaces/tabs only, no line breaks.
+                                            BLOCK-LEVEL ONLY since carve#906:
+                                            read by opt_pad, attr_separator
+                                            and continuation, never by the
+                                            inline `attributes` production *)
+opt_pad = opt_ws, [continuation] ;       (* block-attribute padding: spaces/tabs,
+                                            then AT MOST ONE line break plus its
+                                            indentation -- a blank line ends the
+                                            block and is never interior padding *)
+attr_separator = (whitespace | continuation), opt_ws ;  (* one ws OR one line break *)
+continuation = newline, opt_ws ;         (* a single line break + indent; NOT a blank line *)
+

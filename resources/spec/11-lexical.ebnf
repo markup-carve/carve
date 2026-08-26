@@ -1,0 +1,232 @@
+(* ============================================================================
+   PART 7: LEXICAL ELEMENTS
+   ============================================================================ *)
+
+identifier = (letter | '_'), {letter | digit | '_' | '-'} ;
+(* The leading `_` is admitted HERE and refused for `boolean_attribute` alone,
+   which is where it collides with forced underline (carve#1450). *)
+explicit_identifier = (letter | digit | '_'), {letter | digit | '_' | '-'} ;
+(* Explicit ids and classes additionally admit an ASCII digit first. This is a
+   preservation rule for authored/imported HTML-valid values; generated heading
+   ids remain conservative and prefix a digit-leading slug with `s-`. Attribute
+   keys, boolean attributes and inline-extension names still use `identifier`. *)
+
+letter = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j'
+       | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't'
+       | 'u' | 'v' | 'w' | 'x' | 'y' | 'z'
+       | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J'
+       | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T'
+       | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z' ;
+
+digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
+
+(* A TAB IS SYNTAX ONLY IN THE LEADING RUN -- NORMATIVE. The whole of what a
+   tab does in this language, in one place, so that no construct has to decide
+   it again:
+
+     1. A line's LEADING INDENTATION RUN is measured in VISUAL COLUMNS rather
+        than in characters. A space advances the column by one.
+     2. A TAB IN THAT RUN advances the column to the next MULTIPLE OF 4
+        (CommonMark tab stops), so a leading tab indents to column 4.
+     3. FROM THE FIRST NON-WHITESPACE CHARACTER of a line onward, a tab is
+        CONTENT and never syntax. It satisfies no slot in any production, and
+        no construct is recognized by it.
+     4. INSIDE VERBATIM CONTENT -- fenced code and inline code spans -- a tab
+        is PRESERVED verbatim and never expanded. Stated in full at TABS IN
+        CODE (PART 2) and pinned by corpus tabs-in-code-preserved.
+
+   Every other mention of a tab in this grammar APPLIES one of those four
+   sentences to one construct; none of them restates it. Two of the four keep
+   an operational home this clause does not duplicate: the walk that turns a
+   run into a column, the content column a marker establishes and the
+   straddling tab at a dedent boundary are PART 9 §24 (C1, C3, C5), and 4 is
+   PART 2. MARKER SEPARATORS AND PADDING SLOTS below is 3 applied to every
+   whitespace slot in this grammar that sits inline.
+
+   CONSOLIDATING THE STATEMENT DOES NOT REMOVE THE MEASUREMENT. A tab advances
+   to a stop rather than by a fixed amount, so computing a line's content
+   column still needs the per-line indentation walk. Nor does it make a
+   tab-indented source and a space-indented source the same document: the
+   source records what the author wrote (carve#817, carve#966). A
+   whole-document tab-expanding pre-pass could not be written in any case,
+   because 4 preserves tabs inside verbatim content, so the leading run still
+   has to be identified line by line. NO SEMANTIC CHANGE IS INTENDED and no
+   corpus document moves: the four sentences are what the twelve restatements
+   said between them, and not one production changes spelling. That is a claim
+   about this file, NOT a claim that every engine conforms -- the divergences
+   this file already records against these slots (carve#901 at the frontmatter
+   token, the fence info string and `link_title`) are unaffected, neither
+   settled nor widened by saying the rule once.
+
+   WHY ONCE. This was written twelve times, once per construct. A rule spelled
+   per construct is a rule that can drift per construct, and a construct added
+   later inherits eleven precedents for spelling it a twelfth way. That is the
+   hazard ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT below was written
+   against (carve#963), one layer up: forty-two productions each spelling a
+   whitespace run for themselves is what let three engines reach into three
+   host languages for three different answers, and a carve-php sweep then
+   found fourteen spellings where its ticket named three. The count behaved
+   the same way here -- the ticket named five sites and the sweep found
+   twelve. (carve#984) *)
+
+(* MARKER SEPARATORS AND PADDING SLOTS -- NORMATIVE. A TAB IS SYNTAX ONLY IN
+   THE LEADING RUN, the clause directly above. Two consequences settle every
+   whitespace slot in this grammar.
+
+   FIRST, the leading run itself. `indent = whitespace, {whitespace}` is where
+   a tab belongs, and `blank_line = {whitespace}` is the degenerate case of the
+   same position -- no non-whitespace character precedes either one. A leading
+   run is tabs OR spaces, never both.
+
+   SECOND, everything after it. Whitespace past the first non-whitespace
+   character of a line falls into one of two ROLES. The roles are still worth
+   naming, because they decide what a FAILED match means; they no longer decide
+   the terminal, since both are spelled `space`:
+
+     - A MARKER SEPARATOR is the whitespace that stands between a marker and
+       the token that SELECTS which construct the line opens. It is spelled
+       `space`, and a tab never satisfies it. `heading_first_line`,
+       `blockquote_line`, `unordered_item`, `ordered_item`, `task_marker`,
+       `definition_term` and the three definition markers already carry that
+       spelling; the prose is at MARKER REQUIRES CONTENT (PART 2) and at
+       `abbreviation_definition`. The colon fence joins them: `:::` +
+       separator + (`note` | `|` | `\` | `[label]`)
+       decides between an admonition, a line block, a local hard-break block
+       and a div, so the separator is part of recognizing the block.
+
+     - A PADDING SLOT is whitespace between two tokens on a line whose
+       construct is ALREADY fixed. It carries no recognition and its width
+       means nothing. It is spelled `space` all the same, because it sits
+       after the first non-whitespace character of the line. The padding
+       slots are: the admonition opener's `"title"` and `[label]` slots (the
+       type word has already decided the block), `frontmatter_open`'s slot
+       before the format token (the `---` pair has already decided the block;
+       the token only names the metadata dialect), the code fence's slot
+       before its info string together with `code_fence_info`'s own
+       `"header"` and `[label]` slots (the fence run has already decided the
+       block; the info string names a language and carries metadata),
+       `link_title`, and the reference-definition slot before its trailing
+       `attributes`.
+
+     The two fence openers land on opposite sides of the ROLE line, so state
+     it once: a COLON fence's slot is a separator, because `note` / `|` / `\`
+     / `[label]` after it pick one of four blocks; a CODE fence's slot is
+     padding, because the fence run already picked the block. Both are
+     `space`. So is `raw_block`'s otherwise identical slot, which is a
+     separator because the `=` after it selects a raw block over a code
+     block. Identical shape, different role, same terminal.
+
+   What the role decides is the FAILURE, not the terminal. A separator that
+   does not match leaves the line unrecognized as that construct; a padding
+   slot that does not match leaves a token unconsumed, and the surrounding
+   production then rejects the line. Either way the line falls back to
+   ordinary prose rather than silently re-indenting or silently dropping
+   metadata -- the same visible failure a tab after a marker already produces
+   (carve#692, carve#698).
+
+   Cardinality is a separate question from the terminal: a slot spelled
+   `space` admits exactly one character, and a `space+` run admits one or
+   more. Both spellings are used deliberately and the difference is
+   observable, so read the production rather than the role. Four slots are
+   spelled `space` -- `link_title` (hence `image_title`), the code fence's
+   opener slot, `frontmatter_open`'s, and the reference definition's slot
+   before its trailing `attributes` -- and a second space at any of them is
+   not padding. `code_fence_info`'s and the admonition opener's metadata
+   slots are spelled `space+` and take a run.
+
+   The four single-space slots are narrow by ruling (carve#912). This decides
+   cardinality only. Character membership remains the space-only inline rule
+   of carve#901 and carve#905, while marker separators use the cardinality
+   declared by their own productions (carve#892). Attribute and table-cell
+   padding follow the same inline rule (carve#904, carve#906). *)
+
+(* ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT -- NORMATIVE. The three
+   terminals below are the whole of it, and nothing in the language adds to
+   them. `whitespace` is a SPACE or a TAB. `newline` is a LINE FEED, a
+   CARRIAGE RETURN, or the pair. `space` is the narrower slot that admits the
+   first of those and nothing else. PART 0's guard notation spells the same
+   set once more and adds nothing -- `ws = space | tab | newline`.
+
+   So the whitespace characters Carve has are exactly four: U+0020, U+0009,
+   U+000A and U+000D. EVERY OTHER CHARACTER IS CONTENT. The two an
+   implementation is likeliest to admit by accident are named here so their
+   absence cannot be read as an oversight:
+
+     VERTICAL TAB (U+000B) is CONTENT.
+     FORM FEED     (U+000C) is CONTENT.
+
+   OVER THE OUTPUT OF PART 0, like every other production here. One character
+   never reaches this clause: U+0000 is replaced by U+FFFD before the first
+   line is read (PART 0 INPUT; PART 9 §29 carries the reasons), so the
+   question of whether a NUL is whitespace or content does not arise. That is
+   the same layering as the byte order mark, which this file calls an ordinary
+   zero-width character while PART 0 strips a LEADING one before the reading
+   starts -- not an exception to "every other character is content", but a
+   statement about a stream that no longer holds the character.
+
+   IN EVERY CONSTRUCT, which is the half that had to be said. A production
+   that spells a whitespace run for itself spells THIS one: `blank_line`,
+   `indent`, `definition_indent`, `line_block_line`, `comment_line`,
+   `comment_block_open`, `comment_block_close`, `crossref_id`,
+   `footnote_indent`, `opt_ws` and `attr_separator` all read `whitespace`,
+   and the thirty-one productions that read `space` -- from
+   `heading_first_line` and `caption` to `include_options` -- read the
+   narrower slot of the same definition. Forty-two spellings, one set. An
+   implementation that reaches for a wider class in any of them is not
+   reading its own production, and the language it implements is a different
+   one at that construct only.
+
+   AND IN THE CONSTRUCTS THAT SPELL NO RUN AT ALL, which is where this bites
+   hardest, because there an implementation had to invent something. A
+   definition term, a bullet item and an ordered item take `space` -- one,
+   exactly, not a class. A heading and a caption stood in that list and no
+   longer do: both spell `space+` now, a RUN of the same terminal, each for
+   the reason its own clause states rather than for anything here
+   (carve#1575, carve#1581). The CONTINUATION MARKER takes none:
+   `continuation_marker = '+', newline`, so any character between the
+   `+` and the line end is content and the line is not a marker. The
+   block-attribute line takes `opt_ws`, `attr_separator` and `continuation`,
+   all three built from `whitespace`. A VERTICAL TAB or a FORM FEED in any of
+   those positions is therefore CONTENT, and each construct's own rule reads
+   it as content: MARKER REQUIRES CONTENT (PART 2) is satisfied by it, an
+   emptiness test is not satisfied by its absence, and a line holding one is
+   not a `blank_line`.
+
+   THIS WAS ALREADY WRITTEN DOWN, one position at a time. PART 2's NO
+   TRAILING WHITESPACE says of the end of a content line that "every other
+   character is CONTENT and survives, however invisible", and names the form
+   feed and the vertical tab among the survivors. This clause is that
+   sentence with the position taken out: what is content at the end of a line
+   is content at the start of one, after a marker, and inside a construct's
+   emptiness test. Deriving it per construct is what produced the divergence
+   -- the same character was content where the sentence had been read and
+   whitespace where it had not.
+
+   THE TWO WIDER NOTIONS ARE MARKED AS SUCH, and a construct carrying no such
+   mark takes this definition. WHITESPACE HERE IS UNICODE WHITESPACE beside
+   `unicode_url_char` (PART 3) means the Unicode White_Space property, for a
+   destination only. PART 9 §25's scheme probe strips a wider class again --
+   the C0 controls, which include both characters above, plus the Unicode
+   spaces and the BOM -- and gives its reason there: it strips what a URL
+   parser strips, before a scheme is read, and it is a SECURITY PROBE over a
+   destination rather than a reading of the source.
+
+   WHY UNIFORM RATHER THAN PER CONSTRUCT. One definition maintained once
+   cannot drift; forty-two cannot help it. The alternative is not a second
+   coherent answer but a per-construct patchwork, since no artifact states
+   the wider set -- an implementation reaches one through its host language
+   (a default trim charlist, a regular-expression `\s`, a locale-aware class),
+   and those disagree with each other as readily as with the production. A
+   definition arrived at that way belongs to the host language and not to
+   Carve, which is the same objection this file already makes to the
+   executable artifacts deciding anything. (carve#963) *)
+whitespace = ' ' | '\t' ;
+space = ' ' ;
+newline = '\n' | '\r\n' | '\r' ;
+backslash = '\' ;
+
+character = (* any Unicode character *) ;
+email_char = letter | digit | '.' | '-' | '_' | '+' ;
+
+EOF = (* end of file *) ;
+

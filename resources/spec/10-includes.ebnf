@@ -1,0 +1,12 @@
+(* ============================================================================
+   PART 6: INCLUDES
+   ============================================================================ *)
+
+(* PROCESSOR-LEVEL (PART 9 §19): includes are NOT part of the core parser
+   and the directive is deliberately NOT reachable from `block`/`inline` --
+   a conformant core may leave `{{ … }}` literal. *)
+include_directive = "{{", space, include_path, [include_section], [include_options], space, "}}" ;
+include_path = {character - ('#' | '@' | '}' | ' ')}+ ;
+include_section = '#', identifier ;
+include_options = {space, '@', identifier, ':', attribute_value}+ ;
+

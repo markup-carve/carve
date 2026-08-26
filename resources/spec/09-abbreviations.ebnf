@@ -1,0 +1,11 @@
+(* ============================================================================
+   PART 5: ABBREVIATIONS
+   ============================================================================ *)
+
+abbreviation_definition = "*[", abbreviation_term, "]:", space+, abbreviation_expansion, newline ;
+abbreviation_term = (letter | digit)+ ;
+(* a term is a SINGLE alphanumeric word -- a bracketed term containing
+   punctuation or spaces (`*[e.g.]:`, `*[HTTP API]:`) is NOT a definition;
+   the line stays ordinary paragraph text *)
+abbreviation_expansion = {character - newline}+ ;
+

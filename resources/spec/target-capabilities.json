@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "scope": "PART 11 sections 10a through 11",
+  "features": {
+    "unused_definition": {
+      "rule": "CARVE-P11-028",
+      "html": "omit",
+      "markdown": "preserve",
+      "plain": "preserve",
+      "ansi": "preserve",
+      "carve": "preserve"
+    },
+    "caption": {
+      "rule": "CARVE-P11-032",
+      "html": "semantic",
+      "markdown": "preserve_text",
+      "plain": "preserve_text",
+      "ansi": "preserve_text",
+      "carve": "preserve"
+    },
+    "composite_figure": {
+      "rule": "CARVE-P11-034",
+      "html": "semantic",
+      "markdown": "flatten_preserving_content",
+      "plain": "flatten_preserving_content",
+      "ansi": "flatten_preserving_content",
+      "carve": "preserve"
+    },
+    "resolved_cross_reference": {
+      "rule": "CARVE-P11-038",
+      "html": "link",
+      "markdown": "link",
+      "plain": "display_text",
+      "ansi": "display_text",
+      "carve": "preserve"
+    }
+  }
+}

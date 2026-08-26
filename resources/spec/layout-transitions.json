@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "rule": "CARVE-P0-003",
+  "boundaries": {
+    "ordinary": { "containerOpen": true, "paragraphOpen": true },
+    "blank": { "containerOpen": true, "paragraphOpen": false },
+    "line_comment": { "containerOpen": true, "paragraphOpen": false },
+    "fenced_comment": { "containerOpen": true, "paragraphOpen": false },
+    "definition": { "containerOpen": true, "paragraphOpen": false },
+    "heading": { "containerOpen": true, "paragraphOpen": false },
+    "quote": { "containerOpen": true, "paragraphOpen": "deepest" },
+    "code_fence": { "containerOpen": true, "paragraphOpen": false },
+    "raw_fence": { "containerOpen": true, "paragraphOpen": false },
+    "colon_fence": { "containerOpen": true, "paragraphOpen": false },
+    "table": { "containerOpen": true, "paragraphOpen": false },
+    "nested_list": { "containerOpen": true, "paragraphOpen": "deepest" },
+    "continuation": { "containerOpen": true, "paragraphOpen": "deepest" },
+    "end": { "containerOpen": false, "paragraphOpen": false }
+  }
+}

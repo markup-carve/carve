@@ -48,13 +48,18 @@
    letter | digit; punct = ascii_punctuation; non_ws = character - ws.
 
    NORMATIVITY
-   - This file (resources/grammar.ebnf) is the NORMATIVE specification of
-     Carve. Where any document disagrees with it, this file wins. It is
-     LAYERED, each layer in a declared formalism: PART 0 (layout automaton)
+   - The files in resources/spec/*.ebnf are the NORMATIVE specification of
+     Carve. resources/grammar.ebnf is their generated, byte-for-byte aggregate
+     for consumers that need one file. `npm run spec:check` rejects drift.
+     Where any document disagrees with those sources, the sources win. The
+     specification is LAYERED: PART 0 (layout automaton)
      -> PARTS 1-8 (EBNF productions + the GUARD NOTATION above) -> PART 9
      (operational semantics for the non-context-free rules) -> PART 9R
      (two-pass resolution semantics) -> PART 10 (serialization). PART 9 and
      PART 9R are the authority for behavior the productions cannot encode.
+     `resources/spec/rules.json` gives every `-- NORMATIVE` clause a stable id.
+     The JSON transition and capability tables in that directory are normative
+     inputs consumed or checked by the executable artifacts.
    - docs/case-study/syntax.md and docs/edge-cases.md are EXPLANATORY and
      DERIVED — prose for humans, non-normative.
    - docs/spec-history.md records retired readings, implementation divergence,
@@ -94,7 +99,6 @@
      grammar a change. It binds new clauses only -- keeping an existing one is
      free, removing one re-opens a settled question.
    ============================================================================ *)
-
 (* ============================================================================
    PART 0: LAYOUT LAYER (L0) -- LINE AUTOMATON (NORMATIVE)
    ============================================================================
@@ -3319,7 +3323,7 @@ bare_closer(d) = <&(non_ws), d, !(alnum) ;
      alphanumeric. (A following same-delimiter is allowed: in `/x//` the
      first `/` after `x` closes; the trailing `/` stays literal.)
    Run disambiguation (nearest valid closer, delimiter stack, no same-type
-   nesting) is PART 9 §9; the corpus pins it (tests/corpus/01-emphasis*).
+   nesting) is PART 9 §9; the `01-emphasis` corpus cases pin it.
    Forced `{X … X}` spans bypass BOTH guards entirely (PART 9 §22). *)
 
 emphasis = bare_opener('/'), emphasis_content, bare_closer('/'), [attributes] ;  (* italic *)
@@ -3881,7 +3885,6 @@ typographic_symbol = "(c)" | "(r)" | "(tm)" | "+-" ;
 (* --- Breaks --- *)
 hard_break = '\', newline ;  (* backslash at end of line *)
 soft_break = newline ;        (* regular line ending within paragraph *)
-
 (* ============================================================================
    PART 4: ATTRIBUTES
    ============================================================================ *)
@@ -5222,6 +5225,8 @@ EOF = (* end of file *) ;
         See divergence-from-djot.md section 12 for how this compares to
         Djot's container-node model.
 
+   ============================================================================ *)
+(* ============================================================================
    9. EMPHASIS SPAN RESOLUTION -- FORMAL GUARDS + DELIMITER-STACK
       OPERATIONAL SEMANTICS (governs the *_content productions in PART 3;
       §1 points here). The per-delimiter boundary tests ARE the
@@ -5276,6 +5281,7 @@ EOF = (* end of file *) ;
          - a thematic break (a lone `---` / `***` / `___` line);
          - a block quote (`>` alone or `> `; `>text`, `>= 5`, and `>>=`
            are prose, not quote markers);
+         - a definition-list term (`:: ` followed by non-whitespace content);
          - a valid table row (valid_row(L), §5 T2; a stray `|` in prose,
            and a line-initial `|` with no closing `|`, are NOT ones);
          - a fenced code opener WITH a matching closer ahead (I4);
@@ -6028,6 +6034,8 @@ EOF = (* end of file *) ;
       Implementation status: php, js, and rs implement §15 in full. Pinned
       by corpus 89-block-attribute-lines.
 
+   ============================================================================ *)
+(* ============================================================================
    16. FOOTNOTES -- NORMATIVE (governs `footnote` / `footnote_definition`
       in PART 3). The reference form `[^label]` + `[^label]: body` and the
       INLINE form `^[content]` are implemented, and they are the only note
@@ -6203,14 +6211,6 @@ EOF = (* end of file *) ;
 
          is loose. `text` is a second paragraph, the blank line precedes it,
          and the comment renders nothing.
-
-         WHY IT NEEDED SAYING. Delete the comment and every implementation
-         renders the same document loose. Put it back and three of four
-         flipped to tight -- so a construct that renders NOTHING changed how
-         the blocks around it render. That is the outcome §24 C3 already
-         refuses for a comment's own line, one construct over: an invisible
-         thing may not have a visible effect. carve-js was the one that did
-         not flip. (carve#625, carve-js#625, carve-rs#564)
 
       L1c THE BLANK IS READ AT THE LIST'S LEVEL, NOT THE ITEM'S. L1's first
          disjunct asks what stands BETWEEN one item and the next sibling
@@ -6742,6 +6742,8 @@ EOF = (* end of file *) ;
         `<br>`{=html}   -> <br>            (emitted verbatim)
         `\foo`{=latex}  ->                (dropped in HTML output)
 
+   ============================================================================ *)
+(* ============================================================================
    21. TRAILING LINE COMMENTS -- NORMATIVE (governs `inline_comment` in PART 3).
       - A `%%` token is a trailing comment marker only when the character
         immediately before it is whitespace (space or tab) or it starts the
@@ -7683,6 +7685,8 @@ EOF = (* end of file *) ;
         (carve#979). The narrowing is per TARGET and applies to C0 alone; it
         never narrows what the terminal target strips.
 
+   ============================================================================ *)
+(* ============================================================================
    26. TROJAN-SOURCE / INVISIBLE-UNICODE HARDENING -- NORMATIVE (CVE-2021-42574
       class). Visually deceptive or invisible Unicode MUST NOT produce
       diverging heading ids nor smuggle a live control character into the
@@ -8130,7 +8134,6 @@ EOF = (* end of file *) ;
    here unchanged. Suppressing the element row and the attribute row TOGETHER
    silences both, which is a loss of exactly the kind the report exists to
    name. *)
-
 (* ============================================================================
    PART 9R: RESOLUTION SEMANTICS (NORMATIVE) -- whole-document passes
    ============================================================================
@@ -8577,19 +8580,6 @@ EOF = (* end of file *) ;
       the id behind it -- which is exactly what carve-rs did until it
       was caught by a test rather than by this text.
 
-      This rule was added after all three engines were found to disagree
-      here with nothing to catch it -- carve-js appended a generated id
-      but kept an authored one in place, carve-php put the id last in
-      both cases, carve-rs put it first in both. No two agreed on both
-      cases. The combination was reachable only through a heading inside
-      a container, which no corpus case gave attributes, so each engine
-      picked a different answer and stayed green. carve-js is canonical
-      here (PART 9 §13 and the corpus follow it); carve-php and carve-rs
-      converge on it. The `sections` option is what forced the issue:
-      with it off every heading takes the unwrapped path, so a
-      divergence that used to need a blockquote would have shown up on
-      ordinary documents.
-
       TEXT-BLOCK ALIGNMENT IS A SEMANTIC ATTRIBUTE. On `<p>`, `<div>` and
       `<h1>` through `<h6>`, an authored `align` key whose trimmed,
       ASCII-case-folded value is `left`, `right` or `center` serializes as
@@ -8813,7 +8803,8 @@ EOF = (* end of file *) ;
       bibliographic `[@key]` citation, which is the Citations extension's.
 
 
-   ============================================================================
+   ============================================================================ *)
+(* ============================================================================
    PART 11: CANONICAL SOURCE WRITER (NORMATIVE)
    ============================================================================
 
@@ -8898,31 +8889,6 @@ EOF = (* end of file *) ;
       construct that happens to render alike. Dropping content, re-wrapping
       prose or swapping a construct for a synonym are not available here: each
       of them changes the document, which is the thing §1 forbids.
-
-      WHY IT NEEDS SAYING, measured across six shapes (carve#994). Every one of
-      them follows its own clause correctly -- the break rule then in force
-      wrote a thematic break `---` with no exception stated (§6a, since removed
-      by carve#976), PART 12 §10 hoists definitions to
-      document level and the writer emits the tree's order, PART 9 §5 reads a
-      cell's first character as its alignment marker -- and three of the six
-      destroy the document outright. No clause said the emitted document must
-      re-parse to its own tree, so each decision was locally reasonable and
-      nothing bound them together. This section is that binding.
-
-      ONE ENGINE ALREADY IMPLEMENTS IT, which is why this is written as a rule
-      rather than proposed as a design. carve-rs routes its finished bytes
-      through the parser's own opener test instead of pattern-matching the
-      first line, and that ONE deviation -- reached for the thematic break at
-      byte 0 -- also covers a relocated definition promoting a block to byte 0
-      and a block whose indentation the writer mixed, neither of which it was
-      written for. A general rule was doing general work before it was written
-      down. §6 now says the writer reproduces the author's marker and still
-      states no exception; stating it there is tracked at carve#961, and until
-      it lands this section is what makes the deviation conformant rather than
-      a divergence. Recording the marker does not retire the deviation -- a
-      `---` the author WROTE is reproduced faithfully and can still gain a
-      frontmatter closer from a later break, which is the shape §6a's
-      normalization only made more common.
 
    1b. A FLATTEN PRESERVES THE BOUNDARY IT DISSOLVES -- NORMATIVE. §1a settles
       what a producer owes where §1's invariant CAN hold. This settles what it
@@ -9262,96 +9228,6 @@ EOF = (* end of file *) ;
       safe default -- the escape changes nothing, and it is in the document
       only because a DIFFERENT block needed one.
 
-      MEASURED, AND THE MEASUREMENT IS WHY IT IS A CLAUSE (carve#1507). Three
-      independently written writers -- carve-js, carve-php and carve-rs --
-      invented 72 idle escapes across the same 28 corpus documents, with the
-      same per-document counts, character for character, on the corpus those
-      runs carried at the time. Three writers agreeing to the character is not
-      coincidence and not inheritance: each took the scope deliberately, and
-      each took it from §4's own conclusion that a two-render implementation is
-      stuck with it. That conclusion is what this section corrects.
-
-      NARROWING RETIRES A MINORITY OF THE IDLE ESCAPES, NOT ALL BUT TWO
-      (carve#1532). The ruling that seeded this section predicted that document
-      scope owned 26 documents / 67 escapes and would take them with it,
-      leaving EXACTLY 2. Swept as an A/B at ONE corpus pin -- the same writer
-      without and with the narrowing, carve-js 234fff0 against 8f83eea
-      (carve-js#1307), over the 1362 corpus documents at spec 7cb4769 -- the
-      reading moves from 29 DOCUMENTS / 76 ESCAPES to 25 DOCUMENTS / 59
-      ESCAPES, so document scope owned 4 documents and 17 escapes and those
-      retired. carve-php#1560 and carve-rs#1239 are the same narrowing in the
-      other two writers. The gap against the prediction is a property of the
-      prediction rather than of a narrowing that stopped short: the seeded
-      split was measured by asking "did the writer return the conservative
-      form?", which is TRUE OF EVERY SINGLE-BLOCK DOCUMENT -- and for a
-      single-block document this section's smallest failing unit IS the
-      document. `103-heading-marker-column-zero-2` is `  ## H` alone, and it
-      was counted as document scope on exactly that reading.
-
-      A COUNT HERE IS A READING AT A PIN, NOT AN INVARIANT (carve#1549). The
-      corpus grows, so both halves of a difference have to be swept at the SAME
-      corpus pin, with the same writer save the one change under test. This
-      section shipped with "15 of 72 retired", which subtracted a
-      post-narrowing reading from a pre-narrowing one taken on a corpus that
-      did not yet hold corpus 396 -- the document this very clause added, and
-      its own worked example. At one pin the pair is 17 of 76, and 396 itself
-      carries 4 idle escapes before the narrowing and 2 after, which is the
-      paragraph above coming out as it says it does. What is durable here is
-      the CAUSE SPLIT below; a pair of magnitudes is its arithmetic at a stated
-      pin, and stating the pin is the whole of what makes it checkable.
-
-      WHAT REMAINS IS THREE CAUSES, AND NONE OF THEM IS THIS SECTION'S.
-
-        `unit scope`     20 documents, 47 escapes. §4's strategy has ONE KNOB
-                         PER UNIT, so a unit that fails is written
-                         conservatively IN FULL and every candidate in it is
-                         escaped alongside the one that needed it: `\{\.note\}`
-                         where §2 wants `\{.note}`. This section bounds how
-                         far the fallback REACHES; it does not make it
-                         per-occurrence. Retiring these needs §2's own
-                         per-OPENER-OCCURRENCE test, a different mechanism
-                         rather than a narrower scope, and out of this
-                         section's scope by design (carve#1533). Since taken,
-                         and these retired with it -- see below.
-
-        `opener run`     3 documents, 7 escapes. A FLOOR THE MEASUREMENT CANNOT
-                         GO BELOW, AND NOT DEBT. §2's THE UNIT IS THE OPENER
-                         requires the whole opener run escaped -- `\#\# H` and
-                         never `\## H` -- while the sweep that counts idle
-                         escapes removes ONE BACKSLASH AT A TIME, so with the
-                         first still in place no heading forms either way and
-                         the sweep reads the rest of a correctly escaped run as
-                         idle. Driving these to zero would mean emitting output
-                         §2 forbids. `103-heading-marker-column-zero-2`,
-                         `132-thematic-break-requires-contiguous-markers-3`
-                         and corpus 396, this section's own worked example.
-                         The third arrived with the CORPUS rather than with a
-                         writer, which is how this row came to name two: the
-                         reading behind it was taken at a pin that predated the
-                         commit adding the document the clause shipped.
-
-        `minimal class`  2 documents, 5 escapes. The two the ruling named,
-                         unchanged: `72-escape-coverage-2` carries a literal
-                         backslash written doubled with a lone backslash before
-                         a character that cannot be escaped, and
-                         `390-a-table-cell-s-marker-run-ends-at-a-space-5`
-                         keeps an authored `\=` after the writer's own cell
-                         padding retired it. Both are §2 defects in the escape
-                         logic and are fixed on their own merits.
-
-      An engine that narrows the scope and does not land at exactly these three
-      causes has found something else.
-
-      TWO OF THE THREE ARE WHAT AN ENGINE READS TODAY. All three writers have
-      since taken §2's test per OPENER OCCURRENCE inside the failing unit
-      (carve-js#1327, carve-php#1578, carve-rs#1254), which retires the `unit
-      scope` rows entirely: their ratchets carry the same five slugs with the
-      same counts, 5 DOCUMENTS / 12 ESCAPES, and every one of those is an
-      `opener run` or a `minimal class` row above. That is a §2 mechanism
-      rather than a narrower scope, so nothing this section rules changed with
-      it, and §2 now states that test where the coarser reading was taken
-      (carve#1533), with corpus 403 pinning it and §4's W5 carrying the search.
-
       THE COMPARISON STAYS DOCUMENT-SCOPED, WHICH IS THE OTHER QUESTION. §4
       rules out re-parsing a LINE on its own, because a line has lost the
       document's link-reference and footnote definitions and reports a
@@ -9520,16 +9396,6 @@ EOF = (* end of file *) ;
         carve-php escape it anyway. So "always escaped in a text node" is the
         set's membership rule, and §2 is the test the emitted byte answers to.
 
-        MEASURED ON THE EMPTY CARET PAIR, which is where reading the paragraph
-        above WITHOUT §4 sends a writer (carve#1472). `{^^}` is TEXT by PART
-        3's AN EMPTY BRACE PAIR IS NOT A CONSTRUCT, and it is not text a caret
-        LEADS: carve-js emits it bare, carve-rs and carve-php emit `{\^\^}`.
-        Against carve-rs's own parser the two spellings differ in nothing but
-        the escaping, which §1's EQUALITY IS MODULO ESCAPING makes the same
-        document -- so §2's test returns "no escape needed" in the very engine
-        emitting the escape. The BARE form is canonical, and corpus
-        388-an-empty-brace-pair-is-not-a-construct.fmt pins it.
-
         THE MARK IS THE PROMOTION, NOT A FIELD, which is why the LEADING case
         needs no exception to §2. `resources/ast-schema.json` declares no
         field for it and carve-rs publishes none: what the escape changes
@@ -9565,6 +9431,8 @@ EOF = (* end of file *) ;
       and W4 could not fix it. When a new opener is added to the grammar, its
       character belongs here.
 
+   ============================================================================ *)
+(* ============================================================================
    6. WHAT IS NOT THE WRITER'S JOB. `fmt` does not re-wrap prose, reorder
       attributes, or respell a construct to a synonym (`*` vs `-` bullets,
       ordered-list dialect, thematic-break marker). Those are the author's
@@ -9879,15 +9747,6 @@ EOF = (* end of file *) ;
       next time a cell-level marker is added, and §6e's own history is what
       that costs: each writer answered the alignment-sigil class with its own
       slightly different list of characters.
-
-      MEASURED, AND THE ASYMMETRY IS THE POINT (carve#1601). The pinned
-      carve-js build writes `| \< |` for a cell holding `<` and `| ^ |` for a
-      cell holding `^` -- one production, two halves, one of them escaped. The
-      unescaped half loses the cell outright: `| a | b |` over `| ^ | c |`
-      renders `<td rowspan="2">a</td>` and no cell for the caret at all, which
-      is a §1 failure rather than an over- or under-escaped byte. The shape
-      reached this section through an HTML import, where an ordinary
-      `<td>^</td>` is the everyday way to produce it.
 
    7. NO WHITESPACE-ONLY LINE -- NORMATIVE. `fmt` never emits a line whose only
       content is ASCII spaces or tabs. Such a line is emitted EMPTY.
@@ -10411,6 +10270,8 @@ EOF = (* end of file *) ;
       takes out of the question every case where the author said which reading
       they meant, which is where guessing wrong costs the most.
 
+   ============================================================================ *)
+(* ============================================================================
    8b. THE MARKDOWN TARGET'S AUTHORED ESCAPE NARROWS TOO -- NORMATIVE. §8a
       narrowed M1 and left M2 as written. M2 narrows on the same finding, and
       on a test of the same shape:
@@ -10696,42 +10557,6 @@ EOF = (* end of file *) ;
       targets, which is a defect independent of this rule: whichever way the
       rule had gone, that output was neither the source nor the same
       definition.
-
-      THE EXAMPLE USED TO BE `[^]: %`, on the reading that an empty footnote
-      label was still a footnote. `footnote_label = {character - ']'}+` is
-      one-or-more, so it never was: `[^]: %` is a LINK reference definition
-      whose label is `^`, which carve-rs#488 settled. It is therefore an
-      example of the kind this clause does NOT cover, which is why it was
-      replaced (carve#589).
-
-      ONE ENGINE FOLLOWS IT, NOT THREE. This paragraph claimed "all three
-      engines follow", and that was never measured. On
-
-          [^]: /x
-
-          see [^][]
-
-      carve-rs and the executable spec resolve the link; carve-js builds a
-      footnote node with an EMPTY label and carve-php swallows the line, and
-      both leave `see [^][]` literal. The rule is not in doubt - the
-      production is one-or-more and an ordinary label works in all three - so
-      the two are behind, not disagreeing. Tracked as carve-js#631 and
-      carve-php#768.
-
-      The claim mattered because it was doing work: it is what justified
-      REPLACING the example, so a reader had no reason to check it. An
-      engine-agreement claim in the spec is a measurement, and it goes stale
-      the same way any other measurement does. (carve#637)
-
-      This paragraph used to end "the rule is unchanged - an unused link
-      definition survives the non-HTML targets too". That was true when
-      written and became false sixty lines up, where the clause was narrowed
-      to the definition kinds that have a node. Left in place it said the
-      opposite of its own clause, and an implementer entering at the `[^]: %`
-      example - the natural entry point, since it is what everyone measures
-      against - read the superseded half. It cost a round of work:
-      carve-php#702 item 8 was filed against the old reading and resolved to
-      no change once the contradiction was untangled. (carve#605)
 
   10b. A TABLE ROW KEEPS ITS OWN CELL COUNT -- NORMATIVE. The canonical
       writer emits exactly the cells the row carries. It MAY align the padding
@@ -11150,7 +10975,8 @@ EOF = (* end of file *) ;
       heading without the id that the link this target also emits depends on
       (carve#352).
 
-   ============================================================================
+   ============================================================================ *)
+(* ============================================================================
    PART 12: AST SERIALIZATION (NORMATIVE)
    ============================================================================
 
@@ -11924,22 +11750,6 @@ EOF = (* end of file *) ;
       above -- and drops the stanza's own last line out of the paragraph
       holding it, which is markup-carve/carve-rs#1247 read backwards.
 
-      NOTHING REPORTED IT. `checkStopsAtChildren` in the spec's
-      scripts/spec/ast-positions.mjs skipped every container holding an unplaced
-      child, so the check enforcing carve#1522 declined the one arrangement
-      carve#1522 did not reach and two engines disagreed on that document with
-      nothing red. An unplaced child moves the bound only where it is the LAST
-      child; the skip declined the whole family to protect one arrangement of
-      it. (carve#1551.)
-
-      WHY IT IS WRITTEN DOWN. Nothing compared two engines' spans until
-      carve#917 built the panel, and the first run of it reported 279 of 690
-      documents carrying a span the three engines do not agree on. The check
-      that existed asserted a span SLICES TO plausible text -- a property every
-      one of those divergences preserves, since carve-php's `[0, 1]` and the
-      other two's `[4, 5]` both slice to `*`. So the convention had never been
-      decided and could not have been enforced if it had been. (carve#913.)
-
       A SPAN DOES NOT BEGIN AT A LINE TERMINATOR -- NORMATIVE. Except on a
       `soft_break` or a `hard_break`, whose content IS the terminator, a node's
       `startOffset` MUST NOT select a newline. No construct begins with the
@@ -12046,6 +11856,8 @@ EOF = (* end of file *) ;
       clause above is not that case -- there the absence IS the conformant
       answer, and nothing needs saying.
 
+   ============================================================================ *)
+(* ============================================================================
    5. WHAT IS NOT IN THE SERIALIZED FORM. Formatter-internal nodes (PART 11,
       and the `raw_text` case profiles.md names as neither deniable nor
       carried) are not part of the document and are not serialized. Resolution results that a consumer can
@@ -12295,17 +12107,6 @@ EOF = (* end of file *) ;
       absent means derived, which is the truth. It also matches L7's own key,
       and follows `list.bareMarker`, the other field here that records an
       authored distinction the default spelling cannot express.
-
-      THE ENGINES ARE BEHIND THIS SECTION; THE SECTION IS NOT AHEAD OF AN
-      UNMADE DECISION. Measured on the pinned reference build (carve-js
-      71add23f): `carveToAstJson` publishes the `definition_term` /
-      `definition_description` sequence above, while the INTERNAL tree `parse`
-      returns still carries the old `{terms, definitions}` object. §1 governs
-      the PUBLISHED AST and not an implementation's internals, so the shape this
-      section describes has a producer and reading the internal tree for one
-      answers a different question (carve#1624, carve#1625). What no engine has
-      yet is L7 itself, so none produces this field: ordinary pin lag, declared
-      where pin lag is declared, and not an unkept promise on an unreached shape.
 
    9. HOW DEEP AN INGESTED AST MAY NEST -- NORMATIVE. Reading a serialized AST
       is a recursive descent over attacker-controlled structure, so it needs a
@@ -12569,16 +12370,6 @@ EOF = (* end of file *) ;
       and (d) does not reach it either -- the schema constrains the field's
       TYPE and sign, not whether the number is the right one.
 
-      MEASURED BEFORE RULING, engines at their own mains: root missing
-      `srcByteLength` -- carve-rs rejected, carve-js and carve-php accepted.
-      Root missing `children` -- the same three ways. Unexpected root field --
-      all three rejected, two of them only after §11 landed
-      (carve-js#763, carve-rs#693). Unknown node type -- carve-rs and carve-php
-      rejected at decode, carve-js accepted and threw in the renderer. The
-      majority vote was deliberately NOT followed: it would have decided two
-      security-relevant rows by accident, and on the missing-field rows the
-      majority was the lenient answer.
-
    13. SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE. A producer MAY
       return source-fidelity metadata beside an AST only when the caller asks
       for it. It MUST NOT insert that data into the AST: §§2, 7, 11 and 12 keep
@@ -12774,7 +12565,7 @@ EOF = (* end of file *) ;
       carve#1121's design space and is not claimed here. The schema
       (`resources/ast-schema.json`) pins the shape; an unknown property on a
       `figure_group` is rejected on ingest like any other (§11).
-
+(* ============================================================================
    17. A FIGURE MAY WRAP A TABLE, AND NO CARVE SOURCE SPELLS IT -- NORMATIVE.
       `figure.target` admits a `table`, and a `table` carries its own optional
       `caption`. Those are two trees, not two spellings of one, and both render:
@@ -13138,12 +12929,6 @@ EOF = (* end of file *) ;
       strict-ingest surface is about properties the schema does not NAME, not
       about ones it names optionally.
 
-      ALL THREE ENGINES DO THE SAME THING HERE, and that is the point of saying
-      it. Footnote and caption NUMBERS already diverge on ingest -- carve-js and
-      carve-rs keep the incoming results, carve-php recomputes -- which is a
-      divergence nobody chose. This clause fixes the ingest behavior for this
-      field in advance so it does not become the second one.
-
       THE WRITER IS UNAFFECTED -- NORMATIVE. `fmt` writes the SOURCE SPELLING,
       so promotion is not observable in `fmt` output and a document whose
       reference is never defined still round-trips to itself (§6). The
@@ -13168,3 +12953,5 @@ EOF = (* end of file *) ;
       on which a LINE can be lost and that no CORPUS document held: a slot more
       than one line wide, held only against the oracle by a unit test no engine
       runs, and a slot inside a container, held by nothing at all.
+
+   ============================================================================ *)

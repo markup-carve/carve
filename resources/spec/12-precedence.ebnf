@@ -1,0 +1,64 @@
+(* ============================================================================
+   PART 8: PARSING PRECEDENCE
+   ============================================================================ *)
+
+(*
+   Block parsing precedence (first pass):
+   1. Frontmatter (--- delimited at document start)
+   2. Comments (%% line, %%% block)
+   3. Raw blocks (```=FORMAT -- matched before ordinary fences),
+      then code blocks (``` or ~~~ fenced)
+   4. Headings (# prefix)
+   5. Thematic breaks (---, ***, ___)
+   6. Block quotes (> prefix)
+   7. Definitions (link/footnote/abbreviation definition lines) and
+      block-attribute lines ({...} alone on a line, PART 9 §15)
+   8. Lists (-, * bullets at any indent; ordered markers; :: definition
+      lists)
+   9. Tables (| prefix)
+   10. Colon fences (::: -- admonition with type word, line block with |,
+       local hard-break block with \, generic div when bare; longest-token
+       wins: a `::: x` line is never a `:: ` definition term)
+   11. Paragraphs (everything else)
+   Recognition order is NOT interruption: which of these may interrupt an
+   open paragraph is PART 9 §10 (list markers -- bullet and ordered -- never do).
+
+   Inline parsing precedence (second pass):
+   1. Escaped characters (\x)
+   2. Code spans (`...`)
+   3. Autolinks (<url>) and crossrefs (</#id>)
+   4. Inline footnotes (^[content]) -- above emphasis; a bare `^` is
+      always literal, so `^[` is unambiguous; see PART 9 §16
+   5. Links, images, reference footnotes, inline spans
+      ([text](url), ![alt](src), [^label], [text]{attrs} -- the
+      single-char lookahead after `]` selects among them, PART 9 §14;
+      a `[^` run is a footnote reference before bracket scanning)
+   6. Math ($`…`, $$`…`)
+   7. Emphasis markers (/, *, _, ~, =) and forced spans ({/.../}, {^...^},
+      {,...,} etc.)
+      -- EXCEPT a delimiter that begins a multi-char smart-typography
+      pattern: `=>` is the arrow, never a highlight opener (the pattern
+      is consumed first; PART 9 §8)
+   8. Editorial markup ({+...+}, etc.; {~...~} with `~>` = substitution)
+   9. Extensions (:type[content])
+   10. Mentions and tags (@user, #tag)
+   11. Smart typography (--, ---, etc.)
+   12. Trailing line comments (%%, PART 9 §21)
+   13. Plain text
+
+   Disambiguation rule:
+   - Prefer literal text over markup: a delimiter that has no valid match
+     (per the word-boundary conditions, PART 9 §1) is literal.
+   - An opener matches the NEAREST following valid closer of the same type.
+     Delimiters of the same type between them are literal content (same-type
+     spans do not nest, PART 9 §3); e.g. /usr/local/ -> <em>usr/local</em>.
+   - Different-type spans nest and are resolved with a delimiter stack in a
+     single left-to-right pass (NO backtracking, linear time); e.g.
+     *bold /italic/* and /italic *bold*/ nests fully.
+
+   Note: "shorter spans / earlier opening wins" does NOT apply -- it would
+   truncate /usr/local/ to <em>usr</em> and break nested emphasis. The
+   delimiter-stack model is what makes Design Principle 1 (no backtracking)
+   hold while still producing the canonical outputs in the corpus.
+*)
+

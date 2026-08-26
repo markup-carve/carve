@@ -1,0 +1,448 @@
+(* ============================================================================
+   26. TROJAN-SOURCE / INVISIBLE-UNICODE HARDENING -- NORMATIVE (CVE-2021-42574
+      class). Visually deceptive or invisible Unicode MUST NOT produce
+      diverging heading ids nor smuggle a live control character into the
+      output. The corpus pins representative cases (resources/examples/edge-cases.md
+      "Trojan-Source: heading ids ...", "Trojan-Source: rendered text and
+      code ...").
+      - HEADING IDS are NFC-normalized and stripped of bidi-override /
+        isolate controls (U+202A..U+202E and U+2066..U+2069) and zero-width
+        characters (U+200B, U+200C, U+200D, U+2060, U+FEFF, U+00AD) before
+        slugging. Consequences: a precomposed `é` (U+00E9) and a decomposed
+        `e` + U+0301 yield the SAME id (NFC); a heading containing U+202E and
+        U+200B yields an id with NEITHER codepoint.
+      - PRESENTATION TARGETS -- HTML, Markdown, plain text, and terminal
+        (ANSI) -- strip the bidi-override / isolate controls (U+202A..U+202E,
+        U+2066..U+2069) from rendered text and CODE-SPAN / CODE-BLOCK content.
+        They are REMOVED, not escaped: in HTML, entity-encoding one would let
+        it DECODE BACK to the raw control downstream; in the other presentation
+        targets it would either remain live or change the author's visible
+        content. This target rule is independent of §25's C0-control split:
+        bidi override/isolate characters are Unicode format characters, not
+        C0 controls.
+      - The canonical `carve` target is a SOURCE SERIALIZER, not a presentation
+        target. It MUST preserve authored bidi-override / isolate controls so
+        parse-render-parse does not silently destroy source. A processor that
+        exposes lint diagnostics SHOULD report a preserved control with the
+        rule id `bidi-control-in-source` so an author can remove or explicitly
+        accept it before publishing.
+      - PRESERVED in rendered text: the directional MARKS LRM (U+200E) and
+        RLM (U+200F), and the zero-width characters (U+200B etc.) -- these are
+        stripped from IDS (above) but kept in TEXT, since they can be
+        legitimate content and are not an override/isolate injection. (So
+        `# A<U+202E>B<U+200B>C` renders text `AB<U+200B>C` -- override gone,
+        zero-width kept -- with id `ABC`.)
+
+   27. INLINE LITERAL -- NORMATIVE (governs `literal_inline` in PART 3).
+      A `!` PREFIX immediately before a verbatim code span is an INLINE
+      LITERAL, mirroring how `$` before a code span is inline math (§18). It
+      exists so notation that collides with the bare emphasis delimiters --
+      phonemic transcription `/kaet/`, glob patterns, paths -- can be written
+      without per-character escaping.
+      - CONTENT is captured VERBATIM by the backtick run exactly as for a code
+        span: no inline construct inside it is recognized, and SMART TYPOGRAPHY
+        (§8) does NOT apply -- `--`, `...` and quotes stay as authored.
+      - CONTENT is HTML-ESCAPED on output. This is the opposite of raw
+        passthrough (§20), which emits its content unescaped.
+      - It is EMITTED BY EVERY RENDERER and is NEVER dropped or target-routed.
+        Again the opposite of §20, where a non-matching format drops the span.
+      - The `<code>` WRAPPER IS DROPPED: an inline literal is prose, not code.
+      - ELEMENT. The TRAILING `{…}` is the ORDINARY code-span attribute block,
+        not a special form. With no attribute block the content is emitted as
+        BARE escaped text, with no element at all. When an attribute block is
+        present (id / class / key=value / boolean) a `<span>` is emitted
+        carrying it, in the §14 render order. So the element appears exactly
+        when an attribute needs somewhere to live.
+      - The `!` sigil is CONSUMED, never rendered, and binds to a FOLLOWING
+        BACKTICK RUN only. It is tried before `image` (`![`) and before a bare
+        literal `!` in the inline order, so `!` before `[` still opens an image
+        and `!` anywhere else stays literal text. A literal `!` immediately
+        before a backtick run is therefore written `\!` -- the single case this
+        construct reinterprets. (Chosen over the earlier trailing-`{!}` sigil:
+        the `!` prefix matches the `$`-math / `!`-image family, keeps the
+        attribute block ordinary, and reads as "not code". See #280.)
+      - There is NO block form. A fenced code block already carries its content
+        verbatim; the inline case is the one the notation problem needs, and a
+        block spelling is deliberately left undefined rather than invented.
+      Examples (corpus-pinned):
+        !`/kaet/`        -> /kaet/
+        !`/kaet/`{.ipa}  -> <span class="ipa">/kaet/</span>
+        !`a<b>`          -> a&lt;b&gt;
+
+   28. BLOCK COMMENT FENCES -- NORMATIVE (governs `comment_block`,
+      `comment_block_open` and `comment_block_close` in PART 2). A `%%%` fence
+      line is DELIMITER PLUS INSIGNIFICANT TAIL: the LEADING RUN of 3+ `%` is
+      the delimiter, and ANY remaining text on the line is IGNORED. So
+      `%%% TODO`, `%%% notes` and `%%%html` all open a block comment, and
+      `%%% end` closes one. No separating space is required.
+      - `%%%` HAS NO INFO STRING. A raw passthrough block (§20) is a CODE
+        fence with an `=FORMAT` info string (```` ```=html ````), never a
+        percent fence, so `%%% html` is a COMMENT and its body stays hidden.
+      - The CLOSER matches on EXACT delimiter length (§2), so a longer opener
+        nests shorter fences and a too-short line is content, not a closer.
+      - A `%%%` opener with NO MATCHING CLOSER AHEAD does NOT open a block.
+        The line degrades to a `comment_line` (its first two `%` are the line
+        marker), so every FOLLOWING BLOCK STILL RENDERS. This DIVERGES from
+        the `:::` rule (§12), where an unclosed opener opens and closes at end
+        of input, and the difference is VISIBILITY: an unclosed div still
+        renders the blocks it swallowed, so a forgotten closer costs the
+        reader a stray wrapper, while an unclosed comment would HIDE them and
+        silently delete the rest of the document. This clause used to claim it
+        MIRRORED §12, quoting a §12 sentence that has since been removed for
+        saying the opposite of what §12 means (carve#1717). An implementation that
+        surfaces diagnostics SHOULD report an unterminated comment fence;
+        emitting one is OPTIONAL, since not every implementation has a
+        warning channel.
+      - TAIL DISPOSITION (serialization, PART 10): the OPENER's tail is kept as
+        the comment body's FIRST LINE, so `carve fmt` round-trips the words
+        rather than deleting them; the CLOSER's tail is DISCARDED, as a code
+        fence's closing info is. Neither is ever rendered.
+      Examples (corpus-pinned):
+        "%%% html\nsecret\n%%%\n\nafter"  -> <p>after</p>
+        "%%%\nsecret\n%%% end\n\nafter"   -> <p>after</p>
+        "%%% TODO\nsecret\n\nafter"       -> <p>secret</p><p>after</p>
+
+   29. C0 CONTROLS ON THE RENDER TARGETS -- NORMATIVE (governs what each
+      target may emit; the companion to PART 7's ONE WHITESPACE DEFINITION,
+      IN EVERY CONSTRUCT, which governs what the LANGUAGE reads). The two
+      questions are different and were being answered as one: PART 7 makes a
+      character CONTENT, and a target then deleted it on the way out. Twice
+      in one day that strip was read as a PART 7 violation and nearly
+      "fixed" as one, by two agents independently, which is why it is
+      written down here rather than left as an implementation habit
+      (carve#963, carve#979).
+
+      THE SUBJECT IS A CLASS, NOT TWO CHARACTERS. After carve#963 the
+      whitespace of this language is exactly U+0020, U+0009, U+000A and
+      U+000D. EVERY OTHER C0 CONTROL -- U+0001..U+0008, U+000B, U+000C,
+      U+000E..U+001F -- is ordinary CONTENT: it parses as content, it
+      survives into the AST, and it satisfies no whitespace slot anywhere.
+      The rows below say what happens to ALL of them on each target. Naming
+      only the vertical tab and the form feed, because those are the two the
+      whitespace clause happens to mention, would leave the rest to habit,
+      which is the state this section replaces.
+
+      U+0000 IS NOT ONE OF THOSE CONTROLS -- NORMATIVE (carve#1523). The NULL is
+      REPLACED BY U+FFFD before the first line is read (PART 0 INPUT, A NULL
+      IS REPLACED BEFORE THE FIRST LINE IS READ). So it is not content, it
+      never reaches the AST, and no target is ever asked whether to emit it.
+      T1..T4 below therefore say NOTHING about it: by the time a target runs
+      there is no NUL left to emit, and what each one emits is the ordinary
+      U+FFFD it was handed. HTML, Markdown and plain text emit that character
+      as text like any other, the canonical `carve` writer serializes it as
+      source text, and ANSI is not asked to strip it either -- T4 strips
+      CONTROLS, and U+FFFD is not one. An engine that reaches T1..T4 still
+      holding a NUL has skipped the parse boundary, not found an exception
+      here.
+
+      WHY THE ONE CARVE-OUT, since a rule with an exception has to say why
+      the exception does not spread. Three reasons, none of which reaches
+      another C0 control:
+      - A NUL IS NOT VALID IN AN HTML DOCUMENT. T1's argument for emitting
+        the rest is that the consumer is a parser which treats a stray
+        control as inert character data. That is the argument that fails for
+        this one character, and it fails on the consumer's own terms rather
+        than on a general worry about control characters -- which is exactly
+        the shape T4 already uses to reach one target and no other.
+      - THE IMPORTER ALREADY REPLACES IT. CommonMark 2.3 mandates the
+        replacement and Carve's Markdown importer performs it
+        (markup-carve/carve-js#1293). A language that strips the character on
+        the way in and emits it on the way out is incoherent at its own
+        boundary, and the incoherence is not fixable in the importer: the
+        authored NUL would still reach the output.
+      - THE ENGINES ALREADY AGREED, DELIBERATELY. All three replace it and
+        none said so, while the executable spec kept it -- the same shape as
+        the byte order mark (carve#872), down to why it stayed invisible: no
+        corpus document carried the byte, so neither behavior was pinned.
+        This is not three independent accidents being ratified.
+
+      T1 HTML EMITS THEM. The HTML target does not strip a non-whitespace C0
+         control from rendered text. That is the status quo, and the
+         asymmetry with T4 is DELIBERATE rather than an oversight: it is
+         stated here because it was undocumented and therefore looked like
+         one. An HTML document is consumed by a parser that treats a stray
+         control as inert character data; it is not consumed by a device
+         that ACTS on the character. Note that this is a different rule from
+         §26, which REMOVES the bidi overrides and isolates from rendered
+         text -- those are an injection vector in a renderer, a C0 control
+         is not.
+
+      T2 MARKDOWN EMITS THEM. The Markdown target does not strip them
+         either. A target that silently removes content is lossy in exactly
+         the way carve#817 rejected for the wire, and the reason first
+         offered for the strip -- that a Markdown reader would reclassify
+         these characters as whitespace, so emitting them changes meaning at
+         the boundary -- was measured and did not hold. FOUR READERS WERE
+         MEASURED: the CommonMark reference implementation, and markdown-it
+         in default, commonmark and typographer modes. All four KEEP U+000B
+         and U+000C inline, on a lone line between paragraphs, inside a code
+         span, after a list marker and after an ATX hash. The sharpest case
+         is that `-<VT>item` opens no list in any of them, which it would if
+         the character were whitespace to that reader. They are dropped in
+         exactly two positions, leading and trailing on a line, which is
+         where Carve drops whitespace too. So the downstream reader agrees
+         with carve#963, and stripping makes Carve the lossy party for no
+         reason the consumer requires.
+
+      T3 PLAIN TEXT EMITS THEM, FOLLOWING MARKDOWN. This row is a JUDGEMENT
+         and is recorded as one rather than as a measurement: plain text is
+         a text SERIALIZATION rather than a terminal format, so it takes the
+         fidelity answer and not the device answer. If plain output turns
+         out to be piped to a terminal about as often as ANSI output is,
+         this row is the one to revisit, and revisiting it does not disturb
+         T2.
+
+      T4 ANSI STRIPS THEM. The terminal target removes every non-whitespace
+         C0 control from text, code, math and URL values before emission.
+         This is the one target whose consumer ACTS on the character: a form
+         feed feeds or clears, and the escape U+001B introduces a sequence
+         that can move the cursor, rewrite earlier output or reach the
+         clipboard. That is a property of the device, not a general worry
+         about control characters, so it reaches this target and no other.
+         WHAT THIS ROW DOES NOT DO IS NARROW THE TERMINAL TARGET. §25
+         NON-HTML TARGETS requires it to strip DEL and the C1 controls too,
+         and that requirement is untouched here -- CSI (U+009B) and OSC
+         (U+009D) are single-character forms of the sequences that bullet
+         exists to stop, so a rule about C0 must not be read as licensing
+         them.
+
+      T5 WHAT THIS SECTION DOES NOT SETTLE, stated so its silence is not
+         read as agreement:
+         - PANDOC HAS NOW BEEN MEASURED, and it agrees. pandoc 3.5 keeps
+           U+000B and U+000C in all five positions T2 names -- inline, on a
+           lone line between paragraphs, inside a code span, after a list
+           marker and after an ATX hash -- in its `commonmark`, `gfm` and
+           `markdown` readers alike, and `-<VT>item` opens no list in any of
+           them. T2's finding therefore rests on five readers rather than
+           four. What it still does NOT claim is that EVERY reader agrees: a
+           reader that reclassified these characters as whitespace would be a
+           reason to revisit T2, and none measured so far does.
+         - CARVE-RS HAS NOW BEEN MEASURED, and it conforms. Driving both
+           U+000B and U+000C through the five positions T2 names, on each
+           target: carve-rs keeps them on HTML, Markdown and plain text and
+           strips them on ANSI -- T1, T2, T3 and T4 respectively, ten of ten
+           on each row. carve-js and carve-php were measured the same way at
+           the same time and agree with it on all four. So the three engines
+           are uniform here and the row's worry -- that carve-rs might be
+           doing something else unseen -- did not hold. Assuming it was wrong
+           would have been the error this row was written to prevent.
+         - DEL (U+007F) AND THE C1 CONTROLS are outside this section, which
+           is about C0. The sweep that prompted this note found them reaching
+           Markdown output in carve-js and carve-rs while carve-php refused
+           them; that has since been fixed, and re-measuring finds all three
+           engines identical -- DEL, CSI (U+009B), OSC (U+009D) and U+0080 are
+           stripped on Markdown, plain text and ANSI alike. §25's NON-HTML
+           TARGETS requirement is met on those three.
+           WHAT IS STILL OPEN is the CANONICAL WRITER: all three engines let
+           every one of those characters through on the `carve` target. That
+           may be right -- a writer that drops content is lossy, and the
+           round-trip invariant is what that target answers to -- but §25 says
+           "non-HTML targets" without saying whether the canonical writer is
+           one, and the same question is open for §26's bidi overrides
+           (carve#1076). Deciding it once would settle both.
+*)
+
+
+(* --- PART 9 §16a: the words the engine writes itself --- *)
+(* THE ENGINE'S OWN WORDS ARE A RENDER OPTION -- NORMATIVE (carve#1456).
+
+   Almost every string in the output is the author's: a caption's label is
+   written in the source (`^ Figure #: …`, so a German document writes
+   `^ Abbildung #:`), and a `</#id>` to a numbered caption reuses THAT label
+   rather than inventing one. This clause is about the remainder - the strings
+   an engine writes on its own, where the author has no place to spell them.
+
+   A renderer takes a `labels` map from KEY to STRING. A key the caller omits
+   keeps the default below. Unlike the `symbols` map, which is emitted RAW
+   because a processor's configuration is trusted, a label is TEXT: it is
+   escaped for the position it lands in (an attribute value, or character
+   data). A label is never markup, so nothing is lost by escaping it, and a
+   host that reads its strings from a translation catalog is not handing the
+   renderer an injection vector.
+
+   THE KEYS CORE DEFINES, and the whole set core defines today:
+
+     footnoteBacklink   "Back to reference"   PART 9 §16, the endnote backlink's
+                                              accessible name
+     endnotes           "Footnotes"           PART 9 §16, the endnotes
+                                              section's accessible name
+     admonitionNote     "Note"                PART 9 §12, an UNTITLED Tier-1
+     admonitionTip      "Tip"                 admonition's accessible name.
+     admonitionWarning  "Warning"             One key per canonical type; a
+     admonitionDanger   "Danger"              TITLED admonition is named by
+     admonitionInfo     "Info"                its own title and draws no
+     admonitionSuccess  "Success"             string from here.
+     admonitionExample  "Example"
+     admonitionQuote    "Quote"
+
+   THE SET IS SMALL BECAUSE THE ENGINE WRITES LITTLE. Every key here names a
+   string a READER HEARS and no author can spell: an accessible name on an
+   element the author never wrote. That is the whole test for admission, and it
+   is why the set grew from one key to ten in a single sweep (carve#1468) and
+   is expected to stay near that size. The map exists rather than a
+   per-construct option because core has no extension to hang an option on, and
+   because a new such string needs a place to land that the three engines
+   already agree on.
+
+   WHAT DOES NOT BELONG HERE, restated because the sweep tested it four times:
+   a string the AUTHOR already wrote is never a key. A task box is named by its
+   item's own text and an admonition with a title is named by that title
+   (PART 2 `task_marker`, §12), both DERIVED rather than written, so neither
+   adds a key. A host that translates the document translates those once, in
+   the document. Only where there is nothing on the page to read does a label
+   appear -- the untitled admonition's type word, and the two footnote
+   strings.
+
+   AN EXTENSION WRITES INTO THE SAME MAP -- NORMATIVE (carve#1508). The map is
+   the renderer's, not core's: Extensions §1.5 states which strings an
+   EXTENSION contributes to it, and those keys are part of the same map a host
+   passes once. So the list above is what CORE defines and not the whole map an
+   engine honors -- measured against the pinned build, `indexBackref`,
+   `tabsGroup` and `codeGroup` are honored beside the ten. A fourth,
+   `tocNav` (Extensions SS8b.1, carve#1509), is STATED and not yet honored by
+   any engine: the table-of-contents nav is a navigation landmark and carries an
+   accessible name, and until an engine ships it the key is declared ahead of
+   the pin rather than measured. A host translating a
+   document therefore sets ONE map, which is the whole reason the map exists
+   rather than a per-construct option.
+
+   THE EARLIER READING WAS THE OPPOSITE, and is recorded so a reader of the
+   history is not left with two rules. This clause said extension-written
+   strings STAY with their extension, because moving one into the map would
+   give it two spellings and no rule for which wins. §1.5 supplies exactly
+   that rule -- the author's attribute, then the extension's own option, then
+   the map, then the default -- so the objection no longer holds, and three
+   extension-written strings live under it with both a key and an option.
+
+   AN EXTENSION MAY read the map for a string it shares with core; it MUST NOT
+   require the host to configure the same text twice. Two extension-written
+   strings have no key and are options only -- the heading-permalink label and
+   the table-of-contents summary (which is the `<details>` disclosure's VISIBLE
+   text, and not the nav's name: that one is the `tocNav` key above, on a shape
+   the summary never shares) (carve-js `ariaLabel` / `summary`, carve-php
+   `$ariaLabel`, carve-rs `aria_label`). That is now the RULE and not merely the
+   state (carve#1510): a string the extension already exposes as an option is
+   configured there, and §1.5's admission sentence has been narrowed to say so
+   instead of reading on these two. Adding a key would give one string two
+   spellings where the extension already had one.
+
+   EVERY DOCUMENTED KEY REACHES THE OUTPUT, and that is checked rather than
+   asserted (carve#1508). No fixture in the spec repo renders with a non-default
+   map, so every key was verified at its English default only and an engine that
+   hard-coded all of them would have passed every check. The key names are read
+   off this list and off §1.5's table and each is rendered with a sentinel, so
+   a key documented in neither, or documented and inert, fails.
+
+   WHAT THIS DOES NOT DO: it is not localization. There is no locale name and
+   no built-in table beyond the English defaults, because a locale table is
+   data an engine would then have to carry and keep current, and every host
+   that needs translated strings already has a catalog of its own. The map is
+   the seam to that catalog.
+
+   AN IMPORTER DOES NOT BAKE A DERIVED NAME INTO SOURCE -- NORMATIVE
+   (carve#1500). An HTML importer DROPS an attribute whose value EQUALS what
+   the renderer derives for that element, and KEEPS every other one. It is the
+   rule already applied to a `<th>`'s generated `scope` and to a generated
+   `colspan` / `rowspan`, and it governs every string this clause and
+   Extensions §1.5 make engine-written: the accessible name on an untitled
+   admonition, on an endnotes section, on a footnote backlink, on a tab set and
+   on a `css`-mode tab panel, together with the `role` that accompanies each.
+
+   PROVENANCE IS NOT THE TEST, and cannot be. Nothing in the HTML says who
+   wrote an attribute. But where the value EQUALS the generated one the output
+   is identical whichever of them wrote it, so a value-matched drop is a no-op
+   for what a reader hears: the document rebuilds byte-identical at the default
+   labels. That is why the `scope` rule is phrased as "matches the value the
+   renderer derives" rather than as a test of who wrote it, and it is why this
+   rule cannot repeat the accessibility regression a blanket `aria-label` drop
+   caused. A name that DIFFERS from the derived one is kept, always.
+
+   WHAT THE DROP BUYS is the only thing keeping the `labels` map alive across a
+   round trip. A kept `aria-label="Note"` is indistinguishable from an authored
+   one, and §12's author-wins rule then makes it WIN on the next render: the
+   same source re-rendered with `admonitionNote` set to `Hinweis` still emits
+   `aria-label="Note"`. Dropping it emits `Hinweis`. So an import that keeps a
+   derived name has permanently unlocalized the document while changing no
+   byte of today's output.
+
+   NOTHING IS LOST, SO NOTHING IS DIAGNOSED. The renderer writes the value
+   back, so a value-matched drop is not a lossy decision and emits no
+   `attribute-dropped` -- the same reason the `<figure>` and `<blockquote cite>`
+   imports report nothing. A drop of the OTHER kind, where the value could not
+   be represented, is diagnosed as it always was.
+
+   BYTE-STABILITY IS THEREFORE NOT THE TEST EITHER. A round trip over that
+   admonition is byte-identical while the defect is present, so a round-trip
+   assertion passes and nothing is learned. The assertion has to be that a
+   DERIVED NAME IS ABSENT from the imported source.
+
+   TWO LIMITS, both accepted rather than closed:
+
+     - ATTRIBUTE ORDER moves. A dropped-and-regenerated name lands where the
+       renderer appends it rather than where the author's attributes sit, so
+       `<div aria-label="Tabs" class="tabs" role="group">` comes back as
+       `<div class="tabs" role="group" aria-label="Tabs">`. Semantically
+       identical, and it restores the canonical order rather than disturbing
+       one.
+     - IT CATCHES THE DEFAULT ONLY. HTML rendered with a German map carries
+       `aria-label="Hinweis"`, which matches no default, so it is kept and
+       laundered. An importer cannot know the render's configuration and a
+       non-default value is indistinguishable from an authored one, so failing
+       SAFE - keep - is the right side to err on. An importer MAY take the same
+       `labels` map the render used and match against that too, which closes
+       the residue; it is not required and neither half blocks the other.
+
+   WHAT IS NOT RULED HERE is dropping the name on a named construct REGARDLESS
+   of value. That would take an author's deliberate override -- an
+   `{aria-label="Wichtiger Hinweis"}` written on a `::: note`, which §12
+   currently honors -- so the residue above is accepted rather than closed by
+   force.
+
+   A DERIVED VALUE IS ONE THE IMPORTER CAN RECONSTRUCT -- NORMATIVE
+   (carve-php#1588). The rule above says WHAT to do with a derived value; this
+   says what makes one derived, because the list of shapes it reaches is not the
+   test and cannot be. A list grows an entry every time the question recurs, and
+   an implementation keyed on one entry is a check that cannot fail for the rest
+   of the family.
+
+   THE PROPERTY IS RECONSTRUCTABILITY. An attribute is DERIVED where the
+   importer can rebuild its value FROM THE ELEMENT IT IS READING -- the tag, the
+   classes, the `role`, the element's own text, a control beside it, or the
+   documented default of a `labels` key -- and the value present EQUALS that
+   rebuild. Nothing else qualifies. It follows that the renderer wrote it, from
+   the same document the importer is reading: a value the importer can compute
+   is one the renderer computed, whichever of them ran first, which is why the
+   equality test above stands in for a provenance test that is not available.
+   A value the element does not determine is the author's and is kept.
+
+   THE WRAPPER IS DERIVED ON THE SAME TERMS. The rule is stated over attributes
+   because that is where it was first needed, but an ELEMENT can be
+   reconstructable too, and the endnotes `<section>` is: PART 9 §16 writes one
+   around the notes whenever the document has any, and no Carve construct spells
+   a `<section>` at all. So unwrapping it removes nothing an author wrote, and
+   an importer does not report the unwrapping -- not as `element-unwrapped`, and
+   not as an `attribute-dropped` naming the `doc-endnotes` role or the
+   `endnotes` name that came with it. Whether an importer reports a
+   NON-derived wrapper is not settled here; the engines differ and no document
+   loses anything either way.
+
+   THE IMPORT'S OUTCOME DOES NOT CHANGE THE ANSWER. Derivation is a property of
+   the element being READ, not of what the import goes on to do with it. Both
+   halves of §16's endnotes section are covered: the REFERENCED form is consumed
+   into footnote definitions and the renderer writes the section back, while the
+   REFERENCE-LESS form degrades to the `<hr>` and `<ol>` it is built from
+   (carve#1558) and the renderer writes no section for it at all. The second
+   still reports nothing, because the author still wrote none of it. An importer
+   that instead asks its own EMITTED document whether the value came back
+   answers no for the degraded form -- correctly, and about the wrong question,
+   which is the measurement carve#1502 records: a report built that way
+   contradicts the conversion beside it and calls every value an extension
+   derives a loss.
+
+   WHAT IS STILL REPORTED is everything the element carried that this property
+   does not reach. An authored `class` on an endnotes section is reported when
+   the section is unwrapped, and so is an `aria-label` no default matches --
+   the residue "IT CATCHES THE DEFAULT ONLY" above already accepts, arriving
+   here unchanged. Suppressing the element row and the attribute row TOGETHER
+   silences both, which is a loss of exactly the kind the report exists to
+   name. *)

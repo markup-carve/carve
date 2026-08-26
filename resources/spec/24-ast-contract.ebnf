@@ -1,0 +1,708 @@
+(* ============================================================================
+   5. WHAT IS NOT IN THE SERIALIZED FORM. Formatter-internal nodes (PART 11,
+      and the `raw_text` case profiles.md names as neither deniable nor
+      carried) are not part of the document and are not serialized. Resolution results that a consumer can
+      recompute - footnote numbering, caption numbers, a generated heading id -
+      ARE serialized, because recomputing them requires reimplementing PART 9R.
+
+      A GENERATED HEADING ID IS A RESOLUTION RESULT -- NORMATIVE. A `heading`
+      whose id was slugged from its text rather than written carries that id in
+      `attrs.id`, the slot an authored `{#id}` occupies, and carries it in the
+      resolved tree exactly as the two values above do.
+
+      The criterion is §5's own: recomputability. A heading id is NOT a function
+      of the heading. Dedup assigns the next free suffix in document order, so
+      two `# Notes` headings yield `Notes` and then `Notes-2` (PART 9 §13; the
+      slug and dedup rules are syntax.md §4.1, and PART 9 §13's namespace is
+      shared with every other generated id). Deriving the second one therefore
+      requires having seen every heading before it and replicating the dedup
+      spelling, in the same order. A consumer holding only the tree cannot do
+      that, and a table of contents, a go-to-definition jump and a
+      cross-document index each need the exact id, not a plausible one. This is
+      a stronger case than footnote numbering, where the missing state is a
+      counter the consumer could keep itself.
+
+      §3a IS NOT IN TENSION WITH THIS. §3a forbids folding a resolution result
+      in place of the construct the author wrote; here nothing authored is
+      replaced. The id is published beside the heading's other attributes, the
+      same way a resolved crossref keeps `target` and gains `href`.
+
+      carve-js publishes the field. carve-rs and carve-php publish no `attrs`
+      for a heading at all, which is the null state rather than a decision
+      (carve#750); the gap is declared in resources/ast-value-divergence.txt
+      until each lands a producer, so `scripts/ast-conformance.mjs` reports it
+      by count rather than treating it as new.
+
+   6. ROUND TRIP. `parse(x)` serialized and deserialized MUST equal `parse(x)`.
+      A serializer that loses a field is not a lossy convenience; it is a
+      consumer breaking silently one document later.
+
+   7. THE DOCUMENT ROOT CARRIES EXACTLY THREE FIELDS -- NORMATIVE:
+      `type`, `children`, `srcByteLength`. Nothing else. An implementation MUST
+      NOT hang document-level data off the root; content goes in the tree,
+      where every other piece of content already lives.
+
+      Two things had drifted there. carve-js carried `frontmatter` and
+      `footnoteDefs`; carve-rb (over carve-rs) carried `frontmatter`. carve-php
+      carried neither, because it already put both in the tree (carve#411).
+
+      WHY THE TREE AND NOT THE ROOT. §4 requires every node except the root to
+      carry `pos`, on the grounds that a tree without positions can only be
+      re-parsed rather than navigated. A root FIELD cannot carry `pos`.
+      Frontmatter and a footnote definition are source constructs occupying
+      real bytes: an editor jumps to them, a formatter reproduces them, a
+      language server renames a label. Putting them on the root would make them
+      the only content in the document that cannot be navigated to. That
+      applies to frontmatter exactly as much as to a footnote body, which is
+      why the two do NOT split along a metadata/content line.
+
+      FRONTMATTER IS A BLOCK NODE, `type: "frontmatter"`, carrying:
+        format   the info word on the opening fence (`frontmatter_format` in
+                 PART 2), or `"yaml"` when the fence carries none
+        content  the text between the fences, VERBATIM
+      It is the FIRST child when present, since that is where it is written.
+
+      CONTENT IS RAW, NOT PARSED -- NORMATIVE. `content` is the source text.
+      An implementation MUST NOT emit parsed key/value pairs in its place:
+      parsing YAML or TOML is not the markup parser's job, the raw text plus
+      `format` lets any consumer do it, and a parsed map cannot represent a
+      document whose frontmatter is malformed. carve-rs holds a parsed map
+      internally; that is an internal choice, and §1 already requires mapping
+      on the way out rather than exporting internals.
+
+      A FOOTNOTE DEFINITION IS A BLOCK NODE, `type: "footnote"`, carrying:
+        label     the label as written, without the `[^` and `]:`
+        children  the definition body, parsed as blocks
+      `label`, not `id`: PART 9 §16 calls it a label throughout, and `id`
+      collides with the attribute of that name.
+
+      A DEFINITION IS A CHILD OF THE DOCUMENT even when it was authored inside
+      a container. PART 9 §16 already makes a definition document-level
+      metadata that is collected out of its blockquote or list item, leaving
+      that container empty; the serialized tree follows the same rule rather
+      than inventing a second one. Its `pos` still records where it was
+      WRITTEN, so nothing about navigation is lost by the move.
+
+      AN ABBREVIATION DEFINITION IS A BLOCK NODE, `type: "abbreviation_def"`,
+      carrying:
+        abbr       the term as written, without the `*[` and `]:`
+        expansion  the expansion text, without the separating space
+      It renders nothing itself; it is what the inline `abbreviation` resolves
+      against. The node was named here in two clauses before it was described
+      in any, so its field names lived only in resources/ast-schema.json --
+      the shape a reader of this grammar could not see.
+
+      THE HOISTING CLAUSE ABOVE IS ABOUT FOOTNOTES. An `abbreviation_def` is
+      never hoisted, because there is never one to hoist: the construct is
+      recognized only at document level.
+
+      AN ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL --
+      NORMATIVE. `*[TERM]: expansion` is an `abbreviation_definition` only as a
+      direct child of the document. Written inside a block quote, a list item
+      or a div, the line is not a definition at all: it is ordinary paragraph
+      text, it defines nothing, and it is preserved as the text the author
+      typed.
+
+          > *[HTML]: Hyper Text
+
+          The HTML spec.
+
+      renders a block quote holding the literal text `*[HTML]: Hyper Text`,
+      and `The HTML spec.` with no `<abbr>`.
+
+      This is the same fallback an unrecognized definition marker already
+      takes: `*[HTML]:<TAB>x` is a paragraph because the separator must be a
+      literal space (see the note at `abbreviation_definition`), and the marker
+      line "is preserved as text" there too. The rule is reused, not invented.
+
+      WHY ABBREVIATIONS AND NOT FOOTNOTES. An abbreviation is the only
+      definition kind with NO marker at the use site. A footnote needs `[^a]`
+      and a reference link needs `[text][ref]`, so their reach is bounded by
+      references the author wrote deliberately; an abbreviation rewrites EVERY
+      occurrence of the term in the whole document, with nothing at the use
+      site to point back at the definition. Hoisting is safe for a definition
+      that is inert until referenced and unsafe for one that acts on its own.
+      A container is exactly where quoted and foreign material lives, so
+      hoisting would let a quoted `*[X]: y` inject a document-wide rewrite into
+      the quoting document.
+
+      WHY NOT HOIST AN INERT NODE. The rejected alternative kept the hoist and
+      made a container-authored definition expand nothing: in the tree at
+      document level, but without effect. It loses information. Once hoisted,
+      an inert definition and a real one are the SAME wire shape, so a consumer
+      that decodes the tree expands what the parser did not -- §6's round trip
+      fails on a document the engine itself produced. The distinction has to be
+      recorded somewhere, and tree position records it for free; the
+      alternatives were a new wire field on every definition or an accepted
+      lossy round trip.
+
+      It also drops the author's line. All three engines rendered
+      `> *[HTML]: Hyper Text` as an EMPTY block quote, because the definition
+      was collected out of it and then rendered nothing. Text the author wrote
+      disappeared. Under this clause the line was never a definition, so
+      nothing is collected and nothing vanishes. (carve#708, carve-php#708,
+      carve-php#631)
+
+      THE FORMATTER CONSEQUENCE IS ACCEPTED, NOT OVERLOOKED. Hoisting means
+      PART 11's writer emits the definition after the container the author
+      wrote it in, which reads like a violation of PART 11 §6 ("fmt does not
+      reorder ... those are the author's choices and the AST records them").
+      It is not, because §6 governs what the writer may do with what the tree
+      HOLDS, and this clause is what the tree holds. The consequence is already
+      shipping and corpus-pinned for footnotes:
+
+        See [^a].
+
+        > [^a]: note body
+
+      formats to the definition after an emptied `>`, and corpus
+      `115-footnote-definition-inside-a-container-is-collected` pins the
+      collection it follows from. It is accepted for footnotes because a
+      footnote definition renders as a footnote either way, so the move costs
+      the author placement and nothing else.
+
+      WHY THE SAME TRADE IS NOT ACCEPTED FOR ABBREVIATIONS. There the move
+      costs the author the LINE: an abbreviation definition renders nothing of
+      its own, so hoisting it out of a container empties the container instead
+      of relocating visible output. That is the difference between reordering
+      what the author wrote and deleting it.
+
+      Definitions appear in DOCUMENT ORDER by source position. Numbering is a
+      resolution result and stays on the reference (§5).
+
+   8. A DEFINITION LIST'S ENTRIES ARE NODES -- NORMATIVE. `definition_list`
+      carries `items`: the `<dt>` / `<dd>` sequence in DOCUMENT ORDER, as
+      `definition_term` and `definition_description` nodes.
+
+        {"type":"definition_list","items":[
+          {"type":"definition_term","children":[...]},
+          {"type":"definition_term","children":[...]},
+          {"type":"definition_description","children":[...]}]}
+
+      A `definition_term` carries INLINE children, a `definition_description`
+      BLOCK children, and either may carry `attrs` and `pos` like any other
+      node. A run of terms belongs to the descriptions that follow it, which is
+      the rule the rendered list already shows -- so the grouping is derivable
+      and is not published.
+
+      NOT publishing it is the decision, and it has three reasons.
+
+      A plain `{terms, definitions}` object CANNOT CARRY `pos`. §4 requires one
+      on every node but the root because a tree without positions can only be
+      re-parsed rather than navigated, and a term is exactly what an editor
+      jumps to and a language server renames. Under the object form a term was
+      the only content in a serialized document that could not be navigated to
+      -- the same argument §7 makes for frontmatter and footnote definitions,
+      which is why they are block nodes rather than root fields.
+
+      `definition_term` and `definition_description` are in the profiles.md
+      block vocabulary, so a profile can NAME them. Under the object form those
+      two entries named nothing: a host writing `denyBlock(['definition_term'])`
+      got silence, which profiles.md calls the specific failure a normative
+      vocabulary exists to prevent.
+
+      And the grouping was NOT A SHARED FACT. Given
+
+        :: a
+        :: b
+        :  x
+        :  y
+
+      carve-js published one entry with two terms and two definitions,
+      carve-rs published three entries split differently, and carve-php
+      published the flat node sequence -- while all three rendered the same
+      `<dl>`. A structure two producers disagree about, which no output depends
+      on, is an internal; §1 already says an implementation whose internals
+      differ maps on the way out.
+
+      An engine whose parser groups differently therefore has one more thing to
+      fix than the serializer: carve-rs opened a new entry per `::` line, so
+      §6's round trip only holds once the parser groups the way the list shows.
+
+      A SPELLED LOOSENESS IS A FIELD; A DERIVED ONE IS NOT. `definition_list`
+      MAY carry `loose: true`, and it means what PART 9 §17 L7's consumed
+      boolean means: every description renders its children as BLOCKS. Absent,
+      each description derives its own wrapper from its own block count -- one
+      block renders inline, two or more render as blocks -- which is what every
+      definition list written without the key does.
+
+        {"type":"definition_list","loose":true,"items":[
+          {"type":"definition_term","children":[...]},
+          {"type":"definition_description","children":[...]}]}
+
+      ONLY THE SPELLED FACT IS PUBLISHED, for the same reason the grouping is
+      not: everything else is derivable. What is NOT derivable is the one shape
+      the key exists for. A blank line between two ENTRIES does not loosen a
+      `<dl>` at all -- only a second block inside a description wraps it -- so
+      `<dd><p>x</p></dd>` has no blank-line spelling at any entry count, and a
+      tree without this field cannot say which of the two spellings it came
+      from. That is what makes a definition list unlike a `list`, where `tight`
+      is required and states the whole axis: here the derivation covers
+      everything except the case the derivation cannot see.
+
+      THE NAME IS `loose` AND NOT `tight`, and the divergence from `list` is
+      the point rather than an inconsistency. A `tight` field would be absent on
+      almost every definition list, and an absent boolean read as false says
+      LOOSE -- the opposite of the default, in the one place a consumer is most
+      likely to write `if (node.tight)`. `loose: true` has no such reading:
+      absent means derived, which is the truth. It also matches L7's own key,
+      and follows `list.bareMarker`, the other field here that records an
+      authored distinction the default spelling cannot express.
+
+   9. HOW DEEP AN INGESTED AST MAY NEST -- NORMATIVE. Reading a serialized AST
+      is a recursive descent over attacker-controlled structure, so it needs a
+      bound for the same reason the parser does (PART 9 §25, RESOURCE BOUNDS).
+      This states the PROPERTY rather than a number, because the number cannot
+      be shared -- see the trap below.
+
+      (a) An implementation MUST ACCEPT any AST ITS OWN PARSER CAN PRODUCE at
+          MAX_NESTING_DEPTH. Serialize-then-deserialize is an identity on
+          those documents, which is §6 restricted to the deepest input the
+          parser admits. `parse` piped into ingest MUST NOT fail on a document
+          the same build just parsed.
+
+      (b) It MUST REJECT deeper input with AN ERROR OF ITS OWN: a typed,
+          documented failure naming the depth bound. Not truncation, not a
+          crash, and not whatever its JSON library happened to raise. An
+          ingest that accepts a tree and then silently renders only part of it
+          is the worst of the three, because the caller is told nothing.
+
+      (c) The bound MAY be counted in WHATEVER UNIT suits the implementation
+          -- JSON structural levels, AST node levels, recursion frames --
+          because (a) and (b) are the whole of what a caller can rely on. An
+          implementation MUST NOT publish its unit as a shared contract.
+
+      THE TRAP, stated once, because all three reference engines fell into a
+      different corner of it: an ingest bound is NOT measured in the same unit
+      as MAX_NESTING_DEPTH, and the conversion factor is NOT A CONSTANT. One
+      AST level costs two JSON structural levels for a blockquote or div (the
+      object plus its `children` array) and four for a list (list, items,
+      item, children); in node terms a list level costs two nodes and a div
+      level one. At MAX_NESTING_DEPTH = 200 a blockquote chain therefore
+      encodes past 400 structural levels and a list ladder past 800 -- four
+      times the parser's own number, from the same document depth.
+
+      So neither MAX_NESTING_DEPTH nor "MAX_NESTING_DEPTH plus a small margin"
+      is a safe bound in either unit. An implementation MUST DERIVE its bound
+      from MAX_NESTING_DEPTH by the worst per-level cost of its own encoding,
+      and MUST NOT restate the parser's number as its ingest number -- a
+      second copy of a value is exactly how (a) gets violated. A bound written
+      down twice diverges; one derived from the other cannot.
+
+      The root type is not a leniency point: §7 fixes it at `document`, and
+      the schema pins it as a `const`. An ingest accepting some other root
+      (`doc`, say, which is ProseMirror's) will half-read a foreign format
+      rather than reject it.
+*)
+
+   10. A LINK REFERENCE DEFINITION IS A NODE -- NORMATIVE.
+      `type: "link_reference_definition"`, carrying:
+        label   the reference label as the author wrote it, before case folding
+        href    the destination; present and non-empty, since a definition with
+                an empty destination is not a definition but paragraph text
+        title   the quoted title, unescaped, when the definition carries one
+        attrs   a trailing attribute block on the definition line (§15 A2b)
+
+      IT HOISTS TO THE DOCUMENT, exactly as §7 requires of the FOOTNOTE
+      definition: a definition authored inside a block quote or a list item is
+      a child of the DOCUMENT, and its `pos` still says where it was written.
+      The container is left as the author's remaining content, which is what
+      corpus 117-footnote-definition-inside-a-container-is-collected already
+      pins for the footnote case.
+
+      THE ABBREVIATION DEFINITION IS NOT THE THIRD KIND HERE. §7's clause AN
+      ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL says the
+      opposite for that one: inside a container the line is not a definition
+      at all, it is paragraph text, and nothing is hoisted because nothing was
+      collected. Reading this section first, "the other two definition kinds"
+      said the reverse and made the abbreviation look like an unimplemented
+      hoist rather than a ruled-out one (carve#1267).
+
+      WHY A NODE AND NOT A ROOT MAP. §7 fixes the root at three fields, and its
+      reason is the one that decides this: §4 requires every node except the
+      root to carry `pos`, and a root FIELD cannot carry one. A definition is a
+      source construct occupying real bytes -- an editor jumps to it, a
+      formatter reproduces it, a language server renames its label. On the root
+      it would be the only content in the document that cannot be navigated to.
+      A node also answers "which definition wins" by document order rather than
+      by merge order, and holds its own attributes without a second rule.
+
+      That the root already looked like the precedent is a measurement error
+      worth recording: carve-js's INTERNAL tree carries `footnoteDefs` and
+      `footnoteDefPos`, which is the drift §7 was written against, and its
+      SERIALIZED root carries exactly three fields with the definition as a
+      `footnote` node in `children` -- the same shape carve-rs and carve-php
+      publish. §1 permits exactly that: internals may differ, and map on the way
+      out (carve#642).
+
+      WHAT THE NODE CLOSES. Three clauses wanted it and each named a different
+      loss:
+        §3a   a resolved reference published `href: ""` with the destination
+              recoverable from nothing
+        §10a  an unused definition survived neither the tree nor a round trip,
+              so `carve --markdown` on a document that is only `[lbl]: /u`
+              emitted nothing
+        §15 A2b  definition attributes had to be materialized onto every
+              resolved link, because there was nowhere to put them once
+      and the fourth is why it landed: a writer cannot reproduce a construct the
+      tree does not carry, so PART 11 §1's `parse(fmt(x)) == parse(x)` failed
+      for EVERY resolved reference in all three engines (carve#642).
+
+      A DEFINITION IS STILL INVISIBLE IN HTML. The node renders nothing on that
+      target; it feeds the links and images that resolve its label (PART 9R R1).
+      The non-HTML targets emit it, which is what §10a says and could not
+      previously require of this kind.
+
+   11. A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST -- NORMATIVE.
+      The wire shape is pinned by `resources/ast-schema.json` with
+      `additionalProperties: false` at every node, so a payload carrying a
+      property no node type names is NOT a Carve AST. An ingest MUST REFUSE it
+      with AN ERROR OF ITS OWN -- a typed, documented failure naming the
+      offending property and the PATH it appeared at, so a caller can find it
+      in a tree it did not write. Not a silent drop, and not a pass-through.
+
+      THE PASS-THROUGH IS THE ONE ANSWER THAT CANNOT BE RIGHT, and it is worth
+      saying why separately: an implementation that copies a wire record
+      wholesale re-emits the unknown property when it serializes again, so its
+      OWN OUTPUT no longer validates. A consumer that reads a tree here and
+      publishes it again then emits something the format rejects, having been
+      told nothing. Measured before this was written, one engine echoed 29 of
+      31 injected properties back (carve-js#709).
+
+      REFUSE RATHER THAN DROP, for the reason §9(b) already gives about depth:
+      "an ingest that accepts a tree and then silently renders only part of it
+      is the worst of the three, because the caller is told nothing". An
+      unknown property is the same shape of problem one field down. If a later
+      version of this format gives that property a meaning, an engine that
+      dropped it rendered a document that says something else and reported
+      success; an engine that refused sent the caller to a version mismatch.
+      The root-type note under §9 settles the same question for the root and
+      points the same way: half-reading a foreign format is worse than
+      declining it.
+
+      FORWARD COMPATIBILITY IS NOT AN ARGUMENT FOR LENIENCY HERE. `parse` and
+      the schema ship together in one build, so an unknown property means the
+      payload came from a DIFFERENT version, and no engine can render a field
+      it does not implement whatever it does with it. Refusing makes the
+      version mismatch visible at the boundary where it can still be handled;
+      dropping defers it to whatever the missing field was load-bearing for.
+
+      A DOCUMENTED LEGACY ALIAS IS THE ONE NARROW EXCEPTION. An implementation
+      MAY accept a property it once published itself, PROVIDED it decodes that
+      property onto a field the schema DOES name and says so in its
+      documentation -- `footnote.id`, which two engines published before §7
+      settled on `label`, is the case this is written for. Such a property is
+      not "a property the ingest cannot understand", which is what this clause
+      is about; refusing it would not protect a caller from a half-read tree,
+      it would take away the only reader that reads those stored trees whole.
+      The exception does NOT extend to a property the implementation merely
+      tolerates, and an implementation MUST NOT accept the alias on a type that
+      never carried it.
+
+      THIS DOES NOT CLOSE THE DOOR ON EXTENSION DATA. An extension that wants
+      to carry its own state across a round trip needs a DECLARED place to put
+      it, not the absence of a check -- a namespace the schema names and every
+      engine preserves. Until such a place exists, extension data on the wire
+      is invalid for the same reason any other unnamed property is, and an
+      extension that relies on the pass-through relies on one engine's leak
+      (PART 10 §1: an extension may not change the core vocabulary).
+
+
+   12. A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST -- NORMATIVE. §7
+      fixes the root at `type`, `children` and `srcByteLength`, and
+      `resources/ast-schema.json` marks all three `required`. §9 states the
+      ingest contract for DEPTH and closes with the one non-depth rule it had:
+      the root TYPE is not a leniency point. This is the rest of that root
+      contract, and it says the same thing for the same reason -- a reader that
+      invents a missing field or ignores an unexpected one has silently
+      repaired attacker-controlled input, which is the opposite of what an
+      ingest boundary is for.
+
+      An ingest MUST REFUSE, with AN ERROR OF ITS OWN in the sense §9(b)
+      already means -- typed, documented, naming what was wrong:
+
+      (a) A ROOT MISSING ANY OF THE THREE FIELDS. Not defaulted, not inferred.
+          A reader that supplies `children: []` for a payload that carried no
+          `children` has turned a truncated document into an empty one and
+          reported success; a reader that leaves `srcByteLength` unset has
+          published a document whose source length nothing in the payload
+          stated. Both hand the caller a valid-looking Carve document and no
+          way to learn the input was not one -- the same objection §9 makes to
+          accepting `doc` as a root type.
+
+      (b) A ROOT CARRYING ANYTHING ELSE. §11 already rules this for a property
+          the schema does not name, and the root is not an exception to it:
+          `document` is closed with `additionalProperties: false` like every
+          other node. Stated here because §7's "Nothing else" is written about
+          what an implementation may EMIT, and a reader looking for what it
+          must ACCEPT found nothing.
+
+      (c) A NODE WHOSE `type` THE SCHEMA DOES NOT NAME, AT DECODE. Not in a
+          renderer, one step later. The renderer's error names a RENDERING
+          problem for what is really a payload problem, and it only ever
+          arrives for a caller who renders: a formatter, a linter, a language
+          server or an indexer may hold the tree and never reach a renderer at
+          all, so for those the unknown type is silently carried. §9(b)'s
+          objection to truncation applies unchanged -- an ingest that accepts a
+          tree and then handles only part of it tells the caller nothing.
+
+      THE `keyValues` TRAP, stated because a strict reading of (c) breaks
+      §9(a) on a document the engine's own parser produces. `attrs.keyValues`
+      is the schema's only free-form map: its keys are ordinary attribute
+      identifiers, and `type` is one of them. So
+
+          [x](/u){type=widget}
+
+      serializes an object literally shaped `{"type":"widget"}` inside the
+      tree, and an implementation that refuses "any object whose `type` I do
+      not know" refuses that document.
+
+      (c) IS ABOUT NODE POSITIONS: the root, and every field the schema fills
+      with a node. It is deliberately NOT a list of field names. Which fields
+      hold nodes depends on the TYPE that carries them -- `content` is a node
+      list on `inline_extension` and a verbatim string on `code_block`, and
+      `title` is a node list on `admonition` and a string on `link` -- so a
+      list of names is either wrong for some type or has to repeat the schema.
+      Read it off `resources/ast-schema.json`, which is where the answer
+      already is. The one position the check must NEVER reach is the interior
+      of `attrs.keyValues`: its values are strings and hold no nodes at all,
+      which is what the trap above turns on.
+
+      (d) THE WHOLE PAYLOAD, VALIDATED AGAINST `resources/ast-schema.json`
+          (carve#881). Types and required fields together, at DECODE, refused
+          with the same typed error (a), (b) and (c) already require. Not a
+          fourth list of leniency points -- the schema is the list, it already
+          describes every one of them, and the rows below were only ever
+          divergent because nothing consulted it.
+
+          One clause rather than a row per field, because ruling them one at a
+          time is what produced the state it replaces. Measured after (a)-(c)
+          landed, with all three engines agreeing on THOSE: a root `children`
+          of `null` was read as an empty document by carve-js and carve-php --
+          §12's own objection ("a reader that supplies a default has turned a
+          truncated document into an empty one") arriving through a door the
+          clause did not cover. `attrs: {"class":"x"}` was ACCEPTED by
+          carve-php and rendered as `class="x"`, while the other two refused
+          the payload: `class` is what the rendered HTML calls the thing, so it
+          is the natural producer mistake, and a producer testing against
+          carve-php ships something the other two reject outright.
+          `text.value: 7` made carve-php render `<p>7</p>` -- silent nonsense
+          where a refusal is required. And two engines failed UNTYPED, which
+          §9(b) already forbids: carve-php raised a bare `TypeError` from
+          `AstCodec::decodeNode()` for a null or string child, carve-js a
+          `TypeError: nodes is not iterable` from the RENDERER for a node
+          missing a required field.
+
+          THE COST, recorded: this is a bigger change in all three engines than
+          (a)-(c) were, it rejects trees two of them accept today, and every
+          future schema addition becomes a potential rejection for a producer
+          that has not caught up. That last one is the point rather than a side
+          effect -- it is what makes the schema the contract instead of a
+          description of it.
+
+          The rows already fixed are NOT reopened: an unnamed property under
+          §11 and a missing or non-string `type` under (c) landed separately
+          and keep their own clauses.
+
+      A `srcByteLength` THAT IS PRESENT BUT WRONG IS NOT THIS CLAUSE'S
+      BUSINESS. It is derivable from the payload and nothing in the tree
+      depends on it, so all three engines ignore its value; that stays true and
+      is deliberate rather than unnoticed. (a) is about the field's PRESENCE,
+      and (d) does not reach it either -- the schema constrains the field's
+      TYPE and sign, not whether the number is the right one.
+
+   13. SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE. A producer MAY
+      return source-fidelity metadata beside an AST only when the caller asks
+      for it. It MUST NOT insert that data into the AST: §§2, 7, 11 and 12 keep
+      the canonical tree closed and unchanged.
+
+      The sidecar validates against `resources/ast-source-layout-schema.json`.
+      Version is 1, encoding is UTF-8, and each RFC 6901 `path` addresses the
+      accompanying canonical AST. `startByte` is inclusive and `endByte`
+      exclusive in the ORIGINAL input, including BOM and CRLF bytes. Entries
+      are sorted by path; a producer MUST NOT invent an unplaceable range.
+
+      Original source and byte ranges are the portable minimum. Every OTHER
+      property the schema declares is an optional MEASURED FACT, and each one
+      is defined below. ABSENT MEANS UNKNOWN, per field: a producer that did
+      not measure a fact omits it, a producer MUST NOT emit a fact it did not
+      measure, and a consumer MUST NOT read an omission as a default value.
+
+      F1 `markerRaw` -- the exact source text of the marker that opened the
+         node, WITHOUT the separator that follows it (PART 9 §24 C2). `-`,
+         `*`, `1.`, `1)`, `iv.` for a list item; the `::` of a definition
+         term.
+      F2 `markerColumn` -- the visual column the marker's first character
+         sits at, in PART 9 §24 C1's arithmetic and therefore ZERO-BASED: a
+         marker at the left margin is 0, and a marker after one leading tab is
+         4. It is NOT `pos.startColumn`, which is 1-based and counts
+         codepoints; the two disagree on every node.
+      F3 `contentColumn` -- content_column(node) exactly as PART 9 §24 C3
+         defines it, in the same zero-based arithmetic as F2, so `- ` is 2 and
+         `10. ` is 4.
+      F4 `continuationStyle` -- how the node's later lines reached it. One
+         value, chosen by PRECEDENCE, because a node may be written in more
+         than one of these ways at once: `explicit` if any line was reached
+         through the `+` continuation marker (PART 9 §17 L3/L4), else `lazy`
+         if any paragraph line sits BELOW the content column, else `indent` if
+         any later line REACHES the content column -- at it or past it, since
+         PART 9 §24 C3 asks a child to reach the column, not to land on it --
+         else `marker_line` if all
+         content is on the marker line, else `none` where the node takes no
+         continuation. The order is the order a writer must respect: the
+         spellings that cannot be re-derived from the tree win over the ones
+         that can.
+      F5 `blankLinesBefore`, `blankLinesAfter` -- how many lines holding
+         nothing but PART 2 `whitespace` sit immediately before and after the
+         node's range within its own container. The count is the AUTHORED one,
+         which is what makes it a fact rather than a re-derivation: the parse
+         reads a longer run and a single blank the same way in most positions.
+      F6 `openerRaw`, `closerRaw` -- the exact source text of the delimiter
+         run that opened and closed a fenced node, its info string excluded.
+         ABSENCE STILL MEANS UNKNOWN here, so an unterminated block is not
+         spelled by omitting `closerRaw`: it is `closerRaw` present and EMPTY.
+         A producer that measures fences at all emits both, and `openerRaw` is
+         never empty because a fence cannot open without a delimiter.
+      F7 `metadataSeparatorRaw` -- the exact separator run between a label or
+         term and its body, its whitespace included, for the definition-style
+         openers that take one.
+      F8 `leadingPipe`, `trailingPipe` -- whether the row was AUTHORED with
+         the optional leading and trailing `|`.
+      F9 `attachment` -- how the node reached the host it belongs to.
+         `preceding` for the host immediately above it (a caption slot under
+         its host, PART 9 §4), `continuation` for a `+`-attached block,
+         `detached` where an attachable position was written but the spelling
+         detached it (§4's two blank lines), `none` where the node has no
+         host.
+
+      A DECLARED FACT WITH NO DEFINITION IS A DEFECT, not a reserved slot.
+      `tests/ast-schema.test.mjs` fails when the schema declares an optional
+      property this clause does not define, unless the gap is named there with
+      its open question. That is what stops the sidecar from growing fields no
+      producer can implement (carve#1431).
+
+      DEFAULT OUTPUT DOES NOT MOVE. Ordinary parse, AST encoding, CLI JSON and
+      rendering retain their existing APIs and shapes. An AST decoder does not
+      accept this sidecar as an AST. A layout reader refuses an unknown version.
+
+   14. A CAPTION MAY CARRY AN OPTIONAL STRUCTURED SHORT CAPTION -- NORMATIVE.
+      A `figure` or `table` MAY carry `shortCaption`, an array of inline nodes.
+      It is an abbreviated navigation label for structured publishing targets
+      such as a list of figures or tables. It is NOT a second visible caption,
+      alternative text, an accessible description, or a replacement for the
+      required `figure.caption` / optional `table.caption`.
+
+      CARVE 0.1 SOURCE HAS NO SPELLING FOR THIS FIELD. A source parser therefore
+      never synthesizes it. It enters a tree through an AST consumer or format
+      bridge and survives AST encode/decode by §6. This structural capability
+      is intentionally independent of any future `^^` source proposal.
+
+      ORDINARY HTML, PLAIN AND ANSI OUTPUT IGNORE `shortCaption`; they continue
+      to render the full caption exactly once. A structured exporter MAY map it
+      to its target's corresponding navigation-caption field. A canonical
+      Carve source writer MUST omit the field because this version has no
+      source spelling; it MUST NOT substitute it for the full caption or
+      invent source syntax. A bridge or API which exposes conversion
+      diagnostics SHOULD report that structural loss.
+
+      The field is optional rather than an empty array by default. Absent means
+      no short caption was supplied. A processor MUST NOT derive one by
+      truncating or taking the first sentence of the full caption: abbreviation
+      is an editorial choice and may be language-dependent.
+
+   15. A TABLE MAY CARRY AN OPTIONAL ROW GROUPING -- NORMATIVE. A `table` MAY
+      carry `rowGroups`, an object which PARTITIONS the existing `rows` array
+      into a head, any number of body groups and a foot. `bodies` MAY be empty:
+      a table whose rows are all head and foot is a partition like any other,
+      and refusing it would make a head-only table the one shape the field
+      cannot describe. It is the representation of a
+      table model richer than a core pipe table can spell: several body
+      groups, a group's own intermediate header rows, a foot, and a count of
+      leading row-header columns per group. The standard ListTable extension
+      spells the useful header-led groups, foot and leading row headers.
+
+      IT PARTITIONS `rows`; IT DOES NOT REPEAT THEM. `rowGroups` holds counts,
+      never row nodes. The counts consume `rows` in order -- `headRows` first,
+      then each body's `headRows` and `bodyRows` in sequence, then `footRows` --
+      and they MUST account for every row exactly once. A producer MUST NOT
+      publish a partition whose counts do not sum to `rows.length`; a consumer
+      MUST treat one that does not as invalid rather than repairing it. Holding
+      counts instead of a second copy of the rows is what makes a contradiction
+      between the grouping and the table's content unrepresentable, so `rows`
+      remains the single sequence every consumer reads.
+
+      `headRows` IS STATED RATHER THAN DERIVED. The leading run of header rows
+      is what an HTML renderer already uses for `<thead>`, and it cannot serve
+      here: a body's intermediate header rows are header rows too, so a table
+      whose first body opens with one has a leading run that spans both, and
+      the boundary between them is not recoverable from the rows. The count is
+      therefore explicit whenever `rowGroups` is present.
+
+      `rowHeadColumns` SITS ON THE GROUP, not on the table, matching the model
+      being exchanged, so a table whose groups disagree survives and there is
+      exactly one home for the value. Absent means zero.
+
+      THE OBJECT IS OPTIONAL; ITS THREE PARTS ARE NOT. `headRows`, `bodies` and
+      `footRows` are required together, because a partition missing one of them
+      describes no structure at all -- the omission would have to be read as a
+      zero, and a zero head is a claim rather than a silence. `rowHeadColumns`
+      is the exception and is optional, since it does not partition anything.
+
+      ABSENT MEANS TODAY'S STRUCTURE, and this is why the field breaks nothing:
+      a table without `rowGroups` has the implicit partition every renderer
+      already derives -- the leading run of header rows as the head, everything
+      after it as one body, no foot, no row-head columns.
+
+      A pipe table's preceding block-attribute line MAY carry
+      `header-rows=N` and/or `footer-rows=N`. An empty boolean value means one;
+      otherwise N MUST be a non-negative decimal integer, and the two counts
+      MUST NOT exceed the number of rows. The parser synthesizes one body group
+      holding all rows between them. Explicit header rows promote every cell in
+      those rows to a column-header cell; native `|=` cells outside that head
+      remain header cells and default to row scope. The attributes are consumed
+      in HTML, where the three ranges render as `thead`, `tbody`, and `tfoot`.
+
+      CORE PIPE-TABLE SOURCE CANNOT SPELL multiple bodies, intermediate body
+      headers, or per-group row-head counts. Those richer partitions may enter
+      through an AST consumer or format bridge and survive AST encode/decode by
+      §6. The ListTable
+      extension authors a leading head, header-led body groups, a foot and
+      leading row-header columns; empty group boundaries remain interchange-only.
+
+      HTML maps a source-spelled head and foot to their native row-group
+      elements. Plain and ANSI keep rendering the flat rows. A structured
+      exporter MAY map the full partition to its target's equivalent. A
+      canonical Carve source writer retains `header-rows` / `footer-rows` when
+      they are present in table attributes; it MUST NOT invent a spelling for
+      richer grouping or drop/reorder rows to suit it.
+
+   16. A COMPOSITE FIGURE IS ITS OWN NODE TYPE -- NORMATIVE (PART 9 §4c;
+      carve#1122). The type is `figure_group`, and the wire shape:
+
+        {"type":"figure_group","children":[...],
+         "caption":[...],"attrs":{...},"pos":{...}}
+
+      `children` are ordinary block nodes IN SOURCE ORDER: the panels are the
+      `figure` and `table` nodes among them, exactly the nodes the inner
+      caption rules built, and non-panel stray content sits between them in
+      place. There is NO `panels` array: repeating the children under a
+      second key would let the two disagree, the same contradiction §15's
+      counts-not-copies rule exists to make unrepresentable, and a consumer
+      derives the panel list the way the renderer does -- by type, in order.
+
+      `caption` is the GROUP caption, an array of inline nodes; absent means
+      the group is uncaptioned (no empty-array placeholder). `type` and
+      `children` are required, `attrs` optional, `pos` per §4.
+
+      DISCRIMINATED BY TYPE, NOT BY SHAPE. Every `figure` node carries a
+      `target`; the group deliberately does not, and a consumer telling the
+      two apart by probing for the missing field would break silently the day
+      either shape grows a field. The type string is the whole test, which is
+      why this is a NEW type rather than a target-less `figure`.
+
+      NO `shortCaption`, NO legends, NO label fields. §14's `shortCaption`
+      stays on `figure` and `table`; whether it ever reaches the group, and
+      whether repeated `^` blocks become legends, is carve#1118's and
+      carve#1121's design space and is not claimed here. The schema
+      (`resources/ast-schema.json`) pins the shape; an unknown property on a
+      `figure_group` is rejected on ingest like any other (§11).

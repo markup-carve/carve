@@ -25,6 +25,79 @@ const here = dirname(fileURLToPath(import.meta.url))
 const repo = resolve(here, '..')
 const grammarPath = resolve(repo, 'resources/grammar.ebnf')
 const grammar = readFileSync(grammarPath, 'utf8')
+const readJson = (path) => JSON.parse(readFileSync(resolve(repo, path), 'utf8'))
+
+test('the checked-in grammar is assembled from its normative modules', () => {
+  const output = execFileSync(process.execPath, ['scripts/spec-source.mjs', '--check'], {
+    cwd: repo,
+    encoding: 'utf8',
+  })
+  assert.match(output, /grammar aggregate matches 26 normative source modules/)
+
+  const modules = readdirSync(resolve(repo, 'resources/spec')).filter((file) => file.endsWith('.ebnf'))
+  for (const module of modules) {
+    const source = readFileSync(resolve(repo, 'resources/spec', module), 'utf8')
+    assert.ok(source.endsWith('\n'), `${module} must end with a newline`)
+    const lines = source.split('\n').length
+    assert.ok(lines <= 1000, `${module} has ${lines} lines; split it at a rule boundary`)
+
+    let depth = 0
+    for (let offset = 0; offset < source.length - 1; offset += 1) {
+      const token = source.slice(offset, offset + 2)
+      if (token === '(*') {
+        depth += 1
+        offset += 1
+      } else if (token === '*)') {
+        depth -= 1
+        assert.ok(depth >= 0, `${module} closes an EBNF comment it did not open`)
+        offset += 1
+      }
+    }
+    assert.equal(depth, 0, `${module} leaves ${depth} EBNF comment(s) open`)
+  }
+})
+
+test('stable rule ids cover every normative clause', () => {
+  const output = execFileSync(process.execPath, ['scripts/spec-rules.mjs', '--check'], {
+    cwd: repo,
+    encoding: 'utf8',
+  })
+  assert.match(output, /stable normative rule ids cover the grammar/)
+})
+
+test('the executable ownership transition agrees with the published table', () => {
+  const { boundaries } = readJson('resources/spec/layout-transitions.json')
+  for (const [boundary, expected] of Object.entries(boundaries)) {
+    const closed = ownershipTransition(boundary, false)
+    const open = ownershipTransition(boundary, true)
+    if (expected.paragraphOpen === 'deepest') {
+      assert.deepEqual(closed, { containerOpen: expected.containerOpen, paragraphOpen: false })
+      assert.deepEqual(open, { containerOpen: expected.containerOpen, paragraphOpen: true })
+    } else {
+      assert.deepEqual(closed, expected)
+      assert.deepEqual(open, expected)
+    }
+  }
+})
+
+test('interruption and target tables use closed vocabularies', () => {
+  const interruption = readJson('resources/spec/paragraph-interruption.json')
+  const all = [
+    ...Object.keys(interruption.visibleOpeners),
+    ...interruption.invisibleOpeners,
+    ...interruption.nonInterrupting,
+  ]
+  assert.equal(new Set(all).size, all.length, 'one construct has two interruption answers')
+
+  const capabilities = readJson('resources/spec/target-capabilities.json')
+  const targets = ['html', 'markdown', 'plain', 'ansi', 'carve']
+  const ruleIds = new Set(readJson('resources/spec/rules.json').rules.map(({ id }) => id))
+  for (const [feature, matrix] of Object.entries(capabilities.features)) {
+    assert.ok(ruleIds.has(matrix.rule), `${feature} cites an unknown rule`)
+    const { rule, ...answers } = matrix
+    assert.deepEqual(Object.keys(answers), targets, `${feature} does not answer every target`)
+  }
+})
 
 // Every PART's section labels, keyed by PART number, read from the
 // "  N. TITLE" headings that follow each PART banner.
