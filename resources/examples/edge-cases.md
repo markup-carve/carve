@@ -28491,10 +28491,12 @@ intro
 
 :::
 
-A description line is the other place a blank line turns out not to matter. A
-block opener written directly under one belongs to the description at any indent
-above zero, so the payload does not have to reach the description's own content
-column to get there.
+A description line is the other place a blank line turns out not to matter -
+but the clause says where an opener may sit, and a description body's floor is
+its own content column. An opener BELOW that column does not reach the body at
+all: the body ends there and the opener is classified in whatever context
+survives it (PART 9, `BELOW THE BODY'S COLUMN THE BODY ENDS`). At the top level
+that context needs column 0, so a `>` one column in opens nothing.
 
 ::: compare
 
@@ -28507,14 +28509,17 @@ column to get there.
 ```html
 <dl>
   <dt>term</dt>
-  <dd>
-    <p>definition</p>
-    <blockquote><p>quote</p></blockquote>
-  </dd>
+  <dd>definition</dd>
 </dl>
+<p>&gt; quote</p>
 ```
 
 :::
+
+Inside a list item the surviving context is the item, and the same quote reaches
+the ITEM's content column - so it opens there, as a sibling of the definition
+list rather than inside the `dd`. The base the definition list established
+governs the definition list, not the next opener written below it.
 
 ::: compare
 
@@ -28531,16 +28536,18 @@ column to get there.
   <li>intro
     <dl>
       <dt>term</dt>
-      <dd>
-        <p>definition</p>
-        <blockquote><p>quote</p></blockquote>
-      </dd>
+      <dd>definition</dd>
     </dl>
+    <blockquote><p>quote</p></blockquote>
   </li>
 </ul>
 ```
 
 :::
+
+A footnote body answers the first way: the quote is one column below the
+description's column and two below nothing else, so the description ends and the
+line stays paragraph text in the footnote body.
 
 ::: compare
 
@@ -28563,12 +28570,9 @@ see[^n]
       <p>intro</p>
       <dl>
         <dt>term</dt>
-        <dd>
-          <p>definition</p>
-          <blockquote><p>quote</p></blockquote>
-        </dd>
+        <dd>definition</dd>
       </dl>
-      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>&gt; quote<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -29027,6 +29031,170 @@ iii.  first
   <li>first</li>
 </ol>
 <p>second</p>
+```
+
+:::
+
+## Below a definition body's column the body ends
+
+A definition body has three bands, and the boundary is its own content column
+(PART 9, `BELOW THE BODY'S COLUMN THE BODY ENDS`). Below the column the body
+ENDS and the line is classified in whatever context survives it. At the column
+the line is the body's own block content. Past it a recognized opener takes its
+authored column as that block's local base.
+
+Column 0 is not a special case of the first band, it is the ordinary case: the
+`dd` closes and the quote is the document's own.
+
+::: compare
+
+```carve
+:: term
+:  definition
+> quote
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>definition</dd>
+</dl>
+<blockquote><p>quote</p></blockquote>
+```
+
+:::
+
+One and two columns in are the same band, and the surviving context here is the
+document, where an opener must be written at column 0. So the body still ends
+and the indented `>` is ordinary paragraph text - it opens a quote nowhere.
+
+::: compare
+
+```carve
+:: term
+:  definition
+ > quote
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>definition</dd>
+</dl>
+<p>&gt; quote</p>
+```
+
+:::
+
+::: compare
+
+```carve
+:: term
+:  definition
+  # H
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>definition</dd>
+</dl>
+<p># H</p>
+```
+
+:::
+
+The band is about OPENERS, not about indentation. A line that opens nothing is
+lazy paragraph text and folds into the body from any column, exactly as it does
+under a list item.
+
+::: compare
+
+```carve
+:: term
+:  definition
+  more
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>definition
+more</dd>
+</dl>
+```
+
+:::
+
+At the body's column the quote is the body's own block content, and past it the
+opener keeps its authored column as the block's base. Both nest.
+
+::: compare
+
+```carve
+:: term
+:  definition
+   > quote
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>definition</p>
+    <blockquote><p>quote</p></blockquote>
+  </dd>
+</dl>
+```
+
+:::
+
+::: compare
+
+```carve
+:: term
+:  definition
+    > quote
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>definition</p>
+    <blockquote><p>quote</p></blockquote>
+  </dd>
+</dl>
+```
+
+:::
+
+"The surviving context" is not always the document. Inside a list item the body
+ends the same way, and the quote is then measured against the ITEM's content
+column, which it reaches - so it opens inside the item rather than inside the
+`dd`. The base a block establishes governs that block, never the next opener
+written below it.
+
+::: compare
+
+```carve
+- intro
+
+  :: term
+  :  definition
+   > quote
+```
+
+```html
+<ul>
+  <li>intro
+    <dl>
+      <dt>term</dt>
+      <dd>definition</dd>
+    </dl>
+    <blockquote><p>quote</p></blockquote>
+  </li>
+</ul>
 ```
 
 :::

@@ -1,0 +1,95 @@
+Below a definition body's column the body ends
+
+```
+:: term
+:  definition
+> quote
+.
+<dl>
+  <dt>term</dt>
+  <dd>definition</dd>
+</dl>
+<blockquote><p>quote</p></blockquote>
+```
+
+```
+:: term
+:  definition
+ > quote
+.
+<dl>
+  <dt>term</dt>
+  <dd>definition</dd>
+</dl>
+<p>&gt; quote</p>
+```
+
+```
+:: term
+:  definition
+  # H
+.
+<dl>
+  <dt>term</dt>
+  <dd>definition</dd>
+</dl>
+<p># H</p>
+```
+
+```
+:: term
+:  definition
+  more
+.
+<dl>
+  <dt>term</dt>
+  <dd>definition
+more</dd>
+</dl>
+```
+
+```
+:: term
+:  definition
+   > quote
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>definition</p>
+    <blockquote><p>quote</p></blockquote>
+  </dd>
+</dl>
+```
+
+```
+:: term
+:  definition
+    > quote
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>definition</p>
+    <blockquote><p>quote</p></blockquote>
+  </dd>
+</dl>
+```
+
+```
+- intro
+
+  :: term
+  :  definition
+   > quote
+.
+<ul>
+  <li>intro
+    <dl>
+      <dt>term</dt>
+      <dd>definition</dd>
+    </dl>
+    <blockquote><p>quote</p></blockquote>
+  </li>
+</ul>
+```

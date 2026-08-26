@@ -594,6 +594,7 @@ index: examples/edge-cases/index.md
 
   a-definition-body-s-separator-width-sets-its-content-column
   an-ordered-item-s-separator-width-sets-its-content-column
+  below-a-definition-body-s-column-the-body-ends
 [edge-attributes] Attributes
 > Attribute lines and inline blocks, names and values, classes, booleans and the semantic/language sugar.
 out: examples/edge-cases/attributes.md

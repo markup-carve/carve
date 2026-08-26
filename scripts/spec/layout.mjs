@@ -2263,8 +2263,27 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               i = end
               continue
             }
-            if (foldablePlain(cur) && bodyLeavesParagraphOpen(bodyLines)) {
-              bodyLines.push(stripIndent(cur).replace(/[ \t]+$/, ''))
+            // BELOW THE BODY'S COLUMN THE BODY ENDS (PART 9, carve#932). The
+            // question is asked of the line as the body would READ it, which is
+            // dedented to the body's column 0 - not of the line as authored.
+            //
+            // Those two differ exactly where a block opener sits below the
+            // body's column: a top-level opener must be written at column 0
+            // (STRICT COLUMN ZERO), so `<SP>> q` is not a quote where it
+            // stands, `foldablePlain` called on the authored line said "plain",
+            // and the push then DEDENTED it to the body's column 0 - the one
+            // column where it IS an opener. The line opened a quote inside the
+            // `dd` that it opened nowhere else, at 1 and 2 columns only, which
+            // is the band carve#1772 measured.
+            //
+            // Asking the dedented line instead ends the body there, and the
+            // surviving top-level context classifies the authored line: below
+            // column 0's strict rule it is ordinary paragraph text. Plain text
+            // is unaffected at every column, because dedenting `more` yields
+            // `more`.
+            const dedented = stripIndent(cur).replace(/[ \t]+$/, '')
+            if (foldablePlain(dedented) && bodyLeavesParagraphOpen(bodyLines)) {
+              bodyLines.push(dedented)
               i++
               continue
             }
@@ -3682,9 +3701,23 @@ function collectItems(lines, i, list, state, ind, meas) {
         const descendantOwned = (subCol >= 0 && col >= subCol) || (headSubCol >= 0 && col >= headSubCol)
         if (authoredBlockBase !== null && col < authoredBlockBase && !insideFence()) authoredBlockBase = null
         const openerBase = !descendantOwned && !insideFence() && opensAuthoredBase(lm.rest) ? col : null
+        // A LINE THAT OPENS ITS OWN BASE IS MEASURED AT ITS OWN COLUMN. The
+        // authored base is "the local `block_base` for THAT ONE BLOCK", so a
+        // standing base governs its block's payload and continuations - never
+        // the next opener written below it. `openerBase` therefore wins over
+        // `authoredBlockBase`, which is only reached by lines that open
+        // nothing.
+        //
+        // The two used to be the other way round, and `authoredBlockBase` is
+        // assigned from `openerBase` further down - AFTER this dedent - so a
+        // new opener was measured against the PREVIOUS block's base and its own
+        // column took effect one line too late. A definition list opening a
+        // base at the item's content column then held it over a quote written
+        // one column deeper, which arrived at body column 1 instead of 0 and
+        // stopped being an opener at all (carve#1772, corpus 422-8).
         const localBase = authoredBlockBase !== null && insideFence() && col < authoredBlockBase
           ? contentCol
-          : authoredBlockBase ?? openerBase ?? contentCol
+          : openerBase ?? authoredBlockBase ?? contentCol
         const dd = dedentMeasured(lm, line, localBase)
         const dedented = dd.text
         // The body line's own measurement, derived from this one rather than
