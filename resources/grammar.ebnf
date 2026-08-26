@@ -446,17 +446,19 @@
         `> > # H` / `> > a` / `tail` folds too: those are the shapes with a
         paragraph open, and depth was never the parameter.
 
-        Every engine folded the eight shapes above in a list item while ending
-        all of them in a block quote, on a rule that names neither container,
-        and the executable spec in scripts/spec did the same - so this repo's
-        implementation moves with them. The rule reaches the item's CONTENT
-        COLUMN too (`- a` / blank / `  # H` / `tail`), but no engine was
-        measured there and corpus 75-list-nesting-and-looseness-4 pins the
-        folding answer for a nested spelling of it, so that half is deliberately
-        NOT decided here and stays open. A WRAPPED attribute block (`- {.a` /
-        `  .b}` / `tail`) belongs to that same open half: its opener leaves no
-        paragraph open, but its continuation line arrives at the content column
-        and is what reopens one. (carve#1280)
+        The rule reaches blocks written at an item's CONTENT COLUMN too. A
+        heading there leaves no paragraph open, so a following below-column
+        line cannot stay in that item. In a nested list the owner table is then
+        applied to the surviving frames: corpus 75-list-nesting-and-looseness-4
+        closes the inner item and reclassifies `lazy` in the outer item, whose
+        paragraph remains the selected owner. This is ownership-first S4, not a
+        depth exception.
+
+        A WRAPPED attribute block (`- {.a` / `  .b}` / `tail`) is one
+        interrupting attribute line, not a paragraph split into physical-line
+        fragments. The opener and every continuation line leave no paragraph
+        open, so `tail` is reclassified outside the item. Whether the closing
+        brace shares the opener's line cannot change the interruption rule.
 
         A DEFINITION AT THE CONTENT COLUMN ENDS THE PARAGRAPH, NOT THE
         CONTAINER -- NORMATIVE (carve#1350). One part of the open half above
@@ -5389,12 +5391,6 @@ EOF = (* end of file *) ;
          corpus 81-paragraph-interruption-20: `Text` / `:::` / `stuff` is a
          paragraph followed by a div holding `stuff`.
 
-         This clause used to guard both, and cited a corpus that pins the
-         opposite for `:::`. All three engines follow the corpus. The `:::`
-         half was superseded when unclosed containers changed from degrading
-         to closing at EOF (carve#439) and was not updated with it; the stale
-         citation to "corpus 76" is the same paragraph renumbering that
-         accompanied that change.
       I5 INVISIBLE CONSTRUCTS interrupt AND are consumed: a reference
          definition (link `[r]: url`, footnote `[^r]: …`, abbreviation
          `*[A]: …`), a comment (`%%` line, `%%%` block), and a
@@ -5560,24 +5556,9 @@ EOF = (* end of file *) ;
       may hold `::: tip`, the inner line being an opener rather than a closer
       on account of its label. Only a bare equal-length line closes.
 
-      This paragraph said EQUAL-OR-GREATER and said equal-length fences do
-      not nest. Both were wrong and both contradicted the formal guard above
-      as well as all three engines, which agree that `::: note` / `body` /
-      `::::` leaves the block open and that `::: note` holds `::: tip`. Recorded
-      rather than quietly corrected because the two sentences had been read as
-      the rule (carve#770).
-
-      THIS PARAGRAPH ALSO SAID A BARE OPENER WITH NO MATCHING CLOSER AHEAD IS
-      LITERAL TEXT. That was its third wrong sentence, and the one the
-      carve#770 pass left standing three lines above its own correction note.
-      It contradicted PART 2, which states the rule with no such exception and
-      names the literal-text reading as the EARLIER one, dropped because it
-      "turned one wrong character into a corrupted document". All three
-      engines open a div for a bare `:::` with nothing closing it; none
-      produces the literal text this asked for. It survived because the corpus
-      pinned only the LABELED unclosed opener, so the one shape the two
-      clauses disagreed about was the one shape nothing gated. The bare shape
-      is pinned now (carve#1717).
+      Compatibility history for the retired equal-or-greater closer and
+      literal-unclosed readings lives in docs/spec-history.md. The current rule
+      is fully stated above and pinned by carve#770 and carve#1717.
 
       THE CANONICAL WIDTH IS A FUNCTION OF DEPTH, AND THAT COSTS O(depth^2)
       BYTES (carve#1553). The exact-length guard leaves the DIRECTION free --
@@ -5701,19 +5682,9 @@ EOF = (* end of file *) ;
       (resources/examples/edge-cases.md "Fence opener with a nested-list body inside a list
       item").
 
-      THIS PARAGRAPH ALSO SAID THAT WITH NO MATCHING CLOSER THE OPENER
-      DEGRADES TO LITERAL TEXT AND THE MARKER LINES FORM AN ORDINARY NESTED
-      LIST. That is the retired literal-text reading carve#1719 removed from
-      this section three screens up, wearing a list item. PART 2 grants it no
-      such carve-out: it names ONE exception and it is LAZY FOLDING, a
-      different shape (`- ::: d` over a flush-left `tail`, which opens
-      nothing), not a missing closer. carve-js, carve-php and carve-rs all
-      wrap the nested list in the container, byte for byte what the same
-      document produces WITH a closer at the item content column. It survived
-      the carve#770 pass, and it survived carve#1719 because the corpus pinned
-      the right bytes under a NEGATIVE label that described the removed rule --
-      a gate cannot fail on prose. The label is corrected with this sentence
-      (carve#1722).
+      The retired missing-closer reading and its compatibility evidence live in
+      docs/spec-history.md. The current host-closing rule applies unchanged in
+      a list item and is pinned by carve#1722.
 
       The two tiers for a typed block:
 
@@ -13096,6 +13067,19 @@ EOF = (* end of file *) ;
       is §7's answer rather than §10's; that is a measurement of one engine and
       not a ruling. An implementation emitting the node for a definition it
       recognizes satisfies this clause whichever way that question lands.
+
+   18a. A CITATION ITEM IS A POSITIONED INLINE NODE -- NORMATIVE.
+      Every item in `citation_group.items` carries `type: "citation"` and the
+      required `pos` of PART 12 §4, spanning its optional prefix, `-` author
+      suppression marker, `@key`, locator and suffix. Its existing `key`,
+      `prefix`, `locator`, `locatorLabel`, `locatorValue`, `suffix`,
+      `suppressAuthor`, `number` and `useIndex` fields are unchanged.
+
+      The item is content, not bookkeeping: an editor navigates to a locator,
+      a diagnostic points at one key among several, and an AST transform may
+      replace one citation without replacing its group. It therefore follows
+      the same typed, positioned node contract as every other content-bearing
+      value in the tree and belongs to the inline profile vocabulary.
 
    19. A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA -- NORMATIVE. A
       `table` MAY carry `columns`, an array whose entry at index N describes

@@ -43,6 +43,21 @@ const schema = JSON.parse(readFileSync(resolve(root, 'resources/ast-schema.json'
 const ajv = new Ajv2020({ allErrors: true, strict: true })
 const validate = ajv.compile(schema)
 
+test('citation items are typed positioned nodes', () => {
+  const pos = { startLine: 1, endLine: 1, startColumn: 2, endColumn: 12, startOffset: 1, endOffset: 11 }
+  const citation = { type: 'citation', key: 'smith', suppressAuthor: false, pos }
+  const group = { type: 'citation_group', items: [citation], raw: '[@smith]', pos }
+  const document = {
+    type: 'document',
+    srcByteLength: 12,
+    children: [{ type: 'paragraph', children: [group], pos }],
+  }
+
+  assert.equal(validate(document), true, firstErrors())
+  assert.equal(validate({ ...document, children: [{ type: 'paragraph', children: [{ ...group, items: [{ key: 'smith', suppressAuthor: false, pos }] }], pos }] }), false)
+  assert.equal(validate({ ...document, children: [{ type: 'paragraph', children: [{ ...group, items: [{ type: 'citation', key: 'smith', suppressAuthor: false }] }], pos }] }), false)
+})
+
 test('source layout is a separate closed versioned sidecar', () => {
   const layoutSchema = JSON.parse(readFileSync(resolve(root, 'resources/ast-source-layout-schema.json'), 'utf8'))
   const validateLayout = new Ajv2020({ strict: true }).compile(layoutSchema)
@@ -477,6 +492,7 @@ test('every node type the reference emits is declared in the schema', () => {
  * fields.
  */
 const NOT_PRODUCIBLE = {
+  citation: 'citations (Tier-2) - an item inside citation_group, off in a default-profile run',
   citation_group: 'citations (Tier-2) - off in a default-profile run, exercised by tests/corpus-optional',
   citation_definition:
     'citations (Tier-2) - off in a default-profile run, and with the extension off `[@key]: entry` is ordinary paragraph text (PART 12 section 18)',

@@ -38,6 +38,7 @@ const UNROUTED = new Map([
   ['docs/experiments/container-ownership.md', 'Compatibility evidence linked from the issue and pull request, not a permanent user guide.'],
   ['docs/experiments/comment-classification.md', 'Compatibility evidence linked from the issue and pull request, not a permanent user guide.'],
   ['docs/experiments/definition-footnote-authored-bases.md', 'Compatibility evidence linked from the issue and pull request, not a permanent user guide.'],
+  ['docs/spec-history.md', 'Retired readings linked from the docs index, not a primary navigation path.'],
   ['docs/.vitepress/carve-wasm/README.md', 'Build-tooling note inside .vitepress, not a site page.'],
 ])
 

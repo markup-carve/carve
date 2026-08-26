@@ -527,15 +527,25 @@ folds into the item:
   1. b         →  "1. b" is lazy text of item a  (column 2, below it)
 ```
 
-Every *other* block opener (quote, heading, fence, table) does nest at any
-indent past the parent's base column - those are unambiguous as blocks and never
-fold as lazy text. (Rule B's "a bullet opens a list at any indentation" is about
-the **top level** - no column-0 requirement, unlike CommonMark - not about
-sub-list nesting depth.)
+Every recognized block opener uses the same ownership test. At the top level it
+must start at column 0. Inside containers it must reach the innermost container's
+minimum content column. An opener written deeper is still structural: its
+authored column becomes the local base of that complete block, and `fmt` moves
+the block back to the minimum column. A line below the minimum can only continue
+an already-open paragraph; it cannot open a nested block.
 
-Carve does not require a blank line before a sub-list (unlike djot); indentation
-alone nests it. Structure comes from indentation only; the literal marker numbers
-are auto-renumbered and never create nesting.
+Keep four decisions separate:
+
+1. **Ownership:** the innermost container whose minimum column the opener
+   reaches owns the block.
+2. **Paragraph interruption:** recognized block openers interrupt prose, while
+   list markers do not.
+3. **Sub-list gating:** a nested list marker must reach the item content column;
+   no blank line is required once it does.
+4. **Looseness:** blank lines and paragraph boundaries decide whether paragraph
+   wrappers are rendered; structural nesting alone does not.
+
+Literal marker numbers are auto-renumbered and never create nesting.
 
 #### Task Lists
 ```
@@ -560,9 +570,9 @@ text directly (`<li>text</li>`); a loose item wraps each paragraph in `<p>`
 item's sub-*block* — a sub-list, block quote, fenced code, fenced div,
 heading or table — does **not** loosen the list. The item stays tight with the
 block attached, so checklists-with-notes and steps-with-code stay compact. Only
-a real second paragraph (or a blank between items) loosens. The blank line is
-still required to start the block, so block structure and the uniformity
-principle are unchanged — only the tight/loose rendering differs from djot.
+a real second paragraph or a blank between sibling items loosens it. The blank
+line is optional for a recognized opener; when present, it affects layout and
+looseness, not whether the opener is structural.
 
 **List continuation marker** (Carve addition): a lone `+` at the marker column
 attaches the following flush-left block to the current item with no blank line,
@@ -1030,8 +1040,10 @@ renders as
 
 **Rules** (PART 9 §16):
 - A label is a non-empty physical-line identifier. It may contain spaces and
-  tabs, matched exactly, but never a source newline; `[^two` then `words]` is
-  literal text rather than a reference.
+  tabs, but never a source newline. Lookup trims leading and trailing ASCII
+  whitespace and collapses each internal ASCII-whitespace run to one space;
+  matching remains case-sensitive. `[^two` then `words]` is literal text rather
+  than a reference.
 - Definitions may appear anywhere (order-independent); the first
   definition for a label wins. A body is the def line plus any indented
   continuation lines (parsed as blocks).

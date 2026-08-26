@@ -681,13 +681,18 @@
     },
     "citation": {
       "type": "object",
-      "title": "Citation item",
-      "description": "One `@key` inside a citation group. A plain object, like `definition_item`.",
+      "title": "citation (inline)",
+      "description": "One positioned `@key` node inside a citation group.",
       "required": [
+        "type",
         "key",
-        "suppressAuthor"
+        "suppressAuthor",
+        "pos"
       ],
       "properties": {
+        "type": {
+          "const": "citation"
+        },
         "key": {
           "type": "string"
         },
@@ -729,6 +734,10 @@
         "useIndex": {
           "type": "integer",
           "description": "Per-key, document-wide use-site index (1-based); drives back-link anchors."
+        },
+        "pos": {
+          "$ref": "#/$defs/pos",
+          "description": "The complete citation item, from its optional prefix through its optional suffix."
         }
       },
       "additionalProperties": false
@@ -1478,6 +1487,7 @@
             "abbreviation",
             "autolink",
             "caption_number",
+            "citation",
             "citation_group",
             "code",
             "comment",
@@ -1514,6 +1524,21 @@
         }
       },
       "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "citation"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/citation"
+          }
+        },
         {
           "if": {
             "properties": {

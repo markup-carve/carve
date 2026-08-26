@@ -88,6 +88,7 @@ test('types the implementations emit are all covered', () => {
     'autolink',
     'admonition',
     'heading_ref',
+    'citation',
     'citation_group',
     'caption_number',
     'substitution',
