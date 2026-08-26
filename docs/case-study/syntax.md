@@ -640,7 +640,7 @@ Output:
 ```
 :: Term
 : This definition continues \
-  on the next line.
+   on the next line.
 : Second definition.
 ```
 
@@ -648,8 +648,8 @@ Or with indentation:
 ```
 :: Term
 : This definition has
-  multiple lines through
-  indentation continuation.
+   multiple lines through
+   indentation continuation.
 ```
 
 **Rules:**

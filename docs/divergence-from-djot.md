@@ -950,7 +950,7 @@ Most Djot source needs only mechanical changes:
    of prose now starts a block. Where you relied on Djot keeping it in the
    paragraph, add a blank line or escape the marker.
 7. Definition lists: rewrite `: term` (+ indented body) as `:: term` then
-   `: definition`. A multi-paragraph Djot `<dd>` carries over - a Carve
+   `:  definition`. A multi-paragraph Djot `<dd>` carries over - a Carve
    definition continues like a list item (indent a block after a blank line, or
    use a lone `+`; see section 9).
 8. **Attribute blocks that Djot accepted and Carve does not.** A class or id
