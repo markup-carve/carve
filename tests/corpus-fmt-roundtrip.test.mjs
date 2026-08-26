@@ -247,7 +247,7 @@ const canonicalAst = (value, inAttrs = false) => {
 
 /**
  * Fields that are metadata ABOUT a §1c wrapper rather than content inside it,
- * with the ONE value each may hold.
+ * with the ONE value each may hold and the ONE child it may describe.
  *
  * ADMITTED BY NAME, never as "a key the checker does not recognise" (§1c, IT IS
  * NOT A LICENSE TO IGNORE UNKNOWN KEYS). A key nothing has ruled on is content
@@ -257,12 +257,21 @@ const canonicalAst = (value, inAttrs = false) => {
  * `paragraph.blockImage` is the whole set today. PART 12 §23 pins it to `const:
  * true` and PART 9R R7 makes the promotion phase its only producer, so it
  * records that the paragraph IS the block image - which is the same fact the
- * dissolved spelling states by standing an `image` in block position. The value
- * is checked as well as the key: `blockImage: false` is a spelling PART 12 §23
- * forbids, and a wrapper carrying it is not one this predicate has been told
- * anything about.
+ * dissolved spelling states by standing an `image` in block position.
+ *
+ * ALL THREE HALVES ARE CHECKED, and each is a way the field could mean
+ * something this clause has not ruled on:
+ *
+ *   - the KEY, because an unruled field is content;
+ *   - the VALUE, because `blockImage: false` is a spelling PART 12 §23 forbids
+ *     ("a paragraph that is not a block image omits the field");
+ *   - the CHILD, because the equivalence §1c states is between an `image` in
+ *     block position and a wrapper carrying this field AROUND ONE IMAGE. The
+ *     other shape §1c reaches, a paragraph holding one `comment`, has no
+ *     business carrying a block-image flag, and a wrapper that did would be
+ *     saying something no clause has interpreted - so it is not bare.
  */
-const WRAPPER_METADATA = new Map([['blockImage', true]])
+const WRAPPER_METADATA = new Map([['blockImage', { value: true, child: 'image' }]])
 
 /**
  * True where a node is the wrapper PART 11 §1c permits losing, and nothing else.
@@ -275,15 +284,10 @@ const WRAPPER_METADATA = new Map([['blockImage', true]])
  * its neighbours all survive as themselves"). A paragraph carrying an attribute
  * block is not bare, and a writer that dropped it still fails.
  *
- * BARENESS IS NOT A KEY COUNT, and carve#1823 is why it stopped being one. The
- * predicate required exactly two keys, so the day carve-js began publishing
- * `paragraph.blockImage` the lone-indented-image documents grew a third and
- * §1c stopped recognising the wrapper it was written to forgive: a wrapper loss
- * the clause already tolerated was recounted as a FIELD loss and three corpus
- * documents went red. Nothing about those documents moved - flush-left
- * `parse(fmt(x))` was byte-identical across the two pins and all three still
- * render a bare `<img>` with no `<p>` - so the count, not the tree, was the
- * thing that was wrong.
+ * BARENESS IS NOT A KEY COUNT (carve#1823). A wrapper carrying `blockImage`
+ * holds three keys and is bare; one carrying an attribute block holds three and
+ * is not. What separates them is whether the key is metadata ABOUT the wrapper
+ * or content inside it, which a count cannot see.
  *
  * The wrapper is a `paragraph` and its single child is a node whose own
  * spelling at the block's column reads back as a block opener of that node's
@@ -298,26 +302,27 @@ const isBareWrapper = (node) => {
   if (node === null || typeof node !== 'object' || Array.isArray(node)) return false
   if (node.type !== 'paragraph') return false
   if (!Array.isArray(node.children) || node.children.length !== 1) return false
+  const only = node.children[0]
+  if (only === null || typeof only !== 'object' || Array.isArray(only)) return false
+  if (!SPELLS_ITS_OWN_WRAPPER_AWAY.has(only.type)) return false
   for (const key of Object.keys(node)) {
     if (key === 'type' || key === 'children') continue
-    if (!WRAPPER_METADATA.has(key) || node[key] !== WRAPPER_METADATA.get(key)) return false
+    const metadata = WRAPPER_METADATA.get(key)
+    if (metadata === undefined) return false
+    if (node[key] !== metadata.value || only.type !== metadata.child) return false
   }
-  const only = node.children[0]
-  return (
-    only !== null &&
-    typeof only === 'object' &&
-    !Array.isArray(only) &&
-    SPELLS_ITS_OWN_WRAPPER_AWAY.has(only.type)
-  )
+  return true
 }
 
-/** True where a tree holds a wrapper only the metadata carve-out lets §1c reach. */
-const reachesTheMetadataCarveOut = (node) => {
-  if (node === null || typeof node !== 'object') return false
-  if (Array.isArray(node)) return node.some(reachesTheMetadataCarveOut)
-  if (isBareWrapper(node) && Object.keys(node).some((key) => WRAPPER_METADATA.has(key))) return true
-  return Object.values(node).some((value) => Array.isArray(value) && reachesTheMetadataCarveOut(value))
-}
+/**
+ * The same predicate with the metadata carve-out taken back out.
+ *
+ * Its only reader is the guard that asks whether the carve-out is LOAD-BEARING:
+ * comparing the corpus under both predicates is what separates "the widened
+ * branch exists" from "a document needs it".
+ */
+const isBareWrapperWithoutMetadata = (node) =>
+  isBareWrapper(node) && Object.keys(node).every((key) => key === 'type' || key === 'children')
 
 /**
  * The tree with every wrapper §1c may dissolve dissolved into its child.
@@ -332,7 +337,7 @@ const reachesTheMetadataCarveOut = (node) => {
  *
  * Never applied to the node it is handed, which has no parent to dissolve into.
  */
-const withoutBareWrappers = (node) => {
+const withoutWrappers = (node, isWrapper) => {
   if (node === null || typeof node !== 'object' || Array.isArray(node)) return node
   const out = {}
   for (const [key, value] of Object.entries(node)) {
@@ -342,12 +347,15 @@ const withoutBareWrappers = (node) => {
     }
     out[key] = value.map((child) => {
       if (child === null || typeof child !== 'object' || Array.isArray(child)) return child
-      const walked = withoutBareWrappers(child)
-      return isBareWrapper(walked) ? walked.children[0] : walked
+      const walked = withoutWrappers(child, isWrapper)
+      return isWrapper(walked) ? walked.children[0] : walked
     })
   }
   return out
 }
+
+/** The dissolution §1c actually licenses, which is the one every sweep uses. */
+const withoutBareWrappers = (node) => withoutWrappers(node, isBareWrapper)
 
 // MEMOIZED because four sweeps in this file ask for the same three answers over
 // the same 1404 documents, and a parse is the expensive part of every one of
@@ -369,6 +377,11 @@ const astTree = memo((source) => JSON.stringify(canonicalAst(carveToAstJson(sour
 
 /** The same tree with the wrappers §1c may dissolve taken out of both sides. */
 const astShape = memo((source) => JSON.stringify(withoutBareWrappers(canonicalAst(carveToAstJson(source)))))
+
+/** The same again, with the metadata carve-out withheld. Read by one guard. */
+const astShapeWithoutMetadata = memo((source) =>
+  JSON.stringify(withoutWrappers(canonicalAst(carveToAstJson(source)), isBareWrapperWithoutMetadata)),
+)
 
 test('formatting a corpus document re-parses to the same tree (PART 11 §1, bounded by §1c)', () => {
   const beyond = []
@@ -414,24 +427,33 @@ test('a corpus document still reaches the PART 11 §1c ceiling', () => {
   )
 })
 
-// THE WIDENED BRANCH IS REACHED, asked separately from the ceiling above
-// because it is a separate way for this file to rot. The ceiling test only
-// wants SOME document to re-parse differently, and a `paragraph` holding one
-// `comment` satisfies it - so the metadata carve-out could stop being exercised
-// by anything and that test would stay green. carve#1823 added the carve-out on
-// the strength of three corpus documents; this is what says they are still
-// there, still carrying the field, and still the reason §1c applies to them.
-// The day no document does, the carve-out and this test are deleted together.
-test('a corpus document reaches the PART 11 §1c metadata carve-out', () => {
-  const reached = documents
+// THE WIDENED BRANCH IS LOAD-BEARING, asked separately from the ceiling above
+// because it is a separate way for this file to rot, and asked as "does a
+// document NEED it" rather than "does one produce the shape". The weaker
+// question - is there a wrapper carrying the field anywhere - stays green in a
+// world where the writer starts preserving those wrappers and some unrelated
+// comment wrapper keeps the ceiling reached, so it would report a dead carve-out
+// as live. This runs the sweep's own comparison twice, once with the carve-out
+// and once without, and names the documents that agree only WITH it.
+//
+// The day none do, the metadata carve-out and this test are deleted together.
+test('a corpus document needs the PART 11 §1c metadata carve-out to agree', () => {
+  const needed = documents
     .filter(({ slug }) => !declaredDrift.has(slug))
-    .filter(({ source }) => reachesTheMetadataCarveOut(JSON.parse(astTree(source))))
+    .filter(({ source }) => {
+      const formatted = written(source)
+      return (
+        astShape(formatted) === astShape(source) &&
+        astShapeWithoutMetadata(formatted) !== astShapeWithoutMetadata(source)
+      )
+    })
     .map(({ slug }) => slug)
   assert.notDeepEqual(
-    reached,
+    needed,
     [],
-    'no corpus document produces a wrapper carrying a WRAPPER_METADATA field, so the widening of ' +
-      'isBareWrapper is dead and should be deleted along with this test',
+    'no corpus document is reconciled by the WRAPPER_METADATA carve-out: every document that agrees ' +
+      'under it agrees without it, so the widening of isBareWrapper is dead and should be deleted ' +
+      'along with this test',
   )
 })
 
@@ -539,6 +561,15 @@ test('the PART 11 §1c bound reaches a bare single-child wrapper and no other sh
   assert.ok(
     !dissolves({ type: 'paragraph', blockImage: false, children: [image] }),
     'blockImage: false is a spelling PART 12 section 23 forbids, so the wrapper is not bare',
+  )
+  // AND THE CHILD IT DESCRIBES. §1c equates an `image` in block position with a
+  // wrapper carrying this field AROUND ONE IMAGE. A paragraph holding one
+  // comment is the clause's other shape and has no business carrying a
+  // block-image flag; one that does is saying something no clause has
+  // interpreted, so it keeps its wrapper.
+  assert.ok(
+    !dissolves({ type: 'paragraph', blockImage: true, children: [{ type: 'comment', value: 'c' }] }),
+    'blockImage describes an image child, so a comment wrapper carrying it is not bare',
   )
   // A KEY THE CHECKER HAS NEVER HEARD OF stays content, which is the half that
   // keeps this from being "ignore unknown keys". Reverting the loop to a
