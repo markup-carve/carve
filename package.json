@@ -1,6 +1,6 @@
 {
   "name": "carve-docs",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "private": true,
   "type": "module",
   "description": "Documentation site for Carve, a post-Markdown markup language",
