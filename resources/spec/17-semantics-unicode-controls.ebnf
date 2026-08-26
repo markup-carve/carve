@@ -250,11 +250,8 @@
    an option is configured there, and §1.5's admission sentence has been
    narrowed to say so.
 
-   WHAT THIS DOES NOT DO: it is not localization. There is no locale name and
-   no built-in table beyond the English defaults, because a locale table is
-   data an engine would then have to carry and keep current, and every host
-   that needs translated strings already has a catalog of its own. The map is
-   the seam to that catalog.
+   This is not a localization system: it defines no locale or built-in table
+   beyond the English defaults. The map is the seam to a host's catalog.
 
    AN IMPORTER DOES NOT BAKE A DERIVED NAME INTO SOURCE -- NORMATIVE
    (carve#1500). An HTML importer DROPS an attribute whose value EQUALS what

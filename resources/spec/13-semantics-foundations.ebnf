@@ -461,14 +461,9 @@
          AN ESCAPE REACHES THE OTHER READING where a space cannot. `|\= a |`
          is a data cell whose content is a literal `= a`, unchanged here.
 
-         THE COST, STATED. This CHANGES released spellings: `|=a |` was a
-         header cell and is now a data cell, `|{#x}=R|` was an attributed
-         cell and is now literal text. Both REINTERPRET rather than error,
-         which is the outcome to be careful about. It is accepted on a `0.x`
-         line for one rule over three, and it ships WITH its migration: §6e's
-         canonical writer already emits a space after every prefix, so a
-         formatted document is already conformant, and the glued form is what
-         a linter can name.
+         COMPATIBILITY. The released `|=a |` and `|{#x}=R|` spellings now
+         reinterpret as data-cell content rather than erroring. §6e's writer
+         migrates them by emitting a space after every prefix.
 
          THE LINTER NAMES IT `table-marker-run-padding` -- NORMATIVE. One id
          for the whole run, because T11 is one rule for the whole run: it

@@ -279,13 +279,8 @@
       the reversion does not happen, so the need does not arise: what the
       author wrote is a link, and it stays one.
 
-      WHY PRE-RESOLVE. Post-resolve makes `rawRef`'s stated purpose -- "so it
-      can be restored as literal text" -- unreachable, and `[x][]` cannot
-      survive a format cycle: the writer cannot reproduce a construct the tree
-      no longer carries, so PART 11's canonical writer would silently rewrite
-      one construct into another. Pre-resolve also keeps the distinction a
-      linter, a refactoring tool, or an editor round-tripping a file needs:
-      `[a][]` and `[a](#a)` are different things the author chose between.
+      PRE-RESOLVE preserves authored form through a format cycle: `[a][]` and
+      `[a](#a)` remain distinct constructs, and `rawRef` remains usable.
 
       WHAT IS STILL SERIALIZED. §5's rule is unchanged and is not in tension
       with this one: resolution RESULTS a consumer would otherwise have to

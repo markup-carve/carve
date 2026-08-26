@@ -256,9 +256,8 @@
          at any run length -- which is SS17's content-column model unchanged,
          and is why three blank lines before indented text still leave one
          loose item.
-         WHY THREE AND NOT TWO. Two fires on decoration -- generator output
-         and changelog spacing routinely spell two blank lines between
-         compatible sibling markers.
+         Two blank lines remain ordinary decorative spacing; three establish
+         the boundary.
       N2 ORDERED DIALECT. A list's dialect (decimal / lower- or upper-alpha
          / lower- or upper-roman) and delimiter are fixed by its FIRST
          item; a later marker outside the dialect, or with the other

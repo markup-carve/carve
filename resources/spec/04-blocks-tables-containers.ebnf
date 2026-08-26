@@ -86,10 +86,8 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
    A computed rowspan/colspan/alignment is authoritative, so an author copy of
    those keys is dropped.
 
-   WHY LAST, AND NOT BEFORE THE MARKERS. `|{#x}=R|` is a DATA cell whose
-   content begins with `=`, not an attributed header cell: once `=` has
-   committed the cell to header, everything after it is unambiguous, and one
-   order for both productions is what removes the ambiguity. *)
+   `|{#x}=R|` is a DATA cell whose content begins with `=`, not an attributed
+   header cell. Binding attributes after the markers removes that ambiguity. *)
 cell_attributes = attributes ;
 span_cell = rowspan_marker | colspan_marker ;
 
@@ -440,10 +438,7 @@ local_hard_break_block_open = colon_fence:open, space, backslash ;
    Third member of the sigil-fence family beside `line_block_open` and
    `local_hard_break_block_open`, and it takes the same REQUIRED space before
    its token; `:::>` is not an opener.
-   WHY A SIGIL AND NOT A KEYWORD: `::: quote` is already an admonition kind
-   rendering `<aside class="admonition quote">`, so the keyword is taken and
-   means something else. The `>` is unambiguous because it is already the
-   block-quote marker (markup-carve/carve#1718; jgm/djot#401).
+   `::: quote` remains an admonition kind; `>` selects the block quote.
    WHICH SPELLING AN AUTHOR USED is carried on the node as `fenced` (PART 12),
    because `carve fmt` must be able to write back what it read: normalizing
    one spelling to the other would rewrite documents no one asked to change.
@@ -576,4 +571,3 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
 
 format_name = "html" | "latex" | identifier ;
 raw_content = (* any content until closing fence *) ;
-

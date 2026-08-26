@@ -251,9 +251,8 @@
       NAMES, and its value is in range; what is out of contract is only that the
       value happens to be the default.
 
-      WHAT THE RULE IS NOT. It is not "drop `start` always". `start: 0` and
-      `start: 2` are carried through unchanged, and an implementation that
-      drops them has broken the field rather than normalized it.
+      This does not drop `start` generally: `start: 0` and `start: 2` pass
+      through unchanged.
 
    23. A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH -- NORMATIVE
       (carve#1784; PART 9R R7 owns the phase, this clause owns the wire).
