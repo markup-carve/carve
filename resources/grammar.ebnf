@@ -218,6 +218,26 @@
            line may close the frame because its column is owned by an ancestor;
            the closed block itself never closes its owner.
 
+           ONE AUTHORED BLOCK BASE -- NORMATIVE (carve#1781). Every open
+           container which accepts child blocks has a minimum
+           `content_column`. A recognized block opener AT that column opens
+           there. A recognized opener PAST it establishes its authored visual
+           column as the local `base_column` for that ONE complete block; the
+           opener, payload, structural continuations, metadata and closer are
+           measured from that base. Canonical output returns the block to the
+           container's minimum column. Ordinary over-indented text establishes
+           no base.
+
+           OWNERSHIP PRECEDES REBASING. The base belongs to the INNERMOST open
+           container whose content column the opener reaches. While that block
+           is open, a nested body's opener at its own content column is owned
+           by that nested body; it MUST NOT be reinterpreted as a fresh sibling
+           base in an ancestor. A blank line ends a paragraph, not the authored
+           block which contains it. List items, definition bodies, footnote
+           bodies and blocks attached by a continuation marker apply this same
+           rule; their construct clauses only define the minimum column and
+           attachment boundary.
+
            OWNER SELECTION FOR THE NEXT VISIBLE LINE. Determine this before
            interruption or lazy folding:
 
@@ -1700,13 +1720,10 @@ definition_indent = whitespace, {whitespace} ;
    establishes governs THAT BLOCK; it never carries over to the next opener
    written below it.
 
-   AUTHORED BLOCK BASES APPLY TO DEFINITIONS AND FOOTNOTES -- NORMATIVE
-   (carve#1729). The list-item rule in PART 9 §24 C3 applies to every body with
-   a minimum content column. A recognized block opener AT OR PAST a definition
-   body's column 3 or a footnote body's column 2 belongs to that body. Its
-   authored visual column is the local `block_base` for that one block; the
-   block's payload, continuations and closer are measured relative to that
-   base. Canonical output returns the opener to the body's minimum column.
+   AUTHORED BLOCK BASES -- NORMATIVE (carve#1729, carve#1781). Definition
+   bodies apply PART 0's ONE AUTHORED BLOCK BASE at the content column fixed by
+   their separator. The shared clause decides ownership, extent and canonical
+   placement; this construct adds no second rebase rule.
 
    Thus the `>` on
 
@@ -3480,11 +3497,9 @@ footnote_indent = whitespace, {whitespace} ;
    (carve-rs#611).
 
    THE BODY'S OWN COLUMN IS TWO -- NOT the first continuation line's actual
-   indent. A reader first consumes that minimum and then applies the shared
-   authored `block_base` rule above. Thus a body written farther right does not
-   move the body's column, but a recognized opener there is structural and its
-   relative payload indentation is preserved. Two is a floor for the body, not
-   a ceiling for its blocks. *)
+   indent. A reader first consumes that minimum and then applies PART 0's ONE
+   AUTHORED BLOCK BASE. Two is a floor for the body, not a ceiling for its
+   blocks; this construct adds no second rebase rule. *)
 
 (* DISMISSED (not reserved, no production): a sidenote form
      sidenote = "[>", inline_content, ']' ;
@@ -7319,16 +7334,11 @@ EOF = (* end of file *) ;
              was true; nothing pinned the difference, because it shows only in
              a LOOSE list -- in a tight one both readings render the same
              (carve#677).
-           - AT content_column: dedented to the body's column 0, a block
-             opener nests and a list marker opens a sublist.
-           - ABOVE content_column: a recognized block opener also nests. Its
-             authored visual column becomes that ONE block's temporary
-             `block_base`; the opener, its structural continuation/body and its
-             closer are interpreted relative to that base. Indentation beyond
-             `block_base` remains authored content. The canonical writer ignores
-             the temporary base and emits the block at content_column. Plain
-             paragraph indentation is unchanged, and a sublist marker keeps its
-             existing at-or-past containment rule rather than being rebased.
+           - AT OR ABOVE content_column: a block opener nests and a list marker
+             opens a sublist. Recognized non-list blocks apply PART 0's ONE
+             AUTHORED BLOCK BASE; this item clause defines only containment and
+             adds no second rebase rule. A sublist marker keeps its existing
+             at-or-past containment rule rather than being rebased.
              A processor with lint diagnostics SHOULD report this ambiguous
              compatibility spelling and name both author choices: dedent to
              content_column for the canonical structural spelling, or escape

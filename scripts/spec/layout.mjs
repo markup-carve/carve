@@ -1480,50 +1480,29 @@ const opensAuthoredBase = (line) => opensSubBlock(line) || isLinkDef(line) ||
  * returns left of it. This measures every leading run once and preserves any
  * payload indentation beyond the opener.
  */
-export function normalizeAuthoredBodyBases(lines) {
+export function normalizeAuthoredBodyBases(lines, state = {}) {
   const out = []
-  let blockBase = null
-  let opaque = null
   for (let index = 0; index < lines.length; index++) {
     const line = lines[index]
-    if (opaque !== null) {
-      out.push(line)
-      if (opaque.kind === 'code') {
-        const close = PURE_FENCE.exec(line)
-        if (close && close[1][0] === opaque.run[0] && close[1].length >= opaque.run.length) {
-          opaque = null
-        }
-      } else {
-        const close = COMMENT_FENCE_BODY.exec(line)
-        if (close && close[1].length === opaque.run.length) opaque = null
-      }
-      continue
-    }
-    if (isBlank(line)) {
-      out.push(line)
-      continue
-    }
     const measured = indentCols(line)
-    if (blockBase !== null && measured.col < blockBase) blockBase = null
-    if (blockBase === null && measured.col > 0 && opensAuthoredBase(measured.rest)) {
-      blockBase = measured.col
+    const establishesBase = measured.col > 0 && opensAuthoredBase(measured.rest)
+    const protectsInnermostContainer = measured.col === 0 && opensSubBlock(measured.rest)
+    if (!establishesBase && !protectsInnermostContainer) {
+      out.push(line)
+      continue
     }
-    const normalized = blockBase === null ? line : dedentMeasured(measured, line, blockBase).text
-    out.push(normalized)
-    if (blockBase === null && measured.col === 0) {
-      const code = FENCE.exec(normalized)
-      if (code && parseFenceInfo(code[2]) !== null) {
-        opaque = { kind: 'code', run: code[1] }
-        continue
-      }
-      const comment = COMMENT_FENCE_BODY.exec(normalized)
-      if (comment) {
-        const classified = classifyLayoutComment(lines, index)
-        if (classified && classified.end > index + 1) {
-          opaque = { kind: 'comment', run: comment[1] }
-        }
-      }
-    }
+
+    const base = establishesBase ? measured.col : 0
+    const candidate = lines.slice(index).map((source) => {
+      if (isBlank(source)) return source
+      const sourceMeasured = indentCols(source)
+      return sourceMeasured.col < base
+        ? source
+        : dedentMeasured(sourceMeasured, source, base).text
+    })
+    const relativeEnd = Math.max(1, firstBlockEnd(candidate, 0, candidate.length, state))
+    out.push(...candidate.slice(0, relativeEnd))
+    index += relativeEnd - 1
   }
   return out
 }
@@ -1999,7 +1978,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       if (!state.footnoteDefs.has(key)) {
         // FIRST definition wins (PART 9R state)
         const normalizedBody = state.authoredBodyBases
-          ? normalizeAuthoredBodyBases(bodyLines)
+          ? normalizeAuthoredBodyBases(bodyLines, state)
           : bodyLines
         const bodyBlocks = parseBlocks(normalizedBody, state, false)
         if (bodyBlocks.length === 0) {
@@ -2290,7 +2269,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             break
           }
           const normalizedBody = state.authoredBodyBases
-            ? normalizeAuthoredBodyBases(bodyLines)
+            ? normalizeAuthoredBodyBases(bodyLines, state)
             : bodyLines
           node.items.push({ ddBlocks: normalizedBody.length ? parseBlocks(normalizedBody, state, false) : [] })
           continue
@@ -3030,6 +3009,7 @@ function firstBlockEnd(lines, start, limit, state) {
       footnoteDefs: new Map(),
       abbrDefs: new Map(),
       blockDepth: state.blockDepth ?? 0,
+      measuringAuthoredBlock: state.measuringAuthoredBlock ?? false,
     }, false, true, undefined, stop)
   } catch {
     // Outside the executable subset: the extent is the honest answer, and the
@@ -3065,6 +3045,18 @@ function attachedBlockEnd(lines, start, state, endsAttachment) {
 const attachmentBoundary = (lines) => (idx) =>
   isBlank(lines[idx]) || CONT_MARKER.test(lines[idx])
 
+function authoredBlockEnd(lines, start, base, state) {
+  if (state.measuringAuthoredBlock) return start + 1
+  const candidate = lines.slice(start).map((source) => {
+    if (isBlank(source)) return source
+    const measured = indentCols(source)
+    return measured.col < base ? source : dedentMeasured(measured, source, base).text
+  })
+  return start + firstBlockEnd(candidate, 0, candidate.length, {
+    ...state,
+    measuringAuthoredBlock: true,
+  })
+}
 // Parse ONE following flush-left block (for the `+` continuation marker).
 function takeOneBlock(lines, start, state) {
   const one = attachedBlockEnd(lines, start, state, attachmentBoundary(lines))
@@ -3353,6 +3345,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     // its whole multi-line block. The canonical item column remains
     // `contentCol`; this is only the source collector's local zero.
     let authoredBlockBase = null
+    let authoredBlockLimit = null
     const insideFence = () => fence.opaque !== null || fence.colon.length !== 0
     const trackFence = (line, opens = true) => {
       if (fence.opaque) {
@@ -3480,7 +3473,6 @@ function collectItems(lines, i, list, state, ind, meas) {
         continue
       }
       if (lm.rest === '') {
-        if (!insideFence()) authoredBlockBase = null
         // A blank line INSIDE any open fence is fence content: keep it in the
         // item body and stay tight (no looseness decision).
         if (insideFence()) {
@@ -3716,8 +3708,14 @@ function collectItems(lines, i, list, state, ind, meas) {
         // parser, which knows the descendant's content column, rebases it.
         // Rebasing it against this ancestor would hoist the block one level.
         const descendantOwned = (subCol >= 0 && col >= subCol) || (headSubCol >= 0 && col >= headSubCol)
-        if (authoredBlockBase !== null && col < authoredBlockBase && !insideFence()) authoredBlockBase = null
-        const openerBase = !descendantOwned && !insideFence() && opensAuthoredBase(lm.rest) ? col : null
+        if (authoredBlockLimit !== null && i >= authoredBlockLimit && !insideFence()) {
+          authoredBlockBase = null
+          authoredBlockLimit = null
+        }
+        const insideAuthoredBlock = authoredBlockLimit !== null && i < authoredBlockLimit
+        const openerBase = !insideAuthoredBlock && !descendantOwned && !insideFence() && opensAuthoredBase(lm.rest)
+          ? col
+          : null
         // A LINE THAT OPENS ITS OWN BASE IS MEASURED AT ITS OWN COLUMN. The
         // authored base is "the local `block_base` for THAT ONE BLOCK", so a
         // standing base governs its block's payload and continuations - never
@@ -3734,7 +3732,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         // stopped being an opener at all (carve#1772, corpus 422-8).
         const localBase = authoredBlockBase !== null && insideFence() && col < authoredBlockBase
           ? contentCol
-          : openerBase ?? authoredBlockBase ?? contentCol
+          : authoredBlockBase ?? openerBase ?? contentCol
         const dd = dedentMeasured(lm, line, localBase)
         const dedented = dd.text
         // The body line's own measurement, derived from this one rather than
@@ -3806,7 +3804,10 @@ function collectItems(lines, i, list, state, ind, meas) {
         pushLine(dedented, dmeas)
         // Advance the incremental three-kind tracker so the blank-line branch
         // above knows whether an interior blank is fence content.
-        if (openerBase !== null) authoredBlockBase = openerBase
+        if (openerBase !== null) {
+          authoredBlockBase = openerBase
+          authoredBlockLimit = authoredBlockEnd(lines, i, openerBase, state)
+        }
         trackFence(dedented, bodyFenceOpens(i, dedented, localBase))
         // A COMMENT IS INVISIBLE, SO IT LEAVES NO PARAGRAPH OPEN. §24 C3 says a
         // comment "does end the open PARAGRAPH" (carve#677), of BOTH spellings

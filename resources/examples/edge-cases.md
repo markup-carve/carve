@@ -8735,7 +8735,7 @@ The id is the heading's text with each run of non-alphanumeric ASCII replaced by
 
 :::
 
-## A footnote body's own column is two, and a third column is its text
+## A footnote body's authored base can open a table past column two
 
 The body's minimum column is fixed by §16's `space, space`, not read off the first continuation line. A recognized block opener at or beyond that minimum establishes its own authored base, so these rows remain a table when written one column farther in. Canonical output returns the table to the body's minimum column.
 
@@ -8802,7 +8802,7 @@ see[^a] and [t][r]
 
 :::
 
-## A definition past a footnote body's column is the body's own text
+## A definition past a footnote body's column registers from its authored base
 
 Three spaces is a continuation, so the line belongs to the note. Because a recognized opener may establish an authored base past the minimum column, the link definition registers from there and remains invisible. The one-space control above still leaves the body and stays literal.
 
@@ -12790,7 +12790,7 @@ them.
 
 :::
 
-## A definition body continuation indented past its column is lazy text
+## A definition body opener at or past its column stays structural
 
 `definition_indent` reaches the body's minimum column. A recognized block opener
 at or beyond that column establishes its authored position as a local block
@@ -28073,9 +28073,10 @@ list looseness is decided.
 ## A definition list inside a footnote body carries its authored base
 
 A definition list is a recognized opener, so it belongs to the footnote body at
-or past that body's minimum column (PART 9 SS17, carve#1752). Written AT the
-column, the body's own minimum governs what follows it, and a quote below the
-definition is the note's next block.
+or past that body's minimum column (PART 0, carve#1781). The definition then is
+the innermost open container: a quote reaching its content column belongs to
+the definition, whether the definition list itself was written at or past the
+footnote's minimum.
 
 ::: compare
 
@@ -28099,9 +28100,11 @@ see[^n]
       <p>intro</p>
       <dl>
         <dt>term</dt>
-        <dd>definition</dd>
+        <dd>
+          <p>definition</p>
+          <blockquote><p>quote</p></blockquote>
+        </dd>
       </dl>
-      <blockquote><p>quote</p></blockquote>
       <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
@@ -28110,9 +28113,9 @@ see[^n]
 
 :::
 
-Written PAST the column, the opener's own column becomes the definition's local
-base, and a quote reaching that base is the definition's block rather than the
-note's.
+Written PAST the footnote column, the definition list itself first takes a local
+base. That does not change the nested result: ownership is resolved from the
+innermost container outward.
 
 ::: compare
 
@@ -28149,8 +28152,9 @@ see[^n]
 
 :::
 
-Below that base the quote reaches neither: it is inside the note, past the
-definition, and its marker is text.
+Below the definition's content column, the definition ends. The quote still
+reaches the surviving footnote body, where the shared rule recognizes it as a
+structural sibling rather than literal marker text.
 
 ::: compare
 
@@ -28176,7 +28180,8 @@ see[^n]
         <dt>term</dt>
         <dd>definition</dd>
       </dl>
-      <p>&gt; quote<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <blockquote><p>quote</p></blockquote>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -28545,9 +28550,9 @@ governs the definition list, not the next opener written below it.
 
 :::
 
-A footnote body answers the first way: the quote is one column below the
-description's column and two below nothing else, so the description ends and the
-line stays paragraph text in the footnote body.
+A footnote body follows the same surviving-context rule. The quote is below the
+description's column, so the description ends; it still reaches the footnote's
+minimum column and therefore opens a structural sibling there.
 
 ::: compare
 
@@ -28572,7 +28577,8 @@ see[^n]
         <dt>term</dt>
         <dd>definition</dd>
       </dl>
-      <p>&gt; quote<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <blockquote><p>quote</p></blockquote>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -28580,18 +28586,13 @@ see[^n]
 
 :::
 
-## The definition and footnote base rule does not reach a list item
+## One authored base rule reaches a definition nested in a list item
 
-Authored bases past a body's minimum column are stated for a definition body's
-column 3 and a footnote body's column 2 (PART 9 SS17, carve#1729). A list item is
-not one of those bodies, and it answers the same document differently by design.
-
-The document below is
-`419-a-definition-list-inside-a-footnote-body-carries-its-authored-base-2` with a
-list item in place of the footnote body: the same definition list one column past
-the container's minimum, the same quote at the definition's authored base. In the
-footnote body the quote is the definition's block. Here it is the item's, because
-no base was taken and the blank line returned the item to its own content column.
+List items, footnotes, and definitions use the same PART 0 rule. In this document
+the definition list opens one column past the item's minimum, then the definition
+body becomes the innermost owner. Its blank line does not discard the containing
+block's base, so the quote at the definition's content column remains in the
+`dd`, exactly as it does when the outer container is a footnote.
 
 ::: compare
 
@@ -28609,9 +28610,11 @@ no base was taken and the blank line returned the item to its own content column
   <li>intro
     <dl>
       <dt>term</dt>
-      <dd>definition</dd>
+      <dd>
+        <p>definition</p>
+        <blockquote><p>quote</p></blockquote>
+      </dd>
     </dl>
-    <blockquote><p>quote</p></blockquote>
   </li>
 </ul>
 ```

@@ -14,9 +14,9 @@ The complete mandatory and optional corpora were parsed with the switch off and 
 
 | body | fixture | AST | HTML | reason |
 |---|---|---:|---:|---|
-| footnote | `218-a-footnote-body-s-own-column-is-two-and-a-third-column-is-its-text` | changed | changed | an over-indented table becomes structural |
-| footnote | `220-a-definition-past-a-footnote-body-s-column-is-the-body-s-own-text` | changed | changed | an over-indented link definition registers |
-| definition | `269-a-definition-body-continuation-indented-past-its-column-is-lazy-text` | changed | changed | an over-indented quote becomes structural |
+| footnote | `218-a-footnote-body-s-authored-base-can-open-a-table-past-column-two` | changed | changed | an over-indented table becomes structural |
+| footnote | `220-a-definition-past-a-footnote-body-s-column-registers-from-its-authored-base` | changed | changed | an over-indented link definition registers |
+| definition | `269-a-definition-body-opener-at-or-past-its-column-stays-structural` | changed | changed | an over-indented quote becomes structural |
 
 No other mandatory fixture changed. No optional fixture changed. The three changes are direct instances of the proposed rule, not distinct semantic blockers.
 
@@ -44,6 +44,6 @@ The normalizer measures each leading run once and carries one active base forwar
 
 Adopt the shared rule. The corpus found three intended reinterpretations and no separate blocker:
 
-> A recognized block opener at or beyond a container body's minimum content column belongs to that body. Its authored column is the local base of that block; canonical output uses the minimum column.
+> A recognized block opener at or beyond the innermost open container's minimum content column belongs to that container. Its authored column is the local base of that one complete block; canonical output uses the minimum column.
 
 Migration tooling should report the three ambiguous old shapes and offer either structural dedent or escaping the opener to preserve literal text.

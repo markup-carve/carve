@@ -543,9 +543,9 @@ index: examples/edge-cases/index.md
   a-nested-list-in-a-footnote-body-stays-nested
   a-flush-left-line-after-a-footnote-definition-belongs-to-the-document
   a-footnote-continuation-survives-a-blank-run
-  a-footnote-body-s-own-column-is-two-and-a-third-column-is-its-text
+  a-footnote-body-s-authored-base-can-open-a-table-past-column-two
   a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text
-  a-definition-past-a-footnote-body-s-column-is-the-body-s-own-text
+  a-definition-past-a-footnote-body-s-column-registers-from-its-authored-base
   a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do
   a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink
   a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block
@@ -564,7 +564,7 @@ index: examples/edge-cases/index.md
 
   a-definition-list-inside-a-footnote-body-carries-its-authored-base
   a-recognized-opener-in-a-body-needs-no-blank-line-above-it
-  the-definition-and-footnote-base-rule-does-not-reach-a-list-item
+  one-authored-base-rule-reaches-a-definition-nested-in-a-list-item
 [edge-definitions] Definition lists and abbreviations
 > Terms and descriptions, abbreviation definitions and the document levels that may declare them.
 out: examples/edge-cases/definitions.md
@@ -588,7 +588,7 @@ index: examples/edge-cases/index.md
   an-abbreviation-term-is-one-ascii-alphanumeric-word
   a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace
   an-empty-abbreviation-term-is-not-a-definition
-  a-definition-body-continuation-indented-past-its-column-is-lazy-text
+  a-definition-body-opener-at-or-past-its-column-stays-structural
   an-abbreviation-expands-inside-an-inline-container
   25-definition-lists-7
   407-one-consumed-boolean-spells-the-looseness-no-blank-line-can-2

@@ -153,7 +153,8 @@ see[^n]
         <dt>term</dt>
         <dd>definition</dd>
       </dl>
-      <p>&gt; quote<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <blockquote><p>quote</p></blockquote>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
