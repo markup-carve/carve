@@ -24,6 +24,3 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-422-a-recognized-opener-in-a-body-needs-no-blank-line-above-it-7  the pin does not read a payload written directly under a description line as the description's content (carve-js#1518): it makes the line paragraph text or a sibling of the `dl`, depending on its column. The oracle reads it as description content at any indent above zero.
-422-a-recognized-opener-in-a-body-needs-no-blank-line-above-it-8  same band as -7, inside a list item (carve-js#1518).
-422-a-recognized-opener-in-a-body-needs-no-blank-line-above-it-9  same band as -7, inside a footnote body (carve-js#1518).

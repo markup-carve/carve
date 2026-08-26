@@ -1678,13 +1678,27 @@ definition_indent = whitespace, {whitespace} ;
    coherent rule is preferred to either: two different incoherences are not
    evidence for one of them.
 
-   THE FLOOR IS AN EQUIVALENT MUTANT UNTIL THE LADDER IS PINNED. Lowering a
-   reader's floor from column 3 to column 1 changes nothing any corpus document
-   can see today, because a line below the column falls through to the
-   flush-left branch and nests anyway. Documents covering all three bands, with
-   the two boundaries pinned on both sides, are owed and are deferred to their
-   own pass (carve#932); until they land this clause is the only thing that
-   makes the floor observable.
+   THE LADDER IS PINNED (carve#1772). The documents this clause deferred to
+   their own pass are corpus 425: column 0 and the two columns above it in the
+   BELOW band, the column itself, one column past it, a second opener kind, and
+   the plain line that is not an opener at all and folds from any column. Until
+   they landed, lowering a reader's floor changed nothing any corpus document
+   could see -- a line below the column fell through to the flush-left branch
+   and nested anyway -- so a corpus run reporting every golden reproduced was
+   true and said nothing about this band.
+
+   The executable oracle was the reader that had not moved, and it read a
+   payload written directly under a description line as description content at
+   any indent above zero. Three engines already followed the clause
+   (carve-js#870, carve-php#1036, carve-rs#792). The oracle follows it now.
+
+   THE SURVIVING CONTEXT IS WHATEVER HOLDS THE LIST. At the top level an opener
+   must be written at column 0, so a `>` one or two columns in opens nothing and
+   stays paragraph text. Inside a list item the same line is measured against
+   the ITEM's content column, and reaching it opens the block there -- as a
+   sibling of the definition list, not inside the `dd`. The base a block
+   establishes governs THAT BLOCK; it never carries over to the next opener
+   written below it.
 
    AUTHORED BLOCK BASES APPLY TO DEFINITIONS AND FOOTNOTES -- NORMATIVE
    (carve#1729). The list-item rule in PART 9 §24 C3 applies to every body with
