@@ -181,9 +181,42 @@ test('a second caret line does NOT continue the caption (item 4)', () => {
 })
 
 test('an unresolved reference image gives every caption line back', () => {
-  // The unwrap appends the caption's SOURCE to the paragraph. Reading one line
-  // where the caption held three would silently drop two of them.
+  // The GIVE-BACK appends the slot's SOURCE to the paragraph (PART 9R R7).
+  // Reading one line where the slot held three would silently drop two of them.
   const out = html('![alt][r]\n^ cap\nmore\nyet\n')
   assert.ok(!out.includes('<figure>'), out)
   assert.match(out, /\^ cap\nmore\nyet/, out)
+})
+
+/*
+ * THE PHASE'S OWN CONTRACT, which no corpus document can see.
+ *
+ * `blockImage` is what the four re-derivations collapsed into (carve#1784), and
+ * the corpus can only observe its CONSEQUENCE - the same `<img>` and `<figure>`
+ * bytes a probe render produced before. So the field itself, and the slot that
+ * binds or gives its lines back, are asserted here. Both directions: a promoted
+ * paragraph carries the field and a bound caption, an unpromoted one carries
+ * neither and holds the slot's lines as its own text.
+ *
+ * The phase runs inside `renderDoc`, which mutates the tree it is given, so the
+ * tree is read AFTER rendering. Reading it before would report the parse stage,
+ * where the answer deliberately does not exist yet.
+ */
+test('the promotion phase marks the paragraph and binds its slot', () => {
+  const doc = parse('![a][r]\n^ cap\n\n[r]: /u\n')
+  assert.equal(doc.blocks[0].caption, undefined, 'the parse must not bind the caption')
+  assert.deepEqual(doc.blocks[0].captionSlot?.src, ['^ cap'])
+  renderDoc(doc)
+  assert.equal(doc.blocks[0].blockImage, true)
+  assert.equal(doc.blocks[0].caption, 'cap')
+  assert.equal(doc.blocks[0].captionSlot, undefined, 'the slot is consumed by the phase')
+})
+
+test('an unpromoted paragraph keeps no field and takes the slot back as text', () => {
+  const doc = parse('![a][r]\n^ cap\n')
+  renderDoc(doc)
+  assert.equal(doc.blocks[0].blockImage, undefined)
+  assert.equal(doc.blocks[0].caption, undefined)
+  assert.equal(doc.blocks[0].captionSlot, undefined)
+  assert.deepEqual(doc.blocks[0].lines, ['![a][r]', '^ cap'])
 })

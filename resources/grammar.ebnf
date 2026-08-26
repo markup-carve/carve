@@ -8451,6 +8451,53 @@ EOF = (* end of file *) ;
       the caption registers it in captionIds for R4.
    R6 SECTION WRAPPING consumes headingIds after dedup -- the stateful
       emission algorithm in PART 9 §13.
+   R7 BLOCK IMAGE PROMOTION -- NORMATIVE (carve#1784). Block-image status is a
+      property of the RESOLVED tree, never of the source line. `![a][r]` is a
+      block image where `[r]: /u` is written and ordinary paragraph text where
+      it is not, and the definition may sit anywhere in the document -- so the
+      question cannot be answered while the block layer is still reading lines.
+
+      ONE PHASE, AFTER R1. A paragraph whose whole content resolves to a single
+      image becomes a BLOCK IMAGE (PART 9 §4's image-paragraph host, PART 11
+      §1c's writer-side collapse, PART 10's bare `<img>`). This is the ONLY
+      place the question is asked. Nothing before it may treat an image
+      paragraph as a block image, and nothing after it may re-derive the answer
+      -- a renderer, a writer and an importer all READ it (PART 12 §23 names
+      the field they read it from).
+
+      THE CAPTION BINDS HERE, NOT SYNTACTICALLY. A `^ ` line after an image
+      paragraph is an UNBOUND SLOT until this phase runs: it is not a caption,
+      and it is not paragraph text. The phase binds it as the block image's
+      caption where the paragraph is promoted, and where it is NOT promoted the
+      slot's SOURCE LINES -- all of them, a multi-line caption included -- go
+      back to the paragraph as ordinary text. So an unresolved reference image
+      does not merely leave a paragraph behind; it takes the caption line into
+      it.
+
+      That binding is resolution-dependent BY DESIGN, and it is the half worth
+      stating outright, because the alternative reads cleaner and is wrong.
+      Binding on the SOURCE SHAPE would put a `<figure>` around a paragraph of
+      literal `![a][r]` -- output no engine writes and no clause asks for. So
+      the caption is a property of the same resolved tree the image is.
+
+      A DISPLAY-MATH HOST HAS NOTHING TO WAIT FOR. §4's other prose-spelled
+      captionable host, a paragraph whose whole content is one display-math
+      span, is captionable and is not a block image: it has no reference to
+      resolve, so its slot binds outright. The syntactic filter that decides
+      WHICH paragraphs carry a slot at all is shared between the two hosts and
+      settles nothing else -- an unresolved reference image is
+      captionable-SHAPED, and it is not a block image.
+
+      WHAT THIS REPLACES, so the shape is not rebuilt by accident. The answer
+      used to be reached four times: a syntactic pre-filter in the block layer,
+      a post-pass that took apart a figure the block layer had built
+      speculatively (carrying the undo data on the node to do it), a probe
+      render whose output was discarded, and the paragraph serializer's own
+      render-and-test. Resolution fed the structural decision from four
+      directions, and a fifth consumer -- an importer with no access to any of
+      them -- guessed the rule a third time. An implementation that attaches
+      the caption optimistically and detaches it later is passing this clause's
+      tests while keeping the defect it exists to remove.
    ============================================================================ *)
 
 (* ============================================================================
@@ -9039,6 +9086,17 @@ EOF = (* end of file *) ;
       time and would not reach the next one. A block whose content spells
       anything ELSE -- a second node beside it, a text run, a NO-BREAK SPACE
       (§7) -- keeps its wrapper and no ceiling is reached.
+
+      DECIDED ON THE SPELLING, NEVER ON RESOLUTION -- and PART 9R R7 does not
+      change that (carve#1784). R7's promotion phase reads the RESOLVED tree;
+      this clause reads what a shape SPELLS, and the two are deliberately
+      independent. A writer that consulted resolution would write the same
+      paragraph differently depending on whether a definition appears somewhere
+      else in the document, possibly far away -- a bad property for a formatter,
+      and the reason `paragraph.blockImage` (PART 12 §23) is a field the writer
+      does not read. So a document whose reference is never defined still writes
+      back as itself, and this clause's ceiling is reached by `![a](u)` and by
+      `![a][r]` alike, defined or not.
 
       THE CEILING IS UNIFORM AND NOT POSITIONAL, which is the half that decides
       the shape rather than merely describing it. At top level the image
@@ -13028,3 +13086,85 @@ EOF = (* end of file *) ;
       it, and carve-rs additionally spells it as `<ol start="1">`
       (markup-carve/carve-js#1391, markup-carve/carve-rs#1293). The pin is
       tests/an-ingested-default-start-is-not-re-emitted.test.mjs.
+
+   23. A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH -- NORMATIVE
+      (carve#1784; PART 9R R7 owns the phase, this clause owns the wire).
+
+      A paragraph the promotion phase promoted carries `blockImage: true`:
+
+        {"type":"paragraph","blockImage":true,
+         "children":[{"type":"image","src":"/u","alt":"a",
+                      "ref":"r","rawRef":"[r]"}]}
+
+      The field is set by that phase and by NOTHING ELSE. It is present only as
+      `true`; a paragraph that is not a block image omits it rather than
+      carrying `false`, which is §22's absent-value rule applied here.
+
+      WHY THE TREE NEEDS IT AT ALL. §4's image-paragraph host is a condition on
+      a paragraph's INLINE CONTENT, so a block image and an ordinary paragraph
+      holding one image are the same tree -- PART 11 §1c says as much from the
+      writer's side. Every consumer therefore re-derived the role, and under
+      §3a's pre-resolve tree it had to re-run reference resolution to do it.
+      The field is the resolution result published beside the authored
+      construct: exactly the ADDED-ALONGSIDE rule §3a states for `href` on a
+      resolved reference link, and for the same reason -- the authored
+      construct (`ref`, `rawRef`) survives untouched, and the result is
+      published rather than left to be recomputed.
+
+      IT IS NOT A NON-ANCHOR FLAG. §3a refuses a flag on a nested link because
+      that flag would carry a RENDER fact -- "HTML cannot nest anchors" -- back
+      into a format that describes the source. This field carries a RESOLUTION
+      fact, which §3a already publishes, and it is set by a phase every engine
+      runs rather than by one render target's limitation.
+
+      NOT A DISTINCT NODE TYPE, deliberately. `block_image` is the honest shape
+      -- it IS a different construct, and the caption would have an obvious
+      home on it -- but it breaks every consumer that switches on node type and
+      it ripples through the engines, the importers, `fmt` and this schema at
+      once. A field is additive: a consumer that ignores it still works, and one
+      that reads it stops re-deriving. A type stays available later; going
+      field-first puts the phase and its call sites in place first.
+
+      ON INGEST, TRUST THE PROPERTY -- NORMATIVE. A reader that receives
+      `blockImage` USES it. It runs the promotion phase itself only for a tree
+      that LACKS the field. Recomputing it on every ingest makes the field
+      advisory and re-introduces the re-derivation this clause removes.
+
+      ABSENCE IS NOT A CLAIM. It means the producer did not run the phase --
+      every tree serialized before this clause lacks the field -- so a reader
+      MUST NOT read absence as "this paragraph is ordinary", and MUST NOT
+      reject a tree for omitting it. Requiring it was considered and refused:
+      it breaks every existing AST JSON document for no benefit, and §11's
+      strict-ingest surface is about properties the schema does not NAME, not
+      about ones it names optionally.
+
+      ALL THREE ENGINES DO THE SAME THING HERE, and that is the point of saying
+      it. Footnote and caption NUMBERS already diverge on ingest -- carve-js and
+      carve-rs keep the incoming results, carve-php recomputes -- which is a
+      divergence nobody chose. This clause fixes the ingest behavior for this
+      field in advance so it does not become the second one.
+
+      THE WRITER IS UNAFFECTED -- NORMATIVE. `fmt` writes the SOURCE SPELLING,
+      so promotion is not observable in `fmt` output and a document whose
+      reference is never defined still round-trips to itself (§6). The
+      alternative makes the writer non-local: the same paragraph would be
+      written differently depending on whether a definition appears somewhere
+      else in the document, possibly far away. PART 11 §1c already collapses on
+      the writer side, so teaching `fmt` about resolution buys nothing.
+
+      AN IMPORTER READS THE FIELD RATHER THAN GUESSING. An HTML importer that
+      escapes a following `^ ` line because the image above it "would capture
+      it" is deriving R7 a third time, in a pipeline with no access to the
+      phase (`docs/html-import.md`, the detached-caption case). It reads
+      `blockImage` on the tree it built instead.
+
+      NO HTML MOVES. This is a wire-format clause: every render target already
+      produced the promoted output, so nothing in the corpus changes because of
+      the field. What the corpus pins is R7's OBSERVABLE half, and it was
+      already half-pinned: categories 201, 207, 209 and 412 hold the resolved
+      and unresolved reference image, each with and without a caption, and 209 -
+      the unresolved image whose caption line folds into the paragraph - is the
+      row a syntactic binding fails. Category 434 adds the two give-back paths
+      on which a LINE can be lost and that no CORPUS document held: a slot more
+      than one line wide, held only against the oracle by a unit test no engine
+      runs, and a slot inside a container, held by nothing at all.

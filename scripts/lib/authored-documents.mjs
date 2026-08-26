@@ -108,10 +108,13 @@ export function authoredDocuments() {
  * does not is a citation definition, which is Tier-2 and outside the subset
  * `scripts/spec` models at all.
  *
- * The last move was 87 -> 88: the one-item loose list PART 9 section 17 L7's
- * writer half added to docs/blocks-and-attributes.md, the sample that shows
- * the item count is not the test (markup-carve/carve-rs#1305). The move before
- * it was 85 -> 87, the two `{loose}` samples L7 itself added to the same page.
+ * The last move was 89 -> 90: the captioned reference image PART 9R R7's
+ * block-image promotion added to docs/ast-json.md, the sample that shows an
+ * unresolved reference taking the caption line into the paragraph with it
+ * (carve#1784). The move before it was 87 -> 88, the one-item loose list PART 9
+ * section 17 L7's writer half added to docs/blocks-and-attributes.md, the
+ * sample that shows the item count is not the test
+ * (markup-carve/carve-rs#1305).
  *
  * Pinned EXACTLY and in both directions, which is the whole point of writing
  * them down. A floor would let the population shrink - a docs rewrite that
@@ -125,5 +128,5 @@ export function authoredDocuments() {
  * message says which way it moved and what to do, because a red gate whose fix
  * is "look up how this file works" is a red gate that gets deleted.
  */
-export const AUTHORED_POPULATION = 89
-export const AUTHORED_ANSWERED = 88
+export const AUTHORED_POPULATION = 90
+export const AUTHORED_ANSWERED = 89

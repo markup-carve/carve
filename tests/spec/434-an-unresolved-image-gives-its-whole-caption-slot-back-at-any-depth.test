@@ -1,0 +1,51 @@
+An unresolved image gives its whole caption slot back, at any depth
+
+```
+![a][r]
+^ cap one
+continued
+.
+<p>![a][r]
+^ cap one
+continued</p>
+```
+
+```
+![a][r]
+^ cap one
+continued
+
+[r]: /u
+.
+<figure>
+  <img src="/u" alt="a">
+  <figcaption>cap one
+continued</figcaption>
+</figure>
+```
+
+```
+- ![a][r]
+  ^ cap
+.
+<ul>
+  <li>![a][r]
+^ cap</li>
+</ul>
+```
+
+```
+- ![a][r]
+  ^ cap
+
+[r]: /u
+.
+<ul>
+  <li>
+    <figure>
+      <img src="/u" alt="a">
+      <figcaption>cap</figcaption>
+    </figure>
+  </li>
+</ul>
+```
