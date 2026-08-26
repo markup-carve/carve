@@ -1,11 +1,11 @@
 {
   "engine": "@markup-carve/carve",
   "engineCommit": "77792ef351613cb108cf85e481a81019f822fff5",
-  "corpusDocuments": 1513,
+  "corpusDocuments": 1514,
   "htmlImportPopulation": {
-    "completed": 1512,
-    "canonicalFixedPoints": 1511,
-    "renderedTextPreserved": 1497,
+    "completed": 1513,
+    "canonicalFixedPoints": 1512,
+    "renderedTextPreserved": 1498,
     "expectedRejections": [
       "182-openers-past-the-nesting-cap-are-one-paragraph.crv"
     ]
