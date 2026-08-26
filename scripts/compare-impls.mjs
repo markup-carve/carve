@@ -1751,9 +1751,47 @@ if (failOnDiff) {
     }
     process.exit(1)
   }
+  /*
+   * A FIXTURE MISMATCH IS NOT CHECKED HERE, so this line stops saying it is.
+   *
+   * `mismatches` is set to 0 outright in roundtrip mode a few lines up - the
+   * fixture count belongs to the default run and to check-compare-report.mjs
+   * reading the written report. The sentence claimed it in both modes, so the
+   * roundtrip run asserted a condition it had deliberately not evaluated.
+   *
+   * carve#1804 closed the other half of this: the cross-implementation count
+   * is now gated here rather than deferred, which is why it belongs in the
+   * claim. The fixture half was left behind, and it is the same defect -
+   * a clean bill for a check that did not run, the class carve#755
+   * catalogs reached from the reporting side. Both formatter shards of run
+   * 32947017620 printed the four-condition sentence and then failed on the
+   * next step (carve#1802).
+   *
+   * NAMED, not merely dropped. A reader who is told the fixture condition is
+   * decided elsewhere goes and reads it; a reader of a sentence that simply
+   * omits it learns nothing about who owns it.
+   */
   const successLabel = roundtrip ? 'round-trip or cross-implementation' : label
-  console.log(
-    `\nNo ${successLabel} differences, no fixture mismatches, no PART 11 §1 invariant failures` +
-      `${roundtrip ? ', and no cross-read failures' : ''}.`,
-  )
+  const decided = [`no ${successLabel} differences`]
+  if (!roundtrip) decided.push('no fixture mismatches')
+  decided.push('no PART 11 §1 invariant failures')
+  if (roundtrip) decided.push('no cross-read failures')
+  console.log(`\n${andJoin(decided)}.`)
+  if (roundtrip) {
+    console.log(
+      'NOT checked here: fixture mismatches. This run counted them and wrote them to ' +
+        `${reportPath ?? 'no report, because --report= was not passed'}, and ` +
+        "'npm run compare:report -- <report>' is the gate that decides them.",
+    )
+  }
+}
+
+/** `No a`, `No a and no b`, `No a, no b, and no c` - one sentence, n clauses. */
+function andJoin(parts) {
+  const cap = parts[0].charAt(0).toUpperCase() + parts[0].slice(1)
+  const all = [cap, ...parts.slice(1)]
+  if (all.length < 2) return all.join('')
+  if (all.length === 2) return `${all[0]} and ${all[1]}`
+
+  return `${all.slice(0, -1).join(', ')}, and ${all[all.length - 1]}`
 }
