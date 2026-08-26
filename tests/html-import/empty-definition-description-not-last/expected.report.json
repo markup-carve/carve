@@ -1,1 +1,1 @@
-{"mode":"safe","adapter":"generic","diagnostics":[{"code":"structure-split","severity":"warning","path":"/dl[1]"},{"code":"structure-unspellable","severity":"warning","path":"/dl[1]/dd[2]"}]}
+{"mode":"safe","adapter":"generic","diagnostics":[]}
