@@ -676,6 +676,7 @@ index: examples/edge-cases/index.md
   trailing-whitespace-boundaries
   a-marker-separator-is-a-space-never-a-tab
   an-invisible-line-does-not-cancel-a-blank-line-separation
+  an-invisible-line-before-the-blank-does-not-cancel-the-separation
   a-tab-after-a-heading-quote-or-caption-marker-leaves-the-line-as-prose
   a-tab-indent-is-the-column-it-reaches-whatever-the-line-holds
   the-same-column-written-with-four-spaces
