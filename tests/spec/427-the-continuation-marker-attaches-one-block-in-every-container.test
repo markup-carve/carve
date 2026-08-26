@@ -1,0 +1,73 @@
+The continuation marker attaches one block in every container
+
+```
+see[^n]
+
+[^n]: note
++
+attached
+> outside
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<blockquote><p>outside</p></blockquote>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <p>attached<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+see[^n]
+
+[^n]: note
++
+attached
++
+> attached too
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <p>attached</p>
+      <blockquote><p>attached too</p></blockquote>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+:: term
+:  definition
++
+attached
+> outside
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>definition</p>
+    <p>attached</p>
+  </dd>
+</dl>
+<blockquote><p>outside</p></blockquote>
+```
+
+```
+> quoted
++
+> attached
+.
+<blockquote>
+  <p>quoted</p>
+  <blockquote><p>attached</p></blockquote>
+</blockquote>
+```

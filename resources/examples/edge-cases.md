@@ -29198,3 +29198,115 @@ written below it.
 ```
 
 :::
+
+## The continuation marker attaches one block in every container
+
+`+` is ONE operation: it transfers ownership of the next flush-left block to the
+current container, and that block is then parsed normally (PART 9 §17 L3/L4).
+`ONE IS A COUNT AND THE BOUNDARY IS NOT` therefore holds in every container that
+takes the marker, not only under a list item. A footnote body takes the
+paragraph and leaves the quote at document level; a second attached block takes
+a second marker.
+
+::: compare
+
+```carve
+see[^n]
+
+[^n]: note
++
+attached
+> outside
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<blockquote><p>outside</p></blockquote>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <p>attached<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+::: compare
+
+```carve
+see[^n]
+
+[^n]: note
++
+attached
++
+> attached too
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <p>attached</p>
+      <blockquote><p>attached too</p></blockquote>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+A definition description answers the same document the same way.
+
+::: compare
+
+```carve
+:: term
+:  definition
++
+attached
+> outside
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>definition</p>
+    <p>attached</p>
+  </dd>
+</dl>
+<blockquote><p>outside</p></blockquote>
+```
+
+:::
+
+The marker does not ask what KIND of block it is attaching. A quote line after a
+`+` inside a block quote is a flush-left block like any other, so it is attached
+- it nests, rather than folding into the open paragraph as ordinary lazy
+continuation would.
+
+::: compare
+
+```carve
+> quoted
++
+> attached
+```
+
+```html
+<blockquote>
+  <p>quoted</p>
+  <blockquote><p>attached</p></blockquote>
+</blockquote>
+```
+
+:::

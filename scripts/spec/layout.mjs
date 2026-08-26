@@ -1982,7 +1982,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           i++
         } else if (pullPending && !isBlank(lines[i] ?? '')) {
           // the whole flush-left block pulled in by the preceding `+` marker
-          const end = takePulledBlockEnd(lines, i)
+          const end = attachedBlockEnd(lines, i, state)
           for (let k = i; k < end; k++) bodyLines.push(lines[k])
           pullPending = false
           i = end
@@ -2257,7 +2257,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // flush-left line: either the block pulled in by a preceding `+` /
             // first-block marker, or a lazy continuation of the open paragraph.
             if (pullPending) {
-              const end = takePulledBlockEnd(lines, i)
+              const end = attachedBlockEnd(lines, i, state)
               for (let k = i; k < end; k++) bodyLines.push(lines[k])
               pullPending = false
               i = end
@@ -3039,19 +3039,41 @@ function firstBlockEnd(lines, start, limit, state) {
   return start + stop.next
 }
 
-// Parse ONE following flush-left block (for the `+` continuation marker).
-function takeOneBlock(lines, start, state) {
-  const end = oneBlockEnd(lines, start, (idx) =>
-    isBlank(lines[idx]) || CONT_MARKER.test(lines[idx]) || QUOTE.test(lines[idx]))
-  const one = firstBlockEnd(lines, start, end, state)
-  return { rawMarker: lines.slice(start, one), next: one }
+/*
+ * THE CONTINUATION MARKER IS ONE OPERATION -- SS17 L3/L4 (carve#1782).
+ *
+ * `+` transfers ownership of the NEXT flush-left block to the current
+ * container; after the transfer that block is parsed normally. So there is
+ * exactly ONE extent function, and every container that takes the marker calls
+ * it: SS17 L3's boundary set (a blank line, a sibling marker, a further `+`,
+ * with a fence running through its closer) narrowed to ONE block by
+ * `firstBlockEnd`.
+ *
+ * It used to be two, and they answered SS17 L3's own example differently. The
+ * footnote/`dd` spelling applied no narrowing at all, so `[^n]: a` / `+` /
+ * `para` / `> q` attached BOTH blocks where the same document under `- a`
+ * attached one. And the quote spelling carried a `QUOTE` test in its boundary
+ * set -- a branch on the ATTACHED BLOCK'S KIND, which no clause states -- so a
+ * `+` inside a quote silently declined to attach a following quote line and let
+ * ordinary lazy continuation fold it in instead.
+ *
+ * `blank` and `sibling` are the container's VIEW of L3's boundary set, not
+ * extra rules: a list item measures blankness and its sibling markers in its
+ * own dedented coordinates. A container with no sibling marker form passes
+ * neither and gets the plain reading.
+ */
+function attachedBlockEnd(lines, start, state, { blank, sibling } = {}) {
+  const extent = oneBlockEnd(lines, start, (idx) =>
+    (blank ? blank(idx) : isBlank(lines[idx])) ||
+    CONT_MARKER.test(lines[idx]) ||
+    (sibling ? sibling(idx) : false))
+  return firstBlockEnd(lines, start, extent, state)
 }
 
-// The same extent for the block a `+` marker pulls into a footnote/<dd> (SS17
-// L4), whose boundary set is a blank line or a further marker.
-function takePulledBlockEnd(lines, start) {
-  return oneBlockEnd(lines, start, (idx) =>
-    isBlank(lines[idx]) || CONT_MARKER.test(lines[idx]))
+// Parse ONE following flush-left block (for the `+` continuation marker).
+function takeOneBlock(lines, start, state) {
+  const one = attachedBlockEnd(lines, start, state)
+  return { rawMarker: lines.slice(start, one), next: one }
 }
 
 // --- lists: PART 9 SS11 N1-N3, SS17 L1-L4, SS24 C3/C4 ----------------------
@@ -3424,14 +3446,10 @@ function collectItems(lines, i, list, state, ind, meas) {
       // spelling - it stopped at the first blank with no fence state consulted,
       // which severed a `+`-attached fence here while a footnote body one
       // container over kept it whole.
-      const extent = oneBlockEnd(lines, i, (idx) =>
-        ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
-        matchMarkerAt(ind(idx))?.indent === baseIndent)
-      // ONE BLOCK, and the extent above is the marker's REACH rather than its
-      // count (SS17 L3, carve#1290). `- a` / `+` / `para` / `> q` has both lines
-      // inside the extent and they are two blocks; the `+` takes the first, and
-      // the second needs a `+` of its own.
-      const end = firstBlockEnd(lines, i, extent, state)
+      const end = attachedBlockEnd(lines, i, state, {
+        blank: (idx) => ind(idx).rest === '',
+        sibling: (idx) => matchMarkerAt(ind(idx))?.indent === baseIndent,
+      })
       for (; i < end; i++) {
         // attached VERBATIM, so the line keeps the measurement it has here
         pushLine(lines[i], ind(i))
@@ -3992,10 +4010,10 @@ function collectItems(lines, i, list, state, ind, meas) {
       if (carriesBareContinuation) {
         const sourceCol = lm.L ? lm.L.col : lm.col
         if (nestedAttachmentEnd < 0 && sourceCol === 0) {
-          const extent = oneBlockEnd(lines, i, (idx) =>
-            ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
-            matchMarkerAt(ind(idx))?.indent === baseIndent)
-          nestedAttachmentEnd = firstBlockEnd(lines, i, extent, state)
+          nestedAttachmentEnd = attachedBlockEnd(lines, i, state, {
+            blank: (idx) => ind(idx).rest === '',
+            sibling: (idx) => matchMarkerAt(ind(idx))?.indent === baseIndent,
+          })
         }
         if (i < nestedAttachmentEnd) {
           pushLine(line, lm)

@@ -24,3 +24,4 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+427-the-continuation-marker-attaches-one-block-in-every-container-4  a `+` inside a block quote attaches a following quote line under SS17 L3 (carve#1782); the pinned build still folds it in as lazy continuation

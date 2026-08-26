@@ -1492,8 +1492,9 @@ indent = whitespace, {whitespace} ;
    marker-line-nested-lists. *)
 (* Continuation marker (Carve addition; see PART 9 §17): a lone `+` at the
    current container's marker column attaches the following flush-left block to
-   that container -- a list item OR a block quote -- with no blank line, marker
-   prefix, or indentation, keeping the container tight. *)
+   that container -- with no blank line, marker prefix, or indentation, keeping
+   the container tight. §17 L4 lists the containers that take it; the operation
+   is the same in every one of them. *)
 continuation_marker = '+', newline ;
 continuation_marker_block = continuation_marker, block ;
 (* First-block item (Carve addition; see PART 9 §17): a lone `+` as the sole
@@ -6424,6 +6425,31 @@ EOF = (* end of file *) ;
          S4 refuses one clause over, and taking it here would reject that shape
          in the layout section and reinstate it in this one. carve-rs already
          attaches one.
+
+         ONE OPERATION, EVERY CONTAINER -- NORMATIVE (carve#1782). The marker
+         does exactly one thing: it TRANSFERS OWNERSHIP of the next flush-left
+         block to the current container. What follows the transfer is ordinary
+         parsing of that block. So this clause is the whole rule, and L4 lists
+         the containers that take the marker rather than restating it per
+         container:
+
+         - the count is ONE in every container. The example above answers the
+           same way written into a footnote body or a definition description,
+           and a second attached block takes a second marker there too;
+         - the boundary is the one stated above and nothing else. In
+           particular the marker never branches on the KIND of block it is
+           attaching. `> a` / `+` / `> q` attaches the quote -- the second
+           quote is a flush-left block like any other, so it NESTS inside the
+           first, rather than folding into the open paragraph as ordinary lazy
+           continuation (§10 I6) would have done without the marker.
+
+         Stated because it had drifted. The executable spec carried two extent
+         functions for this one marker: the footnote/`dd` spelling applied no
+         one-block narrowing at all and attached everything up to the boundary,
+         and the block-quote spelling carried a quote test in its boundary set.
+         Neither divergence was reachable from any corpus document, so both
+         readings could move without a red test. Corpus category 427 pins all
+         three shapes.
       L4 CONTAINERS THAT TAKE THE MARKER:
          - LIST ITEM (pinned by corpus list-continuation-marker): `+` at
            the item's marker column attaches the block to the item (for
@@ -6438,6 +6464,12 @@ EOF = (* end of file *) ;
            - item" is a quote whose body is the paragraph "quoted" PLUS a
            real <ul> (not a lazily-folded paragraph, cf. §10 I6). A blank
            line after the quote still ends it.
+         - FOOTNOTE BODY (§16, pinned by corpus footnote-with-multiple-blocks
+           and category 427): `+` at column 0 attaches the following
+           flush-left block to the body, the un-prefixed alternative to
+           indenting it to the body's content column.
+         - DEFINITION DESCRIPTION (§17's `definition_body`, pinned by
+           category 427): the same, for a `dd`. The FIRST-BLOCK form is `: +`.
       L5 NOT CONTINUATION CONTAINERS (a lone `+` keeps its plain meaning):
          - fenced containers (admonition / generic div / line block) --
            their bodies already hold flush-left blocks; a lone `+` inside
@@ -6446,8 +6478,6 @@ EOF = (* end of file *) ;
            distinct construct;
          - LEAF blocks (heading, thematic break, code block, raw block,
            paragraph) hold no child blocks; a heading is a bounded title.
-         - FOOTNOTE DEFINITION bodies compose by indentation today; a `+`
-           attach form is possible future work, deliberately OUT OF SCOPE.
       L6 A COLLECTED DEFINITION LEAVES NO TRACE -- NORMATIVE (the general
          rule for PART 9R R1/R2 COLLECTION, stated ONCE here for every
          container that can hold a definition). A link reference or
