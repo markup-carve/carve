@@ -27405,6 +27405,13 @@ construct renders as the text the author typed.
 :::
 ## An item's attribute block moves its content column; its checkbox does not
 
+::: warning Historical category label
+The heading is retained as the append-only corpus ID. The rule it originally
+named was reversed before release: marker-attached attributes and task
+checkboxes both contribute zero to the content column. The current rule and
+fixtures below are authoritative.
+:::
+
 `90-list-item-attributes-4` is the only document that puts attributes on a task
 item, and it is a single line, so it has no continuation and cannot say where
 the item's content begins. `06-task-lists` and
