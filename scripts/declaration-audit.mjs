@@ -873,6 +873,6 @@ console.log(
   `DECLARATION AUDIT PASSED (mode: ${mode}) - ` +
     (strict
       ? 'every owed list is empty, the pin is current, and every guard is two-directional.'
-      : 'every owed list is empty, every engine-pin window is declared, and every guard is two-directional.'),
+      : 'every owed list is empty, every engine-lag window is declared, and every guard is two-directional.'),
 )
 }
