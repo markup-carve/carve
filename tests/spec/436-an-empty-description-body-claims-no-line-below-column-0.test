@@ -1,0 +1,80 @@
+An empty description body claims no line below column 0
+
+```
+:: t
+:  %% c
+ flush
+.
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<p>flush</p>
+```
+
+```
+:: t
+:  +
+ flush
+.
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<p>flush</p>
+```
+
+```
+:: t
+:  %% c
+  flush
+.
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<p>flush</p>
+```
+
+```
+:: t
+:  +
+  flush
+.
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<p>flush</p>
+```
+
+```
+:: t
+:  +
+flush
+.
+<dl>
+  <dt>t</dt>
+  <dd>flush</dd>
+</dl>
+```
+
+```
+- %% c
+ flush
+.
+<ul>
+  <li></li>
+</ul>
+<p>flush</p>
+```
+
+```
+- +
+ flush
+.
+<ul>
+  <li></li>
+</ul>
+<p>flush</p>
+```

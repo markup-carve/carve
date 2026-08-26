@@ -302,6 +302,7 @@ index: examples/edge-cases/index.md
   a-floating-attribute-does-not-widen-a-list-item-s-content-column
   the-continuation-marker-attaches-one-block-in-every-container
   the-continuation-marker-s-column-gate-reaches-every-container
+  an-empty-description-body-claims-no-line-below-column-0
 
 [edge-containers] Containers, quotes and fences
 > Divs, block quotes, code and comment fences: nesting, lazy continuation, absorption and what closes what.
