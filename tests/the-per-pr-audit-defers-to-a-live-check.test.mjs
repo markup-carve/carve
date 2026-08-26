@@ -2,19 +2,25 @@
  * THE PER-PR AUDIT IS LENIENT ABOUT ONE THING, AND ONLY WHILE SOMETHING ELSE
  * IS STRICT ABOUT IT.
  *
- * `scripts/declaration-audit.mjs --mode=per-pr` passes a DECLARED row in
- * resources/engine-pin-drift.txt, because that ledger exists to describe the
- * window between a spec rule landing and an engine shipping it - "normal", in
- * the file's own words, and "DECLARED rather than tolerated" (carve#1811). What
- * makes that safe rather than a hole is the OTHER half of the ledger's
- * contract, which lives in a different check: `npm run engine:report -- --check`
- * fails on a slug the pin does not reproduce and nobody wrote down - the
- * carve#533 state - and on a listed slug the pin has caught up on.
+ * `scripts/declaration-audit.mjs --mode=per-pr` passes a DECLARED row in the
+ * two ENGINE-LAG ledgers, because they exist to describe the window between a
+ * spec rule landing and an engine shipping it - "normal", in
+ * resources/engine-pin-drift.txt's own words, and "DECLARED rather than
+ * tolerated" (carve#1811). resources/engine-fmt-drift.txt describes the same
+ * window from the WRITER side and got the same verdict once a ruling actually
+ * opened a writer-half window; until then it held zero rows, which is why the
+ * asymmetry sat here unnoticed. What makes the leniency safe rather than a
+ * hole is the OTHER half of each ledger's contract, which lives in a different
+ * check, and which fails in BOTH directions - on a slug the pin does not
+ * reproduce and nobody wrote down (the carve#533 state) and on a listed slug
+ * the pin has caught up on. For the pin ledger that is
+ * `npm run engine:report -- --check`; for the fmt ledger it is
+ * tests/corpus-fmt-roundtrip.test.mjs, which runs per-PR under `npm test`.
  *
  * So the leniency has a precondition, and a precondition nobody checks is the
  * carve#755 shape: delete that step from the per-PR workflow and undeclared
  * drift becomes invisible in both directions, silently, with every gate green.
- * This file pins the precondition.
+ * This file pins the precondition, once per relaxed ledger.
  *
  * It also pins the two things about the lenient mode that are easy to get
  * wrong in the direction of a check that cannot fail:
@@ -63,14 +69,33 @@ test('the per-PR workflow still gates undeclared drift, which is what the lenien
     /npm run engine:report -- --check/,
     'ci.yml no longer gates undeclared engine-pin drift, so --mode=per-pr passing a declared window is now a hole',
   )
+  // The fmt ledger's live half. It is not a workflow step of its own: the
+  // roundtrip test reports undeclared writer drift and ratchets the ledger
+  // against staleness, and it runs under `npm test`. Both halves are asserted,
+  // because either one leaving would reopen the hole from one side.
+  assert.match(workflow, /run: npm test\b/, 'ci.yml no longer runs npm test per-PR')
+  const roundtrip = readFileSync(join(repo, 'tests/corpus-fmt-roundtrip.test.mjs'), 'utf8')
+  assert.match(
+    roundtrip,
+    /loadDeclaredFmtDrift/,
+    'the roundtrip test no longer reads the drift ledgers, so undeclared writer drift is ungated',
+  )
+  assert.match(
+    roundtrip,
+    /loadWriterOnlyDrift/,
+    'the roundtrip test no longer ratchets engine-fmt-drift.txt, so a stale line there excuses nothing forever',
+  )
 })
 
-test('exactly one manifest entry is judged differently per-PR, and it is the engine-pin ledger', () => {
+test('exactly two manifest entries are judged differently per-PR, and they are the engine-lag ledgers', () => {
   const relaxed = MANIFEST.filter((entry) => entry.prPolicy !== undefined)
   assert.deepEqual(
-    relaxed.map((entry) => [entry.path, entry.policy, entry.prPolicy]),
-    [['resources/engine-pin-drift.txt', 'owed', 'declared']],
-    'a second ledger now reads differently per-PR - carve#1811 relaxed the engine-pin ledger only',
+    relaxed.map((entry) => [entry.path, entry.policy, entry.prPolicy]).sort(),
+    [
+      ['resources/engine-fmt-drift.txt', 'owed', 'declared'],
+      ['resources/engine-pin-drift.txt', 'owed', 'declared'],
+    ],
+    'a third ledger now reads differently per-PR - only the two engine-lag ledgers describe a window a PR opens',
   )
   // The AST divergence ledgers and the rest stay owed in BOTH modes. Named
   // rather than counted, because the count is what a relaxation would keep.
@@ -81,7 +106,6 @@ test('exactly one manifest entry is judged differently per-PR, and it is the eng
     'resources/ast-span-divergence.txt',
     'resources/ast-value-divergence.txt',
     'resources/ast-extent-findings.txt',
-    'resources/engine-fmt-drift.txt',
     'resources/converter-drift.txt',
     'resources/oracle-divergence.txt',
   ]) {
