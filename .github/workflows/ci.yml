@@ -16,6 +16,52 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  declarations:
+    name: declarations and engine pin are current
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out carve
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Check out carve-js
+        uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-js
+          path: engines/carve-js
+          fetch-depth: 0
+
+      - name: Check out carve-php
+        uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-php
+          path: engines/carve-php
+          fetch-depth: 0
+
+      - name: Check out carve-rs
+        uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-rs
+          path: engines/carve-rs
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Every declaration is visible and the reference build is current
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/engines/carve-js
+          CARVE_PHP_DIR: ${{ github.workspace }}/engines/carve-php
+          CARVE_RS_DIR: ${{ github.workspace }}/engines/carve-rs
+        run: npm run declarations:check -- --no-fetch
+
   conformance:
     name: spec-corpus conformance
     runs-on: ubuntu-latest

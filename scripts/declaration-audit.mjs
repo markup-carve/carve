@@ -183,6 +183,8 @@ const MANIFEST = [
 
   // -- carve-js --------------------------------------------------------------
   { repo: 'carve-js', path: 'test/corpus.test.ts', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'test/corpus.test.ts' },
+  { repo: 'carve-js', path: 'test/canonical-ahead-of-pin.ts', name: 'CANONICAL_AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'test/corpus-canonical-form.test.ts and test/corpus-render-fixtures.test.ts' },
+  { repo: 'carve-js', path: 'test/ast-vocabulary.test.ts', name: 'PENDING_SPEC_DECISION', kind: 'js', policy: 'owed', guard: 'two-way', staleness: 'is pending only on types that still exist and still need a decision', owner: 'test/ast-vocabulary.test.ts' },
   { repo: 'carve-js', path: 'test/optional-corpus.test.ts', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'test/optional-corpus.test.ts' },
   { repo: 'carve-js', path: 'test/optional-corpus.test.ts', name: 'DECLARED_UNIMPLEMENTED', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'test/optional-corpus.test.ts' },
   { repo: 'carve-js', path: 'test/html-import-conformance.test.ts', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'mirrors spec PIN_LAG' },
@@ -212,6 +214,7 @@ const MANIFEST = [
   { repo: 'carve-rs', path: 'tests/corpus.rs', name: 'KNOWN_GAPS', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/corpus.rs' },
   { repo: 'carve-rs', path: 'tests/corpus.rs', name: 'AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/corpus.rs' },
   { repo: 'carve-rs', path: 'tests/corpus_canonical_form.rs', name: 'AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/corpus_canonical_form.rs' },
+  { repo: 'carve-rs', path: 'tests/corpus_render_fixtures.rs', name: 'FMT_AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', staleness: 'the pin has caught up; delete its FMT_AHEAD_OF_PIN entry', owner: 'tests/corpus_render_fixtures.rs' },
   { repo: 'carve-rs', path: 'tests/optional_corpus.rs', name: 'DECLARED_UNIMPLEMENTED', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/optional_corpus.rs' },
   { repo: 'carve-rs', path: 'tests/optional_corpus.rs', name: 'AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/optional_corpus.rs' },
   { repo: 'carve-rs', path: 'tests/html_import.rs', name: 'BEHIND_THE_RULING', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'mirrors spec PIN_LAG' },
@@ -226,7 +229,49 @@ const MANIFEST = [
  * does not know about. Deliberately narrow: a list that silences a comparison
  * is named for what it excuses, and these are the shapes this org uses.
  */
-const DECLARATION_NAME = /^(PIN_LAG|AHEAD_OF_PIN|BEHIND_THE_RULING|UNMET|LAST_MEASURED|DECLARED_[A-Z_]+|KNOWN_[A-Z_]+|[A-Z_]*_(GAPS|DIVERGENCES|WAIVERS|LOSSES|PENDING|REMAINING|OVER_REACH|UNIMPLEMENTED))$/
+const DECLARATION_NAME = /(?:^|_)(?:PIN_LAG|AHEAD_OF_PIN|BEHIND_THE_RULING|UNMET|LAST_MEASURED|DECLARED_[A-Z_]+|KNOWN_[A-Z_]+|[A-Z_]*?(?:GAPS|DIVERGENCES|WAIVERS|LOSSES|PENDING|REMAINING|OVER_REACH|UNIMPLEMENTED))(?:_|$)/
+const isDeclarationName = (name) => DECLARATION_NAME.test(name)
+
+/** Classify `git rev-list --left-right --count PIN...MAIN`. */
+function classifyPinDistance(pinOnly, mainOnly) {
+  if (!Number.isSafeInteger(pinOnly) || pinOnly < 0 || !Number.isSafeInteger(mainOnly) || mainOnly < 0) {
+    return 'unverifiable'
+  }
+  if (pinOnly === 0 && mainOnly === 0) return 'current'
+  if (pinOnly === 0) return 'behind'
+  if (mainOnly === 0) return 'ahead'
+  return 'diverged'
+}
+
+function pinnedCarveJsSha() {
+  try {
+    const pkg = JSON.parse(readFileSync(join(repoRoot, 'package.json'), 'utf8'))
+    const value = pkg.devDependencies?.['@markup-carve/carve']
+    const match = typeof value === 'string' && value.match(/#([0-9a-f]{40})$/i)
+    return match ? match[1].toLowerCase() : new Error('package.json does not pin @markup-carve/carve to an exact 40-character SHA')
+  } catch (error) {
+    return new Error(`cannot read the carve-js pin: ${error.message}`)
+  }
+}
+
+function gitPinStatus(dir, pin, mainRef = 'origin/main') {
+  try {
+    execFileSync('git', ['-C', dir, 'cat-file', '-e', `${pin}^{commit}`], { stdio: 'ignore' })
+    const main = execFileSync('git', ['-C', dir, 'rev-parse', '--verify', `${mainRef}^{commit}`], { encoding: 'utf8' }).trim()
+    const counts = execFileSync('git', ['-C', dir, 'rev-list', '--left-right', '--count', `${pin}...${main}`], { encoding: 'utf8' })
+      .trim()
+      .split(/\s+/)
+      .map(Number)
+    return { pin, main, pinOnly: counts[0], mainOnly: counts[1], relation: classifyPinDistance(counts[0], counts[1]) }
+  } catch (error) {
+    return new Error(`cannot compare pin ${pin} with carve-js ${mainRef}: ${error.message}`)
+  }
+}
+
+function carveJsPinStatus(dir, mainRef = 'origin/main') {
+  const pin = pinnedCarveJsSha()
+  return pin instanceof Error ? pin : gitPinStatus(dir, pin, mainRef)
+}
 
 /** Test trees to sweep, per repo. */
 const TEST_DIRS = {
@@ -500,7 +545,7 @@ function listFiles(repo, dir) {
 
 /* ------------------------------------------------------------------- main */
 
-export const __internals = { blankComments, declarationIndex, bracketedBlock, topLevelEntries, liveRows, MANIFEST }
+export const __internals = { blankComments, declarationIndex, bracketedBlock, topLevelEntries, liveRows, classifyPinDistance, gitPinStatus, isDeclarationName, MANIFEST }
 
 if (process.env.CARVE_DECL_AUDIT_LIB === '1') {
   // Imported for its helpers by the self-test; do not run the audit.
@@ -529,6 +574,21 @@ const width = { repo: 9, path: 60, name: 32, rows: 20 }
 const pad = (s, n) => String(s).padEnd(n).slice(0, n)
 
 console.log(`Declaration audit - spec repo from this worktree, engines from ${ref}\n`)
+
+const pinStatus = carveJsPinStatus(REPOS['carve-js'].dir, ref === 'worktree' ? 'HEAD' : ref)
+if (pinStatus instanceof Error) {
+  console.log(`PIN STALENESS  UNVERIFIABLE - ${pinStatus.message}\n`)
+  failed += 1
+} else if (pinStatus.relation !== 'current') {
+  console.log(
+    `PIN STALENESS  ${pinStatus.relation.toUpperCase()} - @markup-carve/carve ${pinStatus.pin.slice(0, 8)} ` +
+      `vs carve-js ${ref} ${pinStatus.main.slice(0, 8)} ` +
+      `(pin-only ${pinStatus.pinOnly}, main-only ${pinStatus.mainOnly})\n`,
+  )
+  failed += 1
+} else {
+  console.log(`PIN STALENESS  current at carve-js ${pinStatus.main.slice(0, 8)}\n`)
+}
 console.log(`${pad('repo', width.repo)} ${pad('file', width.path)} ${pad('constant', width.name)} ${pad('rows', width.rows)} policy     guard`)
 console.log('-'.repeat(width.repo + width.path + width.name + width.rows + 24))
 
@@ -596,7 +656,7 @@ for (const [repo, dirs] of Object.entries(TEST_DIRS)) {
       const clean = blankComments(src, LANG_OF[path.endsWith('.php') ? 'php' : path.endsWith('.rs') ? 'rust' : 'js'])
       for (const m of clean.matchAll(/\b(?:const|static)\s+([A-Z][A-Z0-9_]{3,})\b/g)) {
         const name = m[1]
-        if (!DECLARATION_NAME.test(name)) continue
+        if (!isDeclarationName(name)) continue
         const key = `${repo}:${path}:${name}`
         if (!declared.has(key)) undeclared.push(key)
       }
