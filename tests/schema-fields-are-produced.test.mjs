@@ -63,8 +63,6 @@ const OPT_IN_ONLY = {
 
 /** Fields permitted by the schema before the corresponding engine rollout. */
 const ENGINE_ROLLOUT_PENDING = {
-  'paragraph.blockImage':
-    'block-image promotion (PART 9R R7, PART 12 section 23): the field is set by the promotion phase, and the phase lands in the engines after the spec (markup-carve/carve-js#1552, markup-carve/carve-php#1800, markup-carve/carve-rs#1444)',
   'figure.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
   'table.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
 }
