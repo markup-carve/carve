@@ -24,3 +24,7 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+438-a-colon-followed-by-only-whitespace-is-not-a-description  the pin opens a description on a marker followed by whitespace alone, where MARKER REQUIRES CONTENT (PART 2) opens none and the term folds the line as a soft break (carve#1830). Retires when the pin moves past markup-carve/carve-js#1561.
+438-a-colon-followed-by-only-whitespace-is-not-a-description-2  the pin opens a description on a marker followed by whitespace alone, where MARKER REQUIRES CONTENT (PART 2) opens none and the term folds the line as a soft break (carve#1830). Retires when the pin moves past markup-carve/carve-js#1561.
+438-a-colon-followed-by-only-whitespace-is-not-a-description-3  the pin opens a description on a marker followed by whitespace alone, where MARKER REQUIRES CONTENT (PART 2) opens none and the term folds the line as a soft break (carve#1830). Retires when the pin moves past markup-carve/carve-js#1561.
+438-a-colon-followed-by-only-whitespace-is-not-a-description-4  the pin opens a description on a marker followed by whitespace alone, where MARKER REQUIRES CONTENT (PART 2) opens none and the term folds the line as a soft break (carve#1830). Retires when the pin moves past markup-carve/carve-js#1561.
