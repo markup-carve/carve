@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@djot/djot": "^0.3.2",
-    "@markup-carve/carve": "github:markup-carve/carve-js#f4c17da71bcbd78a128e4167bbff4627bc20910d",
+    "@markup-carve/carve": "github:markup-carve/carve-js#983b4f24b8b8182c66f839f5bd32fe807f9cf08c",
     "@markup-carve/carve-grammars": "github:markup-carve/carve-grammars#086d9603736466092c4517e76513b4915c1f94a7",
     "@markup-carve/vite-plugin-carve": "git+https://github.com/markup-carve/vite-plugin-carve.git#0b3552413ff1de6302921c8144497931fbd0124f",
     "@mermaid-lint/cli": "^0.53.1",

@@ -3322,14 +3322,9 @@ function collectItems(lines, i, list, state, ind, meas) {
       // not have -- and a column-0 line then folded into an item with nothing to
       // fold into (carve#1280).
       //
-      // A WRAPPED attribute block (`- {.a` / `  .b}`) is deliberately not
-      // reached here. Its opener leaves no paragraph open either, but its
-      // continuation line arrives at the item's CONTENT COLUMN, where the
-      // classifier below reopens the paragraph on any non-empty residue - so
-      // deciding it needs the content-column half of this rule, which carve#1280
-      // leaves open. Handing this seed a multi-line window alone changes no
-      // output, and a predicate that looks right while deciding nothing is worse
-      // than one that plainly does not reach the case.
+      // A wrapped attribute block is classified from its complete physical-line
+      // span in the body loop below. Its opener is intentionally not guessed
+      // from this one-line seed.
       if (!opensParagraph(head.text.trim(), true)) closePara()
     }
     // Content column of the FIRST sub-list opened in this item (-1 = none). A
@@ -3464,6 +3459,25 @@ function collectItems(lines, i, list, state, ind, meas) {
     // block here, the carry below must not take a SECOND one: `- +` / `para` /
     // `> q` attaches the paragraph and leaves the quote outside the item.
     if (attachNext && attachFlushLeft()) carriesBareContinuation = false
+    // End of a wrapped block-attribute line, inclusive. Attribute lines are
+    // interrupters whether they occupy one physical line or several; each
+    // continuation line therefore leaves no paragraph available for a later
+    // below-column lazy continuation.
+    let wrappedAttrEnd = -1
+    if (head.text.startsWith('{')) {
+      const window = [
+        head.text,
+        ...lines.slice(i).map((candidate) => {
+          const measured = indentCols(candidate)
+          return dedentMeasured(measured, candidate, contentCol).text
+        }),
+      ]
+      const attributes = tryAttrLine(window, 0)
+      if (attributes && attributes.next > 1) {
+        wrappedAttrEnd = i + attributes.next - 2
+        closePara()
+      }
+    }
     while (i < n) {
       const line = lines[i]
       // `+` at the item's MARKER column attaches ONE following flush-left
@@ -3748,6 +3762,14 @@ function collectItems(lines, i, list, state, ind, meas) {
         // The body line's own measurement, derived from this one rather than
         // re-walked, and handed to the item's parse below (carve#752).
         const dmeas = dd.meas ?? indentCols(dedented)
+        if (i > wrappedAttrEnd && dedented.startsWith('{')) {
+          const window = lines.slice(i).map((candidate) => {
+            const measured = indentCols(candidate)
+            return dedentMeasured(measured, candidate, localBase).text
+          })
+          const attributes = tryAttrLine(window, 0)
+          if (attributes && attributes.next > 1) wrappedAttrEnd = i + attributes.next - 1
+        }
         if (
           pendingSeparation &&
           !insideFence() &&
@@ -3839,7 +3861,8 @@ function collectItems(lines, i, list, state, ind, meas) {
         // does the deepest structure now hold an OPEN paragraph that lazy
         // text may fold into? markers open a sub-item paragraph; quotes an
         // open quoted paragraph; fences/breaks close everything (SS10 I2/I6)
-        if (COMMENT_LINE.test(dedented)) closePara()
+        if (i <= wrappedAttrEnd) closePara()
+        else if (COMMENT_LINE.test(dedented)) closePara()
         else if (HR.test(dedented)) closePara()
         // A CODE FENCE CLOSES THE PARAGRAPH ONLY IF IT INTERRUPTED IT -- §10 I4,
         // and the same correction carve#891 already made one construct over for
@@ -3924,11 +3947,6 @@ function collectItems(lines, i, list, state, ind, meas) {
         // then hands the line back to this loop, which reopened it here. One
         // branch settles both.
         //
-        // A WRAPPED attribute block is out of reach here for the reason the
-        // marker-line seed records: its opener has no closing brace, so it is
-        // not an attribute line by itself, and its continuation arrives as
-        // ordinary residue. That case is carve#1280's open content-column half
-        // and is deliberately not decided by a one-line window.
         else if (tryAttrLine([dedented], 0)) closePara()
         // A REFERENCE OR FOOTNOTE DEFINITION ENDS THE PARAGRAPH TOO, and for
         // the same reason the attribute line above does: §10 I5 makes it an

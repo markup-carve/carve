@@ -639,6 +639,7 @@ index: examples/edge-cases/index.md
   39-inline-span-4
   39-inline-span-5
   an-attribute-line-below-a-list-item-interrupts-it
+  a-wrapped-attribute-line-leaves-no-paragraph-open
   an-engine-written-shape-says-what-it-is-called
   text-block-alignment-renders-the-css-declaration
 

@@ -3,8 +3,8 @@ Definition lists
 ```
 :: color
 :: colour
-:  The visual property of objects.
-:  A pigment or paint.
+: The visual property of objects.
+: A pigment or paint.
 .
 <dl>
   <dt>color</dt>
@@ -16,9 +16,9 @@ Definition lists
 
 ```
 :: term
-:  A definition can now hold
+: A definition can now hold
 
-   more than one paragraph.
+  more than one paragraph.
 .
 <dl>
   <dt>term</dt>
@@ -31,7 +31,7 @@ Definition lists
 
 ```
 :: term
-:  A first paragraph,
+: A first paragraph,
 +
 then a flush-left block joined with +.
 .
@@ -46,7 +46,7 @@ then a flush-left block joined with +.
 
 ```
 :: term
-:  A definition wrapped
+: A definition wrapped
 onto the next line.
 .
 <dl>
@@ -58,7 +58,7 @@ onto the next line.</dd>
 
 ```
 :: term
-:  +
+: +
 > the whole definition is this quote
 .
 <dl>
@@ -72,7 +72,7 @@ onto the next line.</dd>
 ```
 :: A term that
 wraps onto the next line
-:  its definition
+: its definition
 .
 <dl>
   <dt>A term that
@@ -84,7 +84,7 @@ wraps onto the next line</dt>
 ```
 :: term
 
-:  the definition
+: the definition
 .
 <dl>
   <dt>term</dt>

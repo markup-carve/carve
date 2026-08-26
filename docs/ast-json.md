@@ -1269,12 +1269,13 @@ shape against the schema and carries a tripwire that fails on the pinned build
 the day it does, so this paragraph cannot go stale the way the rows above have
 twice.
 
-## Open question
+## Citation items are positioned nodes
 
-**Citation items are plain objects**, carrying `key`, `prefix`, `locator` and
-`suffix` with no `type` and no `pos`. The definition-list argument applies only
-partly: a citation item is not in the profile vocabulary, so nothing names it
-and no denial is silently lost - but a locator is still content a consumer might
-want to navigate to.
+Each item inside `citation_group.items` is a `citation` node. It carries
+`type: "citation"`, its existing `key`, `prefix`, `locator`, `suffix`,
+resolution fields, and a required `pos` covering the complete item.
 
-It is the last place where content in the tree is not a node.
+The position makes every authored locator and prefix navigable without treating
+the group as one indivisible range. It also puts citation items in the inline
+profile vocabulary, so diagnostics, editor selections and AST transforms use
+the same node contract as every other content-bearing value.

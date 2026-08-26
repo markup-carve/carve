@@ -1,0 +1,34 @@
+A wrapped attribute line leaves no paragraph open
+
+```
+- {.a
+  .b}
+tail
+.
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+```
+
+```
+- prose
+  {.a
+  .b}
+tail
+.
+<ul>
+  <li>prose</li>
+</ul>
+<p>tail</p>
+```
+
+```
+- {.a}
+tail
+.
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+```

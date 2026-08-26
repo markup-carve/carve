@@ -3044,7 +3044,7 @@ X
 
 ## Definition lists
 
-`:: term` (one or more) then `:  definition` (one or more) form an entry,
+`:: term` (one or more) then `: definition` (one or more) form an entry,
 rendered as a `<dl>` of `<dt>` then `<dd>`. Two colons is a term; three
 is a div/admonition.
 
@@ -3053,8 +3053,8 @@ is a div/admonition.
 ```carve
 :: color
 :: colour
-:  The visual property of objects.
-:  A pigment or paint.
+: The visual property of objects.
+: A pigment or paint.
 ```
 
 ```html
@@ -3076,9 +3076,9 @@ paragraph:
 
 ```carve
 :: term
-:  A definition can now hold
+: A definition can now hold
 
-   more than one paragraph.
+  more than one paragraph.
 ```
 
 ```html
@@ -3101,7 +3101,7 @@ indentation.
 
 ```carve
 :: term
-:  A first paragraph,
+: A first paragraph,
 +
 then a flush-left block joined with +.
 ```
@@ -3126,7 +3126,7 @@ line, a new marker, or a block opener ends the definition instead.
 
 ```carve
 :: term
-:  A definition wrapped
+: A definition wrapped
 onto the next line.
 ```
 
@@ -3142,13 +3142,13 @@ onto the next line.</dd>
 
 When the definition's sole content is a lone `+`, it opens a *first block*: the
 body is the following flush-left block, with no indentation - the same opener
-the list form `- +` provides. Write `:  \+` for a literal `+`.
+the list form `- +` provides. Write `: \+` for a literal `+`.
 
 ::: compare
 
 ```carve
 :: term
-:  +
+: +
 > the whole definition is this quote
 ```
 
@@ -3166,7 +3166,7 @@ the list form `- +` provides. Write `:  \+` for a literal `+`.
 The **term** side is inline-only, like a heading label: it holds inline content
 (no block content), but it *does* fold a following plain line into the term
 with a soft break - a wrapped term line joins the term instead of ending the
-list. A new marker (`::` / `:  `), a blank line, or a block opener ends the
+list. A new marker (`::` / `: `), a blank line, or a block opener ends the
 term.
 
 ::: compare
@@ -3174,7 +3174,7 @@ term.
 ```carve
 :: A term that
 wraps onto the next line
-:  its definition
+: its definition
 ```
 
 ```html
@@ -3192,14 +3192,14 @@ directly under prose folds into that paragraph, so a list needs a blank line
 before it.
 
 A blank line may separate a term from its definition (or one definition from
-the next) for readability - a following `:  ` line still attaches to the entry:
+the next) for readability - a following `: ` line still attaches to the entry:
 
 ::: compare
 
 ```carve
 :: term
 
-:  the definition
+: the definition
 ```
 
 ```html
@@ -3212,7 +3212,7 @@ the next) for readability - a following `:  ` line still attaches to the entry:
 :::
 
 A definition (`<dd>`) ends at a blank line that is followed by neither an
-indented continuation nor a `:  ` definition, at a new `::` term, or at a block
+indented continuation nor a `: ` definition, at a new `::` term, or at a block
 opener.
 
 Attributes attach to the **whole `<dl>`** via a preceding block-attribute line

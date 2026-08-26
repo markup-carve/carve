@@ -81,7 +81,7 @@ const schema = JSON.parse(readFileSync(resolve(repo, 'resources/ast-schema.json'
  * Declared fields, keyed by the type that declares them.
  *
  * A `$defs` entry that pins `type` is keyed by that type. One that does not -
- * `attrs`, `pos`, `citation` - has no `type` on the wire, so an instance cannot
+ * `attrs` and `pos` have no `type` on the wire, so an instance cannot
  * be attributed to it; those are keyed by their `$defs` name and their fields
  * are looked for ANYWHERE, which is the old behavior kept only where per-type
  * attribution is impossible.

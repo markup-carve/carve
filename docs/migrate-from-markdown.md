@@ -369,6 +369,6 @@ When moving a document from Markdown to Carve:
 - [ ] Verify GFM table delimiter rows became `|=` header cells
 - [ ] Verify `~~strike~~` became `~strike~` (single tilde)
 - [ ] Move any heading `{#id}` onto the line above the heading - `carve lint` finds them, and left in place the `#id` becomes a tag AND changes the heading's anchor
-- [ ] Check the indentation of top-level block markers: a leading-indented `#`, `>`, `-`, `` ``` ``, or `:::` is literal paragraph text in Carve, not a block. Markdown tolerates 0-3 spaces of indent; Carve requires a block marker at column 0 (or, inside a list, at the item's content column)
+- [ ] Check block-marker indentation: top-level markers require column 0. Inside a container, a recognized opener must reach the innermost container's minimum content column; a deeper opener is structural too, and `carve fmt` moves it back to the minimum column
 - [ ] Decide on raw HTML: bare `<tags>` become literal text, so replace them with Carve constructs (or use an explicit `` `...`{=html} `` / ```` ```=html ```` passthrough for trusted content; use the engine's safe mode for untrusted input)
 - [ ] Audit CSS and JS for direct-child assumptions - headings now nest their content in `<section>` (see [Headings are wrapped in `<section>`](#headings-are-wrapped-in-section))
