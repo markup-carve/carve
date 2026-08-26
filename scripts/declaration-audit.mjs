@@ -294,7 +294,7 @@ const MANIFEST = [
   { repo: 'carve-rs', path: 'tests/corpus_render_fixtures.rs', name: 'FMT_AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', staleness: 'the pin has caught up; delete its FMT_AHEAD_OF_PIN entry', owner: 'tests/corpus_render_fixtures.rs' },
   { repo: 'carve-rs', path: 'tests/optional_corpus.rs', name: 'DECLARED_UNIMPLEMENTED', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/optional_corpus.rs' },
   { repo: 'carve-rs', path: 'tests/optional_corpus.rs', name: 'AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/optional_corpus.rs' },
-  { repo: 'carve-rs', path: 'tests/html_import.rs', name: 'BEHIND_THE_RULING', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'mirrors spec PIN_LAG' },
+  { repo: 'carve-rs', path: 'tests/html_import.rs', name: 'AHEAD_OF_PIN',      kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'mirrors spec PIN_LAG' },
   // Not a waiver: the set of JSON Schema keywords this hand-written validator
   // implements. Meeting one that is NOT listed is the failure, which is the
   // opposite direction from every other row here.
