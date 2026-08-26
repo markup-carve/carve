@@ -28,14 +28,6 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    character that is not one BEGINS the heading. `##<SP><SP>h` is the heading
    `h`, not `<SP>h`.
 
-   A CORRECTION, NOT A WIDENING, and the third time the same one is made: at
-   the footnote and abbreviation markers (carve#892), at the caption
-   (carve#1575) and here. This production said `space` while every engine
-   consumed a run, so the grammar forbade a shape nothing rejected. The
-   executable spec was the one reader that took it literally, which is how it
-   came to publish `<h2><SP>h</h2>` where all three engines publish `h`
-   (carve#1581).
-
    TWO CLAUSES DECIDE IT, and neither of them counts engines. MARKER
    SEPARATORS AND PADDING SLOTS (PART 2) defines a marker separator as what
    stands between the marker and the content it introduces and rules that a
@@ -82,14 +74,6 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
 
      ## A             -> two separate <h2> elements
      ## B
-
-   WHY THIS DIVERGES. Djot folds a following plain line, or a same-count `#`
-   line, into the heading. That is hard-wrap-safe, and it is also a SILENT
-   CORRUPTION for anyone arriving from Markdown: `# Title` with prose on the
-   next line became ONE heading whose id was derived from both lines, with no
-   error and nothing to lint. divergence-from-djot §7 already broke from Djot on
-   this exact class of bug for the mirror case -- prose followed by a heading --
-   so the two orderings now answer the same way instead of opposite ways.
 
    It also makes this grammar's own model true. A heading is described here as
    "a bounded title, not an open paragraph"; with continuation lines it had
@@ -615,15 +599,6 @@ definition_indent = whitespace, {whitespace} ;
    MARKER SEPARATORS AND PADDING SLOTS clause, which is A TAB IS SYNTAX ONLY
    IN THE LEADING RUN (PART 7) applied to a slot that sits inline).
 
-   THIS PRODUCTION LEADS EVERY IMPLEMENTATION rather than recording them, and
-   that direction is deliberate (carve#888 signoff, carve#893). Measured on
-   the discriminating shape -- a blank line, which forces this branch instead
-   of `lazy_continuation_line` -- only carve-rs reads the column; carve-js,
-   carve-php and the oracle read characters, and carve-js and carve-php differ
-   from each other again on a mixed `<SP><SP><TAB>` run. So a check written
-   against an engine today would pin the pre-ruling behavior. The oracle moves
-   with this production; the engines follow on their own tickets.
-
    The BACKSLASH branch spells the same indentation and is respelled with it,
    for consistency of the file rather than for behavior: that branch resolves
    through the hard break, where all four readers already fold the next line in
@@ -668,14 +643,6 @@ definition_indent = whitespace, {whitespace} ;
    and being unnamed they were inventoried nowhere and pinned by nothing. An
    engine that follows this clause is not being asked to follow new prose.
 
-   NO READER FOLLOWED IT and the failures were not the same failure. Measured
-   at the time of this ruling on `:: t` / `:  body` / `<N spaces>> q`, the
-   executable spec nested the quote inside the `dd` at one and two spaces where
-   the three engines folded it in as lazy text; every reader agreed at zero, at
-   three and at four. Both answers at one and two are wrong here, and the
-   coherent rule is preferred to either: two different incoherences are not
-   evidence for one of them.
-
    THE LADDER IS PINNED (carve#1772). The documents this clause deferred to
    their own pass are corpus 425: column 0 and the two columns above it in the
    BELOW band, the column itself, one column past it, a second opener kind, and
@@ -684,11 +651,6 @@ definition_indent = whitespace, {whitespace} ;
    could see -- a line below the column fell through to the flush-left branch
    and nested anyway -- so a corpus run reporting every golden reproduced was
    true and said nothing about this band.
-
-   The executable oracle was the reader that had not moved, and it read a
-   payload written directly under a description line as description content at
-   any indent above zero. Three engines already followed the clause
-   (carve-js#870, carve-php#1036, carve-rs#792). The oracle follows it now.
 
    THE SURVIVING CONTEXT IS WHATEVER HOLDS THE LIST. At the top level an opener
    must be written at column 0, so a `>` one or two columns in opens nothing and

@@ -20,15 +20,6 @@
       what they are called. Where carve-js's `type` string disagrees with the
       vocabulary in profiles.md, the vocabulary wins.
 
-      Read without that limit, §1 made carve-js's spelling normative even when
-      it collided with the vocabulary. An inline footnote reference is the
-      case that surfaced it: carve-js called it `footnote`, which is ALREADY
-      the block type for the definition, so one identifier named two different
-      nodes and `footnote_ref` -- listed in profiles.md as an inline type --
-      named none. carve-php emitted `footnote_ref`. Deferring to carve-js there
-      would have resolved the disagreement by deleting a distinction the
-      vocabulary makes on purpose (carve#405).
-
    1a. ADJACENT TEXT RUNS ARE COALESCED -- NORMATIVE. A serialized node's
       children contain NO two adjacent `text` nodes. Where a producer's internal
       tree holds a run of them, they are joined into one before serialization,
@@ -39,15 +30,6 @@
       is ONE text node, not four. An implementation that splits a run wherever a
       delimiter failed to open emphasis publishes its parser's bookkeeping, not
       the document.
-
-      WHY THIS IS NORMATIVE rather than left to each producer. §1 requires that
-      a consumer written against one implementation can read another's output.
-      Without this rule that requirement is satisfied by any tree at all: two
-      engines can publish 1 node and 4 nodes for the same characters, both are
-      valid against the schema, and "read another's output" degrades to
-      "parses". Coalescing is what makes the serialized tree CANONICAL for a
-      given document, which is the same argument PART 11 already makes one layer
-      down for canonical source form.
 
       It also makes node-for-node comparison meaningful, which is the only way
       an engine's divergence from the reference can be MEASURED rather than
@@ -162,14 +144,6 @@
       author put there and a consumer MUST leave it alone. Mapping it would
       corrupt the payload the raw block exists to carry unexamined.
 
-      Stated because all three engines publish it on all four fields and only
-      one was written down: two consumers in this org passed it straight
-      through, one into Pandoc JSON and one back into Carve source in place of
-      the `\ ` it came from (carve#721), and carve-sile handed it to SILE,
-      which drew the font's `.notdef` glyph - a visible box, no warning
-      (carve#1242). Private-use codepoints ABOVE U+E000 are writer-internal
-      staging and never reach a published value (carve-rs#404).
-
    3a. THE SERIALIZED TREE IS PRE-RESOLVE -- NORMATIVE. It records what the
       AUTHOR WROTE, not what the document resolves to. Reference resolution,
       like rendering, happens after; a producer MUST NOT fold its results into
@@ -200,15 +174,6 @@
       published rather than left to be recomputed. The distinction this clause
       exists to protect, `[a][]` versus `[a](#a)`, is carried entirely by `ref`
       and `rawRef`, so nothing is lost by keeping `href` too.
-
-      It is also what every engine already does. Measured on
-      `See [getting started][] here.` with the label defined, all three publish
-      the destination -- carve-js `{"href":"/start"}`, carve-rs
-      `{"href":"/start"}`, carve-php `{"ref":"","href":"/start"}`. The clause as
-      first written would have made all three wrong on the half they agree
-      about, in order to protect a distinction `ref` and `rawRef` already carry.
-      What they are each missing is the authored construct BESIDE it, which is
-      the half this clause actually asks for.
 
       A NESTED LINK AND AN AUTOLINK STAY NODES -- NORMATIVE (carve#817).
       "Links never nest" is a RENDERING rule: an anchor may not contain another
@@ -282,12 +247,6 @@
       you, because the engine is a target. Walking the tree and building output
       yourself does not.
 
-      WHY THE DESTINATION IS PUBLISHED, and what it cost when it was not. When
-      this clause was written the vocabulary had no node type for a `[label]:
-      url` link reference definition, so `href: ""` on a resolved reference was
-      unrecoverable: a document holding only `[lbl]: /u` published zero children,
-      and
-
         See [getting started][] here.
 
         [getting started]: /start
@@ -351,15 +310,6 @@
       serialized a later stage by the rule at the top of this section, and it
       cannot be written back: the writer reconstructs `</#` + the id + `>`, so
       the document comes out of a wire round trip spelled `</#Intro>`.
-
-      Measured while settling this (carve#610): carve-php and carve-rs publish
-      `heading_ref` with `target` and no `href` -- the authored half, missing
-      the resolution. carve-js publishes a resolved `link` with `fromCrossref`
-      and no record of the authored id, and for an UNRESOLVED crossref it
-      publishes no node at all: `See </#Nope>.` comes out as one `text` node
-      holding the source, which is the flattening the clause above forbids for
-      `[a][]`. So each engine has one half and no two agree, which is what a
-      vocabulary describing both shapes without choosing produces.
 
       `fromCrossref` on `link` is therefore not the crossref's serialization. A
       LINK the author wrote as a link may still carry it as a rendering hint;
@@ -510,14 +460,6 @@
       source: a backslash at the end of a line, then the next line
       span: the backslash and the newline, not the newline alone
 
-      Three engines, two answers, and nothing to tell them apart: carve-js and
-      carve-php covered the pair, carve-rs covered the newline and left the
-      backslash in no node at all. A break renders as a line break whatever
-      its span says, so no output could show the difference, and the
-      conformance checker compares a span against the text it selects only for
-      a `text` node -- the one node whose exact source text the tree carries.
-      (carve#549, fixed in carve-rs#492.)
-
       A TRAILING ATTRIBUTE BLOCK IS THE NODE'S OWN MARKUP, so the span covers
       it. For
 
@@ -532,16 +474,6 @@
       attribute block is markup of the node's own by the same reading that
       makes a break's backslash part of the break. carve-rs covers the block
       and carve-js stops at the content, so carve-js moves (carve#521).
-
-      IT ALSO REMOVES A WORKAROUND. The `strong` > `emphasis` pair that §4's
-      combined-form rule materialises derives the inner span from the outer one
-      by trimming the two-character delimiters. With the attribute block
-      OUTSIDE the outer span that arithmetic is right; with it inside and
-      unaccounted for, the inner node would claim `x*/{#`. carve-rs omits the
-      inner span whenever the node carries attributes rather than publish a
-      wrong one -- correct, and no longer necessary once the outer span is
-      known to include the block, because the trim can then take the block off
-      the end first.
 
       No corpus document has an attributed inline today, which is why two
       answers coexisted. One case pins it; `*x*{#i}` is enough, and the
@@ -688,23 +620,6 @@
       The `definition_list` ends where the description ends, not on the
       attribute line below it.
 
-      WHY THE OTHER READING LOOKED RIGHT. A floating attribute is SCOPED to the
-      container that holds it (PART 9 §15 A4, carve#1281), so the attribute line
-      is one the definition list CONSUMED - and consuming it was read as owning
-      it, which made the extent run to the last line the list read rather than
-      to its last child. Scope and extent are different questions. Scope decides
-      which blocks an attribute may reach, and it answers "not past this
-      container"; extent decides which source a node claims, and it answers "not
-      past my last child". The same line is inside the container for the first
-      question and outside its span for the second, and the bullet list one
-      construct over already answered it that way: `- a` / `  {.x}` / `tail`
-      scopes the attribute to the item and still excludes it from the list's
-      span, by the clause above that names the construct. Nothing about a
-      definition list's shape changes that arithmetic, and the attribute line
-      leaves no attributes on the `definition_list` node either - it produces
-      nothing at all, which is what "unattached" means. (carve#1530, superseding
-      the extent half of carve#1281 and markup-carve/carve-php#1366.)
-
       A CONTAINER WITH NO PLACED CHILD AT ALL SPANS ITS OWN MARKUP AND STOPS
       THERE -- NORMATIVE. "Ends at its last placed child" is silent when there
       is none, and a container can be emptied: a definition written as an item's
@@ -765,29 +680,10 @@
           a<TAB>b
           :::
 
-      carve-rs ended the paragraph at offset 9, where the break above the
-      tab-bearing line ends, while carve-js and carve-php ended it at 12 where
-      that line ends. Offset 9 is one past the terminator the break owns, so
-      that span ends immediately after a line terminator -- excluded by name
-      above -- and drops the stanza's own last line out of the paragraph
-      holding it, which is markup-carve/carve-rs#1247 read backwards.
-
       A SPAN DOES NOT BEGIN AT A LINE TERMINATOR -- NORMATIVE. Except on a
       `soft_break` or a `hard_break`, whose content IS the terminator, a node's
       `startOffset` MUST NOT select a newline. No construct begins with the
       line ending the line before it.
-
-      This is written down because it is the one thing a checker can verify
-      about a span without knowing what the node covers. A span is compared
-      against the text it selects only on a `text` node -- the single node whose
-      exact source text the tree carries -- so a paragraph, list item, table
-      cell or block quote could point at the wrong source and every conformance
-      run came back clean. carve-php gave a tab-containing line block a
-      paragraph span starting at the newline that ENDED the first stanza line,
-      dropping that line from its own paragraph, and the checker passed it for
-      as long as both existed (markup-carve/carve-php#669, carve#541).
-
-      All three engines satisfy it today; the rule is a ratchet, not a request.
 
       POSITION TRACKING MAY BE OPT-IN, SERIALIZATION MAY NOT. An implementation
       MAY gate position tracking behind a parse option, and MUST enable it when

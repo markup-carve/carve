@@ -401,18 +401,6 @@
         answered S4 while they were the item's last block and stopped answering
         it when prose reopened one.
 
-        Measured across four container heads, eight inner blocks and three
-        following lines - 96 shapes - carve-rs ends the item in the fifteen
-        where the inner block sits directly in the item, and carve-php in the
-        four where a quote holds a table and the following line is a `+` row;
-        carve-js and the executable spec fold in all nineteen. Each of those
-        readers renders the prose line AS prose and then declines to treat its
-        paragraph as open, so each is answering one line two ways inside a
-        single parse. Corpus 361 pins three of the nineteen with two controls: a
-        blank line before `tail`, which closes the paragraph so the item does
-        end, and a second table row at the item's own column, which extends the
-        table and opens no paragraph at all. (carve#1370)
-
         AN UNTERMINATED CONTAINER DOES NOT EXTEND THE ITEM PAST THAT BLANK.
         The control above says the blank closes the paragraph so the item ends,
         and that holds whatever container stands above the blank. S4 asks
@@ -450,29 +438,6 @@
         rather than as the list of prefixes that have been measured: two
         container kinds already spell 62 of them by depth five, and the list
         goes stale at depth six.
-
-        THE HEADING AT THAT COLUMN IS THE CONTROL, and it is what says the
-        question is about the column and not about the line. Measured
-        2026-08-18 over all 62 quote/list prefixes to depth five, against
-        carve-js `099db2cc`, carve-php `925f7dcf` and carve-rs `3f8bde7b`,
-        each built from a clone made for the run: at every one of them a `# h`
-        written at that column is a heading INSIDE the innermost container, in
-        all three. So every reader already places the line at the column. A
-        reader that then declines the DEFINITION there is deciding by the
-        line's SPELLING, which C3 refuses -- the content column IS the body's
-        column 0, and a block opener is recognized there exactly as at the top
-        level.
-
-        A READER THAT DECLINES CONTRADICTS ITSELF, which is what settles this
-        without counting readers. Peel the OUTERMOST container off any document
-        where one declines, and the residue is precisely the body C5 says that
-        container hands down -- and the same reader registers in it, at once or
-        after a further peel. `- > - - x` over `  >     [r]: /url` is `> - - x`
-        over `>     [r]: /url` with one list item wrapped around it: carve-rs
-        registers in the second and reads the first as lazy text, carve-php
-        registers in the second and DROPS the first, publishing neither the
-        definition nor the author's line. An outer container cannot change what
-        an inner body's column 0 is, so those are two answers to one question.
 
         The DROP is the disappearance §24 C3 already forbids under AN INVISIBLE
         LINE FOLDS LIKE ANY OTHER (carve-php#721): a definition may register, or
@@ -514,16 +479,6 @@
         marker line and a heading inside a quote. The line's position changes
         which container owns the heading, not whether the heading is a block.
 
-        WHY THE ENUMERATION HAD TO GO. Read construct by construct, the same
-        column answered three ways at once and no clause said why: an
-        ATTRIBUTE BLOCK at a list item's content column ends the item in every
-        implementation, a DEFINITION there ends it in most, and a COMMENT
-        there ended it in none - while the same comment one container over, at
-        a definition body's content column, does end it. Two of those splits
-        are by construct and one is by container, and §10 I5 makes all of them
-        interrupters. So `- a` / `  %% c` / `tail` ends the item, and so does
-        the `%%%` fence spelling of it, which travels with its opener (§24 C3).
-
         THE §17 L1a OBJECTION DOES NOT REACH THIS. carve#621 and carve#625
         ruled that an invisible line is NOT A PARAGRAPH for looseness. Whether
         a line IS a paragraph and whether it ENDS one are different questions,
@@ -559,17 +514,6 @@
         ends the item exactly as the contiguous and the one-line spellings do.
         `tail` is a document-level paragraph and the note holds two blocks.
 
-        AN INTERNAL CONTRADICTION DECIDES IT, NOT A COUNT. This shape divided
-        four ways, and three of those answers contradict the answer the SAME
-        reader gives one blank line away: carve-php and this implementation end
-        the item on `  [^f]: t` / `    more` and on the one-line spelling, then
-        fold `tail` in as soon as a blank sits between the note's blocks. That
-        is one definition answering by how its own body is laid out, and
-        nothing above is stated over a body's layout - the rule is over the
-        BLOCK, and the blank is inside it. carve-rs is the only reader already
-        consistent across the three spellings, which is a consequence of the
-        property and not a vote for it.
-
         THE LINK REFERENCE DEFINITION IS THE CONTROL, and it does not move. It
         has no body, so its block IS the one line: the blank after it falls
         OUTSIDE the block, the indented line below is the container's own
@@ -599,19 +543,6 @@
         not markup. So the containers close, the item holds an EMPTY code block,
         and `x` re-parses at document level -- where the trailing delimiter run
         is ordinary inline text.
-
-        This is the SAME derivation the block-quote spelling already gets, and
-        all three engines agree there:
-
-            > ```
-            x
-            ```
-
-        gives an empty code block inside the quote and a top-level paragraph.
-        The list spelling is where they diverged, four readers four ways, and
-        the only difference between the two is which container the walk stops
-        at. AT the item's content column the body is the item's and nothing
-        leaves it, which is the shape every other corpus case uses.
 
         AND THE FENCE KIND IS NOT A PARAMETER -- NORMATIVE (carve#980). The
         clause above is named for a code fence, and reads as though
@@ -737,28 +668,12 @@
         with a `:::` line closes the paragraph inside it and inverts the left
         answer, which is what the third document pins.
 
-        THE SPELLING MATTERS AND IS WHY THIS LOOKED CONTESTED. carve#909
-        measured `:::note`, with no separator. PART 7 has since narrowed the
-        colon fence's separator to a space (carve#900, carve#905), so that line
-        no longer passes the opener test: it is ABSORBED as paragraph text, and
-        its answer comes from SS12's absorption rule and carve#902 rather than
-        from this clause. Measured again on the `::: note` spelling, the oracle
-        and carve-js agree on all three documents above, so the oracle is not
-        stale here -- what was stale was the fence.
-
         AND THE CONTAINER KIND IS NOT A PARAMETER EITHER -- NORMATIVE
         (carve#920). The same three documents written with a BLOCK QUOTE decide
         the same way. `> quote` / `> ::: note` / `tail` closes the quote and
         leaves `tail` at top level, and so does the CLOSED form
         `> quote` / `> ::: note` / `> body` / `> :::` / `tail`, because a closed
         container holds no open paragraph any more than an empty one does.
-
-        This is stated separately because two engines answer it by the container
-        kind: carve-js and carve-php produce the top-level paragraph for the
-        list item and fold the identical shape into the block quote
-        (carve-js#833, carve-php#982). carve-rs answers both alike. Depth was
-        not a parameter of this rule, per the paragraph below; neither is which
-        container kind the unmatched prefix belonged to.
 
         AND A DEFINITION BODY IS SUCH A CONTAINER -- NORMATIVE (carve#956).
         The third indented-block collector answers the same way. A definition
@@ -779,16 +694,6 @@
         delimiter run is ordinary inline text, byte for byte the answer corpus
         276 already pins for the `- ``` ` spelling.
 
-        A definition body is the LAST container kind that collects an indented
-        block, so with this the rule is CLOSED over the set rather than
-        enumerated across it. That is why it is stated rather than left to be
-        inherited: at the time of this ruling no reader followed it. The three
-        engines agreed with each other and against this derivation, keeping
-        the below-column line as code text, and the executable spec agreed
-        with neither of those answers -- four readers, three answers, and no
-        fixture, which is the state carve#755 catalogues. Corpus documents for
-        the shape are owed and are deferred to their own pass (carve#956).
-
         This said "the innermost MATCHED context holds an OPEN PARAGRAPH",
         which describes something no implementation does. A lazy line carries
         no markers, so it matches ZERO containers and the innermost matched
@@ -808,4 +713,3 @@
            inline parsing (PART 3) runs per finished block -- the two-phase
            model of PART 8.
    ============================================================================ *)
-

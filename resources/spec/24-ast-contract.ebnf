@@ -27,12 +27,6 @@
       replaced. The id is published beside the heading's other attributes, the
       same way a resolved crossref keeps `target` and gains `href`.
 
-      carve-js publishes the field. carve-rs and carve-php publish no `attrs`
-      for a heading at all, which is the null state rather than a decision
-      (carve#750); the gap is declared in resources/ast-value-divergence.txt
-      until each lands a producer, so `scripts/ast-conformance.mjs` reports it
-      by count rather than treating it as new.
-
    6. ROUND TRIP. `parse(x)` serialized and deserialized MUST equal `parse(x)`.
       A serializer that loses a field is not a lossy convenience; it is a
       consumer breaking silently one document later.
@@ -41,20 +35,6 @@
       `type`, `children`, `srcByteLength`. Nothing else. An implementation MUST
       NOT hang document-level data off the root; content goes in the tree,
       where every other piece of content already lives.
-
-      Two things had drifted there. carve-js carried `frontmatter` and
-      `footnoteDefs`; carve-rb (over carve-rs) carried `frontmatter`. carve-php
-      carried neither, because it already put both in the tree (carve#411).
-
-      WHY THE TREE AND NOT THE ROOT. §4 requires every node except the root to
-      carry `pos`, on the grounds that a tree without positions can only be
-      re-parsed rather than navigated. A root FIELD cannot carry `pos`.
-      Frontmatter and a footnote definition are source constructs occupying
-      real bytes: an editor jumps to them, a formatter reproduces them, a
-      language server renames a label. Putting them on the root would make them
-      the only content in the document that cannot be navigated to. That
-      applies to frontmatter exactly as much as to a footnote body, which is
-      why the two do NOT split along a metadata/content line.
 
       FRONTMATTER IS A BLOCK NODE, `type: "frontmatter"`, carrying:
         format   the info word on the opening fence (`frontmatter_format` in
@@ -136,13 +116,6 @@
       alternatives were a new wire field on every definition or an accepted
       lossy round trip.
 
-      It also drops the author's line. All three engines rendered
-      `> *[HTML]: Hyper Text` as an EMPTY block quote, because the definition
-      was collected out of it and then rendered nothing. Text the author wrote
-      disappeared. Under this clause the line was never a definition, so
-      nothing is collected and nothing vanishes. (carve#708, carve-php#708,
-      carve-php#631)
-
       THE FORMATTER CONSEQUENCE IS ACCEPTED, NOT OVERLOOKED. Hoisting means
       PART 11's writer emits the definition after the container the author
       wrote it in, which reads like a violation of PART 11 §6 ("fmt does not
@@ -160,12 +133,6 @@
       collection it follows from. It is accepted for footnotes because a
       footnote definition renders as a footnote either way, so the move costs
       the author placement and nothing else.
-
-      WHY THE SAME TRADE IS NOT ACCEPTED FOR ABBREVIATIONS. There the move
-      costs the author the LINE: an abbreviation definition renders nothing of
-      its own, so hoisting it out of a container empties the container instead
-      of relocating visible output. That is the difference between reordering
-      what the author wrote and deleting it.
 
       Definitions appear in DOCUMENT ORDER by source position. Numbering is a
       resolution result and stays on the reference (§5).
@@ -200,24 +167,6 @@
       two entries named nothing: a host writing `denyBlock(['definition_term'])`
       got silence, which profiles.md calls the specific failure a normative
       vocabulary exists to prevent.
-
-      And the grouping was NOT A SHARED FACT. Given
-
-        :: a
-        :: b
-        :  x
-        :  y
-
-      carve-js published one entry with two terms and two definitions,
-      carve-rs published three entries split differently, and carve-php
-      published the flat node sequence -- while all three rendered the same
-      `<dl>`. A structure two producers disagree about, which no output depends
-      on, is an internal; §1 already says an implementation whose internals
-      differ maps on the way out.
-
-      An engine whose parser groups differently therefore has one more thing to
-      fix than the serializer: carve-rs opened a new entry per `::` line, so
-      §6's round trip only holds once the parser groups the way the list shows.
 
       A SPELLED LOOSENESS IS A FIELD; A DERIVED ONE IS NOT. `definition_list`
       MAY carry `loose: true`, and it means what PART 9 §17 L7's consumed
@@ -327,14 +276,6 @@
       A node also answers "which definition wins" by document order rather than
       by merge order, and holds its own attributes without a second rule.
 
-      That the root already looked like the precedent is a measurement error
-      worth recording: carve-js's INTERNAL tree carries `footnoteDefs` and
-      `footnoteDefPos`, which is the drift §7 was written against, and its
-      SERIALIZED root carries exactly three fields with the definition as a
-      `footnote` node in `children` -- the same shape carve-rs and carve-php
-      publish. §1 permits exactly that: internals may differ, and map on the way
-      out (carve#642).
-
       WHAT THE NODE CLOSES. Three clauses wanted it and each named a different
       loss:
         §3a   a resolved reference published `href: ""` with the destination
@@ -345,8 +286,7 @@
         §15 A2b  definition attributes had to be materialized onto every
               resolved link, because there was nowhere to put them once
       and the fourth is why it landed: a writer cannot reproduce a construct the
-      tree does not carry, so PART 11 §1's `parse(fmt(x)) == parse(x)` failed
-      for EVERY resolved reference in all three engines (carve#642).
+      tree does not carry, so PART 11 §1's `parse(fmt(x)) == parse(x)` fails.
 
       A DEFINITION IS STILL INVISIBLE IN HTML. The node renders nothing on that
       target; it feeds the links and images that resolve its label (PART 9R R1).
@@ -366,8 +306,7 @@
       wholesale re-emits the unknown property when it serializes again, so its
       OWN OUTPUT no longer validates. A consumer that reads a tree here and
       publishes it again then emits something the format rejects, having been
-      told nothing. Measured before this was written, one engine echoed 29 of
-      31 injected properties back (carve-js#709).
+      told nothing.
 
       REFUSE RATHER THAN DROP, for the reason §9(b) already gives about depth:
       "an ingest that accepts a tree and then silently renders only part of it
@@ -475,30 +414,8 @@
           describes every one of them, and the rows below were only ever
           divergent because nothing consulted it.
 
-          One clause rather than a row per field, because ruling them one at a
-          time is what produced the state it replaces. Measured after (a)-(c)
-          landed, with all three engines agreeing on THOSE: a root `children`
-          of `null` was read as an empty document by carve-js and carve-php --
-          §12's own objection ("a reader that supplies a default has turned a
-          truncated document into an empty one") arriving through a door the
-          clause did not cover. `attrs: {"class":"x"}` was ACCEPTED by
-          carve-php and rendered as `class="x"`, while the other two refused
-          the payload: `class` is what the rendered HTML calls the thing, so it
-          is the natural producer mistake, and a producer testing against
-          carve-php ships something the other two reject outright.
-          `text.value: 7` made carve-php render `<p>7</p>` -- silent nonsense
-          where a refusal is required. And two engines failed UNTYPED, which
-          §9(b) already forbids: carve-php raised a bare `TypeError` from
-          `AstCodec::decodeNode()` for a null or string child, carve-js a
-          `TypeError: nodes is not iterable` from the RENDERER for a node
-          missing a required field.
-
-          THE COST, recorded: this is a bigger change in all three engines than
-          (a)-(c) were, it rejects trees two of them accept today, and every
-          future schema addition becomes a potential rejection for a producer
-          that has not caught up. That last one is the point rather than a side
-          effect -- it is what makes the schema the contract instead of a
-          description of it.
+          One clause rather than a row per field: the schema already defines
+          the complete payload contract.
 
           The rows already fixed are NOT reopened: an unnamed property under
           §11 and a missing or non-string `type` under (c) landed separately

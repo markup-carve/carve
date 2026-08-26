@@ -124,19 +124,9 @@
 
       THE LAZY CASE IS NOT A CASE. Lazy continuation is a PARSER concept: a
       line belonging to a container without carrying its marker. This writer
-      emits no such line, because it re-prefixes every line of the container.
-      Measured, all three:
-
-        > a
-        \# heading
-
-      is emitted as
-
-        > a
-        > # heading
-
-      so the emitted line carries `> ` and M2b sees it. A rule for the
-      source's laziness would describe a line this target never writes.
+      re-prefixes every line of the container, so M2b always sees the emitted
+      prefix. A rule for source laziness would describe a line this target
+      never writes.
 
       NARROWING BY POSITION IS UNCHANGED, WHICH IS THE HALF THAT IS EASY TO
       LOSE. Moving the position does not widen M2b into "an escape behind a
@@ -530,13 +520,6 @@
       §1's `parse(fmt(x)) == parse(x)` requires it, which leaves the round
       trip intact on both of the targets that have one.
 
-      WHY THIS NEEDED SAYING. The corpus pinned HTML for these cases and
-      nothing else, so `compare:impls` reported cross-engine agreement on the
-      Markdown and terminal rows rather than a defect, and reported nothing at
-      all about the plain row because no fixture asked for one. That is the
-      hole §10e came out of. Agreement across implementations is
-      evidence about implementations. (carve#1185)
-
   10g. A COMPOSITE FIGURE SURVIVES EVERY TARGET -- NORMATIVE (PART 9 §4c;
       carve#1122). The floor is `docs/graceful-degradation.md`'s: panel
       content, panel captions, preserved stray content and the group caption
@@ -613,13 +596,6 @@
       axis (`- a` then `* b`), separate nothing that one blank line does not
       separate as well, so they come back as one. What earns the three is the
       boundary's job, not the run's length.
-
-      THE THREE ARE LOAD-BEARING INSIDE THE WRITER TOO. carve-rs squeezes 3+
-      newlines to 2 as a pass over its own output, which would destroy the
-      boundary it had just written; it emits a verbatim-blank sentinel to keep
-      the run intact. A writer whose blank-line handling is a blanket squeeze
-      needs the same exemption, and this is where it is stated rather than
-      rediscovered.
 
       Pinned by corpus
       395-a-longer-run-at-a-list-boundary-is-written-as-exactly-three-blank-lines,

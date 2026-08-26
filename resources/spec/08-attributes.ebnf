@@ -30,17 +30,6 @@ attribute_list = attribute, {space+, attribute} ;
    `opt_pad`, `attr_separator` and `continuation`, all three of which are
    block-level.
 
-   THIS REVERSES PINNED GOLDENS, which is why it needed a decision rather
-   than a correction. Corpus 252, 252-2 and 252-3 pinned a tab as a
-   separator, as padding after an unquoted value, and inside the empty
-   block; all three engines produce them. They are rewritten to the
-   narrowed answer rather than deleted, so the shapes stay pinned - as
-   LITERAL output now. The failure mode is visible rather than silent: a
-   narrowed reader leaves `{.a<TAB>.b}` with its braces showing, which is
-   what this clause already promised. And all three writers normalize the
-   tab away, so no canonically formatted document carries one at any of the
-   five positions; only hand-written source does.
-
    Two neighbouring questions are explicitly NOT decided here and have
    their own tickets: a NEWLINE inside a quoted value, where this file and
    carve-core.ohm split and the engines are 2-1 (carve#888), and
@@ -173,11 +162,7 @@ boolean_attribute = identifier - ('_', {character}) ;
 
    The cost is `{_foo}`, which was a boolean attribute and is now text. It has
    no underline reading either, so it renders literally rather than becoming
-   something else.
-
-   Measured: carve-php already read `{_x_}` as an underline. carve-js,
-   carve-rs and the executable spec produced `<p _x_="">` on the block that
-   followed. *)
+   something else. *)
 
 attribute_value = unquoted_value | quoted_value ;
 unquoted_value = (letter | digit | '-' | '_' | '.' | ':')+ ;
@@ -257,4 +242,3 @@ opt_pad = opt_ws, [continuation] ;       (* block-attribute padding: spaces/tabs
                                             block and is never interior padding *)
 attr_separator = (whitespace | continuation), opt_ws ;  (* one ws OR one line break *)
 continuation = newline, opt_ws ;         (* a single line break + indent; NOT a blank line *)
-

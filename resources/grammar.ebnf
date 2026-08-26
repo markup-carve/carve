@@ -502,18 +502,6 @@
         answered S4 while they were the item's last block and stopped answering
         it when prose reopened one.
 
-        Measured across four container heads, eight inner blocks and three
-        following lines - 96 shapes - carve-rs ends the item in the fifteen
-        where the inner block sits directly in the item, and carve-php in the
-        four where a quote holds a table and the following line is a `+` row;
-        carve-js and the executable spec fold in all nineteen. Each of those
-        readers renders the prose line AS prose and then declines to treat its
-        paragraph as open, so each is answering one line two ways inside a
-        single parse. Corpus 361 pins three of the nineteen with two controls: a
-        blank line before `tail`, which closes the paragraph so the item does
-        end, and a second table row at the item's own column, which extends the
-        table and opens no paragraph at all. (carve#1370)
-
         AN UNTERMINATED CONTAINER DOES NOT EXTEND THE ITEM PAST THAT BLANK.
         The control above says the blank closes the paragraph so the item ends,
         and that holds whatever container stands above the blank. S4 asks
@@ -551,29 +539,6 @@
         rather than as the list of prefixes that have been measured: two
         container kinds already spell 62 of them by depth five, and the list
         goes stale at depth six.
-
-        THE HEADING AT THAT COLUMN IS THE CONTROL, and it is what says the
-        question is about the column and not about the line. Measured
-        2026-08-18 over all 62 quote/list prefixes to depth five, against
-        carve-js `099db2cc`, carve-php `925f7dcf` and carve-rs `3f8bde7b`,
-        each built from a clone made for the run: at every one of them a `# h`
-        written at that column is a heading INSIDE the innermost container, in
-        all three. So every reader already places the line at the column. A
-        reader that then declines the DEFINITION there is deciding by the
-        line's SPELLING, which C3 refuses -- the content column IS the body's
-        column 0, and a block opener is recognized there exactly as at the top
-        level.
-
-        A READER THAT DECLINES CONTRADICTS ITSELF, which is what settles this
-        without counting readers. Peel the OUTERMOST container off any document
-        where one declines, and the residue is precisely the body C5 says that
-        container hands down -- and the same reader registers in it, at once or
-        after a further peel. `- > - - x` over `  >     [r]: /url` is `> - - x`
-        over `>     [r]: /url` with one list item wrapped around it: carve-rs
-        registers in the second and reads the first as lazy text, carve-php
-        registers in the second and DROPS the first, publishing neither the
-        definition nor the author's line. An outer container cannot change what
-        an inner body's column 0 is, so those are two answers to one question.
 
         The DROP is the disappearance §24 C3 already forbids under AN INVISIBLE
         LINE FOLDS LIKE ANY OTHER (carve-php#721): a definition may register, or
@@ -615,16 +580,6 @@
         marker line and a heading inside a quote. The line's position changes
         which container owns the heading, not whether the heading is a block.
 
-        WHY THE ENUMERATION HAD TO GO. Read construct by construct, the same
-        column answered three ways at once and no clause said why: an
-        ATTRIBUTE BLOCK at a list item's content column ends the item in every
-        implementation, a DEFINITION there ends it in most, and a COMMENT
-        there ended it in none - while the same comment one container over, at
-        a definition body's content column, does end it. Two of those splits
-        are by construct and one is by container, and §10 I5 makes all of them
-        interrupters. So `- a` / `  %% c` / `tail` ends the item, and so does
-        the `%%%` fence spelling of it, which travels with its opener (§24 C3).
-
         THE §17 L1a OBJECTION DOES NOT REACH THIS. carve#621 and carve#625
         ruled that an invisible line is NOT A PARAGRAPH for looseness. Whether
         a line IS a paragraph and whether it ENDS one are different questions,
@@ -660,17 +615,6 @@
         ends the item exactly as the contiguous and the one-line spellings do.
         `tail` is a document-level paragraph and the note holds two blocks.
 
-        AN INTERNAL CONTRADICTION DECIDES IT, NOT A COUNT. This shape divided
-        four ways, and three of those answers contradict the answer the SAME
-        reader gives one blank line away: carve-php and this implementation end
-        the item on `  [^f]: t` / `    more` and on the one-line spelling, then
-        fold `tail` in as soon as a blank sits between the note's blocks. That
-        is one definition answering by how its own body is laid out, and
-        nothing above is stated over a body's layout - the rule is over the
-        BLOCK, and the blank is inside it. carve-rs is the only reader already
-        consistent across the three spellings, which is a consequence of the
-        property and not a vote for it.
-
         THE LINK REFERENCE DEFINITION IS THE CONTROL, and it does not move. It
         has no body, so its block IS the one line: the blank after it falls
         OUTSIDE the block, the indented line below is the container's own
@@ -700,19 +644,6 @@
         not markup. So the containers close, the item holds an EMPTY code block,
         and `x` re-parses at document level -- where the trailing delimiter run
         is ordinary inline text.
-
-        This is the SAME derivation the block-quote spelling already gets, and
-        all three engines agree there:
-
-            > ```
-            x
-            ```
-
-        gives an empty code block inside the quote and a top-level paragraph.
-        The list spelling is where they diverged, four readers four ways, and
-        the only difference between the two is which container the walk stops
-        at. AT the item's content column the body is the item's and nothing
-        leaves it, which is the shape every other corpus case uses.
 
         AND THE FENCE KIND IS NOT A PARAMETER -- NORMATIVE (carve#980). The
         clause above is named for a code fence, and reads as though
@@ -838,28 +769,12 @@
         with a `:::` line closes the paragraph inside it and inverts the left
         answer, which is what the third document pins.
 
-        THE SPELLING MATTERS AND IS WHY THIS LOOKED CONTESTED. carve#909
-        measured `:::note`, with no separator. PART 7 has since narrowed the
-        colon fence's separator to a space (carve#900, carve#905), so that line
-        no longer passes the opener test: it is ABSORBED as paragraph text, and
-        its answer comes from SS12's absorption rule and carve#902 rather than
-        from this clause. Measured again on the `::: note` spelling, the oracle
-        and carve-js agree on all three documents above, so the oracle is not
-        stale here -- what was stale was the fence.
-
         AND THE CONTAINER KIND IS NOT A PARAMETER EITHER -- NORMATIVE
         (carve#920). The same three documents written with a BLOCK QUOTE decide
         the same way. `> quote` / `> ::: note` / `tail` closes the quote and
         leaves `tail` at top level, and so does the CLOSED form
         `> quote` / `> ::: note` / `> body` / `> :::` / `tail`, because a closed
         container holds no open paragraph any more than an empty one does.
-
-        This is stated separately because two engines answer it by the container
-        kind: carve-js and carve-php produce the top-level paragraph for the
-        list item and fold the identical shape into the block quote
-        (carve-js#833, carve-php#982). carve-rs answers both alike. Depth was
-        not a parameter of this rule, per the paragraph below; neither is which
-        container kind the unmatched prefix belonged to.
 
         AND A DEFINITION BODY IS SUCH A CONTAINER -- NORMATIVE (carve#956).
         The third indented-block collector answers the same way. A definition
@@ -880,16 +795,6 @@
         delimiter run is ordinary inline text, byte for byte the answer corpus
         276 already pins for the `- ``` ` spelling.
 
-        A definition body is the LAST container kind that collects an indented
-        block, so with this the rule is CLOSED over the set rather than
-        enumerated across it. That is why it is stated rather than left to be
-        inherited: at the time of this ruling no reader followed it. The three
-        engines agreed with each other and against this derivation, keeping
-        the below-column line as code text, and the executable spec agreed
-        with neither of those answers -- four readers, three answers, and no
-        fixture, which is the state carve#755 catalogues. Corpus documents for
-        the shape are owed and are deferred to their own pass (carve#956).
-
         This said "the innermost MATCHED context holds an OPEN PARAGRAPH",
         which describes something no implementation does. A lazy line carries
         no markers, so it matches ZERO containers and the innermost matched
@@ -909,7 +814,6 @@
            inline parsing (PART 3) runs per finished block -- the two-phase
            model of PART 8.
    ============================================================================ *)
-
 (* ============================================================================
    PART 1: DOCUMENT STRUCTURE
    ============================================================================ *)
@@ -1022,14 +926,6 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    character that is not one BEGINS the heading. `##<SP><SP>h` is the heading
    `h`, not `<SP>h`.
 
-   A CORRECTION, NOT A WIDENING, and the third time the same one is made: at
-   the footnote and abbreviation markers (carve#892), at the caption
-   (carve#1575) and here. This production said `space` while every engine
-   consumed a run, so the grammar forbade a shape nothing rejected. The
-   executable spec was the one reader that took it literally, which is how it
-   came to publish `<h2><SP>h</h2>` where all three engines publish `h`
-   (carve#1581).
-
    TWO CLAUSES DECIDE IT, and neither of them counts engines. MARKER
    SEPARATORS AND PADDING SLOTS (PART 2) defines a marker separator as what
    stands between the marker and the content it introduces and rules that a
@@ -1076,14 +972,6 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
 
      ## A             -> two separate <h2> elements
      ## B
-
-   WHY THIS DIVERGES. Djot folds a following plain line, or a same-count `#`
-   line, into the heading. That is hard-wrap-safe, and it is also a SILENT
-   CORRUPTION for anyone arriving from Markdown: `# Title` with prose on the
-   next line became ONE heading whose id was derived from both lines, with no
-   error and nothing to lint. divergence-from-djot §7 already broke from Djot on
-   this exact class of bug for the mirror case -- prose followed by a heading --
-   so the two orderings now answer the same way instead of opposite ways.
 
    It also makes this grammar's own model true. A heading is described here as
    "a bounded title, not an open paragraph"; with continuation lines it had
@@ -1609,15 +1497,6 @@ definition_indent = whitespace, {whitespace} ;
    MARKER SEPARATORS AND PADDING SLOTS clause, which is A TAB IS SYNTAX ONLY
    IN THE LEADING RUN (PART 7) applied to a slot that sits inline).
 
-   THIS PRODUCTION LEADS EVERY IMPLEMENTATION rather than recording them, and
-   that direction is deliberate (carve#888 signoff, carve#893). Measured on
-   the discriminating shape -- a blank line, which forces this branch instead
-   of `lazy_continuation_line` -- only carve-rs reads the column; carve-js,
-   carve-php and the oracle read characters, and carve-js and carve-php differ
-   from each other again on a mixed `<SP><SP><TAB>` run. So a check written
-   against an engine today would pin the pre-ruling behavior. The oracle moves
-   with this production; the engines follow on their own tickets.
-
    The BACKSLASH branch spells the same indentation and is respelled with it,
    for consistency of the file rather than for behavior: that branch resolves
    through the hard break, where all four readers already fold the next line in
@@ -1662,14 +1541,6 @@ definition_indent = whitespace, {whitespace} ;
    and being unnamed they were inventoried nowhere and pinned by nothing. An
    engine that follows this clause is not being asked to follow new prose.
 
-   NO READER FOLLOWED IT and the failures were not the same failure. Measured
-   at the time of this ruling on `:: t` / `:  body` / `<N spaces>> q`, the
-   executable spec nested the quote inside the `dd` at one and two spaces where
-   the three engines folded it in as lazy text; every reader agreed at zero, at
-   three and at four. Both answers at one and two are wrong here, and the
-   coherent rule is preferred to either: two different incoherences are not
-   evidence for one of them.
-
    THE LADDER IS PINNED (carve#1772). The documents this clause deferred to
    their own pass are corpus 425: column 0 and the two columns above it in the
    BELOW band, the column itself, one column past it, a second opener kind, and
@@ -1678,11 +1549,6 @@ definition_indent = whitespace, {whitespace} ;
    could see -- a line below the column fell through to the flush-left branch
    and nested anyway -- so a corpus run reporting every golden reproduced was
    true and said nothing about this band.
-
-   The executable oracle was the reader that had not moved, and it read a
-   payload written directly under a description line as description content at
-   any indent above zero. Three engines already followed the clause
-   (carve-js#870, carve-php#1036, carve-rs#792). The oracle follows it now.
 
    THE SURVIVING CONTEXT IS WHATEVER HOLDS THE LIST. At the top level an opener
    must be written at column 0, so a `>` one or two columns in opens nothing and
@@ -1889,15 +1755,6 @@ caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
    ASCII spaces after the caret, ALL of them separator, and the first character
    that is not one BEGINS the caption. `^<SP><SP><SP>cap` is the caption `cap`,
    not `<SP><SP>cap`.
-
-   A CORRECTION, NOT A WIDENING, and the same one carve#892 made at the footnote
-   and abbreviation markers: this production said `space` while every engine
-   consumed a run, so the grammar forbade a shape nothing rejected. The
-   executable spec was the one reader that took the production literally, which
-   is how it came to publish `<figcaption><SP><SP>cap</figcaption>` where all
-   three engines publish `cap` -- a divergence no gate could reach, since no
-   corpus document, no optional-corpus case and none of the authored documents
-   spelled a caption that way (carve#1575).
 
    TWO CLAUSES DECIDE IT, neither of them a nose count. MARKER SEPARATORS AND
    PADDING SLOTS (PART 2) defines a marker separator as what stands between the
@@ -2635,14 +2492,6 @@ link_text = inline_content ;
    not an escape. `{+ +}`, `{- -}` and `{~ ~> ~}` take `inline_content`, so
    `[{+a\]b+}](u)` already works and they are deliberately NOT in the list.
 
-   This was previously written as "code-span-aware", which named only the
-   first. The others were left to end the label early, and because their
-   content is literal there is no way to write the `]` around it: an escape
-   inside them is not an escape, so `[{#a\]b#}](u)` produces a link whose
-   comment text really contains a backslash. A writer serializing such a
-   document therefore had to choose between keeping the link and keeping the
-   author's text, with no correct answer available (carve#403).
-
    Stated as a property rather than as three names: any future construct whose
    content is literal joins the list by construction. *)
 (* SEMANTIC CONSTRAINT (links never nest): a link MUST NOT contain another
@@ -2869,17 +2718,6 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    engines and the executable spec read it as a definition with trailing junk
    until carve#911, and nothing in this grammar authorized that reading.
 
-   WHY IT IS STATED RATHER THAN LEFT TO THE PRODUCTION. The tail is what made
-   PART 7's promised failure mode UNREACHABLE at this line. That clause says a
-   slot which does not match "falls back to prose rather than silently dropping
-   metadata" -- and here there was no prose to fall back to, so a title or
-   attribute slot that rejected its separator had its metadata quietly eaten by
-   the tail. Every narrowing at this line therefore produced the one outcome
-   the clause names as the one to avoid, which is why carve#907 left two shapes
-   at these slots deliberately unpinned. With the line anchored the promise
-   holds, and the tab and cardinality rules at both slots follow from the
-   general rule with no special case.
-
    THE LINE ENDING is `whitespace` -- `' ' | '\t'` -- the same terminal
    `blank_line = {whitespace}` takes (PART 1; carve#890). So `[a]: /u<SP>` and
    `[a]: /u<TAB>` are still definitions, while `[a]: /u<NBSP>`,
@@ -2910,11 +2748,6 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    another spelling of it. Corpus 266 carries every legal form as a control,
    since the failure mode of an over-eager anchor is rejecting them.
 
-   THE COST, recorded: a shape all four artifacts accepted stops being a
-   definition. One corpus document depended on it -- `16-reference-link-5`,
-   which pinned `[r]: a b c` resolving the label to `a` -- and its golden moved
-   with this ruling.
-
    AN INVALID BLOCK IS NOT `attributes`, SO THE LINE IS NOT A DEFINITION --
    NORMATIVE (carve#933). `[space, attributes]` names the `attributes`
    production, and a balanced `{...}` that production does not accept is not
@@ -2934,17 +2767,6 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    cannot parse. Two readings of `{#}` one construct apart is the thing being
    removed, and the reading kept is the one the rest of the language already
    has.
-
-   WHY IT NEEDED SAYING WHEN THE ANCHOR ALREADY EXISTED. The anchor could not
-   SEE the failure. The trailing block is peeled off by a BALANCE SCAN before
-   anything validates it, so a block that failed validation had already been
-   consumed and DISCARDED, and the line went on to parse as a definition with
-   the author's `{...}` gone from the page -- the exact outcome PART 7 names as
-   the one to avoid, and the reason this anchor exists at all. The remedy is
-   structural rather than a flag: the scan must hand a rejected block BACK as
-   content, which is a THIRD outcome, distinct both from "there was no block"
-   and from "the block was empty". Where those two are the same value, the
-   failure has nowhere to be observed.
 
    THE COMPATIBILITY BREAK THIS ADDS, recorded: a definition line carrying an
    unparseable attribute block stops defining, and a document relying on it
@@ -2986,17 +2808,6 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    override per key" in R1 is exact only once "per key" names a merge, and the
    language has one. A rule where the link's `class` REPLACED the definition's
    would make this the only place in Carve where stacking classes drops one.
-
-   WHY THE SLOT EXISTS AT ALL. R1 and the `linkDefs : label -> (url, title?,
-   attrs?)` symbol table were written with definition attributes in them, and
-   the production had no way to produce the `attrs` they describe -- so the
-   rule was reachable only by an engine that invented a spelling. carve-php
-   invented one: it read a floating `{...}` line ABOVE the definition as
-   attributing it. §15 A2a then settled that a floating attribute floats PAST
-   an invisible construct to the next visible block, which is right, and which
-   removed the only spelling any engine had. This is the replacement, and it
-   does not compete with A2a because it is on the definition's own line
-   (carve#604).
 
    NOT THE SAME AS THE LINE ABOVE. The two forms are different constructs and
    both are now well-defined:
@@ -3052,8 +2863,6 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    rather than in it: an `abbreviation_expansion` is a raw string, so the tab
    survives into the `title`, while a footnote's `inline_content` is parsed as
    blocks and a leading tab is that body's own indentation run (PART 9 §24 C1).
-   Measured, not asserted.
-
    MARKER REQUIRES CONTENT still applies after the run: `[^f]:` followed by
    spaces and nothing else is a paragraph, because a line of `whitespace` is
    blank (PART 1). *)
@@ -3206,13 +3015,6 @@ alt_text = {character} ;
    expressible context-free, which is why this production reads `{character}`
    and defers to the constraint rather than pretending to enumerate it.
 
-   THIS WAS `{character - ']'}`, a flat run stopping at the first `]`, and the
-   two statements sat four lines apart contradicting each other. Read as
-   written it says `![t[z]][r]` is not an image, so the executable spec parsed
-   the `!` as literal text and the rest as a reference LINK, while all three
-   engines rendered an `<img>` (carve#1197). The prose is the rule; the
-   production was the defect.
-
    The VALUE is not `inline_content`. `alt` is an HTML attribute, so nothing
    inside the run is inline-parsed and no smart typography applies:
    `![x /b/ y](/u)` gives `alt="x /b/ y"`, an escape stays as authored
@@ -3254,14 +3056,7 @@ math_display = "$$", code_span ;
    Canonical = carve-js / djot.js (pinned, corpus Math section). The
    `{=format}` raw form is code-span-ONLY and is NOT inherited by math:
    `$\`x\`{=html}` leaves the `{=html}` literal (both impls already agree).
-   The math content is the verbatim text of the reused code_span.
-
-   (This paragraph used to end "carve-php currently DROPS valid math
-   attributes -- to be fixed". It does not: an attribute block on a math
-   span renders the class in ALL THREE engines, verified over each of
-   their mains. A sentence describing one engine's defect is only true on
-   the day it is written, and nothing here re-checks it -- PART 12 section 4's
-   implementation status had rotted the same way.) *)
+   The math content is the verbatim text of the reused code_span. *)
 
 (* --- Emphasis (left/right word-boundary rule; PART 9 §9 is normative).
    The word-boundary restriction applies to EVERY bare emphasis delimiter
@@ -3917,17 +3712,6 @@ attribute_list = attribute, {space+, attribute} ;
    `opt_pad`, `attr_separator` and `continuation`, all three of which are
    block-level.
 
-   THIS REVERSES PINNED GOLDENS, which is why it needed a decision rather
-   than a correction. Corpus 252, 252-2 and 252-3 pinned a tab as a
-   separator, as padding after an unquoted value, and inside the empty
-   block; all three engines produce them. They are rewritten to the
-   narrowed answer rather than deleted, so the shapes stay pinned - as
-   LITERAL output now. The failure mode is visible rather than silent: a
-   narrowed reader leaves `{.a<TAB>.b}` with its braces showing, which is
-   what this clause already promised. And all three writers normalize the
-   tab away, so no canonically formatted document carries one at any of the
-   five positions; only hand-written source does.
-
    Two neighbouring questions are explicitly NOT decided here and have
    their own tickets: a NEWLINE inside a quoted value, where this file and
    carve-core.ohm split and the engines are 2-1 (carve#888), and
@@ -4060,11 +3844,7 @@ boolean_attribute = identifier - ('_', {character}) ;
 
    The cost is `{_foo}`, which was a boolean attribute and is now text. It has
    no underline reading either, so it renders literally rather than becoming
-   something else.
-
-   Measured: carve-php already read `{_x_}` as an underline. carve-js,
-   carve-rs and the executable spec produced `<p _x_="">` on the block that
-   followed. *)
+   something else. *)
 
 attribute_value = unquoted_value | quoted_value ;
 unquoted_value = (letter | digit | '-' | '_' | '.' | ':')+ ;
@@ -4144,7 +3924,6 @@ opt_pad = opt_ws, [continuation] ;       (* block-attribute padding: spaces/tabs
                                             block and is never interior padding *)
 attr_separator = (whitespace | continuation), opt_ws ;  (* one ws OR one line break *)
 continuation = newline, opt_ws ;         (* a single line break + indent; NOT a blank line *)
-
 (* ============================================================================
    PART 5: ABBREVIATIONS
    ============================================================================ *)
@@ -4362,16 +4141,6 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    emptiness test is not satisfied by its absence, and a line holding one is
    not a `blank_line`.
 
-   THIS WAS ALREADY WRITTEN DOWN, one position at a time. PART 2's NO
-   TRAILING WHITESPACE says of the end of a content line that "every other
-   character is CONTENT and survives, however invisible", and names the form
-   feed and the vertical tab among the survivors. This clause is that
-   sentence with the position taken out: what is content at the end of a line
-   is content at the start of one, after a marker, and inside a construct's
-   emptiness test. Deriving it per construct is what produced the divergence
-   -- the same character was content where the sentence had been read and
-   whitespace where it had not.
-
    THE TWO WIDER NOTIONS ARE MARKED AS SUCH, and a construct carrying no such
    mark takes this definition. WHITESPACE HERE IS UNICODE WHITESPACE beside
    `unicode_url_char` (PART 3) means the Unicode White_Space property, for a
@@ -4399,7 +4168,6 @@ character = (* any Unicode character *) ;
 email_char = letter | digit | '.' | '-' | '_' | '+' ;
 
 EOF = (* end of file *) ;
-
 (* ============================================================================
    PART 8: PARSING PRECEDENCE
    ============================================================================ *)
@@ -4868,17 +4636,6 @@ EOF = (* end of file *) ;
          all end their container and leave `tail` a document paragraph, the
          same derivation S4's THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST
          BLOCK already gives `- | a | b |` over `tail`.
-
-         Written down because the two spellings were told apart, and only
-         inside a container. At the TOP LEVEL every implementation already
-         ends the table and starts a sibling paragraph under both spellings,
-         so nothing distinguishes them there; one container in, carve-js and
-         carve-php folded `tail` into the ITEM under `+ b |` while closing it
-         under `| b |`, and ALL THREE engines plus the executable spec did the
-         same in a QUOTE. One question answered by how a line is written is a
-         contradiction rather than a second reading, and on the quote half
-         there was no majority to consult: they were unanimous and wrong
-         together. Ruled at carve#1348.
 
          THE OPPOSITE DIRECTION IS UNCHANGED. With NO table above it a
          `+ ...|` line is not a row at all but ordinary prose, so it leaves a
@@ -5602,14 +5359,6 @@ EOF = (* end of file *) ;
       has no length to match against, so there is nothing for a width test to
       compare; the paragraph simply continues.
 
-      Both halves are what all three engines do and the corpus pins the shape
-      (`24-generic-divs-2`), but neither was stated -- §10 says which openers
-      interrupt a paragraph and nothing said that a malformed sibling earlier
-      in the same paragraph turns that interruption off. A grammar cannot
-      implement a rule nobody wrote down, and tree-sitter-carve gets this case
-      wrong today while its own notes blame the opener line rather than the
-      trailing fence (carve#770).
-
       ABSORPTION REACHES A PARAGRAPH'S OWN LINES ONLY -- NORMATIVE
       (carve#920). The absorbed line has to be one the paragraph's container
       supplied a prefix for. A FLUSH-LEFT fence-shaped line under a QUOTED
@@ -5628,13 +5377,6 @@ EOF = (* end of file *) ;
       quote closes, and the line is re-classified at top level, where it opens
       a div of its own. Change one line to `> :::` and the answer inverts,
       because then it IS one of the paragraph's lines.
-
-      The two shapes are pinned side by side
-      (`260-an-absorbed-colon-fence-leaves-a-block-quote-s-paragraph-open`,
-      `271-the-flush-left-line-after-a-container-a-quoted-line-opened-4`).
-      All three engines already answer both; the executable spec absorbed the
-      flush-left line and is corrected here, which is stated rather than
-      implied because it has been the deciding artifact for this family.
 
       FENCE OPENER WITH A NESTED-LIST BODY: a `:::` opener inside a LIST
       ITEM opens its block even when the opener's body is a nested list
@@ -6031,9 +5773,6 @@ EOF = (* end of file *) ;
          literal while carve-js, carve-php and the executable spec read it
          as an attribute line. None of them could be shown wrong until the
          boundary was stated.
-      Implementation status: php, js, and rs implement §15 in full. Pinned
-      by corpus 89-block-attribute-lines.
-
    ============================================================================ *)
 (* ============================================================================
    16. FOOTNOTES -- NORMATIVE (governs `footnote` / `footnote_definition`
@@ -6185,15 +5924,6 @@ EOF = (* end of file *) ;
          block, a block quote -- all of which every engine already renders
          loose.
 
-         Stated because the SUB-LIST lead was the one shape where that was
-         not true in practice: carve-js rendered it loose and carve-rs and
-         carve-php rendered it tight, while all three agreed on the other
-         four leads. A rule that changed with the first block's kind would
-         need a reason and there is none -- L2 is about a blank line before
-         a sub-BLOCK, and `Body.` is a paragraph, so L2 never applies here.
-         The executable spec and the reference both render it loose already.
-         (carve#538)
-
       L1b AN INVISIBLE LINE DOES NOT CANCEL THE SEPARATION -- NORMATIVE. L1
          asks whether the item holds a blank-line-separated second PARAGRAPH.
          An INVISIBLE LINE (§10 I5, AN INVISIBLE LINE IS ONE CLASSIFICATION)
@@ -6249,14 +5979,6 @@ EOF = (* end of file *) ;
          differently, since carve-php drops the trailing blank from a raw
          block and keeps it in a code block.
 
-         The executable spec answered by the item's interior and kept all six
-         container kinds tight. carve-js and carve-rs loosen all six; carve-php
-         loosens a `:::` div, an admonition, a raw block and a comment fence
-         and stays tight for a code or tilde fence alone
-         (markup-carve/carve-php#1445). Corpus 365 pins a div and a code fence
-         loose, with a different-bullet-axis control that stays tight because
-         the marker after the blank belongs to another list. (carve#1383)
-
       L2 COMPACT LIST BLOCKS -- Carve deviation from djot/CommonMark. A
          blank line before an item's sub-BLOCK (sub-list, block quote,
          fenced code, fenced div, heading, table) does NOT loosen: the item
@@ -6285,16 +6007,6 @@ EOF = (* end of file *) ;
          ordinary column rules, which give it to whichever container its own
          column names, exactly as if the `+` line had been a comment.
 
-         This is stated because the word alone did not carry it. All FOUR
-         readers - the executable spec, carve-js, carve-php and carve-rs -
-         attached whatever line came next at any indentation, and the corpus
-         pinned no column, so the clause and every implementation of it
-         disagreed silently. Under a NESTED marker the cost was visible: `* * +`
-         swallowed a line written at the OUTER item's content column, so outer
-         content could not be written after a nested marker at all, and a writer
-         that spelled an emptied inner item `* * +` changed the document on
-         re-read (carve-js#1228 and its two siblings).
-
          The single-level spelling is unaffected in practice, which is why this
          went unnoticed: under `- +` a line at column 2 is the item's OWN
          content column, so the ordinary rules put it in the item whether the
@@ -6319,13 +6031,6 @@ EOF = (* end of file *) ;
              para
              +
              > q
-
-         The measured sibling case settles the reading on its own: `- a` /
-         `+` / `- x` / `- y` is three flat items in every engine, so a sibling
-         marker ENDS the attachment rather than being swallowed into a run. The
-         two-marker spelling already agrees byte for byte across carve-js,
-         carve-php and carve-rs, so the narrow reading costs one marker line
-         and no expressiveness at all.
 
          This is a BREAK against released carve-js 0.1.3, which attached to the
          boundary, and it is deliberate: the boundary reading is the same
@@ -7362,17 +7067,8 @@ EOF = (* end of file *) ;
         the HTML renderer. A Markdown target's link and image destinations are
         resolved by whatever renders that Markdown, so a scheme blanked here
         and passed through there is not blocked -- it is deferred by one step.
-        Measured before this was written down: all three engines blanked
-        `ms-msdt:` in HTML and emitted it verbatim in Markdown, because each
-        had mirrored the four-scheme core of the denylist into that target and
-        not the OS-handler class. One also failed to strip Unicode whitespace
-        in the Markdown probe, so `<U+202F>javascript:` survived there while
-        being blanked in its own HTML output (carve#352, corpus 119).
-
-        The rule was scoped to "an HTML renderer" because that is where the
-        sink was first identified; the scoping was not a decision that other
-        targets are safe. A target that emits no URL, such as plain text, has
-        nothing to blank and is unaffected.
+        A target that emits no URL, such as plain text, has nothing to blank
+        and is unaffected.
 
         "EMITS A RESOLVABLE URL" IS ABOUT THE URL REACHING A READER THAT
         RESOLVES IT, not about the target emitting a hyperlink construct. The
@@ -7565,31 +7261,6 @@ EOF = (* end of file *) ;
         typed by an author, and a degrade path that invented its own block
         structure would be a second paragraph rule to specify and to test.
 
-        This was unstated and the three engines each chose differently --
-        one paragraph per opener, one paragraph for all of them with a
-        trailing newline, and one without it, per the survey in carve#494 --
-        three byte-different outputs, all satisfying the sentence above as
-        it was written.
-
-        The reference's own answer does not survive reading. Measured here on
-        203 openers, carve-js emits `<p>::: note</p>`, `<p>::: note</p>`,
-        then `<p>::: note\nx</p>`: the last over-cap opener groups with the
-        following text and the other two do not. That is not "one paragraph
-        per opener", it is an artifact of where the degrade path hands back
-        to the block parser, and it is why the reference does not settle this
-        one by being the reference.
-
-        NOW CORPUS-PINNED. This was unpinned for as long as the EXECUTABLE
-        SPEC refused past MAX_NESTING_DEPTH rather than degrading, because a
-        case added then would have gone in the refusal allowlist, where it is
-        skipped and pins nothing -- worse than no case at all. The degrade
-        path is implemented in scripts/spec now, so
-        tests/corpus/182-openers-past-the-nesting-cap-are-one-paragraph.crv
-        carries an HTML fixture, renders in the executable subset, and
-        REFUSED_ALLOW (scripts/spec/refused-allow.mjs) is empty. Engine drift
-        is a separate matter and has its own ledger
-        (resources/engine-pin-drift.txt, carve#533).
-
         Recursive RENDER / RESOLVE /
         FILTER passes over a programmatically constructed tree MUST be
         bounded too, not only the parse path -- but their ceiling MUST NOT
@@ -7600,11 +7271,7 @@ EOF = (* end of file *) ;
         the parser has just accepted, and truncation on the render path
         deletes content silently instead of degrading it to literal text.
         The render ceiling MUST therefore EXCEED MAX_NESTING_DEPTH by enough
-        to cover the blocks a container subtree adds. This sentence
-        previously required the SAME ceiling on both paths, and all three
-        engines complied: at exactly MAX_NESTING_DEPTH the canonical writer
-        dropped the innermost paragraph and the Markdown / plain-text / ANSI
-        renderers dropped the whole document.
+        to cover the blocks a container subtree adds.
 
         THE MARGIN IS DERIVED IN THE IMPLEMENTATION'S OWN UNIT, NOT
         BORROWED FROM ANOTHER IMPLEMENTATION'S -- the same shape as
@@ -7669,10 +7336,6 @@ EOF = (* end of file *) ;
         truncation as the answer at the ceiling reinstates it for every tree
         that arrives over the wire or through a builder.
 
-        Every engine has something to move. Measured on carve-js at the pin
-        this repo carries, with MAX_NESTING_DEPTH = 200 and the ceiling
-        therefore at 232:
-
           depth  renderMarkdown  renderCarve  renderPlainText  renderAnsi  renderHtml
           231    content kept    kept         kept             kept        kept
           232    DROPPED         DROPPED      DROPPED          empty       kept
@@ -7713,10 +7376,7 @@ EOF = (* end of file *) ;
         and OSC (U+009D) are single-character forms of the very sequences
         this bullet exists to stop. A Markdown link/image title MUST escape
         the `"` that would otherwise terminate it. WHICH TARGET STRIPS A C0
-        CONTROL is §29, not this bullet: this requirement used to say only
-        "before emission to a terminal" and was implemented as a strip on
-        all three non-HTML targets, which deleted content on two of them
-        (carve#979). The narrowing is per TARGET and applies to C0 alone; it
+        CONTROL is §29, not this bullet. The narrowing is per TARGET and applies to C0 alone; it
         never narrows what the terminal target strips.
 
    ============================================================================ *)
@@ -8383,21 +8043,6 @@ EOF = (* end of file *) ;
       to the probe would leave the identical hazard unstated for every container,
       which is where an extension author meets it first.
 
-      WHY IT HAS TO BE SAID, given R1a already requires purity. Purity fixes the
-      answer for a given (lines, position, context); it does not say what those
-      arguments mean. The SAME PAIR CAN OCCUR TWICE FOR DIFFERENT LINES: a
-      footnote definition invokes the matcher at position 0 against the whole
-      document and again at position 0 against a two-line fragment. A matcher
-      reading `position == 0` as "start of document" is answering a question the
-      parser never asked, and does so while satisfying purity exactly.
-
-      WHAT AN IMPLEMENTATION OWES. Nothing new -- all three engines already pass
-      re-based arrays, and this clause describes them rather than changing them.
-      What it adds is the contract an extension may rely on, and the reason a
-      conformance document cannot pin it: a corpus document cannot register an
-      extension, so this is tested by an engine's own suite asserting that a
-      matcher inside a container body receives a re-based array.
-
    R2 FOOTNOTES (rendering in PART 9 §16). Footnote labels use the same
       ASCII-whitespace-normalized, case-sensitive key as R1. A [^label] use
       with a matching footnoteDefs entry is numbered by FIRST-REFERENCE order from
@@ -8663,25 +8308,6 @@ EOF = (* end of file *) ;
       renders to nothing is an empty body -- a container holding only a comment
       takes the same shape as one holding nothing.
 
-      WHY THE EXCEPTION SURVIVES. It has no principle behind it. The split is
-      on whether the div carries a type word, which is a property of the
-      RENDERING PATH and not of the document, and a uniform rule would be
-      easier to state and to implement. It stands because the compact bare div
-      is what all three engines already produce and what the corpus already
-      pins (116-fence-opener-with-a-nested-list-body-inside-a-list-item-6,
-      which reaches it incidentally through a stray column-zero closer).
-      Making the rule uniform would overturn a three-way agreement to fix a
-      cosmetic inconsistency, which is a worse trade than writing the
-      inconsistency down. (carve#531)
-
-      WHAT WAS ACTUALLY UNSPECIFIED is narrower than the exception. Two of the
-      four shapes were pinned only incidentally and one -- the div with a WORD
-      CLASS -- was pinned by nothing at all, which is exactly where the engines
-      diverge: carve-php emits the compact form there, carve-js and carve-rs
-      the blank line. carve-php is the one that moves. Each shape needs its own
-      corpus case, since the whole defect is that the shape varies by kind and
-      by attribute; a single case would miss it.
-
    5. PARAGRAPH WRAPPING follows the tight/loose rule (§17): a tight list
       item's text has no <p>; a loose item's paragraphs are wrapped.
 
@@ -8705,17 +8331,6 @@ EOF = (* end of file *) ;
             <tr><td>1</td></tr>
           </tbody>
         </table>
-
-      This was two layouts before, and neither was written down: a head and a
-      foot went on the section's own line while a body gave each row a line, so
-      the same element was laid out two ways for no stated reason. Two fixtures
-      in one commit then demanded DIFFERENT `tfoot` shapes and no engine could
-      satisfy both, which is what a rule nobody wrote looks like when it drifts.
-      One layout needs no exception and no rationale.
-      The emitted HTML is read by people - the corpus documents ARE this spec's
-      worked examples, and a table defect is usually spotted in their diffs - so
-      the line count is not what this optimizes for. Nothing renders differently:
-      whitespace between rows in table context is not rendered.
 
    8. STABLE STRINGS. Mentions and tags render as inert `<span>`s (no link)
       when no URL template is configured; a configured template links to them. The footnote
@@ -9038,11 +8653,6 @@ EOF = (* end of file *) ;
       bounded at the boundary: the words and the constructs on either side of
       it survive as themselves.
 
-      (Ruled at carve#1325. All three engines emit the joined form, so this is
-      a change in each of them rather than a divergence between them --
-      tests/corpus-convert cases 29, 30 and 31 pin the three shapes, declared
-      in resources/converter-drift.txt until each engine lands it.)
-
    1c. A WRAPPER ITS OWN CONTENT SPELLS AWAY IS A DECLARED CEILING --
       NORMATIVE (carve#1658). §1b settles what a producer owes where an
       inline-only slot forces a flatten. This settles the other place §1's
@@ -9310,15 +8920,6 @@ EOF = (* end of file *) ;
       compute that, which an implementation MAY use and is NOT required to.
       Where the two differ, §2 wins.
 
-      That ordering was reversed until carve#374. This section used to pin the
-      output, and it yields a form §2 forbids: for a document containing one
-      genuinely-escaped candidate character, the procedure below escapes EVERY
-      candidate in the document, including characters whose bareness changes
-      nothing. carve-php implemented this section and emitted
-      `\*x\* and \(b\)`; carve-rs and carve-js implemented §2 and emitted
-      `\*x\* and (b)`. Both were reading the spec correctly, which is how the
-      contradiction surfaced.
-
       §2 is the rule worth keeping, because it is the one an author can see the
       difference in, and because §3's argument does not lead here: it shows a
       static character TABLE cannot implement §2, not that per-character
@@ -9501,13 +9102,6 @@ EOF = (* end of file *) ;
       content contains its own fence character, and the example would have been
       load-bearing by accident rather than by design.
 
-      NESTED BOLD ITALIC joins that list, and needed the AST to catch up before
-      it could. `/*x*/` is a single production (`bold_italic`, PART 3) while
-      `*/x/*` is ordinary nesting, and BOTH yield the same `strong` wrapping
-      `emphasis`. So §1 held for either spelling and nothing pinned which one to
-      emit: carve-rs reproduced the author's, carve-js and carve-php normalized
-      to `*/x/*` (carve#375).
-
       The AST therefore RECORDS the combined form -- a `strong` parsed from
       `bold_italic` carries `boldItalic` (PART 12 §3) -- and the writer
       reproduces it. Without that mark the rule could not be stated as an
@@ -9661,13 +9255,6 @@ EOF = (* end of file *) ;
       sides of the change, so it is absent for the length of the rollout rather
       than wrong at one end of it.
 
-      THE OLD SPELLING WAS AN INCONSISTENCY INSIDE ONE WRITER, not a decision.
-      Measured on carve-js `a59df0fa` before this clause: `[x]{lang}` formatted
-      to `[x]{:}` -- a boolean CONTRACTED into the shortest dedicated form --
-      while `[x]{kbd}` formatted to `[x]{kbd=""}` and `[x]{disabled}` to
-      `[x]{disabled=""}`, the same boolean EXPANDED. One writer, one release,
-      opposite directions, and nothing in the spec asked for either.
-
       A COMPACT SEMANTIC SPAN IS WHERE IT SHOWS. `[Tab]{kbd}` is the form PART
       9 §10 documents and the form an author writes; a writer that returned
       `[Tab]{kbd=""}` rewrote the documentation's own example into a shape the
@@ -9733,16 +9320,6 @@ EOF = (* end of file *) ;
       writer's to choose. An UNPREFIXED cell was always padded (`| a | b |`);
       this makes one rule of what was two, and the padded side is the one a
       reader can scan.
-
-      IT ALSO RETIRES TWO GUARDS. The alignment sigil and the attribute slot
-      are both read GLUED off the UNTRIMMED cell, so a glued content character
-      was handed to one of them: `| ~x~ |` came back as `|=~x~|`, which
-      re-reads as a CENTERED column holding `x~` -- the strikethrough gone and
-      every cell in the column aligned by a marker nobody wrote (carve-js#903,
-      carve-rs#819, carve-php#1069 cause 5). Each writer answered with a
-      special case that inserted a space for content beginning with `<`, `>`,
-      `~` or `{`, and each enumerated a slightly different set. One space on
-      every cell covers the class without a list, and the reader trims it.
 
       THE TREE RECORDS NO SLOT, the same reason §6d gives: `table_cell` records
       its padding no more than `code_block` records the space before its info
@@ -9829,13 +9406,6 @@ EOF = (* end of file *) ;
       `to_html(fmt(x)) == to_html(x)` -- and the rule this clause already ends
       with, "where the PARSER discards trailing whitespace the writer may too",
       now reaches every line rather than only the ones that end a block.
-
-      WHAT WAS WRONG, recorded so it is not re-derived. The old text asserted
-      `<p>a \nb</p>` as the rendering and argued from it that stripping breaks
-      the round trip. It does not render that way and never did in the
-      executable spec; carve-rs's limitation to block-final lines (carve#359)
-      was a correct response to an engine whose PARSER kept the run, which is
-      the half carve#926 moved.
 
       A trailing NO-BREAK space is a different matter and IS content, not
       layout -- the author wrote it and it renders as `&nbsp;` -- so an
@@ -9981,24 +9551,6 @@ EOF = (* end of file *) ;
       semantically empty, and it is stated here so the inertness does not
       read as accidental.
 
-      WHY THE BARE WORD AND NOT AN ID, A CLASS OR A KEY/VALUE. All four reach
-      the same empty body and all four are discarded on this node, so the
-      choice is among constructs that mean something rather than between one
-      that does and one that does not -- there is no meaningless candidate to
-      prefer, and the grammar is why. §1a asks for the SMALLEST departure and
-      the bare word is it: an id also occupies the document-wide identifier
-      space, a class is a name a stylesheet can match, and a key/value invents
-      two tokens where one will do.
-
-      ONE SPELLING, PINNED HERE RATHER THAN PER ENGINE. Any of the four would
-      have worked, which is precisely why the writer cannot be left to pick:
-      a sentinel each engine invents is three sentinels, and canonical output
-      stops being the same bytes everywhere. `empty` is the word one engine
-      had already emitted before any clause named it (carve-js#911), so
-      pinning it costs no writer a second change -- and a reader meeting
-      `{empty}` in formatted source now has this clause to look it up in,
-      which is the objection carve#999 opened with.
-
    7c. A LINE BLOCK'S HARD BREAK IS WRITTEN BARE ONLY WHERE THE BARE NEWLINE
       RE-DERIVES IT -- NORMATIVE. A line block hardens every line boundary of
       its own accord, AT EVERY DEPTH (PART 9 §23, AN INLINE CONSTRUCT IS NOT A
@@ -10113,16 +9665,6 @@ EOF = (* end of file *) ;
       line, with the three engines settling on three different canonical
       byte strings for the first of them (carve#1334). The sibling writers
       already do this: a paragraph and a `::: \` block both emit the backslash.
-
-      THE LAST BODY LINE WAS FOUND BY AN ENGINE IMPLEMENTING THE OLD LIST
-      (markup-carve/carve-js#1172), from a whole-corpus
-      `to_html(fmt(x)) == to_html(x)` gate and a sweep over every three-line
-      line block drawn from a 24-shape alphabet. The list's own justification
-      is what let it through: it excused a line with no trailing whitespace
-      because "the tree is identical either way", which holds INSIDE a stanza
-      and fails at its end. A list of the cases where a rule is unsafe goes
-      stale the first time an unlisted case turns up, which is why what is
-      normative here is the property and not the bullets under it.
 
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE. The Markdown renderer is not
       the canonical writer and does not follow §2. It has a different
@@ -10431,19 +9973,9 @@ EOF = (* end of file *) ;
 
       THE LAZY CASE IS NOT A CASE. Lazy continuation is a PARSER concept: a
       line belonging to a container without carrying its marker. This writer
-      emits no such line, because it re-prefixes every line of the container.
-      Measured, all three:
-
-        > a
-        \# heading
-
-      is emitted as
-
-        > a
-        > # heading
-
-      so the emitted line carries `> ` and M2b sees it. A rule for the
-      source's laziness would describe a line this target never writes.
+      re-prefixes every line of the container, so M2b always sees the emitted
+      prefix. A rule for source laziness would describe a line this target
+      never writes.
 
       NARROWING BY POSITION IS UNCHANGED, WHICH IS THE HALF THAT IS EASY TO
       LOSE. Moving the position does not widen M2b into "an escape behind a
@@ -10837,13 +10369,6 @@ EOF = (* end of file *) ;
       §1's `parse(fmt(x)) == parse(x)` requires it, which leaves the round
       trip intact on both of the targets that have one.
 
-      WHY THIS NEEDED SAYING. The corpus pinned HTML for these cases and
-      nothing else, so `compare:impls` reported cross-engine agreement on the
-      Markdown and terminal rows rather than a defect, and reported nothing at
-      all about the plain row because no fixture asked for one. That is the
-      hole §10e came out of. Agreement across implementations is
-      evidence about implementations. (carve#1185)
-
   10g. A COMPOSITE FIGURE SURVIVES EVERY TARGET -- NORMATIVE (PART 9 §4c;
       carve#1122). The floor is `docs/graceful-degradation.md`'s: panel
       content, panel captions, preserved stray content and the group caption
@@ -10920,13 +10445,6 @@ EOF = (* end of file *) ;
       axis (`- a` then `* b`), separate nothing that one blank line does not
       separate as well, so they come back as one. What earns the three is the
       boundary's job, not the run's length.
-
-      THE THREE ARE LOAD-BEARING INSIDE THE WRITER TOO. carve-rs squeezes 3+
-      newlines to 2 as a pass over its own output, which would destroy the
-      boundary it had just written; it emits a verbatim-blank sentinel to keep
-      the run intact. A writer whose blank-line handling is a blanket squeeze
-      needs the same exemption, and this is where it is stated rather than
-      rediscovered.
 
       Pinned by corpus
       395-a-longer-run-at-a-list-boundary-is-written-as-exactly-three-blank-lines,
@@ -11032,15 +10550,6 @@ EOF = (* end of file *) ;
       what they are called. Where carve-js's `type` string disagrees with the
       vocabulary in profiles.md, the vocabulary wins.
 
-      Read without that limit, §1 made carve-js's spelling normative even when
-      it collided with the vocabulary. An inline footnote reference is the
-      case that surfaced it: carve-js called it `footnote`, which is ALREADY
-      the block type for the definition, so one identifier named two different
-      nodes and `footnote_ref` -- listed in profiles.md as an inline type --
-      named none. carve-php emitted `footnote_ref`. Deferring to carve-js there
-      would have resolved the disagreement by deleting a distinction the
-      vocabulary makes on purpose (carve#405).
-
    1a. ADJACENT TEXT RUNS ARE COALESCED -- NORMATIVE. A serialized node's
       children contain NO two adjacent `text` nodes. Where a producer's internal
       tree holds a run of them, they are joined into one before serialization,
@@ -11051,15 +10560,6 @@ EOF = (* end of file *) ;
       is ONE text node, not four. An implementation that splits a run wherever a
       delimiter failed to open emphasis publishes its parser's bookkeeping, not
       the document.
-
-      WHY THIS IS NORMATIVE rather than left to each producer. §1 requires that
-      a consumer written against one implementation can read another's output.
-      Without this rule that requirement is satisfied by any tree at all: two
-      engines can publish 1 node and 4 nodes for the same characters, both are
-      valid against the schema, and "read another's output" degrades to
-      "parses". Coalescing is what makes the serialized tree CANONICAL for a
-      given document, which is the same argument PART 11 already makes one layer
-      down for canonical source form.
 
       It also makes node-for-node comparison meaningful, which is the only way
       an engine's divergence from the reference can be MEASURED rather than
@@ -11174,14 +10674,6 @@ EOF = (* end of file *) ;
       author put there and a consumer MUST leave it alone. Mapping it would
       corrupt the payload the raw block exists to carry unexamined.
 
-      Stated because all three engines publish it on all four fields and only
-      one was written down: two consumers in this org passed it straight
-      through, one into Pandoc JSON and one back into Carve source in place of
-      the `\ ` it came from (carve#721), and carve-sile handed it to SILE,
-      which drew the font's `.notdef` glyph - a visible box, no warning
-      (carve#1242). Private-use codepoints ABOVE U+E000 are writer-internal
-      staging and never reach a published value (carve-rs#404).
-
    3a. THE SERIALIZED TREE IS PRE-RESOLVE -- NORMATIVE. It records what the
       AUTHOR WROTE, not what the document resolves to. Reference resolution,
       like rendering, happens after; a producer MUST NOT fold its results into
@@ -11212,15 +10704,6 @@ EOF = (* end of file *) ;
       published rather than left to be recomputed. The distinction this clause
       exists to protect, `[a][]` versus `[a](#a)`, is carried entirely by `ref`
       and `rawRef`, so nothing is lost by keeping `href` too.
-
-      It is also what every engine already does. Measured on
-      `See [getting started][] here.` with the label defined, all three publish
-      the destination -- carve-js `{"href":"/start"}`, carve-rs
-      `{"href":"/start"}`, carve-php `{"ref":"","href":"/start"}`. The clause as
-      first written would have made all three wrong on the half they agree
-      about, in order to protect a distinction `ref` and `rawRef` already carry.
-      What they are each missing is the authored construct BESIDE it, which is
-      the half this clause actually asks for.
 
       A NESTED LINK AND AN AUTOLINK STAY NODES -- NORMATIVE (carve#817).
       "Links never nest" is a RENDERING rule: an anchor may not contain another
@@ -11294,12 +10777,6 @@ EOF = (* end of file *) ;
       you, because the engine is a target. Walking the tree and building output
       yourself does not.
 
-      WHY THE DESTINATION IS PUBLISHED, and what it cost when it was not. When
-      this clause was written the vocabulary had no node type for a `[label]:
-      url` link reference definition, so `href: ""` on a resolved reference was
-      unrecoverable: a document holding only `[lbl]: /u` published zero children,
-      and
-
         See [getting started][] here.
 
         [getting started]: /start
@@ -11363,15 +10840,6 @@ EOF = (* end of file *) ;
       serialized a later stage by the rule at the top of this section, and it
       cannot be written back: the writer reconstructs `</#` + the id + `>`, so
       the document comes out of a wire round trip spelled `</#Intro>`.
-
-      Measured while settling this (carve#610): carve-php and carve-rs publish
-      `heading_ref` with `target` and no `href` -- the authored half, missing
-      the resolution. carve-js publishes a resolved `link` with `fromCrossref`
-      and no record of the authored id, and for an UNRESOLVED crossref it
-      publishes no node at all: `See </#Nope>.` comes out as one `text` node
-      holding the source, which is the flattening the clause above forbids for
-      `[a][]`. So each engine has one half and no two agree, which is what a
-      vocabulary describing both shapes without choosing produces.
 
       `fromCrossref` on `link` is therefore not the crossref's serialization. A
       LINK the author wrote as a link may still carry it as a rendering hint;
@@ -11522,14 +10990,6 @@ EOF = (* end of file *) ;
       source: a backslash at the end of a line, then the next line
       span: the backslash and the newline, not the newline alone
 
-      Three engines, two answers, and nothing to tell them apart: carve-js and
-      carve-php covered the pair, carve-rs covered the newline and left the
-      backslash in no node at all. A break renders as a line break whatever
-      its span says, so no output could show the difference, and the
-      conformance checker compares a span against the text it selects only for
-      a `text` node -- the one node whose exact source text the tree carries.
-      (carve#549, fixed in carve-rs#492.)
-
       A TRAILING ATTRIBUTE BLOCK IS THE NODE'S OWN MARKUP, so the span covers
       it. For
 
@@ -11544,16 +11004,6 @@ EOF = (* end of file *) ;
       attribute block is markup of the node's own by the same reading that
       makes a break's backslash part of the break. carve-rs covers the block
       and carve-js stops at the content, so carve-js moves (carve#521).
-
-      IT ALSO REMOVES A WORKAROUND. The `strong` > `emphasis` pair that §4's
-      combined-form rule materialises derives the inner span from the outer one
-      by trimming the two-character delimiters. With the attribute block
-      OUTSIDE the outer span that arithmetic is right; with it inside and
-      unaccounted for, the inner node would claim `x*/{#`. carve-rs omits the
-      inner span whenever the node carries attributes rather than publish a
-      wrong one -- correct, and no longer necessary once the outer span is
-      known to include the block, because the trim can then take the block off
-      the end first.
 
       No corpus document has an attributed inline today, which is why two
       answers coexisted. One case pins it; `*x*{#i}` is enough, and the
@@ -11700,23 +11150,6 @@ EOF = (* end of file *) ;
       The `definition_list` ends where the description ends, not on the
       attribute line below it.
 
-      WHY THE OTHER READING LOOKED RIGHT. A floating attribute is SCOPED to the
-      container that holds it (PART 9 §15 A4, carve#1281), so the attribute line
-      is one the definition list CONSUMED - and consuming it was read as owning
-      it, which made the extent run to the last line the list read rather than
-      to its last child. Scope and extent are different questions. Scope decides
-      which blocks an attribute may reach, and it answers "not past this
-      container"; extent decides which source a node claims, and it answers "not
-      past my last child". The same line is inside the container for the first
-      question and outside its span for the second, and the bullet list one
-      construct over already answered it that way: `- a` / `  {.x}` / `tail`
-      scopes the attribute to the item and still excludes it from the list's
-      span, by the clause above that names the construct. Nothing about a
-      definition list's shape changes that arithmetic, and the attribute line
-      leaves no attributes on the `definition_list` node either - it produces
-      nothing at all, which is what "unattached" means. (carve#1530, superseding
-      the extent half of carve#1281 and markup-carve/carve-php#1366.)
-
       A CONTAINER WITH NO PLACED CHILD AT ALL SPANS ITS OWN MARKUP AND STOPS
       THERE -- NORMATIVE. "Ends at its last placed child" is silent when there
       is none, and a container can be emptied: a definition written as an item's
@@ -11777,29 +11210,10 @@ EOF = (* end of file *) ;
           a<TAB>b
           :::
 
-      carve-rs ended the paragraph at offset 9, where the break above the
-      tab-bearing line ends, while carve-js and carve-php ended it at 12 where
-      that line ends. Offset 9 is one past the terminator the break owns, so
-      that span ends immediately after a line terminator -- excluded by name
-      above -- and drops the stanza's own last line out of the paragraph
-      holding it, which is markup-carve/carve-rs#1247 read backwards.
-
       A SPAN DOES NOT BEGIN AT A LINE TERMINATOR -- NORMATIVE. Except on a
       `soft_break` or a `hard_break`, whose content IS the terminator, a node's
       `startOffset` MUST NOT select a newline. No construct begins with the
       line ending the line before it.
-
-      This is written down because it is the one thing a checker can verify
-      about a span without knowing what the node covers. A span is compared
-      against the text it selects only on a `text` node -- the single node whose
-      exact source text the tree carries -- so a paragraph, list item, table
-      cell or block quote could point at the wrong source and every conformance
-      run came back clean. carve-php gave a tab-containing line block a
-      paragraph span starting at the newline that ENDED the first stanza line,
-      dropping that line from its own paragraph, and the checker passed it for
-      as long as both existed (markup-carve/carve-php#669, carve#541).
-
-      All three engines satisfy it today; the rule is a ratchet, not a request.
 
       POSITION TRACKING MAY BE OPT-IN, SERIALIZATION MAY NOT. An implementation
       MAY gate position tracking behind a parse option, and MUST enable it when
@@ -11920,12 +11334,6 @@ EOF = (* end of file *) ;
       replaced. The id is published beside the heading's other attributes, the
       same way a resolved crossref keeps `target` and gains `href`.
 
-      carve-js publishes the field. carve-rs and carve-php publish no `attrs`
-      for a heading at all, which is the null state rather than a decision
-      (carve#750); the gap is declared in resources/ast-value-divergence.txt
-      until each lands a producer, so `scripts/ast-conformance.mjs` reports it
-      by count rather than treating it as new.
-
    6. ROUND TRIP. `parse(x)` serialized and deserialized MUST equal `parse(x)`.
       A serializer that loses a field is not a lossy convenience; it is a
       consumer breaking silently one document later.
@@ -11934,20 +11342,6 @@ EOF = (* end of file *) ;
       `type`, `children`, `srcByteLength`. Nothing else. An implementation MUST
       NOT hang document-level data off the root; content goes in the tree,
       where every other piece of content already lives.
-
-      Two things had drifted there. carve-js carried `frontmatter` and
-      `footnoteDefs`; carve-rb (over carve-rs) carried `frontmatter`. carve-php
-      carried neither, because it already put both in the tree (carve#411).
-
-      WHY THE TREE AND NOT THE ROOT. §4 requires every node except the root to
-      carry `pos`, on the grounds that a tree without positions can only be
-      re-parsed rather than navigated. A root FIELD cannot carry `pos`.
-      Frontmatter and a footnote definition are source constructs occupying
-      real bytes: an editor jumps to them, a formatter reproduces them, a
-      language server renames a label. Putting them on the root would make them
-      the only content in the document that cannot be navigated to. That
-      applies to frontmatter exactly as much as to a footnote body, which is
-      why the two do NOT split along a metadata/content line.
 
       FRONTMATTER IS A BLOCK NODE, `type: "frontmatter"`, carrying:
         format   the info word on the opening fence (`frontmatter_format` in
@@ -12029,13 +11423,6 @@ EOF = (* end of file *) ;
       alternatives were a new wire field on every definition or an accepted
       lossy round trip.
 
-      It also drops the author's line. All three engines rendered
-      `> *[HTML]: Hyper Text` as an EMPTY block quote, because the definition
-      was collected out of it and then rendered nothing. Text the author wrote
-      disappeared. Under this clause the line was never a definition, so
-      nothing is collected and nothing vanishes. (carve#708, carve-php#708,
-      carve-php#631)
-
       THE FORMATTER CONSEQUENCE IS ACCEPTED, NOT OVERLOOKED. Hoisting means
       PART 11's writer emits the definition after the container the author
       wrote it in, which reads like a violation of PART 11 §6 ("fmt does not
@@ -12053,12 +11440,6 @@ EOF = (* end of file *) ;
       collection it follows from. It is accepted for footnotes because a
       footnote definition renders as a footnote either way, so the move costs
       the author placement and nothing else.
-
-      WHY THE SAME TRADE IS NOT ACCEPTED FOR ABBREVIATIONS. There the move
-      costs the author the LINE: an abbreviation definition renders nothing of
-      its own, so hoisting it out of a container empties the container instead
-      of relocating visible output. That is the difference between reordering
-      what the author wrote and deleting it.
 
       Definitions appear in DOCUMENT ORDER by source position. Numbering is a
       resolution result and stays on the reference (§5).
@@ -12093,24 +11474,6 @@ EOF = (* end of file *) ;
       two entries named nothing: a host writing `denyBlock(['definition_term'])`
       got silence, which profiles.md calls the specific failure a normative
       vocabulary exists to prevent.
-
-      And the grouping was NOT A SHARED FACT. Given
-
-        :: a
-        :: b
-        :  x
-        :  y
-
-      carve-js published one entry with two terms and two definitions,
-      carve-rs published three entries split differently, and carve-php
-      published the flat node sequence -- while all three rendered the same
-      `<dl>`. A structure two producers disagree about, which no output depends
-      on, is an internal; §1 already says an implementation whose internals
-      differ maps on the way out.
-
-      An engine whose parser groups differently therefore has one more thing to
-      fix than the serializer: carve-rs opened a new entry per `::` line, so
-      §6's round trip only holds once the parser groups the way the list shows.
 
       A SPELLED LOOSENESS IS A FIELD; A DERIVED ONE IS NOT. `definition_list`
       MAY carry `loose: true`, and it means what PART 9 §17 L7's consumed
@@ -12220,14 +11583,6 @@ EOF = (* end of file *) ;
       A node also answers "which definition wins" by document order rather than
       by merge order, and holds its own attributes without a second rule.
 
-      That the root already looked like the precedent is a measurement error
-      worth recording: carve-js's INTERNAL tree carries `footnoteDefs` and
-      `footnoteDefPos`, which is the drift §7 was written against, and its
-      SERIALIZED root carries exactly three fields with the definition as a
-      `footnote` node in `children` -- the same shape carve-rs and carve-php
-      publish. §1 permits exactly that: internals may differ, and map on the way
-      out (carve#642).
-
       WHAT THE NODE CLOSES. Three clauses wanted it and each named a different
       loss:
         §3a   a resolved reference published `href: ""` with the destination
@@ -12238,8 +11593,7 @@ EOF = (* end of file *) ;
         §15 A2b  definition attributes had to be materialized onto every
               resolved link, because there was nowhere to put them once
       and the fourth is why it landed: a writer cannot reproduce a construct the
-      tree does not carry, so PART 11 §1's `parse(fmt(x)) == parse(x)` failed
-      for EVERY resolved reference in all three engines (carve#642).
+      tree does not carry, so PART 11 §1's `parse(fmt(x)) == parse(x)` fails.
 
       A DEFINITION IS STILL INVISIBLE IN HTML. The node renders nothing on that
       target; it feeds the links and images that resolve its label (PART 9R R1).
@@ -12259,8 +11613,7 @@ EOF = (* end of file *) ;
       wholesale re-emits the unknown property when it serializes again, so its
       OWN OUTPUT no longer validates. A consumer that reads a tree here and
       publishes it again then emits something the format rejects, having been
-      told nothing. Measured before this was written, one engine echoed 29 of
-      31 injected properties back (carve-js#709).
+      told nothing.
 
       REFUSE RATHER THAN DROP, for the reason §9(b) already gives about depth:
       "an ingest that accepts a tree and then silently renders only part of it
@@ -12368,30 +11721,8 @@ EOF = (* end of file *) ;
           describes every one of them, and the rows below were only ever
           divergent because nothing consulted it.
 
-          One clause rather than a row per field, because ruling them one at a
-          time is what produced the state it replaces. Measured after (a)-(c)
-          landed, with all three engines agreeing on THOSE: a root `children`
-          of `null` was read as an empty document by carve-js and carve-php --
-          §12's own objection ("a reader that supplies a default has turned a
-          truncated document into an empty one") arriving through a door the
-          clause did not cover. `attrs: {"class":"x"}` was ACCEPTED by
-          carve-php and rendered as `class="x"`, while the other two refused
-          the payload: `class` is what the rendered HTML calls the thing, so it
-          is the natural producer mistake, and a producer testing against
-          carve-php ships something the other two reject outright.
-          `text.value: 7` made carve-php render `<p>7</p>` -- silent nonsense
-          where a refusal is required. And two engines failed UNTYPED, which
-          §9(b) already forbids: carve-php raised a bare `TypeError` from
-          `AstCodec::decodeNode()` for a null or string child, carve-js a
-          `TypeError: nodes is not iterable` from the RENDERER for a node
-          missing a required field.
-
-          THE COST, recorded: this is a bigger change in all three engines than
-          (a)-(c) were, it rejects trees two of them accept today, and every
-          future schema addition becomes a potential rejection for a producer
-          that has not caught up. That last one is the point rather than a side
-          effect -- it is what makes the schema the contract instead of a
-          description of it.
+          One clause rather than a row per field: the schema already defines
+          the complete payload contract.
 
           The rows already fixed are NOT reopened: an unnamed property under
           §11 and a missing or non-string `type` under (c) landed separately
@@ -12699,15 +12030,6 @@ EOF = (* end of file *) ;
                                             hands an editor as prose and round
                                             trips as prose
 
-      WHY IT IS A NODE is §10's own argument, and it applies here unchanged
-      because nothing distinguishes this definition kind from the other three.
-      A definition renders nothing where it sits -- that is the reason the
-      footnote and link-reference kinds are document-level nodes rather than
-      inline content, not a reason to leave one of them out of the tree. It was
-      written somewhere: an editor jumps to it, a formatter reproduces it, a
-      language server renames its key. Of the four kinds this was the only one
-      with no node, and no clause said why.
-
       NO RENDERED OUTPUT MOVES ON ANY TARGET. The node renders nothing where it
       sits; the entry's text renders in the references list the extension
       builds, exactly as it did before. That is why the divergence survived so
@@ -12904,14 +12226,6 @@ EOF = (* end of file *) ;
       `start: 2` are carried through unchanged, and an implementation that
       drops them has broken the field rather than normalized it.
 
-      NOTHING IN A PARSE-DRIVEN CORPUS CAN COVER THIS. The value is unreachable
-      from Carve source -- `1. a` produces no `start` at all -- so the pin has to
-      be a hand-built payload, which is exactly why three engines drifted apart
-      here unnoticed: carve-php drops the field, carve-js and carve-rs preserve
-      it, and carve-rs additionally spells it as `<ol start="1">`
-      (markup-carve/carve-js#1391, markup-carve/carve-rs#1293). The pin is
-      tests/an-ingested-default-start-is-not-re-emitted.test.mjs.
-
    23. A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH -- NORMATIVE
       (carve#1784; PART 9R R7 owns the phase, this clause owns the wire).
 
@@ -12924,17 +12238,6 @@ EOF = (* end of file *) ;
       The field is set by that phase and by NOTHING ELSE. It is present only as
       `true`; a paragraph that is not a block image omits it rather than
       carrying `false`, which is §22's absent-value rule applied here.
-
-      WHY THE TREE NEEDS IT AT ALL. §4's image-paragraph host is a condition on
-      a paragraph's INLINE CONTENT, so a block image and an ordinary paragraph
-      holding one image are the same tree -- PART 11 §1c says as much from the
-      writer's side. Every consumer therefore re-derived the role, and under
-      §3a's pre-resolve tree it had to re-run reference resolution to do it.
-      The field is the resolution result published beside the authored
-      construct: exactly the ADDED-ALONGSIDE rule §3a states for `href` on a
-      resolved reference link, and for the same reason -- the authored
-      construct (`ref`, `rawRef`) survives untouched, and the result is
-      published rather than left to be recomputed.
 
       IT IS NOT A NON-ANCHOR FLAG. §3a refuses a flag on a nested link because
       that flag would carry a RENDER fact -- "HTML cannot nest anchors" -- back
