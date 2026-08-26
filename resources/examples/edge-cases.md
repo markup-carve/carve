@@ -30505,3 +30505,152 @@ a rule.
 ```
 
 :::
+## A leading continuation marker in a footnote body or a quote is text
+
+The FIRST-BLOCK form of the continuation marker (§17 L4) belongs to the LIST
+ITEM and the DEFINITION DESCRIPTION: `- +` and `:  +` open a body whose content
+is the following flush-left block, and over a column-1 line the marker is
+refused and the body ends. A FOOTNOTE BODY and a BLOCK QUOTE have no such form.
+A `+` that opens one of those two bodies is not a marker at all - it is ordinary
+text, and the line under it lands wherever the ordinary column rules put it,
+which is a different answer from "place by column" rather than a narrower one
+(markup-carve/carve#1821).
+
+The executable spec used to REFUSE the whole document here, `stray continuation
+marker`, at every payload column including column 0 - one reader of four, while
+carve-js, carve-php and carve-rs all rendered the text and agreed byte for byte.
+The band below pins all six documents so the next divergence cannot be silent.
+
+A footnote body whose first line is a lone `+`. The `+` is the note's text, and
+`flush` is a top-level paragraph: the note ended at the line below its column.
+
+::: compare
+
+```carve
+[^a]: +
+flush
+
+see[^a]
+```
+
+```html
+<p>flush</p>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>+<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+Column 1 is still below the body's column, so it answers the same way. Nothing
+about the `+` decides this - the same document with any other one-character
+first line ends the note here too.
+
+::: compare
+
+```carve
+[^a]: +
+ flush
+
+see[^a]
+```
+
+```html
+<p>flush</p>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>+<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+At column 2 the line is inside the body, and it folds into the paragraph the `+`
+opened - one paragraph reading `+ flush`, not two blocks and not an attachment.
+
+::: compare
+
+```carve
+[^a]: +
+  flush
+
+see[^a]
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>+
+flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+The block quote gives one answer across the whole band, because the `+` opens a
+quoted paragraph and every column below it reaches that paragraph by §10 I6's
+lazy fold. Column 0 first.
+
+::: compare
+
+```carve
+> +
+flush
+```
+
+```html
+<blockquote><p>+
+flush</p></blockquote>
+```
+
+:::
+
+Column 1 - a lazily folded line supplies no `>` prefix, so its column says
+nothing about which container it reached.
+
+::: compare
+
+```carve
+> +
+ flush
+```
+
+```html
+<blockquote><p>+
+flush</p></blockquote>
+```
+
+:::
+
+Column 2, the column that would be the quote's content column if a marker were
+reading one here. It is not, and the row is the control that says so.
+
+::: compare
+
+```carve
+> +
+  flush
+```
+
+```html
+<blockquote><p>+
+flush</p></blockquote>
+```
+
+:::

@@ -2867,10 +2867,30 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       continue
     }
 
-    if (CONT_MARKER.test(line) && !inItem) {
-      throw new Refuse('stray continuation marker')
-    }
-    // A `+` reaching HERE is inside a list item's body and is NOT a marker.
+    // A `+` reaching HERE is NOT a marker, in any container.
+    //
+    // THE FIRST-BLOCK FORM IS THE LIST ITEM AND THE DESCRIPTION, and nothing
+    // else. SS17 L4 spells it for those two - `- +` and `:  +` open a body
+    // whose content is the following flush-left block - and a footnote body and
+    // a block quote have no such form. A `+` that opens one of THOSE bodies is
+    // ordinary text, and its payload lands wherever the ordinary column rules
+    // put it, which is a different answer from "place by column" rather than a
+    // narrower one.
+    //
+    // This used to Refuse the whole document, `stray continuation marker`, and
+    // that was the one implementation of four saying so: carve-js, carve-php and
+    // carve-rs render the text, agreeing byte for byte, at every payload column
+    // (carve#1821). The refusal was not even a conservative reading of the
+    // shipped form - it fired at COLUMN 0 too, the one column where the
+    // first-block form attaches cleanly in the two containers that have it.
+    //
+    // And it was never scoped to those two containers: every caller but the list
+    // item's own body reaches here, so a lone `+` refused the document at top
+    // level, in a `:::` div, in a line block, in a `dd` below its first block
+    // and in every nesting of those. All twenty measured shapes now agree with
+    // the engines.
+    //
+    // IN A LIST ITEM'S BODY it was never a marker either, for a separate reason.
     // Every position where SS17 L3 makes it one is consumed before this: the
     // OUTER list's marker column by the parseListRun that collected this body,
     // and a SUB-LIST's marker column by that sub-list's own parseListRun,

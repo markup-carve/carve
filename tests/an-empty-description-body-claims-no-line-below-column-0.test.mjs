@@ -95,25 +95,53 @@ test('at the body\'s own content column the payload is ordinary continuation, in
 })
 
 /*
- * THE OTHER TWO L4 CONTAINERS GIVE A THIRD ANSWER, AND IT IS UNDECIDED.
+ * THE OTHER TWO L4 CONTAINERS GIVE A THIRD ANSWER, AND IT IS NOT THIS ONE.
  *
  * A `+` as the FIRST block of a footnote body or of a block quote is neither
- * attached nor refused: it is a REFUSAL of the whole document, `stray
- * continuation marker`, at every payload column. Measured on e5130e54, before
- * and unchanged after carve#1821 - the guard above is in the description's
- * fold and reaches neither.
+ * attached nor refused: THE FIRST-BLOCK FORM IS THE ITEM AND THE DESCRIPTION
+ * (§17 L4, carve#1821) and those two containers do not have it, so the `+` is
+ * ordinary text and its payload lands where the ordinary column rules put it.
  *
- * That may well be right. A refusal is a decision, unlike a silent divergence,
- * and the first-block form is spelled for the list item and the description and
- * for nothing else. But nothing covered it, so it could have moved without
- * anyone noticing. These rows pin WHAT IT DOES, not that it is correct; if the
- * form is ever extended to those two containers, they are the rows to update.
+ * These rows used to pin a REFUSAL of the whole document, `stray continuation
+ * marker`, observed rather than ruled. That was the executable spec alone:
+ * carve-js, carve-php and carve-rs all rendered the text, agreeing byte for
+ * byte at every payload column, so one reader of four refused. The oracle
+ * joined them.
+ *
+ * The six documents are pinned as corpus 437. What is here is the part a pair
+ * of independent goldens cannot say: that the marker spelling and a PLAIN-TEXT
+ * spelling of the same document are the same document, which is the whole
+ * content of "the `+` is not a marker here".
  */
-for (const [what, src] of [
-  ['a footnote body', '[^a]: +\n flush\n\nsee[^a]\n'],
-  ['a block quote', '> +\n flush\n'],
+for (const [what, marked, plain] of [
+  ['a footnote body, payload at column 0',
+    '[^a]: +\nflush\n\nsee[^a]\n', '[^a]: x\nflush\n\nsee[^a]\n'],
+  ['a footnote body, payload at column 1',
+    '[^a]: +\n flush\n\nsee[^a]\n', '[^a]: x\n flush\n\nsee[^a]\n'],
+  ['a footnote body, payload at column 2',
+    '[^a]: +\n  flush\n\nsee[^a]\n', '[^a]: x\n  flush\n\nsee[^a]\n'],
+  ['a block quote, payload at column 0', '> +\nflush\n', '> x\nflush\n'],
+  ['a block quote, payload at column 1', '> +\n flush\n', '> x\n flush\n'],
+  ['a block quote, payload at column 2', '> +\n  flush\n', '> x\n  flush\n'],
 ]) {
-  test(`a first-block + refuses the document in ${what} (observed, not ruled)`, () => {
-    assert.throws(() => parse(src), /stray continuation marker/)
+  test(`a first-block + is ordinary text in ${what}`, () => {
+    assert.equal(html(marked), html(plain).replaceAll('x', '+'))
   })
 }
+
+/*
+ * The positive half, so a reading that made `+` text EVERYWHERE fails here.
+ * The two containers that DO have the first-block form still attach at column
+ * 0, and the two that do not still have the marker in its ordinary position.
+ */
+test('the first-block form still attaches where §17 L4 spells it', () => {
+  assert.equal(html('- +\nflush\n'), '<ul><li>flush</li></ul>')
+  assert.equal(html(':: t\n:  +\nflush\n'), '<dl><dt>t</dt><dd>flush</dd></dl>')
+})
+
+test('the ordinary marker position is untouched in both other containers', () => {
+  assert.equal(html('> intro\n>\n+\nmore\n'),
+    '<blockquote><p>intro</p><p>more</p></blockquote>')
+  assert.equal(
+    html('[^a]: intro\n+\nmore\n\nsee[^a]\n').includes('<p>more<'), true)
+})

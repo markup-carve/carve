@@ -43,9 +43,14 @@ test('a tight item with a marker after a blank stays tight', () => {
   assert.equal(html('- a\n\n+\nc\n\nx\n'), '<ul><li>a c </li></ul><p>x</p>')
 })
 
-test('a lone marker at document level is still refused', () => {
-  // The control. The refusal this removes from ONE position must survive
-  // everywhere else, or the fix would have bought the corpus a shape by making
-  // the oracle accept documents the engines reject.
-  assert.throws(() => parse('+\nc\n\nx\n'))
+test('a lone marker at document level is ordinary text', () => {
+  // The control, and it used to assert a REFUSAL - the reasoning being that the
+  // refusal removed from ONE position had to survive everywhere else, or the
+  // fix would have bought the corpus a shape by making the oracle accept
+  // documents the engines reject. The premise was wrong: the engines accept
+  // this one. carve-js, carve-php and carve-rs all render the `+` as text here,
+  // so the refusal was the oracle alone, and it is gone (carve#1821). §17 L3
+  // says the same thing in prose - "outside any container a lone `+` is literal
+  // text".
+  assert.equal(html('+\nc\n\nx\n'), '<p>+ c</p><p>x</p>')
 })
