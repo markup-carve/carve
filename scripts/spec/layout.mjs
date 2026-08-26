@@ -310,14 +310,6 @@ const ABBR_DEF = /^\*\[([A-Za-z0-9]+)\]: +(?![ \t]*$)([^ ].*)$/
 // nothing but whitespace opens no block. The lookahead is the same one `HEADING`
 // carries, for the same clause.
 const CAPTION = /^\^ +(?=.*[^ \t\n\r\f])(.*?)[ \t]*$/
-// SS4's two PROSE-spelled captionable hosts: a paragraph whose WHOLE content is
-// one image (inline or reference form, trailing attribute block allowed), and
-// one whose whole content is a display-math span. The other three hosts have a
-// `[caption_slot]` production of their own. ONE spelling, read from two places -
-// the paragraph collector, which decides whether a `^ ` line ends the paragraph,
-// and the wrapper below it, which decides whether the caption attaches. Two
-// copies would let those two answers drift apart, and the collector's copy would
-// be the one nothing tested.
 // THE §16 BRACKETED-RUN CLOSE, SCANNED RATHER THAN MATCHED (carve#1197).
 //
 // `line[open]` is a `[`; the return value is the index just past the `]` that
@@ -388,9 +380,17 @@ export function bracketRunEnd(line, open) {
 // one whose whole content is a display-math span. The other three hosts have a
 // `[caption_slot]` production of their own. ONE spelling, read from two places -
 // the paragraph collector, which decides whether a `^ ` line ends the paragraph,
-// and the wrapper below it, which decides whether the caption attaches. Two
-// copies would let those two answers drift apart, and the collector's copy would
-// be the one nothing tested.
+// and the wrapper below it, which decides whether the paragraph CARRIES A SLOT.
+// Two copies would let those two answers drift apart, and the collector's copy
+// would be the one nothing tested.
+//
+// SYNTACTIC ONLY, AND IT SETTLES NOTHING SEMANTIC (carve#1784). It answers
+// "which paragraphs carry a caption slot at all", over the source shape, and
+// returns the host kind - `'image'`, `'math'` or `null`. Whether an image host
+// is a BLOCK IMAGE, and so whether its slot binds as a caption, is a property of
+// the RESOLVED tree and is settled in exactly one later place: the promotion
+// phase in html.mjs. Do not read this function as that answer - an unresolved
+// reference image is captionable-SHAPED and is not a block image.
 const CAPTIONABLE_IMAGE_TAIL = /^(?:\([^)]*\)|\[[^\]]*\])(?:\{[^}]*\})?$/
 const CAPTIONABLE_MATH = /^\$\$`.*`$/
 function isCaptionableParagraph(para) {
@@ -412,12 +412,12 @@ function isCaptionableParagraph(para) {
   // tail patterns admit a newline inside `[...]` and `(...)` because they
   // never had to exclude one.
   const line = para.join('\n')
-  if (CAPTIONABLE_MATH.test(line)) return true
-  if (!line.startsWith('![')) return false
+  if (CAPTIONABLE_MATH.test(line)) return 'math'
+  if (!line.startsWith('![')) return null
   const altEnd = bracketRunEnd(line, 1)
-  if (altEnd === -1) return false
+  if (altEnd === -1) return null
   const tail = line.slice(altEnd)
-  return !tail.includes('\n') && CAPTIONABLE_IMAGE_TAIL.test(tail)
+  return !tail.includes('\n') && CAPTIONABLE_IMAGE_TAIL.test(tail) ? 'image' : null
 }
 // The run after the marker is SPACES ONLY: `-\titem` is a paragraph in every
 // engine, so a tab here must not open a list (PART 9 SS11). Its width is the
@@ -1638,29 +1638,6 @@ export function parse(src, { authoredBodyBases = true } = {}) {
   // PART 9 SS4c no-nesting demotion); it is false again here, so drop it too.
   delete state.inFigureGroup
   delete state.authoredBodyBases
-  // Unwrap a figure whose reference image never resolved (see the
-  // `pendingRef` note above). Iterative, because a figure can sit inside
-  // any container and the tree is as deep as the document.
-  const stack = [blocks]
-  while (stack.length > 0) {
-    const level = stack.pop()
-    for (const b of level) {
-      if (b === null || typeof b !== 'object') continue
-      if (b.t === 'para' && b.pendingRef !== undefined) {
-        if (!state.linkDefs.has(b.pendingRef)) {
-          b.lines = [...b.lines, ...b.captionSrc]
-          delete b.caption
-        }
-        delete b.pendingRef
-        delete b.captionSrc
-      }
-      for (const value of Object.values(b)) {
-        if (Array.isArray(value) && value.some((x) => x !== null && typeof x === 'object')) {
-          stack.push(value.filter((x) => x !== null && typeof x === 'object'))
-        }
-      }
-    }
-  }
   return { blocks, ...state }
 }
 
@@ -1812,9 +1789,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
    * `from` is the index just past the captionable host. The return value is
    * `null` when no caption line follows, or `{ text, next, src }`: the folded
    * caption text, the index to resume the block loop at, and the caption's
-   * SOURCE lines for the one caller that may have to put them back
-   * (`pendingRef`, an unresolved reference image, unwraps the figure and the
-   * caption returns to the paragraph as literal text).
+   * SOURCE lines, which an image paragraph carries UNBOUND until the promotion
+   * phase runs - a slot on a paragraph that is not promoted to a block image
+   * gives those lines back as ordinary paragraph text (carve#1784).
    *
    * ONE HELPER RATHER THAN FIVE COPIES, for the reason the `CAPTION` pattern
    * gives above it: five sites read this slot -- code block, figure group,
@@ -2882,50 +2859,34 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       i++
     }
     const pnode = { t: 'para', lines: para }
-    // image paragraph caption -> figure (PART 9 SS4; one blank line allowed)
+    // AN UNBOUND CAPTION SLOT, NOT A CAPTION (PART 9 SS4; one blank line
+    // allowed). carve#1784: block-image status is a property of the RESOLVED
+    // tree, so the slot cannot BIND here - a reference image is a block image
+    // only if it resolves, and its definition may sit anywhere below. The old
+    // shape attached the caption optimistically, recorded `pendingRef` and
+    // `captionSrc` as undo data on the node, and a post-pass in `parse` took
+    // the figure apart again when the reference turned out not to resolve.
+    //
+    // So the slot is carried unbound - its folded TEXT, its SOURCE lines and
+    // the host kind the syntactic filter found - and the promotion phase in
+    // html.mjs settles it once, after resolution: it binds as a caption on a
+    // promoted block image, and otherwise its source lines go back to the
+    // paragraph as ordinary text. Nothing is built that has to be dismantled.
+    //
+    // A REFERENCE image is an image: the bracket form takes a caption exactly
+    // as the parenthesis form does. Only the inline form was tested here, so
+    // the oracle left the caption as literal paragraph text under a reference
+    // image while all three engines built the figure - and nothing caught it,
+    // because every captioned-image case in the corpus uses the inline form.
     const cap = captionSlot(i)
     if (cap) {
-      // A REFERENCE image is an image: the bracket form takes a caption
-      // exactly as the parenthesis form does. Only the inline form was
-      // tested here, so the oracle left the caption as literal paragraph
-      // text under a reference image while all three engines built the
-      // figure - and nothing caught it, because every captioned-image case
-      // in the corpus uses the inline form.
-      if (isCaptionableParagraph(para)) {
-        pnode.caption = cap.text
-        // A reference image is captionable ONLY IF IT RESOLVES, and the
-        // definition may sit below it - so the decision cannot be made
-        // here, in a single forward pass. Record what an unwrap would need
-        // and let the post-pass below settle it once every definition is
-        // known. Without that, an unresolved reference produced a figure
-        // wrapped around literal text, where all three engines produce one
-        // paragraph holding both lines.
-        // The alt run is scanned, not matched: see `bracketRunEnd`. The label
-        // that follows is a `reference_label`, which really does stop at the
-        // first `]` (grammar.ebnf: `{character - ']'}`), so that half stays a
-        // pattern.
-        const altEnd = para[0].startsWith('![') ? bracketRunEnd(para[0], 1) : -1
-        const refImage = altEnd === -1 ? null : /^\[([^\]]*)\]/.exec(para[0].slice(altEnd))
-        if (refImage) {
-          // KEYED THE WAY RESOLUTION KEYS IT (html.mjs, carve#648): the
-          // label as written with whitespace collapsed, and the alt text
-          // standing in for an empty label. Storing the raw alt instead
-          // made `![ a  b][]` with `[a b]: /p.png` look unresolved here
-          // while resolving there, so the figure was unwrapped and the
-          // caption came back as literal text.
-          // Keyed EXACTLY as resolution keys it (html.mjs): an explicit label
-          // matches as written - PART 9R R1 is "case-sensitive, no whitespace
-          // folding" - while the collapsed form derives its label from the alt
-          // text, trimmed and collapsed. Using one rule for both directions
-          // put a figure around literal text in one case and dropped a caption
-          // from a resolving image in the other.
-          pnode.pendingRef = refImage[1] === '' ? para[0].slice(2, altEnd - 1) : refImage[1]
-          // EVERY line of the caption, not the marker line alone. The unwrap
-          // appends these to the paragraph, so a caption that spilled onto a
-          // continuation line has to give all of them back or the document
-          // loses a line (PART 2, MULTI-LINE CAPTIONS).
-          pnode.captionSrc = cap.src
-        }
+      const host = isCaptionableParagraph(para)
+      if (host !== null) {
+        // EVERY line of the caption, not the marker line alone. A slot that is
+        // not promoted gives these back to the paragraph, so a caption that
+        // spilled onto a continuation line has to give all of them back or the
+        // document loses a line (PART 2, MULTI-LINE CAPTIONS).
+        pnode.captionSlot = { host, text: cap.text, src: cap.src }
         i = cap.next
       }
       // a caption after a non-captionable block stays literal paragraph

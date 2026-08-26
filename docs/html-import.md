@@ -245,6 +245,13 @@ and writes a bare image line, which is one. That is the gap §2's wording closes
 above. The trailing text node is a second finding of its own - no Carve source
 spells it, which is why `detached-caption-caret` records the image unwrapped.
 
+That judgement is not the escaper's to derive. Block-image status is a property
+of the resolved tree, set by the promotion phase and published as
+`paragraph.blockImage` (PART 9R R7, PART 12 §23), so an importer READS the field on
+the tree it built rather than working the rule out a third time in a pipeline
+with no access to the phase. The escape it writes is unchanged; where the answer
+comes from is not.
+
 A BRACKETED SPAN WHOSE TEXT OPENS A NOTE REFERENCE. A semantic span takes the
 compact form, and its bracket run plus a caret is a note reference:
 

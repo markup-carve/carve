@@ -1437,7 +1437,7 @@
     "image": {
       "type": "object",
       "title": "image (block or inline)",
-      "description": "Also valid in BLOCK position: a lone image paragraph is a block-level image. This covers the DIRECT spelling `![alt](src)` and both reference spellings, `![alt][ref]` and the collapsed `![alt][]`, once they resolve - a reference that resolves to nothing has no destination and stays inside its paragraph. Read the PUBLISHED tree when checking this: an engine may promote during reference resolution rather than in its block pass, so a parse-only tree can still show the paragraph (carve#1663).",
+      "description": "Also valid in BLOCK position: a lone image paragraph is a block-level image. This covers the DIRECT spelling `![alt](src)` and both reference spellings, `![alt][ref]` and the collapsed `![alt][]`, once they resolve - a reference that resolves to nothing has no destination and stays inside its paragraph. Read the PUBLISHED tree when checking this: an engine may promote during reference resolution rather than in its block pass, so a parse-only tree can still show the paragraph (carve#1663). Where it does, `paragraph.blockImage` carries the answer - a consumer reads that field rather than re-deriving promotion from the paragraph's contents (PART 12 section 23).",
       "required": [
         "type",
         "src",
@@ -2408,6 +2408,11 @@
           "items": {
             "$ref": "#/$defs/inlineNode"
           }
+        },
+        "blockImage": {
+          "const": true,
+          "description": "Set by the BLOCK-IMAGE PROMOTION phase, and by nothing else (PART 9R R7, PART 12 section 23): this paragraph's whole content resolves to a single image, so it is a block-level image and not a paragraph. Present ONLY as `true` - a paragraph that is not a block image omits the field rather than carrying `false`.\n\nIt is a resolution result published alongside the authored construct, the same added-alongside rule that lets a resolved reference link keep `href` beside `ref` and `rawRef` (section 3a). A consumer READS it instead of re-deriving it: absent means the producer did not run the phase, not that the paragraph is ordinary, and an ingesting consumer runs promotion itself only where the field is absent.",
+          "type": "boolean"
         },
         "attrs": {
           "$ref": "#/$defs/attrs"

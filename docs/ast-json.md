@@ -370,6 +370,60 @@ a `text` run coalesced across such a gap all have values that are not a slice of
 the source at any offset, so no honest span exists. The exemption is narrow: it
 covers nodes that *cannot* be placed, not nodes that have not been placed yet.
 
+## A block image is a field, not a shape you re-derive
+
+A paragraph whose whole content resolves to a single image is a **block image**,
+and it says so:
+
+```json
+{ "type": "paragraph",
+  "blockImage": true,
+  "children": [ { "type": "image", "src": "/u", "alt": "a", "ref": "r", "rawRef": "[r]" } ] }
+```
+
+The field is set by the **block-image promotion phase** (PART 9R R7) and by
+nothing else. Read it; do not re-derive it.
+
+Re-deriving it is more work than it looks. §4's image-paragraph host is a
+condition on a paragraph's *inline content*, so a block image and an ordinary
+paragraph holding one image are the same tree - and because the tree is
+pre-resolve, deciding between them means running reference resolution yourself.
+`![a][r]` is a block image where `[r]: /u` is written and ordinary paragraph
+text where it is not, and the definition may sit anywhere in the document.
+
+`blockImage` is that resolution result published beside the authored construct -
+the same added-alongside rule that lets a resolved reference link keep `href`
+next to `ref` and `rawRef`. It is present only as `true`; a paragraph that is not
+a block image omits it.
+
+**Absence is not a claim.** It means the producer did not run the phase - every
+tree serialized before this field existed lacks it - so absent does not mean
+"ordinary paragraph", and no reader may reject a tree for omitting it. On ingest:
+**trust the field where it is present, and run promotion only where it is
+absent** (§23). Recomputing it every time makes it advisory and puts the
+re-derivation back.
+
+**The caption goes with it.** A `^ ` line after an image paragraph is an *unbound
+slot* until the phase runs: not a caption, and not paragraph text. It binds as
+the block image's caption where the paragraph is promoted, and where it is not,
+its source lines go back to the paragraph as ordinary text. So
+
+```carve
+![a][r]
+^ cap
+```
+
+is a `figure` where `[r]` is defined and a single paragraph holding **both**
+lines where it is not. Binding the caption on the source shape instead would put
+a `<figure>` around a paragraph of literal `![a][r]`, which no engine writes.
+Corpus categories 207 and 209 pin that pair; category 434 pins the two paths a
+give-back can lose a line on - a slot more than one line wide, and a slot inside
+a container.
+
+`fmt` is unaffected: the writer writes the source spelling, so promotion is not
+observable in its output and a document whose reference is never defined still
+round-trips to itself.
+
 ## Adjacent text runs are coalesced
 
 A node's children hold **no two adjacent `text` nodes**. Where parsing produced
