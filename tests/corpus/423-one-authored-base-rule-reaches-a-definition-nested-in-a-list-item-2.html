@@ -1,35 +1,3 @@
-One authored base rule reaches a definition nested in a list item
-
-```
-- intro
-
-   :: term
-   :  definition
-
-      > quote
-.
-<ul>
-  <li>intro
-    <dl>
-      <dt>term</dt>
-      <dd>
-        <p>definition</p>
-        <blockquote><p>quote</p></blockquote>
-      </dd>
-    </dl>
-  </li>
-</ul>
-```
-
-```
-[^n]: intro
-
-  - item
-
-    > quote
-
-see[^n]
-.
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
@@ -45,4 +13,3 @@ see[^n]
     </li>
   </ol>
 </section>
-```
