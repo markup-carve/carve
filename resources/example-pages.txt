@@ -566,6 +566,7 @@ index: examples/edge-cases/index.md
   a-definition-list-inside-a-footnote-body-carries-its-authored-base
   a-recognized-opener-in-a-body-needs-no-blank-line-above-it
   one-authored-base-rule-reaches-a-definition-nested-in-a-list-item
+  a-comment-in-a-footnote-body-is-invisible-in-both-spellings
 [edge-definitions] Definition lists and abbreviations
 > Terms and descriptions, abbreviation definitions and the document levels that may declare them.
 out: examples/edge-cases/definitions.md
@@ -598,6 +599,7 @@ index: examples/edge-cases/index.md
   an-ordered-item-s-separator-width-sets-its-content-column
   below-a-definition-body-s-column-the-body-ends
   below-a-definition-body-s-column-an-invisible-line-folds-as-text
+  an-abbreviation-definition-outside-document-level-is-not-an-invisible-line
 [edge-attributes] Attributes
 > Attribute lines and inline blocks, names and values, classes, booleans and the semantic/language sugar.
 out: examples/edge-cases/attributes.md

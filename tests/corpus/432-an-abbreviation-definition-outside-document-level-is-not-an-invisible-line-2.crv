@@ -1,0 +1,5 @@
+[^a]: intro
+  *[A]: a
+  more
+
+see[^a] A

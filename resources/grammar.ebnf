@@ -490,9 +490,12 @@
         does not register at all -- `- a` / ` [r]: /u` / `tail` folds, with the
         definition line published as text.
 
-        An ABBREVIATION definition is not on I5's list and is recognized at
-        document level only, so inside a container the line is ordinary
-        paragraph text and reopens the paragraph like any other prose.
+        An ABBREVIATION definition is I5's SECOND exception (§16, and I5's AN
+        INVISIBLE LINE IS ONE CLASSIFICATION): recognized at document level
+        only, so inside a container the line is not an invisible line at all --
+        it is ordinary paragraph text and reopens the paragraph like any other
+        prose. Pinned in both bodies with a collector of their own by corpus
+        432-an-abbreviation-definition-outside-document-level-is-not-an-invisible-line.
 
         A QUOTE IS REACHED BY ITS MARKER, AND A COLUMN NEVER REACHES INTO ONE
         (carve#1384). I5's columns are read against the container a line is IN,
@@ -6038,10 +6041,11 @@ EOF = (* end of file *) ;
          lines and attaches to the NEXT block element: `{#id}\n\nText` ->
          <p id="id">Text</p>.
       A2a AN INVISIBLE CONSTRUCT IS NOT THE NEXT BLOCK -- NORMATIVE. pending
-         floats PAST anything that renders nothing and attaches to the next
-         VISIBLE block. The constructs this covers are the reference,
-         footnote and abbreviation DEFINITIONS (§16) and the two comment
-         forms (§21, §28):
+         floats PAST an INVISIBLE LINE and attaches to the next VISIBLE block.
+         The class is §10 I5's, AN INVISIBLE LINE IS ONE CLASSIFICATION -- the
+         five kinds are enumerated there, and "renders nothing" is its property
+         2. This clause is that property's consequence for a floating
+         attribute, and nothing more:
 
              {#i}
              [^f]: note
@@ -6354,12 +6358,13 @@ EOF = (* end of file *) ;
 
       L1b AN INVISIBLE LINE DOES NOT CANCEL THE SEPARATION -- NORMATIVE. L1
          asks whether the item holds a blank-line-separated second PARAGRAPH.
-         A line that renders nothing -- a comment, a definition, an attribute
-         line -- is not a paragraph, which is why it cannot BE the second one
-         (L1a's argument, carve#621). The same fact means it cannot stand
-         BETWEEN the blank line and the paragraph that follows either: it is
-         not a separator, so the separation it appears to interrupt is intact
-         and the item is LOOSE.
+         An INVISIBLE LINE (§10 I5, AN INVISIBLE LINE IS ONE CLASSIFICATION)
+         emits no visible block, which is why it cannot BE the second one
+         (L1a's argument, carve#621), and by the same clause's property 3 it
+         does not choose the next line's owner either: it is not a separator,
+         so the separation it appears to interrupt is intact and the item is
+         LOOSE. This clause is that property's consequence for list
+         TIGHTNESS.
 
              - a
 
@@ -6550,7 +6555,11 @@ EOF = (* end of file *) ;
            paragraph) hold no child blocks; a heading is a bounded title.
       L6 A COLLECTED DEFINITION LEAVES NO TRACE -- NORMATIVE (the general
          rule for PART 9R R1/R2 COLLECTION, stated ONCE here for every
-         container that can hold a definition). A link reference or
+         container that can hold a definition). This is §10 I5's property 2 --
+         emits no visible block at its authored location -- for the two
+         definitions that also REGISTER, which is their semantic action; the
+         property itself is stated at AN INVISIBLE LINE IS ONE CLASSIFICATION
+         and is not re-derived here. A link reference or
          footnote definition is document-level metadata: wherever it is
          written, PASS 1 collects it into the shared symbol table and PASS
          2 resolves uses against it from anywhere in the document (PART
@@ -7358,9 +7367,11 @@ EOF = (* end of file *) ;
              unanimous; the disagreements are all rows where none is.
 
              AN INVISIBLE LINE FOLDS LIKE ANY OTHER -- NORMATIVE. "Every other
-             line" includes the ones that are not block-SHAPED: a link
-             reference, footnote or abbreviation definition below the column
-             folds as TEXT, and registers nothing. It is text, so a `[^f]`
+             line" includes the ones that are not block-SHAPED. This is the
+             BELOW-COLUMN half of §10 I5's first exception (AN INVISIBLE LINE IS
+             ONE CLASSIFICATION): below the column the comment is still exempt
+             and every other member of the class is not a member here at all --
+             it folds as TEXT and registers nothing. It is text, so a `[^f]`
              elsewhere in the document stays literal; half-folding it -- text
              on the page, definition in the tables -- is not an option the
              rule offers.
@@ -7395,9 +7406,12 @@ EOF = (* end of file *) ;
              column 0, and was skipped there as already-extracted, so the
              author's line rendered as nothing at all (carve-php#721).
 
-             A COMMENT IS THE ONE EXCEPTION -- NORMATIVE. A comment is
-             recognized at ANY column, above the content column, at it, or
-             below it, and stays invisible. BOTH SPELLINGS: the `%%` line form
+             A COMMENT IS THE ONE EXCEPTION -- NORMATIVE. The first of the two
+             exceptions to §10 I5's classification, and it is a question of
+             MEMBERSHIP: it decides which lines are invisible below a column,
+             not how an invisible line behaves. A comment is recognized at ANY
+             column, above the content column, at it, or below it, and stays
+             invisible. BOTH SPELLINGS: the `%%` line form
              and the `%%%` fence form, whose body and closer travel with its
              opener. Leaving the fence out made the same rule answer twice one
              delimiter apart -- the line form invisible, the fence form
