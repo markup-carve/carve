@@ -29512,3 +29512,256 @@ paragraph.
 ```
 
 :::
+
+## Below a definition body's column an invisible line folds as text
+
+§10 I5 and AN INVISIBLE LINE FOLDS LIKE ANY OTHER both say the same thing about
+this band, in their own words: at a nonzero column below the container's content
+column an invisible line is lazy paragraph text of that container, and registers
+nothing. Corpus 426-4 already pins the plain-line control folding from this
+column. Every invisible kind gives the same answer, so the band has one answer
+and not one per construct.
+
+A link reference definition folds as characters. The reference elsewhere in the
+document stays literal, which is what "registers nothing" costs - half-folding
+it, text on the page and a definition in the tables, is not on offer.
+
+::: compare
+
+```carve
+:: t
+:  d
+  [r]: /u
+tail
+
+See [text][r].
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d
+[r]: /u
+tail</dd>
+</dl>
+<p>See [text][r].</p>
+```
+
+:::
+
+The footnote spelling is the same answer one construct over, and the same
+unresolved reference below it.
+
+::: compare
+
+```carve
+:: t
+:  d
+  [^f]: n
+tail
+
+See[^f]
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d
+[^f]: n
+tail</dd>
+</dl>
+<p>See[^f]</p>
+```
+
+:::
+
+A block-attribute line is on I5's interrupter list with the definitions and
+folds with them. It attaches nothing: the braces are characters in the
+description, and the following line folds in behind them exactly as it does
+above.
+
+::: compare
+
+```carve
+:: t
+:  d
+  {.k}
+tail
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d
+{.k}
+tail</dd>
+</dl>
+```
+
+:::
+
+An abbreviation definition already answered this way, because PART 12 §7
+recognizes one only as a direct child of the document; it is in the band so all
+four kinds are held by one row each rather than by an argument that three of
+them are alike.
+
+::: compare
+
+```carve
+:: t
+:  d
+  *[A]: a
+tail
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d
+*[A]: a
+tail</dd>
+</dl>
+```
+
+:::
+
+A COMMENT IS THE ONE EXCEPTION and is invisible at any column, including this
+one. What the line AFTER a comment belongs to is a separate open question about
+the comment's own column, recorded in PART 9 §24 and pinned in the list-item
+host by corpus 189 and 192, so this row asks only what the comment itself
+renders.
+
+::: compare
+
+```carve
+:: t
+:  d
+  %% c
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+```
+
+:::
+
+The band is more than one column wide, and the answer does not move inside it.
+One column below the content column reads the same as two.
+
+::: compare
+
+```carve
+:: t
+:  d
+ [r]: /u
+tail
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d
+[r]: /u
+tail</dd>
+</dl>
+```
+
+:::
+
+## A floating attribute under a definition attaches at column zero
+
+Column 0 is not below a column - it is the surrounding document's own opener
+column, which is where a definition is collected and where a floating attribute
+block lives (§10 I5). So the description ends and the attribute floats forward
+at document level onto the next visible block, exactly as it does under a list
+item or a block quote.
+
+::: compare
+
+```carve
+:: t
+:  d
+{.k}
+tail
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p class="k">tail</p>
+```
+
+:::
+
+A blank line above the attribute is not what makes pending metadata exist (§15
+A2 FLOAT FORWARD says pending SURVIVES a blank line). The two spellings agree.
+
+::: compare
+
+```carve
+:: t
+:  d
+
+{.k}
+tail
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p class="k">tail</p>
+```
+
+:::
+
+The list-item host is the control, and it answers the same. Both rows are here
+because it was their disagreement that was the defect, and one row cannot record
+a disagreement.
+
+::: compare
+
+```carve
+- d
+{.k}
+tail
+```
+
+```html
+<ul>
+  <li>d</li>
+</ul>
+<p class="k">tail</p>
+```
+
+:::
+
+A definition at the same column is the other half of the same band: it ends the
+description too, and being at the document's opener column it REGISTERS, so the
+reference below it resolves.
+
+::: compare
+
+```carve
+:: t
+:  d
+[r]: /u
+
+See [text][r].
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p>See <a href="/u">text</a>.</p>
+```
+
+:::

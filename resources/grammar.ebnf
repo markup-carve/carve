@@ -1675,6 +1675,19 @@ definition_indent = whitespace, {whitespace} ;
        classified in the surviving context. Column 0 is not a special case of
        this, it is the ordinary case: "below the content column" means the
        same thing here as it does for a list item and for a footnote body.
+
+       THE BAND IS ABOUT OPENERS, AND A NON-OPENER STILL FOLDS. What ends the
+       body is a line the surviving context can OPEN A BLOCK with; a line that
+       opens nothing has an open paragraph above it and §10 I2's lazy
+       continuation still reaches it, which is why the plain-line row folds
+       from every column in this band and always did. The five invisible-line
+       kinds resolve HERE, not in this bullet: a comment is invisible at any
+       column (§10, A COMMENT IS THE ONE EXCEPTION), and a definition or
+       attribute line at a nonzero column below the column is lazy paragraph
+       text of THIS body (§10 I5, AN INVISIBLE LINE FOLDS LIKE ANY OTHER). At
+       DOCUMENT column 0 they are interrupters and the body does end. Reading
+       this bullet alone gave the band four different answers across the five
+       kinds, none of them the plain-line control's (carve#1800, carve#1801).
      - AT the column, the line is the body's own block content, so a block
        opener opens inside the `dd`.
      - PAST the column, a recognized block opener establishes its authored
@@ -5410,10 +5423,34 @@ EOF = (* end of file *) ;
          DOCUMENT column 0 it is a document-level interrupter: it ends the item,
          is collected into the shared symbol table, and the following block is
          a document sibling. At a nonzero column BELOW content_column it is lazy
-         paragraph text and does not register. Comment recognition is not an
+         paragraph text of THAT container -- the one whose content column it
+         fell below -- and does not register. Comment recognition is not an
          exception to this opener set: PART 0 has already removed comment
          tokens from visible block classification. Pinned by corpus
          287-a-column-zero-definition-ends-an-open-list-item (carve#1045).
+
+         THE COLUMN SCOPE IS THE SAME FOR AN ATTRIBUTE LINE, and the three
+         bands are the same three bands (carve#1801). A block-attribute line is
+         on I5's interrupter list with the definitions, and §15 A2's pending
+         metadata is scoped to a container exactly as a definition's collection
+         is: at DOCUMENT column 0 it ends the container and floats forward at
+         document level, at content_column it is the container's own pending
+         metadata, and at a nonzero column below it is lazy paragraph text that
+         attaches nothing. Only the SEMANTIC ACTION differs by kind -- register
+         in scope versus retain pending metadata -- and the column that selects
+         the band does not.
+
+         WHICH CONTAINER, NOT ONLY THAT IT IS TEXT (carve#1800). "Lazy
+         paragraph text" names an operation on an OPEN PARAGRAPH, so the text
+         lands in the container that holds that paragraph, and a reader that
+         ends the container and then publishes the same characters one level out
+         has not carried the sentence out -- it has produced text in a place the
+         sentence does not name. The definition-description host is where the
+         two readings came apart: a link or footnote definition one or two
+         columns below the description's content column ended the `dd` and was
+         published as a DOCUMENT-level paragraph, one line after a plain line at
+         the identical column folded into the `dd`. Pinned per kind by corpus
+         430-below-a-definition-body-s-column-an-invisible-line-folds-as-text.
 
          A DEFINITION COLLECTED AT content_column ENDS THE ITEM'S OPEN
          PARAGRAPH. The next nonblank line therefore stays in the item only if
@@ -7276,6 +7313,26 @@ EOF = (* end of file *) ;
              elsewhere in the document stays literal; half-folding it -- text
              on the page, definition in the tables -- is not an option the
              rule offers.
+
+             A BLOCK-ATTRIBUTE LINE FOLDS THE SAME WAY, and for the same
+             reason: it is on I5's interrupter list with the definitions, and
+             below the column it reaches no opener column either. So it is text
+             -- the authored braces render as characters -- and it attaches
+             nothing. Half-folding an attribute is the same unavailable option
+             one construct over, and its failure mode is worse than a wrong
+             shape: an attribute recognized below the column has no visible
+             block left in the container to attach to, so §15 A4 discards it and
+             the author's characters reach neither the page nor any table. That
+             is what carve#1801 measured in a definition description, where the
+             identical line one host over folds as literal text.
+
+             THE FOLD IS INTO THE CONTAINER, in every host, which is the half
+             this clause used to leave to the reader. "Folds as TEXT" and
+             I5's "lazy paragraph text" name one operation on one open
+             paragraph, and that paragraph belongs to the container whose
+             content column the line fell below. Ending the container and
+             emitting the characters at document level satisfies neither
+             sentence (carve#1800).
 
                - - a
                 [^f]: x
