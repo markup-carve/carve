@@ -5409,11 +5409,21 @@ EOF = (* end of file *) ;
          when L3's `+` marker explicitly attaches its flush-left block. At
          DOCUMENT column 0 it is a document-level interrupter: it ends the item,
          is collected into the shared symbol table, and the following block is
-         a document sibling. At a nonzero column BELOW content_column it is lazy
-         paragraph text and does not register. Comment recognition is not an
-         exception to this opener set: PART 0 has already removed comment
-         tokens from visible block classification. Pinned by corpus
-         287-a-column-zero-definition-ends-an-open-list-item (carve#1045).
+         a document sibling. At a nonzero column BELOW content_column it
+         REGISTERS NOTHING and is published as the text the author typed, and
+         WHICH CONTAINER holds that text is the surviving context's decision
+         rather than this clause's: in a list item a paragraph is open and the
+         line folds into it, while a DEFINITION BODY ends at any line below its
+         own column, so the text is the document's. A plain line at the
+         identical column folds in both, because it is not block-shaped and
+         never ends the body - which is why "lazy paragraph text" was the wrong
+         name for this band and named the list-item case as if it were the rule
+         (carve#1800). Comment recognition is not an exception to this opener
+         set: PART 0 has already removed comment tokens from visible block
+         classification. Pinned by corpus
+         287-a-column-zero-definition-ends-an-open-list-item (carve#1045) and,
+         for the definition-body half of the band, by corpus
+         429-below-a-definition-body-s-column-each-invisible-line-keeps-its-own-answer.
 
          A DEFINITION COLLECTED AT content_column ENDS THE ITEM'S OPEN
          PARAGRAPH. The next nonblank line therefore stays in the item only if

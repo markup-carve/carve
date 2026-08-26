@@ -1,0 +1,4 @@
+[^b]: para
+      *[A]: alpha
+
+use[^b] and an A

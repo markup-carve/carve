@@ -1,0 +1,28 @@
+An attribute line under a definition description attaches from column zero
+
+```
+:: t
+:  d
+{.k}
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p class="k">tail</p>
+```
+
+```
+:: t
+:  d
+
+{.k}
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p class="k">tail</p>
+```

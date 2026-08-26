@@ -1,0 +1,58 @@
+Below a definition body's column each invisible line keeps its own answer
+
+```
+:: t
+:  d
+  %% c
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p>tail</p>
+```
+
+```
+:: t
+:  d
+  [r]: /u
+
+[t][r]
+.
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p>[r]: /u</p>
+<p>[t][r]</p>
+```
+
+```
+:: t
+:  d
+  [^f]: n
+
+see[^f]
+.
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p>[^f]: n</p>
+<p>see[^f]</p>
+```
+
+```
+:: t
+:  d
+  {.k}
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p>{.k}
+tail</p>
+```

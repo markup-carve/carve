@@ -2140,11 +2140,39 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // A plain line that folds (as a lazy continuation) into an open term or
       // the open paragraph of a definition (SS17): not blank, not a visible
       // block, not a definition/list/fence/caption opener.
+      // AN ATTRIBUTE LINE IS NOT PLAIN, and leaving it out here loses the
+      // author's characters entirely (carve#1801). §10 I5 lists a
+      // block-attribute line among the constructs that interrupt a paragraph,
+      // so it is an interrupter exactly like the two definition kinds above it.
+      //
+      // WHY THE OMISSION COST MORE THAN A WRONG CONTAINER. This predicate
+      // decides whether a below-column line is PULLED INTO the body, and the
+      // pull DEDENTS it to the body's column 0 - which is the one column where
+      // an attribute line stops being literal text and becomes a real
+      // attribute block. Inside the body there was then nothing left to attach
+      // to, so the block dangled and was dropped: `:: t` / `:  d` / `  {.k}` /
+      // `tail` rendered neither the class nor the characters. carve-js,
+      // carve-php and carve-rs all end the body and publish the literal line,
+      // which is what corpus 157-indented-attribute-line-stays-literal already
+      // says an indented attribute line is.
+      //
+      // This is carve#1786's defect one construct over: that fix moved the
+      // question to the DEDENTED line so a below-column `> q` could not open a
+      // quote it opens nowhere else, and the attribute line reaches the same
+      // column by the same route. Excluding it here ends the body instead, and
+      // the surviving document context classifies the authored line - literal
+      // where it is indented, a floating attribute where it is flush left,
+      // which is how the column-0 spelling recovers its `class` too.
+      //
+      // `{}` stays foldable: parseAttrBlock yields no attributes for it, so
+      // tryAttrLine returns null and corpus 125-a-bare-attribute-block-on-its-
+      // own-line-is-literal keeps its literal reading here as well.
       const foldablePlain = (cur) =>
         !isBlank(cur) &&
         !startsVisibleBlock(cur) &&
         !isLinkDef(cur) &&
         !FOOTNOTE_DEF.test(cur) &&
+        !tryAttrLine([cur], 0) &&
         !BULLET.test(cur) &&
         !isOrderedMarkerLine(cur) &&
         !FENCE.test(cur) &&

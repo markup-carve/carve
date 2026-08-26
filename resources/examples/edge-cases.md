@@ -29411,3 +29411,261 @@ tail
 ```
 
 :::
+
+## Below a definition body's column each invisible line keeps its own answer
+
+The band one column under a description's content column is not one question.
+BELOW THE BODY'S COLUMN THE BODY ENDS decides it for anything block-shaped, and
+§10 I5 makes a link definition, a footnote definition, a comment and an
+attribute line block-shaped: each is recognized before paragraph continuation,
+so each ends the body where a plain line at the same column folds into it. What
+happens to the line AFTER the body ends is then the document's decision, and it
+differs per kind, which is why one sentence about "invisible lines" cannot cover
+the band.
+
+A comment ends the body and stays invisible.
+
+::: compare
+
+```carve
+:: t
+:  d
+  %% c
+tail
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p>tail</p>
+```
+
+:::
+
+A link definition ends the body and is published as the text the author typed.
+At a nonzero column it is not a document-level definition either, so it defines
+nothing and the reference stays literal - the half an implementation can pass
+the container rule without.
+
+::: compare
+
+```carve
+:: t
+:  d
+  [r]: /u
+
+[t][r]
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p>[r]: /u</p>
+<p>[t][r]</p>
+```
+
+:::
+
+The footnote spelling is the same rule and the same answer. The two are one
+construct in I5's list, and nothing distinguishes them by column.
+
+::: compare
+
+```carve
+:: t
+:  d
+  [^f]: n
+
+see[^f]
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p>[^f]: n</p>
+<p>see[^f]</p>
+```
+
+:::
+
+An abbreviation definition is the exception, and not because the band treats it
+differently: AN ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL
+already made the line ordinary paragraph text inside a container, so there is no
+definition here to end the body with. Prose folds from any column, and no
+`<abbr>` is produced. That row is held back until carve-js#1544 ships, because
+the pinned reference build ends the description for it and a document the pin
+does not reproduce cannot land without leaving declared drift behind.
+
+An attribute line ends the body like the two definitions, and the surviving
+document context reads it where it was authored: still indented, which
+`an indented attribute line stays literal` already settles. The characters
+reach the page and no attribute is set.
+
+::: compare
+
+```carve
+:: t
+:  d
+  {.k}
+tail
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p>{.k}
+tail</p>
+```
+
+:::
+
+## An attribute line under a definition description attaches from column zero
+
+Column 0 is outside the description, so the line is a document-level floating
+attribute and A2 FLOAT FORWARD applies: it attaches to the next visible block.
+This is the same answer a list item and a block quote give for the identical
+shape, and the same answer this host gives with a blank line above the
+attribute - A2 says pending SURVIVES a blank line, not that a blank line is
+what creates it.
+
+::: compare
+
+```carve
+:: t
+:  d
+{.k}
+tail
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p class="k">tail</p>
+```
+
+:::
+
+The blank-separated spelling is the control, and it must not differ.
+
+::: compare
+
+```carve
+:: t
+:  d
+
+{.k}
+tail
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p class="k">tail</p>
+```
+
+:::
+
+## Every invisible line at a container's content column
+
+At the content column the answer is uniform across the kinds and the hosts: the
+line closes the open paragraph, emits no visible block where it was written, and
+chooses no owner for the line after it. The rows below are the cells no document
+reached, which is what let the uniformity stand as prose rather than as a gate.
+
+A footnote definition at a description's content column belongs to the
+description, registers, and leaves no trace there.
+
+::: compare
+
+```carve
+:: t
+:  d
+   [^f]: n
+
+see[^f]
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+An abbreviation definition at the same column is the exception again, for the
+reason it is always the exception: in a container it was never a definition.
+
+::: compare
+
+```carve
+:: t
+:  d
+   *[A]: alpha
+
+an A here
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d
+*[A]: alpha</dd>
+</dl>
+<p>an A here</p>
+```
+
+:::
+
+A comment at a footnote body's content column closes the body's paragraph
+without ending the body, and leaves nothing behind - not a blank line, not
+residual whitespace. That row waits on carve-js#1545 for the same reason as the
+abbreviation row above: the pinned build leaves the blank line.
+
+An abbreviation definition inside a footnote body is paragraph text there too.
+
+::: compare
+
+```carve
+[^b]: para
+      *[A]: alpha
+
+use[^b] and an A
+```
+
+```html
+<p>use<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and an A</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>para
+*[A]: alpha<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::

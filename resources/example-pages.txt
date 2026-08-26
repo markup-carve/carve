@@ -596,6 +596,8 @@ index: examples/edge-cases/index.md
   a-definition-body-s-separator-width-sets-its-content-column
   an-ordered-item-s-separator-width-sets-its-content-column
   below-a-definition-body-s-column-the-body-ends
+  below-a-definition-body-s-column-each-invisible-line-keeps-its-own-answer
+  every-invisible-line-at-a-container-s-content-column
 [edge-attributes] Attributes
 > Attribute lines and inline blocks, names and values, classes, booleans and the semantic/language sugar.
 out: examples/edge-cases/attributes.md
@@ -640,6 +642,7 @@ index: examples/edge-cases/index.md
   39-inline-span-5
   an-attribute-line-below-a-list-item-interrupts-it
   a-wrapped-attribute-line-leaves-no-paragraph-open
+  an-attribute-line-under-a-definition-description-attaches-from-column-zero
   an-engine-written-shape-says-what-it-is-called
   text-block-alignment-renders-the-css-declaration
 
