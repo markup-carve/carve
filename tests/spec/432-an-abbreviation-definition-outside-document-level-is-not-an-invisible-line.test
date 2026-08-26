@@ -1,0 +1,38 @@
+An abbreviation definition outside document level is not an invisible line
+
+```
+:: t
+:  d
+   *[A]: a
+   tail
+
+A
+.
+<dl>
+  <dt>t</dt>
+  <dd>d
+*[A]: a
+tail</dd>
+</dl>
+<p>A</p>
+```
+
+```
+[^a]: intro
+  *[A]: a
+  more
+
+see[^a] A
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> A</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>intro
+*[A]: a
+more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```

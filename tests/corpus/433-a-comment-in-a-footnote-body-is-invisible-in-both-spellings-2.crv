@@ -1,0 +1,7 @@
+[^a]: intro
+  %%%
+  c
+  %%%
+  more
+
+see[^a]
