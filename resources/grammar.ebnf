@@ -1576,9 +1576,9 @@ definition_body = (':', definition_separator, first_block_content)
                    | continuation_marker_block
                    | lazy_continuation_line }) ;
 definition_separator = space, {space} ;
-(* FIRST-BLOCK (`:  +`): when the sole content is a lone `+`, the body is the
+(* FIRST-BLOCK (`: +`): when the sole content is a lone `+`, the body is the
    FOLLOWING flush-left block, with no indentation -- the definition-list twin
-   of the list-item `- +` opener (`first_block_content`). `:  \+` is a literal
+   of the list-item `- +` opener (`first_block_content`). `: \+` is a literal
    `+`. *)
 
 (* SEPARATOR WIDTH SETS THE BODY'S COLUMN (carve#1755). The separator is a run
@@ -1619,13 +1619,14 @@ definition_indent = whitespace, {whitespace} ;
    footnote body honors C1 (`footnote_indent`, carve#692) and so does a list
    item (`list_continuation`'s `indent`).
 
-   `definition_indent` widens to any whitespace run REACHING COLUMN 3 -- the
-   body's own column, the one `:  ` establishes. A bare tab (column 0 -> 4), a
-   space then a tab (1 -> 4) and three spaces (0 -> 3) all qualify; one or two
-   spaces do not. The floor is column arithmetic, stated here rather than
+   `definition_indent` is any whitespace run REACHING THE BODY'S AUTHORED
+   CONTENT COLUMN -- the column its separator width establishes. For canonical
+   `: x`, two spaces reach column 2; for accepted `:  x`, three spaces reach
+   column 3. A bare tab reaches column 4 and qualifies for either. The floor is
+   column arithmetic, stated here rather than
    encoded character-by-character, exactly as `footnote_indent` states its
-   own. This is INDENTATION, not a marker SEPARATOR: it does not touch the two
-   literal `space`s the `:` marker itself requires (unchanged -- PART 7's
+   own. This is INDENTATION, not a marker SEPARATOR: it does not change the
+   separator run after the `:` marker (PART 7's
    MARKER SEPARATORS AND PADDING SLOTS clause, which is A TAB IS SYNTAX ONLY
    IN THE LEADING RUN (PART 7) applied to a slot that sits inline).
 

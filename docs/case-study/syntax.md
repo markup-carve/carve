@@ -576,14 +576,16 @@ for. See the [examples](/examples) and PART 9 §17.
 **Basic syntax:**
 ```
 :: Term
-:  Definition here.
+: Definition here.
 
 :: Another term
-:  Its definition.
+: Its definition.
 ```
 
 - `::` (double colon) marks terms
-- `:  ` (colon + 2 spaces) marks definitions
+- `: ` (colon + one or more spaces) marks definitions
+- One separator space is canonical; `carve fmt` narrows wider runs and rebases
+  continuation indentation without changing the document
 
 > **`::` vs `:::`.** A term is *exactly two* colons; *three* colons is a
 > div/admonition (§4.12). The parser keys on the colon count with no
@@ -597,7 +599,7 @@ for. See the [examples](/examples) and PART 9 §17.
 ```
 :: color
 :: colour
-:  The visual property of objects.
+: The visual property of objects.
 ```
 
 Output:
@@ -613,8 +615,8 @@ Output:
 ```
 :: color
 :: colour
-:  The visual property of objects.
-:  A pigment or paint.
+: The visual property of objects.
+: A pigment or paint.
 ```
 
 Output:
@@ -631,36 +633,36 @@ Output:
 ```
 :: This is a long term \
    that spans two lines
-:  Definition here.
+: Definition here.
 ```
 
 **Multi-line definitions:**
 ```
 :: Term
-:  This definition continues \
+: This definition continues \
    on the next line.
-:  Second definition.
+: Second definition.
 ```
 
 Or with indentation:
 ```
 :: Term
-:  This definition has
+: This definition has
    multiple lines through
    indentation continuation.
 ```
 
 **Rules:**
 - `::` starts a term (`<dt>`)
-- `:  ` starts a definition (`<dd>`)
+- `: ` starts a definition (`<dd>`)
 - Consecutive `::` lines are grouped as multiple terms
-- Consecutive `:  ` lines create multiple definitions
+- Consecutive `: ` lines create multiple definitions
 - `\` at line end continues the current term/definition
 - Indented continuation lines also work for definitions
 - Blank line ends the definition list entry
 
 **Rationale:**
-- Unambiguous: `::` vs `:  ` are visually and syntactically distinct
+- Unambiguous: `::` vs `: ` are visually and syntactically distinct
 - Multi-line support via `\` continuation or indentation
 - Matches dictionary structure (synonyms + multiple meanings)
 - No confusion with other `:` uses (like blockquote attribution)

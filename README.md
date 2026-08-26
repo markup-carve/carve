@@ -302,7 +302,7 @@ the [Case Study](https://markup-carve.github.io/carve/case-study/) and the
 
 | Feature | Markdown | Djot | Carve |
 |---------|----------|------|------|
-| Definition lists | n/a | `: term` + indented def | `:: term` / `:  def` |
+| Definition lists | n/a | `: term` + indented def | `:: term` / `: def` |
 | Ordered list dialects | `1.` / `1)` (decimal only) | decimal/alpha/roman; `.` `)` `(1)` delimiters | decimal/alpha/roman; `.` `)` delimiters (`(1)` deliberately omitted — prose-ambiguity) |
 | Table headers | `\|---\|` separator (GFM) | `\|---\|` separator | `\|=` prefix |
 | Table alignment | `:--` / `--:` (GFM), horizontal only | `:--` / `--:` separator, horizontal only | horizontal `\|=<` / `\|=>` / `\|=~` (column) and `\|<` / `\|>` / `\|~` (cell), plus a vertical axis on a second marker: `\|=>^` right+top, `\|<v` left+bottom, `\|?~` middle keeping the column's horizontal value. A marker run is glued to the pipe and ends at a space |

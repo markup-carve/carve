@@ -669,7 +669,7 @@ description, `t2` keeps exactly `d2`, and nothing gains meaning it did not have:
 %%
 
 :: t2
-:  d2
+: d2
 ```
 
 ```html
@@ -684,7 +684,7 @@ description, `t2` keeps exactly `d2`, and nothing gains meaning it did not have:
 
 **A BLANK LINE IS NOT THE BREAK, and the separator has to be written.** A blank
 line between two entries does not loosen a definition list and does not end one
-either - `:: t1`, a blank line, `:: t2`, `:  d2` is ONE list with two terms
+either - `:: t1`, a blank line, `:: t2`, `: d2` is ONE list with two terms
 sharing `d2`, which is the outcome this rule forbids, and the canonical writer
 removes the blank line again. The comment line is what ends the first list, and
 it is the only construct that can: the separator has to render nothing where it
@@ -987,7 +987,7 @@ instead of a `structure-unspellable` diagnostic.
 ```
 {loose}
 :: Term
-:  Definition.
+: Definition.
 ```
 
 The definition list is the worse case: a blank line between two **entries** does
