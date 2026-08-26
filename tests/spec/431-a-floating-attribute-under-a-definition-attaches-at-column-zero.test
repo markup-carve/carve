@@ -1,0 +1,53 @@
+A floating attribute under a definition attaches at column zero
+
+```
+:: t
+:  d
+{.k}
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p class="k">tail</p>
+```
+
+```
+:: t
+:  d
+
+{.k}
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p class="k">tail</p>
+```
+
+```
+- d
+{.k}
+tail
+.
+<ul>
+  <li>d</li>
+</ul>
+<p class="k">tail</p>
+```
+
+```
+:: t
+:  d
+[r]: /u
+
+See [text][r].
+.
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p>See <a href="/u">text</a>.</p>
+```

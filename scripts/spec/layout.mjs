@@ -2271,6 +2271,62 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // is unaffected at every column, because dedenting `more` yields
             // `more`.
             const dedented = stripIndent(cur).replace(/[ \t]+$/, '')
+            const authoredCol = indentCols(cur).col
+            /*
+             * AN INVISIBLE CONSTRUCT AT DOCUMENT COLUMN 0 IS NOT LAZY TEXT --
+             * the same test the item fold makes at §24 C3, for the same reason
+             * (§10 I5): column 0 is not below a column, it is the surrounding
+             * DOCUMENT's own opener column, which is where a definition is
+             * recognized and where a floating attribute block lives. So the
+             * body ends and the enclosing parse classifies the line there: the
+             * definition registers in the shared table, and the attribute
+             * floats forward onto the next visible block.
+             *
+             * The ATTRIBUTE half is what carve#1801 reported. It reached
+             * `foldablePlain` below - an attribute line is neither a visible
+             * block nor a definition - so it folded INTO the body, closed the
+             * body's paragraph with nothing left in the body to attach to, and
+             * §15 A4 discarded it. The author's characters reached neither the
+             * page nor any symbol table, while the identical line under a list
+             * item or a block quote attached to the following paragraph, and
+             * adding one blank line above it made this host attach too. A blank
+             * line is not what makes pending metadata exist (§15 A2).
+             *
+             * Abbreviations are excluded here exactly as they are at C3: PART 12
+             * §7 recognizes one only as a direct child of the DOCUMENT, and a
+             * `dd` is not the document however its columns line up.
+             */
+            if (authoredCol === 0 &&
+                (FOOTNOTE_DEF.test(dedented) || isLinkDef(dedented) || tryAttrLine([dedented], 0))) break
+            /*
+             * AN INVISIBLE LINE FOLDS LIKE ANY OTHER -- NORMATIVE, and §10 I5's
+             * own sentence for the same band: "at a nonzero column BELOW
+             * content_column it is lazy paragraph text and does not register".
+             * Both clauses say TEXT, and the plain-line control at the identical
+             * column folds, so the line folds into the DESCRIPTION rather than
+             * being handed to the document.
+             *
+             * The LAZY frame is what makes it text. Pushing the bare line let
+             * the body's own parse re-recognize the construct it is shaped like,
+             * which is how the three kinds came apart (carve#1800): a link or
+             * footnote definition broke the body and was then published as
+             * document-level paragraph text - text, but not in the container the
+             * fold rule names - and an attribute line folded in as an ATTRIBUTE
+             * and was discarded. A frame is a paragraph continuation by
+             * construction (PART 1 S4), so neither can happen.
+             *
+             * The abbreviation spelling already folded, because nothing inside a
+             * `dd` recognizes it; it is framed here too so all four kinds reach
+             * the body by one path rather than by two that agree today.
+             */
+            if (authoredCol > 0 && bodyLeavesParagraphOpen(bodyLines) &&
+                !startsVisibleBlock(dedented) &&
+                (isLinkDef(dedented) || FOOTNOTE_DEF.test(dedented) ||
+                 ABBR_DEF.test(dedented) || tryAttrLine([dedented], 0) !== null)) {
+              bodyLines.push(LAZY + dedented)
+              i++
+              continue
+            }
             if (foldablePlain(dedented) && bodyLeavesParagraphOpen(bodyLines)) {
               bodyLines.push(dedented)
               i++

@@ -1,0 +1,88 @@
+Below a definition body's column an invisible line folds as text
+
+```
+:: t
+:  d
+  [r]: /u
+tail
+
+See [text][r].
+.
+<dl>
+  <dt>t</dt>
+  <dd>d
+[r]: /u
+tail</dd>
+</dl>
+<p>See [text][r].</p>
+```
+
+```
+:: t
+:  d
+  [^f]: n
+tail
+
+See[^f]
+.
+<dl>
+  <dt>t</dt>
+  <dd>d
+[^f]: n
+tail</dd>
+</dl>
+<p>See[^f]</p>
+```
+
+```
+:: t
+:  d
+  {.k}
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>d
+{.k}
+tail</dd>
+</dl>
+```
+
+```
+:: t
+:  d
+  *[A]: a
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>d
+*[A]: a
+tail</dd>
+</dl>
+```
+
+```
+:: t
+:  d
+  %% c
+.
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+```
+
+```
+:: t
+:  d
+ [r]: /u
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>d
+[r]: /u
+tail</dd>
+</dl>
+```

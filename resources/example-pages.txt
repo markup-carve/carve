@@ -336,6 +336,7 @@ index: examples/edge-cases/index.md
   a-quote-marker-is-plus-a-space-and-a-lazy-line-keeps-its-own-text
   a-block-attribute-line-inside-a-quote-ends-the-paragraph-above-it
   a-floating-attribute-is-scoped-to-the-container-that-holds-it
+  a-floating-attribute-under-a-definition-attaches-at-column-zero
   a-comment-fence-at-column-0-ends-the-item-a-line-does-not
   two-backticks-are-not-a-code-fence-opening-or-closing
   a-single-percent-is-not-a-comment
@@ -596,6 +597,7 @@ index: examples/edge-cases/index.md
   a-definition-body-s-separator-width-sets-its-content-column
   an-ordered-item-s-separator-width-sets-its-content-column
   below-a-definition-body-s-column-the-body-ends
+  below-a-definition-body-s-column-an-invisible-line-folds-as-text
 [edge-attributes] Attributes
 > Attribute lines and inline blocks, names and values, classes, booleans and the semantic/language sugar.
 out: examples/edge-cases/attributes.md
