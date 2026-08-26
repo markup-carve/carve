@@ -593,12 +593,9 @@
       terms, but M1a is stated anyway and is PERMANENT: for `*` the adjacency is
       the shape of the target rather than an accident of one document.
 
-      WHY ADJACENCY IS THE TEST THAT OWES NO PER-READER ARGUMENT. This target
-      answers to a re-parser Carve does not control, and there are several of
-      them, so an escape dropped is an argument owed once per reader. The
-      adjacency case owes none: every one of those readers resolves a delimiter
-      by RUN LENGTH, so an escape sitting next to a live delimiter of the same
-      character holds a run boundary apart under all of them at once.
+      ADJACENCY IS READER-INDEPENDENT: delimiter readers resolve by RUN LENGTH,
+      so an escape beside a live delimiter of the same character preserves the
+      run boundary for all of them.
 
       THE BOUNDARY IS THE CLAUSE, NOT A FLOOR. M1b is written as an
       if-and-only-if on purpose. An escape it drops is dropped and an escape

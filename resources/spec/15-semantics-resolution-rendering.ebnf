@@ -98,17 +98,8 @@
         crossref nests an <a> in an <a>; avoid footnotes in those positions.
 
    16a. THE ENGINE'S OWN WORDS ARE A RENDER OPTION -- NORMATIVE (carve#1456).
-      A renderer takes a `labels` map from key to string, carrying the strings
-      the ENGINE writes rather than the author. Today that is one key,
-      `footnoteBacklink` ("Back to reference"), which names §16's endnote
-      backlink. A caption's label is the author's word and is not in this map;
-      neither are the extension-written strings, which stay options on the
-      extensions that write them. Values are TEXT and are escaped at the point
-      of use - the `symbols` map's raw emission is deliberately not the model
-      here. An HTML importer does not bake one of these strings back into
-      source: it drops an attribute whose value equals what the renderer
-      derives and keeps every other (carve#1500). Stated in full below the
-      footnote clause.
+      The `labels` map, its core and extension keys, escaping, precedence and
+      importer behavior are defined in the full PART 9 §16a clause below.
 
    17. TIGHT vs LOOSE LISTS + CONTINUATION MARKER -- OPERATIONAL (governs
       `list` rendering and the continuation_marker productions in PART 2).
@@ -175,11 +166,8 @@
          this question either, which is the same property PART 1 S4 already
          states for where the item ENDS (carve#1379).
 
-         WHAT THIS DOES NOT TOUCH is the INTERIOR blank of carve#326 C, and
-         that clause's own reason is the discriminator: a sibling after such a
-         fence "stays tight because no blank line actually separates the two
-         items". Content follows an interior blank before the marker, so
-         nothing stands between the items and the list stays tight --
+         An INTERIOR fence blank does not loosen the list: content follows it
+         before the sibling marker, so no blank line separates the items --
 
              - ```
                a
@@ -241,10 +229,6 @@
              +
              > q
 
-         This is a BREAK against released carve-js 0.1.3, which attached to the
-         boundary, and it is deliberate: the boundary reading is the same
-         absorb-flush-left-blocks-until-something-stops-you behavior that PART 1
-         S4 refuses one clause over.
          THE MARKER IS ONE OPERATION IN EVERY CONTAINER -- NORMATIVE
          (carve#1782). The clause above is the WHOLE definition of `+`:
          ownership of the next flush-left block passes to the container, and
@@ -331,13 +315,8 @@
          whitespace. This holds for EVERY block-level context that can hold
          block content: a LIST ITEM, a BLOCK QUOTE, a FOOTNOTE BODY (§16),
          a DEFINITION-LIST `dd`, and a block attached by a `+` CONTINUATION
-         MARKER (L3/L4) alike -- one rule, not five separate ones stated
-         per container. A future container that can hold block content is
-         covered by the same rule without a new clause here: enumerating
-         "which containers collect" was considered and rejected, because an
-         enumeration re-opens the question for every container invented
-         afterward and leaves a silent gap exactly where nobody has measured
-         yet.
+         MARKER (L3/L4) alike. A future container that can hold block content
+         is covered by the same rule.
 
          "No trace" is about OUTPUT, not about block structure -- it does
          not exempt a definition line from §10 I5, which already governs
@@ -527,11 +506,8 @@
       means what the HTML meant, and it cannot know that an extension generated
       it at all.
 
-      THE CONDITIONAL FORM IS REJECTED ON PURPOSE. Emitting the fence when the
-      extension is registered and the core form otherwise makes the importer's
-      output depend on its own configuration, which is the same defect with a
-      nicer surface: two runs of the same tool over the same input produce
-      different documents.
+      The importer MUST NOT choose the fence based on whether an extension is
+      registered; identical input produces the same core form.
 
       THE MATHML PATH WRITES NO TRAILING DELIMITER, for the reason the core
       form has none to write. Carve math is a PREFIX on a code span, so the

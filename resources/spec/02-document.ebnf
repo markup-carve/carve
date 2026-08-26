@@ -24,20 +24,16 @@ frontmatter = &(frontmatter_open, {content_line - frontmatter_close}, frontmatte
    run with NOTHING after it is not that slot: it is trailing whitespace on a
    content line, PART 2 drops it, and the bare `---` opener it leaves opens
    frontmatter. So `---<TAB>` and `---<SP><TAB>` are delimiters while
-   `---<TAB>yaml` is not, and the two clauses never overlap - which is why
-   neither needs an exception written into it to protect the other. The run is
+   `---<TAB>yaml` is not; the two clauses do not overlap. The run is
    PART 2's `whitespace`, spaces and tabs; a form feed or a no-break space is
    content, so `---<FF>` is not an opener. The same split governs the code
-   fence's slot at `fenced_code_block`, which is where it was first ruled
-   (carve#1285) and first ruled too widely: an implementation that refuses
-   BOTH positions has taken the separator half twice.
+   fence's slot at `fenced_code_block`; refusing BOTH positions takes the
+   separator half twice.
    CARDINALITY IS EXACTLY ONE, by ruling (carve#912): `---<SP><SP>yaml` is not
    a typed opener either, because the second space reaches
    `frontmatter_format`, which is letters and digits only. What is left is not
    a thematic break -- a break is a dash run and nothing else -- so the line is
-   ordinary paragraph text. All three engines and the executable spec accepted
-   a run here until the ruling; corpus 264 carries it with its one-space
-   control.
+   ordinary paragraph text.
    The closing delimiter is always a bare `---`. The token distinguishes a typed
    opener from a thematic break. *)
 frontmatter_open = "---", [space], [frontmatter_format], newline ;
@@ -79,4 +75,3 @@ block = heading
    (PART 9 §10, INVISIBLE CONSTRUCTS). *)
 
 blank_line = {whitespace}, newline ;
-

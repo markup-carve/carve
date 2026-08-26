@@ -155,13 +155,9 @@
          that reader. They are dropped in exactly two positions, leading and
          trailing on a line, which is where Carve drops whitespace too.
 
-      T3 PLAIN TEXT EMITS THEM, FOLLOWING MARKDOWN. This row is a JUDGEMENT
-         and is recorded as one rather than as a measurement: plain text is
-         a text SERIALIZATION rather than a terminal format, so it takes the
-         fidelity answer and not the device answer. If plain output turns
-         out to be piped to a terminal about as often as ANSI output is,
-         this row is the one to revisit, and revisiting it does not disturb
-         T2.
+      T3 PLAIN TEXT EMITS THEM, FOLLOWING MARKDOWN. Plain text is a text
+         SERIALIZATION rather than a terminal format, so it takes the fidelity
+         answer rather than the device answer.
 
       T4 ANSI STRIPS THEM. The terminal target removes every non-whitespace
          C0 control from text, code, math and URL values before emission.
@@ -250,11 +246,8 @@
    an option is configured there, and §1.5's admission sentence has been
    narrowed to say so.
 
-   WHAT THIS DOES NOT DO: it is not localization. There is no locale name and
-   no built-in table beyond the English defaults, because a locale table is
-   data an engine would then have to carry and keep current, and every host
-   that needs translated strings already has a catalog of its own. The map is
-   the seam to that catalog.
+   This is not a localization system: it defines no locale or built-in table
+   beyond the English defaults. The map is the seam to a host's catalog.
 
    AN IMPORTER DOES NOT BAKE A DERIVED NAME INTO SOURCE -- NORMATIVE
    (carve#1500). An HTML importer DROPS an attribute whose value EQUALS what

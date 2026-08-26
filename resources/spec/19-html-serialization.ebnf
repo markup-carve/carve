@@ -2,9 +2,7 @@
    PART 10: HTML SERIALIZATION CONVENTIONS (NORMATIVE)
    ============================================================================
 
-   The corpus pins exact bytes against the reference (carve-js); these
-   conventions state the rules a SECOND implementation (e.g. carve-php)
-   must follow to match WITHOUT copying carve-js output. On any
+   These conventions define the exact bytes the corpus pins. On any
    disagreement the corpus wins.
 
    1. ATTRIBUTE ORDER. Attributes serialize in the AUTHOR's source order
@@ -181,8 +179,7 @@
         `[x]{}`                  ->  `<span>x</span>`
         `[x]{onclick="e"}`       ->  `<span>x</span>`
 
-      The last two rows are the unchanged case and the reason the rule is
-      stated this way. PART 9 §25 is an ATTRIBUTE policy: it removes attributes
+      PART 9 §25 is an ATTRIBUTE policy: it removes attributes
       and never the element the author wrote, so a span with no semantic name
       renders its `<span>` whether or not anything survives hardening, and
       corpus `108-security-hardening-8` and `-10` pin those bytes. A semantic
@@ -251,10 +248,9 @@
       contract is `docs/extensions.md` §8: when it is enabled the four names
       behave exactly as §9's three do, under the same nesting order, the same
       value mapping for `dfn`, the same attribute riding, and the same
-      hardening. The extension additionally accepts the `:name[…]` spelling for
-      all seven names as a SOFT-DEPRECATED compatibility form, because
-      `:kbd[x]` was released behavior in carve-js and carve-rs; it is scheduled
-      for removal in 0.2 and the compact spelling is the one to write.
+      hardening. The extension accepts `:name[…]` for all seven names as a
+      soft-deprecated form scheduled for removal in 0.2; writers use the
+      compact spelling.
 
       A core implementation MUST NOT turn an arbitrary extension name into an
       HTML tag: outside `SemanticSpan`, every `:name[…]` keeps the generic

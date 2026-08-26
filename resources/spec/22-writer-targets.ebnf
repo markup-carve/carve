@@ -172,12 +172,8 @@
       or a title that distinguishes one block from another -- MUST NOT be
       silently discarded.
 
-      WHAT THIS CLAUSE DECIDES is where a table caption, a fence title and a
-      fence label go on the targets named below, and nothing else. It neither
-      restates the floor nor narrows it: a loss this clause does not name is
-      still a loss, and the floor still forbids it. Reading a construct/target
-      pair as CONFORMING because no rendering for it is written here inverts
-      the clause -- the pairs it leaves open are open, not allowed.
+      This clause decides only where the named text goes on the targets below.
+      Unnamed construct/target pairs remain open, not allowed by omission.
 
       T1 A FENCE'S TITLE AND LABEL RENDER THE WAY A DIV'S ALREADY DO. This
          clause writes down an existing rule rather than a new one. A fenced
@@ -242,11 +238,8 @@
       drop content the author wrote. It says nothing about the definition that
       IS referenced.
 
-      WHAT THIS CLAUSE DECIDES is where the definition LINE goes on those
-      three targets when the definition is consumed, and what the plain target
-      prints in its place. It neither restates the floor in
-      `docs/graceful-degradation.md` nor narrows it: a construct/target pair
-      this clause does not name is open rather than allowed.
+      This clause decides where the consumed definition line goes on those
+      three targets and what plain text emits. Unnamed pairs remain open.
 
       T1 MARKDOWN KEEPS THE LINE, and keeps the expansion beside it exactly as
          today. `*[TERM]: expansion` is the spelling PHP Markdown Extra uses
@@ -380,14 +373,9 @@
       on the page -- the two lists are ADJACENT for §10i's purposes, and
       §10i decides the run between them as if nothing had stood there.
 
-      WHAT THE RULE REPAIRS. A whitespace-only paragraph does two things at
-      once. It is not empty, so a writer tracking list adjacency treats it as a
-      block that separates the two lists and never writes PART 9 §11 N1a's
-      boundary; and it has no Carve spelling, so nothing of it reaches the
-      output. The lists come back with ONE blank line between them, which is
-      the loose separator, so they MERGE into one loose list. What is lost is a
-      document boundary rather than a blank line, and §1's
-      `to_html(fmt(x)) == to_html(x)` forbids it.
+      A whitespace-only paragraph has no Carve spelling, so it cannot separate
+      the emitted lists. Without this rule they return with one blank line and
+      merge into one loose list, violating §1.
 
       IT IS NOT A PARAGRAPH RULE. Any INTERCHANGE-ONLY block has this shape: a
       `figure` wrapping a `table` (PART 12 §17) is unspellable in the same

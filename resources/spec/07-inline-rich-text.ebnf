@@ -13,9 +13,8 @@ math_display = "$$", code_span ;
    parse a trailing attribute block and APPLY it to the math span, merging
    classes into the existing `math inline` / `math display` class
    (`<span class="math inline c">`); `#id` / `key=value` are applied too.
-   Canonical = carve-js / djot.js (pinned, corpus Math section). The
-   `{=format}` raw form is code-span-ONLY and is NOT inherited by math:
-   `$\`x\`{=html}` leaves the `{=html}` literal (both impls already agree).
+   The `{=format}` raw form is code-span-ONLY and is NOT inherited by math:
+   `$\`x\`{=html}` leaves the `{=html}` literal.
    The math content is the verbatim text of the reused code_span. *)
 
 (* --- Emphasis (left/right word-boundary rule; PART 9 §9 is normative).

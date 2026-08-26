@@ -231,9 +231,8 @@
 
            Definitions register only in the context selected by this table.
            In particular, a definition below one body's content column does
-           not register in that body merely because a paragraph used to be
-           open there; column zero belongs to the document or another surviving
-           ancestor and registers there.
+           not register in that body; column zero belongs to the document or
+           another surviving ancestor and registers there.
 
            COMMENTS ARE CLASSIFIED BEFORE BLOCK OWNERSHIP -- NORMATIVE
            (carve#1731). For each line, first honor any active code, raw or
@@ -455,8 +454,8 @@
                                b
                                tail
 
-        all fold `tail` into the paragraph the prose line opened, for the reason
-        `- a` / `tail` folds. The blocks before that paragraph are spent: they
+        all fold `tail` into the paragraph the prose line opened, as `- a` /
+        `tail` does. The blocks before that paragraph are spent: they
         answered S4 while they were the item's last block and stopped answering
         it when prose reopened one.
 
@@ -528,15 +527,11 @@
         marker line and a heading inside a quote. The line's position changes
         which container owns the heading, not whether the heading is a block.
 
-        WHAT THIS DOES NOT REACH, and both are unchanged. BELOW the content
-        column at a NONZERO column, the following line reaches the container
-        only through S4's lazy fold, and §24 C3's comment exception keeps that
-        path open: `- a` / `  %% c` / ` b` keeps `b` in the item. A line at
-        DOCUMENT column 0
-        is not below a column - it is AT the enclosing context's own block
-        position, the distinction C3 already draws for a definition. And a line
-        AT the content column after the block is the container's own second
-        paragraph, which it was before.
+        BELOW the content column at a NONZERO column, the following line still
+        reaches the container only through S4's lazy fold; §24 C3's comment
+        exception keeps that path open. DOCUMENT column 0 is instead the
+        enclosing context's block position, and a line AT the content column
+        after the block remains the container's second paragraph.
 
         THE BLOCK'S EXTENT IS THE DEFINITION'S, BLANK LINES AND ALL
         (carve#1363). A footnote definition may carry more than one block, and
@@ -725,20 +720,16 @@ frontmatter = &(frontmatter_open, {content_line - frontmatter_close}, frontmatte
    run with NOTHING after it is not that slot: it is trailing whitespace on a
    content line, PART 2 drops it, and the bare `---` opener it leaves opens
    frontmatter. So `---<TAB>` and `---<SP><TAB>` are delimiters while
-   `---<TAB>yaml` is not, and the two clauses never overlap - which is why
-   neither needs an exception written into it to protect the other. The run is
+   `---<TAB>yaml` is not; the two clauses do not overlap. The run is
    PART 2's `whitespace`, spaces and tabs; a form feed or a no-break space is
    content, so `---<FF>` is not an opener. The same split governs the code
-   fence's slot at `fenced_code_block`, which is where it was first ruled
-   (carve#1285) and first ruled too widely: an implementation that refuses
-   BOTH positions has taken the separator half twice.
+   fence's slot at `fenced_code_block`; refusing BOTH positions takes the
+   separator half twice.
    CARDINALITY IS EXACTLY ONE, by ruling (carve#912): `---<SP><SP>yaml` is not
    a typed opener either, because the second space reaches
    `frontmatter_format`, which is letters and digits only. What is left is not
    a thematic break -- a break is a dash run and nothing else -- so the line is
-   ordinary paragraph text. All three engines and the executable spec accepted
-   a run here until the ruling; corpus 264 carries it with its one-space
-   control.
+   ordinary paragraph text.
    The closing delimiter is always a bare `---`. The token distinguishes a typed
    opener from a thematic break. *)
 frontmatter_open = "---", [space], [frontmatter_format], newline ;
@@ -780,7 +771,6 @@ block = heading
    (PART 9 §10, INVISIBLE CONSTRUCTS). *)
 
 blank_line = {whitespace}, newline ;
-
 (* ============================================================================
    PART 2: BLOCK ELEMENTS
    ============================================================================ *)
@@ -879,20 +869,13 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
      - a leading-digit result is prefixed `s-` (a bare leading digit is a valid HTML
        id but an invalid CSS selector); an empty result becomes a generated `s-N`;
      - duplicates within a document get a numeric `-2`, `-3`, ... suffix.
-   An explicit {#id} is used verbatim (case preserved). Implementations MAY offer
-   OPT-IN, orthogonal transforms: lowercasing (carve-js `lowercaseHeadingIds`;
-   carve-php `LowercaseHeadingIdsExtension`; carve-rs `lowercase_heading_ids`) and
-   ASCII-folding for URL/CSS-fragment portability (carve-js `asciiHeadingIds`;
-   carve-php `AsciiHeadingIdsExtension`; carve-rs `ascii_heading_ids`). Neither is
-   the default. ASCII-folding has TWO modes, because a transliteration table
-   covers some scripts and not others: BEST-EFFORT keeps what it cannot map, so a
-   CJK heading still has a usable and unique anchor, and STRICT drops that residue
-   so the id is guaranteed to match `[0-9A-Za-z-]`. carve-js spells them `'fold'`
-   and `'strict'`, carve-rs `AsciiHeadingIds::Fold` and `::Strict`; carve-php's
-   extension is the STRICT one. The table itself is not normative -- what is, is
-   that the three engines carry the SAME table. Carve PRESERVES case, matching
-   djot.js / djot-php per #393; cross-references resolve case-insensitively
-   against the case-preserved id table. *)
+   An explicit {#id} is used verbatim (case preserved). Implementations MAY
+   offer OPT-IN, orthogonal lowercasing and ASCII-folding transforms; neither
+   is the default. ASCII-folding has TWO modes: BEST-EFFORT keeps characters
+   its shared transliteration table cannot map, while STRICT drops that residue
+   so the id matches `[0-9A-Za-z-]`. The table is not normative, but engines
+   MUST use the same table. Cross-references resolve case-insensitively against
+   the case-preserved id table. *)
 
 (* --- Thematic Breaks --- *)
 thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})), newline ;
@@ -1341,14 +1324,13 @@ definition_indent = whitespace, {whitespace} ;
    `block_base` is authored data, and a closer belongs to the base established
    by its opener.
 
-   MIGRATION. This changes released 0.1.3 documents whose over-indented literal
-   text begins with a block opener. A diagnostic SHOULD offer two safe fixes:
-   dedent to make the structural intent explicit, or escape the opener to keep
-   literal text. *)
+   A diagnostic for over-indented literal text that begins with a block opener
+   SHOULD offer two fixes: dedent for structural intent, or escape the opener
+   to keep literal text. *)
 (* The term marker is TWO colons. A single-colon `: term` line is NOT a
    definition list -- it is ordinary paragraph text. (Deliberate: djot uses a
    single colon, but `::` keeps the term marker distinct from the `:::` div
-   fence and from a stray `:` in prose; all three reference impls agree.)
+   fence and from a stray `:` in prose.)
 
    A definition body CONTINUES like a list item (PART 9 §17): a blank line
    followed by an indented block folds in (so a `<dd>` may hold multiple
@@ -1448,10 +1430,8 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
    A computed rowspan/colspan/alignment is authoritative, so an author copy of
    those keys is dropped.
 
-   WHY LAST, AND NOT BEFORE THE MARKERS. `|{#x}=R|` is a DATA cell whose
-   content begins with `=`, not an attributed header cell: once `=` has
-   committed the cell to header, everything after it is unambiguous, and one
-   order for both productions is what removes the ambiguity. *)
+   `|{#x}=R|` is a DATA cell whose content begins with `=`, not an attributed
+   header cell. Binding attributes after the markers removes that ambiguity. *)
 cell_attributes = attributes ;
 span_cell = rowspan_marker | colspan_marker ;
 
@@ -1802,10 +1782,7 @@ local_hard_break_block_open = colon_fence:open, space, backslash ;
    Third member of the sigil-fence family beside `line_block_open` and
    `local_hard_break_block_open`, and it takes the same REQUIRED space before
    its token; `:::>` is not an opener.
-   WHY A SIGIL AND NOT A KEYWORD: `::: quote` is already an admonition kind
-   rendering `<aside class="admonition quote">`, so the keyword is taken and
-   means something else. The `>` is unambiguous because it is already the
-   block-quote marker (markup-carve/carve#1718; jgm/djot#401).
+   `::: quote` remains an admonition kind; `>` selects the block quote.
    WHICH SPELLING AN AUTHOR USED is carried on the node as `fenced` (PART 12),
    because `carve fmt` must be able to write back what it read: normalizing
    one spelling to the other would rewrite documents no one asked to change.
@@ -1938,7 +1915,6 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
 
 format_name = "html" | "latex" | identifier ;
 raw_content = (* any content until closing fence *) ;
-
 (* --- Paragraphs --- *)
 (* A VISIBLE block (heading, quote, table, fence, thematic break,
    admonition/div) interrupts a paragraph with no blank line before it
@@ -2315,9 +2291,7 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    `[a]: /u {=}`. `x {#}` in a paragraph keeps its braces as text for the same
    reason.
 
-   THE COMPATIBILITY BREAK THIS ADDS, recorded: a definition line carrying an
-   unparseable attribute block stops defining. A VALID block still defines and
-   still transfers its attributes. *)
+   A valid block still defines and transfers its attributes. *)
 (* TRAILING ATTRIBUTES ON A DEFINITION -- NORMATIVE. A `{...}` block at the end
    of the definition line attaches to the DEFINITION, and PART 9R R1 already
    says what that means: the attributes transfer to every link OR IMAGE that
@@ -2520,7 +2494,6 @@ image_title = link_title ;
 (* A caption (`^ ` line) may follow a standalone image paragraph on the
    next line, wrapping it in a <figure> -- caption placement is PART 9 §4;
    there is no separate grammar production for the pair. *)
-
 (* --- Math (djot form; PART 9 §18) --- *)
 (* Inline `$` + a verbatim (backtick) span; display `$$` + a verbatim
    span. The backtick span removes ambiguity with a literal `$`, so
@@ -2536,9 +2509,8 @@ math_display = "$$", code_span ;
    parse a trailing attribute block and APPLY it to the math span, merging
    classes into the existing `math inline` / `math display` class
    (`<span class="math inline c">`); `#id` / `key=value` are applied too.
-   Canonical = carve-js / djot.js (pinned, corpus Math section). The
-   `{=format}` raw form is code-span-ONLY and is NOT inherited by math:
-   `$\`x\`{=html}` leaves the `{=html}` literal (both impls already agree).
+   The `{=format}` raw form is code-span-ONLY and is NOT inherited by math:
+   `$\`x\`{=html}` leaves the `{=html}` literal.
    The math content is the verbatim text of the reused code_span. *)
 
 (* --- Emphasis (left/right word-boundary rule; PART 9 §9 is normative).
@@ -3198,23 +3170,11 @@ unquoted_value = (letter | digit | '-' | '_' | '.' | ':')+ ;
    quote: `"a\"b"` -> the value `a"b`. *)
 quoted_value = '"', { escaped_char | (character - '"' - '\' - newline) }, '"'
              | "'", { escaped_char | (character - "'" - '\' - newline) }, "'" ;
-(* A QUOTED VALUE STOPS AT THE NEWLINE -- NORMATIVE (carve#888). `character`
-   is any Unicode character, so this production used to admit a line break
-   inside the quotes while `resources/carve-core.ohm` excluded one at the
-   same slot: ONE production, two normative answers, which is this ticket's
-   subject rather than a consequence of any other clause.
-
-   THE BLOCK-ATTRIBUTE LINE FOLLOWS, and that is the part with a cost.
+(* A QUOTED VALUE STOPS AT THE NEWLINE -- NORMATIVE (carve#888).
    `block_attributes` reads the same `quoted_value`, so a line break inside
    a quoted value ends that block too. A block attribute may still span
    lines: `continuation` is where a newline is admitted, and it sits
-   BETWEEN tokens, never inside one. Measured when this landed, on carve-js
-   `0c71c7d`, carve-php `d993758` and carve-rs `2d5de72`: all three accept
-   the block form, and they do not even agree on what it means -- carve-js
-   keeps the newline in the value, carve-php and carve-rs collapse it to a
-   space, which no production describes. Three engines improvising is what
-   an unstated rule looks like; the oracle already answers both forms the
-   narrowed way. carve-js#838, carve-php#986 and carve-rs#758 carry it. *)
+   BETWEEN tokens, never inside one. *)
 
 (* Block-level attributes appear on their own line(s) preceding a block.
    A single attribute block may span multiple physical lines (the `}`
@@ -3459,15 +3419,8 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    parser strips, before a scheme is read, and it is a SECURITY PROBE over a
    destination rather than a reading of the source.
 
-   WHY UNIFORM RATHER THAN PER CONSTRUCT. One definition maintained once
-   cannot drift; forty-two cannot help it. The alternative is not a second
-   coherent answer but a per-construct patchwork, since no artifact states
-   the wider set -- an implementation reaches one through its host language
-   (a default trim charlist, a regular-expression `\s`, a locale-aware class),
-   and those disagree with each other as readily as with the production. A
-   definition arrived at that way belongs to the host language and not to
-   Carve, which is the same objection this file already makes to the
-   executable artifacts deciding anything. (carve#963) *)
+   Constructs use this definition rather than a host language's trim,
+   regular-expression or locale-aware character class. *)
 whitespace = ' ' | '\t' ;
 space = ' ' ;
 newline = '\n' | '\r\n' | '\r' ;
@@ -4004,37 +3957,19 @@ EOF = (* end of file *) ;
          AN ESCAPE REACHES THE OTHER READING where a space cannot. `|\= a |`
          is a data cell whose content is a literal `= a`, unchanged here.
 
-         THE COST, STATED. This CHANGES released spellings: `|=a |` was a
-         header cell and is now a data cell, `|{#x}=R|` was an attributed
-         cell and is now literal text. Both REINTERPRET rather than error,
-         which is the outcome to be careful about. It is accepted on a `0.x`
-         line for one rule over three, and it ships WITH its migration: §6e's
-         canonical writer already emits a space after every prefix, so a
-         formatted document is already conformant, and the glued form is what
-         a linter can name.
+         `|=a |` and `|{#x}=R|` are data-cell content. §6e's writer emits a
+         space after every prefix.
 
          THE LINTER NAMES IT `table-marker-run-padding` -- NORMATIVE. One id
          for the whole run, because T11 is one rule for the whole run: it
          reports a glued kind marker, a glued alignment run and a glued
          attribute block alike, and `fmt --migrate` repairs any of them by
-         inserting the space. It SUPERSEDES `table-alignment-run-padding`,
-         which named the middle part only. A lint id is spec surface
-         (docs/validation.md carries the row), so it is agreed here BEFORE an
-         engine emits it.
+         inserting the space. It supersedes `table-alignment-run-padding`.
 
-   6. REFERENCE RESOLUTION -- FORMAL STATEMENT MOVED TO PART 9R (rules
-      R1-R3; this §-anchor stays for existing references). Summary: link
-      labels match case-sensitively after ASCII whitespace normalization
-      (PART 9R R1; corpus 78-reference-labels-are-case-sensitive); LAST link definition wins
-      vs FIRST footnote definition (deliberate asymmetry, §16); collapsed
-      references [text][] use their text as the label; abbreviations match
-      at word boundaries only; ALL definitions (link / footnote /
-      abbreviation / heading ids) are collected in the first pass (PART 8)
-      before inline resolution runs -- a definition after its use still
-      resolves; two-pass, O(n), not backtracking. Design Principle 2 ("no
-      dependency on later references") scopes to inline
-      tokenization/highlighting, which never needs the definition table;
-      semantic expansion (abbr, </#id> auto-text, [ref] targets) uses it.
+   6. REFERENCE RESOLUTION -- FORMAL STATEMENT MOVED TO PART 9R R1-R3; this
+      anchor remains for existing references. PART 8 collects all definitions
+      before resolution, including definitions after their uses. Link
+      definitions are LAST-wins while footnote definitions are FIRST-wins.
 
    7. MENTION/TAG BOUNDARIES
       - @ and # only start mentions/tags at word boundaries
@@ -4416,9 +4351,8 @@ EOF = (* end of file *) ;
          at any run length -- which is SS17's content-column model unchanged,
          and is why three blank lines before indented text still leave one
          loose item.
-         WHY THREE AND NOT TWO. Two fires on decoration -- generator output
-         and changelog spacing routinely spell two blank lines between
-         compatible sibling markers.
+         Two blank lines remain ordinary decorative spacing; three establish
+         the boundary.
       N2 ORDERED DIALECT. A list's dialect (decimal / lower- or upper-alpha
          / lower- or upper-roman) and delimiter are fixed by its FIRST
          item; a later marker outside the dialect, or with the other
@@ -4672,8 +4606,8 @@ EOF = (* end of file *) ;
         `abc-2`), and it is a valid `</#id>` crossref target. The one
         exception is the implicit `[Heading][]` reference index, which
         declines headings under a blockquote (PART 11 R1).
-        Consequence worth stating: when the `sections` option below is
-        off, the top-level shape becomes identical to this one, so id
+        When the `sections` option below is off, the top-level shape becomes
+        identical to this one, so id
         placement and attribute placement follow ONE rule everywhere in
         the document.
       - Empty document or doc with no headings: zero <section> elements
@@ -4983,17 +4917,8 @@ EOF = (* end of file *) ;
         crossref nests an <a> in an <a>; avoid footnotes in those positions.
 
    16a. THE ENGINE'S OWN WORDS ARE A RENDER OPTION -- NORMATIVE (carve#1456).
-      A renderer takes a `labels` map from key to string, carrying the strings
-      the ENGINE writes rather than the author. Today that is one key,
-      `footnoteBacklink` ("Back to reference"), which names §16's endnote
-      backlink. A caption's label is the author's word and is not in this map;
-      neither are the extension-written strings, which stay options on the
-      extensions that write them. Values are TEXT and are escaped at the point
-      of use - the `symbols` map's raw emission is deliberately not the model
-      here. An HTML importer does not bake one of these strings back into
-      source: it drops an attribute whose value equals what the renderer
-      derives and keeps every other (carve#1500). Stated in full below the
-      footnote clause.
+      The `labels` map, its core and extension keys, escaping, precedence and
+      importer behavior are defined in the full PART 9 §16a clause below.
 
    17. TIGHT vs LOOSE LISTS + CONTINUATION MARKER -- OPERATIONAL (governs
       `list` rendering and the continuation_marker productions in PART 2).
@@ -5060,11 +4985,8 @@ EOF = (* end of file *) ;
          this question either, which is the same property PART 1 S4 already
          states for where the item ENDS (carve#1379).
 
-         WHAT THIS DOES NOT TOUCH is the INTERIOR blank of carve#326 C, and
-         that clause's own reason is the discriminator: a sibling after such a
-         fence "stays tight because no blank line actually separates the two
-         items". Content follows an interior blank before the marker, so
-         nothing stands between the items and the list stays tight --
+         An INTERIOR fence blank does not loosen the list: content follows it
+         before the sibling marker, so no blank line separates the items --
 
              - ```
                a
@@ -5126,10 +5048,6 @@ EOF = (* end of file *) ;
              +
              > q
 
-         This is a BREAK against released carve-js 0.1.3, which attached to the
-         boundary, and it is deliberate: the boundary reading is the same
-         absorb-flush-left-blocks-until-something-stops-you behavior that PART 1
-         S4 refuses one clause over.
          THE MARKER IS ONE OPERATION IN EVERY CONTAINER -- NORMATIVE
          (carve#1782). The clause above is the WHOLE definition of `+`:
          ownership of the next flush-left block passes to the container, and
@@ -5216,13 +5134,8 @@ EOF = (* end of file *) ;
          whitespace. This holds for EVERY block-level context that can hold
          block content: a LIST ITEM, a BLOCK QUOTE, a FOOTNOTE BODY (§16),
          a DEFINITION-LIST `dd`, and a block attached by a `+` CONTINUATION
-         MARKER (L3/L4) alike -- one rule, not five separate ones stated
-         per container. A future container that can hold block content is
-         covered by the same rule without a new clause here: enumerating
-         "which containers collect" was considered and rejected, because an
-         enumeration re-opens the question for every container invented
-         afterward and leaves a silent gap exactly where nobody has measured
-         yet.
+         MARKER (L3/L4) alike. A future container that can hold block content
+         is covered by the same rule.
 
          "No trace" is about OUTPUT, not about block structure -- it does
          not exempt a definition line from §10 I5, which already governs
@@ -5412,11 +5325,8 @@ EOF = (* end of file *) ;
       means what the HTML meant, and it cannot know that an extension generated
       it at all.
 
-      THE CONDITIONAL FORM IS REJECTED ON PURPOSE. Emitting the fence when the
-      extension is registered and the core form otherwise makes the importer's
-      output depend on its own configuration, which is the same defect with a
-      nicer surface: two runs of the same tool over the same input produce
-      different documents.
+      The importer MUST NOT choose the fence based on whether an extension is
+      registered; identical input produces the same core form.
 
       THE MATHML PATH WRITES NO TRAILING DELIMITER, for the reason the core
       form has none to write. Carve math is a PREFIX on a code span, so the
@@ -5772,9 +5682,8 @@ EOF = (* end of file *) ;
 
    24. TABS AND INDENTATION -- FORMALIZED COLUMN ARITHMETIC (governs
       `indent` in PART 2 and every indentation-sensitive comparison; the
-      arithmetic PART 0's layout automaton runs on. Adjudicated with the
-      tab-stop work, carve #99 / Rule B carve #103; shipped in all three
-      implementations).
+      arithmetic PART 0's layout automaton runs on; carve #99 / Rule B carve
+      #103).
       C1 COLUMNS, NOT CHARACTERS. col advances by 1 for a space and to the
          next multiple of 4 for a tab (CommonMark tab stops; a leading tab
          indents to column 4). Outside indentation (code content, inline
@@ -5830,7 +5739,7 @@ EOF = (* end of file *) ;
                  ITEM either" while it does end the paragraph. So the line stays
                  in the item: a MARKER is at the item body's own column 0, where
                  C4 Rule B opens a list, and any other line begins the item's
-                 SECOND paragraph. All three engines answer both ways round.
+                 SECOND paragraph.
                - after a BLANK LINE, the item is already ended by the clause
                  above, so the branch is never reached at all.
 
@@ -6365,13 +6274,9 @@ EOF = (* end of file *) ;
          that reader. They are dropped in exactly two positions, leading and
          trailing on a line, which is where Carve drops whitespace too.
 
-      T3 PLAIN TEXT EMITS THEM, FOLLOWING MARKDOWN. This row is a JUDGEMENT
-         and is recorded as one rather than as a measurement: plain text is
-         a text SERIALIZATION rather than a terminal format, so it takes the
-         fidelity answer and not the device answer. If plain output turns
-         out to be piped to a terminal about as often as ANSI output is,
-         this row is the one to revisit, and revisiting it does not disturb
-         T2.
+      T3 PLAIN TEXT EMITS THEM, FOLLOWING MARKDOWN. Plain text is a text
+         SERIALIZATION rather than a terminal format, so it takes the fidelity
+         answer rather than the device answer.
 
       T4 ANSI STRIPS THEM. The terminal target removes every non-whitespace
          C0 control from text, code, math and URL values before emission.
@@ -6460,11 +6365,8 @@ EOF = (* end of file *) ;
    an option is configured there, and §1.5's admission sentence has been
    narrowed to say so.
 
-   WHAT THIS DOES NOT DO: it is not localization. There is no locale name and
-   no built-in table beyond the English defaults, because a locale table is
-   data an engine would then have to carry and keep current, and every host
-   that needs translated strings already has a catalog of its own. The map is
-   the seam to that catalog.
+   This is not a localization system: it defines no locale or built-in table
+   beyond the English defaults. The map is the seam to a host's catalog.
 
    AN IMPORTER DOES NOT BAKE A DERIVED NAME INTO SOURCE -- NORMATIVE
    (carve#1500). An HTML importer DROPS an attribute whose value EQUALS what
@@ -6628,17 +6530,9 @@ EOF = (* end of file *) ;
       linkDefs entry is unresolved and renders as literal source text; it
       does not fall through to the heading index at ANY spelling, folded
       or exact.
-      THE ASYMMETRY IS THE ONE THE PARAGRAPH ABOVE ALREADY GIVES: a
-      collapsed label is the author quoting prose from elsewhere in the
-      document, which is why its matching is loose, and an explicit label
-      is an identifier the author wrote twice and can keep identical,
-      which is why its matching is exact. An identifier that names nothing
-      names nothing; it is not retried as prose.
-      If the explicit form SHOULD reach the index, that is a deliberate
-      widening with its own clause, not a retrofit to the engines.
-      THE COMPATIBILITY BREAK, recorded: a document whose
-      `[text][Some Heading]` resolves today renders the bracketed run
-      literally instead.
+      A collapsed label quotes prose, so its matching is loose; an explicit
+      label is an identifier, so its matching is exact. An explicit identifier
+      that names nothing is not retried as heading prose and renders literally.
       ON THIS PATH THE LABEL ENTERS AS ITS RENDERED PLAIN TEXT, the same
       string kind the heading side already enters as. The index is keyed
       by the heading's rendered plain text, so `# *bold* heading` is
@@ -6761,11 +6655,8 @@ EOF = (* end of file *) ;
       from footnoteSeq, a definition it was the only use of stays
       unreferenced and is dropped by the sentence above, and no endnotes
       section is written on its account.
-      RESOLUTION ORDER IS NOT THE ANSWER. An implementation that numbers
-      footnotes before it knows whether the reference resolved counts the
-      discarded use, and the numbering then says so out loud. Which pass runs
-      first is a property of a pipeline rather than of the language, and
-      ratifying it would make an ordering artifact into a rule.
+      Footnotes are numbered only after the enclosing reference's resolution
+      outcome is known; pipeline pass order does not change that answer.
       WHAT IS COUNTED IS WHAT THE OUTPUT HOLDS, which decides the cases
       either side of this one the same way. A note in a reference that DOES
       resolve is an ordinary reference, because the resolved link text is
@@ -6857,9 +6748,7 @@ EOF = (* end of file *) ;
    PART 10: HTML SERIALIZATION CONVENTIONS (NORMATIVE)
    ============================================================================
 
-   The corpus pins exact bytes against the reference (carve-js); these
-   conventions state the rules a SECOND implementation (e.g. carve-php)
-   must follow to match WITHOUT copying carve-js output. On any
+   These conventions define the exact bytes the corpus pins. On any
    disagreement the corpus wins.
 
    1. ATTRIBUTE ORDER. Attributes serialize in the AUTHOR's source order
@@ -7036,8 +6925,7 @@ EOF = (* end of file *) ;
         `[x]{}`                  ->  `<span>x</span>`
         `[x]{onclick="e"}`       ->  `<span>x</span>`
 
-      The last two rows are the unchanged case and the reason the rule is
-      stated this way. PART 9 §25 is an ATTRIBUTE policy: it removes attributes
+      PART 9 §25 is an ATTRIBUTE policy: it removes attributes
       and never the element the author wrote, so a span with no semantic name
       renders its `<span>` whether or not anything survives hardening, and
       corpus `108-security-hardening-8` and `-10` pin those bytes. A semantic
@@ -7106,10 +6994,9 @@ EOF = (* end of file *) ;
       contract is `docs/extensions.md` §8: when it is enabled the four names
       behave exactly as §9's three do, under the same nesting order, the same
       value mapping for `dfn`, the same attribute riding, and the same
-      hardening. The extension additionally accepts the `:name[…]` spelling for
-      all seven names as a SOFT-DEPRECATED compatibility form, because
-      `:kbd[x]` was released behavior in carve-js and carve-rs; it is scheduled
-      for removal in 0.2 and the compact spelling is the one to write.
+      hardening. The extension accepts `:name[…]` for all seven names as a
+      soft-deprecated form scheduled for removal in 0.2; writers use the
+      compact spelling.
 
       A core implementation MUST NOT turn an arbitrary extension name into an
       HTML tag: outside `SemanticSpan`, every `:name[…]` keeps the generic
@@ -7254,19 +7141,13 @@ EOF = (* end of file *) ;
       refuses: the question is about the bytes the producer is about to emit,
       and a producer able to answer it is equally able to just emit the space.
 
-      WHAT THIS CLAUSE DOES NOT REACH, so that the division is not rediscovered
-      per report: a character that was TEXT in one of the blocks and becomes a
-      live delimiter once its neighbour is beside it is an ESCAPING question,
-      and §2 read through §1a already answers it -- the writer reads its own
-      OUTPUT, and escapes what would otherwise change the document. This clause
-      supplies the space and nothing else; §1b and §2 are answering two halves
-      of the same join.
+      A TEXT character that becomes a live delimiter after the join is instead
+      an ESCAPING question governed by §2 through §1a. This clause supplies the
+      space and nothing else.
 
-      REFUSING TO FLATTEN IS NOT AN ANSWER: the slot cannot hold blocks, so a
-      producer that refuses emits nothing where the author's document has
-      content. NEITHER IS ESCAPING THE COLLISION: `*a*\*b*` writes a character
-      the author did not, against §2's if-and-only-if, and an escape is
-      per-character where the defect is per-boundary.
+      The producer MUST flatten rather than omit the content. It MUST NOT write
+      an escape such as `*a*\*b*`: the defect is per-boundary, not
+      per-character, and §2 permits no invented character.
 
       WHAT IS NOT REQUIRED. The flatten need not be REVERSIBLE. Two paragraphs
       written into a caption come back as one paragraph and no spelling of the
@@ -7340,9 +7221,9 @@ EOF = (* end of file *) ;
       form emits meaning-bearing leading whitespace, which editors and
       pipelines strip. So the wrapper is lost EVERYWHERE.
 
-      WHY NOT REFUSE. Refusing would fail an editor's round trip on a tree the
-      renderer accepts, and `docs/html-import.md` already says this exit
-      REPORTS the loss rather than failing.
+      This exit REPORTS the wrapper loss rather than refusing the tree, as
+      `docs/html-import.md` requires, preserving an editor round trip through
+      trees the renderer accepts.
 
       THE WRAPPER IS STILL LOST, and this clause does not pretend otherwise. It
       bounds the loss TO the wrapper -- the content, its attributes and its
@@ -7449,15 +7330,13 @@ EOF = (* end of file *) ;
       sufficient. Two spellings that render alike are still two spellings, and
       removing that is what a CANONICAL writer is for.
 
-      These counterexamples render identically but re-parse to different ASTs
-      (carve#544):
+      These counterexamples render identically but re-parse to different ASTs:
 
-        source     written as    by        what changed
-        `* %%`     `* +`         carve-rs  a line comment became the
-                                           CONTINUATION MARKER (§17 L3) -- a
-                                           different construct with a body
-        `| %%%`    `| %% %`      carve-js  a comment-block fence (§28) split
-                                           into a line comment plus text
+        source     written as    what changed
+        `* %%`     `* +`         a line comment became the CONTINUATION MARKER
+                                 (§17 L3), a different construct with a body
+        `| %%%`    `| %% %`      a comment-block fence (§28) split into a line
+                                 comment plus text
 
       The second is also what §2's own THE UNIT IS THE OPENER paragraph
       forbids one layer down: `%%%` is an opener run, and half of it plus a
@@ -7560,26 +7439,19 @@ EOF = (* end of file *) ;
       than by a table -- so the writer cannot drift from the grammar as the
       grammar grows.
 
-      WHY THE COMPARISON IS DOCUMENT-SCOPED, FOR AN IMPLEMENTATION THAT USES
-      IT. A line re-parsed on its own has lost the document's link-reference
-      and footnote definitions, so a paragraph carrying `[text][ref]` comes
-      back with an empty destination and reports a difference escaping never
-      caused. Any comparison at a scope smaller than the document has that
-      defect, so W1 and W3 render and parse whole documents.
+      THE COMPARISON IS DOCUMENT-SCOPED. A smaller scope loses reference and
+      footnote definitions and can report differences escaping never caused,
+      so W1 and W3 render and parse whole documents.
 
       THAT IS NOT A REASON TO ESCALATE THE WHOLE DOCUMENT, and reading it as
       one is what §2b now forbids. Where the two parses differ, they differ
       SOMEWHERE, and W4 takes the conservative spelling only for the smallest
       unit that fails.
 
-      WHY THE TWO RENDERS ARE COMPARED WITH EACH OTHER, and not the minimal
-      render with the document being written. The writer is not required to be
-      AST-faithful for every construct: a table with a colspan, a doubled
-      alignment marker, some list-item attribute forms and one line-block shape
-      all re-parse to a DIFFERENT document while rendering identical HTML.
-      Comparing against the source document would inherit those defects and
-      break §1's idempotence for a reason that has nothing to do with
-      escaping.
+      THE TWO RENDERS ARE COMPARED WITH EACH OTHER, not with the source tree.
+      Some permitted writer forms re-parse to a different tree while rendering
+      identical HTML; comparing with the source would conflate those differences
+      with escaping.
 
    5. THE TWO SETS.
 
@@ -8236,12 +8108,9 @@ EOF = (* end of file *) ;
       terms, but M1a is stated anyway and is PERMANENT: for `*` the adjacency is
       the shape of the target rather than an accident of one document.
 
-      WHY ADJACENCY IS THE TEST THAT OWES NO PER-READER ARGUMENT. This target
-      answers to a re-parser Carve does not control, and there are several of
-      them, so an escape dropped is an argument owed once per reader. The
-      adjacency case owes none: every one of those readers resolves a delimiter
-      by RUN LENGTH, so an escape sitting next to a live delimiter of the same
-      character holds a run boundary apart under all of them at once.
+      ADJACENCY IS READER-INDEPENDENT: delimiter readers resolve by RUN LENGTH,
+      so an escape beside a live delimiter of the same character preserves the
+      run boundary for all of them.
 
       THE BOUNDARY IS THE CLAUSE, NOT A FLOOR. M1b is written as an
       if-and-only-if on purpose. An escape it drops is dropped and an escape
@@ -8441,12 +8310,8 @@ EOF = (* end of file *) ;
       or a title that distinguishes one block from another -- MUST NOT be
       silently discarded.
 
-      WHAT THIS CLAUSE DECIDES is where a table caption, a fence title and a
-      fence label go on the targets named below, and nothing else. It neither
-      restates the floor nor narrows it: a loss this clause does not name is
-      still a loss, and the floor still forbids it. Reading a construct/target
-      pair as CONFORMING because no rendering for it is written here inverts
-      the clause -- the pairs it leaves open are open, not allowed.
+      This clause decides only where the named text goes on the targets below.
+      Unnamed construct/target pairs remain open, not allowed by omission.
 
       T1 A FENCE'S TITLE AND LABEL RENDER THE WAY A DIV'S ALREADY DO. This
          clause writes down an existing rule rather than a new one. A fenced
@@ -8511,11 +8376,8 @@ EOF = (* end of file *) ;
       drop content the author wrote. It says nothing about the definition that
       IS referenced.
 
-      WHAT THIS CLAUSE DECIDES is where the definition LINE goes on those
-      three targets when the definition is consumed, and what the plain target
-      prints in its place. It neither restates the floor in
-      `docs/graceful-degradation.md` nor narrows it: a construct/target pair
-      this clause does not name is open rather than allowed.
+      This clause decides where the consumed definition line goes on those
+      three targets and what plain text emits. Unnamed pairs remain open.
 
       T1 MARKDOWN KEEPS THE LINE, and keeps the expansion beside it exactly as
          today. `*[TERM]: expansion` is the spelling PHP Markdown Extra uses
@@ -8649,14 +8511,9 @@ EOF = (* end of file *) ;
       on the page -- the two lists are ADJACENT for §10i's purposes, and
       §10i decides the run between them as if nothing had stood there.
 
-      WHAT THE RULE REPAIRS. A whitespace-only paragraph does two things at
-      once. It is not empty, so a writer tracking list adjacency treats it as a
-      block that separates the two lists and never writes PART 9 §11 N1a's
-      boundary; and it has no Carve spelling, so nothing of it reaches the
-      output. The lists come back with ONE blank line between them, which is
-      the loose separator, so they MERGE into one loose list. What is lost is a
-      document boundary rather than a blank line, and §1's
-      `to_html(fmt(x)) == to_html(x)` forbids it.
+      A whitespace-only paragraph has no Carve spelling, so it cannot separate
+      the emitted lists. Without this rule they return with one blank line and
+      merge into one loose list, violating §1.
 
       IT IS NOT A PARAGRAPH RULE. Any INTERCHANGE-ONLY block has this shape: a
       `figure` wrapping a `table` (PART 12 §17) is unspellable in the same
@@ -8706,9 +8563,7 @@ EOF = (* end of file *) ;
 
    A parsed document is exchangeable: an implementation MAY serialize its AST
    to JSON, and a consumer written against one implementation MUST be able to
-   read another's output. The engines' INTERNAL field names already differ for
-   the same node - one calls a link's destination `href`, another `destination`
-   - so three dialects were the default outcome rather than a risk.
+   read another's output.
 
    1. THE SHAPE IS carve-js's. It is the reference implementation and its AST
       is already plain data. An implementation whose internals differ MAPS on
@@ -8729,9 +8584,6 @@ EOF = (* end of file *) ;
       is ONE text node, not four. An implementation that splits a run wherever a
       delimiter failed to open emphasis publishes its parser's bookkeeping, not
       the document.
-
-      It also makes node-for-node comparison meaningful, which is the only way
-      an engine's divergence from the reference can be MEASURED.
 
       SCOPE. The rule is about `text` nodes only, and only about ADJACENCY
       within one parent's child list. It does not merge across an intervening
@@ -8759,10 +8611,8 @@ EOF = (* end of file *) ;
       the two distinct on the wire because an escape is authored form, and
       collapsing them would lose the distinction the type exists to carry.
 
-      The schema cannot express this: a JSON Schema has no way to forbid two
-      adjacent array entries of the same shape. It is checked by the shape
-      comparison in the conformance checker instead, which is why that check is
-      a gate rather than a report.
+      JSON Schema cannot forbid adjacent entries of the same shape, so the
+      conformance check enforces this rule as a gate.
 
    2. EVERY NODE IS AN OBJECT with a `type` holding the node-type identifier
       from profiles.md - the same snake_case strings PART 9 §8 already calls
@@ -8906,7 +8756,7 @@ EOF = (* end of file *) ;
         [click](javascript:alert(1))
 
       publishes `{"type":"link","href":"javascript:alert(1)"}` while every render
-      target blanks it, and all three engines already behave this way.
+      target blanks it.
 
       A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST -- NORMATIVE. The
       obligation is PART 9 section 25's URL-scheme denylist, and section 25 already says it
@@ -8981,13 +8831,8 @@ EOF = (* end of file *) ;
       the reversion does not happen, so the need does not arise: what the
       author wrote is a link, and it stays one.
 
-      WHY PRE-RESOLVE. Post-resolve makes `rawRef`'s stated purpose -- "so it
-      can be restored as literal text" -- unreachable, and `[x][]` cannot
-      survive a format cycle: the writer cannot reproduce a construct the tree
-      no longer carries, so PART 11's canonical writer would silently rewrite
-      one construct into another. Pre-resolve also keeps the distinction a
-      linter, a refactoring tool, or an editor round-tripping a file needs:
-      `[a][]` and `[a](#a)` are different things the author chose between.
+      PRE-RESOLVE preserves authored form through a format cycle: `[a][]` and
+      `[a](#a)` remain distinct constructs, and `rawRef` remains usable.
 
       WHAT IS STILL SERIALIZED. §5's rule is unchanged and is not in tension
       with this one: resolution RESULTS a consumer would otherwise have to
@@ -9031,8 +8876,7 @@ EOF = (* end of file *) ;
       breaking the chain -- the comparison is against the nearest ANCESTOR
       that has one.
 
-      A CONSEQUENCE, worth stating because it settled a question of its own:
-      a node whose content is not a contiguous slice of its own source MUST
+      A node whose content is not a contiguous slice of its own source MUST
       omit `pos` rather than publish a PARTIAL span. A `+` continuation cell
       joined from three source lines has no offset pair that equals its value,
       and a span covering only the first fragment leaves the cell's own text
@@ -9176,8 +9020,8 @@ EOF = (* end of file *) ;
       container whose span covers it is covering source nothing in it owns.
       (carve#1524.)
 
-      A `definition_list` IS NOT AN EXCEPTION -- NORMATIVE, and it is named
-      because it used to be one. It has no closer, so it ends at its last
+      A `definition_list` IS NOT AN EXCEPTION -- NORMATIVE. It has no closer,
+      so it ends at its last
       placed `definition_term` or `definition_description` like every other
       closerless container:
 
@@ -9413,12 +9257,9 @@ EOF = (* end of file *) ;
       literal space (see the note at `abbreviation_definition`), and the marker
       line "is preserved as text" there too. The rule is reused, not invented.
 
-      WHY ABBREVIATIONS AND NOT FOOTNOTES. An abbreviation is the only
-      definition kind with NO marker at the use site: it rewrites EVERY
-      occurrence of the term in the whole document, with nothing at the use
-      site to point back at the definition. Hoisting is safe for a definition
-      that is inert until referenced and unsafe for one that acts on its own,
-      and a container is exactly where quoted and foreign material lives.
+      Unlike footnotes, abbreviations have no use-site marker and rewrite every
+      occurrence of the term. They are therefore recognized only at document
+      level, leaving quoted or foreign container content inert.
 
       THE FORMATTER CONSEQUENCE IS ACCEPTED, NOT OVERLOOKED. Hoisting means
       PART 11's writer emits the definition after the container the author
@@ -9544,12 +9385,9 @@ EOF = (* end of file *) ;
       at all, it is paragraph text, and nothing is hoisted because nothing was
       collected.
 
-      WHY A NODE AND NOT A ROOT MAP. §4 requires every node except the root to
-      carry `pos`, and a root FIELD cannot carry one, while a definition is a
-      source construct occupying real bytes that an editor jumps to and a
-      language server renames. A node also answers "which definition wins" by
-      document order rather than by merge order, and holds its own attributes
-      without a second rule.
+      A node carries the definition's required `pos`, attributes and document
+      order, so document order rather than merge order decides which definition
+      wins; a root map cannot represent those properties directly.
 
       A DEFINITION IS STILL INVISIBLE IN HTML. The node renders nothing on that
       target; it feeds the links and images that resolve its label (PART 9R R1).
@@ -9668,8 +9506,7 @@ EOF = (* end of file *) ;
 
       A `srcByteLength` THAT IS PRESENT BUT WRONG IS NOT THIS CLAUSE'S
       BUSINESS. It is derivable from the payload and nothing in the tree
-      depends on it, so all three engines ignore its value; that stays true and
-      is deliberate rather than unnoticed. (a) is about the field's PRESENCE,
+      depends on it, so readers ignore its value. (a) is about its PRESENCE,
       and (d) does not reach it either -- the schema constrains the field's
       TYPE and sign, not whether the number is the right one.
 
@@ -9953,9 +9790,7 @@ EOF = (* end of file *) ;
 
       NO RENDERED OUTPUT MOVES ON ANY TARGET. The node renders nothing where it
       sits; the entry's text renders in the references list the extension
-      builds, exactly as it did before. That is why the divergence survived so
-      long: HTML is identical whichever way an engine behaves, so no corpus
-      fixture could see it, and the pin has to be an AST-level assertion.
+      builds. Conformance is asserted at the AST level.
 
       TIER-2, SO THE NODE EXISTS ONLY WHERE CITATIONS ARE ENABLED. With the
       extension off, `[@key]: entry` is not a citation definition and it is not
@@ -10084,7 +9919,7 @@ EOF = (* end of file *) ;
       U+0000 out of the content class on that basis. An AST is a second door
       into the same renderers; it takes the same doormat.
 
-      A READER DOES NOT REFUSE THE VALUE, which is the choice worth stating.
+      A READER DOES NOT REFUSE THE VALUE.
       §11 and §12 refuse an unknown property and a deviant root, because those
       are structure a producer got wrong. This is different: the replacement is
       what the parse boundary already does to the identical string, so
@@ -10104,26 +9939,20 @@ EOF = (* end of file *) ;
       carries `start: 1`, the encoder MUST NOT re-emit it: the field is dropped,
       and every tree the implementation publishes matches the documented shape.
 
-      §6 GIVES NO COVER TO PRESERVING IT. The round trip §6 promises is scoped
-      to `parse(x)` -- a parsed tree, which never carries `start: 1`, and which
-      all three engines already comply with. Reading §6 as "JSON to JSON is an
-      identity" extends it past what it says, onto a payload no parser produced.
-      An editor, a patch tool or a hand-built payload can hand an encoder the
-      value; §6 never promised to hand it back.
+      §6's round trip is scoped to `parse(x)`, whose tree never carries
+      `start: 1`; it does not promise JSON-to-JSON identity for an ingested
+      payload no parser produced.
 
       THE DECIDING ASYMMETRY IS THAT NORMALIZING IS LOSSLESS. `start: 1` and no
       `start` describe the same document, so nothing an author wrote is
       discarded, while preserving the value makes the encoder's output depend
       on WHERE THE TREE CAME FROM.
 
-      REFUSING THE PAYLOAD IS NOT THE ANSWER, though §11 refuses an unnamed
-      property and §12 refuses a deviant root. `start` is a property the schema
-      NAMES, and its value is in range; what is out of contract is only that the
-      value happens to be the default.
+      The encoder accepts this payload: `start` is schema-named and in range;
+      only its default value is non-canonical.
 
-      WHAT THE RULE IS NOT. It is not "drop `start` always". `start: 0` and
-      `start: 2` are carried through unchanged, and an implementation that
-      drops them has broken the field rather than normalized it.
+      This does not drop `start` generally: `start: 0` and `start: 2` pass
+      through unchanged.
 
    23. A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH -- NORMATIVE
       (carve#1784; PART 9R R7 owns the phase, this clause owns the wire).

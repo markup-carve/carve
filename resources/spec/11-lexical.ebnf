@@ -179,15 +179,8 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    parser strips, before a scheme is read, and it is a SECURITY PROBE over a
    destination rather than a reading of the source.
 
-   WHY UNIFORM RATHER THAN PER CONSTRUCT. One definition maintained once
-   cannot drift; forty-two cannot help it. The alternative is not a second
-   coherent answer but a per-construct patchwork, since no artifact states
-   the wider set -- an implementation reaches one through its host language
-   (a default trim charlist, a regular-expression `\s`, a locale-aware class),
-   and those disagree with each other as readily as with the production. A
-   definition arrived at that way belongs to the host language and not to
-   Carve, which is the same objection this file already makes to the
-   executable artifacts deciding anything. (carve#963) *)
+   Constructs use this definition rather than a host language's trim,
+   regular-expression or locale-aware character class. *)
 whitespace = ' ' | '\t' ;
 space = ' ' ;
 newline = '\n' | '\r\n' | '\r' ;

@@ -134,19 +134,13 @@
       refuses: the question is about the bytes the producer is about to emit,
       and a producer able to answer it is equally able to just emit the space.
 
-      WHAT THIS CLAUSE DOES NOT REACH, so that the division is not rediscovered
-      per report: a character that was TEXT in one of the blocks and becomes a
-      live delimiter once its neighbour is beside it is an ESCAPING question,
-      and §2 read through §1a already answers it -- the writer reads its own
-      OUTPUT, and escapes what would otherwise change the document. This clause
-      supplies the space and nothing else; §1b and §2 are answering two halves
-      of the same join.
+      A TEXT character that becomes a live delimiter after the join is instead
+      an ESCAPING question governed by §2 through §1a. This clause supplies the
+      space and nothing else.
 
-      REFUSING TO FLATTEN IS NOT AN ANSWER: the slot cannot hold blocks, so a
-      producer that refuses emits nothing where the author's document has
-      content. NEITHER IS ESCAPING THE COLLISION: `*a*\*b*` writes a character
-      the author did not, against §2's if-and-only-if, and an escape is
-      per-character where the defect is per-boundary.
+      The producer MUST flatten rather than omit the content. It MUST NOT write
+      an escape such as `*a*\*b*`: the defect is per-boundary, not
+      per-character, and §2 permits no invented character.
 
       WHAT IS NOT REQUIRED. The flatten need not be REVERSIBLE. Two paragraphs
       written into a caption come back as one paragraph and no spelling of the
@@ -220,9 +214,9 @@
       form emits meaning-bearing leading whitespace, which editors and
       pipelines strip. So the wrapper is lost EVERYWHERE.
 
-      WHY NOT REFUSE. Refusing would fail an editor's round trip on a tree the
-      renderer accepts, and `docs/html-import.md` already says this exit
-      REPORTS the loss rather than failing.
+      This exit REPORTS the wrapper loss rather than refusing the tree, as
+      `docs/html-import.md` requires, preserving an editor round trip through
+      trees the renderer accepts.
 
       THE WRAPPER IS STILL LOST, and this clause does not pretend otherwise. It
       bounds the loss TO the wrapper -- the content, its attributes and its
@@ -329,15 +323,13 @@
       sufficient. Two spellings that render alike are still two spellings, and
       removing that is what a CANONICAL writer is for.
 
-      These counterexamples render identically but re-parse to different ASTs
-      (carve#544):
+      These counterexamples render identically but re-parse to different ASTs:
 
-        source     written as    by        what changed
-        `* %%`     `* +`         carve-rs  a line comment became the
-                                           CONTINUATION MARKER (§17 L3) -- a
-                                           different construct with a body
-        `| %%%`    `| %% %`      carve-js  a comment-block fence (§28) split
-                                           into a line comment plus text
+        source     written as    what changed
+        `* %%`     `* +`         a line comment became the CONTINUATION MARKER
+                                 (§17 L3), a different construct with a body
+        `| %%%`    `| %% %`      a comment-block fence (§28) split into a line
+                                 comment plus text
 
       The second is also what §2's own THE UNIT IS THE OPENER paragraph
       forbids one layer down: `%%%` is an opener run, and half of it plus a
@@ -440,26 +432,19 @@
       than by a table -- so the writer cannot drift from the grammar as the
       grammar grows.
 
-      WHY THE COMPARISON IS DOCUMENT-SCOPED, FOR AN IMPLEMENTATION THAT USES
-      IT. A line re-parsed on its own has lost the document's link-reference
-      and footnote definitions, so a paragraph carrying `[text][ref]` comes
-      back with an empty destination and reports a difference escaping never
-      caused. Any comparison at a scope smaller than the document has that
-      defect, so W1 and W3 render and parse whole documents.
+      THE COMPARISON IS DOCUMENT-SCOPED. A smaller scope loses reference and
+      footnote definitions and can report differences escaping never caused,
+      so W1 and W3 render and parse whole documents.
 
       THAT IS NOT A REASON TO ESCALATE THE WHOLE DOCUMENT, and reading it as
       one is what §2b now forbids. Where the two parses differ, they differ
       SOMEWHERE, and W4 takes the conservative spelling only for the smallest
       unit that fails.
 
-      WHY THE TWO RENDERS ARE COMPARED WITH EACH OTHER, and not the minimal
-      render with the document being written. The writer is not required to be
-      AST-faithful for every construct: a table with a colspan, a doubled
-      alignment marker, some list-item attribute forms and one line-block shape
-      all re-parse to a DIFFERENT document while rendering identical HTML.
-      Comparing against the source document would inherit those defects and
-      break §1's idempotence for a reason that has nothing to do with
-      escaping.
+      THE TWO RENDERS ARE COMPARED WITH EACH OTHER, not with the source tree.
+      Some permitted writer forms re-parse to a different tree while rendering
+      identical HTML; comparing with the source would conflate those differences
+      with escaping.
 
    5. THE TWO SETS.
 

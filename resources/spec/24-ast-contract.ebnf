@@ -89,12 +89,9 @@
       literal space (see the note at `abbreviation_definition`), and the marker
       line "is preserved as text" there too. The rule is reused, not invented.
 
-      WHY ABBREVIATIONS AND NOT FOOTNOTES. An abbreviation is the only
-      definition kind with NO marker at the use site: it rewrites EVERY
-      occurrence of the term in the whole document, with nothing at the use
-      site to point back at the definition. Hoisting is safe for a definition
-      that is inert until referenced and unsafe for one that acts on its own,
-      and a container is exactly where quoted and foreign material lives.
+      Unlike footnotes, abbreviations have no use-site marker and rewrite every
+      occurrence of the term. They are therefore recognized only at document
+      level, leaving quoted or foreign container content inert.
 
       THE FORMATTER CONSEQUENCE IS ACCEPTED, NOT OVERLOOKED. Hoisting means
       PART 11's writer emits the definition after the container the author
@@ -220,12 +217,9 @@
       at all, it is paragraph text, and nothing is hoisted because nothing was
       collected.
 
-      WHY A NODE AND NOT A ROOT MAP. §4 requires every node except the root to
-      carry `pos`, and a root FIELD cannot carry one, while a definition is a
-      source construct occupying real bytes that an editor jumps to and a
-      language server renames. A node also answers "which definition wins" by
-      document order rather than by merge order, and holds its own attributes
-      without a second rule.
+      A node carries the definition's required `pos`, attributes and document
+      order, so document order rather than merge order decides which definition
+      wins; a root map cannot represent those properties directly.
 
       A DEFINITION IS STILL INVISIBLE IN HTML. The node renders nothing on that
       target; it feeds the links and images that resolve its label (PART 9R R1).
@@ -344,8 +338,7 @@
 
       A `srcByteLength` THAT IS PRESENT BUT WRONG IS NOT THIS CLAUSE'S
       BUSINESS. It is derivable from the payload and nothing in the tree
-      depends on it, so all three engines ignore its value; that stays true and
-      is deliberate rather than unnoticed. (a) is about the field's PRESENCE,
+      depends on it, so readers ignore its value. (a) is about its PRESENCE,
       and (d) does not reach it either -- the schema constrains the field's
       TYPE and sign, not whether the number is the right one.
 
