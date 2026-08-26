@@ -253,6 +253,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A colon followed by only whitespace is not a description** (carve#1832,
+  carve#1830, PART 2 MARKER REQUIRES CONTENT). The description marker joins the
+  clause's enumeration, so `:`, `: `, a tab-separated `:` and the bare marker are
+  one document, and the executable spec stopped leaking a folded line's trailing
+  run into the `<dt>`. Spec-ahead of the engines: carve-php already read it this
+  way, carve-js (markup-carve/carve-js#1561) and carve-rs
+  (markup-carve/carve-rs#1452) did not, and corpus 439's four whitespace
+  spellings are declared pin drift until the pin moves past the carve-js fix.
 - **The continuation marker's column gate reaches every container**
   (carve#1817, carve#1814, PART 9 §17 L3). A footnote body, a definition
   description and a block quote refuse a payload that is not flush-left,
