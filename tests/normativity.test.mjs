@@ -153,6 +153,19 @@ test('the citation scan reaches every kind of file that can carry one', () => {
 test('grammar.ebnf declares the normativity policy', () => {
   assert.match(grammar, /\bNORMATIVITY\b/)
   assert.match(grammar, /NORMATIVE specification of\s+Carve/)
+  assert.match(grammar, /docs\/spec-history\.md records retired readings/)
+})
+
+test('volatile implementation history stays outside the normative grammar', () => {
+  for (const heading of [
+    'IMPLEMENTATION STATUS',
+    'HISTORY.',
+    'MEASURED, AT THE CAP',
+    'ALL THREE ENGINES LAND IT',
+    'ALL THREE ENGINES ALREADY DO THIS',
+  ]) {
+    assert.ok(!grammar.includes(heading), `${heading} belongs in docs/spec-history.md`)
+  }
 })
 
 test('the section index finds a plausible set for every sectioned PART', () => {

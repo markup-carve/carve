@@ -57,6 +57,9 @@
      PART 9R are the authority for behavior the productions cannot encode.
    - docs/case-study/syntax.md and docs/edge-cases.md are EXPLANATORY and
      DERIVED — prose for humans, non-normative.
+   - docs/spec-history.md records retired readings, implementation divergence,
+     compatibility measurements and decision archaeology. Those facts may
+     explain a current rule but do not belong inside its normative algorithm.
    - resources/examples/*.md and the generated tests/corpus/* pairs are the
      CONFORMANCE CONTRACT: every example is checked against the reference
      implementation in CI. A spec change is not real until a corpus pair
@@ -83,15 +86,6 @@
      raise against this file, not a divergence to record against the
      engines.
 
-     WHY. The checkers have been wrong, and while they were, they were
-     quietly the language: carve#645 leaked the layout automaton's internal
-     lazy frame into code text, and in carve#646 the executable spec was a
-     FOURTH answer where three engines already disagreed. An artifact that
-     can be wrong cannot also be the arbiter of what is right. The same
-     failure has a cross-repo shape: a satellite graded its grammar against
-     a pinned engine rather than against the corpus, and reported nine
-     grammar defects that were the pin being three weeks stale
-     (tree-sitter-carve#160).
    - WHAT EARNS A CLAUSE is a process rule rather than a language rule, so it
      lives in .github/CONTRIBUTING.md and not here. In short: a new clause
      needs an author-visible document or a visible rendering difference, and a
@@ -112,13 +106,7 @@
    automaton instead of prose. The three engine implementations realize
    this automaton literally.
 
-   INPUT.  Lines, split on `newline` -- '\n', '\r\n' OR a lone '\r', as that
-           production defines it below. This line used to spell the set out as
-           ('\n' | '\r\n'), omitting the lone carriage return the production
-           includes, so the automaton's own INPUT description and the token it
-           consumes disagreed. All three engines split on a lone '\r' (carve#872).
-           Naming the production rather than restating it is what keeps the two
-           from drifting again.
+   INPUT.  Lines, split on `newline` as that production defines it below.
 
            A LEADING BYTE ORDER MARK IS STRIPPED -- NORMATIVE. A single U+FEFF
            at the very start of the document is removed before the first line
@@ -127,11 +115,6 @@
            character, which this file already says of a destination ("ZERO-WIDTH
            characters (U+200B, U+FEFF) are NOT whitespace and ARE ordinary
            destination characters").
-
-           Stated because all three engines did it and none of them said so.
-           The executable spec did NOT, and rendered the heading as a paragraph
-           - a divergence no corpus document could see, because none carried a
-           BOM (carve#872).
 
            A NULL IS REPLACED BEFORE THE FIRST LINE IS READ -- NORMATIVE.
            Every U+0000 in the source becomes U+FFFD REPLACEMENT CHARACTER,
@@ -142,21 +125,8 @@
            and for the same kind of reason as the mark above -- a document is
            read over the OUTPUT of this layer, not over the bytes as authored.
 
-           EVERY occurrence, not only a leading one, which is where it differs
-           from the mark. A NUL is not a character an author writes and means;
-           it is what a truncated read, a C string or a mangled encoding
-           leaves behind, and CommonMark 2.3 replaces it for that reason. The
-           replacement is ONE codepoint for one, so unlike the stripped mark
-           it moves no offset: a position reported against the transformed
-           source is the position in the source, and `tests/ast-positions`
-           needs no waiver for it (the reason carve#876 blocks a BOM'd corpus
-           document and does not block this one).
-
-           Stated for the same reason as the mark: all three engines do it --
-           carve-js calls it "decided cross-impl behavior; WHATWG-style" --
-           and none of them said so, while the executable spec did not do it
-           at all and emitted the raw NUL. No corpus document carried the byte,
-           so neither behavior was pinned. One does now (carve#1523).
+           EVERY occurrence is replaced. One U+0000 becomes one U+FFFD, so the
+           transform does not change source offsets (carve#1523).
 
            Column arithmetic is PART 9 §24 C1. A TAB IS SYNTAX ONLY IN THE
            LEADING RUN (PART 7).
@@ -266,17 +236,6 @@
            open there; column zero belongs to the document or another surviving
            ancestor and registers there.
 
-           TERMINOLOGY IN THE HISTORICAL CASE NOTES BELOW. Earlier clauses
-           often abbreviate a transition as "the paragraph is open, so the
-           container survives" or "no paragraph is open, so it closes". After
-           carve#1730 those phrases describe the correlated leaf result, not
-           the ownership decision. Formally they mean, respectively, "the
-           preceding ordinary boundary stored a continuation claim, then its
-           paragraph continued" and "no continuation claim selected that
-           frame, so the column owner was an ancestor". This state definition
-           and table take precedence over that shorthand; no later example may
-           reverse the dependency.
-
            COMMENTS ARE CLASSIFIED BEFORE BLOCK OWNERSHIP -- NORMATIVE
            (carve#1731). For each line, first honor any active code, raw or
            other opaque payload. Decode the active container prefix and
@@ -357,15 +316,6 @@
         while `- > q` / `lazy` FOLDS, because the ordinary quoted line stored
         a continuation claim whose selected leaf is an open paragraph. The
         owner is selected before that leaf is continued.
-
-        Three engines gave three answers here and the reference is not among
-        the right ones: carve-js and carve-php keep `X` inside the item,
-        carve-rs closes it, and carve-php additionally treats `|` unlike every
-        other character (carve-php#683). The executable spec in scripts/spec
-        also keeps it inside, so THIS repository's implementation moves too --
-        recorded rather than glossed, because a rule whose own reference
-        implementation does not follow it is worth flagging when it lands, not
-        when someone next reads it. (carve#561, carve#572)
 
         THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST BLOCK -- NORMATIVE
         (carve#1280). The clause above is spelled with an empty quote, which
@@ -4351,54 +4301,11 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    not padding. `code_fence_info`'s and the admonition opener's metadata
    slots are spelled `space+` and take a run.
 
-   THE FOUR ARE NARROW BY RULING, not by accident (carve#912). carve-js,
-   carve-php, carve-rs AND the executable spec all accepted a run at all
-   four, so this was not an engine divergence: four artifacts agreed with
-   each other and disagreed with the written cardinality, and this file and
-   carve-core.ohm each carried a comment deferring the question to the other.
-   That deadlock is what precedence exists to break -- see NORMATIVITY: the
-   production is the language and the ohm file is derived, so a split of this
-   shape now has an answer before anyone measures anything. The
-   productions were held right and the four artifacts narrow. The cost is
-   recorded so it is not re-litigated: every document with two spaces at one
-   of those slots reparses.
-
-   This is deliberately the OPPOSITE call from the one carve#905 made, and
-   the two are about different things. carve#905 settled WHICH character a
-   slot admits (a space, never a tab) and left HOW MANY alone; this settles
-   HOW MANY, and settles it tight. A MARKER SEPARATOR's cardinality is
-   settled the other way again, at the three definition markers, and for a
-   reason stated there: a separator is a different position from a padding
-   slot (carve#892).
-
-   RECONCILED SINCE, and it is the one that reversed goldens. The INLINE
-   attribute block's interior spelled its padding `whitespace` and was
-   corrected under carve#906; `attributes` now reads `attr_pad = {space}`
-   and `attribute_list` separates with `space+`. Unlike the table cells
-   below, this one WAS observable: corpus 252, 252-2 and 252-3 pinned the
-   tab forms and all three engines produced them, so the three documents
-   were rewritten to the narrowed answer rather than added to. The
-   block-attribute LINE deliberately did not move with it - see THE INLINE
-   INTERIOR IS SPACE-ONLY beside `attributes` in PART 4 for why a
-   continuation line's leading run is indentation rather than padding.
-
-   RECONCILED SINCE. The five table-cell productions (`delimiter_cell`,
-   `header_cell`, `data_cell`, `rowspan_marker`, `colspan_marker`) spelled
-   inline padding `whitespace` for the same reason and were corrected under
-   carve#904; see TABLE-CELL PADDING beside them in PART 4. That correction
-   was not a revert: no corpus document carried a tab in a table row and all
-   three engines accepted one, so narrowing the production alone would have
-   been unobservable. Corpus 256 and `tests/separator-role-split.test.mjs`
-   carry it instead. All three engines are behind it: measured on carve-js,
-   carve-php and carve-rs main, every tab form of every slot renders
-   byte-identical to its space form.
-
-   HISTORY. carve#878 split the two roles apart and widened every padding slot
-   to `whitespace`, on the reading that a slot carrying no recognition could
-   admit a tab harmlessly. carve#901 corrects that reading: the question is
-   not what a slot recognizes but WHERE it sits, and every padding slot named
-   above sits inline. Engines that accept a tab in one of them today diverge
-   from the production. *)
+   The four single-space slots are narrow by ruling (carve#912). This decides
+   cardinality only. Character membership remains the space-only inline rule
+   of carve#901 and carve#905, while marker separators use the cardinality
+   declared by their own productions (carve#892). Attribute and table-cell
+   padding follow the same inline rule (carve#904, carve#906). *)
 
 (* ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT -- NORMATIVE. The three
    terminals below are the whole of it, and nothing in the language adds to
@@ -5664,41 +5571,9 @@ EOF = (* end of file *) ;
       (A fence-shaped line in TEXT is a different problem, answered by PART 11
       §5's escaping rather than by this width.)
 
-      WHAT THAT BUYS IS PAID FOR IN BYTES, quadratically, where the content is
-      linear. A nest d containers deep spends sum(3..d+2) colons on its openers
-      and the same again on its closers -- d^2 + 5d bytes of fence marker. At
-      d = 3, the depth this file's own examples use, that is 24 bytes.
-
-      MEASURED, AT THE CAP AND NOWHERE ELSE. Over the corpus of 1367 documents
-      at spec f6af10f9, `182-openers-past-the-nesting-cap-are-one-paragraph` is
-      2,032 source bytes, and the canonical form its `.fmt` sidecar pins is
-      42,435 -- a 20.9x expansion, of which 41,012 bytes, 96.6% of the output,
-      are colons. Its widest fence is 202 colons at MAX_NESTING_DEPTH = 200
-      (§25), and the arithmetic closes exactly: 2 x sum(3..202) = 41,000, plus
-      the 12 colons of the three OVER-CAP openers, which degraded to paragraph
-      text and kept the width the author typed.
-
-      READ THAT NUMBER AT THE DOCUMENT THAT PRODUCED IT. `182` exists to sit AT
-      the cap and is adversarial by construction -- 203 openers and one word of
-      content -- so 21x is the WORST case of this rule and not a typical one.
-      The ratio falls off with the depth it squares: a three-deep container in
-      ordinary prose pays those 24 bytes. A property measured only at the cap
-      has to be labeled as such, or the number reads as the common case.
-
-      THE TRADE WAS PRICED AND KEPT (carve#1553). The alternative a reader
-      reaches for first -- the narrowest fence that does not collide with the
-      content -- needs a subtree scan per fence and moves canonical output for
-      EVERY nested-container document. Widening only where a collision actually
-      exists is the more interesting one and it is unmeasured: whether the
-      writer can know that without a separate pass is what decides whether it
-      is cheaper at all. Neither was worth a corpus-wide churn to improve a
-      case nobody authors, and nothing is slow because of the widening today --
-      the complaint that surfaced it (carve#1546) was an escalation search
-      paying the 42 KB 24 times, and it was fixed by not searching the units
-      that cannot move. The property is recorded here so that the next reader
-      who measures 21x can tell a deliberate trade from an oversight, which is
-      precisely why it was filed. A REAL document that hits it is the trigger
-      to reopen; a threshold is not.
+      A nest d containers deep spends d^2 + 5d bytes on opener and closer
+      markers. This accepted canonical-size trade is recorded in
+      docs/spec-history.md (carve#1553).
 
       A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH
       EXPECTING A CLOSER -- NORMATIVE. A `:::` line that is not a valid opener
@@ -6061,36 +5936,6 @@ EOF = (* end of file *) ;
          floating PAST something invisible, which is a different question from
          running out of blocks to float to.
 
-         Stated because §15 said "the NEXT block element" and left open
-         whether an invisible construct is one. Three engines answered three
-         ways and NONE was self-consistent across the five kinds: carve-rs
-         applied it over four and dropped it over an abbreviation definition,
-         carve-php dropped it over the two reference definitions and applied
-         it over the other three, and carve-js dropped it over all five --
-         self-consistent, and the only answer that throws the attribute away.
-         All three agree when nothing intervenes, so this was specifically
-         about what an invisible construct does to a floating attribute.
-         (carve#529)
-
-         ALL THREE NOW FOLLOW THIS RULE. Measured on each engine's own main:
-         every one of the five kinds gives `<p id="i">e</p>` in carve-js,
-         carve-rs and carve-php alike (carve#857). The executable spec in
-         scripts/spec applied it over all five from the start, so the clause
-         was never a behavior invented for it.
-
-         The AGREEMENT is pinned, one claim per kind, in
-         scripts/engine-claims.mjs -- the five that used to pin the
-         divergence. Keeping five rather than collapsing to one is deliberate:
-         the engines disagreed per kind and none was self-consistent across
-         all of them, so a single case would let four kinds regress unnoticed.
-
-         Worth recording how this was found, because the mechanism is the
-         point. The divergence was pinned as a divergence, so the claims began
-         FAILING on the day the last engine came into line, and the failure
-         said to rewrite this paragraph rather than to relax the check. A
-         resolved divergence that nothing pins leaves a false sentence behind
-         with nothing to notice it.
-
       A3 MERGE (over all pending blocks, source order):
          * id -> last one wins;
          * key=value -> last value for a given key wins;
@@ -6104,21 +5949,6 @@ EOF = (* end of file *) ;
          {key=val2} {.baz} {#id2} then "Okay" ->
          <p id="id2" key="val2" class="foo bar baz">Okay</p>.
 
-         THIS SAID "NO de-duplication ... class='a b b c', matching djot and
-         carve-php", and no implementation did that. Measured on
-         `{.a .b}` / `{.b .c}` / `text`: carve-js, carve-rs and carve-php all
-         emit `class="a b c"`, and the INLINE path in this repository's own
-         executable spec deduplicates too. The clause named carve-php as the
-         engine following it, which was the reverse of what carve-php does.
-
-         The worked example above hid it: it has no repeated class, so it
-         reads the same under either rule. `scripts/spec` implemented the
-         sentence rather than the engines and was the only implementation
-         emitting `a b b c` - on a block attribute line and, once §16 gained
-         the definition slot, on a reference definition's attributes as well.
-         A repeated class in one HTML `class` attribute is also a no-op for
-         every consumer, so nothing downstream wanted the duplicate.
-         (carve#615)
       A4 DROP IF DANGLING -- NORMATIVE. pending with no following block
          element produces no output.
 
@@ -7148,10 +6978,9 @@ EOF = (* end of file *) ;
           c
           :::
 
-        All three engines and the executable spec rendered `%% secret` inside
-        the code span. Under this clause the comment is gone before the run
-        exists, and the run carries the empty verse line as a NEWLINE, like
-        every other break it swallows (carve#1282).
+        The comment is gone before the inline run exists, and the run carries
+        the empty verse line as a NEWLINE, like every other break it swallows
+        (carve#1282).
 
         REMOVED FROM THE RENDER, NOT FROM THE TREE. The line is a `comment`
         node like any other comment (§21a, PART 12), so the canonical writer
@@ -7201,13 +7030,9 @@ EOF = (* end of file *) ;
           %%               `              closer takes the emptied line and
           :::              :::            no empty line is left to spell
 
-        Both preserve the tree and the HTML. The second is corpus
-        380-a-terminal-comment-line-still-leaves-an-empty-verse-line, where
-        carve-js and carve-php agree with this clause and carve-rs publishes
-        the `comment` node the paragraph above refuses, then writes it as a
-        ` %%` tail on the closer's line (carve#1472). The `.fmt` beside the
-        case pins the form; the node is the defect and the tail is its
-        consequence, not a second question.
+        Both preserve the tree and the HTML. Corpus
+        380-a-terminal-comment-line-still-leaves-an-empty-verse-line and its
+        `.fmt` file pin the second form (carve#1472).
 
         A TRAILING COMMENT IS A DIFFERENT CONSTRUCT and this clause does not
         reach it. `x %% secret` is `inline_comment` (PART 3, §21), not
@@ -7240,26 +7065,8 @@ EOF = (* end of file *) ;
         down because "leaves an EMPTY verse line" reads, at a stanza's end,
         as though the line owed a break of its own.
 
-        This is the block-layer half of the line above, and leaving it unsaid
-        cost three engines three different answers on the same two lines
-        (carve#510, carve#573):
-
-          `*[A]: x`  literal in carve-rs; in carve-js and carve-php REGISTERED
-                     as a definition and expanded in place, so the verse
-                     showed an `<abbr>` the author never wrote -- and the
-                     definition then applied to the whole document, expanding
-                     text OUTSIDE the block
-          `%% c`     dropped to an empty verse line in carve-rs and carve-php;
-                     kept as literal text in carve-js on any line but the
-                     first, where it drops it like the others
-
-          `[^f]: t`  literal in carve-js and carve-rs; in carve-php hoisted to
-                     an endnote AND left behind as a reference, publishing the
-                     same line twice (fixed in carve-php#691)
-
-        Each is the engine rewriting the author's verse. A line block exists
-        to preserve a layout, so what has to hold inside it is that nothing is
-        claimed and nothing is dropped that was not a comment.
+        A line block preserves authored layout: nothing inside it is claimed
+        and nothing is dropped unless it is a comment (carve#510, carve#573).
 
       (corpus 41-line-blocks*.)
 
@@ -9300,23 +9107,6 @@ EOF = (* end of file *) ;
       therefore stays green under any widening whatsoever, and only a direct
       assertion on the predicate says how wide it is.
 
-      MEASURED ON THE REFERENCE ENGINE over the 1404 corpus documents and the
-      10986 nodes of their canonical trees. Each row is the bounded predicate
-      widened one way; each leaves every document passing, and only the second
-      column separates a widening from a no-op:
-
-        widened to dissolve                nodes it decides differently
-        any single-child paragraph         1166
-        any bare single-child node           25
-        a paragraph carrying attributes       0
-
-      The third row is why the second column is reported at all. It is a
-      genuine loosening -- a wrapper carrying attributes is one this clause
-      does not permit losing -- and against this predicate on this corpus it
-      decides nothing, so a sweep that stayed green under it would have been
-      evidence in neither direction. A mutation that changes no answer is not a
-      test of the bound.
-
    2. THE ESCAPING RULE -- NORMATIVE. A character is escaped IF AND ONLY IF
       omitting the escape would change the re-parsed AST.
 
@@ -9355,16 +9145,6 @@ EOF = (* end of file *) ;
       the `.` ending the second line, so by the test above they are emitted
       BARE -- in the same unit, in the same line, beside the escape that stayed.
 
-      MEASURED, AND THE MEASUREMENT IS WHY THIS IS SPELLED OUT. All three
-      writers read this clause as one knob per unit and wrote the unit
-      conservatively IN FULL, which is §2b's `unit scope` row: 20 documents and
-      47 idle escapes that the reach could not retire because the reach was
-      never what put them there. Taking the test per occurrence retires exactly
-      those (carve-js#1327, carve-php#1578, carve-rs#1254), and the three
-      writers' idle-escape ratchets go from 25 documents / 59 escapes to 5 / 12,
-      the same five slugs with the same counts in each. Nothing in this section
-      changed to allow that; it was already what this section said.
-
       A WRITER MAY STILL BE UNABLE TO DECIDE AN OCCURRENCE, and §2b's fallback
       is what it falls back to -- per occurrence now rather than per unit. A
       fallback that spends more escapes than this test asks for is wider than
@@ -9384,10 +9164,8 @@ EOF = (* end of file *) ;
       sufficient. Two spellings that render alike are still two spellings, and
       removing that is what a CANONICAL writer is for.
 
-      Measured, on documents the differential fuzzer generated (carve#544).
-      Each row renders identically in every engine and re-parses to a
-      DIFFERENT AST, which is how the invariant passed while the output was
-      wrong:
+      These counterexamples render identically but re-parse to different ASTs
+      (carve#544):
 
         source     written as    by        what changed
         `* %%`     `* +`         carve-rs  a line comment became the
@@ -9401,23 +9179,8 @@ EOF = (* end of file *) ;
       stray character is exactly the "shape that happens to work rather than
       one that says what it means".
 
-      AND THE ESCAPING HALF IS ALREADY DECIDED by §2, applied by its own test
-      -- would omitting the escape change the re-parsed AST?
-
-        `}^p`   bare re-parses IDENTICALLY, so nothing here needs escaping.
-                carve-js writes `\}\^p` and carve-rs and carve-php write
-                `}\^p`; ALL THREE over-escape, the last two by one character
-                rather than two.
-        `[^`    bare re-parses identically -- an unterminated `[^` cannot form
-                a footnote reference, and §2 asks whether the CONSTRUCT can
-                form, not whether the characters look like an opener.
-                carve-php is right; carve-js and carve-rs escape it.
-
-      Both are §2 defects rather than new rules, and both are the direction §2
-      already calls a defect rather than a safe default. They are recorded here
-      because a formatter escaping too much is invisible to every gate the
-      project runs: the HTML matches, the round trip holds, and only the AST
-      shows the `escaped_text` node nobody wrote.
+      The escaping half remains §2's test: omit an escape unless doing so
+      changes the re-parsed AST.
 
    2b. THE SCOPE OF AN ESCALATION IS THE SMALLEST UNIT THAT FAILS --
       NORMATIVE. A writer that cannot decide an occurrence exactly may fall
@@ -9649,25 +9412,6 @@ EOF = (* end of file *) ;
       SOMEWHERE, and W4 takes the conservative spelling only for the smallest
       unit that fails. The definitions the comparison needs are present either
       way, because nothing about the comparison changed.
-
-      THIS SECTION USED TO CONCLUDE OTHERWISE, and all three engines
-      implemented the conclusion: "an implementation that computes §2 by
-      COMPARING TWO RENDERS is stuck with document scope, and therefore with
-      over-escaping". It is not stuck, and it was never measured to be. Swept
-      as an A/B at ONE corpus pin -- the reading rule §2b states -- document
-      scope owns 4 documents / 17 escapes, and W4's own selection is what
-      retires them. It is replaced rather than qualified, because an
-      implementation reading it correctly still lands on output §2 forbids.
-
-      W5 IS THE SECOND HALF OF THE SAME CORRECTION. Narrowing the SCOPE left
-      the unit as one knob, which §2b records as its `unit scope` row, and W5
-      is what retires that. Swept the same way -- carve-js 66d2b3d against
-      e9d03dd over the 1363 corpus documents at spec 85fdc504, one writer with
-      and without W5 -- the reading moves from 25 DOCUMENTS / 59 ESCAPES to
-      5 DOCUMENTS / 12 ESCAPES, and every document that retires is a `unit
-      scope` one. carve-js#1327, carve-php#1578 and carve-rs#1254 are the same
-      step in the three writers, and their idle-escape ratchets carry the same
-      five slugs with the same counts.
 
       What remains true is the rest of the trade: this is a strategy rather
       than the requirement, and an implementation that instead asks, per
@@ -10609,13 +10353,6 @@ EOF = (* end of file *) ;
       takes out of the question every case where the author said which reading
       they meant, which is where guessing wrong costs the most.
 
-      ALL THREE ENGINES LAND IT IN ONE RELEASE. The clause is what the engines
-      implement, and it moves the bytes of every document carrying one of
-      these three characters. An engine that narrows on its own is diverging
-      from the other two rather than implementing this early: one doing so put
-      28 corpus documents into disagreement inside four hours, which is what
-      raised the question (carve#961, carve#970).
-
    8b. THE MARKDOWN TARGET'S AUTHORED ESCAPE NARROWS TOO -- NORMATIVE. §8a
       narrowed M1 and left M2 as written. M2 narrows on the same finding, and
       on a test of the same shape:
@@ -10800,10 +10537,6 @@ EOF = (* end of file *) ;
       escape covered only the half of the traffic that was text. If it matters
       it wants a host-aware profile covering both halves, not an
       unconditional escape covering one.
-
-      ALL THREE ENGINES LAND IT IN ONE RELEASE, on §8a's condition and for its
-      reason: the clause is what the engines implement, and it moves the bytes
-      of every document carrying an authored escape.
 
    9. THE MARKDOWN TARGET'S HARD BREAK -- NORMATIVE. A `hard_break` is emitted
       as a BACKSLASH before the newline, never as two trailing spaces.
@@ -11094,12 +10827,6 @@ EOF = (* end of file *) ;
           it should go is a question about the HTML target, which is PART
           10's business rather than this section's.
 
-      WHY THIS NEEDED SAYING. All three engines agreed on dropping all three
-      tokens, and the corpus pinned HTML for these constructs and nothing
-      else, so `compare:impls` reported agreement rather than a defect.
-      Agreement across implementations is evidence about implementations.
-      (carve#1179)
-
   10f. A REFERENCED ABBREVIATION DEFINITION SPLITS BY TARGET -- NORMATIVE.
       §10a rules the definition NOTHING references: the Markdown, plain-text
       and terminal renderers all emit it, because those targets do not get to
@@ -11284,11 +11011,7 @@ EOF = (* end of file *) ;
       needs the same exemption, and this is where it is stated rather than
       rediscovered.
 
-      ALL THREE ENGINES ALREADY DO THIS AND NOTHING SAID SO. Both pairs
-      carve#1499 added spell the boundary with a THREE-blank source, so a
-      writer that preserved the author's six passes them unchanged -- the
-      rendered HTML is equal and so is the tree, which is §1's equality half
-      forgiving it as well. Pinned by corpus
+      Pinned by corpus
       395-a-longer-run-at-a-list-boundary-is-written-as-exactly-three-blank-lines,
       whose source has SIX blank lines and whose `.fmt` sidecar has three
       (carve#1505).
@@ -12258,71 +11981,6 @@ EOF = (* end of file *) ;
       gate. A report is the right instrument here: the distinction needs a human
       reading the document, and the numbers below are what such a reading
       produced.
-
-      IMPLEMENTATION STATUS. All three engines record positions behind a parse
-      option and enable them whenever they serialize, which is the arrangement
-      the paragraph above permits. Measured over the corpus:
-
-        carve-js    4159 placed,   9 unplaced   (0.22%)
-        carve-rs    4183 placed,  15 unplaced   (0.36%)
-        carve-php   4188 placed,  13 unplaced   (0.31%)
-
-      Most of what is left is not a backlog. All three engines independently
-      arrive at residue on the same THREE documents -- a line block
-      (41-line-blocks-9) and two table cells continued across lines
-      (63-table-multi-line-cell-continuation,
-      64-table-rowspan-with-multi-line-content). All of it is REASSEMBLED
-      content: a hard break a line block synthesizes from a soft one, line-block
-      content rebuilt around an indentation sentinel, a cell joined from several
-      source lines by a space the source does not contain. None of it is a slice
-      of the source at any offset, so no span selects it.
-
-      This state is convergent rather than accidental, and it is the evidence
-      that settled carve#490: THAT residue -- the reassembled content named
-      above -- is the permitted category, not a shortfall each engine reports
-      separately. The exemption is scoped to it and does not launder anything
-      else.
-
-      A FOURTH document is not part of that category. carve-rs and carve-php
-      also leave the paragraph, text and soft_break nodes a CAPPED container
-      degrades to unplaced (182-openers-past-the-nesting-cap-are-one-paragraph,
-      renumbered from 181 as the corpus grew) -- 8 of each engine's total above.
-      carve-js places the same nodes against real offsets there: a contiguous
-      slice of the document, not a reassembly. That is the evidence this
-      residue is a gap the clause above does not reach, not a fourth member of
-      the permitted category (carve#672).
-
-      carve-js AND carve-rs -- not carve-rs alone -- leave the merged text of
-      an unwrapped autolink unplaced (03-links-12), for the same reason once
-      §1a joins the run: the `<` and `>` between the pieces are not in the
-      value. carve-php does not.
-
-      A fifth residue is not yet triaged: carve-js and carve-rs both leave a
-      reference image's caption unplaced (207-a-reference-image-takes-a-caption,
-      one `figure` node each). It fits none of the categories above and is
-      counted in the totals above rather than dropped from them for being
-      unexplained.
-
-      docs/ast-json.md's table used to additionally record carve-rs leaving a
-      definition list's OWN parts unplaced. That is fixed: carve-rs places
-      `definition_term` and `definition_description` today, checked over every
-      corpus document that contains one, and the docs page reflects it. The
-      capped-container residue named above is what the same measurement turns
-      up instead.
-
-      The earlier text here named per-engine gaps that no longer exist -- it
-      described carve-rs as placing block nodes only, "869 block nodes and 54
-      left", and pointed at carve-js#441 and carve-rs#333 for tracking. Both
-      issues are closed and both engines have moved. A status section that
-      states numbers has to be re-measured when it is read; these were taken
-      from the corpus on the day this paragraph was written.
-
-      carve-rb serializes carve-rs's tree, so it publishes exactly what that
-      engine records. It is the route by which the conformance checker reaches
-      carve-rs at all, since carve-rs has no JSON serializer of its own -- and
-      therefore also the route by which a stale carve-rs PIN in carve-rb shows
-      up as a conformance failure that carve-rs itself does not have
-      (carve-rb#41).
 
       An implementation that cannot yet produce positions MUST NOT emit `pos`
       with invented values, and MUST NOT omit it silently: it does not yet
@@ -13317,49 +12975,9 @@ EOF = (* end of file *) ;
       have to implement CommonMark 2.3 itself before it could hand the tree
       back.
 
-      WHY THE WIRE FORMAT DECIDES THIS AND NOT EACH ENGINE. All three engines
-      let a NUL through their ingest and then disagreed about what to do with
-      it, so the character was neither content nor absent but engine-dependent.
-      carve-js `8f83eea` and carve-php `b845640` were measured for this clause
-      on 2026-08-22; carve-rs is as recorded in markup-carve/carve-rs#1217:
-
-      - EVERY ENGINE EMITS IT on html, markdown and plain text, verbatim.
-      - THE ANSI TARGET STRIPS IT, since T4 strips controls.
-      - THE CANONICAL WRITER SPLITS THREE WAYS: carve-js and carve-rs DELETE
-        it, so `fmt` is silently lossy there, and carve-php EMITS it, so the
-        writer produces source the parser will not read back the same way.
-      - THE DOOR IS NOT THE JSON PARSER. Every engine's JSON reader refuses a
-        raw control byte in a string, which is RFC 8259 and not a Carve rule -
-        carve-php's raises `Control character error`, and markup-carve/carve-rs#1217
-        records the same refusal there. The escape passes it, and so does
-        every in-memory door, where there is no JSON layer at all:
-        carve-js's `fromAstJson` takes a parsed object and carve-php's
-        `AstCodec::decode` takes an array. Both measurements above were taken
-        through those doors.
-
-      WHAT IT MAKES SAFE, stated because two engines already relied on the
-      guarantee and had it only on the parse path. A NUL is the natural
-      internal sentinel precisely because no document can contain one, and
-      both engines reached for it:
-
-      - carve-rs marks a `::: footnotes` placement with
-        `\u0000carve:footnotes-placement\u0000` in the rendered HTML. Through
-        the ingest, a text node carrying that string pulls the endnotes section
-        into itself -- `<p><section role="doc-endnotes">...</section></p>`, and
-        no longer at the document end (markup-carve/carve-rs#1217).
-      - carve-js keys a PART 11 §10f abbreviation pair by joining term and
-        expansion on a NUL, on the premise that neither half can hold one.
-        Through the ingest they can: `("A" NUL "b", "c")` and
-        `("A", "b" NUL "c")` key identically, and rendering a document holding
-        both definitions with an occurrence of only the first DROPS the second
-        definition line -- deleting the author's text, which is the direction
-        §10f names as the one its two-pass design exists to avoid. Measured on
-        carve-js `8f83eea` (markup-carve/carve-js#1294).
-
-      Neither sentinel has to change once this clause holds. That is the point
-      of putting the rule at the boundary rather than patching each collision:
-      a guarantee the parser makes and the ingest does not is not a guarantee,
-      and every future sentinel would have to rediscover it.
+      Applying this rule at every ingest boundary gives parsers, renderers and
+      canonical writers the same guarantee and prevents U+0000 from colliding
+      with internal sentinels (carve-rs#1217, carve-js#1294).
 
       AN IMPORTER IS THE SAME BOUNDARY BY THE SAME REASONING, and is stated
       here as a SHOULD rather than a MUST because the format being imported may
