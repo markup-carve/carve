@@ -22246,6 +22246,42 @@ tail
 
 :::
 
+The FOOTNOTE kind in a definition body is the cell that completes the section.
+Every other kind on I5's list is measured in both hosts and the two hosts agree
+wherever both were measured, but this one had only ever been measured in the
+list item. A rule stated for "a container" and pinned for one of its containers
+is the shape a later divergence hides in.
+
+::: compare
+
+```carve
+:: t
+:  a
+   [^f]: t
+tail
+
+x[^f]
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>a</dd>
+</dl>
+<p>tail</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>t<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
 ## A bracketed construct spanning a line boundary
 
 A `[` closes at its matching `]`, and NOTHING in that scan is a line. The close
