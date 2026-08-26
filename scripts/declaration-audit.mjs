@@ -211,6 +211,7 @@ const MANIFEST = [
   // -- carve-rs --------------------------------------------------------------
   { repo: 'carve-rs', path: 'tests/corpus.rs', name: 'KNOWN_GAPS', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/corpus.rs' },
   { repo: 'carve-rs', path: 'tests/corpus.rs', name: 'AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/corpus.rs' },
+  { repo: 'carve-rs', path: 'tests/corpus_canonical_form.rs', name: 'AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/corpus_canonical_form.rs' },
   { repo: 'carve-rs', path: 'tests/optional_corpus.rs', name: 'DECLARED_UNIMPLEMENTED', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/optional_corpus.rs' },
   { repo: 'carve-rs', path: 'tests/optional_corpus.rs', name: 'AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/optional_corpus.rs' },
   { repo: 'carve-rs', path: 'tests/html_import.rs', name: 'BEHIND_THE_RULING', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'mirrors spec PIN_LAG' },
