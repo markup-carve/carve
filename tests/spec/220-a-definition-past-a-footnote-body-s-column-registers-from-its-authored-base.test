@@ -1,4 +1,4 @@
-A definition past a footnote body's column is the body's own text
+A definition past a footnote body's column registers from its authored base
 
 ```
 [^a]: note

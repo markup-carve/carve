@@ -1,4 +1,4 @@
-A definition body continuation indented past its column is lazy text
+A definition body opener at or past its column stays structural
 
 ```
 :: t

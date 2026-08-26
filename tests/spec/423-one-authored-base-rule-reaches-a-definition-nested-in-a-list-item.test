@@ -1,0 +1,22 @@
+One authored base rule reaches a definition nested in a list item
+
+```
+- intro
+
+   :: term
+   :  definition
+
+      > quote
+.
+<ul>
+  <li>intro
+    <dl>
+      <dt>term</dt>
+      <dd>
+        <p>definition</p>
+        <blockquote><p>quote</p></blockquote>
+      </dd>
+    </dl>
+  </li>
+</ul>
+```
