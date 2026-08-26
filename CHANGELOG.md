@@ -98,6 +98,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   belongs to the innermost container the opener reaches, so a nested body's
   opener is never a fresh sibling base. This unifies the definition- and
   footnote-body statements of carve#1729.
+- **A list item is a container the innermost-base rule reaches too**
+  (carve#1791, PART 9 §24 C3). An opener written at a nested list item's
+  content column is that item's block. A marker hands out a column even though
+  it opens no sub-block, so ownership does not follow the sub-block predicate.
 - **An unclosed container closes with its host, not at end of input**
   (carve#1778, PART 9 §12). End of input is the top-level case, not the rule.
 - **An ordered item's separator width sets its content column** (carve#1773).
