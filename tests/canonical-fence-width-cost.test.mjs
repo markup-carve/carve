@@ -1,12 +1,10 @@
 /*
  * The colon fence's canonical width costs bytes, and the number is a reading.
  *
- * PART 9 §12 records what widening a fence by one colon per level buys - an
- * O(1) writer that needs no subtree scan - and what it costs, which is
- * `d^2 + 5d` bytes of fence marker for a nest `d` containers deep. The clause
- * quotes that cost at the parse cap, off ONE corpus document, and
- * docs/divergence-from-djot.md §13 quotes the same figures for readers who
- * never open the grammar.
+ * PART 9 §12 records what widening a fence by one colon per level buys and the
+ * `d^2 + 5d` invariant. The measurement and compatibility decision live in
+ * docs/spec-history.md, while docs/divergence-from-djot.md §13 quotes the same
+ * figures for readers comparing languages.
  *
  * Those figures are a reading at a pin, not an invariant (the shape PART 11 §2b
  * had to be corrected into at carve#1567). The document behind them is a corpus
@@ -45,7 +43,7 @@ const colons = (text) => (text.match(/:/g) ?? []).length
 const fenceWidths = (text) =>
   text.split('\n').map((line) => (/^:*/.exec(line))[0].length)
 
-test('PART 9 §12 quotes the canonical-form cost this corpus document measures', () => {
+test('decision history quotes the canonical-form cost this corpus document measures', () => {
   const sourceBytes = Buffer.byteLength(source, 'utf8')
   const canonicalBytes = Buffer.byteLength(canonical, 'utf8')
   const fenceBytes = colons(canonical)
@@ -73,12 +71,15 @@ test('PART 9 §12 quotes the canonical-form cost this corpus document measures',
   )
 
   const grammar = read('resources/grammar.ebnf')
+  const history = read('docs/spec-history.md')
   const page = read('docs/divergence-from-djot.md')
   const share = ((fenceBytes / canonicalBytes) * 100).toFixed(1)
   const ratio = (canonicalBytes / sourceBytes).toFixed(1)
   const grouped = (n) => n.toLocaleString('en-US')
 
-  for (const [where, text] of [['PART 9 §12', grammar], ['divergence §13', page]]) {
+  assert.ok(grammar.includes('d^2 + 5d'), 'PART 9 §12 states the invariant')
+
+  for (const [where, text] of [['decision history', history], ['divergence §13', page]]) {
     for (const claim of [grouped(sourceBytes), grouped(canonicalBytes), grouped(fenceBytes), `${share}%`, String(CAP), String(widest)]) {
       assert.ok(
         text.includes(claim),
@@ -89,6 +90,6 @@ test('PART 9 §12 quotes the canonical-form cost this corpus document measures',
 
   // The clause rounds the ratio one way and the page the other, on purpose:
   // one is the reading, the other is how a reader will quote it.
-  assert.ok(grammar.includes(`${ratio}x`), `PART 9 §12 states the measured ${ratio}x expansion`)
+  assert.ok(history.includes(`${ratio}x`), `decision history states the measured ${ratio}x expansion`)
   assert.ok(page.includes(`${Math.round(Number(ratio))}x`), 'the page states the rounded expansion')
 })
