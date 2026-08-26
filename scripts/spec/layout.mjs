@@ -1486,7 +1486,17 @@ export function normalizeAuthoredBodyBases(lines, state = {}) {
     const line = lines[index]
     const measured = indentCols(line)
     const establishesBase = measured.col > 0 && opensAuthoredBase(measured.rest)
-    const protectsInnermostContainer = measured.col === 0 && opensSubBlock(measured.rest)
+    // A LIST ITEM IS A CONTAINER TOO (carve#1781). `opensSubBlock` answers a
+    // different question - whether a blank-separated sub-block leaves a list
+    // TIGHT - and a list marker is deliberately absent from it there, because a
+    // marker at a body's own column opens a SUBLIST rather than a sub-block.
+    // Here the question is whose content the lines below belong to, and the
+    // answer for a marker is the item it opens. Without this a quote written at
+    // a nested item's content column was rebased to the outer body's column and
+    // lifted out of the item it was written into, which is the same defect this
+    // clause fixed one container kind over.
+    const protectsInnermostContainer = measured.col === 0 &&
+      (opensSubBlock(measured.rest) || matchMarkerAt(measured) !== null)
     if (!establishesBase && !protectsInnermostContainer) {
       out.push(line)
       continue
