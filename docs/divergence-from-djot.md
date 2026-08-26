@@ -153,17 +153,21 @@ content**. A content-less `-`, `- `, or `-   ` is ordinary paragraph text.
 
 **Djot / CommonMark:** `+`, `-`, and `*` are all bullet markers.
 
-**Carve:** bullets are `-` and `*` only. `+` is reserved as the **list
-continuation marker** - a lone `+` on its own line attaches the next flush-left
-block to the current list item, keeping the list tight instead of breaking it.
+**Carve:** bullets are `-` and `*` only. `+` is reserved as the **continuation
+marker** - a lone `+` on its own line transfers ownership of the next
+flush-left block to the container whose marker column it sits at, keeping a
+list tight instead of breaking it. One block, and the same operation in every
+container that takes the marker: a list item, a block quote, a footnote body
+and a definition description.
 
-**Why.** Freeing `+` makes a lone `+` unambiguous and gives lists a clean way to
-own a following block (a note, a quote, a code fence) without deep indentation:
+**Why.** Freeing `+` makes a lone `+` unambiguous and gives a container a clean
+way to own a following block (a note, a quote, a code fence) without deep
+indentation. The attached block is written at column 0:
 
 ```
 - step one
 +
-  > a note that belongs to step one
+> a note that belongs to step one
 - step two
 ```
 
@@ -344,8 +348,8 @@ to a single block. Both forms work:
   djot's* indentation-scoped body, so any djot loose definition body carries
   over.
 - **form B** - a lone `+` attaches the following flush-left block with no
-  indentation (the same continuation marker lists and block quotes use). This
-  is a Carve addition on top of the djot model.
+  indentation (the same continuation marker lists, block quotes and footnote
+  bodies use). This is a Carve addition on top of the djot model.
 
 So multi-paragraph definitions are fully supported - the divergence is the
 *markers*, not the capability:

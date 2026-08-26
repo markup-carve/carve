@@ -6424,6 +6424,24 @@ EOF = (* end of file *) ;
          S4 refuses one clause over, and taking it here would reject that shape
          in the layout section and reinstate it in this one. carve-rs already
          attaches one.
+         THE MARKER IS ONE OPERATION IN EVERY CONTAINER -- NORMATIVE
+         (carve#1782). The clause above is the WHOLE definition of `+`:
+         ownership of the next flush-left block passes to the container, and
+         that block is then parsed like any other. A container may not answer
+         differently because of WHAT it is attaching, and there is no second
+         rule anywhere for a quote, a list, a fence, a caption or a definition
+         under the marker. In particular the ONE BLOCK count and the boundary
+         set above hold in EVERY container in L4, not only in the two that had
+         them spelled out.
+
+         This is stated because the readers disagreed while the clause did
+         not. The executable spec measured the extent in FOUR places and
+         narrowed it to one block in three of them, so `+` / `para` / `> q`
+         attached one block in a list item and both blocks in a footnote body
+         and in a definition description; a fourth place tested for a quote
+         line, so a `+` inside a block quote attached NOTHING when a quote
+         followed it, which the same clause forbids one sentence up ("the
+         marker only ATTACHES").
       L4 CONTAINERS THAT TAKE THE MARKER:
          - LIST ITEM (pinned by corpus list-continuation-marker): `+` at
            the item's marker column attaches the block to the item (for
@@ -6437,7 +6455,17 @@ EOF = (* end of file *) ;
            un-prefixed alternative to repeating `>`. "> quoted \n + \n
            - item" is a quote whose body is the paragraph "quoted" PLUS a
            real <ul> (not a lazily-folded paragraph, cf. §10 I6). A blank
-           line after the quote still ends it.
+           line after the quote still ends it. An attached block that is
+           ITSELF a quote NESTS, like every other kind: `> a` / `+` / `> q`
+           is a quote holding a paragraph and an inner quote. The marker
+           attaching nothing there, and the line continuing the outer quote
+           instead, was the kind test named in L3 (carve#1782).
+         - FOOTNOTE DEFINITION body: `+` at column 0 attaches the following
+           flush-left block to the note, the alternative to indenting it to
+           the body's column (pinned by corpus
+           footnote-with-multiple-blocks).
+         - DEFINITION DESCRIPTION: the same marker, the same reach, for a
+           `<dd>` (`definition_body` carries `continuation_marker_block`).
       L5 NOT CONTINUATION CONTAINERS (a lone `+` keeps its plain meaning):
          - fenced containers (admonition / generic div / line block) --
            their bodies already hold flush-left blocks; a lone `+` inside
@@ -6446,8 +6474,6 @@ EOF = (* end of file *) ;
            distinct construct;
          - LEAF blocks (heading, thematic break, code block, raw block,
            paragraph) hold no child blocks; a heading is a bounded title.
-         - FOOTNOTE DEFINITION bodies compose by indentation today; a `+`
-           attach form is possible future work, deliberately OUT OF SCOPE.
       L6 A COLLECTED DEFINITION LEAVES NO TRACE -- NORMATIVE (the general
          rule for PART 9R R1/R2 COLLECTION, stated ONCE here for every
          container that can hold a definition). A link reference or

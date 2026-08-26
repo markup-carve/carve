@@ -422,7 +422,9 @@ Some other text
 ```
 
 **Resolution:**
-- A **lone** `+` at the list marker column is the list-continuation marker
+- A **lone** `+` at a container's marker column is the continuation marker: it
+  attaches one following flush-left block to that container (a list item, a
+  block quote, a footnote body or a definition description)
 - A `+ ... |` line (pipe structure) is a table continuation
 - Any other `+ x` line is ordinary paragraph text — `+` never starts a list
 
