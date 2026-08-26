@@ -94,13 +94,13 @@ const INVENTORY = [
   // TRAILING WHITESPACE drops the run from the term's folded line. Strip the run
   // and each of these becomes the bare marker, which is the control pinned
   // beside them (carve#1830).
-  { base: '438-a-colon-followed-by-only-whitespace-is-not-a-description', crv: ['trailing-WS'], html: [] },
-  { base: '438-a-colon-followed-by-only-whitespace-is-not-a-description-2', crv: ['trailing-WS'], html: [] },
-  { base: '438-a-colon-followed-by-only-whitespace-is-not-a-description-3', crv: ['trailing-WS'], html: [] },
+  { base: '439-a-colon-followed-by-only-whitespace-is-not-a-description', crv: ['trailing-WS'], html: [] },
+  { base: '439-a-colon-followed-by-only-whitespace-is-not-a-description-2', crv: ['trailing-WS'], html: [] },
+  { base: '439-a-colon-followed-by-only-whitespace-is-not-a-description-3', crv: ['trailing-WS'], html: [] },
   // The TAB spelling, which the separator does not admit at all (PART 1, MARKER
   // SEPARATORS AND PADDING SLOTS). An editor converting it to spaces moves the
   // document onto the row above and the refusal it pins goes untested.
-  { base: '438-a-colon-followed-by-only-whitespace-is-not-a-description-4', crv: ['trailing-WS'], html: [] },
+  { base: '439-a-colon-followed-by-only-whitespace-is-not-a-description-4', crv: ['trailing-WS'], html: [] },
   // The no-break space is the case: it is non-ASCII, so it passes into the
   // heading id unchanged instead of being slugged to a separator, and the
   // id carries the character rather than an entity.

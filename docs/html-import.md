@@ -635,10 +635,11 @@ It attaches a following column-0 block - `:: term` / `: +` / `text` is a
 description whose body is `text` - so it spells an empty body only when a blank
 line follows it. The sentinel claims no line below it at any column.
 
-**Nothing that is not an attribute block spells it.** `: `, `:  `, a colon
-followed by three spaces and a tab after the colon each leak a `:` into the text
-or fold into the term above; `: {}` leaves the literal text `{}` in the body; and
-a bare colon line is read as a continuation of the term, so the re-render is
+**Nothing that is not an attribute block spells it.** A description marker takes
+a separator space and non-empty content (PART 2, MARKER REQUIRES CONTENT), so a
+`:` line carrying nothing but whitespace opens no description at all - one space,
+several, a tab and a bare colon alike. The line folds into the term above, so the
+re-render is
 
 ```html
 <dl>
@@ -647,10 +648,9 @@ a bare colon line is read as a continuation of the term, so the re-render is
 </dl>
 ```
 
-with the `<dt>` damaged as well as the `<dd>` lost. That is the same rule that
-makes `[^f]: {empty}` spell an empty footnote body where `[^f]: {}` does not
-(PART 11 §7b). The first four disagree across engines and are tracked in
-markup-carve/carve#1830.
+with the `<dt>` damaged as well as the `<dd>` lost. `: {}` reaches a `<dd>`, but
+it holds the literal text `{}`. That is the same rule that makes `[^f]: {empty}`
+spell an empty footnote body where `[^f]: {}` does not (PART 11 §7b).
 
 **A looseness key says nothing here.** The one-item and one-block `<dd>` shapes
 above take `{loose}`, because what they need is a way to spell a tightness a
