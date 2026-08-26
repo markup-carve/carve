@@ -44,7 +44,14 @@ const root = new URL('./html-import/', import.meta.url)
  * is declared as pin lag in the contract check, and the tree it returned is
  * held as a literal below so retiring these entries does not retire the proof.
  */
-const UNMET = new Map([])
+const UNMET = new Map([
+  [
+    'traversal-shaped-index',
+    'the fixture writes the canonical one-space definition separator (carve#1757); ' +
+      'the pinned build has not shipped it and reads `: v` as a stray paragraph, ' +
+      'so the entry it records is the entry its own AST is missing',
+  ],
+])
 
 const LOCATION_FIELDS = new Set(['pos', 'srcByteLength'])
 

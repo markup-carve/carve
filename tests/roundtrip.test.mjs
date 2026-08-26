@@ -56,6 +56,28 @@ test('the round-trip corpus is non-empty', () => {
   assert.ok(cases.length >= 6, `found ${cases.length} cases`)
 })
 
+/*
+ * PIN LAG IS DECLARED, never tolerated - the same rule as
+ * resources/engine-pin-drift.txt and the html-import contract, and it fails in
+ * both directions. A `.expected.crv` states what PART 11 REQUIRES, derived from
+ * the spec rather than from any writer's output, so a fixture ahead of the
+ * pinned build is the fixture being right and the build being behind. The
+ * declaration says which, and names why; a listed case the build now
+ * reproduces is red too, so the line goes out with the pin bump that fixed it.
+ *
+ * Both assertions that read the pinned build are covered, because a build that
+ * disagrees about what canonical LOOKS LIKE also disagrees about what the
+ * canonical bytes MEAN: `: def` is a definition body to the spec and a stray
+ * paragraph to a build that has not shipped the one-space separator.
+ */
+const PIN_LAG = new Map([
+  [
+    '13-definition-list-after-a-list',
+    'writes and reads the two-space definition separator; one space is canonical (carve#1757)',
+  ],
+])
+const reproduced = []
+
 /**
  * Collapse adjacent text and escaped-text runs into one text node.
  *
@@ -127,6 +149,7 @@ for (const { slug, source, expected } of cases) {
   test(`${slug}: the expected output re-parses to the same document`, () => {
     // Guards the fixtures themselves: an expected file that does not round-trip
     // would pin a writer that corrupts documents.
+    if (PIN_LAG.has(slug)) return
     assert.deepEqual(
       comparable(expected),
       comparable(source),
@@ -135,6 +158,24 @@ for (const { slug, source, expected } of cases) {
   })
 
   test(`${slug}: fmt(x) == expected bytes (PART 11 §2)`, () => {
+    if (PIN_LAG.has(slug)) {
+      assert.notEqual(
+        carveToCarve(source),
+        expected,
+        `${slug} is declared as pin lag ("${PIN_LAG.get(slug)}") but the pinned ` +
+          'build now reproduces it. Delete the entry, in the commit that moved the pin.',
+      )
+      reproduced.push(slug)
+      return
+    }
     assert.equal(carveToCarve(source), expected)
   })
 }
+
+test('a declared pin lag names a case that is still behind', () => {
+  assert.deepEqual(
+    [...PIN_LAG.keys()].sort(),
+    reproduced.sort(),
+    'a declared pin lag names a round-trip case that does not exist',
+  )
+})
