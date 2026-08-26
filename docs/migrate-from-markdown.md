@@ -48,7 +48,7 @@ The table below covers the constructs you use most often. Items marked **same** 
 | Fenced code | `` `code fence` `` with a language | same | No-space info string is canonical; a space is also accepted |
 | Blockquotes | `> text` | same | Carve adds captions (see below) |
 | Unordered lists | `- item` or `* item` | same | Carve bullets are `-`/`*`; a Markdown `+` bullet is not a Carve bullet |
-| Ordered lists | `1. item` | same | |
+| Ordered lists | `1. item` | `1. item` or `. item` | Numbered markers are portable; prefer Carve's `. ` for native auto-numbering with stable nesting indentation |
 | Task lists | `- [ ] todo` / `- [x] done` | same | |
 | Thematic break | `---` | same | Contiguous `---`, `***`, or `___` (no spaced forms) |
 | **Italic** | `*italic*` or `_italic_` | `/italic/` | **Changed** - see below |
