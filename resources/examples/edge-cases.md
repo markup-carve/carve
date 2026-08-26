@@ -5451,7 +5451,7 @@ An item's own second paragraph after a blank still loosens it - non-propagation 
 
 ## Definition list as a first-class block opener
 
-A `:: term` definition-list opener is a block opener like every other (quote, heading, fence, table) under the content-column rule (PART 9 §24 C3): it *interrupts* an open list item at column 0, and *nests* at the item's content column. The two-line `:: `/`:  ` marker is recognized by look-ahead; only the `:: ` term line opens the block.
+A `:: term` definition-list opener is a block opener like every other (quote, heading, fence, table) under the content-column rule (PART 9 §24 C3): it *interrupts* an open list item at column 0, and *nests* at the item's content column. The two-line `:: `/`: ` marker is recognized by look-ahead; only the `:: ` term line opens the block.
 
 At the content column, the definition list nests inside the item.
 
@@ -5768,7 +5768,12 @@ Mentions and tags are inert stable spans that do not take attributes (they share
 
 ## Under-indented definition attaches, over-indented definition folds
 
-A `:  def` line is a lenient definition-list entry (PART 9 §24 C3): it attaches as a fresh `<dd>` to its open `:: term` when its column is at or below the term's, even under the item's content column. Only a definition line indented *above* the term folds into the term text as a lazy continuation.
+The accepted wider-separator spelling `:  def` is still a definition-list entry
+(PART 9 §24 C3): it attaches as a fresh `<dd>` to its open `:: term` when its
+column is at or below the term's, even under the item's content column. Only a
+definition line indented *above* the term folds into the term text as a lazy
+continuation. The canonical spelling is `: def`; this case deliberately keeps
+the wider separator while testing the marker's authored column.
 
 Under-indented (below the content column, still above column 0): the definition attaches.
 
@@ -5793,7 +5798,9 @@ Under-indented (below the content column, still above column 0): the definition 
 
 :::
 
-At column 0, the definition still attaches: the `:  ` marker is a lenient exception to the column-0 interrupt rule, so it does not end the item and orphan the definition.
+At column 0, the definition still attaches: this accepted wider-separator
+marker is a lenient exception to the column-0 interrupt rule, so it does not
+end the item and orphan the definition.
 
 ::: compare
 
@@ -30360,7 +30367,8 @@ more</li>
 `AND FLUSH-LEFT MEANS COLUMN 0` (§17 L3, markup-carve/carve#1436) gives the
 marker its own control: a line the `+` does not reach falls through to the
 ordinary column rules "exactly as if the `+` line had been a comment". In the
-FIRST-BLOCK form `:  +` no paragraph is open, so the `+` genuinely is a marker
+accepted wider-separator FIRST-BLOCK form `:  +` no paragraph is open, so the
+`+` genuinely is a marker
 and the clause reads its payload's column - and a payload at column 1 or 2 is
 not flush-left, so the marker is refused and the body ends where the comment
 ends it. It did not: the description reached out and put the payload in the
@@ -30508,7 +30516,8 @@ a rule.
 ## A leading continuation marker in a footnote body or a quote is text
 
 The FIRST-BLOCK form of the continuation marker (§17 L4) belongs to the LIST
-ITEM and the DEFINITION DESCRIPTION: `- +` and `:  +` open a body whose content
+ITEM and the DEFINITION DESCRIPTION: `- +` and the accepted wider-separator
+`:  +` open a body whose content
 is the following flush-left block, and over a column-1 line the marker is
 refused and the body ends. A FOOTNOTE BODY and a BLOCK QUOTE have no such form.
 A `+` that opens one of those two bodies is not a marker at all - it is ordinary
@@ -30665,7 +30674,7 @@ definition body the same way, and this is the same shape one construct over.
 The sentinel is an attribute block, so PART 9 §15 A4 drops it - a block-attribute
 line with no following block inside its own container reaches nothing - and the
 description is left empty. It claims NO line below it at any column, which is
-what separates it from `:  +`: the first-block marker attaches a following
+what separates it from the accepted wider-separator `:  +`: the first-block marker attaches a following
 flush-left block, so it spells an empty body only when a blank line follows.
 
 ::: compare
@@ -30706,7 +30715,8 @@ At end of input, where there is no following block at all.
 :::
 
 The line below it is not claimed even at column 0, which is the whole reason the
-sentinel needs no blank line after it. The same document spelled `:  +` puts
+sentinel needs no blank line after it. The same document spelled with the
+accepted wider-separator `:  +` puts
 `flush` inside the `dd`.
 
 ::: compare

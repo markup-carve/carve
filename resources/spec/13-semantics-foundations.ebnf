@@ -395,9 +395,9 @@
          standard row does:
 
              - | a |            > | a |            :: t
-               + b |            > + b |            :  | a |
-             tail               tail                  + b |
-                                                   tail
+               + b |            > + b |            : | a |
+             tail               tail                 + b |
+                                                  tail
 
          all end their container and leave `tail` a document paragraph, the
          same derivation S4's THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST

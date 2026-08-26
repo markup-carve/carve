@@ -537,11 +537,11 @@ definition_entry = definition_term+, [blank_line], definition_body,
                    {[blank_line], definition_body} ;
 (* A blank line may separate a term from its definition, and one definition
    from the next, for readability -- the blank is a separator only (djot
-   parity). A blank NOT followed by a `:  ` definition ends the entry. *)
+   parity). A blank NOT followed by a `: ` definition ends the entry. *)
 definition_term = "::", space, inline_content, newline, {term_continuation_line} ;
 term_continuation_line = inline_content, newline ;
 (* A term folds a following plain line as a soft break; a blank line, a new
-   `::`/`:  ` marker, or a block opener ends it. A term holds inline content
+   `::`/`: ` marker, or a block opener ends it. A term holds inline content
    only -- no block body. (This used to read "like a heading", which was never
    the right comparison: a term is the KEY half of a key-value entry, not a
    title, and it is bound to the definition beneath it rather than to a section
@@ -679,8 +679,8 @@ definition_indent = whitespace, {whitespace} ;
    Thus the `>` on
 
        :: t
-       :  body
-           > q
+       : body
+          > q
 
    opens a block quote. The same rule covers headings, lists, tables, code/raw/
    colon fences, definitions, attributes followed by their target and comments,
@@ -711,4 +711,3 @@ definition_indent = whitespace, {whitespace} ;
    items and block quotes, matching djot). A blank line that is NOT followed by
    an indented continuation ends the body: the single-blank entry separator
    before the next `:: term` is preserved. *)
-

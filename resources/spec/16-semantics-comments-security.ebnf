@@ -368,7 +368,7 @@
          to the item. The block-opener set is UNIFORM and closed: block quote (`>` or
          `> `), heading (`#`), thematic break, fenced code, colon fence / admonition
          (`:::`), TABLE (a `|`-delimited row), and DEFINITION LIST (a `:: term`
-         opener; the two-line `:: `/`:  ` marker is recognized by the same
+         opener; the two-line `:: `/`: ` marker is recognized by the same
          look-ahead the top level uses, and only the `:: ` TERM line opens the
          block). None of these is special-cased: a def-list or table interrupts
          at column 0 and nests at content_column exactly as a quote or heading

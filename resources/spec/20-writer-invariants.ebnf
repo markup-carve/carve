@@ -260,7 +260,7 @@
       writer still does not use it. Inside a list item or a definition
       description there is no such spelling at any width: the marker's own
       content column absorbs the padding, so `- ![a](u)` and `-       ![a](u)`
-      are the same tree, and `:  ` behaves the same way. A writer preserving
+      are the same tree, and `: ` behaves the same way. A writer preserving
       the shape at one nesting level and losing it at the next, with nothing
       declaring the difference, is not a preservation rule; and the indented
       form emits meaning-bearing leading whitespace, which editors and

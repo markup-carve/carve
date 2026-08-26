@@ -307,7 +307,7 @@
 
          THE FIRST-BLOCK FORM IS THE ITEM AND THE DESCRIPTION -- NORMATIVE
          (carve#1821). The four containers above take the marker; only TWO of
-         them take it in the FIRST-BLOCK position. `- +` and `:  +` open a body
+         them take it in the FIRST-BLOCK position. `- +` and `: +` open a body
          whose content is the following flush-left block, and over a line that
          is not flush-left the marker is refused and the body ends. A FOOTNOTE
          BODY and a BLOCK QUOTE have no such form: `[^a]: +` and `> +` open a

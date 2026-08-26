@@ -424,14 +424,14 @@
         anywhere in the stack, which is S4's own "otherwise" and nothing new:
 
             - a                :: t
-              [r]: /u          :  a
-            tail                  [r]: /u
-                               tail
+              [r]: /u          : a
+            tail                 [r]: /u
+                              tail
 
         both end their container and publish `tail` at document level. A
         COMMENT at a definition body's content column ends the paragraph the
         same way and for the same reason (§10 I5 lists it too), so
-        `:  a` over `   %% c` over `tail` ends the `dd`.
+        `: a` over `  %% c` over `tail` ends the `dd`.
 
         AND THE DEFINITION REGISTERS, which is half of what I5 says and the
         half an implementation can pass this rule without: "A link or footnote
@@ -693,8 +693,8 @@
         -- one paragraph holding an unclosed inline verbatim run, not a code
         block. So at a container's content column
 
-            - q                 > q                 :  a
-              ```               > ```                  ```
+            - q                 > q                 : a
+              ```               > ```                 ```
             tail                tail                tail
 
         all three fold `tail` into the paragraph that is still open, and no
@@ -778,12 +778,13 @@
 
         AND A DEFINITION BODY IS SUCH A CONTAINER -- NORMATIVE (carve#956).
         The third indented-block collector answers the same way. A definition
-        body's `dd` demands indentation to column 3 (`definition_indent`), so a
-        fence opened on the `:  ` marker line whose body sits BELOW that column
+        body's canonical `dd` demands indentation to column 2
+        (`definition_indent`), so a fence opened on the `: ` marker line whose
+        body sits BELOW that column
         is the list spelling above with a different prefix:
 
             :: t
-            :  ```
+            : ```
             body
             ```
 
@@ -1435,11 +1436,11 @@ definition_entry = definition_term+, [blank_line], definition_body,
                    {[blank_line], definition_body} ;
 (* A blank line may separate a term from its definition, and one definition
    from the next, for readability -- the blank is a separator only (djot
-   parity). A blank NOT followed by a `:  ` definition ends the entry. *)
+   parity). A blank NOT followed by a `: ` definition ends the entry. *)
 definition_term = "::", space, inline_content, newline, {term_continuation_line} ;
 term_continuation_line = inline_content, newline ;
 (* A term folds a following plain line as a soft break; a blank line, a new
-   `::`/`:  ` marker, or a block opener ends it. A term holds inline content
+   `::`/`: ` marker, or a block opener ends it. A term holds inline content
    only -- no block body. (This used to read "like a heading", which was never
    the right comparison: a term is the KEY half of a key-value entry, not a
    title, and it is bound to the definition beneath it rather than to a section
@@ -1577,8 +1578,8 @@ definition_indent = whitespace, {whitespace} ;
    Thus the `>` on
 
        :: t
-       :  body
-           > q
+       : body
+          > q
 
    opens a block quote. The same rule covers headings, lists, tables, code/raw/
    colon fences, definitions, attributes followed by their target and comments,
@@ -1609,7 +1610,6 @@ definition_indent = whitespace, {whitespace} ;
    items and block quotes, matching djot). A blank line that is NOT followed by
    an indented continuation ends the body: the single-blank entry separator
    before the next `:: term` is preserved. *)
-
 (* --- Tables --- *)
 table = standard_row, [delimiter_row], {table_row}, [caption_slot] ;
 (* a table BEGINS with a standard row; a continuation row only ever follows
@@ -4640,9 +4640,9 @@ EOF = (* end of file *) ;
          standard row does:
 
              - | a |            > | a |            :: t
-               + b |            > + b |            :  | a |
-             tail               tail                  + b |
-                                                   tail
+               + b |            > + b |            : | a |
+             tail               tail                 + b |
+                                                  tail
 
          all end their container and leave `tail` a document paragraph, the
          same derivation S4's THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST
@@ -6094,7 +6094,7 @@ EOF = (* end of file *) ;
 
          THE FIRST-BLOCK FORM IS THE ITEM AND THE DESCRIPTION -- NORMATIVE
          (carve#1821). The four containers above take the marker; only TWO of
-         them take it in the FIRST-BLOCK position. `- +` and `:  +` open a body
+         them take it in the FIRST-BLOCK position. `- +` and `: +` open a body
          whose content is the following flush-left block, and over a line that
          is not flush-left the marker is refused and the body ends. A FOOTNOTE
          BODY and a BLOCK QUOTE have no such form: `[^a]: +` and `> +` open a
@@ -6863,7 +6863,7 @@ EOF = (* end of file *) ;
          to the item. The block-opener set is UNIFORM and closed: block quote (`>` or
          `> `), heading (`#`), thematic break, fenced code, colon fence / admonition
          (`:::`), TABLE (a `|`-delimited row), and DEFINITION LIST (a `:: term`
-         opener; the two-line `:: `/`:  ` marker is recognized by the same
+         opener; the two-line `:: `/`: ` marker is recognized by the same
          look-ahead the top level uses, and only the `:: ` TERM line opens the
          block). None of these is special-cased: a def-list or table interrupts
          at column 0 and nests at content_column exactly as a quote or heading
@@ -8726,7 +8726,7 @@ EOF = (* end of file *) ;
       writer still does not use it. Inside a list item or a definition
       description there is no such spelling at any width: the marker's own
       content column absorbs the padding, so `- ![a](u)` and `-       ![a](u)`
-      are the same tree, and `:  ` behaves the same way. A writer preserving
+      are the same tree, and `: ` behaves the same way. A writer preserving
       the shape at one nesting level and losing it at the next, with nothing
       declaring the difference, is not a preservation rule; and the indented
       form emits meaning-bearing leading whitespace, which editors and
@@ -11220,8 +11220,8 @@ EOF = (* end of file *) ;
       closerless container:
 
           :: t
-          :  d
-             {.k}
+          : d
+            {.k}
           tail
 
       The `definition_list` ends where the description ends, not on the
