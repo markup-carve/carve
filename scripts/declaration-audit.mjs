@@ -643,7 +643,7 @@ function listFiles(repo, dir) {
 
 /* ------------------------------------------------------------------- main */
 
-export const __internals = { blankComments, declarationIndex, bracketedBlock, topLevelEntries, liveRows, classifyPinDistance, gitPinStatus, isDeclarationName, MANIFEST }
+export const __internals = { blankComments, declarationIndex, bracketedBlock, topLevelEntries, liveRows, classifyPinDistance, gitPinStatus, isDeclarationName, undeclaredLedgerRows, MANIFEST }
 
 if (process.env.CARVE_DECL_AUDIT_LIB === '1') {
   // Imported for its helpers by the self-test; do not run the audit.
