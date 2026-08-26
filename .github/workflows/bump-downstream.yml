@@ -200,6 +200,16 @@ jobs:
           # fetch needed, so the fast path stays a shallow single-branch clone.
           # A missing branch makes the call fail -> same safe action as "no
           # commits ahead": recreate from main.
+          # The SHA this decision is made against. The scan below and the push
+          # at the end of the job are minutes apart -- a clone, a submodule
+          # update, a conformance run and possibly a codex attempt sit between
+          # them -- so anything landing in that window is invisible here.
+          # Captured now, it becomes the LEASE the push is held to. Empty means
+          # the branch does not exist yet, which the push treats as 'must still
+          # not exist'.
+          observed="$(gh api "repos/$REPO/git/ref/heads/automation/bump-spec" \
+                --jq '.object.sha' 2>/dev/null || true)"
+
           foreign=0
           if ahead="$(gh api "repos/$REPO/compare/main...automation/bump-spec" \
                 --jq '.commits[] | "\(.commit.author.email)|\(.commit.committer.email)"' 2>/dev/null)"; then
@@ -422,9 +432,35 @@ jobs:
             # overwriting whatever arrived in the meantime.
             git push origin automation/bump-spec
           else
-            # Branch was recreated from main and carries only this workflow's
-            # own commits, so replacing it loses nothing.
-            git push -f origin automation/bump-spec
+            # Branch was recreated from main and carried only this workflow's
+            # own commits WHEN THE SCAN RAN. A bare -f asserts that is still
+            # true minutes later, and it is not: an agent pushing into that
+            # window is overwritten silently. That happened three times in
+            # forty minutes on 2026-08-26, while three engine ports were in
+            # flight, each time discarding verified green work.
+            #
+            # The lease makes the scan and the push ONE decision, evaluated by
+            # the remote at the instant of the push. Anything that arrived
+            # after observed was read REJECTS the push instead of losing to it
+            # -- the same protection the preserve path above already gets from
+            # its plain push, which this branch of the if never had.
+            if [ -n "$observed" ]; then
+              lease="automation/bump-spec:$observed"
+            else
+              lease="automation/bump-spec:"
+            fi
+            if ! git push --force-with-lease="$lease" origin automation/bump-spec; then
+              lease_msg="Bump aborted for $REPO: automation/bump-spec moved after this run read it (lease ${observed:-<absent>}), so the push was refused rather than overwriting the new commits. Nothing was lost. Re-run the workflow to bump on top of them."
+              echo "::error::$lease_msg"
+              echo "$lease_msg" >> "$GITHUB_STEP_SUMMARY"
+              # A refusal nobody reads is the same defect one layer out, so put
+              # it where whoever pushed will see it.
+              late_pr="$(gh pr list --repo "$REPO" --head automation/bump-spec --state open --json number --jq '.[0].number // empty')"
+              if [ -n "$late_pr" ]; then
+                gh pr comment "$late_pr" --repo "$REPO" --body "$lease_msg" 2>/dev/null || true
+              fi
+              exit 1
+            fi
           fi
 
           body="$(printf '%s\n\n%s\n%s' \
