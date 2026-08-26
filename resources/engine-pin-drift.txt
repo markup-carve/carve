@@ -24,3 +24,4 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+427-the-continuation-marker-attaches-one-block-in-every-container-4  the pin still lets a quote line after a `+` inside a block quote continue the outer quote instead of attaching as a nested one, so the marker attaches nothing there (carve#1782). The oracle attaches it, like every other kind of block.

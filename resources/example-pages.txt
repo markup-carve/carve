@@ -300,6 +300,7 @@ index: examples/edge-cases/index.md
   408-the-writer-spells-looseness-only-where-a-blank-line-cannot
   408-the-writer-spells-looseness-only-where-a-blank-line-cannot-2
   a-floating-attribute-does-not-widen-a-list-item-s-content-column
+  the-continuation-marker-attaches-one-block-in-every-container
 
 [edge-containers] Containers, quotes and fences
 > Divs, block quotes, code and comment fences: nesting, lazy continuation, absorption and what closes what.

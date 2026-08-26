@@ -1,0 +1,64 @@
+The continuation marker attaches one block in every container
+
+```
+- a
++
+para
+> q
+.
+<ul>
+  <li>a
+    para
+  </li>
+</ul>
+<blockquote><p>q</p></blockquote>
+```
+
+```
+[^n]: a
++
+para
+> q
+
+see[^n]
+.
+<blockquote><p>q</p></blockquote>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>a</p>
+      <p>para<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+:: t
+:  a
++
+para
+> q
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>a</p>
+    <p>para</p>
+  </dd>
+</dl>
+<blockquote><p>q</p></blockquote>
+```
+
+```
+> a
++
+> q
+.
+<blockquote>
+  <p>a</p>
+  <blockquote><p>q</p></blockquote>
+</blockquote>
+```
