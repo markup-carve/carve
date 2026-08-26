@@ -69,9 +69,7 @@
          "x = 5 \n * 3 + 17"; a blank line starts the list. (Deliberate
          change from the earlier bullet/ordered asymmetry: an ordered
          marker is too common in prose, and the symmetric rule removes the
-         hard-wrapped-bullet false positive. Pinned by corpus 05-lists-12/13,
-         76-paragraph-interruption, 77-blockquote-lazy-continuation,
-         82-single-line-headings.) TIGHT NESTED LISTS UNAFFECTED: an
+         hard-wrapped-bullet false positive.) TIGHT NESTED LISTS UNAFFECTED:
          indented marker inside an open list ITEM opens a sublist with no
          blank line -- that is §24 C3 (content column), not this relation.
       I3 IMAGE EXCLUDED. A line that is only a bare image ("![alt](url)")
@@ -87,10 +85,8 @@
          A `:::` OPENER IS NOT GUARDED. It interrupts whether or not a closer
          follows, and an unterminated one closes with its host -- the
          enclosing container's boundary, or end of input at the top level
-         (§12; the citation here read §25, which is the security section and
-         says nothing about it). Pinned by
-         corpus 81-paragraph-interruption-20: `Text` / `:::` / `stuff` is a
-         paragraph followed by a div holding `stuff`.
+         (§12). Pinned by corpus 81-paragraph-interruption-20: `Text` /
+         `:::` / `stuff` is a paragraph followed by a div holding `stuff`.
 
       I5 INVISIBLE CONSTRUCTS interrupt AND are consumed: a reference
          definition (link `[r]: url`, footnote `[^r]: …`, abbreviation
@@ -179,16 +175,11 @@
          in scope versus retain pending metadata -- and the column that selects
          the band does not.
 
-         WHICH CONTAINER, NOT ONLY THAT IT IS TEXT (carve#1800). "Lazy
-         paragraph text" names an operation on an OPEN PARAGRAPH, so the text
-         lands in the container that holds that paragraph, and a reader that
-         ends the container and then publishes the same characters one level out
-         has not carried the sentence out -- it has produced text in a place the
-         sentence does not name. The definition-description host is where the
-         two readings came apart: a link or footnote definition one or two
-         columns below the description's content column ended the `dd` and was
-         published as a DOCUMENT-level paragraph, one line after a plain line at
-         the identical column folded into the `dd`. Pinned per kind by corpus
+         WHICH CONTAINER, NOT ONLY THAT IT IS TEXT. "Lazy paragraph text" names
+         an operation on an OPEN PARAGRAPH, so the text lands in the container
+         that holds that paragraph; a reader that ends the container and then
+         publishes the same characters one level out has produced text in a
+         place the sentence does not name. Pinned per kind by corpus
          430-below-a-definition-body-s-column-an-invisible-line-folds-as-text.
 
          A DEFINITION COLLECTED AT content_column ENDS THE ITEM'S OPEN
@@ -225,14 +216,8 @@
          about a caption, stated separately from item 2's "a line that
          interrupts a paragraph" precisely because a caret line is not one of
          those. Item 4 would be redundant if it were.
-         WHY IT NEEDED WRITING DOWN. Only the INDENTED spelling was in the
-         corpus (158-indented-image-and-caption-stay-literal), where both
-         readings agree because an indented line opens no top-level block at
-         all. The executable spec ended the paragraph on EVERY caret line, all
-         three engines folded it in, and nothing failed until the canonical
-         writer stopped force-escaping a line-initial caret and `oracle(fmt(x))`
-         parted from `oracle(x)` (carve#1046). Pinned by corpus
-         286-a-caret-line-does-not-end-a-paragraph-it-cannot-caption.
+         An INDENTED caret line opens no top-level block at all, so both
+         readings agree there. (carve#1046)
 
    11. LIST MARKER CHANGE STARTS A NEW LIST -- OPERATIONAL (governs `list`
       in PART 2). §10 decides FIRST whether marker lines establish a list
@@ -264,24 +249,16 @@
            - oranges
          AT EVERY LEVEL. The boundary is not restricted to the top level: it
          applies wherever a list is, including a list nested in a list item
-         and a list inside a quote or a div. A rule that fired at the top
-         level and not inside an item would make one spelling mean two
-         things depending on where it sits, which Design Principle 1 exists
-         to prevent, and the marker's own container has nothing to do with
-         what the run separates.
+         and a list inside a quote or a div.
          THE RUN CLOSES NOTHING ON ITS OWN. It denies a FOLLOWING SIBLING
          MARKER the right to join; it does not end the item. A run followed
          by a continuation at the item's content column continues that item,
          at any run length -- which is SS17's content-column model unchanged,
          and is why three blank lines before indented text still leave one
          loose item.
-         WHY THREE AND NOT TWO. Two fires on decoration. Sampling 8000
-         Markdown files for the shape that would change -- a list open above
-         the run, a compatible sibling marker after it -- found 30 sites at
-         two blank lines and NONE at three, and every one of the 30 was
-         generator output or a changelog's spacing rather than an author
-         separating two lists. A released line needs a threshold that fires
-         on nothing already written.
+         WHY THREE AND NOT TWO. Two fires on decoration -- generator output
+         and changelog spacing routinely spell two blank lines between
+         compatible sibling markers.
       N2 ORDERED DIALECT. A list's dialect (decimal / lower- or upper-alpha
          / lower- or upper-roman) and delimiter are fixed by its FIRST
          item; a later marker outside the dialect, or with the other
@@ -303,9 +280,7 @@
       on the type identifier (below). A BARE `:::` opener with NO type
       word is a GENERIC DIV: a plain `<div>` (no class added), i.e. djot's
       generic container. An EMPTY one closes on the next line --
-      `<div>` newline `</div>`, the exception PART 10 §4 states -- not
-      `<div></div>`, which no engine emits and which this line claimed
-      until carve#531 measured it.
+      `<div>` newline `</div>`, the exception PART 10 §4 states.
 
       INLINE OPENER ATTRIBUTES -- STRICT (djot). The opener line carries NO
       inline attributes: it is the colon fence, an optional type word, and
@@ -332,26 +307,18 @@
       may hold `::: tip`, the inner line being an opener rather than a closer
       on account of its label. Only a bare equal-length line closes.
 
-      Compatibility history for the retired equal-or-greater closer and
-      literal-unclosed readings lives in docs/spec-history.md. The current rule
-      is fully stated above and pinned by carve#770 and carve#1717.
-
       THE CANONICAL WIDTH IS A FUNCTION OF DEPTH, AND THAT COSTS O(depth^2)
       BYTES (carve#1553). The exact-length guard leaves the DIRECTION free --
       longer-outer documents and longer-inner ones both parse -- and `carve
       fmt` writes the inward one: the outermost container is `:::` and each
       level inward adds one colon (PART 11; the `colon_fence` note in PART 2).
       So the writer sizes each fence from the depth it is ALREADY CARRYING. It
-      needs no lookahead and no scan of the subtree it has not written yet, and
-      the widths it emits cannot collide with one another, because along any
-      one chain they are STRICTLY INCREASING: a container's closer is wider
-      than every fence enclosing it and narrower than every fence it encloses.
-      (A fence-shaped line in TEXT is a different problem, answered by PART 11
-      §5's escaping rather than by this width.)
+      needs no lookahead, and the widths it emits cannot collide, because along
+      any one chain they are STRICTLY INCREASING. (A fence-shaped line in TEXT
+      is a different problem, answered by PART 11 §5's escaping.)
 
       A nest d containers deep spends d^2 + 5d bytes on opener and closer
-      markers. This accepted canonical-size trade is recorded in
-      docs/spec-history.md (carve#1553).
+      markers -- the accepted canonical-size trade (docs/spec-history.md).
 
       A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH
       EXPECTING A CLOSER -- NORMATIVE. A `:::` line that is not a valid opener
@@ -407,13 +374,8 @@
       that holds it (corpus
       270-a-real-div-in-a-container-and-the-flush-left-line-after-it), which is
       end of input only when the item runs that far.
-      The corpus pins these
-      (resources/examples/edge-cases.md "Fence opener with a nested-list body inside a list
-      item").
-
-      The retired missing-closer reading and its compatibility evidence live in
-      docs/spec-history.md. The current host-closing rule applies unchanged in
-      a list item and is pinned by carve#1722.
+      (resources/examples/edge-cases.md "Fence opener with a nested-list body
+      inside a list item" pins these.)
 
       The two tiers for a typed block:
 
@@ -456,12 +418,10 @@
            An explicitly empty `""` still counts as a supplied (empty)
            title. Applies to both tiers.
 
-      AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME -- NORMATIVE
-      (carve#1468). A Tier-1 block renders `<aside>`, which is a COMPLEMENTARY
-      LANDMARK, and a landmark with no name is an anonymous row in a reader's
-      landmark list -- the same defect as the unnamed backlink SS16 records, one
-      element up. Tier 2 renders `<div>`, is not a landmark, and takes nothing
-      here.
+      AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME -- NORMATIVE. A
+      Tier-1 block renders `<aside>`, which is a COMPLEMENTARY LANDMARK, and a
+      landmark with no name is an anonymous row in a reader's landmark list.
+      Tier 2 renders `<div>`, is not a landmark, and takes nothing here.
 
         TITLED: the name is the title the author already wrote. The
         `<p class="admonition-title">` takes an `id` and the aside points at it
@@ -537,8 +497,7 @@
         `jgm/djot.js#43` the other way (all attributes migrate to the
         section) and then implemented that resolution only when an
         explicit id is present, so djot's two id cases disagree with
-        each other (`jgm/djot.js#144`). Carve's two cases agree. See
-        divergence-from-djot.md.
+        each other. Carve's two cases agree. See divergence-from-djot.md.
       - HEADINGS INSIDE CONTAINERS DO NOT WRAP. The algorithm walks
         TOP-LEVEL blocks (and the sections it opens), so a heading
         inside a blockquote, div, admonition, list item, definition,
@@ -584,9 +543,7 @@
       - The two-pass id resolution (collect explicit ids first, then
         auto-slug headings with collision-dedup) is unaffected by this
         rule -- only the EMISSION site of the id moves from <h*> to
-        <section>. Existing crossref (`</#id>`) and implicit-heading
-        ref (`[Heading][]`) resolution continue to target the same
-        slug; the fragment URL `#{slug}` resolves to <section id> the
+        <section>. The fragment URL `#{slug}` resolves to <section id> the
         same way browsers resolve to <h* id>.
       - Carve does NOT add `<section>` wrappers around non-heading
         top-level blocks. Headings are the only trigger.
@@ -618,12 +575,11 @@
           attributes.
         - empty or SPACE-only (`[text]{}`, `[text]{ }`) -> a valid EMPTY
           block: a bare `<span>text</span>`. A TAB inside it is not padding
-          and the block is unrecognized (carve#906, the A7 position of THE
-          INLINE INTERIOR IS SPACE-ONLY in PART 4). Both reference impls
-          agree on the space form, even
-          though the bare `attribute_list` production nominally needs >= 1
-          attribute; the empty block is a blessed exception so a
-          default-attribute processor can target the span.
+          and the block is unrecognized (the A7 position of THE INLINE
+          INTERIOR IS SPACE-ONLY in PART 4). The empty block is a blessed
+          exception -- the bare `attribute_list` production nominally needs
+          >= 1 attribute -- so a default-attribute processor can target the
+          span.
         - unrecognized non-empty content (`[text]{???}`, `[text]{=y=}`) -> NOT
           an attribute block: the `]` and the `{...}` render literally. The
           inner bracket content is still inline-parsed, so `[*x*]{???}` ->
@@ -643,7 +599,7 @@
       with id/class/key=value in source order; multiple are allowed; a
       digit-first bare word is not a valid name (the block stays literal, as for
       any digit-first identifier). All impls support it (a carve extension
-      beyond canonical djot, matching djot-php; corpus 97-boolean-attributes).
+      beyond canonical djot, matching djot-php).
       THE THREE NAMES OF PART 9 §9 ARE THE EXCEPTION TO `name=""`: on an
       ordinary span, `abbr`, `time` and `kbd` are consumed into an HTML
       element instead of reaching the output as an attribute, so `[Tab]{kbd}`
@@ -651,20 +607,17 @@
       semantic names -- `samp`, `var`, `cite` and `dfn` -- are NOT core: a
       conformant core leaves them as ordinary boolean attributes
       (`<span samp="">x</span>`), and only the Tier-2 SemanticSpan extension
-      consumes them (§10; corpus 45-inline-extensions-10 pins the core render).
-      All seven are boolean attributes everywhere else,
+      consumes them (§10). All seven are boolean attributes everywhere else,
       including in the AST and in the canonical writer, which writes the span
       back as `[Tab]{kbd}` -- a value-less attribute is spelled bare there
-      (PART 11 §6c), so the consumed name comes back in the form the author
-      wrote it.
+      (PART 11 §6c).
       A COLON is not an `identifier` character, so a colon-bearing name is
       unrecognized in every form -- `{xml:lang="en"}`, `{.sm:hover}`, `{#a:b}`
-      and a bare `{a:b}` all leave the run literal, in every engine (corpus
-      248-an-attribute-name-admits-no-colon). It stays legal one position over,
-      inside an unquoted VALUE (`{k=a:b}`), which `unquoted_value` admits.
-      (A `{% ... %}` block is NOT a comment in Carve -- comments
-      are `%%` / `%%%` only, PART 9 -- and a `%`-bearing attribute block is an
-      invalid attribute that renders literally in ALL impls.)
+      and a bare `{a:b}` all leave the run literal. It stays legal one position
+      over, inside an unquoted VALUE (`{k=a:b}`), which `unquoted_value` admits.
+      (A `{% ... %}` block is NOT a comment in Carve -- comments are `%%` /
+      `%%%` only, PART 9 -- and a `%`-bearing attribute block is an invalid
+      attribute that renders literally in ALL impls.)
 
    15. BLOCK ATTRIBUTE LINES -- OPERATIONAL SEMANTICS (governs
       `block_attributes` in PART 2; matches djot). STATE: pending := the
@@ -689,15 +642,6 @@
              [^f]: note
 
              e
-
-         is `<p id="i">e</p>`. The attribute is the author's instruction about
-         a rendered element; attaching it to a construct that emits nothing
-         silently discards it, and A4 reserves discarding for the cases where
-         there is genuinely nothing left -- end of document, and end of the
-         container that holds the attribute (carve#1281). Neither is silent:
-         both are reported as `unattached-block-attribute`. This clause is about
-         floating PAST something invisible, which is a different question from
-         running out of blocks to float to.
 
       A3 MERGE (over all pending blocks, source order):
          * id -> last one wins;
@@ -731,10 +675,6 @@
          line onto a document-level paragraph; `- {.k}` / `# H` leaves the
          heading outside the item rather than pulling it in to be attributed.
 
-         The failure mode of the other reading is the argument against it. An
-         attribute reaching content the author did not write it next to is the
-         worst of the answers available, and it is the one carve-php shipped.
-
          DROPPING SILENTLY IS THE ONE THING THIS MAY NOT DO. Both dangling
          cases are a lint diagnostic, `unattached-block-attribute`
          (docs/validation.md), in the same family as the other constructs that
@@ -748,9 +688,8 @@
          has nothing left for the attribute.
 
          OUT OF SCOPE, and left open deliberately: what a container that ends up
-         EMPTY renders. carve-rs emits an empty `<blockquote>` for `> {.k}` /
-         `tail`; that is a rendering question about empty containers in general
-         and is not settled here.
+         EMPTY renders. That is a rendering question about empty containers in
+         general and is not settled here.
       A5 MULTI-LINE BLOCK. One block may wrap across lines ({#id\n .foo} is
          one block: id `id`, class `foo`). A BLANK line inside the braces
          ends the attempt -- the text is then literal, not a
@@ -782,10 +721,5 @@
          start after a marker, and A1/A2 apply to it exactly as they would
          at the top level -- a container does not get its own attribute
          rules.
-         Decided in carve#454. The two halves were each pinned (corpus
-         90-list-item-attributes-7 for the literal form, 84 for A1/A2) and
-         their boundary was not, so carve-rs read the marker line as
-         literal while carve-js, carve-php and the executable spec read it
-         as an attribute line. None of them could be shown wrong until the
-         boundary was stated.
+         Decided in carve#454.
    ============================================================================ *)

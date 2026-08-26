@@ -49,42 +49,25 @@
 
       THE SEVENTH IS THE SECOND SPELLING OF THE SECOND. A `quote_block` IS a
       block quote (PART 2), so it captions like one and a captioned quote is a
-      FIGURE either way -- the two spellings cannot differ here without the
-      fenced form being a worse quote than the prefixed one, which is the whole
-      premise of admitting it. The slot hangs on the CLOSING fence, as
-      `figure_group`'s does, because that is where a fenced container's last
-      line is. So TWO `:::` kinds now take a closer caption, and a `^ ` line
-      after any OTHER `:::` closer is still ordinary paragraph content.
+      FIGURE either way. The slot hangs on the CLOSING fence, as
+      `figure_group`'s does. So TWO `:::` kinds now take a closer caption, and
+      a `^ ` line after any OTHER `:::` closer is still ordinary paragraph
+      content.
 
-      WHERE THAT ALLOWANCE IS WRITTEN DOWN differs, and saying so is the point
-      of this paragraph. For FIVE hosts it is STRUCTURAL -- `code_block`,
-      `blockquote`, `table`, `figure_group` and `quote_block` each end in
-      `[caption_slot]`
-      (PART 2; on `figure_group` the slot hangs on the closing fence), and
-      caption_slot's single optional blank_line IS the rule. For the IMAGE
-      PARAGRAPH and the STANDALONE DISPLAY-MATH BLOCK it is PROSE: this
-      clause is the rule, and PART 3 already says so beside `image` ("there
-      is no separate grammar production for the pair").
+      WHERE THAT ALLOWANCE IS WRITTEN DOWN differs. For FIVE hosts it is
+      STRUCTURAL -- `code_block`, `blockquote`, `table`, `figure_group` and
+      `quote_block` each end in `[caption_slot]` (PART 2; on `figure_group`
+      the slot hangs on the closing fence), and caption_slot's single optional
+      blank_line IS the rule. For the IMAGE PARAGRAPH and the STANDALONE
+      DISPLAY-MATH BLOCK it is PROSE: this clause is the rule, and PART 3
+      already says so beside `image` ("there is no separate grammar production
+      for the pair").
 
       NOT AN OVERSIGHT. Neither of those two has a production to hang the slot
-      on. Both ARE a `paragraph` (PART 2), and what distinguishes them -- a
-      paragraph whose whole content is one image, a paragraph that is solely
-      the display-math span -- is a condition on that paragraph's inline
-      content, the same not-context-free class as PART 7's cell_content ("may
-      not contain an unescaped `|`") and §15's block_attributes. Two ways to
-      formalize it fail on inspection: hanging `[caption_slot]` on `paragraph`
-      itself would make EVERY paragraph captionable, which this enumeration
-      denies and no engine does; and a separate image / math paragraph
-      production would duplicate `paragraph` ambiguously AND inherit its
-      trailing `[blank_line]`, so the one blank line the slot exists to
-      account for could be consumed by either optional -- structural in
-      spelling and undecided in fact.
-
-      One rule, two spellings, not two rules. An engine implements this
-      clause; it does not implement four productions and then guess at the
-      remaining two hosts. This paragraph used to end "structural now, not
-      prose", which was true of three hosts out of the five it then named and
-      read as true of all five (carve#991).
+      on. Both ARE a `paragraph` (PART 2), and what distinguishes them is a
+      condition on that paragraph's inline content, the same not-context-free
+      class as PART 7's cell_content and §15's block_attributes. `paragraph`
+      itself is NOT captionable: this enumeration is closed.
 
    4b. WHAT A CAPTION MAKES OF ITS HOST -- EXPLANATORY. The `figure` node is
       the GENERIC captioned wrapper, not the semantic notion "figure". A
@@ -96,25 +79,6 @@
       counter bucket key (PART 2, CAPTION NUMBER PLACEHOLDER) -- and never from
       the host's node type. `^ Listing #: …` on a code block yields "Listing 1"
       because the author wrote "Listing", not because a code block is a listing.
-
-      SO A QUOTE IS NOT A SPECIAL HOST. carve#1161 briefly made a caption on a
-      quote an `attribution` rendered as a `<footer>` INSIDE the `<blockquote>`,
-      on the argument that a figure is a numbered thing and `figure` was doing
-      two jobs. Both halves are wrong. `figure` does one job here, as the code
-      block above shows; and a caption with no bare `#` takes no number under
-      either model, so a quote captioned `^ William Shakespeare` never entered a
-      counter. That clause is withdrawn (carve#1213), and the PART 11 clause
-      that carried the attribution onto the other three targets goes with it.
-      Its number is retired, not reused, which is why PART 11 runs 10c, 10e.
-
-      HTML AGREES, AND IN THE OTHER DIRECTION. The HTML Standard's `blockquote`
-      section requires that "attribution for the quotation, if any, must be
-      placed outside the `blockquote` element", and gives a `<figure>` wrapping
-      the quote with a `<figcaption>` as the way "to clearly relate a quote to
-      its attribution (which is not part of the quote and therefore doesn't
-      belong inside the `blockquote` itself)". So the withdrawn clause was not
-      one valid spelling among two: it put the attribution in the one place the
-      HTML Standard names as wrong.
 
    4c. A COMPOSITE FIGURE GROUPS ITS PANELS UNDER ONE CAPTION -- NORMATIVE
       (governs `figure_group` in PART 2; carve#1122). A bare `::: figure`
@@ -136,10 +100,8 @@
       matches `admonition_open` instead and stays a generic Tier-2 container
       -- `<div class="figure">`, title and label preserved losslessly, the
       pre-§4c shape -- and `carve lint` reports
-      `figure-group-opener-metadata` (corpus 318-composite-figures-8). The
-      group has no title or label slot BY DESIGN: its one authored metadata
-      channel is the caption, and a second spelling for "the text above the
-      figure" would be claimed from carve#1121's design space.
+      `figure-group-opener-metadata`. The group has no title or label slot BY
+      DESIGN: its one authored metadata channel is the caption.
 
       PANELS ARE THE DIRECT CHILDREN THE INNER RULES ALREADY MAKE CAPTIONABLE
       THINGS OF. After the body parses under the UNCHANGED §4 rules, the
@@ -150,37 +112,26 @@
       source order. Everything else -- paragraphs, lists, uncaptioned
       quotes, nested containers -- is plain group content, PRESERVED IN
       PLACE between the panels; a strict profile lints it, and no renderer
-      may silently drop or re-attach it (318-composite-figures-5). Two
+      may silently drop or re-attach it. Two
       consequences worth naming:
 
         - AN UNCAPTIONED QUOTE inside the group is plain content, which is
           how a quotation carries a figure number without a caption of its
-          own: leave the quote bare and caption the GROUP
-          (318-composite-figures-10):
-
-            ::: figure
-            > To be
-            :::
-            ^ Figure #: A pull quote
-
-            <figure class="carve-figure-group">
-              <blockquote><p>To be</p></blockquote>
-              <figcaption>Figure 1: A pull quote</figcaption>
-            </figure>
-
-          A CAPTIONED quote is a `figure` whose target is the quote (§4b)
-          and panels like any other captionable host -- the quote is not a
-          special host inside the group either.
+          own: leave the quote bare and caption the GROUP, and the group's
+          `<figure class="carve-figure-group">` holds the `<blockquote>` and
+          the group `<figcaption>`. A CAPTIONED quote is a `figure` whose
+          target is the quote (§4b) and panels like any other captionable
+          host -- the quote is not a special host inside the group either.
         - A TABLE PANEL keeps its own caption as the table's `<caption>`;
           the panel wrapper adds nothing to it.
 
       THE GROUP CAPTION ATTACHES AT THE CLOSER, THIS KIND ONLY. A `^ ` line
       (or multiline caption block, the normal `caption` rules) adjacent to or
       exactly one blank line below the group's CLOSING fence is the group
-      caption; two blank lines detach it into an ordinary paragraph
-      (318-composite-figures-6). Every other `:::` kind keeps today's
-      behavior -- a `^ ` line after a `::: note` closer is ordinary paragraph
-      content (318-composite-figures-7). Captions INSIDE the fence attach
+      caption; two blank lines detach it into an ordinary paragraph. Every
+      other `:::` kind keeps today's behavior -- a `^ ` line after a
+      `::: note` closer is ordinary paragraph content. Captions INSIDE the
+      fence attach
       only to their local host, unchanged.
 
       THE GROUP IS ONE NUMBERING UNIT (PART 9R R5). A `#` placeholder in the
@@ -193,8 +144,8 @@
       entry. For CROSS-REFERENCES (PART 9R R4), a panel with an id resolves
       `</#id>` with the group's number plus a letter by panel order among the
       panels -- "Figure 2a", letters a..z then aa, ab, ... -- and the group's
-      own id resolves as the plain "Figure 2"
-      (318-composite-figures-2). The letters exist in crossref text only:
+      own id resolves as the plain "Figure 2". The letters exist in crossref
+      text only:
       this version generates no visible `(a)` label inside the panel (authors
       write panel letters in panel captions; the mechanism is reserved).
       Panel ids register only when the group itself drew a number -- an
@@ -209,22 +160,16 @@
       content -- a captioned figure inside an admonition inside the group,
       say -- which draws AFTER the group even though its caption line sits
       above the group's in the source: the inner figure is "Figure 2" and
-      the group "Figure 1" (corpus 318-composite-figures-11). That
-      construction is already the stray content a strict profile lints.
-      Caption-line order was considered and rejected: under it, editing a
-      group's INTERIOR could renumber the group itself, and a group's number
-      should be stable under edits to what it contains. All four
-      implementations of record -- the oracle, carve-js, carve-php and
-      carve-rs -- agree on the pre-order result, so this clause writes down
-      the answer they already share rather than choosing between them.
+      the group "Figure 1". That construction is already the stray content a
+      strict profile lints. Caption-line order is NOT the rule: a group's
+      number is stable under edits to what it contains.
 
       GROUPS DO NOT NEST. A bare `::: figure` opener anywhere inside an open
       group's body -- any depth -- is a generic Tier-2 container
       (`<div class="figure">`), not an inner group, and lints as
-      `figure-group-nested` (318-composite-figures-9). Rejected initially
-      rather than specified halfway: nested numbering ("Figure 2a.iii"?) is a
-      design question carve#1122 explicitly defers, and a generic container
-      is the lossless degradation.
+      `figure-group-nested` (318-composite-figures-9). Nested numbering is a
+      design question carve#1122 explicitly defers, and a generic container is
+      the lossless degradation.
 
       LINT, NOT PARSE. The five findings this clause names are diagnostics
       over a valid parse: `figure-group-opener-metadata` and
@@ -253,10 +198,7 @@
       what the element admits -- no intermediate `div` is needed to make the
       shape valid, and none is emitted. This is also the shape Pandoc's
       writers produce for its native subfigures, which keeps HTML
-      import/export symmetric with the Pandoc bridge. The initial draft of
-      this clause wrapped the panels in a `<div class="carve-figure-panels">`;
-      that form was revised to the flat one before any release, so no
-      shipped document ever carried the wrapper.
+      import/export symmetric with the Pandoc bridge.
 
       The class is FIRST on the group and on each panel, exactly the typed-
       container convention (`admonition note`): `carve-figure-group` leads,
@@ -267,7 +209,7 @@
       with `carve-figure-panel` leading its classes the same way. No group
       caption -> no trailing `<figcaption>`. Zero panels -> the group
       `<figure>` holds the preserved content directly; a consumer selects
-      panels by the `carve-figure-panel` class, never by position, so the
+      panels by the `carve-figure-panel` class, never by position.
       shape needs no branch on child count.
 
    5. TABLE MODEL -- OPERATIONAL SEMANTICS (cell split, row validity,
@@ -344,31 +286,24 @@
 
          - and the block above `+ b |` at the item's own column is a
          blockquote. T6 declines, the line is ordinary prose, and prose reopens
-         the item's paragraph (PART 1 S4's clause on that). No reader joins the
-         cell, so a reader that consults the quote's table anyway declines the
-         join and still ends the paragraph, which reads one line as prose and
-         as a table row in the same parse. Corpus 361 pins it, with the
-         same-column spelling `- | a |` / `  | b |` as its control: there the
-         row above IS the item's own, it joins, and no paragraph opens.
-         (carve#1370)
+         the item's paragraph (PART 1 S4's clause on that). The control is the
+         same-column spelling `- | a |` / `  | b |`: there the row above IS the
+         item's own, it joins, and no paragraph opens. (carve#1370)
 
-         HEADER-NESS IS NOT THE DISCRIMINATOR, and reading it as one gets 115
-         right for the wrong reason. The executable spec declined whenever the
-         row above was ALL-HEADER, which answers three neighbouring documents
-         wrongly and all three engines agree it does:
+         HEADER-NESS IS NOT THE DISCRIMINATOR. Declining whenever the row above
+         is ALL-HEADER answers three neighbouring documents wrongly:
 
              |=a |=b |          | a |            |=a |
              + cont |           |=b |            | - |
                                 + c |            + cont |
 
-         The first two JOIN in every reader - onto a native header row, and
-         onto an all-header row that is not the table's first - and the third
-         DECLINES in every reader, on a NATIVE header row, because a delimiter
-         row sits between the two lines. Header-ness answers all three
-         backwards; the delimiter row answers all three. T9 already says the
-         rest outright: a `^` rowspan MAY reach a header cell, so a header
-         cell is an ordinary cell in every other table mechanism, and nothing
-         here makes it less of a row.
+         The first two JOIN - onto a native header row, and onto an all-header
+         row that is not the table's first - and the third DECLINES, on a
+         NATIVE header row, because a delimiter row sits between the two lines.
+         Header-ness answers all three backwards; the delimiter row answers all
+         three. T9 already says the rest outright: a `^` rowspan MAY reach a
+         header cell, so a header cell is an ordinary cell in every other table
+         mechanism.
 
          AN ALL-EMPTY CONTINUATION ROW IS A CONTINUATION ROW. T2's "at least
          one cell lies between" is written of `valid_row`, the predicate that
@@ -383,8 +318,7 @@
              | a | b |          | a |
              + | |              + |
 
-         the first absorbed and the second published as a paragraph. All three
-         engines absorb both.
+         Both are absorbed.
 
          IT LEAVES NO PARAGRAPH OPEN, LIKE THE ROW IT APPENDS TO -- NORMATIVE.
          PART 1 S4 asks what a container's last BLOCK is, and the answer here
@@ -415,15 +349,12 @@
          ending on a continuation row is decided by the run inside the quote
          and not by the line that carries it. An implementation that peels the
          `>` off ONE line loses that run, and the same quote then answers
-         differently bare and wrapped in a definition body - which is the
-         defect carve-rs shows today, in the direction opposite to the other
-         two engines.
+         differently bare and wrapped in a definition body.
 
-         A QUOTE INSIDE A QUOTE IS ASKED THE SAME QUESTION, ruled at carve#1355
-         and stated in PART 1 S4 rather than here, since it is not about a
-         continuation row: an outer quote's last block may be an inner quote,
-         and then the INNER quote's own last block answers. `> > # H` over
-         `tail` ends both quotes for the reason `> # H` over `tail` ends one.
+         A QUOTE INSIDE A QUOTE IS ASKED THE SAME QUESTION, stated in PART 1
+         S4 rather than here since it is not about a continuation row: an
+         outer quote's last block may be an inner quote, and then the INNER
+         quote's own last block answers.
       T7 GFM DELIMITER ROW -- NORMATIVE. delimiter_row(R) := R is EXACTLY
          the SECOND row of the table AND every cell matches delimiter_cell
          (optional ws, optional `:`, one or more `-`, optional `:`,
@@ -465,23 +396,16 @@
          `<tbody>` (corpus 09-tables-7) -- so the attribute states an
          association the table already has rather than adding a concept.
 
-         IT IS NOT DECORATION. Without it a screen reader guesses the
-         association from position, and guesses wrong on any table with both
-         kinds of header; `scope` is the mechanism WCAG 1.3.1 names for
-         programmatically determined relationships. Carve emits real `<table>`
-         markup precisely so assistive technology can read it, and this was the
-         one part of that markup the language left to inference.
-
          AN AUTHORED `scope` REPLACES THE DEFAULT rather than joining it. A
          cell block naming `scope` suppresses the emitted one, so
          `|={scope="colgroup"} a |` -- a header cell carrying attributes,
          which is grammatical because of T10 and was not before it -- is
          `<th scope="colgroup">` and not
          `<th scope="col" scope="colgroup">`. That is how `colgroup` and
-         `rowgroup`, which have no marker spelling here, stay reachable. The
-         duplicate was the first thing this rule produced when the default was
-         emitted unconditionally: two attributes of one name, which is not
-         valid HTML and is not an override.
+         `<th scope="colgroup">` and not
+         `<th scope="col" scope="colgroup">`. That is how `colgroup` and
+         `rowgroup`, which have no marker spelling here, stay reachable: two
+         attributes of one name is not valid HTML and is not an override.
 
          THE TEST IS CASE-INSENSITIVE, which is the one place this rule departs
          from Carve's case-sensitive attribute names. `{Scope="colgroup"}` is a
@@ -509,45 +433,9 @@
          makes it ordinary content (T4's `{.x} <` is unchanged), and the
          validity rule is T8's.
 
-         WHAT THIS RULE EXISTS TO FIX. With the block bound to the opening
-         `|` instead, an attributed HEADER cell has no spelling at all. The
-         one shape available, `|{#x}=R|`, is ambiguous by construction: an
-         attributed header cell, or a data cell whose content starts with
-         `=`. §5 T1/T3 resolve it as the second, so a canonical writer that
-         emitted it for an attributed header cell round-tripped
-         `<th id="x">R</th>` into `<td id="x">=R</td>` -- a PART 11 §1
-         failure the corpus could not see, because the only document
-         pinning cell attributes (99-table-cell-attributes) carries no
-         marker, and every order agrees on a cell with no marker. Once `=`
-         has committed the cell to header, everything after it is
-         unambiguous, so binding last is the only placement under which the
-         shape is expressible.
-
-         THE COST, STATED. This CHANGES an already-released spelling on
-         `data_cell`: `|{#x}< content |` was documented as attributes then a
-         left-alignment marker, and under T10 the `<` is no longer in a
-         marker position, so it is literal content and the cell is not
-         aligned. (T11 moves that same spelling once more: with no space
-         after the closing brace there is no run, so the braces are content
-         too.) That source REINTERPRETS rather than erroring, which is
-         the outcome to be careful about. It is accepted here for the
-         uniform shape over the preserved special case, on a `0.x` line, and
-         it ships WITH its migration rather than a deprecation window: a
-         canonical writer rewrites the old spelling to the new one. Row
-         attributes (T8) do not move.
-
-         WHAT WAS ACTUALLY MEASURED, so the migration is not sized from the
-         prose. Against this repo's own oracle (scripts/spec) and the
-         `@markup-carve/carve` build package.json pins, `|{#x}< content |`
-         ALREADY renders `<td id="x">&lt; content</td>` -- neither reads the
-         `<` as alignment, so neither ever implemented the order this rule
-         replaces. The other half -- an attribute block after a marker --
-         is what was new, and both this repo's oracle and the pinned
-         `@markup-carve/carve` build read it. So the reinterpretation risk
-         falls on documents written to the retired PROSE, and the engine
-         work was to start reading the marker-run position, not to stop
-         reading the old one. Pinned by corpus
-         319-cell-attributes-bind-after-the-kind-and-alignment-markers.
+         The canonical writer uses this order. The retired
+         `|{#x}< content |` spelling is parsed as unaligned literal content;
+         row attributes (T8) are unaffected.
 
       T11 A MARKER RUN ENDS AT A SPACE -- NORMATIVE. A cell's marker run is
          the kind marker `=`, the alignment run and the attribute block, in
@@ -563,16 +451,6 @@
 
          A cell with NO run is unchanged -- `| a |`, `|a|` and `||` all mean
          what they meant.
-
-         THE RUN HAD NO TERMINATOR, SO IT TOOK CONTENT INSTEAD. `|=hot= |` is
-         a cell whose author wrote a highlight and got a header cell holding
-         `hot=`: the marker ate the opening `=` and nothing said so. Carve
-         resolves this class by making the failure VISIBLE -- `- {.notattr}
-         Milk` renders its braces rather than guessing -- and the table cell
-         was the outlier. The alignment run already required the space, and
-         a doubled marker (`|=<< Note |`) already fell back to content for
-         want of one; this states the rule ONCE, for the whole run, instead
-         of for one of its three parts.
 
          THE CLOSING PIPE IS NOT A TERMINATOR. `|=|` and `|{#x}|` carry no
          run; an empty marked cell is `|= |` and `|{#x} |` -- which is what
@@ -590,20 +468,16 @@
          line for one rule over three, and it ships WITH its migration: §6e's
          canonical writer already emits a space after every prefix, so a
          formatted document is already conformant, and the glued form is what
-         a linter can name. Pinned by corpus
-         390-a-table-cell-s-marker-run-ends-at-a-space.
+         a linter can name.
 
-         THE LINTER NAMES IT `table-marker-run-padding` -- NORMATIVE
-         (carve#1464). One id for the whole run, because T11 is one rule for
-         the whole run: it reports a glued kind marker, a glued alignment run
-         and a glued attribute block alike, and `fmt --migrate` repairs any of
-         them by inserting the space. It SUPERSEDES
-         `table-alignment-run-padding`, which named the middle part only -
-         which is how the one part of the run that reinterprets existing
-         documents, the kind marker, ended up the part with no diagnostic.
-         A lint id is spec surface (docs/validation.md carries the row), so it
-         is agreed here BEFORE an engine emits it, rather than two engines
-         picking different names for it.
+         THE LINTER NAMES IT `table-marker-run-padding` -- NORMATIVE. One id
+         for the whole run, because T11 is one rule for the whole run: it
+         reports a glued kind marker, a glued alignment run and a glued
+         attribute block alike, and `fmt --migrate` repairs any of them by
+         inserting the space. It SUPERSEDES `table-alignment-run-padding`,
+         which named the middle part only. A lint id is spec surface
+         (docs/validation.md carries the row), so it is agreed here BEFORE an
+         engine emits it.
 
    6. REFERENCE RESOLUTION -- FORMAL STATEMENT MOVED TO PART 9R (rules
       R1-R3; this §-anchor stays for existing references). Summary: link
@@ -641,9 +515,7 @@
         or glyph extension (a German / Swiss quote set, say) selects WHICH
         characters are emitted; it does NOT decide WHETHER the substitution
         runs, and removing such an extension does not disable the
-        transform. Stated explicitly because the existence of a
-        smart-quotes extension otherwise reads as "the transform is that
-        extension" -- it is not (carve#338).
+        transform.
       - OPTIONAL OFF SWITCH -- NORMATIVE WHERE OFFERED. A host MAY expose
         one document-global switch, `smartTypography`, defaulting to TRUE
         (idiomatic spellings: `smartTypography: false` in carve-js and
@@ -654,11 +526,7 @@
         document is configured when it is not, which is worse than the
         rejection an unimplemented option should produce. Omitting and
         implementing are both fine; the silent middle is the one state this
-        clause forbids. Measured on each engine's main: carve-php raises
-        `Unknown named parameter $smartTypography`, carve-rs has no such
-        method, and carve-js accepts the option and ignores it -- so the
-        reference is the only one currently non-conformant here, and it is
-        non-conformant in the direction a host cannot detect (carve#560).
+        clause forbids (carve#560).
 
         Where it IS offered and set to FALSE:
         * PARSING IS UNCHANGED. The nodes below are still produced, so the
@@ -720,11 +588,9 @@
             author typed as a typographic character is not a
             `smart_punctuation` node and is emitted unchanged either way.
           Rationale: Markdown is the target generated for machines to read,
-          and the glyph breaks exact-match search against the source - a
-          quote substituted around a code-ish value (`= 'verification-link-
-          sent'`) can no longer be found by searching for what the author
-          wrote, and the reader cannot undo it because the glyph is all that
-          survives. Pinned in tests/corpus-optional (feature
+          and the glyph breaks exact-match search against the source, which
+          the reader cannot undo because the glyph is all that survives.
+          Pinned in tests/corpus-optional (feature
           `markdown-typography-source`, target `markdown`).
         * KIND NAMES ARE SPEC SURFACE -- an implementation inventing its own
           spelling breaks every AST consumer. The fourteen table-resolved

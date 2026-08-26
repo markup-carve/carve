@@ -31,18 +31,14 @@
       A structural CLASS instead merges into the class slot at its FRONT,
       which is the mandatory-base-class rule above said from the other
       side (`task-list`, math's `math inline|display`).
-      This matches reference djot (measured, 0.3.2) on every shape tried --
+      This matches reference djot on every shape tried --
       `<ol type="a" class="attr">`, `<ol start="5" class="attr">`,
       `<a href="…" class="c" id="i" k="v">`, `<img alt="a" src="…"
       class="c">`, `<ul class="task-list c">` -- and it is the same
       placement PART 10 §1 already states for a mention, where the
       structural `href` precedes the author's `data-role` and `id`.
       SO THE DISCRIMINATOR IS THREE-WAY, not two: structural leads,
-      authored follows in source order, engine-minted follows that. Reading
-      a structural attribute as "generated" put carve-rs alone against
-      carve-js, carve-php and djot on `{.attr}` / `a. alpha`
-      (markup-carve/carve#1090); nothing pinned it, which is why the two
-      readings survived side by side.
+      authored follows in source order, engine-minted follows that.
 
       A GENERATED ATTRIBUTE JOINS AT THE END. The two rules above cover
       an all-authored Attrs and an all-programmatic one; the MIXED case
@@ -68,12 +64,10 @@
         > ## Nested   -> <h2 id="Nested" data-source-line="1">
       This is a THIRD category, and stating it is what stops an engine
       from being conformant and divergent at once. An engine that
-      appends the stamp at RENDER time (carve-js) gets the order for
-      free, because the stamp is written outside the attribute walk. An
-      engine that attaches it at PARSE time (carve-rs) carries it inside
-      the authored run, where the "generated last" rule alone would put
-      the id behind it -- which is exactly what carve-rs did until it
-      was caught by a test rather than by this text.
+      appends the stamp at RENDER time gets the order for free, because the
+      stamp is written outside the attribute walk; an engine that attaches it
+      at PARSE time carries it inside the authored run, where the "generated
+      last" rule alone would put the id behind it.
 
       TEXT-BLOCK ALIGNMENT IS A SEMANTIC ATTRIBUTE. On `<p>`, `<div>` and
       `<h1>` through `<h6>`, an authored `align` key whose trimmed,

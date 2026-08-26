@@ -43,31 +43,9 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    PART 2. MARKER SEPARATORS AND PADDING SLOTS below is 3 applied to every
    whitespace slot in this grammar that sits inline.
 
-   CONSOLIDATING THE STATEMENT DOES NOT REMOVE THE MEASUREMENT. A tab advances
-   to a stop rather than by a fixed amount, so computing a line's content
-   column still needs the per-line indentation walk. Nor does it make a
-   tab-indented source and a space-indented source the same document: the
-   source records what the author wrote (carve#817, carve#966). A
-   whole-document tab-expanding pre-pass could not be written in any case,
-   because 4 preserves tabs inside verbatim content, so the leading run still
-   has to be identified line by line. NO SEMANTIC CHANGE IS INTENDED and no
-   corpus document moves: the four sentences are what the twelve restatements
-   said between them, and not one production changes spelling. That is a claim
-   about this file, NOT a claim that every engine conforms -- the divergences
-   this file already records against these slots (carve#901 at the frontmatter
-   token, the fence info string and `link_title`) are unaffected, neither
-   settled nor widened by saying the rule once.
-
-   WHY ONCE. This was written twelve times, once per construct. A rule spelled
-   per construct is a rule that can drift per construct, and a construct added
-   later inherits eleven precedents for spelling it a twelfth way. That is the
-   hazard ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT below was written
-   against (carve#963), one layer up: forty-two productions each spelling a
-   whitespace run for themselves is what let three engines reach into three
-   host languages for three different answers, and a carve-php sweep then
-   found fourteen spellings where its ticket named three. The count behaved
-   the same way here -- the ticket named five sites and the sweep found
-   twelve. (carve#984) *)
+   Computing indentation still requires a per-line tab-stop walk. Source
+   spelling remains preserved, and tabs inside verbatim content are never
+   expanded. *)
 
 (* MARKER SEPARATORS AND PADDING SLOTS -- NORMATIVE. A TAB IS SYNTAX ONLY IN
    THE LEADING RUN, the clause directly above. Two consequences settle every

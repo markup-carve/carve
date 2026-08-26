@@ -45,17 +45,14 @@
       output would carry the caption text as literal body prose instead of
       losing it cleanly, and the loss would stop being observable as a loss.
 
-      A FIGURE GROUP'S TABLE PANEL IS NOT THIS WRAPPER. PART 9 §4c has since
-      made `:::` a captionable host (carve#1122), and a reader arriving here
-      will ask whether `::: figure` around a table now spells the shape. It
-      does not. §16 holds a `figure_group`'s panels in `children` as exactly
-      the nodes the inner caption rules built, so a table panel is a plain
-      `table` child of the group -- carrying its own `caption` if it has one --
-      and never a `figure` whose target is a table. The two say different
-      things: a group wraps a SEQUENCE of panels and captions the sequence,
-      while this wrapper wraps ONE table and captions that table. Carve 0.1
-      source still spells no `figure{target: table}`, which is what makes the
-      writer's loss unavoidable rather than a choice.
+      A FIGURE GROUP'S TABLE PANEL IS NOT THIS WRAPPER. §16 holds a
+      `figure_group`'s panels in `children` as exactly the nodes the inner
+      caption rules built, so a table panel is a plain `table` child of the
+      group -- carrying its own `caption` if it has one -- and never a `figure`
+      whose target is a table. A group wraps a SEQUENCE of panels and captions
+      the sequence, while this wrapper wraps ONE table and captions that table.
+      Carve 0.1 source still spells no `figure{target: table}`, which is what
+      makes the writer's loss unavoidable rather than a choice.
 
       THE TABLE IS THE ONLY HOST IN THIS POSITION. PART 9 §4b states what a
       caption makes of its host: every other captionable host -- an image, a
@@ -84,20 +81,6 @@
       at the use site, and §3 makes field names spec surface: one construct
       identified two ways in one document is the collision §1 exists to stop.
 
-      NEITHER CURRENT BEHAVIOR STANDS, and the two lose different halves of
-      what §10 keeps (carve#1276):
-
-        consuming the line at parse time    discards `pos` entirely, so the
-                                            line cannot be reproduced and an
-                                            AST round trip deletes it
-        leaving the line a paragraph        publishes the parser's failure to
-                                            recognize it: a `citation_group`
-                                            followed by the literal text
-                                            `: {author=` and the rest of the
-                                            entry, which a ProseMirror bridge
-                                            hands an editor as prose and round
-                                            trips as prose
-
       NO RENDERED OUTPUT MOVES ON ANY TARGET. The node renders nothing where it
       sits; the entry's text renders in the references list the extension
       builds, exactly as it did before. That is why the divergence survived so
@@ -115,11 +98,8 @@
       reference definition out of a container while §7 rules that an
       abbreviation definition inside one is not a definition at all, and this
       clause is about the node's SHAPE rather than about which lines produce
-      one. Measured on carve-js `620def4`, a `[@key]: entry` line inside a
-      block quote or a list item is paragraph text and defines nothing, which
-      is §7's answer rather than §10's; that is a measurement of one engine and
-      not a ruling. An implementation emitting the node for a definition it
-      recognizes satisfies this clause whichever way that question lands.
+      one. An implementation emitting the node for a definition it recognizes
+      satisfies this clause whichever way that question lands.
 
    18a. A CITATION ITEM IS A POSITIONED INLINE NODE -- NORMATIVE.
       Every item in `citation_group.items` carries `type: "citation"` and the
@@ -231,34 +211,20 @@
 
       THIS MIRRORS THE PARSE BOUNDARY, which is the whole of the rule: PART 0
       INPUT performs the same replacement on source, and PART 9 §29 carves
-      U+0000 out of the content class on that basis. A wire format that
-      admitted the character would put an authored NUL and an ingested one on
-      different footings - one replaced, one content - which is precisely the
-      divergence §29 exists to remove. An AST is a second door into the same
-      renderers; it takes the same doormat.
+      U+0000 out of the content class on that basis. An AST is a second door
+      into the same renderers; it takes the same doormat.
 
       A READER DOES NOT REFUSE THE VALUE, which is the choice worth stating.
       §11 and §12 refuse an unknown property and a deviant root, because those
-      are structure a producer got wrong and repairing them silently would
-      accept attacker-controlled shape. This is different: the replacement is
+      are structure a producer got wrong. This is different: the replacement is
       what the parse boundary already does to the identical string, so
-      performing it is not a repair, it is the documented reading. Refusing
-      instead would make an ingested document stricter than the same document
-      written as source, and a host that builds a tree programmatically would
-      have to implement CommonMark 2.3 itself before it could hand the tree
-      back.
-
-      Applying this rule at every ingest boundary gives parsers, renderers and
-      canonical writers the same guarantee and prevents U+0000 from colliding
-      with internal sentinels (carve-rs#1217, carve-js#1294).
+      performing it is the documented reading rather than a repair. Refusing
+      would make an ingested document stricter than the same document written
+      as source.
 
       AN IMPORTER IS THE SAME BOUNDARY BY THE SAME REASONING, and is stated
       here as a SHOULD rather than a MUST because the format being imported may
-      have its own rule. Carve's Markdown importer performs the replacement,
-      following CommonMark 2.3 (markup-carve/carve-js#1293); its BBCode
-      importer passes a raw NUL straight through into its Carve output, which
-      is not a substitution and BBCode has no clause to follow, but is the same
-      missing normalization arriving by a third door.
+      have its own rule.
 
    22. AN INGESTED VALUE THE SCHEMA CALLS ABSENT IS NORMALIZED AWAY --
       NORMATIVE (carve#1615). `resources/ast-schema.json` describes a list's
@@ -276,19 +242,14 @@
       value; §6 never promised to hand it back.
 
       THE DECIDING ASYMMETRY IS THAT NORMALIZING IS LOSSLESS. `start: 1` and no
-      `start` describe the same document -- the field is inert, and the renderer
-      emits no `start` attribute for either, `1` being the HTML default.
-      Nothing an author wrote is discarded. Preserving the value keeps a field
-      that makes the encoder's output depend on WHERE THE TREE CAME FROM, which
-      is the property §6's round trip exists to remove.
+      `start` describe the same document, so nothing an author wrote is
+      discarded, while preserving the value makes the encoder's output depend
+      on WHERE THE TREE CAME FROM.
 
       REFUSING THE PAYLOAD IS NOT THE ANSWER, though §11 refuses an unnamed
       property and §12 refuses a deviant root. `start` is a property the schema
       NAMES, and its value is in range; what is out of contract is only that the
-      value happens to be the default. Refusing would break editors that
-      round-trip a tree they did not author, and no engine does it today. This
-      clause is about a NAMED field carrying the value the schema describes as
-      absent, which is a narrower thing than either refusal clause covers.
+      value happens to be the default.
 
       WHAT THE RULE IS NOT. It is not "drop `start` always". `start: 0` and
       `start: 2` are carried through unchanged, and an implementation that
@@ -314,12 +275,10 @@
       runs rather than by one render target's limitation.
 
       NOT A DISTINCT NODE TYPE, deliberately. `block_image` is the honest shape
-      -- it IS a different construct, and the caption would have an obvious
-      home on it -- but it breaks every consumer that switches on node type and
-      it ripples through the engines, the importers, `fmt` and this schema at
-      once. A field is additive: a consumer that ignores it still works, and one
-      that reads it stops re-deriving. A type stays available later; going
-      field-first puts the phase and its call sites in place first.
+      -- it IS a different construct -- but it breaks every consumer that
+      switches on node type and it ripples through the engines, the importers,
+      `fmt` and this schema at once. A field is additive, and a type stays
+      available later.
 
       ON INGEST, TRUST THE PROPERTY -- NORMATIVE. A reader that receives
       `blockImage` USES it. It runs the promotion phase itself only for a tree
@@ -339,24 +298,12 @@
       reference is never defined still round-trips to itself (§6). The
       alternative makes the writer non-local: the same paragraph would be
       written differently depending on whether a definition appears somewhere
-      else in the document, possibly far away. PART 11 §1c already collapses on
-      the writer side, so teaching `fmt` about resolution buys nothing.
+      else in the document.
 
       AN IMPORTER READS THE FIELD RATHER THAN GUESSING. An HTML importer that
       escapes a following `^ ` line because the image above it "would capture
       it" is deriving R7 a third time, in a pipeline with no access to the
       phase (`docs/html-import.md`, the detached-caption case). It reads
       `blockImage` on the tree it built instead.
-
-      NO HTML MOVES. This is a wire-format clause: every render target already
-      produced the promoted output, so nothing in the corpus changes because of
-      the field. What the corpus pins is R7's OBSERVABLE half, and it was
-      already half-pinned: categories 201, 207, 209 and 412 hold the resolved
-      and unresolved reference image, each with and without a caption, and 209 -
-      the unresolved image whose caption line folds into the paragraph - is the
-      row a syntactic binding fails. Category 434 adds the two give-back paths
-      on which a LINE can be lost and that no CORPUS document held: a slot more
-      than one line wide, held only against the oracle by a unit test no engine
-      runs, and a slot inside a container, held by nothing at all.
 
    ============================================================================ *)
