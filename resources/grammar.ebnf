@@ -5412,6 +5412,57 @@ EOF = (* end of file *) ;
          "Para\n{.x}" ends the paragraph with the attribute line floating
          forward (§15; corpus 89-block-attribute-lines-7). (A small
          deviation from djot, which keeps such a line as paragraph text.)
+         AN INVISIBLE LINE IS ONE CLASSIFICATION -- NORMATIVE. The five kinds
+         above are one class, and it is MEMBERSHIP in that class the rest of
+         the grammar cites. An invisible line, in the container that owns it:
+
+           1. CLOSES an open paragraph, with no blank line needed -- this
+              clause, and I6 for the containers;
+           2. EMITS NO VISIBLE BLOCK at its authored location: nothing renders
+              where the line was written, not an empty paragraph, not a blank
+              line, not residual whitespace (L6 for the definitions, §21 and
+              §28 for the comments, §15 A2 for the attribute line);
+           3. DOES NOT ITSELF CHOOSE THE OWNER of the line that follows it. It
+              is neither a paragraph nor a separator, so it can neither BE the
+              next block (A2a) nor stand between a blank line and the block
+              after it (L1b).
+
+         ONLY THE SEMANTIC ACTION DIFFERS BY KIND, and that action is the only
+         thing a per-kind clause has left to state: a comment DISCARDS its
+         visible content (§21, §28), an attribute line RETAINS pending
+         metadata in the current container (§15 A2), and a definition
+         REGISTERS metadata in its permitted scope (L6, PART 9R). A clause that
+         restates properties 1 to 3 for one kind is restating this one; a clause
+         that states an action, a pipeline ORDER, a source-map overlap or column
+         ARITHMETIC is not, and stays where it is.
+
+         PROPERTY 3 DOES NOT SAY WHICH OWNER. It says the invisible line is not
+         what decides -- not that the decision is settled. What the next line
+         belongs to after a COMMENT is host-dependent and still open: the
+         list-item answer is pinned (A COMMENT IS THE ONE EXCEPTION at §24 --
+         a following line stays in the item; corpus
+         189-a-comment-under-a-nested-item-does-not-close-it and
+         192-a-comment-fence-under-a-nested-item-does-not-close-it-either), and
+         the definition-description host answers the same shape differently
+         (carve#1783). A comment's own COLUMN stays open for the same reason:
+         the exemption below decides which lines are invisible, not what the
+         line after one owns.
+
+         THE CLASSIFICATION HAS EXACTLY TWO EXCEPTIONS, and both are about
+         MEMBERSHIP -- which lines are in the class at all -- never about a
+         member behaving differently:
+
+           - A COMMENT IS COLUMN-EXEMPT (A COMMENT IS THE ONE EXCEPTION, §24
+             C3). Below a container's content column a comment is still
+             invisible and still closes the paragraph. The other four kinds are
+             ordinary text there, and they fold into the container that holds
+             the open paragraph, in every host (AN INVISIBLE LINE FOLDS LIKE ANY
+             OTHER; WHICH CONTAINER, NOT ONLY THAT IT IS TEXT; corpus 430).
+           - AN ABBREVIATION DEFINITION IS DOCUMENT-LEVEL ONLY (§16, AN
+             ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL).
+             Anywhere else it is not an invisible line at all: it is paragraph
+             text, it is VISIBLE, and it folds like any other plain line. That
+             is a line OUTSIDE the class, not a third band inside it.
 
          Comments in this list are the layout-transparent tokens classified in
          PART 0 before visible ownership. They close the paragraph without
