@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **An empty description body is written with the `{empty}` sentinel**
+  (carve#1833, carve#1827, PART 11 §7d, `CARVE-P11-040`). The same sentinel
+  PART 11 §7b already gives an empty footnote definition body; it is a
+  block-attribute line with no following block, so it reaches neither the `<dd>`
+  nor anything after it.
+- **`paragraph.blockImage` names one block-image promotion phase**
+  (carve#1816, PART 9R R7, PART 12 §23). Block-image status is decided once on
+  the resolved tree and published on the wire, trusted on ingest and promoted
+  only where absent; the caption stays an unbound slot until the phase runs.
+- **A citation item is a typed, positioned inline node** (carve#1799, PART 12).
+  Each item of a group serializes as `type: "citation"` with its own `pos`, so a
+  consumer can address one cited work rather than replacing the whole group.
 - **A render call can report what a target dropped** (carve#1728). The checked
   result carries `value`, `losses`, `totalLosses` and `truncated`, a
   `raw-format-dropped` code names the target that omitted a raw node, and a
@@ -89,6 +101,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 11 §1c: a resolution result about a wrapper is not content of it**
+  (carve#1823, carve#1831, `CARVE-P11-039`). A paragraph carrying
+  `paragraph.blockImage` around one image is still the bare wrapper the clause
+  forgives; the published field is not a third key that puts the wrapper outside
+  the bound. The carve-out names the child it describes, so the key, its value
+  and the wrapped `image` are all required.
+- **PART 9 §17 L4: the first-block form is the item and the description**
+  (carve#1828, carve#1821, `CARVE-P9-067`). A leading `+` in a footnote body or
+  a block quote is not a continuation marker; it falls through to the ordinary
+  column rules instead of refusing the document.
+- **PART 9 §10 I5 states one classification for the invisible lines**
+  (carve#1813, carve#1783). The three properties every kind shares are stated
+  once and only the semantic action differs by kind; no behavior moves.
 - **The continuation marker is one operation in every container**
   (carve#1782, PART 9 §17 L3/L4). A list item, a definition body and a footnote
   body attach a marked block by the same rule rather than by two.
@@ -228,6 +253,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The continuation marker's column gate reaches every container**
+  (carve#1817, carve#1814, PART 9 §17 L3). A footnote body, a definition
+  description and a block quote refuse a payload that is not flush-left,
+  exactly as a list item already did.
+- **An empty description body claims no line below column 0** (carve#1822,
+  carve#1821, PART 9 §17 L3). In the first-block form `:  +` an indented
+  payload is not flush-left, so the body ends where the comment spelling ends
+  it.
+- **Below a definition body's column an invisible line folds as text**
+  (carve#1809, carve#1800, carve#1801, PART 9 §10 I5). A link, footnote or
+  abbreviation definition or a block-attribute line at a nonzero column below a
+  container's content column is lazy paragraph text of that container and does
+  not register.
+- **A wrapped block-attribute line leaves no paragraph open** (carve#1799).
+  A multiline `{.a` / `.b}` run interrupts exactly like its one-line spelling,
+  so physical wrapping no longer decides where a following flush-left line
+  lands.
 - **The last newline of a code block is its terminator, not a line**
   (carve#1708, PART 11). Exactly one newline before the closing tag is
   stripped; any further newline, space or tab is content.
