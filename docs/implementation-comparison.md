@@ -198,9 +198,12 @@ under the same semantic-span rule,
 `05-lists-25`,
 `05-lists-26`,
 `05-lists-27`,
-`05-lists-28`.
+`05-lists-28`,
+`429-below-a-definition-body-s-column-each-invisible-line-keeps-its-own-answer`,
+`430-an-attribute-line-under-a-definition-description-attaches-from-column-zero`,
+`431-every-invisible-line-at-a-container-s-content-column`.
 
-Every category up to and including `334` landed on a host that could not retake
+Every category up to and including `431` landed on a host that could not retake
 the run above, so its numbers describe the corpus WITHOUT them. The alternative
 was to edit the denominators by hand, which would have published a
 three-engine measurement nobody took - and one that is knowably wrong: all three engines still accept a
