@@ -23,27 +23,20 @@ continuation_row = '+', table_cell, {'|', table_cell}, '|', newline ;
    2. A `+` CONTINUATION EXTENDS THE CELL, so a run left open by the row above
       is still open when the continuation is cut into cells: the pipes it spans
       there are its content too, and the block it reaches the end of is the
-      whole cell. Splitting a continuation row with a fresh scanner cuts inside
-      the run and drops what follows for want of a column to join it to, which
-      is content loss rather than a second answer.
+      whole cell.
 
    3. AN ESCAPED CLOSING PIPE IS STILL AN ESCAPE. `| a b \|` ends in a pipe, so
       the row closes there; the escape decides what the CELL holds, which is a
-      literal pipe rather than an orphaned backslash. Every reader already
-      honors `\|` in every other position of the same row, so reading it
-      everywhere EXCEPT the last position is a position exception with nothing
-      behind it -- and `\|` is the only way to write a literal pipe in a cell.
-      This does not widen what a row is: `| a | b`, with content dangling after
-      the last pipe, is prose exactly as before.
-
-   Pinned by corpus 328 and 332. *)
+      literal pipe rather than an orphaned backslash -- `\|` is the only way to
+      write a literal pipe in a cell, in every position of the row. This does
+      not widen what a row is: `| a | b`, with content dangling after the last
+      pipe, is prose exactly as before. *)
 
 (* Row-level attributes: a `{…}` attribute block GLUED to the row's closing `|`
    (no intervening space) sets the row's `<tr>` attributes -- the row-level twin
    of a cell's attribute block (cell_attributes). The two are NOT in the same
    position: a row's block follows the row's LAST `|`, a cell's follows the
-   cell's marker run (CELL ATTRIBUTES below). Row attributes are unaffected by
-   that rule and are stated here so the pair is not read as one. The whole
+   cell's marker run (CELL ATTRIBUTES below). The whole
    payload must be valid attribute syntax (§15); otherwise the `{` is ordinary
    content and the line is not a row attribute (see PART 9 §5, ROW
    ATTRIBUTES). *)
@@ -90,22 +83,13 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
    text would leave this sentence with nothing to act on; `|{.x} < |` is
    `<td class="x">&lt;</td>`, never `<td>{.x} &lt;</td>`. The only stated route
    from a brace run to literal text is an INVALID payload, two sentences up.
-   This repo's own executable spec read it the other way for a while - it
-   cleared the attributes and re-read the whole segment - which is what
-   carve#1463 records and corpus 392 now pins. A computed rowspan/colspan/alignment is
-   authoritative, so an author copy of those keys is dropped. (corpus
-   99-table-cell-attributes, 319-cell-attributes-bind-after-the-kind-and-alignment-markers.)
+   A computed rowspan/colspan/alignment is authoritative, so an author copy of
+   those keys is dropped.
 
-   WHY LAST, AND NOT BEFORE THE MARKERS. Binding attributes to the opening `|`
-   ahead of the kind marker leaves an attributed header cell UNSPELLABLE: the
-   only shape available is `|{#x}=R|`, and that is ambiguous by construction --
-   readable either as an attributed header cell, or as a data cell whose
-   content begins with `=`. This grammar reads it the second way, so the shape
-   a canonical writer produced for an attributed header cell came back as
-   `<td id="x">=R</td>` and the PART 11 round-trip invariant failed on it.
-   Once `=` has committed the cell to header, everything after it is
-   unambiguous. Stating one order for both productions is what removes the
-   ambiguity, rather than giving header_cell a second, opposite one. *)
+   WHY LAST, AND NOT BEFORE THE MARKERS. `|{#x}=R|` is a DATA cell whose
+   content begins with `=`, not an attributed header cell: once `=` has
+   committed the cell to header, everything after it is unambiguous, and one
+   order for both productions is what removes the ambiguity. *)
 cell_attributes = attributes ;
 span_cell = rowspan_marker | colspan_marker ;
 
@@ -155,30 +139,20 @@ caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
    that is not one BEGINS the caption. `^<SP><SP><SP>cap` is the caption `cap`,
    not `<SP><SP>cap`.
 
-   TWO CLAUSES DECIDE IT, neither of them a nose count. MARKER SEPARATORS AND
-   PADDING SLOTS (PART 2) defines a marker separator as what stands between the
-   marker and the content it introduces and rules that a writer aligning in a
-   column "is writing separator, not content"; the four slots that clause
-   narrows to exactly one space are PADDING slots, an enumeration it closes, and
-   the caret is not among them. And PART 11 §1 names MARKER ALIGNMENT among the
-   spellings `fmt` may normalize while preserving what the document says -- which
-   holds only if the run is not content. All three writers already normalize
-   `^<SP><SP><SP>cap` to `^<SP>cap`, so under the literal reading every one of
-   them changed the document on every pass.
+   TWO CLAUSES DECIDE IT. MARKER SEPARATORS AND PADDING SLOTS (PART 2) makes a
+   marker separator what stands between the marker and the content it
+   introduces, and the four slots it narrows to exactly one space are PADDING
+   slots -- a closed enumeration the caret is not in. And PART 11 §1 names
+   MARKER ALIGNMENT among the spellings `fmt` may normalize, which holds only
+   if the run is not content.
 
    A TAB IS NOT SEPARATOR. `space = ' '`, so `^<SP><TAB>cap` keeps the tab as
-   the caption's first character, exactly as a heading does at the same
-   position. MARKER REQUIRES CONTENT (PART 2) applies after the run as well:
-   a caret, the separator and nothing but whitespace opens no caption, and the
-   line is ordinary paragraph text.
+   the caption's first character. MARKER REQUIRES CONTENT (PART 2) applies
+   after the run as well: a caret, the separator and nothing but whitespace
+   opens no caption, and the line is ordinary paragraph text.
 
-   THE CONTINUATION LINE IS NOT TOUCHED BY THIS, and the two are different
-   positions rather than one rule read twice. A continuation line carries no
-   marker, so its leading run is INDENTATION and it is kept as written -- ruled
-   at carve#1561 on the ground that MULTI-LINE CAPTIONS enumerates only where a
-   caption ENDS and nothing in it, or in `caption_continuation_line`, dedents.
-   This clause is about the run that follows the CARET, which is the one
-   position on a caption where a separator exists at all. *)
+   THE CONTINUATION LINE IS NOT TOUCHED BY THIS. A continuation line carries no
+   marker, so its leading run is INDENTATION and it is kept as written. *)
 (* MULTI-LINE CAPTIONS -- NORMATIVE. A caption is multi-line inline CONTENT, so
    its text spills onto following lines exactly like a PARAGRAPH (§10), NOT like
    a heading. It ends the same way an open paragraph does:
@@ -240,11 +214,7 @@ colon_fence = ":::", {":"} ;
    makes the slot OPTIONAL because a bare `[label]` may sit flush against the
    fence (`:::[First]`); optional is a different property from a different
    role, and the slot answers the same way in all four openers whichever type
-   token follows it. Corpus 254 pins the slot PER OPENER, with a mixed-run case
-   beside each tab-first one, because implementations decide the one rule in
-   four separate places (carve#887, carve#900). Every implementation accepted a
-   tab here when carve#878 ruled on it; all three have since corrected it
-   (carve-js#794, carve-php#947, carve-rs#720). *)
+   token follows it. (carve#887, carve#900) *)
 colon_fence_close = colon_fence:close
                     where len(close) = len(open) ;
 (* FORMAL (PART 9 §12, now a guard): `open` is the colon_fence captured by
@@ -260,10 +230,6 @@ colon_fence_close = colon_fence:close
        documents and longer-inner ones both parse. `carve fmt` emits the
        inward-widening form (PART 11).
 
-   Earlier drafts used len(close) >= len(open), which made a container's
-   fence a quoting relation borrowed from the code fence. It forced a
-   canonical writer to know the maximum container depth of its whole
-   subtree, and it made equal-length nesting silently produce literal text.
    Code fences keep >= (PART 9 §2) because their length axis really is
    quoting: opaque content that never nests, which must be able to hold a
    shorter fence. *)
@@ -277,15 +243,9 @@ admonition = admonition_open, newline,
    a block still open when its HOST ends closes there, innermost first. The
    host is the ENCLOSING CONTAINER where there is one and the DOCUMENT
    otherwise, so "closes at end of input" is the top-level case rather than
-   the whole rule: corpus
-   271-the-flush-left-line-after-a-container-a-quoted-line-opened opens a
-   `::: note` inside a block quote, never closes it, and the container ends
-   WITH THE QUOTE -- the flush-left line below is a sibling paragraph outside
-   both, not content the div swallowed to the end of the file. This is
-   djot's behavior and it is the counterweight to the exact-length closer --
-   a mistyped closer leaves a container open, and the earlier rule (the
-   opener and everything after it degrade to literal text) turned one wrong
-   character into a corrupted document. An unclosed opener SHOULD be
+   the whole rule: a `::: note` opened inside a block quote and never closed
+   ends WITH THE QUOTE, and a flush-left line below is a sibling paragraph
+   outside both. This is djot's behavior. An unclosed opener SHOULD be
    diagnosed by lint and by the language server; it is not an error for the
    parser. Note this is NOT the `%%%` comment-block rule (§28), where an
    opener with no exact closer ahead opens nothing: a comment block is
@@ -302,18 +262,6 @@ admonition = admonition_open, newline,
        tail
                         tail
 
-   is literal item text on the left and an EMPTY div on the right. A blank
-   line is the container's own content, not a folded line, so an opener a
-   blank follows has opened an empty container exactly as one at end of input
-   has. The executable spec asked only whether the body was non-empty, which a
-   lone blank satisfies, and demoted the right-hand spelling to literal text
-   while answering the same opener correctly at end of input, with its closer,
-   with a body line, and inside a quote. That reads one blank line as content
-   in the collector and as absence of content in the block parser. carve-js,
-   carve-php and carve-rs open the div. Corpus 364 pins both sides, the second
-   as the control a fix that stopped asking about folding would flip.
-   (carve#1382)
-
    OPAQUE SPANS (PART 9 §12). `{block - admonition_close}` is a BLOCK
    sequence, so a fenced code block, a raw block and a comment block inside
    the body are single blocks and their lines are never examined for a
@@ -323,38 +271,29 @@ admonition = admonition_open, newline,
    span's opener BEFORE testing for its closer -- an opener with no info
    string (a bare code fence, a `%%%`) is closer-shaped itself, so testing it
    first ends the span on its own line and hands the span's contents back to
-   the block parser (carve#450). Under exact-length closers a miscount there
-   shifts the whole subtree, and a code fence is the only structural way to
-   quote a container fence, so this is the path every document that describes
-   Carve in Carve takes.
+   the block parser (carve#450).
 
    TOOLING FOR NEAR MATCHES (PART 9 §12). Exact length remains a parse rule,
    not a recoverable syntax error. A processor with diagnostics SHOULD report
    `colon-fence-length-mismatch` when a bare colon run does not close the
    innermost open container, would close it after resizing, and plausibly
    expresses closing intent. The finding names the authored and expected
-   widths, the opener position, and the line's actual parse outcome (a nested
-   container or literal text). It MUST NOT fire for typed openers, escaped
-   colons, opaque code/raw/comment payloads, or a different-width child fence
-   that has its own exact closer.
+   widths, the opener position, and the line's actual parse outcome. It MUST
+   NOT fire for typed openers, escaped colons, opaque code/raw/comment
+   payloads, or a different-width child fence that has its own exact closer.
 
    A tool MAY offer separate fixes to resize the run or preserve it as literal
    content. Neither is a canonical-formatting decision: `carve fmt` MUST NOT
    choose an intention. Editors SHOULD pair and highlight exact opener/closer
-   ranges from parser structure. Automatic paired edits stop after either side
-   is independently changed; proximity alone never licenses resizing a nested
-   fence. (carve#1727)
+   ranges from parser structure; proximity alone never licenses resizing a
+   nested fence.
 
    A CLOSER IS REQUIRED. Only a fence that closes is opaque. A ``` or ~~~
    opener with no closer ahead opens NO span: the container's own closer
    stays structural, and the lines after it are parsed normally. This is the
    same test PART 9 §10 I4 applies one level up -- an opener with no closer
    is not a fence -- and the same test the `%%%` rule above already states
-   ("an opener with no exact closer ahead opens nothing"). It was written
-   for the comment block and not for the code fence, and all three engines
-   implemented exactly what was written: `%%%` guarded, ``` not (carve#515).
-
-   Without it, one unclosed fence consumes the rest of the document. In
+   ("an opener with no exact closer ahead opens nothing") (carve#515). In
 
        ::: note
        ```
@@ -362,10 +301,8 @@ admonition = admonition_open, newline,
        :::
        after
 
-   the fence would take `x`, the `:::` AND `after`, closing the admonition
-   at end of input -- so a line written outside the container renders
-   inside it. With the guard the fence is not a span, the `:::` closes the
-   admonition, and `after` is a top-level paragraph.
+   the fence is not a span, the `:::` closes the admonition, and `after` is a
+   top-level paragraph.
 
    This does NOT change a fence with nothing to interrupt: `` ``` `` alone,
    or as the whole content of a blockquote, still opens a code block that
@@ -431,7 +368,7 @@ quoted_title = '"', {character - '"'}, '"' ;
    `table` end in, with the same one-optional-blank-line allowance. Two
    container kinds take it -- this one and `quote_block`, which captions like
    the block quote it is (§4) -- and a `^ ` line after any OTHER `:::` closer
-   is ordinary paragraph content (corpus 318-composite-figures-7). A group left
+   is ordinary paragraph content. A group left
    open at END OF INPUT closes there like any container (PART 9 §12) and, its
    closer line never having been written, has no caption position.
 
@@ -587,9 +524,7 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    raw). The closer follows the PART 9 §2 rule: same fence character, length
    >= opener. Content is verbatim; it is emitted UNESCAPED when the format
    matches the output format (html) and DROPPED otherwise -- the block parallel
-   of raw inline (PART 9 §20). This adopts djot's raw-block syntax; the earlier
-   ```raw FORMAT keyword form was removed (no English keyword; symbol-based and
-   symmetric with inline `{=format}`).
+   of raw inline (PART 9 §20). Adopts djot's raw-block syntax.
 
    THE INTERIOR IS VERBATIM, THE OPENING IS PLACED -- NORMATIVE. Inside a
    container, a renderer that indents its output indents the raw block's
@@ -597,68 +532,20 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    the raw content's own line structure. Every line after the first reaches the
    target with the columns the author gave it.
 
-   Both halves matter and neither is a formatting preference. Re-indenting an
-   interior line changes bytes the author wrote, and inside a `<pre>` those
-   columns are CONTENT -- the rendered code block then says something the
-   source did not. Leaving the block flush at column 0 instead would make
-   `raw_block` the one block kind whose placement ignores its container, which
-   is a second rule applying to one kind with nothing behind it.
-
-   THE `<pre>` HAZARD IS WHAT THIS RULE FORECLOSES, NOT WHAT IT REPAIRED, and
-   the difference matters to anyone arguing the clause later. Taken literally,
-   "indent every line" does corrupt a `<pre>`, and the oracle did exactly that.
-   No ENGINE did: every one of them already suspended re-indentation inside an
-   open `<pre>`, so all three agreed on every `<pre>` shape both before and
-   after this rule landed. What actually had to be settled was the ordinary
-   interior line, where the cost is changed bytes rather than changed rendered
-   content. Argue this clause from the rule; the `<pre>` example illustrates
-   it, and never distinguished the engines.
-
-   A FIXTURE FOR THIS RULE MUST BE AT LEAST TWO LINES WITH AT LEAST ONE OF THEM
-   OUTSIDE A `<pre>`. The corpus could not tell the readings apart because it
-   pinned only a SINGLE-LINE raw block -- a shape on which "indent the block"
-   and "indent every line" agree. The `<pre>` pair pins the placement half, but
-   an engine that re-indents only its non-`<pre>` interior lines passes that
-   pair, so it cannot stand in for the other. Three engines gave three answers
-   when carve#800 was filed; by the time the rule landed carve-js had moved and
-   it was one engine against two.
-
    THE PAYLOAD IS EVERY LINE BETWEEN THE DELIMITERS, blank lines included. A
    blank line is a line, and the last one is payload exactly as an interior one
-   is. This is the property corpus 291 already states for a fence -- a blank
-   line inside a fence is content, and the last one is content too, wherever
-   the fence ends -- and a raw block's verbatim body follows it for the same
-   reason a code block's does. Neither the container the block sits in nor
-   whether the closer was written is a parameter: an unterminated raw block
-   runs to the end of whatever encloses it, and its payload still ends on the
-   line before that end.
-
-   A RAW BLOCK WRITTEN LAST IN THE DOCUMENT CANNOT SHOW THIS, and that is a
-   property of the output's end rather than of the block. The payload's
-   trailing newlines land where the trailing-whitespace trim removes them, so
-   every reader prints the same bytes there whatever it does with the payload.
-   A fixture for this rule therefore needs a block AFTER the raw block, or a
-   container closing around it.
-
-   That shape is why the case looked unsettled. carve#1389 measured the
-   document-final spelling, read four readers agreeing there against three of
-   four inside a list item, and concluded the odd reader was the consistent
-   one. Measured with a paragraph after the block instead, the split is not
-   between the two contexts at all: the reader that drops the blank inside an
-   item drops it at document level too, and the other three keep it in both.
-   What decides it is not the count either way but a contradiction inside that
-   reader, which keeps the same trailing blank as content in a CODE fence --
-   corpus 291's four documents, which it reproduces -- and drops it from a raw
-   block. Corpus 366 pins the document-level and in-item shapes plus a
-   no-blank control.
+   is. Neither the container the block sits in nor whether the closer was
+   written is a parameter: an unterminated raw block runs to the end of
+   whatever encloses it, and its payload still ends on the line before that
+   end. At the END of the document the payload's trailing newlines land where
+   the trailing-whitespace trim removes them.
 
    AN ALL-BLANK PAYLOAD IS NOT AN ABSENT BLOCK. If the sole line between the
    delimiters is blank, that line is still the payload and contributes its
    newline when the raw format matches the output format. Zero payload lines
    contribute nothing; one blank payload line contributes one newline. An
-   implementation MUST NOT encode those two source shapes identically. Corpus
-   372 pins the distinction with a following paragraph so end trimming cannot
-   hide the newline (carve#1401).
+   implementation MUST NOT encode those two source shapes identically.
+   (carve#1401)
 
    RENDER-LOSS REPORTING -- NORMATIVE. Target routing may intentionally omit a
    raw node, but a checked renderer MUST make that omission observable. Its

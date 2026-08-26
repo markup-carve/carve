@@ -4,16 +4,13 @@
 
    A parsed document is exchangeable: an implementation MAY serialize its AST
    to JSON, and a consumer written against one implementation MUST be able to
-   read another's output. Nothing specified this before, and the engines'
-   INTERNAL field names already differ for the same node - one calls a link's
-   destination `href`, another `destination` - so three dialects were the
-   default outcome rather than a risk.
+   read another's output. The engines' INTERNAL field names already differ for
+   the same node - one calls a link's destination `href`, another `destination`
+   - so three dialects were the default outcome rather than a risk.
 
-   1. THE SHAPE IS carve-js's. It is the reference implementation, its AST is
-      already plain data, and the one serializer in the wild (carve-rb, over
-      carve-rs's tree) independently arrived at the same field names. An
-      implementation whose internals differ MAPS on the way out; it does not
-      export its internals.
+   1. THE SHAPE IS carve-js's. It is the reference implementation and its AST
+      is already plain data. An implementation whose internals differ MAPS on
+      the way out; it does not export its internals.
 
       THE TYPE NAME COMES FROM profiles.md, NOT FROM carve-js -- NORMATIVE.
       This clause is about the SHAPE of a node: which fields it carries and
@@ -32,8 +29,7 @@
       the document.
 
       It also makes node-for-node comparison meaningful, which is the only way
-      an engine's divergence from the reference can be MEASURED rather than
-      argued about (the shape check in scripts/ast-conformance.mjs).
+      an engine's divergence from the reference can be MEASURED.
 
       SCOPE. The rule is about `text` nodes only, and only about ADJACENCY
       within one parent's child list. It does not merge across an intervening
@@ -47,9 +43,8 @@
       An implementation that leaves the run split in the parsed tree and joins
       it in the encoder satisfies §1a and BREAKS §6 on the same document: what
       comes back holds one node where the tree held three, so the round trip is
-      not an identity. carve-rs was written that way first and its corpus
-      round-trip test failed on `03-links-12` (carve-rs#441). The tree
-      `parse(x)` returns is therefore already coalesced.
+      not an identity (carve-rs#441). The tree `parse(x)` returns is
+      therefore already coalesced.
 
       POSITIONS. A merged run keeps a span only where its pieces are CONTIGUOUS
       in the source. Where they are not -- the `<` and `>` of an autolink
@@ -57,13 +52,6 @@
       halves of a wrapped table cell -- the merged value is not a slice of the
       source at any offset, and §4 rates a span that selects the wrong text
       worse than no span at all. So such a run publishes NONE.
-
-      That is a real cost and is stated rather than glossed: per-piece spans
-      that existed before the merge are gone in exactly those cases. It only
-      happens where the value was never a source slice to begin with (a
-      manufactured joiner, a dropped delimiter), so nothing that WAS placeable
-      becomes unplaceable -- but a consumer wanting to locate the pieces of such
-      a run works from the source, not from the tree.
 
       `escaped_text` is NOT `text` and does not merge with it: PART 12 §5 keeps
       the two distinct on the wire because an escape is authored form, and
@@ -182,44 +170,29 @@
       every renderer unwraps it at the render seam exactly as it does today.
 
       Flattening it at the encoder is the fold this section exists to forbid,
-      and it is strictly lossier than the case the section opens with. An
-      unresolved reference at least keeps enough to be written back; a nested
-      link's destination does not survive at all. `[[x](y)](z)` published as a
-      link to `z` whose only child is the text `x` has lost `y` from the tree
-      entirely, so `fmt` on the parsed document writes `[[x](y)](z)` back and
-      `fmt` on the same document taken through the AST writes `[x](z)` -- two
-      spellings of the same source, which is the §6 round trip failing. An
-      autolink flattened the same way returns as a bare URL, and that is a
-      DIFFERENT document: a bare URL stays literal where an autolink is a link.
-
-      THE PRECEDENT IS INSIDE THIS RULE ALREADY. A `heading_ref` inside a link
-      is exempt from the flattening for exactly this reason -- it reaches the
-      serialized tree and the renderers suppress the nested anchor instead. A
-      link and an autolink are the same case and take the same treatment. An
-      image and a code span inside a label were never flattened at all, which
-      is what makes this an extension of an existing exemption rather than a
-      new rule about what a label may contain.
+      and it is strictly lossier than the case the section opens with.
+      `[[x](y)](z)` published as a link to `z` whose only child is the text `x`
+      has lost `y` from the tree entirely, so `fmt` on the parsed document and
+      `fmt` on the same document taken through the AST write two different
+      spellings -- the §6 round trip failing. An autolink flattened the same way
+      returns as a bare URL, and that is a DIFFERENT document: a bare URL stays
+      literal where an autolink is a link.
 
       THE NODE CARRIES NO NON-ANCHOR FLAG. Nothing on the wire marks the inner
-      link as unclickable; a consumer infers it from context. A field that
-      exactly one construct ever sets is a special case where the uniform rule
-      is available, and it would carry a RENDER fact -- "HTML cannot nest
-      anchors" -- back into the format that describes the SOURCE, which is the
-      layering this section rejects everywhere else. §3 already gives a link
-      `children`, and those children are inline nodes with `link` and
-      `autolink` among them, so keeping the node needs no new wire surface at
-      all: the flag would be the only reason to add one, on a surface §11 has
-      just made strict. The asymmetry is recorded rather than assumed -- adding
-      the flag later is a normal additive change, removing it later is a break,
-      and a worse one under strict ingest.
+      link as unclickable; a consumer infers it from context. Such a flag would
+      carry a RENDER fact -- "HTML cannot nest anchors" -- back into the format
+      that describes the SOURCE, which is the layering this section rejects
+      everywhere else. §3 already gives a link `children`, and those children
+      are inline nodes with `link` and `autolink` among them, so keeping the
+      node needs no new wire surface at all. The asymmetry is recorded rather
+      than assumed -- adding the flag later is a normal additive change,
+      removing it later is a break.
 
       RENDERED OUTPUT DOES NOT MOVE. Every target still unwraps, so this is a
       wire-format change with no HTML, Markdown, plain or ANSI consequence.
-      What moves is what a consumer of the TREE receives, which is why no
-      corpus golden pins it: a corpus pair here would pass before and after and
-      prove nothing. The pins that can fail are the §6 round trip on the two
-      shapes above and the AST-shape expectation that a `link` and an
-      `autolink` are admissible inside a link's children.
+      What moves is what a consumer of the TREE receives: the §6 round trip on
+      the two shapes above, and that a `link` and an `autolink` are admissible
+      inside a link's children.
 
       A DESTINATION IS THE AUTHOR'S TEXT, UNSANITIZED -- NORMATIVE. `href`,
       `src`, and every other destination field carry what the author wrote,
@@ -239,35 +212,15 @@
       renderer alone -- a scheme blanked in one target and passed through in
       another is not blocked, it is deferred by one step. Handing the tree to
       another tool is the whole purpose of this PART, so the argument applies
-      here with more force than it did to the Markdown target that prompted it:
-      a consumer that wires a serialized `href` into an anchor has published a
-      live `javascript:` URL.
-
-      Feeding the tree back through a conforming engine applies the denylist for
-      you, because the engine is a target. Walking the tree and building output
-      yourself does not.
+      here with more force: a consumer that wires a serialized `href` into an
+      anchor has published a live `javascript:` URL. Feeding the tree back
+      through a conforming engine applies the denylist for you, because the
+      engine is a target. Walking the tree and building output yourself does
+      not.
 
         See [getting started][] here.
 
         [getting started]: /start
-
-      serialized to a `link` with an empty `href`, a `ref`, a `rawRef`, and no
-      record anywhere of `/start`. A consumer that decoded and rendered got a
-      link to nothing, with no second stage available to it -- the input to that
-      stage had been dropped. §6's round trip still held, because both sides
-      carried the same empty `href`; what broke was rendering the tree at all,
-      which is worse and which §6 does not measure. (carve#524)
-
-      §10 HAS SINCE ANSWERED IT: a link reference definition IS a node, hoisted
-      to the document like the footnote definition, and it carries the
-      destination. Both documents above now publish one - measured across all
-      three engines, the definition-only document has a single
-      `link_reference_definition` child holding `/u`, and the resolved one a
-      `paragraph` and a `link_reference_definition` holding `/start`.
-
-      The paragraph above is kept as the REASON rather than deleted, because it
-      is the argument that produced §10 and the thing to re-read before anyone
-      proposes dropping the node again. It describes what was true, not what is.
 
       THE COLLAPSED FORM'S `ref` IS THE DERIVED LABEL. For `[getting started][]`
       the author wrote nothing between the second brackets, and `ref` carries
@@ -275,17 +228,15 @@
       only value a consumer can do anything with. An empty `ref` would say
       "there is a reference here and I will not tell you to what". `rawRef`
       holds the authored spelling, so the empty brackets are not lost by this.
-      The alternative was measured rather than argued: carve-php published
-      `ref: ""` for the collapsed form and carve-js published no `ref` at all
-      once resolved, so all three spellings were in the field at once.
+      A published `ref: ""`, and a `ref` dropped once resolved, are both
+      non-conforming.
 
       AN UNRESOLVED REFERENCE IS STILL A LINK NODE. Where nothing defines
       `[a]`, `see [a][] here` publishes `text`, `link`, `text` -- the link
       carrying `ref` and no `href` -- NOT one text node holding `see [a][]
       here`. Flattening it to text discards the fact that the author wrote a
       reference at all, and it makes the same document have two node counts
-      depending on which engine produced it, which is exactly what §1 and §1a
-      exist to prevent. (carve#486)
+      depending on which engine produced it. (carve#486)
 
       A CROSSREF IS A `heading_ref`, RESOLVED OR NOT -- NORMATIVE. `</#id>` is
       a reference like any other, so the same two halves apply: the authored
@@ -320,37 +271,21 @@
       in the same document, so a consumer reads it from there. This is the one
       place this clause departs from §5's added-alongside rule, and it does so
       because the alternative duplicates an arbitrary amount of inline content
-      per reference -- carve-js's resolved link clones the heading's children
-      into every crossref, which is why it also has to flatten nested crossrefs
-      and cache the clone to stay acyclic. `href` is a fixed-size result; the
-      display text is not.
+      per reference. `href` is a fixed-size result; the display text is not.
 
       SO THERE IS NO `raw_text`. An engine that reverts an unresolved reference
       to literal source needs a node type to carry text that must not be
       escaped again, and no such type is in the vocabulary. Under this clause
       the reversion does not happen, so the need does not arise: what the
-      author wrote is a link, and it stays one. §5 already excludes the
-      formatter-internal `raw_text` from the wire; this says why nothing on the
-      document side has to reach for it. (carve-php#624)
+      author wrote is a link, and it stays one.
 
-      WHY PRE-RESOLVE. Both stages are defensible and both validate against the
-      schema, which is how three engines came to disagree without any of them
-      being wrong (carve#481). The tie is broken by what each one COSTS.
-
-      Post-resolve makes `rawRef`'s stated purpose -- "so it can be restored as
-      literal text" -- unreachable, because the field it would be restored from
-      is gone by the time anyone could use it. It also means `[x][]` cannot
-      survive a format cycle in ANY implementation: the writer cannot reproduce
-      a construct the tree no longer carries, so PART 11's canonical writer
-      silently rewrites one construct into another. That is not a writer bug
-      and cannot be fixed in the writer.
-
-      Pre-resolve keeps both. It also keeps the distinction a linter, a
-      refactoring tool, or an editor round-tripping a file needs: `[a][]` and
-      `[a](#a)` are different things the author chose between, and a format
-      that preserves authored form one layer down (PART 11 §6: bullet
-      characters, delimiters, the bare marker) has no reason to discard this
-      one.
+      WHY PRE-RESOLVE. Post-resolve makes `rawRef`'s stated purpose -- "so it
+      can be restored as literal text" -- unreachable, and `[x][]` cannot
+      survive a format cycle: the writer cannot reproduce a construct the tree
+      no longer carries, so PART 11's canonical writer would silently rewrite
+      one construct into another. Pre-resolve also keeps the distinction a
+      linter, a refactoring tool, or an editor round-tripping a file needs:
+      `[a][]` and `[a](#a)` are different things the author chose between.
 
       WHAT IS STILL SERIALIZED. §5's rule is unchanged and is not in tension
       with this one: resolution RESULTS a consumer would otherwise have to
@@ -362,16 +297,6 @@
       which is the same shape: the authored construct is still there to be read,
       and the resolution result sits beside it.
 
-      WHAT WOULD MAKE `href: ""` DEFENSIBLE, and is not proposed here: a
-      `link_reference_definition` node in the vocabulary, hoisted to the
-      document like the footnote definition. Then the destination
-      survives serialization and a consumer can resolve for itself. It is a
-      bigger change than this clause is worth -- a new node type, a new hoisting
-      rule, three engines to move, and every consumer obliged to run a
-      resolution pass before it can render anything -- and the reason to prefer
-      it would be purity rather than a capability anyone is missing. Recorded so
-      the choice is visible as a choice.
-
    4. POSITIONS ARE REQUIRED. Every node EXCEPT the document root carries
       `pos`:
 
@@ -381,39 +306,21 @@
       Lines are 1-based. Columns are 1-based and offsets 0-based, both counted
       in UNICODE CODEPOINTS. `endColumn` and `endOffset` are exclusive.
 
-      The unit is stated because there is no convention to inherit: every
-      implementation otherwise reports whatever its own strings are indexed by,
-      and the differences are invisible on ASCII. Measured on `\u{1F600} *b*`,
-      where the delimiter sits at codepoint 2, UTF-16 unit 3 and byte 5:
-      djot.js and commonmark.js report 3, carve-js reported 3, and a byte-indexed
-      engine would report 5 -- three implementations, three answers, all
-      believing they were right.
-
       Codepoints rather than bytes or UTF-16 code units because a codepoint index
       always lands on a CHARACTER BOUNDARY. A byte offset can point inside a
       UTF-8 sequence and a UTF-16 offset inside a surrogate pair; either lets a
-      consumer slice a document into invalid text. This also follows djot's
-      reference implementation, which builds a byte-to-charpos table specifically
-      so it can report characters from a byte-indexed language -- the format's
-      author paid that conversion deliberately rather than exporting the host's
-      unit.
-
-      Every implementation therefore converts, and each pays it once per document
-      rather than per position: the mapping is a single pass, and it is the
-      identity for any document without an astral character.
+      consumer slice a document into invalid text. Every implementation
+      therefore converts, and each pays it once per document rather than per
+      position.
 
       The document root is exempt because it spans the whole source by
       definition, so a span on it carries no information a consumer does not
-      already have. The first draft of this section said "every node" without
-      that carve-out, which made the reference implementation non-conformant
-      with a rule written a day earlier - the conformance checker found it on
-      its first run.
+      already have.
 
       This is the field that makes a serialized AST worth exchanging: an
       editor, a language server or a tool grounding output back to source needs
-      to say WHERE, and a tree without positions can only be re-parsed rather
-      than navigated. Making it optional would mean every consumer has to
-      handle its absence, which in practice means not using it.
+      to say WHERE. Making it optional would mean every consumer has to handle
+      its absence, which in practice means not using it.
 
       A SPAN CONTAINS ITS CHILDREN'S SPANS -- NORMATIVE. A node's span
       covers every placed node inside it: a child's `startOffset` is not
@@ -422,17 +329,6 @@
       breaking the chain -- the comparison is against the nearest ANCESTOR
       that has one.
 
-      This is the one structural rule a checker can apply without knowing
-      what a node covers, which is why it matters: a span is compared against
-      the text it selects only for a `text` node, so every other node's span
-      was checked for being present, integral and in range, and never for
-      pointing at the right place. Adding this rule found 70 wrong spans the
-      day it was written -- 66 in carve-rs, 4 in carve-php, 5 more in
-      carve-js's serialized form -- in list items, a figure's quote target, a
-      table's caption, a footnote's body, and a crossref's cloned display
-      text. Every one was a span taken before the rest of the node had been
-      parsed, or copied from a node somewhere else.
-
       A CONSEQUENCE, worth stating because it settled a question of its own:
       a node whose content is not a contiguous slice of its own source MUST
       omit `pos` rather than publish a PARTIAL span. A `+` continuation cell
@@ -440,16 +336,12 @@
       and a span covering only the first fragment leaves the cell's own text
       children outside it -- which this rule reports. Omitting is already
       permitted below; this says the partial span is not an alternative to it.
-      (carve#541, carve#565.)
 
-      CHECKED ON ITS OWN, not as a consequence of the opening-markup clause
-      below. The two point the same way today -- a span covering the
-      construct's markup contains the children inside it -- and that is
-      precisely why containment is asserted separately: were the convention
-      ever revisited, a checker that derived containment from it would go quiet
-      with nothing failing. So the conformance run examines parent and child
-      spans in a pass of its own, and COUNTS the pairs it examined, so the pass
-      cannot come back clean by having compared nothing. (carve#913.)
+      CONTAINMENT IS CHECKED ON ITS OWN, not derived from the opening-markup
+      clause below. The two point the same way today, and that is precisely why
+      containment is asserted separately: were the convention ever revisited, a
+      check that derived containment from it would go quiet with nothing
+      failing.
 
       A SPAN COVERS THE MARKUP THE AUTHOR WROTE -- NORMATIVE. Where a node
       has markup of its own, its span covers that markup and not merely the
@@ -470,15 +362,6 @@
       the node begins and ends before the markup that gave it half its
       content.
 
-      This follows from the sentence above rather than adding to it -- an
-      attribute block is markup of the node's own by the same reading that
-      makes a break's backslash part of the break. carve-rs covers the block
-      and carve-js stops at the content, so carve-js moves (carve#521).
-
-      No corpus document has an attributed inline today, which is why two
-      answers coexisted. One case pins it; `*x*{#i}` is enough, and the
-      combined form `/*x*/{#i}` is worth a second because it is where the
-      derived inner span makes the difference observable.
 
       A break the parser SYNTHESIZED is a different case and keeps the bare
       newline: a line block's implied break and a hard-break fence's converted
@@ -500,14 +383,6 @@
       item's marker is placed by the whitespace before it, so a span that
       started at the marker would leave the characters deciding the item's
       column outside the item.
-
-      THE ALTERNATIVE WAS CONTENT-ONLY, and it is rejected for a structural
-      reason rather than a stylistic one: with it, a nested construct's span is
-      no longer contained by its parent's, so the span tree stops being a tree
-      and the clause above stops being enforceable. Its one advantage was that
-      fewer engines move. Recorded so it is not revisited: carve-js and
-      carve-php both move under this reading, and every consumer indexing on
-      content offsets moves with them.
 
       TWO EXCEPTIONS, both already stated elsewhere in this section and neither
       an opt-out from the rule:
@@ -569,10 +444,9 @@
 
       spans the emptied `block_quote` as `> ` and the hoisted
       `link_reference_definition` over the whole line, and offsets 0 to 2 sit in
-      two document-level siblings at once. Neither engine that publishes that is
-      wrong: §7, the emptied-container paragraph above and the sibling-overlap
-      rule cannot all three hold on this document, and the exception is where it
-      gives. (carve#1571, which leaves §7 and carve#1522 exactly as they are.)
+      two document-level siblings at once. §7, the emptied-container paragraph
+      above and the sibling-overlap rule cannot all three hold on this document,
+      and the exception is where it gives.
 
       THE EXCEPTION IS ABOUT THE PAIR, NOT ABOUT A DEFINITION. It does not say a
       hoisted definition overlaps nothing. Two definitions that claim the same
@@ -593,13 +467,6 @@
       paragraphs above rather than under this one. The exception excuses an
       overlap; it does not extend a container's span, and nothing here permits a
       host to cover source no child of it owns.
-
-      THE TRADE IS DELIBERATE. A list reports a shorter extent than the author
-      typed, which is worse for folding. An editor wanting the region the author
-      typed can recompute it from the item's content column; a consumer that
-      needs one unambiguous answer for one offset cannot recover it from two
-      overlapping spans, so the span carries the half that cannot be
-      reconstructed. (carve#1522.)
 
       An unattached attribute block is the same rule reached from the other
       clause above rather than a second one. `{.x}` written below an item
@@ -646,13 +513,10 @@
       next to the two above. The end rule asks where a container's CONTENT
       stops, so its last placed child is the right boundary; this one asks where
       the CONSTRUCT begins, and a construct begins at its own markup, which
-      exists whether or not any child was placed. An unplaced child says nothing
-      about where the construct was written. Read symmetrically, a line block
-      stanza whose first line holds a tab -- reassembled around expanded tabs,
-      so it carries no position by the clause below -- started its paragraph on
-      the line BELOW that one, which also put the break ending the tab-bearing
-      line outside the paragraph holding it and so contradicted the containment
-      clause above. (markup-carve/carve-rs#1247.)
+      exists whether or not any child was placed. Read symmetrically, a line
+      block stanza whose first line holds a tab -- reassembled around expanded
+      tabs, so it carries no position -- would start its paragraph on the line
+      BELOW that one, contradicting the containment clause above.
 
       A CONTAINER ENDS AT THE MARKUP THAT CLOSES IT EVEN WHERE ITS LAST CHILD
       IS UNPLACED -- NORMATIVE. A container whose last child omits `pos` ends
@@ -665,11 +529,8 @@
       container starts at the markup that opens it, and ends at the markup that
       closes it. "Ends at its last placed child" is the case for a container
       whose closer is IMPLICIT -- a list, an item, a definition list -- where
-      the last child's end is what the container has instead of a closer, and
-      where the source past it belongs to a hoisted sibling or to nothing. It
-      was the only rule written because it was the only case measured; it does
-      not narrow a container over source its own child covers.
-
+      the last child's end is what the container has instead of a closer. It
+      does not narrow a container over source its own child covers.
       A closerless container whose last child is unplaced therefore ends where
       its content ends, which is line geometry the block layer knows even where
       the text on that line cannot be sliced out of the source. A line block
@@ -691,15 +552,10 @@
       positions, not a parse without them.
 
       This is a concession to where the cost falls. Recording a span for every
-      node is not free -- carve-rs builds its line map only when the
-      source-line render option asks for it, precisely so an ordinary parse does
-      not pay -- and serialization is an operation most callers never perform.
-      Charging every parse in the fastest engine for a feature used by
-      exporters, editors and language servers would be the wrong trade, and a
-      spec that demanded it would be quietly ignored or quietly unimplemented.
-
-      The contract a consumer relies on is unchanged: JSON it is handed carries
-      positions. How the producer arranged that is the producer's business.
+      node is not free, and serialization is an operation most callers never
+      perform. The contract a consumer relies on is unchanged: JSON it is
+      handed carries positions. How the producer arranged that is the
+      producer's business.
 
       A REASSEMBLED NODE MUST OMIT `pos` -- NORMATIVE. A node whose value is not
       a contiguous slice of the source, because the producer joined it from
@@ -721,14 +577,9 @@
       rules left a producer no conformant answer at all: coalesce and carry a
       span over characters the value drops, or coalesce and omit the span the
       paragraph below appears to demand. §1a's own POSITIONS note already chose
-      the second; this is where §4 agrees to it. (carve#490)
-
-      Stated in the spec rather than left to each engine because §1a is
-      normative: any implementation following it faithfully arrives at the same
-      fork, so an answer chosen per engine would be three answers. That the
-      three engines' residues already converged -- same three documents, same
-      kind of content -- is the evidence that this is a property of the rules
-      and not of anyone's parser.
+      the second; this is where §4 agrees to it. It is stated here rather than
+      left to each engine because §1a is normative: any implementation
+      following it faithfully arrives at the same fork.
 
       A discontiguous node therefore has no span. A first-fragment span is not
       an alternative: it locates the beginning but falsely describes `pos` as
@@ -749,10 +600,6 @@
       a hoisted definition against the container it was authored in, per the
       clause of that name above.
 
-      The cost is an absent navigation target for that node; its contiguous
-      children may still be placed. This keeps `pos` meaning one thing:
-      the exact extent the node owns. (carve#541, carve#1060.)
-
       THE EXEMPTION IS NARROW. The test is whether a true span EXISTS, not
       whether one was computed. A node the producer has simply not placed yet
       is still a gap, and a text run lifted whole out of the source has a span
@@ -764,9 +611,7 @@
       The conformance checker still REPORTS an absent `pos`, because it cannot
       tell a reassembled node from an unplaced one from the tree alone. That is
       why the position half of that check is a report and the §1a half is a
-      gate. A report is the right instrument here: the distinction needs a human
-      reading the document, and the numbers below are what such a reading
-      produced.
+      gate.
 
       An implementation that cannot yet produce positions MUST NOT emit `pos`
       with invented values, and MUST NOT omit it silently: it does not yet

@@ -15,21 +15,16 @@
            at the very start of the document is removed before the first line
            is read, so `<BOM># T` is a heading and not paragraph text. ONE, and
            only there: a U+FEFF anywhere else is an ordinary zero-width
-           character, which this file already says of a destination ("ZERO-WIDTH
-           characters (U+200B, U+FEFF) are NOT whitespace and ARE ordinary
-           destination characters").
+           character, and zero-width characters (U+200B, U+FEFF) are NOT
+           whitespace and ARE ordinary destination characters.
 
            A NULL IS REPLACED BEFORE THE FIRST LINE IS READ -- NORMATIVE.
            Every U+0000 in the source becomes U+FFFD REPLACEMENT CHARACTER,
            wherever it stands, before the first line is read. It is therefore
            not content, and it is the ONE C0 control PART 9 §29 does not make
-           content; §29 carries the carve-out and its reasons, and the
-           transform itself belongs here because it happens at this boundary
-           and for the same kind of reason as the mark above -- a document is
-           read over the OUTPUT of this layer, not over the bytes as authored.
-
-           EVERY occurrence is replaced. One U+0000 becomes one U+FFFD, so the
-           transform does not change source offsets (carve#1523).
+           content; §29 carries that carve-out. EVERY occurrence is replaced,
+           one U+0000 to one U+FFFD, so the transform does not change source
+           offsets (carve#1523).
 
            Column arithmetic is PART 9 §24 C1. A TAB IS SYNTAX ONLY IN THE
            LEADING RUN (PART 7).
@@ -221,10 +216,9 @@
         owner is selected before that leaf is continued.
 
         THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST BLOCK -- NORMATIVE
-        (carve#1280). The clause above is spelled with an empty quote, which
-        reads as though EMPTINESS were the property doing the work. It is not,
-        any more than verbatimness is two clauses down. The parameter is the
-        one S4 names: does any container in the open stack hold an OPEN
+        (carve#1280). EMPTINESS is not the property doing the work. The
+        parameter is the one S4 names: does any container in the open stack
+        hold an OPEN
         PARAGRAPH. A block that leaves none leaves none wherever it was
         written, and `- # H` writes a HEADING as the item's first block exactly
         as `- ` plus an indented `# H` would. So each of
@@ -285,20 +279,6 @@
             tail             > > | b |          tail
                              tail
 
-        all end BOTH quotes and leave `tail` a top-level paragraph, for the
-        reason `> # H` / `tail` ends one. The reading that stopped at the outer
-        quote gave `tail` a paragraph in the outer quote CONTINUING NOTHING -
-        the outer quote's last block is the inner quote, and the inner quote's
-        is a heading, so there was no open paragraph anywhere in the stack for
-        S4's fold to carry out.
-
-        The one-level spelling already answered this way in every engine and
-        the two-level one did not in three of them, which makes it a
-        contradiction inside each of those readers rather than a gap in this
-        clause. `> > a` / `tail` still folds into the INNER quote, and
-        `> > # H` / `> > a` / `tail` folds too: those are the shapes with a
-        paragraph open, and depth was never the parameter.
-
         The rule reaches blocks written at an item's CONTENT COLUMN too. A
         heading there leaves no paragraph open, so a following below-column
         line cannot stay in that item. In a nested list the owner table is then
@@ -332,11 +312,10 @@
         same way and for the same reason (§10 I5 lists it too), so
         `: a` over `  %% c` over `tail` ends the `dd`.
 
-        AND THE DEFINITION REGISTERS, which is half of what I5 says and the
-        half an implementation can pass this rule without: "A link or footnote
-        definition belongs to an open list item only at that item's
+        AND THE DEFINITION REGISTERS, which is I5's other half: "A link or
+        footnote definition belongs to an open list item only at that item's
         `content_column`". Ending the container while DROPPING the definition
-        gets `tail` right by accident and fails the moment the column moves.
+        is not conforming.
         I5's other two columns are the controls and are UNCHANGED: at DOCUMENT
         column 0 the definition is a document-level interrupter, and at a
         nonzero column BELOW `content_column` it is lazy paragraph text that
@@ -347,8 +326,7 @@
         INVISIBLE LINE IS ONE CLASSIFICATION): recognized at document level
         only, so inside a container the line is not an invisible line at all --
         it is ordinary paragraph text and reopens the paragraph like any other
-        prose. Pinned in both bodies with a collector of their own by corpus
-        432-an-abbreviation-definition-outside-document-level-is-not-an-invisible-line.
+        prose.
 
         A QUOTE IS REACHED BY ITS MARKER, AND A COLUMN NEVER REACHES INTO ONE
         (carve#1384). I5's columns are read against the container a line is IN,
@@ -358,29 +336,9 @@
         so it is paragraph text: it renders where it was written and registers
         nothing.
 
-        The tell was that one line answered differently by what the quote HELD:
-
-            > x                > - x
-              [r]: /u            [r]: /u
-
-            See [r][].         See [r][].
-
-        Both second lines are identical and sit at the quote's content column,
-        and neither writes the marker. The left one folds into the quote's
-        paragraph as text in every reader. The right one was read as the INNER
-        ITEM's content column, where I5 makes a definition the item's, so this
-        implementation registered it and rendered it NOWHERE, and carve-js and
-        carve-php dropped it entirely -- render nothing and define nothing,
-        which is the one outcome carve#624 forbids. carve-rs folds both, and the
-        fold is what S4 already prescribes: the deepest open paragraph in the
-        stack is the inner item's, and the line continues it.
-
         WITH THE MARKER WRITTEN nothing about I5 changes: `> - x` over
-        `>   [r]: /u` registers at the inner item's content column in all four
-        readers, which is corpus
-        360-a-definition-behind-an-alternating-container-prefix-registers-at-the-innermost-content-column's
-        space. The marker is the parameter, and the quote's body is not.
-        Corpus 369.
+        `>   [r]: /u` registers at the inner item's content column. The marker
+        is the parameter, and the quote's body is not.
 
         PROSE REOPENS THE PARAGRAPH WHEREVER IT SITS AMONG THE ITEM'S BLOCKS,
         which is the general shape of that last sentence rather than a property
@@ -418,15 +376,8 @@
 
         end the item in the first two spellings and fold in the third, and the
         difference between them is the blank, never the missing closer. A
-        reader that made the closer decide answers one rule two ways inside a
-        single parse, which is what the executable spec did: it carried the
-        blank as container content and left the item's paragraph open across
-        it, so the flush-left line arrived at a div that should already have
-        been out of reach. carve-js, carve-php and carve-rs all end the item.
-        Corpus 362 pins it with two controls: the same input without the blank,
-        which still folds, and a following line at the item's content column,
-        which is the div's second block rather than the end of the item.
-        (carve#1379)
+        following line at the item's content column is the div's second block
+        rather than the end of the item. (carve#1379)
 
         THE COLUMN IS REACHED BY COMPOSING THE STRIPS, NOT BY WALKING THE
         PREFIX (carve#1368). Which container's `content_column` a line reaches
@@ -434,24 +385,21 @@
         own prefix and hands the residue down, so the question is asked of the
         INNERMOST container in the coordinates IT was handed. The shape of the
         prefix above it -- how many quotes and list items it alternates, in
-        what order, and how deep -- is not a parameter. Stated as a property
-        rather than as the list of prefixes that have been measured: two
-        container kinds already spell 62 of them by depth five, and the list
-        goes stale at depth six.
+        what order, and how deep -- is not a parameter.
 
         The DROP is the disappearance §24 C3 already forbids under AN INVISIBLE
-        LINE FOLDS LIKE ANY OTHER (carve-php#721): a definition may register, or
-        it may stay text, and half-folding it -- gone from the page, absent from
-        the tables -- is not an option the rule offers.
+        LINE FOLDS LIKE ANY OTHER: a definition may register, or it may stay
+        text, and half-folding it -- gone from the page, absent from the
+        tables -- is not an option the rule offers.
 
         AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS
-        UNDER -- NORMATIVE (carve#1350, carve#1357). The clause above names a
-        definition and a comment; this is the rule both are instances of, and
-        it is stated as a property because the instances are not enumerable.
+        UNDER -- NORMATIVE (carve#1350, carve#1357). The definition and the
+        comment above are instances; the rule is stated as a property because
+        the instances are not enumerable.
 
-        §24 C3 says the content column IS the container body's column 0: "a
-        block opener is recognized there exactly as a block opener is
-        recognized only at column 0 at the top level". So a line there is read
+        §24 C3 says the content column IS the container body's column 0: a
+        block opener is recognized there exactly as one is recognized only at
+        column 0 at the top level. So a line there is read
         as a BLOCK, and a block ends the paragraph above it. WHAT THE BLOCK
         RENDERS IS NOT A PARAMETER. A comment, a link or footnote definition
         and an attribute block all render nothing and all three end the
@@ -479,20 +427,11 @@
         marker line and a heading inside a quote. The line's position changes
         which container owns the heading, not whether the heading is a block.
 
-        THE §17 L1a OBJECTION DOES NOT REACH THIS. carve#621 and carve#625
-        ruled that an invisible line is NOT A PARAGRAPH for looseness. Whether
-        a line IS a paragraph and whether it ENDS one are different questions,
-        which is what the `dd` half of carve#1350 already turned on - and the
-        attribute block settles it by measurement rather than by argument,
-        since it is invisible, it ends the item, and every implementation
-        already agrees it does. An objection that would forbid that is an
-        objection to something nobody does.
-
         WHAT THIS DOES NOT REACH, and both are unchanged. BELOW the content
         column at a NONZERO column, the following line reaches the container
         only through S4's lazy fold, and §24 C3's comment exception keeps that
-        path open: `- a` / `  %% c` / ` b` keeps `b` in the item, and corpus
-        189 and 192 pin the nested spelling of it. A line at DOCUMENT column 0
+        path open: `- a` / `  %% c` / ` b` keeps `b` in the item. A line at
+        DOCUMENT column 0
         is not below a column - it is AT the enclosing context's own block
         position, the distinction C3 already draws for a definition. And a line
         AT the content column after the block is the container's own second
@@ -517,15 +456,9 @@
         THE LINK REFERENCE DEFINITION IS THE CONTROL, and it does not move. It
         has no body, so its block IS the one line: the blank after it falls
         OUTSIDE the block, the indented line below is the container's own
-        second paragraph, and the flush-left line folds into that. `- a` /
-        `  [r]: /u` / blank / `    more` / `tail` keeps both lines in the item,
-        which every implementation already does. So this turns on the block's
-        extent, the same thing the contiguous spelling turned on, and not on
-        indentation and not on blank lines.
-
-        The NESTED spelling (`- outer` / `  - inner` / `    [r]: /u` / `tail`)
-        is unanimous and belongs to the nested half this clause leaves open
-        above; it is not decided here.
+        second paragraph, and the flush-left line folds into that. So this
+        turns on the block's extent, not on indentation and not on blank
+        lines. The NESTED spelling is not decided here.
 
         A FENCED BODY IS NOT A PARAGRAPH -- NORMATIVE (carve#646). The same
         rule, with the unmatched container's last block a CODE FENCE opened on
@@ -544,39 +477,16 @@
         and `x` re-parses at document level -- where the trailing delimiter run
         is ordinary inline text.
 
-        AND THE FENCE KIND IS NOT A PARAMETER -- NORMATIVE (carve#980). The
-        clause above is named for a code fence, and reads as though
-        VERBATIMNESS were the property doing the work. It is not. The reach of a container
-        is not extended by what its innermost block happens to be, and the
-        parameter S4 actually consults is whether ANY container in the open
-        stack holds an OPEN PARAGRAPH -- explicitly regardless of how many
-        containers the line failed to match. The fence kind never enters.
-
-        Read that way the two fence kinds are ONE rule and the asymmetry
-        between them falls out of the paragraph:
-
-          - A CODE fence body cannot hold an open paragraph at all, so the
-            column-0 line always takes S4's otherwise and the container ends.
-            That is the clause above, with no exception to carry.
-          - A COLON fence body CAN hold one, so it takes the lazy branch when
-            it does and the same otherwise when it does not.
-
-        The second bullet is not a widening. An EMPTY colon fence already ends
-        the container today -- corpus 270's second document pins it and the
-        oracle produces it -- so the reach rule ALREADY reaches colon fences.
-        What it must not do is override an open paragraph, because S4's lazy
-        branch is what the reach rule is made of, not an exception to it.
-
-        S1 and S2 are why this needed saying. S1 MATCH PREFIXES stops the walk
-        at the ITEM and S2 FENCED BODY does not fire, in the colon spelling
-        exactly as in the code spelling. But stopping the walk only ROUTES the
-        line to S4; it does not decide it. Reading the stop as the decision
-        makes VERBATIMNESS look load-bearing when it only ever stood in for
-        "no paragraph is open", and that derivation reaches the opposite of
-        what corpus 270 and A REAL DIV IS A CONTAINER LIKE ANY OTHER already
-        require. Stated here because a clause that is silent about which
-        property governs leaves the wrong derivation available to the next
-        reader, which is how it was reached once already (carve#980).
+        AND THE FENCE KIND IS NOT A PARAMETER -- NORMATIVE.
+        VERBATIMNESS is not the property doing the work. The reach of a
+        container is not extended by what its innermost block happens to be,
+        and the parameter S4 consults is whether ANY container in the open
+        stack holds an OPEN PARAGRAPH. The fence kind never enters, so the two
+        fence kinds are ONE rule and the asymmetry between them falls out of
+        the paragraph: a CODE fence body cannot hold an open paragraph at all,
+        so the column-0 line always takes S4's otherwise and the container
+        ends, while a COLON fence body CAN hold one and takes the lazy branch
+        when it does.
 
         AND A FENCE THAT OPENED NO BODY IS NOT ONE EITHER (carve#1387). The
         first bullet presumes a code fence body EXISTS. §10 I4 decides that, and
@@ -596,16 +506,6 @@
               ```               > ```                 ```
             tail                tail                tail
 
-        all three fold `tail` into the paragraph that is still open, and no
-        container ends. The LIST spelling is the one that diverged: the
-        executable spec, carve-php and carve-rs ended the item while rendering
-        the same fence line as paragraph text, which is one line answered two
-        ways inside a single parse -- the shape PROSE REOPENS THE PARAGRAPH
-        already names. All three of them fold the quote spelling, and this
-        implementation folded the `dd` spelling too, so the contradiction was
-        inside each reader rather than between them. The fence CHARACTER is not
-        a parameter either: the tilde spelling is the same clause.
-
         THE CLOSER LOOKAHEAD DOES NOT STOP AT A BELOW-COLUMN LINE. §24 C3 folds
         such a line as lazy text while a paragraph is open, so a closer written
         below it is still written inside the container. Stopping there makes the
@@ -618,15 +518,13 @@
              y
               ```
 
-        differently from every engine, which ends the item at ` y` because this
-        fence does have its closer and a real body is open (corpus
-        276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column).
+        wrongly: the item ends at ` y`, because this fence does have its closer
+        and a real body is open.
 
         A BLANK LINE and a TERMINATED fence are the controls, and both are
         unchanged: a blank closes the paragraph so S4's otherwise governs
         (carve#1379), and a fence with a closer is a BLOCK whose body leaves no
         paragraph open, which is the first bullet with its premise intact.
-        Corpus 367.
 
         AND NOTHING CLOSES MEANS THE CONTAINER GOES ON COLLECTING -- NORMATIVE
         (carve#980). S4's lazy branch says NOTHING closes, and that binds the
@@ -641,16 +539,11 @@
               b
               :::
 
-        On the left `a`, `d` and `b` are one paragraph in one div. Folding `d`
-        and then ending the container -- so that `b` lands beside the div
-        rather than inside it -- is the reach over-extended in the other
-        direction, and it renders a document nothing in the stack ever closed.
-        The right-hand document is the same rule with the fold as the last
-        line, which is the only spelling corpus 270 carried, and it is why a
-        reader could fold correctly and still get the left one wrong. Corpus
-        category 280 pins both, and the CONTROL beside them: with nothing in
-        the stack open, the flush-left line still ENDS the container and the
-        line after it is outside too.
+        On the left `a`, `d` and `b` are one paragraph in one div; `b` MUST NOT
+        land beside the div. The right-hand document is the same rule with the
+        fold as the last line. The CONTROL: with nothing in the stack open, the
+        flush-left line still ENDS the container and the line after it is
+        outside too.
 
         A REAL DIV IS A CONTAINER LIKE ANY OTHER -- NORMATIVE (carve#909). An
         unterminated `::: ` div in a container decides the same way, on the same
@@ -692,18 +585,9 @@
         governs, its lazy branch asks for an open PARAGRAPH, and a verbatim
         body is not one. So the containers close, the `dd` holds an EMPTY code
         block, and `body` re-parses at document level -- where the trailing
-        delimiter run is ordinary inline text, byte for byte the answer corpus
-        276 already pins for the `- ``` ` spelling.
+        delimiter run is ordinary inline text, byte for byte the answer the
+        `- ``` ` spelling gets.
 
-        This said "the innermost MATCHED context holds an OPEN PARAGRAPH",
-        which describes something no implementation does. A lazy line carries
-        no markers, so it matches ZERO containers and the innermost matched
-        context is the document root, which holds no open paragraph -- under
-        that wording `> a` / `b` would close the quote at depth 1. Every engine
-        folds there, and corpus 82-blockquote-lazy-continuation pins it. What
-        the wording did produce was a split at depth 2: carve-rs closed both
-        quotes where carve-js and carve-php folded into the nested one
-        (carve#506, carve-rs#452). Depth is not a parameter of this rule.
      S5 OPENERS. When S3/S4 classify the residue as a container opener (a
         quote marker; a list marker at an admissible column; a `+`
         continuation marker at the marker column, PART 9 §17 L3/L4; a fence

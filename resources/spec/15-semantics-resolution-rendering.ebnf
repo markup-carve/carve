@@ -39,31 +39,25 @@
         repeat uses `fnref{n}-{k}` and adds another backlink. The
         backlink glyph is the plain return arrow `↩` (Carve's choice;
         djot appends a variation selector).
-        THE BACKLINK CARRIES AN ACCESSIBLE NAME -- NORMATIVE (carve#1455).
-        The `role` alone was right and the NAME was the glyph, so a screen
-        reader announced the character's Unicode name ("leftwards arrow with
-        hook") or skipped the link outright: correct semantics, no way to know
-        where the link goes. `{name}` is the `footnoteBacklink` label (PART 9
-        §16a) followed by WHAT THE LINK VISIBLY SAYS -- the label alone for a
-        lone backlink (`↩`, so `aria-label="Back to reference"`), the label
-        plus k for the k-th of several (`↩<sup>k</sup>`, so
-        `aria-label="Back to reference 2"`). Matching the visible text is WCAG
-        2.5.3, and it is why the number here is the REFERENCE ORDINAL and not
-        the note number: the note number appears nowhere in this link's text.
-        The name is TEXT and is attribute-escaped.
-        THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME -- NORMATIVE
-        (carve#1468). The rule above names the LINKS and left the REGION they
-        sit in anonymous: `<section role="doc-endnotes">` says what the region
-        is and nothing said what it is called, so a landmark list held an
-        unnamed entry for exactly the reason the backlink did. The section
-        takes `aria-label`, the string is the `endnotes` label (SS16a), and it
-        is escaped the same way:
+        THE BACKLINK CARRIES AN ACCESSIBLE NAME -- NORMATIVE. The `role` alone
+        was right and the NAME was the glyph, so a screen reader announced the
+        character's Unicode name or skipped the link outright. `{name}` is the
+        `footnoteBacklink` label (PART 9 §16a) followed by WHAT THE LINK VISIBLY
+        SAYS -- the label alone for a lone backlink (`↩`, so
+        `aria-label="Back to reference"`), the label plus k for the k-th of
+        several (`↩<sup>k</sup>`, so `aria-label="Back to reference 2"`).
+        Matching the visible text is WCAG 2.5.3, and it is why the number here
+        is the REFERENCE ORDINAL and not the note number. The name is TEXT and
+        is attribute-escaped.
+        THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME -- NORMATIVE. The rule
+        above names the LINKS and left the REGION they sit in anonymous. The
+        section takes `aria-label`, the string is the `endnotes` label (SS16a),
+        and it is escaped the same way:
             <section role="doc-endnotes" aria-label="Footnotes">
         The default is "Footnotes" rather than "Endnotes" because that is the
-        word the rest of this grammar uses for the construct, and a reader
-        meeting the region should hear the name the document's own prose uses
-        for it. A host that renders them at the end and calls them endnotes
-        sets the label; that is what the map is for.
+        word the rest of this grammar uses for the construct. A host that
+        renders them at the end and calls them endnotes sets the label; that is
+        what the map is for.
       - BACKLINK PLACEMENT WHEN THE BODY DOES NOT END IN A PARAGRAPH. "The
         note's last paragraph" above presumes there is one. When the note
         body's LAST BLOCK is not a paragraph (a code block, a block quote, a
@@ -77,11 +71,8 @@
         (or otherwise contained) content, not to the note's own backlink, so
         appending there would misattribute the backlink to the quotation. A
         note body consisting ONLY of a non-paragraph block still gets the
-        synthesized trailing <p>. Decided in carve#688: appending to
-        whatever paragraph happens to be last is undefined when the last
-        block has no paragraph, and where a literal reading of the old rule
-        DOES find one (inside a block quote, or nowhere, leaving the anchor
-        a bare inline child of <li>) it is wrong for the reason just given.
+        synthesized trailing <p>. Appending to whatever paragraph happens to
+        be last is undefined when the last block has no paragraph.
       - INLINE FOOTNOTE `^[content]` (pandoc form; a deliberate carve
         extension -- canonical djot has no inline footnotes). A `^`
         IMMEDIATELY before `[` opens an anonymous note whose content is the
@@ -197,12 +188,6 @@
                ```
              - c
 
-         is tight in every reader. Reading the PAYLOAD instead of the position
-         was the alternative, and it fails on its own terms: it would make a
-         structural answer depend on a detail readers already spell
-         differently, since carve-php drops the trailing blank from a raw
-         block and keeps it in a code block.
-
       L2 COMPACT LIST BLOCKS -- Carve deviation from djot/CommonMark. A
          blank line before an item's sub-BLOCK (sub-list, block quote,
          fenced code, fenced div, heading, table) does NOT loosen: the item
@@ -259,9 +244,7 @@
          This is a BREAK against released carve-js 0.1.3, which attached to the
          boundary, and it is deliberate: the boundary reading is the same
          absorb-flush-left-blocks-until-something-stops-you behavior that PART 1
-         S4 refuses one clause over, and taking it here would reject that shape
-         in the layout section and reinstate it in this one. carve-rs already
-         attaches one.
+         S4 refuses one clause over.
          THE MARKER IS ONE OPERATION IN EVERY CONTAINER -- NORMATIVE
          (carve#1782). The clause above is the WHOLE definition of `+`:
          ownership of the next flush-left block passes to the container, and
@@ -272,14 +255,6 @@
          set above hold in EVERY container in L4, not only in the two that had
          them spelled out.
 
-         This is stated because the readers disagreed while the clause did
-         not. The executable spec measured the extent in FOUR places and
-         narrowed it to one block in three of them, so `+` / `para` / `> q`
-         attached one block in a list item and both blocks in a footnote body
-         and in a definition description; a fourth place tested for a quote
-         line, so a `+` inside a block quote attached NOTHING when a quote
-         followed it, which the same clause forbids one sentence up ("the
-         marker only ATTACHES").
       L4 CONTAINERS THAT TAKE THE MARKER:
          - LIST ITEM (pinned by corpus list-continuation-marker): `+` at
            the item's marker column attaches the block to the item (for
@@ -330,14 +305,8 @@
 
          That is a DIFFERENT ANSWER from "place the payload by its column", not
          a narrower one, which is why it is stated rather than left to the
-         reader of L3. The executable spec instead REFUSED the whole document,
-         `stray continuation marker`, at every payload column -- one reader of
-         four, while carve-js, carve-php and carve-rs rendered the text and
-         agreed byte for byte. The refusal was not a conservative version of the
-         shipped form either: it fired at COLUMN 0 too, the one column where the
-         first-block form attaches cleanly in the two containers that have it.
-         Extending the form to the other two was the alternative, and it is not
-         what this clause does. Corpus 437 pins all six documents.
+         reader of L3. Extending the first-block form to the other two
+         containers was the alternative, and it is not what this clause does.
       L5 NOT CONTINUATION CONTAINERS (a lone `+` keeps its plain meaning):
          - fenced containers (admonition / generic div / line block) --
            their bodies already hold flush-left blocks; a lone `+` inside
@@ -367,14 +336,8 @@
          covered by the same rule without a new clause here: enumerating
          "which containers collect" was considered and rejected, because an
          enumeration re-opens the question for every container invented
-         afterward and leaves a silent gap exactly where nobody has
-         measured yet -- which is how the `+`-attached position went
-         unmeasured until three engines gave three different answers, one
-         of them leaving a blank line inside the item where the attached
-         definition used to be (carve#665), and how the `dd` position went
-         unmeasured until two engines produced the combination this rule
-         forbids on ANY reading -- the line renders nowhere AND defines
-         nothing, so the author's text is simply gone (carve#666).
+         afterward and leaves a silent gap exactly where nobody has measured
+         yet.
 
          "No trace" is about OUTPUT, not about block structure -- it does
          not exempt a definition line from §10 I5, which already governs
@@ -392,12 +355,10 @@
          A footnote definition sitting on a list item's OWN line, followed
          by a plain continuation line, is this exact shape: the item holds
          TWO paragraph blocks with no blank between them and renders both
-         bare, `<li>first\n  second\n</li>` (carve#668). Treating the
-         definition as if it both interrupted AND merged -- attaching the
-         following line back onto the block it just ended -- would need a
-         rule found nowhere else in this grammar; treating it as loosening
-         the item on its own would contradict L2 directly. Three engines
-         each did one of those two things; neither is this rule.
+         bare, `<li>first\n  second\n</li>`. Treating the definition as if it
+         both interrupted AND merged would need a rule found nowhere else in
+         this grammar; treating it as loosening the item on its own would
+         contradict L2 directly.
 
       L7 ONE CONSUMED BOOLEAN SPELLS THE LOOSENESS NO BLANK LINE CAN --
          NORMATIVE (carve#1612). A container's preceding BLOCK-ATTRIBUTE LINE
@@ -418,24 +379,14 @@
              </ul>
 
          THE KEY IS NOT LIST-SPECIFIC, and writing it as if it were would have
-         been the first of at least two one-off keys. Measured over every
-         container that can suppress a paragraph wrapper:
-
-             list item, tight              no <p>    <li>x</li>
-             list item, loose              has <p>   <li><p>x</p></li>
-             definition description        no <p>    <dd>x</dd>
-             definition description, 2 blocks  has <p>  <dd><p>x</p><p>y</p></dd>
-             table cell                    no <p>    no wrapped alternative
-             caption                       no <p>    no wrapped alternative
-             block quote, div, line block, footnote body   always <p>
-
-         So the tight/loose axis exists in exactly TWO places, and this key
-         applies wherever it exists: a LIST (L1) and a DEFINITION LIST (PART 2,
-         definition lists) today, and any container a later clause gives the
-         axis to, with no second key to invent. On a container with no such axis
-         the name has no special meaning and renders `loose=""` like any other
-         boolean. This clause adds a meaning at the positions that have one and
-         reserves the name nowhere else.
+         been the first of at least two one-off keys. The tight/loose axis
+         exists in exactly TWO places, and this key applies wherever it exists:
+         a LIST (L1) and a DEFINITION LIST (PART 2, definition lists) today, and
+         any container a later clause gives the axis to, with no second key to
+         invent. A table cell and a caption suppress the paragraph wrapper with
+         no wrapped alternative at all; a block quote, div, line block and
+         footnote body always wrap. On a container with no such axis the name
+         has no special meaning and renders `loose=""` like any other boolean.
 
          WHAT IS UNSPELLABLE WITHOUT IT. Looseness is spelled with a blank line,
          and a blank line needs two things to stand between, so the shape with
@@ -448,39 +399,19 @@
              inside the description wraps it -- so `<dd><p>x</p></dd>` is
              unspellable at every entry count, not just at one.
 
-         The definition list is therefore worse off than the list, which is the
-         measurement that made the general key the cheaper answer: a list-only
-         key would have left the container with NO looseness mechanism at all
-         still without one.
-
-         THE SHAPE ARRIVES FROM ORDINARY HTML, which is why it earns syntax
-         rather than an interchange-only declaration. `<li><p>...</p></li>` is
-         what WordPress, TinyMCE and Google Docs export emit, so an importer
-         meets it on routine input (carve#1607). The alternative -- keep the
-         tree, report `structure-unspellable`, carry the shape through AST
-         encode/decode by PART 12 §6, exactly how multiple table bodies already
-         work -- costs no syntax and was rejected for that reason: the
-         diagnostic would fire on ordinary imports and tell the author only that
-         Carve cannot say what their document said.
 
          THERE IS NO `tight` TWIN, and its absence is a decision rather than an
          omission. TIGHT IS ALWAYS SPELLABLE: remove the blank lines. Only loose
          has an unspellable case, so a `tight` key would be surface with no
-         shape behind it -- and it would introduce the one genuinely ambiguous
-         document this asymmetric design does not have, where the blank lines
-         say loose and the attribute says tight. Symmetry is the instinct here
-         and it buys a contradiction.
+         shape behind it -- and it would introduce a genuinely ambiguous
+         document, where the blank lines say loose and the attribute says tight.
 
-         THE NAME IS THE TERM OF ART, on purpose. A name describing the tree --
-         `block-children` and its neighbours -- would name the wrong fact: the
-         children are already block nodes in both spellings, and what moves is
-         how they RENDER. A name describing the output -- `paragraphs`,
-         `wrapped` -- would be an HTML artifact, and this axis has to mean
-         something on the Markdown, plain and terminal targets too. `loose` is
-         what CommonMark, djot and Markdown Extra all call this distinction, in
-         lists and in definition lists alike, and L1 above already spells the
-         axis LOOSE. A second vocabulary for one axis inside one grammar costs
-         more than the imperfect fit of "a loose `<dd>`".
+         THE NAME IS THE TERM OF ART, on purpose. A name describing the tree
+         would name the wrong fact -- the children are already block nodes in
+         both spellings, and what moves is how they RENDER -- and a name
+         describing the output would be an HTML artifact, where this axis has to
+         mean something on the Markdown, plain and terminal targets too. `loose`
+         is what CommonMark, djot and Markdown Extra all call this distinction.
 
          REDUNDANT USE IS A NO-OP. `loose` on a list the blank lines already
          made loose is legal and changes nothing, and so is `loose` on a
@@ -493,55 +424,34 @@
          `footer-rows` when they are present" rather than deriving them onto
          every table, and PART 11 §2, which spends a mark only where omitting it
          would change the re-parsed document. On a multi-item loose list the
-         blank lines already say it, so the key would be an idle mark by exactly
-         that test. The alternative -- emit it on every loose container -- would
-         rewrite a large share of the corpus and of every document anyone has
-         written, for nothing gained.
+         blank lines already say it, so the key would be an idle mark.
 
-         THE TEST IS A RE-PARSE, AND IT IS OVER THE DOCUMENT (markup-carve/carve-rs#1305).
-         Write the container's body without the key, read it back, and emit the
-         key exactly where the container's own looseness field did not survive
-         that trip. The equality is PART 11 §1's, taken over the re-parsed
-         document; taking it over the RENDER instead answers a different
-         question and gets the definition list wrong, below.
+         THE TEST IS A RE-PARSE, AND IT IS OVER THE DOCUMENT. Write the
+         container's body without the key, read it back, and emit the key
+         exactly where the container's own looseness field did not survive that
+         trip. The equality is PART 11 §1's, taken over the re-parsed document;
+         taking it over the RENDER instead answers a different question.
 
-         THE ITEM COUNT IS NOT THE TEST. "Two or more items already say it" is
-         true, so the converse -- fewer than two items, therefore write the key
-         -- reads like the same rule backwards, and it is not: a ONE-ITEM list
-         is loose whenever the blank line sits INSIDE that item, and there the
-         blank-line spelling did express the looseness. Corpus document
-         `05-lists-11` is exactly that shape -- one ordered item holding two
-         paragraphs -- so a writer keyed on the item count rewrites it and fails
-         `parse(fmt(x)) == parse(x)` on a document that was never lossy. The
-         count is sound as a SHORTCUT IN ONE DIRECTION ONLY: two or more items
-         always re-parse loose, so the read may be skipped there, which keeps it
-         off almost every list in the corpus. Corpus
-         `408-the-writer-spells-looseness-only-where-a-blank-line-cannot` pins
-         the multi-item case and `-2` the one-item case, both through a `.fmt`
-         sidecar, because the HTML is identical under both spellings and no HTML
-         fixture can see the difference.
+         THE ITEM COUNT IS NOT THE TEST. A ONE-ITEM list is loose whenever the
+         blank line sits INSIDE that item, and there the blank-line spelling did
+         express the looseness, so a writer keyed on the item count rewrites
+         such a document and fails `parse(fmt(x)) == parse(x)`. The count is
+         sound as a SHORTCUT IN ONE DIRECTION ONLY: two or more items always
+         re-parse loose, so the read may be skipped there.
 
-         THE COUNT IS ALSO WRONG IN THE OTHER DIRECTION, which is why it is a
-         different rule rather than a shortcut to be repaired. A definition
-         list's entries count as two or more on any list worth writing, and a
-         blank line between two ENTRIES does not loosen a `<dl>` at any count -
-         so a writer keyed on the count OMITS the key from the container that
-         needs it most. Corpus
-         `407-one-consumed-boolean-spells-the-looseness-no-blank-line-can-2` is
-         that document: two entries, and unspellable without the key.
+         THE COUNT IS ALSO WRONG IN THE OTHER DIRECTION. A definition list's
+         entries count as two or more on any list worth writing, and a blank
+         line between two ENTRIES does not loosen a `<dl>` at any count - so a
+         writer keyed on the count OMITS the key from the container that needs
+         it most.
 
          ON A DEFINITION LIST THE ANSWER IS UNCONDITIONAL: the writer emits the
          key on every definition list carrying `loose`. PART 12 §8 publishes
          `definition_list.loose` ONLY where the looseness was SPELLED, so a body
          written without the key can never read back with the field set, and the
          re-parse test says "emit" every time. A description that already holds
-         two blocks does not change it. There the key is redundant in the RENDER
-         -- both spellings wrap the `<dd>`, which is why redundant use is a
-         no-op above -- and it is not redundant in the TREE, and the tree is what
-         the equality is taken over. That is the same asymmetry the two fields
-         have: `list.tight` is total and derived from the source, so the writer
-         has a real question to answer, while a definition list's field records
-         only what its own derivation misses.
+         two blocks does not change it: there the key is redundant in the RENDER
+         and not in the TREE, and the tree is what the equality is taken over.
 
          ORDERED AND NESTED CONTAINERS TAKE THE SAME KEY AT THE SAME PLACEMENT,
          at the nested container's own indent, so this needs no rediscovering:
@@ -580,24 +490,18 @@
       Author `{attrs}` after the span merge onto the <span> (the base
       `math …` class is kept; see PART 10 §1).
 
-      A MATH SPAN CARRIES ROLE MATH -- NORMATIVE (carve#1468). The delimiters
-      are written for a typesetter to find. Until one runs -- and if none ever
-      does, which is the default, since no engine ships one -- the span is a
-      plain `<span>` full of backslashes and carets, and a reader announces
-      them as prose: "backslash paren E equals m c caret 2". `role="math"` says
-      the run IS MATHEMATICS whether or not the script arrives, and a reader
-      that understands the role can hand the content to a math view instead of
-      spelling it.
+      A MATH SPAN CARRIES ROLE MATH -- NORMATIVE. The delimiters are written
+      for a typesetter to find. Until one runs -- and if none ever does, which
+      is the default -- the span is a plain `<span>` full of backslashes and
+      carets, and a reader announces them as prose. `role="math"` says the run
+      IS MATHEMATICS whether or not the script arrives.
 
       THE NAME STAYS THE AUTHOR'S, and no key is added to §16a for it. A
-      formula's spoken form is not a string the engine could know -- it is
-      per-formula content, not an engine word -- and the seam for it already
-      exists: `{attrs}` merge onto this same span, so a trailing
-      {aria-label="E equals m c squared"} on the formula needs nothing new. An
-      author who spells their own `role` keeps it -- under any ASCII casing,
-      for the reason SS12 states: the name is emitted verbatim, HTML attribute
-      names are case-insensitive, so a case-SENSITIVE test writes a duplicate of
-      the very attribute it is checking for.
+      formula's spoken form is per-formula content, not an engine word, and the
+      seam for it already exists: `{attrs}` merge onto this same span, so a
+      trailing {aria-label="E equals m c squared"} needs nothing new. An author
+      who spells their own `role` keeps it -- under any ASCII casing, for the
+      reason SS12 states.
 
       `role` is written LAST, after the merged author attributes, so adding it
       never moves an attribute the author placed (the ordering PART 10 §1
@@ -620,10 +524,8 @@
       THE ROUND-TRIP ARGUMENT IS REAL AND LOSES ANYWAY. A math-block extension
       WRITES that div, so the fence is an exact round trip of the document that
       produced the HTML. But an importer's job is to produce a document that
-      means what the HTML meant, not to reconstruct the document that happened
-      to generate it -- and it cannot know that an extension generated it at
-      all. HTML from anywhere else carrying those classes gets the same
-      treatment.
+      means what the HTML meant, and it cannot know that an extension generated
+      it at all.
 
       THE CONDITIONAL FORM IS REJECTED ON PURPOSE. Emitting the fence when the
       extension is registered and the core form otherwise makes the importer's
@@ -637,19 +539,7 @@
       its `alttext` is written `` $`E = mc^2` `` inline and ``` $$`E = mc^2` ```
       for `display="block"`, with no `$` or `$$` after the closing backtick. A
       trailing delimiter is literal text, and it renders as a stray dollar sign
-      beside the formula. carve-php carried that defect and removed it in
-      markup-carve/carve-php#1546; carve-js and carve-rs were measured and
-      never had it.
-
-      (Pinned twice, because the two halves need different readers. Converter
-      corpus 33-html-block-math-imports-as-the-core-form compares the RENDER of
-      the produced Carve, which is where the two spellings of the div are
-      distinguishable at all: the fence renders a `language-math` code block
-      where the core form renders the math span. The MathML half has no such
-      render difference -- a stray `$$` is only a stray dollar sign -- so it is
-      pinned on the BYTES, by the `tests/html-import/math-block-and-mathml`
-      fixture, which carries both halves and whose `expected.crv` is compared
-      exactly.)
+      beside the formula.
 
    19. CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES -- NORMATIVE
       (resolution formalized as PART 9R rules R4/R5; behavior detail here).

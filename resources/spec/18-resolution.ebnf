@@ -63,31 +63,17 @@
       linkDefs entry is unresolved and renders as literal source text; it
       does not fall through to the heading index at ANY spelling, folded
       or exact.
-      THE ASYMMETRY IS THE ONE THE PARAGRAPH ABOVE ALREADY GIVES. It is
-      the stated reason the two matchings differ in the first place: a
+      THE ASYMMETRY IS THE ONE THE PARAGRAPH ABOVE ALREADY GIVES: a
       collapsed label is the author quoting prose from elsewhere in the
       document, which is why its matching is loose, and an explicit label
       is an identifier the author wrote twice and can keep identical,
       which is why its matching is exact. An identifier that names nothing
-      names nothing; it is not retried as prose. Reading the fallback as
-      covering both forms deletes that distinction while leaving the
-      sentence that justifies it in place.
-      PROSE IS NORMATIVE AND A READER IS AN IMPLEMENTATION. Measured at
-      the time of this ruling, three of the four readers resolved a shape
-      this rule does not offer -- two of them on both the folded and the
-      exact spelling, one on the exact spelling only -- and one read the
-      rule as written. Which three is a measurement and belongs on the
-      implementation tickets, not here; that they were a majority is not
-      an argument (PART 0's THE EXECUTABLE ARTIFACTS DECIDE NOTHING). If
-      the explicit form SHOULD reach the index, that is a deliberate
+      names nothing; it is not retried as prose.
+      If the explicit form SHOULD reach the index, that is a deliberate
       widening with its own clause, not a retrofit to the engines.
       THE COMPATIBILITY BREAK, recorded: a document whose
       `[text][Some Heading]` resolves today renders the bracketed run
-      literally instead. Accepted (carve#742 signoff). Corpus rows -- with
-      the control that the collapsed form still reaches the index, and the
-      control that an explicit label matching a real linkDefs entry still
-      resolves, since a fix keyed on "unresolved" rather than on "collapsed"
-      breaks the second -- are deferred to their own pass.
+      literally instead.
       ON THIS PATH THE LABEL ENTERS AS ITS RENDERED PLAIN TEXT, the same
       string kind the heading side already enters as. The index is keyed
       by the heading's rendered plain text, so `# *bold* heading` is
@@ -119,18 +105,12 @@
       heading even though the heading is now reachable.
       NFC and NOT NFKC: canonical equivalence only, so `ﬁle` does not
       match `file` and `① one` does not match `1 one` -- compatibility
-      folding would change which text an author is quoting, not just how it
-      is spelled. NFC belongs in the list for two reasons. The id side is
-      ALREADY NFC (§25), so without it a document publishes `id="Café"`
-      and then declines `[Café][]` against the heading that produced it --
-      the same alphabet on one side of the resolution and not the other.
-      And NFC is a WEAKER fold than the case fold this list already
-      admits: case folding relates codepoints Unicode calls distinct,
-      while NFC relates sequences Unicode DEFINES as the same, so
-      admitting the stronger one and refusing the weaker one is backwards.
-      The two spellings are also indistinguishable on screen, so a
-      reference that misses has no visible cause (carve#725, where
-      carve-rs folded and the other three did not). The index holds
+      folding would change which text an author is quoting. NFC belongs in the
+      list for two reasons. The id side is ALREADY NFC (§25), so without it a
+      document publishes `id="Café"` and then declines `[Café][]` against the
+      heading that produced it. And NFC is a WEAKER fold than the case fold
+      this list already admits, so admitting the stronger one and refusing the
+      weaker one is backwards. The index holds
       headings at top level and
       inside divs, admonitions, list items, and definitions, but
       DECLINES any heading with a blockquote ancestor, in either
@@ -158,13 +138,6 @@
       invisible constructs interrupt), so it is never a lazy line there. No
       document distinguishes this clause's answer from section 7's for that kind.
       The link and footnote kinds are the ones this clause governs on its own.
-
-      This is a consequence of NO OPEN PARAGRAPH, NO LAZY LINE, stated here
-      because collection runs BEFORE block structure in every implementation and
-      three engines each got a different answer without it: one deleted the
-      definition's text and left the marker, one registered it while also
-      rendering it, and one half-collected a footnote into the paragraph it was
-      written in.
 
       HOW AN ENGINE MAY DECIDE IT. Collection is a pre-pass over lines, so the
       answer is not local to the line. An implementation MAY ask the block
@@ -204,15 +177,6 @@
       document. A matcher whose answer depends on where it sits in the whole
       document, or on lines the array does not contain, is NOT CONFORMING.
 
-      THIS IS NOT A PROPERTY OF THE PROBE. R1a's pre-pass parses the run back to
-      the last blank line, and that run is re-based -- but so is every container
-      body, with no definition anywhere in the document. Measured on all three
-      engines: a four-line document whose list item holds two lines invokes the
-      matcher with a TWO-LINE array at index 0, then with the whole document at
-      index 3; a block quote and a `:::` container do the same. Scoping the rule
-      to the probe would leave the identical hazard unstated for every container,
-      which is where an extension author meets it first.
-
    R2 FOOTNOTES (rendering in PART 9 §16). Footnote labels use the same
       ASCII-whitespace-normalized, case-sensitive key as R1. A [^label] use
       with a matching footnoteDefs entry is numbered by FIRST-REFERENCE order from
@@ -234,12 +198,9 @@
       section is written on its account.
       RESOLUTION ORDER IS NOT THE ANSWER. An implementation that numbers
       footnotes before it knows whether the reference resolved counts the
-      discarded use, and the numbering then says so out loud: the note a
-      reader can see is numbered fnref{n}-2, a repeat of a reference the
-      document does not contain, and a lone one leaves an endnote whose
-      backlink names an id no element carries. Which pass runs first is a
-      property of a pipeline rather than of the language, and ratifying it
-      would make an ordering artifact into a rule (carve#1198 signoff).
+      discarded use, and the numbering then says so out loud. Which pass runs
+      first is a property of a pipeline rather than of the language, and
+      ratifying it would make an ordering artifact into a rule.
       WHAT IS COUNTED IS WHAT THE OUTPUT HOLDS, which decides the cases
       either side of this one the same way. A note in a reference that DOES
       resolve is an ordinary reference, because the resolved link text is
@@ -258,42 +219,30 @@
       link text is then LABEL + NUMBER, e.g. "Figure 1", markup preserved).
       Resolution is ONE LEVEL: cloned heading text is not re-expanded, so
       self-references and cycles are safe. Unresolved -> literal.
-      WHAT IS CLONED IS THE HEADING'S INLINE NODES -- NORMATIVE (carve#915).
+      WHAT IS CLONED IS THE HEADING'S INLINE NODES -- NORMATIVE.
       "Cloned heading text" means the nodes, not a rendered string. A node
       carries its SOURCE RUN, and a string does not, so an implementation that
       flattens the heading to glyphs while building its id index has destroyed
-      the run before any renderer is invoked. Smart typography's SOURCE mode
-      (§8) then cannot recover it on ANY target, and no renderer change reaches
-      the loss -- the label was materialized in the wrong subsystem. The same
-      argument covers every other run a renderer may want back: a code span, an
-      escape, an inline literal. "markup preserved" already said this for the
-      caption side; it holds for the heading side too, and for the source
-      spelling as much as for the markup.
-      DERIVED DISPLAY TEXT CLONES THE SAME NODES -- NORMATIVE (carve#957).
-      The clause above binds every consumer that derives display text from
-      a heading, not the crossref alone. A render-stage transform may not
-      undo a core resolution rule, so wherever anything builds visible text
-      from a heading -- a numbered cross-reference label, an index term's
-      display, a table-of-contents entry -- it clones the same inline
-      NODES. Flattening to a string at the derivation site destroys the
-      source run exactly as flattening at the index site does, and no
-      renderer downstream can recover it. Stated once here rather than
-      per consumer, because the reach of R4 is what is at issue and the
-      next consumer that derives display text inherits the answer.
+      the run before any renderer is invoked, and no renderer change reaches
+      the loss. The same argument covers every other run a renderer may want
+      back: a code span, an escape, an inline literal.
+      DERIVED DISPLAY TEXT CLONES THE SAME NODES -- NORMATIVE. The clause
+      above binds every consumer that derives display text from a heading, not
+      the crossref alone: a numbered cross-reference label, an index term's
+      display, a table-of-contents entry. Flattening to a string at the
+      derivation site destroys the source run exactly as flattening at the
+      index site does. Stated once here rather than per consumer.
       THE LABEL IS TAKEN BEFORE ANY RENDER-STAGE INJECTION. A heading's
       cloned nodes are its AUTHORED inline content. Whatever a render-stage
       transform later adds to the heading -- a `section-number` span, a
       permalink anchor -- is not part of the label and never appears in
       derived text, so an implementation that resolves cross-references
       AFTER such a transform must clone from the PRISTINE heading and not
-      from the live one.
-      That sentence is normative rather than incidental because two
-      implementations may differ HERE BY CONSTRUCTION rather than by
-      defect: one resolves cross-references before the numbering transform
-      runs, the other after it. Both follow the same words and produce
-      different labels -- one numbered, one plain -- unless the words say
-      which side of the injection the label comes from. Naming the side is
-      therefore the whole content of this half of the clause.
+      from the live one. That is normative rather than incidental because two
+      implementations may differ HERE BY CONSTRUCTION: one resolves
+      cross-references before the numbering transform runs, the other after
+      it, and both follow the same words unless the words say which side of
+      the injection the label comes from.
       NUMBERING, PREFIXING AND JOINING REMAIN THE EXTENSION'S OWN
       BUSINESS. This governs what the TITLE part is made of, not the label
       word, not the number, and not the separator around them.
@@ -326,11 +275,9 @@
       does not merely leave a paragraph behind; it takes the caption line into
       it.
 
-      That binding is resolution-dependent BY DESIGN, and it is the half worth
-      stating outright, because the alternative reads cleaner and is wrong.
-      Binding on the SOURCE SHAPE would put a `<figure>` around a paragraph of
-      literal `![a][r]` -- output no engine writes and no clause asks for. So
-      the caption is a property of the same resolved tree the image is.
+      That binding is resolution-dependent BY DESIGN. Binding on the SOURCE
+      SHAPE would put a `<figure>` around a paragraph of literal `![a][r]` --
+      output no engine writes and no clause asks for.
 
       A DISPLAY-MATH HOST HAS NOTHING TO WAIT FOR. §4's other prose-spelled
       captionable host, a paragraph whose whole content is one display-math
@@ -340,15 +287,4 @@
       settles nothing else -- an unresolved reference image is
       captionable-SHAPED, and it is not a block image.
 
-      WHAT THIS REPLACES, so the shape is not rebuilt by accident. The answer
-      used to be reached four times: a syntactic pre-filter in the block layer,
-      a post-pass that took apart a figure the block layer had built
-      speculatively (carrying the undo data on the node to do it), a probe
-      render whose output was discarded, and the paragraph serializer's own
-      render-and-test. Resolution fed the structural decision from four
-      directions, and a fifth consumer -- an importer with no access to any of
-      them -- guessed the rule a third time. An implementation that attaches
-      the caption optimistically and detaches it later is passing this clause's
-      tests while keeping the defect it exists to remove.
    ============================================================================ *)
-

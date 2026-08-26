@@ -24,12 +24,6 @@ attribute_list = attribute, {space+, attribute} ;
    padding is space-only everywhere, and a continuation line's leading run
    is indentation like any other leading run.
 
-   `opt_ws` was ONE name for both roles, used at five sites, and the two
-   are split rather than substituted so no site can keep the old meaning by
-   accident: `attr_pad` is the inline one, `opt_ws` now serves only
-   `opt_pad`, `attr_separator` and `continuation`, all three of which are
-   block-level.
-
    Two neighbouring questions are explicitly NOT decided here and have
    their own tickets: a NEWLINE inside a quoted value, where this file and
    carve-core.ohm split and the engines are 2-1 (carve#888), and
@@ -180,16 +174,6 @@ quoted_value = '"', { escaped_char | (character - '"' - '\' - newline) }, '"'
    inside the quotes while `resources/carve-core.ohm` excluded one at the
    same slot: ONE production, two normative answers, which is this ticket's
    subject rather than a consequence of any other clause.
-
-   It is settled the ohm file's way because the alternative falsifies a
-   sentence this grammar already states. `attributes` cannot span lines --
-   carve#897 ruled that an inline block stops at the newline, and since
-   carve#906 its padding is `attr_pad = {space}` and its separator `space+`,
-   neither of which admits one. The quoted VALUE was the last way through,
-   so `*x*{k="a` + newline + `b"}` was an attribute block under the EBNF
-   and literal text under the ohm. Narrowing here is what makes the note at
-   `block_attributes` -- "an inline block does not span lines in any
-   engine" -- true of the productions as well as of the engines.
 
    THE BLOCK-ATTRIBUTE LINE FOLLOWS, and that is the part with a cost.
    `block_attributes` reads the same `quoted_value`, so a line break inside

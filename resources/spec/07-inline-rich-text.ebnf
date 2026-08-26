@@ -116,28 +116,13 @@ forced_content    = (inline_element | text_run | literal_special)+ ;
 
      {//}  {**}  {__}  {~~}  {^^}  {,,}  {==}  {++}  {##}
 
-   all render literally. This is not a new rule -- it is the one already
-   written here and in docs/parsing-ambiguities.md §16 ("`{^^}` # Not
-   superscript (no content)"), and the two engines that read it that way,
-   carve-js and carve-rs, were the ones in conformance. The oracle and
-   carve-php emitted empty elements: `<em></em>`, `<sup></sup>`, `<mark></mark>`.
-
-   IT APPLIES TO THE EDITORIAL FAMILY TOO, whose content slots are the same
-   `+` repetition. `{++}` was an `<ins>` inserting nothing and `{##}` a comment
-   saying nothing to anybody; `{--}` was a `<del>` deleting nothing, and the
-   string it freed is the braced en dash (PART 9 §8).
-
-   AN EMPTY ELEMENT IS NOT THE HARM -- the harm is that the braces vanish. An
-   author who wrote `{^^}` sees their four characters replaced by nothing
-   visible, in the output only, which is the same silent-loss shape the hyphen
-   flanking rule refuses. Reading them back as text loses nothing.
+   all render literally. IT APPLIES TO THE EDITORIAL FAMILY TOO, whose content
+   slots are the same `+` repetition; the string `{--}` this frees is the
+   braced en dash (PART 9 §8).
 
    THE ONE FORM LEFT ALONE is a fully empty SUBSTITUTION, `{~~>~}`, which still
-   renders an empty del followed by an empty ins. Substitution is an open
-   divergence (see Editorial Markup below), and the same `+` on both of its
-   halves would also refuse `{~a~>~}` and `{~~>b~}` -- a deletion with no
-   replacement and an insertion replacing nothing, which are ordinary edits.
-   It needs its own decision rather than this one. *)
+   renders an empty del followed by an empty ins: substitution is an open
+   divergence (see Editorial Markup below) and needs its own decision. *)
 
 (* TRAILING ATTRIBUTES -- each emphasis-family span MAY carry a trailing
    `[attributes]` block: the generic inline-attribute carrier that attaches
@@ -146,24 +131,18 @@ forced_content    = (inline_element | text_run | literal_special)+ ;
    `<strong class="real">x</strong>`. It is the SAME `[attributes]` slot
    every other inline carrier uses (code_span, link, image, inline_span,
    extension_inline, autolink). Pinned by corpus
-   80-trailing-attribute-block-edge-cases; both reference impls agree. *)
+   80-trailing-attribute-block-edge-cases. *)
 
 (* Content MAY contain the delimiter character: a delimiter that does not
    satisfy the close condition (PART 9 §1) is literal content, not the span
-   boundary. The span ends at the matched closer only. Subtracting the
-   delimiter here would make e.g. "/usr/local/" -> <em>usr/local</em>
-   ungrammatical, contradicting edge-cases.md §1. The boundary is a semantic
-   constraint (PART 9 §1, §9), not a context-free one. *)
+   boundary. The span ends at the matched closer only. The boundary is a
+   semantic constraint (PART 9 §1, §9), not a context-free one. *)
 emphasis_content = (inline_element | text_run | literal_special)+ ;
 strong_content = (inline_element | text_run | literal_special)+ ;
 bi_content = (inline_element | text_run | literal_special)+ ;
 underline_content = (inline_element | text_run | literal_special)+ ;
 strike_content = (inline_element | text_run | literal_special)+ ;
 highlight_content = (inline_element | text_run | literal_special)+ ;
-
-(* The former prose pseudo-productions emphasis_open_condition /
-   emphasis_close_condition are SUPERSEDED by the formal bare_opener(d) /
-   bare_closer(d) templates above. *)
 
 (* --- Footnotes (PART 9 §16) --- *)
 (* Both implemented forms: the REFERENCE form `[^label]` resolving against a
@@ -185,9 +164,7 @@ footnote_label = {character - ']' - newline}+ ;
 inline_footnote = "^[", inline_content, ']' ;
 (* the closing `]` is the balanced, escape- and LITERAL-SPAN-aware close
    (PART 9 §16) -- the same scan `link_text` states, and the same three spans
-   it skips. This read "code-span-aware", naming only the first of the three,
-   which is the spelling carve#403 replaced at `link_text` and did not replace
-   here; footnote recognition is DISABLED inside the content *)
+   it skips; footnote recognition is DISABLED inside the content *)
 
 footnote_definition = "[^", footnote_label, "]:", space+, inline_content, newline,
                       {footnote_continuation | continuation_marker_block} ;
@@ -198,78 +175,44 @@ footnote_indent = whitespace, {whitespace} ;
    PART 9 §17), the same continuation marker lists, block quotes and definition
    bodies use.
 
-   INDENTATION IS COLUMNS, NOT CHARACTERS -- NORMATIVE (carve#692). The prior
-   spelling of `footnote_indent` as `space, space` made this production a
-   literal two-SPACE requirement, contradicting its own adjacent comment
-   ("indented by >= 2 spaces", a column claim) and PART 9 §24 C1, which
-   already gives a tab a column value (to the next multiple of 4). This
-   production widens to any whitespace run reaching column 2: a bare tab
-   (column 0 -> 4) or a space then a tab (column 1 -> 4) both qualify, exactly
-   as two literal spaces do; a single space (column 1) does not. This is
-   INDENTATION, not a marker SEPARATOR -- it does not touch the literal
-   `space` the def line's own `]:` separator requires (unchanged, PART 9 §24
-   C2's sibling rule for markers). `footnote_indent` above is therefore
-   deliberately loose (any run of `whitespace`, PART 2's own idiom for
-   `list_continuation`'s `indent`) -- the actual column-2 floor is column
-   arithmetic, stated here rather than encoded character-by-character.
+   INDENTATION IS COLUMNS, NOT CHARACTERS -- NORMATIVE (carve#692). Any
+   whitespace run REACHING COLUMN 2 indents the body: a bare tab (column 0 ->
+   4) or a space then a tab (column 1 -> 4) qualify exactly as two literal
+   spaces do; a single space (column 1) does not. PART 9 §24 C1 gives a tab its
+   column value (to the next multiple of 4). This is INDENTATION, not a marker
+   SEPARATOR -- it does not touch the literal `space` the def line's own `]:`
+   separator requires (unchanged, PART 9 §24 C2's sibling rule for markers).
+   `footnote_indent` above is therefore deliberately loose; the column-2 floor
+   is column arithmetic, not a character-by-character encoding.
 
    `inline_content` above describes THE SHAPE OF A LINE that belongs to the
    body, not how the collected body is parsed. The body is parsed AS BLOCKS
    (PART 9 §16: "parsed as blocks"), so a note may hold a table, a list, a code
    block or a quote, and the indentation beyond the body's own is theirs to
-   read. Taking the production literally reads as an inline-only body, which is
-   the opposite of what every implementation does and of what the corpus pins
-   ("A footnote body holds blocks", carve#691) -- and an engine written from
-   this line alone would flatten exactly the structure the indent carries
-   (carve-rs#611).
+   read.
 
    THE BODY'S OWN COLUMN IS TWO -- NOT the first continuation line's actual
    indent. A reader first consumes that minimum and then applies PART 0's ONE
    AUTHORED BLOCK BASE. Two is a floor for the body, not a ceiling for its
    blocks; this construct adds no second rebase rule. *)
 
-(* DISMISSED (not reserved, no production): a sidenote form
-     sidenote = "[>", inline_content, ']' ;
-   was proposed and declined -- margin placement is CSS over the existing
-   footnote/endnote output, so it does not warrant core syntax. The `[>`
+(* DISMISSED (not reserved, no production): a sidenote form `[>content]` --
+   margin placement is CSS over the existing footnote/endnote output. The `[>`
    opener is therefore UNCLAIMED and `[>foo]` is literal text (pinned by the
    corpus). Rationale: docs/dismissed-syntax.md. *)
 
 (* --- Citations (PART 9 §22, Tier-2 extension; issue #90) --- *)
 (* TIER-2, OFF BY DEFAULT. A `[...]` whose content contains a `@key` and which
-   has NO link/ref/span tail (`(url)` / `[ref]` / `{attrs}`) is a citation.
-   Bare `@key` stays a mention (PART 19); `\@` is literal. Items are
-   `;`-separated; each is `[prefix] [-] @key [, locator]` (`-` suppresses the
-   author in author-date mode). Bibliography entries are defined in-document:
-   `[@key]: {author= year=}? entry` (the `{…}` is optional, feeds author-date;
-   a leading `@` label is reserved here, never a link definition - see
-   reference_definition). Numbered output (default) emits `[1]` + an ordered
-   references list; author-date (configuration) emits `(Author Year)` + an
-   alphabetical list. The references list is appended at document end or
-   injected into a `::: references` block.
-
-   INTEGRAL MARKER (issue #226): a single leading `+` immediately after `[`
-   marks the whole citation cluster as integral (author-in-text). The `+` is
-   a group-level flag - there is no per-item integral mode. An integral cluster
-   is wrapped in `<span class="citation" data-cite-mode="integral">…</span>`.
-   The vocabulary (`integral` / `non-integral`) matches CSL / Citum `CitationMode`.
-   Example: `[+@smith2020]`, `[+see @smith2020, p. 12]`.
-
-   TYPED LOCATORS (issue #226): the locator text after the first `,` in an item
-   is parsed into a citeproc `{label, value}` structure plus a trailing suffix.
-   Longest-match, boundary rule: a term matches only when followed by end-of-locator,
-   whitespace, a digit, `§`, or `¶`. On a leading digit with no preceding term,
-   the default label is `page`. Trailing `,`, `&`, `-`, `.` are trimmed from the
-   value; the remainder is the suffix. Canonical labels with recognized abbreviations:
-     book (bk.) | chapter (chap., chaps.) | column | figure | folio |
-     issue (no.) | line (l., ll.) | note (n., nn.) | opus | page (p., pp.) |
-     paragraph (para., ¶) | part | section (sec., §) | sub verbo (s.v.) |
-     verse (v., vv.) | volume (vol.)
-
-   DATA-* HTML CONTRACT (issue #226): each citation anchor carries, in order,
-   only the attributes that apply: `data-cite-key`, `data-suppress-author`,
-   `data-cite-prefix`, `data-locator-label`, `data-locator`, `data-suffix`.
-   Prefix and suffix are flattened plain text.
+   has NO link/ref/span tail (`(url)` / `[ref]` / `{attrs}`) is a citation; a
+   bare `@key` stays a mention (PART 19) and `\@` is literal. Items are
+   `;`-separated; each is `[prefix] [-] @key [, locator]`. Bibliography entries
+   are defined in-document: `[@key]: {author= year=}? entry` -- the `{…}` is
+   optional and feeds author-date, and a leading `@` label is RESERVED here,
+   never a link definition (see reference_definition). NUMBERED output is the
+   DEFAULT: `[1]` plus an ordered references list. AUTHOR-DATE output
+   (configuration) emits `(Author Year)` plus an alphabetical list. The
+   references list is appended at document end, or injected into a
+   `::: references` block.
 
    Undefined behavior (impls MAY differ, NOT corpus-pinned): same-author-year
    disambiguation letters (e.g. `2020a` / `2020b`) are out of scope for v1 -
@@ -277,33 +220,35 @@ footnote_indent = whitespace, {whitespace} ;
    items); such a bracket falls back to literal text.
    Failure-mode handling IS pinned (tests/corpus-optional): a group with any
    undefined key renders the verbatim source; a `[@k]{...}` is a span, not a
-   citation; a `[@k, a; b]` with a `;` in the locator is literal text.
-   Pinned in tests/corpus-optional (features citations-numbered /
-   citations-author-date and the failure-mode cases, plus typed-locator,
-   integral, and suppress-author enrichment cases 13-24). *)
+   citation; a `[@k, a; b]` with a `;` in the locator is literal text. *)
 citation_group = '[', ['+'], citation_item, {';', citation_item}, ']' ;
 citation_item = [inline_content], ['-'], '@', citation_key, [',', space, inline_content] ;
 (* A single leading `+` immediately after `[` sets the whole citation cluster to
    integral mode (CSL/Citum CitationMode: integral = author-in-text; absent =
-   non-integral/parenthetical). This is the Djot draft `[+@foo, p. 15]` form.
-   Mode is a GROUP property; there is no per-item `+`. A bare `+` before `@key`
-   inside a multi-item bracket (e.g. `[@a; +@b]`) is parsed as prefix text on
-   that item, not as an integral marker.
+   non-integral/parenthetical), the Djot draft `[+@foo, p. 15]` form. Mode is a
+   GROUP property; there is no per-item `+`. A bare `+` before `@key` inside a
+   multi-item bracket (e.g. `[@a; +@b]`) is parsed as prefix text on that item,
+   not as an integral marker. An integral cluster wraps the ENTIRE citation
+   group output in `<span class="citation" data-cite-mode="integral">`.
    `-` before `@key` suppresses the author for that item (per-item; applies in
    both numbered and author-date modes via `data-suppress-author="true"`).
-   The locator (text after the first `,` in an item) is parsed into a typed
-   citeproc label + value + trailing suffix: longest-match label from the fixed
-   vocabulary (book/chapter/column/figure/folio/issue/line/note/opus/page/
-   paragraph/part/section/sub verbo/verse/volume, with abbreviations), matching
-   only at a boundary (end of string, whitespace, ASCII digit, `§`, or `¶`); no
-   label but a leading ASCII digit defaults to `page`; value is the leading run
-   of digits/roman/`.,&-` with trailing separators trimmed; the remainder is the
-   suffix. A roman numeral locator with no label produces no data-locator-label.
+   TYPED LOCATOR: the locator (text after the first `,` in an item) is parsed
+   into a citeproc label + value + trailing suffix. The label is the LONGEST
+   match from the fixed vocabulary below, and matches ONLY at a boundary --
+   end of locator, whitespace, an ASCII digit, `§`, or `¶`. Canonical labels,
+   with their recognized abbreviations:
+     book (bk.) | chapter (chap., chaps.) | column | figure | folio |
+     issue (no.) | line (l., ll.) | note (n., nn.) | opus | page (p., pp.) |
+     paragraph (para., ¶) | part | section (sec., §) | sub verbo (s.v.) |
+     verse (v., vv.) | volume (vol.)
+   No label but a leading ASCII digit defaults to `page`; a roman-numeral
+   locator with no label produces NO `data-locator-label`. The value is the
+   leading run of digits/roman/`.,&-`, with trailing `,`, `&`, `-`, `.` trimmed
+   off it; the remainder is the suffix.
    The structure is surfaced as `data-*` attributes on the rendered citation
-   anchors (`data-cite-key`, `data-suppress-author`, `data-cite-prefix`,
-   `data-locator-label`, `data-locator`, `data-suffix`) and, for an integral
-   cluster, a `<span class="citation" data-cite-mode="integral">` wrapper around
-   the entire citation group output. *)
+   anchor, IN THIS ORDER and only where each applies: `data-cite-key`,
+   `data-suppress-author`, `data-cite-prefix`, `data-locator-label`,
+   `data-locator`, `data-suffix`. Prefix and suffix are flattened plain text. *)
 citation_key = (letter | digit | '_'), {citation_key_char} ;
 (* Pandoc-compatible key charset (carve-js `KEY`): after the first char, any of
    these internal punctuation marks are allowed. *)
@@ -312,10 +257,7 @@ citation_key_char = letter | digit | '_' | ':' | '.' | '#' | '$' | '%' | '&'
 citation_definition = '[@', citation_key, "]:", space, [attributes], inline_content, newline ;
 (* The line is a NODE in the serialized tree -- `citation_definition`, carrying
    the key, the entry's inline content and the metadata block (PART 12 §18).
-   Like the other definition kinds it renders nothing where it sits, which is
-   exactly why it is a node: it was written somewhere, and neither consuming it
-   at parse time nor leaving it a paragraph of citation-shaped literal text can
-   put it back (carve#1276). *)
+   Like the other definition kinds it renders nothing where it sits. *)
 
 (* --- Extensions --- *)
 extension_inline = ':', extension_name, '[', extension_content, ']', [attributes] ;
@@ -347,45 +289,28 @@ comment_content = (* any text until the matching `#}`, preserved literally;
                      Forced Intraword Emphasis *) ;
 (* CONTENT IS LITERAL -- NORMATIVE. Nothing inside is parsed as markup, spaces
    are preserved, and no escape is resolved: `{# a *b* c #}` holds the eight
-   characters ` a *b* c ` and renders them, asterisks included. This says what
-   all three implementations already do; the production read `inline_content`,
-   which none of them implemented.
-
-   It follows from what the construct is. An editorial comment is the author's
-   aside about the text, not more text -- emphasis inside it would be markup
-   the reader never sees rendered, and a formatter could not tell it from
-   emphasis the author wrote outside. It is also what lets `link_text`'s scan
-   skip the span: with no escape available, a `]` inside is uncloseable any
-   other way.
+   characters ` a *b* c ` and renders them, asterisks included. It is also what
+   lets `link_text`'s scan skip the span: with no escape available, a `]`
+   inside is uncloseable any other way.
 
    `addition` and `deletion` are NOT literal: they take `inline_content`, and
    `{+a *b* c+}` really does emphasize `b`.
 
-   AN ADDITION'S AND A DELETION'S CONTENT IS NON-EMPTY, and the productions
-   ALREADY SAID SO: `inline_content` is a `+` repetition. `comment_content` now
-   says it too. `{++}`, `{--}` and `{##}` are therefore text, under the same
-   empty-brace clause the forced spans carry (carve#1447); `{---}` is still
-   `<del>-</del>` and `{-x-}` is still `<del>x</del>`. The string `{--}` freed
-   is the braced en dash (PART 9 §8).
+   AN ADDITION'S AND A DELETION'S CONTENT IS NON-EMPTY -- `inline_content` is a
+   `+` repetition, and `comment_content` says it too. `{++}`, `{--}` and `{##}`
+   are therefore text, under the same empty-brace clause the forced spans carry
+   (carve#1447); `{---}` is still `<del>-</del>` and `{-x-}` is still
+   `<del>x</del>`. The string `{--}` freed is the braced en dash (PART 9 §8).
 
-   `substitution` is NOT widened. Both of its halves are spelled
-   `inline_content`, but a half-empty substitution is a real edit -- `{~a~>~}`
-   deletes and `{~~>b~}` inserts -- so requiring content on each half would
-   refuse them, and requiring it across the pair is a different production.
-   The fully empty `{~~>~}` therefore still renders two empty elements, and
-   that sits with substitution's open divergence rather than with this
-   clause.
-
-   `substitution` is an OPEN divergence, deliberately left alone here. Its
+   `substitution` is NOT widened: a half-empty substitution is a real edit --
+   `{~a~>~}` deletes and `{~~>b~}` inserts -- so the fully empty `{~~>~}` still
+   renders two empty elements. `substitution` is an OPEN divergence: its
    production says `inline_content`, and all three implementations render
-   `{~*b*~>*e*~}` with the asterisks literal - so either the production or
-   every engine is wrong, and which one is a behavior question rather than a
-   transcription error. Not folded into this clause. *)
+   `{~*b*~>*e*~}` with the asterisks literal. *)
 (* ATTRIBUTES -- NORMATIVE: an addition / deletion is an ordinary inline node,
    so a trailing `{...}` attribute block attaches to its `<ins>` / `<del>`,
    exactly like a span, code span, link, or emphasis: `{+a+}{.a}` ->
-   `<ins class="a">…</ins>`. (All three impls agreed only after this was
-   pinned; carve-js dropped the block, carve-rs kept it literal.) *)
+   `<ins class="a">…</ins>`. *)
 (* DISAMBIGUATION (PART 9 §22). `{~ … ~}` is editorial SUBSTITUTION when it
    contains a top-level `~>`, and forced STRIKETHROUGH otherwise. `{# … #}`
    stays editorial comment (`#` is not an emphasis delimiter, no collision). *)
@@ -429,15 +354,7 @@ name_word = (letter | digit | '_' | '-')+ ;
    block after a mention stays literal (corpus
    153-attribute-block-after-a-mention-stays-literal), so `@alice{.x}` never
    produces an attributed mention. The slot is filled by a decoded wire
-   payload, the ProseMirror bridge (a stock Tiptap mention carries an id), or
-   an application building the node. Each implementation pins this in its own
-   suite; the corpus cannot, because the corpus renders source.
-
-   The rule exists because the alternative loses on round-trip: a writer that
-   spells an attributed mention as `[*\@alice*]{.mention #keepme}` only
-   satisfies toHtml(fmt(x)) == toHtml(x) if those attributes render, and a
-   writer that drops them instead satisfies it by deleting the data from both
-   sides. Resolved in carve-php#575. *)
+   payload, the ProseMirror bridge, or an application building the node. *)
 
 (* Boundary rules (PSEUDO-PRODUCTIONS -- prose conditions on `mention` /
    `tag` / `symbol`, normative in PART 9 §7, not reachable grammar symbols):
@@ -496,86 +413,46 @@ braced_en_dash = "{--}" ;   (* → – *)
 ellipsis = "..." ;    (* → … *)
 (* A BRACED HYPHEN PAIR IS AN EN DASH, NOT AN EMPTY DELETION -- NORMATIVE
    (carve#1447). `{--}` renders a single EN DASH and the braces are consumed.
-
    It exists because the flanking rule below leaves a position an author cannot
-   spell. A run with whitespace before it and a non-whitespace character after
-   it is flag-shaped and stays literal, which is right for `git log --oneline`
-   and wrong for the author who meant a dash there -- `x ---That`, `x ---(p)`
-   and `x ---, y` are all refused by that rule, and only the first of them is
-   plausibly a flag. `{--}` is the way to say "a dash, here, whatever stands
-   next to it", and it follows the braced precedent that forced spans already
-   set: a collision-prone bare form keeps a braced spelling that never
-   collides.
+   spell: a run with whitespace before it and a non-whitespace character after
+   it is flag-shaped and stays literal, so `x ---That`, `x ---(p)` and
+   `x ---, y` are all refused by that rule.
 
-   THE SPELLING WAS TAKEN, AND WHAT IT COST IS NOTHING. `{--}` rendered
-   `<del></del>`: the `{-` opener meeting its `-}` closer with no content, a
-   deletion that deletes nothing. `deletion` never permitted that -- its
-   content slot is `inline_content`, a `+` repetition -- so no conforming
-   document loses anything, and exactly one string moves: `{---}` is still
-   `<del>-</del>`, `{-x-}` is still `<del>x</del>`.
-
-   Every other empty brace pair reads back as TEXT rather than as a dash: see
-   the empty-brace clause under Forced Intraword Emphasis. `{--}` is the one
-   that becomes something, because a dash wanted the spelling and nothing
-   wants `{++}`.
-
-   There is NO braced EM dash. `{---}` is a deletion of a hyphen, which is a
-   thing an author writes, and taking it would cost what taking `{--}` did not.
-   So a tight em dash -- the Spanish, French and Russian dialogue convention,
-   `---That is mine.` -- still has no shorthand and is written as the literal
+   Exactly one string moves: `{---}` is still `<del>-</del>` and `{-x-}` is
+   still `<del>x</del>`. Every other empty brace pair reads back as TEXT rather
+   than as a dash (see the empty-brace clause under Forced Intraword Emphasis).
+   There is NO braced EM dash -- `{---}` is a deletion of a hyphen -- so a
+   tight em dash still has no shorthand and is written as the literal
    character. *)
 (* A HYPHEN RUN OPENING A WORD AFTER WHITESPACE IS A FLAG, NOT A DASH --
    NORMATIVE (carve#1443). A run of hyphens PRECEDED by whitespace (or the
    start of the inline content) and FOLLOWED by a non-whitespace character
    does not convert. It is literal text. Every other position converts as
-   before.
+   before. The case is a long CLI flag: `git log --oneline` rendered
+   `git log –oneline`, silently and in the output only.
 
-   The case is a long CLI flag, which is ordinary technical prose.
-   `git log --oneline` rendered `git log –oneline`, silently and in the output
-   only: the author saw their flag, the reader got a command that does not run,
-   and nothing warned. `--force-with-lease` failed the same way.
-
-   THE RULE IS DELIBERATELY NARROW, and the two obvious wider ones are both
-   wrong:
-
-   Requiring whitespace on BOTH sides removes the damage and the feature
-   together, because every canonical dash use is unspaced -- `pages 1--10`,
-   `the Mon--Fri window`, a tight `thought---interrupted---resumes`. A numeric
-   range is the reason en dashes exist.
-
-   Requiring the two SIDES TO MATCH in kind also fails, on a case the corpus
-   already pins: `a---- b----- c------` (19-smart-typography-dashes-and-quotes-7)
-   is alphanumeric on the left and whitespace on the right, and it converts. So
-   is a trailing dash on an interrupted clause. Only the LEFT-FLANKING-ONLY
-   shape -- whitespace before, word after -- is the one no dash wants and every
-   flag has.
+   THE RULE IS DELIBERATELY NARROW. Requiring whitespace on BOTH sides removes
+   every canonical dash use, which is unspaced -- `pages 1--10`, `the Mon--Fri
+   window`, a tight `thought---interrupted---resumes`. Requiring the two SIDES
+   TO MATCH in kind fails on `a---- b----- c------`, which is alphanumeric on
+   the left and whitespace on the right and converts. Only the
+   LEFT-FLANKING-ONLY shape -- whitespace before, word after -- is the one no
+   dash wants and every flag has.
 
    THE SPACE CLASS IS PART 7'S, and that is not the host language's `\s`. A
    VERTICAL TAB and a FORM FEED are CONTENT in Carve, so `---<VT>` converts or
-   stays literal exactly as `---!` does; a rule spelled with `\s` answered the
-   two differently, which is the divergence carve-php's whitespace-definition
-   sweep exists to catch. A NO-BREAK SPACE counts as a space here, because the
-   question asked is "does a space stand before this run" - the same question
-   quote flanking asks, and a nbsp is a space to the reader.
+   stays literal exactly as `---!` does. A NO-BREAK SPACE counts as a space
+   here, the same question quote flanking asks.
 
    ELLIPSIS IS NOT COVERED. `wait... really` is the ordinary use and it is
    word-then-whitespace; an ellipsis terminates a clause where a dash joins two
-   things, so their natural positions differ and the rule follows the construct.
+   things, so the rule follows the construct.
 
-   NOT FIXED BY THIS, and stated so it is a known limit rather than a
-   discovery: an HTML comment survives NEITHER half, and each half is lost to a
-   different rule. `<!-- c -->` renders `&lt;!– c →`. The OPENING run is
-   preceded by `!` rather than whitespace, so this clause does not reach it and
-   it converts to a dash. The CLOSING run was flag-shaped and literal under this
-   clause until the arrow set took the doubled run (§8 ARROWS, carve#1442), and
-   an arrow is matched before a hyphen run is decomposed.
-
-   That order is deliberate. Guarding `-->` for this one context would put a
-   context-sensitive exception into a set whose whole argument is that it has
-   none, and Carve escapes raw HTML by default: a literal HTML comment in prose
-   is a document ABOUT HTML rather than HTML, where an author who wants the
-   characters can escape one of them. Recognising the whole construct is what
-   the opening half wants; a wider dash rule would cost the numeric range.
+   NOT FIXED BY THIS: an HTML comment survives NEITHER half. `<!-- c -->`
+   renders `&lt;!– c →`. The OPENING run is preceded by `!` rather than
+   whitespace, so this clause does not reach it and it converts to a dash; the
+   CLOSING run is taken by the arrow set (§8 ARROWS, carve#1442), and an arrow
+   is matched before a hyphen run is decomposed.
 
    Composes with the run decomposition below rather than replacing it: this
    decides WHETHER a run converts, the length decides INTO WHAT. *)
@@ -605,32 +482,19 @@ smart_quote = '"' | "'" ;
 arrow = "<--" | "-->" | "<-->"      (* → ← → ↔, canonical *)
       | "<==" | "==>" | "<=>"       (* → ⇐ ⇒ ⇔ *)
       | "<-" | "->" | "<->" ;       (* deprecated, still rendered *)
-(* THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES -- NORMATIVE
-   (carve#1442). Matched longest-first, as `<->` already beats `<-`, so `<==`
-   beats `<=` and `-->` beats the hyphen run.
+(* THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES -- NORMATIVE.
+   Matched longest-first, as `<->` already beats `<-`, so `<==` beats `<=` and
+   `-->` beats the hyphen run.
 
-   The single-line family was complete and the double-line family was not:
-   `->`, `<-` and `<->` all existed, `=>` existed, and there was no `<=` arrow
-   because `<=` is the comparison. `<=>` -- the common spelling of "if and only
-   if", and the one a writer who has just met `=>` reaches for -- rendered
-   `≤>`.
-
-   `<=` KEEPS ≤, and that is what forces the answer. In technical prose `<=` is
-   far more often a comparison than a leftward implication, so the left double
-   arrow has to grow a character. Once it does, the family is spelled at one
-   width throughout rather than two, which is why the doubled run is canonical
-   everywhere rather than only where it had to be.
+   `<=` KEEPS ≤: in technical prose it is far more often a comparison than a
+   leftward implication, so the left double arrow grows a character.
 
    `->`, `<-` AND `<->` ARE DEPRECATED, NOT REMOVED. They keep rendering and
-   the canonical spelling is the doubled form; a document written before this
-   goes on working.
+   the canonical spelling is the doubled form.
 
-   `=>` IS REMOVED, and that is a behavior change rather than a deprecation.
-   It is the one form that was actively harmful instead of merely
-   non-canonical: `key => value`, `x => x + 1` and `Some(x) => x` are ordinary
-   prose about code, and every one of them silently became ⇒. So the two
-   families are treated differently on purpose, and each exception has a reason
-   that fits in a line -- `<=` is a comparison, and `=>` is code. *)
+   `=>` IS REMOVED, and that is a behavior change rather than a deprecation:
+   `key => value`, `x => x + 1` and `Some(x) => x` are ordinary prose about
+   code, and every one of them silently became ⇒. *)
 comparison = "!=" | "<=" | ">=" ;
 (* NOT the `:name:` symbol above -- these are the fixed typographic
    replacements (© ® ™ ±). Named `typographic_symbol` so the two do not

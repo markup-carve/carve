@@ -14,13 +14,9 @@
       of the heading. Dedup assigns the next free suffix in document order, so
       two `# Notes` headings yield `Notes` and then `Notes-2` (PART 9 §13; the
       slug and dedup rules are syntax.md §4.1, and PART 9 §13's namespace is
-      shared with every other generated id). Deriving the second one therefore
-      requires having seen every heading before it and replicating the dedup
-      spelling, in the same order. A consumer holding only the tree cannot do
-      that, and a table of contents, a go-to-definition jump and a
-      cross-document index each need the exact id, not a plausible one. This is
-      a stronger case than footnote numbering, where the missing state is a
-      counter the consumer could keep itself.
+      shared with every other generated id). A consumer holding only the tree
+      cannot replicate that, and a table of contents, a go-to-definition jump
+      and a cross-document index each need the exact id, not a plausible one.
 
       §3a IS NOT IN TENSION WITH THIS. §3a forbids folding a resolution result
       in place of the construct the author wrote; here nothing authored is
@@ -46,9 +42,9 @@
       An implementation MUST NOT emit parsed key/value pairs in its place:
       parsing YAML or TOML is not the markup parser's job, the raw text plus
       `format` lets any consumer do it, and a parsed map cannot represent a
-      document whose frontmatter is malformed. carve-rs holds a parsed map
-      internally; that is an internal choice, and §1 already requires mapping
-      on the way out rather than exporting internals.
+      document whose frontmatter is malformed. A parsed map held internally is
+      an internal choice, and §1 already requires mapping on the way out rather
+      than exporting internals.
 
       A FOOTNOTE DEFINITION IS A BLOCK NODE, `type: "footnote"`, carrying:
         label     the label as written, without the `[^` and `]:`
@@ -68,9 +64,7 @@
         abbr       the term as written, without the `*[` and `]:`
         expansion  the expansion text, without the separating space
       It renders nothing itself; it is what the inline `abbreviation` resolves
-      against. The node was named here in two clauses before it was described
-      in any, so its field names lived only in resources/ast-schema.json --
-      the shape a reader of this grammar could not see.
+      against.
 
       THE HOISTING CLAUSE ABOVE IS ABOUT FOOTNOTES. An `abbreviation_def` is
       never hoisted, because there is never one to hoist: the construct is
@@ -96,43 +90,20 @@
       line "is preserved as text" there too. The rule is reused, not invented.
 
       WHY ABBREVIATIONS AND NOT FOOTNOTES. An abbreviation is the only
-      definition kind with NO marker at the use site. A footnote needs `[^a]`
-      and a reference link needs `[text][ref]`, so their reach is bounded by
-      references the author wrote deliberately; an abbreviation rewrites EVERY
+      definition kind with NO marker at the use site: it rewrites EVERY
       occurrence of the term in the whole document, with nothing at the use
       site to point back at the definition. Hoisting is safe for a definition
-      that is inert until referenced and unsafe for one that acts on its own.
-      A container is exactly where quoted and foreign material lives, so
-      hoisting would let a quoted `*[X]: y` inject a document-wide rewrite into
-      the quoting document.
-
-      WHY NOT HOIST AN INERT NODE. The rejected alternative kept the hoist and
-      made a container-authored definition expand nothing: in the tree at
-      document level, but without effect. It loses information. Once hoisted,
-      an inert definition and a real one are the SAME wire shape, so a consumer
-      that decodes the tree expands what the parser did not -- §6's round trip
-      fails on a document the engine itself produced. The distinction has to be
-      recorded somewhere, and tree position records it for free; the
-      alternatives were a new wire field on every definition or an accepted
-      lossy round trip.
+      that is inert until referenced and unsafe for one that acts on its own,
+      and a container is exactly where quoted and foreign material lives.
 
       THE FORMATTER CONSEQUENCE IS ACCEPTED, NOT OVERLOOKED. Hoisting means
       PART 11's writer emits the definition after the container the author
       wrote it in, which reads like a violation of PART 11 §6 ("fmt does not
-      reorder ... those are the author's choices and the AST records them").
-      It is not, because §6 governs what the writer may do with what the tree
-      HOLDS, and this clause is what the tree holds. The consequence is already
-      shipping and corpus-pinned for footnotes:
-
-        See [^a].
-
-        > [^a]: note body
-
-      formats to the definition after an emptied `>`, and corpus
-      `115-footnote-definition-inside-a-container-is-collected` pins the
-      collection it follows from. It is accepted for footnotes because a
-      footnote definition renders as a footnote either way, so the move costs
-      the author placement and nothing else.
+      reorder ... those are the author's choices and the AST records them"). It
+      is not, because §6 governs what the writer may do with what the tree
+      HOLDS, and this clause is what the tree holds. It is accepted for
+      footnotes because a footnote definition renders as a footnote either way,
+      so the move costs the author placement and nothing else.
 
       Definitions appear in DOCUMENT ORDER by source position. Numbering is a
       resolution result and stays on the reference (§5).
@@ -152,21 +123,12 @@
       the rule the rendered list already shows -- so the grouping is derivable
       and is not published.
 
-      NOT publishing it is the decision, and it has three reasons.
-
-      A plain `{terms, definitions}` object CANNOT CARRY `pos`. §4 requires one
-      on every node but the root because a tree without positions can only be
-      re-parsed rather than navigated, and a term is exactly what an editor
-      jumps to and a language server renames. Under the object form a term was
-      the only content in a serialized document that could not be navigated to
-      -- the same argument §7 makes for frontmatter and footnote definitions,
-      which is why they are block nodes rather than root fields.
-
-      `definition_term` and `definition_description` are in the profiles.md
-      block vocabulary, so a profile can NAME them. Under the object form those
-      two entries named nothing: a host writing `denyBlock(['definition_term'])`
-      got silence, which profiles.md calls the specific failure a normative
-      vocabulary exists to prevent.
+      NOT publishing it is the decision. `definition_term` and
+      `definition_description` are in the profiles.md block vocabulary, so a
+      profile can NAME them; under an object form those two entries named
+      nothing, and a host writing `denyBlock(['definition_term'])` got silence,
+      which profiles.md calls the specific failure a normative vocabulary
+      exists to prevent.
 
       A SPELLED LOOSENESS IS A FIELD; A DERIVED ONE IS NOT. `definition_list`
       MAY carry `loose: true`, and it means what PART 9 §17 L7's consumed
@@ -190,13 +152,11 @@
       everything except the case the derivation cannot see.
 
       THE NAME IS `loose` AND NOT `tight`, and the divergence from `list` is
-      the point rather than an inconsistency. A `tight` field would be absent on
-      almost every definition list, and an absent boolean read as false says
-      LOOSE -- the opposite of the default, in the one place a consumer is most
-      likely to write `if (node.tight)`. `loose: true` has no such reading:
-      absent means derived, which is the truth. It also matches L7's own key,
-      and follows `list.bareMarker`, the other field here that records an
-      authored distinction the default spelling cannot express.
+      the point. An absent `tight` read as false would say LOOSE, the opposite
+      of the default; `loose: true` absent means derived, which is the truth.
+      It matches L7's own key, and follows `list.bareMarker`, the other field
+      here that records an authored distinction the default spelling cannot
+      express.
 
    9. HOW DEEP AN INGESTED AST MAY NEST -- NORMATIVE. Reading a serialized AST
       is a recursive descent over attacker-controlled structure, so it needs a
@@ -221,22 +181,17 @@
           because (a) and (b) are the whole of what a caller can rely on. An
           implementation MUST NOT publish its unit as a shared contract.
 
-      THE TRAP, stated once, because all three reference engines fell into a
-      different corner of it: an ingest bound is NOT measured in the same unit
+      THE TRAP, stated once: an ingest bound is NOT measured in the same unit
       as MAX_NESTING_DEPTH, and the conversion factor is NOT A CONSTANT. One
       AST level costs two JSON structural levels for a blockquote or div (the
       object plus its `children` array) and four for a list (list, items,
       item, children); in node terms a list level costs two nodes and a div
-      level one. At MAX_NESTING_DEPTH = 200 a blockquote chain therefore
-      encodes past 400 structural levels and a list ladder past 800 -- four
-      times the parser's own number, from the same document depth.
-
-      So neither MAX_NESTING_DEPTH nor "MAX_NESTING_DEPTH plus a small margin"
-      is a safe bound in either unit. An implementation MUST DERIVE its bound
-      from MAX_NESTING_DEPTH by the worst per-level cost of its own encoding,
-      and MUST NOT restate the parser's number as its ingest number -- a
-      second copy of a value is exactly how (a) gets violated. A bound written
-      down twice diverges; one derived from the other cannot.
+      level one. So neither MAX_NESTING_DEPTH nor "MAX_NESTING_DEPTH plus a
+      small margin" is a safe bound in either unit. An implementation MUST
+      DERIVE its bound from MAX_NESTING_DEPTH by the worst per-level cost of
+      its own encoding, and MUST NOT restate the parser's number as its ingest
+      number -- a bound written down twice diverges; one derived from the other
+      cannot.
 
       The root type is not a leniency point: §7 fixes it at `document`, and
       the schema pins it as a `const`. An ingest accepting some other root
@@ -263,30 +218,14 @@
       ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL says the
       opposite for that one: inside a container the line is not a definition
       at all, it is paragraph text, and nothing is hoisted because nothing was
-      collected. Reading this section first, "the other two definition kinds"
-      said the reverse and made the abbreviation look like an unimplemented
-      hoist rather than a ruled-out one (carve#1267).
+      collected.
 
-      WHY A NODE AND NOT A ROOT MAP. §7 fixes the root at three fields, and its
-      reason is the one that decides this: §4 requires every node except the
-      root to carry `pos`, and a root FIELD cannot carry one. A definition is a
-      source construct occupying real bytes -- an editor jumps to it, a
-      formatter reproduces it, a language server renames its label. On the root
-      it would be the only content in the document that cannot be navigated to.
-      A node also answers "which definition wins" by document order rather than
-      by merge order, and holds its own attributes without a second rule.
-
-      WHAT THE NODE CLOSES. Three clauses wanted it and each named a different
-      loss:
-        §3a   a resolved reference published `href: ""` with the destination
-              recoverable from nothing
-        §10a  an unused definition survived neither the tree nor a round trip,
-              so `carve --markdown` on a document that is only `[lbl]: /u`
-              emitted nothing
-        §15 A2b  definition attributes had to be materialized onto every
-              resolved link, because there was nowhere to put them once
-      and the fourth is why it landed: a writer cannot reproduce a construct the
-      tree does not carry, so PART 11 §1's `parse(fmt(x)) == parse(x)` fails.
+      WHY A NODE AND NOT A ROOT MAP. §4 requires every node except the root to
+      carry `pos`, and a root FIELD cannot carry one, while a definition is a
+      source construct occupying real bytes that an editor jumps to and a
+      language server renames. A node also answers "which definition wins" by
+      document order rather than by merge order, and holds its own attributes
+      without a second rule.
 
       A DEFINITION IS STILL INVISIBLE IN HTML. The node renders nothing on that
       target; it feeds the links and images that resolve its label (PART 9R R1).
@@ -301,30 +240,18 @@
       offending property and the PATH it appeared at, so a caller can find it
       in a tree it did not write. Not a silent drop, and not a pass-through.
 
-      THE PASS-THROUGH IS THE ONE ANSWER THAT CANNOT BE RIGHT, and it is worth
-      saying why separately: an implementation that copies a wire record
-      wholesale re-emits the unknown property when it serializes again, so its
-      OWN OUTPUT no longer validates. A consumer that reads a tree here and
-      publishes it again then emits something the format rejects, having been
-      told nothing.
+      THE PASS-THROUGH IS THE ONE ANSWER THAT CANNOT BE RIGHT. An
+      implementation that copies a wire record wholesale re-emits the unknown
+      property when it serializes again, so its OWN OUTPUT no longer validates,
+      and a consumer that reads a tree here and publishes it again emits
+      something the format rejects, having been told nothing.
 
       REFUSE RATHER THAN DROP, for the reason §9(b) already gives about depth:
       "an ingest that accepts a tree and then silently renders only part of it
-      is the worst of the three, because the caller is told nothing". An
-      unknown property is the same shape of problem one field down. If a later
+      is the worst of the three, because the caller is told nothing". If a later
       version of this format gives that property a meaning, an engine that
       dropped it rendered a document that says something else and reported
       success; an engine that refused sent the caller to a version mismatch.
-      The root-type note under §9 settles the same question for the root and
-      points the same way: half-reading a foreign format is worse than
-      declining it.
-
-      FORWARD COMPATIBILITY IS NOT AN ARGUMENT FOR LENIENCY HERE. `parse` and
-      the schema ship together in one build, so an unknown property means the
-      payload came from a DIFFERENT version, and no engine can render a field
-      it does not implement whatever it does with it. Refusing makes the
-      version mismatch visible at the boundary where it can still be handled;
-      dropping defers it to whatever the missing field was load-bearing for.
 
       A DOCUMENTED LEGACY ALIAS IS THE ONE NARROW EXCEPTION. An implementation
       MAY accept a property it once published itself, PROVIDED it decodes that
@@ -411,15 +338,9 @@
           (carve#881). Types and required fields together, at DECODE, refused
           with the same typed error (a), (b) and (c) already require. Not a
           fourth list of leniency points -- the schema is the list, it already
-          describes every one of them, and the rows below were only ever
-          divergent because nothing consulted it.
-
-          One clause rather than a row per field: the schema already defines
-          the complete payload contract.
-
-          The rows already fixed are NOT reopened: an unnamed property under
-          §11 and a missing or non-string `type` under (c) landed separately
-          and keep their own clauses.
+          describes every one of them. An unnamed property under §11 and a
+          missing or non-string `type` under (c) keep their own clauses and are
+          not reopened.
 
       A `srcByteLength` THAT IS PRESENT BUT WRONG IS NOT THIS CLAUSE'S
       BUSINESS. It is derivable from the payload and nothing in the tree

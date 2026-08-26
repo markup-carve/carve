@@ -24,31 +24,18 @@
       in what the author wrote to get there.
 
       Without that clause the first invariant would be unattainable by
-      construction, not merely unmet. §5 requires the writer to escape `"` and
-      `'` UNCONDITIONALLY: a bare quote reaching the writer as text would
-      otherwise re-derive as smart punctuation (PART 9 §8) and change the
-      document. So a text node holding a quote MUST come back carrying an
-      escape, which parses to `escaped_text`. Read strictly, §1 and §5 would
-      contradict each other for every document containing a quote.
-
-      This is also the comparison §4 already performs internally: the two
-      renders it weighs differ precisely in their escaping, so telling them
-      apart BY the escaping would escalate every document. The invariant and
-      the strategy therefore ask the same question -- does dropping the escapes
-      change anything ELSE?
+      construction. §5 requires the writer to escape `"` and `'`
+      UNCONDITIONALLY: a bare quote reaching the writer as text would otherwise
+      re-derive as smart punctuation (PART 9 §8) and change the document, so a
+      text node holding a quote MUST come back carrying an escape, which parses
+      to `escaped_text`. It is also the comparison §4 already performs
+      internally -- the two renders it weighs differ precisely in their
+      escaping, so telling them apart BY the escaping would escalate every
+      document.
 
       What escaping still MUST preserve is the rendered result: the escape is
       authoring syntax, so `to_html(fmt(x)) == to_html(x)` admits no such
       latitude, and neither does idempotence.
-
-      KNOWN GAP -- the first invariant is not met by every implementation on
-      every input. The four constructs first recorded here (a table carrying a
-      colspan, a doubled alignment marker, a list-item attribute form and a
-      line-block shape) are fixed; a corpus-wide sweep finds others, tracked in
-      carve#369. Nothing caught any of them because every existing check
-      compares rendered HTML, which is equal in all of those cases. It is
-      stated rather than left implied: an implementation that satisfies §2 can
-      still fail §1, and §4's comparison is built to be unaffected by that.
 
    1a. THE INVARIANT OUTRANKS THE PER-CONSTRUCT RULES -- NORMATIVE. §1 states
       what the writer must ACHIEVE; §2 through §11 state how it SPELLS each
@@ -73,9 +60,7 @@
       parse(x)` is the requirement. `to_html(fmt(x)) == to_html(x)` is a
       consequence of it and is strictly weaker -- §2a already says that holding
       is necessary, not sufficient -- so a writer satisfying only the HTML form
-      still fails this section. The distinction is easy to lose because the
-      HTML form is what a person can SEE, and reports of these defects are
-      usually written against it; the rule is stated over the parse.
+      still fails this section.
 
       IT IS NOT A LICENSE TO RESPELL. §2a and §6 are unchanged. What this
       section permits is the SMALLEST departure that restores the invariant,
@@ -117,30 +102,13 @@
       side exists at all, not what characters happen to sit on one.
 
       THE FAILURES ARE ONE FAILURE, and only some of them have a visible face.
-      Re-measured 2026-08-18 against carve-js `099db2cc`, carve-php `925f7dcf`
-      and carve-rs `3f8bde7b`, each built from a clone made for the run and each
-      flattening a `<figcaption>` holding two paragraphs. carve-rs emits the
-      separator on every row since markup-carve/carve-rs#1094; carve-js and
-      carve-php agree with each other on every row and lose the boundary:
+      A `<figcaption>` holding two paragraphs flattens with the boundary lost:
 
         <p>one</p><p>two</p>                    ->  onetwo
         <p><strong>a</strong></p>
         <p><strong>b</strong></p>               ->  *a**b*
         <p><code>a</code></p>
         <p><code>b</code></p>                   ->  `a``b`
-
-      The first loses the boundary as CONTENT: `onetwo` re-reads as one word
-      and the reader sees a misspelling. The second and third lose it as
-      STRUCTURE: `*a**b*` re-reads as one strong run holding a literal
-      asterisk, and the third as one code span holding the joined
-      delimiters. Nothing is DROPPED in any of them, which is why no diagnostic
-      fires for any of them -- an importer's unwrap note reports that a `<p>`
-      was unwrapped and says nothing about what the unwrapping joined.
-
-      The third row was not among the two reported at carve#1325. It is the
-      reason the rule is a property: a ruling written to the two shapes in hand
-      would have left the code span for the next release, and the caption slot
-      is not the only inline-only slot either.
 
       THE UNIT IS THE TOKEN, NOT THE NODE, and that difference is the whole
       rule. A node test passes `onetwo` and `one two` alike -- both are a
@@ -150,9 +118,7 @@
 
       IT IS §23's TEST READ BACKWARDS. PART 9 §23 states the forward half for a
       LINE boundary: ONE boundary produces ONE node, "however the boundary is
-      spelled", and a backslash break and a verbatim run are exempt for one
-      reason -- both leave NO NODE, so there is no boundary left in the tree to
-      convert. A flatten is that situation arriving from the other side. The
+      spelled". A flatten is that situation arriving from the other side. The
       block boundary leaves no node either, because the slot has nowhere to put
       one, so it survives only in the BYTES -- and the bytes are read by a
       tokenizer.
@@ -172,23 +138,15 @@
       per report: a character that was TEXT in one of the blocks and becomes a
       live delimiter once its neighbour is beside it is an ESCAPING question,
       and §2 read through §1a already answers it -- the writer reads its own
-      OUTPUT, and escapes what would otherwise change the document. That is
-      already the behavior: `<p>a *b</p><p>c* d</p>` flattens to `a \*bc\* d`
-      in all three engines, with the asterisks correctly escaped and only the
-      word boundary lost. This clause supplies the space and nothing else;
-      §1b and §2 are answering two halves of the same join.
+      OUTPUT, and escapes what would otherwise change the document. This clause
+      supplies the space and nothing else; §1b and §2 are answering two halves
+      of the same join.
 
-      REFUSING TO FLATTEN IS NOT AN ANSWER. The slot cannot hold blocks, so a
+      REFUSING TO FLATTEN IS NOT AN ANSWER: the slot cannot hold blocks, so a
       producer that refuses emits nothing where the author's document has
-      content. That is a strictly larger loss than the one this clause closes,
-      and silent in exactly the same way.
-
-      NEITHER IS ESCAPING THE COLLISION. `*a*\*b*` writes a character the
-      author did not, against §2's if-and-only-if: nothing in either block's
-      own content needs protecting, and the collision exists only at the join.
-      An escape is also per-character where the defect is per-boundary, so it
-      would be re-derived for every delimiter pair two blocks might meet on,
-      where the separator is derived once.
+      content. NEITHER IS ESCAPING THE COLLISION: `*a*\*b*` writes a character
+      the author did not, against §2's if-and-only-if, and an escape is
+      per-character where the defect is per-boundary.
 
       WHAT IS NOT REQUIRED. The flatten need not be REVERSIBLE. Two paragraphs
       written into a caption come back as one paragraph and no spelling of the
@@ -232,26 +190,22 @@
       §10j is. Two shapes have the property today, and they share no node type,
       no vocabulary list and no reason beyond the spelling: a `paragraph` whose
       whole content is one `image`, which writes `![a](u)` and reads back as
-      the standalone image (PART 9 §4's image-paragraph host is a condition on
-      a paragraph's inline content, so the two trees have ONE spelling between
-      them); and a `paragraph` whose whole content is one `comment`, which
-      writes `%% c` and reads back as the block comment. `image` is in the
-      INLINE vocabulary and `comment` is in the BLOCK one (docs/profiles.md),
-      so a rule written over the types would have had to name them one at a
-      time and would not reach the next one. A block whose content spells
-      anything ELSE -- a second node beside it, a text run, a NO-BREAK SPACE
-      (§7) -- keeps its wrapper and no ceiling is reached.
+      the standalone image; and a `paragraph` whose whole content is one
+      `comment`, which writes `%% c` and reads back as the block comment.
+      `image` is in the INLINE vocabulary and `comment` is in the BLOCK one
+      (docs/profiles.md), so a rule written over the types would have had to
+      name them one at a time. A block whose content spells anything ELSE -- a
+      second node beside it, a text run, a NO-BREAK SPACE (§7) -- keeps its
+      wrapper and no ceiling is reached.
 
       DECIDED ON THE SPELLING, NEVER ON RESOLUTION -- and PART 9R R7 does not
-      change that (carve#1784). R7's promotion phase reads the RESOLVED tree;
-      this clause reads what a shape SPELLS, and the two are deliberately
-      independent. A writer that consulted resolution would write the same
-      paragraph differently depending on whether a definition appears somewhere
-      else in the document, possibly far away -- a bad property for a formatter,
-      and the reason `paragraph.blockImage` (PART 12 §23) is a field the writer
-      does not read. So a document whose reference is never defined still writes
-      back as itself, and this clause's ceiling is reached by `![a](u)` and by
-      `![a][r]` alike, defined or not.
+      change that. R7's promotion phase reads the RESOLVED tree; this clause
+      reads what a shape SPELLS, and the two are deliberately independent. A
+      writer that consulted resolution would write the same paragraph
+      differently depending on whether a definition appears somewhere else in
+      the document -- the reason `paragraph.blockImage` (PART 12 §23) is a
+      field the writer does not read. So this clause's ceiling is reached by
+      `![a](u)` and by `![a][r]` alike, defined or not.
 
       THE CEILING IS UNIFORM AND NOT POSITIONAL, which is the half that decides
       the shape rather than merely describing it. At top level the image
@@ -260,22 +214,15 @@
       writer still does not use it. Inside a list item or a definition
       description there is no such spelling at any width: the marker's own
       content column absorbs the padding, so `- ![a](u)` and `-       ![a](u)`
-      are the same tree, and `: ` behaves the same way. A writer preserving
-      the shape at one nesting level and losing it at the next, with nothing
+      are the same tree, and `: ` behaves the same way. A writer preserving the
+      shape at one nesting level and losing it at the next, with nothing
       declaring the difference, is not a preservation rule; and the indented
       form emits meaning-bearing leading whitespace, which editors and
-      pipelines strip. So the wrapper is lost EVERYWHERE, and one sentence
-      describes the writer at every depth.
+      pipelines strip. So the wrapper is lost EVERYWHERE.
 
-      WHY NOT REFUSE. §1's KNOWN GAP and the refusal a writer already owes for
-      a value no source can carry make refusal the honest-looking answer, and
-      it is what an implementation does for an empty raw inline. It loses on
-      two counts. It would fail an editor's round trip on a tree the renderer
-      accepts -- §10j's own reason for bounding a loss rather than rejecting
-      the document, on the path that can least afford it -- and it contradicts
-      a clause that already exists, since `docs/html-import.md` says this exit
-      REPORTS the loss rather than failing. Overturning that needs its own
-      fallback story and is a larger change than the shape asks for.
+      WHY NOT REFUSE. Refusing would fail an editor's round trip on a tree the
+      renderer accepts, and `docs/html-import.md` already says this exit
+      REPORTS the loss rather than failing.
 
       THE WRAPPER IS STILL LOST, and this clause does not pretend otherwise. It
       bounds the loss TO the wrapper -- the content, its attributes and its
@@ -323,21 +270,17 @@
       wrapper, and the fixture is then evidence of nothing. The clause is the
       definition; a fixture is at most an instance of it.
 
-      WHERE THE SET IS SOURCED FROM IS FREE, and the two engines that reached
-      this first source it differently: one states a predicate over what the
-      shape spells and is bounded by construction, the other derives the set
-      from the corpus documents whose pinned canonical form re-parses
+      WHERE THE SET IS SOURCED FROM IS FREE. One engine states a predicate over
+      what the shape spells and is bounded by construction, another derives the
+      set from the corpus documents whose pinned canonical form re-parses
       differently and applies the bound explicitly. Both conform. The bound is
-      the rule; the sourcing is not, and neither spelling is owed a conversion
-      to the other.
+      the rule; the sourcing is not.
 
       A CHECKER THAT WIDENS THE BOUND CANNOT DETECT ITS OWN WIDENING, so the
       width is pinned separately or it is not pinned at all. The dissolution is
       applied to BOTH trees, so widening it can only ever HIDE a difference and
-      never create one: whatever extra shape it swallows, it swallows
-      identically on each side and the two still agree. A corpus sweep
-      therefore stays green under any widening whatsoever, and only a direct
-      assertion on the predicate says how wide it is.
+      never create one, and a corpus sweep stays green under any widening
+      whatsoever.
 
    2. THE ESCAPING RULE -- NORMATIVE. A character is escaped IF AND ONLY IF
       omitting the escape would change the re-parsed AST.
@@ -350,12 +293,9 @@
 
       THE UNIT IS THE OPENER, NOT THE CHARACTER. Where a construct opens on a
       RUN of characters, the whole run is escaped. `--` opens an en dash
-      (PART 9 §8), and `\--` suppresses it just as `\-\-` does, so a
-      character-at-a-time reading of the rule would call the second escape
-      unnecessary and require `\--`. It does not: the escaped form of a
-      suppressed opener is the whole opener escaped. A half-escaped run is a
-      shape that happens to work rather than one that says what it means, it
-      breaks as soon as the surrounding text shifts what the run abuts, and
+      (PART 9 §8), and `\--` suppresses it just as `\-\-` does; the escaped
+      form of a suppressed opener is the whole opener escaped. A half-escaped
+      run breaks as soon as the surrounding text shifts what the run abuts, and
       `\.\.\.` versus `\...` is the same question with the same answer.
 
       So the escape decision is taken per OPENER OCCURRENCE: would omitting the
@@ -381,13 +321,6 @@
       is what it falls back to -- per occurrence now rather than per unit. A
       fallback that spends more escapes than this test asks for is wider than
       the minimum and never narrower, which is the only direction §1 tolerates.
-
-      (Pinned by corpus
-      403-an-idle-escape-does-not-spread-from-the-occurrence-that-needed-one.
-      Like corpus 396 one clause down, its `.fmt` sidecar is the only fixture
-      that can see it: `\{\.note\}` renders the same HTML, re-parses to the
-      same tree and is happily idempotent, so every other gate in every engine
-      was green on the wider form.)
 
    2a. THE WRITER DOES NOT SUBSTITUTE ONE CONSTRUCT FOR ANOTHER -- NORMATIVE.
       §2 governs ESCAPING. It does not license rewriting a construct into a
@@ -440,11 +373,8 @@
       rules out re-parsing a LINE on its own, because a line has lost the
       document's link-reference and footnote definitions and reports a
       difference escaping never caused. That argument is about what the writer
-      PARSES in order to decide, and it stands unchanged. This section is about
-      which BYTES the decision then selects. A writer renders and re-parses
-      WHOLE documents, and takes the conservative spelling only where the
-      minimal one failed -- so the definitions are present for the comparison
-      and the escalation is still local.
+      PARSES in order to decide; this section is about which BYTES the decision
+      then selects.
 
       THE UNIT NESTS, AND IT IS TRIED SMALLEST FIRST. The inline run carrying
       the occurrence is tried before the block that holds it. A failure that
@@ -459,12 +389,6 @@
       IT DOES NOT LOOSEN §2 ANYWHERE. A unit that fails is escaped in full, by
       §2's THE UNIT IS THE OPENER: `\#\# H` and not `\## H`. What narrows is
       the reach of the fallback, not the strength of the escape it applies.
-
-      (Pinned by corpus
-      396-an-idle-escape-does-not-spread-from-the-block-that-needed-one, whose
-      `.fmt` sidecar is the only fixture that can see this: both spellings
-      render the same HTML and re-parse to the same tree, which is why three
-      writers carried the wider scope with every gate green.)
 
    3. WHY A STATIC CHARACTER TABLE CANNOT IMPLEMENT §2. Whether a character
       is significant depends on the line, not on the character:
@@ -487,8 +411,7 @@
       §2 is the rule worth keeping, because it is the one an author can see the
       difference in, and because §3's argument does not lead here: it shows a
       static character TABLE cannot implement §2, not that per-character
-      decisions are impossible. A writer that knows whether a construct would
-      START at a given position decides exactly, and two engines do.
+      decisions are impossible.
 
       The procedure, then, as a strategy:
 
@@ -506,20 +429,6 @@
          A unit is not one knob: the occurrences that survive escaped are the
          ones that failed, not the ones that shared a block with a failure.
 
-      W5 IS WHERE THE STRATEGY COSTS, AND THE COST IS BOUNDED BY SEARCHING
-      RATHER THAN BY ENUMERATING. Offering the occurrences ONE AT A TIME is a
-      render and a re-parse of the whole document per candidate, which is
-      quadratic in the document -- and on ordinary input, not adversarial:
-      a paragraph of indented table rows puts a load-bearing occurrence beside
-      an idle one on every line. Offering a GROUP its bare form and halving the
-      group only where that fails costs a number of renders proportional to how
-      many occurrences FAIL rather than to how many there are. Measured on that
-      shape at 50 / 100 / 200 / 400 rows, in RENDERS rather than in
-      milliseconds: 249 / 499 / 999 / 1999 offering one at a time, flat at
-      about 5 renders per row, against 64 / 72 / 80 / 88 searched -- eight more
-      renders per doubling of the input, which is the logarithm the halving
-      buys. The same bound applies to W4's own search over units.
-
       A WRITER MAY STOP THE SEARCH SHORT, and §2b's fallback is what it returns
       to when it does: the occurrences it did not get to stay escaped. That is
       WIDER than §2's minimum and never narrower, so a spent budget costs
@@ -529,38 +438,28 @@
 
       Two forms and one comparison, with the choice made by the parser rather
       than by a table -- so the writer cannot drift from the grammar as the
-      grammar grows. What it buys is safety without a table; what it costs is
-      precision, and §2 is where the precision is required.
+      grammar grows.
 
       WHY THE COMPARISON IS DOCUMENT-SCOPED, FOR AN IMPLEMENTATION THAT USES
-      IT. An earlier draft decided per line. That cannot be implemented: a line
-      re-parsed on its own has lost the document's link-reference and footnote
-      definitions, so a paragraph carrying `[text][ref]` comes back with an
-      empty destination and reports a difference escaping never caused. Any
-      COMPARISON at a scope smaller than the document has the same defect for
-      the same reason, so W1 and W3 render and parse whole documents.
+      IT. A line re-parsed on its own has lost the document's link-reference
+      and footnote definitions, so a paragraph carrying `[text][ref]` comes
+      back with an empty destination and reports a difference escaping never
+      caused. Any comparison at a scope smaller than the document has that
+      defect, so W1 and W3 render and parse whole documents.
 
       THAT IS NOT A REASON TO ESCALATE THE WHOLE DOCUMENT, and reading it as
       one is what §2b now forbids. Where the two parses differ, they differ
       SOMEWHERE, and W4 takes the conservative spelling only for the smallest
-      unit that fails. The definitions the comparison needs are present either
-      way, because nothing about the comparison changed.
-
-      What remains true is the rest of the trade: this is a strategy rather
-      than the requirement, and an implementation that instead asks, per
-      position, whether a construct would start there needs neither the
-      comparison, nor the scope, nor W5's search.
+      unit that fails.
 
       WHY THE TWO RENDERS ARE COMPARED WITH EACH OTHER, and not the minimal
       render with the document being written. The writer is not required to be
-      AST-faithful for every construct, and in practice is not: a table with a
-      colspan, a doubled alignment marker, some list-item attribute forms and
-      one line-block shape all re-parse to a DIFFERENT document while rendering
-      identical HTML. Comparing against the source document would inherit those
-      defects, flip the escaping decision between passes and break §1's
-      idempotence for a reason that has nothing to do with escaping. Comparing
-      the two renders isolates the only question this decision asks: does
-      dropping the candidate escapes change anything?
+      AST-faithful for every construct: a table with a colspan, a doubled
+      alignment marker, some list-item attribute forms and one line-block shape
+      all re-parse to a DIFFERENT document while rendering identical HTML.
+      Comparing against the source document would inherit those defects and
+      break §1's idempotence for a reason that has nothing to do with
+      escaping.
 
    5. THE TWO SETS.
 
@@ -589,27 +488,18 @@
         weighs the mark; it is not a license to EMIT an escape §2 does not
         ask for. §4 pins the output on §2 and yields to it wherever the two
         differ, and §10g already restates the reach in those terms -- "§5's
-        unconditional set escapes a LEADING caret in TEXT". §2a has filed the
-        other direction as a defect, on `}^p`, where the caret leads nothing,
-        dropping the escape re-derives the same document, and carve-rs and
-        carve-php escape it anyway. So "always escaped in a text node" is the
-        set's membership rule, and §2 is the test the emitted byte answers to.
+        unconditional set escapes a LEADING caret in TEXT". So "always escaped
+        in a text node" is the set's membership rule, and §2 is the test the
+        emitted byte answers to.
 
         THE MARK IS THE PROMOTION, NOT A FIELD, which is why the LEADING case
         needs no exception to §2. `resources/ast-schema.json` declares no
-        field for it and carve-rs publishes none: what the escape changes
-        there is whether the block comes back a PARAGRAPH or a FIGURE, and
-        that is a difference §2 already sees. An engine that reads the
-        paragraph above as promising a field has read a mechanism where the
-        rule is about an outcome.
+        field for it: what the escape changes there is whether the block comes
+        back a PARAGRAPH or a FIGURE, and that is a difference §2 already sees.
 
-        SO THE LEADING CASE IS UNMOVED, and corpus
-        394-a-leading-escaped-caret-keeps-its-escape pins it against the
-        reading that takes the bare `{^^}` above for a general permission.
-        An image over `\^ not a caption` keeps the backslash in all three
-        engines; bare, the same two lines are a `figure` with a
-        `figcaption`. That is §2 requiring the escape, not §5 excusing it,
-        and it is the difference between the two documents.
+        SO THE LEADING CASE IS UNMOVED. An image over `\^ not a caption` keeps
+        the backslash; bare, the same two lines are a `figure` with a
+        `figcaption`. That is §2 requiring the escape, not §5 excusing it.
 
       CANDIDATE -- escaped only when W4 selects the conservative form:
         `* _ ~ / = ,`        emphasis and the braced pair delimiters

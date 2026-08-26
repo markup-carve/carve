@@ -77,16 +77,12 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
    trailing whitespace is stripped; no surrounding single-space strip, which
    applies only to a closed span). Such an unclosed run is OPAQUE -- an
    emphasis delimiter or link tail after it is verbatim content, so the
-   surrounding construct never closes. Matches djot upstream and carve-php.
-   (Pinned as the "Inline verbatim ..." corpus pair; was a carve-js
-   divergence, resolved.) *)
+   surrounding construct never closes. Matches djot upstream. *)
 (* A trailing `{…}` on a code span is the generic inline-attribute
    block, NOT a language tag -- EXCEPT the exact form `{=format}`, which is
-   raw inline passthrough (raw_inline below, PART 9 §20). For any OTHER
-   `{…}`: both impls consume AND apply it -- `\`c\`{.x}` ->
-   `<code class="x">c</code>`, and `#id`/`key=value` likewise. (Was an impl
-   divergence where carve-js dropped the attributes; RESOLVED -- both now
-   apply them identically.) The STRICT attribute rule (§14) applies here and
+   raw inline passthrough (raw_inline below, PART 9 §20). Any OTHER `{…}` is
+   consumed AND applied -- `\`c\`{.x}` -> `<code class="x">c</code>`, and
+   `#id`/`key=value` likewise. The STRICT attribute rule (§14) applies here and
    to IMAGE trailing attrs exactly as to any other inline attribute. Explicit
    ids and classes admit a leading ASCII digit; a digit-leading key or any
    otherwise invalid payload makes the block literal. *)
@@ -153,11 +149,7 @@ link_text = inline_content ;
 
    This is a property of the DOCUMENT, and therefore binds EVERY target that
    can express a link -- HTML, Markdown and ANSI alike, exactly as the
-   smart-typography switch above applies to every target. Nested output is
-   not merely redundant: `[see [H](#H)](/outer)` is not valid Markdown, so a
-   consumer reparsing it gets something other than what the document says,
-   and a nested ANSI link sequence ends with its own reset, which closes the
-   outer link's styling early.
+   smart-typography switch above applies to every target.
 
    An implementation that resolves a construct into a link AFTER the pass
    that enforces this -- a cross-reference is the usual case, since `</#id>`
@@ -196,9 +188,7 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
    `unicode_url_char` says "non-whitespace" without qualifying it to ASCII.
    So a NARROW NO-BREAK SPACE, an IDEOGRAPHIC SPACE and a THIN SPACE end an
    inline destination exactly as a plain space does, and an unbracketed
-   destination cannot contain one. Stated explicitly because two engines read
-   it as ASCII-only and produced a link whose href carried an invisible
-   character (carve#404).
+   destination cannot contain one -- an href MUST NOT carry one (carve#404).
 
    ZERO-WIDTH characters (U+200B, U+FEFF) are NOT whitespace and ARE ordinary
    destination characters. The test is the Unicode White_Space property, not
@@ -213,16 +203,13 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
    ends the destination at `https://e.com`, and `/path` is then left over. It
    is NOT ignored: the definition is anchored at end of line (carve#911), so a
    leftover makes the production fail and the whole line is an ordinary
-   paragraph -- exactly as `[r]: https://e.com /path` behaves. That sentence
-   used to read "ignored", which is what all four artifacts did and what the
-   production never said. Whitespace between the mandatory separator space and
-   the destination is leading whitespace and is skipped. A definition whose
-   destination is EMPTY once that is done is NOT a definition: the line stays
-   literal, as `[r]:` already does.
+   paragraph -- exactly as `[r]: https://e.com /path` behaves. Whitespace
+   between the mandatory separator space and the destination is leading
+   whitespace and is skipped. A definition whose destination is EMPTY once that
+   is done is NOT a definition: the line stays literal, as `[r]:` already does.
 
-   There is deliberately no "trim the ends, keep the interior" variant. It
-   reads as the friendlier rule and it contradicts `link_destination`, which
-   admits no whitespace at all -- leaving `[r]: a b` specified two ways. *)
+   There is no "trim the ends, keep the interior" variant: `link_destination`
+   admits no whitespace at all. *)
 (* Titles accept double OR single quotes -- a deliberate enhancement
    over djot (which has no single-quote titles; it would fold `'...'`
    into the URL). The non-delimiting quote may appear inside the title. *)
@@ -235,14 +222,10 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
    (PART 7): a link is already a link once its destination has been read, and a
    reference definition is already a definition, so the title is optional
    trailing metadata in both. It is spelled `space` all the same, because A
-   TAB IS SYNTAX ONLY IN THE LEADING RUN (PART 7). The three engines accept a
-   tab here today and diverge from this production (carve#901). Cardinality is
-   exactly one character, at both sites, and that is a RULING rather than an
-   oversight: all three engines and the executable spec accepted a run here
-   until carve#912 held the production right and narrowed them. So
-   `[t](/u<SP><SP>"T")` is not a titled link, the quoted run is left
-   unconsumed, and the bracket run stays literal text. Corpus 262 carries it,
-   with the one-space form as its control. *)
+   TAB IS SYNTAX ONLY IN THE LEADING RUN (PART 7, carve#901). Cardinality is
+   exactly one character, at both sites (carve#912). So `[t](/u<SP><SP>"T")` is
+   not a titled link, the quoted run is left unconsumed, and the bracket run
+   stays literal text. *)
 link_title = space, ('"', {('\', '"') | (character - '"')}, '"')
            | space, ("'", {('\', "'") | (character - "'")}, "'") ;
 
@@ -261,97 +244,32 @@ reference_label = (character - ']' - '@'), {character - ']'} ;
        [t][@a]
        ![t][@a]
 
-   both render as the text the author typed. The image spelling is stated here
-   rather than beside `reference_image` because it is the same slot reading the
-   same production, not a parallel rule. Nothing in this is special to `@`; it
-   is the existing fallback reaching one more shape, which is why the ruling
-   needed no new mechanism (carve#1302).
-
    THE FALLBACK IS THE VERBATIM SOURCE RUN, NOT A RESCAN -- NORMATIVE. Which
    one it is decides the rendering, so it cannot be left to inference. The
    declining run is emitted as the characters the author typed; the parser does
    NOT hand the interior back to the inline scanner. That is already the rule
    for every other declining reference: `[t][*a*]` keeps its asterisks rather
-   than emphasizing `a`, and TRAILING ATTRIBUTES ON A DEFINITION's neighbor
-   case -- `[text][missing]{.wide}` -- keeps its braces as text rather than
-   parsing them as `attributes`, which is what carve#679 fixed by carrying the
-   SOURCE STRING through the reference sentinel instead of re-printing a parsed
-   list.
-
-   The distinction bites hardest here, because the interior is `@`-initial by
-   construction and `@a` is exactly what a rescan would claim. A rescan would
-   read `[t][@a]` as a `[t][` run, a MENTION, and a `]` -- and with the Tier-2
-   extension on it would read the now tail-less `[@a]` as a CITATION, since a
-   citation is a `[...]` holding a `@key` with no link/ref/span tail. Both
-   readings are wrong: the bracket run declined as ONE construct and is
-   restored as one, so the `@a` inside it is text and nothing else. That is
-   what the corpus rows and the optional control pin, on both sides of the
-   extension switch.
+   than emphasizing `a`, and `[text][missing]{.wide}` keeps its braces as text
+   rather than parsing them as `attributes`. So the `@a` inside a declining
+   `[t][@a]` is text and nothing else: it is NOT re-read as a mention, and NOT
+   as a citation with the Tier-2 extension on.
 
    THE CONTROL CARRIES THE RULE. `[@a]` on its own IS a citation with the
-   extension on, and that is the REASON the label slot rejects it rather than a
-   side effect of rejecting it: `@` at the first position already means
-   citation, so it cannot also mean label, and an implementation that made the
-   slot accept `@` would be taking the spelling away from citations to do it.
-   Corpus 334-a-label-beginning-with-an-at-sign-is-not-a-reference-label
-   carries both spellings; the citation half is Tier-2, so it is pinned in
-   tests/corpus-optional (`43-citations-at-label-in-reference-position`), where
-   the same two lines are still literal text with citations enabled.
+   extension on, and that is the REASON the label slot rejects it.
 
-   WHAT THE CORPUS PINS, AND WHAT IT CANNOT. The rows are HTML, and at that
-   layer this rule is INDISTINGUISHABLE from "the label is undefined": `@` at
-   the first position is the one spelling `reference_label` rejects, and
-   `[@a]: /u` is reserved for the citation definition, so a `@`-first label can
-   never be defined, and a declining reference renders as its verbatim source
-   either way. The rows state the outcome, which is what a corpus is for; they
-   do not separate the two readings, and nothing else does.
-
-   THE TREE SHAPE IS THE ONE PLACE THEY WOULD SEPARATE, and it is left open
-   here rather than settled in passing. Measured on fresh main builds --
-   carve-js 99af44b, carve-php 035dfcd, carve-rs 564a3b8 -- all three publish
-   an UNRESOLVED REFERENCE node for both spellings:
-
-       {"type":"link","href":"","ref":"@a","rawRef":"[t][@a]"}
-
-   and its `image` counterpart. PART 12 §3a admits `ref` "because the author
-   wrote a reference link", and under this clause no reference link was
-   written, which points at a `text` node carrying the run. Against that, an
-   `href`-less node plus `rawRef` is the vehicle §3a already gives a declining
-   reference for restoring its source, so an engine reaching for it here is not
-   obviously wrong either. Both readings render the corpus rows correctly, no
-   HTML fixture can fail on the difference, and the ruling this clause states
-   did not reach it -- so it is recorded, not decided (carve#1302).
-
-   THE READING NOT TAKEN. "Link text `t` pointing at citation `a`" is coherent
-   authoring intent and has no spelling today, but adopting it here would
-   INVENT A CONSTRUCT on the strength of one bracket pair -- its own AST node
-   or field, renderer behavior on every target, a canonical writer spelling --
-   and nothing else in the language pairs link text with a citation target.
-   That is a feature proposal against a later roadmap, not a reading of this
-   production.
-
-   The EMPTY-TEXT spelling `[][@a]` was settled separately and narrowly in
-   markup-carve/carve-js#1119, deliberately scoped so that `[t][@a]` was not
-   decided as a side effect of an unrelated fix. This clause is what that
-   scoping was waiting on, and it leaves it standing. *)
+   THE TREE SHAPE for a declining `[t][@a]` is left open here; the rendering is
+   the verbatim source run either way. *)
 (* Both roles appear on this one line (PART 7), and both take `space`. The
-   `']' ':'` separator is a MARKER SEPARATOR -- settled in the note below and
-   rejected by all four implementations for a tab -- while the slot before the
-   trailing `attributes` is PADDING: the definition is already complete at
-   `[a]: /url` and the attribute block is optional trailing metadata. The role
-   differs, the terminal does not, because A TAB IS SYNTAX ONLY IN THE LEADING
-   RUN (PART 7). What `attributes` admits INTERNALLY is a separate production
-   (PART 4).
-   Cardinality is exactly one space at BOTH, and at the padding slot that is
-   carve#912's ruling rather than an oversight. Where the rejected block goes
-   differs by run, and the two cases are NOT the same: a ZERO-space run glues
-   the braces to the destination (`[a]: /u{.c}` gives href `/u{.c}`, because
-   `link_destination` reads them), while a TWO-space run cannot -- whitespace
-   ends the destination -- so `{.c}` is DROPPED. That is the outcome this
-   clause names as the one to avoid, and it happened only because
-   `reference_definition` was not anchored at end of line. carve#911 anchored
-   it and the line now falls back to prose instead. Corpus 265 carries it with
-   its one-space control. *)
+   `']' ':'` separator is a MARKER SEPARATOR -- settled in the note below --
+   while the slot before the trailing `attributes` is PADDING: the definition
+   is already complete at `[a]: /url` and the attribute block is optional
+   trailing metadata. The role differs, the terminal does not, because A TAB IS
+   SYNTAX ONLY IN THE LEADING RUN (PART 7).
+   Cardinality is exactly one space at BOTH. The two rejected runs are NOT the
+   same: a ZERO-space run glues the braces to the destination (`[a]: /u{.c}`
+   gives href `/u{.c}`), while a TWO-space run cannot -- whitespace ends the
+   destination -- so the line is left over at the end-of-line anchor and falls
+   back to prose. *)
 reference_definition = '[', reference_label, ']', ':', space, link_destination,
                        [link_title], [space, attributes], newline ;
 (* ANCHORED AT END OF LINE -- NORMATIVE. The production ends in `newline`, and
@@ -361,39 +279,26 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
 
        [a]: /u zzz
 
-   is NOT a definition, and a `[a][]` below it does not resolve. All three
-   engines and the executable spec read it as a definition with trailing junk
-   until carve#911, and nothing in this grammar authorized that reading.
+   is NOT a definition, and a `[a][]` below it does not resolve (carve#911).
 
    THE LINE ENDING is `whitespace` -- `' ' | '\t'` -- the same terminal
-   `blank_line = {whitespace}` takes (PART 1; carve#890). So `[a]: /u<SP>` and
+   `blank_line = {whitespace}` takes (PART 1). So `[a]: /u<SP>` and
    `[a]: /u<TAB>` are still definitions, while `[a]: /u<NBSP>`,
-   `[a]: /u<U+2000>` and `[a]: /u<FF>` are not: every one of those is CONTENT
-   under that ruling, and content after the production is exactly what the
-   anchor rejects. An implementation spelling the ending as a Unicode
-   whitespace PROPERTY reads all five as a line ending, and a tab fixture
-   cannot see the difference, because a tab is inside the property too
-   (carve#888).
+   `[a]: /u<U+2000>` and `[a]: /u<FF>` are not: every one of those is CONTENT,
+   and content after the production is exactly what the anchor rejects. An
+   implementation spelling the ending as a Unicode whitespace PROPERTY reads
+   all five as a line ending, and a tab fixture cannot see the difference.
 
-   A TRAILING ZERO-WIDTH CHARACTER IS NOT ON THAT LIST, and listing it there
-   was an error carried from carve#911's ruling prose into this clause
-   (carve#953). `[a]: /u<U+FEFF>` and `[a]: /u<U+200B>` ARE definitions. The
-   anchor only ever sees what is left over after the production, and here
-   nothing is: U+FEFF and U+200B are not `White_Space`, so they do not END the
-   destination -- `link_destination` absorbs them as ordinary
-   `unicode_url_char`s, exactly as the note beside that production states, and
-   the character is in the href. The anchor is therefore never reached, and it
-   is `url_char` -- the AUTOLINK body, a different production -- that excludes
-   format characters, not `link_destination` (corpus 240). The row is the
-   reason a mutant widening the line ending to "any invisible character"
-   survived: it asserted a differing render, which was true because the HREF
-   carried the character rather than because the line was rejected.
+   A TRAILING ZERO-WIDTH CHARACTER IS NOT ON THAT LIST. `[a]: /u<U+FEFF>` and
+   `[a]: /u<U+200B>` ARE definitions: U+FEFF and U+200B are not `White_Space`,
+   so they do not END the destination -- `link_destination` absorbs them as
+   ordinary `unicode_url_char`s -- and the anchor is never reached. It is
+   `url_char`, the AUTOLINK body, that excludes format characters.
 
    WHAT THE ANCHOR DOES NOT REJECT. `[a]: /u{.c}` is still a definition, with
    destination `/u{.c}`: nothing is left over, because `link_destination`
    simply reads the braces. It is a different shape from `[a]: /u  {.c}`, not
-   another spelling of it. Corpus 266 carries every legal form as a control,
-   since the failure mode of an over-eager anchor is rejecting them.
+   another spelling of it.
 
    AN INVALID BLOCK IS NOT `attributes`, SO THE LINE IS NOT A DEFINITION --
    NORMATIVE (carve#933). `[space, attributes]` names the `attributes`
@@ -406,21 +311,12 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    is NOT a definition. `{#}` is not `attributes` -- there is no identifier
    after the `#` -- so the line renders as the paragraph `[a]: /u {#}` and a
    `[a][]` below it does not resolve. The same holds for `[a]: /u { }` and
-   `[a]: /u {=}`.
-
-   THE DECIDING ARGUMENT IS THAT THE SAME CHARACTERS ALREADY READ THIS WAY
-   ELSEWHERE. `x {#}` in a paragraph keeps the braces as text, because
-   `attributes` rejects that block there too and inline content keeps what it
-   cannot parse. Two readings of `{#}` one construct apart is the thing being
-   removed, and the reading kept is the one the rest of the language already
-   has.
+   `[a]: /u {=}`. `x {#}` in a paragraph keeps its braces as text for the same
+   reason.
 
    THE COMPATIBILITY BREAK THIS ADDS, recorded: a definition line carrying an
-   unparseable attribute block stops defining, and a document relying on it
-   resolves one fewer reference. Accepted (carve#933 signoff). Corpus rows --
-   including the control that a VALID block still defines and still transfers
-   its attributes, which is the row an over-eager fix breaks -- belong with
-   corpus 266 and are deferred to their own pass. *)
+   unparseable attribute block stops defining. A VALID block still defines and
+   still transfers its attributes. *)
 (* TRAILING ATTRIBUTES ON A DEFINITION -- NORMATIVE. A `{...}` block at the end
    of the definition line attaches to the DEFINITION, and PART 9R R1 already
    says what that means: the attributes transfer to every link OR IMAGE that
@@ -436,25 +332,11 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    the label up in the same `linkDefs` table and takes the same three fields, so
    `[ex]: /i.png {.wide}` gives `<img src="/i.png" alt="alt" class="wide">`.
 
-   Stated because leaving it implicit produced a rule nobody could say out loud.
-   The table is `label -> (url, title?, attrs?)`; an image reference already took
-   `url` and `title` from it in every engine, and `attrs` crossed in carve-php
-   and not in carve-js or carve-rs (carve#604's follow-up). Two of three fields
-   transferring is not a rule, it is where an implementation stopped. The
-   ergonomics point the same way: a class repeated at every use site is more
-   common for images -- sizing, floating, lazy-loading -- than for links, which
-   is the case the definition form exists to serve.
-
    THE MERGE IS §15 A3's, the one stacked attribute lists already use: the
    definition's list first, the link's second, so a repeated `id` or key takes
    the LAST value (the link's) and CLASSES ACCUMULATE in source order. So
    `[ex]: /u {.external #a}` with `[Example][ex]{.internal #b}` renders
    `class="external internal" id="b"`.
-
-   Reusing A3 rather than writing a second merge is the point: "link attributes
-   override per key" in R1 is exact only once "per key" names a merge, and the
-   language has one. A rule where the link's `class` REPLACED the definition's
-   would make this the only place in Carve where stacking classes drops one.
 
    NOT THE SAME AS THE LINE ABOVE. The two forms are different constructs and
    both are now well-defined:
@@ -469,10 +351,9 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
 
    THE DEFINITION IS A NODE, so these attributes are serialized ONCE on it
    rather than materialized onto every resolved link. PART 12 §10 adds
-   `link_reference_definition` to the vocabulary; three clauses wanted it (§3a,
-   §10a and this one) and the fourth reason was decisive: without the node, a
-   writer cannot reproduce the definition, so `parse(fmt(x)) == parse(x)` fails
-   for every resolved reference (carve#642). *)
+   `link_reference_definition` to the vocabulary: without the node, a writer
+   cannot reproduce the definition, so `parse(fmt(x)) == parse(x)` fails for
+   every resolved reference (carve#642). *)
 (* THE DEFINITION MARKER SEPARATOR -- NORMATIVE. The marker-to-content
    separator is the `space` terminal (U+0020) ONLY, in all three definition
    markers: `reference_definition`, `footnote_definition` and
@@ -480,30 +361,16 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    so `[^a]:<TAB>x`, `[a]:<TAB>/url` and `*[HTML]:<TAB>x` are ordinary
    paragraphs, not definitions -- the marker line is preserved as text. This
    mirrors the heading, list and task markers, which likewise require a
-   literal space after the marker. carve-rs is the reference here.
+   literal space after the marker.
 
    AND THE SEPARATOR IS A RUN (carve#892). `footnote_definition` and
    `abbreviation_definition` spell it `space+`: one or more ASCII spaces, all
-   of them separator. This is a correction, not a widening -- both productions
-   said `space` while all four readers consumed a run, so the grammar forbade
-   a shape nothing rejected.
-
-   CARDINALITY HERE IS THE OPPOSITE ANSWER FROM carve#912's, and the two are
-   not in conflict because they govern different POSITIONS. A PADDING SLOT
-   sits between two tokens on a line whose construct is already fixed, and its
-   width means nothing, so the four slots spelled `space` mean exactly one. A
-   MARKER SEPARATOR is what stands between the marker and the content it
-   introduces, and a writer aligning definitions in a column is writing
-   separator, not content. Stated here so the two rulings are not read as
-   contradicting each other.
+   of them separator.
 
    WHAT THE RUN DOES NOT INCLUDE. It is ASCII spaces, so the first character
    that is not one ends the separator and BEGINS the content. A no-break space
    is content: `*[HTML]:<SP><NBSP>Hyper` expands to `<NBSP>Hyper`, and
    `[^f]:<SP><NBSP>note` is a footnote whose body starts with the character.
-   This is where all three engines disagreed, each in a different place, and
-   where the executable spec gave a fourth answer no engine gave -- it refused
-   `[^f]:` plus any non-ASCII whitespace as a definition at all (carve#892).
 
    A TAB AFTER THE RUN is content too, by the same rule, and the two markers
    then answer differently for a reason that is downstream of this clause
@@ -522,9 +389,7 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    backslash-escape rule above: a `\"` inside the quoted run is a literal
    quote and does not end the title (`[y]: /u "a\"b\"c"` -> title
    `a"b"c`, emitted as `title="a&quot;b&quot;c"`). This matches the
-   inline-link title; the earlier carve-js divergence (ref-def title
-   stopping at the first raw quote) was fixed in the canonical oracle, and
-   the examples corpus now pins the ref-def escaped-quote form too. *)
+   inline-link title. *)
 (* A reference definition requires a NON-EMPTY `link_destination` (one or
    more `url_char`s after the `':' space`). A bare `[r]:` -- with nothing
    after the colon, or only trailing whitespace -- does NOT form a
@@ -590,41 +455,23 @@ control_char = (* any character in Unicode General_Category Cc *) ;
    internationalized domain written in its own script is an autolink, and
    so is a non-ASCII PATH.
 
-   The CONTROL half is not redundant with the ASCII enumeration, which is
-   the trap it was written around: `unicode_url_char` is "non-whitespace,
-   non-ASCII", so the C1 block U+0080-U+009F satisfies it. Those characters
-   are Cc, are not Cf, and only U+0085 is whitespace - so without this term
-   fourteen control characters would be `url_char`s while every C0 control
-   is excluded, which is not a rule anyone would state on purpose. The
-   executable spec admitted them until its own class test said so.
+   The CONTROL half is not redundant with the ASCII enumeration:
+   `unicode_url_char` is "non-whitespace, non-ASCII", so the C1 block
+   U+0080-U+009F satisfies it. Those characters are Cc, are not Cf, and only
+   U+0085 is whitespace -- so without this term fourteen control characters
+   would be `url_char`s while every C0 control is excluded.
 
-   WHY, since the ASCII enumeration was explicit. The same destination
-   written `[t](https://<IDN>/)` links in all three engines today, because
-   `link_destination` admits `unicode_url_char`. Two spellings of one
-   destination cannot answer differently on the character set, and the
-   inline form is the one with the corpus behind it, so the autolink
-   follows it. The exclusion also looks incidental rather than chosen: the
-   note above enumerates the punctuation `url_char` excludes and never
-   mentions non-ASCII, which is not what a decided exclusion reads like.
-
-   THE FORMAT-CHARACTER EXCLUSION IS THE PART THAT IS NEW RATHER THAN
-   PERMISSIVE. A format character (General_Category Cf: the byte order
-   mark, the zero-width space, the word joiner, the bidi marks) is
-   invisible by definition, so a host carrying one renders as the host
-   without it and links somewhere else. That is a spoofing surface, not an
-   authoring convenience, and no author types one on purpose. Stating it as
-   a PROPERTY rather than as a list of codepoints also makes the byte-order
-   -mark answer fall out of the rule: a host language whose own whitespace
-   class happens to hold U+FEFF gets the right answer for the wrong reason
-   and the wrong answer for U+200B, which is exactly the split carve#860
-   measured.
+   THE FORMAT-CHARACTER EXCLUSION. A format character (General_Category Cf:
+   the byte order mark, the zero-width space, the word joiner, the bidi
+   marks) is invisible by definition, so a host carrying one renders as the
+   host without it and links somewhere else -- a spoofing surface. It is
+   stated as a PROPERTY rather than as a list of codepoints, so U+FEFF and
+   U+200B answer the same way.
 
    THE ASCII HALF DOES NOT MOVE. The nine characters the note above
-   enumerates are still not `url_char`s: they are exclusions with a stated
-   reason, and all four artifacts agree on them today. The rule reads
-   `unicode_url_char - format_char` for that reason -- spelling it "any
-   non-whitespace, non-control character" would additionally re-admit those
-   nine and move every implementation on a question nobody asked.
+   enumerates are still not `url_char`s, which is why the rule reads
+   `unicode_url_char - format_char` rather than "any non-whitespace,
+   non-control character".
 
    `link_destination` IS UNCHANGED. It admits `unicode_url_char` in its own
    right, so a format character in an inline destination or a reference
@@ -635,16 +482,7 @@ control_char = (* any character in Unicode General_Category Cc *) ;
 
    `scheme` IS UNCHANGED AND IS ASCII. Only the BODY admits non-ASCII; a
    scheme is `letter, {letter | digit | '+' | '-' | '.'}` and `letter` is
-   the enumerated ASCII alphabet. The executable spec accepted a non-ASCII
-   scheme because ohm's built-in `letter` is Unicode-aware, and is corrected
-   under this clause rather than beside it.
-
-   Engine state when this landed, measured on fresh mains: carve-rs makes
-   EVERY non-ASCII autolink literal and moves on the first half
-   (markup-carve/carve-rs#755); carve-js and carve-php link format
-   characters and control characters and move on the second
-   (markup-carve/carve-js#834, markup-carve/carve-php#983). No
-   implementation had both halves. *)
+   the enumerated ASCII alphabet. *)
 
 (* --- Images --- *)
 (* An image has the same three forms as a link (inline / reference / collapsed
@@ -655,12 +493,9 @@ reference_image = '!', '[', alt_text, ']', '[', reference_label, ']', [attribute
 collapsed_reference_image = '!', '[', alt_text, ']', '[', ']', [attributes] ;
 alt_text = {character} ;
 (* SEMANTIC CONSTRAINT: the alt text ends at the matching `]` -- THE SAME
-   close as `link_text`, balanced-bracket, escape- and LITERAL-SPAN-aware, and
-   for the same reason: the sentence above this block says an image has the
-   same three forms as a link and that only the leading `!` and the `<img src>`
-   output differ. The bracketed run is not one of the things that differ. Not
+   close as `link_text`, balanced-bracket, escape- and LITERAL-SPAN-aware. Not
    expressible context-free, which is why this production reads `{character}`
-   and defers to the constraint rather than pretending to enumerate it.
+   and defers to the constraint.
 
    The VALUE is not `inline_content`. `alt` is an HTML attribute, so nothing
    inside the run is inline-parsed and no smart typography applies:

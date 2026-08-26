@@ -28,23 +28,13 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    character that is not one BEGINS the heading. `##<SP><SP>h` is the heading
    `h`, not `<SP>h`.
 
-   TWO CLAUSES DECIDE IT, and neither of them counts engines. MARKER
-   SEPARATORS AND PADDING SLOTS (PART 2) defines a marker separator as what
-   stands between the marker and the content it introduces and rules that a
-   writer aligning in a column "is writing separator, not content"; the four
-   slots that clause narrows to exactly one space are PADDING slots, an
-   enumeration it closes, and the heading marker is not among them. And
-   PART 11 §1 names MARKER ALIGNMENT among the spellings `fmt` may normalize
-   while preserving what the document says -- which holds only if the run is
-   not content. All three writers already normalize `##<SP><SP>h` to
-   `##<SP>h`, so under the literal reading every one of them changed the
-   document on every pass.
-
-   NO GATE COULD REACH IT. No corpus document, no optional-corpus case and
-   none of the authored documents in the oracle comparison's population
-   spelled a heading with a second space after the marker.
-   `84-single-line-headings-5` is `#` and two spaces and NOTHING else, which
-   is a different rule and is answered below.
+   TWO CLAUSES DECIDE IT. MARKER SEPARATORS AND PADDING SLOTS (PART 2) makes
+   a marker separator what stands between the marker and the content it
+   introduces, and the four slots it narrows to exactly one space are PADDING
+   slots -- a closed enumeration the heading marker is not in. And PART 11 §1
+   names MARKER ALIGNMENT among the spellings `fmt` may normalize while
+   preserving what the document says, which holds only if the run is not
+   content: `fmt` writes `##<SP><SP>h` as `##<SP>h`.
 
    A TAB IS NOT SEPARATOR. `space = ' '`, so `#<SP><TAB>x` is a heading whose
    text BEGINS with the tab, and `#<TAB>x` is not a heading at all -- the
@@ -53,16 +43,12 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
 
    AND THE MARKER REQUIRES CONTENT after the run as well: hashes, the
    separator and nothing but whitespace open no heading, and the line is
-   ordinary paragraph text with its trailing run dropped. That half needs no
-   correction -- it is the one thing every reader including the executable
-   spec already had, which is why `84-single-line-headings-5` was never red.
+   ordinary paragraph text with its trailing run dropped.
 
    WHAT MOVES WITH THE TEXT, AND WHAT DOES NOT. The derived id does NOT
    change: slugging drops a leading run either way, so `##<SP><SP>a b` is
-   `a-b` under both readings, and a ticket predicting otherwise is predicting
-   from the text rather than from the slug. A CROSSREF's AUTO-TEXT does move,
-   because §19 takes the heading's own text -- `</#a-b>` rendered
-   `<SP>a b` under the literal reading and renders `a b` under this one. *)
+   `a-b`. A CROSSREF's AUTO-TEXT takes the heading's own text (§19), so
+   `</#a-b>` renders `a b`. *)
 
 (* SINGLE-LINE HEADINGS -- NORMATIVE (diverges from Djot). A heading ENDS AT
    THE NEWLINE. It has no continuation line, and nothing following it folds in:
@@ -75,18 +61,6 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
      ## A             -> two separate <h2> elements
      ## B
 
-   It also makes this grammar's own model true. A heading is described here as
-   "a bounded title, not an open paragraph"; with continuation lines it had
-   paragraph-style spill anyway. LAZY CONTINUATION now means exactly one thing
-   across the whole language: it continues an OPEN PARAGRAPH (in a blockquote,
-   list item or definition body). A heading is not a paragraph, so nothing
-   continues it.
-
-   WHAT IS LOST: source-wrapping a long heading. Headings are short by
-   construction, Markdown never offered it, and the rendered result was a raw
-   newline inside the `h1`. A Djot document that wraps a heading therefore
-   renders differently in Carve; `carve lint --from-djot` reports it.
-
    A `^ ` caption line is no exception: it does not fold in, and it does not
    attach either, because a heading is NOT one of §4's captionable hosts. It
    opens an ordinary paragraph of its own.
@@ -94,21 +68,12 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
      # H              -> <h1>H</h1> then <p>^ cap</p>
      ^ cap
 
-   This sentence used to read "a caption still attaches to a heading (§4)",
-   citing as its authority the very clause whose enumeration omits a heading,
-   and no engine attaches one. A false claim carrying a true citation is worse
-   than a bare one: a reader who checks the reference finds the opposite and has
-   no way to tell which of the two is the language (carve#991).
-
    NO TRAILING ATTRIBUTES (djot-strict). A heading line carries NO trailing
    `{...}` attribute block: a `{...}` at the end of a heading line is ordinary
    inline content (literal text unless it forms an inline construct), and the
    id derives from the full literal text. Attributes attach via a PRECEDING
    block-attribute line (PART 9 §15), the uniform block rule; an explicit
-   `#id` from that line lives on the `<section>` wrapper (PART 9 §13).
-   Pinned by corpus 02-headings (the preceding-line and literal-trailing
-   pairs) and 82-single-line-headings (the five cases that used to fold, kept
-   as the regression guard for the behavior that replaced them). *)
+   `#id` from that line lives on the `<section>` wrapper (PART 9 §13). *)
 
 (* HEADING IDENTIFIERS -- NORMATIVE. A heading without an explicit {#id} gets an
    automatic identifier from its TEXT CONTENT, GitHub/SSG-style. WHICH INLINES
@@ -118,11 +83,7 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    assigned before a cross-reference resolves or a symbol is looked up. Code
    spans, MATH runs, an image's alt text, a link's label and a superscript
    contribute; footnote references, cross-references and symbols `:name:` do
-   not, and a line comment ends the line it sits on. "Folded plain text" was the
-   older spelling here and is what let one engine drop math while keeping the
-   code span beside it: a plain-text projection that omits math supports that
-   reading, and nothing said the projection was not the rule. Corpus 332 pins
-   one document per inline kind. Then, on that text:
+   not, and a line comment ends the line it sits on. Then, on that text:
      - reverse smart-typography output to its ASCII source first, so the id does
        not depend on presentation (`Don’t` -> `Don-t`, `Step 1 → 2` -> `Step-1-2`);
      - replace each maximal run of non-alphanumeric ASCII characters with a single
@@ -131,12 +92,7 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
      - PRESERVE CASE (Unicode-aware): NON-ASCII characters AND letter case pass
        through unchanged (`Café` -> `Café`, `日本語` unchanged). The text IS
        NFC-normalized before slugging (PART 9 §25), so a precomposed `é` and a
-       decomposed `e` + U+0301 give the SAME id. The clause used to deny this and
-       argue that the slug "needs no Unicode tables" - but §25 already required
-       the normalization for Trojan-Source reasons, the corpus fixture beside it
-       pins the composed id, and all three engines plus the oracle compose. The
-       tables are carried either way, so the rationale was inverted as well as the
-       rule (carve#705);
+       decomposed `e` + U+0301 give the SAME id (carve#705);
      - a leading-digit result is prefixed `s-` (a bare leading digit is a valid HTML
        id but an invalid CSS selector); an empty result becomes a generated `s-N`;
      - duplicates within a document get a numeric `-2`, `-3`, ... suffix.
@@ -151,9 +107,9 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    so the id is guaranteed to match `[0-9A-Za-z-]`. carve-js spells them `'fold'`
    and `'strict'`, carve-rs `AsciiHeadingIds::Fold` and `::Strict`; carve-php's
    extension is the STRICT one. The table itself is not normative -- what is, is
-   that the three engines carry the SAME table, so a folded id is byte-identical
-   across them. NOTE: carve PRESERVES case, matching djot.js / djot-php per #393;
-   cross-references resolve case-insensitively against the case-preserved id table. *)
+   that the three engines carry the SAME table. Carve PRESERVES case, matching
+   djot.js / djot-php per #393; cross-references resolve case-insensitively
+   against the case-preserved id table. *)
 
 (* --- Thematic Breaks --- *)
 thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})), newline ;
@@ -170,27 +126,22 @@ fenced_code_block = code_fence_open, [space], [code_fence_info], newline,
 (* The space between the fence and the info string is OPTIONAL (lenient:
    both ```php and ``` php are accepted; Markdown writes no space, Djot writes
    the space). The no-space form (```php) is canonical and is what the X->Carve
-   converters emit. It is a PADDING SLOT, not a marker separator (PART 7) --
-   the fence run has already decided that this is a code block, and the info
-   string only names the language and carries metadata -- but both roles take
-   `space`: the slot sits after the fence run, and A TAB IS SYNTAX ONLY IN THE
-   LEADING RUN (PART 7). The same holds for the two slots inside
-   code_fence_info below. So ```` ```<TAB>php ```` is not a fence opener; the
-   backtick run is an ordinary inline verbatim run (carve#1285). A TAB WITH
-   NOTHING AFTER IT IS NOT THIS SLOT, by ruling (carve#1295): it is trailing
-   whitespace on a content line, PART 2 drops it, and ```` ```<TAB> ```` opens
-   an ordinary fence with no info string. Position decides which clause
-   governs, here and at `frontmatter_open`, and refusing both positions is the
-   separator rule applied twice. raw_block (PART 9 §20)
-   spells its otherwise identical slot the same way, for the additional reason
-   that the `=` after it SELECTS a raw block over a code block.
+   converters emit. It is a PADDING SLOT, not a marker separator (PART 7), but
+   both roles take `space`: the slot sits after the fence run, and A TAB IS
+   SYNTAX ONLY IN THE LEADING RUN (PART 7). The same holds for the two slots
+   inside code_fence_info below. So ```` ```<TAB>php ```` is not a fence opener;
+   the backtick run is an ordinary inline verbatim run. A TAB WITH NOTHING AFTER
+   IT IS NOT THIS SLOT: it is trailing whitespace on a content line, PART 2
+   drops it, and ```` ```<TAB> ```` opens an ordinary fence with no info string.
+   Position decides which clause governs, here and at `frontmatter_open`.
+   raw_block (PART 9 §20) spells its otherwise identical slot the same way, for
+   the additional reason that the `=` after it SELECTS a raw block over a code
+   block.
    CARDINALITY DIFFERS BETWEEN THIS SLOT AND THE TWO INSIDE code_fence_info,
    deliberately: this one is `[space]`, exactly one, and those are `space+`.
    So ``` ```<SP><SP>php ``` is not a fence opener at all -- the second space
    reaches `language_info`, whose class holds no space, and the INVALID-FENCE
-   FALLBACK applies. All three engines and the executable spec accepted a run
-   here until carve#912 held the production right; corpus 263 carries it with
-   its one-space control. *)
+   FALLBACK applies. *)
 (* CODE-FENCE INFO STRING -- NORMATIVE. After the optional language_info
    token the opener admits, in this fixed order, an optional "header" (a
    quoted_title -- the SAME token as the admonition header, PART 9 §12) and an
@@ -245,10 +196,8 @@ code_fence_close = (backtick_fence | tilde_fence):close
      - A closing run indented PAST its opener is not a delimiter but code
        content -- which is exactly what lets an indented ``` line appear as
        sample text inside a fence.
-   Earlier drafts accepted 0-3 columns of indentation on a delimiter (a Markdown
-   inheritance, to disambiguate against the 4-space indented code block); Carve
-   has no such construct, so that tolerance is removed. The X->Carve converters
-   re-base an indented Markdown fence to its container's content column. *)
+   The X->Carve converters re-base an indented Markdown fence to its
+   container's content column. *)
 
 backtick_fence = '`', '`', '`', {'`'} ;
 tilde_fence = '~', '~', '~', {'~'} ;
@@ -264,8 +213,7 @@ code_fence_info = ( language_info, [space+, quoted_title], [space+, label] )
    "title" and [label] slots carry: the fence has already decided the block --
    and padding takes `space`, by A TAB IS SYNTAX ONLY IN THE LEADING RUN
    (PART 7). The label slot appears in two alternatives and is one slot with
-   one role, so both spellings carry the same terminal -- otherwise ```js "T" [L] and ``` "T" [L]
-   would disagree about a tab for no reason a reader could state. *)
+   one role, so both spellings carry the same terminal. *)
 language_info = (letter | digit | '-' | '_' | '+' | '#' | '.' | '/')+ ;  (* a single token; the punctuation covers real language tags like c++, c#, f#, asp.net, text/html. May start with a digit. The `/` is normative across all impls (so `text/html`, `image/svg` are language tokens, not split). A token MUST NOT start with `=`: a leading `=` is the raw_block opener (above), not a language. *)
 label = '[', { character - ']' }, ']' ;  (* structured metadata, e.g. [Installation]; not part of the class *)
 code_content = (* any text until matching fence, preserved literally *) ;
@@ -274,7 +222,7 @@ code_content = (* any text until matching fence, preserved literally *) ;
    are not interchangeable. Tab display width is a presentation concern (CSS
    `tab-size`). Tab-to-space expansion is NOT a default behavior -- it is opt-in
    via a tab-normalize extension (flat replacement, default 2 spaces, content
-   only). Matches djot / CommonMark. Pinned by corpus tabs-in-code-preserved. *)
+   only). Matches djot / CommonMark. *)
 
 (* --- Blockquotes --- *)
 blockquote = blockquote_line, {blockquote_line | lazy_continuation_line | continuation_marker_block}, [caption_slot] ;
@@ -325,25 +273,12 @@ bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
    opens its block only when followed by that space AND non-empty content. A
    content-less marker line -- bare (`-`) or with trailing whitespace only
    (`- `, `-   `) -- is NOT a list: it is paragraph text. The rule ignores
-   trailing whitespace, so `-` and `- ` behave identically (an editor stripping
-   the trailing space cannot change the meaning). Carve is stricter than
-   CommonMark, which treats a bare `-` as an empty item; requiring content keeps
-   a lone dash (a prose dash / placeholder) from silently becoming a list.
-   Pinned by corpus content-less-marker-is-not-a-list.
+   trailing whitespace, so `-` and `- ` behave identically. Stricter than
+   CommonMark, which treats a bare `-` as an empty item.
 
-   EVERY SUCH MARKER, not only the two named here. The rule is stated in terms
-   of bullets and ordered markers because those are where it was first needed,
-   but the rationale is a property of the separator space and applies wherever
-   one appears -- including the definition-term marker `::` and the description
-   marker `:`.
-
-   That omission was not theoretical: with the rule read narrowly, `:: ` was a
-   paragraph and `::` followed by TWO spaces was a definition list, so stripping
-   one trailing space changed the document's structure -- the exact thing the
-   sentence above exists to prevent. Three engines carried three answers
-   (paragraph, `<dt></dt>`, and `<dt> </dt>`) with every gate green, because the
-   corpus case pinned bullets only. Pinned now by corpus
-   content-less-marker-is-not-a-list-2 (carve#512).
+   EVERY SUCH MARKER, not only bullets and ordered markers: the rule is a
+   property of the separator space and applies wherever one appears --
+   including the definition-term marker `::` and the description marker `:`.
 
    THE DESCRIPTION MARKER -- NORMATIVE (carve#1830). `definition_separator` is a
    separator space, so a `:` line carrying only whitespace opens no description.
@@ -352,23 +287,17 @@ bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
    tab-separated `:` are one document, and the separator's width carries no
    meaning where it positions nothing. The tab is refused a step earlier, at the
    separator itself (PART 1, MARKER SEPARATORS AND PADDING SLOTS), and lands in
-   the same place. Pinned by corpus
-   a-colon-followed-by-only-whitespace-is-not-a-description.
+   the same place.
 
    A TAB AS THE FIRST CHARACTER OF CONTENT is a different question from the one
-   above -- NORMATIVE. There the separator space itself is present, so the
-   marker is satisfied and a term forms; the tab is not part of the separator
-   at all, it is the first character of the term's inline content. That tab is
-   ordinary leading whitespace, and is stripped like any other leading
-   whitespace in that position -- it does not appear in the rendered `<dt>`,
-   the same way a bullet's own extra separator whitespace never reaches the
-   item's content: content_column is where the item's content actually
-   STARTS (PART 9 §24 C3), so anything before it, space or tab alike, is
-   structural, not text. This is NOT the TABS IN CODE rule (PART 2, above):
-   that verbatim-preservation guarantee covers fenced code content and inline
-   code spans only, never a term's or a paragraph's inline content, so
-   nothing protects this tab. `::` + space + TAB + `x` therefore renders
-   `<dl><dt>x</dt></dl>` (carve#698). *)
+   above -- NORMATIVE.
+   There the separator space is present, so the marker is satisfied and a term
+   forms; the tab is the first character of the term's inline content. It is
+   ordinary leading whitespace and is stripped like any other in that position:
+   content_column is where the item's content actually STARTS (PART 9 §24 C3).
+   The TABS IN CODE rule (PART 2, above) does not apply -- it covers fenced code
+   content and inline code spans only. `::` + space + TAB + `x` therefore
+   renders `<dl><dt>x</dt></dl>`. *)
 
 ordered_list = ordered_item+ ;
 ordered_item = ordered_marker, [item_attributes], space, list_item_content ;
@@ -446,10 +375,8 @@ roman_numeral = ('i' | 'v' | 'x' | 'l' | 'c' | 'd' | 'm')+
    - Free slot: `-{` and `1.{` / `1){` are NOT list markers today (bullet and
      ordered both require the space), so no existing input changes meaning.
    - Diverges from djot (which has no li-attribute form); deliberate Carve
-     extension. The lazy-continuation accident -- a trailing `{…}` line folded
-     onto a tight item, which carve-php attached to the `<li>` and carve-js
-     dropped -- is REJECTED as the mechanism: it was position-dependent (broke
-     once a sub-list intervened) and is not normative. *)
+     extension. A trailing `{…}` line folded onto a tight item is NOT a
+     li-attribute mechanism. *)
 item_attributes = attributes ;
 
 list_item_content = first_block_content
@@ -466,10 +393,7 @@ indent = whitespace, {whitespace} ;
    one-off lone item: following markers at the sub-list's content column MERGE
    into the same nested list, and a post-blank block indented to that column is
    ABSORBED into the open nested item as a lazy continuation. This matches
-   reference djot.js (`@djot/djot`) and CommonMark. It CORRECTS a narrower
-   reading carve inherited from djot-php (which did not persist the nested list);
-   it is a bug fix, NOT a carve divergence. Pinned by corpus
-   marker-line-nested-lists. *)
+   reference djot.js (`@djot/djot`) and CommonMark. *)
 (* Continuation marker (Carve addition; see PART 9 §17): a lone `+` at the
    current container's marker column attaches the following flush-left block to
    that container -- a list item OR a block quote -- with no blank line, marker
@@ -497,28 +421,19 @@ task_state = ' ' | 'x' | 'X' | '-' | '_' | '>' | '?' ;
    indented line below it when it does not.
      `- [ ] a`        -> `<li><input ...> a</li>`
      `- [ ] > q`      -> `<li><input ...> ` newline `  <blockquote>...`
-   The executable spec emitted the checkbox only where the first block was a
-   PARAGRAPH, so a quote, a code fence, a `:::` div, a table row, a heading and
-   a thematic break each rendered a plain `<li>` and the state the author wrote
-   was gone from the output while the item parsed correctly. One serializer
-   branch built the opener without it, and it was the branch every
-   non-paragraph lead takes. carve-js and carve-php write it in all of them.
-   Corpus 363 pins three leads and both states. (carve#1381)
+   A quote, a code fence, a `:::` div, a table row, a heading and a thematic
+   break as the first block each still get the checkbox. (carve#1381)
 
-   THE TASK BOX CARRIES AN ACCESSIBLE NAME -- NORMATIVE (carve#1468). The box
-   is an <input type="checkbox"> and the word beside it is a SIBLING TEXT
-   NODE - not a <label>, not an aria-label - so the input carried a STATE and
-   no NAME, and a reader met an unlabeled disabled checkbox with ordinary prose
-   next to it. The box takes an `aria-label` naming it with the item's own
-   visible text: the DERIVED TEXT of the item's first block (PART 9R R4's
-   derivation, the same one a heading id and a crossref clone read). A
-   paragraph spans LINES -- a soft wrap, or a lazy continuation folded into it
-   -- and a name is ONE line, so each run of ASCII whitespace in the derived
-   text collapses to a single space and the result is trimmed. A NO-BREAK space
-   is content and survives; the collapse is ASCII-only for that reason.
-   Deriving rather than inventing is what keeps this string out of the `labels`
-   map (PART 9 SS16a) - it is the AUTHOR's text, already on the page, so a host
-   translating the document translates it exactly once.
+   THE TASK BOX CARRIES AN ACCESSIBLE NAME -- NORMATIVE. The box is an
+   <input type="checkbox"> and the word beside it is a SIBLING TEXT NODE - not
+   a <label>, not an aria-label - so without a name a reader meets an
+   unlabeled disabled checkbox. The box takes an `aria-label` naming it with
+   the item's own visible text: the DERIVED TEXT of the item's first block
+   (PART 9R R4's derivation). A name is ONE line, so each run of ASCII
+   whitespace in the derived text collapses to a single space and the result is
+   trimmed; a NO-BREAK space is content and survives. Deriving rather than
+   inventing is what keeps this string out of the `labels` map (PART 9 SS16a) -
+   it is the AUTHOR's text, already on the page.
      `- [ ] unchecked`   ->  `<input type="checkbox" disabled
                               aria-label="unchecked">`
      `- [x] done with `c``  ->  `... checked disabled aria-label="done with c"`
@@ -542,13 +457,7 @@ definition_term = "::", space, inline_content, newline, {term_continuation_line}
 term_continuation_line = inline_content, newline ;
 (* A term folds a following plain line as a soft break; a blank line, a new
    `::`/`: ` marker, or a block opener ends it. A term holds inline content
-   only -- no block body. (This used to read "like a heading", which was never
-   the right comparison: a term is the KEY half of a key-value entry, not a
-   title, and it is bound to the definition beneath it rather than to a section
-   of the document. It KEEPS its fold. What made the heading's fold a defect was
-   having TWO ways to spill onto the next line, one of them silent -- a term has
-   exactly one, so a long key stays wrappable at no cost. §434's follow-up
-   question is answered here rather than left open.) *)
+   only -- no block body. Unlike a heading, a term KEEPS its fold. *)
 definition_body = (':', definition_separator, first_block_content)
                 | (':', definition_separator, inline_content, newline,
                    { definition_continuation
@@ -568,54 +477,30 @@ definition_separator = space, {space} ;
    C1), so the spellings differ only in how far their continuations indent,
    never in what they mean.
 
-   This is the rule a BULLET already follows: `-   first` puts its content
-   column at 4 and a continuation at 2 does not reach it. The definition body
-   was the one construct that measured its separator against a fixed width
-   instead, and the one that demanded two spaces where every other marker in
-   the language takes one -- `- item`, `1. item`, `> quote`, `:: term`.
-
    ONE SPACE IS CANONICAL. A wider separator is accepted and the formatter
    narrows it, which is what a formatter is for; nothing about the document's
    meaning depends on the author having picked the canonical width. Narrowing
    the separator narrows the body's column, so a canonical rewrite carries every
    continuation inside that body down by the same amount. A formatter that
    trims the separator and leaves the body where it was changes what the
-   document says.
-
-   What changed for the one-space spelling is that it now HAS a meaning. It used
-   to have none, and the engines disagreed about what to do with a line that had
-   none -- carve-js folded `: x` after a term into the `<dt>`, the oracle left it
-   a stray paragraph. A colon line inside a definition context has exactly one
-   reading now. *)
+   document says. *)
 definition_continuation = (definition_indent, inline_content, newline)
                         | (backslash, newline, definition_indent, inline_content, newline) ;
 definition_indent = whitespace, {whitespace} ;
-(* INDENTATION IS COLUMNS, NOT CHARACTERS -- NORMATIVE (carve#692, carve#888).
-   This production used to read `space, space, space`, which made a definition
-   body's continuation a literal three-SPACE requirement. That contradicted
-   PART 9 §24 C1, which already gives a tab a column value (to the next
-   multiple of 4), and it made the definition body the ONE continuation in the
-   language that counted characters where its siblings count columns: a
-   footnote body honors C1 (`footnote_indent`, carve#692) and so does a list
-   item (`list_continuation`'s `indent`).
+(* INDENTATION IS COLUMNS, NOT CHARACTERS -- NORMATIVE. A tab has a column
+   value (PART 9 §24 C1, to the next multiple of 4), and a definition body's
+   continuation counts columns exactly as a footnote body (`footnote_indent`)
+   and a list item (`list_continuation`'s `indent`) do.
 
    `definition_indent` is any whitespace run REACHING THE BODY'S AUTHORED
    CONTENT COLUMN -- the column its separator width establishes. For canonical
    `: x`, two spaces reach column 2; for accepted `:  x`, three spaces reach
-   column 3. A bare tab reaches column 4 and qualifies for either. The floor is
-   column arithmetic, stated here rather than
-   encoded character-by-character, exactly as `footnote_indent` states its
-   own. This is INDENTATION, not a marker SEPARATOR: it does not change the
-   separator run after the `:` marker (PART 7's
-   MARKER SEPARATORS AND PADDING SLOTS clause, which is A TAB IS SYNTAX ONLY
-   IN THE LEADING RUN (PART 7) applied to a slot that sits inline).
+   column 3. A bare tab reaches column 4 and qualifies for either. This is
+   INDENTATION, not a marker SEPARATOR: it does not change the separator run
+   after the `:` marker (PART 7's MARKER SEPARATORS AND PADDING SLOTS clause).
 
-   The BACKSLASH branch spells the same indentation and is respelled with it,
-   for consistency of the file rather than for behavior: that branch resolves
-   through the hard break, where all four readers already fold the next line in
-   regardless of its indentation, so nothing observable turns on it and no
-   fixture below pins it. Recorded so the untouched-looking half is not read as
-   an oversight.
+   The BACKSLASH branch spells the same indentation: it resolves through the
+   hard break, which folds the next line in regardless of its indentation.
 
    BELOW THE BODY'S COLUMN THE BODY ENDS -- NORMATIVE (carve#932). The three
    bands, in column order, so the rule can be read off once:
@@ -634,9 +519,8 @@ definition_indent = whitespace, {whitespace} ;
        column (§10, A COMMENT IS THE ONE EXCEPTION), and a definition or
        attribute line at a nonzero column below the column is lazy paragraph
        text of THIS body (§10 I5, AN INVISIBLE LINE FOLDS LIKE ANY OTHER). At
-       DOCUMENT column 0 they are interrupters and the body does end. Reading
-       this bullet alone gave the band four different answers across the five
-       kinds, none of them the plain-line control's (carve#1800, carve#1801).
+       DOCUMENT column 0 they are interrupters and the body does end.
+       (carve#1800, carve#1801)
      - AT the column, the line is the body's own block content, so a block
        opener opens inside the `dd`.
      - PAST the column, a recognized block opener establishes its authored
@@ -644,24 +528,7 @@ definition_indent = whitespace, {whitespace} ;
        paragraph-continuation behavior.
 
    `definition_indent` states the floor as column arithmetic; this states what
-   happens on the other side of it. Nothing else in the language gives a
-   sub-column indent a third meaning, and a rule that did would make
-   indentation depth mean two different things one column apart.
-
-   THE RULE IS UNCHANGED AND THE NAMING IS THE CHANGE. The bands were already
-   stated here in passing -- "AT the column the line is the body's own block
-   content and the quote opens; below it the body ends", in the clause below --
-   and being unnamed they were inventoried nowhere and pinned by nothing. An
-   engine that follows this clause is not being asked to follow new prose.
-
-   THE LADDER IS PINNED (carve#1772). The documents this clause deferred to
-   their own pass are corpus 425: column 0 and the two columns above it in the
-   BELOW band, the column itself, one column past it, a second opener kind, and
-   the plain line that is not an opener at all and folds from any column. Until
-   they landed, lowering a reader's floor changed nothing any corpus document
-   could see -- a line below the column fell through to the flush-left branch
-   and nested anyway -- so a corpus run reporting every golden reproduced was
-   true and said nothing about this band.
+   happens on the other side of it.
 
    THE SURVIVING CONTEXT IS WHATEVER HOLDS THE LIST. At the top level an opener
    must be written at column 0, so a `>` one or two columns in opens nothing and
@@ -684,13 +551,12 @@ definition_indent = whitespace, {whitespace} ;
 
    opens a block quote. The same rule covers headings, lists, tables, code/raw/
    colon fences, definitions, attributes followed by their target and comments,
-   with or without a preceding blank. Tabs participate by visual column.
-
-   An ordinary over-indented line which is not a recognized opener remains
-   paragraph text. A line below the minimum column keeps the existing ownership
-   result. The leading run is measured once; implementations MUST NOT probe
-   every possible dedent. Opaque payload indentation beyond `block_base` is
-   authored data, and a closer belongs to the base established by its opener.
+   with or without a preceding blank. Tabs participate by visual column. An
+   ordinary over-indented line which is not a recognized opener remains
+   paragraph text, and the leading run is measured once: implementations MUST
+   NOT probe every possible dedent. Opaque payload indentation beyond
+   `block_base` is authored data, and a closer belongs to the base established
+   by its opener.
 
    MIGRATION. This changes released 0.1.3 documents whose over-indented literal
    text begins with a block opener. A diagnostic SHOULD offer two safe fixes:
