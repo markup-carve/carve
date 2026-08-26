@@ -180,7 +180,7 @@ Not enabled on this site, so the output is shown rather than rendered.
 ```carve
 ::: glossary
 :: API
-:  Application Programming Interface.
+: Application Programming Interface.
 :::
 
 Use the :term[API].

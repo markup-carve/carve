@@ -74,7 +74,7 @@ test('a blank line is not the break, so the separator has to be written', () => 
 
 test('the comment is the only separator that both renders nothing and stays put', async () => {
   const { carveToCarve, parse, toAstJson } = await import('@markup-carve/carve')
-  const between = (line) => `:: t1\n\n${line}\n\n:: t2\n:  d2\n`
+  const between = (line) => `:: t1\n\n${line}\n\n:: t2\n: d2\n`
   const kinds = (source) => toAstJson(parse(source)).children.map((child) => child.type)
 
   // Every candidate renders the two lists where it is written - that is the

@@ -71,7 +71,7 @@ Bare delimiters work only at word boundaries; force one intraword with the brace
 > note for step one
 
 :: term                      (definition list)
-:  definition
+: definition
 
 {loose}                      (consumed boolean: the container's children
 - one-item loose list         render as blocks. The one shape a blank
@@ -87,7 +87,7 @@ Bare delimiters work only at word boundaries; force one intraword with the brace
 - list now lives inside the quote
 
 ::: >                        (the SAME block quote, fenced: no marker on
-notes:                        every line. `fmt` writes back whichever
+notes:                       every line. `fmt` writes back whichever
                               spelling you used. Nests at constant width,
 - a                           so re-quoting is prepend-and-append. Takes
 - b                           the ^ caption on its CLOSING fence.)
@@ -106,7 +106,7 @@ code block
 
 ::: note "Custom Title"      (admonition: note tip warning danger
 body                          info success example quote;
-:::                           any other word = <div class="word">;
+:::                          any other word = <div class="word">;
                               optional "Title" -> admonition-title,
                               must be straight-quoted - unquoted or
                               curly-quoted text makes the line a
@@ -114,7 +114,7 @@ body                          info success example quote;
 
 ::: tab [Label]              (optional [Label] after the type = group
 body                          identifier, e.g. the tab name; same
-:::                           "Header" [Label] tokens as a code fence)
+:::                          "Header" [Label] tokens as a code fence)
 
 ::: outer                    (a closer matches its opener's length
 :::: note                     exactly; canonical nesting adds one

@@ -293,7 +293,7 @@ An extension is a named unit contributing any subset of four things, run as:
 ### 2.1 Matchers (parse stage) — scanner-function contract
 
 - inline: `(text, pos, ctx) -> { node, end } | null`
-- block:  `(lines, ctx) -> { node, linesConsumed } | null`
+- block: `(lines, ctx) -> { node, linesConsumed } | null`
 - `ctx` exposes: definition tables (link/footnote/abbr); recursive
   `parseInlines(text)` / `parseBlocks(lines)`; the extension's config.
 - Precedence: core matchers run first at each position; extension matchers are
@@ -869,7 +869,7 @@ rather than adding a primitive.
 
 ### 7.1 Syntax
 
-- A `::: glossary` block whose body is a definition list (`:: term` / `:  def`)
+- A `::: glossary` block whose body is a definition list (`:: term` / `: def`)
   declares the glossary. Each term is one entry.
 - `:term[word]` (the core inline extension form) references a term. The link
   target is derived from the *bracket text*, not a separate key.

@@ -318,14 +318,14 @@ Carve changes only the term and definition *markers*; djot's loose,
 indentation-scoped body carries over unchanged:
 
 - A **term** is a line starting with `:: ` (double colon).
-- A **definition** is a line starting with `:  ` (single colon, then two
-  spaces).
+- A **definition** is a line starting with `: ` (single colon, then one or more
+  spaces). One space is canonical; wider separators remain accepted input.
 
 ```
 :: color
 :: colour
-:  The visual property of objects.
-:  A pigment or paint.
+: The visual property of objects.
+: A pigment or paint.
 ```
 
 ```
@@ -352,14 +352,14 @@ So multi-paragraph definitions are fully supported - the divergence is the
 
 ```
 :: term
-:  First paragraph.
+: First paragraph.
 +
 Second, flush-left paragraph joined with +.
 ```
 
 The term and definition markers are mutually incompatible: a djot `: term`
 line parses as a plain paragraph in Carve, and vice versa. Only the markers are
-traded - unambiguous `::` / `:  ` instead of djot's single colon, matching how
+traded - unambiguous `::` / `: ` instead of djot's single colon, matching how
 Carve treats the double-colon as a term and reserves three colons for a
 div/admonition. The loose body itself is *not* traded away: form A is djot's
 indentation-scoped body, and `+` (form B) is added on top.

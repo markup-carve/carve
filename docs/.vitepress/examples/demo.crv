@@ -85,9 +85,9 @@ Tasks:
 Definition list:
 
 :: Carve
-:  A post-Markdown lightweight markup language.
+: A post-Markdown lightweight markup language.
 :: Djot
-:  The markup language Carve evolves from.
+: The markup language Carve evolves from.
 
 ## Blockquotes
 

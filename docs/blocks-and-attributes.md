@@ -350,7 +350,7 @@ is unspellable at every entry count.
 ```carve
 {loose}
 :: Term
-:  Definition.
+: Definition.
 ```
 
 ```html
