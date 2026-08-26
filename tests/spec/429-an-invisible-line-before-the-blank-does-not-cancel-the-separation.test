@@ -1,0 +1,56 @@
+An invisible line before the blank does not cancel the separation
+
+```
+- para
+  %% c
+
+  more
+
+x
+.
+<ul>
+  <li><p>para</p>
+    <p>more</p>
+  </li>
+</ul>
+<p>x</p>
+```
+
+```
+- para
+  [r]: /u
+
+  more
+.
+<ul>
+  <li><p>para</p>
+    <p>more</p>
+  </li>
+</ul>
+```
+
+```
+- para
+  [^f]: n
+
+  more
+.
+<ul>
+  <li><p>para</p>
+    <p>more</p>
+  </li>
+</ul>
+```
+
+```
+- para
+  {.k}
+
+  more
+.
+<ul>
+  <li><p>para</p>
+    <p class="k">more</p>
+  </li>
+</ul>
+```
