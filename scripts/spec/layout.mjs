@@ -440,7 +440,7 @@ const BULLET = new RegExp(`^([ \\t]*)([-*])(${ATTR_BLOCK})?( +)(?:\\[([ xX_>?-])
 // The value is optional before a `.`: a bare `. ` is a decimal marker
 // counting from 1 (PART 9 ordered_marker, BARE DOT). A bare `)` is not a
 // marker, so the empty alternative is guarded by a lookahead at the dot.
-const ORDERED = new RegExp(`^([ \\t]*)([0-9]+|[a-z]+|[A-Z]+|(?=\\.))([.)])(${ATTR_BLOCK})? (.+)$`)
+const ORDERED = new RegExp(`^([ \\t]*)([0-9]+|[a-z]+|[A-Z]+|(?=\\.))([.)])(${ATTR_BLOCK})?( +)(.+)$`)
 const CONT_MARKER = /^\+[ \t]*$/
 // marks a lazily-folded line (PART 9 SS10 I2): always paragraph text, never
 // re-classified as structure when an item's content is re-parsed
@@ -3115,9 +3115,12 @@ function matchMarkerAt(meas) {
       delim: m[3],
       attrs: m[4] ?? null,
       dialects,
-      text: m[5],
+      text: m[6],
       // Marker-attached attributes are metadata, not marker width (§24 C3).
-      markerWidth: m[2].length + m[3].length + 1,
+      // The separator is the authored RUN of spaces, not a fixed one: the
+      // content column is where the content actually starts (§24 C3), so
+      // `1.   x` sits at 5 exactly as `-   x` sits at 4 (carve#1773).
+      markerWidth: m[2].length + m[3].length + m[5].length,
     }
   }
   return null

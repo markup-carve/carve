@@ -1,0 +1,152 @@
+An ordered item's separator width sets its content column
+
+```
+1. first
+
+   second
+.
+<ol>
+  <li><p>first</p>
+    <p>second</p>
+  </li>
+</ol>
+```
+
+```
+1.  first
+
+   second
+.
+<ol>
+  <li>first</li>
+</ol>
+<p>second</p>
+```
+
+```
+1.  first
+
+    second
+.
+<ol>
+  <li><p>first</p>
+    <p>second</p>
+  </li>
+</ol>
+```
+
+```
+1.   first
+
+   second
+.
+<ol>
+  <li>first</li>
+</ol>
+<p>second</p>
+```
+
+```
+1.   first
+
+     second
+.
+<ol>
+  <li><p>first</p>
+    <p>second</p>
+  </li>
+</ol>
+```
+
+```
+1.{.note}  first
+
+    second
+.
+<ol>
+  <li class="note"><p>first</p>
+    <p>second</p>
+  </li>
+</ol>
+```
+
+```
+.  first
+
+   second
+.
+<ol>
+  <li><p>first</p>
+    <p>second</p>
+  </li>
+</ol>
+```
+
+```
+11.  first
+
+     second
+.
+<ol start="11">
+  <li><p>first</p>
+    <p>second</p>
+  </li>
+</ol>
+```
+
+```
+11.  first
+
+    second
+.
+<ol start="11">
+  <li>first</li>
+</ol>
+<p>second</p>
+```
+
+```
+111.  first
+
+      second
+.
+<ol start="111">
+  <li><p>first</p>
+    <p>second</p>
+  </li>
+</ol>
+```
+
+```
+111.  first
+
+     second
+.
+<ol start="111">
+  <li>first</li>
+</ol>
+<p>second</p>
+```
+
+```
+iii.  first
+
+      second
+.
+<ol type="i" start="3">
+  <li><p>first</p>
+    <p>second</p>
+  </li>
+</ol>
+```
+
+```
+iii.  first
+
+     second
+.
+<ol type="i" start="3">
+  <li>first</li>
+</ol>
+<p>second</p>
+```
