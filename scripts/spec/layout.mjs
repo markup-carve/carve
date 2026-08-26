@@ -2249,6 +2249,31 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               i++
               continue
             }
+            /*
+             * AN EMPTY BODY CLAIMS NOTHING BELOW COLUMN 0 -- §17 L3, carve#1821.
+             *
+             * `AND FLUSH-LEFT MEANS COLUMN 0` gives the marker its own control:
+             * a refused `+` behaves "exactly as if the `+` line had been a
+             * comment". In the FIRST-BLOCK form `:  +` no paragraph is open, so
+             * the `+` genuinely is a marker and the clause reads its payload's
+             * column - and a payload at column 1 or 2 is not flush-left, so the
+             * marker is refused and the body ends where the comment ends it.
+             *
+             * It did not, at either column, and BOTH ways of reaching the line
+             * claimed it: `pullPending` attached it as the pulled block, and
+             * with a gate guard on the first-block form instead - measurable
+             * dead code - the fold below claimed the same line into the same
+             * empty `dd`, because `bodyLeavesParagraphOpen([])` reports an
+             * empty body as leaving a paragraph open. So the guard belongs
+             * here, ahead of both, and not on the gate.
+             *
+             * The LIST ITEM is the reference: `- +` over ` flush` already
+             * agrees with its comment control at columns 1 and 2 and attaches
+             * at column 0, which is exactly the band this restores. Column 0 is
+             * untouched - there the marker is not refused, and the first-block
+             * form keeps the one flush-left block it names.
+             */
+            if (bodyLines.length === 0 && indentCols(cur).col > 0) break
             // flush-left line: either the block pulled in by a preceding `+` /
             // first-block marker, or a lazy continuation of the open paragraph.
             if (pullPending) {
