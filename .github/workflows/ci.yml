@@ -17,7 +17,10 @@ concurrency:
 
 jobs:
   declarations:
-    name: declarations and engine pin are current
+    # Not "the pin is current": per-PR, pin staleness is REPORTED and the
+    # declared spec-ahead window passes (carve#1811). The release cut runs
+    # `npm run declarations:check`, which is the verdict that requires both.
+    name: declarations are visible and every window is declared
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
