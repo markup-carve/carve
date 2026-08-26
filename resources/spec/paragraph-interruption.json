@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "part": "9",
+  "section": "10",
+  "visibleOpeners": {
+    "heading": "always",
+    "thematic_break": "always",
+    "block_quote": "always",
+    "definition_list_term": "always",
+    "table": "valid_row",
+    "code_fence": "matching_closer",
+    "raw_fence": "matching_closer",
+    "colon_fence": "always"
+  },
+  "invisibleOpeners": [
+    "reference_definition",
+    "footnote_definition",
+    "abbreviation_definition",
+    "line_comment",
+    "fenced_comment",
+    "block_attributes"
+  ],
+  "nonInterrupting": [
+    "unordered_list_marker",
+    "ordered_list_marker",
+    "task_list_marker",
+    "bare_image",
+    "caption"
+  ],
+  "scope": "every_open_paragraph",
+  "headingAcceptsContinuation": false
+}

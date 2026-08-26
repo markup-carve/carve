@@ -1,0 +1,1211 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "id": "CARVE-PRE-001",
+      "part": "PRE",
+      "title": "THE EXECUTABLE ARTIFACTS DECIDE NOTHING"
+    },
+    {
+      "id": "CARVE-PRE-002",
+      "part": "PRE",
+      "title": "A GOLDEN IS NORMATIVE ONCE COMMITTED, NOT ONCE GENERATED"
+    },
+    {
+      "id": "CARVE-PRE-003",
+      "part": "PRE",
+      "title": "A CHECKER THAT DISAGREES WITH A COMMITTED GOLDEN IS WRONG UNTIL A CLAUSE SAYS OTHERWISE"
+    },
+    {
+      "id": "CARVE-P0-001",
+      "part": "0",
+      "title": "A LEADING BYTE ORDER MARK IS STRIPPED"
+    },
+    {
+      "id": "CARVE-P0-002",
+      "part": "0",
+      "title": "A NULL IS REPLACED BEFORE THE FIRST LINE IS READ"
+    },
+    {
+      "id": "CARVE-P0-003",
+      "part": "0",
+      "title": "EVERY FRAME CARRIES OWNERSHIP AND PARAGRAPH STATE SEPARATELY"
+    },
+    {
+      "id": "CARVE-P0-004",
+      "part": "0",
+      "title": "ONE AUTHORED BLOCK BASE"
+    },
+    {
+      "id": "CARVE-P0-005",
+      "part": "0",
+      "title": "COMMENTS ARE CLASSIFIED BEFORE BLOCK OWNERSHIP"
+    },
+    {
+      "id": "CARVE-P0-006",
+      "part": "0",
+      "title": "NO STORED CONTINUATION CLAIM, NO LAZY LINE"
+    },
+    {
+      "id": "CARVE-P0-007",
+      "part": "0",
+      "title": "THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST BLOCK"
+    },
+    {
+      "id": "CARVE-P0-008",
+      "part": "0",
+      "title": "A FLOATING ATTRIBUTE BLOCK DOES NOT CHANGE THE CONTENT COLUMN"
+    },
+    {
+      "id": "CARVE-P0-009",
+      "part": "0",
+      "title": "AND THE QUOTE IT IS ASKED OF MAY ITSELF BE A QUOTE"
+    },
+    {
+      "id": "CARVE-P0-010",
+      "part": "0",
+      "title": "A DEFINITION AT THE CONTENT COLUMN ENDS THE PARAGRAPH, NOT THE CONTAINER"
+    },
+    {
+      "id": "CARVE-P0-011",
+      "part": "0",
+      "title": "AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS UNDER"
+    },
+    {
+      "id": "CARVE-P0-012",
+      "part": "0",
+      "title": "A HEADING IS THE VISIBLE CONTROL"
+    },
+    {
+      "id": "CARVE-P0-013",
+      "part": "0",
+      "title": "A FENCED BODY IS NOT A PARAGRAPH"
+    },
+    {
+      "id": "CARVE-P0-014",
+      "part": "0",
+      "title": "AND THE FENCE KIND IS NOT A PARAMETER"
+    },
+    {
+      "id": "CARVE-P0-015",
+      "part": "0",
+      "title": "AND NOTHING CLOSES MEANS THE CONTAINER GOES ON COLLECTING"
+    },
+    {
+      "id": "CARVE-P0-016",
+      "part": "0",
+      "title": "A REAL DIV IS A CONTAINER LIKE ANY OTHER"
+    },
+    {
+      "id": "CARVE-P0-017",
+      "part": "0",
+      "title": "AND THE CONTAINER KIND IS NOT A PARAMETER EITHER"
+    },
+    {
+      "id": "CARVE-P0-018",
+      "part": "0",
+      "title": "AND A DEFINITION BODY IS SUCH A CONTAINER"
+    },
+    {
+      "id": "CARVE-P2-001",
+      "part": "2",
+      "title": "COLUMN ZERO"
+    },
+    {
+      "id": "CARVE-P2-002",
+      "part": "2",
+      "title": "THE HEADING MARKER SEPARATOR IS A RUN"
+    },
+    {
+      "id": "CARVE-P2-003",
+      "part": "2",
+      "title": "SINGLE-LINE HEADINGS"
+    },
+    {
+      "id": "CARVE-P2-004",
+      "part": "2",
+      "title": "HEADING IDENTIFIERS"
+    },
+    {
+      "id": "CARVE-P2-005",
+      "part": "2",
+      "title": "CODE-FENCE INFO STRING"
+    },
+    {
+      "id": "CARVE-P2-006",
+      "part": "2",
+      "title": "COLUMN-EXACT DELIMITERS"
+    },
+    {
+      "id": "CARVE-P2-007",
+      "part": "2",
+      "title": "TABS IN CODE"
+    },
+    {
+      "id": "CARVE-P2-008",
+      "part": "2",
+      "title": "LAZY CONTINUATION"
+    },
+    {
+      "id": "CARVE-P2-009",
+      "part": "2",
+      "title": "MARKER REQUIRES CONTENT"
+    },
+    {
+      "id": "CARVE-P2-010",
+      "part": "2",
+      "title": "A TAB AS THE FIRST CHARACTER OF CONTENT is a different question from the one above"
+    },
+    {
+      "id": "CARVE-P2-011",
+      "part": "2",
+      "title": "BARE DOT"
+    },
+    {
+      "id": "CARVE-P2-012",
+      "part": "2",
+      "title": "COST"
+    },
+    {
+      "id": "CARVE-P2-013",
+      "part": "2",
+      "title": "WHITESPACE IS THE DISCRIMINATOR"
+    },
+    {
+      "id": "CARVE-P2-014",
+      "part": "2",
+      "title": "MARKER-LINE NESTED LIST"
+    },
+    {
+      "id": "CARVE-P2-015",
+      "part": "2",
+      "title": "THE TASK BOX CARRIES AN ACCESSIBLE NAME"
+    },
+    {
+      "id": "CARVE-P2-016",
+      "part": "2",
+      "title": "INDENTATION IS COLUMNS, NOT CHARACTERS"
+    },
+    {
+      "id": "CARVE-P2-017",
+      "part": "2",
+      "title": "BELOW THE BODY'S COLUMN THE BODY ENDS"
+    },
+    {
+      "id": "CARVE-P2-018",
+      "part": "2",
+      "title": "AUTHORED BLOCK BASES"
+    },
+    {
+      "id": "CARVE-P2-019",
+      "part": "2",
+      "title": "THE ROW TERMINATOR AND AN OPEN RUN"
+    },
+    {
+      "id": "CARVE-P2-020",
+      "part": "2",
+      "title": "THE CAPTION MARKER SEPARATOR IS A RUN"
+    },
+    {
+      "id": "CARVE-P2-021",
+      "part": "2",
+      "title": "MULTI-LINE CAPTIONS"
+    },
+    {
+      "id": "CARVE-P2-022",
+      "part": "2",
+      "title": "CAPTION NUMBER PLACEHOLDER"
+    },
+    {
+      "id": "CARVE-P2-023",
+      "part": "2",
+      "title": "THE INTERIOR IS VERBATIM, THE OPENING IS PLACED"
+    },
+    {
+      "id": "CARVE-P2-024",
+      "part": "2",
+      "title": "RENDER-LOSS REPORTING"
+    },
+    {
+      "id": "CARVE-P2-025",
+      "part": "2",
+      "title": "NO TRAILING WHITESPACE"
+    },
+    {
+      "id": "CARVE-P3-001",
+      "part": "3",
+      "title": "WHICH SPANS THE SCAN SKIPS"
+    },
+    {
+      "id": "CARVE-P3-002",
+      "part": "3",
+      "title": "WHITESPACE HERE IS UNICODE WHITESPACE"
+    },
+    {
+      "id": "CARVE-P3-003",
+      "part": "3",
+      "title": "A LABEL THAT BEGINS WITH AN AT SIGN IS NOT A REFERENCE LABEL"
+    },
+    {
+      "id": "CARVE-P3-004",
+      "part": "3",
+      "title": "THE FALLBACK IS THE VERBATIM SOURCE RUN, NOT A RESCAN"
+    },
+    {
+      "id": "CARVE-P3-005",
+      "part": "3",
+      "title": "ANCHORED AT END OF LINE"
+    },
+    {
+      "id": "CARVE-P3-006",
+      "part": "3",
+      "title": "AN INVALID BLOCK IS NOT `attributes`, SO THE LINE IS NOT A DEFINITION"
+    },
+    {
+      "id": "CARVE-P3-007",
+      "part": "3",
+      "title": "TRAILING ATTRIBUTES ON A DEFINITION"
+    },
+    {
+      "id": "CARVE-P3-008",
+      "part": "3",
+      "title": "AN IMAGE REFERENCE RESOLVES THE SAME ENTRY"
+    },
+    {
+      "id": "CARVE-P3-009",
+      "part": "3",
+      "title": "THE DEFINITION MARKER SEPARATOR"
+    },
+    {
+      "id": "CARVE-P3-010",
+      "part": "3",
+      "title": "DISPLAY TEXT"
+    },
+    {
+      "id": "CARVE-P3-011",
+      "part": "3",
+      "title": "AN AUTOLINK BODY ADMITS NON-ASCII AND EXCLUDES FORMAT CHARACTERS"
+    },
+    {
+      "id": "CARVE-P3-012",
+      "part": "3",
+      "title": "TRAILING ATTRIBUTES on math"
+    },
+    {
+      "id": "CARVE-P3-013",
+      "part": "3",
+      "title": "FORMAL word-boundary guards"
+    },
+    {
+      "id": "CARVE-P3-014",
+      "part": "3",
+      "title": "AN EMPTY BRACE PAIR IS NOT A CONSTRUCT"
+    },
+    {
+      "id": "CARVE-P3-015",
+      "part": "3",
+      "title": "INDENTATION IS COLUMNS, NOT CHARACTERS"
+    },
+    {
+      "id": "CARVE-P3-016",
+      "part": "3",
+      "title": "CONTENT IS LITERAL"
+    },
+    {
+      "id": "CARVE-P3-017",
+      "part": "3",
+      "title": "ATTRIBUTES"
+    },
+    {
+      "id": "CARVE-P3-018",
+      "part": "3",
+      "title": "ATTRIBUTES"
+    },
+    {
+      "id": "CARVE-P3-019",
+      "part": "3",
+      "title": "PRECEDENCE vs SMART TYPOGRAPHY"
+    },
+    {
+      "id": "CARVE-P3-020",
+      "part": "3",
+      "title": "A BRACED HYPHEN PAIR IS AN EN DASH, NOT AN EMPTY DELETION"
+    },
+    {
+      "id": "CARVE-P3-021",
+      "part": "3",
+      "title": "A HYPHEN RUN OPENING A WORD AFTER WHITESPACE IS A FLAG, NOT A DASH"
+    },
+    {
+      "id": "CARVE-P3-022",
+      "part": "3",
+      "title": "THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES"
+    },
+    {
+      "id": "CARVE-P4-001",
+      "part": "4",
+      "title": "THE INLINE INTERIOR IS SPACE-ONLY, THE BLOCK-ATTRIBUTE LINE IS NOT"
+    },
+    {
+      "id": "CARVE-P4-002",
+      "part": "4",
+      "title": "RENDER ORDER"
+    },
+    {
+      "id": "CARVE-P4-003",
+      "part": "4",
+      "title": "THE SIGIL TAKES NO PADDING"
+    },
+    {
+      "id": "CARVE-P4-004",
+      "part": "4",
+      "title": "COLLISION"
+    },
+    {
+      "id": "CARVE-P4-005",
+      "part": "4",
+      "title": "A BOOLEAN ATTRIBUTE DOES NOT START WITH AN UNDERSCORE"
+    },
+    {
+      "id": "CARVE-P4-006",
+      "part": "4",
+      "title": "A QUOTED VALUE STOPS AT THE NEWLINE"
+    },
+    {
+      "id": "CARVE-P7-001",
+      "part": "7",
+      "title": "A TAB IS SYNTAX ONLY IN THE LEADING RUN"
+    },
+    {
+      "id": "CARVE-P7-002",
+      "part": "7",
+      "title": "MARKER SEPARATORS AND PADDING SLOTS"
+    },
+    {
+      "id": "CARVE-P7-003",
+      "part": "7",
+      "title": "ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT"
+    },
+    {
+      "id": "CARVE-P9-001",
+      "part": "9",
+      "title": "A COMPOSITE FIGURE GROUPS ITS PANELS UNDER ONE CAPTION"
+    },
+    {
+      "id": "CARVE-P9-002",
+      "part": "9",
+      "title": "T5 SPAN WALK"
+    },
+    {
+      "id": "CARVE-P9-003",
+      "part": "9",
+      "title": "IT LEAVES NO PARAGRAPH OPEN, LIKE THE ROW IT APPENDS TO"
+    },
+    {
+      "id": "CARVE-P9-004",
+      "part": "9",
+      "title": "T7 GFM DELIMITER ROW"
+    },
+    {
+      "id": "CARVE-P9-005",
+      "part": "9",
+      "title": "T8 ROW ATTRIBUTES"
+    },
+    {
+      "id": "CARVE-P9-006",
+      "part": "9",
+      "title": "T9 A HEADER CELL STATES WHAT IT HEADS"
+    },
+    {
+      "id": "CARVE-P9-007",
+      "part": "9",
+      "title": "T10 CELL ATTRIBUTES BIND LAST"
+    },
+    {
+      "id": "CARVE-P9-008",
+      "part": "9",
+      "title": "T11 A MARKER RUN ENDS AT A SPACE"
+    },
+    {
+      "id": "CARVE-P9-009",
+      "part": "9",
+      "title": "THE LINTER NAMES IT `table-marker-run-padding`"
+    },
+    {
+      "id": "CARVE-P9-010",
+      "part": "9",
+      "title": "UNCONDITIONAL BY DEFAULT"
+    },
+    {
+      "id": "CARVE-P9-011",
+      "part": "9",
+      "title": "OPTIONAL OFF SWITCH"
+    },
+    {
+      "id": "CARVE-P9-012",
+      "part": "9",
+      "title": "AST REPRESENTATION"
+    },
+    {
+      "id": "CARVE-P9-013",
+      "part": "9",
+      "title": "AN INVISIBLE LINE IS ONE CLASSIFICATION"
+    },
+    {
+      "id": "CARVE-P9-014",
+      "part": "9",
+      "title": "N1a HARD BOUNDARY AFTER THREE BLANK LINES"
+    },
+    {
+      "id": "CARVE-P9-015",
+      "part": "9",
+      "title": "BLOCK RENDERING"
+    },
+    {
+      "id": "CARVE-P9-016",
+      "part": "9",
+      "title": "A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH EXPECTING A CLOSER"
+    },
+    {
+      "id": "CARVE-P9-017",
+      "part": "9",
+      "title": "ABSORPTION REACHES A PARAGRAPH'S OWN LINES ONLY"
+    },
+    {
+      "id": "CARVE-P9-018",
+      "part": "9",
+      "title": "AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME"
+    },
+    {
+      "id": "CARVE-P9-019",
+      "part": "9",
+      "title": "HEADING SECTION WRAPPING"
+    },
+    {
+      "id": "CARVE-P9-020",
+      "part": "9",
+      "title": "INLINE SPAN VS LINK DISAMBIGUATION"
+    },
+    {
+      "id": "CARVE-P9-021",
+      "part": "9",
+      "title": "EMPTY OR INVALID ATTRIBUTE BLOCK"
+    },
+    {
+      "id": "CARVE-P9-022",
+      "part": "9",
+      "title": "BOOLEAN (value-less) ATTRIBUTES"
+    },
+    {
+      "id": "CARVE-P9-023",
+      "part": "9",
+      "title": "A2a AN INVISIBLE CONSTRUCT IS NOT THE NEXT BLOCK"
+    },
+    {
+      "id": "CARVE-P9-024",
+      "part": "9",
+      "title": "A4 DROP IF DANGLING"
+    },
+    {
+      "id": "CARVE-P9-025",
+      "part": "9",
+      "title": "FOOTNOTES"
+    },
+    {
+      "id": "CARVE-P9-026",
+      "part": "9",
+      "title": "THE BACKLINK CARRIES AN ACCESSIBLE NAME"
+    },
+    {
+      "id": "CARVE-P9-027",
+      "part": "9",
+      "title": "THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME"
+    },
+    {
+      "id": "CARVE-P9-028",
+      "part": "9",
+      "title": "THE ENGINE'S OWN WORDS ARE A RENDER OPTION"
+    },
+    {
+      "id": "CARVE-P9-029",
+      "part": "9",
+      "title": "L1a THE ITEM'S FIRST BLOCK DOES NOT MATTER"
+    },
+    {
+      "id": "CARVE-P9-030",
+      "part": "9",
+      "title": "L1b AN INVISIBLE LINE DOES NOT CANCEL THE SEPARATION"
+    },
+    {
+      "id": "CARVE-P9-031",
+      "part": "9",
+      "title": "AND FLUSH-LEFT MEANS COLUMN 0"
+    },
+    {
+      "id": "CARVE-P9-032",
+      "part": "9",
+      "title": "ONE IS A COUNT AND THE BOUNDARY IS NOT"
+    },
+    {
+      "id": "CARVE-P9-033",
+      "part": "9",
+      "title": "THE MARKER IS ONE OPERATION IN EVERY CONTAINER"
+    },
+    {
+      "id": "CARVE-P9-034",
+      "part": "9",
+      "title": "L6 A COLLECTED DEFINITION LEAVES NO TRACE"
+    },
+    {
+      "id": "CARVE-P9-035",
+      "part": "9",
+      "title": "L7 ONE CONSUMED BOOLEAN SPELLS THE LOOSENESS NO BLANK LINE CAN"
+    },
+    {
+      "id": "CARVE-P9-036",
+      "part": "9",
+      "title": "MATH"
+    },
+    {
+      "id": "CARVE-P9-037",
+      "part": "9",
+      "title": "A MATH SPAN CARRIES ROLE MATH"
+    },
+    {
+      "id": "CARVE-P9-038",
+      "part": "9",
+      "title": "AN IMPORTER WRITES THE CORE FORM, NEVER THE EXTENSION FENCE"
+    },
+    {
+      "id": "CARVE-P9-039",
+      "part": "9",
+      "title": "CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES"
+    },
+    {
+      "id": "CARVE-P9-040",
+      "part": "9",
+      "title": "RAW PASSTHROUGH"
+    },
+    {
+      "id": "CARVE-P9-041",
+      "part": "9",
+      "title": "TRAILING LINE COMMENTS"
+    },
+    {
+      "id": "CARVE-P9-042",
+      "part": "9",
+      "title": "DELIMITED INLINE COMMENTS"
+    },
+    {
+      "id": "CARVE-P9-043",
+      "part": "9",
+      "title": "FORCED INTRAWORD EMPHASIS"
+    },
+    {
+      "id": "CARVE-P9-044",
+      "part": "9",
+      "title": "LINE BLOCK (VERSE)"
+    },
+    {
+      "id": "CARVE-P9-045",
+      "part": "9",
+      "title": "A BACKSLASH BREAK IS NOT ADDITIVE"
+    },
+    {
+      "id": "CARVE-P9-046",
+      "part": "9",
+      "title": "AN INLINE CONSTRUCT IS NOT A DEPTH THE RULE STOPS AT"
+    },
+    {
+      "id": "CARVE-P9-047",
+      "part": "9",
+      "title": "NO BLOCK CONSTRUCT IS RECOGNIZED INSIDE ONE"
+    },
+    {
+      "id": "CARVE-P9-048",
+      "part": "9",
+      "title": "IT IS REMOVED AT THE BLOCK LAYER"
+    },
+    {
+      "id": "CARVE-P9-049",
+      "part": "9",
+      "title": "THE NODE'S SURVIVAL DOES NOT DEPEND ON HOW THE BOUNDARY ABOVE IT WAS SPELLED"
+    },
+    {
+      "id": "CARVE-P9-050",
+      "part": "9",
+      "title": "LOCAL HARD-BREAK BLOCK"
+    },
+    {
+      "id": "CARVE-P9-051",
+      "part": "9",
+      "title": "THE FOLD PRESUMES AN OPEN PARAGRAPH"
+    },
+    {
+      "id": "CARVE-P9-052",
+      "part": "9",
+      "title": "AN INVISIBLE LINE FOLDS LIKE ANY OTHER"
+    },
+    {
+      "id": "CARVE-P9-053",
+      "part": "9",
+      "title": "A COMMENT IS THE ONE EXCEPTION"
+    },
+    {
+      "id": "CARVE-P9-054",
+      "part": "9",
+      "title": "SECURITY REQUIREMENTS"
+    },
+    {
+      "id": "CARVE-P9-055",
+      "part": "9",
+      "title": "A URL-LIST ATTRIBUTE IS PROBED TOKEN-WISE, NOT AT ITS HEAD"
+    },
+    {
+      "id": "CARVE-P9-056",
+      "part": "9",
+      "title": "A FLATTENED OPENER IS ORDINARY PARAGRAPH TEXT"
+    },
+    {
+      "id": "CARVE-P9-057",
+      "part": "9",
+      "title": "AT THE RENDER CEILING, A RENDERER REFUSES"
+    },
+    {
+      "id": "CARVE-P9-058",
+      "part": "9",
+      "title": "TROJAN-SOURCE / INVISIBLE-UNICODE HARDENING"
+    },
+    {
+      "id": "CARVE-P9-059",
+      "part": "9",
+      "title": "INLINE LITERAL"
+    },
+    {
+      "id": "CARVE-P9-060",
+      "part": "9",
+      "title": "BLOCK COMMENT FENCES"
+    },
+    {
+      "id": "CARVE-P9-061",
+      "part": "9",
+      "title": "C0 CONTROLS ON THE RENDER TARGETS"
+    },
+    {
+      "id": "CARVE-P9-062",
+      "part": "9",
+      "title": "U+0000 IS NOT ONE OF THOSE CONTROLS"
+    },
+    {
+      "id": "CARVE-P9-063",
+      "part": "9",
+      "title": "THE ENGINE'S OWN WORDS ARE A RENDER OPTION"
+    },
+    {
+      "id": "CARVE-P9-064",
+      "part": "9",
+      "title": "AN EXTENSION WRITES INTO THE SAME MAP"
+    },
+    {
+      "id": "CARVE-P9-065",
+      "part": "9",
+      "title": "AN IMPORTER DOES NOT BAKE A DERIVED NAME INTO SOURCE"
+    },
+    {
+      "id": "CARVE-P9-066",
+      "part": "9",
+      "title": "A DERIVED VALUE IS ONE THE IMPORTER CAN RECONSTRUCT"
+    },
+    {
+      "id": "CARVE-P9R-001",
+      "part": "9R",
+      "title": "THE EXPLICIT FORM DOES NOT REACH THE INDEX"
+    },
+    {
+      "id": "CARVE-P9R-002",
+      "part": "9R",
+      "title": "R1a A DEFINITION IS COLLECTED FROM A LINE THE BLOCK STRUCTURE KEEPS"
+    },
+    {
+      "id": "CARVE-P9R-003",
+      "part": "9R",
+      "title": "R1b A MATCHER'S COORDINATES ARE LOCAL, NOT ABSOLUTE"
+    },
+    {
+      "id": "CARVE-P9R-004",
+      "part": "9R",
+      "title": "A NOTE INSIDE AN UNRESOLVED REFERENCE IS NOT A REFERENCE"
+    },
+    {
+      "id": "CARVE-P9R-005",
+      "part": "9R",
+      "title": "WHAT IS CLONED IS THE HEADING'S INLINE NODES"
+    },
+    {
+      "id": "CARVE-P9R-006",
+      "part": "9R",
+      "title": "DERIVED DISPLAY TEXT CLONES THE SAME NODES"
+    },
+    {
+      "id": "CARVE-P9R-007",
+      "part": "9R",
+      "title": "R7 BLOCK IMAGE PROMOTION"
+    },
+    {
+      "id": "CARVE-P10-001",
+      "part": "10",
+      "title": "AN EMPTY CONTAINER BODY"
+    },
+    {
+      "id": "CARVE-P10-002",
+      "part": "10",
+      "title": "A ROW IS A ROW, IN EVERY SECTION"
+    },
+    {
+      "id": "CARVE-P10-003",
+      "part": "10",
+      "title": "SEMANTIC SPAN ATTRIBUTES"
+    },
+    {
+      "id": "CARVE-P10-004",
+      "part": "10",
+      "title": "A DERIVED ATTRIBUTE YIELDS TO AN AUTHORED ONE OF THE SAME NAME"
+    },
+    {
+      "id": "CARVE-P10-005",
+      "part": "10",
+      "title": "LEFTOVER ATTRIBUTES RIDE THE OUTERMOST SEMANTIC ELEMENT"
+    },
+    {
+      "id": "CARVE-P10-006",
+      "part": "10",
+      "title": "THE REGISTRY HOLDS NO ELEMENT CARVE ALREADY SPELLS INLINE"
+    },
+    {
+      "id": "CARVE-P10-007",
+      "part": "10",
+      "title": "WHY THESE THREE ARE CORE AND THE REST ARE NOT"
+    },
+    {
+      "id": "CARVE-P10-008",
+      "part": "10",
+      "title": "THE OTHER SEMANTIC NAMES ARE AN EXTENSION"
+    },
+    {
+      "id": "CARVE-P11-001",
+      "part": "11",
+      "title": "EQUALITY IS MODULO ESCAPING"
+    },
+    {
+      "id": "CARVE-P11-002",
+      "part": "11",
+      "title": "THE INVARIANT OUTRANKS THE PER-CONSTRUCT RULES"
+    },
+    {
+      "id": "CARVE-P11-003",
+      "part": "11",
+      "title": "A FLATTEN PRESERVES THE BOUNDARY IT DISSOLVES"
+    },
+    {
+      "id": "CARVE-P11-004",
+      "part": "11",
+      "title": "A WRAPPER ITS OWN CONTENT SPELLS AWAY IS A DECLARED CEILING"
+    },
+    {
+      "id": "CARVE-P11-005",
+      "part": "11",
+      "title": "A CHECKER FOR §1 NARROWS TO THIS BOUND AND NO WIDER"
+    },
+    {
+      "id": "CARVE-P11-006",
+      "part": "11",
+      "title": "THE ESCAPING RULE"
+    },
+    {
+      "id": "CARVE-P11-007",
+      "part": "11",
+      "title": "AND THAT HOLDS INSIDE A UNIT THAT ESCALATED"
+    },
+    {
+      "id": "CARVE-P11-008",
+      "part": "11",
+      "title": "THE WRITER DOES NOT SUBSTITUTE ONE CONSTRUCT FOR ANOTHER"
+    },
+    {
+      "id": "CARVE-P11-009",
+      "part": "11",
+      "title": "THE SCOPE OF AN ESCALATION IS THE SMALLEST UNIT THAT FAILS"
+    },
+    {
+      "id": "CARVE-P11-010",
+      "part": "11",
+      "title": "THAT COST IS THE STRATEGY'S, NOT THE OUTPUT'S"
+    },
+    {
+      "id": "CARVE-P11-011",
+      "part": "11",
+      "title": "A FRONTMATTER OPENER IS WRITTEN `---yaml`"
+    },
+    {
+      "id": "CARVE-P11-012",
+      "part": "11",
+      "title": "A VALUE-LESS ATTRIBUTE IS WRITTEN AS A BOOLEAN"
+    },
+    {
+      "id": "CARVE-P11-013",
+      "part": "11",
+      "title": "A CODE FENCE OPENER IS WRITTEN GLUED TO ITS INFO STRING"
+    },
+    {
+      "id": "CARVE-P11-014",
+      "part": "11",
+      "title": "A TABLE CELL'S CONTENT IS PADDED"
+    },
+    {
+      "id": "CARVE-P11-015",
+      "part": "11",
+      "title": "PADDING IS NOT AN ESCAPE WHERE THE PRODUCTION ADMITS PADDING"
+    },
+    {
+      "id": "CARVE-P11-016",
+      "part": "11",
+      "title": "NO WHITESPACE-ONLY LINE"
+    },
+    {
+      "id": "CARVE-P11-017",
+      "part": "11",
+      "title": "THE SAME LINE DECIDES WHAT AN IMPORT KEEPS"
+    },
+    {
+      "id": "CARVE-P11-018",
+      "part": "11",
+      "title": "AN EMPTY CONTAINER BODY IS A BLANK LINE HERE TOO"
+    },
+    {
+      "id": "CARVE-P11-019",
+      "part": "11",
+      "title": "A FOOTNOTE DEFINITION WITH NO BLOCKS IS WRITTEN WITH THE SENTINEL `{empty}`"
+    },
+    {
+      "id": "CARVE-P11-020",
+      "part": "11",
+      "title": "A LINE BLOCK'S HARD BREAK IS WRITTEN BARE ONLY WHERE THE BARE NEWLINE RE-DERIVES IT"
+    },
+    {
+      "id": "CARVE-P11-021",
+      "part": "11",
+      "title": "A LINE WHOSE LAST NODE IS A COMMENT IS EXEMPT"
+    },
+    {
+      "id": "CARVE-P11-022",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET'S ESCAPING"
+    },
+    {
+      "id": "CARVE-P11-023",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET'S ESCAPING NARROWS ON THE LINE"
+    },
+    {
+      "id": "CARVE-P11-024",
+      "part": "11",
+      "title": "IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP"
+    },
+    {
+      "id": "CARVE-P11-025",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET'S AUTHORED ESCAPE NARROWS TOO"
+    },
+    {
+      "id": "CARVE-P11-026",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET'S HARD BREAK"
+    },
+    {
+      "id": "CARVE-P11-027",
+      "part": "11",
+      "title": "A LIST ITEM'S CONTINUATION LINES ARE ALIGNED"
+    },
+    {
+      "id": "CARVE-P11-028",
+      "part": "11",
+      "title": "AN UNUSED DEFINITION SURVIVES THE NON-HTML TARGETS"
+    },
+    {
+      "id": "CARVE-P11-029",
+      "part": "11",
+      "title": "A TABLE ROW KEEPS ITS OWN CELL COUNT"
+    },
+    {
+      "id": "CARVE-P11-030",
+      "part": "11",
+      "title": "ADJACENT BLOCKS THAT WOULD MERGE KEEP THE CONTINUATION MARKER"
+    },
+    {
+      "id": "CARVE-P11-031",
+      "part": "11",
+      "title": "MULTIPLE CARVE HEADER ROWS SURVIVE THE MARKDOWN TARGET"
+    },
+    {
+      "id": "CARVE-P11-032",
+      "part": "11",
+      "title": "A PRESENTATION TARGET KEEPS A CAPTION, A FENCE TITLE AND A FENCE LABEL"
+    },
+    {
+      "id": "CARVE-P11-033",
+      "part": "11",
+      "title": "A REFERENCED ABBREVIATION DEFINITION SPLITS BY TARGET"
+    },
+    {
+      "id": "CARVE-P11-034",
+      "part": "11",
+      "title": "A COMPOSITE FIGURE SURVIVES EVERY TARGET"
+    },
+    {
+      "id": "CARVE-P11-035",
+      "part": "11",
+      "title": "THE PLAIN-TEXT TARGET PRESERVES LIST DEPTH"
+    },
+    {
+      "id": "CARVE-P11-036",
+      "part": "11",
+      "title": "A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES"
+    },
+    {
+      "id": "CARVE-P11-037",
+      "part": "11",
+      "title": "AN UNSPELLABLE BLOCK DOES NOT CANCEL THE ADJACENCY IT CANNOT SPELL"
+    },
+    {
+      "id": "CARVE-P11-038",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET'S CROSS-REFERENCES"
+    },
+    {
+      "id": "CARVE-P12-001",
+      "part": "12",
+      "title": "THE TYPE NAME COMES FROM profiles.md, NOT FROM carve-js"
+    },
+    {
+      "id": "CARVE-P12-002",
+      "part": "12",
+      "title": "ADJACENT TEXT RUNS ARE COALESCED"
+    },
+    {
+      "id": "CARVE-P12-003",
+      "part": "12",
+      "title": "BUT THE MERGE IS PART OF `parse(x)`, NOT OF SERIALIZATION"
+    },
+    {
+      "id": "CARVE-P12-004",
+      "part": "12",
+      "title": "THE U+E000 SENTINEL"
+    },
+    {
+      "id": "CARVE-P12-005",
+      "part": "12",
+      "title": "THE SERIALIZED TREE IS PRE-RESOLVE"
+    },
+    {
+      "id": "CARVE-P12-006",
+      "part": "12",
+      "title": "A RESOLVED REFERENCE KEEPS ITS DESTINATION"
+    },
+    {
+      "id": "CARVE-P12-007",
+      "part": "12",
+      "title": "A NESTED LINK AND AN AUTOLINK STAY NODES"
+    },
+    {
+      "id": "CARVE-P12-008",
+      "part": "12",
+      "title": "A DESTINATION IS THE AUTHOR'S TEXT, UNSANITIZED"
+    },
+    {
+      "id": "CARVE-P12-009",
+      "part": "12",
+      "title": "A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST"
+    },
+    {
+      "id": "CARVE-P12-010",
+      "part": "12",
+      "title": "RESOLVED OR NOT"
+    },
+    {
+      "id": "CARVE-P12-011",
+      "part": "12",
+      "title": "A SPAN CONTAINS ITS CHILDREN'S SPANS"
+    },
+    {
+      "id": "CARVE-P12-012",
+      "part": "12",
+      "title": "A SPAN COVERS THE MARKUP THE AUTHOR WROTE"
+    },
+    {
+      "id": "CARVE-P12-013",
+      "part": "12",
+      "title": "A SPAN BEGINS AT THE CONSTRUCT'S OPENING MARKUP"
+    },
+    {
+      "id": "CARVE-P12-014",
+      "part": "12",
+      "title": "A SPAN ENDS IMMEDIATELY AFTER THE CONSTRUCT'S LAST OWNED SOURCE CODEPOINT"
+    },
+    {
+      "id": "CARVE-P12-015",
+      "part": "12",
+      "title": "A HOISTED SIBLING IS NOT A CHILD, AND A CLOSERLESS CONTAINER ENDS BEFORE IT"
+    },
+    {
+      "id": "CARVE-P12-016",
+      "part": "12",
+      "title": "A HOISTED DEFINITION MAY CLAIM SOURCE INSIDE THE CONTAINER IT WAS AUTHORED IN"
+    },
+    {
+      "id": "CARVE-P12-017",
+      "part": "12",
+      "title": "IS NOT AN EXCEPTION"
+    },
+    {
+      "id": "CARVE-P12-018",
+      "part": "12",
+      "title": "A CONTAINER WITH NO PLACED CHILD AT ALL SPANS ITS OWN MARKUP AND STOPS THERE"
+    },
+    {
+      "id": "CARVE-P12-019",
+      "part": "12",
+      "title": "A CONTAINER STARTS AT ITS OPENING MARKUP EVEN WHERE ITS FIRST CHILD IS UNPLACED"
+    },
+    {
+      "id": "CARVE-P12-020",
+      "part": "12",
+      "title": "A CONTAINER ENDS AT THE MARKUP THAT CLOSES IT EVEN WHERE ITS LAST CHILD IS UNPLACED"
+    },
+    {
+      "id": "CARVE-P12-021",
+      "part": "12",
+      "title": "A SPAN DOES NOT BEGIN AT A LINE TERMINATOR"
+    },
+    {
+      "id": "CARVE-P12-022",
+      "part": "12",
+      "title": "A REASSEMBLED NODE MUST OMIT `pos`"
+    },
+    {
+      "id": "CARVE-P12-023",
+      "part": "12",
+      "title": "A GENERATED HEADING ID IS A RESOLUTION RESULT"
+    },
+    {
+      "id": "CARVE-P12-024",
+      "part": "12",
+      "title": "THE DOCUMENT ROOT CARRIES EXACTLY THREE FIELDS"
+    },
+    {
+      "id": "CARVE-P12-025",
+      "part": "12",
+      "title": "CONTENT IS RAW, NOT PARSED"
+    },
+    {
+      "id": "CARVE-P12-026",
+      "part": "12",
+      "title": "AN ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL"
+    },
+    {
+      "id": "CARVE-P12-027",
+      "part": "12",
+      "title": "A DEFINITION LIST'S ENTRIES ARE NODES"
+    },
+    {
+      "id": "CARVE-P12-028",
+      "part": "12",
+      "title": "HOW DEEP AN INGESTED AST MAY NEST"
+    },
+    {
+      "id": "CARVE-P12-029",
+      "part": "12",
+      "title": "A LINK REFERENCE DEFINITION IS A NODE"
+    },
+    {
+      "id": "CARVE-P12-030",
+      "part": "12",
+      "title": "A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST"
+    },
+    {
+      "id": "CARVE-P12-031",
+      "part": "12",
+      "title": "A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST"
+    },
+    {
+      "id": "CARVE-P12-032",
+      "part": "12",
+      "title": "SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR"
+    },
+    {
+      "id": "CARVE-P12-033",
+      "part": "12",
+      "title": "A CAPTION MAY CARRY AN OPTIONAL STRUCTURED SHORT CAPTION"
+    },
+    {
+      "id": "CARVE-P12-034",
+      "part": "12",
+      "title": "A TABLE MAY CARRY AN OPTIONAL ROW GROUPING"
+    },
+    {
+      "id": "CARVE-P12-035",
+      "part": "12",
+      "title": "A COMPOSITE FIGURE IS ITS OWN NODE TYPE"
+    },
+    {
+      "id": "CARVE-P12-036",
+      "part": "12",
+      "title": "A FIGURE MAY WRAP A TABLE, AND NO CARVE SOURCE SPELLS IT"
+    },
+    {
+      "id": "CARVE-P12-037",
+      "part": "12",
+      "title": "A CITATION DEFINITION IS A NODE"
+    },
+    {
+      "id": "CARVE-P12-038",
+      "part": "12",
+      "title": "A CITATION ITEM IS A POSITIONED INLINE NODE"
+    },
+    {
+      "id": "CARVE-P12-039",
+      "part": "12",
+      "title": "A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA"
+    },
+    {
+      "id": "CARVE-P12-040",
+      "part": "12",
+      "title": "TABLE ALIGNMENT RUNS CARRY TWO INDEPENDENT AXES"
+    },
+    {
+      "id": "CARVE-P12-041",
+      "part": "12",
+      "title": "U+0000 IS REPLACED ON INGEST"
+    },
+    {
+      "id": "CARVE-P12-042",
+      "part": "12",
+      "title": "AN INGESTED VALUE THE SCHEMA CALLS ABSENT IS NORMALIZED AWAY"
+    },
+    {
+      "id": "CARVE-P12-043",
+      "part": "12",
+      "title": "A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH"
+    },
+    {
+      "id": "CARVE-P12-044",
+      "part": "12",
+      "title": "ON INGEST, TRUST THE PROPERTY"
+    },
+    {
+      "id": "CARVE-P12-045",
+      "part": "12",
+      "title": "THE WRITER IS UNAFFECTED"
+    }
+  ],
+  "retired": []
+}

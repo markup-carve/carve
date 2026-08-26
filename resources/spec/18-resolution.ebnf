@@ -1,0 +1,369 @@
+(* ============================================================================
+   PART 9R: RESOLUTION SEMANTICS (NORMATIVE) -- whole-document passes
+   ============================================================================
+
+   The two-pass model (PART 8 "first pass"): PASS 1 collects definitions
+   while blocks are parsed; PASS 2 resolves inline uses. A definition may
+   appear before or after its use. Complexity is O(n) -- no rescanning per
+   occurrence (PART 9 §25 RESOURCE BOUNDS). Definitions are collected even
+   inside a block-level container, which then renders as though the
+   definition line were never written (PART 9 §17 L6 states the general
+   rule once, for every container that can hold one; §16; corpus "Footnote
+   definition inside a container is collected"). These rules are
+   attribute-grammar / two-pass semantics --
+   deliberately NOT grammar productions: symbol-table resolution is provably
+   outside context-free syntax, and stating it as rules over declared state
+   keeps it machine-checkable without pretending it is EBNF.
+
+   STATE (symbol tables, PASS 1):
+     linkDefs     : label -> (url, title?, attrs?)   -- LAST definition wins
+     footnoteDefs : label -> body                    -- FIRST definition wins
+     abbrDefs     : term -> expansion                -- LAST definition wins;
+                                                       non-empty term (§25)
+     headingIds   : slug -> heading node             -- case-preserving; the
+                    PART 2 HEADING IDENTIFIERS rules: explicit {#id} ids are
+                    reserved first in document order, then auto-slugs, with
+                    -2/-3/... collision dedup
+     captionIds   : id -> (kind in {figure, table, listing, equation},
+                    number)                          -- from R5
+     footnoteSeq  : ONE shared document-order counter for both footnote
+                    forms
+
+   RULES (PASS 2):
+   R1 LINK REFERENCES. [text][label] and [text][] (label := text) resolve
+      against linkDefs by a shared label key: trim leading and trailing ASCII
+      whitespace and collapse each internal run of U+0020, tab, line feed,
+      form feed or carriage return to one U+0020. Matching remains
+      case-sensitive and preserves every non-whitespace code point (corpus
+      78-reference-labels-are-case-sensitive). Definition
+      attributes transfer to the link OR IMAGE that resolves the label; the
+      reference site's own attributes override per key.
+      If multiple definitions normalize to one key, the LAST link definition
+      wins. A diagnostic on every later colliding definition names both raw
+      spellings and the normalized key; raw spelling remains source metadata.
+      Unresolved -> the bracketed run renders as literal source text. Carve
+      has NO shortcut reference: a bare [label] never resolves (PART 9 §14).
+      IMPLICIT HEADING FALLBACK: a [text][] whose label matches no
+      linkDefs entry falls back to the heading index -- the document's
+      headings keyed by their rendered plain text -- and resolves to
+      `#{slug}` of the FIRST heading with that text. linkDefs WINS on a
+      tie, so an explicit `[label]: url` definition always beats a
+      same-named heading. Matching against the heading index is LOOSER
+      than the linkDefs matching above: the label and the heading text
+      are both trimmed, their internal whitespace runs collapsed to one
+      space, NFC-NORMALIZED, and then compared case-INSENSITIVELY, so
+      `[getting started][]` finds `# Getting Started` and `[Café][]`
+      finds `# Cafe` + U+0301. That asymmetry is
+      deliberate -- a linkDefs label is an identifier the author wrote
+      twice and can keep identical, while a heading ref is prose the
+      author is quoting from elsewhere in the document.
+      THE EXPLICIT FORM DOES NOT REACH THE INDEX -- NORMATIVE (carve#742).
+      The fallback above is scoped to the COLLAPSED `[text][]` and to
+      nothing else. An explicit `[text][label]` whose label matches no
+      linkDefs entry is unresolved and renders as literal source text; it
+      does not fall through to the heading index at ANY spelling, folded
+      or exact.
+      THE ASYMMETRY IS THE ONE THE PARAGRAPH ABOVE ALREADY GIVES. It is
+      the stated reason the two matchings differ in the first place: a
+      collapsed label is the author quoting prose from elsewhere in the
+      document, which is why its matching is loose, and an explicit label
+      is an identifier the author wrote twice and can keep identical,
+      which is why its matching is exact. An identifier that names nothing
+      names nothing; it is not retried as prose. Reading the fallback as
+      covering both forms deletes that distinction while leaving the
+      sentence that justifies it in place.
+      PROSE IS NORMATIVE AND A READER IS AN IMPLEMENTATION. Measured at
+      the time of this ruling, three of the four readers resolved a shape
+      this rule does not offer -- two of them on both the folded and the
+      exact spelling, one on the exact spelling only -- and one read the
+      rule as written. Which three is a measurement and belongs on the
+      implementation tickets, not here; that they were a majority is not
+      an argument (PART 0's THE EXECUTABLE ARTIFACTS DECIDE NOTHING). If
+      the explicit form SHOULD reach the index, that is a deliberate
+      widening with its own clause, not a retrofit to the engines.
+      THE COMPATIBILITY BREAK, recorded: a document whose
+      `[text][Some Heading]` resolves today renders the bracketed run
+      literally instead. Accepted (carve#742 signoff). Corpus rows -- with
+      the control that the collapsed form still reaches the index, and the
+      control that an explicit label matching a real linkDefs entry still
+      resolves, since a fix keyed on "unresolved" rather than on "collapsed"
+      breaks the second -- are deferred to their own pass.
+      ON THIS PATH THE LABEL ENTERS AS ITS RENDERED PLAIN TEXT, the same
+      string kind the heading side already enters as. The index is keyed
+      by the heading's rendered plain text, so `# *bold* heading` is
+      keyed `bold heading`; a collapsed `[*bold* heading][]` reaches it
+      only if its own label contributes `bold heading` too, i.e. its
+      inline markup is stripped exactly as the heading's was. Without
+      that step no heading containing emphasis, a code span or a link is
+      reachable by its collapsed spelling at all, and the author sees no
+      reason why (carve#648). The four normalizations above then apply to
+      that plain text.
+      VISIBLE LEAVES STAY VISIBLE. An autolink contributes its display text
+      and an image contributes its alternative text to both the slug and this
+      index. They are not among §25's named exclusions. A label's parsed inline
+      children survive resolution; an implementation's link-derived internal
+      representation for a non-link mention or tag cannot make that node
+      disappear inside the resolved outer link. If the normalized plain text is
+      empty, no index entry is created and no collapsed label resolves through
+      the fallback slug `s`; the heading itself still receives `s` as §25 says.
+      THE STRIP IS SCOPED TO THE HEADING INDEX. The linkDefs matching
+      above is unchanged and keys on the label AS WRITTEN: `[*bold*]: /x`
+      is matched by `[*bold*][]` and NOT by `[bold][]`, and `[bold]: /x`
+      is not matched by `[*bold*][]` (corpus
+      193-a-collapsed-reference-is-matched-by-the-label-the-author-wrote).
+      Stripping markup before the linkDefs lookup inverts that rule in
+      both directions and is a deviation from this clause rather than a
+      generalization of it (markup-carve/carve-php#768).
+      The tie-break is unaffected: linkDefs still wins, so a definition
+      whose label is written `[*bold* heading]` beats a same-named
+      heading even though the heading is now reachable.
+      NFC and NOT NFKC: canonical equivalence only, so `ﬁle` does not
+      match `file` and `① one` does not match `1 one` -- compatibility
+      folding would change which text an author is quoting, not just how it
+      is spelled. NFC belongs in the list for two reasons. The id side is
+      ALREADY NFC (§25), so without it a document publishes `id="Café"`
+      and then declines `[Café][]` against the heading that produced it --
+      the same alphabet on one side of the resolution and not the other.
+      And NFC is a WEAKER fold than the case fold this list already
+      admits: case folding relates codepoints Unicode calls distinct,
+      while NFC relates sequences Unicode DEFINES as the same, so
+      admitting the stronger one and refusing the weaker one is backwards.
+      The two spellings are also indistinguishable on screen, so a
+      reference that misses has no visible cause (carve#725, where
+      carve-rs folded and the other three did not). The index holds
+      headings at top level and
+      inside divs, admonitions, list items, and definitions, but
+      DECLINES any heading with a blockquote ancestor, in either
+      nesting order: quoted text names the quoted document's headings,
+      not this document's, and a quotation is the one container whose
+      wording an author does not control. Declining it here does not
+      make such a heading unreachable -- it is still slugged, still
+      deduped in the one namespace, and still a `</#id>` crossref
+      target (R4), which addresses it by id rather than by wording.
+   R1a A DEFINITION IS COLLECTED FROM A LINE THE BLOCK STRUCTURE KEEPS --
+      NORMATIVE (carve#1428, and carve#1425 for the flush-left half). A
+      definition line that PART 0's S4 folds into an OPEN PARAGRAPH yields no
+      entry in ANY symbol table -- linkDefs, footnoteDefs or abbrDefs. It is
+      paragraph text, it renders as the text the author typed, and nothing on it
+      defines anything. The container makes no difference: the document level, a
+      quote and a div are one rule, because S4 asks only whether a paragraph is
+      open and which container holds it.
+
+      THE ABBREVIATION KIND IS DECIDED BEFORE THIS CLAUSE REACHES IT, and it is
+      named above for completeness rather than as a case that discriminates.
+      PART 12 section 7 already makes `*[TERM]: expansion` a definition ONLY as a
+      direct child of the document, so every marker-line and in-container
+      spelling is ordinary text by that rule; and at the document level an
+      abbreviation definition INTERRUPTS an open paragraph (PART 9 section 10,
+      invisible constructs interrupt), so it is never a lazy line there. No
+      document distinguishes this clause's answer from section 7's for that kind.
+      The link and footnote kinds are the ones this clause governs on its own.
+
+      This is a consequence of NO OPEN PARAGRAPH, NO LAZY LINE, stated here
+      because collection runs BEFORE block structure in every implementation and
+      three engines each got a different answer without it: one deleted the
+      definition's text and left the marker, one registered it while also
+      rendering it, and one half-collected a footnote into the paragraph it was
+      written in.
+
+      HOW AN ENGINE MAY DECIDE IT. Collection is a pre-pass over lines, so the
+      answer is not local to the line. An implementation MAY ask the block
+      reader: parse the run of lines back to the last blank one twice, once
+      without the candidate line and once with it, and compare the open
+      last-child chains -- a line that folds adds no node at any level, while a
+      line that opens anything changes a count. An implementation MAY instead
+      derive the answer any other way; what is normative is the answer, not the
+      method. For that probe, an implementation MAY hand a matcher a fragment
+      beginning at the last blank line, and a matcher whose answer depends on
+      its absolute position or on lines outside that fragment is not conforming.
+
+      A MATCHER IS A PURE PREDICATE, and this is what makes the probe legitimate
+      (carve#1432). An extension's block or inline matcher MUST be a pure
+      function of the input it is handed: no observable side effects, and the
+      same answer for the same (lines, position, context). An implementation
+      therefore MAY invoke a matcher speculatively, MORE THAN ONCE at the same
+      position, and discard the result -- which core parsing already does when a
+      matcher reports a consumption the parser rejects. An extension that needs
+      to allocate an id, count occurrences or record state does that in
+      `afterParse` or `beforeRender`, which run once over the finished document,
+      and never in a matcher.
+
+      AND IT FAILS TOWARD COLLECTING. An implementation that cannot answer --
+      no probe, an exhausted work budget, a construct it does not recognize --
+      MUST collect the definition rather than suppress it. The two errors are
+      not symmetric: collecting from a line that renders puts a visible line in
+      a symbol table, which a reader can see and report, while suppressing
+      deletes the author's line from the page. Every implementation of this rule
+      chose the first direction for that reason, and a budget exists precisely so
+      the pre-pass stays linear without ever choosing the second.
+
+   R1b A MATCHER'S COORDINATES ARE LOCAL, NOT ABSOLUTE -- NORMATIVE
+      (carve#1437). The `lines` array handed to a block matcher MAY begin at a
+      CONTAINER'S CONTENT rather than at the document, re-based so that index 0
+      is that first line, and `position` indexes the array given rather than the
+      document. A matcher whose answer depends on where it sits in the whole
+      document, or on lines the array does not contain, is NOT CONFORMING.
+
+      THIS IS NOT A PROPERTY OF THE PROBE. R1a's pre-pass parses the run back to
+      the last blank line, and that run is re-based -- but so is every container
+      body, with no definition anywhere in the document. Measured on all three
+      engines: a four-line document whose list item holds two lines invokes the
+      matcher with a TWO-LINE array at index 0, then with the whole document at
+      index 3; a block quote and a `:::` container do the same. Scoping the rule
+      to the probe would leave the identical hazard unstated for every container,
+      which is where an extension author meets it first.
+
+      WHY IT HAS TO BE SAID, given R1a already requires purity. Purity fixes the
+      answer for a given (lines, position, context); it does not say what those
+      arguments mean. The SAME PAIR CAN OCCUR TWICE FOR DIFFERENT LINES: a
+      footnote definition invokes the matcher at position 0 against the whole
+      document and again at position 0 against a two-line fragment. A matcher
+      reading `position == 0` as "start of document" is answering a question the
+      parser never asked, and does so while satisfying purity exactly.
+
+      WHAT AN IMPLEMENTATION OWES. Nothing new -- all three engines already pass
+      re-based arrays, and this clause describes them rather than changing them.
+      What it adds is the contract an extension may rely on, and the reason a
+      conformance document cannot pin it: a corpus document cannot register an
+      extension, so this is tested by an engine's own suite asserting that a
+      matcher inside a container body receives a re-based array.
+
+   R2 FOOTNOTES (rendering in PART 9 §16). Footnote labels use the same
+      ASCII-whitespace-normalized, case-sensitive key as R1. A [^label] use
+      with a matching footnoteDefs entry is numbered by FIRST-REFERENCE order from
+      footnoteSeq; repeat references reuse the number (k-th repeat gets
+      refId fnref{n}-{k} and an extra backlink). An inline ^[content] note
+      draws a fresh anonymous number from the SAME footnoteSeq (it cannot
+      be re-referenced). If definitions normalize to one key, the FIRST
+      footnote definition wins and every later collision receives the same
+      raw-spellings-and-key diagnostic required by R1.
+      Unresolved reference -> literal source text;
+      unreferenced definition -> dropped.
+      A NOTE INSIDE AN UNRESOLVED REFERENCE IS NOT A REFERENCE -- NORMATIVE
+      (carve#1198). R1 degrades an unresolved reference to its literal
+      SOURCE, so the link text that was rendered for it is discarded rather
+      than written into the document. A [^label] use or an ^[content] note
+      sitting in that text therefore references nothing: it draws no number
+      from footnoteSeq, a definition it was the only use of stays
+      unreferenced and is dropped by the sentence above, and no endnotes
+      section is written on its account.
+      RESOLUTION ORDER IS NOT THE ANSWER. An implementation that numbers
+      footnotes before it knows whether the reference resolved counts the
+      discarded use, and the numbering then says so out loud: the note a
+      reader can see is numbered fnref{n}-2, a repeat of a reference the
+      document does not contain, and a lone one leaves an endnote whose
+      backlink names an id no element carries. Which pass runs first is a
+      property of a pipeline rather than of the language, and ratifying it
+      would make an ordering artifact into a rule (carve#1198 signoff).
+      WHAT IS COUNTED IS WHAT THE OUTPUT HOLDS, which decides the cases
+      either side of this one the same way. A note in a reference that DOES
+      resolve is an ordinary reference, because the resolved link text is
+      written (PART 9 §16; corpus
+      311-a-footnote-in-reference-link-text-nests-the-anchors-too). A note in
+      a bracketed run that never carried a tail is an ordinary reference too,
+      because PART 9 §14 renders that run's content. The rule is not about
+      brackets; it is about whether the text reached the reader.
+   R3 ABBREVIATIONS. Each abbrDefs term matches in rendered text at WORD
+      BOUNDARIES only and emits <abbr>. Expansion is bounded per PART 9 §25
+      (an empty term is rejected; total work stays O(n)).
+   R4 CROSSREFS (behavior detail in PART 9 §19). </#id> folds
+      case-insensitively and matches against the case-preserved headingIds
+      (an ASCII spelling of a non-ASCII id does NOT resolve; corpus
+      15-heading-ids), then against captionIds for numbered captions (the
+      link text is then LABEL + NUMBER, e.g. "Figure 1", markup preserved).
+      Resolution is ONE LEVEL: cloned heading text is not re-expanded, so
+      self-references and cycles are safe. Unresolved -> literal.
+      WHAT IS CLONED IS THE HEADING'S INLINE NODES -- NORMATIVE (carve#915).
+      "Cloned heading text" means the nodes, not a rendered string. A node
+      carries its SOURCE RUN, and a string does not, so an implementation that
+      flattens the heading to glyphs while building its id index has destroyed
+      the run before any renderer is invoked. Smart typography's SOURCE mode
+      (§8) then cannot recover it on ANY target, and no renderer change reaches
+      the loss -- the label was materialized in the wrong subsystem. The same
+      argument covers every other run a renderer may want back: a code span, an
+      escape, an inline literal. "markup preserved" already said this for the
+      caption side; it holds for the heading side too, and for the source
+      spelling as much as for the markup.
+      DERIVED DISPLAY TEXT CLONES THE SAME NODES -- NORMATIVE (carve#957).
+      The clause above binds every consumer that derives display text from
+      a heading, not the crossref alone. A render-stage transform may not
+      undo a core resolution rule, so wherever anything builds visible text
+      from a heading -- a numbered cross-reference label, an index term's
+      display, a table-of-contents entry -- it clones the same inline
+      NODES. Flattening to a string at the derivation site destroys the
+      source run exactly as flattening at the index site does, and no
+      renderer downstream can recover it. Stated once here rather than
+      per consumer, because the reach of R4 is what is at issue and the
+      next consumer that derives display text inherits the answer.
+      THE LABEL IS TAKEN BEFORE ANY RENDER-STAGE INJECTION. A heading's
+      cloned nodes are its AUTHORED inline content. Whatever a render-stage
+      transform later adds to the heading -- a `section-number` span, a
+      permalink anchor -- is not part of the label and never appears in
+      derived text, so an implementation that resolves cross-references
+      AFTER such a transform must clone from the PRISTINE heading and not
+      from the live one.
+      That sentence is normative rather than incidental because two
+      implementations may differ HERE BY CONSTRUCTION rather than by
+      defect: one resolves cross-references before the numbering transform
+      runs, the other after it. Both follow the same words and produce
+      different labels -- one numbered, one plain -- unless the words say
+      which side of the injection the label comes from. Naming the side is
+      therefore the whole content of this half of the clause.
+      NUMBERING, PREFIXING AND JOINING REMAIN THE EXTENSION'S OWN
+      BUSINESS. This governs what the TITLE part is made of, not the label
+      word, not the number, and not the separator around them.
+   R5 NUMBERED CAPTIONS. Per kind, in document order, each caption whose
+      top-level text carries a bare `#` placeholder receives the next
+      number of its kind (PART 2, CAPTION NUMBER PLACEHOLDER); an {#id} on
+      the caption registers it in captionIds for R4.
+   R6 SECTION WRAPPING consumes headingIds after dedup -- the stateful
+      emission algorithm in PART 9 §13.
+   R7 BLOCK IMAGE PROMOTION -- NORMATIVE (carve#1784). Block-image status is a
+      property of the RESOLVED tree, never of the source line. `![a][r]` is a
+      block image where `[r]: /u` is written and ordinary paragraph text where
+      it is not, and the definition may sit anywhere in the document -- so the
+      question cannot be answered while the block layer is still reading lines.
+
+      ONE PHASE, AFTER R1. A paragraph whose whole content resolves to a single
+      image becomes a BLOCK IMAGE (PART 9 §4's image-paragraph host, PART 11
+      §1c's writer-side collapse, PART 10's bare `<img>`). This is the ONLY
+      place the question is asked. Nothing before it may treat an image
+      paragraph as a block image, and nothing after it may re-derive the answer
+      -- a renderer, a writer and an importer all READ it (PART 12 §23 names
+      the field they read it from).
+
+      THE CAPTION BINDS HERE, NOT SYNTACTICALLY. A `^ ` line after an image
+      paragraph is an UNBOUND SLOT until this phase runs: it is not a caption,
+      and it is not paragraph text. The phase binds it as the block image's
+      caption where the paragraph is promoted, and where it is NOT promoted the
+      slot's SOURCE LINES -- all of them, a multi-line caption included -- go
+      back to the paragraph as ordinary text. So an unresolved reference image
+      does not merely leave a paragraph behind; it takes the caption line into
+      it.
+
+      That binding is resolution-dependent BY DESIGN, and it is the half worth
+      stating outright, because the alternative reads cleaner and is wrong.
+      Binding on the SOURCE SHAPE would put a `<figure>` around a paragraph of
+      literal `![a][r]` -- output no engine writes and no clause asks for. So
+      the caption is a property of the same resolved tree the image is.
+
+      A DISPLAY-MATH HOST HAS NOTHING TO WAIT FOR. §4's other prose-spelled
+      captionable host, a paragraph whose whole content is one display-math
+      span, is captionable and is not a block image: it has no reference to
+      resolve, so its slot binds outright. The syntactic filter that decides
+      WHICH paragraphs carry a slot at all is shared between the two hosts and
+      settles nothing else -- an unresolved reference image is
+      captionable-SHAPED, and it is not a block image.
+
+      WHAT THIS REPLACES, so the shape is not rebuilt by accident. The answer
+      used to be reached four times: a syntactic pre-filter in the block layer,
+      a post-pass that took apart a figure the block layer had built
+      speculatively (carrying the undo data on the node to do it), a probe
+      render whose output was discarded, and the paragraph serializer's own
+      render-and-test. Resolution fed the structural decision from four
+      directions, and a fifth consumer -- an importer with no access to any of
+      them -- guessed the rule a third time. An implementation that attaches
+      the caption optimistically and detaches it later is passing this clause's
+      tests while keeping the defect it exists to remove.
+   ============================================================================ *)
+

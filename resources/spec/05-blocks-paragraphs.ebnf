@@ -1,0 +1,60 @@
+(* --- Paragraphs --- *)
+(* A VISIBLE block (heading, quote, table, fence, thematic break,
+   admonition/div) interrupts a paragraph with no blank line before it
+   (Markdown-like); invisible constructs (reference definitions, comments,
+   block-attribute lines) interrupt too. A LIST marker (bullet OR ordered) is
+   the exception: it does NOT interrupt -- a list needs a blank line before it
+   (symmetric, Djot-like; see §10). This is the semantic constraint
+   PART 9 §10, not a context-free one. A paragraph is terminated by a blank
+   line, an interrupting block (§10), or end of file -- the optional trailing
+   blank_line here is the paragraph's own terminator, not a precondition for
+   the NEXT block.
+   NO TRAILING WHITESPACE -- NORMATIVE. A `whitespace` run at the END of a
+   CONTENT LINE is DROPPED. It does not reach the output, and it is not
+   content.
+
+   The rule is the project's, not this production's, and it is stated here
+   because this is where it was first written down too narrowly:
+
+     "trailing (invisible and bad) whitespace is the one important rule we
+      have: no such thing."
+
+   So it holds for EVERY content line, not only for a paragraph's final one.
+   `abc<SP>` renders <p>abc</p>; so does `abc<SP>` followed by `def`, where the
+   run sits before a SOFT BREAK; and so do a heading, a list item, a block
+   quote line, a definition term or description, a footnote body line, a table
+   caption and a line-block line. This clause used to say the opposite of the
+   soft-break half, and PART 12 §7 used to say it at greater length
+   (carve#926).
+
+   THE RUN IS `whitespace` -- `' ' | '\t'` -- the same two-character terminal
+   `blank_line = {whitespace}` and `indent` take (PART 1; carve#890). Every
+   other character is CONTENT and survives, however invisible: a no-break
+   space, a zero-width space, a BYTE ORDER MARK, an en quad, an ideographic
+   space, a form feed and a vertical tab all reach the output. That is what
+   makes the rule simple rather than a list, and it is why U+FEFF was a red
+   herring in the shape that raised this: in `<SP>U+FEFF<SP>` the BOM is
+   content and what is dropped is the trailing SPACE.
+
+   WHERE IT DOES NOT REACH. Verbatim content keeps its bytes: a fenced code
+   block's body and a raw block's body are not content LINES in this sense,
+   they are the block's payload. Whitespace INSIDE a construct is not trailing
+   either -- `x<SP>` inside a code span, a literal inline or a table cell ends
+   at the construct's delimiter, not at the line's end, and the line-break
+   backslash likewise leaves the run before it interior.
+
+   THE LINE BLOCK IS NOT AN EXCEPTION, in the order that matters. PART 9 §23's
+   MEDIAL GAPS rule converts an inner or trailing run of TWO OR MORE columns
+   into N\P CONTENT, and content is not whitespace, so this rule never reaches
+   it. What it does reach is §23's one-column case, which that clause leaves
+   as an ordinary collapsible space -- and a lone space cannot serve the
+   purpose §23 gives it, letting a long line wrap between words, at the end of
+   a line.
+
+   (Carve has no two-trailing-space hard break -- a hard break is the backslash
+   form, `\` + newline; see PART 3. This rule is why: a document cannot carry
+   meaning in whitespace nothing can see.) Pinned by corpus
+   104-paragraph-trailing-whitespace and 268. *)
+paragraph = inline_content+, [blank_line] ;
+
+

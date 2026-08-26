@@ -1,0 +1,301 @@
+(* ============================================================================
+   PART 10: HTML SERIALIZATION CONVENTIONS (NORMATIVE)
+   ============================================================================
+
+   The corpus pins exact bytes against the reference (carve-js); these
+   conventions state the rules a SECOND implementation (e.g. carve-php)
+   must follow to match WITHOUT copying carve-js output. On any
+   disagreement the corpus wins.
+
+   1. ATTRIBUTE ORDER. Attributes serialize in the AUTHOR's source order
+      (the recorded `order`; see the RENDER ORDER rule in PART 4 and
+      PART 9 §12-style note). An Attrs built programmatically with no
+      recorded order falls back to a fixed `class`, then `id`, then
+      key=value order. All classes accumulate (space-joined) into one
+      `class` slot at its first-appearance position. An element with no
+      effective attributes emits none. (A top-level heading's id moves
+      to <section> and its other attributes do not, §13; with the
+      `sections` option off, or for a heading inside a container, the id
+      stays on the <h*> with the rest.) A mandatory base class (math `math inline|display`) is
+      prepended to that class slot.
+
+      A STRUCTURAL ATTRIBUTE LEADS. An attribute the element derives from
+      its OWN marker or destination is not "generated" in the sense below:
+      it is part of the element's shape rather than something added on top
+      of what the author wrote. `<ol>`'s `type` and `start` (fixed by the
+      first item's marker, §11 N2), a link's `href`, an image's `src` and
+      `alt` are all structural. They are emitted BEFORE the authored
+      attributes, and the authored order then follows unchanged:
+        > {k=v .attr}   -> <ol type="a" k="v" class="attr">
+        > a. alpha
+      A structural CLASS instead merges into the class slot at its FRONT,
+      which is the mandatory-base-class rule above said from the other
+      side (`task-list`, math's `math inline|display`).
+      This matches reference djot (measured, 0.3.2) on every shape tried --
+      `<ol type="a" class="attr">`, `<ol start="5" class="attr">`,
+      `<a href="…" class="c" id="i" k="v">`, `<img alt="a" src="…"
+      class="c">`, `<ul class="task-list c">` -- and it is the same
+      placement PART 10 §1 already states for a mention, where the
+      structural `href` precedes the author's `data-role` and `id`.
+      SO THE DISCRIMINATOR IS THREE-WAY, not two: structural leads,
+      authored follows in source order, engine-minted follows that. Reading
+      a structural attribute as "generated" put carve-rs alone against
+      carve-js, carve-php and djot on `{.attr}` / `a. alpha`
+      (markup-carve/carve#1090); nothing pinned it, which is why the two
+      readings survived side by side.
+
+      A GENERATED ATTRIBUTE JOINS AT THE END. The two rules above cover
+      an all-authored Attrs and an all-programmatic one; the MIXED case
+      is a generated attribute added to attributes the author wrote, and
+      it takes the authored order first, then the generated attribute.
+      In practice this is one attribute -- the auto-slug id an unwrapped
+      heading carries (§13):
+        > {a=b .c}      -> <h1 a="b" class="c" id="Auto">
+        > # Auto
+      An attribute the author WROTE keeps its authored position even
+      when it is the id, because it is not generated:
+        > {#x a=b}      -> <h1 id="x" a="b">
+        > # Written
+      So the discriminator is provenance, not the attribute's name: the
+      author's own order is never rearranged, and anything the engine
+      minted follows it. Pinned by the corpus.
+
+      A RENDER ANNOTATION IS EMITTED LAST -- after the generated
+      attribute, not merely after the authored ones. The one such
+      annotation in the core is `data-source-line` (§13-adjacent, the
+      `sourceLine` render option), which records where a block was
+      written rather than describing the element:
+        > ## Nested   -> <h2 id="Nested" data-source-line="1">
+      This is a THIRD category, and stating it is what stops an engine
+      from being conformant and divergent at once. An engine that
+      appends the stamp at RENDER time (carve-js) gets the order for
+      free, because the stamp is written outside the attribute walk. An
+      engine that attaches it at PARSE time (carve-rs) carries it inside
+      the authored run, where the "generated last" rule alone would put
+      the id behind it -- which is exactly what carve-rs did until it
+      was caught by a test rather than by this text.
+
+      TEXT-BLOCK ALIGNMENT IS A SEMANTIC ATTRIBUTE. On `<p>`, `<div>` and
+      `<h1>` through `<h6>`, an authored `align` key whose trimmed,
+      ASCII-case-folded value is `left`, `right` or `center` serializes as
+      `style="text-align: VALUE;"`, not as the deprecated `align` attribute.
+      The declaration takes the authored `align` slot. If the author also
+      supplied `style`, emit one `style` attribute at its authored slot and
+      append the declaration there; the appended declaration wins if that
+      style already named `text-align`.
+
+      The element and value sets are closed. On `<table>`, `align` means block
+      placement rather than alignment of cell text, so it remains an ordinary
+      attribute. Every element outside the text-block set, and every value
+      outside the three named values, likewise keeps the authored attribute.
+      Rewriting a table's placement as `text-align` would change the document,
+      not modernize an equivalent spelling. (carve#1755.)
+
+   2. ATTRIBUTE QUOTING + ESCAPING. Attribute values are double-quoted.
+      In an attribute value escape `&`->&amp;, `<`->&lt;, `>`->&gt;,
+      `"`->&quot;, `'`->&apos;. In text/content escape `&`,`<`,`>` (NOT
+      quotes). No other entities are produced. This describes only the
+      QUOTING of values that survive filtering: dangerous attribute names,
+      values, and URL schemes are dropped/blanked FIRST per PART 9 §25.
+
+   3. VOID ELEMENTS are written WITHOUT a trailing slash: `<hr>`,
+      `<img …>`, `<br>`. A hard break serializes as `<br>` + newline.
+
+   4. BLOCK WHITESPACE. Block elements are newline-separated, one per
+      line. Nested block structures (list, blockquote, table, admonition,
+      div, figure, section, endnotes) indent their children by TWO spaces
+      per nesting level. Inline content stays flat on its block's line.
+
+      AN EMPTY CONTAINER BODY -- NORMATIVE. A container whose body renders
+      nothing keeps a BLANK LINE where the body would be:
+
+        <blockquote>
+
+        </blockquote>
+
+      with one exception, and it is an exception rather than a rule: a BARE
+      `:::` div -- no type word, no class -- closes on the next line instead.
+
+        <div>
+        </div>
+
+      So the four shapes are, exhaustively: bare div compact; div with a word
+      class, admonition, and blockquote all with the blank line. A body that
+      renders to nothing is an empty body -- a container holding only a comment
+      takes the same shape as one holding nothing.
+
+      WHY THE EXCEPTION SURVIVES. It has no principle behind it. The split is
+      on whether the div carries a type word, which is a property of the
+      RENDERING PATH and not of the document, and a uniform rule would be
+      easier to state and to implement. It stands because the compact bare div
+      is what all three engines already produce and what the corpus already
+      pins (116-fence-opener-with-a-nested-list-body-inside-a-list-item-6,
+      which reaches it incidentally through a stray column-zero closer).
+      Making the rule uniform would overturn a three-way agreement to fix a
+      cosmetic inconsistency, which is a worse trade than writing the
+      inconsistency down. (carve#531)
+
+      WHAT WAS ACTUALLY UNSPECIFIED is narrower than the exception. Two of the
+      four shapes were pinned only incidentally and one -- the div with a WORD
+      CLASS -- was pinned by nothing at all, which is exactly where the engines
+      diverge: carve-php emits the compact form there, carve-js and carve-rs
+      the blank line. carve-php is the one that moves. Each shape needs its own
+      corpus case, since the whole defect is that the shape varies by kind and
+      by attribute; a single case would miss it.
+
+   5. PARAGRAPH WRAPPING follows the tight/loose rule (§17): a tight list
+      item's text has no <p>; a loose item's paragraphs are wrapped.
+
+   6. CODE. A fenced code block is `<pre><code[ class="language-X"]>` +
+      escaped content + a trailing newline + `</code></pre>`. An inline
+      code span is `<code>` + escaped content + `</code>`.
+
+   7. TABLES. Alignment renders as `style="text-align: VALUE;"` (one
+      space after the colon, trailing semicolon); a cell with no effective
+      alignment emits NO style attribute. `rowspan`/`colspan` are emitted
+      only when their count is > 1.
+      A ROW IS A ROW, IN EVERY SECTION -- NORMATIVE (carve#1459). `<thead>`,
+      `<tbody>` and `<tfoot>` are each written on their own lines with ONE ROW
+      PER LINE, indented one level inside the section:
+
+        <table>
+          <thead>
+            <tr><th scope="col">a</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td></tr>
+          </tbody>
+        </table>
+
+      This was two layouts before, and neither was written down: a head and a
+      foot went on the section's own line while a body gave each row a line, so
+      the same element was laid out two ways for no stated reason. Two fixtures
+      in one commit then demanded DIFFERENT `tfoot` shapes and no engine could
+      satisfy both, which is what a rule nobody wrote looks like when it drifts.
+      One layout needs no exception and no rationale.
+      The emitted HTML is read by people - the corpus documents ARE this spec's
+      worked examples, and a table defect is usually spotted in their diffs - so
+      the line count is not what this optimizes for. Nothing renders differently:
+      whitespace between rows in table context is not rendered.
+
+   8. STABLE STRINGS. Mentions and tags render as inert `<span>`s (no link)
+      when no URL template is configured; a configured template links to them. The footnote
+      backlink glyph is `↩` (§16). Math wraps content in `\(…\)` /
+      `\[…\]` inside `<span class="math inline|display">` (§18).
+
+   9. SEMANTIC SPAN ATTRIBUTES -- NORMATIVE. On an ordinary `[content]{attrs}`
+      span, three attribute names are reserved HTML rendering sugar: `abbr`,
+      `time` and `kbd`. Each present name is consumed as an attribute and wraps
+      the rendered inline content in its same-named element.
+
+        `Press [Tab]{kbd} to indent.`        ->  `<kbd>Tab</kbd>`
+        `[HTML]{abbr="HyperText Markup Language"}`
+                                             ->  `<abbr title="HyperText Markup Language">HTML</abbr>`
+        `[now]{time="2026-01-01"}`           ->  `<time datetime="2026-01-01">now</time>`
+
+      A non-empty `abbr` or `time` value becomes `title` or `datetime`; a value
+      on `kbd` only selects the wrapper. A DERIVED ATTRIBUTE YIELDS TO AN
+      AUTHORED ONE OF THE SAME NAME -- NORMATIVE. `title` and `datetime` are
+      ordinary attribute names an author may also write, so
+      `[x]{abbr="gen" title="authored"}` is `<abbr title="authored">`, not two
+      `title` attributes on one element. The author wrote that one in the
+      output's own vocabulary; the derived one is a convenience for the case
+      where they did not. Several names nest in this fixed
+      INNER-TO-OUTER order, independent of the order the author typed them:
+      `abbr`, `time`, `kbd`.
+
+      LEFTOVER ATTRIBUTES RIDE THE OUTERMOST SEMANTIC ELEMENT -- NORMATIVE.
+      Where a semantic name is present, the span does not survive as a wrapper:
+      every remaining id, class and key/value attribute lands on the outermost
+      semantic element and passes through §1-2 plus PART 9 §25 hardening
+      there.
+
+        `[Tab]{#k .key kbd}`     ->  `<kbd id="k" class="key">Tab</kbd>`
+        `[x]{#i time="12:00" kbd}`
+                                 ->  `<kbd id="i"><time datetime="12:00">x</time></kbd>`
+        `[x]{kbd onclick="e"}`   ->  `<kbd>x</kbd>`
+        `[x]{}`                  ->  `<span>x</span>`
+        `[x]{onclick="e"}`       ->  `<span>x</span>`
+
+      The last two rows are the unchanged case and the reason the rule is
+      stated this way. PART 9 §25 is an ATTRIBUTE policy: it removes attributes
+      and never the element the author wrote, so a span with no semantic name
+      renders its `<span>` whether or not anything survives hardening, and
+      corpus `108-security-hardening-8` and `-10` pin those bytes. A semantic
+      name is not an attribute that was removed - it never reaches the output
+      as one. It RENAMES the element the author wrote, and the author's
+      attributes ride the element they were written on rather than a wrapper
+      the author did not write.
+
+      THE REGISTRY HOLDS NO ELEMENT CARVE ALREADY SPELLS INLINE -- NORMATIVE.
+      A name is reserved only where the language offers no OTHER INLINE
+      SPELLING for that element -- no second way to wrap a run of text where it
+      stands. `code` and `mark` do not qualify: a code span (`` `x` ``) writes
+      `<code>` and the highlight syntax (`=x=`) writes `<mark>`, each the same
+      authoring gesture on the same run. (The inline literal `` !`x` `` is not
+      a third spelling of `<code>`: §27 drops the wrapper, which is the point
+      of it.) `code` made the cost concrete rather than merely untidy: a code
+      span is VERBATIM -- `` `*b*` `` is `<code>*b*</code>` -- while an
+      extension body is parsed, so `:code[*b*]` produced
+      `<code><strong>b</strong></code>`, one tag with two content models,
+      selected by which spelling the author reached for and reported by
+      nothing.
+
+      THE TEST IS THE SPELLING, NOT THE TAG, and `abbr` is why it has to be
+      said. A document-level `*[HTML]: …` definition also emits `<abbr>`, and
+      that does NOT disqualify the name: a definition is a different mechanism
+      at a different level. It expands EVERY occurrence of its term
+      automatically and document-wide, and cannot mark one.
+      `[HTML]{abbr="Custom"}` marks exactly one, with its own title, while the
+      definition keeps expanding the rest; `[WHO]{abbr="World Health
+      Organization"}` marks a term no definition declares; `[HTML]{abbr}` marks
+      an abbreviation with no expansion at all. None of those is writable with
+      `*[…]:`.
+
+      WHY THESE THREE ARE CORE AND THE REST ARE NOT -- NORMATIVE. A name is
+      core when it carries data the author would otherwise lose, or when a core
+      clause already rules its interaction. `abbr` carries the expansion and
+      collides with core abbreviation definitions (the precedence rule below);
+      `time` carries `datetime`, which a reader cannot reconstruct from the
+      text. `kbd` carries neither and is core on ubiquity alone: it is the one
+      name every comparable system ships, and a language that cannot write a
+      keyboard key without an opt-in is thinner than it needs to be. `samp`,
+      `var`, `cite` and `dfn` fail both tests and are the SemanticSpan
+      extension's, per §10.
+
+      An explicit `abbr` attribute is authoritative over automatic abbreviation
+      expansion inside that span. A resolved `abbreviation` child contributes
+      only its visible abbreviation text there; renderers MUST NOT emit a
+      nested `<abbr>`. Thus a document-level `*[HTML]: Long` definition does not
+      override `[HTML]{abbr="Custom"}`.
+
+      This rule changes only HTML rendering. The AST remains an ordinary `span`
+      carrying the authored attributes, plain and ANSI targets render its
+      inline content, and the canonical writer emits the span with its
+      attributes, a value-less one spelled bare per PART 11 §6c.
+
+      Accessible ruby is NOT reserved here: it requires structured
+      base/annotation children rather than a single inline container.
+
+   10. THE OTHER SEMANTIC NAMES ARE AN EXTENSION -- NORMATIVE. `samp`, `var`,
+      `cite` and `dfn` carry no data and collide with no core clause, so they
+      are not core: a conformant core renders `[x]{samp}` as an ordinary
+      boolean attribute (`<span samp="">x</span>`) and `:samp[x]` through the
+      generic `<span class="ext-samp">` fallback.
+
+      They are the `SemanticSpan` extension, Tier-2 and off by default, whose
+      contract is `docs/extensions.md` §8: when it is enabled the four names
+      behave exactly as §9's three do, under the same nesting order, the same
+      value mapping for `dfn`, the same attribute riding, and the same
+      hardening. The extension additionally accepts the `:name[…]` spelling for
+      all seven names as a SOFT-DEPRECATED compatibility form, because
+      `:kbd[x]` was released behavior in carve-js and carve-rs; it is scheduled
+      for removal in 0.2 and the compact spelling is the one to write.
+
+      A core implementation MUST NOT turn an arbitrary extension name into an
+      HTML tag: outside `SemanticSpan`, every `:name[…]` keeps the generic
+      fallback. `cite` denotes a work title or source and is unrelated to a
+      bibliographic `[@key]` citation, which is the Citations extension's.
+
+
+   ============================================================================ *)

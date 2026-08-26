@@ -1,0 +1,839 @@
+(* ============================================================================
+   6. WHAT IS NOT THE WRITER'S JOB. `fmt` does not re-wrap prose, reorder
+      attributes, or respell a construct to a synonym (`*` vs `-` bullets,
+      ordered-list dialect, thematic-break marker). Those are the author's
+      choices and the AST records them; changing one would satisfy §1 while
+      still surprising the author.
+
+      FENCE LENGTH WAS A THIRD EXAMPLE HERE AND IS NOT ONE (carve#1000). It is
+      removed rather than implemented, on this section's own second half: a
+      spelling is the author's to keep BECAUSE THE AST RECORDS IT, and
+      `code_block` records no fence at all (PART 12 §3). Neither the length of
+      the run nor the character it is made of survives the tree, so
+
+        ```js        all three publish the SAME node, and the writer
+        `````js      has nothing to reproduce
+        ~~~js
+
+      That is §6a's objection to the thematic break, reached one construct over:
+      a rule that cannot be applied leaves the question open rather than
+      answering it. The difference between the two is only that one was noticed.
+
+      THE WRITER COMPUTES THE WIDTH IT NEEDS, which is why removing the example
+      costs no document. A fence is widened to clear the longest fence-character
+      run in its content and narrowed when nothing requires the extra width, and
+      §1 holds through both: content carrying a three-backtick run keeps a
+      four-backtick opener, while plain content under a four-backtick opener
+      comes back as three. Measured in all three engines, and the narrowing row
+      is the one that matters -- it is the behavior this section forbade in
+      words and every engine performed, with the round trip intact through it.
+
+      So the mention was decorative. Had the writer instead relied on the
+      AUTHOR's length, removing it would have broken every document whose
+      content contains its own fence character, and the example would have been
+      load-bearing by accident rather than by design.
+
+      NESTED BOLD ITALIC joins that list, and needed the AST to catch up before
+      it could. `/*x*/` is a single production (`bold_italic`, PART 3) while
+      `*/x/*` is ordinary nesting, and BOTH yield the same `strong` wrapping
+      `emphasis`. So §1 held for either spelling and nothing pinned which one to
+      emit: carve-rs reproduced the author's, carve-js and carve-php normalized
+      to `*/x/*` (carve#375).
+
+      The AST therefore RECORDS the combined form -- a `strong` parsed from
+      `bold_italic` carries `boldItalic` (PART 12 §3) -- and the writer
+      reproduces it. Without that mark the rule could not be stated as an
+      author's choice at all, because there would be nothing to preserve.
+
+      `/*x*/` is also the spelling Carve teaches (docs/cheatsheet.md,
+      docs/migrate-from-markdown.md), so normalizing it away rewrote the
+      documented form into one documented nowhere. That is the concrete harm
+      behind the general rule.
+
+      THE THEMATIC BREAK JOINS IT ON THE SAME TERMS (carve#976), and needed the
+      same catching up. `---`, `***` and `___` are three spellings of one
+      construct; until now `thematic_break` recorded none of them, so this
+      section's second half was false for it and could not be applied, and §6a
+      pinned `---` in the meantime rather than leaving three writers to pick
+      separately. The AST RECORDS the character now -- `marker` (PART 12 §3) --
+      and the writer reproduces it, so `***` comes back as `***` and `___` as
+      `___`. §6a is REMOVED with the pin it held, which is what its own text
+      said would happen.
+
+      THE MARKER IS THE CHARACTER, NOT THE RUN LENGTH (carve#1000). `***` and
+      `*****` are ONE spelling here and both come back as `***`: three
+      characters is the width §6a already pinned, applied to whichever character
+      the field names. The argument for recording a length was this section's
+      own mention of FENCE length by analogy, and that mention is the one
+      removed above -- so the analogy points at nothing, and no construct's run
+      length is recorded anywhere.
+
+      EXCEPT WHERE `---` WOULD OPEN FRONTMATTER. A `---` line at byte 0 of the
+      EMITTED document is the frontmatter opener, not a break. Spelling this
+      clause's form there can manufacture a block the document does not have,
+      and everything down to whatever closes it is swallowed with it: a
+      document of `***`, a blank line and `---` renders two breaks, and written
+      by the literal reading of this clause it renders NOTHING -- with any
+      paragraph standing between them lost too. Where that would happen the
+      writer spells the break `***` instead, and that deviation is §1a's --
+      §1's invariant outranks a per-construct rule, and this is the case §1a
+      was reached for.
+      It is CONFORMANT. It is not a divergence from this section, and an
+      implementation that has it is not to be corrected back.
+
+      THE CONDITION IS THE WHOLE EMITTED DOCUMENT, NOT ITS FIRST LINE. An
+      opener needs a closer, so three hyphens at byte 0 open nothing unless a
+      later line closes them -- `***` alone, and `***` above a paragraph, are
+      both written `---` with no exception at all. The document that survives
+      and the document that is destroyed are IDENTICAL on line 1 and differ
+      several lines down, which is why the check this clause most invites, a
+      pattern match on the first line, answers a different question than the
+      one asked. What an implementation owes is §1a's test: read the emitted
+      bytes with its own parser.
+
+      WHICH break moves is not pinned, because more than one departure
+      restores §1 and §1a already says to take the smallest. Usually it is the
+      break at byte 0. Where the writer itself PROMOTED something else there --
+      hoisting a definition below the body can leave a paragraph at the head --
+      the text at byte 0 is not the writer's to respell, and the departure
+      available is to respell the CLOSER instead. What IS pinned is the
+      spelling a moved break takes, `***`, for the reason this clause exists at
+      all: a construct left with two admissible spellings normalizes two ways,
+      and an exception is no more exempt from that than the rule is.
+
+      AN ABSENT MARKER IS `---`, which is what a tree assembled by hand or by a
+      converter carries and what every document written before the field means.
+      That default is not arbitrary: `---` is the spelling Carve teaches
+      (docs/cheatsheet.md writes it and names `***` and `___` as its
+      alternatives), so a break with no authored choice to preserve is written
+      the documented way. §1a still outranks this, and the one deviation it
+      licenses here is real -- a `---` the writer emits at byte 0 can gain a
+      frontmatter closer from a later break, and respelling every break in the
+      document is the smallest departure that restores the invariant.
+
+   6b. A FRONTMATTER OPENER IS WRITTEN `---yaml` -- NORMATIVE. The canonical
+      writer spells the format token on the opening delimiter for EVERY
+      format, the default one included. Frontmatter in `yaml` comes back as
+      `---yaml`, never as a bare `---`; frontmatter in `toml` comes back as
+      `---toml`; nothing about the writer's output turns on which format the
+      document named.
+
+      This is §6's REMAINING gap, and the same one the thematic break had until
+      carve#976 closed it: `---` and `---yaml` open the
+      same frontmatter (PART 1, "a bare `---` defaults to `yaml`"), so the two
+      are synonyms with nothing in the tree to tell them apart.
+
+      PART 1 ALREADY NAMES THE FORM. That production calls `---yaml` canonical
+      in as many words, and PART 11 is the canonical writer -- so the writer
+      emits it. The counter-reading is that the word sits in a sentence about
+      the optional SPACE and therefore settles `---yaml` against `--- yaml`
+      only. It does not survive contact with what the sentence names: the
+      string it calls canonical is a WHOLE OPENER, not the space inside one,
+      and reading it to reach one of the two ways an opener can differ from it
+      but not the other takes an argument the sentence does not make.
+
+      A READER'S LENIENCY IS NOT A WRITER'S LICENSE, which is what the bare
+      form would be. "A bare `---` defaults to `yaml`" tells the PARSER what
+      to do with an opener that names nothing; the writer is not parsing, it
+      is choosing, and `frontmatter_format` is one production over every
+      format with no default case in it. So a writer that omits the token for
+      `yaml` special-cases a value the grammar distinguishes nowhere except in
+      that leniency rule -- and §2 already refuses the mirror of that move,
+      where the writer emits the shortest form that happens to survive
+      re-parsing rather than the form that says what it means.
+
+   6c. A VALUE-LESS ATTRIBUTE IS WRITTEN AS A BOOLEAN -- NORMATIVE. An
+      attribute whose value is the empty string comes back as the bare name:
+      `[x]{kbd}`, not `[x]{kbd=""}`. `boolean_attribute` is the production the
+      language has for "this attribute is present and carries no value"
+      (PART 4), so that is the form the writer emits.
+
+      EXCEPT WHERE THE NAME STARTS WITH `_`, which `boolean_attribute` refuses
+      (carve#1450). `_x_=""` stays `{_x_=""}`: emitting `{_x_}` would write a
+      forced underline, and `{_u}` would write text. The rule is "use the
+      dedicated production where the production applies", and here it does not.
+
+      NOTHING EXTRA PINS THIS, on purpose. §1's `parse(fmt(x)) == parse(x)` is
+      already gated over the corpus for every engine, and corpus
+      389-a-boolean-attribute-does-not-start-with-an-underscore-4 holds
+      `[x]{_u=""}`, so an engine that shortens it breaks its own round-trip the
+      day it ships the reading rule - and not one day earlier, which is what a
+      `.fmt` fixture would have done to a writer that is still correct for the
+      grammar it implements.
+
+      THE WRITER USES THE DEDICATED PRODUCTION, which is the one rule behind
+      all three of these:
+
+        `{lang=fr}`   ->  `{:fr}`     `language_attribute`
+        `{lang=""}`   ->  `{:}`       the same, empty
+        `{kbd=""}`    ->  `{kbd}`     `boolean_attribute`
+
+      and `lang` keeps the sigil when it is written bare, so `{lang}` is `{:}`
+      rather than `{lang}` -- the more specific production wins where both
+      apply.
+
+      THIS IS NOT §6b'S MIRROR. That clause makes the writer spell `---yaml`
+      rather than the shorter `---`, and its reason is that a bare `---` is
+      NOT a production for yaml frontmatter: it is an opener that names no
+      format, which a PARSER leniency rule then defaults. Leaning on that
+      leniency is what §6b refuses. A boolean attribute is the opposite case --
+      the grammar has a production for exactly this shape, and no default is
+      being relied on. `{kbd=""}` is not more explicit than `{kbd}`; it says
+      the value is an empty STRING, where the tree says the attribute has no
+      value at all.
+
+      THREE `.fmt` FIXTURES ARE WITHDRAWN, not updated, and come back with the
+      pin bump: `297-the-language-sigil-takes-no-padding`,
+      `97-boolean-attributes` and `45-inline-extensions-9`. Those fixtures
+      are read THROUGH the pinned build by
+      `tests/corpus-fmt-roundtrip.test.mjs`, and by the engines through their
+      own `spec` submodule, so a fixture carrying the NEW bytes fails in both
+      places until every writer ships this clause, while one carrying the OLD
+      bytes fails afterwards. There is no spelling of it that is green on both
+      sides of the change, so it is absent for the length of the rollout rather
+      than wrong at one end of it.
+
+      THE OLD SPELLING WAS AN INCONSISTENCY INSIDE ONE WRITER, not a decision.
+      Measured on carve-js `a59df0fa` before this clause: `[x]{lang}` formatted
+      to `[x]{:}` -- a boolean CONTRACTED into the shortest dedicated form --
+      while `[x]{kbd}` formatted to `[x]{kbd=""}` and `[x]{disabled}` to
+      `[x]{disabled=""}`, the same boolean EXPANDED. One writer, one release,
+      opposite directions, and nothing in the spec asked for either.
+
+      A COMPACT SEMANTIC SPAN IS WHERE IT SHOWS. `[Tab]{kbd}` is the form PART
+      9 §10 documents and the form an author writes; a writer that returned
+      `[Tab]{kbd=""}` rewrote the documentation's own example into a shape the
+      documentation never shows, and did it for a name whose VALUE is discarded
+      (§10: values on `samp`, `var`, `kbd` and `cite` only
+      select the wrapper). An empty value there is not just longer, it points
+      at a slot that does nothing.
+
+   6d. A CODE FENCE OPENER IS WRITTEN GLUED TO ITS INFO STRING -- NORMATIVE.
+      The canonical writer emits NO padding space between the fence run and
+      the info string: ```php, never ``` php. The two separator slots INSIDE
+      the info string take exactly one space each, so a fence carrying a
+      header and a label comes back as
+
+          ```php "src/Auth.php" [Composer]
+
+      whatever run of spaces the author wrote in either slot. That pins the
+      whole opener LINE rather than its first token, and it holds for every
+      info string, not only a language: a header or a label with no language
+      ahead of it is glued the same way (```"src/app.js"), and so is the raw
+      passthrough selector (```=html, PART 9 §20).
+
+      PART 2 ALREADY NAMES THE FORM. `fenced_code_block` calls the no-space
+      spelling canonical in as many words and records that it is what the
+      X->Carve converters emit; the READER is lenient and takes either, which
+      is a leniency and not a writer's license (§6b makes the same
+      distinction one construct over). This clause is the writer half of that
+      sentence, which nothing stated.
+
+      THE TREE RECORDS NO SLOT, which is why the writer has to be told. §6
+      leaves a spelling to the author BECAUSE THE AST RECORDS IT, and
+      `code_block` records the padding slot no more than it records the fence
+      length or the fence character (PART 12 §3) -- so the writer has nothing
+      to reproduce and must CHOOSE, exactly as §6b and §6c must. Left
+      unchosen, it was chosen twice: carve-js and carve-php normalize to the
+      glued form, carve-rs to the spaced one (carve#1219).
+
+      NOTHING PINNED IT, and the reason is the one this project keeps
+      rediscovering. The fmt corpus held no document whose canonical form
+      contains an info string at all -- twenty-nine `.fmt` fixtures, and the
+      two carrying a code fence carry a BARE one. So the three writers met
+      only on the shape the corpus pins and drifted on the shape it does not,
+      and the drift was invisible to every gate: the HTML is identical, §1's
+      round trip holds for either spelling, and `compare:impls` had no
+      expected bytes to adjudicate between them. A corpus case pins it now.
+
+   6e. A TABLE CELL'S CONTENT IS PADDED -- NORMATIVE.
+      The canonical writer emits every cell as its PREFIX glued to the opening
+      pipe, then ONE space, then the content, then one space before the closing
+      pipe. The prefix is the kind marker `=`, the alignment marker and the
+      attribute block, in the order PART 9 §5 T10 fixes:
+
+          |= Heading |
+          |={.total} Total |= 99 |
+          |=<{.h} Name |=>{.c} Score |{.head}
+
+      An EMPTY cell takes a single space (`|= |`, `| |`), not one from each end,
+      so a column does not grow a space each time the document is formatted.
+
+      THE PREFIX IS GLUED BECAUSE THE READER REQUIRES IT. A space in front of
+      `=` or of an attribute block makes it literal cell content (PART 9 §5
+      T10, corpus `table cell attributes`), so only the CONTENT side is the
+      writer's to choose. An UNPREFIXED cell was always padded (`| a | b |`);
+      this makes one rule of what was two, and the padded side is the one a
+      reader can scan.
+
+      IT ALSO RETIRES TWO GUARDS. The alignment sigil and the attribute slot
+      are both read GLUED off the UNTRIMMED cell, so a glued content character
+      was handed to one of them: `| ~x~ |` came back as `|=~x~|`, which
+      re-reads as a CENTERED column holding `x~` -- the strikethrough gone and
+      every cell in the column aligned by a marker nobody wrote (carve-js#903,
+      carve-rs#819, carve-php#1069 cause 5). Each writer answered with a
+      special case that inserted a space for content beginning with `<`, `>`,
+      `~` or `{`, and each enumerated a slightly different set. One space on
+      every cell covers the class without a list, and the reader trims it.
+
+      THE TREE RECORDS NO SLOT, the same reason §6d gives: `table_cell` records
+      its padding no more than `code_block` records the space before its info
+      string (PART 12 §3), so the writer has nothing to reproduce and must
+      CHOOSE. Left unchosen it was chosen twice -- carve-js and carve-rs glued
+      a prefixed cell, carve-php glued it except when the cell carried
+      attributes, and carve-php padded those.
+
+      THE FIXTURES MOVE IN TWO STEPS, as §6d's did. `284-a-ragged-table-keeps-
+      each-row-s-cell-count-2`, `-3` and `285-adjacent-block-openers-in-an-
+      attached-run-stay-separate-2` spell the old form; they are WITHDRAWN with
+      this clause and come back with the engine pin bump, because a fixture
+      carrying the new bytes fails in every engine that has not shipped the
+      clause yet and one carrying the old bytes fails in every engine that has.
+
+   6f. PADDING IS NOT AN ESCAPE WHERE THE PRODUCTION ADMITS PADDING --
+      NORMATIVE (carve#1601). §6e retires the writer's `<`/`>`/`~`/`{` guards
+      because those three slots are read GLUED to the opening pipe, so one
+      space in front of the content puts it out of their reach. That argument
+      holds only where the construct's OWN production forbids the padding, and
+      one class of cell construct is written WITH the padding inside it:
+
+        span_cell      = rowspan_marker | colspan_marker ;
+        rowspan_marker = {space}, '^', {space} ;
+        colspan_marker = {space}, '<', {space} ;
+
+      A cell whose whole payload is `^` or `<` therefore re-reads as a SPAN
+      however it is padded, and §6e's space does nothing for it. §2 is what
+      applies, by its own test: omitting the escape changes the re-parsed AST,
+      so the payload is escaped and the writer emits `| \^ |` and `| \< |`.
+
+      THE RULE IS THE TEST, NOT THE TWO CHARACTERS. A cell payload is escaped
+      wherever omitting the escape would make the cell re-read as something
+      other than content, which is §2 run over the CELL rather than over the
+      line. Naming `^` and `<` here would be an enumeration that goes stale the
+      next time a cell-level marker is added, and §6e's own history is what
+      that costs: each writer answered the alignment-sigil class with its own
+      slightly different list of characters.
+
+   7. NO WHITESPACE-ONLY LINE -- NORMATIVE. `fmt` never emits a line whose only
+      content is ASCII spaces or tabs. Such a line is emitted EMPTY.
+
+      EXCEPT where those spaces are VERBATIM CONTENT. Inside a code block or a
+      raw block the lines are data, and a line of three spaces renders as three
+      spaces:
+
+        ```           ->  <pre><code>a
+        a                 [three spaces]
+        [3 spaces]        b
+        b                 </code></pre>
+        ```
+
+      so emptying it would change the document. The rule there applies to the
+      STRUCTURAL INDENT only: a verbatim line sitting inside a list item carries
+      the item's content-column indent, and when the verbatim content on that
+      line is EMPTY the indent alone is what remains -- that is layout, and it is
+      omitted. When the verbatim content is itself whitespace, indent and content
+      are both reproduced, and the resulting line is whitespace-only by
+      necessity.
+
+      The case this decides is a blank line INSIDE a list item, where the item's
+      continuation is indented. Indenting the blank line to the content column
+      keeps the block structure visible in the source, and carve-rs and
+      carve-php did that; carve-js emitted an empty line (carve#375).
+
+      The empty line is required. A whitespace-only line is not stable: editors
+      that strip trailing whitespace on save, `git apply --whitespace=fix`, and
+      CI whitespace checks all rewrite it, so a formatter emitting one produces
+      output that ordinary tooling changes behind it -- and `fmt` then reports a
+      diff on a file nobody edited. A formatter whose output cannot survive the
+      tools it will be stored under is not idempotent in practice, whatever §1
+      says about it in isolation.
+
+      AND IT DOES EXTEND to whitespace at the end of a line that HAS content,
+      which is a correction: this text said the opposite twice, and both times
+      it was measurably false.
+
+        `a` + SPACE + newline + `b`   renders  `<p>a\nb</p>`
+        `a` + newline + `b`           renders  `<p>a\nb</p>`
+
+      The two are the same document. PART 2's NO TRAILING WHITESPACE clause
+      drops the run on EVERY content line, including one before a soft break,
+      so a writer that strips it changes nothing about
+      `to_html(fmt(x)) == to_html(x)` -- and the rule this clause already ends
+      with, "where the PARSER discards trailing whitespace the writer may too",
+      now reaches every line rather than only the ones that end a block.
+
+      WHAT WAS WRONG, recorded so it is not re-derived. The old text asserted
+      `<p>a \nb</p>` as the rendering and argued from it that stripping breaks
+      the round trip. It does not render that way and never did in the
+      executable spec; carve-rs's limitation to block-final lines (carve#359)
+      was a correct response to an engine whose PARSER kept the run, which is
+      the half carve#926 moved.
+
+      A trailing NO-BREAK space is a different matter and IS content, not
+      layout -- the author wrote it and it renders as `&nbsp;` -- so an
+      implementation whose whitespace test treats U+00A0 as whitespace must
+      exclude it here. That is the same two-character `whitespace` terminal
+      PART 2's clause names, and it is why the rule is simple rather than a
+      list of exceptions. Corpus case 141-trailing-whitespace-boundaries-4 pins
+      it (this text said case 139, which has been an inline-literal category
+      for some time).
+
+      THE SAME LINE DECIDES WHAT AN IMPORT KEEPS -- NORMATIVE (carve#1628).
+      An HTML importer meeting a BLOCK ELEMENT whose text content is entirely
+      whitespace keeps exactly the characters this clause calls CONTENT, and
+      builds no node at all where every character it holds is LAYOUT:
+
+        <p>&nbsp;</p>   ->  a paragraph holding U+00A0, written as itself
+        <p> </p>        ->  no node, and `element-dropped` reported
+        <p>&#9;</p>     ->  no node, and `element-dropped` reported
+
+      THE CLASS, NOT THE ENTITY. What separates the two rows is the same
+      two-character `whitespace` terminal named above and nothing else: ASCII
+      SPACE and TAB are layout, together with the line terminators an HTML
+      parser folds into them, and EVERY other character is content. So NARROW
+      NO-BREAK SPACE (U+202F) and IDEOGRAPHIC SPACE (U+3000) are kept exactly
+      as U+00A0 is, and an importer that special-cases `&nbsp;` has implemented
+      a different rule that happens to agree on one row. A lone content-space
+      line parses back as a PARAGRAPH and a lone ASCII-space line is a BLANK
+      LINE, which is the whole of why the two rows differ.
+
+      NORMALIZING TO A SPACE IS THE ONE ANSWER FORBIDDEN OUTRIGHT. It keeps a
+      node while discarding the single property that distinguishes U+00A0 from
+      a space, and the paragraph it leaves is unspellable, so it vanishes the
+      moment the writer runs -- the two exits then disagree about the same
+      import, and §1 is broken on a document the importer built itself.
+
+      THE DROP IS REPORTED because it is a real loss: an element the input had
+      contributes nothing, which is `element-dropped` and needs no new code.
+      KEEPING owes nothing and reports nothing, since a kept character survives
+      the write intact. That asymmetry is what decides the two rows against
+      each other where taste would not: `parse(htmlToCarve(h)) == htmlToAst(h)`
+      holds on the first row with no special case, and holds on the second only
+      because the node was never built.
+
+      THE SPACER ARGUMENT IS REAL AND IS NOT THIS RULE. Word, CKEditor and
+      TinyMCE emit `<p>&nbsp;</p>` as layout, so a migration may well want it
+      gone -- but that is an OPT-IN on the importer, not a silent default that
+      discards content the language can spell.
+
+   7a. AN EMPTY CONTAINER BODY IS A BLANK LINE HERE TOO -- NORMATIVE. A COLON
+      FENCE whose body is empty is written with a BLANK LINE between its
+      opener and its closer:
+
+        ::: note          :::             ::: myclass
+        [blank line]      [blank line]    [blank line]
+        :::               :::             :::
+
+      -- an admonition, a BARE div and a div with a word class alike, and the
+      same for a line block (`::: |`) and a local hard-break block
+      (`::: \`). THERE IS NO EXCEPTION ON THIS TARGET: the shape does not vary
+      by container kind, by type word, or by attribute. A body that renders
+      nothing is an empty body here as it is in PART 10 §4, so a container
+      holding only a comment takes this shape too.
+
+      IT REACHES THE CONSTRUCTS THAT HAVE A CLOSER LINE, which is what a colon
+      fence has and a block quote does not. An empty block quote is a `>` line
+      and the question does not arise; §7's rule governs that line, not this
+      one.
+
+      THE SIBLING CLAUSE ALREADY DECIDED THIS QUESTION one layer out and chose
+      the blank line. PART 10 §4 asks what a container whose body renders
+      nothing serializes to, and this asks the same of the same document at
+      the other target. Nothing about the emptiness differs between them, so
+      answering it twice with two answers would be a difference the document
+      cannot account for -- and one rule for "an empty body" across both
+      targets is one rule to maintain.
+
+      THE EXCEPTION IS NOT IMPORTED WITH IT, and §4 is where the reason is
+      written. §4 says of its bare-div exception, in its own words, that it
+      "has no principle behind it", that the split is on "a property of the
+      RENDERING PATH and not of the document", and that a uniform rule "would
+      be easier to state and to implement". What carries the exception there
+      is none of those: it is that overturning a settled three-way agreement
+      to fix a cosmetic inconsistency is the worse trade. That is a reason
+      about the state of §4's own target, and a reason of that shape does not
+      travel to a target it was never about. What is left of §4 once it is set
+      aside is the uniform rule §4 itself prefers, and that is what this clause
+      takes.
+
+      SO THE TWO TARGETS AGREE ON THE RULE AND DIFFER ON ONE SHAPE, which is
+      stated rather than smoothed over: a bare `:::` div closes compactly in
+      HTML and takes the blank line here. That is the cost of §4 keeping an
+      exception it calls principle-free, and it is confined to the one shape
+      §4 names.
+
+   7b. A FOOTNOTE DEFINITION WITH NO BLOCKS IS WRITTEN WITH THE SENTINEL
+      `{empty}` -- NORMATIVE. A `footnote_definition` whose body holds NO
+      blocks is written as the marker, its separator space, and the SENTINEL
+      ATTRIBUTE BLOCK `{empty}`:
+
+        [^f]: {empty}
+
+      and NOT as `[^f]:`. The bare marker line is not a definition at all --
+      MARKER REQUIRES CONTENT (PART 2) says so in as many words, "`[^f]:`
+      followed by spaces and nothing else is a paragraph" -- so a writer
+      emitting it destroys the document: the definition degrades to a
+      paragraph, and every reference to it degrades to literal text with it.
+
+      §1a IS THE RULE THIS SERVES. Spelling the construct by its own rule
+      emits bytes that do not re-parse to the tree they were written from, so
+      §1 wins and the writer takes the smallest departure that restores it.
+      THE PARSE RULE IS UNCHANGED HERE: `[^f]:` stays a paragraph, as corpus
+      267-a-definition-marker-s-separator-is-a-space-and-it-is-a-run-9 and
+      corpus 134-footnote-definition-requires-an-inline-body pin it. What this
+      clause governs is what the WRITER emits, which is the half that was
+      defective in two engines (carve#999).
+
+      THE SENTINEL MUST BE A VALID ATTRIBUTE BLOCK, and this is the part a
+      later reader gets wrong, because the two spellings that LOOK like the
+      empty form are the two that do not work:
+
+        [^f]: {empty}   body EMPTY                            -- works
+        [^f]: {#i}      body EMPTY                            -- works
+        [^f]: { }       body holds the literal text `{ }`     -- does NOT
+        [^f]: {}        body holds the literal text `{}`      -- does NOT
+
+      `block_attributes` requires AT LEAST ONE attribute and there is no
+      block-level blessed-empty form -- PART 4 says it of `{}` in as many
+      words, and `{ }` is blessed INLINE only -- so on this line neither run
+      is an attribute block. Both stay CONTENT, the body then holds a text
+      node the author never wrote, and §1 fails exactly as it does for the
+      bare marker: a different shape, the same defect. Measured in all three
+      engines rather than derived.
+
+      SO EVERY AVAILABLE SPELLING CARRIES MEANING. `{empty}` is a BOOLEAN
+      ATTRIBUTE (PART 9 §14): a bare identifier with no value, rendered
+      `name=""` wherever attributes survive, so `{empty}` on an ordinary
+      paragraph's attribute line gives `<p empty="">`. It is inert HERE
+      because a footnote definition's body is its own container, and a
+      block-attribute line with no following block inside that container is
+      dropped (PART 9 §15 A4) -- the attribute reaches neither the endnote
+      `<li>`, nor the next block, nor the next definition. That is a PARSE
+      RULE and not a property of the word: nothing about `empty` is
+      semantically empty, and it is stated here so the inertness does not
+      read as accidental.
+
+      WHY THE BARE WORD AND NOT AN ID, A CLASS OR A KEY/VALUE. All four reach
+      the same empty body and all four are discarded on this node, so the
+      choice is among constructs that mean something rather than between one
+      that does and one that does not -- there is no meaningless candidate to
+      prefer, and the grammar is why. §1a asks for the SMALLEST departure and
+      the bare word is it: an id also occupies the document-wide identifier
+      space, a class is a name a stylesheet can match, and a key/value invents
+      two tokens where one will do.
+
+      ONE SPELLING, PINNED HERE RATHER THAN PER ENGINE. Any of the four would
+      have worked, which is precisely why the writer cannot be left to pick:
+      a sentinel each engine invents is three sentinels, and canonical output
+      stops being the same bytes everywhere. `empty` is the word one engine
+      had already emitted before any clause named it (carve-js#911), so
+      pinning it costs no writer a second change -- and a reader meeting
+      `{empty}` in formatted source now has this clause to look it up in,
+      which is the objection carve#999 opened with.
+
+   7c. A LINE BLOCK'S HARD BREAK IS WRITTEN BARE ONLY WHERE THE BARE NEWLINE
+      RE-DERIVES IT -- NORMATIVE. A line block hardens every line boundary of
+      its own accord, AT EVERY DEPTH (PART 9 §23, AN INLINE CONSTRUCT IS NOT A
+      DEPTH THE RULE STOPS AT), which is the whole of why the writer may
+      spell a `hard_break` there as a BARE NEWLINE rather than as the PART 3
+      form. The depth half is load-bearing and not decoration: a reading under
+      which a boundary inside an emphasis run stays soft takes the permission's
+      own premise away, and this writer rule then LOSES the break on `*a\` over
+      `b*` while claiming §1 preservation - which is what the pinned build does
+      today (carve#1351). The permission is not general, and it is stated as
+      the PROPERTY it rests on rather than as a list of the places it runs out:
+
+        THE WRITER SPELLS A `hard_break` INSIDE A LINE BLOCK AS A BARE
+        NEWLINE WHERE, AND ONLY WHERE, RE-READING THAT NEWLINE YIELDS THE
+        SAME TREE. EVERYWHERE ELSE IT WRITES THE PART 3 FORM, `\` BEFORE THE
+        NEWLINE.
+
+      §7 permits stripping a line's trailing whitespace on the ground that
+      "where the PARSER discards trailing whitespace the writer may too". The
+      parser does NOT discard it when a backslash follows: PART 7 makes the
+      run before a line-break backslash INTERIOR, and PART 9 §23 gives that
+      the visible consequence. So none of this is a new principle, it is §7
+      applied where its condition does not hold.
+
+      A BARE NEWLINE RE-DERIVES A `hard_break` AT A BOUNDARY BETWEEN TWO BODY
+      LINES, and nowhere else. §23 hardens the boundary BETWEEN lines, so a
+      newline written between two lines comes back as the break it replaced,
+      with the lines around it unchanged. That is the ordinary case and most
+      of every stanza.
+
+      WHAT THE PROPERTY EXCLUDES -- CONSEQUENCES, NOT THE RULE. A case that is
+      not in this list is decided by the property above, not by the absence of
+      a bullet. This clause was first written as a list of the two unsafe
+      cases, and the first entry below is the one it did not reach:
+
+        - THE LAST BODY LINE, WHATEVER IT ENDS IN. §23 hardens the boundary
+          BETWEEN lines, and the body's end is not one. So a `hard_break`
+          there is the AUTHOR'S OWN (PART 3) and nothing else can produce it:
+          the newline after it belongs to the closing fence, or to the blank
+          line before the next stanza. `a\` and `a  \` on a last body line
+          lose the break OUTRIGHT, with no space involved in either -- which
+          is why neither of the two cases below, one about an emptiness and
+          one about a space, reaches this one.
+        - AN EMPTY LINE. A bare newline there is a BLANK LINE, which ends the
+          stanza, so one stanza is written back as two.
+        - CONTENT ENDING IN A LONE SPACE. The boundary comes back and the
+          space does not: PART 2's NO TRAILING WHITESPACE clause takes it. A
+          run of TWO OR MORE columns is already NBSP CONTENT (§23 MEDIAL
+          GAPS) and survives on its own, so it needs no backslash INSIDE a
+          stanza -- at the stanza's end the entry above governs it instead.
+
+      Every condition is visible in the tree with NO new field, so this costs
+      no AST change: the first is a `hard_break` that is the last node of the
+      stanza's own inline sequence, the second is two adjacent `hard_break`
+      nodes with no text between them, the third is a text node whose value
+      ends in one space.
+
+      A LINE WHOSE LAST NODE IS A COMMENT IS EXEMPT -- NORMATIVE. `%%` runs to
+      the END OF ITS LINE, so a trailing space there is INSIDE the note and
+      not content PART 2 is about to take: stripping it leaves the same node,
+      and CONTENT ENDING IN A LONE SPACE therefore does not reach the line.
+      Protecting it with a backslash does not leave the same node either --
+      the block layer claims the whole line before the inline parser sees it,
+      so the `\` lands in the comment's own CONTENT and `%%` comes back as
+      `%% \`. An EMPTY comment line is where this bites, because the writer
+      spells one as the marker plus a separator space and that space is the
+      one the case would have protected.
+
+      THE RULE IS KEYED ON THE NODE, NOT ON THE LINE'S POSITION, which is the
+      same exemption reaching the first consequence. A body line whose content
+      ends in an `inline_comment` carries NO `hard_break` at the body's end,
+      so THE LAST BODY LINE has nothing to spell there and nothing is written.
+      A writer that instead appends `\` to whatever it emitted last on the
+      final line writes it inside the note by the same mechanism, on a line
+      where there was no break to protect in the first place.
+
+      WHICH LINE IS LAST IS DECIDED BY THE BREAKS, HOWEVER THEY WERE SPELLED.
+      A `hard_break` ENDS the body line it stands at the end of, and what
+      follows it is the NEXT body line -- including a line that renders
+      nothing. In
+
+        ::: |
+        a \
+        %% c
+        :::
+
+      the last body line is the COMMENT, not `a `, so the backslash on `a ` is
+      there under CONTENT ENDING IN A LONE SPACE and not under THE LAST BODY
+      LINE, and the comment is written back as its own line below it. A writer
+      that treats a boundary the AUTHOR spelled as the end of the body answers
+      one document two ways depending on which spelling reached it: the same
+      note is kept under `a` and dropped under `a \`.
+
+      AN EMPTY LINE INSIDE A VERBATIM RUN IS SPELLED `%%`, because there the
+      backslash is not a break but content. A run left unclosed on an earlier
+      line swallows an emptied verse line as a NEWLINE in its value (§23), so
+      the tree holds no `hard_break` for this clause to spell and no `comment`
+      node to put back -- what the writer has is a value containing an empty
+      line, and a blank line would end the stanza. An empty verse line has
+      exactly ONE spelling that does not: a comment line, which the block
+      layer removes before the run exists, so `%%` re-reads to the empty line
+      it was written for and to nothing else. The author's own comment TEXT is
+      not recoverable here and is not required to be: the run consumed it, and
+      §1 is about the tree.
+
+      THIS IS §1a, NOT AN EXEMPTION FROM IT. The per-construct spelling emits
+      bytes that do not re-parse to the tree they were written from, so §1
+      wins and the spelling yields to "another spelling of the SAME
+      construct", which for a `hard_break` is its own PART 3 form. Measured on
+      all three engines, the bare newline destroyed a rendered space, split
+      one stanza into two, and dropped a trailing `<br>` from a block's last
+      line, with the three engines settling on three different canonical
+      byte strings for the first of them (carve#1334). The sibling writers
+      already do this: a paragraph and a `::: \` block both emit the backslash.
+
+      THE LAST BODY LINE WAS FOUND BY AN ENGINE IMPLEMENTING THE OLD LIST
+      (markup-carve/carve-js#1172), from a whole-corpus
+      `to_html(fmt(x)) == to_html(x)` gate and a sweep over every three-line
+      line block drawn from a 24-shape alphabet. The list's own justification
+      is what let it through: it excused a line with no trailing whitespace
+      because "the tree is identical either way", which holds INSIDE a stanza
+      and fails at its end. A list of the cases where a rule is unsafe goes
+      stale the first time an unlisted case turns up, which is why what is
+      normative here is the property and not the bullets under it.
+
+   8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE. The Markdown renderer is not
+      the canonical writer and does not follow §2. It has a different
+      re-parser to answer to, so it escapes on a different rule:
+
+      M1 Markdown metacharacters in text are escaped, unconditionally.
+      M2 An `escaped_text` node is emitted AS AN ESCAPE, whatever the
+         character. The author escaped it; the escape carries intent the
+         character alone does not.
+      M3 Nothing else is escaped. A character the author did not escape and
+         Markdown does not read as markup is emitted bare.
+
+      M2 is the rule that needs stating. `\-\-` was written precisely so a
+      processor with smart punctuation on (SmartyPants, markdown-it with
+      typographer, pandoc's default) would NOT read an en dash. Emitting `--`
+      bare loses the author's intent exactly where it was explicit, and the
+      characters this matters for -- `"` `'` `-` `.` -- are not Markdown
+      metacharacters, so M1 does not cover them. This was divergent across
+      implementations with nothing to notice it (carve#350).
+
+      A document that escapes nothing gains no backslashes from M2, so the
+      cost falls only on documents that asked for it.
+
+      An implementation whose AST has no `escaped_text` node cannot honour M2:
+      it cannot tell an escaped character from a literal one. That is a defect
+      in the AST, not licence to skip the rule -- `escaped_text` is in the
+      inline vocabulary (docs/profiles.md).
+
+   8a. THE MARKDOWN TARGET'S ESCAPING NARROWS ON THE LINE -- NORMATIVE. M1 is
+      not one rule across the metacharacter set. It splits three ways:
+
+      M1a THE ASTERISK KEEPS M1 UNCONDITIONALLY. A literal `*` reaching this
+          target in a text node is escaped, whatever else stands on the line.
+      M1b `_`, `#` AND `[` ARE ESCAPED IF AND ONLY IF the character is
+          ADJACENT ON THE EMITTED LINE to an UNESCAPED DELIMITER OF THE SAME
+          CHARACTER -- that is, the position immediately before it or
+          immediately after it in the line the writer is building holds that
+          same character, put there by the writer as MARKUP and not behind a
+          backslash. Adjacent -> escape it. Not adjacent -> emit it bare.
+      M1c A PARAGRAPH LINE MUST NOT BECOME A LIST. When a text character at a
+          paragraph line's content position would begin a Markdown list marker,
+          the target escapes the marker character: `-` and `+` before a space
+          or tab become `\-` and `\+`; after one to nine ASCII digits, `.` and
+          `)` before a space or tab become `\.` and `\)`. Up to three leading
+          spaces are part of the same content position for Markdown readers.
+          The rule applies to paragraph text only: a marker the renderer emits
+          for an actual list remains live, and punctuation inside code remains
+          content. `*` needs no extra case because M1a already escapes it.
+      M1d NOTHING ELSE NARROWS. Every other Markdown metacharacter keeps M1
+          as written, and M2 and M3 are untouched by this clause.
+
+      M1e `<` IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP --
+          NORMATIVE. A `<` is escaped with a BACKSLASH when the next character
+          is an ASCII letter, `/`, `!` or `?`, and left alone otherwise. `>`
+          takes nothing here: mid-line it is inert in every flavour, and at the
+          start of a line it is a block quote marker, which M1 already covers.
+
+          THE HAZARD IS RAW HTML, and it is real. CommonMark and GFM both admit
+          it, so a document whose text contains `<b>` emits a line a reader
+          turns into a tag -- the author's text silently becomes markup, which
+          is the corruption §8 exists to prevent. Measured through a CommonMark
+          reader:
+
+            a <b> c        ->  a <b> c          the tag opens
+            a </b> c       ->  a </b> c         so does a closing one
+            a <!-- c -->   ->  a <!-- c -->     and a comment
+            a <?php ?>     ->  a <?php ?>       and a processing instruction
+
+          Those four next-characters are the whole hazard. Everything else is
+          inert:
+
+            a < b          ->  a &lt; b         a bare `<` is not markup
+            x > y          ->  x &gt; y         nor is a mid-line `>`
+
+          ESCAPING THE `<` ALONE IS SUFFICIENT. The closing `>` needs no escape
+          of its own, because a tag that cannot open cannot be closed:
+
+            a \<b> c       ->  a &lt;b&gt; c
+
+          A BACKSLASH, NOT AN ENTITY. Every engine wrote `&lt;` and `&gt;` here
+          and no clause said so (carve#1148). The reason it could not be derived
+          from this section is that it is not the operation this section
+          describes: M2 and M3 are written in terms of ESCAPING -- protecting a
+          character so it survives as itself -- and `&lt;` does not protect `<`,
+          it replaces it with a different sequence that happens to render
+          alike. `\<` protects it, and a CommonMark reader gives the character
+          back.
+
+          CONDITIONAL, BECAUSE M1b ALREADY ARGUES FOR IT. `<` is the same shape
+          as `_`, `#` and `[`: significant before a tag name, inert before a
+          space. Rewriting every `<` in a document -- the overwhelming majority
+          of them harmless -- is the character-table answer M1b abandoned, and
+          the test belongs on the emitted line like every other one here.
+
+      THE FINDING IS §3'S, ONE TARGET OUT. §3 records, for the canonical
+      writer, that "whether a character is significant depends on the line,
+      not on the character", and §4 is that section's answer to it. M1 was the
+      opposite choice, and a deliberate one: §2's test is answered by the
+      Carve parser, this target has no Markdown parser to hand, and a
+      character table was what remained. But §3's finding is about lines and
+      characters, not about which writer is asking. The Markdown writer builds
+      a line too, and what stands on that line is what decides whether a bare
+      metacharacter is read as markup downstream. So the test here is stated
+      over the EMITTED LINE, as §3 says it has to be, and M1b is this
+      section's §4.
+
+      THE ASTERISK DIFFERS IN KIND, NOT IN DEGREE, which is what M1a is for.
+      This writer emits `*` as an emphasis delimiter. So the asterisk is not a
+      character that MIGHT meet markup on the line; it is the character the
+      line's markup is made of, and a collision with it is the ordinary case
+      rather than the corner one.
+
+      A document whose emphasis contains two literal asterisks is written
+      under M1 as
+
+        *\*\**
+
+      A narrowing that weighs the delimiter runs in the block sees one
+      four-character run flanking nothing, and drops both escapes:
+
+        ****
+
+      Through a CommonMark reader those are not two spellings of one
+      document:
+
+        *\*\**  ->  <p><em>**</em></p>
+        ****    ->  <hr />
+
+      Emphasis containing two asterisks is published as a thematic break. The
+      run being weighed was partly the writer's OWN delimiters, which the
+      escaped literals had merged into, and nothing about the character said
+      so. That is a property of this target's output read by this target's
+      consumers, so it holds for any implementation that narrows the asterisk,
+      whichever one writes it first (carve#970).
+
+      M1b would hold this document on its own terms -- both literals are
+      adjacent to a delimiter the writer wrote. M1a is stated anyway, and it
+      is PERMANENT rather than a fix deferred: for `*` the adjacency is not an
+      accident of one document but the shape of the target, and a condition
+      that holds for every document of a construct is better spelled as an
+      exemption than rediscovered per document. It lapses only if this writer
+      stops spelling emphasis with `*`.
+
+      WHY ADJACENCY IS THE TEST THAT OWES NO PER-READER ARGUMENT. This target
+      answers to a re-parser Carve does not control, and there are several of
+      them -- CommonMark, GFM, markdown-it with typographer, pandoc. That is
+      why M1 was blunt, and the reason does not go away: an escape that
+      protects nothing under one of them may protect something under another,
+      so dropping one is an argument owed once per reader. The adjacency case
+      owes none. Every one of those readers resolves a delimiter by RUN
+      LENGTH, so an escape sitting next to a live delimiter of the same
+      character is holding a run boundary apart under all of them at once.
+      M1b keeps exactly those escapes, and that is why the minimum is stated
+      at this width and not another.
+
+      THE BOUNDARY IS THE CLAUSE, NOT A FLOOR. M1b is written as an
+      if-and-only-if on purpose. An escape it drops is dropped and an escape
+      it keeps is kept; it is not a minimum an implementation may build a
+      wider narrowing on top of, and it is not a permission one engine may
+      take up before another. Three engines implement this clause, and a
+      permissive reading of it yields three outputs -- which is the failure
+      this question came out of, not a latitude worth preserving.
+
+      SO A WIDER NARROWING IS NOT AUTHORIZED HERE. Not for a fourth
+      character, and not for a laxer test on these three. Anything further has
+      to be justified against the standard this clause was written to: state
+      it over the EMITTED LINE, and show it survives a case where the writer's
+      own output supplies the collision. Until that argument is made and
+      written down here, M1 stands unchanged for everything M1b does not name.
+
+      M2 IS WHY A LINE-LEVEL TEST REACHES WHERE §2 NEEDS A PARSER. M1 governs
+      a character that reached the writer inside a TEXT node -- one the Carve
+      grammar did not read as an opener and the author did not mark. A
+      character the author DID escape is an `escaped_text` node, and M2 emits
+      it AS AN ESCAPE whatever the character, untouched by anything above. So
+      a document that MEANT `[a](b)` as text carries the author's escapes in
+      the tree and gets them back on this target under M2, and M1b never sees
+      it. That does not make the two grammars agree and is not claimed to; it
+      takes out of the question every case where the author said which reading
+      they meant, which is where guessing wrong costs the most.
+
+   ============================================================================ *)

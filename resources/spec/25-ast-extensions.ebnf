@@ -1,0 +1,390 @@
+(* ============================================================================
+   17. A FIGURE MAY WRAP A TABLE, AND NO CARVE SOURCE SPELLS IT -- NORMATIVE.
+      `figure.target` admits a `table`, and a `table` carries its own optional
+      `caption`. Those are two trees, not two spellings of one, and both render:
+
+        figure{ target: table, caption }  ->  <figure>
+                                                <table>...</table>
+                                                <figcaption>...</figcaption>
+                                              </figure>
+
+        table{ caption }                  ->  <table>
+                                                <caption>...</caption>
+                                                ...
+                                              </table>
+
+      PART 9 §4 rules the SOURCE spelling, and it produces only the second: a
+      `^ ` line after a table attaches to the table, so a parser never produces
+      the first. The producer is a format bridge -- an HTML importer reading
+      `<figure><table>…<figcaption>`, a shape HTML itself distinguishes from a
+      table carrying a `<caption>`.
+
+      CARVE 0.1 SOURCE HAS NO SPELLING FOR THE WRAPPER. Like `shortCaption` in
+      §14 and `rowGroups` in §15, it enters a tree through an AST consumer or a
+      format bridge and survives AST encode/decode by §6. Being able to
+      REPRESENT the wrapper is not being able to AUTHOR one.
+
+      A CANONICAL CARVE WRITER EMITS THE TARGET AND ITS CAPTION -- the table
+      followed by the `^ ` line -- and MUST NOT invent source syntax for the
+      wrapper. What it writes re-reads as `table{caption}`, a different tree
+      with different HTML, so the wrapper is LOST rather than preserved. A
+      bridge or API which exposes conversion diagnostics SHOULD report that
+      structural loss. This is the one caption shape whose source round trip
+      changes the rendering, which is why it is written down here rather than
+      left to each writer to discover.
+
+      THE TARGET'S OWN CAPTION SLOT MAY ALREADY BE FULL. A `table` carries an
+      optional `caption`, so `figure{ target: table{ caption }, caption }` is a
+      schema-valid tree with TWO captions and only one `^ ` slot to write them
+      into. The wrapper's caption takes that slot only when the target has none;
+      where the target has its own, the figure's caption is LOST WITH THE
+      WRAPPER, exactly as the rest of the wrapper is, and the diagnostic above
+      covers it. A WRITER MUST NOT EMIT A SECOND `^ ` LINE for the figure's
+      caption. There is no second slot for it to land in: a `^ ` line after a
+      caption line is not a caption at all, it is an ordinary paragraph, so the
+      output would carry the caption text as literal body prose instead of
+      losing it cleanly, and the loss would stop being observable as a loss.
+
+      A FIGURE GROUP'S TABLE PANEL IS NOT THIS WRAPPER. PART 9 §4c has since
+      made `:::` a captionable host (carve#1122), and a reader arriving here
+      will ask whether `::: figure` around a table now spells the shape. It
+      does not. §16 holds a `figure_group`'s panels in `children` as exactly
+      the nodes the inner caption rules built, so a table panel is a plain
+      `table` child of the group -- carrying its own `caption` if it has one --
+      and never a `figure` whose target is a table. The two say different
+      things: a group wraps a SEQUENCE of panels and captions the sequence,
+      while this wrapper wraps ONE table and captions that table. Carve 0.1
+      source still spells no `figure{target: table}`, which is what makes the
+      writer's loss unavoidable rather than a choice.
+
+      THE TABLE IS THE ONLY HOST IN THIS POSITION. PART 9 §4b states what a
+      caption makes of its host: every other captionable host -- an image, a
+      quote, a code block, a display-math paragraph -- becomes a `figure` when
+      a `^ ` line follows it, so its wrapper IS what the source spells and the
+      round trip is exact. A table is the one host whose caption has a slot of
+      its own to go into, so the wrapper around it says something the caption
+      inside it does not, and only that difference is unspellable.
+
+   18. A CITATION DEFINITION IS A NODE -- NORMATIVE.
+      `type: "citation_definition"`, carrying:
+        key       the citation key as the author wrote it, without the `@`
+        children  the entry's inline content: what follows the `]: ` separator
+                  and the optional metadata block, parsed as inline
+        attrs     the leading `{author= year=}` metadata block, when the
+                  definition carries one
+      and its `pos` under §4, like every other node.
+
+      SHAPED AFTER §10's LINK REFERENCE DEFINITION, NOT AFTER THE FOOTNOTE.
+      That is the closer of the two analogues: a `footnote` holds BLOCKS,
+      while `[@key]: {author= year=} entry` holds a metadata run plus one line
+      of rendered text. So the entry is `children` of INLINE nodes, and the
+      metadata lands in `attrs` -- the same two slots §10 spends on a
+      definition line's tail, with `key` where that clause has `label`. `key`
+      rather than `label` because `citation.key` already names the same string
+      at the use site, and §3 makes field names spec surface: one construct
+      identified two ways in one document is the collision §1 exists to stop.
+
+      NEITHER CURRENT BEHAVIOR STANDS, and the two lose different halves of
+      what §10 keeps (carve#1276):
+
+        consuming the line at parse time    discards `pos` entirely, so the
+                                            line cannot be reproduced and an
+                                            AST round trip deletes it
+        leaving the line a paragraph        publishes the parser's failure to
+                                            recognize it: a `citation_group`
+                                            followed by the literal text
+                                            `: {author=` and the rest of the
+                                            entry, which a ProseMirror bridge
+                                            hands an editor as prose and round
+                                            trips as prose
+
+      WHY IT IS A NODE is §10's own argument, and it applies here unchanged
+      because nothing distinguishes this definition kind from the other three.
+      A definition renders nothing where it sits -- that is the reason the
+      footnote and link-reference kinds are document-level nodes rather than
+      inline content, not a reason to leave one of them out of the tree. It was
+      written somewhere: an editor jumps to it, a formatter reproduces it, a
+      language server renames its key. Of the four kinds this was the only one
+      with no node, and no clause said why.
+
+      NO RENDERED OUTPUT MOVES ON ANY TARGET. The node renders nothing where it
+      sits; the entry's text renders in the references list the extension
+      builds, exactly as it did before. That is why the divergence survived so
+      long: HTML is identical whichever way an engine behaves, so no corpus
+      fixture could see it, and the pin has to be an AST-level assertion.
+
+      TIER-2, SO THE NODE EXISTS ONLY WHERE CITATIONS ARE ENABLED. With the
+      extension off, `[@key]: entry` is not a citation definition and it is not
+      a reference definition either -- the leading `@` is reserved against that
+      in core -- so the line is ordinary paragraph text. A default-profile parse
+      therefore never produces this type, which is why the schema declares it
+      and the core corpus cannot reach it.
+
+      WHERE A DEFINITION IS RECOGNIZED IS NOT DECIDED HERE. §10 hoists a link
+      reference definition out of a container while §7 rules that an
+      abbreviation definition inside one is not a definition at all, and this
+      clause is about the node's SHAPE rather than about which lines produce
+      one. Measured on carve-js `620def4`, a `[@key]: entry` line inside a
+      block quote or a list item is paragraph text and defines nothing, which
+      is §7's answer rather than §10's; that is a measurement of one engine and
+      not a ruling. An implementation emitting the node for a definition it
+      recognizes satisfies this clause whichever way that question lands.
+
+   18a. A CITATION ITEM IS A POSITIONED INLINE NODE -- NORMATIVE.
+      Every item in `citation_group.items` carries `type: "citation"` and the
+      required `pos` of PART 12 §4, spanning its optional prefix, `-` author
+      suppression marker, `@key`, locator and suffix. Its existing `key`,
+      `prefix`, `locator`, `locatorLabel`, `locatorValue`, `suffix`,
+      `suppressAuthor`, `number` and `useIndex` fields are unchanged.
+
+      The item is content, not bookkeeping: an editor navigates to a locator,
+      a diagnostic points at one key among several, and an AST transform may
+      replace one citation without replacing its group. It therefore follows
+      the same typed, positioned node contract as every other content-bearing
+      value in the tree and belongs to the inline profile vocabulary.
+
+   19. A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA -- NORMATIVE. A
+      `table` MAY carry `columns`, an array whose entry at index N describes
+      column N. An entry MAY carry:
+
+        align   one of `left`, `right` or `center`
+        valign  one of `top`, `middle` or `bottom`
+        width   a number greater than zero and at most one: the column's
+                FRACTION of the table width
+
+      Either field may be absent, meaning unset. The array MAY be empty or
+      shorter than the widest row; a missing entry means both fields are unset
+      for that column. Widths need not sum to one. A sum above one is a
+      diagnostic concern for a source spelling or format bridge, not an invalid
+      exchange tree.
+
+      RESOLUTION IS PER FIELD. A cell's own value wins, then the corresponding
+      column value, then unset. One explicit cell field does not suppress a
+      different field inherited from the column. This keeps the rule usable
+      when a later version adds another alignment axis.
+
+      SOURCE SPELLING. A table's preceding block-attribute line MAY carry
+      `aligns`, `valigns` and `widths`. Each value is a comma-separated
+      positional list; an empty entry means unset. Alignment names are the
+      vocabularies above. Widths are numbers greater than zero and at most 100
+      in source, and divide by 100 on the way into the fractional AST field;
+      any other width is an error. More entries than columns is
+      an error. Fewer is valid, leaves the tail unset, and produces a lint
+      diagnostic. Widths need not total 100; a total above it lints.
+
+      PRECEDENCE IS LOCALITY, PER FIELD: a cell marker wins, then an in-table
+      column marker (native header or GFM delimiter), then the table attribute,
+      then unset. Supplying two column-level spellings for one field lints and
+      the in-table spelling wins. Existing header markers and delimiter colons
+      keep their tree and output; attributes fill only facts they do not state.
+
+      LISTTABLE CELL SPELLING. Because a ListTable cell is a list item, its
+      marker attribute MAY carry `align=left|right|center` and/or
+      `valign=top|middle|bottom`. These values populate the corresponding
+      `table_cell` fields and override the positional column value independently.
+      They are consumed as semantics and MUST NOT also appear as literal HTML
+      `align` or `valign` attributes.
+
+      THE WRITER RETAINS THE MOST LOCAL AVAILABLE SPELLING. A headed table
+      keeps native column markers. A headerless aligned table emits `aligns`.
+      Widths emit percentages with trailing zeroes removed. Metadata a target
+      cannot spell is omitted and reported by conversion diagnostics.
+
+      HTML applies resolved horizontal and vertical alignment to each cell,
+      with `text-align` before `vertical-align`; widths emit a `colgroup` and
+      one `col` per entry. Markdown keeps only column horizontal alignment where
+      it can emit a delimiter row. Plain and ANSI ignore all three fields.
+
+   20. TABLE ALIGNMENT RUNS CARRY TWO INDEPENDENT AXES -- NORMATIVE. A cell
+      alignment run is glued to its opening pipe, after an optional `=` kind
+      marker, and is terminated by exactly one space after an optional glued
+      attribute block. Horizontal markers are `<`, `~`, `>`; vertical markers
+      are `^`, `~`, `v` for top, middle and bottom. A horizontal marker may
+      stand alone; a vertical marker MUST follow a horizontal marker or the
+      `?` inheritance placeholder. Vertical-then-horizontal order is invalid.
+      `~~` means center plus middle. Any other
+      duplicate axis is invalid and falls back visibly rather than consuming
+      a prefix. The only valid order is horizontal (`x`) then vertical (`y`).
+
+      A lone `~` is horizontal center. `?` is the horizontal-inheritance
+      placeholder and is valid only before a vertical marker: `?^`, `?~` and
+      `?v` contribute no cell-level `align`, so that field resolves from the
+      column while the run contributes `top`, `middle` or `bottom` as the
+      cell-level `valign`. A lone `?`, a reversed vertical-plus-`?` pair and
+      every other `?` run are ordinary visible content. A header-cell run supplies
+      column defaults; a body-cell run supplies only that cell. A run with no
+      following space is not alignment: this deliberately changes the glued
+      `|>text` family so marker runs have an unambiguous terminator. `lint`
+      reports the old glued form and `fmt --migrate` inserts the space.
+
+      `table_cell` carries optional `valign` beside `align`, with the same
+      inheritance rule. A whitespace-delimited cell containing only `^` or `<`
+      remains a rowspan/colspan marker; gluing is what distinguishes alignment.
+
+   21. U+0000 IS REPLACED ON INGEST -- NORMATIVE (carve#1523;
+      markup-carve/carve-rs#1217, markup-carve/carve-js#1294). A reader
+      replaces every U+0000 with U+FFFD REPLACEMENT CHARACTER in every string
+      value it ingests. It does this BEFORE any other reading of the value -
+      before a sentinel is looked for in it, before it is used as a key,
+      before it reaches a renderer.
+
+      THE SUBJECT IS THE DECODED VALUE, not the bytes of a JSON document. A
+      string reaches an ingest by two doors and the rule is the same at both:
+      decoded from JSON text, where the only spelling that can carry this
+      character is the `\u0000` escape, and handed in directly by a host that
+      built the tree in memory and called the ingest on it. This clause does
+      NOT relax the JSON grammar: RFC 8259 forbids an unescaped U+0000 inside
+      a string, so a raw byte in JSON text is a syntax error before any Carve
+      rule is reached, and stays one. It is named here only because the second
+      door has no JSON layer to raise it.
+
+      THIS MIRRORS THE PARSE BOUNDARY, which is the whole of the rule: PART 0
+      INPUT performs the same replacement on source, and PART 9 §29 carves
+      U+0000 out of the content class on that basis. A wire format that
+      admitted the character would put an authored NUL and an ingested one on
+      different footings - one replaced, one content - which is precisely the
+      divergence §29 exists to remove. An AST is a second door into the same
+      renderers; it takes the same doormat.
+
+      A READER DOES NOT REFUSE THE VALUE, which is the choice worth stating.
+      §11 and §12 refuse an unknown property and a deviant root, because those
+      are structure a producer got wrong and repairing them silently would
+      accept attacker-controlled shape. This is different: the replacement is
+      what the parse boundary already does to the identical string, so
+      performing it is not a repair, it is the documented reading. Refusing
+      instead would make an ingested document stricter than the same document
+      written as source, and a host that builds a tree programmatically would
+      have to implement CommonMark 2.3 itself before it could hand the tree
+      back.
+
+      Applying this rule at every ingest boundary gives parsers, renderers and
+      canonical writers the same guarantee and prevents U+0000 from colliding
+      with internal sentinels (carve-rs#1217, carve-js#1294).
+
+      AN IMPORTER IS THE SAME BOUNDARY BY THE SAME REASONING, and is stated
+      here as a SHOULD rather than a MUST because the format being imported may
+      have its own rule. Carve's Markdown importer performs the replacement,
+      following CommonMark 2.3 (markup-carve/carve-js#1293); its BBCode
+      importer passes a raw NUL straight through into its Carve output, which
+      is not a substitution and BBCode has no clause to follow, but is the same
+      missing normalization arriving by a third door.
+
+   22. AN INGESTED VALUE THE SCHEMA CALLS ABSENT IS NORMALIZED AWAY --
+      NORMATIVE (carve#1615). `resources/ast-schema.json` describes a list's
+      `start` as "First number of an ordered list, when it is not 1". That
+      sentence is a statement about what a CONFORMANT TREE looks like, and an
+      encoder is the thing that has to honor it. So when an ingested tree
+      carries `start: 1`, the encoder MUST NOT re-emit it: the field is dropped,
+      and every tree the implementation publishes matches the documented shape.
+
+      §6 GIVES NO COVER TO PRESERVING IT. The round trip §6 promises is scoped
+      to `parse(x)` -- a parsed tree, which never carries `start: 1`, and which
+      all three engines already comply with. Reading §6 as "JSON to JSON is an
+      identity" extends it past what it says, onto a payload no parser produced.
+      An editor, a patch tool or a hand-built payload can hand an encoder the
+      value; §6 never promised to hand it back.
+
+      THE DECIDING ASYMMETRY IS THAT NORMALIZING IS LOSSLESS. `start: 1` and no
+      `start` describe the same document -- the field is inert, and the renderer
+      emits no `start` attribute for either, `1` being the HTML default.
+      Nothing an author wrote is discarded. Preserving the value keeps a field
+      that makes the encoder's output depend on WHERE THE TREE CAME FROM, which
+      is the property §6's round trip exists to remove.
+
+      REFUSING THE PAYLOAD IS NOT THE ANSWER, though §11 refuses an unnamed
+      property and §12 refuses a deviant root. `start` is a property the schema
+      NAMES, and its value is in range; what is out of contract is only that the
+      value happens to be the default. Refusing would break editors that
+      round-trip a tree they did not author, and no engine does it today. This
+      clause is about a NAMED field carrying the value the schema describes as
+      absent, which is a narrower thing than either refusal clause covers.
+
+      WHAT THE RULE IS NOT. It is not "drop `start` always". `start: 0` and
+      `start: 2` are carried through unchanged, and an implementation that
+      drops them has broken the field rather than normalized it.
+
+      NOTHING IN A PARSE-DRIVEN CORPUS CAN COVER THIS. The value is unreachable
+      from Carve source -- `1. a` produces no `start` at all -- so the pin has to
+      be a hand-built payload, which is exactly why three engines drifted apart
+      here unnoticed: carve-php drops the field, carve-js and carve-rs preserve
+      it, and carve-rs additionally spells it as `<ol start="1">`
+      (markup-carve/carve-js#1391, markup-carve/carve-rs#1293). The pin is
+      tests/an-ingested-default-start-is-not-re-emitted.test.mjs.
+
+   23. A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH -- NORMATIVE
+      (carve#1784; PART 9R R7 owns the phase, this clause owns the wire).
+
+      A paragraph the promotion phase promoted carries `blockImage: true`:
+
+        {"type":"paragraph","blockImage":true,
+         "children":[{"type":"image","src":"/u","alt":"a",
+                      "ref":"r","rawRef":"[r]"}]}
+
+      The field is set by that phase and by NOTHING ELSE. It is present only as
+      `true`; a paragraph that is not a block image omits it rather than
+      carrying `false`, which is §22's absent-value rule applied here.
+
+      WHY THE TREE NEEDS IT AT ALL. §4's image-paragraph host is a condition on
+      a paragraph's INLINE CONTENT, so a block image and an ordinary paragraph
+      holding one image are the same tree -- PART 11 §1c says as much from the
+      writer's side. Every consumer therefore re-derived the role, and under
+      §3a's pre-resolve tree it had to re-run reference resolution to do it.
+      The field is the resolution result published beside the authored
+      construct: exactly the ADDED-ALONGSIDE rule §3a states for `href` on a
+      resolved reference link, and for the same reason -- the authored
+      construct (`ref`, `rawRef`) survives untouched, and the result is
+      published rather than left to be recomputed.
+
+      IT IS NOT A NON-ANCHOR FLAG. §3a refuses a flag on a nested link because
+      that flag would carry a RENDER fact -- "HTML cannot nest anchors" -- back
+      into a format that describes the source. This field carries a RESOLUTION
+      fact, which §3a already publishes, and it is set by a phase every engine
+      runs rather than by one render target's limitation.
+
+      NOT A DISTINCT NODE TYPE, deliberately. `block_image` is the honest shape
+      -- it IS a different construct, and the caption would have an obvious
+      home on it -- but it breaks every consumer that switches on node type and
+      it ripples through the engines, the importers, `fmt` and this schema at
+      once. A field is additive: a consumer that ignores it still works, and one
+      that reads it stops re-deriving. A type stays available later; going
+      field-first puts the phase and its call sites in place first.
+
+      ON INGEST, TRUST THE PROPERTY -- NORMATIVE. A reader that receives
+      `blockImage` USES it. It runs the promotion phase itself only for a tree
+      that LACKS the field. Recomputing it on every ingest makes the field
+      advisory and re-introduces the re-derivation this clause removes.
+
+      ABSENCE IS NOT A CLAIM. It means the producer did not run the phase --
+      every tree serialized before this clause lacks the field -- so a reader
+      MUST NOT read absence as "this paragraph is ordinary", and MUST NOT
+      reject a tree for omitting it. Requiring it was considered and refused:
+      it breaks every existing AST JSON document for no benefit, and §11's
+      strict-ingest surface is about properties the schema does not NAME, not
+      about ones it names optionally.
+
+      THE WRITER IS UNAFFECTED -- NORMATIVE. `fmt` writes the SOURCE SPELLING,
+      so promotion is not observable in `fmt` output and a document whose
+      reference is never defined still round-trips to itself (§6). The
+      alternative makes the writer non-local: the same paragraph would be
+      written differently depending on whether a definition appears somewhere
+      else in the document, possibly far away. PART 11 §1c already collapses on
+      the writer side, so teaching `fmt` about resolution buys nothing.
+
+      AN IMPORTER READS THE FIELD RATHER THAN GUESSING. An HTML importer that
+      escapes a following `^ ` line because the image above it "would capture
+      it" is deriving R7 a third time, in a pipeline with no access to the
+      phase (`docs/html-import.md`, the detached-caption case). It reads
+      `blockImage` on the tree it built instead.
+
+      NO HTML MOVES. This is a wire-format clause: every render target already
+      produced the promoted output, so nothing in the corpus changes because of
+      the field. What the corpus pins is R7's OBSERVABLE half, and it was
+      already half-pinned: categories 201, 207, 209 and 412 hold the resolved
+      and unresolved reference image, each with and without a caption, and 209 -
+      the unresolved image whose caption line folds into the paragraph - is the
+      row a syntactic binding fails. Category 434 adds the two give-back paths
+      on which a LINE can be lost and that no CORPUS document held: a slot more
+      than one line wide, held only against the oracle by a unit test no engine
+      runs, and a slot inside a container, held by nothing at all.
+
+   ============================================================================ *)

@@ -1,0 +1,628 @@
+(* ============================================================================
+   PART 11: CANONICAL SOURCE WRITER (NORMATIVE)
+   ============================================================================
+
+   The canonical writer (`carve fmt`, the `carve` render target) serializes a
+   document back to Carve source. Nothing here specified it before, so its
+   behavior was defined only by three implementations happening to agree.
+
+   1. THE INVARIANTS. For any document x:
+
+        parse(fmt(x)) == parse(x)        -- meaning is preserved
+        fmt(fmt(x))   == fmt(x)          -- the writer is idempotent
+
+      The first is about the AST, not the bytes: `fmt` MAY normalize the
+      author's spelling (indentation, marker alignment, escape form) but MUST
+      NOT change what the document says. The second forbids growth -- a value
+      that gains an escape per pass violates it, which is how over-escaping is
+      usually first noticed.
+
+      EQUALITY IS MODULO ESCAPING -- NORMATIVE. `escaped_text` and `text`
+      compare EQUAL, and an adjacent run of them compares as the single text
+      node holding the same characters in the same order. `a\-b` and `a-b`
+      are the same document for the purpose of this invariant, and differ only
+      in what the author wrote to get there.
+
+      Without that clause the first invariant would be unattainable by
+      construction, not merely unmet. §5 requires the writer to escape `"` and
+      `'` UNCONDITIONALLY: a bare quote reaching the writer as text would
+      otherwise re-derive as smart punctuation (PART 9 §8) and change the
+      document. So a text node holding a quote MUST come back carrying an
+      escape, which parses to `escaped_text`. Read strictly, §1 and §5 would
+      contradict each other for every document containing a quote.
+
+      This is also the comparison §4 already performs internally: the two
+      renders it weighs differ precisely in their escaping, so telling them
+      apart BY the escaping would escalate every document. The invariant and
+      the strategy therefore ask the same question -- does dropping the escapes
+      change anything ELSE?
+
+      What escaping still MUST preserve is the rendered result: the escape is
+      authoring syntax, so `to_html(fmt(x)) == to_html(x)` admits no such
+      latitude, and neither does idempotence.
+
+      KNOWN GAP -- the first invariant is not met by every implementation on
+      every input. The four constructs first recorded here (a table carrying a
+      colspan, a doubled alignment marker, a list-item attribute form and a
+      line-block shape) are fixed; a corpus-wide sweep finds others, tracked in
+      carve#369. Nothing caught any of them because every existing check
+      compares rendered HTML, which is equal in all of those cases. It is
+      stated rather than left implied: an implementation that satisfies §2 can
+      still fail §1, and §4's comparison is built to be unaffected by that.
+
+   1a. THE INVARIANT OUTRANKS THE PER-CONSTRUCT RULES -- NORMATIVE. §1 states
+      what the writer must ACHIEVE; §2 through §11 state how it SPELLS each
+      construct. Where spelling a construct by its own rule would emit a
+      document that does not re-parse to the tree it was written from, §1 wins
+      and the per-construct rule yields. A writer that deviates for that reason
+      is CONFORMANT: its output must not be corrected back to the literal
+      reading of the rule it departed from, and the deviation is not a defect
+      to be filed against it.
+
+      THE TEST IS ON THE EMITTED BYTES, not on the source and not on the
+      construct in isolation. Whether an emitted run opens what it appears to
+      open is a property of the WHOLE output document: an opener's meaning
+      depends on what precedes it, an opener that needs a closer is not one
+      without it, and the same three characters at byte 0 open something they
+      do not open on line 12. So what an implementation owes is to read its own
+      OUTPUT with its own parser. Pattern-matching the SOURCE cannot answer the
+      question -- the source is the document that already round-trips, and the
+      bytes at risk are the ones the writer just produced.
+
+      THE INVARIANT IS §1's, WHICH IS THE PARSE FORM. `parse(fmt(x)) ==
+      parse(x)` is the requirement. `to_html(fmt(x)) == to_html(x)` is a
+      consequence of it and is strictly weaker -- §2a already says that holding
+      is necessary, not sufficient -- so a writer satisfying only the HTML form
+      still fails this section. The distinction is easy to lose because the
+      HTML form is what a person can SEE, and reports of these defects are
+      usually written against it; the rule is stated over the parse.
+
+      IT IS NOT A LICENSE TO RESPELL. §2a and §6 are unchanged. What this
+      section permits is the SMALLEST departure that restores the invariant,
+      and another spelling of the SAME construct is preferred over a different
+      construct that happens to render alike. Dropping content, re-wrapping
+      prose or swapping a construct for a synonym are not available here: each
+      of them changes the document, which is the thing §1 forbids.
+
+   1b. A FLATTEN PRESERVES THE BOUNDARY IT DISSOLVES -- NORMATIVE. §1a settles
+      what a producer owes where §1's invariant CAN hold. This settles what it
+      owes where the invariant cannot hold at all.
+
+      A slot that takes INLINE content only -- a caption line, a fence title, a
+      table cell, an image's alternative text, a definition term -- cannot
+      carry blocks. A producer handed block content for such a slot therefore
+      FLATTENS it, and the flatten is lossy by construction: the emitted
+      document holds fewer blocks than the tree it was written from, so
+      `parse(fmt(x)) == parse(x)` is unattainable here and §1 is not the rule
+      that applies. What the producer still owes is the BOUNDARY.
+
+      THE RULE. Where two former sibling blocks each contribute at least one
+      TOKEN to the slot, the producer MUST emit a separator between them, and a
+      separator is sufficient IF AND ONLY IF re-reading the emitted slot draws
+      no token from both sides of the join: no word, no delimiter run, no
+      construct delimiter. Stated as a property and not as a list of the pairs
+      that collide, because the pairs are not enumerable -- every inline
+      construct Carve has, and every one it gains, can end one block and begin
+      the next.
+
+      A BLOCK THAT CONTRIBUTES NOTHING IS NOT A SIDE, which is why the rule is
+      written over contributed tokens rather than over sibling positions.
+
+        <figcaption><p>a</p><p></p><p>b</p></figcaption>
+
+      holds three blocks and one join: the empty one puts no token in the slot,
+      so there is no boundary to protect beside it and a separator there would
+      be whitespace no author wrote. The emitted caption is `a b` and not
+      `a  b`. This is not the conditioning refused below -- it asks whether a
+      side exists at all, not what characters happen to sit on one.
+
+      THE FAILURES ARE ONE FAILURE, and only some of them have a visible face.
+      Re-measured 2026-08-18 against carve-js `099db2cc`, carve-php `925f7dcf`
+      and carve-rs `3f8bde7b`, each built from a clone made for the run and each
+      flattening a `<figcaption>` holding two paragraphs. carve-rs emits the
+      separator on every row since markup-carve/carve-rs#1094; carve-js and
+      carve-php agree with each other on every row and lose the boundary:
+
+        <p>one</p><p>two</p>                    ->  onetwo
+        <p><strong>a</strong></p>
+        <p><strong>b</strong></p>               ->  *a**b*
+        <p><code>a</code></p>
+        <p><code>b</code></p>                   ->  `a``b`
+
+      The first loses the boundary as CONTENT: `onetwo` re-reads as one word
+      and the reader sees a misspelling. The second and third lose it as
+      STRUCTURE: `*a**b*` re-reads as one strong run holding a literal
+      asterisk, and the third as one code span holding the joined
+      delimiters. Nothing is DROPPED in any of them, which is why no diagnostic
+      fires for any of them -- an importer's unwrap note reports that a `<p>`
+      was unwrapped and says nothing about what the unwrapping joined.
+
+      The third row was not among the two reported at carve#1325. It is the
+      reason the rule is a property: a ruling written to the two shapes in hand
+      would have left the code span for the next release, and the caption slot
+      is not the only inline-only slot either.
+
+      THE UNIT IS THE TOKEN, NOT THE NODE, and that difference is the whole
+      rule. A node test passes `onetwo` and `one two` alike -- both are a
+      single `text` node -- while the boundary a reader recovers from one and
+      cannot recover from the other is a token boundary. So the test is stated
+      where the loss is.
+
+      IT IS §23's TEST READ BACKWARDS. PART 9 §23 states the forward half for a
+      LINE boundary: ONE boundary produces ONE node, "however the boundary is
+      spelled", and a backslash break and a verbatim run are exempt for one
+      reason -- both leave NO NODE, so there is no boundary left in the tree to
+      convert. A flatten is that situation arriving from the other side. The
+      block boundary leaves no node either, because the slot has nowhere to put
+      one, so it survives only in the BYTES -- and the bytes are read by a
+      tokenizer.
+
+      THE CANONICAL SEPARATOR IS ONE SPACE (U+0020), emitted at every such
+      boundary and conditioned on nothing further. A space ends a word and ends
+      a delimiter run, and it is neither punctuation nor alphanumeric, so it
+      cannot combine with the characters on either side of it into a construct
+      neither block wrote. The emitted forms of the three documents above are
+      `one two`, then `*a* *b*`, then the two code spans separated the same
+      way. Conditioning it on the neighbouring CHARACTERS -- emitting it only
+      where a collision looks likely -- is the source-pattern test §1a already
+      refuses: the question is about the bytes the producer is about to emit,
+      and a producer able to answer it is equally able to just emit the space.
+
+      WHAT THIS CLAUSE DOES NOT REACH, so that the division is not rediscovered
+      per report: a character that was TEXT in one of the blocks and becomes a
+      live delimiter once its neighbour is beside it is an ESCAPING question,
+      and §2 read through §1a already answers it -- the writer reads its own
+      OUTPUT, and escapes what would otherwise change the document. That is
+      already the behavior: `<p>a *b</p><p>c* d</p>` flattens to `a \*bc\* d`
+      in all three engines, with the asterisks correctly escaped and only the
+      word boundary lost. This clause supplies the space and nothing else;
+      §1b and §2 are answering two halves of the same join.
+
+      REFUSING TO FLATTEN IS NOT AN ANSWER. The slot cannot hold blocks, so a
+      producer that refuses emits nothing where the author's document has
+      content. That is a strictly larger loss than the one this clause closes,
+      and silent in exactly the same way.
+
+      NEITHER IS ESCAPING THE COLLISION. `*a*\*b*` writes a character the
+      author did not, against §2's if-and-only-if: nothing in either block's
+      own content needs protecting, and the collision exists only at the join.
+      An escape is also per-character where the defect is per-boundary, so it
+      would be re-derived for every delimiter pair two blocks might meet on,
+      where the separator is derived once.
+
+      WHAT IS NOT REQUIRED. The flatten need not be REVERSIBLE. Two paragraphs
+      written into a caption come back as one paragraph and no spelling of the
+      slot restores them, because the slot forbids the structure. A producer
+      exposing conversion diagnostics SHOULD report that structural loss, as
+      PART 12 §14 requires for a dropped short caption. The requirement here is
+      bounded at the boundary: the words and the constructs on either side of
+      it survive as themselves.
+
+      (Ruled at carve#1325. All three engines emit the joined form, so this is
+      a change in each of them rather than a divergence between them --
+      tests/corpus-convert cases 29, 30 and 31 pin the three shapes, declared
+      in resources/converter-drift.txt until each engine lands it.)
+
+   1c. A WRAPPER ITS OWN CONTENT SPELLS AWAY IS A DECLARED CEILING --
+      NORMATIVE (carve#1658). §1b settles what a producer owes where an
+      inline-only slot forces a flatten. This settles the other place §1's
+      invariant cannot hold, and it is the mirror image: not a slot that
+      cannot HOLD what it was handed, but a wrapper whose own content, written
+      out, IS the thing the block layer reads instead of it.
+
+      THE RULE. Where a block's whole content is a single node, and that node's
+      own spelling AT THE BLOCK'S OWN COLUMN is read back as a block opener of
+      that node's kind, the writer emits that spelling and the wrapper is LOST.
+      `parse(fmt(x)) == parse(x)` is unattainable for such a document, so §1 is
+      not the rule that applies and §1a's smallest-departure licence has
+      nothing smaller to reach for -- every spelling of the content is the
+      content's own. What the producer owes instead is that the loss is
+      DECLARED and not silent:
+
+        - A PRODUCER WITH A DIAGNOSTIC CHANNEL REPORTS IT. The code is
+          `structure-unspellable`, which `docs/html-import.md` already defines
+          for exactly this and already makes the single carve-out to that
+          page's own `parse(htmlToCarve(h)) == htmlToAst(h)`. The AST-returning
+          exit loses nothing and reports nothing; the source-writing exit
+          reports the row.
+        - A PRODUCER WITH NO CHANNEL STATES THE CEILING IN ITS CONTRACT.
+          `carve fmt` and the `carve` render target have no diagnostic list and
+          can only throw, so what they owe is that their stated contract NAMES
+          this shape as one it does not cover. A contract that promises the
+          invariant without qualification, while carrying an exception nothing
+          declares, is worse than a narrower contract that is true as written:
+          every reader of the first one is entitled to rely on it.
+
+      STATED OVER WHAT THE SHAPE SPELLS, never over the node type, the same way
+      §10j is. Two shapes have the property today, and they share no node type,
+      no vocabulary list and no reason beyond the spelling: a `paragraph` whose
+      whole content is one `image`, which writes `![a](u)` and reads back as
+      the standalone image (PART 9 §4's image-paragraph host is a condition on
+      a paragraph's inline content, so the two trees have ONE spelling between
+      them); and a `paragraph` whose whole content is one `comment`, which
+      writes `%% c` and reads back as the block comment. `image` is in the
+      INLINE vocabulary and `comment` is in the BLOCK one (docs/profiles.md),
+      so a rule written over the types would have had to name them one at a
+      time and would not reach the next one. A block whose content spells
+      anything ELSE -- a second node beside it, a text run, a NO-BREAK SPACE
+      (§7) -- keeps its wrapper and no ceiling is reached.
+
+      DECIDED ON THE SPELLING, NEVER ON RESOLUTION -- and PART 9R R7 does not
+      change that (carve#1784). R7's promotion phase reads the RESOLVED tree;
+      this clause reads what a shape SPELLS, and the two are deliberately
+      independent. A writer that consulted resolution would write the same
+      paragraph differently depending on whether a definition appears somewhere
+      else in the document, possibly far away -- a bad property for a formatter,
+      and the reason `paragraph.blockImage` (PART 12 §23) is a field the writer
+      does not read. So a document whose reference is never defined still writes
+      back as itself, and this clause's ceiling is reached by `![a](u)` and by
+      `![a][r]` alike, defined or not.
+
+      THE CEILING IS UNIFORM AND NOT POSITIONAL, which is the half that decides
+      the shape rather than merely describing it. At top level the image
+      paragraph does have a spelling -- one leading space, which the block
+      layer reads as a paragraph and not as a standalone image -- and the
+      writer still does not use it. Inside a list item or a definition
+      description there is no such spelling at any width: the marker's own
+      content column absorbs the padding, so `- ![a](u)` and `-       ![a](u)`
+      are the same tree, and `:  ` behaves the same way. A writer preserving
+      the shape at one nesting level and losing it at the next, with nothing
+      declaring the difference, is not a preservation rule; and the indented
+      form emits meaning-bearing leading whitespace, which editors and
+      pipelines strip. So the wrapper is lost EVERYWHERE, and one sentence
+      describes the writer at every depth.
+
+      WHY NOT REFUSE. §1's KNOWN GAP and the refusal a writer already owes for
+      a value no source can carry make refusal the honest-looking answer, and
+      it is what an implementation does for an empty raw inline. It loses on
+      two counts. It would fail an editor's round trip on a tree the renderer
+      accepts -- §10j's own reason for bounding a loss rather than rejecting
+      the document, on the path that can least afford it -- and it contradicts
+      a clause that already exists, since `docs/html-import.md` says this exit
+      REPORTS the loss rather than failing. Overturning that needs its own
+      fallback story and is a larger change than the shape asks for.
+
+      THE WRAPPER IS STILL LOST, and this clause does not pretend otherwise. It
+      bounds the loss TO the wrapper -- the content, its attributes and its
+      neighbours all survive as themselves -- and it puts the loss on the
+      record, which is the whole of what §1 can be held to here.
+
+      A CHECKER FOR §1 NARROWS TO THIS BOUND AND NO WIDER -- NORMATIVE
+      (carve#1679). The paragraph above says what this clause forgives. This
+      says what it does NOT, because a checker asserting `parse(fmt(x)) ==
+      parse(x)` has to encode both halves, and stated only as a permission the
+      carve-out acquired one mechanism per engine that reached it -- three
+      engines, three exemptions, none of them written where the next reader
+      would look.
+
+      THE RULE. The two trees MUST agree once every wrapper this clause names
+      is dissolved into its content, on BOTH sides. Nothing else is forgiven: a
+      dropped node, a reordering, a changed attribute and a changed node type
+      all still fail, and so does the dissolution of a wrapper that carries
+      anything of its own. A wrapper carrying an attribute block is not BARE --
+      losing it would lose the attributes this clause says survive -- and
+      neither is a node that owns a label, a destination, a level or a kind.
+
+      WHAT DOES NOT CONFORM is a carve-out keyed on the difference EXISTING.
+      "The two trees came back different, and a fixture records the second one,
+      so accept it" forgives a dropped node exactly as readily as a lost
+      wrapper, and the fixture is then evidence of nothing. The clause is the
+      definition; a fixture is at most an instance of it.
+
+      WHERE THE SET IS SOURCED FROM IS FREE, and the two engines that reached
+      this first source it differently: one states a predicate over what the
+      shape spells and is bounded by construction, the other derives the set
+      from the corpus documents whose pinned canonical form re-parses
+      differently and applies the bound explicitly. Both conform. The bound is
+      the rule; the sourcing is not, and neither spelling is owed a conversion
+      to the other.
+
+      A CHECKER THAT WIDENS THE BOUND CANNOT DETECT ITS OWN WIDENING, so the
+      width is pinned separately or it is not pinned at all. The dissolution is
+      applied to BOTH trees, so widening it can only ever HIDE a difference and
+      never create one: whatever extra shape it swallows, it swallows
+      identically on each side and the two still agree. A corpus sweep
+      therefore stays green under any widening whatsoever, and only a direct
+      assertion on the predicate says how wide it is.
+
+   2. THE ESCAPING RULE -- NORMATIVE. A character is escaped IF AND ONLY IF
+      omitting the escape would change the re-parsed AST.
+
+      Escaping MORE than that is a defect, not a safe default. It is how a
+      formatter turns `50% faster: yes (ok)` into `50\% faster\: yes \(ok\)`,
+      which re-parses identically -- so nothing there needed escaping.
+
+      Escaping LESS is a correctness bug: the document changes meaning.
+
+      THE UNIT IS THE OPENER, NOT THE CHARACTER. Where a construct opens on a
+      RUN of characters, the whole run is escaped. `--` opens an en dash
+      (PART 9 §8), and `\--` suppresses it just as `\-\-` does, so a
+      character-at-a-time reading of the rule would call the second escape
+      unnecessary and require `\--`. It does not: the escaped form of a
+      suppressed opener is the whole opener escaped. A half-escaped run is a
+      shape that happens to work rather than one that says what it means, it
+      breaks as soon as the surrounding text shifts what the run abuts, and
+      `\.\.\.` versus `\...` is the same question with the same answer.
+
+      So the escape decision is taken per OPENER OCCURRENCE: would omitting the
+      escapes on this occurrence let the construct form? Yes -> escape the run.
+      No -> emit it bare.
+
+      AND THAT HOLDS INSIDE A UNIT THAT ESCALATED -- NORMATIVE (carve#1533).
+      One occurrence needing the conservative form does not put the OTHER
+      occurrences in the unit with it. §2b bounds how far the fallback reaches;
+      the reach is not the only thing that was too wide. An indented paragraph
+      whose text reads `{.note}` is written
+
+        \{.note}
+        This paragraph.
+
+      and not `\{\.note\}`. The `{` is load bearing: bare, at column zero,
+      the first line opens a block attribute the document does not have. The `.`
+      and the `}` beside it open nothing at those positions, and neither does
+      the `.` ending the second line, so by the test above they are emitted
+      BARE -- in the same unit, in the same line, beside the escape that stayed.
+
+      A WRITER MAY STILL BE UNABLE TO DECIDE AN OCCURRENCE, and §2b's fallback
+      is what it falls back to -- per occurrence now rather than per unit. A
+      fallback that spends more escapes than this test asks for is wider than
+      the minimum and never narrower, which is the only direction §1 tolerates.
+
+      (Pinned by corpus
+      403-an-idle-escape-does-not-spread-from-the-occurrence-that-needed-one.
+      Like corpus 396 one clause down, its `.fmt` sidecar is the only fixture
+      that can see it: `\{\.note\}` renders the same HTML, re-parses to the
+      same tree and is happily idempotent, so every other gate in every engine
+      was green on the wider form.)
+
+   2a. THE WRITER DOES NOT SUBSTITUTE ONE CONSTRUCT FOR ANOTHER -- NORMATIVE.
+      §2 governs ESCAPING. It does not license rewriting a construct into a
+      different one that happens to render the same, and neither does §1's
+      invariant: `to_html(fmt(x)) == to_html(x)` holding is necessary, not
+      sufficient. Two spellings that render alike are still two spellings, and
+      removing that is what a CANONICAL writer is for.
+
+      These counterexamples render identically but re-parse to different ASTs
+      (carve#544):
+
+        source     written as    by        what changed
+        `* %%`     `* +`         carve-rs  a line comment became the
+                                           CONTINUATION MARKER (§17 L3) -- a
+                                           different construct with a body
+        `| %%%`    `| %% %`      carve-js  a comment-block fence (§28) split
+                                           into a line comment plus text
+
+      The second is also what §2's own THE UNIT IS THE OPENER paragraph
+      forbids one layer down: `%%%` is an opener run, and half of it plus a
+      stray character is exactly the "shape that happens to work rather than
+      one that says what it means".
+
+      The escaping half remains §2's test: omit an escape unless doing so
+      changes the re-parsed AST.
+
+   2b. THE SCOPE OF AN ESCALATION IS THE SMALLEST UNIT THAT FAILS --
+      NORMATIVE. A writer that cannot decide an occurrence exactly may fall
+      back to the conservative form (§4). That fallback reaches the SMALLEST
+      UNIT whose minimal form fails to re-parse -- the INLINE RUN, or the
+      BLOCK containing it -- and NOT the whole document. Outside that unit,
+      every candidate character is emitted by §2's own test, which for a
+      character nothing needs means BARE.
+
+      A paragraph the author indented so that its text reads `## H`, followed
+      by a paragraph reading `plain (b) text`, is written as
+
+        \#\# H
+
+        plain (b) text
+
+      The first paragraph's minimal form opens a heading the document does not
+      have, so that block escalates. The second paragraph's minimal form comes
+      back as itself, so it does not, and its parentheses stay bare. Writing
+      `plain \(b\) text` there is what §2 already calls a defect rather than a
+      safe default -- the escape changes nothing, and it is in the document
+      only because a DIFFERENT block needed one.
+
+      THE COMPARISON STAYS DOCUMENT-SCOPED, WHICH IS THE OTHER QUESTION. §4
+      rules out re-parsing a LINE on its own, because a line has lost the
+      document's link-reference and footnote definitions and reports a
+      difference escaping never caused. That argument is about what the writer
+      PARSES in order to decide, and it stands unchanged. This section is about
+      which BYTES the decision then selects. A writer renders and re-parses
+      WHOLE documents, and takes the conservative spelling only where the
+      minimal one failed -- so the definitions are present for the comparison
+      and the escalation is still local.
+
+      THE UNIT NESTS, AND IT IS TRIED SMALLEST FIRST. The inline run carrying
+      the occurrence is tried before the block that holds it. A failure that
+      is not confined to the run widens to the block, which is the usual case
+      for a block opener at column 0: what such a run opens is a property of
+      the LINE it begins, not of the run. Widening then re-runs §1a's test on
+      the emitted bytes, because escalating a unit has changed them, and it
+      terminates -- a document in which every block escalates is the
+      conservative form, arrived at because every block needed it rather than
+      because one did.
+
+      IT DOES NOT LOOSEN §2 ANYWHERE. A unit that fails is escaped in full, by
+      §2's THE UNIT IS THE OPENER: `\#\# H` and not `\## H`. What narrows is
+      the reach of the fallback, not the strength of the escape it applies.
+
+      (Pinned by corpus
+      396-an-idle-escape-does-not-spread-from-the-block-that-needed-one, whose
+      `.fmt` sidecar is the only fixture that can see this: both spellings
+      render the same HTML and re-parse to the same tree, which is why three
+      writers carried the wider scope with every gate green.)
+
+   3. WHY A STATIC CHARACTER TABLE CANNOT IMPLEMENT §2. Whether a character
+      is significant depends on the line, not on the character:
+
+        `[`  literal alone, an opener in `[a](b)`
+        `(`  literal in `[a] (b)`, an opener in `[a](b)`
+        `^`  literal at column 0 before a space, an opener in `^[note]`
+        `-`  literal mid-word, a list marker at column 0, an en dash doubled
+        `_`  literal alone, an opener only when a closer follows on the line
+
+      A writer that decides per character with no context must therefore
+      over-escape to stay correct, which is the defect §2 forbids.
+
+   4. A PERMITTED STRATEGY -- NOT THE PINNED OUTPUT. The output is pinned by
+      §2 and by §2 alone: a character is escaped if and only if omitting the
+      escape would change the re-parsed AST. This section describes ONE way to
+      compute that, which an implementation MAY use and is NOT required to.
+      Where the two differ, §2 wins.
+
+      That ordering was reversed until carve#374. This section used to pin the
+      output, and it yields a form §2 forbids: for a document containing one
+      genuinely-escaped candidate character, the procedure below escapes EVERY
+      candidate in the document, including characters whose bareness changes
+      nothing. carve-php implemented this section and emitted
+      `\*x\* and \(b\)`; carve-rs and carve-js implemented §2 and emitted
+      `\*x\* and (b)`. Both were reading the spec correctly, which is how the
+      contradiction surfaced.
+
+      §2 is the rule worth keeping, because it is the one an author can see the
+      difference in, and because §3's argument does not lead here: it shows a
+      static character TABLE cannot implement §2, not that per-character
+      decisions are impossible. A writer that knows whether a construct would
+      START at a given position decides exactly, and two engines do.
+
+      The procedure, then, as a strategy:
+
+      W1 Render the document twice: the MINIMAL form, escaping only the
+         UNCONDITIONAL set (§5), and the CONSERVATIVE form, additionally
+         escaping every CANDIDATE-set character (§5).
+      W2 If the two are byte-identical, emit either.
+      W3 Otherwise parse BOTH and compare the resulting documents, ignoring
+         source positions and key order.
+      W4 Equal -> emit the minimal form. Different -> emit the conservative
+         form FOR THE SMALLEST UNIT THAT FAILS (§2b), and the minimal form
+         everywhere else, re-running W3 on the result.
+      W5 Inside a unit that stayed conservative, offer each OPENER OCCURRENCE
+         its bare form and keep the bare form wherever W3 still holds (§2).
+         A unit is not one knob: the occurrences that survive escaped are the
+         ones that failed, not the ones that shared a block with a failure.
+
+      W5 IS WHERE THE STRATEGY COSTS, AND THE COST IS BOUNDED BY SEARCHING
+      RATHER THAN BY ENUMERATING. Offering the occurrences ONE AT A TIME is a
+      render and a re-parse of the whole document per candidate, which is
+      quadratic in the document -- and on ordinary input, not adversarial:
+      a paragraph of indented table rows puts a load-bearing occurrence beside
+      an idle one on every line. Offering a GROUP its bare form and halving the
+      group only where that fails costs a number of renders proportional to how
+      many occurrences FAIL rather than to how many there are. Measured on that
+      shape at 50 / 100 / 200 / 400 rows, in RENDERS rather than in
+      milliseconds: 249 / 499 / 999 / 1999 offering one at a time, flat at
+      about 5 renders per row, against 64 / 72 / 80 / 88 searched -- eight more
+      renders per doubling of the input, which is the logarithm the halving
+      buys. The same bound applies to W4's own search over units.
+
+      A WRITER MAY STOP THE SEARCH SHORT, and §2b's fallback is what it returns
+      to when it does: the occurrences it did not get to stay escaped. That is
+      WIDER than §2's minimum and never narrower, so a spent budget costs
+      idle escapes and never correctness. It is also why the state a bounded
+      search returns is still checked by W3 against the conservative form's own
+      re-parse rather than assumed.
+
+      Two forms and one comparison, with the choice made by the parser rather
+      than by a table -- so the writer cannot drift from the grammar as the
+      grammar grows. What it buys is safety without a table; what it costs is
+      precision, and §2 is where the precision is required.
+
+      WHY THE COMPARISON IS DOCUMENT-SCOPED, FOR AN IMPLEMENTATION THAT USES
+      IT. An earlier draft decided per line. That cannot be implemented: a line
+      re-parsed on its own has lost the document's link-reference and footnote
+      definitions, so a paragraph carrying `[text][ref]` comes back with an
+      empty destination and reports a difference escaping never caused. Any
+      COMPARISON at a scope smaller than the document has the same defect for
+      the same reason, so W1 and W3 render and parse whole documents.
+
+      THAT IS NOT A REASON TO ESCALATE THE WHOLE DOCUMENT, and reading it as
+      one is what §2b now forbids. Where the two parses differ, they differ
+      SOMEWHERE, and W4 takes the conservative spelling only for the smallest
+      unit that fails. The definitions the comparison needs are present either
+      way, because nothing about the comparison changed.
+
+      What remains true is the rest of the trade: this is a strategy rather
+      than the requirement, and an implementation that instead asks, per
+      position, whether a construct would start there needs neither the
+      comparison, nor the scope, nor W5's search.
+
+      WHY THE TWO RENDERS ARE COMPARED WITH EACH OTHER, and not the minimal
+      render with the document being written. The writer is not required to be
+      AST-faithful for every construct, and in practice is not: a table with a
+      colspan, a doubled alignment marker, some list-item attribute forms and
+      one line-block shape all re-parse to a DIFFERENT document while rendering
+      identical HTML. Comparing against the source document would inherit those
+      defects, flip the escaping decision between passes and break §1's
+      idempotence for a reason that has nothing to do with escaping. Comparing
+      the two renders isolates the only question this decision asks: does
+      dropping the candidate escapes change anything?
+
+   5. THE TWO SETS.
+
+      UNCONDITIONAL -- always escaped in a text node, never re-derivable:
+        the backslash itself; the backtick (opens a code span in any
+        position); and `"` / `'`. A BARE quote re-derives as smart
+        punctuation (PART 9 §8), so a quote that reached the writer as TEXT
+        is one the author escaped, and it stays escaped. A quote carried by a
+        `smart_punctuation` node is NOT text: the writer emits that node's
+        source run BARE, which is what makes `fmt` reproduce the author's
+        spelling.
+
+        The CARET is also unconditional, for a different reason: it opens
+        nothing on its own, but its escape carries information the AST records
+        separately. A text node whose LEADING caret came from an escape is
+        marked as such, so an image followed by a caret line stays a paragraph
+        instead of being promoted to a figure. Comparing that mark in W3 would
+        escalate every document whose text begins with a caret; ignoring it
+        would silently turn the image case into a figure. Escaping the caret in
+        BOTH forms keeps the two renders identical on that point, at the cost
+        of one escape on a character that is rare in prose.
+
+        THAT COST IS THE STRATEGY'S, NOT THE OUTPUT'S -- NORMATIVE, and the
+        difference is §4's own. This section names the sets W1 renders
+        against, so a caret named here is escaped in BOTH forms and W3 never
+        weighs the mark; it is not a license to EMIT an escape §2 does not
+        ask for. §4 pins the output on §2 and yields to it wherever the two
+        differ, and §10g already restates the reach in those terms -- "§5's
+        unconditional set escapes a LEADING caret in TEXT". §2a has filed the
+        other direction as a defect, on `}^p`, where the caret leads nothing,
+        dropping the escape re-derives the same document, and carve-rs and
+        carve-php escape it anyway. So "always escaped in a text node" is the
+        set's membership rule, and §2 is the test the emitted byte answers to.
+
+        THE MARK IS THE PROMOTION, NOT A FIELD, which is why the LEADING case
+        needs no exception to §2. `resources/ast-schema.json` declares no
+        field for it and carve-rs publishes none: what the escape changes
+        there is whether the block comes back a PARAGRAPH or a FIGURE, and
+        that is a difference §2 already sees. An engine that reads the
+        paragraph above as promising a field has read a mechanism where the
+        rule is about an outcome.
+
+        SO THE LEADING CASE IS UNMOVED, and corpus
+        394-a-leading-escaped-caret-keeps-its-escape pins it against the
+        reading that takes the bare `{^^}` above for a general permission.
+        An image over `\^ not a caption` keeps the backslash in all three
+        engines; bare, the same two lines are a `figure` with a
+        `figcaption`. That is §2 requiring the escape, not §5 excusing it,
+        and it is the difference between the two documents.
+
+      CANDIDATE -- escaped only when W4 selects the conservative form:
+        `* _ ~ / = ,`        emphasis and the braced pair delimiters
+        `[ ] ( ) { } <`      links, images, spans, attributes, autolinks
+        `@ #`                mentions and tags (§7 boundary rules); `#` also
+                             opens a heading at column 0
+        `> + - . ) : | % !`  block openers at column 0, plus the inline forms
+                             `%%`, `::` and the symbol shortcode `:name:` (the
+                             inline-footnote `^[` is covered by the
+                             unconditional caret above)
+        `$`                  math
+
+      A character in neither set is never escaped.
+
+      The set must cover EVERY construct opener, or W4 has nothing to fall
+      back to and the document is unrecoverable: `\@user` would emit as
+      `@user`, W3 would correctly see a `mention` where the source had text,
+      and W4 could not fix it. When a new opener is added to the grammar, its
+      character belongs here.
+
+   ============================================================================ *)

@@ -1,0 +1,101 @@
+(* ============================================================================
+   Carve Markup Language - EBNF Grammar
+   Version: 0.1
+
+   This grammar defines the syntax of Carve, a post-Markdown lightweight markup
+   language with visual mnemonics and human-centered design.
+
+   Notation:
+   - (*...*) = comment
+   - 'x'     = terminal character
+   - "x"     = terminal string
+   - x | y   = alternation
+   - x y     = concatenation
+   - [x]     = optional (0 or 1)
+   - {x}     = repetition (0 or more)
+   - x+      = repetition (1 or more)
+   - {x}+    = repetition (1 or more) -- same as x+, used where the repeated
+               unit is a group
+   - x - y   = exception (x but not y)
+   - (x)     = grouping
+
+   GUARD NOTATION (formal predicates -- machine-interpretable, PEG-class).
+   These are the ONLY devices beyond pure context-free EBNF that the
+   productions use. Each has exact, implementable semantics; none is prose.
+   - &(p)      = positive lookahead: the input AHEAD must match p; consumes
+                 nothing (PEG `&`). p may be a full production, so unbounded
+                 lookahead such as "a matching closer exists ahead" is legal.
+   - !(p)      = negative lookahead: the input ahead must NOT match p;
+                 consumes nothing (PEG `!`).
+   - <&(c) / <!(c) = single-character look-BEHIND: the character immediately
+                 BEFORE the current position must (must not) match the
+                 character class c; consumes nothing. Left context is always
+                 exactly one already-scanned character or START, so this is a
+                 regular condition, mechanically checkable.
+   - x:name    = capture: bind the text matched by x to `name`.
+   - where C   = semantic guard: C is a boolean expression over captures
+                 using only len(name), char(name) (the run's character),
+                 numeric comparison, and equality. A production carrying
+                 `where` matches only when C holds. This is the single
+                 counting device (fence-length matching); everything else
+                 above is regular lookaround.
+   - prod(d)   = production TEMPLATE: a production parameterized by a
+                 terminal d, instantiated once per listed terminal (an
+                 indexed-grammar macro; expansion is purely mechanical).
+   - START, EOL = virtual zero-width terminals (start of inline run /
+                 end of line).
+   Character classes for guards: ws = space | tab | newline; alnum =
+   letter | digit; punct = ascii_punctuation; non_ws = character - ws.
+
+   NORMATIVITY
+   - The files in resources/spec/*.ebnf are the NORMATIVE specification of
+     Carve. resources/grammar.ebnf is their generated, byte-for-byte aggregate
+     for consumers that need one file. `npm run spec:check` rejects drift.
+     Where any document disagrees with those sources, the sources win. The
+     specification is LAYERED: PART 0 (layout automaton)
+     -> PARTS 1-8 (EBNF productions + the GUARD NOTATION above) -> PART 9
+     (operational semantics for the non-context-free rules) -> PART 9R
+     (two-pass resolution semantics) -> PART 10 (serialization). PART 9 and
+     PART 9R are the authority for behavior the productions cannot encode.
+     `resources/spec/rules.json` gives every `-- NORMATIVE` clause a stable id.
+     The JSON transition and capability tables in that directory are normative
+     inputs consumed or checked by the executable artifacts.
+   - docs/case-study/syntax.md and docs/edge-cases.md are EXPLANATORY and
+     DERIVED — prose for humans, non-normative.
+   - docs/spec-history.md records retired readings, implementation divergence,
+     compatibility measurements and decision archaeology. Those facts may
+     explain a current rule but do not belong inside its normative algorithm.
+   - resources/examples/*.md and the generated tests/corpus/* pairs are the
+     CONFORMANCE CONTRACT: every example is checked against the reference
+     implementation in CI. A spec change is not real until a corpus pair
+     pins it.
+   - resources/carve-core.ohm and scripts/spec/*.mjs are DERIVED CHECKERS.
+     They execute what this file states so that a contradiction inside it
+     becomes visible. They are not a fourth implementation whose behavior
+     the language follows; three consequences follow from that, each a
+     clause of its own.
+
+     THE EXECUTABLE ARTIFACTS DECIDE NOTHING -- NORMATIVE. A ruling cites a
+     clause. "The executable spec does X", or "carve-js does X", is a
+     measurement, never an argument for X. Where a question is genuinely
+     unruled, the answer is a new clause here, not the behavior of whatever
+     ran last.
+
+     A GOLDEN IS NORMATIVE ONCE COMMITTED, NOT ONCE GENERATED -- NORMATIVE.
+     `npm run corpus:build` PROPOSES pairs; a reviewed commit is what makes
+     one the answer. A generated golden nobody read is a claim about this
+     file, and it can be a wrong one.
+
+     A CHECKER THAT DISAGREES WITH A COMMITTED GOLDEN IS WRONG UNTIL A
+     CLAUSE SAYS OTHERWISE -- NORMATIVE. The disagreement is a question to
+     raise against this file, not a divergence to record against the
+     engines.
+
+   - WHAT EARNS A CLAUSE is a process rule rather than a language rule, so it
+     lives in .github/CONTRIBUTING.md and not here. In short: a new clause
+     needs an author-visible document or a visible rendering difference, and a
+     shape with neither is recorded as "unruled, engines may differ" instead
+     of costing three engines, the checkers, the corpus and every satellite
+     grammar a change. It binds new clauses only -- keeping an existing one is
+     free, removing one re-opens a settled question.
+   ============================================================================ *)

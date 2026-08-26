@@ -8,6 +8,9 @@
     "node": ">=24"
   },
   "scripts": {
+    "spec:write": "node scripts/spec-source.mjs --write",
+    "spec:check": "node scripts/spec-source.mjs --check",
+    "spec:rules:check": "node scripts/spec-rules.mjs --check",
     "html-import:check": "node --test tests/html-import-contract.check.mjs",
     "escape:check": "node --test tests/escape-corpus.check.mjs",
     "docs:dev": "node scripts/publish-schema.mjs && npm run docs:pages && vitepress dev docs",

@@ -126,6 +126,25 @@ changes:
 These measurements explain the current invariants but are not themselves part
 of the writer algorithm.
 
+The historical escape sweep is particularly sensitive to its corpus pin. An
+early comparison mixed two corpus revisions and understated the improvement.
+At one shared pin, narrowing fallback scope retired 17 of 76 idle escapes;
+later per-opener testing reduced the residue to five documents and twelve
+escapes. The remaining counts described test methodology and implementation
+status, so they were removed from the normative writer procedure (carve#1507,
+carve#1532, carve#1533, carve#1549).
+
+## Renderer and AST convergence
+
+Several rules were originally accompanied by snapshots of which engine had
+implemented them. Those snapshots covered generated heading-attribute order,
+definition-list fields, strict AST ingest, block-image promotion, table-cell
+escaping, invisible comments in loose lists and unused definitions. They aged
+independently of the rules and sometimes contradicted current implementations.
+The specification now retains the required output or wire behavior only;
+implementation coverage belongs in generated conformance reports (carve#625,
+carve#637, carve#917, carve#994, carve#1551, carve#1601, carve#1624).
+
 ## Inline spacing roles
 
 The grammar once widened padding slots to general whitespace because padding

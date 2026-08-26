@@ -1,0 +1,742 @@
+(* ============================================================================
+   PART 3: INLINE ELEMENTS
+   ============================================================================ *)
+
+inline_content = {inline_element | text_run | literal_special}+ ;
+
+(* A special_char that does not begin (or close) a construct under PART 8
+   precedence + PART 9 conditions is literal text. Without this production
+   the grammar cannot represent "a/b/c", "x = a*b", or an inner delimiter
+   such as the middle '/' of /usr/local/ -- yet these are canonical outputs
+   (edge-cases.md §1, corpus 01-emphasis). The "is this a construct?"
+   decision is the semantic constraint in PART 9, not a context-free one. *)
+literal_special = special_char ;
+
+inline_element = escaped_char
+               | raw_inline
+               | literal_inline
+               | code_span
+               | autolink
+               | auto_text_link
+               | link
+               | inline_span
+               | image
+               | math
+               | emphasis
+               | strong
+               | bold_italic
+               | underline
+               | strikethrough
+               | highlight
+               | forced_emphasis
+               | forced_strong
+               | forced_underline
+               | forced_strike
+               | forced_super
+               | forced_sub
+               | forced_highlight
+               | footnote
+               | extension_inline
+               | editorial_markup
+               | mention
+               | tag
+               | symbol
+               | smart_typography
+               | inline_comment
+               | braced_comment
+               | hard_break
+               | soft_break ;
+
+text_run = (character - special_char)+ ;
+
+special_char = '/' | '*' | '_' | '~' | '^' | '`' | '[' | ']'
+             | '!' | '$' | '{' | '}' | '<' | '>' | '@' | '#'
+             | ',' | '=' | ':' | '%' | '\'
+             | '-' | '.' | '"' | "'" | '(' | '+' ;
+(* the second group are the smart-typography trigger characters (dashes,
+   ellipsis, quotes, `(c)`-family symbols, `+-`): they must be excluded
+   from text_run so the smart_typography productions are reachable; when
+   no pattern matches they are literal_special like any other special *)
+
+(* --- Escaped Characters --- *)
+escaped_char = '\', ascii_punctuation ;
+ascii_punctuation = '!' | '"' | '#' | '$' | '%' | '&' | "'" | '(' | ')'
+                  | '*' | '+' | ',' | '-' | '.' | '/' | ':' | ';'
+                  | '<' | '=' | '>' | '?' | '@' | '[' | '\' | ']'
+                  | '^' | '_' | '`' | '{' | '|' | '}' | '~' ;
+
+(* --- Code Spans --- *)
+code_span = backtick_run, code_span_content, [backtick_run], [attributes] ;
+   (* the closing backtick_run is OPTIONAL: an unclosed run runs to end of
+      block -- see UNCLOSED RUN below *)
+backtick_run = '`'+ ;  (* the OPENER is a MAXIMAL run; the CLOSER is a run of
+   the SAME count, also maximal (not part of a longer run) *)
+code_span_content = (* any chars except a closing backtick_run of equal count *) ;
+(* UNCLOSED RUN. An opener with no equal-length closer ahead is NOT literal
+   text: it opens a verbatim span that runs to END_OF_BLOCK (the block's
+   trailing whitespace is stripped; no surrounding single-space strip, which
+   applies only to a closed span). Such an unclosed run is OPAQUE -- an
+   emphasis delimiter or link tail after it is verbatim content, so the
+   surrounding construct never closes. Matches djot upstream and carve-php.
+   (Pinned as the "Inline verbatim ..." corpus pair; was a carve-js
+   divergence, resolved.) *)
+(* A trailing `{…}` on a code span is the generic inline-attribute
+   block, NOT a language tag -- EXCEPT the exact form `{=format}`, which is
+   raw inline passthrough (raw_inline below, PART 9 §20). For any OTHER
+   `{…}`: both impls consume AND apply it -- `\`c\`{.x}` ->
+   `<code class="x">c</code>`, and `#id`/`key=value` likewise. (Was an impl
+   divergence where carve-js dropped the attributes; RESOLVED -- both now
+   apply them identically.) The STRICT attribute rule (§14) applies here and
+   to IMAGE trailing attrs exactly as to any other inline attribute. Explicit
+   ids and classes admit a leading ASCII digit; a digit-leading key or any
+   otherwise invalid payload makes the block literal. *)
+
+(* --- Raw Inline (inline parallel of raw_block; PART 9 §20) --- *)
+(* A code span whose trailing attribute block is EXACTLY `{=format}` is raw
+   inline passthrough: the verbatim span content is emitted unescaped when
+   `format` matches the output, else dropped. Any OTHER trailing `{…}` is a
+   generic attributed code span (above), NOT raw inline. *)
+raw_inline = backtick_run, code_span_content, backtick_run, '{=', format_name, '}' ;
+
+(* --- Literal Inline (PART 9 §27) --- *)
+(* A `!` PREFIX on a verbatim code span is an inline literal, mirroring
+   `math_inline = '$', code_span` (§18). The span content is HTML-ESCAPED and
+   emitted by EVERY renderer (never dropped), but WITHOUT the `<code>` wrapper
+   -- it is prose, not code. The trailing `[attributes]` is the ORDINARY
+   code-span attribute block: with attributes an emitted `<span>` carries them,
+   with none bare escaped text is emitted. Unlike `{=format}` (raw_inline, §20)
+   the content is escaped and never target-routed. The `!` binds to a following
+   backtick run only; `!` elsewhere (and `![` opening an image) is unaffected,
+   so a literal `!` immediately before a backtick run is written `\!`. *)
+literal_inline = '!', code_span ;
+
+(* --- Links --- *)
+link = inline_link | reference_link | collapsed_reference_link ;
+(* autolink and auto_text_link (crossref) are listed directly in
+   inline_element, not here. *)
+
+inline_link = '[', link_text, ']', '(', link_destination, [link_title], ')', [attributes] ;
+reference_link = '[', link_text, ']', '[', reference_label, ']', [attributes] ;
+collapsed_reference_link = '[', link_text, ']', '[', ']', [attributes] ;
+
+link_text = inline_content ;
+(* SEMANTIC CONSTRAINT: the link text ends at the matching `]` -- the close
+   is balanced-bracket, escape- and LITERAL-SPAN-aware (PART 9 §16's rule for
+   inline notes is the same scan); an unescaped bare `]` inside plain text
+   closes it. Not expressible context-free. *)
+(* WHICH SPANS THE SCAN SKIPS -- NORMATIVE. The scan skips the interior of
+   every construct whose content is LITERAL, meaning the parser resolves no
+   escapes inside it:
+
+     `code`            inline code
+     !`literal`        inline literal (PART 9 §27)
+     {# comment #}     editorial comment
+
+   A `]` inside any of them is content, not the close.
+
+   The list is exactly the spans whose content is LITERAL, and that is the
+   whole test: a `]` there cannot be escaped, because an escape inside them is
+   not an escape. `{+ +}`, `{- -}` and `{~ ~> ~}` take `inline_content`, so
+   `[{+a\]b+}](u)` already works and they are deliberately NOT in the list.
+
+   This was previously written as "code-span-aware", which named only the
+   first. The others were left to end the label early, and because their
+   content is literal there is no way to write the `]` around it: an escape
+   inside them is not an escape, so `[{#a\]b#}](u)` produces a link whose
+   comment text really contains a backslash. A writer serializing such a
+   document therefore had to choose between keeping the link and keeping the
+   author's text, with no correct answer available (carve#403).
+
+   Stated as a property rather than as three names: any future construct whose
+   content is literal joins the list by construction. *)
+(* SEMANTIC CONSTRAINT (links never nest): a link MUST NOT contain another
+   link. The link text is inline content, so parsing it may yield a link --
+   written explicitly (`[[x](y)](z)`), as a crossref/auto_text_link, or
+   produced by an extension matcher (e.g. an autolink on a bare URL inside the
+   text). Any such inner link is replaced by its own text content; only the
+   outermost link's destination applies. So `[[x](y)](z)` links `x` to `z`,
+   and `[a https://b c](/u)` (with an autolink extension) links the literal
+   text `a https://b c` to `/u` rather than emitting a nested anchor. Mirrors
+   CommonMark "links may not contain other links".
+
+   This is a property of the DOCUMENT, and therefore binds EVERY target that
+   can express a link -- HTML, Markdown and ANSI alike, exactly as the
+   smart-typography switch above applies to every target. Nested output is
+   not merely redundant: `[see [H](#H)](/outer)` is not valid Markdown, so a
+   consumer reparsing it gets something other than what the document says,
+   and a nested ANSI link sequence ends with its own reset, which closes the
+   outer link's styling early.
+
+   An implementation that resolves a construct into a link AFTER the pass
+   that enforces this -- a cross-reference is the usual case, since `</#id>`
+   need not be resolved during parsing -- must apply the rule at that later
+   point too, in every such target and not only in the one whose output makes
+   the nesting visible as markup (carve-rs#436). *)
+link_destination = {destination_escape | balanced_parens
+                   | (url_char - '(' - ')') | '\' | unicode_url_char}+ ;
+balanced_parens = '(', {destination_escape | balanced_parens
+                       | (url_char - '(' - ')') | '\' | unicode_url_char}, ')' ;
+destination_escape = '\', ('(' | ')' | '\') ;
+(* The destination is ANY run of URL characters: absolute (`https://…`),
+   relative (`/path`, `./file`), or a bare fragment (`#section`) -- there is
+   no scheme requirement. It ends at the first whitespace (a following
+   quoted run is the title) or at the first `)` that has NO unmatched `(`
+   left to pair with. Parentheses BALANCE, to any depth, so
+   `[x](http://a/b(c))` links to `http://a/b(c)` and `[y](e)f)` links to `e`
+   and leaves `f)` literal. This matches djot and CommonMark, both of which
+   balance destination parentheses; URLs carrying parentheses (Wikipedia,
+   MDN) are thus written plainly, with no escape and no second spelling.
+   The ONLY escapes inside a destination are `\(`, `\)` and `\\`, which
+   stand for the literal character and do not affect nesting
+   (`[t](a\)b)` links to `a)b`). A BACKSLASH before anything else is an
+   ordinary destination character kept verbatim (`[t](a\b)` links to `a\b`),
+   so URLs full of backslashes need no doubling. Note `url_char` itself
+   (used by autolinks) still EXCLUDES `\`, so `<http://a\b>` is not an
+   autolink; the backslash is a destination-only literal. There is NO
+   angle-bracket-wrapped destination form -- balanced parentheses and the
+   three escapes cover what one would be for, and whitespace is
+   percent-encoded (`%20`). A newline counts as whitespace, so it ENDS the
+   destination: a `(` whose run reaches the end of the line without a
+   closing `)` is not a link and stays literal (the `[t](url` / `more)`
+   two-line case). *)
+unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
+(* WHITESPACE HERE IS UNICODE WHITESPACE -- NORMATIVE, and it always was:
+   `unicode_url_char` says "non-whitespace" without qualifying it to ASCII.
+   So a NARROW NO-BREAK SPACE, an IDEOGRAPHIC SPACE and a THIN SPACE end an
+   inline destination exactly as a plain space does, and an unbracketed
+   destination cannot contain one. Stated explicitly because two engines read
+   it as ASCII-only and produced a link whose href carried an invisible
+   character (carve#404).
+
+   ZERO-WIDTH characters (U+200B, U+FEFF) are NOT whitespace and ARE ordinary
+   destination characters. The test is the Unicode White_Space property, not
+   "is invisible".
+
+   THE SAME RULE APPLIES IN A REFERENCE DEFINITION, because the definition is
+   built from this same `link_destination`. Whitespace ENDS the destination
+   there too:
+
+     [r]: https://e.com<U+202F>/path
+
+   ends the destination at `https://e.com`, and `/path` is then left over. It
+   is NOT ignored: the definition is anchored at end of line (carve#911), so a
+   leftover makes the production fail and the whole line is an ordinary
+   paragraph -- exactly as `[r]: https://e.com /path` behaves. That sentence
+   used to read "ignored", which is what all four artifacts did and what the
+   production never said. Whitespace between the mandatory separator space and
+   the destination is leading whitespace and is skipped. A definition whose
+   destination is EMPTY once that is done is NOT a definition: the line stays
+   literal, as `[r]:` already does.
+
+   There is deliberately no "trim the ends, keep the interior" variant. It
+   reads as the friendlier rule and it contradicts `link_destination`, which
+   admits no whitespace at all -- leaving `[r]: a b` specified two ways. *)
+(* Titles accept double OR single quotes -- a deliberate enhancement
+   over djot (which has no single-quote titles; it would fold `'...'`
+   into the URL). The non-delimiting quote may appear inside the title. *)
+(* A backslash-escaped delimiter inside the title is a literal quote
+   (CommonMark-style): `\"` in a "-title and `\'` in a '-title are kept
+   as the literal quote character and do NOT end the title. This is
+   honored for the INLINE-link title (`[t](/url "ti\"tle")` -> title
+   `ti"tle`); see the note at `reference_definition` for the ref-def slot. *)
+(* The space before the quoted run is a PADDING SLOT, not a marker separator
+   (PART 7): a link is already a link once its destination has been read, and a
+   reference definition is already a definition, so the title is optional
+   trailing metadata in both. It is spelled `space` all the same, because A
+   TAB IS SYNTAX ONLY IN THE LEADING RUN (PART 7). The three engines accept a
+   tab here today and diverge from this production (carve#901). Cardinality is
+   exactly one character, at both sites, and that is a RULING rather than an
+   oversight: all three engines and the executable spec accepted a run here
+   until carve#912 held the production right and narrowed them. So
+   `[t](/u<SP><SP>"T")` is not a titled link, the quoted run is left
+   unconsumed, and the bracket run stays literal text. Corpus 262 carries it,
+   with the one-space form as its control. *)
+link_title = space, ('"', {('\', '"') | (character - '"')}, '"')
+           | space, ("'", {('\', "'") | (character - "'")}, "'") ;
+
+reference_label = (character - ']' - '@'), {character - ']'} ;
+(* A LABEL THAT BEGINS WITH AN AT SIGN IS NOT A REFERENCE LABEL -- NORMATIVE.
+   The production above SUBTRACTS `@` FROM THE FIRST POSITION, and that exclusion
+   is what keeps `[@key]` free for the Tier-2 Citations extension. So a bracket
+   pair whose content starts with `@` was never spelling a `reference_label`,
+   and the label slot is no exception to it: the slot does not match, so
+   `reference_link` and `reference_image` do not match either, and the
+   construct is NOT a reference link and NOT a reference image.
+
+   What is left is the ORDINARY fallback -- the bracket run stays LITERAL TEXT,
+   exactly as an unresolvable or otherwise malformed reference already does:
+
+       [t][@a]
+       ![t][@a]
+
+   both render as the text the author typed. The image spelling is stated here
+   rather than beside `reference_image` because it is the same slot reading the
+   same production, not a parallel rule. Nothing in this is special to `@`; it
+   is the existing fallback reaching one more shape, which is why the ruling
+   needed no new mechanism (carve#1302).
+
+   THE FALLBACK IS THE VERBATIM SOURCE RUN, NOT A RESCAN -- NORMATIVE. Which
+   one it is decides the rendering, so it cannot be left to inference. The
+   declining run is emitted as the characters the author typed; the parser does
+   NOT hand the interior back to the inline scanner. That is already the rule
+   for every other declining reference: `[t][*a*]` keeps its asterisks rather
+   than emphasizing `a`, and TRAILING ATTRIBUTES ON A DEFINITION's neighbor
+   case -- `[text][missing]{.wide}` -- keeps its braces as text rather than
+   parsing them as `attributes`, which is what carve#679 fixed by carrying the
+   SOURCE STRING through the reference sentinel instead of re-printing a parsed
+   list.
+
+   The distinction bites hardest here, because the interior is `@`-initial by
+   construction and `@a` is exactly what a rescan would claim. A rescan would
+   read `[t][@a]` as a `[t][` run, a MENTION, and a `]` -- and with the Tier-2
+   extension on it would read the now tail-less `[@a]` as a CITATION, since a
+   citation is a `[...]` holding a `@key` with no link/ref/span tail. Both
+   readings are wrong: the bracket run declined as ONE construct and is
+   restored as one, so the `@a` inside it is text and nothing else. That is
+   what the corpus rows and the optional control pin, on both sides of the
+   extension switch.
+
+   THE CONTROL CARRIES THE RULE. `[@a]` on its own IS a citation with the
+   extension on, and that is the REASON the label slot rejects it rather than a
+   side effect of rejecting it: `@` at the first position already means
+   citation, so it cannot also mean label, and an implementation that made the
+   slot accept `@` would be taking the spelling away from citations to do it.
+   Corpus 334-a-label-beginning-with-an-at-sign-is-not-a-reference-label
+   carries both spellings; the citation half is Tier-2, so it is pinned in
+   tests/corpus-optional (`43-citations-at-label-in-reference-position`), where
+   the same two lines are still literal text with citations enabled.
+
+   WHAT THE CORPUS PINS, AND WHAT IT CANNOT. The rows are HTML, and at that
+   layer this rule is INDISTINGUISHABLE from "the label is undefined": `@` at
+   the first position is the one spelling `reference_label` rejects, and
+   `[@a]: /u` is reserved for the citation definition, so a `@`-first label can
+   never be defined, and a declining reference renders as its verbatim source
+   either way. The rows state the outcome, which is what a corpus is for; they
+   do not separate the two readings, and nothing else does.
+
+   THE TREE SHAPE IS THE ONE PLACE THEY WOULD SEPARATE, and it is left open
+   here rather than settled in passing. Measured on fresh main builds --
+   carve-js 99af44b, carve-php 035dfcd, carve-rs 564a3b8 -- all three publish
+   an UNRESOLVED REFERENCE node for both spellings:
+
+       {"type":"link","href":"","ref":"@a","rawRef":"[t][@a]"}
+
+   and its `image` counterpart. PART 12 §3a admits `ref` "because the author
+   wrote a reference link", and under this clause no reference link was
+   written, which points at a `text` node carrying the run. Against that, an
+   `href`-less node plus `rawRef` is the vehicle §3a already gives a declining
+   reference for restoring its source, so an engine reaching for it here is not
+   obviously wrong either. Both readings render the corpus rows correctly, no
+   HTML fixture can fail on the difference, and the ruling this clause states
+   did not reach it -- so it is recorded, not decided (carve#1302).
+
+   THE READING NOT TAKEN. "Link text `t` pointing at citation `a`" is coherent
+   authoring intent and has no spelling today, but adopting it here would
+   INVENT A CONSTRUCT on the strength of one bracket pair -- its own AST node
+   or field, renderer behavior on every target, a canonical writer spelling --
+   and nothing else in the language pairs link text with a citation target.
+   That is a feature proposal against a later roadmap, not a reading of this
+   production.
+
+   The EMPTY-TEXT spelling `[][@a]` was settled separately and narrowly in
+   markup-carve/carve-js#1119, deliberately scoped so that `[t][@a]` was not
+   decided as a side effect of an unrelated fix. This clause is what that
+   scoping was waiting on, and it leaves it standing. *)
+(* Both roles appear on this one line (PART 7), and both take `space`. The
+   `']' ':'` separator is a MARKER SEPARATOR -- settled in the note below and
+   rejected by all four implementations for a tab -- while the slot before the
+   trailing `attributes` is PADDING: the definition is already complete at
+   `[a]: /url` and the attribute block is optional trailing metadata. The role
+   differs, the terminal does not, because A TAB IS SYNTAX ONLY IN THE LEADING
+   RUN (PART 7). What `attributes` admits INTERNALLY is a separate production
+   (PART 4).
+   Cardinality is exactly one space at BOTH, and at the padding slot that is
+   carve#912's ruling rather than an oversight. Where the rejected block goes
+   differs by run, and the two cases are NOT the same: a ZERO-space run glues
+   the braces to the destination (`[a]: /u{.c}` gives href `/u{.c}`, because
+   `link_destination` reads them), while a TWO-space run cannot -- whitespace
+   ends the destination -- so `{.c}` is DROPPED. That is the outcome this
+   clause names as the one to avoid, and it happened only because
+   `reference_definition` was not anchored at end of line. carve#911 anchored
+   it and the line now falls back to prose instead. Corpus 265 carries it with
+   its one-space control. *)
+reference_definition = '[', reference_label, ']', ':', space, link_destination,
+                       [link_title], [space, attributes], newline ;
+(* ANCHORED AT END OF LINE -- NORMATIVE. The production ends in `newline`, and
+   always did. What follows the destination and the optional title is not
+   ignored: it makes the production FAIL, and the line is then an ordinary
+   paragraph.
+
+       [a]: /u zzz
+
+   is NOT a definition, and a `[a][]` below it does not resolve. All three
+   engines and the executable spec read it as a definition with trailing junk
+   until carve#911, and nothing in this grammar authorized that reading.
+
+   WHY IT IS STATED RATHER THAN LEFT TO THE PRODUCTION. The tail is what made
+   PART 7's promised failure mode UNREACHABLE at this line. That clause says a
+   slot which does not match "falls back to prose rather than silently dropping
+   metadata" -- and here there was no prose to fall back to, so a title or
+   attribute slot that rejected its separator had its metadata quietly eaten by
+   the tail. Every narrowing at this line therefore produced the one outcome
+   the clause names as the one to avoid, which is why carve#907 left two shapes
+   at these slots deliberately unpinned. With the line anchored the promise
+   holds, and the tab and cardinality rules at both slots follow from the
+   general rule with no special case.
+
+   THE LINE ENDING is `whitespace` -- `' ' | '\t'` -- the same terminal
+   `blank_line = {whitespace}` takes (PART 1; carve#890). So `[a]: /u<SP>` and
+   `[a]: /u<TAB>` are still definitions, while `[a]: /u<NBSP>`,
+   `[a]: /u<U+2000>` and `[a]: /u<FF>` are not: every one of those is CONTENT
+   under that ruling, and content after the production is exactly what the
+   anchor rejects. An implementation spelling the ending as a Unicode
+   whitespace PROPERTY reads all five as a line ending, and a tab fixture
+   cannot see the difference, because a tab is inside the property too
+   (carve#888).
+
+   A TRAILING ZERO-WIDTH CHARACTER IS NOT ON THAT LIST, and listing it there
+   was an error carried from carve#911's ruling prose into this clause
+   (carve#953). `[a]: /u<U+FEFF>` and `[a]: /u<U+200B>` ARE definitions. The
+   anchor only ever sees what is left over after the production, and here
+   nothing is: U+FEFF and U+200B are not `White_Space`, so they do not END the
+   destination -- `link_destination` absorbs them as ordinary
+   `unicode_url_char`s, exactly as the note beside that production states, and
+   the character is in the href. The anchor is therefore never reached, and it
+   is `url_char` -- the AUTOLINK body, a different production -- that excludes
+   format characters, not `link_destination` (corpus 240). The row is the
+   reason a mutant widening the line ending to "any invisible character"
+   survived: it asserted a differing render, which was true because the HREF
+   carried the character rather than because the line was rejected.
+
+   WHAT THE ANCHOR DOES NOT REJECT. `[a]: /u{.c}` is still a definition, with
+   destination `/u{.c}`: nothing is left over, because `link_destination`
+   simply reads the braces. It is a different shape from `[a]: /u  {.c}`, not
+   another spelling of it. Corpus 266 carries every legal form as a control,
+   since the failure mode of an over-eager anchor is rejecting them.
+
+   THE COST, recorded: a shape all four artifacts accepted stops being a
+   definition. One corpus document depended on it -- `16-reference-link-5`,
+   which pinned `[r]: a b c` resolving the label to `a` -- and its golden moved
+   with this ruling.
+
+   AN INVALID BLOCK IS NOT `attributes`, SO THE LINE IS NOT A DEFINITION --
+   NORMATIVE (carve#933). `[space, attributes]` names the `attributes`
+   production, and a balanced `{...}` that production does not accept is not
+   an instance of it. It is therefore leftover content, and the anchor above
+   disposes of it like any other leftover: the line falls back to prose.
+
+       [a]: /u {#}
+
+   is NOT a definition. `{#}` is not `attributes` -- there is no identifier
+   after the `#` -- so the line renders as the paragraph `[a]: /u {#}` and a
+   `[a][]` below it does not resolve. The same holds for `[a]: /u { }` and
+   `[a]: /u {=}`.
+
+   THE DECIDING ARGUMENT IS THAT THE SAME CHARACTERS ALREADY READ THIS WAY
+   ELSEWHERE. `x {#}` in a paragraph keeps the braces as text, because
+   `attributes` rejects that block there too and inline content keeps what it
+   cannot parse. Two readings of `{#}` one construct apart is the thing being
+   removed, and the reading kept is the one the rest of the language already
+   has.
+
+   WHY IT NEEDED SAYING WHEN THE ANCHOR ALREADY EXISTED. The anchor could not
+   SEE the failure. The trailing block is peeled off by a BALANCE SCAN before
+   anything validates it, so a block that failed validation had already been
+   consumed and DISCARDED, and the line went on to parse as a definition with
+   the author's `{...}` gone from the page -- the exact outcome PART 7 names as
+   the one to avoid, and the reason this anchor exists at all. The remedy is
+   structural rather than a flag: the scan must hand a rejected block BACK as
+   content, which is a THIRD outcome, distinct both from "there was no block"
+   and from "the block was empty". Where those two are the same value, the
+   failure has nowhere to be observed.
+
+   THE COMPATIBILITY BREAK THIS ADDS, recorded: a definition line carrying an
+   unparseable attribute block stops defining, and a document relying on it
+   resolves one fewer reference. Accepted (carve#933 signoff). Corpus rows --
+   including the control that a VALID block still defines and still transfers
+   its attributes, which is the row an over-eager fix breaks -- belong with
+   corpus 266 and are deferred to their own pass. *)
+(* TRAILING ATTRIBUTES ON A DEFINITION -- NORMATIVE. A `{...}` block at the end
+   of the definition line attaches to the DEFINITION, and PART 9R R1 already
+   says what that means: the attributes transfer to every link OR IMAGE that
+   resolves the label, and the reference site's own attributes override per key.
+
+       [Example][ex]
+
+       [ex]: https://example.com {.external}
+
+   gives `<a href="https://example.com" class="external">`.
+
+   AN IMAGE REFERENCE RESOLVES THE SAME ENTRY -- NORMATIVE. `![alt][ex]` looks
+   the label up in the same `linkDefs` table and takes the same three fields, so
+   `[ex]: /i.png {.wide}` gives `<img src="/i.png" alt="alt" class="wide">`.
+
+   Stated because leaving it implicit produced a rule nobody could say out loud.
+   The table is `label -> (url, title?, attrs?)`; an image reference already took
+   `url` and `title` from it in every engine, and `attrs` crossed in carve-php
+   and not in carve-js or carve-rs (carve#604's follow-up). Two of three fields
+   transferring is not a rule, it is where an implementation stopped. The
+   ergonomics point the same way: a class repeated at every use site is more
+   common for images -- sizing, floating, lazy-loading -- than for links, which
+   is the case the definition form exists to serve.
+
+   THE MERGE IS §15 A3's, the one stacked attribute lists already use: the
+   definition's list first, the link's second, so a repeated `id` or key takes
+   the LAST value (the link's) and CLASSES ACCUMULATE in source order. So
+   `[ex]: /u {.external #a}` with `[Example][ex]{.internal #b}` renders
+   `class="external internal" id="b"`.
+
+   Reusing A3 rather than writing a second merge is the point: "link attributes
+   override per key" in R1 is exact only once "per key" names a merge, and the
+   language has one. A rule where the link's `class` REPLACED the definition's
+   would make this the only place in Carve where stacking classes drops one.
+
+   WHY THE SLOT EXISTS AT ALL. R1 and the `linkDefs : label -> (url, title?,
+   attrs?)` symbol table were written with definition attributes in them, and
+   the production had no way to produce the `attrs` they describe -- so the
+   rule was reachable only by an engine that invented a spelling. carve-php
+   invented one: it read a floating `{...}` line ABOVE the definition as
+   attributing it. §15 A2a then settled that a floating attribute floats PAST
+   an invisible construct to the next visible block, which is right, and which
+   removed the only spelling any engine had. This is the replacement, and it
+   does not compete with A2a because it is on the definition's own line
+   (carve#604).
+
+   NOT THE SAME AS THE LINE ABOVE. The two forms are different constructs and
+   both are now well-defined:
+
+       {.a}
+       [ex]: /u {.b}
+
+       text
+
+   `.a` floats past the definition and lands on `<p class="a">text</p>` (A2a);
+   `.b` attributes the definition and reaches every link resolving `ex`.
+
+   THE DEFINITION IS A NODE, so these attributes are serialized ONCE on it
+   rather than materialized onto every resolved link. PART 12 §10 adds
+   `link_reference_definition` to the vocabulary; three clauses wanted it (§3a,
+   §10a and this one) and the fourth reason was decisive: without the node, a
+   writer cannot reproduce the definition, so `parse(fmt(x)) == parse(x)` fails
+   for every resolved reference (carve#642). *)
+(* THE DEFINITION MARKER SEPARATOR -- NORMATIVE. The marker-to-content
+   separator is the `space` terminal (U+0020) ONLY, in all three definition
+   markers: `reference_definition`, `footnote_definition` and
+   `abbreviation_definition`. A tab does NOT satisfy `space` (`space = ' '`),
+   so `[^a]:<TAB>x`, `[a]:<TAB>/url` and `*[HTML]:<TAB>x` are ordinary
+   paragraphs, not definitions -- the marker line is preserved as text. This
+   mirrors the heading, list and task markers, which likewise require a
+   literal space after the marker. carve-rs is the reference here.
+
+   AND THE SEPARATOR IS A RUN (carve#892). `footnote_definition` and
+   `abbreviation_definition` spell it `space+`: one or more ASCII spaces, all
+   of them separator. This is a correction, not a widening -- both productions
+   said `space` while all four readers consumed a run, so the grammar forbade
+   a shape nothing rejected.
+
+   CARDINALITY HERE IS THE OPPOSITE ANSWER FROM carve#912's, and the two are
+   not in conflict because they govern different POSITIONS. A PADDING SLOT
+   sits between two tokens on a line whose construct is already fixed, and its
+   width means nothing, so the four slots spelled `space` mean exactly one. A
+   MARKER SEPARATOR is what stands between the marker and the content it
+   introduces, and a writer aligning definitions in a column is writing
+   separator, not content. Stated here so the two rulings are not read as
+   contradicting each other.
+
+   WHAT THE RUN DOES NOT INCLUDE. It is ASCII spaces, so the first character
+   that is not one ends the separator and BEGINS the content. A no-break space
+   is content: `*[HTML]:<SP><NBSP>Hyper` expands to `<NBSP>Hyper`, and
+   `[^f]:<SP><NBSP>note` is a footnote whose body starts with the character.
+   This is where all three engines disagreed, each in a different place, and
+   where the executable spec gave a fourth answer no engine gave -- it refused
+   `[^f]:` plus any non-ASCII whitespace as a definition at all (carve#892).
+
+   A TAB AFTER THE RUN is content too, by the same rule, and the two markers
+   then answer differently for a reason that is downstream of this clause
+   rather than in it: an `abbreviation_expansion` is a raw string, so the tab
+   survives into the `title`, while a footnote's `inline_content` is parsed as
+   blocks and a leading tab is that body's own indentation run (PART 9 §24 C1).
+   Measured, not asserted.
+
+   MARKER REQUIRES CONTENT still applies after the run: `[^f]:` followed by
+   spaces and nothing else is a paragraph, because a line of `whitespace` is
+   blank (PART 1). *)
+(* A leading `@` is reserved: `[@key]: ...` is never a reference definition, it
+   is a citation definition (PART 9 §22, Tier-2). This parallels the `[^...]:`
+   footnote-definition precedence and holds in core whether or not the citation
+   extension is enabled, so a short entry like `[@a]: A.` is not mis-claimed as
+   a link definition. *)
+(* The reference-definition title reuses `link_title`, INCLUDING the
+   backslash-escape rule above: a `\"` inside the quoted run is a literal
+   quote and does not end the title (`[y]: /u "a\"b\"c"` -> title
+   `a"b"c`, emitted as `title="a&quot;b&quot;c"`). This matches the
+   inline-link title; the earlier carve-js divergence (ref-def title
+   stopping at the first raw quote) was fixed in the canonical oracle, and
+   the examples corpus now pins the ref-def escaped-quote form too. *)
+(* A reference definition requires a NON-EMPTY `link_destination` (one or
+   more `url_char`s after the `':' space`). A bare `[r]:` -- with nothing
+   after the colon, or only trailing whitespace -- does NOT form a
+   definition; the line stays literal paragraph text. *)
+(* --- Inline Spans --- *)
+(* A bracketed inline run immediately followed by an attribute block
+   attaches those attributes to a <span>. Distinguished from links by the
+   character after ']': '(' -> inline_link, '[' -> reference link, '{' ->
+   inline_span. A bare '[text]' with none of those is literal text (carve
+   has no shortcut reference links). See PART 9 §14. *)
+inline_span = '[', inline_content, ']', attributes ;
+
+autolink = '<', (url_autolink | email_autolink), '>', [attributes] ;
+(* A trailing `[attributes]` block attaches to the autolink (generic
+   inline-attribute carrier, examples.md): `<https://example.com>{.ext}`
+   -> `<a href="https://example.com" class="ext">https://example.com</a>`.
+   Same slot as every other inline carrier; both reference impls agree. *)
+(* DISPLAY TEXT -- NORMATIVE: the visible text is the RAW content between
+   `<` and `>`, verbatim. A url_autolink keeps its scheme
+   (`<mailto:a@b>` -> `<a href="mailto:a@b">mailto:a@b</a>`); an
+   email_autolink has no explicit scheme, so it shows the address and the
+   `mailto:` is added only to the href
+   (`<a@b.com>` -> `<a href="mailto:a@b.com">a@b.com</a>`). *)
+url_autolink = scheme, ':', {url_char}+ ;
+(* The autolink body is built from `url_char` only; `<` and `>` are NOT
+   url_chars, so a `<` inside the brackets cannot be part of the body --
+   `<http://a.com/<script>>` is not an autolink and renders as the fully
+   escaped literal text. *)
+(* The trailing `.`, {letter}+ (TLD) is MANDATORY for an email autolink:
+   `<a@b.com>` is a mailto link, but `<a@b>` (no dot+TLD) and `<x@y:z>`
+   (`:` is not an email_char) are NOT email autolinks and stay literal. *)
+email_autolink = {email_char}+, '@', {email_char}+, '.', {letter}+ ;
+
+auto_text_link = "</#", crossref_id, '>' ;  (* cross-reference with auto text *)
+crossref_id = {character - ('>' | whitespace | newline)}+ ;
+(* The crossref id token accepts NON-ASCII characters: automatic heading ids
+   PRESERVE Unicode and case (`# Café Notes` -> `Café-Notes`), so `</#Café-Notes>`
+   must be writable. Resolution is CASE-INSENSITIVE: the reference is folded and
+   matched against the case-preserved id table, then the link emits the target's
+   actual id (`</#café-notes>` resolves to `Café-Notes`). Matching is NOT
+   ASCII-folded, so an ASCII spelling of a non-ASCII id (`cafe` vs `Café`) does
+   NOT resolve (corpus 15-heading-ids). EXPLICIT ids (`{#id}`) remain ASCII
+   `identifier`s -- the asymmetry is deliberate: authors control explicit
+   ids, auto ids follow the heading text. *)
+
+url = scheme, ':', {url_char}+ ;
+scheme = letter, {letter | digit | '+' | '-' | '.'} ;  (* 1+ chars; single-letter schemes ok *)
+url_char = letter | digit | '-' | '.' | '_' | '~' | ':' | '/' | '?'
+         | '#' | '[' | ']' | '@' | '!' | '$' | '&' | "'" | '(' | ')'
+         | '*' | '+' | ',' | ';' | '=' | '%'
+         | (unicode_url_char - format_char - control_char) ;
+format_char  = (* any character in Unicode General_Category Cf *) ;
+control_char = (* any character in Unicode General_Category Cc *) ;
+(* `url_char` therefore EXCLUDES `"`, `\`, `` ` ``, `{`, `}`, `|`, `^`
+   (and `<` / `>`). Any of these inside `<...>` breaks the autolink: the
+   whole run is not an autolink and renders as escaped literal text --
+   `<http://a.com/"q">` is literal (the straight quotes additionally pick
+   up smart-quote typography). *)
+(* AN AUTOLINK BODY ADMITS NON-ASCII AND EXCLUDES FORMAT CHARACTERS --
+   NORMATIVE (carve#844, carve#860). The last alternative is the whole of
+   the change: outside ASCII, `url_char` admits any character that is not
+   whitespace, not a format character and not a control character. An
+   internationalized domain written in its own script is an autolink, and
+   so is a non-ASCII PATH.
+
+   The CONTROL half is not redundant with the ASCII enumeration, which is
+   the trap it was written around: `unicode_url_char` is "non-whitespace,
+   non-ASCII", so the C1 block U+0080-U+009F satisfies it. Those characters
+   are Cc, are not Cf, and only U+0085 is whitespace - so without this term
+   fourteen control characters would be `url_char`s while every C0 control
+   is excluded, which is not a rule anyone would state on purpose. The
+   executable spec admitted them until its own class test said so.
+
+   WHY, since the ASCII enumeration was explicit. The same destination
+   written `[t](https://<IDN>/)` links in all three engines today, because
+   `link_destination` admits `unicode_url_char`. Two spellings of one
+   destination cannot answer differently on the character set, and the
+   inline form is the one with the corpus behind it, so the autolink
+   follows it. The exclusion also looks incidental rather than chosen: the
+   note above enumerates the punctuation `url_char` excludes and never
+   mentions non-ASCII, which is not what a decided exclusion reads like.
+
+   THE FORMAT-CHARACTER EXCLUSION IS THE PART THAT IS NEW RATHER THAN
+   PERMISSIVE. A format character (General_Category Cf: the byte order
+   mark, the zero-width space, the word joiner, the bidi marks) is
+   invisible by definition, so a host carrying one renders as the host
+   without it and links somewhere else. That is a spoofing surface, not an
+   authoring convenience, and no author types one on purpose. Stating it as
+   a PROPERTY rather than as a list of codepoints also makes the byte-order
+   -mark answer fall out of the rule: a host language whose own whitespace
+   class happens to hold U+FEFF gets the right answer for the wrong reason
+   and the wrong answer for U+200B, which is exactly the split carve#860
+   measured.
+
+   THE ASCII HALF DOES NOT MOVE. The nine characters the note above
+   enumerates are still not `url_char`s: they are exclusions with a stated
+   reason, and all four artifacts agree on them today. The rule reads
+   `unicode_url_char - format_char` for that reason -- spelling it "any
+   non-whitespace, non-control character" would additionally re-admit those
+   nine and move every implementation on a question nobody asked.
+
+   `link_destination` IS UNCHANGED. It admits `unicode_url_char` in its own
+   right, so a format character in an inline destination or a reference
+   definition is still an ordinary destination character (corpus
+   `240-a-zero-width-character-in-a-reference-definition-destination`). The
+   two productions exclude different characters -- notably the backslash --
+   and this clause moves only `url_char`.
+
+   `scheme` IS UNCHANGED AND IS ASCII. Only the BODY admits non-ASCII; a
+   scheme is `letter, {letter | digit | '+' | '-' | '.'}` and `letter` is
+   the enumerated ASCII alphabet. The executable spec accepted a non-ASCII
+   scheme because ohm's built-in `letter` is Unicode-aware, and is corrected
+   under this clause rather than beside it.
+
+   Engine state when this landed, measured on fresh mains: carve-rs makes
+   EVERY non-ASCII autolink literal and moves on the first half
+   (markup-carve/carve-rs#755); carve-js and carve-php link format
+   characters and control characters and move on the second
+   (markup-carve/carve-js#834, markup-carve/carve-php#983). No
+   implementation had both halves. *)
+
+(* --- Images --- *)
+(* An image has the same three forms as a link (inline / reference / collapsed
+   reference); only the leading `!` and the `<img src>` output differ. *)
+image = inline_image | reference_image | collapsed_reference_image ;
+inline_image = '!', '[', alt_text, ']', '(', image_source, [image_title], ')', [attributes] ;
+reference_image = '!', '[', alt_text, ']', '[', reference_label, ']', [attributes] ;
+collapsed_reference_image = '!', '[', alt_text, ']', '[', ']', [attributes] ;
+alt_text = {character} ;
+(* SEMANTIC CONSTRAINT: the alt text ends at the matching `]` -- THE SAME
+   close as `link_text`, balanced-bracket, escape- and LITERAL-SPAN-aware, and
+   for the same reason: the sentence above this block says an image has the
+   same three forms as a link and that only the leading `!` and the `<img src>`
+   output differ. The bracketed run is not one of the things that differ. Not
+   expressible context-free, which is why this production reads `{character}`
+   and defers to the constraint rather than pretending to enumerate it.
+
+   THIS WAS `{character - ']'}`, a flat run stopping at the first `]`, and the
+   two statements sat four lines apart contradicting each other. Read as
+   written it says `![t[z]][r]` is not an image, so the executable spec parsed
+   the `!` as literal text and the rest as a reference LINK, while all three
+   engines rendered an `<img>` (carve#1197). The prose is the rule; the
+   production was the defect.
+
+   The VALUE is not `inline_content`. `alt` is an HTML attribute, so nothing
+   inside the run is inline-parsed and no smart typography applies:
+   `![x /b/ y](/u)` gives `alt="x /b/ y"`, an escape stays as authored
+   (`![x \] y](/u)` gives `alt="x \] y"`), and a nested link or image inside
+   the run contributes its source bytes, not an element. Only the CLOSE is
+   shared with `link_text`; the content model is not. *)
+image_source = link_destination ;  (* absolute or relative, like links *)
+image_title = link_title ;
+(* A reference / collapsed-reference image resolves its label against the
+   document's reference definitions EXACTLY as the matching reference_link does
+   (case-sensitive), taking the definition's destination as `src` and its
+   optional title as the image title. A collapsed `![alt][]` uses alt_text as
+   the label, so alt_text must be non-empty; the full `![alt][ref]` form allows
+   an empty alt_text (the label is reference_label). An UNRESOLVED reference
+   image renders as literal source (the `!` plus the bracketed text) and --
+   unlike a reference link -- never matches heading text. There is NO shortcut
+   `![alt]` reference image, mirroring the absence of a shortcut reference
+   link. Trailing [attributes] attach to the resolved <img>. *)
+
+(* A caption (`^ ` line) may follow a standalone image paragraph on the
+   next line, wrapping it in a <figure> -- caption placement is PART 9 §4;
+   there is no separate grammar production for the pair. *)
+

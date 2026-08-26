@@ -1,0 +1,943 @@
+(* ============================================================================
+   21. TRAILING LINE COMMENTS -- NORMATIVE (governs `inline_comment` in PART 3).
+      - A `%%` token is a trailing comment marker only when the character
+        immediately before it is whitespace (space or tab) or it starts the
+        inline run (beginning of paragraph content after leading whitespace).
+      - When recognized, the `%%` and ALL remaining characters up to (but not
+        including) the line break are consumed and produce no output.
+      - `%%` is NEVER recognized inside a code span or raw inline (PART 9 §20);
+        those contexts pass both `%` characters through verbatim.
+      - `\%%` (escaped first percent) is literal -- `%%` is literal text, not a
+        comment marker.
+      - Without preceding whitespace (e.g. `50%%` or `a%%b`) the `%%` is
+        literal -- percentages and doubled-percent tokens in prose are safe.
+      - The comment does NOT cross a line break; a soft-wrapped continuation on
+        the next line of the same paragraph is unaffected (corpus 26-comments-6).
+
+   21a. DELIMITED INLINE COMMENTS -- NORMATIVE (governs `braced_comment` in
+      PART 3). `%%` runs to the end of its inline RUN, so mid-line commenting
+      already works wherever the structure supplies a boundary -- a table cell
+      ends at `|`, link text at `]`. Plain prose supplies none, and this is the
+      form for it: `foo {% bar %} baz` renders `<p>foo  baz</p>`.
+      - SPELLING. `{%` opens, the FIRST `%}` closes. One character per meaning,
+        like the rest of the braced family ({^x^}, {,x,}, {+x+}, {-x-}), and the
+        same spelling Djot uses, so a Djot document's comments keep working.
+      - NO NESTING. A `{%` inside the content is ordinary comment text; the run
+        ends at the first `%}`.
+      - UNTERMINATED STAYS LITERAL. `a {% oops` renders the braces (matching
+        Djot, and the same visible-failure principle as `- {.notattr} Milk`).
+      - VERBATIM CONTEXTS ARE OPAQUE, as for `%%` (§21): a code span or raw
+        inline passes `{%` through.
+      - TRANSPARENT TO INLINE STRUCTURE. A comment inside an emphasis run does
+        not break it: `*bo{% c %}ld*` is one `<strong>`.
+      - MULTI-LINE WITHIN A PARAGRAPH. The run may cross soft line breaks:
+        `a {% one\ntwo %} b` renders `<p>a  b</p>`. It never joins two
+        paragraphs across a blank line -- `%%%` is the block form (§28).
+      - ESCAPING. `\{%` is literal text.
+      - EVERY RENDER TARGET DROPS IT. HTML, Markdown, plain text and ANSI emit
+        nothing for it, as they already do for `%%`. A host that wants comments
+        published does it with a `beforeRender` extension, which keeps the
+        escaping decision where it belongs.
+      - THE SPELLING IS RECORDED. Both forms parse to a `comment` node, and the
+        node says which one produced it (`delimited: true` for this form, PART
+        12). Without that field a writer reading the tree back has one spelling
+        for two constructs, and `foo {% bar %} baz` formats to `foo %% bar` --
+        the trailing form swallowing `baz`. Silent loss through the formatter,
+        on the one construct whose output is invisible.
+      - THIS IS A BEHAVIOR CHANGE. `foo {% bar %} baz` used to render its braces
+        literally. `carve lint` reports a braced comment in a document that also
+        carries template tags (`{% raw %}`, `{% endif %}`), which is the one
+        shape where a Liquid or Nunjucks source reaches the parser as text.
+      (corpus: prose, inside emphasis, table cell, link text, multi-line,
+      unterminated, verbatim span, and an fmt round trip.)
+
+   22. FORCED INTRAWORD EMPHASIS -- NORMATIVE (governs the forced_* productions
+      in PART 3). The brace-pair family is the escape hatch for emphasis where a
+      bare delimiter would otherwise stay literal (§9 word boundary).
+      - FORMS. Each emphasis mark has a forced form that renders the SAME
+        element as its bare delimiter:
+          {/x/}   -> <em>x</em>        {*x*}   -> <strong>x</strong>
+          {_x_}   -> <u>x</u>          {~x~}   -> <s>x</s>
+          {^x^}   -> <sup>x</sup>      {,x,}   -> <sub>x</sub>
+          {=x=}   -> <mark>x</mark>
+      - NO WORD BOUNDARY. A forced span opens and closes regardless of the
+        surrounding characters, so it emphasizes intraword: foo{*bar*}baz ->
+        foo<strong>bar</strong>baz; my{_path_}name -> my<u>path</u>name. This
+        is the ONLY way to emphasize intraword.
+      - BOUNDS = THE BRACES. The closing `X}` ends the span; a bare delimiter
+        of the same kind INSIDE is literal content, like the bare-span rule
+        (§9): {/a/b/} -> <em>a/b</em>. Inner content otherwise parses normally,
+        so cross-type nesting works: {/italic *bold*/} -> <em>italic
+        <strong>bold</strong></em>.
+      - `{~ … ~}` DISAMBIGUATION. The brace pair is editorial SUBSTITUTION when
+        it contains a top-level `~>` ({~old~>new~} -> <del>old</del><ins>new
+        </ins>), and forced STRIKETHROUGH otherwise ({~old~} ->
+        <s>old</s>). The `~>` test is the discriminator.
+      - `{= … =}` is forced highlight (<mark>), distinct from the raw-inline
+        `{=format}` attribute on a code span (`` `x`{=html} ``), which has no
+        trailing `=` before the `}`.
+      - ESCAPING. A literal `{/` (etc.) is written `\{/` -- one backslash on the
+        brace is enough; the inner delimiter need not be escaped.
+      - ATTRIBUTES. A forced span MAY carry a trailing `[attributes]` block like
+        any bare span: {*x*}{.c} -> <strong class="c">x</strong>.
+      (corpus 01-emphasis-12 forced-intraword, 01-emphasis-13 forced-nesting.)
+
+   23. LINE BLOCK (VERSE) -- NORMATIVE (governs `line_block` in PART 2). A
+      `::: |` fenced block preserves the author's per-line layout.
+      - TRIGGER. A bare pipe `|` TYPE TOKEN on the opener (`::: |`) selects this
+        behavior. The token is a pipe, not a word. STRICT (djot): the opener
+        carries no inline attributes, so the `::: {.line-block}` class form is an
+        ordinary PARAGRAPH, not a line block -- the class alone does not trigger it.
+      - WRAPPER. Renders as `<div class="line-block">` (a generic div, never an
+        `<aside>`); extra classes / id attach via a PRECEDING block-attribute
+        line, which floats onto the div (§15).
+      - LINE BREAKS. Each SOFT line break inside a stanza becomes a HARD break
+        (`<br>`). So consecutive non-blank body lines render as one paragraph
+        with `<br>` between them.
+
+        A BACKSLASH BREAK IS NOT ADDITIVE -- NORMATIVE. The rule above has a
+        subject, and it is the SOFT break. `hard_break = '\', newline` (PART 3)
+        consumes its own newline, so no soft break survives a backslash and
+        there is nothing left to convert: ONE line boundary produces ONE
+        `<br>`, however the boundary is spelled. The additive reading would
+        have to SYNTHESIZE a break node no production yields, and it would
+        make the container ADD a line to the layout this block exists to
+        preserve. It also reaches the markdown, plain and ansi targets, where
+        nothing rules on a second break. Ruled at carve#1334, superseding a
+        note on carve-rs#1026 that counted engines rather than citing a clause
+        (PART 0, THE EXECUTABLE ARTIFACTS DECIDE NOTHING) and whose two
+        witnesses have since changed.
+
+        THE BACKSLASH STILL HAS A JOB HERE, so it is not redundant syntax the
+        writer may drop. PART 7 makes the whitespace run before it INTERIOR,
+        which is what lets a verse line keep a LONE trailing space that would
+        otherwise be stripped from a content line; a run of TWO OR MORE
+        trailing columns needs no backslash, because MEDIAL GAPS below has
+        already turned it into NBSP CONTENT. And a `\` ALONE on a body line is
+        how a stanza carries an EMPTY verse line, the blank line being the one
+        spelling that would end the stanza instead. Both are observable in the
+        tree and in the HTML, which is why the canonical writer may not drop
+        either (PART 11 §7c).
+
+        AN INLINE CONSTRUCT IS NOT A DEPTH THE RULE STOPS AT -- NORMATIVE.
+        The subject is the SOFT break, so the only question at a boundary is
+        whether a `soft_break` NODE is there. Nothing conditions the rule on
+        what ENCLOSES that node, and an emphasis run, a link label or a
+        semantic span spanning a boundary encloses one: the newline is a node
+        BESIDE the construct's text, not part of it. So
+
+          ::: |
+          *a
+          b*
+          :::
+
+        holds `<strong>a<br>` over `b</strong>`, the same break the same two
+        lines get with no emphasis around them.
+
+        THE CONVERSION IS IN THE TREE, NOT ONLY IN THE HTML. A stanza's bare
+        newline is a `hard_break` NODE (PART 12), which is what lets PART 11
+        §7c spell one as a bare newline at all - "re-reading that newline
+        yields the SAME TREE" is a statement about nodes. So the conversion
+        runs at every depth for the same reason the render does, and an
+        engine's own AST is where the other reading is easiest to see: all
+        three yield `hard_break` between two body lines and `soft_break`
+        between the same two lines inside a `strong`, one document answered
+        two ways by an enclosure no clause names.
+
+        THE TWO EXEMPTIONS ABOVE ARE DIFFERENT IN KIND, NOT IN DEPTH, which
+        is why neither ever needed a depth stated. A backslash is exempt
+        because `hard_break` consumes its own newline. A verbatim run is
+        exempt because it carries the newline as its own CONTENT (carve#1282;
+        BUT IT DOES NOT SURVIVE A RUN THAT ATE ITS LINE below draws the
+        consequence in these words: "there is no boundary left in the tree").
+        Both leave NO NODE. A run that closes on a LATER line is exempt for
+        that same reason and not for closing, the newline being inside its
+        value either way:
+
+          ::: |
+          a `b
+          c` d
+          :::
+
+        keeps the newline as content while the emphasis above hardens. The
+        two documents differ only in WHICH CONSTRUCT spans the boundary, and
+        that is the difference the rule turns on.
+
+        WHAT THE OTHER READING COST. It made the block answer by the SPELLING
+        of a boundary, which the clause above forbids outright: all three
+        engines emit the `<br>` inside the `<strong>` for `*a\` over `b*` and
+        nothing for `*a` over `b*` - one boundary, one container, two
+        answers. It made a single stanza harden one boundary and not the next,
+        `*a` over `b*` over `c` giving a bare newline and then a `<br>`. And
+        it let any emphasized couplet lose the per-line layout this block
+        exists to preserve. Ruled at carve#1351, superseding four rows pinned
+        on carve-js#1127 whose argument was that the reference engine is
+        unambiguous (PART 0, THE EXECUTABLE ARTIFACTS DECIDE NOTHING) and
+        whose premise - that an inline construct CONSUMED the newline - the
+        `soft_break` node that same parser emits contradicts.
+      - STANZAS. A blank line ends a stanza; each stanza is its own `<p>` inside
+        the single `<div class="line-block">`.
+      - LEADING WHITESPACE. Each body line's leading whitespace is PRESERVED
+        (unlike ordinary paragraph content, which is trimmed), down to a single
+        column. In HTML each leading space serializes as a NBSP (`&nbsp;`,
+        U+00A0), so indentation is visible with no external CSS (matching
+        Pandoc). Plain-text / ANSI renderers emit the literal spaces. A tab in
+        the leading run follows the tab-stop rule (PART 9 §24).
+      - MEDIAL GAPS. An INNER or TRAILING run of TWO OR MORE columns is
+        preserved the same way and serializes as the same NBSPs. This is the
+        inline alignment verse and address blocks are made of -- the caesura of
+        Old English verse, a column of aligned text -- and collapsing it loses
+        the per-line layout the block exists to keep (matching Pandoc, where
+        every space the author writes is significant). A LONE inner space is NOT
+        preserved: it stays an ordinary, collapsible space so a long line can
+        still wrap between words. Tab arithmetic is the leading run's, counted
+        from the column the run starts at -- so the SAME tab is a gap or a lone
+        space depending on the column it lands in, which is what makes it worth
+        pinning: corpus 41-line-blocks-9 holds a tab that crosses one column
+        (collapses) beside two that cross two stops (kept), and a leading one.
+      - REFERENCE COLUMN. Leading whitespace is measured RELATIVE TO THE FENCE
+        indent, not absolute column 0: a `line-block` nested in a list has the
+        container's structural indent stripped first (the list dedents to its
+        content column), so only the author's intra-verse indent survives. The
+        `+` first-block form (fence at column 0) is the canonical way to nest a
+        `line-block` without the container consuming indentation.
+      - INLINE CONTENT parses normally (emphasis, links, code, ...); only the
+        whitespace and soft-break handling differ from an ordinary div.
+      - NO BLOCK CONSTRUCT IS RECOGNIZED INSIDE ONE -- NORMATIVE. A body line
+        is verse: a link, footnote or abbreviation definition, a
+        block-attribute line and a fence opener are all ORDINARY TEXT there,
+        and none of them is REGISTERED. The stanza is the only structure a
+        line block has.
+
+        A COMMENT IS THE ONE EXCEPTION, and the exception is about TIMING
+        rather than about what a comment is. This clause used to say "a
+        comment is not a block construct", which is false: `comment_line` IS
+        a block, listed in PART 1 among the INVISIBLE blocks and ruled by §10
+        I5 to interrupt an open paragraph and be consumed. The real reason it
+        survives the suppression above is that it is the only construct on
+        that list whose recognition PRESERVES the verse instead of rewriting
+        it. A definition or a fence opener CLAIMS the line and changes what
+        renders; a comment-only body line leaves an EMPTY verse line - the
+        line was written, so the stanza keeps its shape.
+
+        IT IS REMOVED AT THE BLOCK LAYER -- NORMATIVE. The line is decided
+        with the other block-layer decisions, BEFORE any inline content
+        exists. No inline run can reach it, so whether an EARLIER line left a
+        verbatim run open cannot change whether a line is a comment. Leaving
+        this unsaid let §21's verbatim exclusion claim the line and PUBLISH
+        the comment's own text, which is the one outcome a comment may never
+        have, on a document whose only defect is a stray backtick somewhere
+        above it (carve#1333):
+
+          ::: |
+          a `b
+          %% secret
+          c
+          :::
+
+        The comment is gone before the inline run exists, and the run carries
+        the empty verse line as a NEWLINE, like every other break it swallows
+        (carve#1282).
+
+        REMOVED FROM THE RENDER, NOT FROM THE TREE. The line is a `comment`
+        node like any other comment (§21a, PART 12), so the canonical writer
+        emits it back UNCHANGED and at the SAME column. A writer that indents
+        it by a space to stop the line re-reading as a comment publishes the
+        very text the removal exists to hide, because in verse a leading run
+        is CONTENT (below) and an indented `%%` line is ordinary text. That is
+        a PART 11 §1 failure, and it is what the pinned build does today.
+
+        THE NODE'S SURVIVAL DOES NOT DEPEND ON HOW THE BOUNDARY ABOVE IT WAS
+        SPELLED -- NORMATIVE. `a` over `%% c` and `a \` over `%% c` are the
+        same document but for a backslash on the line above, and the comment
+        is a node in both. An engine that asks the question of the SOFT-break
+        conversion asks it where a `\` never arrives -- A BACKSLASH BREAK IS
+        NOT ADDITIVE consumed the newline before the conversion ran -- so the
+        note is kept under one spelling and dropped under the other. The
+        boundary that OPENS the comment's line is there either way, which is
+        the only thing the line needs to exist.
+
+        BUT IT DOES NOT SURVIVE A RUN THAT ATE ITS LINE. What an unclosed
+        verbatim run carries across an emptied line is the NEWLINE, the same
+        thing it carries across every boundary it swallows, so there is no
+        boundary left in the tree for a `comment` node to sit on and the run's
+        value holds an EMPTY LINE instead. Appending the node anyway puts its
+        span before the run that contains it and after the node that follows
+        it, which PART 12 containment refuses. The writer's answer for that
+        empty line is PART 11 §7c.
+
+        AND §7c REACHES AN INTERIOR LINE, because the run's own CLOSER takes
+        the last one. A tree records no closer for a verbatim run (PART 12 §3
+        gives `code` a value and nothing else), so PART 11 §6's second half
+        hands that spelling to the writer, which CLOSES what the author left
+        open -- in an ordinary paragraph too, where a lone opener comes back
+        with a closer beside the run's end. Inside verse the closer occupies a
+        LINE, so §7c's `%%` is written for every emptied line the run still
+        spans and not for the one the closer lands on. Written as source over
+        the form the writer emits for it:
+
+          ::: |     ->     ::: |          the emptied line is INTERIOR: the
+          `                `              run spans past it to `x`, so §7c
+          %%               %%             spells it, and the closer follows
+          x                x`
+          :::              :::
+
+          ::: |     ->     ::: |          the run spans ONE boundary and its
+          `                `              value is a bare newline, so the
+          %%               `              closer takes the emptied line and
+          :::              :::            no empty line is left to spell
+
+        Both preserve the tree and the HTML. Corpus
+        380-a-terminal-comment-line-still-leaves-an-empty-verse-line and its
+        `.fmt` file pin the second form (carve#1472).
+
+        A TRAILING COMMENT IS A DIFFERENT CONSTRUCT and this clause does not
+        reach it. `x %% secret` is `inline_comment` (PART 3, §21), not
+        `comment_line`, and §21's third bullet governs it: inside a verbatim
+        run there is no comment there at all, only two percent characters in
+        content -- exactly what PART 3's UNCLOSED RUN clause already rules for
+        an emphasis delimiter or a link tail after the same opener. That holds
+        in a line block for the same reason it holds in a paragraph, where
+        the one line
+
+          a `b %% secret
+
+        publishes the same text with no container involved.
+        The asymmetry is deliberate: an engine may leave a `%%` standing
+        inside a verbatim run, and may never delete author bytes out of one.
+
+        LEADING WHITESPACE IS CONTENT HERE, so `comment_line`'s optional
+        `[whitespace]` prefix has nothing to consume in verse: ONLY a body
+        line whose FIRST character is `%` is a comment line. An indented `%%`
+        line is ordinary verse text and its leading run serializes as NBSPs
+        like any other.
+
+        AN EMPTY VERSE LINE IS A LINE, NOT A BREAK. It contributes a `<br>`
+        only through the BOUNDARY above it, exactly as a line with content
+        does, so a comment-only line at the END of a stanza adds nothing after
+        the break that already separates it from the line before: `a` over
+        `%% c` is `a<br>` and a stanza that is nothing but a comment is an
+        EMPTY paragraph. Anything else would put two breaks on one boundary,
+        which is what A BACKSLASH BREAK IS NOT ADDITIVE refuses above. Written
+        down because "leaves an EMPTY verse line" reads, at a stanza's end,
+        as though the line owed a break of its own.
+
+        A line block preserves authored layout: nothing inside it is claimed
+        and nothing is dropped unless it is a comment (carve#510, carve#573).
+
+      (corpus 41-line-blocks*.)
+
+      LOCAL HARD-BREAK BLOCK -- NORMATIVE (governs `local_hard_break_block` in
+      PART 2). A `::: \` fenced block is the smaller local opt-in for visible
+      line breaks.
+      - TRIGGER. A bare backslash `\` TYPE TOKEN on the opener (`::: \`) selects
+        this behavior. The token is not an English type word. Extra classes / id
+        attach via a PRECEDING block-attribute line.
+      - WRAPPER. Renders as `<div class="hardbreaks">` (a generic div, never an
+        `<aside>`).
+      - DIRECT PARAGRAPHS ONLY. Each soft break in a direct paragraph child of
+        the block becomes a hard break (`<br>`). Nested blocks parse normally and
+        keep normal soft-break behavior; the mode is not inherited.
+      - NO WHITESPACE PRESERVATION. Unlike `::: |`, leading whitespace has no
+        special visual-preservation rule. Ordinary paragraph parsing trims or
+        folds it as usual.
+      (corpus 41-line-blocks*.)
+
+   24. TABS AND INDENTATION -- FORMALIZED COLUMN ARITHMETIC (governs
+      `indent` in PART 2 and every indentation-sensitive comparison; the
+      arithmetic PART 0's layout automaton runs on. Adjudicated with the
+      tab-stop work, carve #99 / Rule B carve #103; shipped in all three
+      implementations).
+      C1 COLUMNS, NOT CHARACTERS. col advances by 1 for a space and to the
+         next multiple of 4 for a tab (CommonMark tab stops; a leading tab
+         indents to column 4). Outside indentation (code content, inline
+         text) tabs are PRESERVED verbatim and never expanded (PART 2,
+         TABS IN CODE).
+      C2 MARKER SEPARATOR IS A SPACE. The required separator after a list
+         marker is a single SPACE character -- a syntax delimiter, not
+         indentation. `-<TAB>a` is NOT a list item (paragraph text).
+      C3 CONTENT COLUMN. content_column(item) := the visual column where
+         the item's content starts (marker width + separator: `- ` -> 2,
+         `1. ` -> 3, `10. ` -> 4). A marker-attached attribute block (§15 A8)
+         is metadata and contributes ZERO: `-{.x} ` -> 2 and `1.{.x} ` -> 3,
+         irrespective of the block's spelling, length or Unicode encoding. A
+         task checkbox is content and contributes zero for the same coordinate:
+         `-{.x} [x] ` -> 2. A child -- a LIST MARKER (bullet `-`/`*`,
+         task, or ordered, SYMMETRIC) opening a sublist, OR any OTHER block
+         opener -- must reach AT LEAST the parent item's content_column to belong
+         to the item. The block-opener set is UNIFORM and closed: block quote (`>` or
+         `> `), heading (`#`), thematic break, fenced code, colon fence / admonition
+         (`:::`), TABLE (a `|`-delimited row), and DEFINITION LIST (a `:: term`
+         opener; the two-line `:: `/`:  ` marker is recognized by the same
+         look-ahead the top level uses, and only the `:: ` TERM line opens the
+         block). None of these is special-cased: a def-list or table interrupts
+         at column 0 and nests at content_column exactly as a quote or heading
+         does (carve#295). The content_column is
+         the item body's CANONICAL COLUMN 0 and its minimum containment column.
+         This one rule holds whether or not a blank line precedes the child;
+         the blank only decides tight vs loose (§17), and there is no relaxed
+         `base_column + 2` channel.
+           - BELOW content_column: the line is outside the item body. A list
+             marker folds as lazy item text (markers never interrupt, §10 I2);
+             every other line, likewise, never nests -- with no blank it
+             lazily continues the open item paragraph (§10 I2), and after a
+             blank it ends the item and parses at DOCUMENT level.
+
+             A definition at DOCUMENT column 0 is the I5 interrupter, not the
+             lazy-text branch: column 0 is the surrounding document's own
+             opener column, so it closes the item and registers there. A
+             definition at a nonzero column below content_column reaches no
+             opener column and follows the lazy-text rule above. This boundary
+             is what distinguishes corpus 286's columns 0 and 1.
+
+             THE FOLD PRESUMES AN OPEN PARAGRAPH -- NORMATIVE (carve#682).
+             "Folds as lazy item text" names an OPERATION, and lazy
+             continuation continues an open paragraph (§10 I2). Where none is
+             open the instruction cannot be carried out, so the branch does not
+             decide the line: it is classified in the context that SURVIVES.
+             Which context that is depends on what closed the paragraph, and
+             the two cases already settled here differ:
+
+               - after a COMMENT, the item is still open -- the comment
+                 exception below is explicit that a comment "does not close the
+                 ITEM either" while it does end the paragraph. So the line stays
+                 in the item: a MARKER is at the item body's own column 0, where
+                 C4 Rule B opens a list, and any other line begins the item's
+                 SECOND paragraph. All three engines answer both ways round.
+               - after a BLANK LINE, the item is already ended by the clause
+                 above, so the branch is never reached at all.
+
+             Two things are NOT settled by this sentence, and both are recorded
+             rather than decided (carve#682):
+
+               - the paragraph closed by a construct that leaves the ITEM's fate
+                 open. A closed CODE fence is the measured one: carve-js and
+                 carve-rs nest a sublist, carve-php and the executable spec open
+                 a sibling list at the top level. That row turns on whether the
+                 item survives the fence, which no clause here states.
+               - the comment's own COLUMN. The comment exception is written
+                 without reference to a column, but the two spellings answer
+                 differently: at the content column the marker opens a sublist,
+                 while BELOW it the following line reaches the item only through
+                 the lazy fold, so ending the paragraph would take that path
+                 away. Corpus 189 and 192 pin the below-column answer (`- - a` /
+                 ` %% c` / ` b` keeps `b` in the INNER item, carve#618), so
+                 aligning the two means moving a pin, not tidying a clause.
+
+             The BLOCK QUOTE row is the control that shows this is the
+             mechanism and not a coincidence: a quote leaves ITS OWN paragraph
+             open, so the fold IS available and all readers agree the marker
+             folds into the quote. Every row where a paragraph is open is
+             unanimous; the disagreements are all rows where none is.
+
+             AN INVISIBLE LINE FOLDS LIKE ANY OTHER -- NORMATIVE. "Every other
+             line" includes the ones that are not block-SHAPED. This is the
+             BELOW-COLUMN half of §10 I5's first exception (AN INVISIBLE LINE IS
+             ONE CLASSIFICATION): below the column the comment is still exempt
+             and every other member of the class is not a member here at all --
+             it folds as TEXT and registers nothing. It is text, so a `[^f]`
+             elsewhere in the document stays literal; half-folding it -- text
+             on the page, definition in the tables -- is not an option the
+             rule offers.
+
+             A BLOCK-ATTRIBUTE LINE FOLDS THE SAME WAY, and for the same
+             reason: it is on I5's interrupter list with the definitions, and
+             below the column it reaches no opener column either. So it is text
+             -- the authored braces render as characters -- and it attaches
+             nothing. Half-folding an attribute is the same unavailable option
+             one construct over, and its failure mode is worse than a wrong
+             shape: an attribute recognized below the column has no visible
+             block left in the container to attach to, so §15 A4 discards it and
+             the author's characters reach neither the page nor any table. That
+             is what carve#1801 measured in a definition description, where the
+             identical line one host over folds as literal text.
+
+             THE FOLD IS INTO THE CONTAINER, in every host, which is the half
+             this clause used to leave to the reader. "Folds as TEXT" and
+             I5's "lazy paragraph text" name one operation on one open
+             paragraph, and that paragraph belongs to the container whose
+             content column the line fell below. Ending the container and
+             emitting the characters at document level satisfies neither
+             sentence (carve#1800).
+
+               - - a
+                [^f]: x
+
+             renders `a` and the literal `[^f]: x` inside the inner item. The
+             failure this guards against is not a wrong shape but a
+             DISAPPEARANCE: a definition that fell past the fold branch was
+             pushed trimmed into the item stream, landed at the item's own
+             column 0, and was skipped there as already-extracted, so the
+             author's line rendered as nothing at all (carve-php#721).
+
+             A COMMENT IS THE ONE EXCEPTION -- NORMATIVE. The first of the two
+             exceptions to §10 I5's classification, and it is a question of
+             MEMBERSHIP: it decides which lines are invisible below a column,
+             not how an invisible line behaves. A comment is recognized at ANY
+             column, above the content column, at it, or below it, and stays
+             invisible. BOTH SPELLINGS: the `%%` line form
+             and the `%%%` fence form, whose body and closer travel with its
+             opener. Leaving the fence out made the same rule answer twice one
+             delimiter apart -- the line form invisible, the fence form
+             VISIBLE text -- which is what carve#629 reported and carve#634
+             settled (corpus 186). Folding it would make the comment VISIBLE, which
+             is the one outcome a comment may never have, and an indented
+             comment at the top level is already invisible for the same
+             reason. It does not close the ITEM either: a following line still
+             belongs to the item rather than parsing at document level
+             (carve#618). It does end the open PARAGRAPH, though, so that line
+             begins the item's SECOND paragraph rather than continuing the
+             first. One sentence used to make both claims and only the first
+             was true; nothing pinned the difference, because it shows only in
+             a LOOSE list -- in a tight one both readings render the same
+             (carve#677).
+           - AT OR ABOVE content_column: a block opener nests and a list marker
+             opens a sublist. Recognized non-list blocks apply PART 0's ONE
+             AUTHORED BLOCK BASE; this item clause defines only containment and
+             adds no second rebase rule. A sublist marker keeps its existing
+             at-or-past containment rule rather than being rebased.
+             A processor with lint diagnostics SHOULD report this ambiguous
+             compatibility spelling and name both author choices: dedent to
+             content_column for the canonical structural spelling, or escape
+             the opener to preserve the literal meaning older readers assigned
+             to it. It SHOULD likewise
+             report a block-shaped line between the marker and content_column
+             that detached after a blank. The stable rule ids and exact scopes
+             are `list-item-block-overindented` and `list-item-body-detached`
+             in docs/validation.md. The default formatter MUST NOT choose one
+             intention for the author while migrating an older spelling
+             (carve#1702, carve#1705).
+         This is intentionally SIMILAR TO DJOT'S LENIENCY inside list items:
+         any authored column at or beyond Carve's minimum content_column may
+         open the block. Top-level block openers remain column-strict, and a
+         line below content_column is unchanged (docs/divergence-from-djot,
+         carve#295, carve#1705).
+      C4 RULE B (TOP LEVEL, ANY INDENT). A bullet (`-`/`*` + space +
+         content) opens a list at ANY indentation at the TOP LEVEL -- no
+         column-0 restriction (unlike CommonMark, `    - x` is a list, not
+         indented code); an ordered marker behaves the same. Scope: WHERE a
+         top-level list may open -- NOT sublist nesting (C3) and NOT
+         interrupting an open paragraph (§10 I2).
+      C5 DEDENT. Re-parsing nested content strips the container's
+         structural indent BY COLUMNS. A tab straddling the dedent boundary
+         is consumed WHOLE on non-marker lines (Carve has no
+         indent-sensitive block below list nesting, so the residual columns
+         never matter); on a LIST-MARKER line the straddling tab's
+         unconsumed columns are re-inserted as spaces, so sibling markers
+         aligned with mixed tab/space indentation keep the same visual
+         column and stay siblings.
+
+   25. SECURITY REQUIREMENTS -- NORMATIVE (HTML output target). These rules
+      bind any implementation that emits HTML for UNTRUSTED input. They were
+      previously stated only in docs/security.md (non-normative); they are
+      hoisted here so an implementation written to this grammar + the corpus
+      cannot be conformant yet a trivial XSS vector. The corpus pins
+      representative cases (resources/examples/edge-cases.md "Security hardening").
+      - URL SINK SCHEME DENYLIST. On every clickable URL sink -- link
+        destination (`href`), image source (`src`), and autolink -- an HTML
+        renderer MUST reject any URL whose scheme is `javascript`, `vbscript`,
+        `data`, or `file`, emitting an EMPTY value (`href=""` / `src=""`).
+        The denylist additionally covers the OS protocol-handler and
+        command-execution class (CVE-2026-20841 class): `ms-msdt`, `ms-office`,
+        `ms-word`, `ms-excel`, `ms-powerpoint`, `ms-access`, `ms-visio`,
+        `ms-project`, `ms-publisher`, `ms-infopath`, `ms-spd`, `ms-search`,
+        `search-ms`, `ms-cxh`, `ms-cxh-full`, `shell`, `vscode`,
+        `vscode-insiders`, and `jar`. These route to an operating-system
+        handler that can launch a binary or open a macro-bearing document, so
+        they are blanked like `javascript:`. Ordinary web and contact schemes
+        -- `http`, `https`, `mailto`, `tel`, `ftp`, `sms` -- remain allowed.
+        Scheme detection MUST first strip leading ASCII control characters
+        AND ALL UNICODE WHITESPACE -- not just ASCII space/tab/newline but
+        every Unicode space separator, including NARROW NO-BREAK SPACE
+        (U+202F), NBSP (U+00A0), the U+2000..U+200A spaces, MEDIUM
+        MATHEMATICAL SPACE (U+205F), IDEOGRAPHIC SPACE (U+3000), the
+        line/paragraph separators (U+2028 / U+2029), and the BOM (U+FEFF) --
+        before matching the scheme, so an obfuscated `<U+202F>javascript:`
+        destination cannot slip past the denylist. The corpus pins the
+        U+202F case (resources/examples/edge-cases.md "Scheme probe strips Unicode
+        whitespace").
+
+        THE CLASS STOPS THERE ON PURPOSE, and the reason is a property of URL
+        parsing rather than a judgement about which characters look
+        suspicious. The WHATWG URL parser strips leading C0 controls and
+        SPACE before reading a scheme, and nothing else. A destination
+        beginning with any other format character -- ZERO WIDTH SPACE
+        (U+200B), LEFT-TO-RIGHT MARK (U+200E), WORD JOINER (U+2060), SOFT
+        HYPHEN (U+00AD) -- therefore FAILS to parse as a URL at all, and a
+        consumer resolving it against a base gets a relative path, never a
+        `javascript:` navigation. Measured against the WHATWG parser: each of
+        those prefixes yields a parse failure, while a TAB or SPACE prefix
+        yields `javascript:` -- which is exactly the set already stripped.
+
+        So the probe strips what an eventual URL parser would strip (plus the
+        Unicode spaces and the BOM, which some parsers historically tolerated),
+        and it deliberately does NOT strip the wider `Cf` category: a
+        `<U+200B>javascript:` destination stays in the document as written and
+        is inert where it lands. Widening the class to all of `Cf` would blank
+        destinations that were never dangerous, and would make the rendered
+        `href` differ from the author's bytes for no gain (carve#782). A `data:` exception for images, if offered, MUST be
+        opt-in. An attribute-block `href`/`src` override (PART 4) MUST NOT
+        reintroduce a rejected scheme.
+
+        THIS APPLIES TO EVERY TARGET THAT EMITS A RESOLVABLE URL, not only to
+        the HTML renderer. A Markdown target's link and image destinations are
+        resolved by whatever renders that Markdown, so a scheme blanked here
+        and passed through there is not blocked -- it is deferred by one step.
+        Measured before this was written down: all three engines blanked
+        `ms-msdt:` in HTML and emitted it verbatim in Markdown, because each
+        had mirrored the four-scheme core of the denylist into that target and
+        not the OS-handler class. One also failed to strip Unicode whitespace
+        in the Markdown probe, so `<U+202F>javascript:` survived there while
+        being blanked in its own HTML output (carve#352, corpus 119).
+
+        The rule was scoped to "an HTML renderer" because that is where the
+        sink was first identified; the scoping was not a decision that other
+        targets are safe. A target that emits no URL, such as plain text, has
+        nothing to blank and is unaffected.
+
+        "EMITS A RESOLVABLE URL" IS ABOUT THE URL REACHING A READER THAT
+        RESOLVES IT, not about the target emitting a hyperlink construct. The
+        TERMINAL target is bound: it prints a link's destination beside the text,
+        and every current terminal emulator autolinks a URL in its output and
+        hands the scheme to the OS handler when the reader clicks it -- the same
+        one step as Markdown, reached without any anchor or OSC 8 sequence being
+        written. This needed saying because the two text targets differ only by
+        accident of their formats: plain text drops the destination and so never
+        faces the question, while the terminal printed it, and all three engines
+        printed `javascript:` and the OS-handler class there while blanking both
+        in Markdown (carve#765).
+
+        WHAT IS BLANKED IS THE DESTINATION, NOT THE TEXT. A denied autolink's
+        visible text IS its URL, and every target shows it: HTML inside
+        `<a href="">`, Markdown as the label of `[...]()`, plain text and the
+        terminal as the characters themselves. Blanking there would edit what the
+        author wrote rather than withhold a destination, and it is not required.
+      - ATTRIBUTE NAME/VALUE HARDENING. On EVERY rendered element -- including
+        elements emitted by extensions -- an HTML renderer MUST drop
+        attributes whose name begins with `on` (case-insensitive) and the
+        names `srcdoc` and `formaction`; MUST blank any attribute value whose
+        scheme (control/space-stripped) is `javascript`/`vbscript`/`data`/
+        `file`; and MUST blank any `style` value containing `expression(`,
+        `url(`, `@import`, `behavior:`, or `-moz-binding` (whitespace
+        collapsed first). This applies to author attribute blocks AND to
+        attributes an extension copies onto its wrapper element: an extension
+        MUST route authored attributes through the same hardening and MUST NOT
+        emit them raw.
+
+        A URL-LIST ATTRIBUTE IS PROBED TOKEN-WISE, NOT AT ITS HEAD --
+        NORMATIVE. The probe above reads the value's LEADING scheme, which
+        vouches for the whole value only where the whole value is ONE URL.
+        Four attributes carry a LIST of URLs: `srcset`, `imagesrcset`, `ping`
+        and `attributionsrc`. So a dangerous scheme in any position but the
+        first went unread. The first two -- on `img`/`source` and on `link`
+        -- are comma-separated image candidate strings, each a URL plus an
+        optional `w`/`x` descriptor; `ping`, on `a` and `area`, is a
+        space-separated set of URLs the user agent POSTs to on activation;
+        `attributionsrc`, on `a`, `img` and `script`, is a space-separated
+        set the user agent sends an attribution request to. For THOSE FOUR
+        NAMES a renderer MUST split the value into tokens, apply to every
+        non-empty token THE SAME PROBE this clause already applies to the
+        value as a whole, and blank the ENTIRE value when ANY token matches.
+        This rule changes WHERE the probe runs, not WHAT it denies. Every
+        other attribute keeps the leading-scheme rule exactly as stated above.
+
+        THE TOKEN PASS IS IN ADDITION TO THE VALUE-WIDE PROBE, NOT INSTEAD OF
+        IT. These four names keep the leading-scheme probe on the WHOLE value
+        as well, and the value is blanked when EITHER the whole value probes
+        dangerous OR any token does. Reading the token pass as a replacement
+        would make these four names deny LESS than the leading rule already
+        denied, which is the opposite of what this paragraph is for: the
+        value-wide probe strips the ASCII whitespace the SPLIT breaks on, so
+        `ping="java script:alert(1)"` is two harmless tokens -- `java` carries
+        no scheme and `script` is not denylisted -- and one denied value. That
+        shape is pinned, in both separator sets (resources/examples/edge-cases.md
+        "URL-list attributes are probed token-wise").
+        THE NAME MATCH IS CASE-INSENSITIVE, like the `on` prefix above: an
+        attribute block may spell the name in any case and the element still
+        carries the author's spelling, so matching on the exact bytes would
+        leave `SRCSET` unprobed.
+
+        THE SEPARATORS ARE THE ONES THE ATTRIBUTE'S OWN GRAMMAR USES, and the
+        set splits in two on this. `ping` and `attributionsrc` split on ASCII
+        WHITESPACE ONLY: neither grammar has a comma in it, so treating one as
+        a separator would blank a single legitimate URL that merely contains a
+        comma in its path. `srcset` and `imagesrcset` split on COMMAS AND
+        ASCII WHITESPACE both, because there the comma really does end a
+        candidate, and a whitespace-only split misses
+        `safe.png 1x,javascript:alert(1) 2x` entirely -- one absent space
+        after the comma and the second candidate hides inside the first one's
+        descriptor.
+
+        THE COMMA SPLIT OVER-BLANKS ONE SHAPE AND THAT IS THE CHOSEN SIDE. A
+        srcset URL may itself contain a comma, so
+        `srcset="https://example.com/a,data:x 1x"` is ONE candidate to a
+        consumer and is blanked here anyway. Reading it exactly would mean
+        requiring the HTML candidate-list algorithm, descriptor scan and
+        paren-awareness included, from three engines that have to agree byte
+        for byte -- a large ask to buy back a URL that embeds a comma
+        immediately followed by a denylisted scheme. Erring toward blanking is
+        also the safe direction HERE specifically, because it can only reach a
+        URL-list attribute and never prose. Both shapes are pinned, so the
+        engines cannot each pick a different tokenization.
+
+        THE STRIP IS PER TOKEN, NOT ONCE AT THE FRONT of the value, so the
+        preceding paragraphs' reasoning composes rather than being bypassed:
+        each token is control-stripped and Unicode-whitespace-stripped on its
+        own before its scheme is read, and a `<U+202F>javascript:` candidate
+        blanks wherever it sits. The `Cf` decision composes unchanged too --
+        a token beginning `<U+200B>javascript:` is left alone at EVERY
+        position, for the reason already given: it fails WHATWG URL parsing
+        and lands inert. Note that the whitespace the STRIP removes is wider
+        than the whitespace the SPLIT breaks on, and deliberately so:
+        `a<U+202F>javascript:x` is ONE token to a consumer, because both
+        grammars put their boundaries at ASCII whitespace, and it resolves as
+        a relative URL rather than a navigation. Same measured basis as the
+        rest of this clause.
+
+        WHAT IS BLANKED IS THE WHOLE VALUE, NOT THE OFFENDING CANDIDATE.
+        Excising one candidate would make the rendered attribute differ from
+        the author's bytes, which this clause already declined to do for the
+        `Cf` case (carve#782), and it would give one value a THIRD outcome --
+        kept, blanked, or silently rewritten -- when the defect being fixed
+        is that one value already had two. Measured before this was written,
+        on all three engines and identical byte for byte in each:
+        `srcset="javascript:alert(1) 1x, safe.png 2x"` blanked while
+        `srcset="safe.png 1x, javascript:alert(1) 2x"` rendered verbatim, and
+        `ping` split the same way (carve#1320). The point is that the SAME
+        VALUE got two answers depending on where the scheme sat. A browser
+        navigates neither -- it does not run `javascript:` in an image
+        context and it pings http(s) only -- so what this fixes is a defense
+        that was positionally inconsistent and a guarantee this clause states
+        but did not keep, for the consumers of Carve's HTML that are not
+        browsers and have no image-context protection of their own.
+
+        THE SET IS CLOSED BY A CRITERION rather than by taste: an attribute
+        whose value grammar is a LIST of URLs that a consumer RESOLVES OR
+        FETCHES. THE CRITERION GOVERNS, NOT THE DOCUMENT AN ATTRIBUTE HAPPENS
+        TO LIVE IN -- three of the four come from the HTML Standard's
+        attribute index, and `attributionsrc` from the Attribution Reporting
+        API, which browsers ship and which sends a request to every URL in
+        the list. An attribute admitted to the language and fetched by a
+        consumer is in scope wherever it was specified.
+
+        The exclusions are named so the set is not widened by
+        pattern-match. `itemtype` and `itemprop` are space-separated
+        absolute-URL token lists, but the standard forbids dereferencing
+        them, so they are identifiers and not sinks; `itemid` is a single URL
+        and the leading rule already reaches it; `archive` on `object` is
+        non-conforming and no longer carries a URL-list value type; `for` on
+        `output` and `headers` on `td`/`th` list IDs, not URLs. A single URL
+        embedded at a NON-LEADING position inside a structured value is a
+        neighboring class and not this one: `style` is that class and
+        already has its own named rule above, and a `meta` refresh `content`
+        is that class but no renderer emits `meta` from document content.
+        PROSE ATTRIBUTES ARE NOT IN THE SET AND MUST NOT BE TOKENIZED --
+        `title`, `alt` and `aria-label` legitimately contain colons, and a
+        blanket "any token that looks like a scheme" test would refuse
+        ordinary text. The corpus pins BOTH directions: a dangerous scheme in
+        a non-leading candidate is blanked, and a prose value carrying a
+        colon is not (resources/examples/edge-cases.md "URL-list attributes are
+        probed token-wise").
+      - RAW PASSTHROUGH OPT-OUT. Raw blocks (```=FORMAT, PART 2) and raw
+        inline (`{=format}`, §20) emit verbatim UNESCAPED content. An
+        implementation MUST provide a mode in which raw passthrough is NOT
+        emitted and is instead escaped as literal text. Implementations SHOULD
+        make safe handling the default for untrusted input; a processor that
+        emits raw passthrough by default MUST document that its input is
+        trusted.
+      - URL TEMPLATE ENCODING. Any value taken from document content (mention
+        name, tag, citation key, crossref id) and substituted into a
+        configured URL template MUST be percent-encoded before substitution,
+        and the resulting URL MUST then pass the scheme denylist above.
+      - MATH + CODE are element TEXT, not raw HTML: their verbatim content MUST
+        be HTML-escaped (`&`,`<`,`>`) before wrapping (§18, PART 10 §6). They
+        are NOT a raw-HTML bypass.
+      - FRONTMATTER MUST be parsed with a SAFE loader -- no arbitrary object
+        instantiation and no custom-tag deserialization (e.g. no YAML
+        `!!`-tag object construction). Any frontmatter value later rendered
+        into output MUST be escaped per the output target's rules.
+      - RESOURCE BOUNDS (DoS). An implementation MUST parse and render any
+        input in time and space LINEAR in input size (within a constant
+        factor). It MUST enforce a FINITE nesting-depth cap for block and
+        inline containers, beyond which further openers degrade to literal
+        text rather than recursing. The cap is a single constant
+        MAX_NESTING_DEPTH applied UNIFORMLY to blockquote, list, and
+        fenced-div / admonition nesting (and to footnote-body and the inline
+        recursion): the reference uses MAX_NESTING_DEPTH = 200, and a
+        conformant implementation SHOULD use the same value (it MAY choose a
+        larger fixed cap, but never an unbounded one). Past the cap every
+        container kind FLATTENS the same way -- the opener becomes literal
+        paragraph text -- rather than crashing.
+
+        A FLATTENED OPENER IS ORDINARY PARAGRAPH TEXT -- NORMATIVE, and
+        therefore groups by the ordinary paragraph rule: consecutive
+        over-cap openers, and any text following them, form ONE paragraph,
+        ending at the first blank line like any other. There is no trailing
+        newline before `</p>`. With MAX_NESTING_DEPTH = 200, 203 `::: note`
+        lines followed by `x` end:
+
+          <p>::: note
+          ::: note
+          ::: note
+          x</p>
+
+        "Degrades to literal text" is the whole rule; nothing about being
+        past the cap makes a line group differently from the same characters
+        typed by an author, and a degrade path that invented its own block
+        structure would be a second paragraph rule to specify and to test.
+
+        This was unstated and the three engines each chose differently --
+        one paragraph per opener, one paragraph for all of them with a
+        trailing newline, and one without it, per the survey in carve#494 --
+        three byte-different outputs, all satisfying the sentence above as
+        it was written.
+
+        The reference's own answer does not survive reading. Measured here on
+        203 openers, carve-js emits `<p>::: note</p>`, `<p>::: note</p>`,
+        then `<p>::: note\nx</p>`: the last over-cap opener groups with the
+        following text and the other two do not. That is not "one paragraph
+        per opener", it is an artifact of where the degrade path hands back
+        to the block parser, and it is why the reference does not settle this
+        one by being the reference.
+
+        NOW CORPUS-PINNED. This was unpinned for as long as the EXECUTABLE
+        SPEC refused past MAX_NESTING_DEPTH rather than degrading, because a
+        case added then would have gone in the refusal allowlist, where it is
+        skipped and pins nothing -- worse than no case at all. The degrade
+        path is implemented in scripts/spec now, so
+        tests/corpus/182-openers-past-the-nesting-cap-are-one-paragraph.crv
+        carries an HTML fixture, renders in the executable subset, and
+        REFUSED_ALLOW (scripts/spec/refused-allow.mjs) is empty. Engine drift
+        is a separate matter and has its own ledger
+        (resources/engine-pin-drift.txt, carve#533).
+
+        Recursive RENDER / RESOLVE /
+        FILTER passes over a programmatically constructed tree MUST be
+        bounded too, not only the parse path -- but their ceiling MUST NOT
+        be reachable by a tree the SAME implementation's parser produces. A
+        parsed tree is deeper than the containers that produced it (the
+        paragraph inside the innermost container is one level further down),
+        so a render ceiling EQUAL to MAX_NESTING_DEPTH truncates a document
+        the parser has just accepted, and truncation on the render path
+        deletes content silently instead of degrading it to literal text.
+        The render ceiling MUST therefore EXCEED MAX_NESTING_DEPTH by enough
+        to cover the blocks a container subtree adds. This sentence
+        previously required the SAME ceiling on both paths, and all three
+        engines complied: at exactly MAX_NESTING_DEPTH the canonical writer
+        dropped the innermost paragraph and the Markdown / plain-text / ANSI
+        renderers dropped the whole document.
+
+        THE MARGIN IS DERIVED IN THE IMPLEMENTATION'S OWN UNIT, NOT
+        BORROWED FROM ANOTHER IMPLEMENTATION'S -- the same shape as
+        PART 12 §9(c)'s ingest-bound trap, at the other end of the same pipe.
+        A render pass MAY count depth in whatever unit its own recursion
+        uses, container depth (one step per nesting level) or AST node
+        levels among them, and the conversion factor between units is NOT 1:
+        a list level costs ONE container-depth step but TWO AST node levels
+        (`list`, then `list_item`) before its body reads as a further level
+        down. A margin sized for one unit does not carry over to the other.
+        This repo's reference counts container depth, where MAX_NESTING_DEPTH
+        + 32 = 232 covers the blocks a container subtree adds; restating that
+        SAME NUMBER in an AST-node-counting implementation understates what
+        that unit actually needs by roughly half, and an ordinary 120-level
+        list ladder -- well inside the parse cap of 200 -- reached such a
+        ceiling and silently dropped the innermost content (carve#650). An
+        implementation MUST THEREFORE DERIVE its margin from the worst
+        per-level cost of ITS OWN unit (as PART 12 §9(c) already requires for
+        the ingest bound), and MUST NOT adopt another implementation's number
+        without redoing that derivation.
+
+        HOW THE MARGIN IS SPELLED IS NOT THE REQUIREMENT. A multiple of
+        MAX_NESTING_DEPTH and an offset added to it are the same statement
+        once the offset has been shown to cover the worst per-level cost of
+        the unit in question: `+ 32` DERIVED for container depth satisfies
+        this clause, and the identical `+ 32` COPIED into an
+        AST-node-counting implementation does not. This paragraph previously
+        required the multiple FORM, which the reference itself did not use --
+        so the clause stated a rule its own reference broke, and an
+        implementation could satisfy the letter of it by writing
+        MAX_NESTING_DEPTH * 1.16 without anyone having thought about the
+        unit. The unit is what went wrong in carve#650 (carve#754).
+
+        AT THE RENDER CEILING, A RENDERER REFUSES -- NORMATIVE. Reaching it
+        MUST produce a typed, documented failure naming the depth bound. NOT
+        silent truncation, not a partial document, and not whatever the host
+        language raises when the stack runs out. This is PART 12 §9(b), the
+        rule ingest already follows, applied to the other end of the same
+        pipe: "an ingest that accepts a tree and then silently renders only
+        part of it is the worst of the three, because the caller is told
+        nothing" is a statement about the CALLER, and a renderer that returns
+        a truncated string tells the caller exactly as little.
+
+        Refusing rather than clamping costs nothing on any path a document
+        travels. A ceiling derived per the margin rule above exceeds
+        MAX_NESTING_DEPTH BY CONSTRUCTION IN ITS OWN UNIT, so no tree from
+        `parse` can reach it, and §9(b) already refuses an ingested tree
+        deeper than the parser's own limit. "By construction" is a property
+        of the DERIVATION, not of any single borrowed number -- a ceiling
+        that copies another implementation's margin instead of deriving its
+        own is not exceeding anything by construction, it is a coincidence
+        that holds for one unit and fails for another. What is left is a
+        tree built through the API, where the caller is the one who built it
+        and is the one who can act on the error.
+
+        Truncation is not the safe default it looks like. The parse path
+        degrades VISIBLY -- an over-cap opener becomes literal text the reader
+        can see -- while a renderer that stops emitting produces a document
+        that looks complete and is not. The failure mode a formatter must
+        never have is deleting content without saying so, which is what
+        carve#517 moved the ceiling out of reach to prevent; leaving
+        truncation as the answer at the ceiling reinstates it for every tree
+        that arrives over the wire or through a builder.
+
+        Every engine has something to move. Measured on carve-js at the pin
+        this repo carries, with MAX_NESTING_DEPTH = 200 and the ceiling
+        therefore at 232:
+
+          depth  renderMarkdown  renderCarve  renderPlainText  renderAnsi  renderHtml
+          231    content kept    kept         kept             kept        kept
+          232    DROPPED         DROPPED      DROPPED          empty       kept
+          1000   DROPPED         DROPPED      DROPPED          empty       kept
+
+        The ceiling itself is in the right place -- above MAX_NESTING_DEPTH,
+        as the paragraph above requires. What happens AT it is the problem.
+        Three of the five emit the nested markers and delete only the BODY, so
+        the output looks complete and is not; one returns an empty string; and
+        renderHtml has no ceiling at all, recursing until the host stack gives
+        out (`RangeError: Maximum call stack size exceeded` at depth 2000).
+        That last one is the "crashing" this section already forbids, and it
+        makes the reference engine's primary renderer the one that behaves
+        unlike every other renderer in the ecosystem, including its own
+        siblings.
+
+        Silent truncation is the worse half even though it looks tidier. One
+        of the three is renderCarve, the canonical writer: a tree built
+        through the API and formatted comes back as a document whose body is
+        gone, with nothing in the return value to say so. (carve#526)
+
+        The cost is real and is not hidden: this makes a renderer FALLIBLE in
+        implementations whose signature says it cannot fail, which is a
+        breaking change to those signatures rather than an internal one. It
+        was preferred anyway, because the alternative -- a diagnostic channel
+        alongside a still-infallible return -- needs a channel every renderer
+        signature can carry, which none of them have either, and leaves a
+        caller that ignores it exactly where it is today. It MUST bound abbreviation, reference,
+        footnote, and crossref expansion so total work stays O(n): in
+        particular an empty abbreviation term is rejected, a reference is not
+        resolved by rescanning the whole output per occurrence, and a crossref
+        target is not cloned without bound.
+      - NON-HTML TARGETS. The Markdown, plain-text, and terminal (ANSI)
+        renderers MUST NOT become injection vectors either. The TERMINAL
+        target MUST strip text, code, math AND URL values of every control
+        character before emission -- the non-whitespace C0 controls, DEL
+        (U+007F) and the C1 controls alike, the last because CSI (U+009B)
+        and OSC (U+009D) are single-character forms of the very sequences
+        this bullet exists to stop. A Markdown link/image title MUST escape
+        the `"` that would otherwise terminate it. WHICH TARGET STRIPS A C0
+        CONTROL is §29, not this bullet: this requirement used to say only
+        "before emission to a terminal" and was implemented as a strip on
+        all three non-HTML targets, which deleted content on two of them
+        (carve#979). The narrowing is per TARGET and applies to C0 alone; it
+        never narrows what the terminal target strips.
+
+   ============================================================================ *)

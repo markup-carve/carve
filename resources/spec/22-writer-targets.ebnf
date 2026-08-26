@@ -1,0 +1,705 @@
+(* ============================================================================
+   8b. THE MARKDOWN TARGET'S AUTHORED ESCAPE NARROWS TOO -- NORMATIVE. §8a
+      narrowed M1 and left M2 as written. M2 narrows on the same finding, and
+      on a test of the same shape:
+
+      M2a AN `escaped_text` NODE IS EMITTED AS AN ESCAPE WHEN ITS CHARACTER
+          COULD BE READ AS MARKUP AT THE POSITION THE WRITER HAS REACHED ON
+          THE EMITTED LINE, or when it is one of the smart-punctuation
+          triggers `"`, `'`, `-` and `.`. Otherwise the character is emitted
+          BARE.
+      M2b `#` IS READ AS MARKUP ONLY AT A LINE'S CONTENT POSITION, where it
+          opens an ATX heading. An `escaped_text` hash anywhere else on the
+          line is emitted bare. A LINE'S CONTENT POSITION IS AFTER ITS
+          CONTAINER PREFIX: the position is measured on the EMITTED LINE, so
+          every prefix the writer put in front of the content is passed over
+          before the test is decided -- a block quote marker, a list or task
+          marker, a definition marker, the alignment §10 gives a continuation
+          line -- in whatever combination and to whatever depth the writer
+          emitted them. Column 0 is the content position of a line NO
+          container encloses, and of no other line.
+      M2c NOTHING ELSE NARROWS. M1, M3 and §8a are untouched, and a character
+          Markdown reads as markup at that position keeps M2 as written.
+
+      WHAT M2 IS FOR SURVIVES INTACT. §8 states M2 for smart punctuation, and
+      that part is load-bearing at every position. Measured through a reader
+      with substitution on:
+
+        a -- b        ->  a – b
+        a \-\- b      ->  a -- b
+
+      `"`, `'`, `-` and `.` are not Markdown metacharacters, so M1 never
+      reached them and M1's narrowing cannot either. M2a names them so the
+      clause that narrows M2 cannot be read as dropping the reason M2 exists.
+
+      THE COST IS ON IDENTIFIERS, AND IT IS THE COST §8a WAS RAISED OVER.
+      carve#970 opened with two examples:
+
+        C\# is a language
+        issue \#123 fixed
+
+      Both are `escaped_text`. In Carve a bare `#` before a word opens a tag,
+      so text holding one can only be spelled as an escape, so neither example
+      was ever an M1 case and §8a's narrowing did not reach the documents that
+      raised it. A backslash inside an identifier breaks exact-match search on
+      the published document, which is the objection §2 calls decisive for the
+      canonical writer: "Escaping MORE than that is a defect, not a safe
+      default."
+
+      THE TARGET ALREADY DISCARDS THE DISTINCTION THE ESCAPE WAS PRESERVING.
+      Markdown has no construct for a tag or a mention, so this target emits
+      the characters and drops the node:
+
+        #tag rest        ->  #tag rest
+        hi @name ok      ->  hi @name ok
+
+      So under M2 as written this target emits a bare `#` for the construct
+      and a backslashed one for text that merely resembles it. No reader acts
+      on that difference, and the document carrying the backslash is the one
+      that never asked for markup.
+
+      THE `[` CASE §8a LEANS ON IS UNTOUCHED, and M2a is written positionally
+      so that it is. §8a's account of the link grammars ends by resting on M2:
+      an author who meant `[a](b)` as text carries escapes in the tree and
+      gets them back here, so M1b never has to guess. A `[` can open a link at
+      any position on a line, so M2a keeps its escape everywhere and that
+      argument stands unchanged. `#` is the character that differs, because
+      its reading is positional and every position but one is inert.
+
+      A CONTAINER PREFIX IS PART OF THE LINE, WHICH IS WHY M2b MEASURES ON IT.
+      M2b's position is the ONLY narrowing in this clause -- M2a keeps the
+      escape by default and M2c closes the set -- so the whole of §8b turns on
+      where that position is. Read as an offset into the BLOCK'S CONTENT it
+      answers a question no reader asks: the string a reader parses is the
+      emitted line, and the two differ by exactly the prefix the writer put in
+      front. Measured on all three engines, which agreed:
+
+        > \# heading
+
+      emitted as
+
+        > # heading
+
+      and read back, through this project's own importer, as a heading:
+
+        before:  <blockquote><p># heading</p></blockquote>
+        after:   <blockquote><h1 id="heading">heading</h1></blockquote>
+
+      The author escaped the hash so it would stay text, and a round trip
+      returned it as structure. That is content corruption rather than a
+      rendering difference, and it is the case M2 exists to remove: §8a's
+      closing argument rests on M2 taking "out of the question every case
+      where the author said which reading they meant" (carve#1330).
+
+      §10 ALREADY DECIDED THIS, ONE CHARACTER OVER. A list item's continuation
+      line is aligned to the marker's width and kept literal by ESCAPING it:
+
+        1. outer
+           1\. inner
+
+      The inner line's text is `1. inner`, which is a list marker nowhere in
+      isolation. It is one only because three spaces of item alignment stand
+      in front of it, and §10 escapes it for that reason -- "§2 governs
+      whether a character is escaped GIVEN the line the writer emits; §10
+      fixes the line." So this project has already ruled that the escape test
+      is answered against the line as the reader receives it, and has already
+      rejected the alternative that reasons about the content alone: §10
+      refuses to indent less "because its correctness depends on the WIDTH of
+      the marker above it". The reading that produced this defect carries the
+      same dependency and does not notice it.
+
+      STATED OVER THE LINE, NOT AS A LIST OF CONTAINERS THAT COUNT. Two
+      consequences, both measured on all three engines:
+
+      - A container this target FLATTENS contributes no prefix and needs no
+        exemption. A colon fence emits no marker and a definition-list body
+        emits no indent, so a hash in either lands at column 0 and its escape
+        was already kept.
+      - A container this target DOES prefix is covered whatever its kind,
+        depth or mixture -- `> > `, `- > `, `- [ ] `, `[^a]: `, `   1. ` --
+        without naming any of them.
+
+      An enumeration would have to be revisited every time the writer gains a
+      prefix. The line does not.
+
+      THE LAZY CASE IS NOT A CASE. Lazy continuation is a PARSER concept: a
+      line belonging to a container without carrying its marker. This writer
+      emits no such line, because it re-prefixes every line of the container.
+      Measured, all three:
+
+        > a
+        \# heading
+
+      is emitted as
+
+        > a
+        > # heading
+
+      so the emitted line carries `> ` and M2b sees it. A rule for the
+      source's laziness would describe a line this target never writes.
+
+      NARROWING BY POSITION IS UNCHANGED, WHICH IS THE HALF THAT IS EASY TO
+      LOSE. Moving the position does not widen M2b into "an escape behind a
+      prefix is kept". The two documents carve#970 opened with keep their
+      narrowing inside a container exactly as they had it outside one, because
+      the hash is not at the content position there either:
+
+        > C\# is a language      ->  > C# is a language
+        - issue \#123 fixed      ->  - issue #123 fixed
+
+      and so does a hash that stands AT the content position but opens no
+      heading, since M2b's reading is CommonMark's and a run closed by a
+      letter is not one:
+
+        > \#tag rest             ->  > #tag rest
+
+      Both directions are pinned in the corpus. The first is what the clause
+      is for; the second is what stops the correction being taken too far.
+
+      WHAT IS LOST IS BOUNDED BY §1. Carve source through this target and back
+      stops recording which hash was text. §1 already defines the round-trip
+      invariant MODULO ESCAPING (carve#370) -- `escaped_text` and `text`
+      compare equal -- and the invariants that admit no latitude,
+      `to_html(fmt(x)) == to_html(x)` and idempotence, are inside the Carve
+      target, which this clause does not touch.
+
+      The importers re-derive what they need, which is why the backslash in
+      the Markdown was not what carried it:
+
+        md-in: Bau #64748b       ->  carve: Bau \#64748b
+        md-in: C# is a language  ->  carve: C# is a language
+
+      The escape comes back where a construct would form and stays absent
+      where none would. The loss is also already taken in the other direction:
+      a tag node does not survive a round trip through this target today,
+      since the writer flattens it and an importer escapes it back to text.
+      This clause makes the two directions agree rather than adding an
+      asymmetry.
+
+      A KNOWN LIMIT, STATED RATHER THAN SOLVED. GFM as deployed on one host
+      autolinks a bare `#` before digits to an issue, and a bare `@` before a
+      name to a user. That exposure is not created here: this target emits
+      both bare today whenever the document holds the construct, and M2's
+      escape covered only the half of the traffic that was text. If it matters
+      it wants a host-aware profile covering both halves, not an
+      unconditional escape covering one.
+
+   9. THE MARKDOWN TARGET'S HARD BREAK -- NORMATIVE. A `hard_break` is emitted
+      as a BACKSLASH before the newline, never as two trailing spaces.
+
+      Both spellings mean the same thing to a CommonMark reader:
+
+        `a` SPACE SPACE newline `b`   ->  <p>a<br />b</p>
+        `a` BACKSLASH newline `b`     ->  <p>a<br />b</p>
+
+      The difference is what survives handling. Trailing whitespace is removed by
+      editors that strip it on save, by `git apply --whitespace=fix`, and by CI
+      whitespace checks -- and removing ONE of the two spaces is enough:
+
+        `a` SPACE newline `b`         ->  <p>a b</p>
+
+      so the break does not degrade, it VANISHES, silently, in a file nobody
+      edited. The backslash form cannot be damaged that way, and it is the only
+      hard-break spelling this target emits that ordinary tooling will not touch.
+
+      The cost is pre-CommonMark processors, which show a literal backslash
+      instead of a break. That is a visible artifact in a rare consumer, against
+      silent data loss in a common one.
+
+      This is a property of the MARKDOWN target only. The canonical writer spells
+      a hard break the way the Carve grammar does (`hard_break`, PART 3), and
+      §7's no-whitespace-only-line rule already covers the writer's side.
+
+  10. A LIST ITEM'S CONTINUATION LINES ARE ALIGNED -- NORMATIVE. Every
+      continuation line of a list item is indented to the WIDTH OF THE MARKER,
+      including one whose text would otherwise read as a list marker. Such a
+      line is kept literal by ESCAPING it, per §2, not by indenting it less:
+
+        1. outer
+           1\. inner
+
+      The alternative -- leaving the line at an indent below the nesting
+      threshold so no escape is needed -- looks appealing because it removes an
+      escape the author did not write. It is rejected because its correctness
+      depends on the WIDTH of the marker above it. Two spaces sit below the
+      threshold under `1. ` and reach it under `- `, so the same rule produces
+      a continuation in one list and a nested list in the other, silently
+      changing what the document says (carve#352).
+
+      This does not conflict with §2. §2 governs whether a character is escaped
+      GIVEN the line the writer emits; §10 fixes the line. A writer may not
+      manufacture a layout whose only merit is dodging an escape.
+
+  10a. AN UNUSED DEFINITION SURVIVES THE NON-HTML TARGETS -- NORMATIVE. A
+      FOOTNOTE or ABBREVIATION definition that NOTHING references is still
+      emitted by the Markdown, plain-text and terminal renderers. HTML drops
+      it, because HTML has nowhere to put a definition nobody used; the other
+      three do not get to drop content the author wrote.
+
+      A LINK REFERENCE DEFINITION IS NOW COVERED TOO. It was excluded while it
+      was the one definition kind with NO NODE IN THE TREE -- `[lbl]: /u` alone
+      parsed to a document with empty `children`, so a renderer walking blocks
+      had nothing to walk and requiring the output would have required an output
+      no engine could produce (carve#592). PART 12 §10 gives it a node, so the
+      exclusion has no cause left: all three kinds walk, and all three emit.
+
+      This clause first said "link, footnote or abbreviation" and was wrong to.
+      PART 12 §3a had already considered the missing node and declined it --
+      "a bigger change than this clause is worth ... a new node type, a new
+      hoisting rule, three engines to move" -- so one section was requiring
+      what another section's recorded decision made unreachable. Narrowed here
+      rather than left contradictory: a spec that demands the impossible is
+      worse than one that admits a gap.
+
+      THE GAP IS REAL AND IS NOT CLOSED BY NARROWING. An unused link reference
+      definition currently survives nothing: not the tree, not a round trip
+      through the AST, and now explicitly not the non-HTML targets. So
+      `carve --markdown` on a document that is only `[lbl]: /u` emits nothing,
+      and the URL the author wrote is gone. That is the same content loss §10a
+      exists to prevent, reached by a different route.
+
+      SETTLED IN PART 12 §10. The node was open on two grounds here -- making a
+      resolved reference's destination recoverable (§3a), and making an unused
+      one survive at all (this clause) -- and a third decided it: without the
+      node a writer cannot reproduce the definition, so PART 11 §1's
+      `parse(fmt(x)) == parse(x)` failed for every resolved reference in all
+      three engines (carve#642).
+
+          [^n]: %         ->  markdown  [^n]: %
+                              plain     [^n]: %
+                              html      (nothing)
+
+      This is PART 11 §6's objection applied one target out: a renderer that
+      silently discards an authored construct makes the round trip lossy, and
+      an unused definition is exactly the construct a person is most likely to
+      be in the middle of writing. Dropping it also makes the output depend on
+      whether a reference exists elsewhere in the document, so adding one
+      reference changes an unrelated line.
+
+      THE MARKER IS EMITTED AS WRITTEN. `[^n]: %` is a footnote definition, so
+      it renders with its caret. `[n]: %` is not that construct -- it is a LINK
+      reference definition, and emitting one where the author wrote the other
+      turns a definition into something that parses back as a different
+      construct. Every engine drops the caret on the plain and terminal
+      targets, which is a defect independent of this rule: whichever way the
+      rule had gone, that output was neither the source nor the same
+      definition.
+
+  10b. A TABLE ROW KEEPS ITS OWN CELL COUNT -- NORMATIVE. The canonical
+      writer emits exactly the cells the row carries. It MAY align the padding
+      of cells that exist, but MUST NOT append empty cells to make every row as
+      wide as the widest row in the table. A missing trailing cell is not an
+      empty cell: adding one changes both the re-parsed tree and the rendered
+      table, so §1a makes rectangular alignment yield.
+
+      Where a delimiter row is required to promote the first row to a header,
+      that delimiter carries exactly one cell for each cell in the HEADER ROW,
+      not one for each column reached by a wider body row. Its job is to mark
+      that row as a header; extending it to the table width both manufactures
+      header cells and can stop the delimiter from matching the row it belongs
+      to. Native `=` header markers remain preferred wherever they can express
+      the header, including when a later body row is wider. (carve#1030)
+
+  10c. ADJACENT BLOCKS THAT WOULD MERGE KEEP THE CONTINUATION MARKER --
+       NORMATIVE. In a tight list item, deciding whether to retain `+` is a
+       property of the emitted BLOCK SEQUENCE, not only of each child in
+       isolation. If two adjacent children written at the item's content
+       column would re-parse as one block, the writer emits each child from the
+       first such child onward at the marker column, preceded by its own `+`.
+
+       This includes adjacent block quotes, tables, line blocks, definition
+       lists, and lists whose marker kind is compatible. A single block opener
+       that cannot fold into the paragraph above it remains canonically
+       indented at the content column. A blank line is not the fallback: it
+       would make a tight item loose and change its rendered structure.
+       (carve#1033)
+
+  10d. MULTIPLE CARVE HEADER ROWS SURVIVE THE MARKDOWN TARGET -- NORMATIVE.
+       Markdown pipe tables can identify only one header row. The first Carve
+       header row therefore becomes that row, and every later Carve header row
+       is emitted as an ordinary Markdown body row. Their header semantics are
+       lost, but no authored cell content is dropped.
+
+       The Markdown delimiter uses the final effective column alignment from
+       the Carve header rows: a later explicit header marker wins, while an
+       omitted marker does not reset an earlier one. A body-cell alignment is
+       local to that cell and MUST NOT become the Markdown column alignment,
+       including when that body row precedes the first header row.
+
+  10e. A PRESENTATION TARGET KEEPS A CAPTION, A FENCE TITLE AND A FENCE
+      LABEL -- NORMATIVE. `docs/graceful-degradation.md` states the floor for
+      every non-interactive target: a renderer MUST preserve the construct's
+      CONTENT and may drop only its INTERACTION, and authored text -- a label
+      or a title that distinguishes one block from another -- MUST NOT be
+      silently discarded. Three authored tokens were discarded anyway, by all
+      three engines:
+
+      WHAT THIS CLAUSE DECIDES is where those three tokens go on the targets
+      named below, and nothing else. It neither restates the floor nor
+      narrows it: a loss this clause does not name is still a loss, and the
+      floor still forbids it. Reading a construct/target pair as CONFORMING
+      because no rendering for it is written here inverts the clause -- the
+      pairs it leaves open are open, not allowed.
+
+          |= H |             ->  markdown  | H |
+          | a |                            | --- |
+          ^ Table caption                  | a |
+
+          ```js "src/app.js"   ->  plain     const a = 1
+          const a = 1              terminal  ┌── js
+          ```                                  const a = 1
+
+          ```js [Node]         ->  plain     const a = 1
+          const a = 1              terminal  ┌── js
+          ```                                  const a = 1
+
+      T1 A FENCE'S TITLE AND LABEL RENDER THE WAY A DIV'S ALREADY DO. This
+         clause writes down an existing rule rather than a new one. A fenced
+         div already surfaces both tokens on every target, which is the
+         caption rule `docs/graceful-degradation.md` makes normative for an
+         unconsumed label: `::: note "T" [L]` emits `**T**` then `**L**` in
+         Markdown, a standalone line each in plain text, and a bold
+         standalone line each on the terminal, the title always before the
+         label. A code fence carries the SAME two tokens in the SAME two
+         slots of its info string, so it renders them the same way, above the
+         block:
+
+             ```php "src/Auth.php" [Composer]   ->  src/Auth.php
+             composer require x                     (blank)
+             ```                                    Composer
+                                                    (blank)
+                                                    composer require x
+
+         The language tag is untouched: it keeps whatever slot the target
+         already gives it, which on the terminal is the `┌── ` header line
+         and in plain text is nothing. Folding the title into that header
+         instead was considered and rejected -- the header exists only when
+         the fence has a language, so a titled fence with no language would
+         have needed a header invented for it, and a fence carrying both a
+         title and a label would have needed a separator invented too. The
+         div's shape needs neither and already ships.
+
+      T2 A TABLE CAPTION SURVIVES THE MARKDOWN TARGET as body text AFTER the
+         table, separated by one blank line. The position is what this target
+         already does for the other two captioned hosts -- an image caption
+         and a listing caption both follow their block as body text -- so the
+         table was the odd one out rather than a consequence of Markdown
+         having no caption syntax:
+
+             |= H |             ->  | H |
+             | a |                  | --- |
+             ^ Table caption        | a |
+                                    (blank)
+                                    Table caption
+
+      ADJACENCY IS NOT AVAILABLE HERE, AND THAT IS THE GENERAL FORM.
+      A plain-text target has no delimiter to put around a block, so what it
+      has instead is ADJACENCY: dropping the blank line says that the line
+      below belongs to the block above. That move is unavailable to both
+      halves of this clause, and measuring why gives the rule its shape:
+      attachment by adjacency is only available on a target where adjacency
+      does not change what the adjacent block IS.
+
+      A caption written directly after the last row of a Markdown table is
+      read by a GFM reader as ANOTHER ROW -- `| a |` then `Table caption`
+      yields `<td>a</td>` and `<td>Table caption</td>`. The words survive as
+      a fabricated data cell, which is worse than losing them, because a
+      reader cannot tell an authored cell from a caption and neither can a
+      parser. A line written directly above a code block in plain text reads
+      as the FIRST LINE OF THE CODE, for the same reason: that target draws
+      no delimiter around a code block at all.
+
+      So both halves take the separation their target forces and accept that
+      the ATTACHMENT is weaker than adjacency would have given. That is a
+      floor being met, not a relationship being preserved: this clause is
+      about the words surviving. Modeling a caption as something a round trip
+      can recover on the Markdown target is carve#1121's business, not this
+      clause's. Writing the relationship as an ELEMENT is not open here
+      either, though that target does admit HTML -- a `<caption>` is only
+      valid as the first child of a `<table>`, and the `<table>` a pipe table
+      produces is built by the READER, so there is nowhere to put one.
+
+      TWO MORE LOSSES OF THE SAME TOKENS ARE RECORDED HERE AND LEFT OPEN,
+      both measured on the same build that produced the rows above. Each
+      breaks the floor exactly as the three rows above did; what is missing
+      is a decided rendering, not a rule. Neither is settled by this clause
+      and neither is thereby permitted:
+
+        - A fence title on a fence with NO LANGUAGE is dropped by the
+          MARKDOWN writer too: ```"src/app.js" emits a bare ``` and the
+          title is gone. The Markdown target keeps the title only when a
+          language precedes it.
+
+        - A code-group label never reaches the HTML target at all:
+          ```js [Node] gives `<pre><code class="language-js">`. Core
+          assigns the label no meaning and a group extension consumes it, so
+          on HTML with no such extension the token has nowhere to go. Where
+          it should go is a question about the HTML target, which is PART
+          10's business rather than this section's.
+
+  10f. A REFERENCED ABBREVIATION DEFINITION SPLITS BY TARGET -- NORMATIVE.
+      §10a rules the definition NOTHING references: the Markdown, plain-text
+      and terminal renderers all emit it, because those targets do not get to
+      drop content the author wrote. It says nothing about the definition that
+      IS referenced, and each of the three got that one wrong in its own way:
+
+          *[HTML]: Hyper Text  ->  markdown  *[HTML]: Hyper Text
+                                             (blank)
+          HTML                               <abbr title="Hyper Text">HTML</abbr>
+
+                                   plain     *[HTML]: Hyper Text
+                                             (blank)
+                                             HTML
+
+                                   terminal  *[HTML]: Hyper Text   (dim)
+                                             (blank)
+                                             HTML (Hyper Text)
+
+      On two of them the same words are emitted twice. On the third a line of
+      CARVE SOURCE sits in a plain-text document AND the expansion the author
+      defined never appears anywhere, so that target is wrong on both halves.
+
+      WHAT THIS CLAUSE DECIDES is where the definition LINE goes on those
+      three targets when the definition is consumed, and what the plain target
+      prints in its place. It neither restates the floor in
+      `docs/graceful-degradation.md` nor narrows it: a construct/target pair
+      this clause does not name is open rather than allowed.
+
+      T1 MARKDOWN KEEPS THE LINE, and keeps the expansion beside it exactly as
+         today. `*[TERM]: expansion` is the spelling PHP Markdown Extra uses
+         for an abbreviation, so on this target the line is CONTENT rather
+         than leaked source, and keeping it is what lets the export round-trip
+         back to a working abbreviation. The duplication is the price of that
+         round trip, and it is paid only here.
+
+      T2 PLAIN TEXT AND THE TERMINAL DROP THE LINE and emit only the
+         expansion, in the `TERM (expansion)` shape, at every occurrence:
+
+             *[HTML]: Hyper Text  ->  plain     HTML (Hyper Text)
+             (blank)                  terminal  HTML (Hyper Text)
+             HTML
+
+         Neither half is invented. The terminal already writes
+         `TERM (expansion)` for an automatic expansion; PART 9 §9's
+         authored-`abbr` rule already writes the same shape on the PLAIN
+         target for an authored value (carve#1178). Plain lacked the automatic
+         case for a reason this clause removes -- carve#1178 left it out on
+         the ground that the definition line carried the mapping instead -- so
+         the expansion is not an addition to this ruling but the other half of
+         it. Emitting neither, which is what plain does today, loses the
+         author's expansion outright.
+
+      THE TEST IS WHETHER THIS DEFINITION'S EXPANSION IS EMITTED, not whether
+      its term appears. The line is dropped on plain and the terminal exactly
+      where the same output carries the expansion that definition supplies,
+      and kept otherwise. That is not a refinement for its own sake: the line
+      goes because the content is emitted TWICE, and it is emitted twice only
+      where the expansion is emitted. Three shapes already in the corpus fail
+      the test, and in each the definition's text is carried by its own line
+      and by nothing else, so dropping it would be the content loss §10a
+      exists to prevent:
+
+        - THE TERM NEVER APPEARS. That is §10a, which this clause leaves
+          exactly as it stands.
+
+        - AN AUTHORED `abbr` OUTRANKS THE DEFINITION. PART 9 §9 makes
+          `[HTML]{abbr="Custom"}` authoritative and a resolved `abbreviation`
+          child contributes only its visible text there, so the definition's
+          own expansion reaches no target. `45-inline-extensions-11` pins
+          `HTML (Custom)` on plain and on the terminal with the definition
+          line above it, and this clause leaves that case as carve#1178 left
+          it.
+
+        - A LATER DEFINITION OF THE SAME TERM WON. PART 9R R3 is last-wins, so
+          in
+
+              *[A]: a
+              *[A]: b
+
+              A here.
+
+          only `b` is ever emitted. `*[A]: b` goes and `*[A]: a` stays, on
+          plain and on the terminal alike. Dropping every definition of a term
+          that expanded anywhere was considered and rejected: it deletes the
+          string `a` from the document outright, and the reason this clause
+          moves anything at all is that the plain target should not be losing
+          text.
+
+      THE MARKDOWN TARGET NEEDS NONE OF THAT TEST -- it keeps every definition
+      line whatever became of it. So does the canonical writer, where PART 11
+      §1's `parse(fmt(x)) == parse(x)` requires it, which leaves the round
+      trip intact on both of the targets that have one.
+
+      WHY THIS NEEDED SAYING. The corpus pinned HTML for these cases and
+      nothing else, so `compare:impls` reported cross-engine agreement on the
+      Markdown and terminal rows rather than a defect, and reported nothing at
+      all about the plain row because no fixture asked for one. That is the
+      hole §10e came out of. Agreement across implementations is
+      evidence about implementations. (carve#1185)
+
+  10g. A COMPOSITE FIGURE SURVIVES EVERY TARGET -- NORMATIVE (PART 9 §4c;
+      carve#1122). The floor is `docs/graceful-degradation.md`'s: panel
+      content, panel captions, preserved stray content and the group caption
+      are all CONTENT, and no target may silently discard any of them. What
+      this clause decides is the canonical writer's spelling and the three
+      non-HTML renderings, so that engines degrade the construct identically
+      instead of each meeting the floor its own way.
+
+      THE CANONICAL WRITER EMITS THE AUTHORED FORM: the attribute line where
+      attributes exist, the bare `::: figure` opener (`figure_group` has no
+      title or label to spell), the children with one blank line between
+      them, the closer at the opener's width (the inward-widening discipline
+      of PART 9 §12 unchanged), and the group caption as a `^ ` line after
+      the closer, its `#` placeholder written back as authored.
+
+      THE CARET AFTER A GROUP CLOSER IS A CAPTION POSITION. §5's
+      unconditional set escapes a leading caret in TEXT; the group caption is
+      NOT text in that position -- it is the caption the closer hosts -- so
+      the writer MUST NOT emit it as `\^ `, which would re-parse as a
+      paragraph and break §1's `parse(fmt(x)) == parse(x)`. The other
+      direction holds too: a PARAGRAPH whose text begins with a caret,
+      sitting where §4's allowance reaches a group closer above it, keeps its
+      `\^ ` escape, because bare it would re-parse as the group caption
+      (corpus 318-composite-figures-6 holds the detached shape).
+
+      T1 MARKDOWN emits the panels in order, each host degraded as it
+         already does, each panel caption as an emphasized `*(...)*`
+         paragraph after its host; preserved stray content in place; the
+         group caption LAST, as a bold `**...**` paragraph, its number
+         resolved. Emphasis and bold rather than invented syntax: Markdown
+         has no figure grouping, and this is the spelling the tabs/label
+         rule already uses for authored text with no native slot.
+
+      T2 PLAIN TEXT AND THE TERMINAL put the group caption FIRST, its number
+         resolved, then a blank line, then each panel: its caption line,
+         then its host's degradation (`[Image: alt]` and the rest,
+         unchanged), a blank line between panels. Caption-first because on a
+         caption-less target the group caption is the only line that says
+         what the following blocks are one of.
+
+      Tabs, `presentation=` hints and PDF layout are renderer/extension
+      business and out of this clause's scope; hint classes reach the HTML
+      target only.
+
+  10h. THE PLAIN-TEXT TARGET PRESERVES LIST DEPTH -- NORMATIVE. A nested list
+      item is indented by TWO ASCII SPACES for each list ancestor. The target
+      may discard marker style and tight/loose layout, but it MUST NOT flatten
+      parent, child, and grandchild items into siblings: indentation is the
+      plain-text representation of that structure. ANSI and canonical Carve
+      use the same two-space depth step; plain text differs only by omitting
+      presentation styling, not by erasing hierarchy.
+
+  10i. A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES --
+      NORMATIVE. The writer normalizes a run of blank lines between two blocks
+      to ONE. A run that is PART 9 §11 N1a's hard list boundary is the
+      exception, and it is written as EXACTLY THREE -- not one, and not the run
+      the author happened to type:
+
+        - apples                 is written as:   - apples
+        (six blank lines)                         (three blank lines)
+        - oranges                                 - oranges
+
+      ONE would MERGE the two lists, which §1 forbids: the boundary is the only
+      thing keeping them apart, so the general normalization cannot reach this
+      run. That much §1a already decides. THREE rather than the author's run is
+      what this section adds, and it is a canonical-form choice: N1a reads
+      THREE OR MORE, so every run at or above the threshold parses identically
+      and §1 is indifferent between them. Left unstated, one document has
+      unboundedly many canonical spellings, and `fmt` carries the author's
+      whitespace into the one form whose purpose is not to.
+
+      A RUN THAT IS NOT THE BOUNDARY NORMALIZES AS USUAL. Three blank lines
+      between two paragraphs, or between two lists that already differ on an N1
+      axis (`- a` then `* b`), separate nothing that one blank line does not
+      separate as well, so they come back as one. What earns the three is the
+      boundary's job, not the run's length.
+
+      THE THREE ARE LOAD-BEARING INSIDE THE WRITER TOO. carve-rs squeezes 3+
+      newlines to 2 as a pass over its own output, which would destroy the
+      boundary it had just written; it emits a verbatim-blank sentinel to keep
+      the run intact. A writer whose blank-line handling is a blanket squeeze
+      needs the same exemption, and this is where it is stated rather than
+      rediscovered.
+
+      Pinned by corpus
+      395-a-longer-run-at-a-list-boundary-is-written-as-exactly-three-blank-lines,
+      whose source has SIX blank lines and whose `.fmt` sidecar has three
+      (carve#1505).
+
+  10j. AN UNSPELLABLE BLOCK DOES NOT CANCEL THE ADJACENCY IT CANNOT SPELL --
+      NORMATIVE (carve#1621). Where EVERY block between two sibling lists is
+      UNSPELLABLE -- it reaches the writer from the AST and leaves no character
+      on the page -- the two lists are ADJACENT for §10i's purposes, and
+      §10i decides the run between them as if nothing had stood there.
+
+      WHAT THE RULE REPAIRS. A whitespace-only paragraph does two things at
+      once. It is not empty, so a writer tracking list adjacency treats it as a
+      block that separates the two lists and never writes PART 9 §11 N1a's
+      boundary; and it has no Carve spelling, so nothing of it reaches the
+      output. The lists come back with ONE blank line between them, which is
+      the loose separator, so they MERGE:
+
+        list, paragraph, list       is written as:   - a
+        -- the paragraph holding                     [blank line]
+        one ASCII SPACE                              - b
+
+      That source re-reads as ONE loose list, so two lists became one and the
+      items changed shape with them. What is lost is a document boundary rather
+      than a blank line, and §1's `to_html(fmt(x)) == to_html(x)` forbids it.
+
+      THE RULE IS ALREADY FOLLOWED ON THE SIBLING SHAPE, which is what settles
+      it without a cross-engine tally. The pinned build writes the boundary
+      across an EMPTY paragraph and not across a whitespace-only one, and those
+      two trees differ in nothing the writer can put on the page. That is one
+      engine reading its own rule two ways, and the reading that keeps §1 is
+      the one that survives.
+
+      IT IS NOT A PARAGRAPH RULE. Any INTERCHANGE-ONLY block has this shape: a
+      `figure` wrapping a `table` (PART 12 §17) is unspellable in the same
+      sense and would cancel the same adjacency. So the rule is stated over what
+      a block SPELLS and never over its type, and it reaches every such shape a
+      later clause admits without naming one of them. A block that spells
+      ANYTHING -- a thematic break, or a paragraph holding a NO-BREAK SPACE
+      (§7) -- separates the two lists as it always did, and no boundary is
+      written.
+
+      THE BLOCK IS STILL LOST, and this clause does not pretend otherwise. It
+      bounds the loss TO the block, which is what §1 can be held to, instead
+      of letting it take a document boundary with it. Refusing the tree was the
+      alternative and is worse: it fails an editor's round trip on a tree the
+      renderer accepts, trading a silent loss for a loud one on the path that
+      can least afford it.
+
+      NO CARVE SOURCE REACHES THIS, so nothing in the parse-driven corpus can
+      pin it and the fixture is a hand-built payload entering through the AST
+      ingest (tests/an-unspellable-block-does-not-cancel-list-adjacency.test.mjs).
+
+  11. THE MARKDOWN TARGET'S CROSS-REFERENCES -- NORMATIVE. A resolved
+      cross-reference is emitted as a Markdown link to the target heading's id,
+      and the target heading gains an explicit `{#id}` suffix. Both halves are
+      required, and neither is emitted without the other:
+
+        # H                       ->  # H {#H}
+        See </#h>.                ->  See [H](#H).
+
+      A heading NOTHING references gains no suffix. Markdown has no portable
+      heading-id syntax, so an id every processor must be told about is noise
+      unless something links to it.
+
+      THE ID IS THE ONE THE DOCUMENT ASSIGNED, not a fresh slug of the heading
+      text. The two differ whenever the core disambiguated a repeat (`Setup`
+      and `Setup-2`), and a renderer that re-derives the slug does not merely
+      mislabel the heading: it fails to recognize the reference as pointing at
+      a known heading at all, so it drops the `{#id}` AND degrades the link to
+      bare text -- one cause presenting as two unrelated symptoms.
+
+      A CROSS-REFERENCE CONTRIBUTES NOTHING TO A HEADING'S SLUG. By the time
+      this target runs, resolution has replaced `</#a>` with a link carrying
+      the target heading's text, so counting it slugs `# A </#a>` as `A-A`.
+
+      THE SCAN INCLUDES FOOTNOTE DEFINITION BODIES. They render as block
+      content, so a reference inside one is a reference; missing them leaves a
+      heading without the id that the link this target also emits depends on
+      (carve#352).
+
+   ============================================================================ *)
