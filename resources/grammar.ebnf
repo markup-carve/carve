@@ -8753,6 +8753,36 @@ EOF = (* end of file *) ;
       losing it would lose the attributes this clause says survive -- and
       neither is a node that owns a label, a destination, a level or a kind.
 
+      A RESOLUTION RESULT ABOUT THE WRAPPER IS NOT CONTENT OF IT -- NORMATIVE
+      (carve#1823). `paragraph.blockImage` (PART 12 §23) is the ONE field a
+      wrapper may carry and still be BARE, and it is admitted BY NAME. It is
+      set by PART 9R R7's promotion phase and by nothing else, it is present
+      only as `true`, and what it records is that this paragraph IS the block
+      image -- which is exactly what the dissolved spelling states outright. So
+      the two spellings PART 12 §23 blesses for one fact, `image` in block
+      position and a `paragraph` carrying `blockImage` around one `image`,
+      differ in no information, and dissolving either into the other takes
+      nothing with it. Note that this is a rule about the CHECKER's comparison
+      and not about the writer: `fmt` still does not read the field, per
+      DECIDED ON THE SPELLING above.
+
+      IT IS NOT A LICENSE TO IGNORE UNKNOWN KEYS, and the distinction is the
+      whole of why the field is named. A key a checker has never heard of is
+      content until something says otherwise; `blockImage` is metadata ABOUT
+      the wrapper, and it is admitted because PART 12 §23 says what it means
+      and bounds it to one value. A wrapper carrying `blockImage: false`, a
+      wrapper carrying `blockImage` beside an attribute block, and a wrapper
+      carrying any other field are each NOT bare, and a writer that lost one of
+      them still fails.
+
+      WHY THE CLAUSE MOVES RATHER THAN THE ENGINES. A checker that keyed
+      bareness on a key COUNT stops reaching a lone image the moment an engine
+      publishes the field, so the wrapper this clause was written to forgive is
+      silently recounted as a FIELD loss and every block image begins failing
+      §1. That is a wider and quieter change than admitting one named key, and
+      it is a change to what §1c covers that nothing declares -- which is the
+      failure mode this whole section exists to refuse.
+
       WHAT DOES NOT CONFORM is a carve-out keyed on the difference EXISTING.
       "The two trees came back different, and a fixture records the second one,
       so accept it" forgives a dropped node exactly as readily as a lost
