@@ -613,8 +613,8 @@
       closerless container:
 
           :: t
-          :  d
-             {.k}
+          : d
+            {.k}
           tail
 
       The `definition_list` ends where the description ends, not on the

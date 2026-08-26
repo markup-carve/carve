@@ -323,14 +323,14 @@
         anywhere in the stack, which is S4's own "otherwise" and nothing new:
 
             - a                :: t
-              [r]: /u          :  a
-            tail                  [r]: /u
-                               tail
+              [r]: /u          : a
+            tail                 [r]: /u
+                              tail
 
         both end their container and publish `tail` at document level. A
         COMMENT at a definition body's content column ends the paragraph the
         same way and for the same reason (§10 I5 lists it too), so
-        `:  a` over `   %% c` over `tail` ends the `dd`.
+        `: a` over `  %% c` over `tail` ends the `dd`.
 
         AND THE DEFINITION REGISTERS, which is half of what I5 says and the
         half an implementation can pass this rule without: "A link or footnote
@@ -592,8 +592,8 @@
         -- one paragraph holding an unclosed inline verbatim run, not a code
         block. So at a container's content column
 
-            - q                 > q                 :  a
-              ```               > ```                  ```
+            - q                 > q                 : a
+              ```               > ```                 ```
             tail                tail                tail
 
         all three fold `tail` into the paragraph that is still open, and no
@@ -677,12 +677,13 @@
 
         AND A DEFINITION BODY IS SUCH A CONTAINER -- NORMATIVE (carve#956).
         The third indented-block collector answers the same way. A definition
-        body's `dd` demands indentation to column 3 (`definition_indent`), so a
-        fence opened on the `:  ` marker line whose body sits BELOW that column
+        body's canonical `dd` demands indentation to column 2
+        (`definition_indent`), so a fence opened on the `: ` marker line whose
+        body sits BELOW that column
         is the list spelling above with a different prefix:
 
             :: t
-            :  ```
+            : ```
             body
             ```
 
