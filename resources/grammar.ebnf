@@ -1235,6 +1235,14 @@ bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
    one appears -- including the definition-term marker `::` and the description
    marker `:`.
 
+   That omission was not theoretical: with the rule read narrowly, `:: ` was a
+   paragraph and `::` followed by TWO spaces was a definition list, so stripping
+   one trailing space changed the document's structure -- the exact thing the
+   sentence above exists to prevent. Three engines carried three answers
+   (paragraph, `<dt></dt>`, and `<dt> </dt>`) with every gate green, because the
+   corpus case pinned bullets only. Pinned now by corpus
+   content-less-marker-is-not-a-list-2 (carve#512).
+
    THE DESCRIPTION MARKER -- NORMATIVE (carve#1830). `definition_separator` is a
    separator space, so a `:` line carrying only whitespace opens no description.
    It is a plain line under the open term, which folds it as a soft break, and
@@ -1244,14 +1252,6 @@ bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
    separator itself (PART 1, MARKER SEPARATORS AND PADDING SLOTS), and lands in
    the same place. Pinned by corpus
    a-colon-followed-by-only-whitespace-is-not-a-description.
-
-   That omission was not theoretical: with the rule read narrowly, `:: ` was a
-   paragraph and `::` followed by TWO spaces was a definition list, so stripping
-   one trailing space changed the document's structure -- the exact thing the
-   sentence above exists to prevent. Three engines carried three answers
-   (paragraph, `<dt></dt>`, and `<dt> </dt>`) with every gate green, because the
-   corpus case pinned bullets only. Pinned now by corpus
-   content-less-marker-is-not-a-list-2 (carve#512).
 
    A TAB AS THE FIRST CHARACTER OF CONTENT is a different question from the one
    above -- NORMATIVE. There the separator space itself is present, so the
