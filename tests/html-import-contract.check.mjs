@@ -78,7 +78,10 @@ test('every expected.crv is a fixed point of the canonical writer', async () => 
  * that disagrees and is not listed is red; a listed fixture that now agrees is
  * red too, so the line goes out with the pin bump that fixed it.
  */
-const PIN_LAG = new Map([])
+const PIN_LAG = new Map([
+  ['empty-definition-description-not-last', 'writes the two-space definition separator; one space is canonical (carve#1757)'],
+  ['traversal-shaped-index', 'writes the two-space definition separator; one space is canonical (carve#1757)'],
+])
 
 /*
  * A DIAGNOSTIC is a pattern: the page calls diagnostic objects MINIMUM matches,
