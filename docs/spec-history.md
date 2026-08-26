@@ -182,3 +182,30 @@ internal-sentinel collisions in footnote placement and abbreviation keys
 (carve-rs#1217, carve-js#1294). The current rule normalizes U+0000 to U+FFFD at
 every ingest boundary, matching source parsing. Raw U+0000 in JSON remains an
 RFC 8259 syntax error before Carve sees the value.
+
+## Resource-bound convergence
+
+Early implementations counted parser depth, JSON nesting, AST node depth and
+renderer recursion in different units. Reusing one numeric ceiling caused
+accepted trees to be truncated by later rendering passes. The lasting rule is
+to derive each bound from the parser limit using that representation's
+worst-case expansion. Per-engine measurements and the rollout status were
+removed from PART 9 and PART 12 (carve#494, carve#533).
+
+## Security target convergence
+
+URL filtering and C0-control handling first landed in individual renderers.
+That produced temporary differences between HTML, Markdown, terminal and plain
+text output, including dangerous schemes passed through one target and content
+deleted from another. The normative rule now states the sink-based behavior
+per target. Historical engine snapshots remain in carve#352, carve#765 and
+carve#979 rather than in the active security algorithm.
+
+## AST shape convergence
+
+The published AST once reflected implementation-specific grouping and
+resolution phases for definition lists, cross-references and reference
+definitions. Strict ingest also landed field by field, leaving combinations
+that silently defaulted invalid values or failed inside renderers. PART 12 now
+defines one schema-governed payload contract. The implementation surveys that
+motivated it are retained in carve#610, carve#642, carve#708 and carve#881.

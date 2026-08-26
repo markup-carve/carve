@@ -124,25 +124,6 @@
       renders to nothing is an empty body -- a container holding only a comment
       takes the same shape as one holding nothing.
 
-      WHY THE EXCEPTION SURVIVES. It has no principle behind it. The split is
-      on whether the div carries a type word, which is a property of the
-      RENDERING PATH and not of the document, and a uniform rule would be
-      easier to state and to implement. It stands because the compact bare div
-      is what all three engines already produce and what the corpus already
-      pins (116-fence-opener-with-a-nested-list-body-inside-a-list-item-6,
-      which reaches it incidentally through a stray column-zero closer).
-      Making the rule uniform would overturn a three-way agreement to fix a
-      cosmetic inconsistency, which is a worse trade than writing the
-      inconsistency down. (carve#531)
-
-      WHAT WAS ACTUALLY UNSPECIFIED is narrower than the exception. Two of the
-      four shapes were pinned only incidentally and one -- the div with a WORD
-      CLASS -- was pinned by nothing at all, which is exactly where the engines
-      diverge: carve-php emits the compact form there, carve-js and carve-rs
-      the blank line. carve-php is the one that moves. Each shape needs its own
-      corpus case, since the whole defect is that the shape varies by kind and
-      by attribute; a single case would miss it.
-
    5. PARAGRAPH WRAPPING follows the tight/loose rule (§17): a tight list
       item's text has no <p>; a loose item's paragraphs are wrapped.
 
@@ -166,17 +147,6 @@
             <tr><td>1</td></tr>
           </tbody>
         </table>
-
-      This was two layouts before, and neither was written down: a head and a
-      foot went on the section's own line while a body gave each row a line, so
-      the same element was laid out two ways for no stated reason. Two fixtures
-      in one commit then demanded DIFFERENT `tfoot` shapes and no engine could
-      satisfy both, which is what a rule nobody wrote looks like when it drifts.
-      One layout needs no exception and no rationale.
-      The emitted HTML is read by people - the corpus documents ARE this spec's
-      worked examples, and a table defect is usually spotted in their diffs - so
-      the line count is not what this optimizes for. Nothing renders differently:
-      whitespace between rows in table context is not rendered.
 
    8. STABLE STRINGS. Mentions and tags render as inert `<span>`s (no link)
       when no URL template is configured; a configured template links to them. The footnote

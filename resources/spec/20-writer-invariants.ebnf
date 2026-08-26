@@ -198,11 +198,6 @@
       bounded at the boundary: the words and the constructs on either side of
       it survive as themselves.
 
-      (Ruled at carve#1325. All three engines emit the joined form, so this is
-      a change in each of them rather than a divergence between them --
-      tests/corpus-convert cases 29, 30 and 31 pin the three shapes, declared
-      in resources/converter-drift.txt until each engine lands it.)
-
    1c. A WRAPPER ITS OWN CONTENT SPELLS AWAY IS A DECLARED CEILING --
       NORMATIVE (carve#1658). §1b settles what a producer owes where an
       inline-only slot forces a flatten. This settles the other place §1's
@@ -469,15 +464,6 @@
       escape would change the re-parsed AST. This section describes ONE way to
       compute that, which an implementation MAY use and is NOT required to.
       Where the two differ, §2 wins.
-
-      That ordering was reversed until carve#374. This section used to pin the
-      output, and it yields a form §2 forbids: for a document containing one
-      genuinely-escaped candidate character, the procedure below escapes EVERY
-      candidate in the document, including characters whose bareness changes
-      nothing. carve-php implemented this section and emitted
-      `\*x\* and \(b\)`; carve-rs and carve-js implemented §2 and emitted
-      `\*x\* and (b)`. Both were reading the spec correctly, which is how the
-      contradiction surfaced.
 
       §2 is the rule worth keeping, because it is the one an author can see the
       difference in, and because §3's argument does not lead here: it shows a

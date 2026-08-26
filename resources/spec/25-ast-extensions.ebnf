@@ -98,15 +98,6 @@
                                             hands an editor as prose and round
                                             trips as prose
 
-      WHY IT IS A NODE is §10's own argument, and it applies here unchanged
-      because nothing distinguishes this definition kind from the other three.
-      A definition renders nothing where it sits -- that is the reason the
-      footnote and link-reference kinds are document-level nodes rather than
-      inline content, not a reason to leave one of them out of the tree. It was
-      written somewhere: an editor jumps to it, a formatter reproduces it, a
-      language server renames its key. Of the four kinds this was the only one
-      with no node, and no clause said why.
-
       NO RENDERED OUTPUT MOVES ON ANY TARGET. The node renders nothing where it
       sits; the entry's text renders in the references list the extension
       builds, exactly as it did before. That is why the divergence survived so
@@ -303,14 +294,6 @@
       `start: 2` are carried through unchanged, and an implementation that
       drops them has broken the field rather than normalized it.
 
-      NOTHING IN A PARSE-DRIVEN CORPUS CAN COVER THIS. The value is unreachable
-      from Carve source -- `1. a` produces no `start` at all -- so the pin has to
-      be a hand-built payload, which is exactly why three engines drifted apart
-      here unnoticed: carve-php drops the field, carve-js and carve-rs preserve
-      it, and carve-rs additionally spells it as `<ol start="1">`
-      (markup-carve/carve-js#1391, markup-carve/carve-rs#1293). The pin is
-      tests/an-ingested-default-start-is-not-re-emitted.test.mjs.
-
    23. A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH -- NORMATIVE
       (carve#1784; PART 9R R7 owns the phase, this clause owns the wire).
 
@@ -323,17 +306,6 @@
       The field is set by that phase and by NOTHING ELSE. It is present only as
       `true`; a paragraph that is not a block image omits it rather than
       carrying `false`, which is §22's absent-value rule applied here.
-
-      WHY THE TREE NEEDS IT AT ALL. §4's image-paragraph host is a condition on
-      a paragraph's INLINE CONTENT, so a block image and an ordinary paragraph
-      holding one image are the same tree -- PART 11 §1c says as much from the
-      writer's side. Every consumer therefore re-derived the role, and under
-      §3a's pre-resolve tree it had to re-run reference resolution to do it.
-      The field is the resolution result published beside the authored
-      construct: exactly the ADDED-ALONGSIDE rule §3a states for `href` on a
-      resolved reference link, and for the same reason -- the authored
-      construct (`ref`, `rawRef`) survives untouched, and the result is
-      published rather than left to be recomputed.
 
       IT IS NOT A NON-ANCHOR FLAG. §3a refuses a flag on a nested link because
       that flag would carry a RENDER fact -- "HTML cannot nest anchors" -- back

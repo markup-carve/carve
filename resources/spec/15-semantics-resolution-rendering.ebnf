@@ -148,15 +148,6 @@
          block, a block quote -- all of which every engine already renders
          loose.
 
-         Stated because the SUB-LIST lead was the one shape where that was
-         not true in practice: carve-js rendered it loose and carve-rs and
-         carve-php rendered it tight, while all three agreed on the other
-         four leads. A rule that changed with the first block's kind would
-         need a reason and there is none -- L2 is about a blank line before
-         a sub-BLOCK, and `Body.` is a paragraph, so L2 never applies here.
-         The executable spec and the reference both render it loose already.
-         (carve#538)
-
       L1b AN INVISIBLE LINE DOES NOT CANCEL THE SEPARATION -- NORMATIVE. L1
          asks whether the item holds a blank-line-separated second PARAGRAPH.
          An INVISIBLE LINE (§10 I5, AN INVISIBLE LINE IS ONE CLASSIFICATION)
@@ -212,14 +203,6 @@
          differently, since carve-php drops the trailing blank from a raw
          block and keeps it in a code block.
 
-         The executable spec answered by the item's interior and kept all six
-         container kinds tight. carve-js and carve-rs loosen all six; carve-php
-         loosens a `:::` div, an admonition, a raw block and a comment fence
-         and stays tight for a code or tilde fence alone
-         (markup-carve/carve-php#1445). Corpus 365 pins a div and a code fence
-         loose, with a different-bullet-axis control that stays tight because
-         the marker after the blank belongs to another list. (carve#1383)
-
       L2 COMPACT LIST BLOCKS -- Carve deviation from djot/CommonMark. A
          blank line before an item's sub-BLOCK (sub-list, block quote,
          fenced code, fenced div, heading, table) does NOT loosen: the item
@@ -248,16 +231,6 @@
          ordinary column rules, which give it to whichever container its own
          column names, exactly as if the `+` line had been a comment.
 
-         This is stated because the word alone did not carry it. All FOUR
-         readers - the executable spec, carve-js, carve-php and carve-rs -
-         attached whatever line came next at any indentation, and the corpus
-         pinned no column, so the clause and every implementation of it
-         disagreed silently. Under a NESTED marker the cost was visible: `* * +`
-         swallowed a line written at the OUTER item's content column, so outer
-         content could not be written after a nested marker at all, and a writer
-         that spelled an emptied inner item `* * +` changed the document on
-         re-read (carve-js#1228 and its two siblings).
-
          The single-level spelling is unaffected in practice, which is why this
          went unnoticed: under `- +` a line at column 2 is the item's OWN
          content column, so the ordinary rules put it in the item whether the
@@ -282,13 +255,6 @@
              para
              +
              > q
-
-         The measured sibling case settles the reading on its own: `- a` /
-         `+` / `- x` / `- y` is three flat items in every engine, so a sibling
-         marker ENDS the attachment rather than being swallowed into a run. The
-         two-marker spelling already agrees byte for byte across carve-js,
-         carve-php and carve-rs, so the narrow reading costs one marker line
-         and no expressiveness at all.
 
          This is a BREAK against released carve-js 0.1.3, which attached to the
          boundary, and it is deliberate: the boundary reading is the same

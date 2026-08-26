@@ -403,17 +403,6 @@
          same derivation S4's THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST
          BLOCK already gives `- | a | b |` over `tail`.
 
-         Written down because the two spellings were told apart, and only
-         inside a container. At the TOP LEVEL every implementation already
-         ends the table and starts a sibling paragraph under both spellings,
-         so nothing distinguishes them there; one container in, carve-js and
-         carve-php folded `tail` into the ITEM under `+ b |` while closing it
-         under `| b |`, and ALL THREE engines plus the executable spec did the
-         same in a QUOTE. One question answered by how a line is written is a
-         contradiction rather than a second reading, and on the quote half
-         there was no majority to consult: they were unanimous and wrong
-         together. Ruled at carve#1348.
-
          THE OPPOSITE DIRECTION IS UNCHANGED. With NO table above it a
          `+ ...|` line is not a row at all but ordinary prose, so it leaves a
          paragraph open and the flush-left line folds (carve#1345, corpus

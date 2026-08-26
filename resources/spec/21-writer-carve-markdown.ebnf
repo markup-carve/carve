@@ -33,13 +33,6 @@
       content contains its own fence character, and the example would have been
       load-bearing by accident rather than by design.
 
-      NESTED BOLD ITALIC joins that list, and needed the AST to catch up before
-      it could. `/*x*/` is a single production (`bold_italic`, PART 3) while
-      `*/x/*` is ordinary nesting, and BOTH yield the same `strong` wrapping
-      `emphasis`. So §1 held for either spelling and nothing pinned which one to
-      emit: carve-rs reproduced the author's, carve-js and carve-php normalized
-      to `*/x/*` (carve#375).
-
       The AST therefore RECORDS the combined form -- a `strong` parsed from
       `bold_italic` carries `boldItalic` (PART 12 §3) -- and the writer
       reproduces it. Without that mark the rule could not be stated as an
@@ -193,13 +186,6 @@
       sides of the change, so it is absent for the length of the rollout rather
       than wrong at one end of it.
 
-      THE OLD SPELLING WAS AN INCONSISTENCY INSIDE ONE WRITER, not a decision.
-      Measured on carve-js `a59df0fa` before this clause: `[x]{lang}` formatted
-      to `[x]{:}` -- a boolean CONTRACTED into the shortest dedicated form --
-      while `[x]{kbd}` formatted to `[x]{kbd=""}` and `[x]{disabled}` to
-      `[x]{disabled=""}`, the same boolean EXPANDED. One writer, one release,
-      opposite directions, and nothing in the spec asked for either.
-
       A COMPACT SEMANTIC SPAN IS WHERE IT SHOWS. `[Tab]{kbd}` is the form PART
       9 §10 documents and the form an author writes; a writer that returned
       `[Tab]{kbd=""}` rewrote the documentation's own example into a shape the
@@ -265,16 +251,6 @@
       writer's to choose. An UNPREFIXED cell was always padded (`| a | b |`);
       this makes one rule of what was two, and the padded side is the one a
       reader can scan.
-
-      IT ALSO RETIRES TWO GUARDS. The alignment sigil and the attribute slot
-      are both read GLUED off the UNTRIMMED cell, so a glued content character
-      was handed to one of them: `| ~x~ |` came back as `|=~x~|`, which
-      re-reads as a CENTERED column holding `x~` -- the strikethrough gone and
-      every cell in the column aligned by a marker nobody wrote (carve-js#903,
-      carve-rs#819, carve-php#1069 cause 5). Each writer answered with a
-      special case that inserted a space for content beginning with `<`, `>`,
-      `~` or `{`, and each enumerated a slightly different set. One space on
-      every cell covers the class without a list, and the reader trims it.
 
       THE TREE RECORDS NO SLOT, the same reason §6d gives: `table_cell` records
       its padding no more than `code_block` records the space before its info
@@ -361,13 +337,6 @@
       `to_html(fmt(x)) == to_html(x)` -- and the rule this clause already ends
       with, "where the PARSER discards trailing whitespace the writer may too",
       now reaches every line rather than only the ones that end a block.
-
-      WHAT WAS WRONG, recorded so it is not re-derived. The old text asserted
-      `<p>a \nb</p>` as the rendering and argued from it that stripping breaks
-      the round trip. It does not render that way and never did in the
-      executable spec; carve-rs's limitation to block-final lines (carve#359)
-      was a correct response to an engine whose PARSER kept the run, which is
-      the half carve#926 moved.
 
       A trailing NO-BREAK space is a different matter and IS content, not
       layout -- the author wrote it and it renders as `&nbsp;` -- so an
@@ -513,24 +482,6 @@
       semantically empty, and it is stated here so the inertness does not
       read as accidental.
 
-      WHY THE BARE WORD AND NOT AN ID, A CLASS OR A KEY/VALUE. All four reach
-      the same empty body and all four are discarded on this node, so the
-      choice is among constructs that mean something rather than between one
-      that does and one that does not -- there is no meaningless candidate to
-      prefer, and the grammar is why. §1a asks for the SMALLEST departure and
-      the bare word is it: an id also occupies the document-wide identifier
-      space, a class is a name a stylesheet can match, and a key/value invents
-      two tokens where one will do.
-
-      ONE SPELLING, PINNED HERE RATHER THAN PER ENGINE. Any of the four would
-      have worked, which is precisely why the writer cannot be left to pick:
-      a sentinel each engine invents is three sentinels, and canonical output
-      stops being the same bytes everywhere. `empty` is the word one engine
-      had already emitted before any clause named it (carve-js#911), so
-      pinning it costs no writer a second change -- and a reader meeting
-      `{empty}` in formatted source now has this clause to look it up in,
-      which is the objection carve#999 opened with.
-
    7c. A LINE BLOCK'S HARD BREAK IS WRITTEN BARE ONLY WHERE THE BARE NEWLINE
       RE-DERIVES IT -- NORMATIVE. A line block hardens every line boundary of
       its own accord, AT EVERY DEPTH (PART 9 §23, AN INLINE CONSTRUCT IS NOT A
@@ -645,16 +596,6 @@
       line, with the three engines settling on three different canonical
       byte strings for the first of them (carve#1334). The sibling writers
       already do this: a paragraph and a `::: \` block both emit the backslash.
-
-      THE LAST BODY LINE WAS FOUND BY AN ENGINE IMPLEMENTING THE OLD LIST
-      (markup-carve/carve-js#1172), from a whole-corpus
-      `to_html(fmt(x)) == to_html(x)` gate and a sweep over every three-line
-      line block drawn from a 24-shape alphabet. The list's own justification
-      is what let it through: it excused a line with no trailing whitespace
-      because "the tree is identical either way", which holds INSIDE a stanza
-      and fails at its end. A list of the cases where a rule is unsafe goes
-      stale the first time an unlisted case turns up, which is why what is
-      normative here is the property and not the bullets under it.
 
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE. The Markdown renderer is not
       the canonical writer and does not follow §2. It has a different

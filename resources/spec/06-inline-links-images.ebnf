@@ -139,14 +139,6 @@ link_text = inline_content ;
    not an escape. `{+ +}`, `{- -}` and `{~ ~> ~}` take `inline_content`, so
    `[{+a\]b+}](u)` already works and they are deliberately NOT in the list.
 
-   This was previously written as "code-span-aware", which named only the
-   first. The others were left to end the label early, and because their
-   content is literal there is no way to write the `]` around it: an escape
-   inside them is not an escape, so `[{#a\]b#}](u)` produces a link whose
-   comment text really contains a backslash. A writer serializing such a
-   document therefore had to choose between keeping the link and keeping the
-   author's text, with no correct answer available (carve#403).
-
    Stated as a property rather than as three names: any future construct whose
    content is literal joins the list by construction. *)
 (* SEMANTIC CONSTRAINT (links never nest): a link MUST NOT contain another
@@ -373,17 +365,6 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    engines and the executable spec read it as a definition with trailing junk
    until carve#911, and nothing in this grammar authorized that reading.
 
-   WHY IT IS STATED RATHER THAN LEFT TO THE PRODUCTION. The tail is what made
-   PART 7's promised failure mode UNREACHABLE at this line. That clause says a
-   slot which does not match "falls back to prose rather than silently dropping
-   metadata" -- and here there was no prose to fall back to, so a title or
-   attribute slot that rejected its separator had its metadata quietly eaten by
-   the tail. Every narrowing at this line therefore produced the one outcome
-   the clause names as the one to avoid, which is why carve#907 left two shapes
-   at these slots deliberately unpinned. With the line anchored the promise
-   holds, and the tab and cardinality rules at both slots follow from the
-   general rule with no special case.
-
    THE LINE ENDING is `whitespace` -- `' ' | '\t'` -- the same terminal
    `blank_line = {whitespace}` takes (PART 1; carve#890). So `[a]: /u<SP>` and
    `[a]: /u<TAB>` are still definitions, while `[a]: /u<NBSP>`,
@@ -414,11 +395,6 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    another spelling of it. Corpus 266 carries every legal form as a control,
    since the failure mode of an over-eager anchor is rejecting them.
 
-   THE COST, recorded: a shape all four artifacts accepted stops being a
-   definition. One corpus document depended on it -- `16-reference-link-5`,
-   which pinned `[r]: a b c` resolving the label to `a` -- and its golden moved
-   with this ruling.
-
    AN INVALID BLOCK IS NOT `attributes`, SO THE LINE IS NOT A DEFINITION --
    NORMATIVE (carve#933). `[space, attributes]` names the `attributes`
    production, and a balanced `{...}` that production does not accept is not
@@ -438,17 +414,6 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    cannot parse. Two readings of `{#}` one construct apart is the thing being
    removed, and the reading kept is the one the rest of the language already
    has.
-
-   WHY IT NEEDED SAYING WHEN THE ANCHOR ALREADY EXISTED. The anchor could not
-   SEE the failure. The trailing block is peeled off by a BALANCE SCAN before
-   anything validates it, so a block that failed validation had already been
-   consumed and DISCARDED, and the line went on to parse as a definition with
-   the author's `{...}` gone from the page -- the exact outcome PART 7 names as
-   the one to avoid, and the reason this anchor exists at all. The remedy is
-   structural rather than a flag: the scan must hand a rejected block BACK as
-   content, which is a THIRD outcome, distinct both from "there was no block"
-   and from "the block was empty". Where those two are the same value, the
-   failure has nowhere to be observed.
 
    THE COMPATIBILITY BREAK THIS ADDS, recorded: a definition line carrying an
    unparseable attribute block stops defining, and a document relying on it
@@ -490,17 +455,6 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    override per key" in R1 is exact only once "per key" names a merge, and the
    language has one. A rule where the link's `class` REPLACED the definition's
    would make this the only place in Carve where stacking classes drops one.
-
-   WHY THE SLOT EXISTS AT ALL. R1 and the `linkDefs : label -> (url, title?,
-   attrs?)` symbol table were written with definition attributes in them, and
-   the production had no way to produce the `attrs` they describe -- so the
-   rule was reachable only by an engine that invented a spelling. carve-php
-   invented one: it read a floating `{...}` line ABOVE the definition as
-   attributing it. §15 A2a then settled that a floating attribute floats PAST
-   an invisible construct to the next visible block, which is right, and which
-   removed the only spelling any engine had. This is the replacement, and it
-   does not compete with A2a because it is on the definition's own line
-   (carve#604).
 
    NOT THE SAME AS THE LINE ABOVE. The two forms are different constructs and
    both are now well-defined:
@@ -556,8 +510,6 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    rather than in it: an `abbreviation_expansion` is a raw string, so the tab
    survives into the `title`, while a footnote's `inline_content` is parsed as
    blocks and a leading tab is that body's own indentation run (PART 9 §24 C1).
-   Measured, not asserted.
-
    MARKER REQUIRES CONTENT still applies after the run: `[^f]:` followed by
    spaces and nothing else is a paragraph, because a line of `whitespace` is
    blank (PART 1). *)
@@ -709,13 +661,6 @@ alt_text = {character} ;
    output differ. The bracketed run is not one of the things that differ. Not
    expressible context-free, which is why this production reads `{character}`
    and defers to the constraint rather than pretending to enumerate it.
-
-   THIS WAS `{character - ']'}`, a flat run stopping at the first `]`, and the
-   two statements sat four lines apart contradicting each other. Read as
-   written it says `![t[z]][r]` is not an image, so the executable spec parsed
-   the `!` as literal text and the rest as a reference LINK, while all three
-   engines rendered an `<img>` (carve#1197). The prose is the rule; the
-   production was the defect.
 
    The VALUE is not `inline_content`. `alt` is an HTML attribute, so nothing
    inside the run is inline-parsed and no smart typography applies:

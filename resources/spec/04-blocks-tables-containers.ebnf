@@ -155,15 +155,6 @@ caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
    that is not one BEGINS the caption. `^<SP><SP><SP>cap` is the caption `cap`,
    not `<SP><SP>cap`.
 
-   A CORRECTION, NOT A WIDENING, and the same one carve#892 made at the footnote
-   and abbreviation markers: this production said `space` while every engine
-   consumed a run, so the grammar forbade a shape nothing rejected. The
-   executable spec was the one reader that took the production literally, which
-   is how it came to publish `<figcaption><SP><SP>cap</figcaption>` where all
-   three engines publish `cap` -- a divergence no gate could reach, since no
-   corpus document, no optional-corpus case and none of the authored documents
-   spelled a caption that way (carve#1575).
-
    TWO CLAUSES DECIDE IT, neither of them a nose count. MARKER SEPARATORS AND
    PADDING SLOTS (PART 2) defines a marker separator as what stands between the
    marker and the content it introduces and rules that a writer aligning in a

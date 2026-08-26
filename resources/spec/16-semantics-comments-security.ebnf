@@ -583,17 +583,8 @@
         the HTML renderer. A Markdown target's link and image destinations are
         resolved by whatever renders that Markdown, so a scheme blanked here
         and passed through there is not blocked -- it is deferred by one step.
-        Measured before this was written down: all three engines blanked
-        `ms-msdt:` in HTML and emitted it verbatim in Markdown, because each
-        had mirrored the four-scheme core of the denylist into that target and
-        not the OS-handler class. One also failed to strip Unicode whitespace
-        in the Markdown probe, so `<U+202F>javascript:` survived there while
-        being blanked in its own HTML output (carve#352, corpus 119).
-
-        The rule was scoped to "an HTML renderer" because that is where the
-        sink was first identified; the scoping was not a decision that other
-        targets are safe. A target that emits no URL, such as plain text, has
-        nothing to blank and is unaffected.
+        A target that emits no URL, such as plain text, has nothing to blank
+        and is unaffected.
 
         "EMITS A RESOLVABLE URL" IS ABOUT THE URL REACHING A READER THAT
         RESOLVES IT, not about the target emitting a hyperlink construct. The
@@ -786,31 +777,6 @@
         typed by an author, and a degrade path that invented its own block
         structure would be a second paragraph rule to specify and to test.
 
-        This was unstated and the three engines each chose differently --
-        one paragraph per opener, one paragraph for all of them with a
-        trailing newline, and one without it, per the survey in carve#494 --
-        three byte-different outputs, all satisfying the sentence above as
-        it was written.
-
-        The reference's own answer does not survive reading. Measured here on
-        203 openers, carve-js emits `<p>::: note</p>`, `<p>::: note</p>`,
-        then `<p>::: note\nx</p>`: the last over-cap opener groups with the
-        following text and the other two do not. That is not "one paragraph
-        per opener", it is an artifact of where the degrade path hands back
-        to the block parser, and it is why the reference does not settle this
-        one by being the reference.
-
-        NOW CORPUS-PINNED. This was unpinned for as long as the EXECUTABLE
-        SPEC refused past MAX_NESTING_DEPTH rather than degrading, because a
-        case added then would have gone in the refusal allowlist, where it is
-        skipped and pins nothing -- worse than no case at all. The degrade
-        path is implemented in scripts/spec now, so
-        tests/corpus/182-openers-past-the-nesting-cap-are-one-paragraph.crv
-        carries an HTML fixture, renders in the executable subset, and
-        REFUSED_ALLOW (scripts/spec/refused-allow.mjs) is empty. Engine drift
-        is a separate matter and has its own ledger
-        (resources/engine-pin-drift.txt, carve#533).
-
         Recursive RENDER / RESOLVE /
         FILTER passes over a programmatically constructed tree MUST be
         bounded too, not only the parse path -- but their ceiling MUST NOT
@@ -821,11 +787,7 @@
         the parser has just accepted, and truncation on the render path
         deletes content silently instead of degrading it to literal text.
         The render ceiling MUST therefore EXCEED MAX_NESTING_DEPTH by enough
-        to cover the blocks a container subtree adds. This sentence
-        previously required the SAME ceiling on both paths, and all three
-        engines complied: at exactly MAX_NESTING_DEPTH the canonical writer
-        dropped the innermost paragraph and the Markdown / plain-text / ANSI
-        renderers dropped the whole document.
+        to cover the blocks a container subtree adds.
 
         THE MARGIN IS DERIVED IN THE IMPLEMENTATION'S OWN UNIT, NOT
         BORROWED FROM ANOTHER IMPLEMENTATION'S -- the same shape as
@@ -890,10 +852,6 @@
         truncation as the answer at the ceiling reinstates it for every tree
         that arrives over the wire or through a builder.
 
-        Every engine has something to move. Measured on carve-js at the pin
-        this repo carries, with MAX_NESTING_DEPTH = 200 and the ceiling
-        therefore at 232:
-
           depth  renderMarkdown  renderCarve  renderPlainText  renderAnsi  renderHtml
           231    content kept    kept         kept             kept        kept
           232    DROPPED         DROPPED      DROPPED          empty       kept
@@ -934,10 +892,7 @@
         and OSC (U+009D) are single-character forms of the very sequences
         this bullet exists to stop. A Markdown link/image title MUST escape
         the `"` that would otherwise terminate it. WHICH TARGET STRIPS A C0
-        CONTROL is §29, not this bullet: this requirement used to say only
-        "before emission to a terminal" and was implemented as a strip on
-        all three non-HTML targets, which deleted content on two of them
-        (carve#979). The narrowing is per TARGET and applies to C0 alone; it
+        CONTROL is §29, not this bullet. The narrowing is per TARGET and applies to C0 alone; it
         never narrows what the terminal target strips.
 
    ============================================================================ *)

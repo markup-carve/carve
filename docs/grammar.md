@@ -97,5 +97,5 @@ Implementations should match this grammar. The [case study](./case-study/) expla
 
 The generated single-file grammar remains available at
 [`resources/grammar.ebnf`](https://github.com/markup-carve/carve/blob/main/resources/grammar.ebnf).
-It is intentionally not embedded into this page: the aggregate exceeds 13,000
-lines and is a tool input, not a readable introduction.
+It is intentionally not embedded into this page: the aggregate is a generated
+tool input, not a readable introduction.

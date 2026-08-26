@@ -192,16 +192,6 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    emptiness test is not satisfied by its absence, and a line holding one is
    not a `blank_line`.
 
-   THIS WAS ALREADY WRITTEN DOWN, one position at a time. PART 2's NO
-   TRAILING WHITESPACE says of the end of a content line that "every other
-   character is CONTENT and survives, however invisible", and names the form
-   feed and the vertical tab among the survivors. This clause is that
-   sentence with the position taken out: what is content at the end of a line
-   is content at the start of one, after a marker, and inside a construct's
-   emptiness test. Deriving it per construct is what produced the divergence
-   -- the same character was content where the sentence had been read and
-   whitespace where it had not.
-
    THE TWO WIDER NOTIONS ARE MARKED AS SUCH, and a construct carrying no such
    mark takes this definition. WHITESPACE HERE IS UNICODE WHITESPACE beside
    `unicode_url_char` (PART 3) means the Unicode White_Space property, for a
@@ -229,4 +219,3 @@ character = (* any Unicode character *) ;
 email_char = letter | digit | '.' | '-' | '_' | '+' ;
 
 EOF = (* end of file *) ;
-
