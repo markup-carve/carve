@@ -452,12 +452,37 @@ markers in the source.
 
 #### Ordered
 ```
+. First item
+. Second item
+  - Sub-item
+  - Another
+. Third item
+```
+
+For an automatically numbered decimal list, prefer Carve's bare-dot marker
+`. `. It counts from 1 and stays two columns wide at every item, so nested
+content does not need to move when the rendered list crosses 9, 99, or 999.
+`carve fmt` preserves this spelling.
+
+Use explicit numbers when the source must also parse as Markdown or Djot, when
+visible source numbering is useful, or when the list must start somewhere other
+than 1:
+
+```
 1. First item
 2. Second item
-   1. Sub-item
-   2. Another
+
+   - Sub-item
 3. Third item
+
+11. Starts at eleven
+12. Continues at twelve
 ```
+
+Bare-dot markers are a Carve extension; CommonMark and Djot do not recognize
+them as ordered-list markers. The formatter preserves the form that opened the
+list: a bare-dot list stays bare-dot, while an explicitly numbered list stays
+numbered and has its marker values normalized.
 
 Ordered lists support **decimal, alphabetic (`a.`/`A.`), and roman
 (`i.`/`I.`)** markers, with either the `.` or `)` delimiter. The first item
@@ -492,17 +517,23 @@ like any list marker (the §10 rule above).
 
 **Auto-numbering:**
 ```
-1. First
-1. Second (auto-increments)
-1. Third
+. First
+. Second
+. Third
 ```
+
+Repeated `1.` markers also auto-increment, as in Markdown, but retain the wider
+numbered spelling when formatted. Bare dots are the native Carve convention
+when stable nesting indentation matters.
 
 #### Indentation and nesting
 
 Every list item has a **content column**: where its content begins, after the
-marker: `- ` / `* ` → column 2, `1. ` → 3, `10. ` → 4. A **task** item's checkbox
-is content, not marker, so its content column is the **bullet width (2)**, not
-the full `- [x] ` width.
+marker: `- ` / `* ` / `. ` → column 2, `1. ` → 3, `10. ` → 4,
+`100. ` → 5. Consequently, nested content under explicit numbers moves one
+column at each power of ten. Bare-dot auto-numbering avoids those transitions.
+A **task** item's checkbox is content, not marker, so its content column is the
+**bullet width (2)**, not the full `- [x] ` width.
 
 How a deeper marker inside an open list item is read - this is sub-list nesting,
 a different axis from the §10 paragraph rule (no list marker interrupts a

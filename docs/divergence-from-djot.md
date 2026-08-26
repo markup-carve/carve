@@ -904,7 +904,11 @@ as more than restyled Djot:
   from 1, the AsciiDoc-style shorthand for the list nobody numbers by hand. It
   is a spelling of decimal-dot, not a dialect, so it mixes with `1.` in one
   list; only `.` may drop its value, since a leading `) ` collides with prose
-  parentheticals far more often (grammar, ordered_marker).
+  parentheticals far more often (grammar, ordered_marker). Prefer the bare-dot
+  form for native Carve auto-numbering: its constant marker width keeps nested
+  content at the same indentation when the rendered count crosses 9, 99, or
+  999. Use numbered markers when the source must remain readable as Djot or
+  Markdown. `carve fmt` preserves whichever form opened the list.
 - **Boolean attributes** - a bare word in `{…}` (`[text]{featured}`,
   `{.note open}`) is a value-less attribute rendered `name=""`. Canonical djot
   rejects bare words (the whole block stays literal); carve accepts them,
