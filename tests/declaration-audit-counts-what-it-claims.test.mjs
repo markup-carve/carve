@@ -25,10 +25,14 @@
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { execFileSync } from 'node:child_process'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 
 process.env.CARVE_DECL_AUDIT_LIB = '1'
 const { __internals } = await import('../scripts/declaration-audit.mjs')
-const { liveRows, blankComments, MANIFEST } = __internals
+const { liveRows, blankComments, classifyPinDistance, gitPinStatus, isDeclarationName, MANIFEST } = __internals
 
 const rows = (kind, name, src) => {
   const out = liveRows({ kind, name }, src)
@@ -154,4 +158,52 @@ test('at least one guard is verified rather than merely claimed', () => {
   // subject of this file.
   const anchored = MANIFEST.filter((entry) => entry.staleness !== undefined)
   assert.ok(anchored.length > 0, 'no manifest entry verifies its guard claim against the file')
+})
+
+test('pin distance distinguishes every relation that must not read as current', () => {
+  assert.equal(classifyPinDistance(0, 0), 'current')
+  assert.equal(classifyPinDistance(0, 3), 'behind')
+  assert.equal(classifyPinDistance(2, 0), 'ahead')
+  assert.equal(classifyPinDistance(2, 3), 'diverged')
+  assert.equal(classifyPinDistance(-1, 0), 'unverifiable')
+  assert.equal(classifyPinDistance(Number.NaN, 0), 'unverifiable')
+})
+
+test('the git-backed pin gate observes current, behind, ahead, diverged and unverifiable histories', (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'carve-pin-audit-'))
+  t.after(() => rmSync(dir, { recursive: true, force: true }))
+  const git = (...args) => execFileSync('git', ['-C', dir, ...args], { encoding: 'utf8' }).trim()
+  git('init', '-q')
+  git('config', 'user.email', 'audit@example.invalid')
+  git('config', 'user.name', 'Declaration audit')
+  writeFileSync(join(dir, 'state'), 'base\n')
+  git('add', 'state')
+  git('commit', '-qm', 'base')
+  const base = git('rev-parse', 'HEAD')
+  git('branch', 'side', base)
+  writeFileSync(join(dir, 'state'), 'main\n')
+  git('commit', '-qam', 'main')
+  const main = git('rev-parse', 'HEAD')
+  git('switch', '-q', 'side')
+  writeFileSync(join(dir, 'state'), 'side\n')
+  git('commit', '-qam', 'side')
+  const side = git('rev-parse', 'HEAD')
+
+  assert.equal(gitPinStatus(dir, main, 'master').relation, 'current')
+  assert.equal(gitPinStatus(dir, base, 'master').relation, 'behind')
+  assert.equal(gitPinStatus(dir, main, base).relation, 'ahead')
+  assert.equal(gitPinStatus(dir, side, 'master').relation, 'diverged')
+  assert.ok(gitPinStatus(dir, '0'.repeat(40), 'master') instanceof Error)
+})
+
+test('a decorated declaration name is swept and explicitly manifested', () => {
+  assert.equal(isDeclarationName('TOTALLY_NEW_AHEAD_OF_PIN'), true)
+  assert.equal(isDeclarationName('CANONICAL_AHEAD_OF_PIN'), true)
+  assert.equal(isDeclarationName('ORDINARY_TEST_FIXTURES'), false)
+  const entry = MANIFEST.find(
+    ({ repo, path, name }) => repo === 'carve-js' && path === 'test/canonical-ahead-of-pin.ts' && name === 'CANONICAL_AHEAD_OF_PIN',
+  )
+  assert.ok(entry, 'the canonical writer declaration is invisible to the manifest')
+  assert.equal(entry.policy, 'owed')
+  assert.equal(entry.guard, 'two-way')
 })
