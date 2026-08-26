@@ -34,7 +34,7 @@ A feature should remain an **extension** if:
 | Admonitions | `::: note`, `::: warning` | ✅ In spec (4.12) |
 | Frontmatter | `---` YAML block | ✅ In spec (4.23) |
 | Footnotes | `[^ref]` | ✅ In spec (4.11) |
-| Definition lists | `:: term` / `:  definition` | ✅ In spec (4.5) |
+| Definition lists | `:: term` / `: definition` | ✅ In spec (4.5) |
 | Task lists | `- [ ]`, `- [x]` | ✅ In spec (4.5) |
 | Profiles | Feature restriction | ✅ In spec (4.21) |
 | Attributes | `{#id .class key=value}` | ✅ In spec (4.10) |
