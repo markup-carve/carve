@@ -134,15 +134,21 @@ This matters because block structure is decided before inline parsing starts.
 You do not need an inline parser guessing whether a later line will turn the
 current line into some different block type.
 
-### One bounded exception: fence/`:::` closer lookahead
+### One bounded exception: code/raw fence closer lookahead
 
 There is a single, deliberate departure from "decided from the line beginning
 alone". Under the paragraph-interruption rule (`resources/grammar.ebnf` PART 9
-§10), a fenced-code or `:::` opener interrupts an open paragraph **only when a
-matching closer exists ahead** in the same context; an unterminated opener stays
-paragraph text instead of swallowing the rest of the block. Deciding that needs
-a forward scan over later lines — so for fences and divs, a *later* line does
-co-determine whether the current line is a block opener or prose.
+§10), a code or raw fence interrupts an open paragraph **only when a matching
+closer exists ahead** in the same context; an unterminated opener stays paragraph
+text instead of swallowing the rest of the block. Deciding that needs a forward
+scan over later lines, so for verbatim fences a *later* line co-determines whether
+the current line is a block opener or prose.
+
+A colon-fence opener is not guarded by closer lookahead. It interrupts whether
+or not a closer follows, and an unclosed container closes at its container
+boundary or end of input (PART 9 §12). The separate lazy-folding rule can still
+make a below-content-column marker line paragraph text inside a list item; that
+is a column-ownership decision, not a missing-closer rule.
 
 This is a conscious trade, not an oversight:
 
@@ -150,14 +156,14 @@ This is a conscious trade, not an oversight:
   parses the paragraph and then rewinds to reparse it under a new interpretation.
 - It stays **linear-time** because the block pre-pass already walks every line
   once; "does a matching closer follow?" is memoized during that single walk
-  rather than rescanned per opener. Without that memo a naive implementation is
-  O(n²), so the pre-scan is the load-bearing detail.
+  rather than rescanned per verbatim opener. Without that memo a naive
+  implementation is O(n²), so the pre-scan is the load-bearing detail.
 - It is **not** the "bounded local lookahead" the inline layer uses; it is a
   bounded *block-level* forward scan, bounded by the enclosing container.
 
 The payoff is a usability guarantee neither CommonMark nor Djot give: a stray
-` ``` ` or `:::` inside prose can never eat the remainder of the document. Carve
-accepts the narrower parser contract to buy that. Everything else in block
+` ``` ` inside prose cannot turn the remainder into a code block. Carve accepts
+the narrower parser contract to buy that. Everything else in block
 structure — headings, quotes, bullet lists, thematic breaks, table rows — is
 still decided from the line beginning alone, with no lookahead.
 

@@ -516,9 +516,11 @@ of this matches Djot; the heading half deliberately does not.
 
 **Other carve-outs:**
 
-1. **Closer lookahead** — a fence (`` ``` ``/`~~~`) or `:::` interrupts only
+1. **Closer lookahead** — a code or raw fence (`` ``` ``/`~~~`) interrupts only
    when a matching closer exists ahead. An unterminated opener stays paragraph
-   text, so a stray marker never swallows the rest of the block.
+   text, so a stray marker never swallows the rest of the block. A `:::` opener
+   is different: it opens without a closer and closes at its container boundary
+   or end of input (§12).
 2. **Image excluded** — a bare image `![alt](url)` is inline content, not a
    block, so it renders inside the paragraph.
 

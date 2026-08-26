@@ -1599,9 +1599,11 @@ paragraph with no blank line before it, at the top level and inside nested
 content. Three carve-outs keep common prose safe: **list markers never
 interrupt** — neither a bullet (`- `/`* `) nor an ordered marker, in any dialect
 or value, so a list always needs a blank line before it (symmetric, Djot-like);
-a fence or `:::` interrupts only when it has a matching closer ahead; and a bare
-image is never a block. Invisible constructs (reference definitions, comments,
-block-attribute lines) interrupt as they always have.
+a code or raw fence interrupts only when it has a matching closer ahead; and a
+bare image is never a block. A `:::` opener interrupts with or without a closer
+and closes at its container boundary or end of input. Invisible constructs
+(reference definitions, comments, block-attribute lines) interrupt as they
+always have.
 
 A heading marker after a prose line interrupts.
 
@@ -1812,9 +1814,10 @@ text
 
 :::
 
-**Carve-out — closer lookahead.** A `:::` block (or a fence) with no matching
-closer ahead does not interrupt; it stays paragraph text, so a stray marker
-never swallows the rest of the block.
+**Invalid glued colon fence.** A type word requires a separating space.
+`:::note` is therefore paragraph text, independently of whether a closer
+follows. A valid `::: note` or bare `:::` opens immediately and may close at
+the container boundary or end of input.
 
 :::: compare
 
