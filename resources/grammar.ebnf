@@ -2014,7 +2014,14 @@ admonition = admonition_open, newline,
 (* the body may be EMPTY, like the generic div's (PART 9 §12).
 
    UNCLOSED (PART 9 §12). The closer is OPTIONAL: an opener always opens, and
-   a block still open at END OF INPUT closes there, innermost first. This is
+   a block still open when its HOST ends closes there, innermost first. The
+   host is the ENCLOSING CONTAINER where there is one and the DOCUMENT
+   otherwise, so "closes at end of input" is the top-level case rather than
+   the whole rule: corpus
+   271-the-flush-left-line-after-a-container-a-quoted-line-opened opens a
+   `::: note` inside a block quote, never closes it, and the container ends
+   WITH THE QUOTE -- the flush-left line below is a sibling paragraph outside
+   both, not content the div swallowed to the end of the file. This is
    djot's behavior and it is the counterweight to the exact-length closer --
    a mistyped closer leaves a container open, and the earlier rule (the
    opener and everything after it degrade to literal text) turned one wrong
@@ -5345,7 +5352,10 @@ EOF = (* end of file *) ;
          81-paragraph-interruption-19.
 
          A `:::` OPENER IS NOT GUARDED. It interrupts whether or not a closer
-         follows, and an unterminated one closes at EOF (PART 9 §25). Pinned by
+         follows, and an unterminated one closes with its host -- the
+         enclosing container's boundary, or end of input at the top level
+         (§12; the citation here read §25, which is the security section and
+         says nothing about it). Pinned by
          corpus 81-paragraph-interruption-20: `Text` / `:::` / `stuff` is a
          paragraph followed by a div holding `stuff`.
 
@@ -5512,7 +5522,9 @@ EOF = (* end of file *) ;
       `colon_fence_close` states as `len(close) = len(open)` -- so a bare
       `:::` inside a `::::` block is content rather than a closer, and a bare
       `::::` inside a `:::` block is likewise not one. AN UNCLOSED OPENER STILL
-      OPENS, bare or labeled, and closes at end of input by PART 2's rule.
+      OPENS, bare or labeled, and closes where its HOST ends by PART 2's rule:
+      the enclosing container's boundary, or end of input at the top level
+      (corpus 271-the-flush-left-line-after-a-container-a-quoted-line-opened).
 
       EQUAL-LENGTH FENCES DO NEST, because a closer must be BARE: `::: note`
       may hold `::: tip`, the inner line being an opener rather than a closer
@@ -5651,7 +5663,10 @@ EOF = (* end of file *) ;
       between the opener and the nested list still opens the block, and an
       empty body (opener immediately followed by its closer) opens too. A
       MISSING closer changes none of this: PART 2's UNCLOSED rule governs
-      unqualified, the opener opens and the container closes at end of input.
+      unqualified, the opener opens and the container closes with the ITEM
+      that holds it (corpus
+      270-a-real-div-in-a-container-and-the-flush-left-line-after-it), which is
+      end of input only when the item runs that far.
       The corpus pins these
       (resources/examples/edge-cases.md "Fence opener with a nested-list body inside a list
       item").
