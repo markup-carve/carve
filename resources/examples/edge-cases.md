@@ -30727,10 +30727,9 @@ flush
 
 :::
 
-An entry AFTER the empty one, the shape markup-carve/carve#1636 had to break the
-list for. The empty description is spellable where it stands, so the import
-writes ONE list and the second term keeps its own description instead of
-inheriting the first term's.
+An entry AFTER the empty one. The empty description is spelled where it stands,
+so this is ONE list and the second term keeps its own description rather than
+the first term inheriting it (markup-carve/carve#1636).
 
 ::: compare
 
