@@ -30004,3 +30004,317 @@ promotes, and the item holds a figure.
 ```
 
 :::
+
+## The continuation marker's column gate reaches every container
+
+`AND FLUSH-LEFT MEANS COLUMN 0` (§17 L3, markup-carve/carve#1436) says a `+`
+attaches a block that begins at document column 0 and nothing else: a line at
+any other column is not attached at all, and falls through to the ordinary
+column rules exactly as if the `+` line had been a comment. Only the LIST ITEM
+asked that question - the gate was spelled in the item's attach path and in the
+item collector's nested guard, and the footnote body, the description and the
+block quote had no equivalent - so those three reached out for a line the clause
+leaves where the author put it (markup-carve/carve#1814). Each row below is the
+same document twice, once with the marker and once with the comment the clause
+names as its control.
+
+A column below the body's minimum is not the note's. The comment spelling ends
+the body and the paragraph lands at document level, above the endnotes section.
+
+::: compare
+
+```carve
+[^a]: intro
+%% c
+ more
+
+see[^a]
+```
+
+```html
+<p>more</p>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>intro<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+The marker answers the same, where it used to pull the line into the note.
+
+::: compare
+
+```carve
+[^a]: intro
++
+ more
+
+see[^a]
+```
+
+```html
+<p>more</p>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>intro<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+The body's OWN minimum column is not column 0 either, so it is refused for the
+same reason - the marker names one column, not a range reaching down to the
+container's floor. An indented comment at that column is a different document
+and stays inside the body, which is pinned above under "A comment in a footnote
+body is invisible in both spellings"; the control here is the comment where the
+marker was.
+
+::: compare
+
+```carve
+[^a]: intro
+%% c
+  more
+
+see[^a]
+```
+
+```html
+<p>more</p>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>intro<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+::: compare
+
+```carve
+[^a]: intro
++
+  more
+
+see[^a]
+```
+
+```html
+<p>more</p>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>intro<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+Column 0 is what the marker does reach, and the positive row is what makes the
+two above mean something: the same note, the same paragraph, one column over.
+
+::: compare
+
+```carve
+[^a]: intro
++
+more
+
+see[^a]
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>intro</p>
+      <p>more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+A description body's content column is 3 here, so column 2 is below it and the
+ordinary rules put the paragraph outside the `dd`. The comment spelling:
+
+::: compare
+
+```carve
+:: term
+:  intro
+%% c
+  more
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>intro</dd>
+</dl>
+<p>more</p>
+```
+
+:::
+
+And the marker, which used to pull the same line in.
+
+::: compare
+
+```carve
+:: term
+:  intro
++
+  more
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>intro</dd>
+</dl>
+<p>more</p>
+```
+
+:::
+
+At column 0 the description takes it, as a second block of the `dd`.
+
+::: compare
+
+```carve
+:: term
+:  intro
++
+more
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>intro</p>
+    <p>more</p>
+  </dd>
+</dl>
+```
+
+:::
+
+A column never reaches into a quote (§10 I5,
+markup-carve/carve#1384), and the marker does not reach out of one for it. The
+quoted paragraph is closed here so the row asks about the COLUMN and nothing
+else; the blank-line control and the comment control agree with each other.
+
+::: compare
+
+```carve
+> intro
+>
+
+  more
+```
+
+```html
+<blockquote><p>intro</p></blockquote>
+<p>more</p>
+```
+
+:::
+
+::: compare
+
+```carve
+> intro
+>
+%% c
+  more
+```
+
+```html
+<blockquote><p>intro</p></blockquote>
+<p>more</p>
+```
+
+:::
+
+::: compare
+
+```carve
+> intro
+>
++
+  more
+```
+
+```html
+<blockquote><p>intro</p></blockquote>
+<p>more</p>
+```
+
+:::
+
+At column 0 the marker attaches, which is the only spelling that puts a block
+into a quote without a `>` in front of it.
+
+::: compare
+
+```carve
+> intro
+>
++
+more
+```
+
+```html
+<blockquote>
+  <p>intro</p>
+  <p>more</p>
+</blockquote>
+```
+
+:::
+
+The list item is the container that always held the gate, and it answers the
+band the same way: the marker attaches nothing and the line reaches the item by
+its own column, exactly as the comment spelling leaves it.
+
+::: compare
+
+```carve
+- intro
++
+  more
+```
+
+```html
+<ul>
+  <li>intro
+more</li>
+</ul>
+```
+
+:::

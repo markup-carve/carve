@@ -1943,12 +1943,28 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // blank separator lets parseBlocks start it fresh. Checked BEFORE
           // lazy continuation, which would otherwise swallow the bare `+` as
           // paragraph text.
+          //
+          // AND FLUSH-LEFT MEANS COLUMN 0 (SS17 L3, carve#1436) - asked here by
+          // the same predicate every other container asks (carve#1814). When
+          // the next line is at any other column the `+` is NOT a marker: it is
+          // an ordinary invisible line at document column 0, and this body ends
+          // at it exactly as it ends at a comment line there. It is consumed
+          // first, so the enclosing parse resumes on the line the marker did
+          // not take rather than on a stray `+`.
+          //
+          // The body used to end only at column 1 and below, by way of the
+          // pull branch failing to place the line - so `[^n]: a` / `+` / ` para`
+          // put the paragraph in the note while the comment spelling of the
+          // same document put it at document level, and at column 2 the note
+          // kept it through the continuation branch without the pull branch
+          // ever being asked.
+          i++
+          if (!attachesFlushLeft(ind(i))) break
           bodyLines.push('')
           pullPending = true
-          i++
         } else if (pullPending && !isBlank(lines[i] ?? '')) {
           // the whole flush-left block pulled in by the preceding `+` marker
-          const end = attachedBlockEnd(lines, i, state, attachmentBoundary(lines))
+          const end = attachedBlockEnd(lines, i, state, attachmentBoundary(lines), ind(i))
           for (let k = i; k < end; k++) bodyLines.push(lines[k])
           pullPending = false
           i = end
@@ -2205,9 +2221,22 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (CONT_MARKER.test(cur)) {
               // `+` pull-left marker: the following flush-left block joins the
               // <dd>; a blank separator lets parseBlocks start a fresh block.
+              //
+              // AND FLUSH-LEFT MEANS COLUMN 0 (SS17 L3, carve#1436), asked by
+              // the shared predicate (carve#1814). A `+` whose next line sits
+              // at any other column is not a marker at all - it is an invisible
+              // line at document column 0, and the description body ends at it
+              // exactly as it ends at a comment line there. Consumed first, so
+              // the enclosing parse resumes on the following line and not on a
+              // stray `+`, which is a refusal at document level.
+              //
+              // This site had no column test, so `:: t` / `:  a` / `+` /
+              // `  para` pulled a column-2 line into the `<dd>` while the
+              // comment spelling of the same document left it outside.
+              i++
+              if (!attachesFlushLeft(ind(i))) break
               bodyLines.push('')
               pullPending = true
-              i++
               continue
             }
             if (isDefinitionContinuationLine(cur, bodyColumn)) {
@@ -2223,7 +2252,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // flush-left line: either the block pulled in by a preceding `+` /
             // first-block marker, or a lazy continuation of the open paragraph.
             if (pullPending) {
-              const end = attachedBlockEnd(lines, i, state, attachmentBoundary(lines))
+              const end = attachedBlockEnd(lines, i, state, attachmentBoundary(lines), ind(i))
               for (let k = i; k < end; k++) bodyLines.push(lines[k])
               pullPending = false
               i = end
@@ -2735,11 +2764,26 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         if (lines[i] !== undefined && CONT_MARKER.test(lines[i])) {
           // PART 9 SS17 L4: `+` at column 0 attaches ONE following block
           i++
-          const attached = takeOneBlock(lines, i, state)
-          // blank separators force the attached lines to parse as their own
-          // block instead of lazily folding into the open paragraph
-          inner.push('', ...attached.rawMarker, '')
-          i = attached.next
+          // ... and AND FLUSH-LEFT MEANS COLUMN 0 says WHICH block, asked in
+          // `attachedBlockEnd` where every container asks it (carve#1814). A
+          // QUOTE IS REACHED BY ITS MARKER, AND A COLUMN NEVER REACHES INTO ONE
+          // (SS10 I5, carve#1384): a column-2 line under `> a` is in no quote,
+          // and with no gate here the marker reached out and took it anyway.
+          //
+          // A refused marker is consumed and contributes NOTHING - no blank
+          // separators, because a separator would close the quote's open
+          // paragraph, and the clause says the line behaves as if the `+` had
+          // been a comment. The quote does not END at it the way a footnote
+          // body or a `<dd>` does: those two end at a comment line in that
+          // position and a quote does not, and the difference belongs to each
+          // container's invisible-line rule rather than to the marker.
+          const attached = takeOneBlock(lines, i, state, ind(i))
+          if (attached.next > i) {
+            // blank separators force the attached lines to parse as their own
+            // block instead of lazily folding into the open paragraph
+            inner.push('', ...attached.rawMarker, '')
+            i = attached.next
+          }
           continue
         }
         if (lines[i] !== undefined && qOpenPara && !isBlank(lines[i]) &&
@@ -3061,8 +3105,37 @@ function firstBlockEnd(lines, start, limit, state) {
  * outside the item one container over. The other spelling tested QUOTE, so a
  * `+` inside a block quote declined to attach a following quote line and the
  * marker did nothing at all, where L3 says the marker only ever ATTACHES.
+ *
+ * AND WHICH LINE IT REACHES is not a parameter of the operation either
+ * (carve#1814). `AND FLUSH-LEFT MEANS COLUMN 0` (SS17 L3, carve#1436) says the
+ * marker attaches a block that BEGINS AT COLUMN 0 and nothing else; a line at
+ * any other column is not attached at all and falls through to the ordinary
+ * column rules, which give it to whichever container its own column names,
+ * exactly as if the `+` line had been a comment. That gate was spelled TWICE -
+ * once in the list item's `attachFlushLeft`, once in the item collector's
+ * nested-attachment guard - and the other three attach sites had no equivalent,
+ * so a `<dd>` pulled a column-1 or column-2 line in, a footnote body pulled a
+ * column-1 line in, and a block quote reached out for a column-2 line that
+ * `A QUOTE IS REACHED BY ITS MARKER` (SS10 I5, carve#1384) puts in no quote at
+ * all. Both readers agreed with each other on all of it, because the corpus
+ * only ever asked the container that had the gate (carve#1814).
+ *
+ * So the gate is asked HERE, once, off the SOURCE column: `firstMeas.L` is the
+ * measured line's own record and `L.col` is its DOCUMENT column, no matter how
+ * many strips the frame is behind. A frame-relative `ind(i).col` cannot answer
+ * it - inside a container that is the column the strip left, not the column the
+ * author wrote - which is why both surviving spellings read `.L.col`.
+ *
+ * A refused attachment returns `start`, an EMPTY range. Every caller reads that
+ * as "the marker attached nothing" and lets its own ordinary rules have the
+ * line; the marker line is still consumed and still contributes nothing, which
+ * is exactly what the clause's comment spelling does.
  */
-function attachedBlockEnd(lines, start, state, endsAttachment) {
+const attachesFlushLeft = (firstMeas) =>
+  !!firstMeas && (firstMeas.L ? firstMeas.L.col : firstMeas.col) === 0
+
+function attachedBlockEnd(lines, start, state, endsAttachment, firstMeas) {
+  if (!attachesFlushLeft(firstMeas)) return start
   return firstBlockEnd(lines, start, oneBlockEnd(lines, start, endsAttachment), state)
 }
 
@@ -3085,8 +3158,10 @@ function authoredBlockEnd(lines, start, base, state) {
   })
 }
 // Parse ONE following flush-left block (for the `+` continuation marker).
-function takeOneBlock(lines, start, state) {
-  const one = attachedBlockEnd(lines, start, state, attachmentBoundary(lines))
+// `next === start` means the gate refused: the line is not at column 0, so the
+// marker attaches nothing and the caller's ordinary rules keep the line.
+function takeOneBlock(lines, start, state, firstMeas) {
+  const one = attachedBlockEnd(lines, start, state, attachmentBoundary(lines), firstMeas)
   return { rawMarker: lines.slice(start, one), next: one }
 }
 
@@ -3447,8 +3522,11 @@ function collectItems(lines, i, list, state, ind, meas) {
       // first line must therefore begin at document column 0. In particular,
       // do not feed an indented line into this item's body: its own column is
       // what selects the enclosing container (markup-carve/carve#1436).
-      const first = i < n ? ind(i) : null
-      if (!first || (first.L ? first.L.col : first.col) !== 0) return false
+      //
+      // The test used to be spelled HERE, and the three other attach sites had
+      // none - which is the whole of carve#1814. It is `attachesFlushLeft` now,
+      // asked once and shared, and an empty range is the refusal.
+      if (i >= n || !attachesFlushLeft(ind(i))) return false
       pushLine('', BLANK_MEAS)
       // ONE block, with the SAME extent rule every other container uses: a
       // fence runs through its closer, so a boundary line written inside one is
@@ -3463,7 +3541,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       // sibling marker to the shared one (carve#1782).
       const end = attachedBlockEnd(lines, i, state, (idx) =>
         ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
-        matchMarkerAt(ind(idx))?.indent === baseIndent)
+        matchMarkerAt(ind(idx))?.indent === baseIndent, ind(i))
       for (; i < end; i++) {
         // attached VERBATIM, so the line keeps the measurement it has here
         pushLine(lines[i], ind(i))
@@ -4053,11 +4131,15 @@ function collectItems(lines, i, list, state, ind, meas) {
       // (carve#1387). The quote and the `dd` spellings of this shape already
       // fold in every reader.
       if (carriesBareContinuation) {
-        const sourceCol = lm.L ? lm.L.col : lm.col
-        if (nestedAttachmentEnd < 0 && sourceCol === 0) {
+        // The column gate is `attachesFlushLeft`, once, for every container
+        // (carve#1814); the `sourceCol === 0` test here was its SECOND
+        // spelling, and a rule with two spellings is a rule that drifts. A
+        // refusal leaves the end UNSET rather than empty, because this loop
+        // asks once per line and the marker stays live for the next one.
+        if (nestedAttachmentEnd < 0 && attachesFlushLeft(lm)) {
           nestedAttachmentEnd = attachedBlockEnd(lines, i, state, (idx) =>
             ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
-            matchMarkerAt(ind(idx))?.indent === baseIndent)
+            matchMarkerAt(ind(idx))?.indent === baseIndent, lm)
         }
         if (i < nestedAttachmentEnd) {
           pushLine(line, lm)
