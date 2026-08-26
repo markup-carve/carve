@@ -1,0 +1,79 @@
+A colon followed by only whitespace is not a description
+
+```
+:: t
+: 
+
+flush
+.
+<dl>
+  <dt>t
+:</dt>
+</dl>
+<p>flush</p>
+```
+
+```
+:: t
+:  
+
+flush
+.
+<dl>
+  <dt>t
+:</dt>
+</dl>
+<p>flush</p>
+```
+
+```
+:: t
+:   
+
+flush
+.
+<dl>
+  <dt>t
+:</dt>
+</dl>
+<p>flush</p>
+```
+
+```
+:: t
+:	
+
+flush
+.
+<dl>
+  <dt>t
+:</dt>
+</dl>
+<p>flush</p>
+```
+
+```
+:: t
+: {}
+
+flush
+.
+<dl>
+  <dt>t</dt>
+  <dd>{}</dd>
+</dl>
+<p>flush</p>
+```
+
+```
+:: t
+:
+
+flush
+.
+<dl>
+  <dt>t
+:</dt>
+</dl>
+<p>flush</p>
+```

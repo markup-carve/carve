@@ -334,7 +334,18 @@ bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
    EVERY SUCH MARKER, not only the two named here. The rule is stated in terms
    of bullets and ordered markers because those are where it was first needed,
    but the rationale is a property of the separator space and applies wherever
-   one appears -- including the definition-term marker `::`.
+   one appears -- including the definition-term marker `::` and the description
+   marker `:`.
+
+   THE DESCRIPTION MARKER -- NORMATIVE (carve#1830). `definition_separator` is a
+   separator space, so a `:` line carrying only whitespace opens no description.
+   It is a plain line under the open term, which folds it as a soft break, and
+   NO TRAILING WHITESPACE (PART 2) drops the run -- so `:`, `: `, `:   ` and a
+   tab-separated `:` are one document, and the separator's width carries no
+   meaning where it positions nothing. The tab is refused a step earlier, at the
+   separator itself (PART 1, MARKER SEPARATORS AND PADDING SLOTS), and lands in
+   the same place. Pinned by corpus
+   a-colon-followed-by-only-whitespace-is-not-a-description.
 
    That omission was not theoretical: with the rule read narrowly, `:: ` was a
    paragraph and `::` followed by TWO spaces was a definition list, so stripping
