@@ -9696,6 +9696,53 @@ EOF = (* end of file *) ;
       byte strings for the first of them (carve#1334). The sibling writers
       already do this: a paragraph and a `::: \` block both emit the backslash.
 
+   7d. AN EMPTY DESCRIPTION BODY IS WRITTEN WITH THE SENTINEL `{empty}` --
+      NORMATIVE (carve#1827). A `definition_description` whose body holds NO
+      blocks is written as the marker, its separator space, and the SENTINEL
+      ATTRIBUTE BLOCK `{empty}`:
+
+        :: t
+        : {empty}
+
+      and NOT as the term alone, which drops the description and fails §1: the
+      bytes re-parse to a `<dl>` with no `<dd>` in it.
+
+      §7b SPELLS THE SAME SHAPE ONE CONSTRUCT OVER, an empty footnote
+      definition body, with the same sentinel. Everything it says about why the
+      bare word rather than an id, a class or a key/value holds here and is not
+      restated.
+
+      THE SENTINEL IS INERT, for §7b's reason: a block-attribute line with no
+      following block inside its own container is dropped (PART 9 §15 A4), so
+      the attribute reaches neither the `<dd>`, nor the next block, nor the next
+      entry. `: {#i}` reaches the same empty body by the same path and is
+      equally discarded, which is why the choice is among constructs that all
+      mean something and §7b's smallest-departure argument settles it.
+
+      TWO OTHER SPELLINGS REACH AN EMPTY `<dd>` AND NEITHER IS CANONICAL. Both
+      are properties of the language as it stands, not alternatives under
+      consideration:
+
+        : {empty}   claims no line below it at any column        -- CANONICAL
+        : +         claims a following flush-left block          -- not written
+        : %%        holds a `comment` child                      -- not written
+
+      `: +` IS THE FIRST-BLOCK FORM (PART 9 §17 L4) with nothing flush-left
+      under it. It ATTACHES a following column-0 block -- `:: t` / `: +` /
+      `flush` is a description whose body is `flush` -- so it spells an empty
+      body only when a blank line follows, and a writer emitting it must look
+      ahead at the next block to know whether that blank line is required. The
+      sentinel needs no lookahead, and a rule that cannot be got wrong is
+      preferred to one that must be got right.
+
+      `: %%` FAILS §1 RATHER THAN LAYOUT. An empty comment renders nothing and
+      the rendered HTML matches, so the failure is not visible at the HTML. Its
+      `definition_description` carries a `comment` CHILD the source does not
+      have, where the canonical spelling carries an empty children list. PART
+      10's import ceiling forbids that in its own words -- an importer "may add
+      nothing at all" -- and §1 quantifies over `parse`, not over the render, so
+      a spelling that round-trips the HTML and not the TREE does not satisfy it.
+
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE. The Markdown renderer is not
       the canonical writer and does not follow §2. It has a different
       re-parser to answer to, so it escapes on a different rule:

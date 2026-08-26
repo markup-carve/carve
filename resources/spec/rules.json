@@ -992,6 +992,11 @@
       "title": "A RESOLUTION RESULT ABOUT THE WRAPPER IS NOT CONTENT OF IT"
     },
     {
+      "id": "CARVE-P11-040",
+      "part": "11",
+      "title": "AN EMPTY DESCRIPTION BODY IS WRITTEN WITH THE SENTINEL `{empty}`"
+    },
+    {
       "id": "CARVE-P12-001",
       "part": "12",
       "title": "THE TYPE NAME COMES FROM profiles.md, NOT FROM carve-js"
