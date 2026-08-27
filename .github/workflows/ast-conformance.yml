@@ -244,6 +244,18 @@ jobs:
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
         run: npm run compare:convert
 
+      # Tier-2/Tier-3 fixtures need explicit extension adapters, so the default
+      # corpus sweep in the formatter job cannot exercise them. Run the small
+      # optional corpus against the same already-built engines and fail on a
+      # wrong adapter command or a cross-engine output difference.
+      - name: Cross-engine optional-corpus comparison
+        if: always()
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+        run: npm run compare:impls -- --corpus=optional --fail-on-diff
+
 
       # The grammar names engines and says what they do - "all impls support
       # it", "carve-rs is the reference here", "carve-php additionally accepts
