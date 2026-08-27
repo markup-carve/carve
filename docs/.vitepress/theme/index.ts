@@ -1,6 +1,13 @@
 import DefaultTheme from 'vitepress/theme'
 import type { Theme } from 'vitepress'
 import '@markup-carve/carve-grammars/shiki/carve.css'
+// The tokens and the opt-in recipes layer from the shipped stylesheet, rather
+// than a copy of them in custom.css. tokens.css defines only `--carve-*` custom
+// properties; recipes.css styles the containers the engine has no handler for
+// (`::: tree`, `::: cards`, ...), which custom.css has never covered. Both are
+// scoped under `.carve`, so they reach rendered examples and nothing else.
+import '@markup-carve/carve-css/tokens.css'
+import '@markup-carve/carve-css/recipes.css'
 import './custom.css'
 import 'katex/dist/katex.min.css'
 import Playground from './components/Playground.vue'
@@ -26,7 +33,9 @@ function enhanceCompareBlocks(root: ParentNode): void {
     if (!htmlDiv || !code) return
 
     const output = document.createElement('div')
-    output.className = 'carve-output'
+    // `carve` is the scope every carve-css rule sits under, so a rendered
+    // example gets the same treatment a consumer's own page gets.
+    output.className = 'carve-output carve'
 
     const tabs = document.createElement('div')
     tabs.className = 'carve-output__tabs'

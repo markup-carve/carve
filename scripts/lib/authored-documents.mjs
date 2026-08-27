@@ -108,13 +108,15 @@ export function authoredDocuments() {
  * does not is a citation definition, which is Tier-2 and outside the subset
  * `scripts/spec` models at all.
  *
- * The last move was 89 -> 90: the captioned reference image PART 9R R7's
+ * The last move was 90 -> 100: the ten samples on docs/recipes.md, which show
+ * containers the engine has no handler for - `::: tree`, `::: cards`,
+ * `::: columns` and the rest - rendering as the generic div the extension
+ * contract promises. No new construct moved; the page documents what an
+ * unregistered container word already does, so all ten are answered. The move
+ * before it was 89 -> 90, the captioned reference image PART 9R R7's
  * block-image promotion added to docs/ast-json.md, the sample that shows an
  * unresolved reference taking the caption line into the paragraph with it
- * (carve#1784). The move before it was 87 -> 88, the one-item loose list PART 9
- * section 17 L7's writer half added to docs/blocks-and-attributes.md, the
- * sample that shows the item count is not the test
- * (markup-carve/carve-rs#1305).
+ * (carve#1784).
  *
  * Pinned EXACTLY and in both directions, which is the whole point of writing
  * them down. A floor would let the population shrink - a docs rewrite that
@@ -128,5 +130,5 @@ export function authoredDocuments() {
  * message says which way it moved and what to do, because a red gate whose fix
  * is "look up how this file works" is a red gate that gets deleted.
  */
-export const AUTHORED_POPULATION = 90
-export const AUTHORED_ANSWERED = 89
+export const AUTHORED_POPULATION = 100
+export const AUTHORED_ANSWERED = 99
