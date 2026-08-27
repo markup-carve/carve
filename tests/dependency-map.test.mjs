@@ -16,7 +16,7 @@
 import { strict as assert } from 'node:assert'
 import { test } from 'node:test'
 
-import { classify, parseManifest, renderMermaid, releaseLayers, renderReleaseOrder } from '../tools/dependency-map.mjs'
+import { classify, parseManifest, renderMermaid, releaseLayers, renderReleaseOrder, ciReferences, notARelease } from '../tools/dependency-map.mjs'
 
 const cases = [
   ['github: shorthand', '@markup-carve/carve', 'github:markup-carve/carve-js#3ba8ba32', 'carve-js', '3ba8ba32'],
@@ -185,5 +185,89 @@ test('the rendered order names every repo exactly once', () => {
     const hits = text.split('\n').filter((line) => line.includes(repo.padEnd(24))).length
     assert.equal(hits, 1, `${repo} should be listed once, found ${hits}`)
   }
-  assert.match(text, /NO ORG DEPENDENCY/, 'the unconstrained tail has its own heading')
+  // The tail is split by whether CI names anything, so either heading is the
+  // tail being present. Asserting the old single heading would fail on a
+  // rename that lost nothing, and pass on one that dropped a whole half.
+  assert.match(text, /NOTHING (DECLARED, BUT CI NAMES ONE|FOUND EITHER WAY)/, 'the unconstrained tail has its own heading')
+})
+
+/*
+ * DEPENDENCIES READ OUT OF CI, AND THE TWO WAYS THAT GOES WRONG.
+ *
+ * The pattern is looking for `markup-carve/<name>` in a workflow, and that
+ * prefix appears in more than repository URLs. Both directions are asserted:
+ * a real checkout has to be found, and a lookalike has to be rejected.
+ */
+
+const KNOWN = new Set(['carve', 'carve-rs', 'tree-sitter-carve', 'carve-go'])
+
+test('a workflow checkout of another org repo is found', () => {
+  const yaml = [
+    'jobs:',
+    '  drift:',
+    '    steps:',
+    '      - uses: actions/checkout@v4',
+    '        with:',
+    '          repository: markup-carve/tree-sitter-carve',
+  ].join('\n')
+  assert.deepEqual([...ciReferences(yaml, 'helix-carve', KNOWN)], ['tree-sitter-carve'])
+})
+
+test('an org-prefixed string that is not a repo is rejected', () => {
+  // Live defect: carve-wasm's preflight explains the npm registry path
+  // `/-/org/markup-carve/package` in a comment, and a shape-only pattern
+  // reported a repository named `package` - with a verdict, in a table whose
+  // whole value is that its rows are real.
+  const yaml = '# /-/org/markup-carve/package, an ORGANIZATION READ - not a package'
+  assert.deepEqual([...ciReferences(yaml, 'carve-wasm', KNOWN)], [])
+})
+
+test('a repo does not depend on itself through its own CI', () => {
+  const yaml = 'repository: markup-carve/carve-go\nrepository: markup-carve/carve-rs'
+  assert.deepEqual([...ciReferences(yaml, 'carve-go', KNOWN)], ['carve-rs'])
+})
+
+test('a CI edge never decides a release stage', () => {
+  // Coupling is not containment. A workflow checkout says the two are TESTED
+  // together, which is worth showing and must not reorder a release.
+  const edges = [
+    { repo: 'helix-carve', target: 'tree-sitter-carve', kind: 'ci', field: 'workflow' },
+    { repo: 'tree-sitter-carve', target: 'carve-js', field: 'dependencies' },
+  ]
+  const { layer, soft } = releaseLayers(edges, ['helix-carve', 'tree-sitter-carve', 'carve-js'])
+  assert.equal(layer.get('helix-carve'), 0, 'the CI edge leaves it unconstrained')
+  assert.equal(layer.get('tree-sitter-carve'), 1, 'the declared edge still layers')
+  assert.deepEqual([...(soft.get('helix-carve') ?? [])], ['tree-sitter-carve'])
+})
+
+test('a repo that is not a release artifact is named, not silently dropped', () => {
+  for (const repo of ['.github', 'awesome-carve', 'carve-bench', 'laravel-carve-demo']) {
+    assert.equal(notARelease(repo), true, `${repo} is not a release artifact`)
+  }
+  for (const repo of ['carve', 'carve-js', 'wp-carve']) {
+    assert.equal(notARelease(repo), false, `${repo} is one`)
+  }
+  const repos = ['carve', 'carve-js', 'awesome-carve', 'laravel-carve-demo']
+  const states = new Map(repos.map((r) => [r, { latestRelease: '0.1.0', latestTag: '0.1.0', behindTag: 1 }]))
+  const text = renderReleaseOrder([{ repo: 'carve-js', target: 'carve', field: 'dependencies' }], states, repos)
+  assert.match(text, /NOT A RELEASE ARTIFACT/)
+  assert.match(text, /awesome-carve/, 'named in the excluded list rather than omitted')
+  assert.match(text, /laravel-carve-demo/)
+})
+
+test('an excluded repo cannot appear as a release stage member', () => {
+  const repos = ['carve', 'carve-js', 'laravel-carve', 'laravel-carve-demo']
+  const states = new Map(repos.map((r) => [r, { latestRelease: '0.1.0', latestTag: '0.1.0', behindTag: 0 }]))
+  const text = renderReleaseOrder(
+    [
+      { repo: 'carve-js', target: 'carve', field: 'dependencies' },
+      { repo: 'laravel-carve', target: 'carve-js', field: 'dependencies' },
+      { repo: 'laravel-carve-demo', target: 'laravel-carve', field: 'dependencies' },
+    ],
+    states,
+    repos,
+  )
+  const staged = text.split('NOT A RELEASE ARTIFACT')[0]
+  assert.ok(!staged.includes('laravel-carve-demo'), 'the demo is not a stage member')
+  assert.match(staged, /laravel-carve /, 'the thing it depends on still is')
 })
