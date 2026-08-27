@@ -357,13 +357,23 @@ async function targetState(repo) {
     ])
     const bySha = new Map()
     for (const tag of tags ?? []) bySha.set(tag.commit.sha, tag.name)
+    const latestTag = tags?.[0]?.name ?? null
+    const latestRelease = release?.tag_name ?? null
+    // HOW FAR THIS REPO ITSELF HAS MOVED PAST ITS OWN LATEST TAG, which is a
+    // different question from any edge verdict: an edge says whether a PIN
+    // names a release, this says whether there is anything here to release at
+    // all. Counts every commit, docs and CI included, so it reports that a
+    // release is POSSIBLE rather than that one is warranted.
+    const base = latestRelease ?? latestTag
+    const own = base ? await distance(repo, base, meta.default_branch) : null
     return {
       branch: meta.default_branch,
       head: null,
       tags: tags ?? [],
       tagBySha: bySha,
-      latestTag: tags?.[0]?.name ?? null,
-      latestRelease: release?.tag_name ?? null,
+      latestTag,
+      latestRelease,
+      behindTag: own?.ahead ?? null,
     }
   })()
   targetCache.set(repo, promise)
@@ -513,6 +523,15 @@ const TIERS = [
 
 const TIER_MEMBERS = new Set(TIERS.flatMap(([, members]) => members))
 
+/*
+ * Derived from TIERS rather than restated, so a tier edit cannot leave two
+ * lists disagreeing about which repo is the spec and which are engines. The
+ * release order below reads both: the spec is the one repo every layer is
+ * measured from, and the engines are the hubs stage 2 is grouped by.
+ */
+const SPEC_REPO = TIERS[0][1][0]
+const ENGINES = TIERS[1][1]
+
 /** A label Mermaid can hold: no node syntax, no edge syntax, not too long. */
 function edgeLabel(edge) {
   const raw = String(edge.resolved ?? edge.ref ?? edge.spec ?? '?')
@@ -629,7 +648,135 @@ function renderMermaid(edges) {
   return lines.join('\n')
 }
 
-function renderMarkdown(edges, { repos, skipped, generatedFrom }) {
+/*
+ * THE RELEASE ORDER, WHICH IS THE QUESTION THE GRAPH ABOVE DOES NOT ANSWER.
+ *
+ * The mermaid pictures show every edge, which is what makes them accurate and
+ * what makes them unreadable for the one thing a maintainer actually asks:
+ * "what may I release, and what has to go first". Nineteen repos pin carve-js,
+ * so the fan is a funnel, and a funnel does not tell you the order.
+ *
+ * This layers the same edge list topologically. A repo may be released once
+ * everything it depends on has been; repos in one layer do not depend on each
+ * other, so they carry no order between them.
+ *
+ * THE SPEC'S OWN devDependencies ARE DROPPED. `carve` dev-depends on carve-js
+ * and carve-grammars to render its own corpus, and both submodule the spec
+ * back. That is a cycle, and it is not a build dependency in either direction -
+ * it is verification. Keeping it would make the graph unlayerable and would
+ * assert something false: that the spec cannot be tagged before its own
+ * consumers. Every other edge is a real build or vendor dependency.
+ *
+ * `behindTag` is per REPO, not per edge: how far a repo's own default branch
+ * has moved past its own latest tag. The edge notes above answer "is this pin a
+ * release"; this answers "is there anything here to release at all". They are
+ * different questions and a repo can be red on one and clean on the other.
+ */
+function releaseLayers(edges, allRepos) {
+  const dep = new Map()
+  // EVERY repo, not only the ones an edge names. A repo that declares no org
+  // dependency has no edge at all, so seeding this from `edges` would drop the
+  // entire unconstrained tail - the editors, the standalone tools - from a
+  // list whose whole claim is that it covers the org. They belong in stage 0.
+  const nodes = new Set(allRepos)
+  for (const edge of edges) {
+    nodes.add(edge.repo)
+    nodes.add(edge.target)
+    if (edge.repo === edge.target) continue
+    // The verification cycle, described above.
+    if (edge.repo === SPEC_REPO && edge.field === 'devDependencies') continue
+    if (!dep.has(edge.repo)) dep.set(edge.repo, new Set())
+    dep.get(edge.repo).add(edge.target)
+  }
+  const layer = new Map()
+  const level = (node, seen = new Set()) => {
+    if (layer.has(node)) return layer.get(node)
+    // A cycle we did not name above would otherwise recurse forever. Treat the
+    // back edge as absent rather than throwing: a wrong layer is visible in the
+    // output and a stack overflow is not.
+    if (seen.has(node)) return 0
+    const targets = [...(dep.get(node) ?? [])].filter((t) => nodes.has(t))
+    const value = targets.length
+      ? 1 + Math.max(...targets.map((t) => level(t, new Set([...seen, node]))))
+      : 0
+    layer.set(node, value)
+    return value
+  }
+  for (const node of nodes) level(node)
+  return { layer, dep }
+}
+
+function renderReleaseOrder(edges, states, allRepos) {
+  const { layer, dep } = releaseLayers(edges, allRepos)
+  const byLayer = new Map()
+  for (const [node, value] of layer) {
+    if (!byLayer.has(value)) byLayer.set(value, [])
+    byLayer.get(value).push(node)
+  }
+
+  const describe = (repo) => {
+    const state = states.get(repo)
+    const version = state?.latestRelease ?? state?.latestTag ?? 'UNRELEASED'
+    const lag = state?.behindTag ? `+${state.behindTag}` : ''
+    return `${repo.padEnd(24)} ${version.padEnd(10)} ${lag}`.trimEnd()
+  }
+  const branch = (items, extra = () => '') =>
+    items.map((repo, index) => {
+      const stem = index === items.length - 1 ? '└──' : '├──'
+      return `    ${stem} ${describe(repo)}${extra(repo)}`
+    })
+
+  const lines = ['```text']
+  const zero = (byLayer.get(0) ?? []).filter((repo) => repo !== SPEC_REPO).sort()
+
+  lines.push(`STAGE 0  the spec - everything downstream verifies against it`)
+  lines.push(`  ${describe(SPEC_REPO)}`)
+
+  for (const value of [...byLayer.keys()].filter((v) => v > 0).sort((a, b) => a - b)) {
+    const members = byLayer.get(value).sort()
+    lines.push('')
+    if (value === 1) {
+      lines.push('STAGE 1  engines and the spec-only consumers')
+      for (const repo of members) lines.push(`  ${describe(repo)}`)
+      continue
+    }
+    lines.push(`STAGE ${value}`)
+    if (value !== 2) {
+      for (const repo of members) {
+        const targets = [...(dep.get(repo) ?? [])].sort().join(', ')
+        lines.push(`  ${describe(repo)}${targets ? `  <- ${targets}` : ''}`)
+      }
+      continue
+    }
+    {
+      // Grouped by hub, because a flat list of twenty-one at this layer is the
+      // same funnel the mermaid fan already is.
+      const claimed = new Set()
+      for (const hub of ENGINES) {
+        const fan = members.filter((r) => !claimed.has(r) && (dep.get(r) ?? new Set()).has(hub)).sort()
+        if (!fan.length) continue
+        for (const repo of fan) claimed.add(repo)
+        lines.push(`  from ${hub}`)
+        lines.push(...branch(fan))
+      }
+      const rest = members.filter((r) => !claimed.has(r)).sort()
+      if (rest.length) {
+        lines.push('  several hubs')
+        lines.push(...branch(rest, (repo) => `  <- ${[...(dep.get(repo) ?? [])].sort().join(', ')}`))
+      }
+    }
+  }
+
+  if (zero.length) {
+    lines.push('')
+    lines.push('NO ORG DEPENDENCY  release whenever, in any order')
+    for (const repo of zero) lines.push(`  ${describe(repo)}`)
+  }
+  lines.push('```')
+  return lines.join('\n')
+}
+
+function renderMarkdown(edges, { repos, skipped, generatedFrom, states }) {
   const worst = [...edges].sort(
     (a, b) => VERDICTS[b.verdict].rank - VERDICTS[a.verdict].rank || a.repo.localeCompare(b.repo),
   )
@@ -651,6 +798,31 @@ function renderMarkdown(edges, { repos, skipped, generatedFrom }) {
   )
   out.push('')
   out.push(`Read ${repos} repositories, ${edges.length} edges, from ${generatedFrom}.`)
+  out.push('')
+  out.push('## Release order')
+  out.push('')
+  out.push(
+    'The graphs further down show every edge, which is what makes them complete and what makes ' +
+      'them hard to read as an ORDER. This is the same data layered: a repo may be released once ' +
+      'everything it depends on has been.',
+  )
+  out.push('')
+  out.push(
+    'Within a stage there is no order - those repos do not depend on each other, so they go in ' +
+      'parallel or not at all. Across stages the order binds: releasing against an unreleased ' +
+      'dependency ships a build no release names. The trailing count is commits past that repo' +
+      "'s own latest tag, so it says a release is possible, not that one is warranted - the " +
+      'CHANGELOG says that.',
+  )
+  out.push('')
+  out.push(renderReleaseOrder(edges, states, [...states.keys()]))
+  out.push('')
+  out.push(
+    'The spec\'s own devDependencies are left out of the layering: `' + SPEC_REPO + '` dev-depends ' +
+      'on its engines to render its own corpus and they submodule the spec back, which is a ' +
+      'verification cycle rather than a build dependency. It does mean a spec cut wants the ' +
+      'engine pin bumped first, and an engine cut wants its spec submodule current.',
+  )
   out.push('')
   out.push('## What the verdicts mean')
   out.push('')
@@ -716,7 +888,7 @@ function renderMarkdown(edges, { repos, skipped, generatedFrom }) {
 
 // ---------------------------------------------------------------------------
 
-export { classify, parseManifest, renderMermaid, renderSpine, renderConsumers }
+export { classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder }
 
 async function main() {
   const repos = await api(`orgs/${ORG}/repos?per_page=100&type=public`)
@@ -760,9 +932,18 @@ async function main() {
     return
   }
 
+  // EVERY repo's state, not just the ones an edge points at. A repo with no
+  // incoming edge still has a tag and still has commits past it, and leaving it
+  // out would silently drop the whole unconstrained tail of the release order -
+  // the editors and the standalone tools - from a list that claims to be one.
+  const states = new Map(
+    await mapLimit(live, CONCURRENCY, async (repo) => [repo.name, await targetState(repo.name)]),
+  )
+
   const markdown = `${renderMarkdown(resolved, {
     repos: live.length,
     skipped,
+    states,
     generatedFrom: 'each repository\'s default branch',
   })}\n`
   const out = value('out', null)
