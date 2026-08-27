@@ -114,6 +114,7 @@ async function repoManifestPaths(repo, branch) {
   // request that already has it.
   const gitlinks = new Map()
   const workflows = []
+  const vendored = []
   for (const entry of tree.tree) {
     if (entry.type === 'commit') gitlinks.set(entry.path, entry.sha)
     if (entry.type !== 'blob') continue
@@ -121,6 +122,12 @@ async function repoManifestPaths(repo, branch) {
     // vendors a grammar or embeds an engine build usually also checks that
     // repo out to test the copy is current, and that checkout names it.
     if (/^\.github\/workflows\/[^/]+\.ya?ml$/.test(entry.path)) workflows.push(entry.path)
+    // A COMMITTED BUILD OF ANOTHER REPO. The build scripts that produce these
+    // stamp a provenance header, so the pin is IN the artifact rather than in a
+    // manifest - which is why a manifest reader calls the repo independent
+    // while it ships a megabyte of an engine. Candidates by extension only;
+    // the header read below is what decides.
+    if (VENDOR_CANDIDATE.test(entry.path)) vendored.push(entry.path)
     // Only root manifests and one level down: a fixture deep in tests/ is not
     // a dependency this repo ships, and reading them all turns a cheap report
     // into a slow one.
@@ -135,7 +142,7 @@ async function repoManifestPaths(repo, branch) {
       wanted.push({ path: entry.path, kind: 'ruby' })
     }
   }
-  return { manifests: wanted, gitlinks, workflows }
+  return { manifests: wanted, gitlinks, workflows, vendored }
 }
 
 /*
@@ -164,9 +171,54 @@ async function repoManifestPaths(repo, branch) {
  * prose, which is not a contract. Absence here remains weaker evidence than
  * presence.
  */
+/*
+ * Extensions a committed build of another repo actually uses. Deliberately
+ * narrow: this list decides which files get a header read, and widening it to
+ * "every .json" would spend a request per fixture in the org.
+ */
+const VENDOR_CANDIDATE = /\.(iife\.js|bundle\.js|min\.js|umd\.js|wasm|css)$|\/(server|engine|carve)\.js$/
+
+/*
+ * THE PIN THAT LIVES IN THE ARTIFACT.
+ *
+ * `tools/build-carve-bundle.sh` in intellij-carve writes
+ *
+ *   // Bundled from markup-carve/carve-js commit 37ed8904…
+ *
+ * and its own test reads it back, precisely because a recorded provenance that
+ * nothing consumes "looks like traceability and cannot fail" - the dead-check
+ * shape catalogued in markup-carve/carve#755. This is the org-wide consumer of
+ * the same line: a repo that ships a build of another repo is not independent
+ * of it, whatever its manifests say, and here that dependency has a resolvable
+ * commit rather than a guess.
+ *
+ * Only the first bytes are read. A range request over raw content turns a 1.4MB
+ * bundle into 300 bytes, so this is cheap enough to run over every candidate.
+ */
+const VENDOR_HEADER = /(?:Bundled|Generated|Vendored|Copied)\s+from\s+markup-carve\/([a-z0-9][a-z0-9.-]*)(?:[^\n]*?\bcommit\s+([0-9a-f]{7,40}))?/i
+
+function vendorProvenance(head, self, known) {
+  const match = VENDOR_HEADER.exec(head)
+  if (!match) return null
+  const target = match[1].replace(/\.git$/, '')
+  if (target === self || !known.has(target)) return null
+  return { target, ref: match[2] ?? null }
+}
+
 function ciReferences(text, self, known) {
   const found = new Set()
-  for (const match of text.matchAll(/markup-carve\/([a-z0-9][a-z0-9.-]*)/gi)) {
+  // ONLY A CHECKOUT, NOT A MENTION. `markup-carve/x` appearing anywhere in a
+  // workflow says nothing about direction: carve-grammars names six consumers
+  // in a downstream-check job and depends on none of them, carve-rs names the
+  // homebrew tap it PUSHES to, and a first cut of this reported all of it as
+  // dependencies - backwards, and confidently.
+  //
+  // `repository:` is the checkout input, so it is the one spelling that means
+  // "this run needs that repo's tree". Narrowing to it drops every one of those
+  // false edges and keeps the ones that motivated the feature: helix-carve
+  // checking out tree-sitter-carve to diff a vendored grammar, carve-go
+  // checking out carve-rs to rebuild the engine it embeds.
+  for (const match of text.matchAll(/^\s*repository:\s*['"]?markup-carve\/([a-z0-9][a-z0-9.-]*)/gim)) {
     const name = match[1].replace(/\.git$/, '')
     if (name === self) continue
     // MATCHED AGAINST THE LIVE REPO LIST, because `markup-carve/` prefixes more
@@ -183,6 +235,26 @@ function ciReferences(text, self, known) {
 
 async function readFile(repo, path, branch) {
   return api(`repos/${ORG}/${repo}/contents/${encodeURIComponent(path)}?ref=${branch}`, { raw: true })
+}
+
+/*
+ * The first bytes of a file, without downloading it.
+ *
+ * The contents API returns the whole blob, and a vendored bundle is routinely
+ * over a megabyte - fetching fifty of them to read three comment lines would
+ * turn a cheap report into a slow one. Raw content honours a range request, so
+ * this is 300 bytes per candidate. A server that ignores the range still
+ * answers correctly, just wastefully, and the slice bounds it either way.
+ */
+async function readHead(repo, path, branch, bytes = 512) {
+  const url = `https://raw.githubusercontent.com/${ORG}/${repo}/${branch}/${path}`
+  try {
+    const response = await fetch(url, { headers: { Range: `bytes=0-${bytes - 1}` } })
+    if (!response.ok && response.status !== 206) return null
+    return (await response.text()).slice(0, bytes)
+  } catch {
+    return null
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -447,6 +519,29 @@ async function resolveEdge(edge) {
 
   if (edge.kind === 'path') {
     return { ...edge, verdict: 'local', note: 'local path, pins nothing' }
+  }
+
+  // A VENDORED BUILD carries its own commit, so it resolves exactly like a git
+  // pin - which is the point of reading it. Without a commit in the header the
+  // artifact still names its source, and that is worth reporting as unpinned
+  // rather than dropping.
+  if (edge.kind === 'vendor') {
+    if (!edge.ref) {
+      return { ...edge, verdict: 'unpinned', note: `vendored in ${edge.path}, header names no commit` }
+    }
+    const resolved = await distance(edge.target, edge.ref, state.branch)
+    const tagged = state.tagBySha.get(edge.ref)
+    const latest = state.latestRelease ?? state.latestTag
+    const behind = resolved?.ahead ?? null
+    const note = `vendored in ${edge.path}${
+      latest ? `, ${(await distance(edge.target, latest, edge.ref))?.ahead ?? '?'} past ${latest}` : ''
+    }${behind === null ? '' : `, ${behind} behind main`}`
+    return {
+      ...edge,
+      resolved: edge.ref.slice(0, 8),
+      verdict: tagged ? (tagged === latest ? 'released' : 'behind-release') : 'unreleased',
+      note,
+    }
   }
 
   // A workflow checkout pins nothing by construction - it takes whatever the
@@ -767,6 +862,10 @@ function releaseLayers(edges, allRepos) {
     // A CI checkout is coupling, not containment - it never decides an order a
     // declared edge did not already decide. Recorded so the tree can mark it,
     // and deliberately kept out of `dep` so it cannot invent a stage.
+    //
+    // A VENDORED BUILD IS NOT IN THIS BRANCH ON PURPOSE. It ships the target
+    // inside itself, which is the same relationship an npm pin describes and a
+    // stronger one than a lockfile: the bytes are in the tree. It layers.
     if (edge.kind === 'ci') {
       if (!soft.has(edge.repo)) soft.set(edge.repo, new Set())
       soft.get(edge.repo).add(edge.target)
@@ -807,10 +906,22 @@ function renderReleaseOrder(edges, states, allRepos) {
     const lag = state?.behindTag ? `+${state.behindTag}` : ''
     return `${repo.padEnd(24)} ${version.padEnd(10)} ${lag}`.trimEnd()
   }
+  // WHAT A REPO IS COUPLED TO, for a repo that is already IN a stage.
+  //
+  // This existed and was rendered only for the unconstrained tail, so a repo
+  // with one declared edge and three CI ones showed the declared edge and
+  // silently dropped the rest. intellij-carve was the case that exposed it: it
+  // declares a spec submodule, so it landed in a stage, and its carve-js and
+  // carve-lsp couplings - which the run had already found - were collected and
+  // never printed.
+  const coupling = (repo) => {
+    const targets = [...(soft.get(repo) ?? [])].sort()
+    return targets.length ? `  ~ ${targets.join(', ')}` : ''
+  }
   const branch = (items, extra = () => '') =>
     items.map((repo, index) => {
       const stem = index === items.length - 1 ? '└──' : '├──'
-      return `    ${stem} ${describe(repo)}${extra(repo)}`
+      return `    ${stem} ${describe(repo)}${extra(repo)}${coupling(repo)}`
     })
 
   const lines = ['```text']
@@ -823,15 +934,15 @@ function renderReleaseOrder(edges, states, allRepos) {
     const members = byLayer.get(value).sort()
     lines.push('')
     if (value === 1) {
-      lines.push('STAGE 1  engines and the spec-only consumers')
-      for (const repo of members) lines.push(`  ${describe(repo)}`)
+      lines.push('STAGE 1  everything that pins only the spec')
+      for (const repo of members) lines.push(`  ${describe(repo)}${coupling(repo)}`)
       continue
     }
     lines.push(`STAGE ${value}`)
     if (value !== 2) {
       for (const repo of members) {
         const targets = [...(dep.get(repo) ?? [])].sort().join(', ')
-        lines.push(`  ${describe(repo)}${targets ? `  <- ${targets}` : ''}`)
+        lines.push(`  ${describe(repo)}${targets ? `  <- ${targets}` : ''}${coupling(repo)}`)
       }
       continue
     }
@@ -1009,7 +1120,7 @@ function renderMarkdown(edges, { repos, skipped, generatedFrom, states }) {
 
 // ---------------------------------------------------------------------------
 
-export { classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, notARelease }
+export { classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, notARelease, vendorProvenance }
 
 async function main() {
   const repos = await api(`orgs/${ORG}/repos?per_page=100&type=public`)
@@ -1017,7 +1128,7 @@ async function main() {
   const liveNames = new Set(live.map((repo) => repo.name))
 
   const perRepo = await mapLimit(live, CONCURRENCY, async (repo) => {
-    const { manifests, gitlinks, workflows } = await repoManifestPaths(repo.name, repo.default_branch)
+    const { manifests, gitlinks, workflows, vendored } = await repoManifestPaths(repo.name, repo.default_branch)
     const found = []
     for (const manifest of manifests) {
       const text = await readFile(repo.name, manifest.path, repo.default_branch)
@@ -1028,6 +1139,26 @@ async function main() {
         found.push({ ...edge, repo: repo.name })
       }
     }
+    // VENDORED BUILDS BEFORE CI, because a committed artifact with a commit in
+    // its header is a HARDER statement than a workflow checkout: the build
+    // contains that version rather than being tested against it.
+    for (const path of vendored ?? []) {
+      const head = await readHead(repo.name, path, repo.default_branch)
+      if (!head) continue
+      const found_ = vendorProvenance(head, repo.name, liveNames)
+      if (!found_) continue
+      found.push({
+        kind: 'vendor',
+        ref: found_.ref,
+        target: found_.target,
+        name: found_.target,
+        spec: found_.ref ? `${found_.target}@${found_.ref}` : found_.target,
+        field: 'vendored',
+        path,
+        repo: repo.name,
+      })
+    }
+
     // CI SECOND, so a repo that both declares and checks out a target keeps the
     // declared edge: the pin is the stronger statement and the dedupe below is
     // first-one-wins per (repo, target, ref).
