@@ -16,7 +16,7 @@
 import { strict as assert } from 'node:assert'
 import { test } from 'node:test'
 
-import { classify, parseManifest, renderMermaid } from '../tools/dependency-map.mjs'
+import { classify, parseManifest, renderMermaid, releaseLayers, renderReleaseOrder } from '../tools/dependency-map.mjs'
 
 const cases = [
   ['github: shorthand', '@markup-carve/carve', 'github:markup-carve/carve-js#3ba8ba32', 'carve-js', '3ba8ba32'],
@@ -119,4 +119,71 @@ test('each node is declared once', () => {
   const rendered = renderMermaid([edge('a-carve', 'carve-js'), edge('b-carve', 'carve-js')])
   const declarations = [...rendered.matchAll(/^\s*carve_js\["carve-js"\]/gm)]
   assert.equal(declarations.length, 1)
+})
+
+/*
+ * THE RELEASE ORDER, AND THE TWO WAYS IT SILENTLY LIES.
+ *
+ * Both of these were live defects in the first cut of the renderer, and neither
+ * one produces an error - they produce a shorter list, which reads exactly like
+ * a smaller org.
+ */
+
+const edgesFor = (pairs, field = 'dependencies') =>
+  pairs.map(([repo, target]) => ({ repo, target, field, verdict: 'released', note: '' }))
+
+test('a repo that declares no dependency still appears in the order', () => {
+  // Seeding the node set from the edges drops every repo that declares nothing.
+  // That is the whole unconstrained tail - the editors, the standalone tools -
+  // and its absence is invisible: the page just stops mentioning them.
+  const { layer } = releaseLayers(edgesFor([['engine', 'carve']]), ['carve', 'engine', 'lonely'])
+  assert.equal(layer.get('lonely'), 0, 'a repo with no edge belongs in stage 0')
+  assert.equal(layer.get('carve'), 0)
+  assert.equal(layer.get('engine'), 1)
+})
+
+test('the order covers every repo it was given', () => {
+  const repos = ['carve', 'engine', 'binding', 'lonely']
+  const { layer } = releaseLayers(edgesFor([['engine', 'carve'], ['binding', 'engine']]), repos)
+  assert.deepEqual([...layer.keys()].sort(), [...repos].sort())
+})
+
+test('the spec devDependency cycle does not decide the layering', () => {
+  // The spec dev-depends on its engines to render its own corpus, and they
+  // submodule the spec back. Honouring that direction makes the graph
+  // unlayerable and asserts something false - that the spec cannot be tagged
+  // before its own consumers.
+  const cycle = [
+    { repo: 'carve-js', target: 'carve', field: 'submodule', verdict: 'released', note: '' },
+    { repo: 'carve', target: 'carve-js', field: 'devDependencies', verdict: 'released', note: '' },
+  ]
+  const { layer } = releaseLayers(cycle, ['carve', 'carve-js'])
+  assert.equal(layer.get('carve'), 0, 'the spec releases first')
+  assert.equal(layer.get('carve-js'), 1, 'the engine follows it')
+})
+
+test('a cycle the drop rule does not cover still terminates', () => {
+  // Two ordinary repos pointing at each other is not a shape the org has, but a
+  // renderer that recurses forever on it fails in the least debuggable way.
+  const mutual = [
+    { repo: 'a', target: 'b', field: 'dependencies', verdict: 'released', note: '' },
+    { repo: 'b', target: 'a', field: 'dependencies', verdict: 'released', note: '' },
+  ]
+  const { layer } = releaseLayers(mutual, ['a', 'b'])
+  assert.ok(layer.has('a') && layer.has('b'), 'both nodes are placed rather than hanging')
+})
+
+test('the rendered order names every repo exactly once', () => {
+  const repos = ['carve', 'carve-js', 'carve-php', 'binding', 'lonely']
+  const states = new Map(repos.map((r) => [r, { latestRelease: '0.1.0', latestTag: '0.1.0', behindTag: 3 }]))
+  const text = renderReleaseOrder(
+    edgesFor([['carve-js', 'carve'], ['carve-php', 'carve'], ['binding', 'carve-js']]),
+    states,
+    repos,
+  )
+  for (const repo of repos) {
+    const hits = text.split('\n').filter((line) => line.includes(repo.padEnd(24))).length
+    assert.equal(hits, 1, `${repo} should be listed once, found ${hits}`)
+  }
+  assert.match(text, /NO ORG DEPENDENCY/, 'the unconstrained tail has its own heading')
 })
