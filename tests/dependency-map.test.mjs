@@ -20,7 +20,7 @@ import * as nodePath from 'node:path'
 import { parseDependencyLedger, auditDependencyLedger } from '../scripts/lib/drift-ledger.mjs'
 import { test } from 'node:test'
 
-import { classify, parseManifest, renderMermaid, releaseLayers, renderReleaseOrder, ciReferences, notARelease, vendorProvenance, staleSourceBanner } from '../tools/dependency-map.mjs'
+import { classify, parseManifest, renderMermaid, releaseLayers, renderReleaseOrder, ciReferences, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange } from '../tools/dependency-map.mjs'
 
 const cases = [
   ['github: shorthand', '@markup-carve/carve', 'github:markup-carve/carve-js#3ba8ba32', 'carve-js', '3ba8ba32'],
@@ -505,4 +505,71 @@ test('the banner names both commits, short, so the reader can tell what ran', ()
   assert.match(text, /01234567/, 'the commit it should have come from')
   assert.doesNotMatch(text, /deadbeefcafe1234/, 'abbreviated, not the full sha')
   assert.match(text, /Regenerate from/, 'and what to do about it')
+})
+/*
+ * WHICH DIFFERENCES ARE WORTH A COMMIT.
+ *
+ * Both real cases below happened on 2026-08-27, forty minutes apart, and they
+ * are the reason the mask exists rather than a plain `git diff`: the first pair
+ * differed only because time had passed, the second because seven repos had
+ * released. A plain diff calls both a change and the wiki history stops meaning
+ * anything.
+ *
+ * The dangerous direction is a change wrongly called cosmetic, since that one
+ * is never published and leaves no trace - so the tag distance is asserted
+ * separately from the head distance, which is the pair most easily confused.
+ */
+const TREE_LINE = '  carve-php                0.1.6      +2'
+const EDGE_NOTE = '| `x` | `y` | `0.1.4` | 34 BEHIND 0.1.4, 44 behind main |'
+
+test('a commit landing on a target repo is not a change to the map', () => {
+  const before = [TREE_LINE, EDGE_NOTE].join('\n')
+  const after = before.replace('+2', '+3').replace('44 behind main', '45 behind main')
+  assert.notEqual(before, after, 'the raw text really does differ')
+  assert.equal(isSubstantiveChange(before, after), false, 'and it is still only the clock')
+})
+
+test('distance from a TAG is news, and stays unmasked', () => {
+  // `34 BEHIND 0.1.4` moves when the target releases or when the pin moves.
+  // Masking it alongside `behind main` would silence the two events this page
+  // exists to report, and silence them invisibly.
+  const before = EDGE_NOTE
+  const after = EDGE_NOTE.replace('34 BEHIND', '35 BEHIND')
+  assert.equal(isSubstantiveChange(before, after), true)
+  assert.match(volatileMask(after), /35 BEHIND 0\.1\.4/)
+})
+
+test('a release is substantive even though its lag counter moved too', () => {
+  // The shape of the 12:21 run: seven repos went UNRELEASED to 0.1.0, and their
+  // lag counters reset in the same render. The masked fields must not swallow
+  // the version beside them.
+  const before = '    ├── astro-carve              UNRELEASED'
+  const after = '    ├── astro-carve              0.1.0'
+  assert.equal(isSubstantiveChange(before, after), true)
+})
+
+test('a page that does not exist yet is always worth writing', () => {
+  assert.equal(isSubstantiveChange(null, 'anything'), true)
+  assert.equal(isSubstantiveChange(undefined, 'anything'), true)
+})
+
+test('the mask leaves everything it does not target byte-identical', () => {
+  const untouched = [
+    '| 🔴 not a release | A commit that was never tagged. |',
+    '  carve_rs -->|"0.1.4"| carve_wasm',
+    'Read 56 repositories, 86 edges, from each repository default branch.',
+  ].join('\n')
+  assert.equal(volatileMask(untouched), untouched)
+})
+
+test('a lag counter is masked where it sits mid-line, not only at end of line', () => {
+  // Found by running the real thing rather than by reading the regex: a repo
+  // with couplings prints its lag BEFORE that list, so an end-of-line anchor
+  // masked the bare rows and missed exactly the rows that tick most often.
+  // intellij-carve going +3 to +4 was still forcing a publish.
+  const before = '  intellij-carve           0.1.6      +3  <- carve, carve-css, carve-js'
+  const after = '  intellij-carve           0.1.6      +4  <- carve, carve-css, carve-js'
+  assert.equal(isSubstantiveChange(before, after), false)
+  const soft = '  carve-go                 v0.1.0     +13  ~ carve, carve-rb'
+  assert.equal(isSubstantiveChange(soft, soft.replace('+13', '+14')), false)
 })

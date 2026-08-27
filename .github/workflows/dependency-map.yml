@@ -62,13 +62,34 @@ jobs:
         with:
           node-version: 24
 
+      # Cloned BEFORE generating, because the published page is an input now:
+      # the generator compares against it to say whether the run is worth a
+      # commit.
+      - name: Clone the wiki
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git clone --quiet \
+            "https://x-access-token:$TOKEN@github.com/${{ github.repository }}.wiki.git" wiki
+
       # No `npm ci`: the generator imports nothing outside node: builtins and
       # one local module, and shells out to `gh` and `git`. Installing the repo's
       # full dev tree would be minutes spent on nothing this step reads.
+      #
+      # `--changed-vs` reports substantive or cosmetic and decides nothing. The
+      # page is written either way, so a later step can still publish it if the
+      # policy here ever changes.
       - name: Generate
+        id: generate
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node tools/dependency-map.mjs --out "$RUNNER_TEMP/Dependency-Map.md"
+        run: |
+          set -euo pipefail
+          VERDICT="$(node tools/dependency-map.mjs \
+            --out "$RUNNER_TEMP/Dependency-Map.md" \
+            --changed-vs wiki/Dependency-Map.md | tail -n 1)"
+          echo "verdict=$VERDICT" >> "$GITHUB_OUTPUT"
+          echo "Change since the published page: $VERDICT"
 
       # A generator that fails halfway can still exit 0 with a plausible file, and
       # this page's whole failure mode is a section that is missing rather than
@@ -88,13 +109,18 @@ jobs:
             exit 1
           fi
 
+      # SKIPPED WHEN THE ONLY MOVEMENT IS THE CLOCK. `+N` past a tag and
+      # `N behind main` tick on every commit to the target, so a plain diff
+      # differs on nearly every run and the page's history would record the
+      # passage of time rather than any change in the org. The published page
+      # still carries the true counters - the mask decides whether to publish,
+      # never what to publish.
       - name: Push it, if it moved
+        if: steps.generate.outputs.verdict == 'substantive'
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          git clone --quiet \
-            "https://x-access-token:$TOKEN@github.com/${{ github.repository }}.wiki.git" wiki
           cp "$RUNNER_TEMP/Dependency-Map.md" wiki/Dependency-Map.md
           cd wiki
           if git diff --quiet -- Dependency-Map.md; then
