@@ -1,0 +1,52 @@
+# Dependencies between org repos that no manifest, bundle header or CI
+# checkout can be read for.
+#
+# `tools/dependency-map.mjs` finds an edge four ways: a package manifest, a
+# submodule gitlink, a provenance header inside a committed build, and a
+# workflow that checks another repo out. Each of those is a machine-readable
+# statement by the repo itself, and between them they cover most of the org.
+#
+# They do not cover everything, and the two gaps are opposite in shape:
+#
+#   - A dependency that exists and NOTHING declares. emacs-carve vendors
+#     carve-grammars' block-battery table and says so in a code comment, which
+#     is prose. A file copied without a header, a format implemented from
+#     reading another repo, a runtime that shells out to a binary it does not
+#     install - all real, none readable.
+#
+#   - An edge the tool FINDS and that is not a dependency. carve-rs checks out
+#     the homebrew tap in its release workflow to update a formula. That is a
+#     push. Telling it from a checkout-to-consume needs the job's intent, and a
+#     pattern does not recover intent.
+#
+# WHY A FILE AND NOT A PARAGRAPH. The Dependency Map exists because the wiki's
+# prose could not be re-derived: a pin that went stale read exactly like one
+# that had not. A hand-written note about a hand-written dependency has the
+# same defect one level up. This file is checked in both directions instead:
+#
+#   - a line whose edge the tool can NOW find on its own is STALE. The
+#     detection caught up; delete the line in the commit that made it true.
+#   - a line naming a repo that does not exist, a kind that is not in the list,
+#     or the same pair twice, is an error.
+#
+# So the file can only ever hold what detection genuinely cannot reach, and it
+# shrinks as the detectors improve rather than accumulating.
+#
+# FORMAT: <repo> -> <target>  <kind>  <reason>
+#
+# KINDS
+#   vendors    A copy of the target is in this repo's tree, with no header to
+#              read. Containment: it LAYERS, exactly like a declared pin,
+#              because releasing this repo ships that code.
+#   couples    The two are bound at build or test time without either
+#              containing the other. Shown with `~`, and never layers.
+#   not-a-dependency
+#              Suppresses an edge the tool finds and should not have. The
+#              reason has to say what the reference actually is.
+#
+# Keep the reason specific enough that a reader can check it: name the file,
+# the workflow or the mechanism, not "needs it".
+
+emacs-carve -> carve-grammars  vendors  tests/lib/block-battery.json is carve-grammars' block battery, copied with no provenance header and no CI check; only a code comment records where it came from
+
+carve-rs -> homebrew-carve  not-a-dependency  the release workflow checks out the tap to write a formula into it, so the arrow points the other way: the tap consumes carve-rs releases
