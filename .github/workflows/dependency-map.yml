@@ -1,0 +1,113 @@
+name: Dependency Map
+
+# Regenerate the wiki's Dependency Map and push it, so that page is produced by
+# a machine reading current main rather than by whoever last remembered to run
+# the tool.
+#
+# WHY THIS EXISTS RATHER THAN A NOTE IN A RUNBOOK. The page carries "generated -
+# do not edit by hand", and the hand-edit is not what broke it. A regeneration
+# run from a checkout parked on a feature branch produced it from a generator
+# predating the CI-read edges (#1847) and the declaration ledger (#1851): 86
+# edges came back as 61 and the whole Release order section vanished. A
+# regeneration rewrites every line anyway, so the diff hid it completely, and the
+# page read as one that had got shorter because releases had landed. The next
+# commit hand-patched that degraded page - counts, mermaid classes and table rows
+# retyped in place - which is how a generated document quietly stops being one.
+#
+# Nothing about that sequence was careless; it is what a manual step does over
+# enough runs. So the manual step goes away, and the generator additionally
+# stamps a warning on any page it produces from something that is not main
+# (staleSourceBanner in tools/dependency-map.mjs), which covers the local runs
+# this workflow does not.
+#
+# THE TOKEN. A repo's wiki is a separate git repository, `<repo>.wiki.git`, and
+# GITHUB_TOKEN with `contents: write` is what pushes to it. If an org policy ever
+# refuses that, the push step is what fails, loudly and on its own - swap in a
+# fine-grained PAT with Contents: read & write on this repo (BUMP_TOKEN already
+# exists for the downstream bumps and would do) rather than dropping the step.
+
+on:
+  # The map reads every repo in the org, so it goes stale from OTHER repos'
+  # activity, not this one's. That makes the schedule the primary trigger here,
+  # unlike most of this repo's automation.
+  schedule:
+    - cron: '37 5 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    # A change to the generator changes the page by definition. Waiting for the
+    # next nightly to see it is how a generator lands and its output does not.
+    paths:
+      - 'tools/dependency-map.mjs'
+      - 'scripts/lib/drift-ledger.mjs'
+      - 'resources/undeclared-dependencies.txt'
+      - '.github/workflows/dependency-map.yml'
+
+# One run at a time, and let a newer one win: two runs pushing to the same wiki
+# ref differ only in which was slower to finish.
+concurrency:
+  group: dependency-map
+  cancel-in-progress: true
+
+jobs:
+  regenerate:
+    name: Regenerate and push the wiki page
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # the wiki repo, not this one
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      # No `npm ci`: the generator imports nothing outside node: builtins and
+      # one local module, and shells out to `gh` and `git`. Installing the repo's
+      # full dev tree would be minutes spent on nothing this step reads.
+      - name: Generate
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node tools/dependency-map.mjs --out "$RUNNER_TEMP/Dependency-Map.md"
+
+      # A generator that fails halfway can still exit 0 with a plausible file, and
+      # this page's whole failure mode is a section that is missing rather than
+      # wrong. So assert the shape before it is allowed to overwrite anything.
+      - name: The page has the sections it is supposed to have
+        run: |
+          set -euo pipefail
+          PAGE="$RUNNER_TEMP/Dependency-Map.md"
+          for heading in '## Release order' '## The spine' '## Every edge, worst first'; do
+            grep -qxF "$heading" "$PAGE" || { echo "::error::generated page is missing '$heading'"; exit 1; }
+          done
+          # The banner fires when the run did not come from main. In this job it
+          # always does, so its presence means the checkout is not what it claims
+          # and the page must not be published.
+          if grep -q 'Generated from a checkout that is not' "$PAGE"; then
+            echo "::error::generated from something other than main; refusing to publish"
+            exit 1
+          fi
+
+      - name: Push it, if it moved
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git clone --quiet \
+            "https://x-access-token:$TOKEN@github.com/${{ github.repository }}.wiki.git" wiki
+          cp "$RUNNER_TEMP/Dependency-Map.md" wiki/Dependency-Map.md
+          cd wiki
+          if git diff --quiet -- Dependency-Map.md; then
+            echo "No change since the last run."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add Dependency-Map.md
+          # Two -m rather than an embedded newline: a heredoc here would carry
+          # this block's indentation into the commit body.
+          git commit \
+            -m 'Regenerate the Dependency Map' \
+            -m "Generated from ${{ github.sha }} by .github/workflows/dependency-map.yml."
+          git push --quiet
+          echo "Pushed."
