@@ -43,10 +43,12 @@
  */
 
 import { execFile } from 'node:child_process'
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { promisify } from 'node:util'
+
+import { parseDependencyLedger, auditDependencyLedger } from '../scripts/lib/drift-ledger.mjs'
 
 /** This file lives in tools/, so the repo root is one level up. */
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -222,83 +224,6 @@ function vendorProvenance(head, self, known) {
   const target = match[1].replace(/\.git$/, '')
   if (target === self || !known.has(target)) return null
   return { target, ref: VENDOR_COMMIT.exec(head)?.[1] ?? null }
-}
-
-/*
- * THE HAND-WRITTEN HALF, AND WHY IT IS GATED HARDER THAN THE READ HALF.
- *
- * resources/undeclared-dependencies.txt holds the edges no manifest, bundle
- * header or checkout can be read for, and the edges the tool finds that are not
- * dependencies at all. Its own file comment carries the rules; this parses it.
- *
- * A hand-written note about a hand-written dependency rots the same way the
- * wiki prose did, so parsing is strict and the caller checks both directions: a
- * line the tool can now find on its own is STALE and must go, a line naming a
- * repo or kind that does not exist is an error. The file can only hold what
- * detection cannot reach.
- */
-const DECLARED_KINDS = new Set(['vendors', 'couples', 'not-a-dependency'])
-
-function parseDeclaredDependencies(text) {
-  const rows = []
-  const problems = []
-  const seen = new Set()
-  const lines = text.split('\n')
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]
-    if (!line.trim() || line.trimStart().startsWith('#')) continue
-    const match = /^(\S+)\s*->\s*(\S+)\s\s+(\S+)\s\s+(.+?)\s*$/.exec(line)
-    if (!match) {
-      problems.push(`line ${i + 1}: not "<repo> -> <target>  <kind>  <reason>"`)
-      continue
-    }
-    const [, repo, target, kind, reason] = match
-    if (!DECLARED_KINDS.has(kind)) {
-      problems.push(`line ${i + 1}: unknown kind "${kind}" (${[...DECLARED_KINDS].join(', ')})`)
-      continue
-    }
-    if (repo === target) {
-      problems.push(`line ${i + 1}: ${repo} cannot depend on itself`)
-      continue
-    }
-    const key = `${repo}|${target}`
-    if (seen.has(key)) {
-      problems.push(`line ${i + 1}: ${repo} -> ${target} is declared twice`)
-      continue
-    }
-    seen.add(key)
-    rows.push({ repo, target, kind, reason, line: i + 1 })
-  }
-  return { rows, problems }
-}
-
-/*
- * The two-directional check. `found` is what the run detected on its own.
- *
- * A declared line the run now finds is the good failure: someone taught the
- * tool to read that dependency and the note is redundant. It is reported rather
- * than tolerated, because a ledger nobody prunes becomes the prose again.
- */
-function auditDeclared(rows, found, known) {
-  const problems = []
-  const detected = new Set(found.map((edge) => `${edge.repo}|${edge.target}`))
-  for (const row of rows) {
-    for (const name of [row.repo, row.target]) {
-      if (!known.has(name)) problems.push(`line ${row.line}: no such repo "${name}"`)
-    }
-    const isDetected = detected.has(`${row.repo}|${row.target}`)
-    if (row.kind === 'not-a-dependency' && !isDetected) {
-      problems.push(
-        `line ${row.line}: ${row.repo} -> ${row.target} suppresses an edge nothing detects any more - delete the line`,
-      )
-    }
-    if (row.kind !== 'not-a-dependency' && isDetected) {
-      problems.push(
-        `line ${row.line}: ${row.repo} -> ${row.target} is detected on its own now - delete the line`,
-      )
-    }
-  }
-  return problems
 }
 
 function ciReferences(text, self, known) {
@@ -1222,7 +1147,7 @@ function renderMarkdown(edges, { repos, skipped, generatedFrom, states }) {
 
 // ---------------------------------------------------------------------------
 
-export { classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, notARelease, vendorProvenance, parseDeclaredDependencies, auditDeclared }
+export { classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, notARelease, vendorProvenance }
 
 async function main() {
   const repos = await api(`orgs/${ORG}/repos?per_page=100&type=public`)
@@ -1302,18 +1227,19 @@ async function main() {
   // that is still needed from one the detectors have caught up with.
   const ledgerPath = resolve(repoRoot, 'resources/undeclared-dependencies.txt')
   const ledger = existsSync(ledgerPath)
-    ? parseDeclaredDependencies(readFileSync(ledgerPath, 'utf8'))
-    : { rows: [], problems: [] }
+    ? parseDependencyLedger(ledgerPath)
+    : { entries: new Map(), failures: [] }
+  const declared = [...ledger.entries.values()]
   const ledgerProblems = [
-    ...ledger.problems,
-    ...auditDeclared(ledger.rows, flat, liveNames),
+    ...ledger.failures,
+    ...auditDependencyLedger(declared, flat, liveNames),
   ]
 
   const suppressed = new Set(
-    ledger.rows.filter((row) => row.kind === 'not-a-dependency').map((row) => `${row.repo}|${row.target}`),
+    declared.filter((row) => row.kind === 'not-a-dependency').map((row) => `${row.repo}|${row.target}`),
   )
   const kept = flat.filter((edge) => !suppressed.has(`${edge.repo}|${edge.target}`))
-  for (const row of ledger.rows) {
+  for (const row of declared) {
     if (row.kind === 'not-a-dependency') continue
     kept.push({
       kind: row.kind === 'vendors' ? 'vendor-declared' : 'ci',

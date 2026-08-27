@@ -116,6 +116,105 @@ export function parseConverterLedger(path) {
   return { entries, failures }
 }
 
+/** The kinds `resources/undeclared-dependencies.txt` accepts. */
+export const DEPENDENCY_KINDS = new Set(['vendors', 'couples', 'not-a-dependency'])
+
+/**
+ * `resources/undeclared-dependencies.txt`, whose lines are
+ * `<repo> -> <target>  <kind>  <reason>`.
+ *
+ * A third shape rather than a third parser: the key is a PAIR like the
+ * converter ledger's, and the value carries a kind as well as a reason, because
+ * this ledger says what sort of dependency it is declaring and not only that
+ * one exists. Everything else is the house rule - `#` comments, blank lines,
+ * two or more spaces before the reason, and one entry per key.
+ *
+ * Failures are collected rather than thrown, matching `parseConverterLedger`
+ * and for the same reason: the caller is a run that takes minutes over the
+ * whole org, and a bad line should report itself alongside every other finding
+ * instead of aborting the report someone was waiting for.
+ *
+ * @param {string} path
+ * @returns {{ entries: Map<string, { repo: string, target: string, kind: string, reason: string, line: number }>, failures: Array<string> }}
+ */
+export function parseDependencyLedger(path) {
+  const name = basename(path)
+  const entries = new Map()
+  const failures = []
+  const lines = readFileSync(path, 'utf8').split('\n')
+  for (const [index, rawLine] of lines.entries()) {
+    const line = rawLine.trim()
+    if (!line || line.startsWith('#')) continue
+    const parsed = /^(\S+) *-> *(\S+) {2,}(\S+) {2,}(.+)$/.exec(line)
+    if (!parsed) {
+      failures.push(
+        `${name} line ${index + 1} unparseable: ${JSON.stringify(rawLine)} ` +
+          '(format: repo -> target  kind  reason)',
+      )
+      continue
+    }
+    const [, repo, target, kind, reason] = parsed
+    if (!DEPENDENCY_KINDS.has(kind)) {
+      failures.push(
+        `${name} line ${index + 1}: unknown kind ${JSON.stringify(kind)} - ` +
+          `one of ${[...DEPENDENCY_KINDS].join(', ')}`,
+      )
+      continue
+    }
+    if (repo === target) {
+      failures.push(`${name} line ${index + 1}: ${repo} cannot depend on itself`)
+      continue
+    }
+    const key = `${repo} -> ${target}`
+    if (entries.has(key)) {
+      failures.push(
+        `${name}: duplicate entry: ${key} - already declared as ` +
+          `${JSON.stringify(entries.get(key).reason)}, and this line says ${JSON.stringify(reason)}. ` +
+          'One of the two reasons is being thrown away; keep the true one.',
+      )
+      continue
+    }
+    entries.set(key, { repo, target, kind, reason, line: index + 1 })
+  }
+  return { entries, failures }
+}
+
+/**
+ * The two-directional check the ledger's value depends on.
+ *
+ * A hand-written note about a hand-written dependency rots exactly the way the
+ * wiki prose the Dependency Map replaced did, so neither direction is allowed
+ * to pass quietly: a declaration the tool can now read for itself is redundant,
+ * and a suppression with nothing left to suppress is describing a world that
+ * moved. Both name the line to delete.
+ *
+ * @param {Iterable<{ repo: string, target: string, kind: string, line: number }>} rows
+ * @param {Array<{ repo: string, target: string }>} detected edges the run found on its own.
+ * @param {Set<string>} known live repo names.
+ * @returns {Array<string>}
+ */
+export function auditDependencyLedger(rows, detected, known) {
+  const failures = []
+  const found = new Set(detected.map((edge) => `${edge.repo}|${edge.target}`))
+  for (const row of rows) {
+    for (const repo of [row.repo, row.target]) {
+      if (!known.has(repo)) failures.push(`line ${row.line}: no such repo ${JSON.stringify(repo)}`)
+    }
+    const isDetected = found.has(`${row.repo}|${row.target}`)
+    if (row.kind === 'not-a-dependency' && !isDetected) {
+      failures.push(
+        `line ${row.line}: ${row.repo} -> ${row.target} suppresses an edge nothing detects any more - delete the line`,
+      )
+    }
+    if (row.kind !== 'not-a-dependency' && isDetected) {
+      failures.push(
+        `line ${row.line}: ${row.repo} -> ${row.target} is detected on its own now - delete the line`,
+      )
+    }
+  }
+  return failures
+}
+
 /*
  * The same ledger, spelled as an object literal.
  *
