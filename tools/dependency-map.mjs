@@ -43,8 +43,15 @@
  */
 
 import { execFile } from 'node:child_process'
-import { writeFileSync } from 'node:fs'
+import { existsSync, writeFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { promisify } from 'node:util'
+
+import { parseDependencyLedger, auditDependencyLedger } from '../scripts/lib/drift-ledger.mjs'
+
+/** This file lives in tools/, so the repo root is one level up. */
+const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
 const run = promisify(execFile)
 
@@ -195,14 +202,28 @@ const VENDOR_CANDIDATE = /\.(iife\.js|bundle\.js|min\.js|umd\.js|wasm|css)$|\/(s
  * Only the first bytes are read. A range request over raw content turns a 1.4MB
  * bundle into 300 bytes, so this is cheap enough to run over every candidate.
  */
-const VENDOR_HEADER = /(?:Bundled|Generated|Vendored|Copied)\s+from\s+markup-carve\/([a-z0-9][a-z0-9.-]*)(?:[^\n]*?\bcommit\s+([0-9a-f]{7,40}))?/i
+const VENDOR_HEADER = /(?:Bundled|Generated|Vendored|Copied)\s+from\s+markup-carve\/([a-z0-9][a-z0-9.-]*)/i
+
+/*
+ * THE COMMIT IS NOT ALWAYS ON THE SAME LINE as the repo it names, and requiring
+ * that quietly downgraded a real pin to "unpinned". intellij-carve's CSS header
+ * reads
+ *
+ *   VENDORED from markup-carve/carve-css src/recipes.css
+ *   version 0.1.0, commit e0042b9
+ *
+ * which a same-line pattern reports as a dependency with no version - true of
+ * the line it looked at and false of the file. The whole header window is
+ * searched instead, which is the unit the writer was working in.
+ */
+const VENDOR_COMMIT = /\bcommit\s+([0-9a-f]{7,40})\b/i
 
 function vendorProvenance(head, self, known) {
   const match = VENDOR_HEADER.exec(head)
   if (!match) return null
   const target = match[1].replace(/\.git$/, '')
   if (target === self || !known.has(target)) return null
-  return { target, ref: match[2] ?? null }
+  return { target, ref: VENDOR_COMMIT.exec(head)?.[1] ?? null }
 }
 
 function ciReferences(text, self, known) {
@@ -542,6 +563,12 @@ async function resolveEdge(edge) {
       verdict: tagged ? (tagged === latest ? 'released' : 'behind-release') : 'unreleased',
       note,
     }
+  }
+
+  // A HAND-DECLARED dependency pins nothing - that is why it had to be written
+  // down. The reason carries the evidence a pin would otherwise have carried.
+  if (edge.kind === 'vendor-declared') {
+    return { ...edge, verdict: 'undeclared', note: `declared by hand: ${edge.declaredReason}` }
   }
 
   // A workflow checkout pins nothing by construction - it takes whatever the
@@ -1195,7 +1222,39 @@ async function main() {
     else byPin.set(key, { ...edge, paths: [edge.path] })
   }
   const flat = [...byPin.values()]
-  const resolved = await mapLimit(flat, CONCURRENCY, resolveEdge)
+
+  // THE HAND-WRITTEN HALF, APPLIED AFTER DETECTION so the audit can tell a line
+  // that is still needed from one the detectors have caught up with.
+  const ledgerPath = resolve(repoRoot, 'resources/undeclared-dependencies.txt')
+  const ledger = existsSync(ledgerPath)
+    ? parseDependencyLedger(ledgerPath)
+    : { entries: new Map(), failures: [] }
+  const declared = [...ledger.entries.values()]
+  const ledgerProblems = [
+    ...ledger.failures,
+    ...auditDependencyLedger(declared, flat, liveNames),
+  ]
+
+  const suppressed = new Set(
+    declared.filter((row) => row.kind === 'not-a-dependency').map((row) => `${row.repo}|${row.target}`),
+  )
+  const kept = flat.filter((edge) => !suppressed.has(`${edge.repo}|${edge.target}`))
+  for (const row of declared) {
+    if (row.kind === 'not-a-dependency') continue
+    kept.push({
+      kind: row.kind === 'vendors' ? 'vendor-declared' : 'ci',
+      ref: null,
+      target: row.target,
+      name: row.target,
+      spec: '',
+      field: 'declared',
+      path: 'resources/undeclared-dependencies.txt',
+      repo: row.repo,
+      declaredReason: row.reason,
+    })
+  }
+
+  const resolved = await mapLimit(kept, CONCURRENCY, resolveEdge)
   const skipped = live.filter((repo) => !resolved.some((edge) => edge.repo === repo.name)).map((repo) => repo.name)
 
   if (flag('json')) {
@@ -1213,6 +1272,14 @@ async function main() {
   const states = new Map(
     await mapLimit(live, CONCURRENCY, async (repo) => [repo.name, await targetState(repo.name)]),
   )
+
+  if (ledgerProblems.length) {
+    // Reported on stderr rather than thrown: the tool's contract is that it
+    // describes the org and does not fail on it (see the header). A ledger
+    // problem is still loud, and `--check` is where a gate belongs.
+    console.error('resources/undeclared-dependencies.txt:')
+    for (const problem of ledgerProblems) console.error(`  ${problem}`)
+  }
 
   const markdown = `${renderMarkdown(resolved, {
     repos: live.length,

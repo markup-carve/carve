@@ -14,6 +14,10 @@
  * "anything with a slash".
  */
 import { strict as assert } from 'node:assert'
+import * as nodeFs from 'node:fs'
+import * as nodeOs from 'node:os'
+import * as nodePath from 'node:path'
+import { parseDependencyLedger, auditDependencyLedger } from '../scripts/lib/drift-ledger.mjs'
 import { test } from 'node:test'
 
 import { classify, parseManifest, renderMermaid, releaseLayers, renderReleaseOrder, ciReferences, notARelease, vendorProvenance } from '../tools/dependency-map.mjs'
@@ -340,4 +344,125 @@ test('a vendored build layers like a declared edge, a CI checkout does not', () 
   const { layer } = releaseLayers(edges, ['carve-rs', 'plugin', 'other'])
   assert.equal(layer.get('plugin'), 1, 'the vendored build layers above its source')
   assert.equal(layer.get('other'), 0, 'the CI checkout leaves it unconstrained')
+})
+
+/*
+ * THE DECLARATION LEDGER.
+ *
+ * It holds what no detector can read, which is exactly the content that rots
+ * without a gate - the failure the Dependency Map was built to end. So the
+ * parse is strict and the audit runs in BOTH directions.
+ */
+
+/* The shared parser reads a PATH, which is right for the real ledger and awkward
+ * for a one-line fixture. This writes the fixture out rather than reimplementing
+ * the parse - a second parser in the tests is the duplication this refactor
+ * removed from the tool. */
+function parseFixture(text) {
+  const { mkdtempSync, writeFileSync: write } = nodeFs
+  const dir = mkdtempSync(nodeOs.tmpdir() + '/carve-ledger-')
+  const file = nodePath.join(dir, 'undeclared-dependencies.txt')
+  write(file, text)
+  return parseDependencyLedger(file)
+}
+
+const LIVE = new Set(['carve', 'carve-js', 'emacs-carve', 'carve-grammars', 'carve-rs', 'homebrew-carve'])
+
+test('a well formed declaration parses', () => {
+  const { entries, failures } = parseFixture(
+    '# a comment\n\nemacs-carve -> carve-grammars  vendors  a copied table with no header\n',
+  )
+  const rows = [...entries.values()]
+  const problems = failures
+  assert.deepEqual(problems, [])
+  assert.equal(rows.length, 1)
+  assert.deepEqual(
+    { ...rows[0], line: undefined },
+    { repo: 'emacs-carve', target: 'carve-grammars', kind: 'vendors', reason: 'a copied table with no header', line: undefined },
+  )
+})
+
+test('a malformed line is reported rather than skipped', () => {
+  // Skipping it silently is how a ledger comes to describe less than it claims.
+  const { entries, failures } = parseFixture('emacs-carve depends on carve-grammars\n')
+  const rows = [...entries.values()]
+  const problems = failures
+  assert.equal(rows.length, 0)
+  assert.equal(problems.length, 1)
+  assert.match(problems[0], /line 1/)
+})
+
+test('an unknown kind is refused', () => {
+  const { failures: problems } = parseFixture('a -> b  sortof  because\n')
+  assert.match(problems[0], /unknown kind/)
+})
+
+test('the same pair cannot be declared twice', () => {
+  const { failures: problems } = parseFixture(
+    'a -> b  vendors  one reason\na -> b  couples  another reason\n',
+  )
+  // The shared parser names BOTH reasons, so the author can see which one is
+  // being thrown away rather than only that a collision happened.
+  assert.match(problems[0], /duplicate entry: a -> b/)
+  assert.match(problems[0], /one reason/)
+  assert.match(problems[0], /another reason/)
+})
+
+test('a declaration the tool can now detect on its own is stale', () => {
+  // The good failure: someone taught a detector to read this dependency, so the
+  // hand-written note is redundant and has to go, or the ledger becomes the
+  // prose it replaced.
+  const rows = [{ repo: 'emacs-carve', target: 'carve-grammars', kind: 'vendors', reason: 'x', line: 3 }]
+  const detected = [{ repo: 'emacs-carve', target: 'carve-grammars' }]
+  const problems = auditDependencyLedger(rows, detected, LIVE)
+  assert.equal(problems.length, 1)
+  assert.match(problems[0], /detected on its own now - delete the line/)
+})
+
+test('a suppression that no longer suppresses anything is stale', () => {
+  const rows = [{ repo: 'carve-rs', target: 'homebrew-carve', kind: 'not-a-dependency', reason: 'x', line: 5 }]
+  const problems = auditDependencyLedger(rows, [], LIVE)
+  assert.match(problems[0], /suppresses an edge nothing detects any more/)
+})
+
+test('a suppression that still has something to suppress is clean', () => {
+  const rows = [{ repo: 'carve-rs', target: 'homebrew-carve', kind: 'not-a-dependency', reason: 'x', line: 5 }]
+  const detected = [{ repo: 'carve-rs', target: 'homebrew-carve' }]
+  assert.deepEqual(auditDependencyLedger(rows, detected, LIVE), [])
+})
+
+test('a declaration naming a repo that does not exist is refused', () => {
+  const rows = [{ repo: 'emacs-carve', target: 'carve-nope', kind: 'vendors', reason: 'x', line: 2 }]
+  const problems = auditDependencyLedger(rows, [], LIVE)
+  assert.equal(problems.length, 1)
+  assert.match(problems[0], /no such repo "carve-nope"/)
+})
+
+test('the committed ledger is valid and every line is still needed', async () => {
+  // The file itself, not a fixture: a ledger that parses in theory and is
+  // malformed on disk has gated nothing.
+  const { readFileSync, existsSync } = await import('node:fs')
+  const { resolve, dirname } = await import('node:path')
+  const { fileURLToPath } = await import('node:url')
+  const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+  const path = resolve(root, 'resources/undeclared-dependencies.txt')
+  assert.ok(existsSync(path), 'the ledger exists')
+  const { entries, failures } = parseDependencyLedger(path)
+  assert.deepEqual(failures, [], 'the committed ledger parses cleanly')
+  assert.ok(entries.size > 0, 'it holds at least one declaration')
+})
+
+test('a vendor header whose commit is on a later line still pins', () => {
+  // intellij-carve's CSS header puts the repo on one line and the commit on the
+  // next. A same-line pattern called that unpinned, which is true of the line
+  // and false of the file.
+  const head = [
+    '/*',
+    ' * VENDORED from markup-carve/carve-js src/recipes.css',
+    ' * version 0.1.0, commit e0042b9',
+    ' */',
+  ].join('\n')
+  const found = vendorProvenance(head, 'intellij-carve', LIVE)
+  assert.equal(found?.target, 'carve-js')
+  assert.equal(found?.ref, 'e0042b9')
 })
