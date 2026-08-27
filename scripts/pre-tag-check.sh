@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 #
-# pre-tag-check.sh <version> [repo-dir]
+# pre-tag-check.sh <version> [repo-dir] [--tag <tag>]
 #
-# Validates that a repository is ready to be tagged <version>, so a release is
+# Validates that a repository is ready to release <version>, so a release is
 # never cut with a stale version field, an un-cut changelog, or - in the spec
 # repo - an engine pin drift file nobody reconciled. Run it from a repo root (or
 # pass the repo dir) BEFORE publishing the draft release / tagging.
 #
 #   bash scripts/pre-tag-check.sh 0.1.2                 # check the current repo
 #   bash /path/to/carve/scripts/pre-tag-check.sh 0.1.1 ../carve-rs
+#   bash scripts/pre-tag-check.sh 0.1.4 ../carve-lsp --tag v0.1.4
 #
 # Exit status is non-zero if anything fails. This mirrors the CI release guards
 # in carve-js/carve-rs (which block npm/cargo publish on a version or changelog
@@ -18,12 +19,36 @@
 set -u
 
 VERSION="${1:-}"
-DIR="${2:-.}"
-
 if [ -z "$VERSION" ]; then
-  echo "usage: pre-tag-check.sh <version> [repo-dir]" >&2
+  echo "usage: pre-tag-check.sh <version> [repo-dir] [--tag <tag>]" >&2
   exit 2
 fi
+shift
+
+DIR="."
+DIR_SET=0
+TAG="$VERSION"
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --tag)
+      [ "$#" -ge 2 ] && [ -n "$2" ] \
+        || { echo "--tag requires a tag name" >&2; exit 2; }
+      TAG="$2"
+      shift 2
+      ;;
+    -*)
+      echo "unknown option: $1" >&2
+      exit 2
+      ;;
+    *)
+      [ "$DIR_SET" -eq 0 ] \
+        || { echo "unexpected argument: $1" >&2; exit 2; }
+      DIR="$1"
+      DIR_SET=1
+      shift
+      ;;
+  esac
+done
 
 cd "$DIR" || { echo "cannot cd into $DIR" >&2; exit 2; }
 
@@ -32,7 +57,12 @@ ok()   { echo "  [ok]   $*"; }
 bad()  { echo "  [FAIL] $*"; fail=1; }
 skip() { echo "  [skip] $*"; }
 
-echo "Pre-tag check for $VERSION in $(pwd)"
+if ! git check-ref-format "refs/tags/$TAG" >/dev/null 2>&1; then
+  echo "invalid tag name: $TAG" >&2
+  exit 2
+fi
+
+echo "Pre-tag check for version $VERSION (tag $TAG) in $(pwd)"
 
 # A dot-escaped copy of the version for anchored greps.
 ESCV="${VERSION//./\\.}"
@@ -57,12 +87,12 @@ else
 fi
 
 # 3. Tag not already present (local or remote).
-if git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null 2>&1; then
-  bad "tag $VERSION already exists locally"
-elif git ls-remote --exit-code --tags origin "refs/tags/$VERSION" >/dev/null 2>&1; then
-  bad "tag $VERSION already exists on origin"
+if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null 2>&1; then
+  bad "tag $TAG already exists locally"
+elif git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+  bad "tag $TAG already exists on origin"
 else
-  ok "tag $VERSION not yet present"
+  ok "tag $TAG not yet present"
 fi
 
 # 4. Version field matches the target (auto-detect the manifest).
@@ -261,7 +291,7 @@ fi
 
 echo
 if [ "$fail" -ne 0 ]; then
-  echo "PRE-TAG CHECK FAILED - do not tag $VERSION yet."
+  echo "PRE-TAG CHECK FAILED - do not tag $TAG yet."
   exit 1
 fi
-echo "PRE-TAG CHECK PASSED - ready to tag $VERSION."
+echo "PRE-TAG CHECK PASSED - ready to tag $TAG."

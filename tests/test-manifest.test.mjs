@@ -12,9 +12,10 @@
 
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { execFileSync } from 'node:child_process'
-import { readFileSync, readdirSync } from 'node:fs'
-import { resolve, dirname } from 'node:path'
+import { execFileSync, spawnSync } from 'node:child_process'
+import { mkdtempSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { resolve, dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -93,4 +94,57 @@ test('the AST verdict cannot close on narrower or disposable evidence', () => {
     'green computes which required gates its run skipped',
   )
   assert.match(workflow, /if \[ -n "\$missing" \]; then[\s\S]*?#\$issue remains open/)
+})
+
+function run(command, args, cwd) {
+  return spawnSync(command, args, { cwd, encoding: 'utf8' })
+}
+
+function releaseRepository() {
+  const dir = mkdtempSync(join(tmpdir(), 'carve-pre-tag-'))
+  const work = join(dir, 'work')
+  const origin = join(dir, 'origin.git')
+  mkdirSync(work)
+  assert.equal(run('git', ['init', '--bare', origin], dir).status, 0)
+  assert.equal(run('git', ['init', '-b', 'main'], work).status, 0)
+  assert.equal(run('git', ['config', 'user.email', 'test@example.invalid'], work).status, 0)
+  assert.equal(run('git', ['config', 'user.name', 'pre-tag test'], work).status, 0)
+  writeFileSync(join(work, 'package.json'), '{"version":"0.1.4"}\n')
+  writeFileSync(join(work, 'CHANGELOG.md'), '# Changelog\n\n## [0.1.4] - 2026-08-27\n')
+  assert.equal(run('git', ['add', '.'], work).status, 0)
+  assert.equal(run('git', ['commit', '-m', 'release'], work).status, 0)
+  assert.equal(run('git', ['remote', 'add', 'origin', origin], work).status, 0)
+  assert.equal(run('git', ['push', '-u', 'origin', 'main'], work).status, 0)
+  return work
+}
+
+test('the pre-tag check separates a prefixed tag from the bare version', () => {
+  const work = releaseRepository()
+  const checker = resolve(repo, 'scripts/pre-tag-check.sh')
+  const result = run('bash', [checker, '0.1.4', work, '--tag', 'v0.1.4'], repo)
+
+  assert.equal(result.status, 0, result.stdout + result.stderr)
+  assert.match(result.stdout, /tag v0\.1\.4 not yet present/)
+  assert.match(result.stdout, /package\.json version = 0\.1\.4/)
+  assert.match(result.stdout, /CHANGELOG\.md has a '## \[0\.1\.4\]' section/)
+})
+
+test('the pre-tag check tests the real prefixed ref for existence', () => {
+  const work = releaseRepository()
+  const checker = resolve(repo, 'scripts/pre-tag-check.sh')
+  assert.equal(run('git', ['tag', 'v0.1.4'], work).status, 0)
+  const result = run('bash', [checker, '0.1.4', '--tag', 'v0.1.4', work], repo)
+
+  assert.equal(result.status, 1, result.stdout + result.stderr)
+  assert.match(result.stdout, /\[FAIL\] tag v0\.1\.4 already exists locally/)
+  assert.doesNotMatch(result.stdout, /expected v0\.1\.4/)
+})
+
+test('the pre-tag check keeps the existing bare-tag invocation', () => {
+  const work = releaseRepository()
+  const checker = resolve(repo, 'scripts/pre-tag-check.sh')
+  const result = run('bash', [checker, '0.1.4', work], repo)
+
+  assert.equal(result.status, 0, result.stdout + result.stderr)
+  assert.match(result.stdout, /tag 0\.1\.4 not yet present/)
 })
