@@ -20,7 +20,7 @@ import * as nodePath from 'node:path'
 import { parseDependencyLedger, auditDependencyLedger } from '../scripts/lib/drift-ledger.mjs'
 import { test } from 'node:test'
 
-import { classify, parseManifest, renderMermaid, releaseLayers, renderReleaseOrder, ciReferences, notARelease, vendorProvenance } from '../tools/dependency-map.mjs'
+import { classify, parseManifest, renderMermaid, releaseLayers, renderReleaseOrder, ciReferences, notARelease, vendorProvenance, staleSourceBanner } from '../tools/dependency-map.mjs'
 
 const cases = [
   ['github: shorthand', '@markup-carve/carve', 'github:markup-carve/carve-js#3ba8ba32', 'carve-js', '3ba8ba32'],
@@ -465,4 +465,44 @@ test('a vendor header whose commit is on a later line still pins', () => {
   const found = vendorProvenance(head, 'intellij-carve', LIVE)
   assert.equal(found?.target, 'carve-js')
   assert.equal(found?.ref, 'e0042b9')
+})
+
+/*
+ * THE BANNER IS THE ONLY THING THAT CAN REPORT A RUN FROM A STALE TREE.
+ *
+ * A regeneration rewrites every line of the page, so a section that stopped
+ * being emitted leaves no trace a reviewer could catch in the diff - it looks
+ * like data that moved. That is not a hypothetical shape: a run from a branch
+ * older than the CI-read edges published 61 edges instead of 86 with the Release
+ * order section gone, and it went unnoticed until somebody asked where their
+ * dependency information had gone.
+ *
+ * Both directions are asserted, because a banner that fires when it should not
+ * is worse than none: the workflow REFUSES TO PUBLISH when it sees one, so a
+ * false positive stops the nightly regeneration outright.
+ */
+test('the stale-source banner fires only when the run did not come from main', () => {
+  assert.equal(
+    staleSourceBanner({ sha: 'a'.repeat(40), mainSha: 'a'.repeat(40) }),
+    null,
+    'a run from the tip of main carries no banner',
+  )
+})
+
+test('a banner needs both sides of the comparison, and says neither when it has one', () => {
+  // No .git, no network, a remote not called origin: none of those mean the run
+  // was stale, they mean the question went unanswered. A banner on "unknown"
+  // would fire on every tarball and be tuned out inside a week - and it would
+  // also break the workflow, which treats a banner as a reason not to publish.
+  assert.equal(staleSourceBanner({}), null)
+  assert.equal(staleSourceBanner({ sha: 'a'.repeat(40) }), null)
+  assert.equal(staleSourceBanner({ mainSha: 'b'.repeat(40) }), null)
+})
+
+test('the banner names both commits, short, so the reader can tell what ran', () => {
+  const text = staleSourceBanner({ sha: 'deadbeefcafe1234', mainSha: '0123456789abcdef' })
+  assert.match(text, /deadbeef/, 'the commit the run came from')
+  assert.match(text, /01234567/, 'the commit it should have come from')
+  assert.doesNotMatch(text, /deadbeefcafe1234/, 'abbreviated, not the full sha')
+  assert.match(text, /Regenerate from/, 'and what to do about it')
 })

@@ -1023,7 +1023,44 @@ function renderReleaseOrder(edges, states, allRepos) {
   return lines.join('\n')
 }
 
-function renderMarkdown(edges, { repos, skipped, generatedFrom, states }) {
+const TICK = '`'
+const STALE_HEAD = '**Generated from a checkout that is not `main`.** '
+const RUN_FROM = 'This run came from `'
+
+/*
+ * WAS THIS RUN MADE FROM A CHECKOUT THAT COULD SEE THE WHOLE GENERATOR?
+ *
+ * The page says "generated - do not edit by hand", which is honest about hand
+ * edits while saying nothing about the other way it rots: a run from a checkout
+ * parked on a feature branch, by a generator predating whatever the tool has
+ * learned since that branch was cut.
+ *
+ * That is not hypothetical. A run from a branch older than the CI-read edges
+ * (#1847) and the declaration ledger (#1851) rewrote the wiki page with 61
+ * edges instead of 86 and dropped the whole Release order section - and the
+ * result was indistinguishable from a page that had got shorter because
+ * releases landed. Nobody could see it in the diff, because a regeneration
+ * rewrites every line anyway. The next commit then hand-patched the degraded
+ * page, which is how a generated document stops being generated.
+ *
+ * A missing section cannot announce itself, so the provenance has to. Silent
+ * when the run came from the tip of main - which is what the automation in
+ * .github/workflows/dependency-map.yml produces, and the case that should not
+ * carry a banner.
+ */
+function staleSourceBanner({ sha, mainSha }) {
+  if (!sha || !mainSha || sha === mainSha) return null
+  return (
+    STALE_HEAD +
+    RUN_FROM + sha.slice(0, 8) + TICK + ', ' +
+    'while ' + TICK + 'main' + TICK + ' is at ' + TICK + mainSha.slice(0, 8) + TICK + '. ' +
+    'A generator older than the tree it ran from emits whatever it knew then, so a section it has ' +
+    'since gained is MISSING here rather than empty, and that reads exactly like data that moved. ' +
+    'Regenerate from ' + TICK + 'main' + TICK + ' before trusting this page.'
+  )
+}
+
+function renderMarkdown(edges, { repos, skipped, generatedFrom, states, source }) {
   const worst = [...edges].sort(
     (a, b) => VERDICTS[b.verdict].rank - VERDICTS[a.verdict].rank || a.repo.localeCompare(b.repo),
   )
@@ -1044,6 +1081,11 @@ function renderMarkdown(edges, { repos, skipped, generatedFrom, states }) {
       'this page is only the part a machine can re-derive.',
   )
   out.push('')
+  const stale = staleSourceBanner(source ?? {})
+  if (stale) {
+    out.push(stale)
+    out.push('')
+  }
   out.push(`Read ${repos} repositories, ${edges.length} edges, from ${generatedFrom}.`)
   out.push('')
   out.push('## Release order')
@@ -1147,7 +1189,31 @@ function renderMarkdown(edges, { repos, skipped, generatedFrom, states }) {
 
 // ---------------------------------------------------------------------------
 
-export { classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, notARelease, vendorProvenance }
+export { classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, notARelease, vendorProvenance, staleSourceBanner }
+
+/*
+ * What this run was generated FROM, for staleSourceBanner above.
+ *
+ * `ls-remote` rather than `fetch`: asking a question about the remote must not
+ * write to the checkout somebody is working in, and a stale remote-tracking ref
+ * is exactly the thing that would make this answer wrong.
+ *
+ * Every failure here is silent by design. A tarball with no `.git`, no network,
+ * a remote named something other than `origin` - none of those say the run is
+ * stale, they say the question cannot be answered, and a banner that fires on
+ * "unknown" would be ignored within a week.
+ */
+async function sourceProvenance() {
+  const git = async (args) => (await run('git', args, { cwd: repoRoot })).stdout.trim()
+  try {
+    const sha = await git(['rev-parse', 'HEAD'])
+    const remote = await git(['ls-remote', 'origin', 'refs/heads/main'])
+    const mainSha = remote.split(/\s+/)[0]
+    return { sha, mainSha }
+  } catch {
+    return {}
+  }
+}
 
 async function main() {
   const repos = await api(`orgs/${ORG}/repos?per_page=100&type=public`)
@@ -1286,6 +1352,7 @@ async function main() {
     skipped,
     states,
     generatedFrom: 'each repository\'s default branch',
+    source: await sourceProvenance(),
   })}\n`
   const out = value('out', null)
   if (out) writeFileSync(out, markdown)
