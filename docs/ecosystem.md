@@ -60,6 +60,7 @@ Syntax highlighting, structural editing, and diagnostics inside editors.
 | [tree-sitter-carve](https://github.com/markup-carve/tree-sitter-carve) | Tree-sitter | Grammar for highlighting and structural editing. |
 | [highlightjs-carve](https://github.com/markup-carve/highlightjs-carve) | Highlight.js | Syntax grammar for highlighted Carve source. |
 | [pygments-carve](https://github.com/markup-carve/pygments-carve) | Pygments | Lexer for Python documentation and highlighting tools. |
+| [rouge-carve](https://github.com/markup-carve/rouge-carve) | Rouge | Lexer for Jekyll, Redcarpet and other Ruby highlighting. |
 | [carve-lsp](https://github.com/markup-carve/carve-lsp) | LSP | Language server - syntax diagnostics, Djot/Markdown collision hints. *Early.* |
 
 ## Framework integrations
