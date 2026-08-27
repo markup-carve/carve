@@ -113,9 +113,14 @@ async function repoManifestPaths(repo, branch) {
   // is. The tree entry of type `commit` is the pinned sha, and this is the one
   // request that already has it.
   const gitlinks = new Map()
+  const workflows = []
   for (const entry of tree.tree) {
     if (entry.type === 'commit') gitlinks.set(entry.path, entry.sha)
     if (entry.type !== 'blob') continue
+    // CI is where an UNDECLARED dependency becomes readable. A repo that
+    // vendors a grammar or embeds an engine build usually also checks that
+    // repo out to test the copy is current, and that checkout names it.
+    if (/^\.github\/workflows\/[^/]+\.ya?ml$/.test(entry.path)) workflows.push(entry.path)
     // Only root manifests and one level down: a fixture deep in tests/ is not
     // a dependency this repo ships, and reading them all turns a cheap report
     // into a slow one.
@@ -130,7 +135,50 @@ async function repoManifestPaths(repo, branch) {
       wanted.push({ path: entry.path, kind: 'ruby' })
     }
   }
-  return { manifests: wanted, gitlinks }
+  return { manifests: wanted, gitlinks, workflows }
+}
+
+/*
+ * DEPENDENCIES NOTHING DECLARES, READ OUT OF CI.
+ *
+ * Thirteen repos declare no manifest dependency on the org, and the page used
+ * to render that as "no org dependency" with a paragraph admitting that a
+ * vendored grammar or an embedded engine build is invisible here. That
+ * paragraph was right and it was also the end of the enquiry.
+ *
+ * Most of those repos DO name what they depend on - in a workflow rather than
+ * in a manifest, because the dependency is a copy that has to be checked
+ * against its source. `helix-carve` checks out `tree-sitter-carve` in a job
+ * called grammar-drift; `carve-go` checks out `carve-rs` to rebuild the WASI
+ * engine it embeds. That is a real dependency and a machine can read it.
+ *
+ * IT IS A WEAKER CLAIM THAN A MANIFEST EDGE and is kept separate for that
+ * reason: a manifest pin says "this build contains that version", a workflow
+ * checkout says "this repo is tested against that repo". The first constrains
+ * release order absolutely; the second says the two are coupled and a release
+ * wants looking at. So these never override a declared edge, and the tree
+ * marks them.
+ *
+ * WHAT IT STILL CANNOT SEE: a vendored file with no CI check on it. emacs-carve
+ * vendors carve-grammars' block-battery table and says so in a comment, in
+ * prose, which is not a contract. Absence here remains weaker evidence than
+ * presence.
+ */
+function ciReferences(text, self, known) {
+  const found = new Set()
+  for (const match of text.matchAll(/markup-carve\/([a-z0-9][a-z0-9.-]*)/gi)) {
+    const name = match[1].replace(/\.git$/, '')
+    if (name === self) continue
+    // MATCHED AGAINST THE LIVE REPO LIST, because `markup-carve/` prefixes more
+    // than repositories. carve-wasm's preflight explains the npm registry path
+    // `/-/org/markup-carve/package` in a comment, and a pattern that only knows
+    // the shape reported a repo named `package` that does not exist - as an
+    // edge, with a verdict, in a table whose whole value is that its rows are
+    // real. The org's own repo list is already in hand, so the check is free.
+    if (!known.has(name)) continue
+    found.add(name)
+  }
+  return found
 }
 
 async function readFile(repo, path, branch) {
@@ -401,6 +449,14 @@ async function resolveEdge(edge) {
     return { ...edge, verdict: 'local', note: 'local path, pins nothing' }
   }
 
+  // A workflow checkout pins nothing by construction - it takes whatever the
+  // default branch says at run time. The verdict is about the COUPLING being
+  // undeclared, which is the finding; asking whether it names a release would
+  // report every one of them red for a question they do not answer.
+  if (edge.kind === 'ci') {
+    return { ...edge, verdict: 'undeclared', note: `named in ${edge.path}, not in any manifest` }
+  }
+
   if (edge.kind === 'registry') {
     const exact = edge.spec.match(/^=?=?\s*v?(\d+\.\d+\.\d+)$/)
     const latest = state.latestRelease ?? state.latestTag
@@ -484,6 +540,7 @@ async function resolveEdge(edge) {
 // ---------------------------------------------------------------------------
 
 const VERDICTS = {
+  undeclared: { label: '🔗 undeclared', rank: 1 },
   released: { label: '✅ released', rank: 0 },
   'behind-release': { label: '🟡 older release', rank: 2 },
   range: { label: '🟦 range', rank: 1 },
@@ -531,6 +588,26 @@ const TIER_MEMBERS = new Set(TIERS.flatMap(([, members]) => members))
  */
 const SPEC_REPO = TIERS[0][1][0]
 const ENGINES = TIERS[1][1]
+
+/*
+ * REPOS THAT ARE NOT RELEASE ARTIFACTS AT ALL.
+ *
+ * A release order that lists them reads as thirteen repos waiting to ship when
+ * several of them will never ship anything: `.github` is org metadata, an
+ * awesome-list is a list, a demo exists to be deployed rather than depended on,
+ * and a benchmark or fidelity harness is measurement. None of them has a
+ * consumer, so none can block one.
+ *
+ * They are LISTED rather than dropped, because silently omitting a repo from a
+ * page whose claim is org coverage is the same defect as dropping the
+ * unconstrained tail was - the reader cannot tell an intentional omission from
+ * a broken query.
+ *
+ * The suffix rule catches demos as they are added; the names are the ones no
+ * rule describes.
+ */
+const NEVER_RELEASED = new Set(['.github', 'awesome-carve', 'carve-bench', 'pandoc-format-fidelity'])
+const notARelease = (repo) => NEVER_RELEASED.has(repo) || repo.endsWith('-demo')
 
 /** A label Mermaid can hold: no node syntax, no edge syntax, not too long. */
 function edgeLabel(edge) {
@@ -674,17 +751,27 @@ function renderMermaid(edges) {
  */
 function releaseLayers(edges, allRepos) {
   const dep = new Map()
+  const soft = new Map()
   // EVERY repo, not only the ones an edge names. A repo that declares no org
   // dependency has no edge at all, so seeding this from `edges` would drop the
   // entire unconstrained tail - the editors, the standalone tools - from a
   // list whose whole claim is that it covers the org. They belong in stage 0.
-  const nodes = new Set(allRepos)
+  const nodes = new Set(allRepos.filter((repo) => !notARelease(repo)))
   for (const edge of edges) {
+    if (notARelease(edge.repo) || notARelease(edge.target)) continue
     nodes.add(edge.repo)
     nodes.add(edge.target)
     if (edge.repo === edge.target) continue
     // The verification cycle, described above.
     if (edge.repo === SPEC_REPO && edge.field === 'devDependencies') continue
+    // A CI checkout is coupling, not containment - it never decides an order a
+    // declared edge did not already decide. Recorded so the tree can mark it,
+    // and deliberately kept out of `dep` so it cannot invent a stage.
+    if (edge.kind === 'ci') {
+      if (!soft.has(edge.repo)) soft.set(edge.repo, new Set())
+      soft.get(edge.repo).add(edge.target)
+      continue
+    }
     if (!dep.has(edge.repo)) dep.set(edge.repo, new Set())
     dep.get(edge.repo).add(edge.target)
   }
@@ -703,11 +790,11 @@ function releaseLayers(edges, allRepos) {
     return value
   }
   for (const node of nodes) level(node)
-  return { layer, dep }
+  return { layer, dep, soft }
 }
 
 function renderReleaseOrder(edges, states, allRepos) {
-  const { layer, dep } = releaseLayers(edges, allRepos)
+  const { layer, dep, soft } = releaseLayers(edges, allRepos)
   const byLayer = new Map()
   for (const [node, value] of layer) {
     if (!byLayer.has(value)) byLayer.set(value, [])
@@ -768,9 +855,31 @@ function renderReleaseOrder(edges, states, allRepos) {
   }
 
   if (zero.length) {
+    // Split the unconstrained tail by whether CI names anything. A repo that
+    // tests itself against another repo is coupled to it even with nothing in
+    // a manifest, and saying so is more useful than one flat list that implies
+    // thirteen independent repos.
+    const coupled = zero.filter((repo) => (soft.get(repo) ?? new Set()).size)
+    const loose = zero.filter((repo) => !(soft.get(repo) ?? new Set()).size)
+    if (coupled.length) {
+      lines.push('')
+      lines.push('NOTHING DECLARED, BUT CI NAMES ONE  coupling rather than containment')
+      for (const repo of coupled) {
+        const targets = [...soft.get(repo)].sort().join(', ')
+        lines.push(`  ${describe(repo)}  ~ ${targets}`)
+      }
+    }
+    if (loose.length) {
+      lines.push('')
+      lines.push('NOTHING FOUND EITHER WAY  release whenever, in any order')
+      for (const repo of loose) lines.push(`  ${describe(repo)}`)
+    }
+  }
+  const excluded = allRepos.filter(notARelease).sort()
+  if (excluded.length) {
     lines.push('')
-    lines.push('NO ORG DEPENDENCY  release whenever, in any order')
-    for (const repo of zero) lines.push(`  ${describe(repo)}`)
+    lines.push('NOT A RELEASE ARTIFACT  listed so an omission cannot pass for a broken query')
+    lines.push(`  ${excluded.join(', ')}`)
   }
   lines.push('```')
   return lines.join('\n')
@@ -818,6 +927,14 @@ function renderMarkdown(edges, { repos, skipped, generatedFrom, states }) {
   out.push(renderReleaseOrder(edges, states, [...states.keys()]))
   out.push('')
   out.push(
+    'A `~` marks a dependency no manifest declares, read out of the repo\'s own CI: a vendored ' +
+      'grammar or an embedded engine build is usually checked against its source by a workflow, ' +
+      'and that checkout names it. It is coupling rather than containment - a manifest pin says ' +
+      'this build CONTAINS that version, a workflow checkout says the two are TESTED together - ' +
+      'so it never decides a stage, and a vendored file with no CI check on it stays invisible.',
+  )
+  out.push('')
+  out.push(
     'The spec\'s own devDependencies are left out of the layering: `' + SPEC_REPO + '` dev-depends ' +
       'on its engines to render its own corpus and they submodule the spec back, which is a ' +
       'verification cycle rather than a build dependency. It does mean a spec cut wants the ' +
@@ -834,6 +951,10 @@ function renderMarkdown(edges, { repos, skipped, generatedFrom, states }) {
   out.push('| 🟠 unpinned | A branch name, or no ref at all. Whatever that branch says today. |')
   out.push('| 🔴 not a release | A commit that was never tagged. The build ships something no release names. |')
   out.push('| ⬚ local | A path dependency. Pins nothing, and is fine inside one checkout. |')
+  out.push(
+    '| 🔗 undeclared | No manifest declares it; the repo\'s own CI checks the target out. ' +
+      'Coupling rather than containment, and it pins nothing by construction. |',
+  )
   out.push('')
   const summary = [...counts.entries()]
     .sort((a, b) => VERDICTS[b[0]].rank - VERDICTS[a[0]].rank)
@@ -888,14 +1009,15 @@ function renderMarkdown(edges, { repos, skipped, generatedFrom, states }) {
 
 // ---------------------------------------------------------------------------
 
-export { classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder }
+export { classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, notARelease }
 
 async function main() {
   const repos = await api(`orgs/${ORG}/repos?per_page=100&type=public`)
   const live = (repos ?? []).filter((repo) => !repo.archived && !repo.fork)
+  const liveNames = new Set(live.map((repo) => repo.name))
 
   const perRepo = await mapLimit(live, CONCURRENCY, async (repo) => {
-    const { manifests, gitlinks } = await repoManifestPaths(repo.name, repo.default_branch)
+    const { manifests, gitlinks, workflows } = await repoManifestPaths(repo.name, repo.default_branch)
     const found = []
     for (const manifest of manifests) {
       const text = await readFile(repo.name, manifest.path, repo.default_branch)
@@ -904,6 +1026,27 @@ async function main() {
         // A repo depending on itself is a fixture or a self-reference, not an edge.
         if (edge.target === repo.name) continue
         found.push({ ...edge, repo: repo.name })
+      }
+    }
+    // CI SECOND, so a repo that both declares and checks out a target keeps the
+    // declared edge: the pin is the stronger statement and the dedupe below is
+    // first-one-wins per (repo, target, ref).
+    const declared = new Set(found.map((edge) => edge.target))
+    for (const path of workflows ?? []) {
+      const text = await readFile(repo.name, path, repo.default_branch)
+      if (!text) continue
+      for (const target of ciReferences(text, repo.name, liveNames)) {
+        if (declared.has(target)) continue
+        found.push({
+          kind: 'ci',
+          ref: null,
+          target,
+          name: target,
+          spec: '',
+          field: 'workflow',
+          path,
+          repo: repo.name,
+        })
       }
     }
     return found
