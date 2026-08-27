@@ -351,9 +351,6 @@ const impls = [
       if (SOURCE_TYPOGRAPHY_FEATURES.has(feature)) {
         return [...rustBaseCommand, '--smart-typography', 'source', ...flags]
       }
-      if (feature === 'list-table-columns-1344') {
-        return [...rustBaseCommand, '--extensions', ...flags]
-      }
       return null
     },
     hooks: [
