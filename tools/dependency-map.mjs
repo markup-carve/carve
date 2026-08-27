@@ -37,13 +37,17 @@
  *   node tools/dependency-map.mjs --json          # the same data, unrendered
  *   node tools/dependency-map.mjs --out FILE      # write instead of printing
  *   node tools/dependency-map.mjs --org NAME      # default markup-carve
+ *   node tools/dependency-map.mjs --out F --changed-vs G
+ *                                                 # ...and say whether F differs
+ *                                                 # from G by more than the lag
+ *                                                 # counters: substantive|cosmetic
  *
  * Needs `gh` authenticated. Roughly one request per repo plus a few per
  * dependency target; well inside the authenticated hourly limit.
  */
 
 import { execFile } from 'node:child_process'
-import { existsSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { promisify } from 'node:util'
@@ -1023,6 +1027,47 @@ function renderReleaseOrder(edges, states, allRepos) {
   return lines.join('\n')
 }
 
+/*
+ * THE PAGE HOLDS TWO CLOCKS, AND THEY ARE NOT NEWS.
+ *
+ * `+N` in the release order is how far a repo has moved past its own tag, and
+ * `N behind main` on an edge is how far a pin sits behind a moving head. Both
+ * tick on every commit to the target, whether or not anything about who
+ * depends on whom changed. Published as-is that is correct; used as the test
+ * for WHETHER TO PUBLISH it means every run differs from the last, so the
+ * automation commits on every run and the page's history stops being a record
+ * of anything.
+ *
+ * So the decision to publish is taken on the page with those two fields
+ * blanked, and the page that gets published is the real one. Masking is a
+ * comparison device, never an output.
+ *
+ * NOT MASKED, deliberately: `34 BEHIND 0.1.4`. That is distance from a TAG.
+ * It moves when the target releases or when the pin moves, and both of those
+ * are exactly what this page exists to report.
+ */
+function volatileMask(text) {
+  return text
+    .replace(/, \d+ behind main/g, ', N behind main')
+    // Anchored to a token boundary rather than end of line: a repo that is
+    // coupled to others carries its lag BEFORE that list, so `+3` in
+    // `intellij-carve 0.1.6 +3  <- carve, carve-css` sits mid-line. An
+    // end-of-line anchor masked the bare rows and missed exactly the busiest
+    // rows, which are the ones that tick most often.
+    .replace(/(\s)\+\d+(?=\s|$)/gm, '$1+N')
+}
+
+/*
+ * Is the difference between two renderings worth a commit?
+ *
+ * A page that does not exist yet is always worth writing, and so is one whose
+ * masked form moved. Everything else is the clock.
+ */
+function isSubstantiveChange(before, after) {
+  if (before === null || before === undefined) return true
+  return volatileMask(before) !== volatileMask(after)
+}
+
 const TICK = '`'
 const STALE_HEAD = '**Generated from a checkout that is not `main`.** '
 const RUN_FROM = 'This run came from `'
@@ -1189,7 +1234,7 @@ function renderMarkdown(edges, { repos, skipped, generatedFrom, states, source }
 
 // ---------------------------------------------------------------------------
 
-export { classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, notARelease, vendorProvenance, staleSourceBanner }
+export { classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange }
 
 /*
  * What this run was generated FROM, for staleSourceBanner above.
@@ -1355,8 +1400,20 @@ async function main() {
     source: await sourceProvenance(),
   })}\n`
   const out = value('out', null)
+
+  // `--changed-vs FILE` answers "should this be published?" without deciding
+  // it. The file is still written either way: a caller that wants the page
+  // wants it whichever verdict comes back, and one that acts on the verdict
+  // should act on it rather than on this tool's exit status. Printed on stdout
+  // because --out is what frees stdout up; without --out the page is the
+  // output and the verdict has nowhere to go that is not the page.
+  const against = value('changed-vs', null)
   if (out) writeFileSync(out, markdown)
   else process.stdout.write(markdown)
+  if (against && out) {
+    const before = existsSync(against) ? readFileSync(against, 'utf8') : null
+    process.stdout.write(isSubstantiveChange(before, markdown) ? 'substantive\n' : 'cosmetic\n')
+  }
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) await main()
