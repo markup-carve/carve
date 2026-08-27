@@ -36,10 +36,13 @@ the line directly above it:
 
 /italic/, *bold*, /*bold italic*/, _underline_, ~strikethrough~, =highlight=,
 super{^script^} and sub{,script,}. Inline `code span`, and raw inline passthrough
-`<abbr>HTML</abbr>`{=html} emitted verbatim.
+`<q>quoted</q>`{=html} emitted verbatim.
 
-Editorial markup: {+ added text +}, {- deleted text -},
-{~ old phrase ~> new phrase ~}, and an {# editorial note #}.
+Semantic spans reach elements that have no delimiter of their own: press
+[Ctrl+C]{kbd} to copy, and expand [HTML]{abbr="HyperText Markup Language"}.
+
+Editorial markup: {+added text+}, {-deleted text-},
+{~old phrase~>new phrase~}, and an {#editorial note#}.
 
 Escapes keep specials literal: \*not bold\*, \/not italic\/, \#not-a-tag.
 
@@ -56,7 +59,7 @@ Cross-reference to a heading by id: jump to </#top>.
 [site]: https://example.com "Reference definition"
 
 ![A descriptive alt text](images/diagram.png)
-^ Figure 1: images may carry a caption line.
+^ Figure #: images may carry a caption line.
 
 ## Lists
 
@@ -70,11 +73,11 @@ Unordered:
 
 Ordered:
 
-1. clone the repo
-2. install dependencies
-   - run the build
-   - run the tests
-3. ship it
+. clone the repo
+. install dependencies
+  - run the build
+  - run the tests
+. ship it
 
 Tasks:
 
@@ -100,7 +103,7 @@ Definition list:
 | Apple        |    1.20 |   In     |
 | Banana       |    0.50 |   In     |
 | Dragon fruit |    4.00 |   Out    |
-^ Table 1: column alignment - left, right, center.
+^ Table #: column alignment - left, right, center.
 
 ## Code and raw blocks
 
@@ -179,7 +182,9 @@ This block has only an id and classes, so it renders as a plain
 ## Mentions, tags, and inline extensions
 
 Mention a person with @alice and reference a tag like #release-1.0.
-An inline extension names a role: press :kbd[Ctrl+C] to copy.
+An inline extension names a role for a handler to render: :youtube[dQw4w9WgXcQ]
+becomes an embed where the handler is registered, and degrades to its content
+where it is not.
 
 ## Footnotes
 

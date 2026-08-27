@@ -32,9 +32,11 @@ the line directly above it:</p>
     <h2>Inline formatting</h2>
     <p><em>italic</em>, <strong>bold</strong>, <strong><em>bold italic</em></strong>, <u>underline</u>, <s>strikethrough</s>, <mark>highlight</mark>,
 super<sup>script</sup> and sub<sub>script</sub>. Inline <code>code span</code>, and raw inline passthrough
-<abbr>HTML</abbr> emitted verbatim.</p>
-    <p>Editorial markup: <ins> added text </ins>, <del> deleted text </del>,
-<del> old phrase </del><ins> new phrase </ins>, and an <span class="critic-comment"> editorial note </span>.</p>
+<q>quoted</q> emitted verbatim.</p>
+    <p>Semantic spans reach elements that have no delimiter of their own: press
+<kbd>Ctrl+C</kbd> to copy, and expand <abbr title="HyperText Markup Language">HTML</abbr>.</p>
+    <p>Editorial markup: <ins>added text</ins>, <del>deleted text</del>,
+<del>old phrase</del><ins>new phrase</ins>, and an <span class="critic-comment">editorial note</span>.</p>
     <p>Escapes keep specials literal: *not bold*, /not italic/, #not-a-tag.</p>
   </section>
   <section id="Links-and-images">
@@ -163,7 +165,9 @@ the fence:</p>
   <section id="Mentions-tags-and-inline-extensions">
     <h2>Mentions, tags, and inline extensions</h2>
     <p>Mention a person with <span class="mention"><strong>@alice</strong></span> and reference a tag like <span class="tag"><strong>#release-1.0</strong></span>.
-An inline extension names a role: press <span class="ext-kbd">Ctrl+C</span> to copy.</p>
+An inline extension names a role for a handler to render: <span class="ext-youtube">dQw4w9WgXcQ</span>
+becomes an embed where the handler is registered, and degrades to its content
+where it is not.</p>
   </section>
   <section id="Footnotes">
     <h2>Footnotes</h2>
