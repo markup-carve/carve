@@ -82,6 +82,26 @@ export default defineConfig({
   },
 
   head: [
+    // VitePress signals dark with a `dark` CLASS on <html>. carve-css keys its
+    // palette off `data-theme`, with `prefers-color-scheme` as the fallback for
+    // an unstamped root. Left alone that breaks BOTH ways: a dark page keeps the
+    // light tokens (white cards on a dark ground), and on a dark-OS machine a
+    // LIGHT page picks up the dark tokens, because nothing said otherwise.
+    //
+    // So stamp both directions, never just dark. In head rather than the theme so
+    // it lands before first paint - a sync at hydration flashes the wrong palette.
+    [
+      'script',
+      {},
+      `(function () {
+  var root = document.documentElement
+  function sync() {
+    root.setAttribute('data-theme', root.classList.contains('dark') ? 'dark' : 'light')
+  }
+  sync()
+  new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['class'] })
+})()`,
+    ],
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/carve/logo.svg' }],
     ['meta', { name: 'theme-color', content: '#3c8772' }],
     ['meta', { property: 'og:type', content: 'website' }],
