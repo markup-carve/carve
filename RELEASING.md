@@ -111,6 +111,38 @@ CI green:
 6. **Publish the prepared draft GitHub Release.** Publishing creates the tag at
    the current `main`; the tag then drives the registry publish.
 
+## Editing a draft release: `-f` sends strings, and a string is not `false`
+
+**Use `-F` for `draft`, never `-f`.** `gh api -f` sends every value as a JSON
+string, so `-f draft=true` sends `"true"` - and GitHub coerces that string on a
+boolean field to **false**. The call meant to keep a release a draft publishes
+it, creates the tag, and the tag push runs whatever the release workflow does.
+
+```sh
+gh api repos/O/R/releases/$ID -X PATCH -f tag_name=X.Y.Z -F draft=true   # draft stays a draft
+gh api repos/O/R/releases/$ID -X PATCH -f tag_name=X.Y.Z -f draft=true   # PUBLISHES it
+```
+
+That is not a hypothetical. On 2026-08-27 it published `vscode-carve` 0.1.3 to
+the VS Code Marketplace and Open VSX from a call whose only intent was to
+rewrite the release notes. Both publish steps had already succeeded by the time
+the workflow was cancelled ~40 seconds later, and a marketplace version number
+can never be reused.
+
+**Read the field you changed back, not the field you remember.** Every checklist
+here already says to resend `tag_name` and read it back, because an omitted
+`tag_name` silently becomes `untagged-<hash>`. That guard was in place and it
+did not help: it verified `tag_name` while `draft` was the field that moved. A
+read-back is only worth what it reads.
+
+```sh
+gh api repos/O/R/releases/$ID --jq '{tag_name, draft}'   # both, every time
+```
+
+**The same coercion applies to every boolean the API takes** - `prerelease`,
+`generate_release_notes`, `make_latest`. Reach for `-F` whenever the value is
+not a string.
+
 ## Guards
 
 The publish step is gated so a mistake cannot ship the wrong version:
@@ -152,6 +184,8 @@ surfaces in the PR that missed it:
 ## Never
 
 - Never tag before `pre-tag-check.sh` passes.
+- Never pass a boolean to `gh api` with `-f`. It becomes a string, and a
+  string on `draft` reads as false - see the section above.
 - Never tag `carve` on a drift file nobody reconciled. CI gates that drift is
   DECLARED; only the step above gates that it is CURRENT.
 - Never publish a version whose field or changelog does not match the tag.
