@@ -3364,8 +3364,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     const item = { }
     if (head.attrs && head.attrs.replace(/[{} ]/g, '') !== '') item.attrs = head.attrs
     if (list.task) item.checked = /^[xX]$/.test(head.task)
-    // PART 11 S6g / PART 10 S11: the authored state, when it is not the
-    // default for the box. `X` folds to `x` - the two spell one state.
+    // PART 11 S6g. `X` folds to `x` - the two spell one state.
     if (list.task && !item.checked && head.task !== ' ') item.taskState = head.task
     // The marker line's text opens the item paragraph -- unless that text is
     // itself a construct that opens none. `. >` is an EMPTY quote, so nothing
