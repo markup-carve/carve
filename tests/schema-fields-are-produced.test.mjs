@@ -65,6 +65,7 @@ const OPT_IN_ONLY = {
 const ENGINE_ROLLOUT_PENDING = {
   'figure.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
   'table.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
+  'list_item.taskState': 'carve#1866: the schema records the task state before the engines emit it; 06-task-lists-2 covers it the moment the pin moves',
 }
 
 /**

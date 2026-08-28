@@ -407,6 +407,20 @@ task_marker = '[', task_state, ']', space ;
 (* `x`/`X` render a CHECKED checkbox; every other state (` `, `-`, `_`,
    `>`, `?`) renders an UNCHECKED checkbox. Matches djot-php. *)
 task_state = ' ' | 'x' | 'X' | '-' | '_' | '>' | '?' ;
+(* THE STATE IS RECORDED, NOT ONLY THE BOX (carve#1866). Rendering answers a
+   two-valued question, so `checked` alone was all the AST carried and the
+   four extended states did not survive a format cycle: `carve fmt` rewrote
+   `[-]`, `[_]`, `[>]` and `[?]` to `[ ]`. They are distinguishable states an
+   author chose between -- the examples name them dropped, paused, deferred
+   and maybe -- so PART 12 records the character in `list_item.taskState` and
+   PART 11 §6g writes it back. `checked` keeps driving the rendering above,
+   which does not change: the state is the author's spelling, exactly as
+   `bulletChar` is for `-` vs `*`.
+
+   TASK STATE IS NOT A SAME-LIST AXIS. §11's criteria are unchanged: a `[ ]`
+   item and a `[-]` item are the SAME list, where a `-` bullet and a `*`
+   bullet are not. The marker character splits a list; the state inside the
+   box does not. *)
 (* THE CHECKBOX IS A PROPERTY OF THE ITEM, NOT OF ITS FIRST BLOCK. It is
    written directly after the `<li>` opener whatever the marker line goes on to
    open, and nothing about that block reaches it. Only the CONTENT moves: it
