@@ -585,10 +585,15 @@ Literal marker numbers are auto-renumbered and never create nesting.
 ```
 
 The marker holds exactly one character (PART 9 `task_state`). `x` / `X` render a
-**checked** box; ` `, `-`, `_`, `>`, `?` all render an **unchecked** box. The
-non-space markers are recognized (for author conventions like cancelled/
-deferred) but produce the same output as `[ ]` — there is no distinct rendering,
-and a character outside that set is not a task marker at all.
+**checked** box; ` `, `-`, `_`, `>`, `?` all render an **unchecked** box. A
+character outside that set is not a task marker at all.
+
+The four non-space markers carry an author convention - cancelled, paused,
+deferred, unsure - and the box cannot show which. So the item names it:
+`- [-] dropped` renders `<li data-task-state="-">`, which a stylesheet can
+reach, and the AST records the same character in `taskState` so the formatter
+writes back what the author typed (PART 10 §11, PART 11 §6g). `[ ]` and `[x]`
+carry no attribute - the box already says which they are.
 
 #### Tight vs loose
 

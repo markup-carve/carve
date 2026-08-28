@@ -794,6 +794,13 @@ function renderItem(item, list, depth, ctx) {
   // nothing new is written in English and nothing is translated twice. An item
   // whose first block is not a paragraph, or whose text derives to nothing,
   // takes NO attribute: an empty name is worse than none.
+  // PART 10 S11 (carve#1870): the four extended states render the same box as
+  // `[ ]`, so the item names the state it was written with. `[ ]` and `[x]`
+  // carry nothing - the box already says which they are. It is STRUCTURAL, so
+  // it leads the authored attributes (S1).
+  if (item.taskState !== undefined) {
+    liAttrs = ` data-task-state="${escapeAttr(item.taskState)}"${liAttrs}`
+  }
   const taskName = list.task ? taskLabel(item) : ''
   const prefix = list.task
     ? `<input type="checkbox"${item.checked ? ' checked' : ''} disabled${taskName === '' ? '' : ` aria-label="${escapeAttr(taskName)}"`}> `
