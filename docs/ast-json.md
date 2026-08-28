@@ -138,11 +138,24 @@ not export its internals, and it does not invent a synonym.
 
 Author-choice fields preserve a spelling when it differs from the default.
 `list.bulletChar` records `*` while absence means `-`; likewise,
-`thematic_break.marker` records `*` or `_` while absence means `-`. A writer
-reproduces the recorded character and uses the default when the field is absent.
+`thematic_break.marker` records `*` or `_` while absence means `-`, and
+`list_item.taskState` records the task marker character while absence means the
+default for the box (`x` when `checked` is true, a space when it is false). A
+writer reproduces the recorded character and uses the default when the field is
+absent.
 The marker records the CHARACTER only: `***` and `*****` are one spelling, and
 no run length is recorded, on the same reasoning that took fence length off this
 list in carve#1000.
+
+`taskState` is the state, `checked` is the box. The seven states of PART 2
+render as two - `x`/`X` checked, everything else unchecked - so `checked` alone
+was all the tree carried and `carve fmt` rewrote `[-]`, `[_]`, `[>]` and `[?]`
+to `[ ]` (carve#1866). The two fields cannot disagree: `taskState` is `x` if and
+only if `checked` is true, and a payload asserting otherwise is invalid. `[X]`
+is folded to `x`, so the field admits six characters and not seven - the case is
+not a state, and nothing downstream can tell the two apart. Task state does not
+split a list: a `[ ]` item and a `[-]` item are one list, where a `-` bullet and
+a `*` bullet are two.
 
 **The tree is pre-resolve** (§3a). It records what the author wrote, not what the
 document resolves to. `[getting started][]` publishes a `link` carrying `ref` and

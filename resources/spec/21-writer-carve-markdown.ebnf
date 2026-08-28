@@ -185,6 +185,30 @@
       line. Naming `^` and `<` here would be an enumeration that goes stale the
       next time a cell-level marker is added.
 
+   6g. A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE -- NORMATIVE
+      (carve#1866). PART 2 admits seven task states and the rendering collapses
+      them to two, so the writer had nothing to reproduce and wrote `[x]` or
+      `[ ]`: `carve fmt -w` turned `[-]`, `[_]`, `[>]` and `[?]` into `[ ]` and
+      the author's distinction was gone from the file. The AST now records the
+      character (PART 12, `list_item.taskState`) and the writer emits it.
+
+      THE FIELD IS THE SPELLING, `checked` IS THE MEANING. This is §6's own
+      rule, not an exception to it: a spelling is the author's to keep BECAUSE
+      THE AST RECORDS IT, and the state is recorded exactly as `bulletChar`
+      records `*`. An absent field is the default for the box -- `x` when
+      `checked` is true, ` ` when it is false -- which is what a tree assembled
+      by hand or by a converter carries, and what every document written before
+      the field means.
+
+      `X` IS A CASE, NOT A STATE. `[X]` is written `[x]`, as it already was.
+      The field admits six characters rather than seven for that reason: the
+      two spell one state, nothing downstream can tell them apart, and §1 is
+      satisfied because the AST they parse to is the same one.
+
+      THE RENDERING IS UNCHANGED. Every state but `x`/`X` still renders an
+      unchecked box (PART 2 `task_state`), so no HTML moves with this clause.
+      What moves is only what survives a format cycle.
+
    7. NO WHITESPACE-ONLY LINE -- NORMATIVE. `fmt` never emits a line whose only
       content is ASCII spaces or tabs. Such a line is emitted EMPTY.
 

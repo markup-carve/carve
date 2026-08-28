@@ -2308,6 +2308,17 @@
           "type": "boolean",
           "description": "Present only on a task-list item; absent on a plain bullet."
         },
+        "taskState": {
+          "enum": [
+            " ",
+            "x",
+            "-",
+            "_",
+            ">",
+            "?"
+          ],
+          "description": "Task marker character AS AUTHORED (PART 11 section 6g), on a task item whose state is not the default for `checked`: absent means `x` when checked is true and ` ` when it is false. `X` is folded to `x`, which is a case, not a state (carve#1866)."
+        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
@@ -2315,6 +2326,54 @@
           "$ref": "#/$defs/pos"
         }
       },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "taskState"
+            ],
+            "properties": {
+              "taskState": {
+                "const": "x"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "checked"
+            ],
+            "properties": {
+              "checked": {
+                "const": true
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "taskState"
+            ],
+            "properties": {
+              "taskState": {
+                "not": {
+                  "const": "x"
+                }
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "checked"
+            ],
+            "properties": {
+              "checked": {
+                "const": false
+              }
+            }
+          }
+        }
+      ],
       "additionalProperties": false
     },
     "literal_inline": {

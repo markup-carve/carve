@@ -1002,6 +1002,11 @@
       "title": "AN EMPTY DESCRIPTION BODY IS WRITTEN WITH THE SENTINEL `{empty}`"
     },
     {
+      "id": "CARVE-P11-041",
+      "part": "11",
+      "title": "A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE"
+    },
+    {
       "id": "CARVE-P12-001",
       "part": "12",
       "title": "THE TYPE NAME COMES FROM profiles.md, NOT FROM carve-js"
