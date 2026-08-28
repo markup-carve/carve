@@ -157,6 +157,11 @@
       "title": "THE DESCRIPTION MARKER"
     },
     {
+      "id": "CARVE-P2-027",
+      "part": "2",
+      "title": "WHICH CHARACTERS THE CONTENT TEST IGNORES"
+    },
+    {
       "id": "CARVE-P2-010",
       "part": "2",
       "title": "A TAB AS THE FIRST CHARACTER OF CONTENT is a different question from the one above"

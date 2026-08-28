@@ -24,3 +24,4 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+439-a-colon-followed-by-only-whitespace-is-not-a-description-7  carve#1836 rules that a separator space then a lone tab opens no description; the pinned build still opens an empty one. Clears when the pin moves past the ports (carve-js#1564, carve-php#1814, carve-rs#1456).

@@ -77,3 +77,29 @@ flush
 </dl>
 <p>flush</p>
 ```
+
+```
+:: t
+: 	
+
+flush
+.
+<dl>
+  <dt>t
+:</dt>
+</dl>
+<p>flush</p>
+```
+
+```
+:: t
+: 	text
+
+flush
+.
+<dl>
+  <dt>t</dt>
+  <dd>text</dd>
+</dl>
+<p>flush</p>
+```

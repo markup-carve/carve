@@ -30924,3 +30924,54 @@ flush
 ```
 
 :::
+
+The cell between those two: a separator space, and then a tab. The separator IS
+satisfied here, so this spelling is refused at the content test rather than at
+the separator. After the greedy space run a lone tab is trailing whitespace and
+nothing else, and MARKER REQUIRES CONTENT ignores trailing whitespace, so the
+marker opens nothing and the line folds like the rows above. The greedy run is
+spaces only, which is what leaves the tab to be judged as content
+(markup-carve/carve#1836).
+
+::: compare
+
+```carve
+:: t
+: 	
+
+flush
+```
+
+```html
+<dl>
+  <dt>t
+:</dt>
+</dl>
+<p>flush</p>
+```
+
+:::
+
+The reach control. The same separator space and the same tab, with text behind
+it: the content test now finds a character that is neither space nor tab, so the
+description opens and the tab is content. Only a run of nothing but spaces and
+tabs is trailing whitespace.
+
+::: compare
+
+```carve
+:: t
+: 	text
+
+flush
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>text</dd>
+</dl>
+<p>flush</p>
+```
+
+:::
