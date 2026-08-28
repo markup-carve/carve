@@ -1063,7 +1063,19 @@ bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
    content_column is where the item's content actually STARTS (PART 9 §24 C3).
    The TABS IN CODE rule (PART 2, above) does not apply -- it covers fenced code
    content and inline code spans only. `::` + space + TAB + `x` therefore
-   renders `<dl><dt>x</dt></dl>`. *)
+   renders `<dl><dt>x</dt></dl>`.
+
+   WHICH CHARACTERS THE CONTENT TEST IGNORES -- NORMATIVE (carve#1836). The
+   trailing whitespace this rule ignores is spelled `' ' | '\t'`, the same set
+   NO TRAILING WHITESPACE (PART 2) drops. The separator run is SPACES ONLY, so a
+   tab PAST that run is judged by the content test rather than by the separator:
+   a body of nothing but tabs is a trailing run and opens nothing. `: ` + TAB
+   therefore folds into the term, landing where `:` + TAB already lands one step
+   earlier, while `: ` + TAB + `x` opens a description whose content begins with
+   the tab. Every character outside that set is content, so `: ` + VT and `: ` +
+   NBSP each open a description. Without this the tab was read as content by two
+   engines and as a recognized marker over a closed list by a third, which is
+   three readings of one cell. *)
 
 ordered_list = ordered_item+ ;
 ordered_item = ordered_marker, [item_attributes], space, list_item_content ;

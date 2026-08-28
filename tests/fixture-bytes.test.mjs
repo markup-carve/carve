@@ -101,6 +101,11 @@ const INVENTORY = [
   // SEPARATORS AND PADDING SLOTS). An editor converting it to spaces moves the
   // document onto the row above and the refusal it pins goes untested.
   { base: '439-a-colon-followed-by-only-whitespace-is-not-a-description-4', crv: ['trailing-WS'], html: [] },
+  // The ruled cell (carve#1836): a separator space, then a TAB. The space
+  // satisfies the separator, so the tab is judged by the content test and is
+  // trailing whitespace there. An editor that expands it to spaces moves the
+  // document onto the one-space row and the ruling goes untested.
+  { base: '439-a-colon-followed-by-only-whitespace-is-not-a-description-7', crv: ['trailing-WS'], html: [] },
   // The no-break space is the case: it is non-ASCII, so it passes into the
   // heading id unchanged instead of being slugged to a separator, and the
   // id carries the character rather than an entity.
