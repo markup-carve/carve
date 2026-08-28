@@ -24,3 +24,4 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+06-task-lists-2  PART 10 section 11 (carve#1870): the four extended states name themselves with data-task-state, which the pinned build does not write yet

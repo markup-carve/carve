@@ -1240,7 +1240,7 @@ whitespace-ONLY lines can tell `> >` from `> > `.
 
 :::
 
-Only `[x]`/`[X]` render a checked box; every other state (`[ ]`, `[-]`, `[_]`, `[>]`, `[?]`) renders an unchecked box.
+Only `[x]`/`[X]` render a checked box; every other state (`[ ]`, `[-]`, `[_]`, `[>]`, `[?]`) renders an unchecked box. The four extended states name the box they carry with `data-task-state`, so a stylesheet can tell a dropped task from an open one; `[ ]` and `[x]` carry nothing, because the box already says which they are.
 
 ::: compare
 
@@ -1253,10 +1253,10 @@ Only `[x]`/`[X]` render a checked box; every other state (`[ ]`, `[-]`, `[_]`, `
 
 ```html
 <ul>
-  <li><input type="checkbox" disabled aria-label="dropped"> dropped</li>
-  <li><input type="checkbox" disabled aria-label="paused"> paused</li>
-  <li><input type="checkbox" disabled aria-label="deferred"> deferred</li>
-  <li><input type="checkbox" disabled aria-label="maybe"> maybe</li>
+  <li data-task-state="-"><input type="checkbox" disabled aria-label="dropped"> dropped</li>
+  <li data-task-state="_"><input type="checkbox" disabled aria-label="paused"> paused</li>
+  <li data-task-state="&gt;"><input type="checkbox" disabled aria-label="deferred"> deferred</li>
+  <li data-task-state="?"><input type="checkbox" disabled aria-label="maybe"> maybe</li>
 </ul>
 ```
 

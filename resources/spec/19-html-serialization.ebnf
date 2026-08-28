@@ -257,5 +257,47 @@
       fallback. `cite` denotes a work title or source and is unrelated to a
       bibliographic `[@key]` citation, which is the Citations extension's.
 
+   11. AN EXTENDED TASK STATE NAMES ITSELF ON THE ITEM -- NORMATIVE
+      (carve#1870). PART 2 admits seven task states and §2's box has two
+      positions, so `[-]`, `[_]`, `[>]` and `[?]` rendered bytes identical to
+      `[ ]`: the distinction the author made survived the file (PART 11 §6g)
+      and died at the renderer, out of reach of any stylesheet. The item
+      carries `data-task-state` holding the authored character:
+
+        - [-] dropped   ->  <li data-task-state="-"><input type="checkbox"
+                            disabled aria-label="dropped"> dropped</li>
+
+      ONLY WHERE THE AST RECORDS A STATE, which is the same rule PART 12
+      states for the field: `[ ]` and `[x]` carry no attribute, because the
+      box already says which they are, and their bytes are unchanged by this
+      clause. An item whose `taskState` is absent emits nothing here.
+
+      ON THE `<li>`, NOT ON THE `<input>`. The state is a property of the
+      ITEM -- PART 2 says so of the checkbox itself -- and a stylesheet
+      reaching the item's own text is what the attribute is for
+      (`li[data-task-state="-"]`). Putting it on the box would put the
+      selector one level below the content it wants to reach.
+
+      IT IS A STRUCTURAL ATTRIBUTE and leads the authored ones (§1), like
+      `<ol>`'s `type` and a link's `href`: the item derives it from its own
+      marker rather than from anything the author attached.
+
+      THE VALUE IS THE RECORDED CHARACTER, escaped as §2 escapes any value --
+      `>` is written `&gt;`, and a value outside PART 2's enumeration is not
+      one this clause writes.
+
+      AN IMPORTER CONSUMES IT, and consuming is not the same as dropping a
+      DERIVED attribute (PART 9 §16a). The checkbox `<input>` is already
+      consumed into the item's state rather than kept as content; this
+      attribute is the other half of that state and is read the same way. It
+      is what lets a document survive a render-and-import cycle: without it
+      `[-]` comes back as `[ ]`, silently, because both spellings render the
+      same box and no diagnostic can see a difference that is not there.
+
+      THE ACCESSIBLE NAME DOES NOT MOVE. The box keeps the item's own text as
+      its `aria-label` (PART 2). Naming the state there would invent copy the
+      author did not write, and the states are an author's shorthand rather
+      than a vocabulary this spec can translate.
+
 
    ============================================================================ *)
