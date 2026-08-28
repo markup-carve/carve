@@ -2317,7 +2317,7 @@
             ">",
             "?"
           ],
-          "description": "Task marker character AS AUTHORED (PART 11 section 6g), on a task item whose state is not the default for `checked`: absent means `x` when checked is true and ` ` when it is false. `X` is folded to `x`, which is a case, not a state (carve#1866)."
+          "description": "Task marker character AS AUTHORED (PART 11 section 6g), on a task item whose state is not the default for `checked`: absent means `x` when checked is true and ` ` when it is false. `X` is folded to `x`, which is a case, not a state (carve#1866). The two branches below spell the states rather than negating `x`: an engine validator that skips a keyword it does not implement accepts everything the keyword was added to reject, so this schema stays inside the subset every engine implements."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
@@ -2356,9 +2356,13 @@
             ],
             "properties": {
               "taskState": {
-                "not": {
-                  "const": "x"
-                }
+                "enum": [
+                  " ",
+                  "-",
+                  "_",
+                  ">",
+                  "?"
+                ]
               }
             }
           },
