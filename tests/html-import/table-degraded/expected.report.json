@@ -1,0 +1,1 @@
+{"mode":"safe","adapter":"generic","diagnostics":[{"code":"table-degraded","message":"Dropped the row grouping of a table whose <thead> or <tfoot> is not at the edge of its rows: the head is a prefix of the rows and the foot a suffix","severity":"warning","path":"/table[1]"}]}
