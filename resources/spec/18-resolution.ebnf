@@ -153,14 +153,34 @@
       `afterParse` or `beforeRender`, which run once over the finished document,
       and never in a matcher.
 
-      AND IT FAILS TOWARD COLLECTING. An implementation that cannot answer --
-      no probe, an exhausted work budget, a construct it does not recognize --
-      MUST collect the definition rather than suppress it. The two errors are
-      not symmetric: collecting from a line that renders puts a visible line in
-      a symbol table, which a reader can see and report, while suppressing
-      deletes the author's line from the page. Every implementation of this rule
-      chose the first direction for that reason, and a budget exists precisely so
-      the pre-pass stays linear without ever choosing the second.
+      AND IT FAILS TOWARD KEEPING THE TEXT -- NORMATIVE (carve#1881). An
+      implementation that cannot answer -- no probe, an exhausted work budget,
+      a construct it does not recognize -- collects NOTHING from the candidate
+      line.
+
+      THAT IS CONSERVATIVE, NOT IDENTICAL TO THE AFFORDABLE ANSWER, and the
+      difference is the point. Where the probe would have said the line opens
+      something, it would have been collected, and this fallback declines it:
+      the document loses a definition it should have had. What it does not lose
+      is the line, which stays exactly as the author typed it. The two errors
+      available here are under-collecting and deleting text, and only the first
+      is one a reader can see -- a reference to the uncollected label renders as
+      its literal `[^f]`, on the page, where someone can report it.
+
+      THIS CLAUSE SAID THE OPPOSITE, and named the wrong loss to justify it. It
+      required collecting, on the reasoning that "suppressing deletes the
+      author's line from the page". It is collecting that deletes the line: the
+      definition is taken OUT of the source, and what renders is the remainder --
+      a bare `-` where the author wrote `- [^f]: body`. Suppressing leaves every
+      character on the page and declines only to register metadata, so the
+      failure a reader meets is a reference that renders as its literal
+      `[^f]` -- visible, and diagnosable, which is what the old reasoning wanted
+      and did not get.
+
+      Measured before the correction (carve#1881): at four thousand such lines
+      the engine implementing this clause faithfully removed 3,858 of them.
+      Being conformant was the reason it did, which is why the clause moved
+      rather than the engine alone.
 
    R1b A MATCHER'S COORDINATES ARE LOCAL, NOT ABSOLUTE -- NORMATIVE
       (carve#1437). The `lines` array handed to a block matcher MAY begin at a
