@@ -32,9 +32,7 @@ const NOT_COVERED_HERE = {
   'diagnostics-truncated':
     'unreachable here by construction: a cap marker rather than a loss at a place. "Resource limits" makes it a MAY - carve-rs emits it, carve-js and carve-php throw a typed error instead - and neither oracle sets a cap',
   'attribute-preserved':
-    'has a producer, no shared case: it needs `roundtrip` mode and an element kept whole as raw HTML that also carried a refused attribute, and every fixture here is `safe` (carve#1878)',
-  'table-degraded':
-    'has a producer, no shared case: no corpus document and no fixture holds a table the importer cannot do structurally (carve#1878)',
+    'has a producer the shared harness cannot reach: it needs `roundtrip` mode, and NO fixture runner passes one - this file and every engine runner import with the default, so a fixture declaring another mode would be run in `safe` and fail everywhere. The harness has to honor the declared mode first (carve#1878)',
 }
 
 async function fixtureCodes() {
