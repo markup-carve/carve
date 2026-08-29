@@ -155,6 +155,9 @@ jobs:
       - name: Executable-spec gate (formal Core grammar vs corpus)
         run: npm run core:check
 
+      - name: Grammar reachability (corpus vs formal Core grammar)
+        run: npm run grammar:reach
+
       # PART 11 section 1, over documents the corpus cannot reach.
       #
       # The corpus pins documents somebody wrote, and every one of them

@@ -79,6 +79,33 @@ npm run core:check
 
 The gate demands byte-identical HTML for **every pair in the conformance corpus**. Rules a pure PEG cannot state are executed as declared predicates in the layout automaton (fence-length counting, the `where` guards) or as a pre-scan (the emphasis close-first delimiter-stack rule), so the pipeline never silently diverges from the delimiter-stack semantics.
 
+### Coverage runs the other way too
+
+`core:check` asks whether the grammar covers the corpus. The reverse question -
+whether the corpus reaches every production the grammar declares - had no gate,
+so a production could land and never be exercised by a single document
+(carve#1850).
+
+```bash
+npm run grammar:reach
+```
+
+It walks the CST of every match the oracle runs, plus a `doc` match per document
+for the block layer the render path never enters, and records which rules
+produced a node. A rule mentioned only inside a `~` lookahead can never produce
+one, so those are separated out rather than counted as holes - Ohm's positive
+`&` is not the same and stays in the question. A rule nothing references at all
+is separated out again, as an orphan rather than an exemption, so a production
+with no caller cannot be waived as one that merely cannot produce a node. The
+gate recomputes both sets and fails if either moves.
+
+Everything left over is pinned in `resources/grammar-corpus-coverage.txt`, which
+fails in both directions - a new unreached production, and a stale entry that a
+new document has since covered.
+
+Each declared gap names a spelling that would close it, and
+`tests/grammar-reachability.test.mjs` checks that the named spelling really does
+reach the rule, so the reason column stays a claim the suite can refute.
 ## Which artifact decides
 
 The executable artifacts are **derived checkers**, not a fourth implementation. They exist to execute what `grammar.ebnf` states, so that a contradiction inside it becomes visible. Three rules, normative in the grammar itself:

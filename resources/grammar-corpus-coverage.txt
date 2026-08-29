@@ -1,0 +1,59 @@
+# Productions of resources/carve-core.ohm that no corpus document reaches.
+#
+# `npm run grammar:reach` walks the CST of every match the oracle runs over
+# tests/corpus, plus a `doc` match per document for the block layer the render
+# path never enters, and records which rules produced a node. It FAILS when the
+# real set differs from this file in EITHER direction:
+#
+#   - a rule is unreached and not listed  -> a production landed with no
+#     document exercising it, or a document that used to cover one changed.
+#   - a rule is listed and now reached    -> the entry is stale. Delete the
+#     line in the commit that adds the covering document.
+#
+# WHY THIS FILE EXISTS. The gates ran one direction only: `core:check` renders
+# all corpus documents through the oracle and `normativity.test.mjs` reconciles
+# the clause inventory against the grammar, so both answer "is what the corpus
+# uses covered by the grammar". Neither answered the reverse, so a production
+# could land, ship, and never be exercised by a single document with nothing
+# reporting it (carve#1850).
+#
+# Format: <rule>  <KIND>  <reason>
+#
+# KIND is one of:
+#
+#   LOOKAHEAD  the rule is mentioned ONLY inside a `~` lookahead, so it never
+#              produces a CST node and no document can reach it in the sense
+#              measured here. Derived from the grammar, not a judgement: the
+#              gate recomputes this set and fails if it moves, so a rule
+#              slipping into lookahead-only position cannot leave the question
+#              quietly.
+#
+#   ORPHAN     nothing references the rule at all, so no document can reach it
+#              by any path. Kept separate from LOOKAHEAD deliberately: lumping
+#              the two together would let a production with no caller - the
+#              deadest thing this gate can find - be waived as an exemption.
+#              There are none today.
+#
+#   GAP        the rule IS positively reachable and no corpus document
+#              exercises it. A real hole. The reason names a spelling that
+#              closes it, verified against the grammar.
+
+ascii          LOOKAHEAD  only in `uUrlChar = ~ascii ~uControl ~uSpace ~uFormat any`
+uControl       LOOKAHEAD  only in `uUrlChar`
+uSpace         LOOKAHEAD  only in `uUrlChar`
+uFormat        LOOKAHEAD  only in `uUrlChar`
+uFormatBmp     LOOKAHEAD  reached only through `uFormat`, which is lookahead-only
+uFormatAstral  LOOKAHEAD  reached only through `uFormat`, which is lookahead-only
+structural     LOOKAHEAD  only in `paraLine = ~blankLine ~structural inline+ lineEnd`
+headingStart   LOOKAHEAD  reached only through `structural`
+hashes         LOOKAHEAD  reached only through `headingStart`, itself lookahead-only
+colonFence     LOOKAHEAD  reached only through `structural`
+ordMarker      LOOKAHEAD  reached only through `structural`
+spaceOrEnd     LOOKAHEAD  only in `boldItalic = "/*" ~spaceOrEnd biInner+ "*/" attrs?`
+
+at             GAP  `other` admits it, so an `@` NOT followed by a word character reaches it: `a @ b`
+sqEsc          GAP  a `\'` inside a single-quoted attribute value: `{title='a\'b'}`
+spaceChar      GAP  trailing whitespace on a fence closer, which `btClose`/`tdClose` admit
+rich           GAP  the `rich` branch of `biInner`/`fInner` never wins; a doubled delimiter run inside bold-italic reaches it: `/*a // b*/`
+delimRun       GAP  reached with `rich`, by the same spelling
+dRun           GAP  reached with `delimRun`, by the same spelling
