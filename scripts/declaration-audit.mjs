@@ -230,6 +230,11 @@ const MANIFEST = [
 
   // -- the spec repo's declaration CONSTANTS, which the ledgers do not cover -
   { repo: 'spec', path: 'tests/html-import-contract.check.mjs', name: 'PIN_LAG', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'npm run html-import:check' },
+  // Codes the fixture and corpus oracles cannot reach (carve#1835). PRINTED
+  // rather than judged, because no rule separates the two kinds it holds: one
+  // entry is unreachable by construction - a cap marker, and a spec MAY at that
+  // - and two name coverage that carve#1878 may or may not close.
+  { repo: 'spec', path: 'tests/html-import-contract.check.mjs', name: 'NOT_COVERED_HERE', kind: 'js', policy: 'manual', guard: 'two-way', owner: 'npm run html-import:check' },
   { repo: 'spec', path: 'tests/ast-positions.test.mjs', name: 'DECLARED_OVER_REACH', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/ast-positions.test.mjs' },
   { repo: 'spec', path: 'tests/the-two-import-exits-agree.test.mjs', name: 'UNMET', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/the-two-import-exits-agree.test.mjs' },
   { repo: 'spec', path: 'tests/optional-corpus.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/optional-corpus.test.mjs' },

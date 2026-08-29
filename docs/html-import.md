@@ -1147,12 +1147,6 @@ lossy decision should be observable. The common diagnostic codes are:
   no spelling for, so it survives in the AST and not in written Carve. The
   AST-returning entry point loses nothing and reports nothing; the one that
   writes source reports this.
-- `structure-split`: one source structure was written as more than one,
-  because writing it as one would have changed what its parts mean. Everything
-  inside is kept exactly and every part is spellable; what is lost is the
-  grouping. It is not `structure-unspellable`, which is for a shape the syntax
-  cannot spell at all. The AST-returning entry point loses nothing and reports
-  nothing; the one that writes source reports this.
 - `encoding-assumed`: the source did not declare how to read a value, and the
   importer assumed an encoding to map it. An importer MUST emit this whenever
   the node it produced is only correct if that assumption holds. The motivating
@@ -1160,6 +1154,19 @@ lossy decision should be observable. The common diagnostic codes are:
   never says what `alttext` contains, so reading it as TeX is a guess, and the
   math node may hold something that is not TeX at all.
 - `diagnostics-truncated`: the diagnostic cap was reached.
+
+**Every code here has a producer.** A code the format names and nothing can emit
+is a promise to a consumer that no import will keep, and `structure-split` was
+one for as long as the shape that produced it existed: a dropped empty `<dd>`
+split a `<dl>` in two until that entry gained the `{empty}` sentinel, after
+which no engine could emit the code and the taxonomy still named it. The
+fixtures gate this in both directions, with one exemption - `diagnostics-truncated`
+reports the state of the report rather than a loss at a place, and no fixture
+reaches a cap.
+
+Retiring a code is not a compatibility event and adding one back is not either:
+a reader must already tolerate a code it does not know, so the list may grow the
+day a shape needs it.
 
 `encoding-assumed` is deliberately not filed under `element-unwrapped`.
 Unwrapping is a note about the input's structure and loses no meaning;

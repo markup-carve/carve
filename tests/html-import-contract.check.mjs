@@ -4,6 +4,7 @@ import { test } from 'node:test'
 import './binding-contract.check-helper.mjs'
 import './html-import-construct-coverage.check-helper.mjs'
 import './import-roundtrip-ratchets.check-helper.mjs'
+import { carveToCarve, carveToHtml, htmlToCarve } from '@markup-carve/carve'
 
 const root = new URL('./html-import/', import.meta.url)
 
@@ -19,14 +20,110 @@ test('every HTML import fixture publishes all four contract files', async () => 
   }
 })
 
-test('the report schema and fixture vocabulary agree', async () => {
-  const schema = JSON.parse(await readFile(new URL('../resources/html-import-schema.json', import.meta.url), 'utf8'))
-  const allowed = new Set(schema.properties.diagnostics.items.properties.code.enum)
+/*
+ * Codes the two oracles below cannot reach, and why (carve#1835).
+ *
+ * Both directions are checked, so this map is the only way a declared code
+ * passes with nothing producing it - and an entry a run starts producing fails
+ * too. The reasons are NOT interchangeable: one code is unreachable by
+ * construction, and two have producers that no shared case exercises yet.
+ */
+const NOT_COVERED_HERE = {
+  'diagnostics-truncated':
+    'unreachable here by construction: a cap marker rather than a loss at a place. "Resource limits" makes it a MAY - carve-rs emits it, carve-js and carve-php throw a typed error instead - and neither oracle sets a cap',
+  'attribute-preserved':
+    'has a producer, no shared case: it needs `roundtrip` mode and an element kept whole as raw HTML that also carried a refused attribute, and every fixture here is `safe` (carve#1878)',
+  'table-degraded':
+    'has a producer, no shared case: no corpus document and no fixture holds a table the importer cannot do structurally (carve#1878)',
+}
+
+async function fixtureCodes() {
+  const codes = new Set()
   for (const fixture of await readdir(root, { withFileTypes: true })) {
     if (!fixture.isDirectory()) continue
     const report = JSON.parse(await readFile(new URL(`${fixture.name}/expected.report.json`, root), 'utf8'))
-    for (const diagnostic of report.diagnostics) assert.ok(allowed.has(diagnostic.code), diagnostic.code)
+    for (const diagnostic of report.diagnostics) codes.add(diagnostic.code)
   }
+  return codes
+}
+
+/*
+ * THE SECOND ORACLE, and the reason the first one alone would not do.
+ *
+ * The shared fixture set is deliberately small - one subject per directory -
+ * so five live codes have no fixture and would read as orphans. The corpus
+ * rendered and re-imported through the pinned build reaches them, which is the
+ * same population `import-roundtrip-ratchets` already walks.
+ */
+async function corpusCodes() {
+  const corpus = new URL('./corpus/', import.meta.url)
+  const codes = new Set()
+  for (const name of (await readdir(corpus)).filter((file) => file.endsWith('.crv'))) {
+    const canonical = carveToCarve(await readFile(new URL(name, corpus), 'utf8'))
+    const html = carveToHtml(canonical)
+    for (const mode of ['safe', 'semantic', 'roundtrip']) {
+      try {
+        for (const d of htmlToCarve(html, { mode }).report.diagnostics) codes.add(d.code)
+      } catch {
+        // A document the importer refuses says nothing about the vocabulary.
+      }
+    }
+  }
+  return codes
+}
+
+const declaredCodes = async () =>
+  JSON.parse(await readFile(new URL('../resources/html-import-schema.json', import.meta.url), 'utf8'))
+    .properties.diagnostics.items.properties.code.enum
+
+test('the report schema and fixture vocabulary agree', async () => {
+  const allowed = new Set(await declaredCodes())
+  for (const code of await fixtureCodes()) assert.ok(allowed.has(code), code)
+})
+
+/*
+ * THE OTHER DIRECTION, which is the one that was missing (carve#1835).
+ *
+ * `structure-split` sat in the enum after the shape that produced it was
+ * spelled away, and every gate stayed green: the check above asks whether a
+ * fixture's code is declared, and nothing asked whether a declared code is
+ * produced. That is a promise to a consumer - a `case` on a code no import can
+ * emit reads as live and is dead - and it is the question
+ * tests/schema-fields-are-produced.test.mjs already asks one level down, for
+ * AST fields.
+ */
+test('every declared diagnostic code is produced, or named as not covered here', async () => {
+  const produced = new Set([...(await fixtureCodes()), ...(await corpusCodes())])
+  const orphans = (await declaredCodes())
+    .filter((code) => !produced.has(code) && !(code in NOT_COVERED_HERE))
+    .sort()
+
+  assert.deepEqual(
+    orphans,
+    [],
+    `code(s) the schema declares that nothing here produces: ${orphans.join(', ')}. ` +
+      'Either a case is missing, or the code describes something no importer can emit. ' +
+      'Add a fixture or a corpus document, or name it in NOT_COVERED_HERE with the reason.',
+  )
+})
+
+test('every not-covered exemption is still needed', async () => {
+  const produced = new Set([...(await fixtureCodes()), ...(await corpusCodes())])
+  const stale = Object.keys(NOT_COVERED_HERE).filter((code) => produced.has(code)).sort()
+
+  assert.deepEqual(
+    stale,
+    [],
+    `NOT_COVERED_HERE names code(s) something now produces: ${stale.join(', ')}. ` +
+      'Delete the entry so the code is gated like every other one.',
+  )
+})
+
+test('every not-covered exemption names a code the schema still declares', async () => {
+  const declared = new Set(await declaredCodes())
+  const unknown = Object.keys(NOT_COVERED_HERE).filter((code) => !declared.has(code)).sort()
+
+  assert.deepEqual(unknown, [], `NOT_COVERED_HERE names retired code(s): ${unknown.join(', ')}.`)
 })
 
 /*
