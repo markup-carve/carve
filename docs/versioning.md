@@ -223,30 +223,12 @@ carve-js pins carve-php's exact bytes as test fixtures.
 
 ## Changelog
 
-### 0.2
+Released changes live in
+[CHANGELOG.md](https://github.com/markup-carve/carve/blob/main/CHANGELOG.md),
+which is written per merge and cut into sections at each tag.
 
-- [behavior] A table alignment marker run now ends at a required space; glued
-  marker-shaped content must be separated or escaped. Migration: run
-  `carve fmt --migrate` to insert the terminator.
-- [addition] Tables gain independent horizontal and vertical cell/column
-  alignment, positional `aligns`/`valigns`/`widths` attributes, and an exchange
-  AST `columns` model. ListTable gains the same column attributes plus
-  per-cell `align`/`valign` and `footer-rows`; pipe tables gain explicit
-  `header-rows` / `footer-rows` partitioning.
-
-### 0.1
-
-Initial released version. Establishes the grammar, the PART 9 semantic
-constraints, the conformance corpus, and the tooling conventions (`carve fmt`,
-the provenance marker, profiles, the extension contract). Everything prior to
-0.1 was draft; there is no earlier released version to migrate from.
-
-<!--
-Format for future entries (newest first):
-
-### 0.2
-
-- [behavior] <what changed in rendered output> (#PR). Migration: <what authors do>.
-- [clarification] <what was pinned> (#PR).
-- [addition] <new syntax> (#PR).
--->
+This page carried its own copy, and the copy was wrong: both entries it filed
+under a future `0.2` had already shipped in released `0.1.4` - the alignment-run
+terminator and the two-axis table model alike. A second changelog nothing gates
+does not stay a summary, it becomes a contradiction, so there is one file and
+this is a pointer to it.
