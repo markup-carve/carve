@@ -242,6 +242,37 @@ const astDiff = (expected, actual) => {
   }
 }
 
+/*
+ * The fixture's rows are a SUBSEQUENCE of the report's, not an element-for-element
+ * match (carve#1884).
+ *
+ * How many rows one loss takes is engine-defined: a table whose `<thead>` sits
+ * between two `<tbody>` runs is one degradation, and an importer may say so in
+ * one row or in one row per distinct loss. Both are the same code at the same
+ * place. What a fixture pins is which losses are reported and in what order, so
+ * an engine may SPLIT a row and may not invent a code, drop one, or reorder.
+ */
+function withoutDiagnostics(report) {
+  const { diagnostics: _ignored, ...rest } = report
+  return rest
+}
+
+function diagnosticsMatch(expected, actual) {
+  const wanted = (expected.diagnostics ?? []).map((d) => d.code)
+  const got = (actual.diagnostics ?? []).map((d) => d.code)
+  const allowed = new Set(wanted)
+
+  const unexpected = got.filter((code) => !allowed.has(code))
+  if (unexpected.length) {
+    return `expected.report.json: report adds code(s) the fixture does not name: ${unexpected.join(', ')}`
+  }
+  let at = 0
+  for (const code of got) if (code === wanted[at]) at++
+  return at === wanted.length
+    ? null
+    : `expected.report.json: fixture rows [${wanted.join(', ')}] are not a subsequence of [${got.join(', ')}]`
+}
+
 test('the pinned build imports every fixture the way the fixture says', async () => {
   const { htmlToCarve, htmlToAst, toAstJson } = await import('@markup-carve/carve')
   const fixtures = (await readdir(root, { withFileTypes: true })).filter((e) => e.isDirectory())
@@ -258,7 +289,10 @@ test('the pinned build imports every fixture the way the fixture says', async ()
     const ast = htmlToAst(html)
     const failures = [
       source.value === expectedCrv ? null : `expected.crv: got ${JSON.stringify(source.value)}`,
-      subsetOf(expectedReport, source.report, 'expected.report.json'),
+      diagnosticsMatch(expectedReport, source.report),
+      // `diagnostics` is compared above, by subsequence rather than element for
+      // element, so the whole-object check must not compare it again.
+      subsetOf(withoutDiagnostics(expectedReport), source.report, 'expected.report.json'),
       astDiff(expectedAst, toAstJson(ast.value)),
     ].filter(Boolean)
 
