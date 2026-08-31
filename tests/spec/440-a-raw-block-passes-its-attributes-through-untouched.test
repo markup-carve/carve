@@ -1,0 +1,9 @@
+A raw block passes its attributes through untouched
+
+````
+```=html
+<custom onclick="reveal()">t</custom>
+```
+.
+<custom onclick="reveal()">t</custom>
+````

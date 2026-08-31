@@ -21,15 +21,15 @@ implementation exposes.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>1540 / 1540</strong>
+    <strong>1541 / 1541</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>1540 / 1540</strong>
+    <strong>1541 / 1541</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>1540 / 1540</strong>
+    <strong>1541 / 1541</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -40,9 +40,9 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `da45f9d2` | `1540 / 1540` | `0` | `0` | `3.71` |
-| JS | `f0abfc66` | `1540 / 1540` | `0` | `0` | `107.12` |
-| PHP | `3a39d658` | `1540 / 1540` | `0` | `0` | `75.37` |
+| Rust | `da45f9d2` | `1541 / 1541` | `0` | `0` | `3.71` |
+| JS | `f0abfc66` | `1541 / 1541` | `0` | `0` | `107.12` |
+| PHP | `3a39d658` | `1541 / 1541` | `0` | `0` | `75.37` |
 
 Spec commit: `3eae6be`. The run covers the whole corpus, so nothing is declared
 after it.
@@ -259,7 +259,7 @@ It renders exactly what is SCORED: every document on the default target, plus
 any target that document carries an expected-output file for. That second part
 is not optional - a case may add a `.md`, `.txt` or `.fmt` beside its `.html`,
 and those files count toward `pass=N/M`, which is why the snapshot above reads
-`pass=1675/1675` under `corpus_pairs=1540`. What it drops is the rest of the
+`pass=1675/1675` under `corpus_pairs=1541`. What it drops is the rest of the
 five-target sweep, where every document is rendered on every target to check
 the engines against each other. That is four extra renders per document against
 fifteen extra in total, and no count in the gate depends on it.
@@ -485,7 +485,7 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=1540 shard=0/1 targets=html,markdown,plain,carve,ansi
+profile=default/no-opt-in corpus=core corpus_pairs=1541 shard=0/1 targets=html,markdown,plain,carve,ansi
 rust: pass=1675/1675 mismatch=0 error=0 skipped=0 runs=7700 avg_ms=3.71
   mismatching documents: 0
 js: pass=1675/1675 mismatch=0 error=0 skipped=0 runs=7700 avg_ms=107.12

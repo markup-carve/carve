@@ -25,14 +25,14 @@ test('every HTML import fixture publishes all four contract files', async () => 
  *
  * Both directions are checked, so this map is the only way a declared code
  * passes with nothing producing it - and an entry a run starts producing fails
- * too. The reasons are NOT interchangeable: one code is unreachable by
- * construction, and two have producers that no shared case exercises yet.
+ * too. One code is left, and it is the unreachable-by-construction kind rather
+ * than the not-covered-yet kind: the two that had producers no shared case
+ * exercised are both covered now, by fixture (`table-degraded`) and by corpus
+ * row (`attribute-preserved`, which the corpus oracle reaches in `roundtrip`).
  */
 const NOT_COVERED_HERE = {
   'diagnostics-truncated':
     'unreachable here by construction: a cap marker rather than a loss at a place. "Resource limits" makes it a MAY - carve-rs emits it, carve-js and carve-php throw a typed error instead - and neither oracle sets a cap',
-  'attribute-preserved':
-    'has a producer the shared harness cannot reach: it needs `roundtrip` mode, and NO fixture runner passes one - this file and every engine runner import with the default, so a fixture declaring another mode would be run in `safe` and fail everywhere. The harness has to honor the declared mode first (carve#1878)',
 }
 
 async function fixtureCodes() {
