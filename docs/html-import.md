@@ -1239,7 +1239,7 @@ report as a subsequence, and every row the report adds must carry a code the
 fixture already names.
 
 AND A ROW SUBJECT TO THAT STATES NO `message`. The wording follows the
-granularity - "dropped the row grouping" and "merged 2 <tbody> groups into one"
+granularity - "dropped the row grouping" and "merged 2 `<tbody>` groups into one"
 describe the same loss at different sizes - so a fixture that pinned the message
 would pin the granularity through the back door. Such a row states its `code`,
 and its `severity` and `path` where those agree; the prose is the engine's. Every
