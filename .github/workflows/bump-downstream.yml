@@ -209,6 +209,15 @@ jobs:
           # not exist'.
           observed="$(gh api "repos/$REPO/git/ref/heads/automation/bump-spec" \
                 --jq '.object.sha' 2>/dev/null || true)"
+          # gh prints a 404 BODY ON STDOUT, so a missing branch arrives here as
+          # `{"message":"Not Found",...}` rather than as the empty string this
+          # says means "no branch". git was then handed that JSON as the lease's
+          # expected object name and refused every push with `cannot parse
+          # expected object name`, on every repo whose branch did not exist yet.
+          # Anything that is not a full sha means the branch is not there.
+          if ! printf '%s' "$observed" | grep -Eq '^[0-9a-f]{40}$'; then
+            observed=""
+          fi
 
           foreign=0
           if ahead="$(gh api "repos/$REPO/compare/main...automation/bump-spec" \
@@ -408,7 +417,10 @@ jobs:
             if [ -n "${CODEX_API_KEY:-}" ]; then
               echo "CODEX_API_KEY present -> attempting implementation with codex"
               npm install -g @openai/codex >/dev/null 2>&1 || true
-              OPENAI_API_KEY="$CODEX_API_KEY" codex exec --full-auto \
+              # `--full-auto` was removed from the CLI; the sandbox policy is
+              # its own flag now, and the run failed with `unexpected argument`
+              # before it reached the model.
+              OPENAI_API_KEY="$CODEX_API_KEY" codex exec --sandbox workspace-write \
                 "The git submodule '$SUB' (the Carve spec corpus) was just bumped to a newer version. Implement the minimal parser/renderer changes in THIS repository so that the command '$TEST_CMD' passes. Do not edit anything under '$SUB'. Match existing code style." \
                 || true
               if bash -c "$TEST_CMD"; then
