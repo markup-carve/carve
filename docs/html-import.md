@@ -1211,6 +1211,44 @@ position of the nearest ancestor that has one, and ties with it.
 `diagnostics-truncated` is last. It reports the state of the report rather than
 a loss at a place, so it has no element to be ordered by.
 
+HOW MANY ROWS ONE LOSS TAKES IS ENGINE-DEFINED (carve#1884). The order above is
+normative; the GRANULARITY is not. A table whose `<thead>` sits between two
+`<tbody>` runs loses its row grouping, and an importer may say so in one row or
+in one row per distinct loss:
+
+```
+Dropped the row grouping of a table whose <thead> or <tfoot> is not at the edge
+of its rows
+```
+
+```
+Merged 2 <tbody> groups into one; Carve source has no body grouping
+The table head changes from 1 to 0 row(s); Carve derives it from the leading run
+of header rows
+```
+
+Both are the same code at the same place and neither is more true. Coalescing
+loses detail a reader might want; itemizing spends rows on one element. Nothing
+downstream can act on the difference, because a consumer filters on the CODE and
+reads the prose - which is the same reason `path` is engine-defined a section
+below.
+
+WHAT A SHARED FIXTURE MAY PIN, THEREFORE. Its `diagnostics` are the rows an
+implementation MUST produce, in order: the fixture's sequence must appear in the
+report as a subsequence, and every row the report adds must carry a code the
+fixture already names.
+
+AND A ROW SUBJECT TO THAT STATES NO `message`. The wording follows the
+granularity - "dropped the row grouping" and "merged 2 `<tbody>` groups into one"
+describe the same loss at different sizes - so a fixture that pinned the message
+would pin the granularity through the back door. Such a row states its `code`,
+and its `severity` and `path` where those agree; the prose is the engine's. Every
+other row states its message as before, and the check on those is unchanged:
+an unpinned message is how a reworded or emptied one used to pass unnoticed. An implementation may split one of those rows into
+several; it may not invent a code the fixture does not list, drop one it does,
+or reorder them. That is what makes a fixture portable rather than a recording
+of whichever engine its author generated it from.
+
 WHY THIS IS A REQUIREMENT RATHER THAN A QUALITY OF IMPLEMENTATION. The shared
 fixture runners compare diagnostics POSITIONALLY. With no defined order, a
 fixture holding more than one diagnostic was safe only where the implementations
@@ -1218,8 +1256,10 @@ happened to agree anyway - which they do when the losses sit in separate
 top-level blocks, and did not when two sit under one parent. Such a fixture
 would pin whichever order its author's engine produced, and that is why
 `table-caption-index` had to be kept to a single row (carve#1560). The runners
-stay positional: they are the check, and comparing unordered as well would state
-a rule that nothing enforces. The `diagnostic-order` fixture is the case this
+stay ORDERED for the same reason - comparing unordered would state a rule that
+nothing enforces - and they match the fixture's rows as a SUBSEQUENCE rather
+than element for element, which is what the granularity rule above requires of
+them. Order is still the check; count is not. The `diagnostic-order` fixture is the case this
 opens - two losses in one `<table>`, in the order the document spells them.
 
 ## The `path` of a diagnostic
