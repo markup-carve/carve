@@ -650,6 +650,33 @@
         past the cap makes a line group differently from the same characters
         typed by an author.
 
+        A RETURNED DOCUMENT NEVER SILENTLY LACKS AUTHORED TEXT -- NORMATIVE
+        (carve#1881). A limit has two permitted answers, and this is the rule
+        over both. It MAY DEGRADE, in which case every authored character stays
+        in the output and what is lost is structure, a symbol-table entry or a
+        report row -- the nesting cap above already works this way, since past
+        it an opener stops opening and stays on the page as the characters it is
+        made of. Or it MAY REFUSE the whole operation with a typed failure, as
+        the render ceiling below requires. What no limit may do is RETURN a
+        document that is missing text the author typed.
+
+        Refusal is not the exception to this, it is the other half of it: a
+        caller handed a typed error knows the operation did not happen, while a
+        caller handed a document cannot tell which parts of it were dropped.
+        The rule covers every bound in this section and any an implementation
+        adds of its own -- a work budget, a diagnostic cap, a probe allowance.
+
+        The direction is not a preference. A document that loses metadata
+        shows the loss where a reader meets it -- an unresolved reference
+        renders as its literal source -- while a document that loses text
+        shows nothing at all, because what would have reported the loss is
+        the text that is gone. One failure is diagnosable and the other is
+        silent, and a limit is reached most often on exactly the documents
+        nobody is reading closely.
+
+        PART 9R R1a is where this was got wrong once, in as many words, and
+        the cost of it is measured there.
+
         Recursive RENDER / RESOLVE /
         FILTER passes over a programmatically constructed tree MUST be
         bounded too, not only the parse path -- but their ceiling MUST NOT
