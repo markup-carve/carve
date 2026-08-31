@@ -1236,7 +1236,15 @@ below.
 WHAT A SHARED FIXTURE MAY PIN, THEREFORE. Its `diagnostics` are the rows an
 implementation MUST produce, in order: the fixture's sequence must appear in the
 report as a subsequence, and every row the report adds must carry a code the
-fixture already names. An implementation may split one of those rows into
+fixture already names.
+
+AND A ROW SUBJECT TO THAT STATES NO `message`. The wording follows the
+granularity - "dropped the row grouping" and "merged 2 <tbody> groups into one"
+describe the same loss at different sizes - so a fixture that pinned the message
+would pin the granularity through the back door. Such a row states its `code`,
+and its `severity` and `path` where those agree; the prose is the engine's. Every
+other row states its message as before, and the check on those is unchanged:
+an unpinned message is how a reworded or emptied one used to pass unnoticed. An implementation may split one of those rows into
 several; it may not invent a code the fixture does not list, drop one it does,
 or reorder them. That is what makes a fixture portable rather than a recording
 of whichever engine its author generated it from.
