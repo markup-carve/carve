@@ -105,11 +105,8 @@ attribute = language_attribute | id_attribute | class_attribute
 
    A BOOLEAN `lang` IS THE SAME KEY AS WELL: `{lang}` means `lang=""` under
    PART 4's boolean rule, so `{:fr lang}` ends at `lang=""` and `{lang :fr}` at
-   `lang="fr"`. This paragraph carried a caveat until carve#1125: the executable
-   spec used to emit a boolean unconditionally, so `{a=1 a}` came out as
-   `a="1" a=""` where every engine gave `a=""`. That is fixed, the three
-   spellings of the key now meet in one slot everywhere, and the corpus pins the
-   boolean form beside the other two rather than leaving it to prose. *)
+   `lang="fr"`. The three spellings of the key meet in one slot, and the corpus
+   pins the boolean form beside the other two. *)
 language_attribute = ':', [ language_tag ] ;
 language_tag       = language_subtag, { '-', language_subtag } ;
 language_subtag    = ( letter | digit ), { letter | digit } ;

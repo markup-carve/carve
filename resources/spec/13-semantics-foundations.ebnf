@@ -433,9 +433,9 @@
          makes it ordinary content (T4's `{.x} <` is unchanged), and the
          validity rule is T8's.
 
-         The canonical writer uses this order. The retired
-         `|{#x}< content |` spelling is parsed as unaligned literal content;
-         row attributes (T8) are unaffected.
+         The canonical writer uses this order. The `|{#x}< content |` spelling
+         is parsed as unaligned literal content; row attributes (T8) are
+         unaffected.
 
       T11 A MARKER RUN ENDS AT A SPACE -- NORMATIVE. A cell's marker run is
          the kind marker `=`, the alignment run and the attribute block, in

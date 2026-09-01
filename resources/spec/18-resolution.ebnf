@@ -167,21 +167,6 @@
       is one a reader can see -- a reference to the uncollected label renders as
       its literal `[^f]`, on the page, where someone can report it.
 
-      THIS CLAUSE SAID THE OPPOSITE, and named the wrong loss to justify it. It
-      required collecting, on the reasoning that "suppressing deletes the
-      author's line from the page". It is collecting that deletes the line: the
-      definition is taken OUT of the source, and what renders is the remainder --
-      a bare `-` where the author wrote `- [^f]: body`. Suppressing leaves every
-      character on the page and declines only to register metadata, so the
-      failure a reader meets is a reference that renders as its literal
-      `[^f]` -- visible, and diagnosable, which is what the old reasoning wanted
-      and did not get.
-
-      Measured before the correction (carve#1881): at four thousand such lines
-      the engine implementing this clause faithfully removed 3,858 of them.
-      Being conformant was the reason it did, which is why the clause moved
-      rather than the engine alone.
-
    R1b A MATCHER'S COORDINATES ARE LOCAL, NOT ABSOLUTE -- NORMATIVE
       (carve#1437). The `lines` array handed to a block matcher MAY begin at a
       CONTAINER'S CONTENT rather than at the document, re-based so that index 0
