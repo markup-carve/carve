@@ -1430,6 +1430,19 @@ minimum. AST comparison ignores object-key order and absent optional fields;
 source comparison uses the canonical writer byte-for-byte. Diagnostic fixture
 objects are minimum matches: implementations may add optional location fields.
 
+`expected.report.json` IS THE REPORT, NOT A CONFIGURATION (carve#1886). Its
+`mode` and `adapter` are fields the import RETURNS, asserted like any other, and
+a fixture cannot ask to be imported some other way: every runner imports with
+default options, so a fixture declaring `"mode": "roundtrip"` would be run in
+`safe` and fail on the very field it set. That is why all of them read `safe`.
+
+A SHAPE THAT ONLY ANOTHER MODE REACHES GOES ELSEWHERE, and it is already
+covered: the vocabulary gate sweeps the whole corpus in `safe`, `semantic` and
+`roundtrip`, which is how `attribute-preserved` - reachable only under
+`roundtrip` - is exercised without a fixture (carve#1878). An engine-local test
+is the other home. Teaching four runners to read the field would buy the fixture
+set a mode it has never needed.
+
 The shared set is deliberately small and each directory has one subject:
 
 | fixture | subject |
