@@ -92,6 +92,11 @@
       "title": "DEFINITION BODIES FOLLOW THE SAME CONTAINER REACH RULE"
     },
     {
+      "id": "CARVE-P0-019",
+      "part": "0",
+      "title": "A NEW MARKER DOES NOT REACH A DEAD CONTAINER'S COLUMN"
+    },
+    {
       "id": "CARVE-P2-001",
       "part": "2",
       "title": "COLUMN ZERO"
