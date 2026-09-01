@@ -223,8 +223,7 @@
 
       A DEFINITION IS STILL INVISIBLE IN HTML. The node renders nothing on that
       target; it feeds the links and images that resolve its label (PART 9R R1).
-      The non-HTML targets emit it, which is what §10a says and could not
-      previously require of this kind.
+      The non-HTML targets emit it, as §10a requires.
 
    11. A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST -- NORMATIVE.
       The wire shape is pinned by `resources/ast-schema.json` with

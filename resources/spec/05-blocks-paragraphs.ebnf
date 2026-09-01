@@ -23,9 +23,7 @@
    `abc<SP>` renders <p>abc</p>; so does `abc<SP>` followed by `def`, where the
    run sits before a SOFT BREAK; and so do a heading, a list item, a block
    quote line, a definition term or description, a footnote body line, a table
-   caption and a line-block line. This clause used to say the opposite of the
-   soft-break half, and PART 12 §7 used to say it at greater length
-   (carve#926).
+   caption and a line-block line.
 
    THE RUN IS `whitespace` -- `' ' | '\t'` -- the same two-character terminal
    `blank_line = {whitespace}` and `indent` take (PART 1; carve#890). Every
@@ -56,5 +54,4 @@
    meaning in whitespace nothing can see.) Pinned by corpus
    104-paragraph-trailing-whitespace and 268. *)
 paragraph = inline_content+, [blank_line] ;
-
 

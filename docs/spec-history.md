@@ -159,6 +159,51 @@ same space-only model in carve#904 and carve#906. Marker separators remain a
 different role and take the cardinality their own productions declare
 (carve#892).
 
+The `lang` shorthand briefly carried a caveat because the executable checker
+merged a repeated boolean key differently from every engine. Before carve#1125,
+`{a=1 a}` became `a="1" a=""` in the checker instead of the last-value result
+`a=""`. The checker was corrected; boolean, key/value and `:lang` spellings now
+share one merge slot.
+
+## Clarifications moved out of active clauses
+
+Several current rules accumulated sentences describing what an older clause
+said rather than what the language does now. Those sentences were removed from
+the active algorithm together and are retained here for traceability:
+
+- Trailing ASCII space is discarded on every content line. An older paragraph
+  said the opposite for a run before a soft break, while PART 12 repeated the
+  rule at greater length (carve#926).
+- An unclosed comment fence degrades to a line comment instead of mirroring an
+  unclosed div. The older comment clause quoted a stale description of the div
+  behavior and would have hidden the rest of the document (carve#1717).
+- A below-column definition or attribute line that folds as text folds into
+  the open paragraph belonging to its container. The older text left that host
+  implicit, allowing a document-level reading (carve#1800).
+- HTML security requirements first lived only in `docs/security.md`; moving
+  them into PART 9 made them conformance requirements rather than guidance.
+- Non-HTML output of link-reference definitions became an explicit consequence
+  of PART 11 §10a when those definitions gained AST nodes.
+- Canonical table padding replaced writer guards for `<`, `>`, `~` and `{` in
+  the three glued table-prefix positions (carve#1601). The current writer rule
+  states the required strategy without narrating that transition.
+- `|{#x}< content |` is an older spelling for a cell attribute followed by an
+  alignment marker. It now parses as unaligned literal content; canonical form
+  puts the alignment run before the attributes.
+- PART 11 originally introduced its invariants because writer behavior had
+  been inferred from three implementations agreeing. That origin does not
+  qualify the current invariants.
+- A failed extension-definition probe originally collected the candidate line,
+  on the mistaken reasoning that declining it would delete the author's text.
+  Collecting is what removes a definition from visible output. Before the
+  correction, a 4,000-line stress case lost 3,858 lines; R1a now fails toward
+  keeping the authored text (carve#1881).
+- Canonical task markers once fell back to rendered checkbox state, turning
+  `[-]`, `[_]`, `[>]` and `[?]` into `[ ]`. The AST now retains the authored
+  state and the writer reproduces it (carve#1866).
+- Raw blocks formerly also accepted a `` ```raw FORMAT `` keyword spelling.
+  Block and inline raw now share the `=FORMAT` spelling.
+
 ## AST position implementation history
 
 Position coverage used to be reported inside PART 12 with per-engine counts and

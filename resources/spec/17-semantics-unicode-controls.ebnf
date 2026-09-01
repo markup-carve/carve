@@ -87,9 +87,7 @@
         of input, and the difference is VISIBILITY: an unclosed div still
         renders the blocks it swallowed, so a forgotten closer costs the
         reader a stray wrapper, while an unclosed comment would HIDE them and
-        silently delete the rest of the document. This clause used to claim it
-        MIRRORED §12, quoting a §12 sentence that has since been removed for
-        saying the opposite of what §12 means (carve#1717). An implementation that
+        silently delete the rest of the document. An implementation that
         surfaces diagnostics SHOULD report an unterminated comment fence;
         emitting one is OPTIONAL, since not every implementation has a
         warning channel.

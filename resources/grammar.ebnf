@@ -1966,9 +1966,7 @@ raw_content = (* any content until closing fence *) ;
    `abc<SP>` renders <p>abc</p>; so does `abc<SP>` followed by `def`, where the
    run sits before a SOFT BREAK; and so do a heading, a list item, a block
    quote line, a definition term or description, a footnote body line, a table
-   caption and a line-block line. This clause used to say the opposite of the
-   soft-break half, and PART 12 §7 used to say it at greater length
-   (carve#926).
+   caption and a line-block line.
 
    THE RUN IS `whitespace` -- `' ' | '\t'` -- the same two-character terminal
    `blank_line = {whitespace}` and `indent` take (PART 1; carve#890). Every
@@ -1999,7 +1997,6 @@ raw_content = (* any content until closing fence *) ;
    meaning in whitespace nothing can see.) Pinned by corpus
    104-paragraph-trailing-whitespace and 268. *)
 paragraph = inline_content+, [blank_line] ;
-
 
 (* ============================================================================
    PART 3: INLINE ELEMENTS
@@ -3132,11 +3129,8 @@ attribute = language_attribute | id_attribute | class_attribute
 
    A BOOLEAN `lang` IS THE SAME KEY AS WELL: `{lang}` means `lang=""` under
    PART 4's boolean rule, so `{:fr lang}` ends at `lang=""` and `{lang :fr}` at
-   `lang="fr"`. This paragraph carried a caveat until carve#1125: the executable
-   spec used to emit a boolean unconditionally, so `{a=1 a}` came out as
-   `a="1" a=""` where every engine gave `a=""`. That is fixed, the three
-   spellings of the key now meet in one slot everywhere, and the corpus pins the
-   boolean form beside the other two rather than leaving it to prose. *)
+   `lang="fr"`. The three spellings of the key meet in one slot, and the corpus
+   pins the boolean form beside the other two. *)
 language_attribute = ':', [ language_tag ] ;
 language_tag       = language_subtag, { '-', language_subtag } ;
 language_subtag    = ( letter | digit ), { letter | digit } ;
@@ -3955,9 +3949,9 @@ EOF = (* end of file *) ;
          makes it ordinary content (T4's `{.x} <` is unchanged), and the
          validity rule is T8's.
 
-         The canonical writer uses this order. The retired
-         `|{#x}< content |` spelling is parsed as unaligned literal content;
-         row attributes (T8) are unaffected.
+         The canonical writer uses this order. The `|{#x}< content |` spelling
+         is parsed as unaligned literal content; row attributes (T8) are
+         unaffected.
 
       T11 A MARKER RUN ENDS AT A SPACE -- NORMATIVE. A cell's marker run is
          the kind marker `=`, the alignment run and the attribute block, in
@@ -5405,9 +5399,9 @@ EOF = (* end of file *) ;
       fence, PART 2) emits its verbatim content UNESCAPED when FORMAT
       matches the output format and drops it otherwise; the inline form
       follows. Block and inline raw share the `=FORMAT` spelling (```=html
-      / `…`{=html}); the former ```raw FORMAT keyword form was removed. A code span whose trailing attribute block
-      is EXACTLY `{=format}` (a single `=`-prefixed format name, with no
-      other classes/ids/keys) is raw passthrough: the verbatim span content
+      / `…`{=html}). A code span whose trailing attribute block is EXACTLY
+      `{=format}` (a single `=`-prefixed format name, with no other
+      classes/ids/keys) is raw passthrough: the verbatim span content
       is emitted UNESCAPED when `format` matches the output format (`html`),
       and DROPPED otherwise. The `{=format}` tag is consumed, not rendered.
       A code span with any OTHER trailing `{…}` is a generic attributed code
@@ -5803,8 +5797,7 @@ EOF = (* end of file *) ;
             discards it and the author's characters reach neither the page nor
             any table (carve#1801).
 
-            THE FOLD IS INTO THE CONTAINER, in every host, which is the half
-            this clause used to leave to the reader. "Folds as TEXT" and
+            THE FOLD IS INTO THE CONTAINER, in every host. "Folds as TEXT" and
             I5's "lazy paragraph text" name one operation on one open
             paragraph, and that paragraph belongs to the container whose
             content column the line fell below. Ending the container and
@@ -5868,11 +5861,10 @@ EOF = (* end of file *) ;
          column and stay siblings.
 
    25. SECURITY REQUIREMENTS -- NORMATIVE (HTML output target). These rules
-      bind any implementation that emits HTML for UNTRUSTED input. They were
-      previously stated only in docs/security.md (non-normative); they are
-      hoisted here so an implementation written to this grammar + the corpus
-      cannot be conformant yet a trivial XSS vector. The corpus pins
-      representative cases (resources/examples/edge-cases.md "Security hardening").
+      bind any implementation that emits HTML for UNTRUSTED input, so an
+      implementation written to this grammar + the corpus cannot be conformant
+      yet expose a trivial XSS vector. The corpus pins representative cases
+      (resources/examples/edge-cases.md "Security hardening").
       - URL SINK SCHEME DENYLIST. On every clickable URL sink -- link
         destination (`href`), image source (`src`), and autolink -- an HTML
         renderer MUST reject any URL whose scheme is `javascript`, `vbscript`,
@@ -6259,9 +6251,7 @@ EOF = (* end of file *) ;
         of input, and the difference is VISIBILITY: an unclosed div still
         renders the blocks it swallowed, so a forgotten closer costs the
         reader a stray wrapper, while an unclosed comment would HIDE them and
-        silently delete the rest of the document. This clause used to claim it
-        MIRRORED §12, quoting a §12 sentence that has since been removed for
-        saying the opposite of what §12 means (carve#1717). An implementation that
+        silently delete the rest of the document. An implementation that
         surfaces diagnostics SHOULD report an unterminated comment fence;
         emitting one is OPTIONAL, since not every implementation has a
         warning channel.
@@ -6687,21 +6677,6 @@ EOF = (* end of file *) ;
       is one a reader can see -- a reference to the uncollected label renders as
       its literal `[^f]`, on the page, where someone can report it.
 
-      THIS CLAUSE SAID THE OPPOSITE, and named the wrong loss to justify it. It
-      required collecting, on the reasoning that "suppressing deletes the
-      author's line from the page". It is collecting that deletes the line: the
-      definition is taken OUT of the source, and what renders is the remainder --
-      a bare `-` where the author wrote `- [^f]: body`. Suppressing leaves every
-      character on the page and declines only to register metadata, so the
-      failure a reader meets is a reference that renders as its literal
-      `[^f]` -- visible, and diagnosable, which is what the old reasoning wanted
-      and did not get.
-
-      Measured before the correction (carve#1881): at four thousand such lines
-      the engine implementing this clause faithfully removed 3,858 of them.
-      Being conformant was the reason it did, which is why the clause moved
-      rather than the engine alone.
-
    R1b A MATCHER'S COORDINATES ARE LOCAL, NOT ABSOLUTE -- NORMATIVE
       (carve#1437). The `lines` array handed to a block matcher MAY begin at a
       CONTAINER'S CONTENT rather than at the document, re-based so that index 0
@@ -7125,8 +7100,7 @@ EOF = (* end of file *) ;
    ============================================================================
 
    The canonical writer (`carve fmt`, the `carve` render target) serializes a
-   document back to Carve source. Nothing here specified it before, so its
-   behavior was defined only by three implementations happening to agree.
+   document back to Carve source.
 
    1. THE INVARIANTS. For any document x:
 
@@ -7784,8 +7758,8 @@ EOF = (* end of file *) ;
       `=` or of an attribute block makes it literal cell content (PART 9 §5
       T10, corpus `table cell attributes`), so only the CONTENT side is the
       writer's to choose. An UNPREFIXED cell was always padded (`| a | b |`);
-      this makes one rule of what was two, and the padded side is the one a
-      reader can scan.
+      prefixed and unprefixed cells therefore share one padding rule, and the
+      padded side is the one a reader can scan.
 
       THE TREE RECORDS NO SLOT, the same reason §6d gives: `table_cell` records
       its padding no more than `code_block` records the space before its info
@@ -7794,11 +7768,12 @@ EOF = (* end of file *) ;
 
 
    6f. PADDING IS NOT AN ESCAPE WHERE THE PRODUCTION ADMITS PADDING --
-      NORMATIVE (carve#1601). §6e retires the writer's `<`/`>`/`~`/`{` guards
-      because those three slots are read GLUED to the opening pipe, so one
-      space in front of the content puts it out of their reach. That argument
-      holds only where the construct's OWN production forbids the padding, and
-      one class of cell construct is written WITH the padding inside it:
+      NORMATIVE (carve#1601). §6e's padding removes the need for
+      `<`/`>`/`~`/`{` guards because its three prefix slots are read GLUED to
+      the opening pipe, so one space in front of the content puts it out of
+      their reach. That argument holds only where the construct's OWN production
+      forbids the padding, and one class of cell construct is written WITH the
+      padding inside it:
 
         span_cell      = rowspan_marker | colspan_marker ;
         rowspan_marker = {space}, '^', {space} ;
@@ -7816,11 +7791,9 @@ EOF = (* end of file *) ;
       next time a cell-level marker is added.
 
    6g. A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE -- NORMATIVE
-      (carve#1866). PART 2 admits seven task states and the rendering collapses
-      them to two, so the writer had nothing to reproduce and wrote `[x]` or
-      `[ ]`: `carve fmt -w` turned `[-]`, `[_]`, `[>]` and `[?]` into `[ ]` and
-      the author's distinction was gone from the file. The AST now records the
-      character (PART 12, `list_item.taskState`) and the writer emits it.
+      (carve#1866). PART 2 admits seven task states while rendering collapses
+      them to two. The AST records the authored character (PART 12,
+      `list_item.taskState`) and the writer emits it.
 
       THE FIELD IS THE SPELLING, `checked` IS THE MEANING. This is §6's own
       rule, not an exception to it: a spelling is the author's to keep BECAUSE
@@ -9530,8 +9503,7 @@ EOF = (* end of file *) ;
 
       A DEFINITION IS STILL INVISIBLE IN HTML. The node renders nothing on that
       target; it feeds the links and images that resolve its label (PART 9R R1).
-      The non-HTML targets emit it, which is what §10a says and could not
-      previously require of this kind.
+      The non-HTML targets emit it, as §10a requires.
 
    11. A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST -- NORMATIVE.
       The wire shape is pinned by `resources/ast-schema.json` with

@@ -560,9 +560,9 @@
       fence, PART 2) emits its verbatim content UNESCAPED when FORMAT
       matches the output format and drops it otherwise; the inline form
       follows. Block and inline raw share the `=FORMAT` spelling (```=html
-      / `…`{=html}); the former ```raw FORMAT keyword form was removed. A code span whose trailing attribute block
-      is EXACTLY `{=format}` (a single `=`-prefixed format name, with no
-      other classes/ids/keys) is raw passthrough: the verbatim span content
+      / `…`{=html}). A code span whose trailing attribute block is EXACTLY
+      `{=format}` (a single `=`-prefixed format name, with no other
+      classes/ids/keys) is raw passthrough: the verbatim span content
       is emitted UNESCAPED when `format` matches the output format (`html`),
       and DROPPED otherwise. The `{=format}` tag is consumed, not rendered.
       A code span with any OTHER trailing `{…}` is a generic attributed code

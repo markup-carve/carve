@@ -384,8 +384,7 @@
             discards it and the author's characters reach neither the page nor
             any table (carve#1801).
 
-            THE FOLD IS INTO THE CONTAINER, in every host, which is the half
-            this clause used to leave to the reader. "Folds as TEXT" and
+            THE FOLD IS INTO THE CONTAINER, in every host. "Folds as TEXT" and
             I5's "lazy paragraph text" name one operation on one open
             paragraph, and that paragraph belongs to the container whose
             content column the line fell below. Ending the container and
@@ -449,11 +448,10 @@
          column and stay siblings.
 
    25. SECURITY REQUIREMENTS -- NORMATIVE (HTML output target). These rules
-      bind any implementation that emits HTML for UNTRUSTED input. They were
-      previously stated only in docs/security.md (non-normative); they are
-      hoisted here so an implementation written to this grammar + the corpus
-      cannot be conformant yet a trivial XSS vector. The corpus pins
-      representative cases (resources/examples/edge-cases.md "Security hardening").
+      bind any implementation that emits HTML for UNTRUSTED input, so an
+      implementation written to this grammar + the corpus cannot be conformant
+      yet expose a trivial XSS vector. The corpus pins representative cases
+      (resources/examples/edge-cases.md "Security hardening").
       - URL SINK SCHEME DENYLIST. On every clickable URL sink -- link
         destination (`href`), image source (`src`), and autolink -- an HTML
         renderer MUST reject any URL whose scheme is `javascript`, `vbscript`,

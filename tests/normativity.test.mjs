@@ -241,6 +241,40 @@ test('volatile implementation history stays outside the normative grammar', () =
   }
 })
 
+test('retired readings stay in spec-history, not active normative modules', () => {
+  const phrases = [
+    /\bused to\b/i,
+    /\bpreviously\b/i,
+    /\buntil carve#/i,
+    /\bretired\b/i,
+    /\bimplementations? happening to agree\b/i,
+    /\bsaid the opposite\b/i,
+    /\bmeasured before\b/i,
+    /\bformer\b.*\bwas removed\b/i,
+  ]
+  const offenders = []
+  for (const module of readdirSync(resolve(repo, 'resources/spec'))) {
+    if (!module.endsWith('.ebnf') || module === '00-preamble.ebnf') continue
+    const lines = readFileSync(resolve(repo, 'resources/spec', module), 'utf8').split('\n')
+    for (const [index, line] of lines.entries()) {
+      for (const phrase of phrases) {
+        if (phrase.test(line)) offenders.push(`${module}:${index + 1}: ${line.trim()}`)
+      }
+    }
+  }
+  assert.deepEqual(
+    offenders,
+    [],
+    `retired readings belong in docs/spec-history.md:\n${offenders.join('\n')}`,
+  )
+
+  const history = readFileSync(resolve(repo, 'docs/spec-history.md'), 'utf8')
+  assert.match(history, /^## Clarifications moved out of active clauses$/m)
+  for (const issue of ['926', '1125', '1601', '1717', '1800', '1866', '1881']) {
+    assert.match(history, new RegExp(`carve#${issue}\\b`), `history keeps carve#${issue}`)
+  }
+})
+
 test('the section index finds a plausible set for every sectioned PART', () => {
   // Sanity: parsing worked. A floor per PART, so a regex that silently stopped
   // matching shows up here rather than as a citation test that passes because

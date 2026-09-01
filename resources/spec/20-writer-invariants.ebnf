@@ -3,8 +3,7 @@
    ============================================================================
 
    The canonical writer (`carve fmt`, the `carve` render target) serializes a
-   document back to Carve source. Nothing here specified it before, so its
-   behavior was defined only by three implementations happening to agree.
+   document back to Carve source.
 
    1. THE INVARIANTS. For any document x:
 
