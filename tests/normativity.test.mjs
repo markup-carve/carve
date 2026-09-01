@@ -65,6 +65,14 @@ test('stable rule ids cover every normative clause', () => {
   assert.match(output, /stable normative rule ids cover the grammar/)
 })
 
+test('focused rule indexes match the scoped registry', () => {
+  const output = execFileSync(process.execPath, ['scripts/spec-rule-index.mjs', '--check'], {
+    cwd: repo,
+    encoding: 'utf8',
+  })
+  assert.match(output, /6 focused rule-index pages cover \d+ rules/)
+})
+
 test('language-rule titles stand alone and process-rule ids stay retired', () => {
   const registry = readJson('resources/spec/rules.json')
   const dependent = registry.rules.filter(({ title }) =>

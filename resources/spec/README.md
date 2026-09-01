@@ -22,7 +22,8 @@ filename order, so their numeric prefixes are part of the build contract.
   section 10.
 - `target-capabilities.json` records the cross-target behavior defined by PART
   11 sections 10a through 11.
-- `rules.json` assigns stable IDs to clauses carrying `-- NORMATIVE`.
+- `rules.json` assigns stable IDs and one closed implementation scope to clauses
+  carrying `-- NORMATIVE`.
 
 Rule IDs are permanent. A rule title may be clarified by changing its `title`
 in `rules.json`, but its ID must not be recycled. Adding a rule requires a new
@@ -30,6 +31,11 @@ ID in its PART. Removing a rule moves its registry entry from `rules` to
 `retired` rather than assigning the ID to another rule. Every retired entry
 keeps its last title and names a `replacement`; a Markdown replacement includes
 the heading anchor that now owns the contract.
+
+The five scopes are navigation metadata, not conformance profiles. Every active
+rule belongs to exactly one scope, and `npm run spec:rules:write` generates the
+focused pages under `docs/rules/`. Run `npm run spec:rules:check` to validate the
+registry and reject stale generated pages.
 
 ## What belongs elsewhere
 

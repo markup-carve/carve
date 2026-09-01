@@ -56,7 +56,9 @@ parsing English prose:
 - `layout-transitions.json` defines every ownership boundary transition.
 - `paragraph-interruption.json` partitions interrupting and non-interrupting constructs.
 - `target-capabilities.json` records cross-target preservation behavior.
-- `rules.json` assigns stable identifiers to every normative clause.
+- `rules.json` assigns stable identifiers and an implementation scope to every
+  normative clause. The generated [normative rule index](./rules/) provides
+  focused views without making any rule optional.
 
 Run `npm run spec:check` and `npm run spec:rules:check` after editing the
 specification.

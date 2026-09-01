@@ -1,1245 +1,1520 @@
 {
   "version": 1,
+  "scopes": [
+    {
+      "id": "parsing",
+      "title": "Parsing",
+      "description": "Input normalization, layout, block and inline recognition, attributes, and lexical boundaries."
+    },
+    {
+      "id": "resolution-rendering",
+      "title": "Resolution and rendering",
+      "description": "Document-wide resolution, core semantic behavior, and HTML serialization."
+    },
+    {
+      "id": "ast-interchange",
+      "title": "AST interchange",
+      "description": "The core serialized tree shape, source positions, and cross-implementation AST guarantees."
+    },
+    {
+      "id": "canonical-writing",
+      "title": "Canonical writing",
+      "description": "Canonical Carve source, Markdown and plain-text targets, round trips, and escaping."
+    },
+    {
+      "id": "imports-security-extensions",
+      "title": "Imports, security, and extensions",
+      "description": "Optional and host-facing behavior, importer contracts, security limits, diagnostics, and extension surfaces."
+    }
+  ],
   "rules": [
     {
       "id": "CARVE-P0-001",
       "part": "0",
-      "title": "A LEADING BYTE ORDER MARK IS STRIPPED"
+      "title": "A LEADING BYTE ORDER MARK IS STRIPPED",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P0-002",
       "part": "0",
-      "title": "A NULL IS REPLACED BEFORE THE FIRST LINE IS READ"
+      "title": "A NULL IS REPLACED BEFORE THE FIRST LINE IS READ",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P0-003",
       "part": "0",
-      "title": "EVERY FRAME CARRIES OWNERSHIP AND PARAGRAPH STATE SEPARATELY"
+      "title": "EVERY FRAME CARRIES OWNERSHIP AND PARAGRAPH STATE SEPARATELY",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P0-004",
       "part": "0",
-      "title": "ONE AUTHORED BLOCK BASE"
+      "title": "ONE AUTHORED BLOCK BASE",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P0-005",
       "part": "0",
-      "title": "COMMENTS ARE CLASSIFIED BEFORE BLOCK OWNERSHIP"
+      "title": "COMMENTS ARE CLASSIFIED BEFORE BLOCK OWNERSHIP",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P0-006",
       "part": "0",
-      "title": "NO STORED CONTINUATION CLAIM, NO LAZY LINE"
+      "title": "NO STORED CONTINUATION CLAIM, NO LAZY LINE",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P0-007",
       "part": "0",
-      "title": "THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST BLOCK"
+      "title": "THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST BLOCK",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P0-008",
       "part": "0",
-      "title": "A FLOATING ATTRIBUTE BLOCK DOES NOT CHANGE THE CONTENT COLUMN"
+      "title": "A FLOATING ATTRIBUTE BLOCK DOES NOT CHANGE THE CONTENT COLUMN",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P0-009",
       "part": "0",
-      "title": "A QUOTE'S LAST BLOCK MAY ITSELF BE A QUOTE"
+      "title": "A QUOTE'S LAST BLOCK MAY ITSELF BE A QUOTE",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P0-010",
       "part": "0",
-      "title": "A DEFINITION AT THE CONTENT COLUMN ENDS THE PARAGRAPH, NOT THE CONTAINER"
+      "title": "A DEFINITION AT THE CONTENT COLUMN ENDS THE PARAGRAPH, NOT THE CONTAINER",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P0-011",
       "part": "0",
-      "title": "AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS UNDER"
+      "title": "AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS UNDER",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P0-012",
       "part": "0",
-      "title": "A HEADING IS THE VISIBLE CONTROL"
+      "title": "A HEADING IS THE VISIBLE CONTROL",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P0-013",
       "part": "0",
-      "title": "A FENCED BODY IS NOT A PARAGRAPH"
+      "title": "A FENCED BODY IS NOT A PARAGRAPH",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P0-014",
       "part": "0",
-      "title": "FENCE KIND DOES NOT DETERMINE CONTAINER REACH"
+      "title": "FENCE KIND DOES NOT DETERMINE CONTAINER REACH",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P0-015",
       "part": "0",
-      "title": "A LAZY FOLD KEEPS THE CONTAINER OPEN FOR FOLLOWING LINES"
+      "title": "A LAZY FOLD KEEPS THE CONTAINER OPEN FOR FOLLOWING LINES",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P0-016",
       "part": "0",
-      "title": "A REAL DIV IS A CONTAINER LIKE ANY OTHER"
+      "title": "A REAL DIV IS A CONTAINER LIKE ANY OTHER",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P0-017",
       "part": "0",
-      "title": "CONTAINER KIND DOES NOT DETERMINE CONTAINER REACH"
+      "title": "CONTAINER KIND DOES NOT DETERMINE CONTAINER REACH",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P0-018",
       "part": "0",
-      "title": "DEFINITION BODIES FOLLOW THE SAME CONTAINER REACH RULE"
+      "title": "DEFINITION BODIES FOLLOW THE SAME CONTAINER REACH RULE",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P0-019",
       "part": "0",
-      "title": "A NEW MARKER DOES NOT REACH A DEAD CONTAINER'S COLUMN"
+      "title": "A NEW MARKER DOES NOT REACH A DEAD CONTAINER'S COLUMN",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-001",
       "part": "2",
-      "title": "COLUMN ZERO"
+      "title": "COLUMN ZERO",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-002",
       "part": "2",
-      "title": "THE HEADING MARKER SEPARATOR IS A RUN"
+      "title": "THE HEADING MARKER SEPARATOR IS A RUN",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-003",
       "part": "2",
-      "title": "SINGLE-LINE HEADINGS"
+      "title": "SINGLE-LINE HEADINGS",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-004",
       "part": "2",
-      "title": "HEADING IDENTIFIERS"
+      "title": "HEADING IDENTIFIERS",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-005",
       "part": "2",
-      "title": "CODE-FENCE INFO STRING"
+      "title": "CODE-FENCE INFO STRING",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-006",
       "part": "2",
-      "title": "COLUMN-EXACT DELIMITERS"
+      "title": "COLUMN-EXACT DELIMITERS",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-007",
       "part": "2",
-      "title": "TABS IN CODE"
+      "title": "TABS IN CODE",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-008",
       "part": "2",
-      "title": "LAZY CONTINUATION"
+      "title": "LAZY CONTINUATION",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-009",
       "part": "2",
-      "title": "MARKER REQUIRES CONTENT"
+      "title": "MARKER REQUIRES CONTENT",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-026",
       "part": "2",
-      "title": "THE DESCRIPTION MARKER"
+      "title": "THE DESCRIPTION MARKER",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-027",
       "part": "2",
-      "title": "WHICH CHARACTERS THE CONTENT TEST IGNORES"
+      "title": "WHICH CHARACTERS THE CONTENT TEST IGNORES",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-010",
       "part": "2",
-      "title": "A TAB AS THE FIRST CHARACTER OF CONTENT is a different question from the one above"
+      "title": "A TAB AS THE FIRST CHARACTER OF CONTENT is a different question from the one above",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-011",
       "part": "2",
-      "title": "BARE DOT"
+      "title": "BARE DOT",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-012",
       "part": "2",
-      "title": "COST"
+      "title": "COST",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-013",
       "part": "2",
-      "title": "WHITESPACE IS THE DISCRIMINATOR"
+      "title": "WHITESPACE IS THE DISCRIMINATOR",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-014",
       "part": "2",
-      "title": "MARKER-LINE NESTED LIST"
+      "title": "MARKER-LINE NESTED LIST",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-015",
       "part": "2",
-      "title": "THE TASK BOX CARRIES AN ACCESSIBLE NAME"
+      "title": "THE TASK BOX CARRIES AN ACCESSIBLE NAME",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-016",
       "part": "2",
-      "title": "INDENTATION IS COLUMNS, NOT CHARACTERS"
+      "title": "INDENTATION IS COLUMNS, NOT CHARACTERS",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-017",
       "part": "2",
-      "title": "BELOW THE BODY'S COLUMN THE BODY ENDS"
+      "title": "BELOW THE BODY'S COLUMN THE BODY ENDS",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-018",
       "part": "2",
-      "title": "AUTHORED BLOCK BASES"
+      "title": "AUTHORED BLOCK BASES",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-019",
       "part": "2",
-      "title": "THE ROW TERMINATOR AND AN OPEN RUN"
+      "title": "THE ROW TERMINATOR AND AN OPEN RUN",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-020",
       "part": "2",
-      "title": "THE CAPTION MARKER SEPARATOR IS A RUN"
+      "title": "THE CAPTION MARKER SEPARATOR IS A RUN",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-021",
       "part": "2",
-      "title": "MULTI-LINE CAPTIONS"
+      "title": "MULTI-LINE CAPTIONS",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-022",
       "part": "2",
-      "title": "CAPTION NUMBER PLACEHOLDER"
+      "title": "CAPTION NUMBER PLACEHOLDER",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-023",
       "part": "2",
-      "title": "THE INTERIOR IS VERBATIM, THE OPENING IS PLACED"
+      "title": "THE INTERIOR IS VERBATIM, THE OPENING IS PLACED",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-024",
       "part": "2",
-      "title": "RENDER-LOSS REPORTING"
+      "title": "RENDER-LOSS REPORTING",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P2-025",
       "part": "2",
-      "title": "NO TRAILING WHITESPACE"
+      "title": "NO TRAILING WHITESPACE",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-001",
       "part": "3",
-      "title": "WHICH SPANS THE SCAN SKIPS"
+      "title": "WHICH SPANS THE SCAN SKIPS",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-002",
       "part": "3",
-      "title": "WHITESPACE HERE IS UNICODE WHITESPACE"
+      "title": "WHITESPACE HERE IS UNICODE WHITESPACE",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-003",
       "part": "3",
-      "title": "A LABEL THAT BEGINS WITH AN AT SIGN IS NOT A REFERENCE LABEL"
+      "title": "A LABEL THAT BEGINS WITH AN AT SIGN IS NOT A REFERENCE LABEL",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-004",
       "part": "3",
-      "title": "THE FALLBACK IS THE VERBATIM SOURCE RUN, NOT A RESCAN"
+      "title": "THE FALLBACK IS THE VERBATIM SOURCE RUN, NOT A RESCAN",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-005",
       "part": "3",
-      "title": "ANCHORED AT END OF LINE"
+      "title": "ANCHORED AT END OF LINE",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-006",
       "part": "3",
-      "title": "AN INVALID BLOCK IS NOT `attributes`, SO THE LINE IS NOT A DEFINITION"
+      "title": "AN INVALID BLOCK IS NOT `attributes`, SO THE LINE IS NOT A DEFINITION",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-007",
       "part": "3",
-      "title": "TRAILING ATTRIBUTES ON A DEFINITION"
+      "title": "TRAILING ATTRIBUTES ON A DEFINITION",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-008",
       "part": "3",
-      "title": "AN IMAGE REFERENCE RESOLVES THE SAME ENTRY"
+      "title": "AN IMAGE REFERENCE RESOLVES THE SAME ENTRY",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-009",
       "part": "3",
-      "title": "THE DEFINITION MARKER SEPARATOR"
+      "title": "THE DEFINITION MARKER SEPARATOR",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-010",
       "part": "3",
-      "title": "DISPLAY TEXT"
+      "title": "DISPLAY TEXT",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-011",
       "part": "3",
-      "title": "AN AUTOLINK BODY ADMITS NON-ASCII AND EXCLUDES FORMAT CHARACTERS"
+      "title": "AN AUTOLINK BODY ADMITS NON-ASCII AND EXCLUDES FORMAT CHARACTERS",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-012",
       "part": "3",
-      "title": "TRAILING ATTRIBUTES on math"
+      "title": "TRAILING ATTRIBUTES on math",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-013",
       "part": "3",
-      "title": "FORMAL word-boundary guards"
+      "title": "FORMAL word-boundary guards",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-014",
       "part": "3",
-      "title": "AN EMPTY BRACE PAIR IS NOT A CONSTRUCT"
+      "title": "AN EMPTY BRACE PAIR IS NOT A CONSTRUCT",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-015",
       "part": "3",
-      "title": "INDENTATION IS COLUMNS, NOT CHARACTERS"
+      "title": "INDENTATION IS COLUMNS, NOT CHARACTERS",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-016",
       "part": "3",
-      "title": "CONTENT IS LITERAL"
+      "title": "CONTENT IS LITERAL",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-017",
       "part": "3",
-      "title": "ATTRIBUTES"
+      "title": "ATTRIBUTES",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-018",
       "part": "3",
-      "title": "ATTRIBUTES"
+      "title": "ATTRIBUTES",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-019",
       "part": "3",
-      "title": "PRECEDENCE vs SMART TYPOGRAPHY"
+      "title": "PRECEDENCE vs SMART TYPOGRAPHY",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-020",
       "part": "3",
-      "title": "A BRACED HYPHEN PAIR IS AN EN DASH, NOT AN EMPTY DELETION"
+      "title": "A BRACED HYPHEN PAIR IS AN EN DASH, NOT AN EMPTY DELETION",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-021",
       "part": "3",
-      "title": "A HYPHEN RUN OPENING A WORD AFTER WHITESPACE IS A FLAG, NOT A DASH"
+      "title": "A HYPHEN RUN OPENING A WORD AFTER WHITESPACE IS A FLAG, NOT A DASH",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P3-022",
       "part": "3",
-      "title": "THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES"
+      "title": "THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P4-001",
       "part": "4",
-      "title": "THE INLINE INTERIOR IS SPACE-ONLY, THE BLOCK-ATTRIBUTE LINE IS NOT"
+      "title": "THE INLINE INTERIOR IS SPACE-ONLY, THE BLOCK-ATTRIBUTE LINE IS NOT",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P4-002",
       "part": "4",
-      "title": "RENDER ORDER"
+      "title": "RENDER ORDER",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P4-003",
       "part": "4",
-      "title": "THE SIGIL TAKES NO PADDING"
+      "title": "THE SIGIL TAKES NO PADDING",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P4-004",
       "part": "4",
-      "title": "COLLISION"
+      "title": "COLLISION",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P4-005",
       "part": "4",
-      "title": "A BOOLEAN ATTRIBUTE DOES NOT START WITH AN UNDERSCORE"
+      "title": "A BOOLEAN ATTRIBUTE DOES NOT START WITH AN UNDERSCORE",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P4-006",
       "part": "4",
-      "title": "A QUOTED VALUE STOPS AT THE NEWLINE"
+      "title": "A QUOTED VALUE STOPS AT THE NEWLINE",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P7-001",
       "part": "7",
-      "title": "A TAB IS SYNTAX ONLY IN THE LEADING RUN"
+      "title": "A TAB IS SYNTAX ONLY IN THE LEADING RUN",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P7-002",
       "part": "7",
-      "title": "MARKER SEPARATORS AND PADDING SLOTS"
+      "title": "MARKER SEPARATORS AND PADDING SLOTS",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P7-003",
       "part": "7",
-      "title": "ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT"
+      "title": "ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-001",
       "part": "9",
-      "title": "A COMPOSITE FIGURE GROUPS ITS PANELS UNDER ONE CAPTION"
+      "title": "A COMPOSITE FIGURE GROUPS ITS PANELS UNDER ONE CAPTION",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9-002",
       "part": "9",
-      "title": "T5 SPAN WALK"
+      "title": "T5 SPAN WALK",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-003",
       "part": "9",
-      "title": "A CONTINUATION ROW LEAVES NO PARAGRAPH OPEN"
+      "title": "A CONTINUATION ROW LEAVES NO PARAGRAPH OPEN",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-004",
       "part": "9",
-      "title": "T7 GFM DELIMITER ROW"
+      "title": "T7 GFM DELIMITER ROW",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-005",
       "part": "9",
-      "title": "T8 ROW ATTRIBUTES"
+      "title": "T8 ROW ATTRIBUTES",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-006",
       "part": "9",
-      "title": "T9 A HEADER CELL STATES WHAT IT HEADS"
+      "title": "T9 A HEADER CELL STATES WHAT IT HEADS",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-007",
       "part": "9",
-      "title": "T10 CELL ATTRIBUTES BIND LAST"
+      "title": "T10 CELL ATTRIBUTES BIND LAST",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-008",
       "part": "9",
-      "title": "T11 A MARKER RUN ENDS AT A SPACE"
+      "title": "T11 A MARKER RUN ENDS AT A SPACE",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-009",
       "part": "9",
-      "title": "TABLE MARKER-PADDING DIAGNOSTICS SHARE ONE ID"
+      "title": "TABLE MARKER-PADDING DIAGNOSTICS SHARE ONE ID",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P9-010",
       "part": "9",
-      "title": "UNCONDITIONAL BY DEFAULT"
+      "title": "UNCONDITIONAL BY DEFAULT",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9-011",
       "part": "9",
-      "title": "OPTIONAL OFF SWITCH"
+      "title": "OPTIONAL OFF SWITCH",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P9-012",
       "part": "9",
-      "title": "AST REPRESENTATION"
+      "title": "AST REPRESENTATION",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P9-013",
       "part": "9",
-      "title": "AN INVISIBLE LINE IS ONE CLASSIFICATION"
+      "title": "AN INVISIBLE LINE IS ONE CLASSIFICATION",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-014",
       "part": "9",
-      "title": "N1a HARD BOUNDARY AFTER THREE BLANK LINES"
+      "title": "N1a HARD BOUNDARY AFTER THREE BLANK LINES",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-015",
       "part": "9",
-      "title": "BLOCK RENDERING"
+      "title": "BLOCK RENDERING",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9-016",
       "part": "9",
-      "title": "A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH EXPECTING A CLOSER"
+      "title": "A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH EXPECTING A CLOSER",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-017",
       "part": "9",
-      "title": "ABSORPTION REACHES A PARAGRAPH'S OWN LINES ONLY"
+      "title": "ABSORPTION REACHES A PARAGRAPH'S OWN LINES ONLY",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-018",
       "part": "9",
-      "title": "AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME"
+      "title": "AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9-019",
       "part": "9",
-      "title": "HEADING SECTION WRAPPING"
+      "title": "HEADING SECTION WRAPPING",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9-020",
       "part": "9",
-      "title": "INLINE SPAN VS LINK DISAMBIGUATION"
+      "title": "INLINE SPAN VS LINK DISAMBIGUATION",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-021",
       "part": "9",
-      "title": "EMPTY OR INVALID ATTRIBUTE BLOCK"
+      "title": "EMPTY OR INVALID ATTRIBUTE BLOCK",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-022",
       "part": "9",
-      "title": "BOOLEAN (value-less) ATTRIBUTES"
+      "title": "BOOLEAN (value-less) ATTRIBUTES",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-023",
       "part": "9",
-      "title": "A2a AN INVISIBLE CONSTRUCT IS NOT THE NEXT BLOCK"
+      "title": "A2a AN INVISIBLE CONSTRUCT IS NOT THE NEXT BLOCK",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-024",
       "part": "9",
-      "title": "A4 DROP IF DANGLING"
+      "title": "A4 DROP IF DANGLING",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-025",
       "part": "9",
-      "title": "FOOTNOTES"
+      "title": "FOOTNOTES",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9-026",
       "part": "9",
-      "title": "THE BACKLINK CARRIES AN ACCESSIBLE NAME"
+      "title": "THE BACKLINK CARRIES AN ACCESSIBLE NAME",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9-027",
       "part": "9",
-      "title": "THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME"
+      "title": "THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9-028",
       "part": "9",
-      "title": "THE ENGINE'S OWN WORDS ARE A RENDER OPTION"
+      "title": "THE ENGINE'S OWN WORDS ARE A RENDER OPTION",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P9-029",
       "part": "9",
-      "title": "L1a THE ITEM'S FIRST BLOCK DOES NOT MATTER"
+      "title": "L1a THE ITEM'S FIRST BLOCK DOES NOT MATTER",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-030",
       "part": "9",
-      "title": "L1b AN INVISIBLE LINE DOES NOT CANCEL THE SEPARATION"
+      "title": "L1b AN INVISIBLE LINE DOES NOT CANCEL THE SEPARATION",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-031",
       "part": "9",
-      "title": "CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0"
+      "title": "CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-032",
       "part": "9",
-      "title": "ONE IS A COUNT AND THE BOUNDARY IS NOT"
+      "title": "ONE IS A COUNT AND THE BOUNDARY IS NOT",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-033",
       "part": "9",
-      "title": "THE MARKER IS ONE OPERATION IN EVERY CONTAINER"
+      "title": "THE MARKER IS ONE OPERATION IN EVERY CONTAINER",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-067",
       "part": "9",
-      "title": "THE FIRST-BLOCK FORM IS THE ITEM AND THE DESCRIPTION"
+      "title": "THE FIRST-BLOCK FORM IS THE ITEM AND THE DESCRIPTION",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9-068",
       "part": "9",
-      "title": "A RETURNED DOCUMENT NEVER SILENTLY LACKS AUTHORED TEXT"
+      "title": "A RETURNED DOCUMENT NEVER SILENTLY LACKS AUTHORED TEXT",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9-034",
       "part": "9",
-      "title": "L6 A COLLECTED DEFINITION LEAVES NO TRACE"
+      "title": "L6 A COLLECTED DEFINITION LEAVES NO TRACE",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-035",
       "part": "9",
-      "title": "L7 ONE CONSUMED BOOLEAN SPELLS THE LOOSENESS NO BLANK LINE CAN"
+      "title": "L7 ONE CONSUMED BOOLEAN SPELLS THE LOOSENESS NO BLANK LINE CAN",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-036",
       "part": "9",
-      "title": "MATH"
+      "title": "MATH",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9-037",
       "part": "9",
-      "title": "A MATH SPAN CARRIES ROLE MATH"
+      "title": "A MATH SPAN CARRIES ROLE MATH",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9-038",
       "part": "9",
-      "title": "AN IMPORTER WRITES THE CORE FORM, NEVER THE EXTENSION FENCE"
+      "title": "AN IMPORTER WRITES THE CORE FORM, NEVER THE EXTENSION FENCE",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P9-039",
       "part": "9",
-      "title": "CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES"
+      "title": "CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P9-040",
       "part": "9",
-      "title": "RAW PASSTHROUGH"
+      "title": "RAW PASSTHROUGH",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9-041",
       "part": "9",
-      "title": "TRAILING LINE COMMENTS"
+      "title": "TRAILING LINE COMMENTS",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-042",
       "part": "9",
-      "title": "DELIMITED INLINE COMMENTS"
+      "title": "DELIMITED INLINE COMMENTS",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-043",
       "part": "9",
-      "title": "FORCED INTRAWORD EMPHASIS"
+      "title": "FORCED INTRAWORD EMPHASIS",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-044",
       "part": "9",
-      "title": "LINE BLOCK (VERSE)"
+      "title": "LINE BLOCK (VERSE)",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-045",
       "part": "9",
-      "title": "A BACKSLASH BREAK IS NOT ADDITIVE"
+      "title": "A BACKSLASH BREAK IS NOT ADDITIVE",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-046",
       "part": "9",
-      "title": "AN INLINE CONSTRUCT IS NOT A DEPTH THE RULE STOPS AT"
+      "title": "AN INLINE CONSTRUCT IS NOT A DEPTH THE RULE STOPS AT",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-047",
       "part": "9",
-      "title": "NO BLOCK CONSTRUCT IS RECOGNIZED INSIDE ONE"
+      "title": "NO BLOCK CONSTRUCT IS RECOGNIZED INSIDE ONE",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-048",
       "part": "9",
-      "title": "AN INVISIBLE LINE IS REMOVED AT THE BLOCK LAYER"
+      "title": "AN INVISIBLE LINE IS REMOVED AT THE BLOCK LAYER",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-049",
       "part": "9",
-      "title": "THE NODE'S SURVIVAL DOES NOT DEPEND ON HOW THE BOUNDARY ABOVE IT WAS SPELLED"
+      "title": "THE NODE'S SURVIVAL DOES NOT DEPEND ON HOW THE BOUNDARY ABOVE IT WAS SPELLED",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-050",
       "part": "9",
-      "title": "LOCAL HARD-BREAK BLOCK"
+      "title": "LOCAL HARD-BREAK BLOCK",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-051",
       "part": "9",
-      "title": "THE FOLD PRESUMES AN OPEN PARAGRAPH"
+      "title": "THE FOLD PRESUMES AN OPEN PARAGRAPH",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-052",
       "part": "9",
-      "title": "AN INVISIBLE LINE FOLDS LIKE ANY OTHER"
+      "title": "AN INVISIBLE LINE FOLDS LIKE ANY OTHER",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-053",
       "part": "9",
-      "title": "A COMMENT IS THE ONE EXCEPTION"
+      "title": "A COMMENT IS THE ONE EXCEPTION",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-054",
       "part": "9",
-      "title": "SECURITY REQUIREMENTS"
+      "title": "SECURITY REQUIREMENTS",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P9-055",
       "part": "9",
-      "title": "A URL-LIST ATTRIBUTE IS PROBED TOKEN-WISE, NOT AT ITS HEAD"
+      "title": "A URL-LIST ATTRIBUTE IS PROBED TOKEN-WISE, NOT AT ITS HEAD",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P9-056",
       "part": "9",
-      "title": "A FLATTENED OPENER IS ORDINARY PARAGRAPH TEXT"
+      "title": "A FLATTENED OPENER IS ORDINARY PARAGRAPH TEXT",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P9-057",
       "part": "9",
-      "title": "AT THE RENDER CEILING, A RENDERER REFUSES"
+      "title": "AT THE RENDER CEILING, A RENDERER REFUSES",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P9-058",
       "part": "9",
-      "title": "TROJAN-SOURCE / INVISIBLE-UNICODE HARDENING"
+      "title": "TROJAN-SOURCE / INVISIBLE-UNICODE HARDENING",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P9-059",
       "part": "9",
-      "title": "INLINE LITERAL"
+      "title": "INLINE LITERAL",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9-060",
       "part": "9",
-      "title": "BLOCK COMMENT FENCES"
+      "title": "BLOCK COMMENT FENCES",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P9-061",
       "part": "9",
-      "title": "C0 CONTROLS ON THE RENDER TARGETS"
+      "title": "C0 CONTROLS ON THE RENDER TARGETS",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9-062",
       "part": "9",
-      "title": "U+0000 IS NOT ONE OF THOSE CONTROLS"
+      "title": "U+0000 IS NOT ONE OF THOSE CONTROLS",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9-063",
       "part": "9",
-      "title": "THE ENGINE'S OWN WORDS ARE A RENDER OPTION"
+      "title": "THE ENGINE'S OWN WORDS ARE A RENDER OPTION",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P9-064",
       "part": "9",
-      "title": "AN EXTENSION WRITES INTO THE SAME MAP"
+      "title": "AN EXTENSION WRITES INTO THE SAME MAP",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P9-065",
       "part": "9",
-      "title": "AN IMPORTER DOES NOT BAKE A DERIVED NAME INTO SOURCE"
+      "title": "AN IMPORTER DOES NOT BAKE A DERIVED NAME INTO SOURCE",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P9-066",
       "part": "9",
-      "title": "A DERIVED VALUE IS ONE THE IMPORTER CAN RECONSTRUCT"
+      "title": "A DERIVED VALUE IS ONE THE IMPORTER CAN RECONSTRUCT",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P9R-001",
       "part": "9R",
-      "title": "THE EXPLICIT FORM DOES NOT REACH THE INDEX"
+      "title": "THE EXPLICIT FORM DOES NOT REACH THE INDEX",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9R-002",
       "part": "9R",
-      "title": "R1a A DEFINITION IS COLLECTED FROM A LINE THE BLOCK STRUCTURE KEEPS"
+      "title": "R1a A DEFINITION IS COLLECTED FROM A LINE THE BLOCK STRUCTURE KEEPS",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9R-003",
       "part": "9R",
-      "title": "R1b A MATCHER'S COORDINATES ARE LOCAL, NOT ABSOLUTE"
+      "title": "R1b A MATCHER'S COORDINATES ARE LOCAL, NOT ABSOLUTE",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9R-004",
       "part": "9R",
-      "title": "A NOTE INSIDE AN UNRESOLVED REFERENCE IS NOT A REFERENCE"
+      "title": "A NOTE INSIDE AN UNRESOLVED REFERENCE IS NOT A REFERENCE",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9R-005",
       "part": "9R",
-      "title": "WHAT IS CLONED IS THE HEADING'S INLINE NODES"
+      "title": "WHAT IS CLONED IS THE HEADING'S INLINE NODES",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9R-006",
       "part": "9R",
-      "title": "DERIVED DISPLAY TEXT CLONES THE SAME NODES"
+      "title": "DERIVED DISPLAY TEXT CLONES THE SAME NODES",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9R-007",
       "part": "9R",
-      "title": "R7 BLOCK IMAGE PROMOTION"
+      "title": "R7 BLOCK IMAGE PROMOTION",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9R-008",
       "part": "9R",
-      "title": "AN UNANSWERABLE PROBE KEEPS THE CANDIDATE TEXT"
+      "title": "AN UNANSWERABLE PROBE KEEPS THE CANDIDATE TEXT",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P10-001",
       "part": "10",
-      "title": "AN EMPTY CONTAINER BODY"
+      "title": "AN EMPTY CONTAINER BODY",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P10-002",
       "part": "10",
-      "title": "A ROW IS A ROW, IN EVERY SECTION"
+      "title": "A ROW IS A ROW, IN EVERY SECTION",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P10-003",
       "part": "10",
-      "title": "SEMANTIC SPAN ATTRIBUTES"
+      "title": "SEMANTIC SPAN ATTRIBUTES",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P10-004",
       "part": "10",
-      "title": "A DERIVED ATTRIBUTE YIELDS TO AN AUTHORED ONE OF THE SAME NAME"
+      "title": "A DERIVED ATTRIBUTE YIELDS TO AN AUTHORED ONE OF THE SAME NAME",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P10-005",
       "part": "10",
-      "title": "LEFTOVER ATTRIBUTES RIDE THE OUTERMOST SEMANTIC ELEMENT"
+      "title": "LEFTOVER ATTRIBUTES RIDE THE OUTERMOST SEMANTIC ELEMENT",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P10-006",
       "part": "10",
-      "title": "THE REGISTRY HOLDS NO ELEMENT CARVE ALREADY SPELLS INLINE"
+      "title": "THE REGISTRY HOLDS NO ELEMENT CARVE ALREADY SPELLS INLINE",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P10-007",
       "part": "10",
-      "title": "WHY THESE THREE ARE CORE AND THE REST ARE NOT"
+      "title": "WHY THESE THREE ARE CORE AND THE REST ARE NOT",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P10-008",
       "part": "10",
-      "title": "THE OTHER SEMANTIC NAMES ARE AN EXTENSION"
+      "title": "THE OTHER SEMANTIC NAMES ARE AN EXTENSION",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P10-009",
       "part": "10",
-      "title": "AN EXTENDED TASK STATE NAMES ITSELF ON THE ITEM"
+      "title": "AN EXTENDED TASK STATE NAMES ITSELF ON THE ITEM",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P11-001",
       "part": "11",
-      "title": "EQUALITY IS MODULO ESCAPING"
+      "title": "EQUALITY IS MODULO ESCAPING",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-002",
       "part": "11",
-      "title": "THE INVARIANT OUTRANKS THE PER-CONSTRUCT RULES"
+      "title": "THE INVARIANT OUTRANKS THE PER-CONSTRUCT RULES",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-003",
       "part": "11",
-      "title": "A FLATTEN PRESERVES THE BOUNDARY IT DISSOLVES"
+      "title": "A FLATTEN PRESERVES THE BOUNDARY IT DISSOLVES",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-004",
       "part": "11",
-      "title": "A WRAPPER ITS OWN CONTENT SPELLS AWAY IS A DECLARED CEILING"
+      "title": "A WRAPPER ITS OWN CONTENT SPELLS AWAY IS A DECLARED CEILING",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-005",
       "part": "11",
-      "title": "WRAPPER LOSS IS THE ONLY EQUALITY CARVE-OUT"
+      "title": "WRAPPER LOSS IS THE ONLY EQUALITY CARVE-OUT",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-006",
       "part": "11",
-      "title": "THE ESCAPING RULE"
+      "title": "THE ESCAPING RULE",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-007",
       "part": "11",
-      "title": "ESCAPE MINIMALITY STILL APPLIES INSIDE AN ESCALATED UNIT"
+      "title": "ESCAPE MINIMALITY STILL APPLIES INSIDE AN ESCALATED UNIT",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-008",
       "part": "11",
-      "title": "THE WRITER DOES NOT SUBSTITUTE ONE CONSTRUCT FOR ANOTHER"
+      "title": "THE WRITER DOES NOT SUBSTITUTE ONE CONSTRUCT FOR ANOTHER",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-009",
       "part": "11",
-      "title": "THE SCOPE OF AN ESCALATION IS THE SMALLEST UNIT THAT FAILS"
+      "title": "THE SCOPE OF AN ESCALATION IS THE SMALLEST UNIT THAT FAILS",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-010",
       "part": "11",
-      "title": "SEARCH COST BELONGS TO THE STRATEGY, NOT THE OUTPUT"
+      "title": "SEARCH COST BELONGS TO THE STRATEGY, NOT THE OUTPUT",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-011",
       "part": "11",
-      "title": "A FRONTMATTER OPENER IS WRITTEN `---yaml`"
+      "title": "A FRONTMATTER OPENER IS WRITTEN `---yaml`",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-012",
       "part": "11",
-      "title": "A VALUE-LESS ATTRIBUTE IS WRITTEN AS A BOOLEAN"
+      "title": "A VALUE-LESS ATTRIBUTE IS WRITTEN AS A BOOLEAN",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-013",
       "part": "11",
-      "title": "A CODE FENCE OPENER IS WRITTEN GLUED TO ITS INFO STRING"
+      "title": "A CODE FENCE OPENER IS WRITTEN GLUED TO ITS INFO STRING",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-014",
       "part": "11",
-      "title": "A TABLE CELL'S CONTENT IS PADDED"
+      "title": "A TABLE CELL'S CONTENT IS PADDED",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-015",
       "part": "11",
-      "title": "PADDING IS NOT AN ESCAPE WHERE THE PRODUCTION ADMITS PADDING"
+      "title": "PADDING IS NOT AN ESCAPE WHERE THE PRODUCTION ADMITS PADDING",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-016",
       "part": "11",
-      "title": "NO WHITESPACE-ONLY LINE"
+      "title": "NO WHITESPACE-ONLY LINE",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-017",
       "part": "11",
-      "title": "THE SAME LINE DECIDES WHAT AN IMPORT KEEPS"
+      "title": "THE SAME LINE DECIDES WHAT AN IMPORT KEEPS",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-018",
       "part": "11",
-      "title": "AN EMPTY CONTAINER BODY IS A BLANK LINE HERE TOO"
+      "title": "AN EMPTY CONTAINER BODY IS A BLANK LINE HERE TOO",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-019",
       "part": "11",
-      "title": "A FOOTNOTE DEFINITION WITH NO BLOCKS IS WRITTEN WITH THE SENTINEL `{empty}`"
+      "title": "A FOOTNOTE DEFINITION WITH NO BLOCKS IS WRITTEN WITH THE SENTINEL `{empty}`",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-020",
       "part": "11",
-      "title": "A LINE BLOCK'S HARD BREAK IS WRITTEN BARE ONLY WHERE THE BARE NEWLINE RE-DERIVES IT"
+      "title": "A LINE BLOCK'S HARD BREAK IS WRITTEN BARE ONLY WHERE THE BARE NEWLINE RE-DERIVES IT",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-021",
       "part": "11",
-      "title": "A LINE WHOSE LAST NODE IS A COMMENT IS EXEMPT"
+      "title": "A LINE WHOSE LAST NODE IS A COMMENT IS EXEMPT",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-022",
       "part": "11",
-      "title": "THE MARKDOWN TARGET'S ESCAPING"
+      "title": "THE MARKDOWN TARGET'S ESCAPING",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-023",
       "part": "11",
-      "title": "THE MARKDOWN TARGET'S ESCAPING NARROWS ON THE LINE"
+      "title": "THE MARKDOWN TARGET'S ESCAPING NARROWS ON THE LINE",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-024",
       "part": "11",
-      "title": "IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP"
+      "title": "IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-025",
       "part": "11",
-      "title": "THE MARKDOWN TARGET'S AUTHORED ESCAPE NARROWS TOO"
+      "title": "THE MARKDOWN TARGET'S AUTHORED ESCAPE NARROWS TOO",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-026",
       "part": "11",
-      "title": "THE MARKDOWN TARGET'S HARD BREAK"
+      "title": "THE MARKDOWN TARGET'S HARD BREAK",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-027",
       "part": "11",
-      "title": "A LIST ITEM'S CONTINUATION LINES ARE ALIGNED"
+      "title": "A LIST ITEM'S CONTINUATION LINES ARE ALIGNED",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-028",
       "part": "11",
-      "title": "AN UNUSED DEFINITION SURVIVES THE NON-HTML TARGETS"
+      "title": "AN UNUSED DEFINITION SURVIVES THE NON-HTML TARGETS",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-029",
       "part": "11",
-      "title": "A TABLE ROW KEEPS ITS OWN CELL COUNT"
+      "title": "A TABLE ROW KEEPS ITS OWN CELL COUNT",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-030",
       "part": "11",
-      "title": "ADJACENT BLOCKS THAT WOULD MERGE KEEP THE CONTINUATION MARKER"
+      "title": "ADJACENT BLOCKS THAT WOULD MERGE KEEP THE CONTINUATION MARKER",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-031",
       "part": "11",
-      "title": "MULTIPLE CARVE HEADER ROWS SURVIVE THE MARKDOWN TARGET"
+      "title": "MULTIPLE CARVE HEADER ROWS SURVIVE THE MARKDOWN TARGET",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-032",
       "part": "11",
-      "title": "A PRESENTATION TARGET KEEPS A CAPTION, A FENCE TITLE AND A FENCE LABEL"
+      "title": "A PRESENTATION TARGET KEEPS A CAPTION, A FENCE TITLE AND A FENCE LABEL",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-033",
       "part": "11",
-      "title": "A REFERENCED ABBREVIATION DEFINITION SPLITS BY TARGET"
+      "title": "A REFERENCED ABBREVIATION DEFINITION SPLITS BY TARGET",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-034",
       "part": "11",
-      "title": "A COMPOSITE FIGURE SURVIVES EVERY TARGET"
+      "title": "A COMPOSITE FIGURE SURVIVES EVERY TARGET",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-035",
       "part": "11",
-      "title": "THE PLAIN-TEXT TARGET PRESERVES LIST DEPTH"
+      "title": "THE PLAIN-TEXT TARGET PRESERVES LIST DEPTH",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-036",
       "part": "11",
-      "title": "A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES"
+      "title": "A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-037",
       "part": "11",
-      "title": "AN UNSPELLABLE BLOCK DOES NOT CANCEL THE ADJACENCY IT CANNOT SPELL"
+      "title": "AN UNSPELLABLE BLOCK DOES NOT CANCEL THE ADJACENCY IT CANNOT SPELL",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-038",
       "part": "11",
-      "title": "THE MARKDOWN TARGET'S CROSS-REFERENCES"
+      "title": "THE MARKDOWN TARGET'S CROSS-REFERENCES",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-039",
       "part": "11",
-      "title": "A RESOLUTION RESULT ABOUT THE WRAPPER IS NOT CONTENT OF IT"
+      "title": "A RESOLUTION RESULT ABOUT THE WRAPPER IS NOT CONTENT OF IT",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-040",
       "part": "11",
-      "title": "AN EMPTY DESCRIPTION BODY IS WRITTEN WITH THE SENTINEL `{empty}`"
+      "title": "AN EMPTY DESCRIPTION BODY IS WRITTEN WITH THE SENTINEL `{empty}`",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P11-041",
       "part": "11",
-      "title": "A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE"
+      "title": "A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE",
+      "scope": "canonical-writing"
     },
     {
       "id": "CARVE-P12-001",
       "part": "12",
-      "title": "THE TYPE NAME COMES FROM profiles.md, NOT FROM carve-js"
+      "title": "THE TYPE NAME COMES FROM profiles.md, NOT FROM carve-js",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-002",
       "part": "12",
-      "title": "ADJACENT TEXT RUNS ARE COALESCED"
+      "title": "ADJACENT TEXT RUNS ARE COALESCED",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-003",
       "part": "12",
-      "title": "TEXT COALESCING OCCURS DURING `parse(x)`, NOT SERIALIZATION"
+      "title": "TEXT COALESCING OCCURS DURING `parse(x)`, NOT SERIALIZATION",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-004",
       "part": "12",
-      "title": "THE U+E000 SENTINEL"
+      "title": "THE U+E000 SENTINEL",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-005",
       "part": "12",
-      "title": "THE SERIALIZED TREE IS PRE-RESOLVE"
+      "title": "THE SERIALIZED TREE IS PRE-RESOLVE",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-006",
       "part": "12",
-      "title": "A RESOLVED REFERENCE KEEPS ITS DESTINATION"
+      "title": "A RESOLVED REFERENCE KEEPS ITS DESTINATION",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-007",
       "part": "12",
-      "title": "A NESTED LINK AND AN AUTOLINK STAY NODES"
+      "title": "A NESTED LINK AND AN AUTOLINK STAY NODES",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-008",
       "part": "12",
-      "title": "A DESTINATION IS THE AUTHOR'S TEXT, UNSANITIZED"
+      "title": "A DESTINATION IS THE AUTHOR'S TEXT, UNSANITIZED",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-009",
       "part": "12",
-      "title": "A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST"
+      "title": "A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P12-010",
       "part": "12",
-      "title": "RESOLVED OR NOT"
+      "title": "RESOLVED OR NOT",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-011",
       "part": "12",
-      "title": "A SPAN CONTAINS ITS CHILDREN'S SPANS"
+      "title": "A SPAN CONTAINS ITS CHILDREN'S SPANS",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-012",
       "part": "12",
-      "title": "A SPAN COVERS THE MARKUP THE AUTHOR WROTE"
+      "title": "A SPAN COVERS THE MARKUP THE AUTHOR WROTE",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-013",
       "part": "12",
-      "title": "A SPAN BEGINS AT THE CONSTRUCT'S OPENING MARKUP"
+      "title": "A SPAN BEGINS AT THE CONSTRUCT'S OPENING MARKUP",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-014",
       "part": "12",
-      "title": "A SPAN ENDS IMMEDIATELY AFTER THE CONSTRUCT'S LAST OWNED SOURCE CODEPOINT"
+      "title": "A SPAN ENDS IMMEDIATELY AFTER THE CONSTRUCT'S LAST OWNED SOURCE CODEPOINT",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-015",
       "part": "12",
-      "title": "A HOISTED SIBLING IS NOT A CHILD, AND A CLOSERLESS CONTAINER ENDS BEFORE IT"
+      "title": "A HOISTED SIBLING IS NOT A CHILD, AND A CLOSERLESS CONTAINER ENDS BEFORE IT",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-016",
       "part": "12",
-      "title": "A HOISTED DEFINITION MAY CLAIM SOURCE INSIDE THE CONTAINER IT WAS AUTHORED IN"
+      "title": "A HOISTED DEFINITION MAY CLAIM SOURCE INSIDE THE CONTAINER IT WAS AUTHORED IN",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-017",
       "part": "12",
-      "title": "IS NOT AN EXCEPTION"
+      "title": "IS NOT AN EXCEPTION",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-018",
       "part": "12",
-      "title": "A CONTAINER WITH NO PLACED CHILD AT ALL SPANS ITS OWN MARKUP AND STOPS THERE"
+      "title": "A CONTAINER WITH NO PLACED CHILD AT ALL SPANS ITS OWN MARKUP AND STOPS THERE",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-019",
       "part": "12",
-      "title": "A CONTAINER STARTS AT ITS OPENING MARKUP EVEN WHERE ITS FIRST CHILD IS UNPLACED"
+      "title": "A CONTAINER STARTS AT ITS OPENING MARKUP EVEN WHERE ITS FIRST CHILD IS UNPLACED",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-020",
       "part": "12",
-      "title": "A CONTAINER ENDS AT THE MARKUP THAT CLOSES IT EVEN WHERE ITS LAST CHILD IS UNPLACED"
+      "title": "A CONTAINER ENDS AT THE MARKUP THAT CLOSES IT EVEN WHERE ITS LAST CHILD IS UNPLACED",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-021",
       "part": "12",
-      "title": "A SPAN DOES NOT BEGIN AT A LINE TERMINATOR"
+      "title": "A SPAN DOES NOT BEGIN AT A LINE TERMINATOR",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-022",
       "part": "12",
-      "title": "A REASSEMBLED NODE MUST OMIT `pos`"
+      "title": "A REASSEMBLED NODE MUST OMIT `pos`",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-023",
       "part": "12",
-      "title": "A GENERATED HEADING ID IS A RESOLUTION RESULT"
+      "title": "A GENERATED HEADING ID IS A RESOLUTION RESULT",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-024",
       "part": "12",
-      "title": "THE DOCUMENT ROOT CARRIES EXACTLY THREE FIELDS"
+      "title": "THE DOCUMENT ROOT CARRIES EXACTLY THREE FIELDS",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-025",
       "part": "12",
-      "title": "CONTENT IS RAW, NOT PARSED"
+      "title": "CONTENT IS RAW, NOT PARSED",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-026",
       "part": "12",
-      "title": "AN ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL"
+      "title": "AN ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-027",
       "part": "12",
-      "title": "A DEFINITION LIST'S ENTRIES ARE NODES"
+      "title": "A DEFINITION LIST'S ENTRIES ARE NODES",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-028",
       "part": "12",
-      "title": "HOW DEEP AN INGESTED AST MAY NEST"
+      "title": "HOW DEEP AN INGESTED AST MAY NEST",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-029",
       "part": "12",
-      "title": "A LINK REFERENCE DEFINITION IS A NODE"
+      "title": "A LINK REFERENCE DEFINITION IS A NODE",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-030",
       "part": "12",
-      "title": "A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST"
+      "title": "A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-031",
       "part": "12",
-      "title": "A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST"
+      "title": "A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-032",
       "part": "12",
-      "title": "SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR"
+      "title": "SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P12-033",
       "part": "12",
-      "title": "A CAPTION MAY CARRY AN OPTIONAL STRUCTURED SHORT CAPTION"
+      "title": "A CAPTION MAY CARRY AN OPTIONAL STRUCTURED SHORT CAPTION",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P12-034",
       "part": "12",
-      "title": "A TABLE MAY CARRY AN OPTIONAL ROW GROUPING"
+      "title": "A TABLE MAY CARRY AN OPTIONAL ROW GROUPING",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P12-035",
       "part": "12",
-      "title": "A COMPOSITE FIGURE IS ITS OWN NODE TYPE"
+      "title": "A COMPOSITE FIGURE IS ITS OWN NODE TYPE",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-036",
       "part": "12",
-      "title": "A FIGURE MAY WRAP A TABLE, AND NO CARVE SOURCE SPELLS IT"
+      "title": "A FIGURE MAY WRAP A TABLE, AND NO CARVE SOURCE SPELLS IT",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P12-037",
       "part": "12",
-      "title": "A CITATION DEFINITION IS A NODE"
+      "title": "A CITATION DEFINITION IS A NODE",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P12-038",
       "part": "12",
-      "title": "A CITATION ITEM IS A POSITIONED INLINE NODE"
+      "title": "A CITATION ITEM IS A POSITIONED INLINE NODE",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P12-039",
       "part": "12",
-      "title": "A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA"
+      "title": "A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA",
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P12-040",
       "part": "12",
-      "title": "TABLE ALIGNMENT RUNS CARRY TWO INDEPENDENT AXES"
+      "title": "TABLE ALIGNMENT RUNS CARRY TWO INDEPENDENT AXES",
+      "scope": "parsing"
     },
     {
       "id": "CARVE-P12-041",
       "part": "12",
-      "title": "U+0000 IS REPLACED ON INGEST"
+      "title": "U+0000 IS REPLACED ON INGEST",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-042",
       "part": "12",
-      "title": "AN INGESTED VALUE THE SCHEMA CALLS ABSENT IS NORMALIZED AWAY"
+      "title": "AN INGESTED VALUE THE SCHEMA CALLS ABSENT IS NORMALIZED AWAY",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-043",
       "part": "12",
-      "title": "A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH"
+      "title": "A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-044",
       "part": "12",
-      "title": "ON INGEST, TRUST THE PROPERTY"
+      "title": "ON INGEST, TRUST THE PROPERTY",
+      "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-045",
       "part": "12",
-      "title": "THE WRITER IS UNAFFECTED"
+      "title": "THE WRITER IS UNAFFECTED",
+      "scope": "canonical-writing"
     }
   ],
   "retired": [

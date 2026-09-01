@@ -236,6 +236,18 @@ export default defineConfig({
             { text: 'HTML Import', link: '/html-import' },
             { text: 'Format Bridges', link: '/format-bridges' },
             { text: 'Formal Grammar', link: '/grammar' },
+            {
+              text: 'Normative Rules',
+              collapsed: true,
+              items: [
+                { text: 'Overview', link: '/rules/' },
+                { text: 'Parsing', link: '/rules/parsing' },
+                { text: 'Resolution & Rendering', link: '/rules/resolution-rendering' },
+                { text: 'AST Interchange', link: '/rules/ast-interchange' },
+                { text: 'Canonical Writing', link: '/rules/canonical-writing' },
+                { text: 'Imports, Security & Extensions', link: '/rules/imports-security-extensions' },
+              ],
+            },
             { text: 'Native Features', link: '/native-features-analysis' },
             { text: 'Carve vs Markdown/Djot/MDX', link: '/comparison' },
             { text: 'Divergence from Djot', link: '/divergence-from-djot' },

@@ -39,6 +39,24 @@ const actual = clauses(readFileSync(grammarPath, 'utf8'))
 
 if (command === '--check') {
   const stored = JSON.parse(readFileSync(registryPath, 'utf8'))
+  const scopes = Array.isArray(stored.scopes) ? stored.scopes : []
+  const scopeIds = scopes.map(({ id }) => id)
+  if (new Set(scopeIds).size !== scopeIds.length || scopeIds.length !== 5) {
+    console.error('resources/spec/rules.json must declare five unique rule scopes')
+    process.exitCode = 1
+  }
+  for (const scope of scopes) {
+    if (!scope.id || !scope.title || !scope.description) {
+      console.error('every rule scope needs an id, title and description')
+      process.exitCode = 1
+    }
+  }
+  for (const rule of stored.rules) {
+    if (!scopeIds.includes(rule.scope)) {
+      console.error(`${rule.id} has unknown or missing scope '${rule.scope ?? ''}'`)
+      process.exitCode = 1
+    }
+  }
   const byPartAndTitle = (rules) => rules.map(({ part, title }) => `${part}\0${title}`).sort()
   const expectedKeys = byPartAndTitle(stored.rules)
   const actualKeys = byPartAndTitle(actual)
