@@ -26,8 +26,10 @@ filename order, so their numeric prefixes are part of the build contract.
 
 Rule IDs are permanent. A rule title may be clarified by changing its `title`
 in `rules.json`, but its ID must not be recycled. Adding a rule requires a new
-ID in its PART. Removing a rule retains the ID in review history rather than
-assigning it to another rule.
+ID in its PART. Removing a rule moves its registry entry from `rules` to
+`retired` rather than assigning the ID to another rule. Every retired entry
+keeps its last title and names a `replacement`; a Markdown replacement includes
+the heading anchor that now owns the contract.
 
 ## What belongs elsewhere
 

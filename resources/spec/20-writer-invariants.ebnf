@@ -222,7 +222,7 @@
       neighbours all survive as themselves -- and it puts the loss on the
       record, which is the whole of what §1 can be held to here.
 
-      A CHECKER FOR §1 NARROWS TO THIS BOUND AND NO WIDER -- NORMATIVE
+      WRAPPER LOSS IS THE ONLY EQUALITY CARVE-OUT -- NORMATIVE
       (carve#1679). The paragraph above says what this clause forgives. This
       says what it does NOT, because a checker asserting `parse(fmt(x)) ==
       parse(x)` has to encode both halves, and stated only as a permission the
@@ -295,8 +295,9 @@
       escapes on this occurrence let the construct form? Yes -> escape the run.
       No -> emit it bare.
 
-      AND THAT HOLDS INSIDE A UNIT THAT ESCALATED -- NORMATIVE (carve#1533).
-      One occurrence needing the conservative form does not put the OTHER
+      ESCAPE MINIMALITY STILL APPLIES INSIDE AN ESCALATED UNIT -- NORMATIVE
+      (carve#1533). One occurrence needing the conservative form does not put
+      the OTHER
       occurrences in the unit with it. §2b bounds how far the fallback reaches;
       the reach is not the only thing that was too wide. An indented paragraph
       whose text reads `{.note}` is written
@@ -466,7 +467,7 @@
         BOTH forms keeps the two renders identical on that point, at the cost
         of one escape on a character that is rare in prose.
 
-        THAT COST IS THE STRATEGY'S, NOT THE OUTPUT'S -- NORMATIVE, and the
+        SEARCH COST BELONGS TO THE STRATEGY, NOT THE OUTPUT -- NORMATIVE, and the
         difference is §4's own. This section names the sets W1 renders
         against, so a caret named here is escaped in BOTH forms and W3 never
         weighs the mark; it is not a license to EMIT an escape §2 does not

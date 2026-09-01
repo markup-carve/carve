@@ -72,24 +72,9 @@
    - resources/carve-core.ohm and scripts/spec/*.mjs are DERIVED CHECKERS.
      They execute what this file states so that a contradiction inside it
      becomes visible. They are not a fourth implementation whose behavior
-     the language follows; three consequences follow from that, each a
-     clause of its own.
-
-     THE EXECUTABLE ARTIFACTS DECIDE NOTHING -- NORMATIVE. A ruling cites a
-     clause. "The executable spec does X", or "carve-js does X", is a
-     measurement, never an argument for X. Where a question is genuinely
-     unruled, the answer is a new clause here, not the behavior of whatever
-     ran last.
-
-     A GOLDEN IS NORMATIVE ONCE COMMITTED, NOT ONCE GENERATED -- NORMATIVE.
-     `npm run corpus:build` PROPOSES pairs; a reviewed commit is what makes
-     one the answer. A generated golden nobody read is a claim about this
-     file, and it can be a wrong one.
-
-     A CHECKER THAT DISAGREES WITH A COMMITTED GOLDEN IS WRONG UNTIL A
-     CLAUSE SAYS OTHERWISE -- NORMATIVE. The disagreement is a question to
-     raise against this file, not a divergence to record against the
-     engines.
+     the language follows. The review and ruling policy for checkers and
+     generated goldens lives under WHAT SETTLES A QUESTION in
+     `.github/CONTRIBUTING.md`.
 
    - WHAT EARNS A CLAUSE is a process rule rather than a language rule, so it
      lives in .github/CONTRIBUTING.md and not here. In short: a new clause

@@ -153,8 +153,9 @@
       `afterParse` or `beforeRender`, which run once over the finished document,
       and never in a matcher.
 
-      AND IT FAILS TOWARD KEEPING THE TEXT -- NORMATIVE (carve#1881). An
-      implementation that cannot answer -- no probe, an exhausted work budget,
+      AN UNANSWERABLE PROBE KEEPS THE CANDIDATE TEXT -- NORMATIVE
+      (carve#1881). An implementation that cannot answer -- no probe, an
+      exhausted work budget,
       a construct it does not recognize -- collects NOTHING from the candidate
       line.
 

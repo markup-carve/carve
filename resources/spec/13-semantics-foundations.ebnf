@@ -320,7 +320,7 @@
 
          Both are absorbed.
 
-         IT LEAVES NO PARAGRAPH OPEN, LIKE THE ROW IT APPENDS TO -- NORMATIVE.
+         A CONTINUATION ROW LEAVES NO PARAGRAPH OPEN -- NORMATIVE.
          PART 1 S4 asks what a container's last BLOCK is, and the answer here
          is a table however its last row is spelled: this clause gives a
          continuation row `table_cell`s and joins them onto the row above, so
@@ -464,7 +464,8 @@
          `|=a |` and `|{#x}=R|` are data-cell content. §6e's writer emits a
          space after every prefix.
 
-         THE LINTER NAMES IT `table-marker-run-padding` -- NORMATIVE. One id
+         TABLE MARKER-PADDING DIAGNOSTICS SHARE ONE ID -- NORMATIVE. The id is
+         `table-marker-run-padding`. One id
          for the whole run, because T11 is one rule for the whole run: it
          reports a glued kind marker, a glued alignment run and a glued
          attribute block alike, and `fmt --migrate` repairs any of them by

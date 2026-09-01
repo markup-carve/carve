@@ -1942,7 +1942,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // lazy continuation, which would otherwise swallow the bare `+` as
           // paragraph text.
           //
-          // AND FLUSH-LEFT MEANS COLUMN 0 (SS17 L3, carve#1436) - asked here by
+          // CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0 (SS17 L3, carve#1436) - asked here by
           // the same predicate every other container asks (carve#1814). When
           // the next line is at any other column the `+` is NOT a marker: it is
           // an ordinary invisible line at document column 0, and this body ends
@@ -2224,7 +2224,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               // `+` pull-left marker: the following flush-left block joins the
               // <dd>; a blank separator lets parseBlocks start a fresh block.
               //
-              // AND FLUSH-LEFT MEANS COLUMN 0 (SS17 L3, carve#1436), asked by
+              // CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0 (SS17 L3, carve#1436), asked by
               // the shared predicate (carve#1814). A `+` whose next line sits
               // at any other column is not a marker at all - it is an invisible
               // line at document column 0, and the description body ends at it
@@ -2254,7 +2254,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             /*
              * AN EMPTY BODY CLAIMS NOTHING BELOW COLUMN 0 -- §17 L3, carve#1821.
              *
-             * `AND FLUSH-LEFT MEANS COLUMN 0` gives the marker its own control:
+             * `CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0` gives the marker its own control:
              * a refused `+` behaves "exactly as if the `+` line had been a
              * comment". In the FIRST-BLOCK form `:  +` no paragraph is open, so
              * the `+` genuinely is a marker and the clause reads its payload's
@@ -2791,7 +2791,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         if (lines[i] !== undefined && CONT_MARKER.test(lines[i])) {
           // PART 9 SS17 L4: `+` at column 0 attaches ONE following block
           i++
-          // ... and AND FLUSH-LEFT MEANS COLUMN 0 says WHICH block, asked in
+          // ... and CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0 says WHICH block, asked in
           // `attachedBlockEnd` where every container asks it (carve#1814). A
           // QUOTE IS REACHED BY ITS MARKER, AND A COLUMN NEVER REACHES INTO ONE
           // (SS10 I5, carve#1384): a column-2 line under `> a` is in no quote,
@@ -3154,7 +3154,7 @@ function firstBlockEnd(lines, start, limit, state) {
  * marker did nothing at all, where L3 says the marker only ever ATTACHES.
  *
  * AND WHICH LINE IT REACHES is not a parameter of the operation either
- * (carve#1814). `AND FLUSH-LEFT MEANS COLUMN 0` (SS17 L3, carve#1436) says the
+ * (carve#1814). `CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0` (SS17 L3, carve#1436) says the
  * marker attaches a block that BEGINS AT COLUMN 0 and nothing else; a line at
  * any other column is not attached at all and falls through to the ordinary
  * column rules, which give it to whichever container its own column names,

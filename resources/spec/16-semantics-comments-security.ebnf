@@ -185,7 +185,8 @@
         opener CLAIMS the line and changes what renders, while a comment-only
         body line leaves an EMPTY verse line.
 
-        IT IS REMOVED AT THE BLOCK LAYER -- NORMATIVE. The line is decided
+        AN INVISIBLE LINE IS REMOVED AT THE BLOCK LAYER -- NORMATIVE. The line
+        is decided
         with the other block-layer decisions, BEFORE any inline content
         exists. No inline run can reach it, so whether an EARLIER line left a
         verbatim run open cannot change whether a line is a comment. Otherwise

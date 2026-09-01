@@ -269,7 +269,7 @@
         not, because it ends on a heading. Non-emptiness is not the test - a
         quote is a container like any other and its own last block answers.
 
-        AND THE QUOTE IT IS ASKED OF MAY ITSELF BE A QUOTE -- NORMATIVE
+        A QUOTE'S LAST BLOCK MAY ITSELF BE A QUOTE -- NORMATIVE
         (carve#1355). "Recursively" has no depth in it, and neither does "a
         container like any other". An OUTER quote whose last block is an inner
         quote is answered by what the INNER quote ends on:
@@ -472,7 +472,7 @@
         and `x` re-parses at document level -- where the trailing delimiter run
         is ordinary inline text.
 
-        AND THE FENCE KIND IS NOT A PARAMETER -- NORMATIVE.
+        FENCE KIND DOES NOT DETERMINE CONTAINER REACH -- NORMATIVE.
         VERBATIMNESS is not the property doing the work. The reach of a
         container is not extended by what its innermost block happens to be,
         and the parameter S4 consults is whether ANY container in the open
@@ -521,7 +521,7 @@
         (carve#1379), and a fence with a closer is a BLOCK whose body leaves no
         paragraph open, which is the first bullet with its premise intact.
 
-        AND NOTHING CLOSES MEANS THE CONTAINER GOES ON COLLECTING -- NORMATIVE
+        A LAZY FOLD KEEPS THE CONTAINER OPEN FOR FOLLOWING LINES -- NORMATIVE
         (carve#980). S4's lazy branch says NOTHING closes, and that binds the
         lines AFTER the folded one as much as the folded one itself. A line
         that returns to the container's content column is still that
@@ -556,15 +556,16 @@
         with a `:::` line closes the paragraph inside it and inverts the left
         answer, which is what the third document pins.
 
-        AND THE CONTAINER KIND IS NOT A PARAMETER EITHER -- NORMATIVE
+        CONTAINER KIND DOES NOT DETERMINE CONTAINER REACH -- NORMATIVE
         (carve#920). The same three documents written with a BLOCK QUOTE decide
         the same way. `> quote` / `> ::: note` / `tail` closes the quote and
         leaves `tail` at top level, and so does the CLOSED form
         `> quote` / `> ::: note` / `> body` / `> :::` / `tail`, because a closed
         container holds no open paragraph any more than an empty one does.
 
-        AND A DEFINITION BODY IS SUCH A CONTAINER -- NORMATIVE (carve#956).
-        The third indented-block collector answers the same way. A definition
+        DEFINITION BODIES FOLLOW THE SAME CONTAINER REACH RULE -- NORMATIVE
+        (carve#956). The third indented-block collector answers the same way. A
+        definition
         body's canonical `dd` demands indentation to column 2
         (`definition_indent`), so a fence opened on the `: ` marker line whose
         body sits BELOW that column
