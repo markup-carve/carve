@@ -339,6 +339,46 @@
         `>   [r]: /u` registers at the inner item's content column. The marker
         is the parameter, and the quote's body is not.
 
+        A NEW MARKER DOES NOT REACH A DEAD CONTAINER'S COLUMN -- NORMATIVE
+        (carve#1892). A blank line ends a
+        block quote, and every column opened INSIDE it dies with it, including
+        the item columns. A later line that writes the marker again opens a NEW
+        quote; it does not re-enter the old one, and it inherits nothing from
+        it. So
+
+            > - x
+
+            >   [r]: /u
+
+            > [r][]
+
+        has no item open when `[r]: /u` is read. The definition sits two columns
+        ABOVE the new quote's content column with nothing between, and I5's
+        first control asks for the content column exactly: `> - x` over
+        `>   [r]: /u` registers because an item is open at that column, and the
+        same two lines with a blank between them do not, because none is. The
+        definition is PARAGRAPH TEXT -- published where it was written, and
+        registering nothing, so `[r][]` stays literal.
+
+        ABOVE A CONTENT COLUMN IS NOT AT IT, which is the general rule that
+        control is one case of. I5's three columns are exhaustive as written:
+        AT `content_column` the definition registers, at DOCUMENT column 0 it
+        registers, and at a nonzero column BELOW `content_column` it is lazy
+        paragraph text. A column ABOVE `content_column` with no item open is
+        none of the three, and it resolves the way the document level resolves
+        it: a container is a document with a margin, and indentation above the
+        margin is no more a definition site than column 2 is at the top level.
+        The single exception stays the one §24 C3 already carves out -- WITH AN
+        ITEM OPEN the test is "at or past" rather than "exactly at", because the
+        item erases an authored base before it parses the line (carve#1705).
+        With no item open there is no base to erase.
+
+        THIS IS THE MARKED SPELLING OF A RULE ALREADY SETTLED for the unmarked
+        one. `> - a` over a blank over four spaces reaches column 4 and is
+        inside NOTHING, so it registers nothing while the page prints it as
+        text (carve-php#1431). Re-marking the quote changes which container the
+        line is in; it does not revive the item that ended at the blank.
+
         PROSE REOPENS THE PARAGRAPH WHEREVER IT SITS AMONG THE ITEM'S BLOCKS,
         which is the general shape of that last sentence rather than a property
         of abbreviations. S4 asks whether any container in the open stack holds
