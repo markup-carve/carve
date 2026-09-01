@@ -76,6 +76,9 @@ believed.
   satellite (tree-sitter-carve#160).
 - **A generated golden is a proposal.** `npm run corpus:build` writes pairs;
   the review that commits them is what makes them the answer.
+- **A checker yields to a committed golden until the grammar changes.** Raise
+  the disagreement against the normative clause; do not record it as engine
+  divergence or rewrite the reviewed pair to match the checker.
 - **Never settle a cross-engine question by counting engines.** Three engines
   agreeing is evidence that a shape is unpinned, not that it is correct.
 

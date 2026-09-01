@@ -1,7 +1,7 @@
 /*
  * AN EMPTY BODY CLAIMS NOTHING BELOW COLUMN 0 -- §17 L3, carve#1821.
  *
- * `AND FLUSH-LEFT MEANS COLUMN 0` (carve#1436) names its own control: a line
+ * `CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0` (carve#1436) names its own control: a line
  * the marker does not reach "falls through to the ordinary column rules, which
  * give it to whichever container its own column names, exactly as if the `+`
  * line had been a comment". So the rule is a RELATION between two documents,

@@ -30050,7 +30050,8 @@ promotes, and the item holds a figure.
 
 ## The continuation marker's column gate reaches every container
 
-`AND FLUSH-LEFT MEANS COLUMN 0` (§17 L3, markup-carve/carve#1436) says a `+`
+`CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0` (§17 L3,
+markup-carve/carve#1436) says a `+`
 attaches a block that begins at document column 0 and nothing else: a line at
 any other column is not attached at all, and falls through to the ordinary
 column rules exactly as if the `+` line had been a comment. Only the LIST ITEM
@@ -30364,7 +30365,8 @@ more</li>
 
 ## An empty description body claims no line below column 0
 
-`AND FLUSH-LEFT MEANS COLUMN 0` (§17 L3, markup-carve/carve#1436) gives the
+`CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0` (§17 L3,
+markup-carve/carve#1436) gives the
 marker its own control: a line the `+` does not reach falls through to the
 ordinary column rules "exactly as if the `+` line had been a comment". In the
 accepted wider-separator FIRST-BLOCK form `:  +` no paragraph is open, so the

@@ -197,8 +197,9 @@
          sole way to END a container, so a `+` can never break the
          following block OUT of its container -- it adds it IN.
 
-         AND FLUSH-LEFT MEANS COLUMN 0 -- NORMATIVE (carve#1436). "flush-left"
-         above is the reach, not a description of the usual case: the marker
+         CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0 -- NORMATIVE
+         (carve#1436). "flush-left" above is the reach, not a description of
+         the usual case: the marker
          attaches a block that begins at column 0 and NOTHING else. A line at
          any other column is not attached at all - it falls through to the
          ordinary column rules, which give it to whichever container its own

@@ -2,21 +2,6 @@
   "version": 1,
   "rules": [
     {
-      "id": "CARVE-PRE-001",
-      "part": "PRE",
-      "title": "THE EXECUTABLE ARTIFACTS DECIDE NOTHING"
-    },
-    {
-      "id": "CARVE-PRE-002",
-      "part": "PRE",
-      "title": "A GOLDEN IS NORMATIVE ONCE COMMITTED, NOT ONCE GENERATED"
-    },
-    {
-      "id": "CARVE-PRE-003",
-      "part": "PRE",
-      "title": "A CHECKER THAT DISAGREES WITH A COMMITTED GOLDEN IS WRONG UNTIL A CLAUSE SAYS OTHERWISE"
-    },
-    {
       "id": "CARVE-P0-001",
       "part": "0",
       "title": "A LEADING BYTE ORDER MARK IS STRIPPED"
@@ -59,7 +44,7 @@
     {
       "id": "CARVE-P0-009",
       "part": "0",
-      "title": "AND THE QUOTE IT IS ASKED OF MAY ITSELF BE A QUOTE"
+      "title": "A QUOTE'S LAST BLOCK MAY ITSELF BE A QUOTE"
     },
     {
       "id": "CARVE-P0-010",
@@ -84,12 +69,12 @@
     {
       "id": "CARVE-P0-014",
       "part": "0",
-      "title": "AND THE FENCE KIND IS NOT A PARAMETER"
+      "title": "FENCE KIND DOES NOT DETERMINE CONTAINER REACH"
     },
     {
       "id": "CARVE-P0-015",
       "part": "0",
-      "title": "AND NOTHING CLOSES MEANS THE CONTAINER GOES ON COLLECTING"
+      "title": "A LAZY FOLD KEEPS THE CONTAINER OPEN FOR FOLLOWING LINES"
     },
     {
       "id": "CARVE-P0-016",
@@ -99,12 +84,12 @@
     {
       "id": "CARVE-P0-017",
       "part": "0",
-      "title": "AND THE CONTAINER KIND IS NOT A PARAMETER EITHER"
+      "title": "CONTAINER KIND DOES NOT DETERMINE CONTAINER REACH"
     },
     {
       "id": "CARVE-P0-018",
       "part": "0",
-      "title": "AND A DEFINITION BODY IS SUCH A CONTAINER"
+      "title": "DEFINITION BODIES FOLLOW THE SAME CONTAINER REACH RULE"
     },
     {
       "id": "CARVE-P2-001",
@@ -409,7 +394,7 @@
     {
       "id": "CARVE-P9-003",
       "part": "9",
-      "title": "IT LEAVES NO PARAGRAPH OPEN, LIKE THE ROW IT APPENDS TO"
+      "title": "A CONTINUATION ROW LEAVES NO PARAGRAPH OPEN"
     },
     {
       "id": "CARVE-P9-004",
@@ -439,7 +424,7 @@
     {
       "id": "CARVE-P9-009",
       "part": "9",
-      "title": "THE LINTER NAMES IT `table-marker-run-padding`"
+      "title": "TABLE MARKER-PADDING DIAGNOSTICS SHARE ONE ID"
     },
     {
       "id": "CARVE-P9-010",
@@ -549,7 +534,7 @@
     {
       "id": "CARVE-P9-031",
       "part": "9",
-      "title": "AND FLUSH-LEFT MEANS COLUMN 0"
+      "title": "CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0"
     },
     {
       "id": "CARVE-P9-032",
@@ -644,7 +629,7 @@
     {
       "id": "CARVE-P9-048",
       "part": "9",
-      "title": "IT IS REMOVED AT THE BLOCK LAYER"
+      "title": "AN INVISIBLE LINE IS REMOVED AT THE BLOCK LAYER"
     },
     {
       "id": "CARVE-P9-049",
@@ -774,7 +759,7 @@
     {
       "id": "CARVE-P9R-008",
       "part": "9R",
-      "title": "AND IT FAILS TOWARD KEEPING THE TEXT"
+      "title": "AN UNANSWERABLE PROBE KEEPS THE CANDIDATE TEXT"
     },
     {
       "id": "CARVE-P10-001",
@@ -844,7 +829,7 @@
     {
       "id": "CARVE-P11-005",
       "part": "11",
-      "title": "A CHECKER FOR §1 NARROWS TO THIS BOUND AND NO WIDER"
+      "title": "WRAPPER LOSS IS THE ONLY EQUALITY CARVE-OUT"
     },
     {
       "id": "CARVE-P11-006",
@@ -854,7 +839,7 @@
     {
       "id": "CARVE-P11-007",
       "part": "11",
-      "title": "AND THAT HOLDS INSIDE A UNIT THAT ESCALATED"
+      "title": "ESCAPE MINIMALITY STILL APPLIES INSIDE AN ESCALATED UNIT"
     },
     {
       "id": "CARVE-P11-008",
@@ -869,7 +854,7 @@
     {
       "id": "CARVE-P11-010",
       "part": "11",
-      "title": "THAT COST IS THE STRATEGY'S, NOT THE OUTPUT'S"
+      "title": "SEARCH COST BELONGS TO THE STRATEGY, NOT THE OUTPUT"
     },
     {
       "id": "CARVE-P11-011",
@@ -1039,7 +1024,7 @@
     {
       "id": "CARVE-P12-003",
       "part": "12",
-      "title": "BUT THE MERGE IS PART OF `parse(x)`, NOT OF SERIALIZATION"
+      "title": "TEXT COALESCING OCCURS DURING `parse(x)`, NOT SERIALIZATION"
     },
     {
       "id": "CARVE-P12-004",
@@ -1252,5 +1237,24 @@
       "title": "THE WRITER IS UNAFFECTED"
     }
   ],
-  "retired": []
+  "retired": [
+    {
+      "id": "CARVE-PRE-001",
+      "part": "PRE",
+      "title": "THE EXECUTABLE ARTIFACTS DECIDE NOTHING",
+      "replacement": ".github/CONTRIBUTING.md#what-settles-a-question"
+    },
+    {
+      "id": "CARVE-PRE-002",
+      "part": "PRE",
+      "title": "A GOLDEN IS NORMATIVE ONCE COMMITTED, NOT ONCE GENERATED",
+      "replacement": ".github/CONTRIBUTING.md#what-settles-a-question"
+    },
+    {
+      "id": "CARVE-PRE-003",
+      "part": "PRE",
+      "title": "A CHECKER THAT DISAGREES WITH A COMMITTED GOLDEN IS WRONG UNTIL A CLAUSE SAYS OTHERWISE",
+      "replacement": ".github/CONTRIBUTING.md#what-settles-a-question"
+    }
+  ]
 }

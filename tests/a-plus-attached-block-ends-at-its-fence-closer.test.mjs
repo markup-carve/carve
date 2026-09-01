@@ -23,8 +23,8 @@
  * that kind in all five, which is what "one spelling" means here.
  *
  * `markup-carve/carve#966` is why this is a checker fix rather than a normative
- * one: THE EXECUTABLE ARTIFACTS DECIDE NOTHING, so the oracle having answered
- * this the way the engines answer it was a measurement, never the rule.
+ * one: `.github/CONTRIBUTING.md`, WHAT SETTLES A QUESTION, makes the oracle's
+ * answer a measurement rather than the rule.
  */
 
 import { test } from 'node:test'

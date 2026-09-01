@@ -65,6 +65,42 @@ test('stable rule ids cover every normative clause', () => {
   assert.match(output, /stable normative rule ids cover the grammar/)
 })
 
+test('language-rule titles stand alone and process-rule ids stay retired', () => {
+  const registry = readJson('resources/spec/rules.json')
+  const dependent = registry.rules.filter(({ title }) =>
+    /^(?:(?:AND|BUT|SO|THAT|IT|THIS|THEY)\b|THE LINTER\b|A CHECKER FOR\b)/.test(title),
+  )
+  assert.deepEqual(
+    dependent,
+    [],
+    `rule titles must make sense without their preceding paragraph: ${dependent.map(({ id }) => id).join(', ')}`,
+  )
+
+  assert.deepEqual(registry.rules.filter(({ part }) => part === 'PRE'), [])
+  for (const rule of registry.retired) {
+    assert.ok(rule.replacement, `${rule.id} names what replaced it`)
+    const [relative, anchor] = rule.replacement.split('#')
+    const replacementPath = resolve(repo, relative)
+    assert.ok(existsSync(replacementPath), `${rule.id} replacement exists: ${relative}`)
+    if (anchor) {
+      const slugs = readFileSync(replacementPath, 'utf8')
+        .split('\n')
+        .filter((line) => /^#{1,6} /.test(line))
+        .map((line) => line.replace(/^#{1,6} /, '').toLowerCase()
+          .replace(/[^a-z0-9 -]/g, '').trim().replace(/ +/g, '-'))
+      assert.ok(slugs.includes(anchor), `${rule.id} replacement anchor exists: ${anchor}`)
+    }
+  }
+  for (const id of ['CARVE-PRE-001', 'CARVE-PRE-002', 'CARVE-PRE-003']) {
+    const retired = registry.retired.find((rule) => rule.id === id)
+    assert.equal(
+      retired?.replacement,
+      '.github/CONTRIBUTING.md#what-settles-a-question',
+      `${id} stays resolvable to the process policy that replaced it`,
+    )
+  }
+})
+
 test('the executable ownership transition agrees with the published table', () => {
   const { boundaries } = readJson('resources/spec/layout-transitions.json')
   for (const [boundary, expected] of Object.entries(boundaries)) {

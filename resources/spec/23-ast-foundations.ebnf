@@ -33,7 +33,7 @@
       pieces and joins them at the end of the parse is exactly as conformant as
       one that never split.
 
-      BUT THE MERGE IS PART OF `parse(x)`, NOT OF SERIALIZATION -- NORMATIVE.
+      TEXT COALESCING OCCURS DURING `parse(x)`, NOT SERIALIZATION -- NORMATIVE.
       §6 requires `parse(x)` serialized and deserialized to equal `parse(x)`.
       An implementation that leaves the run split in the parsed tree and joins
       it in the encoder satisfies §1a and BREAKS §6 on the same document: what
