@@ -9,7 +9,7 @@ description: "Canonical Carve source, Markdown and plain-text targets, round tri
 
 Canonical Carve source, Markdown and plain-text targets, round trips, and escaping.
 
-This focused view contains 42 of 248 active normative rules. It is navigation, not a conformance profile: rules in the other views remain mandatory where applicable. Rule IDs remain stable when titles are clarified or rules move between views.
+This focused view contains 42 of 249 active normative rules. It is navigation, not a conformance profile: rules in the other views remain mandatory where applicable. Rule IDs remain stable when titles are clarified or rules move between views.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 

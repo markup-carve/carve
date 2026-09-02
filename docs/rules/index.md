@@ -11,13 +11,13 @@ Carve has one normative language contract. These views filter that contract by i
 
 | View | Rules | Responsibility |
 |---|---:|---|
-| [Parsing](./parsing) | 115 | Input normalization, layout, block and inline recognition, attributes, and lexical boundaries. |
+| [Parsing](./parsing) | 116 | Input normalization, layout, block and inline recognition, attributes, and lexical boundaries. |
 | [Resolution and rendering](./resolution-rendering) | 31 | Document-wide resolution, core semantic behavior, and HTML serialization. |
 | [AST interchange](./ast-interchange) | 36 | The core serialized tree shape, source positions, and cross-implementation AST guarantees. |
 | [Canonical writing](./canonical-writing) | 42 | Canonical Carve source, Markdown and plain-text targets, round trips, and escaping. |
 | [Imports, security, and extensions](./imports-security-extensions) | 24 | Optional and host-facing behavior, importer contracts, security limits, diagnostics, and extension surfaces. |
 
-Together the views cover all 248 active rules exactly once. The source metadata lives in `resources/spec/rules.json`.
+Together the views cover all 249 active rules exactly once. The source metadata lives in `resources/spec/rules.json`.
 
 ## Retired rule IDs
 

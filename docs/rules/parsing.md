@@ -9,7 +9,7 @@ description: "Input normalization, layout, block and inline recognition, attribu
 
 Input normalization, layout, block and inline recognition, attributes, and lexical boundaries.
 
-This focused view contains 115 of 248 active normative rules. It is navigation, not a conformance profile: rules in the other views remain mandatory where applicable. Rule IDs remain stable when titles are clarified or rules move between views.
+This focused view contains 116 of 249 active normative rules. It is navigation, not a conformance profile: rules in the other views remain mandatory where applicable. Rule IDs remain stable when titles are clarified or rules move between views.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -34,6 +34,7 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | `CARVE-P0-017` | 0 | CONTAINER KIND DOES NOT DETERMINE CONTAINER REACH |
 | `CARVE-P0-018` | 0 | DEFINITION BODIES FOLLOW THE SAME CONTAINER REACH RULE |
 | `CARVE-P0-019` | 0 | A NEW MARKER DOES NOT REACH A DEAD CONTAINER'S COLUMN |
+| `CARVE-P0-020` | 0 | AT OR PAST MEANS THE DEEPEST COLUMN THE LINE REACHES |
 | `CARVE-P2-001` | 2 | COLUMN ZERO |
 | `CARVE-P2-002` | 2 | THE HEADING MARKER SEPARATOR IS A RUN |
 | `CARVE-P2-003` | 2 | SINGLE-LINE HEADINGS |

@@ -44,8 +44,20 @@ implementation exposes.
 | JS | `f0abfc66` | `1541 / 1541` | `0` | `0` | `107.12` |
 | PHP | `3a39d658` | `1541 / 1541` | `0` | `0` | `75.37` |
 
-Spec commit: `3eae6be`. The run covers the whole corpus, so nothing is declared
-after it.
+Spec commit: `3eae6be`.
+
+Corpus added since this run: `441-a-definition-between-two-open-content-columns-reaches-the-outer-one`.
+
+That category landed on a host with no engine checkouts, so the run above could
+not be retaken and its numbers describe the corpus WITHOUT it. Editing the
+denominators by hand would publish a three-engine measurement nobody took, and
+one that is knowably wrong besides: carve-rs and carve-php both read a
+definition between two open content columns as lazy text today
+(markup-carve/carve-rs#1505, markup-carve/carve-php#1856).
+`tests/implementation-comparison-counts.test.mjs` reads this line and counts the
+fixtures the category contributes, so the number cannot be asserted, only
+derived, and the line has to be DELETED by whoever next runs
+`npm run compare:impls`.
 
 <details>
 <summary>What this run measures, and what it cannot</summary>

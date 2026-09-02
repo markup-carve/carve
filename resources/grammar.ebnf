@@ -457,7 +457,51 @@
         The single exception stays the one §24 C3 already carves out -- WITH AN
         ITEM OPEN the test is "at or past" rather than "exactly at", because the
         item erases an authored base before it parses the line (carve#1705).
-        With no item open there is no base to erase.
+        With no item open there is no base to erase, and with more than one
+        open the clause below says which of them the test is measured from.
+
+        AT OR PAST MEANS THE DEEPEST COLUMN THE LINE REACHES -- NORMATIVE
+        (carve#1896). Containers nest, so their content columns do too, and a
+        definition can land strictly BETWEEN two open ones. The test is read
+        against the deepest column the LINE REACHES, never against the deepest
+        container left OPEN: the definition registers in the innermost open
+        container whose content column it is at or past, and a container it
+        does not reach neither owns the line nor withholds it. So
+
+            - - x
+               [r]: /url
+
+            See [r][].
+
+        opens items at content columns 2 and 4, and the definition at column 3
+        registers against the outer item -- as it does at 2, at 4 and at 5.
+        Moving that one line between the columns changes nothing a reader can
+        see. No quote is needed to state the rule and none is a parameter of
+        it: `- > - - x` over `  >    [r]: /url` is the same shape wearing a
+        marker, and answers the same way. All four columns are pinned by corpus
+        441-a-definition-between-two-open-content-columns-reaches-the-outer-one,
+        the neighbours with the divergent one, because the neighbours are what
+        make the rule legible.
+
+        THE OTHER READING LEAVES A HOLE, which is what settles it. Read as the
+        deepest container still OPEN, column 3 is not at or past column 4, so
+        the line folds and defines nothing while columns 2 and 4 both register:
+        one added space removes a definition and a second restores it. Past a
+        container's content column more indentation may change WHICH container
+        owns a line; it never changes whether the line is a definition at all.
+        Nor can the deeper item be the owner. A line at column 3 does not REACH
+        the item at column 4 -- that is what reaching means -- so that item
+        could only take the line by lazy folding, and §10 I5 spends it first:
+        at a container's content column a definition INTERRUPTS the open
+        paragraph and registers, rather than folding into it. The container the
+        line does reach is the item at column 2.
+
+        BELOW EVERY OPEN COLUMN IS UNCHANGED. This clause governs a line that
+        reaches one open content column and not the next. A definition at a
+        nonzero column below the OUTERMOST open content column reaches no
+        opener column at all; it stays lazy paragraph text of the container
+        whose column it fell below (§24 C3, AN INVISIBLE LINE FOLDS LIKE ANY
+        OTHER), and this clause does not admit it.
 
         THIS IS THE MARKED SPELLING OF A RULE ALREADY SETTLED for the unmarked
         one. `> - a` over a blank over four spaces reaches column 4 and is

@@ -9,7 +9,7 @@ description: "Document-wide resolution, core semantic behavior, and HTML seriali
 
 Document-wide resolution, core semantic behavior, and HTML serialization.
 
-This focused view contains 31 of 248 active normative rules. It is navigation, not a conformance profile: rules in the other views remain mandatory where applicable. Rule IDs remain stable when titles are clarified or rules move between views.
+This focused view contains 31 of 249 active normative rules. It is navigation, not a conformance profile: rules in the other views remain mandatory where applicable. Rule IDs remain stable when titles are clarified or rules move between views.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
