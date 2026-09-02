@@ -143,6 +143,12 @@
       "scope": "parsing"
     },
     {
+      "id": "CARVE-P0-020",
+      "part": "0",
+      "title": "AT OR PAST MEANS THE DEEPEST COLUMN THE LINE REACHES",
+      "scope": "parsing"
+    },
+    {
       "id": "CARVE-P2-001",
       "part": "2",
       "title": "COLUMN ZERO",
