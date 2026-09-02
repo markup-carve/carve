@@ -22,8 +22,8 @@ filename order, so their numeric prefixes are part of the build contract.
   section 10.
 - `target-capabilities.json` records the cross-target behavior defined by PART
   11 sections 10a through 11.
-- `rules.json` assigns stable IDs and one closed implementation scope to clauses
-  carrying `-- NORMATIVE`.
+- `rules.json` assigns one closed implementation scope to every clause carrying
+  `-- NORMATIVE [CARVE-…]`; the source marker binds its stable ID directly.
 
 Rule IDs are permanent. A rule title may be clarified by changing its `title`
 in `rules.json`, but its ID must not be recycled. Adding a rule requires a new
@@ -40,7 +40,8 @@ registry and reject stale generated pages.
 ## What belongs elsewhere
 
 The normative modules contain productions, state, algorithms, invariants and
-the smallest counterexample needed to distinguish a rule. Put these elsewhere:
+the smallest counterexample needed to distinguish a rule. Git history supplies
+issue provenance. Put these elsewhere:
 
 - retired readings and compatibility measurements: `docs/spec-history.md`
 - implementation status and engine drift: `docs/implementation-comparison.md`

@@ -120,7 +120,7 @@ link_text = inline_content ;
    is balanced-bracket, escape- and LITERAL-SPAN-aware (PART 9 §16's rule for
    inline notes is the same scan); an unescaped bare `]` inside plain text
    closes it. Not expressible context-free. *)
-(* WHICH SPANS THE SCAN SKIPS -- NORMATIVE. The scan skips the interior of
+(* WHICH SPANS THE SCAN SKIPS -- NORMATIVE [CARVE-P3-001]. The scan skips the interior of
    every construct whose content is LITERAL, meaning the parser resolves no
    escapes inside it:
 
@@ -155,7 +155,7 @@ link_text = inline_content ;
    that enforces this -- a cross-reference is the usual case, since `</#id>`
    need not be resolved during parsing -- must apply the rule at that later
    point too, in every such target and not only in the one whose output makes
-   the nesting visible as markup (carve-rs#436). *)
+   the nesting visible as markup. *)
 link_destination = {destination_escape | balanced_parens
                    | (url_char - '(' - ')') | '\' | unicode_url_char}+ ;
 balanced_parens = '(', {destination_escape | balanced_parens
@@ -184,11 +184,11 @@ destination_escape = '\', ('(' | ')' | '\') ;
    closing `)` is not a link and stays literal (the `[t](url` / `more)`
    two-line case). *)
 unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
-(* WHITESPACE HERE IS UNICODE WHITESPACE -- NORMATIVE, and it always was:
+(* WHITESPACE HERE IS UNICODE WHITESPACE -- NORMATIVE [CARVE-P3-002], and it always was:
    `unicode_url_char` says "non-whitespace" without qualifying it to ASCII.
    So a NARROW NO-BREAK SPACE, an IDEOGRAPHIC SPACE and a THIN SPACE end an
    inline destination exactly as a plain space does, and an unbracketed
-   destination cannot contain one -- an href MUST NOT carry one (carve#404).
+   destination cannot contain one -- an href MUST NOT carry one.
 
    ZERO-WIDTH characters (U+200B, U+FEFF) are NOT whitespace and ARE ordinary
    destination characters. The test is the Unicode White_Space property, not
@@ -201,7 +201,7 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
      [r]: https://e.com<U+202F>/path
 
    ends the destination at `https://e.com`, and `/path` is then left over. It
-   is NOT ignored: the definition is anchored at end of line (carve#911), so a
+   is NOT ignored: the definition is anchored at end of line, so a
    leftover makes the production fail and the whole line is an ordinary
    paragraph -- exactly as `[r]: https://e.com /path` behaves. Whitespace
    between the mandatory separator space and the destination is leading
@@ -222,15 +222,15 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
    (PART 7): a link is already a link once its destination has been read, and a
    reference definition is already a definition, so the title is optional
    trailing metadata in both. It is spelled `space` all the same, because A
-   TAB IS SYNTAX ONLY IN THE LEADING RUN (PART 7, carve#901). Cardinality is
-   exactly one character, at both sites (carve#912). So `[t](/u<SP><SP>"T")` is
+   TAB IS SYNTAX ONLY IN THE LEADING RUN (PART 7). Cardinality is
+   exactly one character, at both sites. So `[t](/u<SP><SP>"T")` is
    not a titled link, the quoted run is left unconsumed, and the bracket run
    stays literal text. *)
 link_title = space, ('"', {('\', '"') | (character - '"')}, '"')
            | space, ("'", {('\', "'") | (character - "'")}, "'") ;
 
 reference_label = (character - ']' - '@'), {character - ']'} ;
-(* A LABEL THAT BEGINS WITH AN AT SIGN IS NOT A REFERENCE LABEL -- NORMATIVE.
+(* A LABEL THAT BEGINS WITH AN AT SIGN IS NOT A REFERENCE LABEL -- NORMATIVE [CARVE-P3-003].
    The production above SUBTRACTS `@` FROM THE FIRST POSITION, and that exclusion
    is what keeps `[@key]` free for the Tier-2 Citations extension. So a bracket
    pair whose content starts with `@` was never spelling a `reference_label`,
@@ -244,7 +244,7 @@ reference_label = (character - ']' - '@'), {character - ']'} ;
        [t][@a]
        ![t][@a]
 
-   THE FALLBACK IS THE VERBATIM SOURCE RUN, NOT A RESCAN -- NORMATIVE. Which
+   THE FALLBACK IS THE VERBATIM SOURCE RUN, NOT A RESCAN -- NORMATIVE [CARVE-P3-004]. Which
    one it is decides the rendering, so it cannot be left to inference. The
    declining run is emitted as the characters the author typed; the parser does
    NOT hand the interior back to the inline scanner. That is already the rule
@@ -272,14 +272,14 @@ reference_label = (character - ']' - '@'), {character - ']'} ;
    back to prose. *)
 reference_definition = '[', reference_label, ']', ':', space, link_destination,
                        [link_title], [space, attributes], newline ;
-(* ANCHORED AT END OF LINE -- NORMATIVE. The production ends in `newline`, and
+(* ANCHORED AT END OF LINE -- NORMATIVE [CARVE-P3-005]. The production ends in `newline`, and
    always did. What follows the destination and the optional title is not
    ignored: it makes the production FAIL, and the line is then an ordinary
    paragraph.
 
        [a]: /u zzz
 
-   is NOT a definition, and a `[a][]` below it does not resolve (carve#911).
+   is NOT a definition, and a `[a][]` below it does not resolve.
 
    THE LINE ENDING is `whitespace` -- `' ' | '\t'` -- the same terminal
    `blank_line = {whitespace}` takes (PART 1). So `[a]: /u<SP>` and
@@ -301,7 +301,7 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    another spelling of it.
 
    AN INVALID BLOCK IS NOT `attributes`, SO THE LINE IS NOT A DEFINITION --
-   NORMATIVE (carve#933). `[space, attributes]` names the `attributes`
+   NORMATIVE [CARVE-P3-006]. `[space, attributes]` names the `attributes`
    production, and a balanced `{...}` that production does not accept is not
    an instance of it. It is therefore leftover content, and the anchor above
    disposes of it like any other leftover: the line falls back to prose.
@@ -315,7 +315,7 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    reason.
 
    A valid block still defines and transfers its attributes. *)
-(* TRAILING ATTRIBUTES ON A DEFINITION -- NORMATIVE. A `{...}` block at the end
+(* TRAILING ATTRIBUTES ON A DEFINITION -- NORMATIVE [CARVE-P3-007]. A `{...}` block at the end
    of the definition line attaches to the DEFINITION, and PART 9R R1 already
    says what that means: the attributes transfer to every link OR IMAGE that
    resolves the label, and the reference site's own attributes override per key.
@@ -326,7 +326,7 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
 
    gives `<a href="https://example.com" class="external">`.
 
-   AN IMAGE REFERENCE RESOLVES THE SAME ENTRY -- NORMATIVE. `![alt][ex]` looks
+   AN IMAGE REFERENCE RESOLVES THE SAME ENTRY -- NORMATIVE [CARVE-P3-008]. `![alt][ex]` looks
    the label up in the same `linkDefs` table and takes the same three fields, so
    `[ex]: /i.png {.wide}` gives `<img src="/i.png" alt="alt" class="wide">`.
 
@@ -351,8 +351,8 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    rather than materialized onto every resolved link. PART 12 §10 adds
    `link_reference_definition` to the vocabulary: without the node, a writer
    cannot reproduce the definition, so `parse(fmt(x)) == parse(x)` fails for
-   every resolved reference (carve#642). *)
-(* THE DEFINITION MARKER SEPARATOR -- NORMATIVE. The marker-to-content
+   every resolved reference. *)
+(* THE DEFINITION MARKER SEPARATOR -- NORMATIVE [CARVE-P3-009]. The marker-to-content
    separator is the `space` terminal (U+0020) ONLY, in all three definition
    markers: `reference_definition`, `footnote_definition` and
    `abbreviation_definition`. A tab does NOT satisfy `space` (`space = ' '`),
@@ -361,7 +361,7 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    mirrors the heading, list and task markers, which likewise require a
    literal space after the marker.
 
-   AND THE SEPARATOR IS A RUN (carve#892). `footnote_definition` and
+   AND THE SEPARATOR IS A RUN. `footnote_definition` and
    `abbreviation_definition` spell it `space+`: one or more ASCII spaces, all
    of them separator.
 
@@ -404,8 +404,8 @@ autolink = '<', (url_autolink | email_autolink), '>', [attributes] ;
 (* A trailing `[attributes]` block attaches to the autolink (generic
    inline-attribute carrier, examples.md): `<https://example.com>{.ext}`
    -> `<a href="https://example.com" class="ext">https://example.com</a>`.
-   Same slot as every other inline carrier; both reference impls agree. *)
-(* DISPLAY TEXT -- NORMATIVE: the visible text is the RAW content between
+   It uses the same slot as every other inline carrier. *)
+(* AN AUTOLINK DISPLAYS ITS RAW SOURCE BODY -- NORMATIVE [CARVE-P3-010]: the visible text is the RAW content between
    `<` and `>`, verbatim. A url_autolink keeps its scheme
    (`<mailto:a@b>` -> `<a href="mailto:a@b">mailto:a@b</a>`); an
    email_autolink has no explicit scheme, so it shows the address and the
@@ -447,7 +447,7 @@ control_char = (* any character in Unicode General_Category Cc *) ;
    `<http://a.com/"q">` is literal (the straight quotes additionally pick
    up smart-quote typography). *)
 (* AN AUTOLINK BODY ADMITS NON-ASCII AND EXCLUDES FORMAT CHARACTERS --
-   NORMATIVE (carve#844, carve#860). The last alternative is the whole of
+   NORMATIVE [CARVE-P3-011]. The last alternative is the whole of
    the change: outside ASCII, `url_char` admits any character that is not
    whitespace, not a format character and not a control character. An
    internationalized domain written in its own script is an autolink, and

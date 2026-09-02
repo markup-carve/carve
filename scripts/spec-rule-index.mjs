@@ -7,6 +7,18 @@ import { fileURLToPath } from 'node:url'
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const registry = JSON.parse(readFileSync(resolve(repo, 'resources/spec/rules.json'), 'utf8'))
 const outputDir = resolve(repo, 'docs/rules')
+const sourceDir = resolve(repo, 'resources/spec')
+
+const sourceLinks = new Map()
+for (const file of readdirSync(sourceDir).filter((name) => /^\d.*\.ebnf$/.test(name)).sort()) {
+  const source = readFileSync(resolve(sourceDir, file), 'utf8')
+  for (const match of source.matchAll(/--\s+NORMATIVE\s+\[(CARVE-(?:P\d+R?|PRE)-\d{3})\]/g)) {
+    const id = match[1]
+    const line = source.slice(0, match.index).split('\n').length
+    if (sourceLinks.has(id)) throw new Error(`duplicate normative source id '${id}'`)
+    sourceLinks.set(id, `https://github.com/markup-carve/carve/blob/main/resources/spec/${file}#L${line}`)
+  }
+}
 
 const frontmatter = (title, description) => `---
 title: ${JSON.stringify(title)}
@@ -19,14 +31,15 @@ description: ${JSON.stringify(description)}
 
 const scopePage = (scope) => {
   const rules = registry.rules.filter((rule) => rule.scope === scope.id)
-  const rows = rules.map((rule) =>
-    `| \`${rule.id}\` | ${rule.part} | ${rule.title.replaceAll('|', '\\|')} |`,
-  )
+  const rows = rules.map((rule) => {
+    const link = sourceLinks.get(rule.id)
+    if (!link) throw new Error(`no normative source for '${rule.id}'`)
+    return `| [\`${rule.id}\`](${link}) | ${rule.part} | ${rule.title.replaceAll('|', '\\|')} |`
+  })
   return frontmatter(`${scope.title} rules`, scope.description) +
     `# ${scope.title} rules\n\n${scope.description}\n\n` +
-    `This focused view contains ${rules.length} of ${registry.rules.length} active normative rules. ` +
-    'It is navigation, not a conformance profile: rules in the other views remain mandatory where applicable. ' +
-    'Rule IDs remain stable when titles are clarified or rules move between views.\n\n' +
+    `This view contains ${rules.length} of ${registry.rules.length} active rules. ` +
+    'Every rule remains mandatory where applicable.\n\n' +
     'Return to the [rule index](./) or read the complete [formal grammar](../grammar).\n\n' +
     '| Rule | Part | Clause |\n|---|---:|---|\n' + rows.join('\n') + '\n'
 }
@@ -38,9 +51,12 @@ const indexPage = () => {
     const description = scope.description.replaceAll('|', '\\|')
     return `| [${title}](./${scope.id}) | ${count} | ${description} |`
   })
-  const retired = registry.retired.map((rule) =>
-    `| \`${rule.id}\` | ${rule.title.replaceAll('|', '\\|')} | \`${rule.replacement}\` |`,
-  )
+  const retired = registry.retired.map((rule) => {
+    const replacement = rule.replacement.startsWith('CARVE-')
+      ? `[\`${rule.replacement}\`](${sourceLinks.get(rule.replacement)})`
+      : `[\`${rule.replacement}\`](https://github.com/markup-carve/carve/blob/main/${rule.replacement})`
+    return `| \`${rule.id}\` | ${rule.title.replaceAll('|', '\\|')} | ${replacement} |`
+  })
   return frontmatter(
     'Normative rule index',
     'Focused views of every active Carve rule, grouped by implementation responsibility.',

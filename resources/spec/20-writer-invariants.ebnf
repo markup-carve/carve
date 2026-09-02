@@ -16,7 +16,7 @@
       that gains an escape per pass violates it, which is how over-escaping is
       usually first noticed.
 
-      EQUALITY IS MODULO ESCAPING -- NORMATIVE. `escaped_text` and `text`
+      EQUALITY IS MODULO ESCAPING -- NORMATIVE [CARVE-P11-001]. `escaped_text` and `text`
       compare EQUAL, and an adjacent run of them compares as the single text
       node holding the same characters in the same order. `a\-b` and `a-b`
       are the same document for the purpose of this invariant, and differ only
@@ -36,7 +36,7 @@
       authoring syntax, so `to_html(fmt(x)) == to_html(x)` admits no such
       latitude, and neither does idempotence.
 
-   1a. THE INVARIANT OUTRANKS THE PER-CONSTRUCT RULES -- NORMATIVE. §1 states
+   1a. THE INVARIANT OUTRANKS THE PER-CONSTRUCT RULES -- NORMATIVE [CARVE-P11-002]. §1 states
       what the writer must ACHIEVE; §2 through §11 state how it SPELLS each
       construct. Where spelling a construct by its own rule would emit a
       document that does not re-parse to the tree it was written from, §1 wins
@@ -68,7 +68,7 @@
       prose or swapping a construct for a synonym are not available here: each
       of them changes the document, which is the thing §1 forbids.
 
-   1b. A FLATTEN PRESERVES THE BOUNDARY IT DISSOLVES -- NORMATIVE. §1a settles
+   1b. A FLATTEN PRESERVES THE BOUNDARY IT DISSOLVES -- NORMATIVE [CARVE-P11-003]. §1a settles
       what a producer owes where §1's invariant CAN hold. This settles what it
       owes where the invariant cannot hold at all.
 
@@ -150,7 +150,7 @@
       it survive as themselves.
 
    1c. A WRAPPER ITS OWN CONTENT SPELLS AWAY IS A DECLARED CEILING --
-      NORMATIVE (carve#1658). §1b settles what a producer owes where an
+      NORMATIVE [CARVE-P11-004]. §1b settles what a producer owes where an
       inline-only slot forces a flatten. This settles the other place §1's
       invariant cannot hold, and it is the mirror image: not a slot that
       cannot HOLD what it was handed, but a wrapper whose own content, written
@@ -180,7 +180,7 @@
           every reader of the first one is entitled to rely on it.
 
       STATED OVER WHAT THE SHAPE SPELLS, never over the node type, the same way
-      §10j is. Two shapes have the property today, and they share no node type,
+      §10j is. Two shapes have the property, and they share no node type,
       no vocabulary list and no reason beyond the spelling: a `paragraph` whose
       whole content is one `image`, which writes `![a](u)` and reads back as
       the standalone image; and a `paragraph` whose whole content is one
@@ -222,8 +222,8 @@
       neighbours all survive as themselves -- and it puts the loss on the
       record, which is the whole of what §1 can be held to here.
 
-      WRAPPER LOSS IS THE ONLY EQUALITY CARVE-OUT -- NORMATIVE
-      (carve#1679). The paragraph above says what this clause forgives. This
+      WRAPPER LOSS IS THE ONLY EQUALITY CARVE-OUT -- NORMATIVE [CARVE-P11-005].
+      The paragraph above says what this clause forgives. This
       says what it does NOT, because a checker asserting `parse(fmt(x)) ==
       parse(x)` has to encode both halves, and stated only as a permission the
       carve-out acquired one mechanism per engine that reached it -- three
@@ -238,8 +238,8 @@
       losing it would lose the attributes this clause says survive -- and
       neither is a node that owns a label, a destination, a level or a kind.
 
-      A RESOLUTION RESULT ABOUT THE WRAPPER IS NOT CONTENT OF IT -- NORMATIVE
-      (carve#1823). `paragraph.blockImage` (PART 12 §23) is the ONE field a
+      A RESOLUTION RESULT ABOUT THE WRAPPER IS NOT CONTENT OF IT -- NORMATIVE [CARVE-P11-039].
+      `paragraph.blockImage` (PART 12 §23) is the ONE field a
       wrapper may carry and still be BARE, and it is admitted BY NAME. §23
       bounds it to `true` and PART 9R R7's promotion phase is its only
       producer, so what it records is that this paragraph IS the block image --
@@ -275,7 +275,7 @@
       never create one, and a corpus sweep stays green under any widening
       whatsoever.
 
-   2. THE ESCAPING RULE -- NORMATIVE. A character is escaped IF AND ONLY IF
+   2. THE ESCAPING RULE -- NORMATIVE [CARVE-P11-006]. A character is escaped IF AND ONLY IF
       omitting the escape would change the re-parsed AST.
 
       Escaping MORE than that is a defect, not a safe default. It is how a
@@ -295,8 +295,8 @@
       escapes on this occurrence let the construct form? Yes -> escape the run.
       No -> emit it bare.
 
-      ESCAPE MINIMALITY STILL APPLIES INSIDE AN ESCALATED UNIT -- NORMATIVE
-      (carve#1533). One occurrence needing the conservative form does not put
+      ESCAPE MINIMALITY STILL APPLIES INSIDE AN ESCALATED UNIT -- NORMATIVE [CARVE-P11-007].
+      One occurrence needing the conservative form does not put
       the OTHER
       occurrences in the unit with it. §2b bounds how far the fallback reaches;
       the reach is not the only thing that was too wide. An indented paragraph
@@ -316,7 +316,7 @@
       fallback that spends more escapes than this test asks for is wider than
       the minimum and never narrower, which is the only direction §1 tolerates.
 
-   2a. THE WRITER DOES NOT SUBSTITUTE ONE CONSTRUCT FOR ANOTHER -- NORMATIVE.
+   2a. THE WRITER DOES NOT SUBSTITUTE ONE CONSTRUCT FOR ANOTHER -- NORMATIVE [CARVE-P11-008].
       §2 governs ESCAPING. It does not license rewriting a construct into a
       different one that happens to render the same, and neither does §1's
       invariant: `to_html(fmt(x)) == to_html(x)` holding is necessary, not
@@ -340,7 +340,7 @@
       changes the re-parsed AST.
 
    2b. THE SCOPE OF AN ESCALATION IS THE SMALLEST UNIT THAT FAILS --
-      NORMATIVE. A writer that cannot decide an occurrence exactly may fall
+      NORMATIVE [CARVE-P11-009]. A writer that cannot decide an occurrence exactly may fall
       back to the conservative form (§4). That fallback reaches the SMALLEST
       UNIT whose minimal form fails to re-parse -- the INLINE RUN, or the
       BLOCK containing it -- and NOT the whole document. Outside that unit,
@@ -467,7 +467,7 @@
         BOTH forms keeps the two renders identical on that point, at the cost
         of one escape on a character that is rare in prose.
 
-        SEARCH COST BELONGS TO THE STRATEGY, NOT THE OUTPUT -- NORMATIVE, and the
+        SEARCH COST BELONGS TO THE STRATEGY, NOT THE OUTPUT -- NORMATIVE [CARVE-P11-010], and the
         difference is §4's own. This section names the sets W1 renders
         against, so a caret named here is escaped in BOTH forms and W3 never
         weighs the mark; it is not a license to EMIT an escape §2 does not
@@ -488,7 +488,7 @@
 
       CANDIDATE -- escaped only when W4 selects the conservative form:
         `* _ ~ / = ,`        emphasis and the braced pair delimiters
-        `[ ] ( ) { } <`      links, images, spans, attributes, autolinks
+        `[ ]  { } <`      links, images, spans, attributes, autolinks
         `@ #`                mentions and tags (§7 boundary rules); `#` also
                              opens a heading at column 0
         `> + - . ) : | % !`  block openers at column 0, plus the inline forms

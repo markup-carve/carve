@@ -1,5 +1,5 @@
 (* ============================================================================
-   16. FOOTNOTES -- NORMATIVE (governs `footnote` / `footnote_definition`
+   16. FOOTNOTES -- NORMATIVE [CARVE-P9-025] (governs `footnote` / `footnote_definition`
       in PART 3). The reference form `[^label]` + `[^label]: body` and the
       INLINE form `^[content]` are implemented, and they are the only note
       forms: the proposed sidenote (`[>content]`) was dismissed as a
@@ -39,7 +39,7 @@
         repeat uses `fnref{n}-{k}` and adds another backlink. The
         backlink glyph is the plain return arrow `↩` (Carve's choice;
         djot appends a variation selector).
-        THE BACKLINK CARRIES AN ACCESSIBLE NAME -- NORMATIVE. The `role` alone
+        THE BACKLINK CARRIES AN ACCESSIBLE NAME -- NORMATIVE [CARVE-P9-026]. The `role` alone
         was right and the NAME was the glyph, so a screen reader announced the
         character's Unicode name or skipped the link outright. `{name}` is the
         `footnoteBacklink` label (PART 9 §16a) followed by WHAT THE LINK VISIBLY
@@ -49,7 +49,7 @@
         Matching the visible text is WCAG 2.5.3, and it is why the number here
         is the REFERENCE ORDINAL and not the note number. The name is TEXT and
         is attribute-escaped.
-        THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME -- NORMATIVE. The rule
+        THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME -- NORMATIVE [CARVE-P9-027]. The rule
         above names the LINKS and left the REGION they sit in anonymous. The
         section takes `aria-label`, the string is the `endnotes` label (SS16a),
         and it is escaped the same way:
@@ -97,9 +97,7 @@
         text (`[t[^1]](u)`) or inside a heading later cloned by a `</#id>`
         crossref nests an <a> in an <a>; avoid footnotes in those positions.
 
-   16a. THE ENGINE'S OWN WORDS ARE A RENDER OPTION -- NORMATIVE (carve#1456).
-      The `labels` map, its core and extension keys, escaping, precedence and
-      importer behavior are defined in the full PART 9 §16a clause below.
+   16a. ENGINE-WRITTEN LABELS are defined in the full PART 9 §16a clause below.
 
    17. TIGHT vs LOOSE LISTS + CONTINUATION MARKER -- OPERATIONAL (governs
       `list` rendering and the continuation_marker productions in PART 2).
@@ -115,7 +113,7 @@
          (<li><p>text</p></li>). An item can hold more than one paragraph
          block and still be tight -- L2 and L6 below cover the ways that
          happens without a blank line ever appearing.
-      L1a THE ITEM'S FIRST BLOCK DOES NOT MATTER -- NORMATIVE. L1 asks
+      L1a THE ITEM'S FIRST BLOCK DOES NOT MATTER -- NORMATIVE [CARVE-P9-029]. L1 asks
          whether the item holds a blank-line-separated second PARAGRAPH. It
          does not ask what the FIRST block was, and nothing here depends on
          that. So
@@ -127,14 +125,14 @@
          is LOOSE: the sub-list is the item's first block, `Body.` is a
          second paragraph after a blank line, and L1 is satisfied. The same
          holds for every other lead -- plain text, a heading, an attribute
-         block, a block quote -- all of which every engine already renders
+         block, a block quote -- all of which core rendering handles
          loose.
 
-      L1b AN INVISIBLE LINE DOES NOT CANCEL THE SEPARATION -- NORMATIVE. L1
+      L1b AN INVISIBLE LINE DOES NOT CANCEL THE SEPARATION -- NORMATIVE [CARVE-P9-030]. L1
          asks whether the item holds a blank-line-separated second PARAGRAPH.
          An INVISIBLE LINE (§10 I5, AN INVISIBLE LINE IS ONE CLASSIFICATION)
          emits no visible block, which is why it cannot BE the second one
-         (L1a's argument, carve#621), and by the same clause's property 3 it
+         (L1a's argument), and by the same clause's property 3 it
          does not choose the next line's owner either: it is not a separator,
          so the separation it appears to interrupt is intact and the item is
          LOOSE. This clause is that property's consequence for list
@@ -164,7 +162,7 @@
          are both LOOSE, and so are the same documents with the closer
          written. The state of the container above the blank does not enter
          this question either, which is the same property PART 1 S4 already
-         states for where the item ENDS (carve#1379).
+         states for where the item ENDS.
 
          An INTERIOR fence blank does not loosen the list: content follows it
          before the sibling marker, so no blank line separates the items --
@@ -197,8 +195,8 @@
          sole way to END a container, so a `+` can never break the
          following block OUT of its container -- it adds it IN.
 
-         CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0 -- NORMATIVE
-         (carve#1436). "flush-left" above is the reach, not a description of
+         CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0 -- NORMATIVE [CARVE-P9-031].
+         "flush-left" above is the reach, not a description of
          the usual case: the marker
          attaches a block that begins at column 0 and NOTHING else. A line at
          any other column is not attached at all - it falls through to the
@@ -210,7 +208,7 @@
          content column, so the ordinary rules put it in the item whether the
          marker reached it or not.
 
-         ONE IS A COUNT AND THE BOUNDARY IS NOT -- NORMATIVE (carve#1290).
+         ONE IS A COUNT AND THE BOUNDARY IS NOT -- NORMATIVE [CARVE-P9-032].
          The blank line, sibling marker or further `+` above is the EXTENT of
          that single block, which may be many lines long -- a list, a quote,
          a fenced block. It is not a run boundary, and the marker does not
@@ -230,8 +228,8 @@
              +
              > q
 
-         THE MARKER IS ONE OPERATION IN EVERY CONTAINER -- NORMATIVE
-         (carve#1782). The clause above is the WHOLE definition of `+`:
+         THE MARKER IS ONE OPERATION IN EVERY CONTAINER -- NORMATIVE [CARVE-P9-033].
+         The clause above is the WHOLE definition of `+`:
          ownership of the next flush-left block passes to the container, and
          that block is then parsed like any other. A container may not answer
          differently because of WHAT it is attaching, and there is no second
@@ -257,7 +255,7 @@
            ITSELF a quote NESTS, like every other kind: `> a` / `+` / `> q`
            is a quote holding a paragraph and an inner quote. The marker
            attaching nothing there, and the line continuing the outer quote
-           instead, was the kind test named in L3 (carve#1782).
+           instead, was the kind test named in L3.
          - FOOTNOTE DEFINITION body: `+` at column 0 attaches the following
            flush-left block to the note, the alternative to indenting it to
            the body's column (pinned by corpus
@@ -265,8 +263,8 @@
          - DEFINITION DESCRIPTION: the same marker, the same reach, for a
            `<dd>` (`definition_body` carries `continuation_marker_block`).
 
-         THE FIRST-BLOCK FORM IS THE ITEM AND THE DESCRIPTION -- NORMATIVE
-         (carve#1821). The four containers above take the marker; only TWO of
+         THE FIRST-BLOCK FORM IS THE ITEM AND THE DESCRIPTION -- NORMATIVE [CARVE-P9-067].
+         The four containers above take the marker; only TWO of
          them take it in the FIRST-BLOCK position. `- +` and `: +` open a body
          whose content is the following flush-left block, and over a line that
          is not flush-left the marker is refused and the body ends. A FOOTNOTE
@@ -300,7 +298,7 @@
            distinct construct;
          - LEAF blocks (heading, thematic break, code block, raw block,
            paragraph) hold no child blocks; a heading is a bounded title.
-      L6 A COLLECTED DEFINITION LEAVES NO TRACE -- NORMATIVE (the general
+      L6 A COLLECTED DEFINITION LEAVES NO TRACE -- NORMATIVE [CARVE-P9-034] (the general
          rule for PART 9R R1/R2 COLLECTION, stated ONCE here for every
          container that can hold a definition). This is §10 I5's property 2 --
          emits no visible block at its authored location -- for the two
@@ -341,7 +339,7 @@
          contradict L2 directly.
 
       L7 ONE CONSUMED BOOLEAN SPELLS THE LOOSENESS NO BLANK LINE CAN --
-         NORMATIVE (carve#1612). A container's preceding BLOCK-ATTRIBUTE LINE
+         NORMATIVE [CARVE-P9-035]. A container's preceding BLOCK-ATTRIBUTE LINE
          (§15) MAY carry the boolean `loose`. It says that the container's
          children render as BLOCKS rather than as inline runs, and it is
          CONSUMED: it never reaches the output as an HTML attribute. The
@@ -361,7 +359,7 @@
          THE KEY IS NOT LIST-SPECIFIC, and writing it as if it were would have
          been the first of at least two one-off keys. The tight/loose axis
          exists in exactly TWO places, and this key applies wherever it exists:
-         a LIST (L1) and a DEFINITION LIST (PART 2, definition lists) today, and
+         a LIST (L1) and a DEFINITION LIST (PART 2, definition lists), and
          any container a later clause gives the axis to, with no second key to
          invent. A table cell and a caption suppress the paragraph wrapper with
          no wrapped alternative at all; a block quote, div, line block and
@@ -451,12 +449,12 @@
          PART 12 §8 defines: the `<dd>` wrapper is otherwise derived from the
          description's block count, and that derivation cannot reach the one
          shape this key exists for, so the SPELLED fact is published and nothing
-         else is (carve#1624). The two fields are named differently because they
+         else is. The two fields are named differently because they
          say different things: `tight` states the whole axis for a list, while
          `loose` records only what a definition list's own derivation misses.
 
 
-   18. MATH -- NORMATIVE (governs `math` in PART 3; djot form). Inline
+   18. MATH -- NORMATIVE [CARVE-P9-036] (governs `math` in PART 3; djot form). Inline
       `$` + verbatim backtick span; display `$$` + verbatim backtick
       span. A `$` NOT immediately followed by a backtick run is literal
       (`$5` is currency); `\$` escapes a literal `$`. Rendering:
@@ -470,7 +468,7 @@
       Author `{attrs}` after the span merge onto the <span> (the base
       `math …` class is kept; see PART 10 §1).
 
-      A MATH SPAN CARRIES ROLE MATH -- NORMATIVE. The delimiters are written
+      A MATH SPAN CARRIES ROLE MATH -- NORMATIVE [CARVE-P9-037]. The delimiters are written
       for a typesetter to find. Until one runs -- and if none ever does, which
       is the default -- the span is a plain `<span>` full of backslashes and
       carets, and a reader announces them as prose. `role="math"` says the run
@@ -488,7 +486,7 @@
       pins for the base class).
 
       AN IMPORTER WRITES THE CORE FORM, NEVER THE EXTENSION FENCE --
-      NORMATIVE (carve#1514). An importer meeting `<div class="math display">`
+      NORMATIVE [CARVE-P9-038]. An importer meeting `<div class="math display">`
       emits the CORE display form -- `$$` followed by a verbatim backtick span,
       a paragraph holding a `math` node -- and never the ```` ```math ````
       fence. `<span class="math inline">` is the inline `$` form on the same
@@ -518,7 +516,7 @@
       trailing delimiter is literal text, and it renders as a stray dollar sign
       beside the formula.
 
-   19. CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES -- NORMATIVE
+   19. CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES -- NORMATIVE [CARVE-P9-039]
       (resolution formalized as PART 9R rules R4/R5; behavior detail here).
       - `</#id>` clones the target heading's full inline children, so a
         heading with markup (`# *Setup*`) yields a link that KEEPS the
@@ -535,7 +533,7 @@
         whose caption carries a number placeholder and an `{#id}`) yields the
         caption's LABEL + NUMBER ("Figure 1"), markup preserved, NOT the
         caption prose. A `</#id>` to an id that is neither a heading nor a
-        numbered caption stays unresolved (renders literal), as today.
+        numbered caption stays unresolved and renders literally.
       - Mentions (`@user`), tags (`#tag`) and smart typography are ON by
         default in the conformant core; a processor MAY disable them. The
         corpus pins the default-on behavior.
@@ -556,7 +554,7 @@
         they do NOT specify the broader include language reserved for a
         processor.
 
-   20. RAW PASSTHROUGH -- NORMATIVE (governs `raw_inline` in PART 3 and the
+   20. RAW PASSTHROUGH -- NORMATIVE [CARVE-P9-040] (governs `raw_inline` in PART 3 and the
       semantics of `raw_block` in PART 2). The BLOCK form (```=FORMAT
       fence, PART 2) emits its verbatim content UNESCAPED when FORMAT
       matches the output format and drops it otherwise; the inline form

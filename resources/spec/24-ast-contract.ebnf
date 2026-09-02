@@ -5,7 +5,7 @@
       recompute - footnote numbering, caption numbers, a generated heading id -
       ARE serialized, because recomputing them requires reimplementing PART 9R.
 
-      A GENERATED HEADING ID IS A RESOLUTION RESULT -- NORMATIVE. A `heading`
+      A GENERATED HEADING ID IS A RESOLUTION RESULT -- NORMATIVE [CARVE-P12-023]. A `heading`
       whose id was slugged from its text rather than written carries that id in
       `attrs.id`, the slot an authored `{#id}` occupies, and carries it in the
       resolved tree exactly as the two values above do.
@@ -27,7 +27,7 @@
       A serializer that loses a field is not a lossy convenience; it is a
       consumer breaking silently one document later.
 
-   7. THE DOCUMENT ROOT CARRIES EXACTLY THREE FIELDS -- NORMATIVE:
+   7. THE DOCUMENT ROOT CARRIES EXACTLY THREE FIELDS -- NORMATIVE [CARVE-P12-024]:
       `type`, `children`, `srcByteLength`. Nothing else. An implementation MUST
       NOT hang document-level data off the root; content goes in the tree,
       where every other piece of content already lives.
@@ -38,7 +38,7 @@
         content  the text between the fences, VERBATIM
       It is the FIRST child when present, since that is where it is written.
 
-      CONTENT IS RAW, NOT PARSED -- NORMATIVE. `content` is the source text.
+      CONTENT IS RAW, NOT PARSED -- NORMATIVE [CARVE-P12-025]. `content` is the source text.
       An implementation MUST NOT emit parsed key/value pairs in its place:
       parsing YAML or TOML is not the markup parser's job, the raw text plus
       `format` lets any consumer do it, and a parsed map cannot represent a
@@ -71,7 +71,7 @@
       recognized only at document level.
 
       AN ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL --
-      NORMATIVE. `*[TERM]: expansion` is an `abbreviation_definition` only as a
+      NORMATIVE [CARVE-P12-026]. `*[TERM]: expansion` is an `abbreviation_definition` only as a
       direct child of the document. Written inside a block quote, a list item
       or a div, the line is not a definition at all: it is ordinary paragraph
       text, it defines nothing, and it is preserved as the text the author
@@ -105,7 +105,7 @@
       Definitions appear in DOCUMENT ORDER by source position. Numbering is a
       resolution result and stays on the reference (§5).
 
-   8. A DEFINITION LIST'S ENTRIES ARE NODES -- NORMATIVE. `definition_list`
+   8. A DEFINITION LIST'S ENTRIES ARE NODES -- NORMATIVE [CARVE-P12-027]. `definition_list`
       carries `items`: the `<dt>` / `<dd>` sequence in DOCUMENT ORDER, as
       `definition_term` and `definition_description` nodes.
 
@@ -155,7 +155,7 @@
       here that records an authored distinction the default spelling cannot
       express.
 
-   9. HOW DEEP AN INGESTED AST MAY NEST -- NORMATIVE. Reading a serialized AST
+   9. HOW DEEP AN INGESTED AST MAY NEST -- NORMATIVE [CARVE-P12-028]. Reading a serialized AST
       is a recursive descent over attacker-controlled structure, so it needs a
       bound for the same reason the parser does (PART 9 §25, RESOURCE BOUNDS).
       This states the PROPERTY rather than a number, because the number cannot
@@ -196,7 +196,7 @@
       rather than reject it.
 *)
 
-   10. A LINK REFERENCE DEFINITION IS A NODE -- NORMATIVE.
+   10. A LINK REFERENCE DEFINITION IS A NODE -- NORMATIVE [CARVE-P12-029].
       `type: "link_reference_definition"`, carrying:
         label   the reference label as the author wrote it, before case folding
         href    the destination; present and non-empty, since a definition with
@@ -225,7 +225,7 @@
       target; it feeds the links and images that resolve its label (PART 9R R1).
       The non-HTML targets emit it, as §10a requires.
 
-   11. A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST -- NORMATIVE.
+   11. A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST -- NORMATIVE [CARVE-P12-030].
       The wire shape is pinned by `resources/ast-schema.json` with
       `additionalProperties: false` at every node, so a payload carrying a
       property no node type names is NOT a Carve AST. An ingest MUST REFUSE it
@@ -267,7 +267,7 @@
       (PART 10 §1: an extension may not change the core vocabulary).
 
 
-   12. A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST -- NORMATIVE. §7
+   12. A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST -- NORMATIVE [CARVE-P12-031]. §7
       fixes the root at `type`, `children` and `srcByteLength`, and
       `resources/ast-schema.json` marks all three `required`. §9 states the
       ingest contract for DEPTH and closes with the one non-depth rule it had:
@@ -328,7 +328,7 @@
       which is what the trap above turns on.
 
       (d) THE WHOLE PAYLOAD, VALIDATED AGAINST `resources/ast-schema.json`
-          (carve#881). Types and required fields together, at DECODE, refused
+          Types and required fields together, at DECODE, refused
           with the same typed error (a), (b) and (c) already require. Not a
           fourth list of leniency points -- the schema is the list, it already
           describes every one of them. An unnamed property under §11 and a
@@ -341,7 +341,7 @@
       and (d) does not reach it either -- the schema constrains the field's
       TYPE and sign, not whether the number is the right one.
 
-   13. SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE. A producer MAY
+   13. SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE [CARVE-P12-032]. A producer MAY
       return source-fidelity metadata beside an AST only when the caller asks
       for it. It MUST NOT insert that data into the AST: §§2, 7, 11 and 12 keep
       the canonical tree closed and unchanged.
@@ -409,13 +409,13 @@
       `tests/ast-schema.test.mjs` fails when the schema declares an optional
       property this clause does not define, unless the gap is named there with
       its open question. That is what stops the sidecar from growing fields no
-      producer can implement (carve#1431).
+      producer can implement.
 
       DEFAULT OUTPUT DOES NOT MOVE. Ordinary parse, AST encoding, CLI JSON and
       rendering retain their existing APIs and shapes. An AST decoder does not
       accept this sidecar as an AST. A layout reader refuses an unknown version.
 
-   14. A CAPTION MAY CARRY AN OPTIONAL STRUCTURED SHORT CAPTION -- NORMATIVE.
+   14. A CAPTION MAY CARRY AN OPTIONAL STRUCTURED SHORT CAPTION -- NORMATIVE [CARVE-P12-033].
       A `figure` or `table` MAY carry `shortCaption`, an array of inline nodes.
       It is an abbreviated navigation label for structured publishing targets
       such as a list of figures or tables. It is NOT a second visible caption,
@@ -440,7 +440,7 @@
       truncating or taking the first sentence of the full caption: abbreviation
       is an editorial choice and may be language-dependent.
 
-   15. A TABLE MAY CARRY AN OPTIONAL ROW GROUPING -- NORMATIVE. A `table` MAY
+   15. A TABLE MAY CARRY AN OPTIONAL ROW GROUPING -- NORMATIVE [CARVE-P12-034]. A `table` MAY
       carry `rowGroups`, an object which PARTITIONS the existing `rows` array
       into a head, any number of body groups and a foot. `bodies` MAY be empty:
       a table whose rows are all head and foot is a partition like any other,
@@ -506,8 +506,8 @@
       they are present in table attributes; it MUST NOT invent a spelling for
       richer grouping or drop/reorder rows to suit it.
 
-   16. A COMPOSITE FIGURE IS ITS OWN NODE TYPE -- NORMATIVE (PART 9 §4c;
-      carve#1122). The type is `figure_group`, and the wire shape:
+   16. A COMPOSITE FIGURE IS ITS OWN NODE TYPE -- NORMATIVE [CARVE-P12-035]
+      (PART 9 §4c). The type is `figure_group`, and the wire shape:
 
         {"type":"figure_group","children":[...],
          "caption":[...],"attrs":{...},"pos":{...}}
@@ -532,7 +532,7 @@
 
       NO `shortCaption`, NO legends, NO label fields. §14's `shortCaption`
       stays on `figure` and `table`; whether it ever reaches the group, and
-      whether repeated `^` blocks become legends, is carve#1118's and
-      carve#1121's design space and is not claimed here. The schema
+      whether repeated `^` blocks become legends, remains open and is not
+      claimed here. The schema
       (`resources/ast-schema.json`) pins the shape; an unknown property on a
       `figure_group` is rejected on ingest like any other (§11).

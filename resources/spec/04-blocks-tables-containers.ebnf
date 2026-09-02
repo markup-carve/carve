@@ -11,7 +11,7 @@ standard_row = '|', table_cell, {'|', table_cell}, '|', [row_attributes], newlin
 
 continuation_row = '+', table_cell, {'|', table_cell}, '|', newline ;
 
-(* THE ROW TERMINATOR AND AN OPEN RUN -- NORMATIVE (carve#1284, carve#1293).
+(* THE ROW TERMINATOR AND AN OPEN RUN -- NORMATIVE [CARVE-P2-019].
    Cells are cut from the line BEFORE any inline parsing, so what an inline run
    does can never decide where a row ends.
 
@@ -78,7 +78,7 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
    ordinary content, NOT attributes. The whole brace payload must be valid
    attribute syntax (§15); otherwise the '{' is literal content. A cell
    carrying attributes is never a bare span_cell -- its content is literal even
-   if it is just '^' or '<', AND THE ATTRIBUTES STAY ON IT (carve#1463). The
+   if it is just '^' or '<', AND THE ATTRIBUTES STAY ON IT. The
    block is what makes the cell ordinary content, so reading it back out as
    text would leave this sentence with nothing to act on; `|{.x} < |` is
    `<td class="x">&lt;</td>`, never `<td>{.x} &lt;</td>`. The only stated route
@@ -101,8 +101,8 @@ colspan_marker = {space}, '<', {space} ;
    `|<TAB>a<TAB>|` is a cell whose text begins and ends with a tab, and
    `|<TAB>---<TAB>|` is not a delimiter_cell at all - the row is an ordinary
    row and promotes no header. Same for the two span markers: a tab beside
-   the `^` or `<` makes the cell ordinary content rather than a span
-   (carve#904, applying carve#901). What counts as an EMPTY cell is a
+   the `^` or `<` makes the cell ordinary content rather than a span. What
+   counts as an EMPTY cell is a
    separate question and is unchanged here. *)
 
 alignment_run = horizontal_alignment, [vertical_alignment]
@@ -132,7 +132,7 @@ cell_content = inline_content ;
 (* --- Captions --- *)
 caption = '^', space+, inline_content, newline, {caption_continuation_line} ;
 caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
-(* THE CAPTION MARKER SEPARATOR IS A RUN -- NORMATIVE. `space+`: one or more
+(* THE CAPTION MARKER SEPARATOR IS A RUN -- NORMATIVE [CARVE-P2-020]. `space+`: one or more
    ASCII spaces after the caret, ALL of them separator, and the first character
    that is not one BEGINS the caption. `^<SP><SP><SP>cap` is the caption `cap`,
    not `<SP><SP>cap`.
@@ -151,7 +151,7 @@ caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
 
    THE CONTINUATION LINE IS NOT TOUCHED BY THIS. A continuation line carries no
    marker, so its leading run is INDENTATION and it is kept as written. *)
-(* MULTI-LINE CAPTIONS -- NORMATIVE. A caption is multi-line inline CONTENT, so
+(* MULTI-LINE CAPTIONS -- NORMATIVE [CARVE-P2-021]. A caption is multi-line inline CONTENT, so
    its text spills onto following lines exactly like a PARAGRAPH (§10), NOT like
    a heading. It ends the same way an open paragraph does:
      1. a blank line ends the caption;
@@ -186,7 +186,7 @@ caption_slot = [blank_line], caption ;
    (Reading this note as "only a production attaches a caption" would make a
    captioned image a paragraph, which §4 denies and no engine does.) *)
 
-(* CAPTION NUMBER PLACEHOLDER -- NORMATIVE.
+(* CAPTION NUMBER PLACEHOLDER -- NORMATIVE [CARVE-P2-022].
    The FIRST bare `#` in a caption's TOP-LEVEL inline_content is a number
    placeholder. "Bare" = a `#` that does NOT begin a tag (a `#`
    followed by whitespace, `:`, `.`, end-of-caption, or any
@@ -212,7 +212,7 @@ colon_fence = ":::", {":"} ;
    makes the slot OPTIONAL because a bare `[label]` may sit flush against the
    fence (`:::[First]`); optional is a different property from a different
    role, and the slot answers the same way in all four openers whichever type
-   token follows it. (carve#887, carve#900) *)
+   token follows it.  *)
 colon_fence_close = colon_fence:close
                     where len(close) = len(open) ;
 (* FORMAL (PART 9 §12, now a guard): `open` is the colon_fence captured by
@@ -269,7 +269,7 @@ admonition = admonition_open, newline,
    span's opener BEFORE testing for its closer -- an opener with no info
    string (a bare code fence, a `%%%`) is closer-shaped itself, so testing it
    first ends the span on its own line and hands the span's contents back to
-   the block parser (carve#450).
+   the block parser.
 
    TOOLING FOR NEAR MATCHES (PART 9 §12). Exact length remains a parse rule,
    not a recoverable syntax error. A processor with diagnostics SHOULD report
@@ -291,7 +291,7 @@ admonition = admonition_open, newline,
    stays structural, and the lines after it are parsed normally. This is the
    same test PART 9 §10 I4 applies one level up -- an opener with no closer
    is not a fence -- and the same test the `%%%` rule above already states
-   ("an opener with no exact closer ahead opens nothing") (carve#515). In
+   ("an opener with no exact closer ahead opens nothing"). In
 
        ::: note
        ```
@@ -332,7 +332,7 @@ admonition = admonition_open, newline,
    AND PADDING SLOTS). The roles differ, the terminal does not, because A TAB
    IS SYNTAX ONLY IN THE LEADING RUN (PART 7). `::: note<TAB>"T"` is not an
    admonition opener -- the line stays prose, the same way a tab after a
-   marker leaves a line as prose (carve#692). *)
+   marker leaves a line as prose. *)
 admonition_open = colon_fence:open, space, admonition_type,
                   [space+, quoted_title], [space+, label] ;
 admonition_close = colon_fence_close ;
@@ -521,7 +521,7 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    matches the output format (html) and DROPPED otherwise -- the block parallel
    of raw inline (PART 9 §20). Adopts djot's raw-block syntax.
 
-   THE INTERIOR IS VERBATIM, THE OPENING IS PLACED -- NORMATIVE. Inside a
+   THE INTERIOR IS VERBATIM, THE OPENING IS PLACED -- NORMATIVE [CARVE-P2-023]. Inside a
    container, a renderer that indents its output indents the raw block's
    OPENING position, exactly as it would any other block, and MUST NOT touch
    the raw content's own line structure. Every line after the first reaches the
@@ -540,9 +540,9 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    newline when the raw format matches the output format. Zero payload lines
    contribute nothing; one blank payload line contributes one newline. An
    implementation MUST NOT encode those two source shapes identically.
-   (carve#1401)
 
-   RENDER-LOSS REPORTING -- NORMATIVE. Target routing may intentionally omit a
+
+   RENDER-LOSS REPORTING -- NORMATIVE [CARVE-P2-024]. Target routing may intentionally omit a
    raw node, but a checked renderer MUST make that omission observable. Its
    result has `value`, `losses`, `totalLosses`, and `truncated`. Each omitted
    raw node contributes one loss in document order with the stable code
@@ -567,7 +567,7 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    `--strict-losses`, offer a machine-readable JSON report, and permit the
    explicit exception `--allow-loss raw-format-dropped`. Import-loss reports
    are separate: they describe source-to-AST migration, while this report
-   describes AST-to-target rendering (carve#1728). *)
+   describes AST-to-target rendering. *)
 
 format_name = "html" | "latex" | identifier ;
 raw_content = (* any content until closing fence *) ;

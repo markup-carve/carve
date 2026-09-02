@@ -11,13 +11,13 @@ Carve has one normative language contract. These views filter that contract by i
 
 | View | Rules | Responsibility |
 |---|---:|---|
-| [Parsing](./parsing) | 116 | Input normalization, layout, block and inline recognition, attributes, and lexical boundaries. |
-| [Resolution and rendering](./resolution-rendering) | 31 | Document-wide resolution, core semantic behavior, and HTML serialization. |
+| [Parsing](./parsing) | 110 | Input normalization, layout, block and inline recognition, attributes, and lexical boundaries. |
+| [Resolution and rendering](./resolution-rendering) | 36 | Document-wide resolution, core semantic behavior, and HTML serialization. |
 | [AST interchange](./ast-interchange) | 36 | The core serialized tree shape, source positions, and cross-implementation AST guarantees. |
 | [Canonical writing](./canonical-writing) | 42 | Canonical Carve source, Markdown and plain-text targets, round trips, and escaping. |
 | [Imports, security, and extensions](./imports-security-extensions) | 24 | Optional and host-facing behavior, importer contracts, security limits, diagnostics, and extension surfaces. |
 
-Together the views cover all 249 active rules exactly once. The source metadata lives in `resources/spec/rules.json`.
+Together the views cover all 248 active rules exactly once. The source metadata lives in `resources/spec/rules.json`.
 
 ## Retired rule IDs
 
@@ -25,6 +25,7 @@ Retired IDs are never reused. Their replacement points to the document that now 
 
 | Rule | Last title | Replacement |
 |---|---|---|
-| `CARVE-PRE-001` | THE EXECUTABLE ARTIFACTS DECIDE NOTHING | `.github/CONTRIBUTING.md#what-settles-a-question` |
-| `CARVE-PRE-002` | A GOLDEN IS NORMATIVE ONCE COMMITTED, NOT ONCE GENERATED | `.github/CONTRIBUTING.md#what-settles-a-question` |
-| `CARVE-PRE-003` | A CHECKER THAT DISAGREES WITH A COMMITTED GOLDEN IS WRONG UNTIL A CLAUSE SAYS OTHERWISE | `.github/CONTRIBUTING.md#what-settles-a-question` |
+| `CARVE-P9-028` | THE ENGINE'S OWN WORDS ARE A RENDER OPTION | [`CARVE-P9-063`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L191) |
+| `CARVE-PRE-001` | THE EXECUTABLE ARTIFACTS DECIDE NOTHING | [`.github/CONTRIBUTING.md#what-settles-a-question`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question) |
+| `CARVE-PRE-002` | A GOLDEN IS NORMATIVE ONCE COMMITTED, NOT ONCE GENERATED | [`.github/CONTRIBUTING.md#what-settles-a-question`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question) |
+| `CARVE-PRE-003` | A CHECKER THAT DISAGREES WITH A COMMITTED GOLDEN IS WRONG UNTIL A CLAUSE SAYS OTHERWISE | [`.github/CONTRIBUTING.md#what-settles-a-question`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question) |

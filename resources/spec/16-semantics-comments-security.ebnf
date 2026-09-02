@@ -1,5 +1,5 @@
 (* ============================================================================
-   21. TRAILING LINE COMMENTS -- NORMATIVE (governs `inline_comment` in PART 3).
+   21. TRAILING LINE COMMENTS -- NORMATIVE [CARVE-P9-041] (governs `inline_comment` in PART 3).
       - A `%%` token is a trailing comment marker only when the character
         immediately before it is whitespace (space or tab) or it starts the
         inline run (beginning of paragraph content after leading whitespace).
@@ -14,7 +14,7 @@
       - The comment does NOT cross a line break; a soft-wrapped continuation on
         the next line of the same paragraph is unaffected (corpus 26-comments-6).
 
-   21a. DELIMITED INLINE COMMENTS -- NORMATIVE (governs `braced_comment` in
+   21a. DELIMITED INLINE COMMENTS -- NORMATIVE [CARVE-P9-042] (governs `braced_comment` in
       PART 3). `%%` runs to the end of its inline RUN, so mid-line commenting
       already works wherever the structure supplies a boundary -- a table cell
       ends at `|`, link text at `]`. Plain prose supplies none, and this is the
@@ -47,7 +47,7 @@
         template tags (`{% raw %}`, `{% endif %}`), which is the one shape
         where a Liquid or Nunjucks source reaches the parser as text.
 
-   22. FORCED INTRAWORD EMPHASIS -- NORMATIVE (governs the forced_* productions
+   22. FORCED INTRAWORD EMPHASIS -- NORMATIVE [CARVE-P9-043] (governs the forced_* productions
       in PART 3). The brace-pair family is the escape hatch for emphasis where a
       bare delimiter would otherwise stay literal (§9 word boundary).
       - FORMS. Each emphasis mark has a forced form that renders the SAME
@@ -78,7 +78,7 @@
         any bare span: {*x*}{.c} -> <strong class="c">x</strong>.
       (corpus 01-emphasis-12 forced-intraword, 01-emphasis-13 forced-nesting.)
 
-   23. LINE BLOCK (VERSE) -- NORMATIVE (governs `line_block` in PART 2). A
+   23. LINE BLOCK (VERSE) -- NORMATIVE [CARVE-P9-044] (governs `line_block` in PART 2). A
       `::: |` fenced block preserves the author's per-line layout.
       - TRIGGER. A bare pipe `|` TYPE TOKEN on the opener (`::: |`) selects this
         behavior. The token is a pipe, not a word. STRICT (djot): the opener
@@ -91,7 +91,7 @@
         (`<br>`). So consecutive non-blank body lines render as one paragraph
         with `<br>` between them.
 
-        A BACKSLASH BREAK IS NOT ADDITIVE -- NORMATIVE. The rule above has a
+        A BACKSLASH BREAK IS NOT ADDITIVE -- NORMATIVE [CARVE-P9-045]. The rule above has a
         subject, and it is the SOFT break. `hard_break = '\', newline` (PART 3)
         consumes its own newline, so no soft break survives a backslash and
         there is nothing left to convert: ONE line boundary produces ONE
@@ -99,7 +99,6 @@
         have to SYNTHESIZE a break node no production yields, and it would
         make the container ADD a line to the layout this block exists to
         preserve. It holds on the markdown, plain and ansi targets too
-        (carve#1334).
 
         THE BACKSLASH STILL HAS A JOB HERE, so it is not redundant syntax the
         writer may drop. PART 7 makes the whitespace run before it INTERIOR,
@@ -112,7 +111,7 @@
         tree and in the HTML, which is why the canonical writer may not drop
         either (PART 11 §7c).
 
-        AN INLINE CONSTRUCT IS NOT A DEPTH THE RULE STOPS AT -- NORMATIVE.
+        AN INLINE CONSTRUCT IS NOT A DEPTH THE RULE STOPS AT -- NORMATIVE [CARVE-P9-046].
         The subject is the SOFT break, so the only question at a boundary is
         whether a `soft_break` NODE is there. Nothing conditions the rule on
         what ENCLOSES that node, and an emphasis run, a link label or a
@@ -170,7 +169,7 @@
         `line-block` without the container consuming indentation.
       - INLINE CONTENT parses normally (emphasis, links, code, ...); only the
         whitespace and soft-break handling differ from an ordinary div.
-      - NO BLOCK CONSTRUCT IS RECOGNIZED INSIDE ONE -- NORMATIVE. A body line
+      - NO BLOCK CONSTRUCT IS RECOGNIZED INSIDE ONE -- NORMATIVE [CARVE-P9-047]. A body line
         is verse: a link, footnote or abbreviation definition, a
         block-attribute line and a fence opener are all ORDINARY TEXT there,
         and none of them is REGISTERED. The stanza is the only structure a
@@ -185,14 +184,14 @@
         opener CLAIMS the line and changes what renders, while a comment-only
         body line leaves an EMPTY verse line.
 
-        AN INVISIBLE LINE IS REMOVED AT THE BLOCK LAYER -- NORMATIVE. The line
+        AN INVISIBLE LINE IS REMOVED AT THE BLOCK LAYER -- NORMATIVE [CARVE-P9-048]. The line
         is decided
         with the other block-layer decisions, BEFORE any inline content
         exists. No inline run can reach it, so whether an EARLIER line left a
         verbatim run open cannot change whether a line is a comment. Otherwise
         §21's verbatim exclusion claims the line and PUBLISHES the comment's
         own text -- the one outcome a comment may never have -- on a document
-        whose only defect is a stray backtick above it (carve#1333):
+        whose only defect is a stray backtick above it:
 
           ::: |
           a `b
@@ -202,7 +201,6 @@
 
         The comment is gone before the inline run exists, and the run carries
         the empty verse line as a NEWLINE, like every other break it swallows
-        (carve#1282).
 
         REMOVED FROM THE RENDER, NOT FROM THE TREE. The line is a `comment`
         node like any other comment (§21a, PART 12), so the canonical writer
@@ -213,7 +211,7 @@
         PART 11 §1 failure.
 
         THE NODE'S SURVIVAL DOES NOT DEPEND ON HOW THE BOUNDARY ABOVE IT WAS
-        SPELLED -- NORMATIVE. `a` over `%% c` and `a \` over `%% c` are the
+        SPELLED -- NORMATIVE [CARVE-P9-049]. `a` over `%% c` and `a \` over `%% c` are the
         same document but for a backslash on the line above, and the comment
         is a node in both. The boundary that OPENS the comment's line is there
         either way, which is the only thing the line needs to exist.
@@ -271,7 +269,7 @@
 
       (corpus 41-line-blocks*.)
 
-      LOCAL HARD-BREAK BLOCK -- NORMATIVE (governs `local_hard_break_block` in
+      LOCAL HARD-BREAK BLOCK -- NORMATIVE [CARVE-P9-050] (governs `local_hard_break_block` in
       PART 2). A `::: \` fenced block is the smaller local opt-in for visible
       line breaks.
       - TRIGGER. A bare backslash `\` TYPE TOKEN on the opener (`::: \`) selects
@@ -290,8 +288,7 @@
 
    24. TABS AND INDENTATION -- FORMALIZED COLUMN ARITHMETIC (governs
       `indent` in PART 2 and every indentation-sensitive comparison; the
-      arithmetic PART 0's layout automaton runs on; carve #99 / Rule B carve
-      #103).
+      arithmetic PART 0's layout automaton runs on).
       C1 COLUMNS, NOT CHARACTERS. col advances by 1 for a space and to the
          next multiple of 4 for a tab (CommonMark tab stops; a leading tab
          indents to column 4). Outside indentation (code content, inline
@@ -316,7 +313,7 @@
          look-ahead the top level uses, and only the `:: ` TERM line opens the
          block). None of these is special-cased: a def-list or table interrupts
          at column 0 and nests at content_column exactly as a quote or heading
-         does (carve#295). The content_column is
+         does. The content_column is
          the item body's CANONICAL COLUMN 0 and its minimum containment column.
          This one rule holds whether or not a blank line precedes the child;
          the blank only decides tight vs loose (§17), and there is no relaxed
@@ -334,7 +331,7 @@
              opener column and follows the lazy-text rule above. This boundary
              is what distinguishes corpus 286's columns 0 and 1.
 
-             THE FOLD PRESUMES AN OPEN PARAGRAPH -- NORMATIVE (carve#682).
+             THE FOLD PRESUMES AN OPEN PARAGRAPH -- NORMATIVE [CARVE-P9-051].
              "Folds as lazy item text" names an OPERATION, and lazy
              continuation continues an open paragraph (§10 I2). Where none is
              open the instruction cannot be carried out, so the branch does not
@@ -365,7 +362,7 @@
                  the lazy fold. Corpus 189 and 192 pin the below-column answer,
                  so aligning the two means moving a pin, not tidying a clause.
 
-             AN INVISIBLE LINE FOLDS LIKE ANY OTHER -- NORMATIVE. "Every other
+             AN INVISIBLE LINE FOLDS LIKE ANY OTHER -- NORMATIVE [CARVE-P9-052]. "Every other
              line" includes the ones that are not block-SHAPED. This is the
              BELOW-COLUMN half of §10 I5's first exception (AN INVISIBLE LINE IS
              ONE CLASSIFICATION): below the column the comment is still exempt
@@ -383,37 +380,37 @@
             one construct over: an attribute recognized below the column has no
             visible block left in the container to attach to, so §15 A4
             discards it and the author's characters reach neither the page nor
-            any table (carve#1801).
+            any table.
 
             THE FOLD IS INTO THE CONTAINER, in every host. "Folds as TEXT" and
             I5's "lazy paragraph text" name one operation on one open
             paragraph, and that paragraph belongs to the container whose
             content column the line fell below. Ending the container and
             emitting the characters at document level satisfies neither
-            sentence (carve#1800).
+            sentence.
 
               - - a
                [^f]: x
 
             renders `a` and the literal `[^f]: x` inside the inner item.
 
-            A COMMENT IS THE ONE EXCEPTION -- NORMATIVE. The first of the two
+            A COMMENT IS THE ONE EXCEPTION -- NORMATIVE [CARVE-P9-053]. The first of the two
             exceptions to §10 I5's classification, and it is a question of
             MEMBERSHIP: it decides which lines are invisible below a column,
             not how an invisible line behaves. A comment is recognized at ANY
             column, above the content column, at it, or below it, and stays
             invisible. BOTH SPELLINGS: the `%%` line form
             and the `%%%` fence form, whose body and closer travel with its
-            opener (corpus 186, carve#634). Folding it would make the comment
+            opener (corpus 186). Folding it would make the comment
             VISIBLE, which is the one outcome a comment may never have, and an
             indented comment at the top level is already invisible for the same
             reason. It does not close the ITEM either: a following line still
             belongs to the item rather than parsing at document level
-            (carve#618). It does end the open PARAGRAPH, though, so that line
+            It does end the open PARAGRAPH, though, so that line
             begins the item's SECOND paragraph rather than continuing the
-            first -- a difference visible only in a LOOSE list (carve#677).
+            first -- a difference visible only in a LOOSE list.
 
-            AND THE OWNERSHIP HALF REACHES A DEGRADED FENCE (carve#1903).
+            AND THE OWNERSHIP HALF REACHES A DEGRADED FENCE.
             "The `%%%` fence form, whose body and closer travel with its
             opener" names a fence that HAS a closer. §28 substitutes for the
             one that does not: an opener with no matching closer AHEAD opens no
@@ -451,12 +448,11 @@
              are `list-item-block-overindented` and `list-item-body-detached`
              in docs/validation.md. The default formatter MUST NOT choose one
              intention for the author while migrating an older spelling
-             (carve#1702, carve#1705).
          This is intentionally SIMILAR TO DJOT'S LENIENCY inside list items:
          any authored column at or beyond Carve's minimum content_column may
          open the block. Top-level block openers remain column-strict, and a
          line below content_column is unchanged (docs/divergence-from-djot,
-         carve#295, carve#1705).
+        ).
       C4 RULE B (TOP LEVEL, ANY INDENT). A bullet (`-`/`*` + space +
          content) opens a list at ANY indentation at the TOP LEVEL -- no
          column-0 restriction (unlike CommonMark, `    - x` is a list, not
@@ -472,7 +468,7 @@
          aligned with mixed tab/space indentation keep the same visual
          column and stay siblings.
 
-   25. SECURITY REQUIREMENTS -- NORMATIVE (HTML output target). These rules
+   25. SECURITY REQUIREMENTS -- NORMATIVE [CARVE-P9-054] (HTML output target). These rules
       bind any implementation that emits HTML for UNTRUSTED input, so an
       implementation written to this grammar + the corpus cannot be conformant
       yet expose a trivial XSS vector. The corpus pins representative cases
@@ -545,7 +541,7 @@
         emit them raw.
 
         A URL-LIST ATTRIBUTE IS PROBED TOKEN-WISE, NOT AT ITS HEAD --
-        NORMATIVE. The probe above reads the value's LEADING scheme, which
+        NORMATIVE [CARVE-P9-055]. The probe above reads the value's LEADING scheme, which
         vouches for the whole value only where the whole value is ONE URL.
         Four attributes carry a LIST of URLs: `srcset`, `imagesrcset`, `ping`
         and `attributionsrc`, so a dangerous scheme in any position but the
@@ -657,7 +653,7 @@
         container kind FLATTENS the same way -- the opener becomes literal
         paragraph text -- rather than crashing.
 
-        A FLATTENED OPENER IS ORDINARY PARAGRAPH TEXT -- NORMATIVE, and
+        A FLATTENED OPENER IS ORDINARY PARAGRAPH TEXT -- NORMATIVE [CARVE-P9-056], and
         therefore groups by the ordinary paragraph rule: consecutive
         over-cap openers, and any text following them, form ONE paragraph,
         ending at the first blank line like any other. There is no trailing
@@ -673,8 +669,8 @@
         past the cap makes a line group differently from the same characters
         typed by an author.
 
-        A RETURNED DOCUMENT NEVER SILENTLY LACKS AUTHORED TEXT -- NORMATIVE
-        (carve#1881). A limit has two permitted answers, and this is the rule
+        A RETURNED DOCUMENT NEVER SILENTLY LACKS AUTHORED TEXT -- NORMATIVE [CARVE-P9-068].
+        A limit has two permitted answers, and this is the rule
         over both. It MAY DEGRADE, in which case every authored character stays
         in the output and what is lost is structure, a symbol-table entry or a
         report row -- the nesting cap above already works this way, since past
@@ -733,7 +729,7 @@
         the unit in question. The FORM is not the requirement; the derivation
         is.
 
-        AT THE RENDER CEILING, A RENDERER REFUSES -- NORMATIVE. Reaching it
+        AT THE RENDER CEILING, A RENDERER REFUSES -- NORMATIVE [CARVE-P9-057]. Reaching it
         MUST produce a typed, documented failure naming the depth bound. NOT
         silent truncation, not a partial document, and not whatever the host
         language raises when the stack runs out. This is PART 12 §9(b), the

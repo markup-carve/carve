@@ -13,7 +13,7 @@ heading = atx_heading ;
 atx_heading = heading_first_line ;
 heading_first_line = heading_marker, space+, inline_content, newline ;
 heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
-(* COLUMN ZERO -- NORMATIVE. A heading_marker sits at COLUMN 0 of its line (no
+(* A HEADING MARKER STARTS AT ITS CONTAINER'S CONTENT COLUMN -- NORMATIVE [CARVE-P2-001]. A heading_marker sits at COLUMN 0 of its line (no
    leading spaces or tabs); carve does NOT accept CommonMark's 0-3 space indent.
    An indented `#`-line is ordinary paragraph text: "   # H" is <p># H</p>, not
    a heading -- including one written directly under an open heading, which used
@@ -23,7 +23,7 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    quoted heading.) Matches Djot (which dropped CommonMark's indent fuzz);
    pinned by corpus 103-heading-marker-column-zero. *)
 
-(* THE HEADING MARKER SEPARATOR IS A RUN -- NORMATIVE. `space+`: one or more
+(* THE HEADING MARKER SEPARATOR IS A RUN -- NORMATIVE [CARVE-P2-002]. `space+`: one or more
    ASCII spaces after the hashes, ALL of them separator, and the first
    character that is not one BEGINS the heading. `##<SP><SP>h` is the heading
    `h`, not `<SP>h`.
@@ -50,7 +50,7 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    `a-b`. A CROSSREF's AUTO-TEXT takes the heading's own text (§19), so
    `</#a-b>` renders `a b`. *)
 
-(* SINGLE-LINE HEADINGS -- NORMATIVE (diverges from Djot). A heading ENDS AT
+(* SINGLE-LINE HEADINGS -- NORMATIVE [CARVE-P2-003] (diverges from Djot). A heading ENDS AT
    THE NEWLINE. It has no continuation line, and nothing following it folds in:
    the next line begins whatever block it begins, exactly as it would after any
    other closed block.
@@ -75,9 +75,9 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    block-attribute line (PART 9 §15), the uniform block rule; an explicit
    `#id` from that line lives on the `<section>` wrapper (PART 9 §13). *)
 
-(* HEADING IDENTIFIERS -- NORMATIVE. A heading without an explicit {#id} gets an
+(* HEADING IDENTIFIERS -- NORMATIVE [CARVE-P2-004]. A heading without an explicit {#id} gets an
    automatic identifier from its TEXT CONTENT, GitHub/SSG-style. WHICH INLINES
-   CONTRIBUTE IS PART OF THE RULE, by ruling (carve#1283): an inline contributes
+   CONTRIBUTE IS PART OF THE RULE: an inline contributes
    the literal text it carries, or it contributes nothing, and which of the two
    is a property of the CONSTRUCT rather than of what it renders -- an id is
    assigned before a cross-reference resolves or a symbol is looked up. Code
@@ -92,7 +92,7 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
      - PRESERVE CASE (Unicode-aware): NON-ASCII characters AND letter case pass
        through unchanged (`Café` -> `Café`, `日本語` unchanged). The text IS
        NFC-normalized before slugging (PART 9 §25), so a precomposed `é` and a
-       decomposed `e` + U+0301 give the SAME id (carve#705);
+       decomposed `e` + U+0301 give the SAME id;
      - a leading-digit result is prefixed `s-` (a bare leading digit is a valid HTML
        id but an invalid CSS selector); an empty result becomes a generated `s-N`;
      - duplicates within a document get a numeric `-2`, `-3`, ... suffix.
@@ -135,7 +135,7 @@ fenced_code_block = code_fence_open, [space], [code_fence_info], newline,
    So ``` ```<SP><SP>php ``` is not a fence opener at all -- the second space
    reaches `language_info`, whose class holds no space, and the INVALID-FENCE
    FALLBACK applies. *)
-(* CODE-FENCE INFO STRING -- NORMATIVE. After the optional language_info
+(* CODE-FENCE INFO STRING -- NORMATIVE [CARVE-P2-005]. After the optional language_info
    token the opener admits, in this fixed order, an optional "header" (a
    quoted_title -- the SAME token as the admonition header, PART 9 §12) and an
    optional bracketed [label]. Both are STRUCTURED METADATA -- neither is part
@@ -177,7 +177,7 @@ code_fence_close = (backtick_fence | tilde_fence):close
 (* FORMAL (PART 9 §2, now stated as a guard): the closer uses the SAME fence
    character as its opener and is at least as long. The `where` clause is the
    grammar's counting device -- see GUARD NOTATION in the header. *)
-(* COLUMN-EXACT DELIMITERS -- NORMATIVE (PART 2). A fenced-code delimiter --
+(* COLUMN-EXACT DELIMITERS -- NORMATIVE [CARVE-P2-006] (PART 2). A fenced-code delimiter --
    the opener AND the closer -- sits exactly at its container's content column;
    after container prefixes are stripped (PART 0), that means NO leading
    whitespace (at the top level, column 0). Carve has no indented-code-block
@@ -210,7 +210,7 @@ code_fence_info = ( language_info, [space+, quoted_title], [space+, label] )
 language_info = (letter | digit | '-' | '_' | '+' | '#' | '.' | '/')+ ;  (* a single token; the punctuation covers real language tags like c++, c#, f#, asp.net, text/html. May start with a digit. The `/` is normative across all impls (so `text/html`, `image/svg` are language tokens, not split). A token MUST NOT start with `=`: a leading `=` is the raw_block opener (above), not a language. *)
 label = '[', { character - ']' }, ']' ;  (* structured metadata, e.g. [Installation]; not part of the class *)
 code_content = (* any text until matching fence, preserved literally *) ;
-(* TABS IN CODE -- NORMATIVE. Literal tab characters in code content (fenced
+(* TABS IN CODE -- NORMATIVE [CARVE-P2-007]. Literal tab characters in code content (fenced
    code blocks and inline code spans) are PRESERVED verbatim; a tab and N spaces
    are not interchangeable. Tab display width is a presentation concern (CSS
    `tab-size`). Tab-to-space expansion is NOT a default behavior -- it is opt-in
@@ -224,7 +224,7 @@ blockquote = blockquote_line, {blockquote_line | lazy_continuation_line | contin
    the CONTINUATION MARKER note below and PART 9 §17. *)
 blockquote_line = '>', (newline | (space, inline_content, newline)) ;
 
-(* LAZY CONTINUATION -- NORMATIVE (CommonMark-compatible). After one or more
+(* LAZY CONTINUATION -- NORMATIVE [CARVE-P2-008] (CommonMark-compatible). After one or more
    blockquote_lines, a line that does NOT carry the '>' marker still continues
    the blockquote -- folding into the INNERMOST open paragraph, at whatever
    depth that paragraph sits -- provided it is:
@@ -262,7 +262,7 @@ unordered_item = bullet_marker, [item_attributes], space, [task_marker], list_it
 bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
                                 continuation marker (PART 9 §17); a `+ ` line is
                                 ordinary paragraph text. Deviates from djot. *)
-(* MARKER REQUIRES CONTENT -- NORMATIVE. A marker that takes a separator space
+(* MARKER REQUIRES CONTENT -- NORMATIVE [CARVE-P2-009]. A marker that takes a separator space
    opens its block only when followed by that space AND non-empty content. A
    content-less marker line -- bare (`-`) or with trailing whitespace only
    (`- `, `-   `) -- is NOT a list: it is paragraph text. The rule ignores
@@ -273,7 +273,7 @@ bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
    property of the separator space and applies wherever one appears --
    including the definition-term marker `::` and the description marker `:`.
 
-   THE DESCRIPTION MARKER -- NORMATIVE (carve#1830). `definition_separator` is a
+   THE DESCRIPTION MARKER -- NORMATIVE [CARVE-P2-026]. `definition_separator` is a
    separator space, so a `:` line carrying only whitespace opens no description.
    It is a plain line under the open term, which folds it as a soft break, and
    NO TRAILING WHITESPACE (PART 2) drops the run -- so `:`, `: `, `:   ` and a
@@ -282,8 +282,7 @@ bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
    separator itself (PART 1, MARKER SEPARATORS AND PADDING SLOTS), and lands in
    the same place.
 
-   A TAB AS THE FIRST CHARACTER OF CONTENT is a different question from the one
-   above -- NORMATIVE.
+   A LEADING CONTENT TAB FOLLOWS NORMAL INDENTATION -- NORMATIVE [CARVE-P2-010].
    There the separator space is present, so the marker is satisfied and a term
    forms; the tab is the first character of the term's inline content. It is
    ordinary leading whitespace and is stripped like any other in that position:
@@ -292,7 +291,7 @@ bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
    content and inline code spans only. `::` + space + TAB + `x` therefore
    renders `<dl><dt>x</dt></dl>`.
 
-   WHICH CHARACTERS THE CONTENT TEST IGNORES -- NORMATIVE (carve#1836). The
+   WHICH CHARACTERS THE CONTENT TEST IGNORES -- NORMATIVE [CARVE-P2-027]. The
    trailing whitespace this rule ignores is spelled `' ' | '\t'`, the same set
    NO TRAILING WHITESPACE (PART 2) drops. The separator run is SPACES ONLY, so a
    tab PAST that run is judged by the content test rather than by the separator:
@@ -319,7 +318,7 @@ ordered_item = ordered_marker, [item_attributes], space, list_item_content ;
    literal paragraph text (pinned by corpus parenthesized-ordered-marker). *)
 ordered_marker = (digit+ | letter | roman_numeral), ('.' | ')')
                | '.' ;
-(* BARE DOT -- NORMATIVE (Carve addition; no Djot or CommonMark equivalent).
+(* A BARE DOT OPENS A DECIMAL LIST -- NORMATIVE [CARVE-P2-011] (Carve addition; no Djot or CommonMark equivalent).
    The VALUE may be omitted when the delimiter is `.`: a bare `. ` is a decimal
    ordered marker counting from 1, the AsciiDoc-style shorthand.
 
@@ -338,7 +337,7 @@ ordered_marker = (digit+ | letter | roman_numeral), ('.' | ')')
    (`.{#x} text`), because the shape is marker, [attributes], space, content
    and the block sits BEFORE the required space rather than competing with it.
 
-   COST -- NORMATIVE. After a blank line a paragraph beginning `. ` opens a
+   A BARE DOT AFTER A BLANK LINE OPENS A LIST -- NORMATIVE [CARVE-P2-012]. After a blank line a paragraph beginning `. ` opens a
    list, where it was prose before; so does one beginning with `.{` plus a
    valid attribute block and a space. Escape the marker (`\. text`) to keep the
    line prose.
@@ -362,7 +361,7 @@ roman_numeral = ('i' | 'v' | 'x' | 'l' | 'c' | 'd' | 'm')+
      `3.{#x k=v} text`-> `<li id="x" k="v">text</li>`
    For task items the block abuts the marker, before the task marker:
      `-{.c} [ ] text` -> `<li class="c"><input ...> text</li>`.
-   WHITESPACE IS THE DISCRIMINATOR -- NORMATIVE:
+   WHITESPACE IS THE DISCRIMINATOR -- NORMATIVE [CARVE-P2-013]:
    - `-{.c} text` (attr ABUTS marker) -> the `{.c}` is part of the MARKER and
      attributes the `<li>`. This is the ONLY way to attribute the `<li>`.
    - `- {.c} text` (a space BEFORE `{`) -> the `{.c}` is ordinary item CONTENT,
@@ -377,7 +376,7 @@ roman_numeral = ('i' | 'v' | 'x' | 'l' | 'c' | 'd' | 'm')+
      `.class`, `key=value`) OR is the blessed empty block (`-{} text` -> bare
      `<li>`). Otherwise (`-{+a+}`, `-{not attrs}`) the `-{` is not a marker and
      the line stays ordinary paragraph/inline text.
-   - Free slot: `-{` and `1.{` / `1){` are NOT list markers today (bullet and
+   - Free slot: `-{` and `1.{` / `1){` are NOT list markers (bullet and
      ordered both require the space), so no existing input changes meaning.
    - Diverges from djot (which has no li-attribute form); deliberate Carve
      extension. A trailing `{…}` line folded onto a tight item is NOT a
@@ -392,7 +391,7 @@ indent = whitespace, {whitespace} ;
 (* This production IS a leading indentation run, so its column arithmetic is
    A TAB IS SYNTAX ONLY IN THE LEADING RUN (PART 7); how much indent nests what
    is NOT a fixed character count -- the content-column rules are PART 9 §24. *)
-(* MARKER-LINE NESTED LIST -- NORMATIVE. A sub-list whose first marker sits on
+(* MARKER-LINE NESTED LIST -- NORMATIVE [CARVE-P2-014]. A sub-list whose first marker sits on
    the PARENT item's marker line (`- - A`) is an ordinary persistent nested_list,
    identical to writing the sub-marker on its own indented line. It is NOT a
    one-off lone item: following markers at the sub-list's content column MERGE
@@ -411,7 +410,7 @@ continuation_marker_block = continuation_marker, block ;
    `- + text` keeps `+ text` as literal inline content -- only a bare `+`
    triggers this. *)
 (* One block, exactly as `continuation_marker_block` above: the two forms
-   differ in WHERE the marker sits, never in how much it takes (carve#1290). *)
+   differ in WHERE the marker sits, never in how much it takes. *)
 first_block_content = continuation_marker, block ;
 
 (* Task lists are unordered lists with special markers *)
@@ -419,7 +418,7 @@ task_marker = '[', task_state, ']', space ;
 (* `x`/`X` render a CHECKED checkbox; every other state (` `, `-`, `_`,
    `>`, `?`) renders an UNCHECKED checkbox. Matches djot-php. *)
 task_state = ' ' | 'x' | 'X' | '-' | '_' | '>' | '?' ;
-(* THE STATE IS RECORDED, NOT ONLY THE BOX (carve#1866). Rendering answers a
+(* THE STATE IS RECORDED, NOT ONLY THE BOX. Rendering answers a
    two-valued question, so `checked` alone was all the AST carried and the
    four extended states did not survive a format cycle: `carve fmt` rewrote
    `[-]`, `[_]`, `[>]` and `[?]` to `[ ]`. They are distinguishable states an
@@ -439,11 +438,11 @@ task_state = ' ' | 'x' | 'X' | '-' | '_' | '>' | '?' ;
    sits beside the checkbox when the first block renders inline, and on its own
    indented line below it when it does not.
      `- [ ] a`        -> `<li><input ...> a</li>`
-     `- [ ] > q`      -> `<li><input ...> ` newline `  <blockquote>...`
+     `- [ ] > q`      -> `<li><input ...> ` newline `  <blockquote> ...`
    A quote, a code fence, a `:::` div, a table row, a heading and a thematic
-   break as the first block each still get the checkbox. (carve#1381)
+   break as the first block each still get the checkbox.
 
-   THE TASK BOX CARRIES AN ACCESSIBLE NAME -- NORMATIVE. The box is an
+   THE TASK BOX CARRIES AN ACCESSIBLE NAME -- NORMATIVE [CARVE-P2-015]. The box is an
    <input type="checkbox"> and the word beside it is a SIBLING TEXT NODE - not
    a <label>, not an aria-label - so without a name a reader meets an
    unlabeled disabled checkbox. The box takes an `aria-label` naming it with
@@ -489,7 +488,7 @@ definition_separator = space, {space} ;
    of the list-item `- +` opener (`first_block_content`). `: \+` is a literal
    `+`. *)
 
-(* SEPARATOR WIDTH SETS THE BODY'S COLUMN (carve#1755). The separator is a run
+(* SEPARATOR WIDTH SETS THE BODY'S COLUMN. The separator is a run
    of ONE OR MORE spaces, and the body's content column is `1 + separator
    width`: `: x` establishes column 2, `:  x` column 3, `:    x` column 5. A
    continuation line qualifies by REACHING its own body's column (PART 9 SS24
@@ -506,7 +505,7 @@ definition_separator = space, {space} ;
 definition_continuation = (definition_indent, inline_content, newline)
                         | (backslash, newline, definition_indent, inline_content, newline) ;
 definition_indent = whitespace, {whitespace} ;
-(* INDENTATION IS COLUMNS, NOT CHARACTERS -- NORMATIVE. A tab has a column
+(* INDENTATION IS COLUMNS, NOT CHARACTERS -- NORMATIVE [CARVE-P2-016]. A tab has a column
    value (PART 9 §24 C1, to the next multiple of 4), and a definition body's
    continuation counts columns exactly as a footnote body (`footnote_indent`)
    and a list item (`list_continuation`'s `indent`) do.
@@ -521,7 +520,7 @@ definition_indent = whitespace, {whitespace} ;
    The BACKSLASH branch spells the same indentation: it resolves through the
    hard break, which folds the next line in regardless of its indentation.
 
-   BELOW THE BODY'S COLUMN THE BODY ENDS -- NORMATIVE (carve#932). The three
+   BELOW THE BODY'S COLUMN THE BODY ENDS -- NORMATIVE [CARVE-P2-017]. The three
    bands, in column order, so the rule can be read off once:
 
      - BELOW the body's content column, the body ENDS and the line is
@@ -539,7 +538,7 @@ definition_indent = whitespace, {whitespace} ;
        attribute line at a nonzero column below the column is lazy paragraph
        text of THIS body (§10 I5, AN INVISIBLE LINE FOLDS LIKE ANY OTHER). At
        DOCUMENT column 0 they are interrupters and the body does end.
-       (carve#1800, carve#1801)
+
      - AT the column, the line is the body's own block content, so a block
        opener opens inside the `dd`.
      - PAST the column, a recognized block opener establishes its authored
@@ -585,7 +584,7 @@ definition_indent = whitespace, {whitespace} ;
    establishes governs THAT BLOCK; it never carries over to the next opener
    written below it.
 
-   AUTHORED BLOCK BASES -- NORMATIVE (carve#1729, carve#1781). Definition
+   AUTHORED BLOCK BASES -- NORMATIVE [CARVE-P2-018]. Definition
    bodies apply PART 0's ONE AUTHORED BLOCK BASE at the content column fixed by
    their separator. The shared clause decides ownership, extent and canonical
    placement; this construct adds no second rebase rule.

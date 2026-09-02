@@ -143,7 +143,10 @@ test('§18: the schema declares exactly the fields the clause names', () => {
   assert.equal(declared.additionalProperties, false)
 
   const clause = grammar.slice(grammar.indexOf('18. A CITATION DEFINITION IS A NODE'))
-  assert.ok(clause.startsWith('18. A CITATION DEFINITION IS A NODE -- NORMATIVE.'), 'clause heading missing')
+  assert.ok(
+    clause.startsWith('18. A CITATION DEFINITION IS A NODE -- NORMATIVE [CARVE-P12-037].'),
+    'clause heading missing',
+  )
   for (const field of ['key', 'children', 'attrs']) {
     assert.match(
       clause.slice(0, 900),

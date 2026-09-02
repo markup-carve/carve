@@ -8,7 +8,7 @@
 math = math_inline | math_display ;
 math_inline = '$', code_span ;
 math_display = "$$", code_span ;
-(* TRAILING ATTRIBUTES on math -- NORMATIVE: math reuses `code_span`, which
+(* TRAILING ATTRIBUTES on math -- NORMATIVE [CARVE-P3-012]: math reuses `code_span`, which
    carries the generic `[attributes]` slot, so `$\`x\`{.c}` / `$$\`x\`{.c}`
    parse a trailing attribute block and APPLY it to the math span, merging
    classes into the existing `math inline` / `math display` class
@@ -52,7 +52,7 @@ math_display = "$$", code_span ;
    is literal by the same-delimiter-adjacency rule (PART 9 §9), like `**x**`
    or `//x//`. The delimiter set is fully uniform: all single-char. --- *)
 
-(* FORMAL word-boundary guards -- NORMATIVE; production templates (GUARD
+(* FORMAL word-boundary guards -- NORMATIVE [CARVE-P3-013]; production templates (GUARD
    NOTATION, header) instantiated for every bare delimiter
    d in { '/', '*', '_', '~', '=' } (all single-char): *)
 
@@ -109,7 +109,7 @@ forced_strike     = "{~", forced_content, "~}", [attributes] ;
    distinction from the raw-inline `{=format}` attribute). *)
 forced_highlight  = "{=", forced_content, "=}", [attributes] ;
 forced_content    = (inline_element | text_run | literal_special)+ ;
-(* AN EMPTY BRACE PAIR IS NOT A CONSTRUCT -- NORMATIVE (carve#1447). The `+`
+(* AN EMPTY BRACE PAIR IS NOT A CONSTRUCT -- NORMATIVE [CARVE-P3-014]. The `+`
    above is load-bearing: an opener that meets its own closer with nothing
    between them opened nothing, and its characters are TEXT.
 
@@ -174,7 +174,7 @@ footnote_indent = whitespace, {whitespace} ;
    PART 9 §17), the same continuation marker lists, block quotes and definition
    bodies use.
 
-   INDENTATION IS COLUMNS, NOT CHARACTERS -- NORMATIVE (carve#692). Any
+   INDENTATION IS COLUMNS, NOT CHARACTERS -- NORMATIVE [CARVE-P3-015]. Any
    whitespace run REACHING COLUMN 2 indents the body: a bare tab (column 0 ->
    4) or a space then a tab (column 1 -> 4) qualify exactly as two literal
    spaces do; a single space (column 1) does not. PART 9 §24 C1 gives a tab its
@@ -200,7 +200,7 @@ footnote_indent = whitespace, {whitespace} ;
    opener is therefore UNCLAIMED and `[>foo]` is literal text (pinned by the
    corpus). Rationale: docs/dismissed-syntax.md. *)
 
-(* --- Citations (PART 9 §22, Tier-2 extension; issue #90) --- *)
+(* --- Citations (PART 9 §22, Tier-2 extension) --- *)
 (* TIER-2, OFF BY DEFAULT. A `[...]` whose content contains a `@key` and which
    has NO link/ref/span tail (`(url)` / `[ref]` / `{attrs}`) is a citation; a
    bare `@key` stays a mention (PART 19) and `\@` is literal. Items are
@@ -249,7 +249,7 @@ citation_item = [inline_content], ['-'], '@', citation_key, [',', space, inline_
    `data-suppress-author`, `data-cite-prefix`, `data-locator-label`,
    `data-locator`, `data-suffix`. Prefix and suffix are flattened plain text. *)
 citation_key = (letter | digit | '_'), {citation_key_char} ;
-(* Pandoc-compatible key charset (carve-js `KEY`): after the first char, any of
+(* Pandoc-compatible key charset: after the first char, any of
    these internal punctuation marks are allowed. *)
 citation_key_char = letter | digit | '_' | ':' | '.' | '#' | '$' | '%' | '&'
                   | '+' | '?' | '<' | '>' | '~' | '/' | '-' ;
@@ -286,7 +286,7 @@ editorial_comment = "{#", comment_content, "#}" ;
 comment_content = (* any text until the matching `#}`, preserved literally;
                      at least one character -- see the empty-brace clause under
                      Forced Intraword Emphasis *) ;
-(* CONTENT IS LITERAL -- NORMATIVE. Nothing inside is parsed as markup, spaces
+(* EDITORIAL COMMENT CONTENT IS LITERAL -- NORMATIVE [CARVE-P3-016]. Nothing inside is parsed as markup, spaces
    are preserved, and no escape is resolved: `{# a *b* c #}` holds the eight
    characters ` a *b* c ` and renders them, asterisks included. It is also what
    lets `link_text`'s scan skip the span: with no escape available, a `]`
@@ -298,7 +298,7 @@ comment_content = (* any text until the matching `#}`, preserved literally;
    AN ADDITION'S AND A DELETION'S CONTENT IS NON-EMPTY -- `inline_content` is a
    `+` repetition, and `comment_content` says it too. `{++}`, `{--}` and `{##}`
    are therefore text, under the same empty-brace clause the forced spans carry
-   (carve#1447); `{---}` is still `<del>-</del>` and `{-x-}` is still
+   while `{---}` is still `<del>-</del>` and `{-x-}` is still
    `<del>x</del>`. The string `{--}` freed is the braced en dash (PART 9 §8).
 
    `substitution` is NOT widened: a half-empty substitution is a real edit --
@@ -306,7 +306,7 @@ comment_content = (* any text until the matching `#}`, preserved literally;
    renders two empty elements. `substitution` is an OPEN divergence: its
    production says `inline_content`, and all three implementations render
    `{~*b*~>*e*~}` with the asterisks literal. *)
-(* ATTRIBUTES -- NORMATIVE: an addition / deletion is an ordinary inline node,
+(* ADDITION AND DELETION ATTRIBUTES BIND TO THEIR ELEMENT -- NORMATIVE [CARVE-P3-017]: an addition / deletion is an ordinary inline node,
    so a trailing `{...}` attribute block attaches to its `<ins>` / `<del>`,
    exactly like a span, code span, link, or emphasis: `{+a+}{.a}` ->
    `<ins class="a">…</ins>`. *)
@@ -376,7 +376,7 @@ symbol_boundary = (* :name:: no word character directly before the opening
    substitution is the common use, not a language feature. Profiles may
    strip or force-literal symbols ("symbol" is the construct name in
    profile allowlists).
-   ATTRIBUTES -- NORMATIVE: a trailing `{...}` attribute block attaches to
+   SYMBOL ATTRIBUTES FORCE A SPAN WRAPPER -- NORMATIVE [CARVE-P3-018]: a trailing `{...}` attribute block attaches to
    the symbol; in HTML output attributes force a `<span>` wrapper around the
    resolved (or literal) output so they have an element to land on:
    `:rocket:{.big}` -> `<span class="big">🚀</span>` (mapped) /
@@ -392,7 +392,7 @@ symbol_name = (letter | digit | '+' | '-'), {letter | digit | '_' | '+' | '-'} ;
    inline extension `:type[...]` is tried first; `:kbd[Ctrl]` never parses
    as a symbol because the name run must be closed by ':'.
 
-   PRECEDENCE vs SMART TYPOGRAPHY -- NORMATIVE: a symbol is recognized BEFORE
+   PRECEDENCE vs SMART TYPOGRAPHY -- NORMATIVE [CARVE-P3-019]: a symbol is recognized BEFORE
    the typographic replacements (PART 9 §8), so a name made of typographic
    punctuation is a symbol, not a substitution: `:+-:` is the symbol `+-`
    (NOT `:` + ± + `:`), and `:--:` is the symbol `--` (NOT an en dash between
@@ -410,8 +410,8 @@ em_dash = "---" ;     (* → — *)
 en_dash = "--" ;      (* → – *)
 braced_en_dash = "{--}" ;   (* → – *)
 ellipsis = "..." ;    (* → … *)
-(* A BRACED HYPHEN PAIR IS AN EN DASH, NOT AN EMPTY DELETION -- NORMATIVE
-   (carve#1447). `{--}` renders a single EN DASH and the braces are consumed.
+(* A BRACED HYPHEN PAIR IS AN EN DASH, NOT AN EMPTY DELETION -- NORMATIVE [CARVE-P3-020].
+   `{--}` renders a single EN DASH and the braces are consumed.
    It exists because the flanking rule below leaves a position an author cannot
    spell: a run with whitespace before it and a non-whitespace character after
    it is flag-shaped and stays literal, so `x ---That`, `x ---(p)` and
@@ -424,7 +424,7 @@ ellipsis = "..." ;    (* → … *)
    tight em dash still has no shorthand and is written as the literal
    character. *)
 (* A HYPHEN RUN OPENING A WORD AFTER WHITESPACE IS A FLAG, NOT A DASH --
-   NORMATIVE (carve#1443). A run of hyphens PRECEDED by whitespace (or the
+   NORMATIVE [CARVE-P3-021]. A run of hyphens PRECEDED by whitespace (or the
    start of the inline content) and FOLLOWED by a non-whitespace character
    does not convert. It is literal text. Every other position converts as
    before. The case is a long CLI flag: `git log --oneline` rendered
@@ -450,7 +450,7 @@ ellipsis = "..." ;    (* → … *)
    NOT FIXED BY THIS: an HTML comment survives NEITHER half. `<!-- c -->`
    renders `&lt;!– c →`. The OPENING run is preceded by `!` rather than
    whitespace, so this clause does not reach it and it converts to a dash; the
-   CLOSING run is taken by the arrow set (§8 ARROWS, carve#1442), and an arrow
+   CLOSING run is taken by the arrow set (§8 ARROWS), and an arrow
    is matched before a hyphen run is decomposed.
 
    Composes with the run decomposition below rather than replacing it: this
@@ -481,7 +481,7 @@ smart_quote = '"' | "'" ;
 arrow = "<--" | "-->" | "<-->"      (* → ← → ↔, canonical *)
       | "<==" | "==>" | "<=>"       (* → ⇐ ⇒ ⇔ *)
       | "<-" | "->" | "<->" ;       (* deprecated, still rendered *)
-(* THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES -- NORMATIVE.
+(* THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES -- NORMATIVE [CARVE-P3-022].
    Matched longest-first, as `<->` already beats `<-`, so `<==` beats `<=` and
    `-->` beats the hyphen run.
 

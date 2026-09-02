@@ -11,23 +11,19 @@ const registryPath = resolve(repo, 'resources/spec/rules.json')
 const clauses = (grammar) => {
   const flat = grammar.replace(/\n\s*/g, ' ')
   const partStarts = [...flat.matchAll(/PART (\d+R?):/g)]
-  const matches = [...flat.matchAll(/([A-Z][A-Za-z0-9 ,§`(){}'/+.:[\]-]{3,240}?)\s+--\s+NORMATIVE/g)]
-  const counters = new Map()
+  const matches = [...flat.matchAll(/([A-Z][A-Za-z0-9 ,§`(){}'/+.:[\]-]{3,240}?)\s+--\s+NORMATIVE\s+\[(CARVE-(?:P\d+R?|PRE)-\d{3})\]/g)]
   let partIndex = -1
 
   return matches.map((match) => {
     while (partStarts[partIndex + 1]?.index < match.index) partIndex += 1
     const partMatch = partStarts[partIndex]
     const part = partMatch?.[1] ?? 'PRE'
-    const count = (counters.get(part) ?? 0) + 1
-    counters.set(part, count)
     const raw = match[1].trim().replace(/\s+/g, ' ')
     const title = raw.split(/(?<=\.)\)?\s+/).at(-1)
       .replace(/^\d+[a-z]?\.\s*/, '')
       .replace(/^-\s+/, '')
-    const prefix = part === 'PRE' ? 'PRE' : `P${part}`
     return {
-      id: `CARVE-${prefix}-${String(count).padStart(3, '0')}`,
+      id: match[2],
       part,
       title,
     }
@@ -57,10 +53,14 @@ if (command === '--check') {
       process.exitCode = 1
     }
   }
-  const byPartAndTitle = (rules) => rules.map(({ part, title }) => `${part}\0${title}`).sort()
-  const expectedKeys = byPartAndTitle(stored.rules)
-  const actualKeys = byPartAndTitle(actual)
-  if (JSON.stringify(expectedKeys) !== JSON.stringify(actualKeys)) {
+  const byId = (rules) => new Map(rules.map((rule) => [rule.id, rule]))
+  const expectedById = byId(stored.rules)
+  const actualById = byId(actual)
+  const sameRule = (a, b) => a?.part === b?.part && a?.title === b?.title
+  if (expectedById.size !== stored.rules.length || actualById.size !== actual.length ||
+      stored.rules.length !== actual.length ||
+      stored.rules.some((rule) => !sameRule(rule, actualById.get(rule.id))) ||
+      actual.some((rule) => !sameRule(rule, expectedById.get(rule.id)))) {
     console.error('resources/spec/rules.json does not cover the current normative clauses')
     process.exitCode = 1
   }
