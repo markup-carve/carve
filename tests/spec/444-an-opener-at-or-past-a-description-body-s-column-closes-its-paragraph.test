@@ -1,0 +1,234 @@
+An opener at or past a description body's column closes its paragraph
+
+```
+:: term
+:  definition
+    [r]: /url
+tail
+.
+<dl>
+  <dt>term</dt>
+  <dd>definition</dd>
+</dl>
+<p>tail</p>
+```
+
+```
+:: term
+:  definition
+   [r]: /url
+tail
+.
+<dl>
+  <dt>term</dt>
+  <dd>definition</dd>
+</dl>
+<p>tail</p>
+```
+
+```
+:: term
+:  definition
+    # H
+tail
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>definition</p>
+    <h1 id="H">H</h1>
+  </dd>
+</dl>
+<p>tail</p>
+```
+
+```
+:: term
+:  definition
+   # H
+tail
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>definition</p>
+    <h1 id="H">H</h1>
+  </dd>
+</dl>
+<p>tail</p>
+```
+
+```
+:: term
+:  definition
+    ***
+tail
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>definition</p>
+    <hr>
+  </dd>
+</dl>
+<p>tail</p>
+```
+
+```
+:: term
+:  definition
+    | a |
+tail
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>definition</p>
+    <table>
+      <tbody>
+        <tr><td>a</td></tr>
+      </tbody>
+    </table>
+  </dd>
+</dl>
+<p>tail</p>
+```
+
+```
+:: term
+:  definition
+    {.k}
+tail
+.
+<dl>
+  <dt>term</dt>
+  <dd>definition</dd>
+</dl>
+<p>tail</p>
+```
+
+```
+:: term
+:  definition
+   {.k}
+tail
+.
+<dl>
+  <dt>term</dt>
+  <dd>definition</dd>
+</dl>
+<p>tail</p>
+```
+
+```
+:: term
+:  definition
+    %% c
+tail
+.
+<dl>
+  <dt>term</dt>
+  <dd>definition</dd>
+</dl>
+<p>tail</p>
+```
+
+```
+:: term
+:  definition
+    more
+tail
+.
+<dl>
+  <dt>term</dt>
+  <dd>definition
+more
+tail</dd>
+</dl>
+```
+
+```
+:: term
+:  definition
+    > q
+tail
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>definition</p>
+    <blockquote><p>q
+tail</p></blockquote>
+  </dd>
+</dl>
+```
+
+```
+:: term
+:    definition
+      # H
+tail
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>definition</p>
+    <h1 id="H">H</h1>
+  </dd>
+</dl>
+<p>tail</p>
+```
+
+```
+- intro
+
+  :: term
+  :  definition
+      # H
+  tail
+.
+<ul>
+  <li>intro
+    <dl>
+      <dt>term</dt>
+      <dd>
+        <p>definition</p>
+        <h1 id="H">H</h1>
+      </dd>
+    </dl>
+    tail
+  </li>
+</ul>
+```
+
+```
+:: term
+:  definition
+    # H
+ [r]: /url
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>definition</p>
+    <h1 id="H">H</h1>
+  </dd>
+</dl>
+<p>[r]: /url</p>
+```
+
+```
+:: term
+:  definition
+   # H
+ [r]: /url
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>definition</p>
+    <h1 id="H">H</h1>
+  </dd>
+</dl>
+<p>[r]: /url</p>
+```

@@ -47,8 +47,9 @@ implementation exposes.
 Spec commit: `3eae6be`.
 
 Corpus added since this run: `441-a-definition-between-two-open-content-columns-reaches-the-outer-one`,
-`442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column`
-and `443-an-unterminated-comment-fence-in-a-list-item-is-the-line-form`.
+`442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column`,
+`443-an-unterminated-comment-fence-in-a-list-item-is-the-line-form`
+and `444-an-opener-at-or-past-a-description-body-s-column-closes-its-paragraph`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -57,7 +58,9 @@ one that is knowably wrong besides: carve-rs and carve-php both read a
 definition between two open content columns as lazy text today
 (markup-carve/carve-rs#1505, markup-carve/carve-php#1856), and the JS column
 would be wrong for section 443 as well, whose band the pinned build answers its
-own way (markup-carve/carve-js#1602).
+own way (markup-carve/carve-js#1602), and for section 444, which no engine reads
+the ruled way yet (markup-carve/carve-js#1604, markup-carve/carve-php#1874,
+markup-carve/carve-rs#1525).
 `tests/implementation-comparison-counts.test.mjs` reads this line and counts the
 fixtures each category contributes, so the numbers cannot be asserted, only
 derived, and the line has to be DELETED by whoever next runs

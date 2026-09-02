@@ -2202,6 +2202,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // rest -- matching the real output the corpus pins for all engines.
           // (`:  \+` stays a literal `+`, never a marker.)
           const bodyLines = []
+          // The fold question is asked of the body AS IT WILL BE READ (§10 I5,
+          // carve#1911): a block opener past the body's column is rebased to
+          // the body's own column 0 before the body is parsed, so asking the
+          // authored lines reported an open paragraph the body does not have.
+          const asRead = (ls) => (state.authoredBodyBases ? normalizeAuthoredBodyBases(ls, state) : ls)
           i++
           // `pullPending` marks that a `+` marker (bare or the first-block `:  +`
           // form) opened a pulled-in block: the NEXT flush-left line begins it.
@@ -2352,7 +2357,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
              * `dd` recognizes it; it is framed here too so all four kinds reach
              * the body by one path rather than by two that agree today.
              */
-            if (authoredCol > 0 && bodyLeavesParagraphOpen(bodyLines) &&
+            if (authoredCol > 0 && bodyLeavesParagraphOpen(asRead(bodyLines)) &&
                 !startsVisibleBlock(dedented) &&
                 (isLinkDef(dedented) || FOOTNOTE_DEF.test(dedented) ||
                  ABBR_DEF.test(dedented) || tryAttrLine([dedented], 0) !== null)) {
@@ -2360,7 +2365,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               i++
               continue
             }
-            if (foldablePlain(dedented) && bodyLeavesParagraphOpen(bodyLines)) {
+            if (foldablePlain(dedented) && bodyLeavesParagraphOpen(asRead(bodyLines))) {
               bodyLines.push(dedented)
               i++
               continue

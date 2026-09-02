@@ -1389,6 +1389,34 @@ definition_indent = whitespace, {whitespace} ;
        column as that block's local base; ordinary text keeps the existing
        paragraph-continuation behavior.
 
+   AN OPENER IN THE TWO UPPER BANDS CLOSES THE BODY'S PARAGRAPH (carve#1911).
+   The two bands answer that question ALIKE, because the opener is the body's
+   own block content in both: at the column it opens at the body's column 0,
+   past it at the authored base `AUTHORED BLOCK BASES` gives it, and the
+   paragraph above it survives neither reading. §10 I1 closes it for a visible
+   opener - a heading, a thematic break, a table row - and §10 I5 closes it for
+   a definition, a footnote definition or an attribute block, which interrupt
+   at the body's own column 0 exactly as they do at the document's.
+
+   That is what the first band's `A NON-OPENER STILL FOLDS` is conditioned on.
+   The open paragraph it names is not a given: with the paragraph closed a
+   flush-left non-opener has nothing left to reach, so the body ENDS at the
+   opener and the line below is classified in the surviving context. The two
+   columns therefore agree - a reader whose answer moves between the body's
+   column and one column past it is reading indentation rather than the rule.
+
+   AN OPENER THAT LEAVES A PARAGRAPH OPEN IS NOT COVERED, and must not be read
+   into it: what ends the body is a CLOSED PARAGRAPH, never the presence of an
+   opener. A block quote is the case to keep in view -
+
+       :: t
+       :  d
+           > q
+       tail
+
+   opens the quote inside the `dd`, the quote's own paragraph is still open,
+   and `tail` lazily continues THE QUOTE.
+
    `definition_indent` states the floor as column arithmetic; this states what
    happens on the other side of it.
 
