@@ -365,9 +365,31 @@ The item holds `x` alone and `y` is a document paragraph:
 ```
 
 The `%% c` line form gives that answer at the same column, and so does a `%%%`
-fence WITH a closer there - the degraded spelling is not a third case. Column 0
-is the one place the two spellings part in every current reader, and that is an
-open question rather than this rule (markup-carve/carve#1903).
+fence WITH a closer there - the degraded spelling is not a third case.
+
+Column 0 is the same rule, and it answers the other way. There the comment is
+below the item's content column, where §24 C3's exception says a comment ends
+the paragraph but "does not close the ITEM either", so the follower stays:
+
+```text
+- x
+%%%
+y
+```
+
+```html
+<ul>
+  <li>x
+    y
+  </li>
+</ul>
+```
+
+`%% z` in the fence's place gives that. A `%%%` WITH a closer does not - a
+terminated fence at column 0 is a comment BLOCK at the document's own opener
+column and it ends the item (corpus 214). Every current engine answers column 0
+the terminated fence's way for the degraded spelling too, which is
+markup-carve/carve#1903.
 
 **Provenance marker (tool-written):**
 - Tooling such as `carve fmt --stamp` writes a trailing comment recording the

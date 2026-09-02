@@ -82,7 +82,12 @@
         nests shorter fences and a too-short line is content, not a closer.
       - A `%%%` opener with NO MATCHING CLOSER AHEAD does NOT open a block.
         The line degrades to a `comment_line` (its first two `%` are the line
-        marker), so every FOLLOWING BLOCK STILL RENDERS. This DIVERGES from
+        marker), so every FOLLOWING BLOCK STILL RENDERS. The degradation is a
+        CLASSIFICATION, and it is TOTAL: the line is a `comment_line` for every
+        question the layout asks about it, container OWNERSHIP included, so at a
+        container's own column 0 it leaves the frame open exactly as a `%%` line
+        does (§24 C3, carve#1903). Reading it as a visibility rule alone would
+        make one line two constructs at once. This DIVERGES from
         the `:::` rule (§12), where an unclosed opener opens and closes at end
         of input, and the difference is VISIBILITY: an unclosed div still
         renders the blocks it swallowed, so a forgotten closer costs the
