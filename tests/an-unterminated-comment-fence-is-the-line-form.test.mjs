@@ -114,25 +114,31 @@ test('an ordinary indented line still folds into the item', () => {
 })
 
 /*
- * COLUMN 0 IS RECORDED, NOT DECIDED -- markup-carve/carve#1903.
+ * COLUMN 0 IS DECIDED -- markup-carve/carve#1903.
  *
- * Here the two spellings part in EVERY reader, and a terminated fence sides
- * with the degraded one, so §28's substitution is not what separates them. It
- * is whether §24 C3's "does not close the ITEM either" reaches the fence
- * spelling. The answers are pinned as they stand so that moving either one is a
- * decision somebody made, and the ruling ticket says what has to be settled
- * first.
+ * It used to be recorded here rather than decided, because the two spellings
+ * parted in EVERY reader and a terminated fence sided with the degraded one, so
+ * §28's substitution did not obviously separate them. The ruling is that it
+ * does: the degradation is a CLASSIFICATION and it is TOTAL, so a degraded
+ * opener is a `comment_line` for ownership as well as for rendering, and §24
+ * C3's "does not close the ITEM either" reaches it unchanged.
+ *
+ * The TERMINATED fence at that column keeps its own answer, and the pair below
+ * is the reason the rule is not "a comment never closes anything": one of them
+ * is a comment BLOCK at the document's own opener column and the other is not a
+ * block at all.
  */
 test('at column 0 the line form keeps the follower in the item', () => {
   assert.equal(oracle(item(LINE, 0)), INSIDE)
 })
 
 for (const fence of FENCES) {
-  test(`at column 0 an unterminated ${JSON.stringify(fence)} ends the item -- carve#1903`, () => {
-    assert.equal(oracle(item(fence, 0)), OUTSIDE)
+  test(`at column 0 an unterminated ${JSON.stringify(fence)} answers as the line form does -- carve#1903`, () => {
+    assert.equal(oracle(item(fence, 0)), oracle(item(LINE, 0)))
+    assert.equal(oracle(item(fence, 0)), INSIDE)
   })
 }
 
-test('at column 0 a terminated comment fence ends the item too', () => {
+test('at column 0 a terminated comment fence still ends the item', () => {
   assert.equal(oracle('- x\n%%%\nc\n%%%\ny\n'), OUTSIDE)
 })

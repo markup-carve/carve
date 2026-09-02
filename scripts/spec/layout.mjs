@@ -1027,6 +1027,25 @@ const COMMENT_FENCE_BODY = /^(%{3,})(.*)$/
  * selected. The returned extent remains available to AST/source-layout
  * consumers even though it contributes no visible block.
  */
+/*
+ * DOES THIS COMMENT FENCE OPEN A SPAN? -- PART 9 §28, and PART 0's
+ * COMMENTS ARE CLASSIFIED BEFORE BLOCK OWNERSHIP.
+ *
+ * An opener with an exact-width closer AHEAD opens a `fenced_comment`; one
+ * without opens nothing and IS one `%%` line comment. The lookahead is
+ * `classifyLayoutComment`'s own, extracted so the collectors that need only
+ * the boolean ask the same question rather than a second spelling of it.
+ */
+export function commentFenceOpensSpan(lines, index) {
+  const opener = COMMENT_FENCE.exec(lines[index] ?? '')
+  if (!opener) return false
+  for (let i = index + 1; i < lines.length; i++) {
+    const closer = COMMENT_FENCE.exec(lines[i] ?? '')
+    if (closer && closer[1].length === opener[1].length) return true
+  }
+  return false
+}
+
 export function classifyLayoutComment(lines, index) {
   const opener = COMMENT_FENCE.exec(lines[index] ?? '')
   if (opener) {
@@ -4259,7 +4278,8 @@ function collectItems(lines, i, list, state, ind, meas) {
       // agrees. Breaking rather than declining to claim the line matters:
       // falling through would fold the fence as text and make a comment
       // VISIBLE, the one outcome it may never have.
-      if (!nm && COMMENT_FENCE_BODY.test(lm.rest) && lm.col === 0 && itemLines.length > 0) {
+      if (!nm && COMMENT_FENCE_BODY.test(lm.rest) && lm.col === 0 && itemLines.length > 0 &&
+          commentFenceOpensSpan(lines, i)) {
         break
       }
       if (!nm && lm.rest.startsWith('%%') && itemLines.length > 0) {

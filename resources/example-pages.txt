@@ -400,6 +400,7 @@ index: examples/edge-cases/index.md
   an-unclosed-bare-colon-fence-opens-a-div
   a-fenced-block-quote-is-the-block-quote-written-another-way
   an-unterminated-comment-fence-in-a-list-item-is-the-line-form
+  a-degraded-comment-fence-at-a-container-s-column-0-keeps-the-follower-in-the-item
 
 [edge-blocks] Paragraphs, breaks and captions
 > Paragraph folding, thematic breaks, caption attachment and adjacent block openers.

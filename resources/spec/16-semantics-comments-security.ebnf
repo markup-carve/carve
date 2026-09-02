@@ -412,6 +412,30 @@
             (carve#618). It does end the open PARAGRAPH, though, so that line
             begins the item's SECOND paragraph rather than continuing the
             first -- a difference visible only in a LOOSE list (carve#677).
+
+            AND THE OWNERSHIP HALF REACHES A DEGRADED FENCE (carve#1903).
+            "The `%%%` fence form, whose body and closer travel with its
+            opener" names a fence that HAS a closer. §28 substitutes for the
+            one that does not: an opener with no matching closer AHEAD opens no
+            block and IS one `comment_line`, so at this clause it is the LINE
+            form and every sentence above reaches it unchanged. Thus
+
+                - x
+                %%%
+                y
+
+            keeps `y` in the item, exactly as `%% z` in its place does, at
+            every container's own column 0 and at every depth. The substitution
+            is a CLASSIFICATION and not a visibility rule; a line that were a
+            `comment_line` for rendering and a `comment_block_open` for
+            ownership would be two constructs at once, which no clause here
+            offers.
+
+            The TERMINATED fence at that column is a different line and is not
+            what this settles. Corpus 214 pins it as ENDING the item and every
+            reader agrees; what separates the two is that one of them is a
+            comment BLOCK written at the enclosing context's own opener column
+            and the other is not a block at all.
            - AT OR ABOVE content_column: a block opener nests and a list marker
              opens a sublist. Recognized non-list blocks apply PART 0's ONE
              AUTHORED BLOCK BASE; this item clause defines only containment and
