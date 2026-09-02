@@ -1036,14 +1036,17 @@ const COMMENT_FENCE_BODY = /^(%{3,})(.*)$/
  * `classifyLayoutComment`'s own, extracted so the collectors that need only
  * the boolean ask the same question rather than a second spelling of it.
  */
-export function commentFenceOpensSpan(lines, index) {
-  const opener = COMMENT_FENCE.exec(lines[index] ?? '')
-  if (!opener) return false
+export function commentFenceCloserAhead(lines, index, run) {
   for (let i = index + 1; i < lines.length; i++) {
     const closer = COMMENT_FENCE.exec(lines[i] ?? '')
-    if (closer && closer[1].length === opener[1].length) return true
+    if (closer && closer[1].length === run.length) return true
   }
   return false
+}
+
+export function commentFenceOpensSpan(lines, index) {
+  const opener = COMMENT_FENCE.exec(lines[index] ?? '')
+  return opener !== null && commentFenceCloserAhead(lines, index, opener[1])
 }
 
 export function classifyLayoutComment(lines, index) {
@@ -3532,7 +3535,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     let authoredBlockBase = null
     let authoredBlockLimit = null
     const insideFence = () => fence.opaque !== null || fence.colon.length !== 0
-    const trackFence = (line, opens = true) => {
+    const trackFence = (line, opens, index) => {
       if (fence.opaque) {
         if (fence.opaque.kind === 'code') {
           const c = PURE_FENCE.exec(line)
@@ -3558,6 +3561,15 @@ function collectItems(lines, i, list, state, ind, meas) {
       }
       const comment = COMMENT_FENCE_BODY.exec(line)
       if (comment) {
+        // §28 AGAIN, AND THIS IS WHERE THE SPAN IS DECIDED (carve#1914). A
+        // code fence records `opens` because §10 I4 can refuse to let it
+        // interrupt while the SPAN still runs; a comment fence has no such
+        // split - an opener with no exact-width closer ahead opens NOTHING and
+        // is one `%%` line comment, so there is no span to track. Recording one
+        // anyway left `opens` undefined, and the collector's
+        // `fence.opaque.opens !== false` test is true for undefined, so the
+        // item broke on a verbatim body it never had.
+        if (!commentFenceCloserAhead(lines, index, comment[1])) return
         fence.opaque = { kind: 'comment', run: comment[1] }
         return
       }
@@ -3577,7 +3589,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     {
       // A fence can open on the MARKER LINE (`- ``` `), where its opener is the
       // marker-line content, not a collected continuation line -- seed from it.
-      trackFence(head.text)
+      trackFence(head.text, true, i)
     }
     i++
     // FIRST-BLOCK form (SS17 L4): a bare `+` as the sole marker-line content
@@ -4023,7 +4035,7 @@ function collectItems(lines, i, list, state, ind, meas) {
           authoredBlockBase = openerBase
           authoredBlockLimit = authoredBlockEnd(lines, i, openerBase, state)
         }
-        trackFence(dedented, bodyFenceOpens(i, dedented, localBase))
+        trackFence(dedented, bodyFenceOpens(i, dedented, localBase), i)
         // A COMMENT IS INVISIBLE, SO IT LEAVES NO PARAGRAPH OPEN. §24 C3 says a
         // comment "does end the open PARAGRAPH" (carve#677), of BOTH spellings
         // - the `%%` line and the `%%%` fence, "whose body and closer travel

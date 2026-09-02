@@ -49,9 +49,10 @@ Spec commit: `3eae6be`.
 Corpus added since this run: `441-a-definition-between-two-open-content-columns-reaches-the-outer-one`,
 `442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column`,
 `443-an-unterminated-comment-fence-in-a-list-item-is-the-line-form`
-`444-an-opener-at-or-past-a-description-body-s-column-closes-its-paragraph`
+`444-an-opener-at-or-past-a-description-body-s-column-closes-its-paragraph`,
+`445-a-degraded-comment-fence-at-a-container-s-column-0-keeps-the-follower-in-the-item`
 and
-`445-a-degraded-comment-fence-at-a-container-s-column-0-keeps-the-follower-in-the-item`.
+`446-a-degraded-comment-fence-leaves-a-lazy-follower-where-the-line-form-does`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -64,7 +65,9 @@ own way (markup-carve/carve-js#1602), and for section 444, which no engine reads
 the ruled way yet (markup-carve/carve-js#1604, markup-carve/carve-php#1874,
 markup-carve/carve-rs#1525) and for section 445, which no engine reads the ruled
 way either (markup-carve/carve-js#1607, markup-carve/carve-php#1877,
-markup-carve/carve-rs#1529).
+markup-carve/carve-rs#1529). Section 446 is the one exception: every engine
+already reads that band the ruled way, so its rows would only widen the
+denominators.
 `tests/implementation-comparison-counts.test.mjs` reads this line and counts the
 fixtures each category contributes, so the numbers cannot be asserted, only
 derived, and the line has to be DELETED by whoever next runs
