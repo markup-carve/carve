@@ -271,13 +271,11 @@ test('a quoted run\'s diff total matches its own per-target rows', () => {
   assert.ok(checked >= 2, `expected both quoted runs to carry a diff total; checked ${checked}`)
 })
 
-test('the landing page quotes the real corpus size', () => {
-  const live = countPairs('tests/corpus')
-  const m = landing.match(/same (\d+) Carve inputs/)
-  assert.ok(m, 'docs/index.md no longer states the number of shared Carve inputs')
-  assert.equal(
-    Number(m[1]),
-    live,
-    `docs/index.md says the implementations share ${m[1]} inputs; the test set holds ${live}`,
+test('the landing page states that implementations share inputs without a volatile count', () => {
+  assert.match(landing, /tested with the same Carve inputs and expected\n  HTML outputs/)
+  assert.doesNotMatch(
+    landing,
+    /same \d+ Carve inputs/,
+    'the landing-page advantage should not require an update whenever the corpus grows',
   )
 })
