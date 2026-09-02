@@ -5,25 +5,13 @@ description: Try Carve in 30 seconds, then render it in your own project.
 
 # Get Started
 
-## Interactive online, readable offline
+Use the [Playground](/playground) without installing anything. The [Cheat
+Sheet](/cheatsheet) lists the syntax.
 
-One of Carve's design principles: it targets the interactive web first. The [Playground](/playground), live preview, and hydration extensions (Mermaid, D2, Graphviz, Vega-Lite, Chart.js, math, tabs, details) render rich, interactive output when JavaScript is present. But interactivity is an enhancement, never a requirement — Carve only ever emits the marker element, and the client library hydrates it.
+## Install a renderer
 
-With no JavaScript — RSS readers, email, `curl`, archived pages, PDF, Markdown or terminal exports — every construct degrades to self-describing semantic HTML: a `mermaid` fence renders as `<pre class="mermaid">` showing its source, `:::details` is a native `<details>`, `list-table` is a real `<table>`, captions are `<figure>` / `<figcaption>`. The document is always whole; online just makes it richer.
-
-## 1. Try it now — no install
-
-The fastest path is the **[Playground](/playground)**: type Carve on the left, watch the HTML render live on the right. Nothing to set up.
-
-Or skim the **[Cheat Sheet](/cheatsheet)** — the whole syntax fits on one page.
-
-## 2. Render Carve in your project
-
-There are three reference engines. All of them turn a Carve string into HTML and pass the shared Tier-1 corpus.
-
-::: tip Published packages
-The three reference engines are published: npm [`@markup-carve/carve`](https://www.npmjs.com/package/@markup-carve/carve), Packagist [`markup-carve/carve-php`](https://packagist.org/packages/markup-carve/carve-php), and crates.io [`carve-lang`](https://crates.io/crates/carve-lang). The install commands below use them.
-:::
+The JavaScript, PHP, and Rust implementations use the same core conformance
+corpus.
 
 ### JavaScript / TypeScript — [`carve-js`](https://github.com/markup-carve/carve-js)
 
@@ -37,11 +25,9 @@ import { carveToHtml } from '@markup-carve/carve'
 const html = carveToHtml('/italic/, *bold*, and a heading')
 ```
 
-`carveToHtml` is the one-call entry point; the package also exposes the AST (`parse`) and the Markdown / plain-text / ANSI renderers.
+The package also exposes `parse` and Markdown, plain-text, and ANSI renderers.
 
 ### Rust — [`carve-rs`](https://github.com/markup-carve/carve-rs)
-
-The Rust engine is a third reference-quality implementation — Tier-1 corpus passing — and ships a `carve` CLI tool.
 
 ```bash
 cargo install carve-lang
@@ -54,7 +40,8 @@ carve input.crv
 
 ### Browser / Node via WebAssembly — [`carve-wasm`](https://github.com/markup-carve/carve-wasm)
 
-carve-wasm wraps carve-rs as a WebAssembly module, usable in the browser or any Node/Bun/Deno environment. It is early-stage; see the repository for the current API.
+`carve-wasm` wraps `carve-rs`. See its repository for the current browser and
+server-side JavaScript APIs.
 
 ### PHP — [`carve-php`](https://github.com/markup-carve/carve-php)
 
@@ -68,11 +55,12 @@ use MarkupCarve\Carve\CarveConverter;
 $html = (new CarveConverter())->convert('/italic/, *bold*, and a heading');
 ```
 
-`CarveConverter::convert()` returns HTML; the package also ships `parse()` plus Markdown / plain-text / ANSI renderers and HTML/Markdown/Djot converters.
+`CarveConverter::convert()` returns HTML. The package also provides `parse`,
+other output formats, and format converters.
 
 ### Language bindings
 
-Higher-level wrappers built on carve-rs are available for other languages. Ruby is on RubyGems and Go is fetched by module path; Python is not on PyPI yet (install from Git).
+These bindings use `carve-rs`:
 
 | Language | Project | Install |
 |---|---|---|
@@ -80,38 +68,35 @@ Higher-level wrappers built on carve-rs are available for other languages. Ruby 
 | Ruby | [carve-rb](https://github.com/markup-carve/carve-rb) | `gem install carve-lang` |
 | Go | [carve-go](https://github.com/markup-carve/carve-go) | `go get github.com/markup-carve/carve-go` |
 
-The full ecosystem — editor integrations, framework plugins, and more — is listed on the **[Ecosystem](/ecosystem)** page.
+Editor and framework integrations are listed in the [Ecosystem](/ecosystem).
 
-## 3. Learn the syntax
+## Read the reference
 
-- **[Cheat Sheet](/cheatsheet)** — every construct, one scannable page.
-- **[Examples](/examples)** — Carve source next to the exact HTML it produces.
-- **[Formal Grammar](/grammar)** — the normative block and inline grammar.
-- **[Case Study](/case-study/)** — the design research the language grew out of (historical, not normative).
+- [Cheat Sheet](/cheatsheet): syntax reference.
+- [Examples](/examples): Carve source and HTML output.
+- [Formal Grammar](/grammar): normative block and inline grammar.
+- [Migration from Markdown](/migrate-from-markdown): incompatible syntax and conversion.
 
-## 4. Core vs extensions
+## Core and extensions
 
-Almost everything you write is **core** (Tier-1): headings, lists, tables,
-links, code, math, footnotes, admonitions, attributes, and the rest of the
-cheat sheet. Core is **on by default** and renders identically across every
-implementation — no configuration, no plugins.
+Core includes headings, lists, tables, links, code, math, footnotes,
+admonitions, and attributes. It is enabled by default.
 
 A few things are **opt-in**:
 
-- **Tier-2** — spec-defined but off by default, e.g. citations `[@key]`,
+- **Tier-2** — specified but off by default, for example citations `[@key]`,
   bare-URL autolinking, mention/tag → URL templates, a collapsible `details`
   widget, `list-table`. Enable them in your processor.
-- **Tier-3** — per-implementation extensions, e.g. Mermaid diagrams, a
+- **Tier-3** — implementation-specific extensions, for example Mermaid diagrams, a
   table of contents, heading permalinks. Register the ones you want.
 
-The `:name[…]` (inline) and `::: name` (block) **syntax** is core, but whether a
-given `name` does something special depends on whether a handler is registered;
-an unknown one just renders as a plain span/div, so documents always stay
-readable. The full **[feature → tier table](/extensions#feature-tiers-quick-reference)**
-is the place to look up any feature.
+The `:name[…]` inline form and `::: name` block form are core syntax. A named
+handler may change how they render. Unknown names render as a span or div. See
+the [feature tier table](/extensions#feature-tiers-quick-reference).
 
 ## Build your own parser
 
-Carve's grammar is small and unambiguous. To implement it in another language, start from **[Build Your Own Implementation](/implementing-carve)** and the **[Formal Grammar](/grammar)**.
+Start with [Build Your Own Implementation](/implementing-carve) and the [Formal
+Grammar](/grammar).
 
 **File extension:** `.crv`
