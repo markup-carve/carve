@@ -1,0 +1,111 @@
+A degraded comment fence leaves a lazy follower where the line form does
+
+```
+- x
+  %%%
+ y
+.
+<ul>
+  <li>x
+    y
+  </li>
+</ul>
+```
+
+```
+- x
+  %% z
+ y
+.
+<ul>
+  <li>x
+    y
+  </li>
+</ul>
+```
+
+```
+- x
+  %%%
+  body
+y
+.
+<ul>
+  <li>x
+    body
+y
+  </li>
+</ul>
+```
+
+```
+- x
+  %% z
+  body
+y
+.
+<ul>
+  <li>x
+    body
+y
+  </li>
+</ul>
+```
+
+```
+1. x
+   %%%
+  y
+.
+<ol>
+  <li>x
+    y
+  </li>
+</ol>
+```
+
+```
+-   x
+    %%%
+   y
+.
+<ul>
+  <li>x
+    y
+  </li>
+</ul>
+```
+
+```
+- x
+    %%%
+ y
+.
+<ul>
+  <li>x
+    y
+  </li>
+</ul>
+```
+
+```
+- x
+  %%%
+  %%%
+ y
+.
+<ul>
+  <li>x
+    y
+  </li>
+</ul>
+```
+
+```
+> x
+  %%%
+ y
+.
+<blockquote><p>x</p></blockquote>
+<p>y</p>
+```

@@ -32225,3 +32225,208 @@ y
 ```
 
 :::
+## A degraded comment fence leaves a lazy follower where the line form does
+
+§28 says an opener with no exact-width closer ahead opens NO block, so there is
+no verbatim body under it and nothing for the item's collector to stop at. A
+line that would lazily continue the item's paragraph past a `%%` line comment
+therefore continues it past a degraded fence too
+(markup-carve/carve#1914).
+
+Section 443 pins the band where the follower sits at column 0 or at the content
+column; section 445 pins the container's own column 0. This is the third
+follower shape: a LAZY line, below the content column or continuing a paragraph
+inside the item, which those sections left out.
+
+The reported document. `- x` hands out at column 2, the unterminated fence is
+written there, and `y` at column 1 is below the column - a lazy continuation of
+the item's paragraph.
+
+::: compare
+
+```carve
+- x
+  %%%
+ y
+```
+
+```html
+<ul>
+  <li>x
+    y
+  </li>
+</ul>
+```
+
+:::
+
+The `%% z` line form at the same coordinates, which is the answer the
+substitution requires the row above to have.
+
+::: compare
+
+```carve
+- x
+  %% z
+ y
+```
+
+```html
+<ul>
+  <li>x
+    y
+  </li>
+</ul>
+```
+
+:::
+
+The other lazy shape: a body line inside the item, then a flush-left
+continuation of the paragraph it opened.
+
+::: compare
+
+```carve
+- x
+  %%%
+  body
+y
+```
+
+```html
+<ul>
+  <li>x
+    body
+y
+  </li>
+</ul>
+```
+
+:::
+
+Its line-form control.
+
+::: compare
+
+```carve
+- x
+  %% z
+  body
+y
+```
+
+```html
+<ul>
+  <li>x
+    body
+y
+  </li>
+</ul>
+```
+
+:::
+
+The band moves with the CONTENT column, not with column 2. An ordered marker
+hands out at 3, so the fence is at 3 and the lazy follower at 2.
+
+::: compare
+
+```carve
+1. x
+   %%%
+  y
+```
+
+```html
+<ol>
+  <li>x
+    y
+  </li>
+</ol>
+```
+
+:::
+
+A padded marker hands out at 4.
+
+::: compare
+
+```carve
+-   x
+    %%%
+   y
+```
+
+```html
+<ul>
+  <li>x
+    y
+  </li>
+</ul>
+```
+
+:::
+
+Past the content column it is still one line comment, and the follower is still
+the item's.
+
+::: compare
+
+```carve
+- x
+    %%%
+ y
+```
+
+```html
+<ul>
+  <li>x
+    y
+  </li>
+</ul>
+```
+
+:::
+
+A fence that DOES close is not reached by §28 at all - it is an ordinary comment
+block. It ends the paragraph under it and leaves the item open in the same way,
+so this row is what the band answers rather than what the fallback path does.
+
+::: compare
+
+```carve
+- x
+  %%%
+  %%%
+ y
+```
+
+```html
+<ul>
+  <li>x
+    y
+  </li>
+</ul>
+```
+
+:::
+
+And the host control. A block quote is reached by its MARKER, so an unmarked
+line below it is outside the quote whatever it is; both spellings end the quote
+and publish the follower, and a fix that made a degraded fence keep the follower
+everywhere would break this row.
+
+::: compare
+
+```carve
+> x
+  %%%
+ y
+```
+
+```html
+<blockquote><p>x</p></blockquote>
+<p>y</p>
+```
+
+:::
