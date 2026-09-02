@@ -342,6 +342,34 @@ stack in a single left-to-right pass: linear time, no backtracking.
 - `carve fmt` keeps an opener's trailing text as the comment's first body line
   (nothing is lost); a closer's trailing text is dropped
 
+**The degraded fence IS the line form, not "no longer a comment".** The fallback
+above is a substitution: PART 0 spells it "an opener without an exact-width
+closer is one `%%` line comment; later lines are classified normally", so the
+two spellings answer identically at a given column. That is visible inside a
+list item from the item's content column upward, where a comment ends the
+paragraph under it and a following flush-left line lands outside the item:
+
+```text
+- x
+  %%%
+y
+```
+
+`- x` has content column 2, so the comment sits at the item body's own column 0.
+The item holds `x` alone and `y` is a document paragraph:
+
+```html
+<ul>
+  <li>x</li>
+</ul>
+<p>y</p>
+```
+
+The `%% c` line form gives that answer at the same column, and so does a `%%%`
+fence WITH a closer there - the degraded spelling is not a third case. Column 0
+is the one place the two spellings part in every current reader, and that is an
+open question rather than this rule (markup-carve/carve#1903).
+
 **Provenance marker (tool-written):**
 - Tooling such as `carve fmt --stamp` writes a trailing comment recording the
   spec version a document was processed under and the engine that wrote it, e.g.
