@@ -287,6 +287,7 @@ index: examples/edge-cases/index.md
   a-fence-opened-on-a-list-marker-line-body-below-the-content-column
   a-below-column-marker-after-a-comment-where-no-paragraph-is-open
   a-column-zero-definition-ends-an-open-list-item
+  a-definition-between-two-open-content-columns-reaches-the-outer-one
   adjacent-sibling-lists-survive-the-round-trip
   a-multi-letter-ordered-marker-opens-no-list
   a-block-attached-after-an-invisible-line-leaves-the-item-tight
