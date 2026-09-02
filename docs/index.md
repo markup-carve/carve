@@ -67,8 +67,8 @@ show Carve source beside its HTML output.
 - Cross-references and numbered captions keep labels and link text in sync.
 - Tables support captions, alignment, rowspan, colspan, and multiline cells
   without HTML.
-- JavaScript, PHP, and Rust are tested with the same 1554 Carve inputs and
-  expected HTML outputs.
+- JavaScript, PHP, and Rust are tested with the same Carve inputs and expected
+  HTML outputs.
 - A document can be rendered as HTML, Markdown, plain text, or ANSI terminal
   text. Rendering methods can warn when an output format omits content.
 - If an application does not recognize an extension, its content remains in an
