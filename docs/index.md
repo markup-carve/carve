@@ -67,7 +67,7 @@ show Carve source beside its HTML output.
 - Cross-references and numbered captions keep labels and link text in sync.
 - Tables support captions, alignment, rowspan, colspan, and multiline cells
   without HTML.
-- Core behavior is pinned by 1545 corpus examples shared by the JavaScript,
+- Core behavior is pinned by 1554 corpus examples shared by the JavaScript,
   PHP, and Rust implementations.
 - One AST renders to HTML, Markdown, plain text, and ANSI; checked APIs report
   lossy output.

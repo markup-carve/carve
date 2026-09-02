@@ -1,0 +1,128 @@
+A marker folds only strictly between the item's base and content column
+
+```
+- lead
+- [t]: /t
+
+See [t][].
+.
+<ul>
+  <li>lead</li>
+  <li></li>
+</ul>
+<p>See <a href="/t">t</a>.</p>
+```
+
+```
+- lead
+ - [t]: /t
+
+See [t][].
+.
+<ul>
+  <li>lead
+- [t]: /t</li>
+</ul>
+<p>See [t][].</p>
+```
+
+```
+- lead
+  - [t]: /t
+
+See [t][].
+.
+<ul>
+  <li>lead
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+</ul>
+<p>See <a href="/t">t</a>.</p>
+```
+
+```
+-   lead
+- [t]: /t
+
+See [t][].
+.
+<ul>
+  <li>lead</li>
+  <li></li>
+</ul>
+<p>See <a href="/t">t</a>.</p>
+```
+
+```
+-   lead
+  - [t]: /t
+
+See [t][].
+.
+<ul>
+  <li>lead
+- [t]: /t</li>
+</ul>
+<p>See [t][].</p>
+```
+
+```
+-   lead
+   - [t]: /t
+
+See [t][].
+.
+<ul>
+  <li>lead
+- [t]: /t</li>
+</ul>
+<p>See [t][].</p>
+```
+
+```
+-   lead
+    - [t]: /t
+
+See [t][].
+.
+<ul>
+  <li>lead
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+</ul>
+<p>See <a href="/t">t</a>.</p>
+```
+
+```
+- lead
+1. [t]: /t
+
+See [t][].
+.
+<ul>
+  <li>lead</li>
+</ul>
+<ol>
+  <li></li>
+</ol>
+<p>See <a href="/t">t</a>.</p>
+```
+
+```
+-   lead
+ - prose
+ - [t]: /t
+
+See [t][].
+.
+<ul>
+  <li>lead
+- prose
+- [t]: /t</li>
+</ul>
+<p>See [t][].</p>
+```
