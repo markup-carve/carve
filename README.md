@@ -73,11 +73,12 @@ editorial markup, raw content, includes, and extension syntax.
 - Cross-references and numbered captions keep labels and link text in sync.
 - Tables support captions, alignment, rowspan, colspan, and multiline cells
   without HTML.
-- A formal grammar and shared corpus cover the JavaScript, PHP, and Rust
-  implementations.
-- One AST renders to HTML, Markdown, plain text, and ANSI; checked APIs report
-  lossy output.
-- Unknown extensions remain ordinary spans or divs instead of losing content.
+- JavaScript, PHP, and Rust are tested with the same Carve inputs and expected
+  outputs.
+- A document can be rendered as HTML, Markdown, plain text, or ANSI terminal
+  text. Rendering methods can warn when an output format omits content.
+- If an application does not recognize an extension, its content remains in an
+  ordinary span or div.
 - Bare HTML is literal text. Explicit `=html` passthrough can be disabled for
   untrusted input.
 
@@ -136,10 +137,10 @@ Markdown](https://markup-carve.github.io/carve/migrate-from-markdown) and the
 [format bridges](https://markup-carve.github.io/carve/format-bridges) for the
 supported interchange paths.
 
-Core syntax is enabled by default. Citations, automatic URL linking, diagrams,
-and some application features are extensions. The [extension
+Core syntax is always available. Citations, automatic URL linking, diagrams,
+and some application features must be enabled separately. The [optional feature
 table](https://markup-carve.github.io/carve/extensions#feature-tiers-quick-reference)
-states which features are portable.
+lists their availability.
 
 Bare HTML is literal text, but explicit `=html` passthrough is enabled by
 default in the JavaScript and Rust renderers. Disable it for untrusted input.
@@ -158,9 +159,10 @@ Carve 0.1 is specified. Before 1.0, minor releases may change the grammar.
 - [Rust implementation](https://github.com/markup-carve/carve-rs)
 - [Documentation](https://markup-carve.github.io/carve/)
 
-The three reference implementations use the same conformance corpus. Over 1,500 corpus examples
-plus 49 optional-corpus examples cover core and host-dependent features. Current
-differences are recorded in the [implementation comparison](https://markup-carve.github.io/carve/implementation-comparison).
+The three reference implementations use the same tests. More than 1,500 core
+input/output tests and 49 optional input/output tests cover the language and its
+shared optional features. Current differences are recorded in the
+[implementation comparison](https://markup-carve.github.io/carve/implementation-comparison).
 
 ## Development
 

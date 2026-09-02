@@ -273,11 +273,11 @@ test('a quoted run\'s diff total matches its own per-target rows', () => {
 
 test('the landing page quotes the real corpus size', () => {
   const live = countPairs('tests/corpus')
-  const m = landing.match(/pinned by (\d+) corpus examples/)
-  assert.ok(m, 'docs/index.md no longer states a corpus example count in the expected phrasing')
+  const m = landing.match(/same (\d+) Carve inputs/)
+  assert.ok(m, 'docs/index.md no longer states the number of shared Carve inputs')
   assert.equal(
     Number(m[1]),
     live,
-    `docs/index.md says "pinned by ${m[1]} corpus examples"; the corpus holds ${live}`,
+    `docs/index.md says the implementations share ${m[1]} inputs; the test set holds ${live}`,
   )
 })

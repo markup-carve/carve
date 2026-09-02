@@ -1,24 +1,20 @@
 ---
-description: "The profiles contract: restricting which node types a document may contain, so a host can accept untrusted input."
+description: Restrict the kinds of content allowed in comments, chat messages, articles, and other application contexts.
 ---
 
-# Profiles Contract
+# Content profiles
 
-A **profile** restricts which node types a document may contain, so a host can
-render untrusted input safely (comments, chat, articles). It is applied as an
-**AST transform after parsing and before rendering**: a disallowed node is
-replaced or removed per the profile's action, so the restriction holds across
-**every** renderer (HTML, Markdown, plain text, ANSI).
+A **profile** is a set of content restrictions. An application can use one to
+allow links in comments while rejecting images or embedded HTML. The profile is
+applied after Carve reads the document and before it creates HTML, Markdown,
+plain text, or terminal output.
 
-Profiles are **configuration, not syntax** — they are not pinned by the
-conformance corpus. This page is therefore the **normative contract**: every
-implementation MUST expose the same node-type vocabulary, the same resolution
-rule, the same four presets, and the same link-policy semantics, so a given
-profile produces the same allow/deny decision in `carve-js`, `carve-php`, and
-`carve-rs`. `carve-php` is the reference for profile golden fixtures; cross-impl
-parity is verified by those fixtures, not the corpus.
+Profiles are application configuration, not Carve syntax. This page defines
+their required behavior. JavaScript, PHP, and Rust use the same content-type
+names, four presets, and link rules. The shared expected results are maintained
+in `carve-php`.
 
-## Node-type vocabulary (normative)
+## Content-type names
 
 A profile's allow/deny lists use these exact type strings. They are stable
 identifiers, independent of a renderer's output tag.
@@ -58,7 +54,7 @@ An **`admonition`** is likewise its own type rather than a `div` carrying a
 class. A profile that wants to deny callouts while allowing generic
 containers has no way to express that if the kind lives in a class string.
 
-Which fences are callouts is the **Tier-1 canonical list** - `note`, `tip`,
+The built-in callout names are `note`, `tip`,
 `warning`, `danger`, `info`, `success`, `example`, `quote`. A fence opened with
 any other word (`::: sidebar`, `::: aside-note`, a name your own extension
 claims) is a **generic container**: it renders as `<div class="name">` rather
@@ -77,24 +73,23 @@ applyProfile(parse('::: note\nbody\n:::\n'), p).violations     // [{ nodeType: '
 applyProfile(parse('::: sidebar\nbody\n:::\n'), p).violations  // []
 ```
 
-This is a TRUST CLASS, not an AST type. A serialized AST publishes `::: sidebar`
-as an `admonition` node carrying `kind: "sidebar"`, because that is what the
-parser built; the profile classifies it as `div` because that is the capability
-it carries. The two vocabularies are different sizes and the next section says
-why - `tag` is the same shape, its own AST type classified as `mention`.
+For profile rules, `div` is a content category rather than the object type
+stored in parsed document JSON. The parser stores `::: sidebar` as an
+`admonition` object with `kind: "sidebar"`; the profile treats it as a `div`
+because it has the same permissions. Profile categories and parsed object types
+therefore do not have a one-to-one relationship.
 
 Denying `div` still removes callouts, through the subtype rule: an `admonition`
 answers to its own name and to `div`. A host that wants today's "deny every
 named fence" behavior denies both.
 
-### The AST has more node types than a profile can deny
+### Parsed documents have more object types than profiles use
 
-This page answers "what can a profile deny", which is a smaller set than "what
-appears in the tree". A serialized AST (PART 12) therefore carries type names
-this vocabulary does not list - `tag`, `smart_punctuation`, `literal_inline`
-and the `document` root - because denying them would mean nothing: they are
-folded into another trust class. A consumer reading an AST should expect them;
-a profile author should not look for them here.
+This page lists content that a profile can allow or deny. Parsed document JSON
+also contains `tag`, `smart_punctuation`, `literal_inline`, and the `document`
+root. Profiles group those objects with related content because separate rules
+would not provide a useful permission. Code that reads parsed document JSON
+must still accept them.
 
 `raw_text` is a separate case and is NOT carried. It is formatter-internal, and
 PART 12 §5 keeps it off the wire; PART 12 §3a goes further and says there is no

@@ -1,14 +1,15 @@
 ---
-title: AST Source Layout Sidecar
-description: Optional source fidelity metadata for editors and minimal-diff writers.
+title: Source Locations in Parsed Document JSON
+description: Optional source text and location data for editors and formatters.
 ---
 
-# AST source layout sidecar
+# Source locations in parsed document JSON
 
-The canonical [AST exchange format](./ast-json.md) describes meaning, not every
-spelling choice. A source-aware consumer may explicitly request a separate,
-versioned layout sidecar. It is never inserted into AST nodes: the document root
-remains exactly `type`, `children`, and `srcByteLength`.
+The [parsed document JSON](./ast-json.md) records document structure, not every
+choice in the original source. An editor or formatter can request a second JSON
+object containing the source text and locations. The API calls this object a
+**source layout sidecar**. It is separate from the parsed document, whose root
+still contains only `type`, `children`, and `srcByteLength`.
 
 The machine-readable contract is
 [`ast-source-layout-schema.json`](https://markup-carve.github.io/carve/ast-source-layout-schema.json).

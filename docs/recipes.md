@@ -1,23 +1,21 @@
 ---
-description: Constructs that need no extension and no engine support - only CSS on the HTML Carve already emits.
+description: Use CSS to style Carve containers as trees, cards, columns, and other layouts.
 ---
 
 # Styling Recipes
 
-Carve has no `tree` construct, no `cards` construct and no `columns` construct.
-It does not need them. Three pieces of core syntax, all Tier-1 and always on,
-hand the styling layer everything it needs:
+Trees, cards, and columns do not require new Carve syntax. Containers, classes,
+and attributes provide the HTML hooks required by CSS:
 
-| Seam | You write | The engine emits |
+| HTML hook | Carve source | Generated HTML |
 | --- | --- | --- |
-| A container word with no handler | `::: cards` | `<div class="cards">` |
+| A container name with no extension | `::: cards` | `<div class="cards">` |
 | A span class | `[beta]{.badge}` | `<span class="badge">` |
 | An attribute line above a block | `{#id .x data-y="2"}` | the id, classes and `data-*` on that element |
 
-An unregistered `::: name` renders as a generic div carrying the word as a
-class, a documented part of the [extension contract](/extensions). So the tree
-below already renders correctly out of every engine, with no extension, no
-configuration and no parser change. The only thing ever missing was CSS.
+If an application has no extension named `name`, `::: name` becomes a div with
+the class `name`. The tree below therefore needs CSS but no parser extension or
+configuration.
 
 [carve-css](https://github.com/markup-carve/carve-css) ships that CSS as an
 opt-in layer:

@@ -42,7 +42,7 @@ shows complete input and output.
 | `{--}` | – | braced en dash — converts in the flag position the bare run refuses |
 | `\` at end of line | hard break | `\ ` is a hard break here too — the trailing space is stripped before the escape is read |
 | `\ ` mid-line | no-break space | backslash-space; in the last column it is the hard break above |
-| `` `<br>`{=html} `` | raw inline | target-routed; Carve renderers emit only `=html`, others feed external writers ([why](/divergence-from-djot#_10-raw-passthrough-is-target-routed-and-the-pandoc-boundary)) |
+| `` `<br>`{=html} `` | raw inline | emitted only in HTML output; other format names are retained for external converters ([security and configuration](/security)) |
 
 Bare delimiters work only at word boundaries; force one intraword with the brace form, e.g. `H{,2,}O`, `mc{^2^}`. The braces need content: an empty pair like `{^^}` is text.
 
@@ -90,7 +90,7 @@ notes:                       every line. `fmt` writes back whichever
 ```language "Header" [Label]
 code block
 ```
-                             (canonical is ```language - no space; "Header"
+                             (standard form is ```language - no space; "Header"
                               -> <pre title>, [Label] = code-group tab name;
                               both optional, space-separated, in that order)
 
@@ -111,7 +111,7 @@ body                          identifier, e.g. the tab name; same
 :::                          "Header" [Label] tokens as a code fence)
 
 ::: outer                    (a closer matches its opener's length
-:::: note                     exactly; canonical nesting adds one
+:::: note                     exactly; standard nesting adds one
 inner                         colon per level inward)
 ::::
 :::
@@ -298,4 +298,4 @@ Extension, off by default; falls back to a code block when unrendered. See
 
 - **[Examples](/examples)** — each construct next to its rendered HTML.
 - **[Get Started](/get-started)** — render Carve in your own project.
-- **[Formal Grammar](/grammar)** — the normative spec.
+- **[Formal Grammar](/grammar)** — the language specification.

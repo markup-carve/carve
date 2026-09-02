@@ -5,17 +5,23 @@ description: Side-by-side Carve source and the output it produces, split by what
 
 # Examples
 
-Each pair shows the Carve source on the left and the HTML it produces on the right; toggle the output to **Rendered** to see the result in place. The HTML rendering reflects the *intended* output: think of these as the contract every implementation must honor. Reference implementations already exist (carve-js, carve-rs, carve-php) and are tested against exactly these fixtures.
+Each example shows Carve source and its HTML output. Select **Rendered** to see
+the result. The JavaScript, PHP, and Rust implementations are tested against
+these expected outputs.
 
-The examples are split by **what it takes to get the output**, not by which file holds the case:
+The examples are grouped by whether a feature is always available, must be
+enabled, or applies only to unusual input.
 
 | Page | What is on it | Pinned in |
 |---|---|---|
-| [**Core**](/examples/core) | Everything Tier-1: always on, not disableable, identical in every implementation. | `tests/corpus` (mandatory) |
-| [**Extensions**](/examples/extensions) | Tier-2 features that ship off, Tier-1 syntax whose *resolution* you configure, and Tier-3 app extensions. | Tier-2: `tests/corpus-optional`; Tier-3: snapshot test only |
-| [**Processor options**](/examples/processor-options) | Renderer switches, not extensions: typography modes, section wrapping, non-HTML targets. | `tests/corpus-optional` |
-| [**Edge cases**](/examples/edge-cases/) | Boundary rules: what happens when a construct is unmatched, malformed, or deliberately not special. | `tests/corpus` (mandatory) |
+| [**Core**](/examples/core) | Syntax available without configuration and supported by every implementation. | Required input/output tests |
+| [**Optional features**](/examples/extensions) | Features shared by all implementations but disabled initially, plus application-specific extensions. | Shared optional tests or application tests |
+| [**Parser and output settings**](/examples/processor-options) | Typography settings, heading-section wrappers, and non-HTML output. | Shared optional tests |
+| [**Edge cases**](/examples/edge-cases/) | Unmatched, incomplete, or intentionally literal syntax. | Required input/output tests |
 
-Every `::: compare` pair on the Core and Edge cases pages is part of the [conformance corpus](/grammar): the HTML shown is generated from the same fixtures the reference implementations are tested against, so it cannot drift from real output.
+Every comparison on the Core and Edge Cases pages comes from the same
+[input/output tests](/grammar) used by the JavaScript, PHP, and Rust
+implementations. The displayed HTML is generated from those tests.
 
-The Extensions and Processor options pages show their output as static comparisons rather than live renders, because that output depends on configuration this site does not apply.
+The Optional Features and Settings pages show saved output because the result
+depends on configuration that this site does not enable.

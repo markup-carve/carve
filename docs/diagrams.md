@@ -5,9 +5,8 @@ description: Draw UML, flowcharts, graphs and charts from fenced code blocks - d
 
 # Diagrams & Charts
 
-Carve draws diagrams from **fenced code blocks**. The diagram stays plain text in
-your source - no binary image to keep in sync, no ASCII art to hand-align - and a
-client library or a build step turns it into real vector output.
+Carve stores diagram instructions in fenced code blocks. A browser library or
+build tool can turn those instructions into an image.
 
 ````carve
 ``` mermaid
@@ -21,13 +20,12 @@ classDiagram
 ```
 ````
 
-That is the whole authoring story. Everything below is about which languages are
-available and who does the drawing.
+The rest of this page lists supported diagram languages and output options.
 
-## Available presets
+## Supported diagram languages
 
-All eight are instances of one extension, `FencedRender`: a renderer claims a
-fenced block by its language word and emits a single hydration element.
+The optional `FencedRender` extension recognizes these eight fence names and
+generates an HTML element for the selected browser library.
 
 | Fence word | Draws | Mode |
 | ---------- | ----- | ---- |
@@ -40,8 +38,7 @@ fenced block by its language word and emits a single hydration element.
 | `vega-lite` | statistical charts from a grammar-of-graphics spec | json |
 | `chart` | Chart.js charts | json |
 
-Any other client-rendered language needs no new code, only a new instance with
-its own fence word.
+An application can configure another fence name and drawing library.
 
 ## UML specifically
 
@@ -78,10 +75,10 @@ User --> (Parse source)
 ```
 ````
 
-## What Carve emits
+## Generated HTML
 
-Carve emits only the marker element. Loading the client library and hydrating it
-is the host's job.
+Carve generates the HTML element shown below. The application must load the
+library that replaces it with a finished diagram.
 
 **Text mode** (Mermaid, D2, Graphviz, WaveDrom, ABC, PlantUML) escapes the body inside a
 `<pre>`. Note that `&` and `<` are escaped but `>` is preserved, so arrow syntax
@@ -129,7 +126,7 @@ whether or not the script arrives, and the name says which one (carve#1468).
 ## Rendering without a browser
 
 For PDF, email, or any output with no client-side JavaScript, `renderStatic`
-accepts a **renderers** map. The canonical keys are `mermaid`, `chart`,
+accepts a **renderers** map. The standard keys are `mermaid`, `chart`,
 `graphviz` and `math`; implementations must use exactly these names so one config
 behaves identically across engines.
 
@@ -144,12 +141,11 @@ Working per-engine recipes are in
 
 ## Seeing it rendered
 
-This page shows the source and the markup Carve emits, not the drawn diagram -
-the docs site does not hydrate diagrams outside the playground. To see real
-output:
+This page shows the source and generated HTML, not the drawn diagram. To see the
+finished output:
 
-- **[Playground](/playground)** - paste a `mermaid` fence and it renders live in
-  the browser, the same way a host page would hydrate it.
+- **[Playground](/playground)** - paste a `mermaid` fence and the browser draws
+  the diagram.
 - **[carve-pdf `03-math-diagrams.pdf`](https://github.com/markup-carve/carve-pdf/blob/master/examples/03-math-diagrams.pdf)** -
   a real PDF built from
   [`03-math-diagrams.crv`](https://github.com/markup-carve/carve-pdf/blob/master/examples/03-math-diagrams.crv),
@@ -157,21 +153,22 @@ output:
   time. Source and output side by side, for a target with no client-side
   JavaScript at view time.
 
-## Degradation
+## When a diagram cannot be drawn
 
 When the extension is off, or no renderer is supplied for that key, the fence
 falls back to its **source as a code block**. It never renders blank. The
 diagram description stays readable in the document, which is the point of
 keeping it as text in the first place.
 
-See [Graceful Degradation](/graceful-degradation) for the full matrix.
+See [Output without JavaScript](/graceful-degradation) for every output format.
 
 ## Enabling
 
-`FencedRender` is a Tier-3 extension and ships **off**. Turn it on per document
-or per project in your engine's extension configuration; see the
-[Extensions Contract](/extensions) and each implementation's own
+`FencedRender` is an implementation-specific extension and starts disabled.
+Enable it for a document or project; see the
+[Optional Features and Extensions](/extensions) and each implementation's own
 `docs/extensions.md` for the client libraries it pairs with.
 
-Because Tier-3 output is never conformance-pinned, these presets are free to
-track upstream diagram libraries without a spec change.
+This output is implementation-specific and is not part of the shared
+input/output tests. An implementation can therefore update its supported
+diagram libraries without changing the Carve specification.

@@ -1,14 +1,15 @@
 ---
-description: Which features earn a place in core syntax and which belong in an extension, with the MUST/SHOULD/MAY reasoning.
+description: Why some features are built into Carve while others must be enabled separately.
 ---
 
-# Native Features Analysis
+# Built-in and optional features
 
-Comparing djot-php extensions with Carve's design to determine what should be native syntax vs. implementation extensions.
+This design record compares djot-php extensions with Carve and explains which
+features became part of Carve syntax.
 
-## Criteria for Native Features
+## Criteria for built-in features
 
-A feature should be **native** (part of Carve syntax) if:
+A feature should be built into Carve syntax if:
 1. It affects document semantics, not just rendering
 2. It's universally useful across contexts
 3. It has clear, unambiguous syntax

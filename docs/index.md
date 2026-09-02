@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Carve
   text: A markup language for documents
-  tagline: Headings, tables, captions, references, math, and extensions in .crv files.
+  tagline: Syntax for headings, tables, captions, references, math, and optional extensions.
   image:
     src: /logo.svg
     alt: Carve logo
@@ -20,12 +20,12 @@ hero:
       link: /cheatsheet
 
 features:
-  - title: Specification
-    details: A formal grammar and shared conformance corpus define the language.
-  - title: Implementations
-    details: Reference implementations are available for JavaScript, PHP, and Rust.
-  - title: Output
-    details: Render to HTML, Markdown, plain text, or ANSI. Checked APIs report dropped content.
+  - title: Defined behavior
+    details: A specification and shared input/output tests define how the language works.
+  - title: Three implementations
+    details: Carve parsers are available for JavaScript, PHP, and Rust.
+  - title: Four output formats
+    details: Convert a document to HTML, Markdown, plain text, or ANSI terminal text.
 description: Carve syntax, installation, specification, and reference implementations.
 ---
 
@@ -67,11 +67,12 @@ show Carve source beside its HTML output.
 - Cross-references and numbered captions keep labels and link text in sync.
 - Tables support captions, alignment, rowspan, colspan, and multiline cells
   without HTML.
-- Core behavior is pinned by 1554 corpus examples shared by the JavaScript,
-  PHP, and Rust implementations.
-- One AST renders to HTML, Markdown, plain text, and ANSI; checked APIs report
-  lossy output.
-- Unknown extensions remain ordinary spans or divs.
+- JavaScript, PHP, and Rust are tested with the same 1554 Carve inputs and
+  expected HTML outputs.
+- A document can be rendered as HTML, Markdown, plain text, or ANSI terminal
+  text. Rendering methods can warn when an output format omits content.
+- If an application does not recognize an extension, its content remains in an
+  ordinary span or div.
 - Bare HTML is literal text. Explicit `=html` passthrough can be disabled for
   untrusted input.
 
@@ -96,13 +97,12 @@ bindings.
 
 Carve is a separate language, not a Markdown extension. Use a Carve parser for
 `.crv` files. The [Markdown migration guide](./migrate-from-markdown) lists
-syntax differences and the [format bridges](./format-bridges) describe
-conversion limits.
+syntax differences and [Format conversion](./format-bridges) describes which
+content can be preserved.
 
-Core syntax is enabled by default. Some features, including citations,
-automatic URL linking, and diagrams, are opt-in. Check the [feature tier
-table](./extensions#feature-tiers-quick-reference) before depending on an
-extension.
+Core syntax is always available. Some features, including citations, automatic
+URL linking, and diagrams, must be enabled separately. The [optional features
+table](./extensions#feature-tiers-quick-reference) lists their availability.
 
 ## Reference
 
@@ -111,6 +111,7 @@ extension.
 - [Security](./security)
 - [Implementation comparison](./implementation-comparison)
 - [Ecosystem](./ecosystem)
+- [Terms used in this documentation](./terms)
 
 Carve 0.1 is specified. Minor releases may change the grammar before 1.0; see
 [Versioning](./versioning).

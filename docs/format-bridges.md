@@ -1,24 +1,22 @@
 ---
-description: Why Carve reaches other document formats and editor models through the AST rather than through rendered HTML, what a bridge owes its caller, and what a round trip proves about the AST itself.
+description: Convert Carve to and from Pandoc and ProseMirror without using rendered HTML as an intermediate format.
 ---
 
-# Format bridges
+# Format conversion
 
-A bridge converts between the Carve AST and some other document model: Pandoc's
-AST on the way to LaTeX, Typst or DOCX, a ProseMirror document on the way into a
-Tiptap editor. This page says why that boundary sits at the AST rather than at
-rendered output, what a bridge owes the caller that runs it, and why a bridge
-round trip tests something about Carve that no HTML test can reach.
+Carve can convert to and from Pandoc documents for LaTeX, Typst, or DOCX output,
+and ProseMirror documents used by editors such as Tiptap. These converters work
+with structured documents instead of using rendered HTML as an intermediate
+format. This preserves information that HTML cannot represent.
 
-It is a rationale page, not a normative one. The normative wire shape is the
-[AST exchange format](./ast-json); the normative HTML direction is the
-[HTML import contract](./html-import).
+This page explains the design; it does not define required behavior. [Parsed
+document JSON](./ast-json) defines the data exchanged between programs. [HTML
+import](./html-import) defines conversion from HTML.
 
-## HTML is a sink, not a channel
+## Why conversion does not use rendered HTML
 
-Rendered HTML is the end of the pipeline, so it is a bad place to start a
-conversion. The AST holds information HTML has no element for, and by the time
-HTML exists that information is already gone:
+Rendered HTML has already discarded information that another document format
+may support. The parsed Carve document can still record:
 
 - whether a list was tight or loose, which is content and not styling - a loose
   list read back as tight loses its items' paragraphs;
@@ -90,7 +88,7 @@ target cannot be interactive - the interaction, never the words. A bridge
 governs what a *converter* may drop when a target model is smaller than
 Carve's - a node, never in silence.
 
-## A round trip is an expressiveness test for the AST
+## Testing conversion in both directions
 
 The corpus now records this measurement directly for built-in import routes.
 At the current JavaScript engine pin, 605 of 1,384 documents return to their

@@ -34,15 +34,15 @@ const examples = (dir) =>
   readdirSync(resolve(root, dir)).filter((name) => name.endsWith('.crv')).length
 
 test('the README\'s corpus floor is true and not stale', () => {
-  const match = readme.match(/Over ([\d,]+) corpus examples/)
-  assert.ok(match, 'the conformance row states a corpus floor as "Over N corpus examples"')
+  const match = readme.match(/More than ([\d,]+) core\s+input\/output tests/)
+  assert.ok(match, 'the README states a floor for the core input/output tests')
 
   const claimed = Number(match[1].replace(/,/g, ''))
   const actual = examples('tests/corpus')
 
   assert.ok(
     actual >= claimed,
-    `README claims over ${claimed} corpus examples, tests/corpus holds ${actual}`,
+    `README claims more than ${claimed} core tests; tests/corpus holds ${actual}`,
   )
   assert.ok(
     claimed >= actual - SLACK,
@@ -51,8 +51,8 @@ test('the README\'s corpus floor is true and not stale', () => {
 })
 
 test('the README\'s optional-corpus count is exact', () => {
-  const match = readme.match(/plus ([\d,]+) optional-corpus examples/)
-  assert.ok(match, 'the conformance row states an optional-corpus count')
+  const match = readme.match(/and ([\d,]+) optional input\/output tests/)
+  assert.ok(match, 'the README states the optional input/output test count')
 
   assert.equal(
     Number(match[1].replace(/,/g, '')),

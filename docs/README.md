@@ -27,5 +27,25 @@ npm run docs:build   # production build into docs/.vitepress/dist
 - `case-study/` - the original design research, kept as a historical record.
 - `.vitepress/` - site config and theme; the live playground renders through the pinned `@markup-carve/carve` dependency.
 
+## Writing standards
+
+Author-facing pages use ordinary markup and publishing terms. Before adding a
+project-specific term:
+
+1. Use an established term if it describes the same concept.
+2. Define an unavoidable Carve or API term at first use.
+3. Use the same term for the same operation. In particular, distinguish
+   **parse**, **format**, **render**, and **convert** as defined on the [terms
+   page](terms.md).
+4. Keep test-suite names and parser internals out of introductions, navigation,
+   feature summaries, and instructions for authors.
+5. State the observable behavior instead of assigning it a slogan. For example,
+   write “the renderer shows the diagram source” rather than “the construct
+   degrades gracefully.”
+
+Use **core syntax** for syntax that is always available and **optional feature**
+for behavior that must be enabled. Use Tier 1, Tier 2, and Tier 3 only when the
+formal availability distinction matters, and define the tiers nearby.
+
 > [!NOTE]
 > This `README.md` is excluded from the VitePress build (`srcExclude`); it exists only to orient people browsing the repository.

@@ -101,7 +101,7 @@ dropped), `allowLinks` (`<a>` + external `href`), `allowAnimation` (SMIL), and
 
 ## Fallback
 
-A body that is not a single, well-formed `<svg>` root degrades to an escaped code
-block — never blank, never raw. In sandbox mode the image is always a
+A body that is not a single, well-formed `<svg>` element becomes an escaped code
+block. It is never blank or emitted as raw HTML. In sandbox mode the image is a
 self-contained data URI, so it needs no network and works offline and in static
 renders.
