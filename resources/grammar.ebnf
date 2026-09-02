@@ -6737,16 +6737,40 @@ EOF = (* end of file *) ;
       and never in a matcher.
 
       AN UNANSWERABLE PROBE KEEPS THE CANDIDATE TEXT -- NORMATIVE
-      (carve#1881). An implementation that cannot answer -- no probe, an
-      exhausted work budget,
-      a construct it does not recognize -- collects NOTHING from the candidate
-      line.
+      (carve#1881, narrowed by carve#1895). An implementation that cannot
+      answer -- no probe available, or a construct it does not recognize --
+      collects NOTHING from the candidate line.
+
+      AN EXHAUSTED WORK BUDGET IS NOT ONE OF THOSE REASONS (carve#1895). It was
+      listed here and is removed. Exhaustion is a property of the METHOD an
+      implementation chose, not of the question it was asked: the double
+      re-parse above costs 4x per doubling -- 178ms at 50 marker-led
+      definitions, 40 seconds at 800 -- while an engine that answers the same
+      question from pre-pass state answers a 3200-line document correctly in
+      47ms, spending no budget at all. An engine that declines it spends about
+      the same wall clock to do so, so the escape bought nothing that choosing
+      another method would not have bought outright. A processor that CAN
+      determine a candidate line's position collects the definition AT ANY
+      DOCUMENT SIZE. Ten definitions under a heading is an ordinary document,
+      and "past ten they stop resolving" is not graceful degradation -- a
+      reader cannot tell it from a typo in a label, and adding a definition at
+      the end of a list retroactively changes whether an unrelated reference
+      above it resolves.
+
+      BOUNDING THE PROBE IS STILL SOUND, and this clause does not forbid it.
+      What it forbids is spending the bound as an ANSWER. An implementation
+      that keeps the re-parse and its budget must reach the answer another way
+      once the budget is gone -- the position is derivable without the probe
+      wherever no extension matcher may have consumed the line above, which is
+      the one thing static reasoning cannot see and the case the probe was
+      written for.
 
       THAT IS CONSERVATIVE, NOT IDENTICAL TO THE AFFORDABLE ANSWER, and the
-      difference is the point. Where the probe would have said the line opens
-      something, it would have been collected, and this fallback declines it:
-      the document loses a definition it should have had. What it does not lose
-      is the line, which stays exactly as the author typed it. The two errors
+      difference is the point wherever the fallback still applies. Where the
+      probe would have said the line opens something, it would have been
+      collected, and this fallback declines it: the document loses a definition
+      it should have had. What it does not lose is the line, which stays exactly
+      as the author typed it. The two errors
       available here are under-collecting and deleting text, and only the first
       is one a reader can see -- a reference to the uncollected label renders as
       its literal `[^f]`, on the page, where someone can report it.
