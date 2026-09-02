@@ -46,7 +46,8 @@ implementation exposes.
 
 Spec commit: `3eae6be`.
 
-Corpus added since this run: `441-a-definition-between-two-open-content-columns-reaches-the-outer-one`.
+Corpus added since this run: `441-a-definition-between-two-open-content-columns-reaches-the-outer-one`
+and `442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column`.
 
 That category landed on a host with no engine checkouts, so the run above could
 not be retaken and its numbers describe the corpus WITHOUT it. Editing the
