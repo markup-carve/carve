@@ -1,17 +1,13 @@
 # Carve documentation (source)
 
-This directory is the **source** for the Carve documentation site, built with
-[VitePress](https://vitepress.dev/). It is **not meant to be read directly here
-on GitHub** - the pages use VitePress-specific syntax (`:::` containers,
-code-group tabs, frontmatter, custom components) that GitHub's Markdown viewer
-does not render, so the raw files look broken.
+This directory contains the source for the [Carve documentation
+site](https://markup-carve.github.io/carve/), built with
+[VitePress](https://vitepress.dev/). Some pages use VitePress containers,
+frontmatter, and components that GitHub does not render.
 
-## 📖 Read the docs online
+## Read the documentation
 
-👉 **<https://markup-carve.github.io/carve/>**
-
-That is the rendered, navigable site - working code tabs, search, the syntax
-reference, the migration guide, and the interactive playground.
+<https://markup-carve.github.io/carve/>
 
 ## Building locally
 

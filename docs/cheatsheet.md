@@ -5,20 +5,13 @@ description: Every Carve construct on one scannable page.
 
 # Cheat Sheet
 
-The whole syntax, one page. Carve's mnemonic: **the markup looks like its output**.
+Rows marked **✦** require an opt-in extension. Other entries are core syntax.
+See the [feature tier table](/extensions#feature-tiers-quick-reference) for
+availability.
 
-Everything here is **core** (Tier-1) — on by default, identical across every
-implementation — except rows marked **✦**, which are opt-in extensions
-(Tier-2/3) you enable in your processor. Look any feature up in the
-[feature → tier table](/extensions#feature-tiers-quick-reference).
-
-Two kinds of block appear below. A block tagged `carve` is a **document**: paste
-it into the [Playground](/playground) and you get what the text around it says.
-A block tagged `text` is **notation** - several constructs packed onto a line
-each, with the explanation in a right-hand column. That is how a reference card
-fits on one page, and it is not a document: pasted anywhere, the annotations
-make every line prose. For the working version of a notation block, see
-[Blocks & Attributes](/blocks-and-attributes) and [Examples](/examples).
+`carve` code blocks are valid documents. `text` blocks are compact notation;
+their right-hand comments are not part of the syntax. [Examples](/examples)
+shows complete input and output.
 
 ## Inline
 

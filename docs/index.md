@@ -3,125 +3,114 @@ layout: home
 
 hero:
   name: Carve
-  text: A post-Markdown markup language
-  tagline: Visual mnemonics, human-centered design — markup you can feel.
+  text: A markup language for documents
+  tagline: Headings, tables, captions, references, math, and extensions in .crv files.
   image:
     src: /logo.svg
     alt: Carve logo
   actions:
     - theme: brand
-      text: Try Carve →
+      text: Open Playground
       link: /playground
     - theme: alt
-      text: Get Started
+      text: Install
       link: /get-started
     - theme: alt
-      text: View on GitHub
-      link: https://github.com/markup-carve
+      text: Full Cheat Sheet
+      link: /cheatsheet
 
 features:
-  - title: Visual Mnemonics
-    details: "/italic/ slashes lean, *bold* asterisks are heavy, _underline_ sits below, ~strikethrough~ runs through. Syntax that looks like its output."
-  - title: Linear-Time Rigor
-    details: "Djot-style linear-time parsing with no backtracking and unambiguous rules (Djot is the markup Carve builds on), extended with captions, abbreviations, and social conventions."
-  - title: Ten-Second Rule
-    details: Learnable in 10 seconds for basic use. Memorable after 10 days without practice. Unambiguous within 10 characters of context.
-  - title: Interactive Online, Readable Offline
-    details: "Built for the interactive web first — diagrams, math, charts and tabs hydrate into rich output online. With no JavaScript every block degrades to clean semantic HTML: a Mermaid fence still shows its source, <details> stays native, tables stay tables."
-  - title: Captions Everywhere
-    details: One ^ prefix captions images, blockquotes, tables, listings, equations and composite figure groups — emitting semantic figure / figcaption / caption HTML.
-  - title: Friendly Tables
-    details: "|= for headers, ^ for rowspan, < for colspan, + for multi-line cells. No separator row required."
-  - title: Built-in Extensions
-    details: ":type[content]{attrs} for video embeds and the rest of the handler family. Keyboard hints and the other semantic spans are core attributes instead — [Tab]{kbd}. @mentions and #tags as you'd expect from social platforms."
-  - title: Hardened Rendering
-    details: "Always-on URL-scheme and attribute hardening, Trojan-Source stripping in presentation targets, and linear-time DoS limits neutralize common Markdown attack classes. For untrusted documents, disable the one trusted-content feature: explicit raw HTML passthrough. Carve never executes embedded code (unlike MDX)."
-description: Carve is a post-Markdown markup language with visual mnemonics, a formal grammar, and hardened rendering.
+  - title: Specification
+    details: A formal grammar and shared conformance corpus define the language.
+  - title: Implementations
+    details: Reference implementations are available for JavaScript, PHP, and Rust.
+  - title: Output
+    details: Render to HTML, Markdown, plain text, or ANSI. Checked APIs report dropped content.
+description: Carve syntax, installation, specification, and reference implementations.
 ---
 
-## What it looks like
-
-Emphasis you can read at a glance - slashes lean, asterisks are heavy,
-underscores sit below, tildes run through:
+## Syntax
 
 ```carve
-/italic/  *bold*  _underline_  ~strikethrough~  =highlight=
+# Release notes
 
-H{,2,}O and E=mc{^2^}
+This has /italic/, *bold*, _underline_, ~strikethrough~, and =highlight=.
+
+- [x] Publish the release
+- [ ] Update the package
+
+|= Package |= Version |
+| carve-js | 0.1 |
+^ Published packages
+
+::: note
+Containers can represent admonitions and application-defined blocks.
+:::
 ```
 
-Tables without a separator row. `|=` marks a header cell and `|=>` aligns that
-column right; a bare `|>` aligns one body cell. Every marker run is glued to the
-pipe and ends at a space, and a second marker adds the vertical axis - `|=>^` is
-right and top, `|<v` left and bottom. One `^` line captions the whole thing:
+| Construct | Syntax |
+|---|---|
+| Heading | `# Heading` |
+| Link | `[text](https://example.com)` |
+| Image | `![alt](image.jpg)` |
+| Cross-reference | `</#heading-id>` |
+| Footnote | `[^note]` |
+| Inline math | `` $`x + y` `` |
+| Attributes | `{#id .class key=value}` |
+| Extension | `:name[content]` |
 
-```carve
-|= Fruit  |=>^ Price |
-| Apple    | $1       |
-| Pear     | $2       |
-|~ Total   |<v $3     |
-^ Table 1: no separator row needed
+The [cheat sheet](./cheatsheet) lists every construct. [Examples](./examples)
+show Carve source beside its HTML output.
+
+## Why Carve
+
+- Cross-references and numbered captions keep labels and link text in sync.
+- Tables support captions, alignment, rowspan, colspan, and multiline cells
+  without HTML.
+- A formal grammar and shared corpus cover the JavaScript, PHP, and Rust
+  implementations.
+- One AST renders to HTML, Markdown, plain text, and ANSI; checked APIs report
+  lossy output.
+- Unknown extensions remain ordinary spans or divs.
+- Bare HTML is literal text. Explicit `=html` passthrough can be disabled for
+  untrusted input.
+
+## Install
+
+```bash
+npm install @markup-carve/carve
+composer require markup-carve/carve-php
+cargo install carve-lang
 ```
 
-The same `^` captions an image or attributes a quote:
+```ts
+import { carveToHtml } from '@markup-carve/carve'
 
-```carve
-![Apollo 11](apollo.jpg)
-^ Figure 1: first moon landing
-
-> Stay hungry, stay foolish.
-^ Steve Jobs
+const html = carveToHtml('/italic/ and *bold*')
 ```
 
-Abbreviations expand wherever the word appears, defined once anywhere in the
-document:
+See [Get Started](./get-started) for PHP, the Rust CLI, WebAssembly, and language
+bindings.
 
-```carve
-The HTML spec is essential reading.
+## Scope
 
-*[HTML]: HyperText Markup Language
-```
+Carve is a separate language, not a Markdown extension. Use a Carve parser for
+`.crv` files. The [Markdown migration guide](./migrate-from-markdown) lists
+syntax differences and the [format bridges](./format-bridges) describe
+conversion limits.
 
-Plus the conventions you already type - mentions, tags, and semantic spans:
+Core syntax is enabled by default. Some features, including citations,
+automatic URL linking, and diagrams, are opt-in. Check the [feature tier
+table](./extensions#feature-tiers-quick-reference) before depending on an
+extension.
 
-```carve
-Hey @alice, see #release-1.0.
+## Reference
 
-Press [Tab]{kbd} to indent.
-```
+- [Formal grammar](./grammar)
+- [Extensions](./extensions)
+- [Security](./security)
+- [Implementation comparison](./implementation-comparison)
+- [Ecosystem](./ecosystem)
 
-Every construct is on the [cheat sheet](./cheatsheet), and every one of them is
-pinned to exact HTML in the [examples](./examples).
-
-## Status
-
-**Carve 0.1 is specified and shipping.** Tier-1 core and Tier-2 standard
-extensions are normative and stable; Tier-3 app-level extensions ship but evolve
-(see [Versioning](./versioning)). Conformance is pinned by 1545 corpus examples
-with exact HTML output, and the three reference engines - carve-js (TypeScript),
-carve-php, and carve-rs - all run the same corpus. Where the corpus pins a rule
-ahead of an engine, the window is declared on the
-[implementation comparison](./implementation-comparison) page rather than left
-for a reader to discover.
-Pre-1.0, a minor release may still change the grammar.
-
-Reference material covers the normative [grammar](./grammar) and
-[extensions contract](./extensions), the [security model](./security), the
-[technical rationale](./technical-rationale), [parsing ambiguities](./parsing-ambiguities),
-[specification decision history](./spec-history),
-[native features](./native-features-analysis), and the
-[broader markup landscape](./markup-languages). The [Case Study](./case-study/)
-records the original design research the language grew out of; it is history,
-not the normative spec.
-
-Looking for a parser, editor plugin, or framework integration? See the [Ecosystem](./ecosystem). Want to write your own? Start with [Build Your Own Implementation](./implementing-carve).
-
-**File extension:** `.crv`
-
-## Influences
-
-- **[Djot](https://djot.net/)** (John MacFarlane) — rigorous parsing, attributes, foundation
-- **Org-mode** — `/italic/` syntax, TODO states
-- **Creole** — `|=` table headers
-- **AsciiDoc** — admonitions, document structure
-- **CriticMarkup** — editorial annotations
+Carve 0.1 is specified. Minor releases may change the grammar before 1.0; see
+[Versioning](./versioning).
