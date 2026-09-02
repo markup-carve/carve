@@ -2813,7 +2813,22 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           }
           continue
         }
+        // A COMMENT IS COLUMN-EXEMPT (§10 I5's first exception, §24 C3). The
+        // other four invisible kinds are ordinary text below a column and fold;
+        // a comment stays invisible at ANY column, and folding one would make it
+        // VISIBLE -- the one outcome a comment may never have. `peekInterrupts`
+        // is the I5 predicate for the four that fold, so it does not answer for
+        // a comment; the caption slot carries the same extra arm one construct
+        // over, and the quote's own marker-line tracker above already tests
+        // COMMENT_LINE. This branch was the only reader of an unmarked line that
+        // never asked, so `> x` over `%% c` published the comment's own text as
+        // quoted prose where all three engines drop it (carve#1899).
+        //
+        // The line is not framed here: the item collector pushes a comment
+        // UNFRAMED for exactly this reason, so a comment reaching a nested quote
+        // still arrives as itself.
         if (lines[i] !== undefined && qOpenPara && !isBlank(lines[i]) &&
+            !COMMENT_LINE.test(lines[i]) &&
             !peekInterrupts(i) && !COLON_CLOSER.test(lines[i]) && !CAPTION.test(lines[i])) {
           // lazy continuation folds into the open quoted paragraph (SS10 I6)
           //

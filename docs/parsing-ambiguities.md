@@ -320,6 +320,11 @@ stack in a single left-to-right pass: linear time, no backtracking.
   `%%` is a comment line just like one in the first column. Like any block it
   interrupts an open paragraph and renders nothing (it leaves no empty
   paragraph)
+- The column does not matter **inside a container** either. Below a list item's
+  or a blockquote's content column a reference definition or an attribute line
+  is ordinary text and folds into the open paragraph, but a comment is still a
+  comment: it closes the paragraph and renders nothing. Folding one would
+  publish the text a comment exists to hide (PART 9 §10 I5, §24 C3)
 
 **Block comments:**
 - `%%%` must start the line to open/close; the **leading run of `%` is the
@@ -358,6 +363,9 @@ Visible text. %% trailing comment, consumed to end of line
 %%%
 Block comment with %% inside is fine.
 %%%
+
+> A quoted paragraph.
+%% Below the quote's marker, and still a comment.
 ```
 
 **In code blocks:** `%%` and `%%%` are literal (code blocks protect everything).
