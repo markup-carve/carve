@@ -1,0 +1,119 @@
+An unterminated comment fence in a list item is the line form
+
+```
+- x
+  %%%
+y
+.
+<ul>
+  <li>x</li>
+</ul>
+<p>y</p>
+```
+
+```
+- x
+  %% z
+y
+.
+<ul>
+  <li>x</li>
+</ul>
+<p>y</p>
+```
+
+```
+- x
+  %%%
+  %%%
+y
+.
+<ul>
+  <li>x</li>
+</ul>
+<p>y</p>
+```
+
+```
+- x
+  %%%
+  y
+.
+<ul>
+  <li>x
+    y
+  </li>
+</ul>
+```
+
+```
+- x
+    %%%
+y
+.
+<ul>
+  <li>x</li>
+</ul>
+<p>y</p>
+```
+
+```
+1. x
+   %%%
+y
+.
+<ol>
+  <li>x</li>
+</ol>
+<p>y</p>
+```
+
+```
+-   x
+    %%%
+y
+.
+<ul>
+  <li>x</li>
+</ul>
+<p>y</p>
+```
+
+```
+- x
+  %%%
+y
+  %%%
+z
+.
+<ul>
+  <li>x</li>
+</ul>
+<p>y</p>
+<p>z</p>
+```
+
+```
+- x
+  %%%
+  %%%%
+z
+.
+<ul>
+  <li>x</li>
+</ul>
+<p>z</p>
+```
+
+```
+- x
+  %%%
+  body
+  %%%
+y
+.
+<ul>
+  <li>x</li>
+</ul>
+<p>y</p>
+```
