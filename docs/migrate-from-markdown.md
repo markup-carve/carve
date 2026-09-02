@@ -45,10 +45,10 @@ The table below covers the constructs you use most often. Items marked **same** 
 | Reference links | `[text][ref]` / `[ref]: url` | same | |
 | Images | `![alt](src)` | same | |
 | Inline code | `` `code` `` | same | |
-| Fenced code | `` `code fence` `` with a language | same | No-space info string is canonical; a space is also accepted |
+| Fenced code | `` `code fence` `` with a language | same | Write the language next to the fence; a space is also accepted |
 | Blockquotes | `> text` | same | Carve adds captions (see below) |
 | Unordered lists | `- item` or `* item` | same | Carve bullets are `-`/`*`; a Markdown `+` bullet is not a Carve bullet |
-| Ordered lists | `1. item` | `1. item` or `. item` | Numbered markers are portable; prefer Carve's `. ` for native auto-numbering with stable nesting indentation |
+| Ordered lists | `1. item` | `1. item` or `. item` | Numbered markers work in both languages; `. ` asks Carve to number the list from 1 |
 | Task lists | `- [ ] todo` / `- [x] done` | same | |
 | Thematic break | `---` | same | Contiguous `---`, `***`, or `___` (no spaced forms) |
 | **Italic** | `*italic*` or `_italic_` | `/italic/` | **Changed** - see below |
@@ -95,7 +95,8 @@ The mnemonic: `/` leans like italics, `*` is strong like bold.
 
 ## Fenced code blocks
 
-Fenced code blocks work like Markdown for the common case - a language directly after the fence, no space, which is the canonical Carve form:
+Fenced code blocks work like Markdown in the common case. Put the language
+directly after the opening fence:
 
 ````md
 ```python
@@ -108,7 +109,8 @@ Carve is lenient about the leading space: one space after the fence (the Djot st
 
 ## Tables
 
-GFM tables use a delimiter row (`|---|`) to mark the header. Carve's native, canonical form marks header cells with `|=` and needs no delimiter row:
+GFM tables use a delimiter row (`|---|`) to mark the header. Carve marks each
+header cell with `|=` and needs no delimiter row:
 
 ::: code-group
 
@@ -127,7 +129,9 @@ GFM tables use a delimiter row (`|---|`) to mark the header. Carve's native, can
 
 :::
 
-For convenience, Carve also accepts a GFM `|---|` delimiter row as a second line, so a pasted Markdown table still renders - but `|=` is the canonical form the converter emits.
+Carve also accepts a GFM `|---|` delimiter row as the second line, so many
+pasted Markdown tables render unchanged. Carve's formatter and converters write
+the `|=` form.
 
 Note the space after `|=`. A cell marker is glued to the pipe and ends at a space, so `|=Name |` is a data cell whose text is `=Name`, not a header.
 
@@ -171,7 +175,10 @@ Dangerous operation ahead.
 :::
 ```
 
-The Tier-1 canonical types - `note`, `tip`, `warning`, `danger`, `info`, `success`, `example`, `quote` - render as admonition `<aside>` callouts. Any other `:::` name (e.g. `important`, `caution`, or your own) renders as a generic typed `<div>` (class `name`), or as a registered extension if one claims that name.
+The built-in callout names are `note`, `tip`, `warning`, `danger`, `info`,
+`success`, `example`, and `quote`. They render as `<aside>` elements. Another
+`:::` name, such as `important`, renders as a `<div>` with that class unless an
+enabled extension handles the name.
 
 A custom title goes in **straight double quotes** after the type:
 
@@ -181,7 +188,10 @@ The quoted header renders as the admonition's title.
 :::
 ```
 
-If you come from VitePress or Docusaurus, note the difference: their unquoted form (`::: tip Custom Title`) is **not** a fence in Carve - the whole block degrades to a literal paragraph. Quote the title. The same happens when a CMS "smart quote" filter converts your straight quotes to typographic ones (`::: tip “Custom”`) before Carve parses the text - if you see raw `:::` lines in your output, check the quotes.
+VitePress and Docusaurus accept an unquoted title such as `::: tip Custom Title`.
+Carve does not: it treats those lines as ordinary text. Write `::: tip "Custom
+Title"`. Typographic quotation marks such as `“Custom Title”` are not accepted
+here; use straight quotation marks.
 
 ### Attributes
 
@@ -260,7 +270,9 @@ Reference-style[^1] and inline^[This is the footnote content.] both work.
 
 ### Citations
 
-Citations are a Tier-2 extension (enable the citations extension). Cite with `[@key]` and define entries in-document with `[@key]:` lines. The generated reference list is appended at the document end, or injected wherever you place a `::: references` block:
+Citations are an optional feature. After enabling them, cite with `[@key]` and
+define entries with `[@key]:` lines. The reference list appears at the end of
+the document, or at the position of a `::: references` block:
 
 ```carve
 Recent work [@smith2023] shows promising results.

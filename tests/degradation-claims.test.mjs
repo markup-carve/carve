@@ -44,8 +44,7 @@ const page = readFileSync(resolve(root, 'docs/graceful-degradation.md'), 'utf8')
 const squash = (html) => html.replace(/\s+/g, ' ').trim()
 
 test('a spoiler is revealed, not hidden, outside interactive HTML', () => {
-  // The page: "blurred until revealed | revealed | degrades natively (hiding is
-  // meaningless offline)".
+  // The page: "blurred until revealed | revealed | hiding is not retained".
   const source = '::: spoiler\nhidden text\n:::\n'
   const interactive = squash(carveToHtml(source, { extensions: [spoiler()], mode: 'interactive' }))
   const staticHtml = squash(carveToHtml(source, { extensions: [spoiler()], mode: 'static' }))
@@ -85,7 +84,7 @@ test('each pinned claim still appears on the page', () => {
   for (const phrase of [
     'kept, not flattened',
     'source preserved',
-    'degrades natively',
+    'hiding is not retained',
   ]) {
     assert.ok(page.includes(phrase), `docs/graceful-degradation.md no longer says "${phrase}"`)
   }

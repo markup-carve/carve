@@ -74,25 +74,26 @@ Editor and framework integrations are listed in the [Ecosystem](/ecosystem).
 
 - [Cheat Sheet](/cheatsheet): syntax reference.
 - [Examples](/examples): Carve source and HTML output.
-- [Formal Grammar](/grammar): normative block and inline grammar.
+- [Formal Grammar](/grammar): the rules that define valid block and inline syntax.
 - [Migration from Markdown](/migrate-from-markdown): incompatible syntax and conversion.
 
-## Core and extensions
+## Features available by default and optional features
 
-Core includes headings, lists, tables, links, code, math, footnotes,
-admonitions, and attributes. It is enabled by default.
+Headings, lists, tables, links, code, math, footnotes, callouts, and attributes
+are available without configuration.
 
-A few things are **opt-in**:
+A few features must be enabled separately:
 
-- **Tier-2** — specified but off by default, for example citations `[@key]`,
+- **Widely implemented optional features (Tier 2)** — citations `[@key]`,
   bare-URL autolinking, mention/tag → URL templates, a collapsible `details`
-  widget, `list-table`. Enable them in your processor.
-- **Tier-3** — implementation-specific extensions, for example Mermaid diagrams, a
+  widget, `list-table`. Enable them in your parser configuration.
+- **Implementation-specific features (Tier 3)** — for example Mermaid diagrams, a
   table of contents, heading permalinks. Register the ones you want.
 
-The `:name[…]` inline form and `::: name` block form are core syntax. A named
-handler may change how they render. Unknown names render as a span or div. See
-the [feature tier table](/extensions#feature-tiers-quick-reference).
+The `:name[…]` inline form and `::: name` block form are always recognized. An
+application can register code that changes the output for a name. Without that
+code, the content renders as an ordinary span or div. See the [optional features
+table](/extensions#feature-tiers-quick-reference).
 
 ## Build your own parser
 

@@ -1,32 +1,29 @@
 ---
-title: AST Exchange Format
-description: The JSON encoding of a parsed Carve document - one shape across every implementation, with a published JSON Schema.
+title: Parsed Document JSON
+description: The JSON representation of a parsed Carve document, shared by every implementation.
 ---
 
-# AST Exchange Format
+# Parsed document JSON
 
 > [!TIP]
-> Application authors usually need the five interoperability rules and the API
-> examples. The complete node and field catalog is reference material for
-> engine, binding, and editor implementers.
+> Most application developers need only the five compatibility rules and API
+> examples. The complete list of object types and fields is for parser, binding,
+> and editor developers.
 
-A parsed Carve document is **exchangeable**. One implementation serializes it,
-another reads it, and neither has to know which produced it.
+A parser represents a Carve document as an **abstract syntax tree (AST)**: a
+tree of objects for headings, paragraphs, links, and other content. This page
+defines its JSON form. One implementation can write the JSON and another can
+read it.
 
-- **Normative text:** [`resources/grammar.ebnf`](https://github.com/markup-carve/carve/blob/main/resources/grammar.ebnf), PART 12
-- **Machine-readable:** [`ast-schema.json`](https://markup-carve.github.io/carve/ast-schema.json) ([source](https://github.com/markup-carve/carve/blob/main/resources/ast-schema.json))
-- **Conformance runner:** `node scripts/ast-conformance.mjs` in this repo
+- **Specification:** [`resources/grammar.ebnf`](https://github.com/markup-carve/carve/blob/main/resources/grammar.ebnf), Part 12
+- **JSON Schema:** [`ast-schema.json`](https://markup-carve.github.io/carve/ast-schema.json) ([source](https://github.com/markup-carve/carve/blob/main/resources/ast-schema.json))
+- **Compatibility test:** `node scripts/ast-conformance.mjs`
 
 ## Why it exists
 
-Every integration that is not "source to HTML" - an editor, a linter, a
-converter, a structural diff - needs the tree, not the output. Without a shared
-encoding each of them pivots through HTML and re-parses it, and each
-implementation invents its own field names. That already happened here: one
-engine called a link's destination `href`, another `destination`, and nothing
-noticed until a consumer read the wrong one.
-
-The encoding turns an N×M integration problem into N+M.
+Editors, linters, converters, and document-comparison tools need structured
+content, not finished HTML. A shared JSON format prevents each implementation
+from assigning different field names to the same information.
 
 ## Editing APIs
 

@@ -5,7 +5,11 @@ description: Live Carve to HTML preview, in your browser.
 
 # Playground
 
-Type Carve on the left, see the rendered HTML on the right (and the raw HTML below). Everything runs client-side, no network round-trip — the same [reference parser](https://github.com/markup-carve/carve-js) that backs the spec corpus.
+Type Carve on the left. The rendered result and generated HTML appear on the
+right. Processing happens in your browser; the document is not sent to a
+server. The playground uses the [JavaScript
+parser](https://github.com/markup-carve/carve-js) tested by this project's
+shared input/output tests.
 
 ::: details Sharing a document as a link
 The **share button** in the toolbar puts the whole document in the URL fragment, so a playground state is bookmarkable and sendable. The fragment never reaches a server: it is compressed and base64-encoded in the browser, and decoded there again. Very large documents are refused rather than turned into a link that arrives truncated.
@@ -15,15 +19,16 @@ The **share button** in the toolbar puts the whole document in the URL fragment,
 
 <Playground />
 
-## Vite Plugin Dogfood
+## Build-time example
 
-The docs build also imports a `.crv` file through `@markup-carve/vite-plugin-carve`
-and renders the generated HTML during the VitePress build.
+This example is read from a `.crv` file and converted to HTML during the
+VitePress build by `@markup-carve/vite-plugin-carve`.
 
 <DogfoodCarve />
 
-## What this proves
+## Version used by this playground
 
-- Every construct in the [Quick Reference](/) and every pair in the [Examples](./examples) flows through the same parser → AST → renderer pipeline you see here.
-- Edits round-trip in single-digit milliseconds. Carve's linear-time parsing is the reason.
-- The current build comes from [`@markup-carve/carve`](https://github.com/markup-carve/carve-js), pinned to an exact carve-js commit in the repo's `package.json`.
+The playground and documentation examples use
+[`@markup-carve/carve`](https://github.com/markup-carve/carve-js). The exact
+source revision is recorded in `package.json`, so the examples do not change
+when a new package version is published.

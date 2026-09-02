@@ -1,19 +1,18 @@
 ---
-description: What every Carve construct renders as when JavaScript, or a whole target, is unavailable.
+description: How Carve preserves content in output formats that cannot reproduce an interactive feature.
 ---
 
-# Graceful Degradation
+# Output without JavaScript
 
-Carve renders to several targets: interactive HTML, static HTML (and PDF derived
-from it), Markdown, plain text, and ANSI terminal output. Some constructs are
-inherently interactive - tabs you click, disclosures you expand, diagrams a
-script draws. This page defines how those constructs must behave when the target
-is **not** interactive, so that no document silently loses content on the way to
-print, Markdown, or a terminal.
+Carve can produce interactive HTML, static HTML, Markdown, plain text, and ANSI
+terminal text. Tabs, collapsible sections, and browser-drawn diagrams cannot
+work identically in every format. This page states what replaces them and which
+content must remain. The specification calls this behavior **graceful
+degradation**; this page uses **fallback output**.
 
 ## The principle
 
-> When an interactive construct is rendered to a non-interactive target, the
+> When an interactive feature is written to a non-interactive output format, the
 > renderer MUST preserve the construct's **content and structure** and may drop
 > only its **interaction**. Authored text - especially a label or title that
 > distinguishes one panel from another - MUST NOT be silently discarded.
@@ -22,34 +21,33 @@ A reader of the PDF should be able to tell the tabs apart. A reader of the
 Markdown export should see every panel's heading. Losing the click is fine;
 losing the words is not.
 
-## Output targets
+## Output formats
 
-| Target | Interaction | Client scripts | Typical use |
+| Output | Interaction | Browser scripts | Typical use |
 | --- | --- | --- | --- |
 | Interactive HTML | yes | yes (KaTeX, mermaid, tab JS) | docs sites, blogs |
 | Static HTML / PDF | no | no (print, weasyprint) | handouts, archives |
 | Markdown | no | n/a (host may re-render) | export, interchange |
 | Plain text / ANSI | no | n/a | terminals, emails, logs |
 
-The non-interactive targets share one requirement: every authored token must
-survive in a readable form.
+Non-interactive output must retain the author's text in a readable form.
 
-## How each construct degrades
+## Fallback output by feature
 
-The table reflects the reference engines' renderer behavior.
+The table describes the JavaScript, PHP, and Rust implementations.
 
 | Construct | Interactive HTML | Static / PDF / Markdown / Plain | Status |
 | --- | --- | --- | --- |
 | Tabs / code-group | clickable tabs; `[label]` is the tab header | each panel shown in sequence, **its `[label]` as a caption heading** | see normative rule below |
 | Disclosure (`details`) | native `<details>`/`<summary>` (interactive without scripts) | native `<details open>` - kept, not flattened | special case - see below |
-| Spoiler | blurred until revealed | revealed | degrades natively (hiding is meaningless offline) |
+| Spoiler | blurred until revealed | revealed | hiding is not retained |
 | Mermaid / charts | script-drawn diagram | diagram source preserved (a ` ```mermaid ` fence in Markdown); for PDF the extension SHOULD pre-render to SVG/PNG at build time | source never lost; image needs build-time render |
 | Math (`$\`...\``) | KaTeX / MathJax | source preserved (`$...$` in Markdown); for PDF use server-side KaTeX to MathML/HTML | source never lost |
-| Footnotes | jump links | print-native footnotes; `[^id]` preserved in Markdown | degrades natively |
-| Links / autolinks | clickable | clickable in PDF; URL preserved in plain text | degrades natively |
-| Cross-references / TOC | anchor links | internal PDF links; anchors preserved in Markdown | degrades natively |
+| Footnotes | jump links | print-native footnotes; `[^id]` preserved in Markdown | content retained |
+| Links / autolinks | clickable | clickable in PDF; URL preserved in plain text | destination retained |
+| Cross-references / table of contents | anchor links | internal PDF links; anchors preserved in Markdown | destination retained |
 | Multiple table header rows | all rows keep header semantics | Markdown: first header row stays the header; later header rows stay as body rows | header semantics weaken; cell content survives |
-| Composite figure (`::: figure`) | one `<figure>` holding the panel figures directly plus a group `<figcaption>`; layout hints (`columns-2`) pass through as classes | Markdown: panels in order, panel captions as `*(...)*`, group caption last as `**...**`; plain/terminal: group caption first, then each panel's caption + host degradation | normative - PART 9 §4c + the writer/degradation clause in PART 11 |
+| Composite figure (`::: figure`) | one `<figure>` containing the panel figures and group caption | Markdown: panels in order, panel captions in italics, group caption last in bold; plain/terminal: group caption first, followed by each panel | required by Parts 9 and 11 of the specification |
 
 The composite figure's contract is the floor applied with no exceptions: every
 panel, every panel caption, any stray content between the panels, and the group
@@ -124,17 +122,15 @@ the reader cannot tell "Installation" from "Usage". The authored labels are gone
 > Markdown, and a standalone line in plain text and ANSI. If a block has both a
 > title and a label, the title is rendered first.
 
-This makes the label **degradation-safe by default**: it survives in every
-target whether or not a group extension is present, and the interactive
-extension simply consumes it earlier (transforming the node before rendering),
-so there is no double rendering on the web.
+This keeps the label visible whether or not the tabs extension is enabled. When
+the extension is enabled, it uses the label as the tab heading instead.
 
 The same invariant generalizes: any future construct whose meaning lives in an
 extension-only token (a carousel index, an embed poster, a reveal trigger) MUST
 define a static caption-or-source fallback, or the renderer MUST surface the
 token rather than drop it.
 
-## Three classes of degradation
+## Three kinds of fallback
 
 "Not online" is two failure modes, not one, plus a third in the same family:
 
@@ -144,17 +140,18 @@ token rather than drop it.
 2. **Client-rendered visual** - mermaid, charts, math. The content is *source*
    that needs a client script to become a visual. Offline you get raw source,
    not the diagram. Fallback: **move rendering to build time** - pre-render to an
-   image (mermaid/chart) or server-side render (math); else degrade to source.
+   image (Mermaid or Chart.js) or render math during the build; otherwise show
+   the source.
 3. **Embedded** - iframes, video, future embed extensions. Online is a live
    embed; offline is a **poster image plus a link**.
 
 Class 1 is a cheap markup transform. Classes 2 and 3 need a build-time renderer
-and so are a pipeline concern, not a markup tweak.
+and must be configured as part of the document build.
 
 ## How the renderer chooses: the `mode` signal
 
-The engine does **not** sniff the target. Degradation is set by a render
-**mode** - `"interactive"` (default) or `"static"` - plus the output format:
+The renderer does not guess how the output will be used. The application chooses
+`"interactive"` (the default) or `"static"`, together with the output format:
 
 - **Output format.** Markdown, plain text, and ANSI are inherently static and
   degrade unconditionally; the label-caption rule and source-fallbacks apply

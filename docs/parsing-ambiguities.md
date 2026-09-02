@@ -1,15 +1,14 @@
 ---
-description: Non-normative analysis of the parsing situations most likely to surprise an author or an implementer.
+description: How Carve reads syntax that could otherwise have more than one interpretation.
 ---
 
-# Carve Parsing Ambiguities
+# Syntax edge cases
 
-> **Non-normative.** This document analyzes tricky cases for humans. The
-> normative specification is [`resources/grammar.ebnf`](https://github.com/markup-carve/carve/blob/main/resources/grammar.ebnf)
-> (PART 9 for semantic constraints); `resources/examples/*.md` + `tests/corpus`
-> are the conformance contract. On any disagreement, the grammar wins.
+**Non-normative.**
 
-This document analyzes potentially ambiguous or tricky parsing scenarios in Carve syntax.
+This page explains syntax that readers or parser developers may interpret in
+more than one way. It is explanatory, not part of the specification. If it
+conflicts with the [formal grammar](./grammar), the grammar applies.
 
 ---
 

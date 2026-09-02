@@ -1,47 +1,47 @@
 ---
-description: "The normative extension contract: the feature tiers, what each guarantees, and how a processor registers a handler."
+description: Which features are always available, which must be enabled, and how applications add extensions.
 ---
 
-# Carve extensions contract (NORMATIVE)
+# Optional features and extensions
 
-This document is normative. The conformance corpus (`tests/corpus`) remains the
-authority for Tier-1 output; the optional Tier-2 corpus
-(`tests/corpus-optional`) pins configuration-dependent outputs per feature id.
-This document defines the feature taxonomy and the extension mechanism every
-implementation realizes.
+This page is part of the specification. It separates features into three
+groups: core syntax, widely implemented optional features, and features owned
+by one application or implementation. It also defines how applications add
+extensions.
 
-If you only need to decide whether a feature is core, optional, or app-specific,
-use the [quick-reference table](#feature-tiers-quick-reference). The numbered
-sections that follow are the detailed contract for extension implementers.
+The specification uses **Tier 1**, **Tier 2**, and **Tier 3** as short names for
+those groups. These names describe availability; they are not quality levels.
+Core output is tested in `tests/corpus`. Optional output shared by all three
+implementations is tested in `tests/corpus-optional`.
 
-::: tip Hands-on
-For a worked, end-to-end walkthrough of building a Tier-3 extension (a `qr`
-fenced block, in both carve-js and carve-php), see
-[Writing an extension: a QR-code case study](./extension-tutorial).
+To check whether a feature is available by default, use the [feature
+table](#feature-tiers-quick-reference). The numbered sections are API rules for
+extension developers.
+
+::: tip Example
+To build a `qr` fenced block in JavaScript and PHP, see [Write an
+extension](./extension-tutorial).
 :::
 
-## 1. Feature taxonomy
+## 1. Availability groups
 
-| Tier | Definition | Default | Conformance |
+| Group | Meaning | Default | Tests |
 |------|------------|---------|-------------|
-| 1&nbsp;·&nbsp;<Badge type="tip" text="core" /> | Normative syntax in `resources/grammar.ebnf` + the corpus; identical output everywhere. | Always on | Mandatory (corpus) |
-| 2&nbsp;·&nbsp;<Badge type="info" text="standard" /> | Spec-listed behaviors every impl SHOULD offer but ship off/passthrough ("standard-recommended"). | Off / passthrough | Optional corpus when enabled |
-| 3&nbsp;·&nbsp;<Badge type="warning" text="extension" /> | Not in the spec, not conformance-tested, may exist in one impl only (app extension). | Off | Never |
+| Tier 1 · <Badge type="tip" text="core" /> | Required Carve syntax and output. | On | Required tests |
+| Tier 2 · <Badge type="info" text="optional" /> | optional features present in all three reference implementations | Off | shared optional tests |
+| Tier 3 · <Badge type="warning" text="application" /> | features supplied by one application or implementation | Off | application tests |
 
-Invariant: a feature's tier is identical in every language; a Tier-1 feature is
-core-and-default-on everywhere and its default output is corpus-pinned.
+An availability group does not change between programming languages. Tier 1 is
+always available. Tier 2 must be enabled. Tier 3 may not exist in every
+implementation.
 
-> The same split is described as MUST / SHOULD / MAY in
-> [`native-features-analysis.md`](./native-features-analysis): **MUST** = Tier-1
-> core (not disableable); **SHOULD** = Tier-1 default-on but a processor MAY
-> turn it off (the four shorthands below); **MAY** = Tier-2 / Tier-3. Same model,
-> two vocabularies.
+The detailed rules use **MUST**, **SHOULD**, and **MAY** as defined by RFC 2119.
+Those words state requirements; the tier names state availability.
 
 ### Feature tiers (quick reference)
 
-The one place to answer "is feature X core or an extension?". "Disable?" is
-whether a conformant processor may turn a default-on feature off (grammar
-PART 9 §19); Tier-2 / Tier-3 are off until enabled.
+Use this table to check whether a feature is available by default. “Disable?”
+states whether an application may turn off a feature that normally starts on.
 
 | Feature | Tier | Default | Disable? |
 |---|---|---|---|
