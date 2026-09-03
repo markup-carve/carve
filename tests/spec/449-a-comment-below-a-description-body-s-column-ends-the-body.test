@@ -1,0 +1,188 @@
+A comment below a description body's column ends the body
+
+```
+:: t
+:  x
+%%%
+y
+%%%
+z
+.
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>z</p>
+```
+
+```
+:: t
+:  x
+%%%%
+y
+%%%%
+z
+.
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>z</p>
+```
+
+```
+:: t
+:  x
+%%%
+y
+w
+%%%
+z
+.
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>z</p>
+```
+
+```
+:: t
+:  x
+%%%
+y
+z
+.
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>y
+z</p>
+```
+
+```
+:: t
+:  x
+%% c
+z
+.
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>z</p>
+```
+
+```
+:: t
+:  x
+   %%%
+y
+   %%%
+z
+.
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>y</p>
+<p>z</p>
+```
+
+```
+- a
+%%%
+c
+%%%
+b
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>b</p>
+```
+
+```
+:: t
+:  x
+%% c
+   more
+.
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>more</p>
+```
+
+```
+:: t
+:  x
+%%%
+   more
+.
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>more</p>
+```
+
+```
+:: t
+:  x
+%%%
+y
+%%%
+   more
+.
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>more</p>
+```
+
+```
+:: t
+:  x
+ %%%
+y
+ %%%
+z
+.
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>z</p>
+```
+
+```
+:: t
+:  x
+  %%%
+y
+  %%%
+z
+.
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>z</p>
+```
+
+```
+:: t
+:  x
+ %% c
+   more
+.
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>more</p>
+```
