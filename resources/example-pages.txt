@@ -611,6 +611,7 @@ index: examples/edge-cases/index.md
   an-ordered-item-s-separator-width-sets-its-content-column
   below-a-definition-body-s-column-the-body-ends
   an-opener-at-or-past-a-description-body-s-column-closes-its-paragraph
+  the-host-does-not-change-which-column-a-definition-reaches
   below-a-definition-body-s-column-an-invisible-line-folds-as-text
   an-abbreviation-definition-outside-document-level-is-not-an-invisible-line
 [edge-attributes] Attributes

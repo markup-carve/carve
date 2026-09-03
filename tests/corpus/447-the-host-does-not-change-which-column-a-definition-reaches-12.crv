@@ -1,0 +1,5 @@
+:: t
+:  - a
+    [^n]: note text
+
+See [^n].
