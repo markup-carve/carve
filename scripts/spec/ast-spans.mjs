@@ -42,6 +42,11 @@
  * opens the construct". Most of what this panel reports is that question,
  * so those rows are engines owing a fix rather than an open convention.
  *
+ * NOT ALL OF THEM. `checkOpeningMarkup` permits a start anywhere in the line's
+ * leading indentation, so two engines can start a span at different offsets in
+ * that run and both pass the source-side rule. Such a row is owed by nobody and
+ * cannot be retired by fixing an engine (markup-carve/carve#1928).
+ *
  * What this module still does not do is say WHICH engine owes it, because that
  * needs the source and this module only has the trees. It reports a
  * DISAGREEMENT; the rules that name a side live in ./ast-positions.mjs and each

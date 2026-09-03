@@ -551,7 +551,10 @@ function reportSpanDisagreements(present) {
     }
     console.log('  EXTENT rows are PART 12 §4, and WHICH END moved decides which engine owes it:')
     console.log('    startOffset differs - a span "begins at the markup that opens the construct",')
-    console.log('      so the engine spanning the content alone moves (carve#913, checkOpeningMarkup).')
+    console.log('      so the engine spanning the content alone moves (carve#913, checkOpeningMarkup),')
+    console.log('      UNLESS the starts differ only inside the line\'s LEADING INDENTATION.')
+    console.log('      checkOpeningMarkup walks over that run before matching a marker, so both')
+    console.log('      readings pass it and no engine owes the row (carve#1928).')
     console.log('    endOffset differs, startOffset unanimous - a span "ends immediately after the')
     console.log('      last source codepoint the construct owns", and a container with no closer ends')
     console.log('      at its last child, so the WIDE engine moves (checkStopsAtChildren, over the')
@@ -575,6 +578,11 @@ function reportSpanDisagreements(present) {
       '  START. A span "begins at the markup that opens the construct"',
       '  (markup-carve/carve#913), so an engine spanning the content alone is the one that',
       '  moves. checkOpeningMarkup in scripts/spec/ast-positions.mjs is the source-side rule.',
+      '  It permits a start anywhere in the line\'s LEADING INDENTATION, because the indent',
+      '  is what places a nested item\'s marker - so on a row where the starts differ only',
+      '  inside that run, both readings pass it and NEITHER engine owes the row. Taking the',
+      '  sentence literally there names the engine that begins at the markup, which is the',
+      '  conformant one (markup-carve/carve#1928).',
       '  END. A span "ends immediately after the last source codepoint the construct owns",',
       '  and a container with no closer "ends at its last child", so on those rows the WIDE',
       '  engine is the one that moves. checkStopsAtChildren, over the types in',
