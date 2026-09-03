@@ -51,7 +51,11 @@
    - The files in resources/spec/*.ebnf are the NORMATIVE specification of
      Carve. resources/grammar.ebnf is their generated, byte-for-byte aggregate
      for consumers that need one file. `npm run spec:check` rejects drift.
-     Where any document disagrees with those sources, the sources win. The
+     Where another document disagrees with these source modules, these source
+     modules govern.
+     The clauses define behavior. Reviewed corpus pairs pin concrete examples;
+     they do not silently override a clause. A disagreement between a clause
+     and a committed pair is a defect to resolve in both artifacts. The
      specification is LAYERED: PART 0 (layout automaton)
      -> PARTS 1-8 (EBNF productions + the GUARD NOTATION above) -> PART 9
      (operational semantics for the non-context-free rules) -> PART 9R
@@ -66,21 +70,13 @@
      compatibility measurements and decision archaeology. Those facts may
      explain a current rule but do not belong inside its normative algorithm.
    - resources/examples/*.md and the generated tests/corpus/* pairs are the
-     CONFORMANCE CONTRACT: every example is checked against the reference
-     implementation in CI. A spec change is not real until a corpus pair
-     pins it.
+     CONFORMANCE EXAMPLES. Every example is checked in CI. A behavior change
+     needs a reviewed pair, but that pair does not supersede a clause.
    - resources/carve-core.ohm and scripts/spec/*.mjs are DERIVED CHECKERS.
      They execute what this file states so that a contradiction inside it
      becomes visible. They are not a fourth implementation whose behavior
      the language follows. The review and ruling policy for checkers and
      generated goldens lives under WHAT SETTLES A QUESTION in
-     `.github/CONTRIBUTING.md`.
-
-   - WHAT EARNS A CLAUSE is a process rule rather than a language rule, so it
-     lives in .github/CONTRIBUTING.md and not here. In short: a new clause
-     needs an author-visible document or a visible rendering difference, and a
-     shape with neither is recorded as "unruled, engines may differ" instead
-     of costing three engines, the checkers, the corpus and every satellite
-     grammar a change. It binds new clauses only -- keeping an existing one is
-     free, removing one re-opens a settled question.
+     `.github/CONTRIBUTING.md`, and what earns a new clause lives beside it
+     under WHAT EARNS A CLAUSE. Both are process rules, not language rules.
    ============================================================================ *)

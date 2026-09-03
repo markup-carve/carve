@@ -11,31 +11,53 @@ const registryPath = resolve(repo, 'resources/spec/rules.json')
 const clauses = (grammar) => {
   const flat = grammar.replace(/\n\s*/g, ' ')
   const partStarts = [...flat.matchAll(/PART (\d+R?):/g)]
-  const matches = [...flat.matchAll(/([A-Z][A-Za-z0-9 ,§`(){}'/+.:[\]-]{3,240}?)\s+--\s+NORMATIVE/g)]
-  const counters = new Map()
+  const matches = [...flat.matchAll(/([A-Z](?:[A-Za-z0-9 ,§(){}'/+.:[\]-]|`[^`]*`){3,240}?)\s+--\s+NORMATIVE\s+\[(CARVE-(?:P\d+R?|PRE)-\d{3})\]/g)]
   let partIndex = -1
 
   return matches.map((match) => {
     while (partStarts[partIndex + 1]?.index < match.index) partIndex += 1
     const partMatch = partStarts[partIndex]
     const part = partMatch?.[1] ?? 'PRE'
-    const count = (counters.get(part) ?? 0) + 1
-    counters.set(part, count)
     const raw = match[1].trim().replace(/\s+/g, ' ')
     const title = raw.split(/(?<=\.)\)?\s+/).at(-1)
       .replace(/^\d+[a-z]?\.\s*/, '')
       .replace(/^-\s+/, '')
-    const prefix = part === 'PRE' ? 'PRE' : `P${part}`
     return {
-      id: `CARVE-${prefix}-${String(count).padStart(3, '0')}`,
+      id: match[2],
       part,
       title,
     }
   })
 }
 
+// A clause marker is `-- NORMATIVE`; the same token inside backticks is prose about the
+// convention, not a clause. Every clause must carry an id, and the title match above must
+// reach every id, or the rule would be absent from the registry with nothing to signal it.
+const unbound = (grammar) => {
+  const flat = grammar.replace(/\n\s*/g, ' ')
+  const markers = [...flat.matchAll(/(.?)--\s+NORMATIVE(?!\s*`)(\s*\[(CARVE-(?:P\d+R?|PRE)-\d{3})\])?/g)]
+    .filter((match) => match[1] !== '`')
+  return {
+    idless: markers.filter((match) => !match[2]).map((match) => flat.slice(Math.max(0, match.index - 90), match.index).trim()),
+    ids: markers.filter((match) => match[2]).map((match) => match[3]),
+  }
+}
+
 const command = process.argv[2] ?? '--check'
-const actual = clauses(readFileSync(grammarPath, 'utf8'))
+const grammar = readFileSync(grammarPath, 'utf8')
+const actual = clauses(grammar)
+const markers = unbound(grammar)
+for (const context of markers.idless) {
+  console.error(`normative clause carries no stable id: ...${context}`)
+  process.exitCode = 1
+}
+const reached = new Set(actual.map(({ id }) => id))
+for (const id of markers.ids) {
+  if (!reached.has(id)) {
+    console.error(`'${id}' is not reachable by the clause-title match; widen it or reword the title`)
+    process.exitCode = 1
+  }
+}
 
 if (command === '--check') {
   const stored = JSON.parse(readFileSync(registryPath, 'utf8'))
@@ -57,10 +79,14 @@ if (command === '--check') {
       process.exitCode = 1
     }
   }
-  const byPartAndTitle = (rules) => rules.map(({ part, title }) => `${part}\0${title}`).sort()
-  const expectedKeys = byPartAndTitle(stored.rules)
-  const actualKeys = byPartAndTitle(actual)
-  if (JSON.stringify(expectedKeys) !== JSON.stringify(actualKeys)) {
+  const byId = (rules) => new Map(rules.map((rule) => [rule.id, rule]))
+  const expectedById = byId(stored.rules)
+  const actualById = byId(actual)
+  const sameRule = (a, b) => a?.part === b?.part && a?.title === b?.title
+  if (expectedById.size !== stored.rules.length || actualById.size !== actual.length ||
+      stored.rules.length !== actual.length ||
+      stored.rules.some((rule) => !sameRule(rule, actualById.get(rule.id))) ||
+      actual.some((rule) => !sameRule(rule, expectedById.get(rule.id)))) {
     console.error('resources/spec/rules.json does not cover the current normative clauses')
     process.exitCode = 1
   }

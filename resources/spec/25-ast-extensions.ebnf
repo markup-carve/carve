@@ -1,5 +1,5 @@
 (* ============================================================================
-   17. A FIGURE MAY WRAP A TABLE, AND NO CARVE SOURCE SPELLS IT -- NORMATIVE.
+   17. A FIGURE MAY WRAP A TABLE, AND NO CARVE SOURCE SPELLS IT -- NORMATIVE [CARVE-P12-036].
       `figure.target` admits a `table`, and a `table` carries its own optional
       `caption`. Those are two trees, not two spellings of one, and both render:
 
@@ -62,7 +62,7 @@
       its own to go into, so the wrapper around it says something the caption
       inside it does not, and only that difference is unspellable.
 
-   18. A CITATION DEFINITION IS A NODE -- NORMATIVE.
+   18. A CITATION DEFINITION IS A NODE -- NORMATIVE [CARVE-P12-037].
       `type: "citation_definition"`, carrying:
         key       the citation key as the author wrote it, without the `@`
         children  the entry's inline content: what follows the `]: ` separator
@@ -99,7 +99,7 @@
       one. An implementation emitting the node for a definition it recognizes
       satisfies this clause whichever way that question lands.
 
-   18a. A CITATION ITEM IS A POSITIONED INLINE NODE -- NORMATIVE.
+   18a. A CITATION ITEM IS A POSITIONED INLINE NODE -- NORMATIVE [CARVE-P12-038].
       Every item in `citation_group.items` carries `type: "citation"` and the
       required `pos` of PART 12 §4, spanning its optional prefix, `-` author
       suppression marker, `@key`, locator and suffix. Its existing `key`,
@@ -112,7 +112,7 @@
       the same typed, positioned node contract as every other content-bearing
       value in the tree and belongs to the inline profile vocabulary.
 
-   19. A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA -- NORMATIVE. A
+   19. A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA -- NORMATIVE [CARVE-P12-039]. A
       `table` MAY carry `columns`, an array whose entry at index N describes
       column N. An entry MAY carry:
 
@@ -164,7 +164,7 @@
       one `col` per entry. Markdown keeps only column horizontal alignment where
       it can emit a delimiter row. Plain and ANSI ignore all three fields.
 
-   20. TABLE ALIGNMENT RUNS CARRY TWO INDEPENDENT AXES -- NORMATIVE. A cell
+   20. TABLE ALIGNMENT RUNS CARRY TWO INDEPENDENT AXES -- NORMATIVE [CARVE-P12-040]. A cell
       alignment run is glued to its opening pipe, after an optional `=` kind
       marker, and is terminated by exactly one space after an optional glued
       attribute block. Horizontal markers are `<`, `~`, `>`; vertical markers
@@ -190,8 +190,7 @@
       inheritance rule. A whitespace-delimited cell containing only `^` or `<`
       remains a rowspan/colspan marker; gluing is what distinguishes alignment.
 
-   21. U+0000 IS REPLACED ON INGEST -- NORMATIVE (carve#1523;
-      markup-carve/carve-rs#1217, markup-carve/carve-js#1294). A reader
+   21. U+0000 IS REPLACED ON INGEST -- NORMATIVE [CARVE-P12-041]. A reader
       replaces every U+0000 with U+FFFD REPLACEMENT CHARACTER in every string
       value it ingests. It does this BEFORE any other reading of the value -
       before a sentinel is looked for in it, before it is used as a key,
@@ -225,7 +224,7 @@
       have its own rule.
 
    22. AN INGESTED VALUE THE SCHEMA CALLS ABSENT IS NORMALIZED AWAY --
-      NORMATIVE (carve#1615). `resources/ast-schema.json` describes a list's
+      NORMATIVE [CARVE-P12-042]. `resources/ast-schema.json` describes a list's
       `start` as "First number of an ordered list, when it is not 1". That
       sentence is a statement about what a CONFORMANT TREE looks like, and an
       encoder is the thing that has to honor it. So when an ingested tree
@@ -247,8 +246,8 @@
       This does not drop `start` generally: `start: 0` and `start: 2` pass
       through unchanged.
 
-   23. A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH -- NORMATIVE
-      (carve#1784; PART 9R R7 owns the phase, this clause owns the wire).
+   23. A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH -- NORMATIVE [CARVE-P12-043]
+      (PART 9R R7 owns the phase; this clause owns the wire).
 
       A paragraph the promotion phase promoted carries `blockImage: true`:
 
@@ -263,8 +262,8 @@
       IT IS NOT A NON-ANCHOR FLAG. §3a refuses a flag on a nested link because
       that flag would carry a RENDER fact -- "HTML cannot nest anchors" -- back
       into a format that describes the source. This field carries a RESOLUTION
-      fact, which §3a already publishes, and it is set by a phase every engine
-      runs rather than by one render target's limitation.
+      fact, which §3a already publishes, and it is set by the resolution phase
+      rather than by one render target's limitation.
 
       NOT A DISTINCT NODE TYPE, deliberately. `block_image` is the honest shape
       -- it IS a different construct -- but it breaks every consumer that
@@ -272,7 +271,7 @@
       `fmt` and this schema at once. A field is additive, and a type stays
       available later.
 
-      ON INGEST, TRUST THE PROPERTY -- NORMATIVE. A reader that receives
+      AN INGESTED `blockImage` VALUE IS AUTHORITATIVE -- NORMATIVE [CARVE-P12-044]. A reader that receives
       `blockImage` USES it. It runs the promotion phase itself only for a tree
       that LACKS the field. Recomputing it on every ingest makes the field
       advisory and re-introduces the re-derivation this clause removes.
@@ -285,7 +284,7 @@
       strict-ingest surface is about properties the schema does not NAME, not
       about ones it names optionally.
 
-      THE WRITER IS UNAFFECTED -- NORMATIVE. `fmt` writes the SOURCE SPELLING,
+      `fmt` WRITES THE SOURCE SPELLING, NOT `blockImage` -- NORMATIVE [CARVE-P12-045]. `fmt` writes the SOURCE SPELLING,
       so promotion is not observable in `fmt` output and a document whose
       reference is never defined still round-trips to itself (§6). The
       alternative makes the writer non-local: the same paragraph would be

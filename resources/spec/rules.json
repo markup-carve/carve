@@ -151,7 +151,7 @@
     {
       "id": "CARVE-P2-001",
       "part": "2",
-      "title": "COLUMN ZERO",
+      "title": "A HEADING MARKER STARTS AT ITS CONTAINER'S CONTENT COLUMN",
       "scope": "parsing"
     },
     {
@@ -217,19 +217,19 @@
     {
       "id": "CARVE-P2-010",
       "part": "2",
-      "title": "A TAB AS THE FIRST CHARACTER OF CONTENT is a different question from the one above",
+      "title": "A LEADING CONTENT TAB FOLLOWS NORMAL INDENTATION",
       "scope": "parsing"
     },
     {
       "id": "CARVE-P2-011",
       "part": "2",
-      "title": "BARE DOT",
+      "title": "A BARE DOT OPENS A DECIMAL LIST",
       "scope": "parsing"
     },
     {
       "id": "CARVE-P2-012",
       "part": "2",
-      "title": "COST",
+      "title": "A BARE DOT AFTER A BLANK LINE OPENS A LIST",
       "scope": "parsing"
     },
     {
@@ -248,7 +248,7 @@
       "id": "CARVE-P2-015",
       "part": "2",
       "title": "THE TASK BOX CARRIES AN ACCESSIBLE NAME",
-      "scope": "parsing"
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P2-016",
@@ -302,7 +302,7 @@
       "id": "CARVE-P2-024",
       "part": "2",
       "title": "RENDER-LOSS REPORTING",
-      "scope": "parsing"
+      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P2-025",
@@ -356,7 +356,7 @@
       "id": "CARVE-P3-008",
       "part": "3",
       "title": "AN IMAGE REFERENCE RESOLVES THE SAME ENTRY",
-      "scope": "parsing"
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P3-009",
@@ -367,8 +367,8 @@
     {
       "id": "CARVE-P3-010",
       "part": "3",
-      "title": "DISPLAY TEXT",
-      "scope": "parsing"
+      "title": "AN AUTOLINK DISPLAYS ITS RAW SOURCE BODY",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P3-011",
@@ -403,19 +403,19 @@
     {
       "id": "CARVE-P3-016",
       "part": "3",
-      "title": "CONTENT IS LITERAL",
+      "title": "EDITORIAL COMMENT CONTENT IS LITERAL",
       "scope": "parsing"
     },
     {
       "id": "CARVE-P3-017",
       "part": "3",
-      "title": "ATTRIBUTES",
+      "title": "ADDITION AND DELETION ATTRIBUTES BIND TO THEIR ELEMENT",
       "scope": "parsing"
     },
     {
       "id": "CARVE-P3-018",
       "part": "3",
-      "title": "ATTRIBUTES",
+      "title": "SYMBOL ATTRIBUTES FORCE A SPAN WRAPPER",
       "scope": "parsing"
     },
     {
@@ -451,8 +451,8 @@
     {
       "id": "CARVE-P4-002",
       "part": "4",
-      "title": "RENDER ORDER",
-      "scope": "parsing"
+      "title": "AUTHORED ATTRIBUTES RENDER IN SOURCE ORDER",
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P4-003",
@@ -463,7 +463,7 @@
     {
       "id": "CARVE-P4-004",
       "part": "4",
-      "title": "COLLISION",
+      "title": "LANGUAGE SHORTHAND USES THE `lang` KEY",
       "scope": "parsing"
     },
     {
@@ -509,6 +509,12 @@
       "scope": "parsing"
     },
     {
+      "id": "CARVE-P9-069",
+      "part": "9",
+      "title": "THE ROW ABOVE IS A LINE, NOT A `<tr>`",
+      "scope": "parsing"
+    },
+    {
       "id": "CARVE-P9-003",
       "part": "9",
       "title": "A CONTINUATION ROW LEAVES NO PARAGRAPH OPEN",
@@ -530,7 +536,7 @@
       "id": "CARVE-P9-006",
       "part": "9",
       "title": "T9 A HEADER CELL STATES WHAT IT HEADS",
-      "scope": "parsing"
+      "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9-007",
@@ -553,19 +559,19 @@
     {
       "id": "CARVE-P9-010",
       "part": "9",
-      "title": "UNCONDITIONAL BY DEFAULT",
+      "title": "SMART TYPOGRAPHY RUNS BY DEFAULT",
       "scope": "resolution-rendering"
     },
     {
       "id": "CARVE-P9-011",
       "part": "9",
-      "title": "OPTIONAL OFF SWITCH",
+      "title": "HOSTS MAY OFFER A DOCUMENT-WIDE SMART TYPOGRAPHY SWITCH",
       "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P9-012",
       "part": "9",
-      "title": "AST REPRESENTATION",
+      "title": "SMART TYPOGRAPHY RECORDS SOURCE AND RESOLVED KIND",
       "scope": "ast-interchange"
     },
     {
@@ -657,12 +663,6 @@
       "part": "9",
       "title": "THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME",
       "scope": "resolution-rendering"
-    },
-    {
-      "id": "CARVE-P9-028",
-      "part": "9",
-      "title": "THE ENGINE'S OWN WORDS ARE A RENDER OPTION",
-      "scope": "imports-security-extensions"
     },
     {
       "id": "CARVE-P9-029",
@@ -991,7 +991,7 @@
     {
       "id": "CARVE-P10-007",
       "part": "10",
-      "title": "WHY THESE THREE ARE CORE AND THE REST ARE NOT",
+      "title": "THE CORE SEMANTIC NAMES ARE CLOSED",
       "scope": "resolution-rendering"
     },
     {
@@ -1147,7 +1147,7 @@
     {
       "id": "CARVE-P11-024",
       "part": "11",
-      "title": "IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP",
+      "title": "M1e `<` IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP",
       "scope": "canonical-writing"
     },
     {
@@ -1255,7 +1255,7 @@
     {
       "id": "CARVE-P12-001",
       "part": "12",
-      "title": "THE TYPE NAME COMES FROM profiles.md, NOT FROM carve-js",
+      "title": "AST TYPE NAMES FOLLOW THE PROFILE VOCABULARY",
       "scope": "ast-interchange"
     },
     {
@@ -1309,7 +1309,7 @@
     {
       "id": "CARVE-P12-010",
       "part": "12",
-      "title": "RESOLVED OR NOT",
+      "title": "A CROSSREF REMAINS A HEADING-REFERENCE NODE AFTER RESOLUTION",
       "scope": "ast-interchange"
     },
     {
@@ -1351,7 +1351,7 @@
     {
       "id": "CARVE-P12-017",
       "part": "12",
-      "title": "IS NOT AN EXCEPTION",
+      "title": "A DEFINITION LIST ENDS AT ITS LAST PLACED CHILD",
       "scope": "ast-interchange"
     },
     {
@@ -1513,17 +1513,23 @@
     {
       "id": "CARVE-P12-044",
       "part": "12",
-      "title": "ON INGEST, TRUST THE PROPERTY",
+      "title": "AN INGESTED `blockImage` VALUE IS AUTHORITATIVE",
       "scope": "ast-interchange"
     },
     {
       "id": "CARVE-P12-045",
       "part": "12",
-      "title": "THE WRITER IS UNAFFECTED",
+      "title": "`fmt` WRITES THE SOURCE SPELLING, NOT `blockImage`",
       "scope": "canonical-writing"
     }
   ],
   "retired": [
+    {
+      "id": "CARVE-P9-028",
+      "part": "9",
+      "title": "THE ENGINE'S OWN WORDS ARE A RENDER OPTION",
+      "replacement": "CARVE-P9-063"
+    },
     {
       "id": "CARVE-PRE-001",
       "part": "PRE",

@@ -1770,6 +1770,8 @@ indentation, void elements, tight/loose `<p>` wrapping, table styles —
 are pinned normatively in **`resources/grammar.ebnf` PART 10** (HTML
 Serialization Conventions). They exist so a second implementation (for
 example carve-php) can match the corpus without copying the reference
-renderer byte-for-byte. The corpus wins on any disagreement.
+renderer byte-for-byte. A disagreement between a clause and a committed
+corpus pair is a defect to resolve in both artifacts; neither silently
+overrides the other.
 
 ---

@@ -56,7 +56,7 @@
       frontmatter closer from a later break, and respelling every break in the
       document is then the smallest departure that restores the invariant.
 
-   6b. A FRONTMATTER OPENER IS WRITTEN `---yaml` -- NORMATIVE. The canonical
+   6b. A FRONTMATTER OPENER IS WRITTEN `---yaml` -- NORMATIVE [CARVE-P11-011]. The canonical
       writer spells the format token on the opening delimiter for EVERY
       format, the default one included. Frontmatter in `yaml` comes back as
       `---yaml`, never as a bare `---`; frontmatter in `toml` comes back as
@@ -77,14 +77,14 @@
       move, where the writer emits the shortest form that happens to survive
       re-parsing rather than the form that says what it means.
 
-   6c. A VALUE-LESS ATTRIBUTE IS WRITTEN AS A BOOLEAN -- NORMATIVE. An
+   6c. A VALUE-LESS ATTRIBUTE IS WRITTEN AS A BOOLEAN -- NORMATIVE [CARVE-P11-012]. An
       attribute whose value is the empty string comes back as the bare name:
       `[x]{kbd}`, not `[x]{kbd=""}`. `boolean_attribute` is the production the
       language has for "this attribute is present and carries no value"
       (PART 4), so that is the form the writer emits.
 
-      EXCEPT WHERE THE NAME STARTS WITH `_`, which `boolean_attribute` refuses
-      (carve#1450). `_x_=""` stays `{_x_=""}`: emitting `{_x_}` would write a
+      EXCEPT WHERE THE NAME STARTS WITH `_`, which `boolean_attribute` refuses.
+      `_x_=""` stays `{_x_=""}`: emitting `{_x_}` would write a
       forced underline, and `{_u}` would write text. The rule is "use the
       dedicated production where the production applies", and here it does not.
 
@@ -111,7 +111,7 @@
       VALUE is discarded. An empty value there points at a slot that does
       nothing.
 
-   6d. A CODE FENCE OPENER IS WRITTEN GLUED TO ITS INFO STRING -- NORMATIVE.
+   6d. A CODE FENCE OPENER IS WRITTEN GLUED TO ITS INFO STRING -- NORMATIVE [CARVE-P11-013].
       The canonical writer emits NO padding space between the fence run and
       the info string: ```php, never ``` php. The two separator slots INSIDE
       the info string take exactly one space each, so a fence carrying a
@@ -137,7 +137,7 @@
       length or the fence character (PART 12 §3) -- so the writer has nothing
       to reproduce and must CHOOSE, exactly as §6b and §6c must.
 
-   6e. A TABLE CELL'S CONTENT IS PADDED -- NORMATIVE.
+   6e. A TABLE CELL'S CONTENT IS PADDED -- NORMATIVE [CARVE-P11-014].
       The canonical writer emits every cell as its PREFIX glued to the opening
       pipe, then ONE space, then the content, then one space before the closing
       pipe. The prefix is the kind marker `=`, the alignment marker and the
@@ -164,7 +164,7 @@
 
 
    6f. PADDING IS NOT AN ESCAPE WHERE THE PRODUCTION ADMITS PADDING --
-      NORMATIVE (carve#1601). §6e's padding removes the need for
+      NORMATIVE [CARVE-P11-015]. §6e's padding removes the need for
       `<`/`>`/`~`/`{` guards because its three prefix slots are read GLUED to
       the opening pipe, so one space in front of the content puts it out of
       their reach. That argument holds only where the construct's OWN production
@@ -186,8 +186,8 @@
       line. Naming `^` and `<` here would be an enumeration that goes stale the
       next time a cell-level marker is added.
 
-   6g. A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE -- NORMATIVE
-      (carve#1866). PART 2 admits seven task states while rendering collapses
+   6g. A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE -- NORMATIVE [CARVE-P11-041].
+      PART 2 admits seven task states while rendering collapses
       them to two. The AST records the authored character (PART 12,
       `list_item.taskState`) and the writer emits it.
 
@@ -208,7 +208,7 @@
       unchecked box (PART 2 `task_state`), so no HTML moves with this clause.
       What moves is only what survives a format cycle.
 
-   7. NO WHITESPACE-ONLY LINE -- NORMATIVE. `fmt` never emits a line whose only
+   7. NO WHITESPACE-ONLY LINE -- NORMATIVE [CARVE-P11-016]. `fmt` never emits a line whose only
       content is ASCII spaces or tabs. Such a line is emitted EMPTY.
 
       EXCEPT where those spaces are VERBATIM CONTENT. Inside a code block or a
@@ -255,7 +255,7 @@
       implementation whose whitespace test treats U+00A0 as whitespace must
       exclude it here.
 
-      THE SAME LINE DECIDES WHAT AN IMPORT KEEPS -- NORMATIVE (carve#1628).
+      THE SAME LINE DECIDES WHAT AN IMPORT KEEPS -- NORMATIVE [CARVE-P11-017].
       An HTML importer meeting a BLOCK ELEMENT whose text content is entirely
       whitespace keeps exactly the characters this clause calls CONTENT, and
       builds no node at all where every character it holds is LAYOUT:
@@ -288,7 +288,7 @@
       node was never built.
 
 
-   7a. AN EMPTY CONTAINER BODY IS A BLANK LINE HERE TOO -- NORMATIVE. A COLON
+   7a. AN EMPTY CONTAINER BODY IS A BLANK LINE HERE TOO -- NORMATIVE [CARVE-P11-018]. A COLON
       FENCE whose body is empty is written with a BLANK LINE between its
       opener and its closer:
 
@@ -322,7 +322,7 @@
       div closes compactly in HTML and takes the blank line here.
 
    7b. A FOOTNOTE DEFINITION WITH NO BLOCKS IS WRITTEN WITH THE SENTINEL
-      `{empty}` -- NORMATIVE. A `footnote_definition` whose body holds NO
+      `{empty}` -- NORMATIVE [CARVE-P11-019]. A `footnote_definition` whose body holds NO
       blocks is written as the marker, its separator space, and the SENTINEL
       ATTRIBUTE BLOCK `{empty}`:
 
@@ -366,14 +366,14 @@
       and not a property of the word.
 
    7c. A LINE BLOCK'S HARD BREAK IS WRITTEN BARE ONLY WHERE THE BARE NEWLINE
-      RE-DERIVES IT -- NORMATIVE. A line block hardens every line boundary of
+      RE-DERIVES IT -- NORMATIVE [CARVE-P11-020]. A line block hardens every line boundary of
       its own accord, AT EVERY DEPTH (PART 9 §23, AN INLINE CONSTRUCT IS NOT A
       DEPTH THE RULE STOPS AT), which is the whole of why the writer may
       spell a `hard_break` there as a BARE NEWLINE rather than as the PART 3
       form. The depth half is load-bearing and not decoration: a reading under
       which a boundary inside an emphasis run stays soft takes the permission's
       own premise away, and this writer rule then LOSES the break on `*a\` over
-      `b*` while claiming §1 preservation (carve#1351). The permission is not
+      `b*` while claiming §1 preservation. The permission is not
       general, and it is stated as
       the PROPERTY it rests on rather than as a list of the places it runs out:
 
@@ -420,7 +420,7 @@
       the second is two adjacent `hard_break` nodes with no text between them,
       the third is a text node whose value ends in one space.
 
-      A LINE WHOSE LAST NODE IS A COMMENT IS EXEMPT -- NORMATIVE. `%%` runs to
+      A LINE WHOSE LAST NODE IS A COMMENT IS EXEMPT -- NORMATIVE [CARVE-P11-021]. `%%` runs to
       the END OF ITS LINE, so a trailing space there is INSIDE the note and
       not content PART 2 is about to take: stripping it leaves the same node,
       and CONTENT ENDING IN A LONE SPACE therefore does not reach the line.
@@ -469,7 +469,7 @@
       and drops a trailing `<br>` from a block's last line.
 
    7d. AN EMPTY DESCRIPTION BODY IS WRITTEN WITH THE SENTINEL `{empty}` --
-      NORMATIVE (carve#1827). A `definition_description` whose body holds NO
+      NORMATIVE [CARVE-P11-040]. A `definition_description` whose body holds NO
       blocks is written as the marker, its separator space, and the SENTINEL
       ATTRIBUTE BLOCK `{empty}`:
 
@@ -511,7 +511,7 @@
       have, where the canonical spelling carries an empty children list, and §1
       quantifies over `parse`, not over the render.
 
-   8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE. The Markdown renderer is not
+   8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE [CARVE-P11-022]. The Markdown renderer is not
       the canonical writer and does not follow §2. It has a different
       re-parser to answer to, so it escapes on a different rule:
 
@@ -527,7 +527,7 @@
       typographer, pandoc's default) would NOT read an en dash. Emitting `--`
       bare loses the author's intent exactly where it was explicit, and the
       characters this matters for -- `"` `'` `-` `.` -- are not Markdown
-      metacharacters, so M1 does not cover them (carve#350). A document that
+      metacharacters, so M1 does not cover them. A document that
       escapes nothing gains no backslashes from M2.
 
       An implementation whose AST has no `escaped_text` node cannot honour M2:
@@ -535,7 +535,7 @@
       in the AST, not licence to skip the rule -- `escaped_text` is in the
       inline vocabulary (docs/profiles.md).
 
-   8a. THE MARKDOWN TARGET'S ESCAPING NARROWS ON THE LINE -- NORMATIVE. M1 is
+   8a. THE MARKDOWN TARGET'S ESCAPING NARROWS ON THE LINE -- NORMATIVE [CARVE-P11-023]. M1 is
       not one rule across the metacharacter set. It splits three ways:
 
       M1a THE ASTERISK KEEPS M1 UNCONDITIONALLY. A literal `*` reaching this
@@ -559,7 +559,7 @@
           as written, and M2 and M3 are untouched by this clause.
 
       M1e `<` IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP --
-          NORMATIVE. A `<` is escaped with a BACKSLASH when the next character
+          NORMATIVE [CARVE-P11-024]. A `<` is escaped with a BACKSLASH when the next character
           is an ASCII letter, `/`, `!` or `?`, and left alone otherwise. `>`
           takes nothing here: mid-line it is inert in every flavour, and at the
           start of a line it is a block quote marker, which M1 already covers.
@@ -579,7 +579,7 @@
             a \<b> c       ->  a &lt;b&gt; c
 
           A BACKSLASH, NOT AN ENTITY. Every engine wrote `&lt;` and `&gt;` here
-          and no clause said so (carve#1148). M2 and M3 are written in terms of
+          and no clause said so. M2 and M3 are written in terms of
           ESCAPING -- protecting a character so it survives as itself -- and
           `&lt;` does not protect `<`, it replaces it with a different sequence
           that happens to render alike. `\<` protects it, and a CommonMark

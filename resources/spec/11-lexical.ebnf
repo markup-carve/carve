@@ -4,7 +4,7 @@
 
 identifier = (letter | '_'), {letter | digit | '_' | '-'} ;
 (* The leading `_` is admitted HERE and refused for `boolean_attribute` alone,
-   which is where it collides with forced underline (carve#1450). *)
+   which is where it collides with forced underline. *)
 explicit_identifier = (letter | digit | '_'), {letter | digit | '_' | '-'} ;
 (* Explicit ids and classes additionally admit an ASCII digit first. This is a
    preservation rule for authored/imported HTML-valid values; generated heading
@@ -20,7 +20,7 @@ letter = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j'
 
 digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
-(* A TAB IS SYNTAX ONLY IN THE LEADING RUN -- NORMATIVE. The whole of what a
+(* A TAB IS SYNTAX ONLY IN THE LEADING RUN -- NORMATIVE [CARVE-P7-001]. The whole of what a
    tab does in this language, in one place, so that no construct has to decide
    it again:
 
@@ -47,7 +47,7 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    spelling remains preserved, and tabs inside verbatim content are never
    expanded. *)
 
-(* MARKER SEPARATORS AND PADDING SLOTS -- NORMATIVE. A TAB IS SYNTAX ONLY IN
+(* MARKER SEPARATORS AND PADDING SLOTS -- NORMATIVE [CARVE-P7-002]. A TAB IS SYNTAX ONLY IN
    THE LEADING RUN, the clause directly above. Two consequences settle every
    whitespace slot in this grammar.
 
@@ -99,8 +99,7 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    slot that does not match leaves a token unconsumed, and the surrounding
    production then rejects the line. Either way the line falls back to
    ordinary prose rather than silently re-indenting or silently dropping
-   metadata -- the same visible failure a tab after a marker already produces
-   (carve#692, carve#698).
+   metadata -- the same visible failure a tab after a marker already produces.
 
    Cardinality is a separate question from the terminal: a slot spelled
    `space` admits exactly one character, and a `space+` run admits one or
@@ -112,13 +111,13 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    not padding. `code_fence_info`'s and the admonition opener's metadata
    slots are spelled `space+` and take a run.
 
-   The four single-space slots are narrow by ruling (carve#912). This decides
+   The four single-space slots are narrow by ruling. This decides
    cardinality only. Character membership remains the space-only inline rule
-   of carve#901 and carve#905, while marker separators use the cardinality
-   declared by their own productions (carve#892). Attribute and table-cell
-   padding follow the same inline rule (carve#904, carve#906). *)
+   of and, while marker separators use the cardinality
+   declared by their own productions. Attribute and table-cell
+   padding follow the same inline rule. *)
 
-(* ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT -- NORMATIVE. The three
+(* ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT -- NORMATIVE [CARVE-P7-003]. The three
    terminals below are the whole of it, and nothing in the language adds to
    them. `whitespace` is a SPACE or a TAB. `newline` is a LINE FEED, a
    CARRIAGE RETURN, or the pair. `space` is the narrower slot that admits the
@@ -159,8 +158,8 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    definition term, a bullet item and an ordered item take `space` -- one,
    exactly, not a class. A heading and a caption stood in that list and no
    longer do: both spell `space+` now, a RUN of the same terminal, each for
-   the reason its own clause states rather than for anything here
-   (carve#1575, carve#1581). The CONTINUATION MARKER takes none:
+   the reason its own clause states rather than for anything here.
+   The CONTINUATION MARKER takes none:
    `continuation_marker = '+', newline`, so any character between the
    `+` and the line end is content and the line is not a marker. The
    block-attribute line takes `opt_ws`, `attr_separator` and `continuation`,

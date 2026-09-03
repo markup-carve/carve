@@ -62,7 +62,8 @@ the change rather than a courtesy.
 
 ## What settles a question
 
-Only `resources/grammar.ebnf` does. The executable artifacts
+The source modules in `resources/spec/*.ebnf` settle language questions;
+`resources/grammar.ebnf` is their checked, byte-for-byte aggregate. The executable artifacts
 (`resources/carve-core.ohm`, `scripts/spec/*.mjs`) and the engines are
 measured, never cited: "the executable spec does X" and "carve-js does X" are
 observations about an implementation, and both have been wrong while being

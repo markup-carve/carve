@@ -80,8 +80,8 @@
       the host's node type. `^ Listing #: …` on a code block yields "Listing 1"
       because the author wrote "Listing", not because a code block is a listing.
 
-   4c. A COMPOSITE FIGURE GROUPS ITS PANELS UNDER ONE CAPTION -- NORMATIVE
-      (governs `figure_group` in PART 2; carve#1122). A bare `::: figure`
+   4c. A COMPOSITE FIGURE GROUPS ITS PANELS UNDER ONE CAPTION -- NORMATIVE [CARVE-P9-001]
+      (governs `figure_group` in PART 2). A bare `::: figure`
       container is ONE figure holding ordered sub-figures: its direct
       captionable children are PANELS, and the `^ ` caption after its closing
       fence -- §4's sixth host -- is the caption of the WHOLE group. The AST
@@ -129,7 +129,7 @@
       (or multiline caption block, the normal `caption` rules) adjacent to or
       exactly one blank line below the group's CLOSING fence is the group
       caption; two blank lines detach it into an ordinary paragraph. Every
-      other `:::` kind keeps today's behavior -- a `^ ` line after a
+      other `:::` kind keeps its behavior -- a `^ ` line after a
       `::: note` closer is ordinary paragraph content. Captions INSIDE the
       fence attach
       only to their local host, unchanged.
@@ -150,7 +150,7 @@
       write panel letters in panel captions; the mechanism is reserved).
       Panel ids register only when the group itself drew a number -- an
       unnumbered group's panels are anchors but not caption crossref targets,
-      exactly as an id on an uncaptioned figure is today.
+      exactly as an id on an uncaptioned figure.
 
       THE GROUP NUMBERS WHERE IT BEGINS, NOT WHERE ITS CAPTION SITS. A
       captionable host takes its number at the position of the HOST, and a
@@ -168,7 +168,7 @@
       group's body -- any depth -- is a generic Tier-2 container
       (`<div class="figure">`), not an inner group, and lints as
       `figure-group-nested` (318-composite-figures-9). Nested numbering is a
-      design question carve#1122 explicitly defers, and a generic container is
+      design question explicitly defers, and a generic container is
       the lossless degradation.
 
       LINT, NOT PARSE. The five findings this clause names are diagnostics
@@ -242,7 +242,7 @@
          (colspan) is a span marker; ANY other content disqualifies it --
          `{.x} <` is an ordinary cell with literal text `{.x} <` (no
          attributed span marker exists).
-      T5 SPAN WALK -- NORMATIVE, a total function. origin(marker) :=
+      T5 SPAN WALK -- NORMATIVE [CARVE-P9-002], a total function. origin(marker) :=
            for `<` at (r,c): the nearest c' < c walking LEFT with
              avail(r,c'), skipping consumed positions;
            for `^` at (r,c): the nearest r' < r walking UP with
@@ -268,7 +268,7 @@
          joined content belongs to the SPANNING cell (corpus 40, 41). A
          table cannot BEGIN with a continuation row (PART 2 `table`).
 
-         THE ROW ABOVE IS A LINE, NOT A `<tr>` -- NORMATIVE (carve#1354). What
+         THE ROW ABOVE IS A LINE, NOT A `<tr>` -- NORMATIVE [CARVE-P9-069]. What
          a continuation joins is the row above it in the SOURCE. T7 CONSUMES
          the delimiter row - it produces no `<tr>` and is not a row of the
          table - so a `+` line directly under one has no row above it to join
@@ -288,7 +288,7 @@
          blockquote. T6 declines, the line is ordinary prose, and prose reopens
          the item's paragraph (PART 1 S4's clause on that). The control is the
          same-column spelling `- | a |` / `  | b |`: there the row above IS the
-         item's own, it joins, and no paragraph opens. (carve#1370)
+         item's own, it joins, and no paragraph opens.
 
          HEADER-NESS IS NOT THE DISCRIMINATOR. Declining whenever the row above
          is ALL-HEADER answers three neighbouring documents wrongly:
@@ -320,7 +320,7 @@
 
          Both are absorbed.
 
-         A CONTINUATION ROW LEAVES NO PARAGRAPH OPEN -- NORMATIVE.
+         A CONTINUATION ROW LEAVES NO PARAGRAPH OPEN -- NORMATIVE [CARVE-P9-003].
          PART 1 S4 asks what a container's last BLOCK is, and the answer here
          is a table however its last row is spelled: this clause gives a
          continuation row `table_cell`s and joins them onto the row above, so
@@ -339,7 +339,7 @@
 
          THE OPPOSITE DIRECTION IS UNCHANGED. With NO table above it a
          `+ ...|` line is not a row at all but ordinary prose, so it leaves a
-         paragraph open and the flush-left line folds (carve#1345, corpus
+         paragraph open and the flush-left line folds (corpus
          326-...-26 and -28). The rule has a parameter, and this clause fixes
          its other value; a reading that answers "row" or "prose" everywhere
          gets one of the two halves wrong.
@@ -355,7 +355,7 @@
          S4 rather than here since it is not about a continuation row: an
          outer quote's last block may be an inner quote, and then the INNER
          quote's own last block answers.
-      T7 GFM DELIMITER ROW -- NORMATIVE. delimiter_row(R) := R is EXACTLY
+      T7 GFM DELIMITER ROW -- NORMATIVE [CARVE-P9-004]. delimiter_row(R) := R is EXACTLY
          the SECOND row of the table AND every cell matches delimiter_cell
          (optional ws, optional `:`, one or more `-`, optional `:`,
          optional ws -- PART 2; an empty cell `|---||` or other content
@@ -373,9 +373,8 @@
          dash). Native `|=` header cells and `<`/`>`/`~` alignment markers
          may COEXIST with a delimiter row; a single column carrying BOTH a
          native marker AND a delimiter colon has UNSPECIFIED alignment (do
-         not combine on one column). Verified identical js/php/rs; pinned
-         by corpus 09-tables-3.
-      T8 ROW ATTRIBUTES -- NORMATIVE. A `{…}` GLUED to a row's closing `|`
+         not combine on one column). Corpus 09-tables-3 pins the result.
+      T8 ROW ATTRIBUTES -- NORMATIVE [CARVE-P9-005]. A `{…}` GLUED to a row's closing `|`
          (no intervening space) sets that row's `<tr>` attributes -- the
          row-level twin of a cell's attribute block, same syntax, same
          validity rule, and UNCHANGED by T10: a row's block still follows
@@ -389,7 +388,7 @@
          `|{.c} a |{.r}` -> `<tr class="r">` with `<td class="c">`. Pinned
          by corpus 100-table-row-attributes.
 
-      T9 A HEADER CELL STATES WHAT IT HEADS -- NORMATIVE. Every `th` carries a
+      T9 A HEADER CELL STATES WHAT IT HEADS -- NORMATIVE [CARVE-P9-006]. Every `th` carries a
          `scope`: `col` for a cell in the head-row run, `row` for one below it.
          `|=` already distinguishes the two positions -- a header cell in the
          first rows opens `<thead>`, one in a later row is a row header inside
@@ -418,7 +417,7 @@
          Otherwise `scope` precedes `rowspan`, `colspan` and the authored
          block in the serialization.
 
-      T10 CELL ATTRIBUTES BIND LAST -- NORMATIVE. A cell's `{…}` block
+      T10 CELL ATTRIBUTES BIND LAST -- NORMATIVE [CARVE-P9-007]. A cell's `{…}` block
          attaches AFTER the kind marker and AFTER the alignment marker, in
          every cell. One order, both productions (PART 2 `header_cell`,
          `data_cell`):
@@ -437,7 +436,7 @@
          is parsed as unaligned literal content; row attributes (T8) are
          unaffected.
 
-      T11 A MARKER RUN ENDS AT A SPACE -- NORMATIVE. A cell's marker run is
+      T11 A MARKER RUN ENDS AT A SPACE -- NORMATIVE [CARVE-P9-008]. A cell's marker run is
          the kind marker `=`, the alignment run and the attribute block, in
          T10's order. A cell carrying ANY of the three must follow the run
          with one literal space. Without it there is no run at all, and every
@@ -464,7 +463,7 @@
          `|=a |` and `|{#x}=R|` are data-cell content. §6e's writer emits a
          space after every prefix.
 
-         TABLE MARKER-PADDING DIAGNOSTICS SHARE ONE ID -- NORMATIVE. The id is
+         TABLE MARKER-PADDING DIAGNOSTICS SHARE ONE ID -- NORMATIVE [CARVE-P9-009]. The id is
          `table-marker-run-padding`. One id
          for the whole run, because T11 is one rule for the whole run: it
          reports a glued kind marker, a glued alignment run and a glued
@@ -492,24 +491,22 @@
         fractions (recorded in dismissed-syntax.md). Converted set:
         dashes, ellipsis, smart quotes, arrows, comparisons, `+-`, and
         symbols (`(c)`,`(r)`,`(tm)`).
-      - UNCONDITIONAL BY DEFAULT -- NORMATIVE. The substitution belongs to
+      - SMART TYPOGRAPHY RUNS BY DEFAULT -- NORMATIVE [CARVE-P9-010]. The substitution belongs to
         the default inline layer, not to an opt-in feature: a conformant
         implementation performs it with NO extension registered. A locale
         or glyph extension (a German / Swiss quote set, say) selects WHICH
         characters are emitted; it does NOT decide WHETHER the substitution
         runs, and removing such an extension does not disable the
         transform.
-      - OPTIONAL OFF SWITCH -- NORMATIVE WHERE OFFERED. A host MAY expose
+      - HOSTS MAY OFFER A DOCUMENT-WIDE SMART TYPOGRAPHY SWITCH -- NORMATIVE [CARVE-P9-011]. A host MAY expose
         one document-global switch, `smartTypography`, defaulting to TRUE
-        (idiomatic spellings: `smartTypography: false` in carve-js and
-        carve-php, `Options::with_smart_typography(false)` in carve-rs).
-        A host that omits the switch stays conformant. ACCEPTING IT AND
+        where offered. A host that omits the switch stays conformant. ACCEPTING IT AND
         IGNORING IT IS NOT -- a host that takes `smartTypography: false`
         without error and emits the glyphs anyway has told the caller the
         document is configured when it is not, which is worse than the
         rejection an unimplemented option should produce. Omitting and
         implementing are both fine; the silent middle is the one state this
-        clause forbids (carve#560).
+        clause forbids.
 
         Where it IS offered and set to FALSE:
         * PARSING IS UNCHANGED. The nodes below are still produced, so the
@@ -537,7 +534,7 @@
           `to_html(x)` and `to_markdown(x)` disagree about what the
           document says.
         Pinned in tests/corpus-optional (feature `smart-typography-off`).
-      - AST REPRESENTATION -- NORMATIVE. A recognized substitution is its
+      - SMART TYPOGRAPHY RECORDS SOURCE AND RESOLVED KIND -- NORMATIVE [CARVE-P9-012]. A recognized substitution is its
         own inline node, `smart_punctuation`, carrying BOTH halves: the
         resolved KIND and the author's SOURCE RUN. A presentation renderer
         (HTML, Markdown, plain text, ANSI) emits the glyph for the kind; the

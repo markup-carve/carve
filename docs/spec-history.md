@@ -254,3 +254,13 @@ definitions. Strict ingest also landed field by field, leaving combinations
 that silently defaulted invalid values or failed inside renderers. PART 12 now
 defines one schema-governed payload contract. The implementation surveys that
 motivated it are retained in carve#610, carve#642, carve#708 and carve#881.
+
+## Block-attribute line breaks
+
+PART 4 once named two neighbouring questions it declined to decide. The first,
+a newline inside a quoted value, is now settled by A QUOTED VALUE STOPS AT THE
+NEWLINE. The second is still open and was measured rather than ruled:
+carve-php caps a block-attribute block at one line break where the other two
+engines and the executable checker accept any number. The clause states the
+grammar; the divergence is recorded here and pinned by carve#888 rather than
+inside the active algorithm.

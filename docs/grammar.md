@@ -20,20 +20,16 @@ resolution and canonical writing together.
 | PART 12 | AST serialization: the JSON shape a parsed document exchanges as | Reference-implementation field names + a round-trip invariant |
 
 ::: info Why layers instead of one grammar?
-Light markup languages are not context-free: fence-length matching is a counting
-constraint, indentation is two-dimensional, and reference resolution needs a
-whole-document symbol table. EBNF covers the context-free layer. Structured
-tables cover closed state transitions and capability matrices. Labeled
-operational prose remains normative where an algorithm has not yet been reduced
-to data. The repository does not claim that English prose becomes executable
-merely because it is labeled normative.
+Some Carve constraints are not expressible in context-free EBNF. Structured
+tables cover closed state transitions and capability matrices; operational
+clauses cover the remaining algorithms.
 :::
 
 ## Specification sources
 
 The editable normative sources are split by processing phase under
 [`resources/spec/`](https://github.com/markup-carve/carve/tree/main/resources/spec).
-No source module is larger than the phase it specifies:
+The modules follow the processing pipeline:
 
 | Source | Responsibility |
 |---|---|
@@ -63,9 +59,9 @@ parsing English prose:
 Run `npm run spec:check` and `npm run spec:rules:check` after editing the
 specification.
 
-## Carve Core: the executable spec
+## Executable checks
 
-**Carve Core** is the subset of Carve whose specification is directly executable - each spec layer exists as a machine-interpretable artifact:
+Three derived artifacts execute the core specification:
 
 | Spec layer | Executable artifact |
 |---|---|
@@ -73,54 +69,18 @@ specification.
 | PART 3 inline grammar | [`resources/carve-core.ohm`](https://github.com/markup-carve/carve/blob/main/resources/carve-core.ohm) (Ohm/PEG) |
 | PART 9R resolution + PART 10 serialization | `scripts/spec/html.mjs` |
 
-The executable spec covers the full conformant core: block structure (headings incl. section wrapping, lists with every ordered dialect, quotes, tables with the span walk, fenced code and colon fences, definition lists, comments, frontmatter, block-attribute lines), the complete inline layer (emphasis with word-boundary guards, links, images, spans, attributes with the security hardening rules, autolinks, math, extensions, mentions/tags, editorial markup, smart typography, footnotes incl. inline notes, crossrefs, raw passthrough), and the resolution passes (references, footnote numbering and endnotes placement, numbered captions, abbreviations).
-
 ```bash
 npm run core:check
-```
-
-The gate demands byte-identical HTML for **every pair in the conformance corpus**. Rules a pure PEG cannot state are executed as declared predicates in the layout automaton (fence-length counting, the `where` guards) or as a pre-scan (the emphasis close-first delimiter-stack rule), so the pipeline never silently diverges from the delimiter-stack semantics.
-
-### Coverage runs the other way too
-
-`core:check` asks whether the grammar covers the corpus. The reverse question -
-whether the corpus reaches every production the grammar declares - had no gate,
-so a production could land and never be exercised by a single document
-(carve#1850).
-
-```bash
 npm run grammar:reach
 ```
 
-It walks the CST of every match the oracle runs, plus a `doc` match per document
-for the block layer the render path never enters, and records which rules
-produced a node. A rule mentioned only inside a `~` lookahead can never produce
-one, so those are separated out rather than counted as holes - Ohm's positive
-`&` is not the same and stays in the question. A rule nothing references at all
-is separated out again, as an orphan rather than an exemption, so a production
-with no caller cannot be waived as one that merely cannot produce a node. The
-gate recomputes both sets and fails if either moves.
-
-Everything left over is pinned in `resources/grammar-corpus-coverage.txt`, which
-fails in both directions - a new unreached production, and a stale entry that a
-new document has since covered.
-
-Each declared gap names a spelling that would close it, and
-`tests/grammar-reachability.test.mjs` checks that the named spelling really does
-reach the rule, so the reason column stays a claim the suite can refute.
-## Which artifact decides
-
-The executable artifacts are **derived checkers**, not a fourth implementation. They exist to execute what `grammar.ebnf` states, so that a contradiction inside it becomes visible. Three rules, normative in the grammar itself:
-
-1. **The executable artifacts decide nothing.** A ruling cites a clause. "The executable spec does X", or "carve-js does X", is a measurement, never an argument for X. An unruled question is answered by writing a clause, not by the behavior of whatever ran last.
-2. **A golden is normative once committed, not once generated.** `npm run corpus:build` proposes pairs; a reviewed commit makes one the answer. A generated golden nobody read is a claim about the grammar, and it can be a wrong one.
-3. **A checker that disagrees with a committed golden is wrong until a clause says otherwise.** The disagreement is a question to raise against the grammar, not a divergence to record against the engines.
-
-::: warning Why this is stated rather than assumed
-The checkers have been wrong, and while they were, they were quietly the language: [carve#645](https://github.com/markup-carve/carve/issues/645) leaked the layout automaton's internal lazy frame into code text, and in [carve#646](https://github.com/markup-carve/carve/issues/646) the executable spec turned out to be a *fourth* answer where three engines already disagreed. An artifact that can be wrong cannot also be the arbiter of what is right.
-
-The same mistake has a cross-repo shape. A satellite graded its grammar against a **pinned engine** instead of against the corpus; the pin was three weeks stale, and it reported nine grammar defects that were the pin ([tree-sitter-carve#160](https://github.com/markup-carve/tree-sitter-carve/issues/160)). Measure against the committed golden, never against an implementation.
-:::
+`core:check` compares the derived pipeline with every reviewed corpus pair.
+`grammar:reach` checks that the corpus exercises every reachable production and
+pins the remainder in `resources/grammar-corpus-coverage.txt`, which fails both
+on a newly unreached production and on a stale entry a new document now covers.
+These tools expose disagreements; they do not override normative clauses. The
+review policy for clauses, checkers, and generated goldens lives in
+[`CONTRIBUTING.md`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question).
 
 Implementations should match this grammar. The [case study](./case-study/) explains the design rationale, the [parsing ambiguities page](./parsing-ambiguities) covers parsing edge cases, and the [examples](./examples) show the expected HTML output for each construct.
 

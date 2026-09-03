@@ -57,7 +57,7 @@
       deliberate -- a linkDefs label is an identifier the author wrote
       twice and can keep identical, while a heading ref is prose the
       author is quoting from elsewhere in the document.
-      THE EXPLICIT FORM DOES NOT REACH THE INDEX -- NORMATIVE (carve#742).
+      THE EXPLICIT FORM DOES NOT REACH THE INDEX -- NORMATIVE [CARVE-P9R-001].
       The fallback above is scoped to the COLLAPSED `[text][]` and to
       nothing else. An explicit `[text][label]` whose label matches no
       linkDefs entry is unresolved and renders as literal source text; it
@@ -74,7 +74,7 @@
       inline markup is stripped exactly as the heading's was. Without
       that step no heading containing emphasis, a code span or a link is
       reachable by its collapsed spelling at all, and the author sees no
-      reason why (carve#648). The four normalizations above then apply to
+      reason why. The four normalizations above then apply to
       that plain text.
       VISIBLE LEAVES STAY VISIBLE. An autolink contributes its display text
       and an image contributes its alternative text to both the slug and this
@@ -91,7 +91,7 @@
       193-a-collapsed-reference-is-matched-by-the-label-the-author-wrote).
       Stripping markup before the linkDefs lookup inverts that rule in
       both directions and is a deviation from this clause rather than a
-      generalization of it (markup-carve/carve-php#768).
+      generalization of it.
       The tie-break is unaffected: linkDefs still wins, so a definition
       whose label is written `[*bold* heading]` beats a same-named
       heading even though the heading is now reachable.
@@ -113,7 +113,7 @@
       deduped in the one namespace, and still a `</#id>` crossref
       target (R4), which addresses it by id rather than by wording.
    R1a A DEFINITION IS COLLECTED FROM A LINE THE BLOCK STRUCTURE KEEPS --
-      NORMATIVE (carve#1428, and carve#1425 for the flush-left half). A
+      NORMATIVE [CARVE-P9R-002]. A
       definition line that PART 0's S4 folds into an OPEN PARAGRAPH yields no
       entry in ANY symbol table -- linkDefs, footnoteDefs or abbrDefs. It is
       paragraph text, it renders as the text the author typed, and nothing on it
@@ -142,8 +142,8 @@
       beginning at the last blank line, and a matcher whose answer depends on
       its absolute position or on lines outside that fragment is not conforming.
 
-      A MATCHER IS A PURE PREDICATE, and this is what makes the probe legitimate
-      (carve#1432). An extension's block or inline matcher MUST be a pure
+      A MATCHER IS A PURE PREDICATE, and this is what makes the probe legitimate.
+      An extension's block or inline matcher MUST be a pure
       function of the input it is handed: no observable side effects, and the
       same answer for the same (lines, position, context). An implementation
       therefore MAY invoke a matcher speculatively, MORE THAN ONCE at the same
@@ -153,12 +153,12 @@
       `afterParse` or `beforeRender`, which run once over the finished document,
       and never in a matcher.
 
-      AN UNANSWERABLE PROBE KEEPS THE CANDIDATE TEXT -- NORMATIVE
-      (carve#1881, narrowed by carve#1895). An implementation that cannot
+      AN UNANSWERABLE PROBE KEEPS THE CANDIDATE TEXT -- NORMATIVE [CARVE-P9R-008].
+      An implementation that cannot
       answer -- no probe available, or a construct it does not recognize --
       collects NOTHING from the candidate line.
 
-      AN EXHAUSTED WORK BUDGET IS NOT ONE OF THOSE REASONS (carve#1895). It was
+      AN EXHAUSTED WORK BUDGET IS NOT ONE OF THOSE REASONS. It was
       listed here and is removed. Exhaustion is a property of the METHOD an
       implementation chose, not of the question it was asked: the double
       re-parse above costs 4x per doubling -- 178ms at 50 marker-led
@@ -192,8 +192,8 @@
       is one a reader can see -- a reference to the uncollected label renders as
       its literal `[^f]`, on the page, where someone can report it.
 
-   R1b A MATCHER'S COORDINATES ARE LOCAL, NOT ABSOLUTE -- NORMATIVE
-      (carve#1437). The `lines` array handed to a block matcher MAY begin at a
+   R1b A MATCHER'S COORDINATES ARE LOCAL, NOT ABSOLUTE -- NORMATIVE [CARVE-P9R-003].
+      The `lines` array handed to a block matcher MAY begin at a
       CONTAINER'S CONTENT rather than at the document, re-based so that index 0
       is that first line, and `position` indexes the array given rather than the
       document. A matcher whose answer depends on where it sits in the whole
@@ -210,8 +210,8 @@
       raw-spellings-and-key diagnostic required by R1.
       Unresolved reference -> literal source text;
       unreferenced definition -> dropped.
-      A NOTE INSIDE AN UNRESOLVED REFERENCE IS NOT A REFERENCE -- NORMATIVE
-      (carve#1198). R1 degrades an unresolved reference to its literal
+      A NOTE INSIDE AN UNRESOLVED REFERENCE IS NOT A REFERENCE -- NORMATIVE [CARVE-P9R-004].
+      R1 degrades an unresolved reference to its literal
       SOURCE, so the link text that was rendered for it is discarded rather
       than written into the document. A [^label] use or an ^[content] note
       sitting in that text therefore references nothing: it draws no number
@@ -238,14 +238,14 @@
       link text is then LABEL + NUMBER, e.g. "Figure 1", markup preserved).
       Resolution is ONE LEVEL: cloned heading text is not re-expanded, so
       self-references and cycles are safe. Unresolved -> literal.
-      WHAT IS CLONED IS THE HEADING'S INLINE NODES -- NORMATIVE.
+      WHAT IS CLONED IS THE HEADING'S INLINE NODES -- NORMATIVE [CARVE-P9R-005].
       "Cloned heading text" means the nodes, not a rendered string. A node
       carries its SOURCE RUN, and a string does not, so an implementation that
       flattens the heading to glyphs while building its id index has destroyed
       the run before any renderer is invoked, and no renderer change reaches
       the loss. The same argument covers every other run a renderer may want
       back: a code span, an escape, an inline literal.
-      DERIVED DISPLAY TEXT CLONES THE SAME NODES -- NORMATIVE. The clause
+      DERIVED DISPLAY TEXT CLONES THE SAME NODES -- NORMATIVE [CARVE-P9R-006]. The clause
       above binds every consumer that derives display text from a heading, not
       the crossref alone: a numbered cross-reference label, an index term's
       display, a table-of-contents entry. Flattening to a string at the
@@ -271,7 +271,7 @@
       the caption registers it in captionIds for R4.
    R6 SECTION WRAPPING consumes headingIds after dedup -- the stateful
       emission algorithm in PART 9 §13.
-   R7 BLOCK IMAGE PROMOTION -- NORMATIVE (carve#1784). Block-image status is a
+   R7 BLOCK IMAGE PROMOTION -- NORMATIVE [CARVE-P9R-007]. Block-image status is a
       property of the RESOLVED tree, never of the source line. `![a][r]` is a
       block image where `[r]: /u` is written and ordinary paragraph text where
       it is not, and the definition may sit anywhere in the document -- so the

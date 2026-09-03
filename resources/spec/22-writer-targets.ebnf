@@ -1,5 +1,5 @@
 (* ============================================================================
-   8b. THE MARKDOWN TARGET'S AUTHORED ESCAPE NARROWS TOO -- NORMATIVE. §8a
+   8b. THE MARKDOWN TARGET'S AUTHORED ESCAPE NARROWS TOO -- NORMATIVE [CARVE-P11-025]. §8a
       narrowed M1 and left M2 as written. M2 narrows on the same finding, and
       on a test of the same shape:
 
@@ -69,7 +69,7 @@
         - issue \#123 fixed      ->  - issue #123 fixed
         > \#tag rest             ->  > #tag rest
 
-   9. THE MARKDOWN TARGET'S HARD BREAK -- NORMATIVE. A `hard_break` is emitted
+   9. THE MARKDOWN TARGET'S HARD BREAK -- NORMATIVE [CARVE-P11-026]. A `hard_break` is emitted
       as a BACKSLASH before the newline, never as two trailing spaces.
 
       Both spellings mean the same thing to a CommonMark reader. The difference
@@ -85,7 +85,7 @@
       a hard break the way the Carve grammar does (`hard_break`, PART 3), and
       §7's no-whitespace-only-line rule already covers the writer's side.
 
-  10. A LIST ITEM'S CONTINUATION LINES ARE ALIGNED -- NORMATIVE. Every
+  10. A LIST ITEM'S CONTINUATION LINES ARE ALIGNED -- NORMATIVE [CARVE-P11-027]. Every
       continuation line of a list item is indented to the WIDTH OF THE MARKER,
       including one whose text would otherwise read as a list marker. Such a
       line is kept literal by ESCAPING it, per §2, not by indenting it less:
@@ -97,7 +97,7 @@
       GIVEN the line the writer emits; §10 fixes the line. A writer may not
       manufacture a layout whose only merit is dodging an escape.
 
-  10a. AN UNUSED DEFINITION SURVIVES THE NON-HTML TARGETS -- NORMATIVE. A
+  10a. AN UNUSED DEFINITION SURVIVES THE NON-HTML TARGETS -- NORMATIVE [CARVE-P11-028]. A
       FOOTNOTE or ABBREVIATION definition that NOTHING references is still
       emitted by the Markdown, plain-text and terminal renderers. HTML drops
       it, because HTML has nowhere to put a definition nobody used; the other
@@ -108,7 +108,7 @@
       node, so all three kinds walk and all three emit.
 
       THE GAP IS REAL AND IS NOT CLOSED BY NARROWING. An unused link reference
-      definition currently survives nothing: not the tree, not a round trip
+      definition survives neither the tree nor a round trip
       through the AST, and now explicitly not the non-HTML targets. So
       `carve --markdown` on a document that is only `[lbl]: /u` emits nothing,
       and the URL the author wrote is gone -- the same content loss §10a
@@ -124,7 +124,7 @@
       turns a definition into something that parses back as a different
       construct.
 
-  10b. A TABLE ROW KEEPS ITS OWN CELL COUNT -- NORMATIVE. The canonical
+  10b. A TABLE ROW KEEPS ITS OWN CELL COUNT -- NORMATIVE [CARVE-P11-029]. The canonical
       writer emits exactly the cells the row carries. It MAY align the padding
       of cells that exist, but MUST NOT append empty cells to make every row as
       wide as the widest row in the table. A missing trailing cell is not an
@@ -137,10 +137,10 @@
       that row as a header; extending it to the table width both manufactures
       header cells and can stop the delimiter from matching the row it belongs
       to. Native `=` header markers remain preferred wherever they can express
-      the header, including when a later body row is wider. (carve#1030)
+      the header, including when a later body row is wider.
 
   10c. ADJACENT BLOCKS THAT WOULD MERGE KEEP THE CONTINUATION MARKER --
-       NORMATIVE. In a tight list item, deciding whether to retain `+` is a
+       NORMATIVE [CARVE-P11-030]. In a tight list item, deciding whether to retain `+` is a
        property of the emitted BLOCK SEQUENCE, not only of each child in
        isolation. If two adjacent children written at the item's content
        column would re-parse as one block, the writer emits each child from the
@@ -151,9 +151,9 @@
        that cannot fold into the paragraph above it remains canonically
        indented at the content column. A blank line is not the fallback: it
        would make a tight item loose and change its rendered structure.
-       (carve#1033)
 
-  10d. MULTIPLE CARVE HEADER ROWS SURVIVE THE MARKDOWN TARGET -- NORMATIVE.
+
+  10d. MULTIPLE CARVE HEADER ROWS SURVIVE THE MARKDOWN TARGET -- NORMATIVE [CARVE-P11-031].
        Markdown pipe tables can identify only one header row. The first Carve
        header row therefore becomes that row, and every later Carve header row
        is emitted as an ordinary Markdown body row. Their header semantics are
@@ -166,7 +166,7 @@
        including when that body row precedes the first header row.
 
   10e. A PRESENTATION TARGET KEEPS A CAPTION, A FENCE TITLE AND A FENCE
-      LABEL -- NORMATIVE. `docs/graceful-degradation.md` states the floor for
+      LABEL -- NORMATIVE [CARVE-P11-032]. `docs/graceful-degradation.md` states the floor for
       every non-interactive target: a renderer MUST preserve the construct's
       CONTENT and may drop only its INTERACTION, and authored text -- a label
       or a title that distinguishes one block from another -- MUST NOT be
@@ -232,7 +232,7 @@
           it should go is a question about the HTML target, which is PART
           10's business rather than this section's.
 
-  10f. A REFERENCED ABBREVIATION DEFINITION SPLITS BY TARGET -- NORMATIVE.
+  10f. A REFERENCED ABBREVIATION DEFINITION SPLITS BY TARGET -- NORMATIVE [CARVE-P11-033].
       §10a rules the definition NOTHING references: the Markdown, plain-text
       and terminal renderers all emit it, because those targets do not get to
       drop content the author wrote. It says nothing about the definition that
@@ -241,8 +241,8 @@
       This clause decides where the consumed definition line goes on those
       three targets and what plain text emits. Unnamed pairs remain open.
 
-      T1 MARKDOWN KEEPS THE LINE, and keeps the expansion beside it exactly as
-         today. `*[TERM]: expansion` is the spelling PHP Markdown Extra uses
+      T1 MARKDOWN KEEPS THE LINE, and keeps the expansion beside it.
+         `*[TERM]: expansion` is the spelling PHP Markdown Extra uses
          for an abbreviation, so on this target the line is CONTENT rather
          than leaked source, and keeping it is what lets the export round-trip
          back to a working abbreviation. The duplication is the price of that
@@ -290,8 +290,8 @@
       §1's `parse(fmt(x)) == parse(x)` requires it, which leaves the round
       trip intact on both of the targets that have one.
 
-  10g. A COMPOSITE FIGURE SURVIVES EVERY TARGET -- NORMATIVE (PART 9 §4c;
-      carve#1122). The floor is `docs/graceful-degradation.md`'s: panel
+  10g. A COMPOSITE FIGURE SURVIVES EVERY TARGET -- NORMATIVE [CARVE-P11-034]
+      (PART 9 §4c). The floor is `docs/graceful-degradation.md`'s: panel
       content, panel captions, preserved stray content and the group caption
       are all CONTENT, and no target may silently discard any of them. What
       this clause decides is the canonical writer's spelling and the three
@@ -334,7 +334,7 @@
       business and out of this clause's scope; hint classes reach the HTML
       target only.
 
-  10h. THE PLAIN-TEXT TARGET PRESERVES LIST DEPTH -- NORMATIVE. A nested list
+  10h. THE PLAIN-TEXT TARGET PRESERVES LIST DEPTH -- NORMATIVE [CARVE-P11-035]. A nested list
       item is indented by TWO ASCII SPACES for each list ancestor. The target
       may discard marker style and tight/loose layout, but it MUST NOT flatten
       parent, child, and grandchild items into siblings: indentation is the
@@ -343,7 +343,7 @@
       presentation styling, not by erasing hierarchy.
 
   10i. A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES --
-      NORMATIVE. The writer normalizes a run of blank lines between two blocks
+      NORMATIVE [CARVE-P11-036]. The writer normalizes a run of blank lines between two blocks
       to ONE. A run that is PART 9 §11 N1a's hard list boundary is the
       exception, and it is written as EXACTLY THREE -- not one, and not the run
       the author happened to type:
@@ -368,7 +368,7 @@
       boundary's job, not the run's length.
 
   10j. AN UNSPELLABLE BLOCK DOES NOT CANCEL THE ADJACENCY IT CANNOT SPELL --
-      NORMATIVE (carve#1621). Where EVERY block between two sibling lists is
+      NORMATIVE [CARVE-P11-037]. Where EVERY block between two sibling lists is
       UNSPELLABLE -- it reaches the writer from the AST and leaves no character
       on the page -- the two lists are ADJACENT for §10i's purposes, and
       §10i decides the run between them as if nothing had stood there.
@@ -390,7 +390,7 @@
       pin it and the fixture is a hand-built payload entering through the AST
       ingest (tests/an-unspellable-block-does-not-cancel-list-adjacency.test.mjs).
 
-  11. THE MARKDOWN TARGET'S CROSS-REFERENCES -- NORMATIVE. A resolved
+  11. THE MARKDOWN TARGET'S CROSS-REFERENCES -- NORMATIVE [CARVE-P11-038]. A resolved
       cross-reference is emitted as a Markdown link to the target heading's id,
       and the target heading gains an explicit `{#id}` suffix. Both halves are
       required, and neither is emitted without the other:
@@ -415,7 +415,6 @@
 
       THE SCAN INCLUDES FOOTNOTE DEFINITION BODIES. They render as block
       content, so a reference inside one is a reference; missing them leaves a
-      heading without the id that the link this target also emits depends on
-      (carve#352).
+      heading without the id that the link this target also emits depends on.
 
    ============================================================================ *)

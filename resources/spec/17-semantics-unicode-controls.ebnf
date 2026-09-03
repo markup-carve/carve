@@ -1,5 +1,5 @@
 (* ============================================================================
-   26. TROJAN-SOURCE / INVISIBLE-UNICODE HARDENING -- NORMATIVE (CVE-2021-42574
+   26. TROJAN-SOURCE / INVISIBLE-UNICODE HARDENING -- NORMATIVE [CARVE-P9-058] (CVE-2021-42574
       class). Visually deceptive or invisible Unicode MUST NOT produce
       diverging heading ids nor smuggle a live control character into the
       output. The corpus pins representative cases (resources/examples/edge-cases.md
@@ -33,7 +33,7 @@
         `# A<U+202E>B<U+200B>C` renders text `AB<U+200B>C` -- override gone,
         zero-width kept -- with id `ABC`.)
 
-   27. INLINE LITERAL -- NORMATIVE (governs `literal_inline` in PART 3).
+   27. INLINE LITERAL -- NORMATIVE [CARVE-P9-059] (governs `literal_inline` in PART 3).
       A `!` PREFIX immediately before a verbatim code span is an INLINE
       LITERAL, mirroring how `$` before a code span is inline math (§18). It
       exists so notation that collides with the bare emphasis delimiters --
@@ -60,7 +60,7 @@
         before a backtick run is therefore written `\!` -- the single case this
         construct reinterprets. (Chosen over the earlier trailing-`{!}` sigil:
         the `!` prefix matches the `$`-math / `!`-image family, keeps the
-        attribute block ordinary, and reads as "not code". See #280.)
+        attribute block ordinary, and reads as "not code".)
       - There is NO block form. A fenced code block already carries its content
         verbatim; the inline case is the one the notation problem needs, and a
         block spelling is deliberately left undefined rather than invented.
@@ -69,7 +69,7 @@
         !`/kaet/`{.ipa}  -> <span class="ipa">/kaet/</span>
         !`a<b>`          -> a&lt;b&gt;
 
-   28. BLOCK COMMENT FENCES -- NORMATIVE (governs `comment_block`,
+   28. BLOCK COMMENT FENCES -- NORMATIVE [CARVE-P9-060] (governs `comment_block`,
       `comment_block_open` and `comment_block_close` in PART 2). A `%%%` fence
       line is DELIMITER PLUS INSIGNIFICANT TAIL: the LEADING RUN of 3+ `%` is
       the delimiter, and ANY remaining text on the line is IGNORED. So
@@ -105,7 +105,7 @@
         "%%%\nsecret\n%%% end\n\nafter"   -> <p>after</p>
         "%%% TODO\nsecret\n\nafter"       -> <p>secret</p><p>after</p>
 
-   29. C0 CONTROLS ON THE RENDER TARGETS -- NORMATIVE (governs what each
+   29. C0 CONTROLS ON THE RENDER TARGETS -- NORMATIVE [CARVE-P9-061] (governs what each
       target may emit; the companion to PART 7's ONE WHITESPACE DEFINITION,
       IN EVERY CONSTRUCT, which governs what the LANGUAGE reads). The two
       questions are different: PART 7 makes a character CONTENT, and a target
@@ -113,7 +113,7 @@
       like a PART 7 violation, which is why it is written down here rather
       than left as an implementation habit.
 
-      THE SUBJECT IS A CLASS, NOT TWO CHARACTERS. After carve#963 the
+      THE SUBJECT IS A CLASS, NOT TWO CHARACTERS. After the
       whitespace of this language is exactly U+0020, U+0009, U+000A and
       U+000D. EVERY OTHER C0 CONTROL -- U+0001..U+0008, U+000B, U+000C,
       U+000E..U+001F -- is ordinary CONTENT: it parses as content, it
@@ -123,7 +123,7 @@
       whitespace clause happens to mention, would leave the rest to habit,
       which is the state this section replaces.
 
-      U+0000 IS NOT ONE OF THOSE CONTROLS -- NORMATIVE (carve#1523). The NULL is
+      U+0000 IS NOT ONE OF THOSE CONTROLS -- NORMATIVE [CARVE-P9-062]. The NULL is
       REPLACED BY U+FFFD before the first line is read (PART 0 INPUT, A NULL
       IS REPLACED BEFORE THE FIRST LINE IS READ). So it is not content, it
       never reaches the AST, and no target is ever asked whether to emit it.
@@ -193,7 +193,7 @@
 
 
 (* --- PART 9 §16a: the words the engine writes itself --- *)
-(* THE ENGINE'S OWN WORDS ARE A RENDER OPTION -- NORMATIVE (carve#1456).
+(* THE ENGINE'S OWN WORDS ARE A RENDER OPTION -- NORMATIVE [CARVE-P9-063].
 
    Almost every string in the output is the author's: a caption's label is
    written in the source (`^ Figure #: …`, so a German document writes
@@ -209,7 +209,7 @@
    host that reads its strings from a translation catalog is not handing the
    renderer an injection vector.
 
-   THE KEYS CORE DEFINES, and the whole set core defines today:
+   THE KEYS CORE DEFINES, and the complete core set:
 
      footnoteBacklink   "Back to reference"   PART 9 §16, the endnote backlink's
                                               accessible name
@@ -231,7 +231,7 @@
    read does a label appear -- the untitled admonition's type word, and the two
    footnote strings.
 
-   AN EXTENSION WRITES INTO THE SAME MAP -- NORMATIVE. The map is the
+   AN EXTENSION WRITES INTO THE SAME MAP -- NORMATIVE [CARVE-P9-064]. The map is the
    renderer's, not core's: Extensions §1.5 states which strings an EXTENSION
    contributes to it, and those keys are part of the same map a host passes
    once. So the list above is what CORE defines and not the whole map an engine
@@ -252,8 +252,8 @@
    This is not a localization system: it defines no locale or built-in table
    beyond the English defaults. The map is the seam to a host's catalog.
 
-   AN IMPORTER DOES NOT BAKE A DERIVED NAME INTO SOURCE -- NORMATIVE
-   (carve#1500). An HTML importer DROPS an attribute whose value EQUALS what
+   AN IMPORTER DOES NOT BAKE A DERIVED NAME INTO SOURCE -- NORMATIVE [CARVE-P9-065].
+   An HTML importer DROPS an attribute whose value EQUALS what
    the renderer derives for that element, and KEEPS every other one. It is the
    rule already applied to a `<th>`'s generated `scope` and to a generated
    `colspan` / `rowspan`, and it governs every string this clause and
@@ -272,7 +272,7 @@
    round trip. A kept `aria-label="Note"` is indistinguishable from an authored
    one, and §12's author-wins rule then makes it WIN on the next render, so an
    import that keeps a derived name has permanently unlocalized the document
-   while changing no byte of today's output.
+   without changing the rendered bytes.
 
    NOTHING IS LOST, SO NOTHING IS DIAGNOSED. The renderer writes the value
    back, so a value-matched drop is not a lossy decision and emits no
@@ -302,11 +302,11 @@
    WHAT IS NOT RULED HERE is dropping the name on a named construct REGARDLESS
    of value. That would take an author's deliberate override -- an
    `{aria-label="Wichtiger Hinweis"}` written on a `::: note`, which §12
-   currently honors -- so the residue above is accepted rather than closed by
+   honors -- so the residue above is accepted rather than closed by
    force.
 
-   A DERIVED VALUE IS ONE THE IMPORTER CAN RECONSTRUCT -- NORMATIVE
-   (carve-php#1588). The rule above says WHAT to do with a derived value; this
+   A DERIVED VALUE IS ONE THE IMPORTER CAN RECONSTRUCT -- NORMATIVE [CARVE-P9-066].
+   The rule above says WHAT to do with a derived value; this
    says what makes one derived, because the list of shapes it reaches is not the
    test and cannot be. A list grows an entry every time the question recurs, and
    an implementation keyed on one entry is a check that cannot fail for the rest

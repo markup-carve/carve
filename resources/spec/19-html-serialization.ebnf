@@ -2,8 +2,9 @@
    PART 10: HTML SERIALIZATION CONVENTIONS (NORMATIVE)
    ============================================================================
 
-   These conventions define the exact bytes the corpus pins. On any
-   disagreement the corpus wins.
+   These conventions define the exact bytes illustrated by the corpus. A
+   disagreement between a clause and a committed pair is a defect in one or
+   both artifacts; neither silently overrides the other.
 
    1. ATTRIBUTE ORDER. Attributes serialize in the AUTHOR's source order
       (the recorded `order`; see the RENDER ORDER rule in PART 4 and
@@ -24,7 +25,7 @@
       first item's marker, §11 N2), a link's `href`, an image's `src` and
       `alt` are all structural. They are emitted BEFORE the authored
       attributes, and the authored order then follows unchanged:
-        > {k=v .attr}   -> <ol type="a" k="v" class="attr">
+        > {k=v .attr}  -> <ol type="a" k="v" class="attr">
         > a. alpha
       A structural CLASS instead merges into the class slot at its FRONT,
       which is the mandatory-base-class rule above said from the other
@@ -44,7 +45,7 @@
       it takes the authored order first, then the generated attribute.
       In practice this is one attribute -- the auto-slug id an unwrapped
       heading carries (§13):
-        > {a=b .c}      -> <h1 a="b" class="c" id="Auto">
+        > {a=b .c}     -> <h1 a="b" class="c" id="Auto">
         > # Auto
       An attribute the author WROTE keeps its authored position even
       when it is the id, because it is not generated:
@@ -81,7 +82,7 @@
       attribute. Every element outside the text-block set, and every value
       outside the three named values, likewise keeps the authored attribute.
       Rewriting a table's placement as `text-align` would change the document,
-      not modernize an equivalent spelling. (carve#1755.)
+      not modernize an equivalent spelling.
 
    2. ATTRIBUTE QUOTING + ESCAPING. Attribute values are double-quoted.
       In an attribute value escape `&`->&amp;, `<`->&lt;, `>`->&gt;,
@@ -98,7 +99,7 @@
       div, figure, section, endnotes) indent their children by TWO spaces
       per nesting level. Inline content stays flat on its block's line.
 
-      AN EMPTY CONTAINER BODY -- NORMATIVE. A container whose body renders
+      AN EMPTY CONTAINER BODY -- NORMATIVE [CARVE-P10-001]. A container whose body renders
       nothing keeps a BLANK LINE where the body would be:
 
         <blockquote>
@@ -127,7 +128,7 @@
       space after the colon, trailing semicolon); a cell with no effective
       alignment emits NO style attribute. `rowspan`/`colspan` are emitted
       only when their count is > 1.
-      A ROW IS A ROW, IN EVERY SECTION -- NORMATIVE (carve#1459). `<thead>`,
+      A ROW IS A ROW, IN EVERY SECTION -- NORMATIVE [CARVE-P10-002]. `<thead>`,
       `<tbody>` and `<tfoot>` are each written on their own lines with ONE ROW
       PER LINE, indented one level inside the section:
 
@@ -145,7 +146,7 @@
       backlink glyph is `↩` (§16). Math wraps content in `\(…\)` /
       `\[…\]` inside `<span class="math inline|display">` (§18).
 
-   9. SEMANTIC SPAN ATTRIBUTES -- NORMATIVE. On an ordinary `[content]{attrs}`
+   9. SEMANTIC SPAN ATTRIBUTES -- NORMATIVE [CARVE-P10-003]. On an ordinary `[content]{attrs}`
       span, three attribute names are reserved HTML rendering sugar: `abbr`,
       `time` and `kbd`. Each present name is consumed as an attribute and wraps
       the rendered inline content in its same-named element.
@@ -157,7 +158,7 @@
 
       A non-empty `abbr` or `time` value becomes `title` or `datetime`; a value
       on `kbd` only selects the wrapper. A DERIVED ATTRIBUTE YIELDS TO AN
-      AUTHORED ONE OF THE SAME NAME -- NORMATIVE. `title` and `datetime` are
+      AUTHORED ONE OF THE SAME NAME -- NORMATIVE [CARVE-P10-004]. `title` and `datetime` are
       ordinary attribute names an author may also write, so
       `[x]{abbr="gen" title="authored"}` is `<abbr title="authored">`, not two
       `title` attributes on one element. The author wrote that one in the
@@ -166,13 +167,13 @@
       INNER-TO-OUTER order, independent of the order the author typed them:
       `abbr`, `time`, `kbd`.
 
-      LEFTOVER ATTRIBUTES RIDE THE OUTERMOST SEMANTIC ELEMENT -- NORMATIVE.
+      LEFTOVER ATTRIBUTES RIDE THE OUTERMOST SEMANTIC ELEMENT -- NORMATIVE [CARVE-P10-005].
       Where a semantic name is present, the span does not survive as a wrapper:
       every remaining id, class and key/value attribute lands on the outermost
       semantic element and passes through §1-2 plus PART 9 §25 hardening
       there.
 
-        `[Tab]{#k .key kbd}`     ->  `<kbd id="k" class="key">Tab</kbd>`
+        `[Tab]{#k .key kbd}`    ->  `<kbd id="k" class="key">Tab</kbd>`
         `[x]{#i time="12:00" kbd}`
                                  ->  `<kbd id="i"><time datetime="12:00">x</time></kbd>`
         `[x]{kbd onclick="e"}`   ->  `<kbd>x</kbd>`
@@ -188,7 +189,7 @@
       attributes ride the element they were written on rather than a wrapper
       the author did not write.
 
-      THE REGISTRY HOLDS NO ELEMENT CARVE ALREADY SPELLS INLINE -- NORMATIVE.
+      THE REGISTRY HOLDS NO ELEMENT CARVE ALREADY SPELLS INLINE -- NORMATIVE [CARVE-P10-006].
       A name is reserved only where the language offers no OTHER INLINE
       SPELLING for that element -- no second way to wrap a run of text where it
       stands. `code` and `mark` do not qualify: a code span (`` `x` ``) writes
@@ -213,16 +214,12 @@
       an abbreviation with no expansion at all. None of those is writable with
       `*[…]:`.
 
-      WHY THESE THREE ARE CORE AND THE REST ARE NOT -- NORMATIVE. A name is
-      core when it carries data the author would otherwise lose, or when a core
-      clause already rules its interaction. `abbr` carries the expansion and
-      collides with core abbreviation definitions (the precedence rule below);
-      `time` carries `datetime`, which a reader cannot reconstruct from the
-      text. `kbd` carries neither and is core on ubiquity alone: it is the one
-      name every comparable system ships, and a language that cannot write a
-      keyboard key without an opt-in is thinner than it needs to be. `samp`,
-      `var`, `cite` and `dfn` fail both tests and are the SemanticSpan
-      extension's, per §10.
+      THE CORE SEMANTIC NAMES ARE CLOSED -- NORMATIVE [CARVE-P10-007]. A name
+      is core when it preserves otherwise-lost authored data or a core clause
+      already governs its interaction. Core recognizes exactly `abbr`, `time`,
+      and `kbd`; `kbd` is also retained for its broad use across comparable
+      systems. `samp`, `var`, `cite`, and `dfn` meet neither criterion and
+      belong to the SemanticSpan extension described in §10.
 
       An explicit `abbr` attribute is authoritative over automatic abbreviation
       expansion inside that span. A resolved `abbreviation` child contributes
@@ -238,7 +235,7 @@
       Accessible ruby is NOT reserved here: it requires structured
       base/annotation children rather than a single inline container.
 
-   10. THE OTHER SEMANTIC NAMES ARE AN EXTENSION -- NORMATIVE. `samp`, `var`,
+   10. THE OTHER SEMANTIC NAMES ARE AN EXTENSION -- NORMATIVE [CARVE-P10-008]. `samp`, `var`,
       `cite` and `dfn` carry no data and collide with no core clause, so they
       are not core: a conformant core renders `[x]{samp}` as an ordinary
       boolean attribute (`<span samp="">x</span>`) and `:samp[x]` through the
@@ -257,8 +254,8 @@
       fallback. `cite` denotes a work title or source and is unrelated to a
       bibliographic `[@key]` citation, which is the Citations extension's.
 
-   11. AN EXTENDED TASK STATE NAMES ITSELF ON THE ITEM -- NORMATIVE
-      (carve#1870). PART 2 admits seven task states and §2's box has two
+   11. AN EXTENDED TASK STATE NAMES ITSELF ON THE ITEM -- NORMATIVE [CARVE-P10-009].
+      PART 2 admits seven task states and §2's box has two
       positions, so `[-]`, `[_]`, `[>]` and `[?]` rendered bytes identical to
       `[ ]`: the distinction the author made survived the file (PART 11 §6g)
       and died at the renderer, out of reach of any stylesheet. The item

@@ -19,7 +19,7 @@ export function extractNormativeClauses(grammar) {
   // Clause headings wrap across lines, so flatten the indentation first and
   // match against the running text rather than line by line.
   const flat = grammar.replace(/\n\s*/g, ' ')
-  const raw = [...flat.matchAll(/([A-Z][A-Za-z0-9 ,§`(){}'/+.:[\]-]{3,110}?)\s+--\s+NORMATIVE/g)]
+  const raw = [...flat.matchAll(/([A-Z](?:[A-Za-z0-9 ,§(){}'/+.:[\]-]|`[^`]*`){3,110}?)\s+--\s+NORMATIVE/g)]
   const headings = raw
     .map((m) => m[1].trim().replace(/\s+/g, ' '))
     // A match can start mid-sentence when the preceding prose ends in a capital

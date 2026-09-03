@@ -96,7 +96,7 @@
          "Para\n{.x}" ends the paragraph with the attribute line floating
          forward (§15; corpus 89-block-attribute-lines-7). (A small
          deviation from djot, which keeps such a line as paragraph text.)
-         AN INVISIBLE LINE IS ONE CLASSIFICATION -- NORMATIVE. The five kinds
+         AN INVISIBLE LINE IS ONE CLASSIFICATION -- NORMATIVE [CARVE-P9-013]. The five kinds
          above are one class, and it is MEMBERSHIP in that class the rest of
          the grammar cites. An invisible line, in the container that owns it:
 
@@ -127,8 +127,8 @@
          a following line stays in the item; corpus
          189-a-comment-under-a-nested-item-does-not-close-it and
          192-a-comment-fence-under-a-nested-item-does-not-close-it-either), and
-         the definition-description host answers the same shape differently
-         (carve#1783). A comment's own COLUMN stays open for the same reason:
+         the definition-description host answers the same shape differently.
+         A comment's own COLUMN stays open for the same reason:
          the exemption below decides which lines are invisible, not what the
          line after one owns.
 
@@ -162,10 +162,10 @@
          fell below -- and does not register. Comment recognition is not an
          exception to this opener set: PART 0 has already removed comment
          tokens from visible block classification. Pinned by corpus
-         287-a-column-zero-definition-ends-an-open-list-item (carve#1045).
+         287-a-column-zero-definition-ends-an-open-list-item.
 
          THE COLUMN SCOPE IS THE SAME FOR AN ATTRIBUTE LINE, and the three
-         bands are the same three bands (carve#1801). A block-attribute line is
+         bands are the same three bands. A block-attribute line is
          on I5's interrupter list with the definitions, and §15 A2's pending
          metadata is scoped to a container exactly as a definition's collection
          is: at DOCUMENT column 0 it ends the container and floats forward at
@@ -190,7 +190,7 @@
          item prose. The comment exception above does not extend to definitions.
          The bare decimal-dot marker `. ` claims one marker column and one
          separator column, so its content_column is the same as `- `. Pinned
-         by corpus 374 (carve#1376).
+         by corpus 374.
       I6 SCOPE + THE HEADING EXCEPTION. The relation applies to EVERY open
          paragraph, including a blockquote's lazy continuation: "> quoted
          \n - item" folds into ONE quote whose paragraph is
@@ -217,7 +217,7 @@
          interrupts a paragraph" precisely because a caret line is not one of
          those. Item 4 would be redundant if it were.
          An INDENTED caret line opens no top-level block at all, so both
-         readings agree there. (carve#1046)
+         readings agree there.
 
    11. LIST MARKER CHANGE STARTS A NEW LIST -- OPERATIONAL (governs `list`
       in PART 2). §10 decides FIRST whether marker lines establish a list
@@ -235,7 +235,7 @@
            * c
            * d
          `- a` followed by `- [x] b` is likewise two lists.
-         N1a HARD BOUNDARY AFTER THREE BLANK LINES -- NORMATIVE. A run of
+         N1a HARD BOUNDARY AFTER THREE BLANK LINES -- NORMATIVE [CARVE-P9-014]. A run of
          THREE OR MORE blank lines before an item marker ends the list: the
          marker after the run opens a NEW sibling list even when every N1
          axis matches. ONE blank line remains the ordinary loose separator,
@@ -273,7 +273,7 @@
       classification (with N3's one-item-forward tie-break) for the rest of
       the list.
 
-   12. FENCED ":::" BLOCK RENDERING -- NORMATIVE (governs `admonition`
+   12. FENCED ":::" BLOCK RENDERING -- NORMATIVE [CARVE-P9-015] (governs `admonition`
       and `div` in PART 2; cross-references syntax.md §4.20 "Block
       Extensions"). A TYPED `::: word` block renders by a TWO-TIER rule
       on the type identifier (below). A BARE `:::` opener with NO type
@@ -307,7 +307,7 @@
       on account of its label. Only a bare equal-length line closes.
 
       THE CANONICAL WIDTH IS A FUNCTION OF DEPTH, AND THAT COSTS O(depth^2)
-      BYTES (carve#1553). The exact-length guard leaves the DIRECTION free --
+      BYTES. The exact-length guard leaves the DIRECTION free --
       longer-outer documents and longer-inner ones both parse -- and `carve
       fmt` writes the inward one: the outermost container is `:::` and each
       level inward adds one colon (PART 11; the `colon_fence` note in PART 2).
@@ -320,7 +320,7 @@
       markers -- the accepted canonical-size trade (docs/spec-history.md).
 
       A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH
-      EXPECTING A CLOSER -- NORMATIVE. A `:::` line that is not a valid opener
+      EXPECTING A CLOSER -- NORMATIVE [CARVE-P9-016]. A `:::` line that is not a valid opener
       (an attribute block where the opener takes a type word, say) is ordinary
       paragraph text, and from that point the paragraph absorbs the next
       fence-shaped line as text too, INSTEAD of being interrupted by it:
@@ -340,8 +340,8 @@
       has no length to match against, so there is nothing for a width test to
       compare; the paragraph simply continues.
 
-      ABSORPTION REACHES A PARAGRAPH'S OWN LINES ONLY -- NORMATIVE
-      (carve#920). The absorbed line has to be one the paragraph's container
+      ABSORPTION REACHES A PARAGRAPH'S OWN LINES ONLY -- NORMATIVE [CARVE-P9-017].
+      The absorbed line has to be one the paragraph's container
       supplied a prefix for. A FLUSH-LEFT fence-shaped line under a QUOTED
       paragraph is not:
 
@@ -417,7 +417,7 @@
            An explicitly empty `""` still counts as a supplied (empty)
            title. Applies to both tiers.
 
-      AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME -- NORMATIVE. A
+      AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME -- NORMATIVE [CARVE-P9-018]. A
       Tier-1 block renders `<aside>`, which is a COMPLEMENTARY LANDMARK, and a
       landmark with no name is an anonymous row in a reader's landmark list.
       Tier 2 renders `<div>`, is not a landmark, and takes nothing here.
@@ -447,7 +447,7 @@
         the name undefined, and the author's is the more specific statement.
         The title `<p>` is still emitted, unchanged, without an id.
 
-   13. HEADING SECTION WRAPPING -- NORMATIVE (governs `atx_heading` in
+   13. HEADING SECTION WRAPPING -- NORMATIVE [CARVE-P9-019] (governs `atx_heading` in
       PART 2 and the renderer; matches djot, see `jgm/djot` official
       `headings.test`). Every heading emits a `<section id="{id}">`
       wrapper around itself and the following content up to the next
@@ -483,9 +483,9 @@
       - ATTRIBUTES OTHER THAN THE ID STAY ON THE `<h*>`. The id is the
         only attribute that hoists, and it hoists the same way whether
         it was written (`{#x}`) or slugged from the heading text:
-          {a=b .c}       -> <section id="abc"><h1 a="b" class="c">
+          {a=b .c}      -> <section id="abc"><h1 a="b" class="c">
           # abc
-          {a=b .c #x}    -> <section id="x"><h1 a="b" class="c">
+          {a=b .c #x}   -> <section id="x"><h1 a="b" class="c">
           # abc
         The id hoists because it names the region a fragment URL
         targets, and that region is the section. Every other attribute
@@ -547,7 +547,7 @@
       - Carve does NOT add `<section>` wrappers around non-heading
         top-level blocks. Headings are the only trigger.
 
-   14. INLINE SPAN VS LINK DISAMBIGUATION -- NORMATIVE (governs `link`
+   14. INLINE SPAN VS LINK DISAMBIGUATION -- NORMATIVE [CARVE-P9-020] (governs `link`
       and `inline_span` in PART 3). After scanning a bracketed run
       `[ inline_content ]`, the IMMEDIATELY FOLLOWING character selects
       the construct (single-character lookahead, no backtracking):
@@ -568,7 +568,7 @@
       Because the `{` test fires only when the attribute block directly
       abuts `]`, `[text] {.x}` (with a space) is literal `[text]`
       followed by a literal `{.x}` -- the span requires adjacency.
-      EMPTY OR INVALID ATTRIBUTE BLOCK -- NORMATIVE. The directly-abutting
+      EMPTY OR INVALID ATTRIBUTE BLOCK -- NORMATIVE [CARVE-P9-021]. The directly-abutting
       `{...}` is classified by its content:
         - yields at least one attribute (`[text]{.c}`) -> span with those
           attributes.
@@ -591,7 +591,7 @@
           when mixed with valid attributes (`{.ok .1}`), so the run stays
           literal. No other leading character is newly accepted.
           A digit/`-`/`_` AFTER the first character is valid (`{.a1}`).
-      BOOLEAN (value-less) ATTRIBUTES -- NORMATIVE. A bare identifier with no
+      BOOLEAN (value-less) ATTRIBUTES -- NORMATIVE [CARVE-P9-022]. A bare identifier with no
       value (`[text]{featured}`, `{.note open}`, `{disabled}` on a block line)
       is a boolean attribute, rendered `name=""`. It is matched after the
       `key_value_attribute` form (so `k=v` stays a key/value) and mixes freely
@@ -630,7 +630,7 @@
       A2 FLOAT FORWARD. pending survives blank lines and further attribute
          lines and attaches to the NEXT block element: `{#id}\n\nText` ->
          <p id="id">Text</p>.
-      A2a AN INVISIBLE CONSTRUCT IS NOT THE NEXT BLOCK -- NORMATIVE. pending
+      A2a AN INVISIBLE CONSTRUCT IS NOT THE NEXT BLOCK -- NORMATIVE [CARVE-P9-023]. pending
          floats PAST an INVISIBLE LINE and attaches to the next VISIBLE block.
          The class is §10 I5's, AN INVISIBLE LINE IS ONE CLASSIFICATION -- the
          five kinds are enumerated there, and "renders nothing" is its property
@@ -655,11 +655,11 @@
          {key=val2} {.baz} {#id2} then "Okay" ->
          <p id="id2" key="val2" class="foo bar baz">Okay</p>.
 
-      A4 DROP IF DANGLING -- NORMATIVE. pending with no following block
+      A4 DROP IF DANGLING -- NORMATIVE [CARVE-P9-024]. pending with no following block
          element produces no output.
 
          THERE ARE TWO WAYS TO RUN OUT OF FOLLOWING BLOCKS, and this clause
-         named only the first (carve#1281):
+         named only the first:
 
            - END OF DOCUMENT; and
            - END OF THE CONTAINER that holds the attribute.
@@ -682,7 +682,7 @@
 
          Which container END is reached is PART 1 S4's question, not this
          clause's: an attribute line leaves no open paragraph, so a following
-         flush-left line does not join the container (carve#1280). The two
+         flush-left line does not join the container. The two
          clauses meet on `> {.k}` / `tail`, where S4 ends the quote and A4 then
          has nothing left for the attribute.
 
@@ -692,8 +692,8 @@
       A5 MULTI-LINE BLOCK. One block may wrap across lines ({#id\n .foo} is
          one block: id `id`, class `foo`). A BLANK line inside the braces
          ends the attempt -- the text is then literal, not a
-         block_attributes. A quoted value containing a literal `}` spanning
-         lines is unsupported by the reference impls (pathological).
+         block_attributes. A quoted value containing a literal `}` across
+         lines is outside this form.
       A6 NOT AN ATTRIBUTE LIST -> NOT AN ATTRIBUTE LINE. A `{…}` line whose
          braces do not parse as an attribute list is ordinary paragraph
          content under normal inline rules (a `{#a #}` line is an editorial
@@ -712,7 +712,7 @@
          item body's column 0 at source column 2 (§24 C3). WITH a space, what follows
          the brace run on that line decides:
            - {.c} text      -> literal: <li>{.c} text</li>
-           - {a=b .c}       -> an A1 attribute line, floating (A2) to the
+           - {a=b .c}      -> an A1 attribute line, floating (A2) to the
              # H               heading below: <li><h1 a="b" class="c" …>
          The discriminator is whether CONTENT FOLLOWS the braces on that
          line, not the column they sit in. Braces trailed by text are part
@@ -720,5 +720,4 @@
          start after a marker, and A1/A2 apply to it exactly as they would
          at the top level -- a container does not get its own attribute
          rules.
-         Decided in carve#454.
    ============================================================================ *)

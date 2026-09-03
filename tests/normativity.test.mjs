@@ -76,7 +76,7 @@ test('focused rule indexes match the scoped registry', () => {
 test('language-rule titles stand alone and process-rule ids stay retired', () => {
   const registry = readJson('resources/spec/rules.json')
   const dependent = registry.rules.filter(({ title }) =>
-    /^(?:(?:AND|BUT|SO|THAT|IT|THIS|THEY)\b|THE LINTER\b|A CHECKER FOR\b)/.test(title),
+    /^(?:(?:AND|BUT|SO|THAT|IT|THIS|THEY|IS|ARE|WAS|WERE|DOES|DO|HAS|HAVE)\b|THE LINTER\b|A CHECKER FOR\b)/.test(title),
   )
   assert.deepEqual(
     dependent,
@@ -87,6 +87,13 @@ test('language-rule titles stand alone and process-rule ids stay retired', () =>
   assert.deepEqual(registry.rules.filter(({ part }) => part === 'PRE'), [])
   for (const rule of registry.retired) {
     assert.ok(rule.replacement, `${rule.id} names what replaced it`)
+    if (rule.replacement.startsWith('CARVE-')) {
+      assert.ok(
+        registry.rules.some(({ id }) => id === rule.replacement),
+        `${rule.id} replacement is an active rule: ${rule.replacement}`,
+      )
+      continue
+    }
     const [relative, anchor] = rule.replacement.split('#')
     const replacementPath = resolve(repo, relative)
     assert.ok(existsSync(replacementPath), `${rule.id} replacement exists: ${relative}`)

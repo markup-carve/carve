@@ -17,9 +17,9 @@ frontmatter = &(frontmatter_open, {content_line - frontmatter_close}, frontmatte
    canonical) and it is a PADDING SLOT, not a marker separator (PART 7). Both
    roles take `space`: the slot sits after the `---`, and A TAB IS SYNTAX ONLY
    IN THE LEADING RUN (PART 7). So `---<TAB>yaml` is not a typed opener; it is
-   a thematic break followed by ordinary lines. Implementations that read it as frontmatter today diverge
-   from this production (carve#901).
-   POSITION DECIDES WHICH CLAUSE GOVERNS, by ruling (carve#1295). Everything
+   a thematic break followed by ordinary lines. Reading it as frontmatter
+   diverges from this production.
+   POSITION DECIDES WHICH CLAUSE GOVERNS, by ruling. Everything
    in this paragraph is about the slot BEFORE the format token. A whitespace
    run with NOTHING after it is not that slot: it is trailing whitespace on a
    content line, PART 2 drops it, and the bare `---` opener it leaves opens
@@ -29,7 +29,7 @@ frontmatter = &(frontmatter_open, {content_line - frontmatter_close}, frontmatte
    content, so `---<FF>` is not an opener. The same split governs the code
    fence's slot at `fenced_code_block`; refusing BOTH positions takes the
    separator half twice.
-   CARDINALITY IS EXACTLY ONE, by ruling (carve#912): `---<SP><SP>yaml` is not
+   CARDINALITY IS EXACTLY ONE: `---<SP><SP>yaml` is not
    a typed opener either, because the second space reaches
    `frontmatter_format`, which is letters and digits only. What is left is not
    a thematic break -- a break is a dash run and nothing else -- so the line is
