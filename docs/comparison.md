@@ -56,6 +56,8 @@ that remain in the paragraph, and closing markers that do not start a block.
 |---|:---:|:---:|:---:|:---:|
 | Tables | 🧩 GFM | ✅ | 🧩 GFM | ✅ |
 | Table rowspan / colspan | ❌ | ❌ | ❌ | ✅ |
+| Captions on figures, tables, code, quotes | 🧩 Pandoc, images only | ⚠️ tables only | 🧩 component | ✅ one `^ ` line, every captionable block |
+| A lone image is a block | ❌ wrapped in `<p>` | ❌ wrapped in `<p>` | ❌ | ✅ bare `<img>`, so a caption has a host |
 | Footnotes | 🧩 | ✅ | 🧩 | ✅ |
 | Math | 🧩 | ✅ | 🧩 | ✅ |
 | Definition lists | 🧩 | ✅ | 🧩 | ✅ |
@@ -66,6 +68,13 @@ that remain in the paragraph, and closing markers that do not start a block.
 | Editorial / critic markup | ❌ | ❌ | ❌ | ✅ |
 | Frontmatter | ⚠️ tooling | ❌ | 🧩 | ✅ |
 | Symbols / emoji shortcodes | 🧩 | ✅ symbols, mapped via filters | 🧩 | ✅ `:name:` symbols, mapped via config |
+
+Djot already spells a table caption `^ Caption`. Carve keeps that spelling and
+lets it attach to any captionable block. The two rules work together: a lone
+image is a block rather than paragraph text, which is what gives the caption
+line something to attach to, and the pair renders as `<figure>` with a
+`<figcaption>`. Markdown and Djot wrap the same image in a paragraph, so the
+caption has to be written as raw HTML.
 
 ## Docs & cross-referencing
 
