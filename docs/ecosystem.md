@@ -130,7 +130,7 @@ Opt-in extensions that add non-core syntax.
 
 | Project | Target | Notes |
 |---|---|---|
-| [carve-php-media-embed](https://github.com/markup-carve/carve-php-media-embed) | carve-php | Embeds audio/video from 30+ providers via dereuromark/media-embed. |
+| [carve-php-media-embed](https://github.com/markup-carve/carve-php-media-embed) | carve-php | Embeds audio and video through dereuromark/media-embed. |
 | [carve-php-chat](https://github.com/markup-carve/carve-php-chat) | carve-php | Renders Carve to chat-platform markup (WhatsApp, Slack, Telegram, Discord) via data-driven flavor definitions. |
 
 ## Benchmarks

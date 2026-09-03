@@ -17,6 +17,7 @@ const authorFacingPages = [
   'docs/recipes.md',
   'docs/diagrams.md',
   'docs/svg-images.md',
+  'docs/ecosystem.md',
 ]
 
 const unexplainedInternalTerms = [
@@ -28,6 +29,12 @@ const unexplainedInternalTerms = [
   /\bhost degradation\b/i,
   /\bsource-positioned losses?\b/i,
   /\bhydrat(?:e|es|ed|ing|ion)\b/i,
+  /\bconformance corpus\b/i,
+  /\bcorpus categor(?:y|ies)\b/i,
+]
+
+const volatileMarketingMetrics = [
+  /\b(?:more than|over|about|approximately)?\s*[1-9][\d,]+\+?\s+(?:[\w/-]+\s+){0,4}(?:tests|examples|providers|platforms)\b/i,
 ]
 
 test('main author-facing pages do not use unexplained internal terminology', () => {
@@ -35,6 +42,15 @@ test('main author-facing pages do not use unexplained internal terminology', () 
     const text = readFileSync(resolve(root, path), 'utf8')
     for (const term of unexplainedInternalTerms) {
       assert.doesNotMatch(text, term, `${path} uses internal terminology ${term}`)
+    }
+  }
+})
+
+test('main author-facing pages do not advertise volatile inventory counts', () => {
+  for (const path of authorFacingPages) {
+    const text = readFileSync(resolve(root, path), 'utf8')
+    for (const metric of volatileMarketingMetrics) {
+      assert.doesNotMatch(text, metric, `${path} advertises volatile metric ${metric}`)
     }
   }
 })

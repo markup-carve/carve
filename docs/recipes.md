@@ -320,12 +320,10 @@ source - the branch becomes a container, so the fence widens at every level.
 ## Why this is not syntax
 
 Every recipe here could have been a construct in the language. None of them
-should be. A construct costs a grammar production, a node type, a rule in three
-engines, four editor grammars and a corpus category - and buys a document older
-engines cannot read. The container seam costs nothing, degrades to a readable
-nested list wherever the CSS is absent, and lets a house style ship recipes the
-language never has to know about.
+needs to be. Ordinary containers and attributes keep the document readable when
+the stylesheet is absent and let a project add its own visual conventions
+without inventing specialized syntax.
 
 That is also why these class names are a convention rather than a spec rule, and
-why the layer is a separate import: opting in is how a consumer says they use
-those words the way carve-css means them.
+why the layer is a separate import: adding the stylesheet opts into the meaning
+that carve-css gives those words.
