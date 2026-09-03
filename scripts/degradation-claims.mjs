@@ -92,8 +92,8 @@ const hasCollapsedDisclosure = (html) =>
 const CLAIMS = [
   {
     row: 'Spoiler',
-    quote: 'blurred until revealed | revealed | degrades natively (hiding is meaningless offline)',
-    phrase: 'hiding is meaningless offline',
+    quote: 'blurred until revealed | revealed | hiding is not retained',
+    phrase: 'hiding is not retained',
     source: '::: spoiler\nhidden text\n:::\n',
     check: (staticHtml, interactive) => {
       if (!staticHtml.includes('hidden text')) return 'the body is missing from the static output'
@@ -108,7 +108,7 @@ const CLAIMS = [
   {
     row: 'Spoiler (inline)',
     quote: 'blurred until revealed | revealed',
-    phrase: 'hiding is meaningless offline',
+    phrase: 'hiding is not retained',
     source: 'a :spoiler[hidden] b\n',
     check: (staticHtml, interactive) => {
       if (!staticHtml.includes('hidden')) return 'the content is missing from the static output'
