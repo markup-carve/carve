@@ -590,6 +590,14 @@ definition_indent = whitespace, {whitespace} ;
    their separator. The shared clause decides ownership, extent and canonical
    placement; this construct adds no second rebase rule.
 
+   A NESTED CONTAINER DOES NOT WITHHOLD THE COLUMNS IT DOES NOT REACH
+   (carve#1918). A list or a body opened inside the `dd` has a content column
+   of its own, and a definition written between the `dd`'s column and that one
+   is the `dd`'s: PART 0's OWNERSHIP PRECEDES REBASING selects the innermost
+   container whose content column the line REACHES, and a container it does not
+   reach neither owns the line nor withholds it. `:: t` / `:  - a` over four
+   spaces registers, exactly as `- - x` over three does.
+
    Thus the `>` on
 
        :: t

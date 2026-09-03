@@ -3163,20 +3163,102 @@ function oneBlockEnd(lines, start, endsBlock) {
 function firstBlockEnd(lines, start, limit, state) {
   if (limit - start <= 1) return limit
   const stop = { next: limit - start }
+  const seen = {
+    linkDefs: new Map(),
+    footnoteDefs: new Map(),
+    abbrDefs: new Map(),
+    blockDepth: state.blockDepth ?? 0,
+    measuringAuthoredBlock: state.measuringAuthoredBlock ?? false,
+  }
   try {
-    parseBlocks(lines.slice(start, limit), {
-      linkDefs: new Map(),
-      footnoteDefs: new Map(),
-      abbrDefs: new Map(),
-      blockDepth: state.blockDepth ?? 0,
-      measuringAuthoredBlock: state.measuringAuthoredBlock ?? false,
-    }, false, true, undefined, stop)
+    parseBlocks(lines.slice(start, limit), seen, false, true, undefined, stop)
   } catch {
     // Outside the executable subset: the extent is the honest answer, and the
     // real parse of these lines raises the same refusal where it belongs.
     return limit
   }
-  return start + stop.next
+  return foldedDefinitionEnd(lines, start, start + stop.next, seen)
+}
+
+/*
+ * SS10 I5 SPENDS THE LAZY FOLD FIRST, so a block's extent ends above a
+ * definition the block can only take as TEXT -- carve#1918.
+ *
+ * This measurement parses the block ALONE, where a definition below the block's
+ * own content column is ordinary lazy paragraph text and the extent swallows
+ * it. The block is not alone: PART 0's OWNERSHIP PRECEDES REBASING gives the
+ * base to the innermost open container whose content column the opener REACHES,
+ * and a line that reaches the surrounding container but not this block is the
+ * container's. SS10 I5 is what makes that a definition rather than text -- at a
+ * container's content column a definition INTERRUPTS the open paragraph and
+ * registers, so the fold this measurement relied on is already spent.
+ *
+ * REGISTRATION IS THE TEST, not the column, because the column alone cannot
+ * answer it: inside the block a definition at a nested item's content column is
+ * genuinely the block's and registers there. The parse above already carries the
+ * answer in its own tables, so this costs one pass and no second parse.
+ *
+ * A definition at the block's column 0 is the block's by construction and is
+ * never a candidate. A REPEATED key is, because first-wins registration makes
+ * the table no evidence for the second line: the label is in it either way, so
+ * without this the second spelling of one label would stay folded and publish
+ * its own characters as text.
+ *
+ * AN OPAQUE PAYLOAD IS NOT SCANNED, and this walk has to say so itself: it is
+ * handed a line slice rather than a parse, so a `[r]: /url` written INSIDE a
+ * code, raw or comment fence looks exactly like one written beside it. The
+ * block never registers verbatim content, so every such line read as folded and
+ * the block was cut in half inside its own fence -- `- a` / `+` / a fence
+ * holding one came out as an EMPTY code block plus a paragraph carrying the
+ * definition and the closing run. The span is tracked with the same opener and
+ * closer tests the item collector's `trackFence` uses: a code or raw fence
+ * closes on a pure run of its own character at or past its length, a comment
+ * fence on an EXACT-width run (SS28).
+ *
+ * AN OPENER WITH NO CLOSER IS STILL OPAQUE, and requiring one here is wrong:
+ * an unterminated code or raw fence runs to the end of its container rather
+ * than falling back to prose, so scanning its payload cuts the fence in half.
+ * `trackFence` records the span the same way, unconditionally. The comment
+ * fence is the one that differs -- SS28 gives an unterminated `%%%` no span at
+ * all -- which is why only that branch asks for a closer ahead.
+ */
+function foldedDefinitionEnd(lines, start, end, seen) {
+  const claimed = new Set()
+  let opaque = null
+  for (let k = start; k < end; k++) {
+    const line = lines[k]
+    if (line === undefined || isBlank(line)) continue
+    const { col, rest } = indentCols(line)
+    if (opaque) {
+      if (opaque.kind === 'code') {
+        const c = PURE_FENCE.exec(rest)
+        if (c && c[1][0] === opaque.run[0] && c[1].length >= opaque.run.length) opaque = null
+      } else {
+        const c = COMMENT_FENCE_BODY.exec(rest)
+        if (c && c[1].length === opaque.run.length) opaque = null
+      }
+      continue
+    }
+    const code = FENCE.exec(rest)
+    if (code && parseFenceInfo(code[2]) !== null) {
+      opaque = { kind: 'code', run: code[1] }
+      continue
+    }
+    const comment = COMMENT_FENCE_BODY.exec(rest)
+    if (comment && commentFenceCloserAhead(lines, k, comment[1])) {
+      opaque = { kind: 'comment', run: comment[1] }
+      continue
+    }
+    const footnote = FOOTNOTE_DEF.exec(rest)
+    const link = isLinkDef(rest) ? LINK_DEF.exec(splitTrailingAttrBlock(rest)[0]) : null
+    if (!footnote && !link) continue
+    const key = labelKey(footnote ? footnote[1] : link[1])
+    const table = footnote ? seen.footnoteDefs : seen.linkDefs
+    const kind = footnote ? 'f' : 'l'
+    if (col > 0 && (claimed.has(kind + key) || !table.has(key))) return k
+    claimed.add(kind + key)
+  }
+  return end
 }
 
 /*

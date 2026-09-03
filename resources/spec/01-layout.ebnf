@@ -106,6 +106,17 @@
            rule; their construct clauses only define the minimum column and
            attachment boundary.
 
+           A BLOCK'S EXTENT ENDS AT A DEFINITION IT CAN ONLY TAKE AS TEXT
+           (carve#1918). "At its own content column" is the whole of what the
+           nested body owns: ownership is decided per line, so a block standing
+           open does not withhold the columns BELOW its own. A definition it
+           does not itself register is a line its body never reached, and §10
+           I5 has already spent the lazy fold that would be the only other way
+           in -- at a container's content column a definition INTERRUPTS the
+           open paragraph rather than folding into it. So the extent ends above
+           that line, and the line establishes its base in the container whose
+           content column it does reach.
+
            OWNER SELECTION FOR THE NEXT VISIBLE LINE. Determine this before
            interruption or lazy folding:
 
@@ -416,6 +427,26 @@
         opener column at all; it stays lazy paragraph text of the container
         whose column it fell below (§24 C3, AN INVISIBLE LINE FOLDS LIKE ANY
         OTHER), and this clause does not admit it.
+
+        THE HOST IS NOT A PARAMETER EITHER (carve#1918). This clause is
+        written about CONTAINERS, and the three indented-block collectors are
+        containers alike -- a description body and a footnote body select an
+        owner by content column exactly as a list item does (the DEFINITION
+        BODIES FOLLOW THE SAME CONTAINER REACH RULE clause below, carve#956).
+        So
+
+            :: t
+            :  - a
+                [r]: /url
+
+        opens the body at column 3 and the item inside it at column 5, and the
+        definition at column 4 registers against the BODY -- the derivation
+        `- - x` gets one construct over, and the same answer at every column of
+        the band. Every pair of hosts answers alike: a body inside a body, a
+        note inside an item, an item inside a note. A reader that answers this
+        shape one way under an item and the other under a body is reading the
+        MARKER rather than the column, which is the reading the hole above
+        already ruled out.
 
         THIS IS THE MARKED SPELLING OF A RULE ALREADY SETTLED for the unmarked
         one. `> - a` over a blank over four spaces reaches column 4 and is

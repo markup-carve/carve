@@ -1,0 +1,478 @@
+The host does not change which column a definition reaches
+
+```
+:: t
+:  - a
+   [r]: /url
+
+See [r][].
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a</li>
+    </ul>
+  </dd>
+</dl>
+<p>See <a href="/url">r</a>.</p>
+```
+
+```
+:: t
+:  - a
+    [r]: /url
+
+See [r][].
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a</li>
+    </ul>
+  </dd>
+</dl>
+<p>See <a href="/url">r</a>.</p>
+```
+
+```
+:: t
+:  - a
+     [r]: /url
+
+See [r][].
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a</li>
+    </ul>
+  </dd>
+</dl>
+<p>See <a href="/url">r</a>.</p>
+```
+
+```
+:: t
+: - a
+   [r]: /url
+
+See [r][].
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a</li>
+    </ul>
+  </dd>
+</dl>
+<p>See <a href="/url">r</a>.</p>
+```
+
+```
+:: t
+:   - a
+     [r]: /url
+
+See [r][].
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a</li>
+    </ul>
+  </dd>
+</dl>
+<p>See <a href="/url">r</a>.</p>
+```
+
+```
+:: t
+:  :: u
+   : d
+    [r]: /url
+
+See [r][].
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <dl>
+      <dt>u</dt>
+      <dd>d</dd>
+    </dl>
+  </dd>
+</dl>
+<p>See <a href="/url">r</a>.</p>
+```
+
+```
+[^f]: b
+
+  - a
+   [r]: /url
+
+See [r][] and [^f].
+.
+<p>See <a href="/url">r</a> and <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>b</p>
+      <ul>
+        <li>a</li>
+      </ul>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+[^f]: b
+
+  :: t
+  : d
+   [r]: /url
+
+See [r][] and [^f].
+.
+<p>See <a href="/url">r</a> and <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>b</p>
+      <dl>
+        <dt>t</dt>
+        <dd>d</dd>
+      </dl>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+- x
+  :: t
+  : d
+   [r]: /url
+
+See [r][].
+.
+<ul>
+  <li>x
+    <dl>
+      <dt>t</dt>
+      <dd>d</dd>
+    </dl>
+  </li>
+</ul>
+<p>See <a href="/url">r</a>.</p>
+```
+
+```
+- x
+  [^g]: b
+   [r]: /url
+
+See [r][] and [^g].
+.
+<ul>
+  <li>x</li>
+</ul>
+<p>See <a href="/url">r</a> and <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>b<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+- x
+  [^g]: b
+   [^n]: note text
+
+See [^n] and [^g].
+.
+<ul>
+  <li>x</li>
+</ul>
+<p>See <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and <a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a>.</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note text<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>b<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+:: t
+:  - a
+    [^n]: note text
+
+See [^n].
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a</li>
+    </ul>
+  </dd>
+</dl>
+<p>See <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note text<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+:: t
+: [^g]: b
+   [r]: /url
+
+See [r][] and [^g].
+.
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<p>See <a href="/url">r</a> and <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>b<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+[^f]: b
+
+  [^g]: c
+   [^n]: note text
+
+See [^n] and [^f] and [^g].
+.
+<p>See <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and <a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a> and <a id="fnref3" href="#fn3" role="doc-noteref"><sup>3</sup></a>.</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note text<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>b<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+    <li id="fn3">
+      <p>c<a href="#fnref3" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+- - x
+  [r]: /first
+   [r]: /second
+
+See [r][].
+.
+<ul>
+  <li>
+    <ul>
+      <li>x</li>
+    </ul>
+  </li>
+</ul>
+<p>See <a href="/second">r</a>.</p>
+```
+
+```
+:: t
+:  - a
+    *[HTML]: HyperText
+
+HTML here.
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a
+*[HTML]: HyperText</li>
+    </ul>
+  </dd>
+</dl>
+<p>HTML here.</p>
+```
+
+```
+:: t
+: d
+ [r]: /url
+
+See [r][].
+.
+<dl>
+  <dt>t</dt>
+  <dd>d
+[r]: /url</dd>
+</dl>
+<p>See [r][].</p>
+```
+
+```
+:: t
+:  - a
+    more
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a
+more</li>
+    </ul>
+  </dd>
+</dl>
+```
+
+```
+:: t
+:  d
+    > q
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d</p>
+    <blockquote><p>q
+tail</p></blockquote>
+  </dd>
+</dl>
+```
+
+```
+:: t
+:  - a
+     [r]: /url
+     more
+
+See [r][].
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a
+        more
+      </li>
+    </ul>
+  </dd>
+</dl>
+<p>See <a href="/url">r</a>.</p>
+```
+
+````
+:: t
+:  - a
+     ```
+     [r]: /url
+     ```
+
+See [r][].
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a
+        <pre><code>[r]: /url
+</code></pre>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<p>See [r][].</p>
+````
+
+````
+- a
++
+```
+ [r]: /url
+```
+
+See [r][].
+.
+<ul>
+  <li>a
+    <pre><code> [r]: /url
+</code></pre>
+  </li>
+</ul>
+<p>See [r][].</p>
+````
+
+```
+:: t
+:  - a
+     %%%
+     [r]: /url
+     %%%
+
+See [r][].
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a</li>
+    </ul>
+  </dd>
+</dl>
+<p>See [r][].</p>
+```
+
+```
+- a
++
+[r]: /a
+[r]: /b
+more
+
+See [r][].
+.
+<ul>
+  <li>a
+    more
+  </li>
+</ul>
+<p>See <a href="/b">r</a>.</p>
+```
