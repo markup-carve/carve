@@ -88,51 +88,24 @@ target cannot be interactive - the interaction, never the words. A bridge
 governs what a *converter* may drop when a target model is smaller than
 Carve's - a node, never in silence.
 
-## Testing conversion in both directions
+## Check conversion in both directions
 
-The corpus now records this measurement directly for built-in import routes.
-At the current JavaScript engine pin, 675 of 1,636 documents return to their
-canonical Carve source through HTML, and 410 through Markdown. The exact counts
-are a bidirectional ratchet in `resources/import-roundtrip-baseline.json`: a
-regression and an improvement both require inspection rather than silently
-changing the published baseline.
+Before storing converted content, test both directions on documents that matter
+to your application:
 
-Bridges are usually justified by reach: one conversion unlocks a whole family of
-outputs. That is true, and it is not the most interesting property.
+1. Convert Carve to the target format and inspect the loss report.
+2. Convert the result back to Carve.
+3. Compare the visible content and the structures your workflow depends on.
 
-HTML conformance cannot prove the AST holds a thing. A field can be present in
-the schema, absent from every renderer, and no HTML test will ever notice,
-because HTML is lossy by construction - there is no element whose absence
-implicates the field. Fields that no source spells and no renderer prints are
-exactly the ones that rot unobserved.
+A target format may legitimately lack a Carve construct. That construct should
+be reported as degraded or dropped. The reverse direction is more important:
+an unmapped construct in the target document must be an error, because silently
+skipping it destroys content.
 
-A bridge to a mature foreign AST asks a question HTML never asks: *is there
-somewhere to put this?* It gets asked in both directions, and the two answers
-mean different things:
-
-- **Carve to foreign.** A Carve node with no equivalent is a limit of the
-  target. Expected, uninteresting, reported as dropped or degraded.
-- **Foreign to Carve.** A construct the Carve AST cannot hold is a limit of
-  **Carve**. That is a finding about the language, and it is the same diagnostic
-  the [HTML import contract](./html-import) raises for a structure Carve cannot
-  spell.
-
-So a bridge is a distribution route and an audit at once. Round-tripping the
-corpus through a foreign model is one of the few checks that can fail because
-the exchange format is missing something, rather than because a renderer is.
-
-That is also why the fidelity gate on a bridge is worth stating precisely.
-carve-php's corpus sweep is narrow on purpose: a document whose types the editor
-model fully covers must round-trip to **byte-identical HTML**; a document that
-loses something is allowed to differ, because it must. A single gate over
-everything would have to be loose enough to pass the lossy documents, and would
-then stop detecting anything.
-
-The other half of that gate is what happens to the exemptions. carve-grammars
-drives its round trip off a coverage matrix and fails when a *skipped* category
-round-trips cleanly for every one of its files, which forces the skip to be
-promoted. Without that direction the exemption list only ever grows, and a list
-that only grows stops describing anything.
+The repository maintains detailed round-trip baselines for its built-in
+converters in `resources/import-roundtrip-baseline.json`. Those measurements
+are development gates rather than compatibility promises, so this guide does
+not publish their changing totals.
 
 ## The bridges that exist
 
@@ -151,11 +124,15 @@ one stored document with no Node runtime anywhere in the pipeline.
 carve-js and carve-rs have no bridge of their own. Both accept a `prosemirror`
 adapter for [HTML import](./html-import), which normalizes editor-produced HTML
 on the way in - a different job, at a different stage, from converting a
-ProseMirror document. For carve-js that is by design, since the ProseMirror
-vocabulary and its schema live in carve-grammars and restating them in the
-engine is the drift the next section describes.
+ProseMirror document. For carve-js that is by design: the ProseMirror vocabulary
+and its schema live in carve-grammars, avoiding a second copy that could drift.
 
-## One vocabulary, copied rather than restated
+:::: details Bridge implementer notes
+
+The remainder explains how bridge implementations keep their vocabularies
+aligned. Application developers can stop after the bridge table.
+
+**One vocabulary, copied rather than restated**
 
 A bridge needs a name for every Carve node type in the target's vocabulary, and
 the tempting mistake is for each implementation to write that mapping down
@@ -176,7 +153,7 @@ than editor content. A bridge reads its degradation list from there instead of
 inventing one, which is what keeps two bridges to the same model from disagreeing
 about what was lost.
 
-### A name is only half a vocabulary
+**A name is only half a vocabulary**
 
 Naming the node a type becomes leaves the attributes to each implementation, and
 that is where two bridges to the same model actually drifted: one wrote `ref`,
@@ -200,7 +177,7 @@ FIXTURES beside itself: a set of Carve sources with the exact target document
 each must produce. A bridge in another runtime copies them and asserts against
 them, which turns "we both read the same map" into something a test can fail.
 
-### The preservation node is part of the wire
+**The preservation node is part of the wire**
 
 A bridge that keeps an unmodeled construct as exact source needs somewhere to
 put it, and that node crosses runtimes like any other. carve-grammars writes a
@@ -219,7 +196,7 @@ Pandoc's side needs no shared map, because it reads the serialized
 pins. Any engine that can write that JSON can feed the bridge, not only the one
 it ships beside.
 
-## An application's own node type
+**An application's own node type**
 
 A bridge does not need to know about an application's private constructs for
 them to survive. An attributed container carries them as data:
@@ -234,4 +211,6 @@ them to survive. An attributed container carries them as data:
 That crosses into a ProseMirror document as the generic Carve div node with both
 data attributes intact, and comes back spelled the same way. A genuinely new
 *editor* node - one with its own ProseMirror name - belongs in the shared map
-first, for the reason the previous section gives.
+first so every bridge uses the same vocabulary.
+
+::::

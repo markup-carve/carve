@@ -2,30 +2,23 @@
 description: Why some features are built into Carve while others must be enabled separately.
 ---
 
-# Built-in and optional features
+# Feature availability
 
-This design record compares djot-php extensions with Carve and explains which
-features became part of Carve syntax.
+Use this page to see what works without configuration, what can be switched
+off, and what needs an extension. For syntax examples, start with the
+[cheat sheet](/cheatsheet).
 
-## Criteria for built-in features
+## What is available by default
 
-A feature should be built into Carve syntax if:
-1. It affects document semantics, not just rendering
-2. It's universally useful across contexts
-3. It has clear, unambiguous syntax
-4. It follows Carve's visual mnemonic principles
-
-A feature should remain an **extension** if:
-1. It's implementation/output-specific (HTML attributes, etc.)
-2. It's context-dependent (wiki links depend on wiki software)
-3. It integrates third-party tools (Mermaid, etc.)
-4. It's a rendering concern (permalinks, ToC generation)
+Features fall into three groups: always available, available by default with an
+opt-out, and opt-in or application-supplied - for example Mermaid rendering in
+a documentation site.
 
 ---
 
-## Native Features (Core Carve Syntax)
+## Core syntax
 
-### Already in Carve Spec
+### Familiar document features
 
 | Feature | Carve Syntax | Status |
 |---------|-------------|--------|
@@ -41,10 +34,11 @@ A feature should remain an **extension** if:
 | Attributes | `{#id .class key=value}` | ✅ In spec (4.10) |
 | Extensions | `:type[content]{attrs}` | ✅ In spec (4.20) |
 
-### Added to Carve Spec
+### Carve-specific features
 
-These were proposed during this analysis and have since landed in the spec.
-Grammar references point at `resources/grammar.ebnf`.
+These features are part of Carve today. The comparison column shows the
+equivalent spelling in djot-php, one of the projects Carve originally drew
+experience from. Grammar references point at `resources/grammar.ebnf`.
 
 | Feature | djot-php Syntax | Carve Syntax | Status |
 |---------|-----------------|-------------|--------|
@@ -59,10 +53,10 @@ Grammar references point at `resources/grammar.ebnf`.
 
 ---
 
-## Native Additions (in spec)
+## Features Carve adds
 
-The features below were the concrete proposals from this analysis. All are now
-part of Carve syntax; the examples remain as a feature-level reference.
+The features below are part of Carve syntax; the examples provide a quick
+feature-level reference.
 
 ### 1. Captions (`^`)
 
@@ -142,11 +136,11 @@ combine on one span where the `:type[…]` form cannot nest.
 
 ---
 
-## Implementation Extensions (Not Native)
+## Optional and application features
 
 These should remain implementation-specific, not part of Carve syntax:
 
-| djot-php Extension | Why Not Native |
+| djot-php extension | Why it stays outside core syntax |
 |--------------------|----------------|
 | **ExternalLinksExtension** | HTML attribute concern (`target`, `rel`) |
 | **DefaultAttributesExtension** | Implementation convenience |
@@ -184,8 +178,8 @@ These should remain implementation-specific, not part of Carve syntax:
 
 ## Disabling / Restricting Features
 
-Can a processor turn native features off? It depends on the tier (see
-Conformance Core below for the full split).
+Can a processor turn features off? It depends on the tier; the availability
+summary below gives the full split.
 
 > This MUST / SHOULD / MAY split is the same model as the Tier-1/2/3 taxonomy in
 > the normative [extensions contract](./extensions): **MUST** = Tier-1 core
@@ -207,15 +201,13 @@ processor-level mechanism; it is not encoded in `resources/grammar.ebnf`.
 
 ---
 
-## Conformance Core (what every implementation MUST produce)
+## Availability summary
 
-The native/extension split above answers "what belongs in the language."
-This answers the question a *second* implementer (e.g. carve-php) needs:
-**what must I produce to be conformant, and what is optional?** Byte-level
-output rules live in `resources/grammar.ebnf` PART 10; this is the
-feature-level boundary.
+The availability split answers what an author can use everywhere and what
+requires configuration. Exact output rules live in `resources/grammar.ebnf`;
+this section stays at the feature level.
 
-### MUST (core) — pinned by the corpus, identical across implementations
+### Always available
 
 - **Blocks:** headings (+ `<section>` wrapping, §13), paragraphs,
   thematic breaks, fenced code, blockquotes, lists (ordered
@@ -233,11 +225,11 @@ feature-level boundary.
 - **Semantics:** automatic heading ids (jgm/djot#393 run-replacement, case-preserving, non-ASCII preserved, smart typography reversed to ASCII before slugging; opt-in lowercase and opt-in ASCII fold; cross-references resolve case-insensitively), id de-duplication,
   order-independent reference/abbreviation/footnote resolution.
 
-### SHOULD / configurable (on by default, a processor MAY disable)
+### Available by default, with an opt-out
 
 - `@mention` and `#tag` shorthands, smart typography (grammar PART 9 §19).
 
-### MAY / out of core (processor-level)
+### Opt-in or supplied by an application
 
 - Includes (<code v-pre>{{ … }}</code>, §19, with the security requirements there).
 - The `:type[content]` extension *registry* beyond the generic fallback.

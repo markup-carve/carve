@@ -38,7 +38,7 @@ The table describes the JavaScript, PHP, and Rust implementations.
 
 | Construct | Interactive HTML | Static / PDF / Markdown / Plain | Status |
 | --- | --- | --- | --- |
-| Tabs / code-group | clickable tabs; `[label]` is the tab header | each panel shown in sequence, **its `[label]` as a caption heading** | see normative rule below |
+| Tabs / code-group | clickable tabs; `[label]` is the tab header | each panel shown in sequence, **its `[label]` as a caption heading** | see the label rule below |
 | Disclosure (`details`) | native `<details>`/`<summary>` (interactive without scripts) | native `<details open>` - kept, not flattened | special case - see below |
 | Spoiler | blurred until revealed | revealed | hiding is not retained |
 | Mermaid / charts | script-drawn diagram | diagram source preserved (a ` ```mermaid ` fence in Markdown); for PDF the extension SHOULD pre-render to SVG/PNG at build time | source never lost; image needs build-time render |
@@ -73,7 +73,7 @@ verbatim). The exception is tabs/code-group, whose distinguishing text is a
 This is the line between disclosure and the script-dependent constructs:
 tabs/code-group/spoiler need a script or stylesheet to be interactive, so they
 flatten in `static`; `details` does not, so it stays itself. The only static
-requirement is the `open` attribute - without it a print engine could render the
+requirement is the `open` attribute - without it a PDF renderer could render the
 disclosure collapsed and hide the body.
 
 **Email and other no-`<details>` targets.** A few email clients ignore the
@@ -113,7 +113,7 @@ with no indication of which is which:
 rendered to Markdown without the fallback collapses to two unlabeled code spans -
 the reader cannot tell "Installation" from "Usage". The authored labels are gone.
 
-## Normative rule: unconsumed labels render as captions
+## How unused labels appear
 
 > A renderer that does not consume a fenced div's grouping `[label]` (because no
 > group extension is active for the target) MUST render the label as a visible
@@ -187,10 +187,9 @@ lost:
 1. **HTML to PDF.** Render Carve to HTML in **`mode: "static"`** with a
    `renderers` map (so tabs become labeled stacked sections, disclosures expand,
    mermaid/charts **pre-render** to SVG/PNG, and **math** renders server-side).
-   Pass that self-contained HTML to a print engine
-   (weasyprint, headless Chromium). Because client scripts never run in a print
-   engine, anything left to client JS would otherwise be blank - the disabled
-   extensions plus pre-rendering are what make the PDF complete.
+   Pass that self-contained HTML to a PDF tool such as WeasyPrint or headless
+   Chromium. Client scripts do not run in that pipeline, so disabling
+   interactive extensions and pre-rendering visuals make the PDF complete.
 2. **Markdown to PDF.** Render Carve to Markdown (the fallback is automatic),
    then hand it to a Markdown-to-PDF toolchain (for example pandoc). Diagram
    and math source survive as fenced blocks for that toolchain to handle.

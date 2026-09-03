@@ -79,12 +79,12 @@ that remain in the paragraph, and closing markers that do not start a block.
 
 | | Markdown | Djot | MDX | **Carve** |
 |---|:---:|:---:|:---:|:---:|
-| Sanitization mandated by the spec | ❌ consumer's job | ❌ consumer's job | n/a | ✅ §25, corpus-pinned |
+| Built-in safety requirements | ❌ consumer's job | ❌ consumer's job | n/a | ✅ URL, attribute, Unicode, and resource protections |
 | URL / attribute / DoS hardening by default | ❌ | ❌ | ❌ | ✅ always on |
 | Raw HTML default | ⚠️ on (libs vary) | ⚠️ on | runs JS | ⚠️ on, one-flag opt-out / safe mode |
 | Embeds live components / JS | ❌ | ❌ | ✅ (its purpose) | ❌ by design |
 | Independent implementations | many, divergent | several (js, lua, rust, go) | JS-only | **php · js · rs, conformance-tested** |
-| Shared spec test corpus | ❌ | ⚠️ | ❌ | ✅ |
+| Implementations share expected results | ⚠️ | ⚠️ | ❌ | ✅ |
 
 See [Security → How Carve compares on security](/security#how-carve-compares-on-security)
 for the detailed breakdown and caveats.

@@ -15,8 +15,8 @@ Carve has no *implicit* raw-HTML passthrough. Authored bare `<` and `>` carry no
 special meaning and are escaped on output rather than interpreted.
 
 There is one *explicit*, author-opted raw passthrough - `` ```=html `` blocks
-and `` `…`{=html} `` inline - which emits verbatim HTML and is on by default
-(it is corpus-pinned). For UNTRUSTED input you MUST disable it: set
+and `` `…`{=html} `` inline - which emits verbatim HTML and is on by default.
+For UNTRUSTED input you MUST disable it: set
 `allowRawHtml: false` (carve-js) / `Options::with_raw_html(false)` (carve-rs) /
 enable `SafeMode` (carve-php), which escapes the raw content to text instead of
 emitting it.
@@ -125,12 +125,11 @@ Specifically, on every rendered element:
   attributes - `title`, `alt`, `aria-label` - are deliberately **not**
   tokenized, so an ordinary colon in text is never mistaken for a scheme.
 
-All other attributes pass through with their values HTML-escaped (quotes
-included, so a value cannot break out of its attribute). This baseline is
-identical across carve-php, carve-js and carve-rs, except for the URL-list rule
-above: the corpus pins it and the three engines are implementing it, so check
-the [implementation comparison](./implementation-comparison) page for the
-current window.
+All other attributes pass through with their values HTML-escaped, including
+quotes, so a value cannot break out of its attribute. The URL-list rule for
+`srcset`, `imagesrcset`, `ping`, and `attributionsrc` is newer than the rest of
+this baseline; check the [implementation comparison](/implementation-comparison)
+before relying on it in your chosen engine.
 
 ## Invisible Unicode and Trojan Source (always on)
 
@@ -175,7 +174,7 @@ containers (blockquote / div / list / admonition) and inline constructs
 a fixed nesting depth (200). Past the cap, further openers degrade to literal
 text instead of recursing, so a deeply nested document parses in time linear in
 its size rather than the ~O(n^2) a naive nested-link rescan would cost. The cap
-is enforced by all three implementations.
+is enforced by the JavaScript, PHP, and Rust implementations.
 
 **Output amplification is bounded too.** Expansion features whose output can
 exceed their input — abbreviation expansion (`*[KEY]: …`) and the generated
@@ -242,13 +241,12 @@ does not launder an attack:
 Most lightweight-markup ecosystems treat sanitization as the *consumer's* job:
 the format says nothing about safety, and you are expected to bolt on a
 sanitizer (or pick a "safe mode") yourself. Carve is unusual in that the
-baseline defenses on this page are **part of the specification** (grammar
-PART 9 §25), **pinned by the shared corpus**, and **enforced identically by all
-three implementations** with no configuration.
+baseline defenses on this page are always-on parts of Carve and require no
+configuration.
 
-| | Spec mandates sanitization? | URL scheme filtering | Attribute hardening | Trojan Source / bidi | Raw HTML default | DoS bounds in spec |
+| | Built-in safety requirements? | URL scheme filtering | Attribute hardening | Trojan Source / bidi | Raw HTML default | Required DoS bounds |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Carve** | **yes** (§25/§26, corpus-pinned, 3 impls) | always-on denylist | always-on (incl. extension wrappers, CSS-escape decoding) | **always-on strip + NFC ids** | **on, one-flag opt-out / safe mode** | yes (linear-time, depth caps, output budgets) |
+| **Carve** | **yes** | always-on denylist | always-on, including extension wrappers and CSS-escape decoding | **always-on strip + NFC ids** | **on, one-flag opt-out / safe mode** | yes (linear-time, depth caps, output budgets) |
 | CommonMark / markdown-it / marked | no | none (consumer's job) | no attribute model | none | on (libs vary; `markdown-it` defaults off) | no (several ReDoS CVEs historically) |
 | GitHub GFM | no - platform sanitizer | via GitHub's separate allowlist | via GitHub's sanitizer | none in the format | sanitized server-side | no |
 | Djot (Carve's parent) | no | none mandated | none mandated | none | on | no |
@@ -419,11 +417,9 @@ reach an `href` — the robust, future-proof posture for that deployment.
 
 ## Beyond the baseline: SafeMode and Profiles
 
-The baseline on this page - the URL scheme denylist, the attribute name/value
-hardening, the raw-HTML escape switch, and the DoS resource bounds - is the
-normative default, mandated by the grammar (`resources/grammar.ebnf` PART 9 §25)
-and pinned by the corpus ("Security hardening" examples). It is enforced by all
-three implementations (carve-php, carve-js, carve-rs) without any configuration.
+The baseline on this page - the URL scheme denylist, attribute hardening,
+raw-HTML escape switch, and resource bounds - is the default and needs no
+configuration.
 `SafeMode` / `Profile` are **optional, implementation-level**
 policy objects that layer a broader surface ON TOP (scheme allowlists,
 domain allow/deny, `rel=nofollow`, feature restriction, nesting / length
