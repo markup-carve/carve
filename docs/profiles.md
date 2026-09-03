@@ -83,125 +83,29 @@ Denying `div` still removes callouts, through the subtype rule: an `admonition`
 answers to its own name and to `div`. A host that wants today's "deny every
 named fence" behavior denies both.
 
-### Parsed documents have more object types than profiles use
+### Parsed documents contain additional object types
 
-This page lists content that a profile can allow or deny. Parsed document JSON
-also contains `tag`, `smart_punctuation`, `literal_inline`, and the `document`
-root. Profiles group those objects with related content because separate rules
-would not provide a useful permission. Code that reads parsed document JSON
-must still accept them.
+Profiles describe content permissions, not every internal object in parsed
+document JSON. The `document` root and the `smart_punctuation` and
+`literal_inline` objects are not separately deniable.
 
-`raw_text` is a separate case and is NOT carried. It is formatter-internal, and
-PART 12 §5 keeps it off the wire; PART 12 §3a goes further and says there is no
-such node at all, because the reversion that would have needed one does not
-happen. So it is neither deniable nor serialized, and a consumer should not
-expect it. Measured: no engine emits it for any of the 655 corpus documents,
-and `resources/ast-schema.json` does not name it.
+A **`tag`** node is classified as **`mention`** because both represent a
+named inline token for permission purposes. Denying `mention` denies both;
+naming `tag` directly in an allow or deny list does nothing and produces no
+diagnostic. A profile cannot
+allow mentions while denying tags.
 
-### A definition line is content, so the definition types are deniable
+`smart_punctuation` is classified as `text`, and the inline literal
+`` !`…` `` is classified as `code`. Formatter-internal `raw_text` is not
+serialized and cannot be named in a profile. The `document` root is always
+allowed.
 
-`abbreviation_def` and `link_reference_definition` are in the Block vocabulary
-above, and both were kept out of it until carve#771 on the reasoning that a
-definition line renders nothing. That reasoning was measured against the HTML
-target only, and it does not survive the other three.
-
-**`abbreviation_def` is output today.** All three engines emit the definition
-line on `markdown`, `plain` and `ansi`, and drop it only on `html`:
-
-```
-HTML is fine.
-
-*[HTML]: HyperText
-```
-
-```
-html      <p><abbr title="HyperText">HTML</abbr> is fine.</p>
-markdown  <abbr title="HyperText">HTML</abbr> is fine.
-
-          *[HTML]: HyperText
-plain     HTML is fine.
-
-          *[HTML]: HyperText
-```
-
-A host restricting untrusted input on any of those three targets is looking at
-authored text it may have a reason to withhold, so it must be able to name the
-type. "Renders nothing" described one target out of four.
-
-**`link_reference_definition` moves with it**, which is what this page has always
-said - the two are one case. The reason is now PART 11 §10a rather than a
-measurement: that clause is normative, and since PART 12 §10 gave the link
-definition a node it covers all three definition kinds, requiring an unused
-definition of any kind to survive the Markdown, plain-text and terminal
-renderers. So the same authored line is required output there. Stated plainly
-because the page has been wrong here once already: **no engine emits the unused
-link definition line yet**, so denying the type withholds nothing on any target
-at the time of writing. Its vocabulary membership follows the clause, not the
-current output.
-
-**`citation_definition` joins them** under PART 12 §18, which gives the fourth
-definition kind a node for the same reason: `[@key]: {author= year=} entry` is
-authored text a host may have a reason to withhold, and it is text a formatter
-has to be able to put back. It is Tier-2, so it appears only where the Citations
-extension is enabled - a profile denying the type on input that never enables
-citations denies something the parse cannot produce, which is true of every
-extension type in this list and not a reason to leave it out.
-
-What a deny takes is the definition LINE, never the EXPANSION it fed. The
-inline `abbreviation`, and the `link` or `image` a reference resolves to, are
-separate entries in this vocabulary and keep rendering. Denying the definition
-denies exactly the definition.
-
-The membership settles a second thing, which is why both types had to move
-together. A type outside the vocabulary resolves through the three steps below
-on its node's own axis, and the string-only form of the allow/deny query has no
-axis to resolve on - so a host that denied `abbreviation_def` and then asked
-`isTypeAllowed('abbreviation_def')` was told `true`, while the same profile
-answered `false` for the same node in the tree. Two APIs, one profile, opposite
-answers. In the vocabulary, both answer `false`.
-
-A **`tag`** node - the AST form of `#tag` - is deliberately **NOT** its own
-vocabulary entry: it is classified as **`mention`**, and all three
-implementations agree on that. `@user` and `#tag` are parsed by the same
-boundary rules (PART 9 §7) and render through the same inert-span mechanism, so
-they are one trust class rather than two. Denying `mention` denies both:
-
-```js
-const p = Profile.minimal()
-p.denyInline(['mention'])
-applyProfile(parse('hi @user'), p).violations  // [{ nodeType: 'mention', ... }]
-applyProfile(parse('hi #tag'), p).violations   // [{ nodeType: 'mention', ... }]
-```
-
-The consequence is worth stating plainly, because it is a real limit: a host
-CANNOT allow mentions while denying tags. `tag` is not addressable, so naming it
-in `allowedInline` or `deniedInline` does nothing at all - silently, since an
-unrecognized identifier is not an error. A host that needs one without the other
-has to deny `mention` and reintroduce the wanted construct through an extension.
-
-A **`smart_punctuation`** node - the AST form of a typographic substitution,
-carrying the resolved kind and the author's source run (PART 9 §8) - is
-classified as **`text`**. It is ordinary visible prose with no capability of its
-own: an em dash is not a different trust level from the words around it. Denying
-it would express nothing a `text` denial does not already express, so it is not
-separately nameable here.
-
-Types serving a formatter rather than a document are **not** in this
-vocabulary and cannot be named in a profile. An implementation may carry a
-node preserving literal source for round-trip formatting (carve-php calls it
-`raw_text`); denying it would break `fmt` while expressing nothing about the
-document's content.
-
-The inline literal of PART 9 §27 (`` !`…` ``) is classified as **`code`** for
-profiles — it is a code span with the `<code>` wrapper dropped, sharing code's
-verbatim capture, escaping, and trailing-attribute surface, so it is allowed
-exactly where `code` is and denied where `code` is. (Types are trust classes,
-not one per AST node: `inline_footnote` and `footnote_ref` likewise fold into
-`footnote`.) It is not classified as `text`: with attributes it renders a
-`<span>` carrying class/id/style just as an attributed code span does, which is
-`code`'s trust level, not plain text's.
-
-The `document` root is always allowed and cannot be denied.
+Definition lines are authored content, so `abbreviation_def`,
+`link_reference_definition`, and the optional `citation_definition` are
+separately deniable. Current renderers do not yet emit an unused link-reference
+definition on non-HTML targets, so denying that type may presently remove
+nothing. A deny removes the definition line, never the abbreviation, link, or
+image that it supplied.
 
 ## The profile model
 
@@ -216,7 +120,7 @@ A profile carries:
 | `maxLength` | max output length in bytes (0 = unlimited) | `0` |
 | `disallowedAction` | what to do with a disallowed node | `to_text` |
 
-### Resolution (normative)
+### How allow and deny lists resolve
 
 For a node of type `T`, in its axis (inline or block):
 
@@ -237,8 +141,7 @@ the implementation's vocabulary predates. A vocabulary gap makes a type
 un-nameable, never invisible. An allow list still excludes unknown types, so a
 restrictive profile loses no safety.
 
-`document` is always allowed and cannot be denied. Deny always beats allow;
-an allowlist is a closed set.
+Deny always beats allow; an allowlist is a closed set.
 
 ### Actions on a disallowed node
 
@@ -310,7 +213,7 @@ disable raw-HTML passthrough on the renderer (`allowRawHtml: false`), ideally
 both. The two controls are independent: the profile gates AST node types; the
 renderer flag gates whether raw content is serialized verbatim or escaped.
 
-### The `carve` target does not apply a profile (normative)
+### Formatting source does not apply a profile
 
 A profile is a statement about what may be **rendered**. The `carve` target does
 not render: it writes the document back as Carve source, and PART 11 §1 makes
@@ -337,7 +240,7 @@ fails safe (carve#759).
 Nothing here changes the other targets: `html`, `markdown`, `plain` and `ansi`
 all apply the profile, because all four RENDER.
 
-## Presets (normative)
+## Presets
 
 Four presets MUST exist with exactly these definitions.
 
@@ -402,7 +305,9 @@ to_text'd, stripped, or raises a violation).
 Presets: **`unrestricted`** (all schemes/hosts), **`internalOnly`**
 (`allowExternal = false`), **`allowlist(domains)`** (only the listed hosts).
 
-## Implementation notes
+::: details Implementation and compatibility notes
+
+**Implementation notes**
 
 - Profiles are a **core** capability in every implementation (a safety feature,
   not an opt-in plugin).
@@ -413,7 +318,7 @@ Presets: **`unrestricted`** (all schemes/hosts), **`internalOnly`**
 - Parity is byte-checked against `carve-php` via golden fixtures (the presets
   and the resolution rule above are the shared source of truth).
 
-## Parity battery
+**Parity battery**
 
 `tests/profile-fixtures.json` is the **shared golden battery**: a set of
 `{carve, profile, html}` fixtures rendered by carve-php (the reference) covering
@@ -422,3 +327,5 @@ carve-rs assert their own profile output against this file (comparing
 trailing-newline-insensitively, since renderers differ on a trailing `\n`), so a
 profile divergence in any implementation is caught. Regenerate with
 `tests/gen-profile-fixtures.php` from a carve-php checkout.
+
+:::

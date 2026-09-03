@@ -278,7 +278,11 @@ A name is reserved only where Carve has no other **inline** spelling for that el
 - `samp`, `var`, `cite` and `dfn` are the [SemanticSpan extension](/extensions)'s - same spelling, same rules, off until a host enables it. Until then they stay ordinary attributes.
 - An abbreviation definition (`*[HTML]: HyperText Markup Language`) also emits `<abbr>`, and that is a different mechanism rather than a second spelling: it expands every occurrence document-wide, where `[HTML]{abbr="…"}` marks one, with its own title, and can mark a term no definition declares.
 
-The `:name[content]{attrs}` form has no core handler at all - `:kbd[Tab]` is `<span class="ext-kbd">Tab</span>` unless the extension is enabled, where it is accepted as a **soft-deprecated** spelling and slated for removal in 0.2.
+The `:name[content]{attrs}` form is generic extension syntax. Without the
+SemanticSpan extension, `:kbd[Tab]` renders as
+`<span class="ext-kbd">Tab</span>`. With the extension enabled, that older
+spelling still works during the transition to `[Tab]{kbd}`, but is scheduled
+for removal in Carve 0.2.
 
 ## Consumed structural keys
 
@@ -420,7 +424,7 @@ A `{…}` on the line before a list attaches to the **list**, not to an item. To
 - ordinary item
 ```
 
-**Whitespace is the discriminator** (normative):
+**Whitespace is the discriminator:**
 
 - `-{.c} text` - the `{.c}` abuts the marker, so it is part of the marker and attributes the `<li>` -> `<li class="c">text</li>`.
 - `- {.c} text` - a space before `{`, so the `{.c}` is ordinary item **content** (literal), not a li-attribute -> `<li>{.c} text</li>`.

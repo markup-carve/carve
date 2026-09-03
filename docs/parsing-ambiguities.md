@@ -6,9 +6,9 @@ description: How Carve reads syntax that could otherwise have more than one inte
 
 **Non-normative.**
 
-This page explains syntax that readers or parser developers may interpret in
-more than one way. It is explanatory, not part of the specification. If it
-conflicts with the [formal grammar](./grammar), the grammar applies.
+This guide explains what ambiguous-looking source means in practice. The formal
+rules live in the [grammar](./grammar); examples here focus on the result an
+author sees.
 
 ---
 
@@ -37,16 +37,16 @@ The **same-delimiter adjacency** part of that rule — a delimiter adjacent to
 another of the same delimiter (before or after) does not open — applies to all
 five single-character delimiters. So a doubled delimiter is always literal:
 `**x**`, `~~x~~`, and `==x==` render verbatim, exactly like `//x//` and
-`__x__` (corpus `74-doubled-emphasis-delimiters`). (`^` and `,` are not
+`__x__`. (`^` and `,` are not
 delimiters at all — superscript/subscript are the braced `{^x^}` / `{,x,}`
 forms only.)
 
 **This means a path in an emphasizing position still italicizes:**
-`/usr/local/` → `<em>usr/local</em>` (verified — corpus `01-emphasis-6`),
+`/usr/local/` → `<em>usr/local</em>`,
 because the opening `/` is at line start and the inner slashes are literal
 content. An intraword path fragment like `a/b/c` stays literal because the `/`
 is alphanumeric-flanked and cannot open; `x /a/b y` stays literal because the
-closing `/` is followed by an alphanumeric (corpus `01-emphasis-9`).
+closing `/` is followed by an alphanumeric.
 
 **Recommendation:** For paths that sit in an emphasizing position, use code
 fencing - they're code anyway:
@@ -176,7 +176,7 @@ if (x < 5)                     # Literal <
 ```
 The first line is bold, not a list item, because `*` is NOT followed by
 whitespace. The second stays literal text: an opener without a matching
-closer never emphasizes (corpus `01-emphasis-3`).
+closer never emphasizes.
 
 List requires `* ` (asterisk + space). Bold opener requires `*` + non-whitespace
 AND a valid closer ahead.
@@ -206,8 +206,7 @@ AND a valid closer ahead.
 | `@john!` | `@john` | `!` |
 | `email@domain.com` | - | (not a mention, no word boundary before @) |
 
-The same name rule applies to `#tags` (`#release-1.0` is one tag). Pinned by
-corpus `89-mention-and-tag-name-boundaries`.
+The same name rule applies to `#tags` (`#release-1.0` is one tag).
 
 ---
 
@@ -308,9 +307,7 @@ stack in a single left-to-right pass: linear time, no backtracking.
 - `%%` is a comment marker when **preceded by whitespace or at the start of
   the inline run** (line start counts) — including a *trailing* comment after
   text: `Visible. %% this tail is a comment` keeps only `Visible.`
-  (corpus `46-comments-2`)
 - The comment runs to the end of the line; it never crosses a line break
-  (corpus `46-comments-6`)
 - Without preceding whitespace `%%` is literal: `The value is 50%% increase`
   stays literal text — percentages are safe
 - `\%%` (escaped first percent) is literal
@@ -387,9 +384,10 @@ y
 
 `%% z` in the fence's place gives that. A `%%%` WITH a closer does not - a
 terminated fence at column 0 is a comment BLOCK at the document's own opener
-column and it ends the item (corpus 214). Every current engine answers column 0
-the terminated fence's way for the degraded spelling too, which is
-markup-carve/carve#1903.
+column and it ends the item. Current implementations also end the item for the
+unterminated, column-zero `%%%` spelling, rather than producing the illustrated
+grammar result. Until [that gap](https://github.com/markup-carve/carve/issues/1903)
+closes, use the `%% z` line form when the follower must stay in the item.
 
 **Provenance marker (tool-written):**
 - Tooling such as `carve fmt --stamp` writes a trailing comment recording the
@@ -614,14 +612,13 @@ collected/consumed (an attribute line floats forward to the next block, §15).
 | `1. a` / `   [r]: /u` / `   after` | one tight item with two paragraphs | definition is at the item's content column |
 | `- text` / `  # H` | item: text + heading | heading interrupts inside the item |
 
-Normative statement: `resources/grammar.ebnf` PART 9 §10. Verified by corpus
-`05-lists-12` and the `76-paragraph-interruption` family.
+The formal statement is in `resources/grammar.ebnf`, PART 9 §10.
 
 ---
 
 ## 18. Single-Line Headings (Nothing Folds INTO a Heading)
 
-**Rule (normative, grammar PART 2):** a heading **ends at the newline**.
+**Rule:** a heading **ends at the newline**.
 Nothing folds into it - the next line begins whatever block it begins, exactly
 as after any other closed block. A `^ ` caption line is no exception: it does
 not fold in, and it does not attach either, because a heading is not one of
@@ -637,9 +634,8 @@ outside
 Heading **plus** paragraph: `<h1 id="Title">Title</h1>` then `<p>outside</p>`.
 
 This used to be one heading holding both lines, with id `Title-outside`, and
-this document called it the biggest authoring trap in the heading syntax. It is
-gone rather than documented: see `divergence-from-djot` §14 for why, and corpus
-`82-single-line-headings` for the pins.
+this document called it the biggest authoring trap in the heading syntax. That
+older behavior is gone; see `divergence-from-djot` §14 for the rationale.
 
 ```carve
 # Title

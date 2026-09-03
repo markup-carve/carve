@@ -149,7 +149,7 @@ export default defineConfig({
             items: [
               { text: 'Case Study', link: '/case-study/' },
               { text: 'Technical Rationale', link: '/technical-rationale' },
-              { text: 'Built-in Features', link: '/native-features-analysis' },
+              { text: 'Feature Availability', link: '/native-features-analysis' },
               { text: 'Security', link: '/security' },
               { text: 'Output Without JavaScript', link: '/graceful-degradation' },
               { text: 'Static Output Recipes', link: '/static-rendering-recipes' },
@@ -248,7 +248,7 @@ export default defineConfig({
                 { text: 'Import, Security & Extensions', link: '/rules/imports-security-extensions' },
               ],
             },
-            { text: 'Built-in Features', link: '/native-features-analysis' },
+            { text: 'Feature Availability', link: '/native-features-analysis' },
             { text: 'Carve vs Markdown/Djot/MDX', link: '/comparison' },
             { text: 'Divergence from Djot', link: '/divergence-from-djot' },
             { text: 'Whitespace Across Formats', link: '/portable-whitespace' },

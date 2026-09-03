@@ -901,7 +901,11 @@ carried - 45 documents, carve-js alone against the other two - and it was
 deleted when carve-rs landed the last producer
 ([carve#750](https://github.com/markup-carve/carve/issues/750) is closed).
 
-## Conformance status
+::: details Maintainer notes: current implementation status
+
+The shape sections on this page are the contract application developers should
+use. The following measurements and issue history explain current
+implementation gaps; they are not additional API requirements.
 
 Run `node scripts/ast-conformance.mjs` in this repo against sibling checkouts of
 the engines. It reports two things a schema cannot: nodes with no position, and
@@ -1188,6 +1192,8 @@ That is also why the §3a row is worth keeping while the others go. The spec
 says what the shape is, then the engines conform, then the pin moves; a row is
 the honest record of where an engine is in that order, and it has to be deleted
 when the order finishes rather than left behind as a fact.
+
+:::
 
 ## Definition lists
 
