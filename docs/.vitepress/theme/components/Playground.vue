@@ -41,6 +41,10 @@ const fullscreen = ref(false)
 // it?" is not a question this component can answer. Reloading the playground
 // without a fragment gives a normal, raw-HTML-enabled session back.
 const fromSharedLink = ref(false)
+// The engine the sender was on. A link made in Rust mode still opens on JS
+// (see applyShareLink), so the preview has to say that rather than let the
+// recipient assume they are looking at what the sender saw.
+const sharedEngine = ref<Engine | null>(null)
 // Feedback for the share button. It reports through the icon (plus an
 // aria-live line for screen readers) rather than a text label beside it: a
 // label that appears and disappears would reflow the toolbar row each time.
@@ -56,9 +60,24 @@ async function applyShareLink(): Promise<void> {
   source.value = state.source
   // The Rust engine renders through a WASM binding with no options, so raw
   // HTML cannot be turned off there. A shared document therefore stays on the
-  // JS engine (see the disabled button in the toolbar).
+  // JS engine (see the disabled button in the toolbar). The two engines do not
+  // carry the same extension set, so a link made in Rust mode can render
+  // differently here - `sharedEngine` is what the note reports.
+  sharedEngine.value = state.engine === 'rust' ? 'rust' : 'js'
   engine.value = 'js'
 }
+
+const sharedNoteText = computed<string>(() =>
+  sharedEngine.value === 'rust'
+    ? 'shared link: raw HTML off, JavaScript engine'
+    : 'shared link: raw HTML off',
+)
+
+const sharedNoteTitle = computed<string>(() =>
+  sharedEngine.value === 'rust'
+    ? 'This document arrived in a link made in Rust (WASM) mode. The WASM build cannot turn raw HTML off, so it renders here on the JavaScript engine instead - which carries a few extensions carve-rs does not, so the output can differ from what the sender saw.'
+    : 'This document arrived in a link, so raw HTML is not rendered and the Rust engine is not offered',
+)
 
 function shareUrl(encoded: string): string {
   const { origin, pathname, search } = window.location
@@ -700,9 +719,9 @@ void mermaidInit
             v-if="fromSharedLink"
             class="pg-shared-note"
             role="note"
-            title="This document arrived in a link, so raw HTML is not rendered and the Rust engine is not offered"
+            :title="sharedNoteTitle"
           >
-            shared link: raw HTML off
+            {{ sharedNoteText }}
           </span>
         </div>
         <div
