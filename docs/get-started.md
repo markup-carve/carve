@@ -10,8 +10,8 @@ Sheet](/cheatsheet) lists the syntax.
 
 ## Install a renderer
 
-The JavaScript, PHP, and Rust implementations use the same core conformance
-corpus.
+The JavaScript, PHP, and Rust implementations are tested with the same Carve
+documents and expected output.
 
 ### JavaScript / TypeScript — [`carve-js`](https://github.com/markup-carve/carve-js)
 
@@ -84,11 +84,11 @@ are available without configuration.
 
 A few features must be enabled separately:
 
-- **Widely implemented optional features (Tier 2)** — citations `[@key]`,
+- **Available everywhere, but opt-in** — citations `[@key]`,
   bare-URL autolinking, mention/tag → URL templates, a collapsible `details`
   widget, `list-table`. Enable them in your parser configuration.
-- **Implementation-specific features (Tier 3)** — for example Mermaid diagrams, a
-  table of contents, heading permalinks. Register the ones you want.
+- **Dependent on the implementation** — for example Mermaid diagrams, a table
+  of contents, and heading permalinks. Register the ones you want.
 
 The `:name[…]` inline form and `::: name` block form are always recognized. An
 application can register code that changes the output for a name. Without that

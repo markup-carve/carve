@@ -367,7 +367,7 @@ const html = carveToHtml(source, { sections: false })
 <p>A paragraph.</p>
 ```
 
-Nothing else changes when it is off - ids, dedup, `</#id>` cross-references, `[Heading][]` references, and `::: toc` all resolve against the slug, not the element carrying it. Check your engine's release notes for whether it ships the option yet; the wrapper is the default and is what the conformance corpus pins.
+Nothing else changes when it is off - ids, dedup, `</#id>` cross-references, `[Heading][]` references, and `::: toc` all resolve against the slug, not the element carrying it. Check your engine's release notes for whether it ships the option yet; the wrapper remains the tested default across implementations.
 
 Two related shapes are worth knowing while you audit selectors. A heading **inside** a blockquote, div, admonition, or list item is never wrapped - it emits `<h* id="…">` in place, which is also exactly what every heading looks like with `sections: false`. And on a wrapped heading only the id hoists: `{#install .featured}` gives `<section id="install"><h2 class="featured">`, so a class you attached to a heading still selects the heading.
 

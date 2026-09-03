@@ -24,8 +24,8 @@ The rest of this page lists supported diagram languages and output options.
 
 ## Supported diagram languages
 
-The optional `FencedRender` extension recognizes these eight fence names and
-generates an HTML element for the selected browser library.
+The optional `FencedRender` extension recognizes these fence names and generates
+an HTML element for the selected drawing library.
 
 | Fence word | Draws | Mode |
 | ---------- | ----- | ---- |
@@ -94,47 +94,31 @@ like `-->` survives intact:
 <div class="chart" role="img" aria-label="chart"><script type="application/json">{"type":"bar"}</script></div>
 ```
 
-### The marker is an image, and it is named
+### Give a diagram a useful name
 
-The body of a text-mode fence is diagram **source**. Before the client library
-runs - and if it never runs, which is the default, since no engine ships one - a
-reader announces the backslashes and arrows as prose; afterwards the injected
-`<svg>` has no accessible name either. `role="img"` says the block IS an image
-whether or not the script arrives, and the name says which one (carve#1468).
+Add an `aria-label` when the fence word alone would not tell someone what the
+diagram shows:
 
-- **The role and the name travel together.** An `img` with no accessible name is
-  skipped entirely, which is worse than the source being read out, so setting
-  the label to the empty string removes the role as well.
-- **The default is the extension's own class word** (`mermaid`, `d2`, `chart`).
-  That is the fence's own word wherever a preset claims one language, and the
-  class wherever it claims aliases: a `dot` fence and a `puml` fence are named
-  `graphviz` and `plantuml`, after the class they render into, so one preset
-  names every fence it claims alike. Either way the word is one the extension
-  already carries rather than invented English - so there is nothing here to
-  translate and this is an option on the extension rather than a `labels` key
-  ([extensions §1.5](./extensions#_1-5-the-strings-an-extension-writes-itself)).
-  A host that wants a reader to hear something better sets it, and an author can
-  name one diagram with `{aria-label="Deploy flow"}` on the fence.
-- **The author's own `role` or `aria-label` wins**, matched
-  ASCII-case-insensitively because HTML attribute names are. An author who wrote
-  only a name still gets the role - losing it there would leave the defect on
-  the one fence whose author cared enough to name it.
-- **The no-renderer static fallback is NOT named.** That path really is source
-  text in a `<pre><code>`; calling it an image would hide the one thing it
-  exists to show.
+````carve
+{aria-label="Deployment flow"}
+``` mermaid
+flowchart LR
+  Build --> Test --> Deploy
+```
+````
+
+In browser output, the generated element uses that label. Without one, the
+extension uses its class word, such as `mermaid`, `graphviz`, or `plantuml`.
+For text-based formats, the source remains in that labeled element until the
+drawing library replaces it. To leave otherwise-unnamed fences without an image
+role or default label, configure the extension with `label: ''`.
 
 ## Rendering without a browser
 
-For PDF, email, or any output with no client-side JavaScript, `renderStatic`
-accepts a **renderers** map. The standard keys are `mermaid`, `chart`,
-`graphviz` and `math`; implementations must use exactly these names so one config
-behaves identically across engines.
-
-Renderers are synchronous (`source -> string`). An async tool such as `mmdc` or
-an HTTP service must run in a build step and be supplied as a pre-resolved
-lookup, not awaited inside the render. A renderer typically returns a
-self-contained `data:` image URI, so if you sanitize the static HTML afterwards,
-**allow the `data:` scheme for images** or the diagram is silently stripped.
+For PDF, email, or another output without browser JavaScript, select static mode
+and pass a renderers map keyed by each fence's generated CSS class. A renderer
+can return a self-contained `data:` image URI. If you sanitize the resulting
+HTML, allow `data:` for images or the sanitizer will remove the diagram.
 
 Working per-engine recipes are in
 [Static Rendering Recipes](/static-rendering-recipes).
@@ -155,20 +139,22 @@ finished output:
 
 ## When a diagram cannot be drawn
 
-When the extension is off, or no renderer is supplied for that key, the fence
-falls back to its **source as a code block**. It never renders blank. The
-diagram description stays readable in the document, which is the point of
-keeping it as text in the first place.
+The fallback depends on how the document is rendered:
+
+- With the extension off, the fence is an ordinary code block.
+- In browser output, text-based formats keep their source in the prepared,
+  labeled element until a drawing library replaces it. JSON-based formats keep
+  their data in the page, but no chart appears without the library.
+- In static output, a fence with no configured renderer becomes a source code
+  block. It has no image role or extension-supplied name, although attributes
+  written by the author remain.
+
+The diagram never disappears silently, and its source remains in the document.
 
 See [Output without JavaScript](/graceful-degradation) for every output format.
 
 ## Enabling
 
-`FencedRender` is an implementation-specific extension and starts disabled.
-Enable it for a document or project; see the
-[Optional Features and Extensions](/extensions) and each implementation's own
-`docs/extensions.md` for the client libraries it pairs with.
-
-This output is implementation-specific and is not part of the shared
-input/output tests. An implementation can therefore update its supported
-diagram libraries without changing the Carve specification.
+`FencedRender` starts disabled. Enable it for a document or project, then choose
+the drawing libraries you want. See [Optional Features and
+Extensions](/extensions) and your implementation's extension documentation.

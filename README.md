@@ -159,9 +159,8 @@ Carve 0.1 is specified. Before 1.0, minor releases may change the grammar.
 - [Rust implementation](https://github.com/markup-carve/carve-rs)
 - [Documentation](https://markup-carve.github.io/carve/)
 
-The three reference implementations use the same tests. More than 1,500 core
-input/output tests and 49 optional input/output tests cover the language and its
-shared optional features. Current differences are recorded in the
+The reference implementations are tested with the same Carve documents and
+expected output. Current differences are recorded in the
 [implementation comparison](https://markup-carve.github.io/carve/implementation-comparison).
 
 ## Development
