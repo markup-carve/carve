@@ -7,12 +7,12 @@
  *   PERMITTED. PART 12 §4 exempts a node the producer REASSEMBLED - a table
  *   cell continued on a `+` line, a `text` run coalesced across a gap - because
  *   its value is not a slice of the source at any offset, so no honest span
- *   exists. docs/ast-json.md names those cases verbatim - the clause is "A table
+ *   exists. docs/ast-json-contract.md names those cases verbatim - the clause is "A table
  *   cell continued on a `+` line, the hard break a line block makes" - and its
  *   conformance table's carve-js row names carve-js as the engine that omits a
  *   continued cell's position. Nothing to fix, in any engine, ever.
  *
- *   OWED. Everything else in that column. docs/ast-json.md narrows the exemption
+ *   OWED. Everything else in that column. docs/ast-json-contract.md narrows the exemption
  *   to "covers nodes that *cannot* be placed, not nodes that have not been
  *   placed yet", and its conformance section states the test as "whether a true
  *   span EXISTS rather than whether one was written down". Each of these is an

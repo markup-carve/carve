@@ -203,7 +203,7 @@ test('the kinds the pinned build misreads are the declared ones', async () => {
 })
 
 test('the clause names the exemptions and says the list is closed', async () => {
-  const doc = await readFile(new URL('../docs/html-import.md', import.meta.url), 'utf8')
+  const doc = await readFile(new URL('../docs/html-import-contract.md', import.meta.url), 'utf8')
   assert.match(doc, /There are exactly three, because\nthe importer reads their parent through a shape of its own/)
   assert.match(doc, /MUST\nNOT number any other kind among its same-named siblings/)
 })

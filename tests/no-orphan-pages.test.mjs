@@ -1,7 +1,7 @@
 /**
  * Every docs page must be reachable from the site navigation.
  *
- * WHY. `docs/html-import.md` and `docs/ast-source-layout.md` sat in the repo
+ * WHY. `docs/html-import-contract.md` and `docs/ast-source-layout.md` sat in the repo
  * with no nav entry, no sidebar entry and no inbound link from any other page -
  * reachable only by site search. `ast-source-layout.md` even publishes a JSON
  * schema to `docs/public/`, so the schema shipped while the page explaining it
@@ -39,6 +39,10 @@ const UNROUTED = new Map([
   ['docs/experiments/comment-classification.md', 'Compatibility evidence linked from the issue and pull request, not a permanent user guide.'],
   ['docs/experiments/definition-footnote-authored-bases.md', 'Compatibility evidence linked from the issue and pull request, not a permanent user guide.'],
   ['docs/spec-history.md', 'Retired readings linked from the docs index, not a primary navigation path.'],
+  ['docs/extension-contract.md', 'Implementer contract linked from the reader-facing optional-features guide.'],
+  ['docs/html-import-contract.md', 'Implementer contract linked from the reader-facing HTML import guide.'],
+  ['docs/ast-json-contract.md', 'Complete interchange contract linked from the reader-facing parsed-JSON guide.'],
+  ['docs/implementation-comparison-methodology.md', 'Maintainer evidence linked from the reader-facing implementation comparison.'],
   ['docs/.vitepress/carve-wasm/README.md', 'Build-tooling note inside .vitepress, not a site page.'],
 ])
 

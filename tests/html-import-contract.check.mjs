@@ -127,7 +127,7 @@ test('every not-covered exemption names a code the schema still declares', async
 /*
  * THE FIXED-POINT CLAIM, CHECKED (markup-carve/carve#1286).
  *
- * docs/html-import.md says every `expected.crv` here is also a fixed point of
+ * docs/html-import-contract.md says every `expected.crv` here is also a fixed point of
  * `carve fmt` in all three engines, "because source comparison is byte-exact"
  * - a fixture that is not one pins source no writer produces, and the first
  * engine to run its formatter over it disagrees. Nothing read that claim.
@@ -147,7 +147,7 @@ test('every expected.crv is a fixed point of the canonical writer', async () => 
       carveToCarve(src),
       src,
       `tests/html-import/${fixture.name}/expected.crv is not what the writer emits for it, ` +
-        `so it pins source no engine's formatter produces (docs/html-import.md, ` +
+        `so it pins source no engine's formatter produces (docs/html-import-contract.md, ` +
         `"Conformance fixtures"). Rewrite the fixture in canonical form.`,
     )
   }
@@ -164,7 +164,7 @@ test('every expected.crv is a fixed point of the canonical writer', async () => 
  * as they were.
  *
  * So the fixtures run here too, through the `@markup-carve/carve` build
- * package.json pins. Comparison follows what docs/html-import.md promises
+ * package.json pins. Comparison follows what docs/html-import-contract.md promises
  * implementations: source is byte-exact, AST ignores key order and absent
  * optional fields, and a diagnostic object is a MINIMUM match.
  *

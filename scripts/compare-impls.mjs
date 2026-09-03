@@ -1444,7 +1444,7 @@ for (const impl of active) {
   // case meant re-running every fixture by hand. Same defect ast:check had
   // before carve#670.
   // ALL of them, not the first ten. This block is pasted verbatim into
-  // docs/implementation-comparison.md, so a truncated list publishes a snapshot
+  // docs/implementation-comparison-methodology.md, so a truncated list publishes a snapshot
   // whose hidden rows are exactly the ones a reader would act on - and the
   // page's own per-engine `N / M` is derived by COUNTING these lines, which a
   // cap makes impossible to do correctly (carve#804).

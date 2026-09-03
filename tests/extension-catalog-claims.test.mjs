@@ -1,5 +1,5 @@
 /*
- * docs/extensions.md names extensions; the reference engine either exports them
+ * docs/extension-contract.md names extensions; the reference engine either exports them
  * or it does not.
  *
  * That page is where a processor author goes to find out what there is to
@@ -27,7 +27,7 @@ import { fileURLToPath } from 'node:url'
 import * as lib from '@markup-carve/carve'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const page = readFileSync(resolve(root, 'docs/extensions.md'), 'utf8')
+const page = readFileSync(resolve(root, 'docs/extension-contract.md'), 'utf8')
 
 /*
  * Names on the tier rows that the reference engine does NOT export, each with

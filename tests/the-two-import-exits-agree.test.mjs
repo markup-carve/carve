@@ -1,7 +1,7 @@
 /*
  * THE TWO EXITS OF AN IMPORT SAY THE SAME THING (markup-carve/carve#1601).
  *
- * docs/html-import.md, "The two exits say the same thing":
+ * docs/html-import-contract.md, "The two exits say the same thing":
  *
  *     parse(htmlToCarve(h)) == htmlToAst(h)
  *
@@ -84,7 +84,7 @@ const normalize = (value) => {
  * ordered delimiter, which slot an attribute sat in, where a definition's lines
  * ran. A parse fills them in because it read source; an import records none of
  * them, because it read HTML and there was no source to read them off. So a
- * fixture omitting one is the absent optional field docs/html-import.md already
+ * fixture omitting one is the absent optional field docs/html-import-contract.md already
  * tells implementations to ignore, and it is the ONLY absence that is.
  *
  * Skipping every key that is missing from either side instead would be a check
@@ -118,7 +118,7 @@ const SOURCE_LAYOUT_FIELDS = new Set([
  * recorded `"bulletChar": "-"` on both of its lists while
  * `traversal-shaped-index` and `derived-endnotes-section` - the same construct,
  * the same importer, the same run - recorded none, so no implementation could
- * pass both. `docs/ast-json.md` settles which is wrong twice over: a
+ * pass both. `docs/ast-json-contract.md` settles which is wrong twice over: a
  * source-layout field is filled in by a PARSE, and `list.bulletChar` "records
  * `*` while absence means `-`", so `-` is the value that is spelled by leaving
  * the field out even where a source WAS read.
@@ -294,7 +294,7 @@ test('every fixture records two exits that say the same thing', async () => {
       miss,
       null,
       `tests/html-import/${name}: expected.crv and expected.ast.json say different ` +
-        `things (${miss}). docs/html-import.md, "The two exits say the same thing".`,
+        `things (${miss}). docs/html-import-contract.md, "The two exits say the same thing".`,
     )
   }
   assert.deepEqual([...UNMET.keys()].sort(), held.sort(), 'a declared entry names a fixture that does not exist')
