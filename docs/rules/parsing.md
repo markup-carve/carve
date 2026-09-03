@@ -25,14 +25,14 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P0-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L253) | 0 | A FLOATING ATTRIBUTE BLOCK DOES NOT CHANGE THE CONTENT COLUMN |
 | [`CARVE-P0-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L283) | 0 | A QUOTE'S LAST BLOCK MAY ITSELF BE A QUOTE |
 | [`CARVE-P0-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L307) | 0 | A DEFINITION AT THE CONTENT COLUMN ENDS THE PARAGRAPH, NOT THE CONTAINER |
-| [`CARVE-P0-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L510) | 0 | AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS UNDER |
-| [`CARVE-P0-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L536) | 0 | A HEADING IS THE VISIBLE CONTROL |
-| [`CARVE-P0-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L573) | 0 | A FENCED BODY IS NOT A PARAGRAPH |
-| [`CARVE-P0-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L590) | 0 | FENCE KIND DOES NOT DETERMINE CONTAINER REACH |
-| [`CARVE-P0-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L639) | 0 | A LAZY FOLD KEEPS THE CONTAINER OPEN FOR FOLLOWING LINES |
-| [`CARVE-P0-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L658) | 0 | A REAL DIV IS A CONTAINER LIKE ANY OTHER |
-| [`CARVE-P0-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L674) | 0 | CONTAINER KIND DOES NOT DETERMINE CONTAINER REACH |
-| [`CARVE-P0-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L681) | 0 | DEFINITION BODIES FOLLOW THE SAME CONTAINER REACH RULE |
+| [`CARVE-P0-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L557) | 0 | AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS UNDER |
+| [`CARVE-P0-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L583) | 0 | A HEADING IS THE VISIBLE CONTROL |
+| [`CARVE-P0-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L620) | 0 | A FENCED BODY IS NOT A PARAGRAPH |
+| [`CARVE-P0-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L637) | 0 | FENCE KIND DOES NOT DETERMINE CONTAINER REACH |
+| [`CARVE-P0-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L686) | 0 | A LAZY FOLD KEEPS THE CONTAINER OPEN FOR FOLLOWING LINES |
+| [`CARVE-P0-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L705) | 0 | A REAL DIV IS A CONTAINER LIKE ANY OTHER |
+| [`CARVE-P0-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L721) | 0 | CONTAINER KIND DOES NOT DETERMINE CONTAINER REACH |
+| [`CARVE-P0-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L728) | 0 | DEFINITION BODIES FOLLOW THE SAME CONTAINER REACH RULE |
 | [`CARVE-P0-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L353) | 0 | A NEW MARKER DOES NOT REACH A DEAD CONTAINER'S COLUMN |
 | [`CARVE-P0-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L388) | 0 | AT OR PAST MEANS THE DEEPEST COLUMN THE LINE REACHES |
 | [`CARVE-P2-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L16) | 2 | A HEADING MARKER STARTS AT ITS CONTAINER'S CONTENT COLUMN |

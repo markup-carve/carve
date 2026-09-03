@@ -51,9 +51,10 @@ Corpus added since this run: `441-a-definition-between-two-open-content-columns-
 `443-an-unterminated-comment-fence-in-a-list-item-is-the-line-form`
 `444-an-opener-at-or-past-a-description-body-s-column-closes-its-paragraph`,
 `445-a-degraded-comment-fence-at-a-container-s-column-0-keeps-the-follower-in-the-item`,
-`446-a-degraded-comment-fence-leaves-a-lazy-follower-where-the-line-form-does`
+`446-a-degraded-comment-fence-leaves-a-lazy-follower-where-the-line-form-does`,
+`447-the-host-does-not-change-which-column-a-definition-reaches`
 and
-`447-the-host-does-not-change-which-column-a-definition-reaches`.
+`448-a-marker-folds-into-a-quote-below-it`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -68,7 +69,12 @@ markup-carve/carve-rs#1525) and for section 445, which no engine reads the ruled
 way either (markup-carve/carve-js#1607, markup-carve/carve-php#1877,
 markup-carve/carve-rs#1529). Section 446 is the one exception: every engine
 already reads that band the ruled way, so its rows would only widen the
-denominators.
+denominators. Section 448 is the widest of them: seven of its thirteen rows are
+the fold no engine performs yet (markup-carve/carve-js#1615,
+markup-carve/carve-php#1882, markup-carve/carve-rs#1537), and the other six are
+its controls, which every engine already reproduces - so a hand-edited
+denominator would be wrong for the folds and right for the controls, in one
+number that could not say which.
 `tests/implementation-comparison-counts.test.mjs` reads this line and counts the
 fixtures each category contributes, so the numbers cannot be asserted, only
 derived, and the line has to be DELETED by whoever next runs

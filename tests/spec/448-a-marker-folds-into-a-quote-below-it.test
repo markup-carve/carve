@@ -1,0 +1,149 @@
+A marker folds into a quote below it
+
+```
+- a
+  > - x
+  - m
+.
+<ul>
+  <li>a
+    <blockquote>
+      <ul>
+        <li>x
+- m</li>
+      </ul>
+    </blockquote>
+  </li>
+</ul>
+```
+
+```
+- > - x
+  - m
+.
+<ul>
+  <li>
+    <blockquote>
+      <ul>
+        <li>x
+- m</li>
+      </ul>
+    </blockquote>
+  </li>
+</ul>
+```
+
+```
+- a
+  > - x
+  p
+  - m
+.
+<ul>
+  <li>a
+    <blockquote>
+      <ul>
+        <li>x
+p
+- m</li>
+      </ul>
+    </blockquote>
+  </li>
+</ul>
+```
+
+```
+- a
+  > q
+  - m
+.
+<ul>
+  <li>a
+    <blockquote><p>q
+- m</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- a
+  > - x
+
+  - m
+.
+<ul>
+  <li>a
+    <blockquote>
+      <ul>
+        <li>x</li>
+      </ul>
+    </blockquote>
+    <ul>
+      <li>m</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - b
+  - m
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+      <li>m</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  # h
+  - m
+.
+<ul>
+  <li>a
+    <h1 id="h">h</h1>
+    <ul>
+      <li>m</li>
+    </ul>
+  </li>
+</ul>
+```
+
+````
+- a
+  ```
+  c
+  ```
+  - m
+.
+<ul>
+  <li>a
+    <pre><code>c
+</code></pre>
+    <ul>
+      <li>m</li>
+    </ul>
+  </li>
+</ul>
+````
+
+```
+- a
+  p
+  - m
+.
+<ul>
+  <li>a
+p
+    <ul>
+      <li>m</li>
+    </ul>
+  </li>
+</ul>
+```
