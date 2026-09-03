@@ -1,5 +1,5 @@
 /*
- * docs/ast-json.md quotes MEASURED engine state, and measured state rots.
+ * docs/ast-json-contract.md quotes MEASURED engine state, and measured state rots.
  *
  * That page carries a per-engine table of what each implementation publishes.
  * Twice in two days it was found wrong, in opposite directions: the positions
@@ -74,7 +74,7 @@ import { PAGE_ANCHORS, countAnchor, flatten } from '../scripts/spec/ast-page-anc
 import { RECONCILED_ENGINES, parseWaivers } from '../scripts/spec/ast-waivers.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const page = readFileSync(resolve(root, 'docs/ast-json.md'), 'utf8')
+const page = readFileSync(resolve(root, 'docs/ast-json-contract.md'), 'utf8')
 const waiverText = readFileSync(resolve(root, 'resources/ast-position-waivers.txt'), 'utf8')
 const valueText = readFileSync(resolve(root, 'resources/ast-value-divergence.txt'), 'utf8')
 
@@ -100,7 +100,7 @@ const nodesOfType = (doc, type) => {
 const treeOf = (source) => toAstJson(parse(source))
 
 test('the page has a carve-js row to check', () => {
-  assert.ok(jsRow, 'no `| carve-js |` row in docs/ast-json.md; the table shape changed')
+  assert.ok(jsRow, 'no `| carve-js |` row in docs/ast-json-contract.md; the table shape changed')
 })
 
 /*
@@ -151,11 +151,11 @@ test('ref carries the resolution key, not the authored label, when the label hol
   // must not leave the sentence standing.
   assert.ok(
     page.includes('**`ref` is the resolution key**'),
-    'docs/ast-json.md no longer states the §3a ruling this measures',
+    'docs/ast-json-contract.md no longer states the §3a ruling this measures',
   )
   assert.ok(
     page.includes('"ref": "code() heading"'),
-    'the §3a example on docs/ast-json.md no longer publishes the key this measures',
+    'the §3a example on docs/ast-json-contract.md no longer publishes the key this measures',
   )
 })
 
@@ -294,12 +294,12 @@ test('the page still tells a consumer both halves', () => {
   assert.match(
     page,
     /consumer that renders a destination owns the denylist/i,
-    'docs/ast-json.md no longer tells a consumer it owns the denylist',
+    'docs/ast-json-contract.md no longer tells a consumer it owns the denylist',
   )
   assert.match(
     page,
     /javascript:alert\(1\)/,
-    'docs/ast-json.md no longer shows what an unsanitized destination looks like',
+    'docs/ast-json-contract.md no longer shows what an unsanitized destination looks like',
   )
 })
 
@@ -382,7 +382,7 @@ test('a row names an issue only where a ledger still declares the debt', () => {
       for (const issue of citedIssues(cell)) {
         assert.ok(
           debt.has(issue),
-          `docs/ast-json.md:${row.lineNo} (${row.engineCell}) cites ${issue}, which neither ` +
+          `docs/ast-json-contract.md:${row.lineNo} (${row.engineCell}) cites ${issue}, which neither ` +
             'resources/ast-position-waivers.txt nor resources/ast-value-divergence.txt still ' +
             'declares. A conformance row states measured state; the history goes in the prose below it.',
         )
@@ -404,7 +404,7 @@ test('a declared position gap is named in its own engine row', () => {
       assert.ok(
         cited.has(line.status),
         `resources/ast-position-waivers.txt owes ${line.status} for ${engine} ` +
-          `(${line.document}, ${line.type}) and docs/ast-json.md:${row.lineNo} does not name it`,
+          `(${line.document}, ${line.type}) and docs/ast-json-contract.md:${row.lineNo} does not name it`,
       )
     }
   }
@@ -422,12 +422,12 @@ test('a positions cell names exactly the permitted categories its ledger records
         assert.ok(
           named,
           `resources/ast-position-waivers.txt permits ${type} for ${engine} and ` +
-            `docs/ast-json.md:${row.lineNo} does not say so (expected the phrase "${phrase}")`,
+            `docs/ast-json-contract.md:${row.lineNo} does not say so (expected the phrase "${phrase}")`,
         )
       } else {
         assert.ok(
           !named,
-          `docs/ast-json.md:${row.lineNo} tells a reader ${engine} omits a ${type} position, ` +
+          `docs/ast-json-contract.md:${row.lineNo} tells a reader ${engine} omits a ${type} position, ` +
             'and no line in resources/ast-position-waivers.txt records one',
         )
       }
@@ -451,7 +451,7 @@ test('an engine claiming §3a conformance has the measurement printed below the 
       const line = page
         .split('\n')
         .find((candidate) => candidate.trim().startsWith(`${engine}   `) || candidate.trim().startsWith(`${engine}  {`))
-      assert.ok(line, `docs/ast-json.md:${row.lineNo} claims §3a conformance for ${engine} with no measured line`)
+      assert.ok(line, `docs/ast-json-contract.md:${row.lineNo} claims §3a conformance for ${engine} with no measured line`)
       for (const field of ['"href"', '"ref"', '"rawRef"']) {
         assert.ok(
           line.includes(field),
@@ -479,7 +479,7 @@ test('a paragraph citing the value ledger names only fields it still declares', 
     for (const m of paragraph.matchAll(/`([a-z_]+(?:\.[a-z_]+)+)`/gi)) {
       assert.ok(
         declaredFields.has(m[1]),
-        `docs/ast-json.md points at resources/ast-value-divergence.txt for \`${m[1]}\`, ` +
+        `docs/ast-json-contract.md points at resources/ast-value-divergence.txt for \`${m[1]}\`, ` +
           'which that file no longer declares',
       )
     }
@@ -494,7 +494,7 @@ test('every clause another file cites still occurs exactly once on the page', ()
     assert.equal(
       countAnchor(page, phrase),
       1,
-      `scripts/spec/ast-page-anchors.mjs cites "${name}" as "${phrase}", which docs/ast-json.md ` +
+      `scripts/spec/ast-page-anchors.mjs cites "${name}" as "${phrase}", which docs/ast-json-contract.md ` +
         'no longer contains exactly once - reword the citation or restore the clause',
     )
   }

@@ -6,7 +6,7 @@
  * it must, because a direct `[text](/url)` link has no reference to record - so
  * an engine that resolves a reference and then throws the label away validates
  * cleanly. All three engines did exactly that at some point, and the only
- * record of it was a prose table in docs/ast-json.md, which was wrong in both
+ * record of it was a prose table in docs/ast-json-contract.md, which was wrong in both
  * directions inside two months (carve#673, carve#674).
  *
  * The rule needs the SOURCE, not just the tree: only the span a node came from

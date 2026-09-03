@@ -125,7 +125,7 @@ test('an unbuilt checkout still resolves to null', () => {
 
 test('a relative CARVE_RS_DIR still resolves to an absolute binary', () => {
   // `compare:impls` spawns this binary with `cwd` set to the carve-rs checkout,
-  // and `CARVE_RS_DIR` may be relative - docs/implementation-comparison.md
+  // and `CARVE_RS_DIR` may be relative - docs/implementation-comparison-methodology.md
   // spells it `../carve-rs`. A candidate relative to THIS repo is re-resolved
   // against the checkout by the child, so `vendor/carve-rs/target/release/carve`
   // is looked for under `vendor/carve-rs/vendor/carve-rs/...`, the spawn fails

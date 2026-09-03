@@ -1,5 +1,5 @@
 /*
- * The conformance table on docs/ast-json.md, parsed.
+ * The conformance table on docs/ast-json-contract.md, parsed.
  *
  * That table is a MEASUREMENT written down in prose - one row per engine, a
  * shape column and a positions column - and measured state rots. It has been
@@ -58,12 +58,12 @@ export function parseConformanceTable(page) {
   const header = lines.findIndex((line) => line.trim() === '| engine | shape | positions |')
   if (header === -1) {
     throw new Error(
-      'docs/ast-json.md has no `| engine | shape | positions |` header; the conformance table ' +
+      'docs/ast-json-contract.md has no `| engine | shape | positions |` header; the conformance table ' +
         'was renamed or reshaped, and every row check below is measuring nothing until this is updated',
     )
   }
   if (!SEPARATOR.test(lines[header + 1].trim())) {
-    throw new Error(`docs/ast-json.md:${header + 2} is not a table separator; the table shape changed`)
+    throw new Error(`docs/ast-json-contract.md:${header + 2} is not a table separator; the table shape changed`)
   }
 
   const rows = []
@@ -72,7 +72,7 @@ export function parseConformanceTable(page) {
     if (!line.startsWith('|')) break
     const cells = cellsOf(line)
     if (cells.length !== 3) {
-      throw new Error(`docs/ast-json.md:${i + 1} has ${cells.length} cells, expected 3 (engine, shape, positions)`)
+      throw new Error(`docs/ast-json-contract.md:${i + 1} has ${cells.length} cells, expected 3 (engine, shape, positions)`)
     }
     const [engineCell, shape, positions] = cells
     rows.push({

@@ -59,7 +59,7 @@ and gets a scannable QR for each - a link to open, a network to join, a text to
 send, a contact to save. Same extension, different payload convention (Step 1).
 
 ::: tip Tier
-Everything here is [Tier-3](./extensions#_1-feature-taxonomy): an app extension,
+Everything here is an [application extension](./extensions#feature-tiers-quick-reference):
 off by default, never part of the conformance corpus. It changes nothing about
 core Carve - it only claims the `qr` info word on fenced code blocks, which core
 would otherwise render as a `<pre><code class="language-qr">`.

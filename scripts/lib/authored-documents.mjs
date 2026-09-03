@@ -108,13 +108,11 @@ export function authoredDocuments() {
  * does not is a citation definition, which is Tier-2 and outside the subset
  * `scripts/spec` models at all.
  *
- * The last move was 90 -> 100: the ten samples on docs/recipes.md, which show
- * containers the engine has no handler for - `::: tree`, `::: cards`,
- * `::: columns` and the rest - rendering as the generic div the extension
- * contract promises. No new construct moved; the page documents what an
- * unregistered container word already does, so all ten are answered. The move
- * before it was 89 -> 90, the captioned reference image PART 9R R7's
- * block-image promotion added to docs/ast-json.md, the sample that shows an
+ * The last move was 96 -> 98: the reader-facing extension guide adds one
+ * unknown-extension fallback example, and the reader-facing AST guide adds one
+ * small tree-shape example. Both are answered. The earlier captioned reference
+ * image sample covers PART 9R R7's
+ * block-image promotion added to docs/ast-json-contract.md, the sample that shows an
  * unresolved reference taking the caption line into the paragraph with it
  * (carve#1784).
  *
@@ -130,5 +128,5 @@ export function authoredDocuments() {
  * message says which way it moved and what to do, because a red gate whose fix
  * is "look up how this file works" is a red gate that gets deleted.
  */
-export const AUTHORED_POPULATION = 96
-export const AUTHORED_ANSWERED = 95
+export const AUTHORED_POPULATION = 98
+export const AUTHORED_ANSWERED = 97

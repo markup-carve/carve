@@ -11,7 +11,7 @@
  * and it must: a direct `[text](/url)` link has no reference to record. So an
  * engine that resolves a reference and drops the label validates cleanly, and
  * three engines did exactly that - the only record of it was a prose table in
- * docs/ast-json.md, which was found wrong in both directions within two months
+ * docs/ast-json-contract.md, which was found wrong in both directions within two months
  * (carve#673, carve#674). Documentation of measured state is not enforcement.
  *
  * The rule needs the SOURCE. Nothing in a resolved tree distinguishes

@@ -1714,7 +1714,7 @@ declarationDrift.push({
   advice: [
     'Each line there is one engine, one document and one node type, with a count and',
     'either "permitted" (PART 12 §4 exempts a REASSEMBLED node - see the §4 clause on',
-    'docs/ast-json.md) or the issue tracking the gap. Update it in the commit that',
+    'docs/ast-json-contract.md) or the issue tracking the gap. Update it in the commit that',
     'moves the number, and never widen a line to "permitted" to quiet a run: that page',
     'narrows the exemption to nodes that CANNOT be placed, not nodes nobody has placed.',
   ],

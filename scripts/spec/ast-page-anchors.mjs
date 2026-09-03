@@ -1,9 +1,9 @@
 /*
- * The sentences of docs/ast-json.md that other files CITE, quoted rather than
+ * The sentences of docs/ast-json-contract.md that other files CITE, quoted rather than
  * numbered.
  *
  * Every module that leans on a clause from that page used to point at it by
- * line: `docs/ast-json.md:116-117`, `:148-153`, `:427`, `:438`, `:108`. The page
+ * line: `docs/ast-json-contract.md:116-117`, `:148-153`, `:427`, `:438`, `:108`. The page
  * grows, so all five drifted, and markup-carve/carve#965 tabulated the damage.
  * The correction that issue proposed - re-number them - was itself out of date
  * by the time it was written: it put the narrowing clause at 131 when the clause

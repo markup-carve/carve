@@ -1,7 +1,7 @@
 /*
  * The comparison page quotes a run, and a quoted run goes stale.
  *
- * docs/implementation-comparison.md embeds the raw output of
+ * docs/implementation-comparison-methodology.md embeds the raw output of
  * `npm run compare:impls` so a reader can see what the tool reports without
  * running four engines. That output carries `corpus_pairs=N`, and N is a fact
  * about this repository that anyone can check - so nobody did. The page said
@@ -47,7 +47,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const page = readFileSync(resolve(root, 'docs/implementation-comparison.md'), 'utf8')
+const page = readFileSync(resolve(root, 'docs/implementation-comparison-methodology.md'), 'utf8')
 const landing = readFileSync(resolve(root, 'docs/index.md'), 'utf8')
 
 const countPairs = (dir) =>
@@ -140,7 +140,7 @@ for (const corpus of ['core', 'optional']) {
     assert.equal(
       entry.pairs,
       live,
-      `docs/implementation-comparison.md quotes corpus_pairs=${entry.pairs} for the ${corpus} corpus, which now holds ${live}${lagNote}. Re-run "${rerun}" for the counts this test reads, or "${full}" to retake the whole published snapshot.`,
+      `docs/implementation-comparison-methodology.md quotes corpus_pairs=${entry.pairs} for the ${corpus} corpus, which now holds ${live}${lagNote}. Re-run "${rerun}" for the counts this test reads, or "${full}" to retake the whole published snapshot.`,
     )
   })
 }
@@ -157,7 +157,7 @@ test('every declared-lag category still contributes fixtures', () => {
   for (const [category, files] of declared) {
     assert.ok(
       files.length > 0,
-      `docs/implementation-comparison.md declares "${category}" as added since its quoted ` +
+      `docs/implementation-comparison-methodology.md declares "${category}" as added since its quoted ` +
         `run, but no tests/corpus fixture carries that name. Renumbered by a rebase, or ` +
         `removed? Fix the name or delete the line - a declaration that matches nothing ` +
         `excuses everything.`,
@@ -200,7 +200,7 @@ test('the comparison cards and table quote the real core corpus size', () => {
     assert.equal(
       Number(total),
       live,
-      `docs/implementation-comparison.md quotes ${passed} / ${total} where the corpus holds ${live}`,
+      `docs/implementation-comparison-methodology.md quotes ${passed} / ${total} where the corpus holds ${live}`,
     )
   }
 })

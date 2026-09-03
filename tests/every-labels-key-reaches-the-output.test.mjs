@@ -18,7 +18,7 @@
  *
  * WHAT IT READS. The key names come off the two places the spec states them:
  * PART 9 §16a's list in resources/grammar.ebnf for the ten core writes, and
- * Extensions §1.5's table in docs/extensions.md for the extension-written
+ * Extensions §1.5's table in docs/extension-contract.md for the extension-written
  * three. Reading them rather than restating them is the point - a key added to
  * one table with no probe below fails, and a probe for a key neither table
  * names fails too, so the tables and the map cannot drift apart in either
@@ -39,7 +39,7 @@ import { carveToHtml, codeGroup, headingPermalinks, index, tableOfContents, tabs
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const grammar = readFileSync(resolve(root, 'resources/grammar.ebnf'), 'utf8')
-const extensions = readFileSync(resolve(root, 'docs/extensions.md'), 'utf8')
+const extensions = readFileSync(resolve(root, 'docs/extension-contract.md'), 'utf8')
 
 /*
  * §16a's list is a fixed-column block: the key, then its default in double

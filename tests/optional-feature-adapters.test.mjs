@@ -101,7 +101,7 @@ const engines = [
 
 /*
  * Pairs the harness genuinely cannot ask for today, each with the reason, taken
- * from the run docs/implementation-comparison.md publishes rather than from
+ * from the run docs/implementation-comparison-methodology.md publishes rather than from
  * reading the adapters back to themselves:
  *
  *   rust: pass=5/5 ... skipped=28
@@ -131,7 +131,7 @@ const DECLARED_UNREACHABLE = {
   'rust:tabs-aria': 'no CLI flag for the tabs extension, and none for its mode',
   'php:symbol-map': 'the symbol map is not reachable from CarveConverter::create()',
   // "`section-wrapper-off` and `source-line-after-generated-id` reach carve-js
-  // and carve-php" - docs/implementation-comparison.md, on the same run.
+  // and carve-php" - docs/implementation-comparison-methodology.md, on the same run.
   'rust:section-wrapper-off': 'no CLI flag for the sections opt-out',
   'rust:source-line-after-generated-id': 'no CLI flag for the sections opt-out or the line stamp',
 }

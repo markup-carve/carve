@@ -193,7 +193,7 @@ const part9Sections = sectionSet(9)
 const part12Sections = sectionSet(12)
 
 // Pages whose bare "§N" citations mean PART 12.
-const part12Pages = ['docs/ast-json.md']
+const part12Pages = ['docs/ast-json-contract.md']
 
 const docFiles = [
   ...readdirSync(resolve(repo, 'docs'))
