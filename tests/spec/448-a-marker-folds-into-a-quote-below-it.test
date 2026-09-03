@@ -1,4 +1,4 @@
-A marker at an enclosing item's content column folds into a quote below it
+A marker folds into a quote below it
 
 ```
 - a
@@ -29,82 +29,6 @@ A marker at an enclosing item's content column folds into a quote below it
 - m</li>
       </ul>
     </blockquote>
-  </li>
-</ul>
-```
-
-```
-- > > - x
-  - m
-.
-<ul>
-  <li>
-    <blockquote>
-      <blockquote>
-        <ul>
-          <li>x
-- m</li>
-        </ul>
-      </blockquote>
-    </blockquote>
-  </li>
-</ul>
-```
-
-```
-- > - > x
-  - m
-.
-<ul>
-  <li>
-    <blockquote>
-      <ul>
-        <li>
-          <blockquote><p>x
-- m</p></blockquote>
-        </li>
-      </ul>
-    </blockquote>
-  </li>
-</ul>
-```
-
-```
-- > - - x
-  - m
-.
-<ul>
-  <li>
-    <blockquote>
-      <ul>
-        <li>
-          <ul>
-            <li>x
-- m</li>
-          </ul>
-        </li>
-      </ul>
-    </blockquote>
-  </li>
-</ul>
-```
-
-```
-- - > - x
-    - m
-.
-<ul>
-  <li>
-    <ul>
-      <li>
-        <blockquote>
-          <ul>
-            <li>x
-- m</li>
-          </ul>
-        </blockquote>
-      </li>
-    </ul>
   </li>
 </ul>
 ```

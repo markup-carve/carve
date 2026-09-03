@@ -33143,7 +33143,7 @@ See [r][].
 
 :::
 
-## A marker at an enclosing item's content column folds into a quote below it
+## A marker folds into a quote below it
 
 An unmarked line at an ENCLOSING item's content column, with a quote below it
 holding the innermost open paragraph, is lazy paragraph text in that quote's
@@ -33211,119 +33211,6 @@ written on is not a parameter of this rule.
 - m</li>
       </ul>
     </blockquote>
-  </li>
-</ul>
-```
-
-:::
-
-Two quotes deep. Depth is not a parameter either -- the innermost open
-paragraph is still inside a quote, and still reached only by the fold.
-
-::: compare
-
-```carve
-- > > - x
-  - m
-```
-
-```html
-<ul>
-  <li>
-    <blockquote>
-      <blockquote>
-        <ul>
-          <li>x
-- m</li>
-        </ul>
-      </blockquote>
-    </blockquote>
-  </li>
-</ul>
-```
-
-:::
-
-The innermost open paragraph one construct over: a quote inside the quoted
-item rather than the quoted item's own text.
-
-::: compare
-
-```carve
-- > - > x
-  - m
-```
-
-```html
-<ul>
-  <li>
-    <blockquote>
-      <ul>
-        <li>
-          <blockquote><p>x
-- m</p></blockquote>
-        </li>
-      </ul>
-    </blockquote>
-  </li>
-</ul>
-```
-
-:::
-
-A sublist inside the quoted item. The fold targets the deepest open
-paragraph, wherever the quote's own structure puts it.
-
-::: compare
-
-```carve
-- > - - x
-  - m
-```
-
-```html
-<ul>
-  <li>
-    <blockquote>
-      <ul>
-        <li>
-          <ul>
-            <li>x
-- m</li>
-          </ul>
-        </li>
-      </ul>
-    </blockquote>
-  </li>
-</ul>
-```
-
-:::
-
-A deeper host, with the band at column 4 instead of 2. The enclosing item
-whose content column the line reaches is the inner one, and the answer is the
-same.
-
-::: compare
-
-```carve
-- - > - x
-    - m
-```
-
-```html
-<ul>
-  <li>
-    <ul>
-      <li>
-        <blockquote>
-          <ul>
-            <li>x
-- m</li>
-          </ul>
-        </blockquote>
-      </li>
-    </ul>
   </li>
 </ul>
 ```

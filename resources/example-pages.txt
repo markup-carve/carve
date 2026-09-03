@@ -271,7 +271,7 @@ index: examples/edge-cases/index.md
   an-unterminated-fence-at-a-content-column-opens-no-block-so-the-paragraph-stays-open
   a-heading-at-an-item-s-content-column-leaves-no-paragraph-open
   a-quote-is-reached-by-its-marker-and-a-column-never-reaches-into-one
-  a-marker-at-an-enclosing-item-s-content-column-folds-into-a-quote-below-it
+  a-marker-folds-into-a-quote-below-it
   colon-fence-as-a-block-opener-in-a-list-item
   fence-folds-as-lazy-inline-code-above-the-content-column
   indented-ordered-marker-content-column-includes-the-marker-indent
