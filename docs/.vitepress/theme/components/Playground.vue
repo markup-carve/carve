@@ -58,25 +58,35 @@ async function applyShareLink(): Promise<void> {
   if (!state) return
   fromSharedLink.value = true
   source.value = state.source
-  // The Rust engine renders through a WASM binding with no options, so raw
-  // HTML cannot be turned off there. A shared document therefore stays on the
-  // JS engine (see the disabled button in the toolbar). The two engines do not
-  // carry the same extension set, so a link made in Rust mode can render
-  // differently here - `sharedEngine` is what the note reports.
+  // The sender's engine is honored where it can be. The WASM build gained a
+  // `rawHtml` option (markup-carve/carve-wasm#70), so a shared document no
+  // longer has to leave the Rust engine to have its passthrough escaped. A
+  // vendored build predating that option still cannot, and `rustMayRender`
+  // decides which case this is by measuring the build rather than trusting a
+  // version number.
   sharedEngine.value = state.engine === 'rust' ? 'rust' : 'js'
-  engine.value = 'js'
+  engine.value = sharedEngine.value
 }
 
+// The note reports a fallback only when one happened. Once the vendored build
+// honors `rawHtml`, a Rust-mode link renders on Rust and there is nothing extra
+// to say.
+const sharedFellBackToJs = computed<boolean>(
+  () =>
+    sharedEngine.value === 'rust' &&
+    (wasmError.value !== null || (wasmReady.value && !wasmCanDisableRawHtml.value)),
+)
+
 const sharedNoteText = computed<string>(() =>
-  sharedEngine.value === 'rust'
+  sharedFellBackToJs.value
     ? 'shared link: raw HTML off, JavaScript engine'
     : 'shared link: raw HTML off',
 )
 
 const sharedNoteTitle = computed<string>(() =>
-  sharedEngine.value === 'rust'
-    ? 'This document arrived in a link made in Rust (WASM) mode. The WASM build cannot turn raw HTML off, so it renders here on the JavaScript engine instead - which carries a few extensions carve-rs does not, so the output can differ from what the sender saw.'
-    : 'This document arrived in a link, so raw HTML is not rendered and the Rust engine is not offered',
+  sharedFellBackToJs.value
+    ? 'This document arrived in a link made in Rust (WASM) mode. This vendored WASM build cannot turn raw HTML off, so it renders here on the JavaScript engine instead - which carries a few extensions carve-rs does not, so the output can differ from what the sender saw.'
+    : 'This document arrived in a link, so raw HTML is not rendered',
 )
 
 function shareUrl(encoded: string): string {
@@ -145,24 +155,53 @@ const engine = ref<Engine>('js')
 // The Rust engine is the carve-rs parser compiled to WASM (vendored under
 // ../../carve-wasm). It is loaded lazily on first selection so the JS-only
 // experience never pays for the ~250 KB module download.
-let wasmToHtml: ((source: string) => string) | null = null
+let wasmRender: ((source: string, options: object) => string) | null = null
 const wasmReady = ref(false)
 const wasmError = ref<string | null>(null)
+// Whether the vendored build honors `rawHtml: false`. See the probe below.
+const wasmCanDisableRawHtml = ref(false)
+
+// A document whose passthrough must not be emitted, used to MEASURE the option
+// rather than assume it. `toHtmlWithOptions` ignores an unrecognized key by
+// design, so a bundle predating the option would accept `rawHtml: false`,
+// render the passthrough anyway, and report nothing.
+const RAW_HTML_PROBE = '```=html\n<b>probe</b>\n```\n'
 
 async function ensureWasm(): Promise<void> {
-  if (wasmToHtml || typeof window === 'undefined') return
+  if (wasmRender || typeof window === 'undefined') return
   try {
     // @ts-expect-error - vendored WASM glue without TS resolution context
     const mod = await import('../../carve-wasm/carve_wasm.js')
     await mod.default() // instantiate the WASM module (resolves its own .wasm)
-    // `toHtmlFull` renders with carve-rs's built-in extensions enabled, to
-    // match the JS engine's extensions-on output as closely as carve-rs allows.
-    wasmToHtml = mod.toHtmlFull as (source: string) => string
+    // `toHtmlWithOptions` with `full: true` renders the extension set carve-rs
+    // ships, which is what `toHtmlFull` did, and additionally takes the options
+    // a shared document needs.
+    const render = mod.toHtmlWithOptions as (source: string, options: object) => string
+    wasmCanDisableRawHtml.value = !render(RAW_HTML_PROBE, { rawHtml: false }).includes(
+      '<b>probe</b>',
+    )
+    wasmRender = render
     wasmReady.value = true
+    // A shared document selected Rust before this probe could run. If the build
+    // cannot serve it, move the selection back rather than leaving a disabled
+    // button lit: the toolbar has to name the engine that is rendering.
+    if (fromSharedLink.value && !wasmCanDisableRawHtml.value) engine.value = 'js'
   } catch (err) {
     wasmError.value = err instanceof Error ? err.message : String(err)
+    // A shared document has to render SOMEWHERE, and the JS engine is loaded
+    // and can turn raw HTML off. Only a document this visitor typed is left
+    // looking at the load failure, which is information they asked for by
+    // selecting the engine.
+    if (fromSharedLink.value) engine.value = 'js'
   }
 }
+
+// Whether the Rust engine may render THIS document. A shared document is written
+// by whoever sent the link, so it may only render where raw HTML can be turned
+// off - a property of the vendored build, not of the engine.
+const rustMayRender = computed<boolean>(
+  () => !fromSharedLink.value || wasmCanDisableRawHtml.value,
+)
 
 watch(engine, (e) => {
   if (e === 'rust') void ensureWasm()
@@ -271,14 +310,17 @@ const rendered = computed<{ html: string; ms: number | null }>(() => {
     }
   }
   try {
-    const useWasm = engine.value === 'rust' && wasmToHtml
+    const useWasm = engine.value === 'rust' && wasmRender && rustMayRender.value
     const t0 = performance.now()
     let out = (
       useWasm
-        ? wasmToHtml!(source.value)
+        ? wasmRender!(source.value, {
+            full: true,
+            // A document that arrived in a URL is not this visitor's document.
+            rawHtml: !fromSharedLink.value,
+          })
         : carveToHtml(source.value, {
             extensions: JS_EXTENSIONS,
-            // A document that arrived in a URL is not this visitor's document.
             allowRawHtml: !fromSharedLink.value,
           })
     ) as string
@@ -306,7 +348,9 @@ const renderStatus = computed<string>(() => {
     if (wasmError.value) return 'Rust (WASM): load failed'
     if (!wasmReady.value) return 'Rust (WASM): loading…'
   }
-  const label = engine.value === 'rust' ? 'Rust (WASM)' : 'JavaScript'
+  // The engine that RENDERED, which is not always the one selected: a shared
+  // document falls back when the vendored build cannot turn raw HTML off.
+  const label = engine.value === 'rust' && rustMayRender.value ? 'Rust (WASM)' : 'JavaScript'
   const ms = mounted.value ? rendered.value.ms : null
   return ms === null ? label : `${label}: ${ms < 1 ? ms.toFixed(3) : ms.toFixed(2)} ms`
 })
@@ -621,10 +665,10 @@ void mermaidInit
           type="button"
           :class="{ active: engine === 'rust' }"
           :aria-pressed="engine === 'rust'"
-          :disabled="fromSharedLink"
+          :disabled="fromSharedLink && sharedFellBackToJs"
           :title="
-            fromSharedLink
-              ? 'The WASM build renders with raw HTML enabled, so it is not offered for a document that arrived in a link'
+            fromSharedLink && sharedFellBackToJs
+              ? 'The WASM engine cannot render this shared document - either this vendored build cannot turn raw HTML off, or it failed to load'
               : undefined
           "
           @click="engine = 'rust'"
