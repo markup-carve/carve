@@ -98,7 +98,7 @@
         `<br>`, however the boundary is spelled. The additive reading would
         have to SYNTHESIZE a break node no production yields, and it would
         make the container ADD a line to the layout this block exists to
-        preserve. It holds on the markdown, plain and ansi targets too
+        preserve. It holds on the markdown, plain and ansi targets too.
 
         THE BACKSLASH STILL HAS A JOB HERE, so it is not redundant syntax the
         writer may drop. PART 7 makes the whitespace run before it INTERIOR,
@@ -200,7 +200,7 @@
           :::
 
         The comment is gone before the inline run exists, and the run carries
-        the empty verse line as a NEWLINE, like every other break it swallows
+        the empty verse line as a NEWLINE, like every other break it swallows.
 
         REMOVED FROM THE RENDER, NOT FROM THE TREE. The line is a `comment`
         node like any other comment (§21a, PART 12), so the canonical writer
@@ -405,7 +405,7 @@
             VISIBLE, which is the one outcome a comment may never have, and an
             indented comment at the top level is already invisible for the same
             reason. It does not close the ITEM either: a following line still
-            belongs to the item rather than parsing at document level
+            belongs to the item rather than parsing at document level.
             It does end the open PARAGRAPH, though, so that line
             begins the item's SECOND paragraph rather than continuing the
             first -- a difference visible only in a LOOSE list.
@@ -447,7 +447,7 @@
              that detached after a blank. The stable rule ids and exact scopes
              are `list-item-block-overindented` and `list-item-body-detached`
              in docs/validation.md. The default formatter MUST NOT choose one
-             intention for the author while migrating an older spelling
+             intention for the author while migrating an older spelling.
          This is intentionally SIMILAR TO DJOT'S LENIENCY inside list items:
          any authored column at or beyond Carve's minimum content_column may
          open the block. Top-level block openers remain column-strict, and a

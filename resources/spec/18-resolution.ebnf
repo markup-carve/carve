@@ -142,7 +142,7 @@
       beginning at the last blank line, and a matcher whose answer depends on
       its absolute position or on lines outside that fragment is not conforming.
 
-      A MATCHER IS A PURE PREDICATE, and this is what makes the probe legitimate
+      A MATCHER IS A PURE PREDICATE, and this is what makes the probe legitimate.
       An extension's block or inline matcher MUST be a pure
       function of the input it is handed: no observable side effects, and the
       same answer for the same (lines, position, context). An implementation

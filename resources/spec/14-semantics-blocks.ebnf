@@ -127,7 +127,7 @@
          a following line stays in the item; corpus
          189-a-comment-under-a-nested-item-does-not-close-it and
          192-a-comment-fence-under-a-nested-item-does-not-close-it-either), and
-         the definition-description host answers the same shape differently
+         the definition-description host answers the same shape differently.
          A comment's own COLUMN stays open for the same reason:
          the exemption below decides which lines are invisible, not what the
          line after one owns.

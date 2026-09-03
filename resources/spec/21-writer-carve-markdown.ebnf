@@ -83,7 +83,7 @@
       language has for "this attribute is present and carries no value"
       (PART 4), so that is the form the writer emits.
 
-      EXCEPT WHERE THE NAME STARTS WITH `_`, which `boolean_attribute` refuses
+      EXCEPT WHERE THE NAME STARTS WITH `_`, which `boolean_attribute` refuses.
       `_x_=""` stays `{_x_=""}`: emitting `{_x_}` would write a
       forced underline, and `{_u}` would write text. The rule is "use the
       dedicated production where the production applies", and here it does not.

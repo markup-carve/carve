@@ -297,7 +297,7 @@ comment_content = (* any text until the matching `#}`, preserved literally;
 
    AN ADDITION'S AND A DELETION'S CONTENT IS NON-EMPTY -- `inline_content` is a
    `+` repetition, and `comment_content` says it too. `{++}`, `{--}` and `{##}`
-   are therefore text, under the same empty-brace clause the forced spans carry
+   are therefore text, under the same empty-brace clause the forced spans carry;
    while `{---}` is still `<del>-</del>` and `{-x-}` is still
    `<del>x</del>`. The string `{--}` freed is the braced en dash (PART 9 §8).
 

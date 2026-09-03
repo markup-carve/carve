@@ -338,10 +338,10 @@
         it is ordinary paragraph text and reopens the paragraph like any other
         prose.
 
-        A QUOTE IS REACHED BY ITS MARKER, AND A COLUMN NEVER REACHES INTO ONE
+        A QUOTE IS REACHED BY ITS MARKER, AND A COLUMN NEVER REACHES INTO ONE.
         I5's columns are read against the container a line is IN,
         and a line that writes no `>` is in no quote whatever column it lands
-        on -- §24 C5 composes the strips and the quote's strip IS the marker
+        on -- §24 C5 composes the strips and the quote's strip IS the marker.
         Such a line reaches the quote only through S4's lazy fold,
         so it is paragraph text: it renders where it was written and registers
         nothing.
@@ -547,7 +547,7 @@
         enclosing context's block position, and a line AT the content column
         after the block remains the container's second paragraph.
 
-        THE BLOCK'S EXTENT IS THE DEFINITION'S, BLANK LINES AND ALL
+        THE BLOCK'S EXTENT IS THE DEFINITION'S, BLANK LINES AND ALL.
         A footnote definition may carry more than one block, and
         the container's reach over it is the DEFINITION'S extent rather than a
         CONTIGUOUS indented run. The blank between the note's blocks is

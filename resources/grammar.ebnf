@@ -77,7 +77,8 @@
      becomes visible. They are not a fourth implementation whose behavior
      the language follows. The review and ruling policy for checkers and
      generated goldens lives under WHAT SETTLES A QUESTION in
-     `.github/CONTRIBUTING.md`.
+     `.github/CONTRIBUTING.md`, and what earns a new clause lives beside it
+     under WHAT EARNS A CLAUSE. Both are process rules, not language rules.
    ============================================================================ *)
 (* ============================================================================
    PART 0: LAYOUT LAYER (L0) -- LINE AUTOMATON (NORMATIVE)
@@ -419,10 +420,10 @@
         it is ordinary paragraph text and reopens the paragraph like any other
         prose.
 
-        A QUOTE IS REACHED BY ITS MARKER, AND A COLUMN NEVER REACHES INTO ONE
+        A QUOTE IS REACHED BY ITS MARKER, AND A COLUMN NEVER REACHES INTO ONE.
         I5's columns are read against the container a line is IN,
         and a line that writes no `>` is in no quote whatever column it lands
-        on -- §24 C5 composes the strips and the quote's strip IS the marker
+        on -- §24 C5 composes the strips and the quote's strip IS the marker.
         Such a line reaches the quote only through S4's lazy fold,
         so it is paragraph text: it renders where it was written and registers
         nothing.
@@ -628,7 +629,7 @@
         enclosing context's block position, and a line AT the content column
         after the block remains the container's second paragraph.
 
-        THE BLOCK'S EXTENT IS THE DEFINITION'S, BLANK LINES AND ALL
+        THE BLOCK'S EXTENT IS THE DEFINITION'S, BLANK LINES AND ALL.
         A footnote definition may carry more than one block, and
         the container's reach over it is the DEFINITION'S extent rather than a
         CONTIGUOUS indented run. The blank between the note's blocks is
@@ -2947,7 +2948,7 @@ comment_content = (* any text until the matching `#}`, preserved literally;
 
    AN ADDITION'S AND A DELETION'S CONTENT IS NON-EMPTY -- `inline_content` is a
    `+` repetition, and `comment_content` says it too. `{++}`, `{--}` and `{##}`
-   are therefore text, under the same empty-brace clause the forced spans carry
+   are therefore text, under the same empty-brace clause the forced spans carry;
    while `{---}` is still `<del>-</del>` and `{-x-}` is still
    `<del>x</del>`. The string `{--}` freed is the braced en dash (PART 9 §8).
 
@@ -3352,7 +3353,7 @@ attr_pad = {space} ;                     (* INLINE attribute-block padding:
                                             spaces only, no tab and no line
                                             break -- it sits inline *)
 opt_ws = {whitespace} ;                  (* spaces/tabs only, no line breaks.
-                                            BLOCK-LEVEL ONLY since:
+                                            BLOCK-LEVEL ONLY:
                                             read by opt_pad, attr_separator
                                             and continuation, never by the
                                             inline `attributes` production *)
@@ -3486,7 +3487,7 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    slot that does not match leaves a token unconsumed, and the surrounding
    production then rejects the line. Either way the line falls back to
    ordinary prose rather than silently re-indenting or silently dropping
-   metadata -- the same visible failure a tab after a marker already produces
+   metadata -- the same visible failure a tab after a marker already produces.
 
    Cardinality is a separate question from the terminal: a slot spelled
    `space` admits exactly one character, and a `space+` run admits one or
@@ -3545,7 +3546,7 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    definition term, a bullet item and an ordered item take `space` -- one,
    exactly, not a class. A heading and a caption stood in that list and no
    longer do: both spell `space+` now, a RUN of the same terminal, each for
-   the reason its own clause states rather than for anything here
+   the reason its own clause states rather than for anything here.
    The CONTINUATION MARKER takes none:
    `continuation_marker = '+', newline`, so any character between the
    `+` and the line end is content and the line is not a marker. The
@@ -3910,7 +3911,7 @@ EOF = (* end of file *) ;
          joined content belongs to the SPANNING cell (corpus 40, 41). A
          table cannot BEGIN with a continuation row (PART 2 `table`).
 
-         THE ROW ABOVE IS A LINE, NOT A `<tr>` -- NORMATIVE. What
+         THE ROW ABOVE IS A LINE, NOT A `<tr>` -- NORMATIVE [CARVE-P9-069]. What
          a continuation joins is the row above it in the SOURCE. T7 CONSUMES
          the delimiter row - it produces no `<tr>` and is not a row of the
          table - so a `+` line directly under one has no row above it to join
@@ -4366,7 +4367,7 @@ EOF = (* end of file *) ;
          a following line stays in the item; corpus
          189-a-comment-under-a-nested-item-does-not-close-it and
          192-a-comment-fence-under-a-nested-item-does-not-close-it-either), and
-         the definition-description host answers the same shape differently
+         the definition-description host answers the same shape differently.
          A comment's own COLUMN stays open for the same reason:
          the exemption below decides which lines are invisible, not what the
          line after one owns.
@@ -5633,7 +5634,7 @@ EOF = (* end of file *) ;
         `<br>`, however the boundary is spelled. The additive reading would
         have to SYNTHESIZE a break node no production yields, and it would
         make the container ADD a line to the layout this block exists to
-        preserve. It holds on the markdown, plain and ansi targets too
+        preserve. It holds on the markdown, plain and ansi targets too.
 
         THE BACKSLASH STILL HAS A JOB HERE, so it is not redundant syntax the
         writer may drop. PART 7 makes the whitespace run before it INTERIOR,
@@ -5735,7 +5736,7 @@ EOF = (* end of file *) ;
           :::
 
         The comment is gone before the inline run exists, and the run carries
-        the empty verse line as a NEWLINE, like every other break it swallows
+        the empty verse line as a NEWLINE, like every other break it swallows.
 
         REMOVED FROM THE RENDER, NOT FROM THE TREE. The line is a `comment`
         node like any other comment (§21a, PART 12), so the canonical writer
@@ -5940,7 +5941,7 @@ EOF = (* end of file *) ;
             VISIBLE, which is the one outcome a comment may never have, and an
             indented comment at the top level is already invisible for the same
             reason. It does not close the ITEM either: a following line still
-            belongs to the item rather than parsing at document level
+            belongs to the item rather than parsing at document level.
             It does end the open PARAGRAPH, though, so that line
             begins the item's SECOND paragraph rather than continuing the
             first -- a difference visible only in a LOOSE list.
@@ -5982,7 +5983,7 @@ EOF = (* end of file *) ;
              that detached after a blank. The stable rule ids and exact scopes
              are `list-item-block-overindented` and `list-item-body-detached`
              in docs/validation.md. The default formatter MUST NOT choose one
-             intention for the author while migrating an older spelling
+             intention for the author while migrating an older spelling.
          This is intentionally SIMILAR TO DJOT'S LENIENCY inside list items:
          any authored column at or beyond Carve's minimum content_column may
          open the block. Top-level block openers remain column-strict, and a
@@ -6800,7 +6801,7 @@ EOF = (* end of file *) ;
       beginning at the last blank line, and a matcher whose answer depends on
       its absolute position or on lines outside that fragment is not conforming.
 
-      A MATCHER IS A PURE PREDICATE, and this is what makes the probe legitimate
+      A MATCHER IS A PURE PREDICATE, and this is what makes the probe legitimate.
       An extension's block or inline matcher MUST be a pure
       function of the input it is handed: no observable side effects, and the
       same answer for the same (lines, position, context). An implementation
@@ -7858,7 +7859,7 @@ EOF = (* end of file *) ;
       language has for "this attribute is present and carries no value"
       (PART 4), so that is the form the writer emits.
 
-      EXCEPT WHERE THE NAME STARTS WITH `_`, which `boolean_attribute` refuses
+      EXCEPT WHERE THE NAME STARTS WITH `_`, which `boolean_attribute` refuses.
       `_x_=""` stays `{_x_=""}`: emitting `{_x_}` would write a
       forced underline, and `{_u}` would write text. The rule is "use the
       dedicated production where the production applies", and here it does not.
@@ -8836,7 +8837,7 @@ EOF = (* end of file *) ;
 
       THE SCAN INCLUDES FOOTNOTE DEFINITION BODIES. They render as block
       content, so a reference inside one is a reference; missing them leaves a
-      heading without the id that the link this target also emits depends on
+      heading without the id that the link this target also emits depends on.
 
    ============================================================================ *)
 (* ============================================================================
@@ -9775,7 +9776,7 @@ EOF = (* end of file *) ;
       of `attrs.keyValues`: its values are strings and hold no nodes at all,
       which is what the trap above turns on.
 
-      (d) THE WHOLE PAYLOAD, VALIDATED AGAINST `resources/ast-schema.json`
+      (d) THE WHOLE PAYLOAD, VALIDATED AGAINST `resources/ast-schema.json`.
           Types and required fields together, at DECODE, refused
           with the same typed error (a), (b) and (c) already require. Not a
           fourth list of leniency points -- the schema is the list, it already

@@ -509,6 +509,12 @@
       "scope": "parsing"
     },
     {
+      "id": "CARVE-P9-069",
+      "part": "9",
+      "title": "THE ROW ABOVE IS A LINE, NOT A `<tr>`",
+      "scope": "parsing"
+    },
+    {
       "id": "CARVE-P9-003",
       "part": "9",
       "title": "A CONTINUATION ROW LEAVES NO PARAGRAPH OPEN",
@@ -1141,7 +1147,7 @@
     {
       "id": "CARVE-P11-024",
       "part": "11",
-      "title": "IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP",
+      "title": "M1e `<` IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP",
       "scope": "canonical-writing"
     },
     {

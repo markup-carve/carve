@@ -415,6 +415,6 @@
 
       THE SCAN INCLUDES FOOTNOTE DEFINITION BODIES. They render as block
       content, so a reference inside one is a reference; missing them leaves a
-      heading without the id that the link this target also emits depends on
+      heading without the id that the link this target also emits depends on.
 
    ============================================================================ *)

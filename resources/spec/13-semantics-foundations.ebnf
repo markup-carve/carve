@@ -268,7 +268,7 @@
          joined content belongs to the SPANNING cell (corpus 40, 41). A
          table cannot BEGIN with a continuation row (PART 2 `table`).
 
-         THE ROW ABOVE IS A LINE, NOT A `<tr>` -- NORMATIVE. What
+         THE ROW ABOVE IS A LINE, NOT A `<tr>` -- NORMATIVE [CARVE-P9-069]. What
          a continuation joins is the row above it in the SOURCE. T7 CONSUMES
          the delimiter row - it produces no `<tr>` and is not a row of the
          table - so a `+` line directly under one has no row above it to join

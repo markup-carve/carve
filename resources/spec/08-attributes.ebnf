@@ -197,7 +197,7 @@ attr_pad = {space} ;                     (* INLINE attribute-block padding:
                                             spaces only, no tab and no line
                                             break -- it sits inline *)
 opt_ws = {whitespace} ;                  (* spaces/tabs only, no line breaks.
-                                            BLOCK-LEVEL ONLY since:
+                                            BLOCK-LEVEL ONLY:
                                             read by opt_pad, attr_separator
                                             and continuation, never by the
                                             inline `attributes` production *)

@@ -327,7 +327,7 @@
       of `attrs.keyValues`: its values are strings and hold no nodes at all,
       which is what the trap above turns on.
 
-      (d) THE WHOLE PAYLOAD, VALIDATED AGAINST `resources/ast-schema.json`
+      (d) THE WHOLE PAYLOAD, VALIDATED AGAINST `resources/ast-schema.json`.
           Types and required fields together, at DECODE, refused
           with the same typed error (a), (b) and (c) already require. Not a
           fourth list of leniency points -- the schema is the list, it already

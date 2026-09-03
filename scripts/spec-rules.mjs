@@ -11,7 +11,7 @@ const registryPath = resolve(repo, 'resources/spec/rules.json')
 const clauses = (grammar) => {
   const flat = grammar.replace(/\n\s*/g, ' ')
   const partStarts = [...flat.matchAll(/PART (\d+R?):/g)]
-  const matches = [...flat.matchAll(/([A-Z][A-Za-z0-9 ,§`(){}'/+.:[\]-]{3,240}?)\s+--\s+NORMATIVE\s+\[(CARVE-(?:P\d+R?|PRE)-\d{3})\]/g)]
+  const matches = [...flat.matchAll(/([A-Z](?:[A-Za-z0-9 ,§(){}'/+.:[\]-]|`[^`]*`){3,240}?)\s+--\s+NORMATIVE\s+\[(CARVE-(?:P\d+R?|PRE)-\d{3})\]/g)]
   let partIndex = -1
 
   return matches.map((match) => {
@@ -30,8 +30,34 @@ const clauses = (grammar) => {
   })
 }
 
+// A clause marker is `-- NORMATIVE`; the same token inside backticks is prose about the
+// convention, not a clause. Every clause must carry an id, and the title match above must
+// reach every id, or the rule would be absent from the registry with nothing to signal it.
+const unbound = (grammar) => {
+  const flat = grammar.replace(/\n\s*/g, ' ')
+  const markers = [...flat.matchAll(/(.?)--\s+NORMATIVE(?!\s*`)(\s*\[(CARVE-(?:P\d+R?|PRE)-\d{3})\])?/g)]
+    .filter((match) => match[1] !== '`')
+  return {
+    idless: markers.filter((match) => !match[2]).map((match) => flat.slice(Math.max(0, match.index - 90), match.index).trim()),
+    ids: markers.filter((match) => match[2]).map((match) => match[3]),
+  }
+}
+
 const command = process.argv[2] ?? '--check'
-const actual = clauses(readFileSync(grammarPath, 'utf8'))
+const grammar = readFileSync(grammarPath, 'utf8')
+const actual = clauses(grammar)
+const markers = unbound(grammar)
+for (const context of markers.idless) {
+  console.error(`normative clause carries no stable id: ...${context}`)
+  process.exitCode = 1
+}
+const reached = new Set(actual.map(({ id }) => id))
+for (const id of markers.ids) {
+  if (!reached.has(id)) {
+    console.error(`'${id}' is not reachable by the clause-title match; widen it or reword the title`)
+    process.exitCode = 1
+  }
+}
 
 if (command === '--check') {
   const stored = JSON.parse(readFileSync(registryPath, 'utf8'))

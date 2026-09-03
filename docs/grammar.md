@@ -75,7 +75,9 @@ npm run grammar:reach
 ```
 
 `core:check` compares the derived pipeline with every reviewed corpus pair.
-`grammar:reach` checks that the corpus exercises every reachable production.
+`grammar:reach` checks that the corpus exercises every reachable production and
+pins the remainder in `resources/grammar-corpus-coverage.txt`, which fails both
+on a newly unreached production and on a stale entry a new document now covers.
 These tools expose disagreements; they do not override normative clauses. The
 review policy for clauses, checkers, and generated goldens lives in
 [`CONTRIBUTING.md`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question).

@@ -99,7 +99,7 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    slot that does not match leaves a token unconsumed, and the surrounding
    production then rejects the line. Either way the line falls back to
    ordinary prose rather than silently re-indenting or silently dropping
-   metadata -- the same visible failure a tab after a marker already produces
+   metadata -- the same visible failure a tab after a marker already produces.
 
    Cardinality is a separate question from the terminal: a slot spelled
    `space` admits exactly one character, and a `space+` run admits one or
@@ -158,7 +158,7 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    definition term, a bullet item and an ordered item take `space` -- one,
    exactly, not a class. A heading and a caption stood in that list and no
    longer do: both spell `space+` now, a RUN of the same terminal, each for
-   the reason its own clause states rather than for anything here
+   the reason its own clause states rather than for anything here.
    The CONTINUATION MARKER takes none:
    `continuation_marker = '+', newline`, so any character between the
    `+` and the line end is content and the line is not a marker. The

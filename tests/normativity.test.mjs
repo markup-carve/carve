@@ -76,7 +76,7 @@ test('focused rule indexes match the scoped registry', () => {
 test('language-rule titles stand alone and process-rule ids stay retired', () => {
   const registry = readJson('resources/spec/rules.json')
   const dependent = registry.rules.filter(({ title }) =>
-    /^(?:(?:AND|BUT|SO|THAT|IT|THIS|THEY)\b|THE LINTER\b|A CHECKER FOR\b)/.test(title),
+    /^(?:(?:AND|BUT|SO|THAT|IT|THIS|THEY|IS|ARE|WAS|WERE|DOES|DO|HAS|HAVE)\b|THE LINTER\b|A CHECKER FOR\b)/.test(title),
   )
   assert.deepEqual(
     dependent,
