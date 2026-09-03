@@ -33398,3 +33398,328 @@ p
 ```
 
 :::
+
+## A comment below a description body's column ends the body
+
+A `%%%` written at DOCUMENT column 0 below a description body ends the body and
+is classified in the surviving context, where a matching run below it makes it a
+comment BLOCK. The line between the two delimiters is comment content and
+renders nothing (markup-carve/carve#1930).
+
+This is the rule the ITEM host has always had -- a comment fence at the frame's
+column 0 ends the item and hands the following line to the enclosing block,
+while an indented fence stays with the item. §17's band says the same for a
+description body in so many words: below the body's content column the body
+ends and the line is classified in the surviving context, and "at DOCUMENT
+column 0 they are interrupters and the body does end". The `dd` had no such arm,
+so the fence folded in as an invisible body line, no block was ever opened, and
+BOTH delimiters degraded to line comments while the text between them was
+published.
+
+TERMINATED IS WHAT MAKES IT A BLOCK, and the degraded control below is why that
+has to be said: §28's degradation is total, so an opener with no exact-width
+closer ahead is one `%%` line comment for every question the layout asks, and it
+opens nothing here either.
+
+The ticket's document.
+
+::: compare
+
+```carve
+:: t
+:  x
+%%%
+y
+%%%
+z
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>z</p>
+```
+
+:::
+
+The width is not a parameter -- a wider run answers the same way.
+
+::: compare
+
+```carve
+:: t
+:  x
+%%%%
+y
+%%%%
+z
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>z</p>
+```
+
+:::
+
+The closer is looked for AHEAD rather than on the next line, so a two-line body
+is the same block.
+
+::: compare
+
+```carve
+:: t
+:  x
+%%%
+y
+w
+%%%
+z
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>z</p>
+```
+
+:::
+
+DEGRADED IS THE CONTROL. With no closer ahead the opener is one line comment,
+it opens nothing, and the lines below it are ordinary paragraph text.
+
+::: compare
+
+```carve
+:: t
+:  x
+%%%
+y
+z
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>y
+z</p>
+```
+
+:::
+
+The `%%` LINE FORM is the other control. It is invisible at any column and opens
+no block, so the body ends at it and the following line is a document paragraph.
+
+::: compare
+
+```carve
+:: t
+:  x
+%% c
+z
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>z</p>
+```
+
+:::
+
+AT THE BODY'S OWN COLUMN the fence is the body's content, its closer is not in
+the body, and both delimiters degrade to line comments. This row is what makes
+column 0 legible as the document's column rather than the body's.
+
+::: compare
+
+```carve
+:: t
+:  x
+   %%%
+y
+   %%%
+z
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>y</p>
+<p>z</p>
+```
+
+:::
+
+THE ITEM HOST IS THE TWIN, pinned beside the description so the two cannot drift
+apart again.
+
+::: compare
+
+```carve
+- a
+%%%
+c
+%%%
+b
+```
+
+```html
+<ul>
+  <li>a</li>
+</ul>
+<p>b</p>
+```
+
+:::
+
+A FOLLOWER AT THE BODY'S OWN COLUMN is what makes the three comment shapes one
+rule rather than three. With the body ended at the comment, a line back at column
+3 is a document paragraph -- it has no body left to rejoin. The `%%` line form
+first.
+
+::: compare
+
+```carve
+:: t
+:  x
+%% c
+   more
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>more</p>
+```
+
+:::
+
+The DEGRADED fence, same answer: whether a closer follows decides what the
+comment IS, never whether the body survives it.
+
+::: compare
+
+```carve
+:: t
+:  x
+%%%
+   more
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>more</p>
+```
+
+:::
+
+And the terminated fence, which completes the trio.
+
+::: compare
+
+```carve
+:: t
+:  x
+%%%
+y
+%%%
+   more
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>more</p>
+```
+
+:::
+
+THE COLUMN IS NOT A PARAMETER EITHER, as long as the comment is BELOW the body's
+content column. One column in answers as column 0 does.
+
+::: compare
+
+```carve
+:: t
+:  x
+ %%%
+y
+ %%%
+z
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>z</p>
+```
+
+:::
+
+Two columns in, the last column below the body's own.
+
+::: compare
+
+```carve
+:: t
+:  x
+  %%%
+y
+  %%%
+z
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>z</p>
+```
+
+:::
+
+And the line form one column in, with a follower back at the body's column --
+the two axes crossed, so neither can be read as the one doing the work.
+
+::: compare
+
+```carve
+:: t
+:  x
+ %% c
+   more
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>x</dd>
+</dl>
+<p>more</p>
+```
+
+:::

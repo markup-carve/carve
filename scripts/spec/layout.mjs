@@ -2359,6 +2359,37 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (authoredCol === 0 &&
                 (FOOTNOTE_DEF.test(dedented) || isLinkDef(dedented) || tryAttrLine([dedented], 0))) break
             /*
+             * A COMMENT BELOW THE BODY'S COLUMN ENDS IT (carve#1930). This arm
+             * is only reached for a line BELOW the body's content column, and
+             * §17's band sends such a line to the surviving context: the body
+             * ends and the document classifies it. A comment closes the
+             * paragraph above it wherever it is written, so once the body's
+             * paragraph is closed and the comment is not the body's own
+             * content, nothing is left open for the next line to fold into -
+             * S4's ordinary answer, reached the ordinary way.
+             *
+             * The `dd` had no such arm at all, so a comment here folded in as an
+             * invisible BODY line and the body went on collecting. Two things
+             * followed. A terminated `%%%` never opened a comment BLOCK, so both
+             * delimiters degraded to line comments and the text between them was
+             * PUBLISHED; and a following line at the body's own column stayed in
+             * the `dd` where every engine puts it outside.
+             *
+             * NEITHER THE KIND NOR THE COLUMN IS A PARAMETER. The `%%` line
+             * form, a `%%%` with no closer ahead and a terminated `%%%` answer
+             * alike, and so does a comment one or two columns in. Both narrower
+             * forms were written first and every document that told them apart
+             * sided with this one in all three engines.
+             *
+             * The ITEM collector states its half of the same rule further down,
+             * and corpus 214 pins it there. AT the body's own column nothing
+             * changes: that line is the body's own content and never reaches
+             * here, and neither does a comment under an EMPTY body - the
+             * first-block `+` branch above consumes it first, which is why
+             * there is no emptiness guard on this line to go stale.
+             */
+            if (classifyLayoutComment(lines, i) !== null) break
+            /*
              * AN INVISIBLE LINE FOLDS LIKE ANY OTHER -- NORMATIVE, and §10 I5's
              * own sentence for the same band: "at a nonzero column BELOW
              * content_column it is lazy paragraph text and does not register".
