@@ -507,6 +507,53 @@
         whose column it fell below (§24 C3, AN INVISIBLE LINE FOLDS LIKE ANY
         OTHER), and this clause does not admit it.
 
+        A QUOTE IS NOT ONE OF THE COLUMNS (carve#1905), which is the other
+        boundary of this clause and the one an unmarked LIST MARKER runs into.
+        "The deepest column the LINE REACHES" ranges over the containers a
+        column can reach, and a quote is never one of them: A QUOTE IS REACHED
+        BY ITS MARKER, AND A COLUMN NEVER REACHES INTO ONE (carve#1384, above).
+        So where a quote holds the innermost open paragraph, this clause's
+        reach question does not arise for it at all. The line writes no marker,
+        so it is in no quote at whatever column it lands on; nothing about a
+        column closes one either, so the quote SURVIVES the line; and S4
+        settles ownership before it classifies any residue, selecting that
+        surviving quote, whose boundary left the deepest paragraph open. The
+        residue therefore meets §10 I2 -- list markers never interrupt -- and
+        folds. §24 C3's other branch, a marker at the content column opening a
+        SUBLIST, asks what a line does IN a container, and this line is never
+        classified in the item it merely reaches. So
+
+            - a              - > - x
+              > - x            - m
+              - m
+
+        both fold `- m` into the quoted item's paragraph, and the two spellings
+        are one document to this clause -- as are the deeper hosts and the
+        deeper quotes, none of which is a parameter of it.
+
+        THE PARAGRAPH TWIN IS THE DERIVATION, not an analogy. Replace the
+        quoted list with quoted prose and nothing else, and `- a` / `  > q` /
+        `  - m` folds by the same three sentences, which is how every reader
+        already answers it. Ruling the marker out of the fold would have had to
+        move that document too, or else say why one open paragraph inside a
+        quote takes a lazy line at this column and another does not.
+
+        THE NO-QUOTE SHAPES ARE THE CONTROLS, and none of them moves. Put an
+        item, a heading, a fence or a paragraph where the quote was and the
+        owner S4 selects is the enclosing ITEM: the residue is classified
+        there, §24 C3 governs at the content column, and the marker opens a
+        list element with no blank line before it, exactly as §10 I2's TIGHT
+        NESTED LISTS UNAFFECTED note already says. A BLANK LINE is the escape
+        under a quote as well, and the only one: it ends the quote and every
+        column opened inside it (A NEW MARKER DOES NOT REACH A DEAD CONTAINER'S
+        COLUMN, above), leaving the next line the item's. What the fold costs is
+        the lines AFTER it -- A LAZY FOLD KEEPS THE CONTAINER OPEN FOR FOLLOWING
+        LINES, so intervening prose does not escape the quote and carries the
+        marker under it in as well. Corpus
+        448-a-marker-at-an-enclosing-item-s-content-column-folds-into-a-quote-below-it
+        pins the controls beside the folds, because the neighbours are what make
+        the rule legible.
+
         THE HOST IS NOT A PARAMETER EITHER (carve#1918). This clause is
         written about CONTAINERS, and the three indented-block collectors are
         containers alike -- a description body and a footnote body select an

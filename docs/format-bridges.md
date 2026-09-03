@@ -91,8 +91,8 @@ Carve's - a node, never in silence.
 ## Testing conversion in both directions
 
 The corpus now records this measurement directly for built-in import routes.
-At the current JavaScript engine pin, 605 of 1,384 documents return to their
-canonical Carve source through HTML, and 374 through Markdown. The exact counts
+At the current JavaScript engine pin, 675 of 1,636 documents return to their
+canonical Carve source through HTML, and 410 through Markdown. The exact counts
 are a bidirectional ratchet in `resources/import-roundtrip-baseline.json`: a
 regression and an improvement both require inspection rather than silently
 changing the published baseline.
