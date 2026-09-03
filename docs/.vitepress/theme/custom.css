@@ -411,6 +411,14 @@
   border-radius: 6px;
   display: block;
 }
+
+/* VitePress' reset makes every image a block. Carve keeps an image that shares
+ * a paragraph inline, and the playground is where that difference is taught. */
+.carve-render p img {
+  display: inline;
+  max-width: 100%;
+  height: auto;
+}
 .carve-render figcaption {
   margin-top: 0.45rem;
   padding-left: 0.6rem;
