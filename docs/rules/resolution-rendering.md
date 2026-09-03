@@ -44,10 +44,10 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9R-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L248) | 9R | DERIVED DISPLAY TEXT CLONES THE SAME NODES |
 | [`CARVE-P9R-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L274) | 9R | R7 BLOCK IMAGE PROMOTION |
 | [`CARVE-P9R-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L156) | 9R | AN UNANSWERABLE PROBE KEEPS THE CANDIDATE TEXT |
-| [`CARVE-P10-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L102) | 10 | AN EMPTY CONTAINER BODY |
-| [`CARVE-P10-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L131) | 10 | A ROW IS A ROW, IN EVERY SECTION |
-| [`CARVE-P10-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L149) | 10 | SEMANTIC SPAN ATTRIBUTES |
-| [`CARVE-P10-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L161) | 10 | A DERIVED ATTRIBUTE YIELDS TO AN AUTHORED ONE OF THE SAME NAME |
-| [`CARVE-P10-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L170) | 10 | LEFTOVER ATTRIBUTES RIDE THE OUTERMOST SEMANTIC ELEMENT |
-| [`CARVE-P10-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L192) | 10 | THE REGISTRY HOLDS NO ELEMENT CARVE ALREADY SPELLS INLINE |
-| [`CARVE-P10-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L217) | 10 | THE CORE SEMANTIC NAMES ARE CLOSED |
+| [`CARVE-P10-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L101) | 10 | AN EMPTY CONTAINER BODY |
+| [`CARVE-P10-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L130) | 10 | A ROW IS A ROW, IN EVERY SECTION |
+| [`CARVE-P10-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L148) | 10 | SEMANTIC SPAN ATTRIBUTES |
+| [`CARVE-P10-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L160) | 10 | A DERIVED ATTRIBUTE YIELDS TO AN AUTHORED ONE OF THE SAME NAME |
+| [`CARVE-P10-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L169) | 10 | LEFTOVER ATTRIBUTES RIDE THE OUTERMOST SEMANTIC ELEMENT |
+| [`CARVE-P10-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L191) | 10 | THE REGISTRY HOLDS NO ELEMENT CARVE ALREADY SPELLS INLINE |
+| [`CARVE-P10-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L216) | 10 | THE CORE SEMANTIC NAMES ARE CLOSED |

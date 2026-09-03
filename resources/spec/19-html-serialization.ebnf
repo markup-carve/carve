@@ -2,9 +2,8 @@
    PART 10: HTML SERIALIZATION CONVENTIONS (NORMATIVE)
    ============================================================================
 
-   These conventions define the exact bytes illustrated by the corpus. A
-   disagreement between a clause and a committed pair is a defect in one or
-   both artifacts; neither silently overrides the other.
+   These conventions define the exact bytes the corpus pins. On any
+   disagreement the corpus wins.
 
    1. ATTRIBUTE ORDER. Attributes serialize in the AUTHOR's source order
       (the recorded `order`; see the RENDER ORDER rule in PART 4 and
