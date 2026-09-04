@@ -59,7 +59,9 @@ Corpus added since this run: `441-a-definition-between-two-open-content-columns-
 `447-the-host-does-not-change-which-column-a-definition-reaches`,
 `448-a-marker-folds-into-a-quote-below-it`
 and
-`449-a-comment-below-a-description-body-s-column-ends-the-body`.
+`449-a-comment-below-a-description-body-s-column-ends-the-body`
+and
+`450-a-closed-fence-in-a-description-body-ends-it`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the

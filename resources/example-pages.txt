@@ -615,6 +615,7 @@ index: examples/edge-cases/index.md
   the-host-does-not-change-which-column-a-definition-reaches
   below-a-definition-body-s-column-an-invisible-line-folds-as-text
   a-comment-below-a-description-body-s-column-ends-the-body
+  a-closed-fence-in-a-description-body-ends-it
   an-abbreviation-definition-outside-document-level-is-not-an-invisible-line
 [edge-attributes] Attributes
 > Attribute lines and inline blocks, names and values, classes, booleans and the semantic/language sugar.
