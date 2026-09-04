@@ -16,163 +16,6 @@ export function extensions() {
 
 /**
  * @param {string} source
- * @param {string | null} [mode]
- * @returns {any}
- */
-export function fromHtml(source, mode) {
-    const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len0 = WASM_VECTOR_LEN;
-    var ptr1 = isLikeNone(mode) ? 0 : passStringToWasm0(mode, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    var len1 = WASM_VECTOR_LEN;
-    const ret = wasm.fromHtml(ptr0, len0, ptr1, len1);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {string} source
- * @returns {any}
- */
-export function fromMarkdown(source) {
-    const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.fromMarkdown(ptr0, len0);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * Import HTML through the Rust HTML5 DOM and canonical Carve writer.
- *
- * Returns `{ value, report }`; `report.diagnostics` makes every lossy import
- * decision observable. `roundtrip` is only safe for Carve-produced HTML.
- * @param {string} source
- * @param {string | null} [mode]
- * @returns {any}
- */
-export function htmlToCarve(source, mode) {
-    const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len0 = WASM_VECTOR_LEN;
-    var ptr1 = isLikeNone(mode) ? 0 : passStringToWasm0(mode, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    var len1 = WASM_VECTOR_LEN;
-    const ret = wasm.htmlToCarve(ptr0, len0, ptr1, len1);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * Parse Carve source and return its AST as a JSON string.
- *
- * The PART 12 exchange shape (https://markup-carve.github.io/carve/ast-json):
- * the same tree every Carve engine publishes, so a consumer written against
- * one implementation reads another's output. The root carries exactly `type`,
- * `children` and `srcByteLength`; frontmatter and footnote definitions are
- * block nodes inside `children`, not root fields.
- *
- * Returns a STRING rather than a JS object: the caller runs `JSON.parse`, which
- * is what a browser does natively and faster than building the object graph
- * across the wasm boundary one property at a time. It also keeps the bytes
- * available for a caller that stores or forwards them.
- *
- * Position tracking is on for this entry point and nowhere else. PART 12 §4
- * lets an engine gate tracking behind a parse option but requires the
- * serialized form to carry it, and rendering would pay for spans nobody reads.
- * @param {string} source
- * @returns {string}
- */
-export function parseJson(source) {
-    let deferred2_0;
-    let deferred2_1;
-    try {
-        const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.parseJson(ptr0, len0);
-        deferred2_0 = ret[0];
-        deferred2_1 = ret[1];
-        return getStringFromWasm0(ret[0], ret[1]);
-    } finally {
-        wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
-    }
-}
-
-/**
- * @param {string} source
- * @returns {string}
- */
-export function toAnsi(source) {
-    let deferred2_0;
-    let deferred2_1;
-    try {
-        const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.toAnsi(ptr0, len0);
-        deferred2_0 = ret[0];
-        deferred2_1 = ret[1];
-        return getStringFromWasm0(ret[0], ret[1]);
-    } finally {
-        wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
-    }
-}
-
-/**
- * @param {string} source
- * @param {boolean | null} [strict]
- * @param {number | null} [maximum]
- * @returns {any}
- */
-export function toAnsiWithReport(source, strict, maximum) {
-    const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.toAnsiWithReport(ptr0, len0, isLikeNone(strict) ? 0xFFFFFF : strict ? 1 : 0, isLikeNone(maximum) ? 0x100000001 : (maximum) >>> 0);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {string} source
- * @returns {string}
- */
-export function toCarve(source) {
-    let deferred2_0;
-    let deferred2_1;
-    try {
-        const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.toCarve(ptr0, len0);
-        deferred2_0 = ret[0];
-        deferred2_1 = ret[1];
-        return getStringFromWasm0(ret[0], ret[1]);
-    } finally {
-        wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
-    }
-}
-
-/**
- * @param {string} source
- * @param {boolean | null} [strict]
- * @param {number | null} [maximum]
- * @returns {any}
- */
-export function toCarveWithReport(source, strict, maximum) {
-    const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.toCarveWithReport(ptr0, len0, isLikeNone(strict) ? 0xFFFFFF : strict ? 1 : 0, isLikeNone(maximum) ? 0x100000001 : (maximum) >>> 0);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {string} source
  * @returns {string}
  */
 export function toHtml(source) {
@@ -237,6 +80,8 @@ export function toHtmlFull(source, symbols) {
  * // '<h1 id="A">A</h1>\n<p>p</p>'
  *
  * toHtmlWithOptions(src, { sections: false, symbols: { rocket: '🚀' }, full: true })
+ *
+ * toHtmlWithOptions(untrusted, { rawHtml: false })
  * ```
  *
  * Every field is optional:
@@ -259,6 +104,31 @@ export function toHtmlFull(source, symbols) {
  *   over `full`.
  * * `full` (default `false`) - enable the preview extension set instead of
  *   rendering core-only.
+ * * `rawHtml` (default `true`) - render an explicit passthrough - the `=html`
+ *   raw block and the `` `…`{=html} `` inline raw span - as markup. `false`
+ *   emits it as escaped text instead, the same switch carve-js spells
+ *   `allowRawHtml`. A host that renders a document it did not author (a shared
+ *   link, a comment field, anything a reader supplies) wants `false`: without
+ *   it a passthrough is a way to run script on the host's origin.
+ * * `profile` - one of `"full"`, `"article"`, `"comment"`, `"minimal"`. The
+ *   rest of the untrusted-input story: input length, denied constructs, link
+ *   policy. A document the profile REJECTS throws a `ProfileViolationError`
+ *   carrying `violations`, rather than resolving to an empty string.
+ * * `profileBaseHost` - the host counted as internal when the profile's link
+ *   policy distinguishes internal from external links.
+ * * `mode` - `"interactive"` (default) or `"static"`, the self-contained form
+ *   for print, PDF and archival: no client scripts.
+ * * `sourceLine` (default `false`) - stamp top-level blocks with
+ *   `data-source-line`, for editor preview scroll-sync.
+ * * `positions` (default `false`) - keep source offsets on the nodes.
+ * * `labels` - override the engine-written strings (admonition names, the
+ *   endnotes heading, backlink text) for a page that is not in English. These
+ *   are TEXT and are escaped where they land, unlike `symbols`.
+ * * `smartTypography` - `"glyph"` (default) resolves `...` to an ellipsis,
+ *   `"source"` keeps the author's run.
+ * * `lowercaseHeadingIds` (default `false`) and `asciiHeadingIds`
+ *   (`"off"` (default), `"fold"`, `"strict"`) - the slug policy, for a host
+ *   whose anchors have to match another generator's.
  *
  * An unrecognized key is ignored: the object is configuration, and a caller
  * who mistypes one deserves the render to still work. A wrong TYPE on a key
@@ -292,22 +162,6 @@ export function toHtmlWithOptions(source, options) {
     } finally {
         wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
     }
-}
-
-/**
- * @param {string} source
- * @param {boolean | null} [strict]
- * @param {number | null} [maximum]
- * @returns {any}
- */
-export function toHtmlWithReport(source, strict, maximum) {
-    const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.toHtmlWithReport(ptr0, len0, isLikeNone(strict) ? 0xFFFFFF : strict ? 1 : 0, isLikeNone(maximum) ? 0x100000001 : (maximum) >>> 0);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
 }
 
 /**
@@ -348,76 +202,6 @@ export function toHtmlWithSymbols(source, symbols) {
     } finally {
         wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
     }
-}
-
-/**
- * @param {string} source
- * @returns {string}
- */
-export function toMarkdown(source) {
-    let deferred2_0;
-    let deferred2_1;
-    try {
-        const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.toMarkdown(ptr0, len0);
-        deferred2_0 = ret[0];
-        deferred2_1 = ret[1];
-        return getStringFromWasm0(ret[0], ret[1]);
-    } finally {
-        wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
-    }
-}
-
-/**
- * @param {string} source
- * @param {boolean | null} [strict]
- * @param {number | null} [maximum]
- * @returns {any}
- */
-export function toMarkdownWithReport(source, strict, maximum) {
-    const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.toMarkdownWithReport(ptr0, len0, isLikeNone(strict) ? 0xFFFFFF : strict ? 1 : 0, isLikeNone(maximum) ? 0x100000001 : (maximum) >>> 0);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {string} source
- * @returns {string}
- */
-export function toPlainText(source) {
-    let deferred2_0;
-    let deferred2_1;
-    try {
-        const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.toPlainText(ptr0, len0);
-        deferred2_0 = ret[0];
-        deferred2_1 = ret[1];
-        return getStringFromWasm0(ret[0], ret[1]);
-    } finally {
-        wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
-    }
-}
-
-/**
- * @param {string} source
- * @param {boolean | null} [strict]
- * @param {number | null} [maximum]
- * @returns {any}
- */
-export function toPlainTextWithReport(source, strict, maximum) {
-    const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.toPlainTextWithReport(ptr0, len0, isLikeNone(strict) ? 0xFFFFFF : strict ? 1 : 0, isLikeNone(maximum) ? 0x100000001 : (maximum) >>> 0);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
 }
 
 /**
@@ -519,10 +303,6 @@ function __wbg_get_imports() {
             const ret = new TypeError(getStringFromWasm0(arg0, arg1));
             return ret;
         },
-        __wbg_new_4f9fafbb3909af72: function() {
-            const ret = new Object();
-            return ret;
-        },
         __wbg_new_e3b04b4d53d1b593: function(arg0, arg1) {
             const ret = new Error(getStringFromWasm0(arg0, arg1));
             return ret;
@@ -531,10 +311,6 @@ function __wbg_get_imports() {
             const ret = new Array();
             return ret;
         },
-        __wbg_parse_545d11396395fbbd: function() { return handleError(function (arg0, arg1) {
-            const ret = JSON.parse(getStringFromWasm0(arg0, arg1));
-            return ret;
-        }, arguments); },
         __wbg_push_6bdbc990be5ac37b: function(arg0, arg1) {
             const ret = arg0.push(arg1);
             return ret;
@@ -543,12 +319,10 @@ function __wbg_get_imports() {
             const ret = Reflect.set(arg0, arg1, arg2);
             return ret;
         }, arguments); },
-        __wbindgen_cast_0000000000000001: function(arg0) {
-            // Cast intrinsic for `F64 -> Externref`.
-            const ret = arg0;
-            return ret;
+        __wbg_set_name_ab9c98596fd7310a: function(arg0, arg1, arg2) {
+            arg0.name = getStringFromWasm0(arg1, arg2);
         },
-        __wbindgen_cast_0000000000000002: function(arg0, arg1) {
+        __wbindgen_cast_0000000000000001: function(arg0, arg1) {
             // Cast intrinsic for `Ref(String) -> Externref`.
             const ret = getStringFromWasm0(arg0, arg1);
             return ret;

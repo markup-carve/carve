@@ -15,12 +15,18 @@ npm run sync-carve-wasm
 
 That rebuilds `../carve-wasm` with `wasm-pack` and copies its `pkg/` output here.
 
+It builds the RENDERING-ONLY profile (`--no-default-features`). The Playground
+calls one export, `toHtmlWithOptions`, so the AST, import, report and
+other-renderer surfaces are dropped: 0.54 MB gzip against 1.45 MB for the
+default build. A page that needs `parseJson`, an importer or a checked renderer
+has to drop that flag.
+
 Build from a released carve-wasm tag, not an arbitrary `main` commit.
 
 ## Provenance
 
-This copy was built from carve-wasm **v0.1.1**, which pins carve-rs **0.1.4**
-(`2e9c43f2`).
+This copy was built from carve-wasm **v0.1.2**, which pins carve-rs
+**`da45f9d2`** (20 commits past the `0.1.4` tag).
 
 The bundle carries its own stamp: `version()` returns the carve-wasm version it
 was built from, so the vendored engine can be identified at runtime without
