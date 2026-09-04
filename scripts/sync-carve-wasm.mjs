@@ -47,8 +47,17 @@ if (!existsSync(wasmRoot)) {
   process.exit(1)
 }
 
+// THE RENDERING-ONLY PROFILE, not the default build. The Playground calls
+// exactly one export - `toHtmlWithOptions` - and `--no-default-features` keeps
+// the HTML renderers while dropping the AST, import, report and other-renderer
+// surfaces nobody here loads. Measured on carve-wasm v0.1.2: 0.54 MB gzip
+// against 1.45 MB for the default build, which every visitor to the page
+// downloads.
+//
+// If a page ever needs `parseJson`, an importer or a checked renderer, this
+// flag is what removed it - drop the flag rather than reaching around it.
 console.log(`Building carve-wasm at ${wasmRoot}...`)
-execSync('wasm-pack build --target web --release', {
+execSync('wasm-pack build --target web --release --no-default-features', {
   cwd: wasmRoot,
   stdio: 'inherit',
 })

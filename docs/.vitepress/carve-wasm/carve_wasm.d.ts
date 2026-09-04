@@ -1,6 +1,29 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export interface LintWarning {
+    /** 1-based line number. */
+    line: number;
+    /** 1-based column number. */
+    column: number;
+    /** Stable rule id, shared with carve-js and carve-php. */
+    rule: string;
+    message: string;
+    /** 0-based BYTE offset into the source, inclusive. */
+    start: number;
+    /** 0-based BYTE offset into the source, exclusive. */
+    end: number;
+}
+
+export interface Stamp {
+    /** The spec version the document was last processed under. */
+    version: string;
+    /** The engine that wrote the marker, when it recorded one. */
+    generatedBy: string | null;
+}
+
+
+
 /**
  * Every extension name this build accepts, in registry order.
  *
@@ -8,46 +31,6 @@
  * moves. Nothing here lists names.
  */
 export function extensions(): string[];
-
-export function fromHtml(source: string, mode?: string | null): any;
-
-export function fromMarkdown(source: string): any;
-
-/**
- * Import HTML through the Rust HTML5 DOM and canonical Carve writer.
- *
- * Returns `{ value, report }`; `report.diagnostics` makes every lossy import
- * decision observable. `roundtrip` is only safe for Carve-produced HTML.
- */
-export function htmlToCarve(source: string, mode?: string | null): any;
-
-/**
- * Parse Carve source and return its AST as a JSON string.
- *
- * The PART 12 exchange shape (https://markup-carve.github.io/carve/ast-json):
- * the same tree every Carve engine publishes, so a consumer written against
- * one implementation reads another's output. The root carries exactly `type`,
- * `children` and `srcByteLength`; frontmatter and footnote definitions are
- * block nodes inside `children`, not root fields.
- *
- * Returns a STRING rather than a JS object: the caller runs `JSON.parse`, which
- * is what a browser does natively and faster than building the object graph
- * across the wasm boundary one property at a time. It also keeps the bytes
- * available for a caller that stores or forwards them.
- *
- * Position tracking is on for this entry point and nowhere else. PART 12 §4
- * lets an engine gate tracking behind a parse option but requires the
- * serialized form to carry it, and rendering would pay for spans nobody reads.
- */
-export function parseJson(source: string): string;
-
-export function toAnsi(source: string): string;
-
-export function toAnsiWithReport(source: string, strict?: boolean | null, maximum?: number | null): any;
-
-export function toCarve(source: string): string;
-
-export function toCarveWithReport(source: string, strict?: boolean | null, maximum?: number | null): any;
 
 export function toHtml(source: string): string;
 
@@ -76,6 +59,8 @@ export function toHtmlFull(source: string, symbols?: object | null): string;
  * // '<h1 id="A">A</h1>\n<p>p</p>'
  *
  * toHtmlWithOptions(src, { sections: false, symbols: { rocket: '🚀' }, full: true })
+ *
+ * toHtmlWithOptions(untrusted, { rawHtml: false })
  * ```
  *
  * Every field is optional:
@@ -98,6 +83,31 @@ export function toHtmlFull(source: string, symbols?: object | null): string;
  *   over `full`.
  * * `full` (default `false`) - enable the preview extension set instead of
  *   rendering core-only.
+ * * `rawHtml` (default `true`) - render an explicit passthrough - the `=html`
+ *   raw block and the `` `…`{=html} `` inline raw span - as markup. `false`
+ *   emits it as escaped text instead, the same switch carve-js spells
+ *   `allowRawHtml`. A host that renders a document it did not author (a shared
+ *   link, a comment field, anything a reader supplies) wants `false`: without
+ *   it a passthrough is a way to run script on the host's origin.
+ * * `profile` - one of `"full"`, `"article"`, `"comment"`, `"minimal"`. The
+ *   rest of the untrusted-input story: input length, denied constructs, link
+ *   policy. A document the profile REJECTS throws a `ProfileViolationError`
+ *   carrying `violations`, rather than resolving to an empty string.
+ * * `profileBaseHost` - the host counted as internal when the profile's link
+ *   policy distinguishes internal from external links.
+ * * `mode` - `"interactive"` (default) or `"static"`, the self-contained form
+ *   for print, PDF and archival: no client scripts.
+ * * `sourceLine` (default `false`) - stamp top-level blocks with
+ *   `data-source-line`, for editor preview scroll-sync.
+ * * `positions` (default `false`) - keep source offsets on the nodes.
+ * * `labels` - override the engine-written strings (admonition names, the
+ *   endnotes heading, backlink text) for a page that is not in English. These
+ *   are TEXT and are escaped where they land, unlike `symbols`.
+ * * `smartTypography` - `"glyph"` (default) resolves `...` to an ellipsis,
+ *   `"source"` keeps the author's run.
+ * * `lowercaseHeadingIds` (default `false`) and `asciiHeadingIds`
+ *   (`"off"` (default), `"fold"`, `"strict"`) - the slug policy, for a host
+ *   whose anchors have to match another generator's.
  *
  * An unrecognized key is ignored: the object is configuration, and a caller
  * who mistypes one deserves the render to still work. A wrong TYPE on a key
@@ -110,8 +120,6 @@ export function toHtmlFull(source: string, symbols?: object | null): string;
  * still emitted.
  */
 export function toHtmlWithOptions(source: string, options?: object | null): string;
-
-export function toHtmlWithReport(source: string, strict?: boolean | null, maximum?: number | null): any;
 
 /**
  * Render with the core profile and a **symbols map**: `{ rocket: "🚀" }` (a
@@ -131,14 +139,6 @@ export function toHtmlWithReport(source: string, strict?: boolean | null, maximu
  */
 export function toHtmlWithSymbols(source: string, symbols?: object | null): string;
 
-export function toMarkdown(source: string): string;
-
-export function toMarkdownWithReport(source: string, strict?: boolean | null, maximum?: number | null): any;
-
-export function toPlainText(source: string): string;
-
-export function toPlainTextWithReport(source: string, strict?: boolean | null, maximum?: number | null): any;
-
 export function version(): string;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
@@ -146,24 +146,11 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 export interface InitOutput {
     readonly memory: WebAssembly.Memory;
     readonly extensions: () => [number, number];
-    readonly fromHtml: (a: number, b: number, c: number, d: number) => [number, number, number];
-    readonly fromMarkdown: (a: number, b: number) => [number, number, number];
-    readonly parseJson: (a: number, b: number) => [number, number];
-    readonly toAnsi: (a: number, b: number) => [number, number];
-    readonly toAnsiWithReport: (a: number, b: number, c: number, d: number) => [number, number, number];
-    readonly toCarve: (a: number, b: number) => [number, number];
-    readonly toCarveWithReport: (a: number, b: number, c: number, d: number) => [number, number, number];
     readonly toHtml: (a: number, b: number) => [number, number];
     readonly toHtmlFull: (a: number, b: number, c: number) => [number, number, number, number];
     readonly toHtmlWithOptions: (a: number, b: number, c: number) => [number, number, number, number];
-    readonly toHtmlWithReport: (a: number, b: number, c: number, d: number) => [number, number, number];
     readonly toHtmlWithSymbols: (a: number, b: number, c: number) => [number, number, number, number];
-    readonly toMarkdown: (a: number, b: number) => [number, number];
-    readonly toMarkdownWithReport: (a: number, b: number, c: number, d: number) => [number, number, number];
-    readonly toPlainText: (a: number, b: number) => [number, number];
-    readonly toPlainTextWithReport: (a: number, b: number, c: number, d: number) => [number, number, number];
     readonly version: () => [number, number];
-    readonly htmlToCarve: (a: number, b: number, c: number, d: number) => [number, number, number];
     readonly __wbindgen_malloc: (a: number, b: number) => number;
     readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
     readonly __wbindgen_exn_store: (a: number) => void;
