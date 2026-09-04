@@ -172,15 +172,10 @@ export function checkContainment(doc, findings) {
  *   places reach past their last child, all of them over spaces, and the same
  *   sentence that puts the leading run inside the span puts the trailing one
  *   there. Adding the type would report the cell's own source as nobody's.
- *   `definition_description` reaches past its last child on NOTHING measured -
- *   36 placed on the corpus, none of them over-reaching - because every trailing
- *   run a description line carries lands on the enclosing `definition_list`
- *   instead, which IS in this set: `:: t` / `:  a` / blank / `   b<SP><SP>` ends
- *   the description at `b` and the list two codepoints later. Adding it would be
- *   a type that cannot fire, which this file already refused once below.
  *
- * THE CLAIM ABOVE WAS FALSE FOR THREE TYPES UNTIL carve#1574, and they are in
- * the set now rather than excused in this comment. `footnote` (27 of 73 placed),
+ * THE CLAIM ABOVE WAS FALSE FOR THREE TYPES UNTIL carve#1574, AND FOR A FOURTH
+ * UNTIL carve#1923, and they are in the set now rather than excused in this
+ * comment. `footnote` (27 of 73 placed),
  * `definition_term` (2 of 43) and `heading` (1 of 136) each reached past their
  * last child on real corpus documents while being named by none of the
  * categories above - so a reader auditing the guard was told they had been
@@ -203,6 +198,27 @@ export function checkContainment(doc, findings) {
  * every other closerless container. The 30 documents this newly reports are
  * declared red with the rest in tests/ast-positions.test.mjs and close when the
  * engines move.
+
+ * `definition_description` WAS EXCLUDED ON A MEASUREMENT THROUGH ONE ENGINE, and
+ * that is the whole defect. The excuse said it "reaches past its last child on
+ * NOTHING measured - 36 placed on the corpus, none of them over-reaching", and
+ * re-measured today that claim still HOLDS for the reference: 141 placed on the
+ * pinned carve-js, 130 with a placed child, 0 over-reaching. But this rule does
+ * not run against the reference alone. `scripts/ast-conformance.mjs` applies it
+ * to every engine, and carve-rs ends the description over a footnote definition
+ * hoisted out of it - `447-the-host-does-not-change-which-column-a-definition-reaches-12`
+ * spans it 5..31 where carve-js and carve-php stop at 5..11, the list's own end.
+ * A type that cannot fire on the reference can still be the only rule that
+ * reaches another engine, so "nothing measured" has to name WHICH tree was
+ * measured before it can excuse a type.
+ *
+ * The 7 documents were invisible precisely because the type was absent: with no
+ * rule on the description, carve-rs's parent `definition_list` ends at its last
+ * child correctly - that child being the over-wide description - so the parent
+ * passes too, and the pair surfaced only as two undeclared three-way span rows
+ * with matching counts (carve#1923). Hoisting is what makes the two readings
+ * differ, and carve#1522 already ruled that a hoisted sibling is not a child,
+ * which is the narrow reading carve-js and carve-php take.
  *
  * `definition_list` IS PRESENT, AND IT USED TO BE THE ONE EXCEPTION. It has no
  * closer, so §4 ends it at its last placed `definition_term` or
@@ -258,6 +274,7 @@ export function checkContainment(doc, findings) {
  */
 export const ENDS_AT_LAST_CHILD = new Set([
   'block_quote',
+  'definition_description',
   'definition_list',
   'definition_term',
   'figure',
