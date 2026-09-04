@@ -155,6 +155,38 @@ The separator is a space: `:::>` opens nothing and stays paragraph text, exactly
 
 Rules of thumb: a standalone admonition wants quotes; a panel in a group wants brackets; use both to have a named tab whose panel also carries a visible heading (`::: tab "Install on Linux" [Linux]`). A title never feeds the tab name - if a tab has no `[label]`, the name falls back to the deprecated `{label="…"}` attribute or first inner heading, then to `Tab N`.
 
+#### When a bare `:::` opens a div
+
+A bare `:::` opens a generic div only when a non-blank line follows it
+**inside the same container**. Blank lines between the fence and that content
+do not matter. At the end of a list item, quote, footnote, other container, or
+the whole document, it is literal paragraph text—not an empty div. The `:::`
+therefore remains visible in rendered output.
+
+````carve
+- This stays paragraph text, including the fence below.
+  :::
+
+Outside the list.
+````
+
+Content outside the list cannot become the body of a div inside it. To open
+one, keep its content—and its closing fence—inside the item:
+
+````carve
+- This paragraph comes first.
+  :::
+
+  This is inside the div.
+  :::
+````
+
+The same rule applies at document level: a final bare `:::` is text, while one
+with later content opens a div. This prevents a delimiter at a boundary from
+creating invisible, empty structure. If raw `:::` appears in output, check
+both the opener syntax and whether its intended content is still inside the
+same container.
+
 ## Inline elements
 
 An inline element lives inside a line of text.
