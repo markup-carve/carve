@@ -22,7 +22,10 @@ jobs:
     # `npm run declarations:check`, which is the verdict that requires both.
     name: declarations are visible and every window is declared
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    # 10 like every other job here. At 5 the cap sat inside `npm ci`'s own range
+    # and killed the job mid-install, which then reported as a declaration
+    # failure - the wrong component entirely (carve#1942).
+    timeout-minutes: 10
 
     steps:
       - name: Check out carve
@@ -56,7 +59,20 @@ jobs:
           node-version: 24
           cache: npm
 
-      - run: npm ci
+      # THE REASON THIS JOB STALLED. `docs build` and `mermaid diagrams valid`
+      # both rewrite the git dependencies to HTTPS before installing; this job
+      # did not, so `npm ci` fetched carve-js, carve-grammars and
+      # vite-plugin-carve over ssh://git@github.com and hung there (carve#1942).
+      - name: Prefer HTTPS for Git dependencies
+        run: |
+          git config --global url."https://github.com/".insteadOf ssh://git@github.com/
+          git config --global url."https://github.com/".insteadOf git@github.com:
+
+      # Its own cap, so an install stall fails AS an install stall instead of
+      # taking the job down and reading as a declaration finding.
+      - name: Install
+        timeout-minutes: 5
+        run: npm ci
 
       # PER-PR MODE, not the release verdict (carve#1811). The two answer
       # different questions and the engine-pin ledger is where they part: a
