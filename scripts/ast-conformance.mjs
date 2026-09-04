@@ -487,6 +487,14 @@ function reportValueDisagreements(present) {
  * rule for that end says the WIDE one does - carve#1637, where six of eight
  * rows were end-only and the text pointed at the one engine with no end-side
  * finding at all.
+ *
+ * THE START HALF HAD THE SAME DEFECT, one ruling later. It told the reader that
+ * a row differing only inside the leading indentation was owed by nobody, which
+ * was true while `checkOpeningMarkup` walked that run for every type. carve#1928
+ * withdrew the latitude from LEAF types, so on those rows the engine starting in
+ * the indent does owe it - and the old text named carve-php, the engine that
+ * begins at the markup, as the one to change. Both halves now say which side
+ * only after the row says which rule applies.
  */
 function reportSpanDisagreements(present) {
   const byKey = new Map()
@@ -551,10 +559,13 @@ function reportSpanDisagreements(present) {
     }
     console.log('  EXTENT rows are PART 12 §4, and WHICH END moved decides which engine owes it:')
     console.log('    startOffset differs - a span "begins at the markup that opens the construct",')
-    console.log('      so the engine spanning the content alone moves (carve#913, checkOpeningMarkup),')
-    console.log('      UNLESS the starts differ only inside the line\'s LEADING INDENTATION.')
-    console.log('      checkOpeningMarkup walks over that run before matching a marker, so both')
-    console.log('      readings pass it and no engine owes the row (carve#1928).')
+    console.log('      so the engine that starts LATER, at the markup, is the conformant one and')
+    console.log('      the earlier engine moves (carve#913, checkOpeningMarkup).')
+    console.log('      WHERE THE STARTS DIFFER ONLY INSIDE THE LEADING INDENTATION, the type')
+    console.log('      decides: a CONTAINER may begin part way into that run at its parent\'s')
+    console.log('      content column, so no engine owes the row; a LEAF begins at its markup, so')
+    console.log('      the engine starting in the indent owes it (carve#1928,')
+    console.log('      INDENT_LATITUDE in scripts/spec/ast-positions.mjs).')
     console.log('    endOffset differs, startOffset unanimous - a span "ends immediately after the')
     console.log('      last source codepoint the construct owns", and a container with no closer ends')
     console.log('      at its last child, so the WIDE engine moves (checkStopsAtChildren, over the')
@@ -576,13 +587,17 @@ function reportSpanDisagreements(present) {
       'the source - and WHICH RULE names a side depends on WHICH END of the span moved.',
       'PART 12 §4 has two sentences and they point at different checkers:',
       '  START. A span "begins at the markup that opens the construct"',
-      '  (markup-carve/carve#913), so an engine spanning the content alone is the one that',
-      '  moves. checkOpeningMarkup in scripts/spec/ast-positions.mjs is the source-side rule.',
-      '  It permits a start anywhere in the line\'s LEADING INDENTATION, because the indent',
-      '  is what places a nested item\'s marker - so on a row where the starts differ only',
-      '  inside that run, both readings pass it and NEITHER engine owes the row. Taking the',
-      '  sentence literally there names the engine that begins at the markup, which is the',
-      '  conformant one (markup-carve/carve#1928).',
+      '  (markup-carve/carve#913), so the engine that starts EARLIER - short of the markup -',
+      '  is the one that moves. checkOpeningMarkup in scripts/spec/ast-positions.mjs is the',
+      '  source-side rule, and it does NOT name one side for every row: where the starts',
+      '  differ only inside the line\'s LEADING INDENTATION the TYPE decides. A CONTAINER may',
+      '  begin part way into that run, at its parent\'s content column, because the run is',
+      '  what places its marker - there both readings pass and neither engine owes the row.',
+      '  A LEAF has no marker to place, so it begins at the markup and the engine starting',
+      '  in the indent owes it (markup-carve/carve#1928; the set is INDENT_LATITUDE).',
+      '  Read the node TYPE off the row before naming a side. Reading every indent row as',
+      '  "nobody owes it" named carve-php, which begins at the markup, as the one to change',
+      '  on 444-an-opener-at-or-past-a-description-body-s-column-closes-its-paragraph-9.',
       '  END. A span "ends immediately after the last source codepoint the construct owns",',
       '  and a container with no closer "ends at its last child", so on those rows the WIDE',
       '  engine is the one that moves. checkStopsAtChildren, over the types in',

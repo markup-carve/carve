@@ -249,6 +249,14 @@ both are stated in §4: the inner half of a combined `/*x*/`, whose span is the
 outer one trimmed by the two-character delimiters, and a table cell, which runs
 between the pipes because the `|` opens the row.
 
+**Leading indentation belongs to the span only where it places the construct.**
+A nested container may begin part way into that run, at its parent's content
+column, because the run is what puts its marker where it is. A **leaf** has no
+marker to place, so its span begins at the markup itself: a comment written at a
+description body's content column begins at the `%`, not at the first space of
+the indentation before it. Both readings used to satisfy this sentence, which is
+what markup-carve/carve#1928 settled.
+
 A span **ends immediately after the last source codepoint the construct owns**.
 Closing delimiters and attached attributes are included; a following newline,
 blank line, or unattached attribute block is not. Containers end at their
