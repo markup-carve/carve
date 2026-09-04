@@ -1,0 +1,86 @@
+An empty unterminated container ends at a flush-left line
+
+```
+- d
+  ::: d
+tail
+.
+<ul>
+  <li>d
+    <div class="d">
+
+    </div>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+:: t
+:  d
+   ::: d
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d</p>
+    <div class="d">
+
+    </div>
+  </dd>
+</dl>
+<p>tail</p>
+```
+
+```
+:: t
+:  ::: d
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <div class="d">
+
+    </div>
+  </dd>
+</dl>
+<p>tail</p>
+```
+
+```
+:: t
+:  d
+   ::: d
+   tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d</p>
+    <div class="d">
+      <p>tail</p>
+    </div>
+  </dd>
+</dl>
+```
+
+```
+:: t
+:  d
+   ::: d
+   body
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d</p>
+    <div class="d">
+      <p>body
+tail</p>
+    </div>
+  </dd>
+</dl>
+```

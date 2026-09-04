@@ -63,7 +63,9 @@ and
 and
 `450-a-closed-fence-in-a-description-body-ends-it`
 and
-`451-a-container-in-a-host-body-owns-a-line-past-its-own-content-column`.
+`451-a-container-in-a-host-body-owns-a-line-past-its-own-content-column`
+and
+`452-an-empty-unterminated-container-ends-at-a-flush-left-line`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -92,6 +94,12 @@ inner container content column and a lazy run ending early at a closer
 be false in the JS column by six, and unmeasured in the other two: the engine
 checkouts on this host are mid-work and their builds do not match any commit
 the run could name.
+Section 452 lags for one row only, and the reason is the mirror of the others:
+the pinned build folds a flush-left line into an empty container for the
+MARKER-LINE spelling (markup-carve/carve-js#1641), where carve-php and carve-rs
+both answer the ruled way. Its other four rows every engine already reproduces,
+so a hand-edited denominator would be right for four and wrong for one, in one
+number that could not say which.
 `tests/implementation-comparison-counts.test.mjs` reads this line and counts the
 fixtures each category contributes, so the numbers cannot be asserted, only
 derived, and the line has to be DELETED by whoever next runs
