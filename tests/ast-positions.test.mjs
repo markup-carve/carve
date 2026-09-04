@@ -1294,6 +1294,122 @@ test('a definition list that stops at its last description is accepted', () => {
   assert.ok(ENDS_AT_LAST_CHILD.has('definition_list'))
 })
 
+/*
+ * A DESCRIPTION STOPS AT ITS LAST CHILD TOO (PART 12 section 4, carve#1923).
+ *
+ * The shape carve-rs and the other two engines answer differently, reduced to a
+ * tree. `447-the-host-does-not-change-which-column-a-definition-reaches-12`:
+ *
+ *     :: t
+ *     :  - a
+ *         [^n]: note text
+ *
+ * The footnote definition on line 3 sits inside the description body - its
+ * column 5 clears the body's content column of 4 - and is hoisted out of the
+ * tree by section 7, leaving the bullet list as the description's last placed
+ * child at 11. carve-js and carve-php end the description there; carve-rs ends
+ * it at 31, over source no child of it covers. carve#1522 already ruled a
+ * hoisted sibling is not a child, so the narrow reading is the conformant one
+ * and the wide engine owes the row.
+ *
+ * The pair matters more than usual here because the type was ABSENT from
+ * `ENDS_AT_LAST_CHILD` until this ticket, and its absence is why 7 documents
+ * diverged in silence: with the description unchecked, carve-rs's enclosing
+ * `definition_list` still ends at its last child - the over-wide description -
+ * so the parent passed as well.
+ */
+test('a description reaching past its last child is reported', () => {
+  const source = ':: t\n:  - a\n    [^n]: note text\n'
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'definition_list',
+        pos: pos(0, 31),
+        items: [
+          { type: 'definition_term', pos: pos(0, 4), children: [] },
+          {
+            type: 'definition_description',
+            pos: pos(5, 31),
+            children: [
+              {
+                type: 'list',
+                pos: pos(5, 11),
+                items: [
+                  {
+                    type: 'list_item',
+                    pos: pos(8, 11),
+                    children: [
+                      {
+                        type: 'paragraph',
+                        pos: pos(8, 11),
+                        children: [{ type: 'text', pos: pos(8, 11) }],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }
+  const findings = stopFindings(doc, source)
+  assert.equal(
+    findings.length,
+    1,
+    `expected the description's over-reach to be reported, got: ${JSON.stringify(findings)}`,
+  )
+  assert.match(findings[0], /definition_description/)
+  // THE TYPE IS WHAT MAKES IT FIRE. Removing `definition_description` from the
+  // set makes this exact tree pass, which is the state carve#1923 ended and the
+  // reason a bare `assert.deepEqual(..., [])` next door was not enough.
+  assert.ok(ENDS_AT_LAST_CHILD.has('definition_description'))
+})
+
+test('a description that stops at its last child is accepted', () => {
+  // The other direction, so the finding above is the RULE and not the document:
+  // the same tree with carve-js's narrow end reports nothing.
+  const source = ':: t\n:  - a\n    [^n]: note text\n'
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'definition_list',
+        pos: pos(0, 11),
+        items: [
+          { type: 'definition_term', pos: pos(0, 4), children: [] },
+          {
+            type: 'definition_description',
+            pos: pos(5, 11),
+            children: [
+              {
+                type: 'list',
+                pos: pos(5, 11),
+                items: [
+                  {
+                    type: 'list_item',
+                    pos: pos(8, 11),
+                    children: [
+                      {
+                        type: 'paragraph',
+                        pos: pos(8, 11),
+                        children: [{ type: 'text', pos: pos(8, 11) }],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }
+  assert.deepEqual(stopFindings(doc, source), [])
+})
+
 test('the parse tree cannot answer for a definition list, so the corpus pass reads the wire shape', () => {
   // The reason the corpus pass below serializes before it checks, pinned so it
   // cannot be simplified back. carve-js parses a definition list into bare
@@ -1507,11 +1623,15 @@ test('a table cell is bounded by the pipes on BOTH sides, which is why it is abs
   assert.ok(!ENDS_AT_LAST_CHILD.has('table_cell'))
 })
 
-test('a definition description has nothing after its last child, which is why it is absent', () => {
-  // The other absence carve#1574 had to account for. A description ends where
-  // its last block ends and has nothing after it to claim, so naming the type
-  // would be a check that cannot fail - which this file refused once already
-  // for `definition_list` itself.
+test('a definition description ends at its last child ON THE REFERENCE, which is why its absence looked safe', () => {
+  // The observation is unchanged and still true; the conclusion drawn from it
+  // was wrong, and carve#1923 is what retired it. A description ends where its
+  // last block ends ON THE PINNED carve-js - 141 placed over the corpus, 130
+  // with a placed child, 0 over-reaching - so naming the type looked like a
+  // check that cannot fail. But `scripts/ast-conformance.mjs` runs this rule
+  // against EVERY engine, and carve-rs ends a description over a footnote
+  // definition hoisted out of it on 7 documents. "Nothing measured" has to name
+  // which tree was measured before it can excuse a type.
   //
   // The trailing run PART 2 excludes from content used to land on the enclosing
   // `definition_list`, which is where it was reported. Since
@@ -1527,7 +1647,9 @@ test('a definition description has nothing after its last child, which is why it
   assert.equal([...source].slice(list.pos.startOffset, list.pos.endOffset).join(''), ':: t\n:  a\n\n   b')
   assert.equal(description.pos.endOffset, description.children.at(-1).pos.endOffset)
   assert.deepEqual(stopFindings(wire, source), [])
-  assert.ok(!ENDS_AT_LAST_CHILD.has('definition_description'))
+  // In the set now, and this document still reports nothing - which is the
+  // point: adding the type costs the reference no finding and reaches carve-rs.
+  assert.ok(ENDS_AT_LAST_CHILD.has('definition_description'))
 })
 
 /*
