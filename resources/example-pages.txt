@@ -216,6 +216,7 @@ index: examples/edge-cases/index.md
   blocked-span-marker-renders-as-empty-cell
   colspan-marker-scans-left-past-a-consumed-cell
   a-pipe-pair-with-no-cell-is-not-a-table
+  a-row-whose-every-cell-is-blank-is-not-a-table
   a-continuation-row-needs-a-body-row
   table-row-closing-pipe
   a-table-delimiter-cell-needs-at-least-one-dash

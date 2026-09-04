@@ -34259,3 +34259,132 @@ tail</p>
 ```
 
 ::::
+
+## A row whose every cell is blank is not a table
+
+The table detector counts delimiter slots and never asks whether a slot holds
+anything. A single empty PLAIN cell was already rejected - `||` is a paragraph -
+but the rejection reached neither a MULTI-cell all-empty row nor the HEADER
+path, so `|||` opened a two-column table of empty cells and `|= |`, an empty
+header cell, opened a `<thead>`-only table where the identical `| |` was
+rejected. A table whose every cell is empty carries no data, and degrading it to
+text is what the one- and two-pipe cases already do (markup-carve/carve#1950).
+
+::: compare
+
+```carve
+|||
+```
+
+```html
+<p>|||</p>
+```
+
+:::
+
+Whitespace-only cells are empty too - the content is trimmed before it is
+weighed.
+
+::: compare
+
+```carve
+| | |
+```
+
+```html
+<p>| | |</p>
+```
+
+:::
+
+The header path, which was the clearest gap: an empty header cell had no
+rejection at all, though the identical plain cell did. A table that is one empty
+header and no body is as empty as output gets.
+
+::: compare
+
+```carve
+|= |
+```
+
+```html
+<p>|= |</p>
+```
+
+:::
+
+A row with any content is a table, unchanged. This is the control the rule must
+not move.
+
+::: compare
+
+```carve
+|a|b|
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+ONE filled cell is enough - the rule is EVERY cell blank, not any cell blank. A
+row of one value and one empty cell is a real table with an empty cell in it.
+
+::: compare
+
+```carve
+| a | |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>a</td><td></td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+A CELL MARKER IS SOMETHING THE AUTHOR WROTE. An attribute block is a deliberate
+construct, so a cell that carries one and no text is not blank and the row stays
+a table - the boundary is content a reader wrote, and an attribute is that.
+
+::: compare
+
+```carve
+|{.x} |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td class="x"></td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+An alignment run is deliberate the same way, and holds its row a table too.
+
+::: compare
+
+```carve
+|> |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td style="text-align: right;"></td></tr>
+  </tbody>
+</table>
+```
+
+:::
