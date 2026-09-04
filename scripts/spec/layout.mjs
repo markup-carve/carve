@@ -1395,6 +1395,19 @@ function opensParagraph(text, atBlockPosition = false, tableOpen = false) {
     if (isTableRow(text) || isContinuationRow(text, openTable)) return false
     if (FOOTNOTE_DEF.test(text) || isLinkDef(text)) return false
     if (tryAttrLine([text], 0)) return false
+    // AN EMPTY UNTERMINATED COLON CONTAINER HOLDS NO PARAGRAPH, so a flush-left
+    // plain line below it continues nothing and closes what is above it. The
+    // list host already answers that way; the description host folded the line
+    // INTO the container, three columns to the left of it, on no clause at all
+    // (carve#1938).
+    //
+    // NOT AT A BLOCK POSITION, and that flag is the whole of the narrowing. A
+    // colon opener written on a MARKER line reaches here as bare `::: d` with
+    // `atBlockPosition` true, and there it is demoted to literal text by lazy
+    // folding instead - which corpus 364 and 161 pin. Asking this question of
+    // that spelling opens a container where those rows say there is none, and
+    // retires both.
+    if (!atBlockPosition && isColonParagraphInterrupt(text)) return false
 
     return true
   }
