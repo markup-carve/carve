@@ -1,0 +1,79 @@
+A closed fence in a description body ends it
+
+```
+:: term
+:  definition
+   ::: note
+   body
+   :::
+tail
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>definition</p>
+    <aside class="admonition note" aria-label="Note">
+      <p>body</p>
+    </aside>
+  </dd>
+</dl>
+<p>tail</p>
+```
+
+````
+:: term
+:  definition
+   ```
+   c
+   ```
+tail
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>definition</p>
+    <pre><code>c
+</code></pre>
+  </dd>
+</dl>
+<p>tail</p>
+````
+
+````
+:: term
+:  definition
+   ```
+   c
+tail
+.
+<dl>
+  <dt>term</dt>
+  <dd>definition
+<code>
+c
+tail</code></dd>
+</dl>
+````
+
+````
+:: term
+:  definition
+   ::: note
+   ```
+   :::
+   ```
+   :::
+tail
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>definition</p>
+    <aside class="admonition note" aria-label="Note">
+      <pre><code>:::
+</code></pre>
+    </aside>
+  </dd>
+</dl>
+<p>tail</p>
+````

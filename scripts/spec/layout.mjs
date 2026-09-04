@@ -1472,7 +1472,75 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
     return bodyLeavesParagraphOpen(inner, true, depth + 1)
   }
 
+  // A CLOSED FENCE IS NOT AN OPEN PARAGRAPH (carve#1930). `opensParagraph` is
+  // handed the body's last LINE and has no fence branch, so a bare ``` or a bare
+  // `:::` fell through to its `return true` and reported a paragraph open -
+  // folding the flush-left line below into a `dd` whose last block was a closed
+  // block. `A FENCED BODY IS NOT A PARAGRAPH` and `FENCE KIND DOES NOT DETERMINE
+  // CONTAINER REACH` (both NORMATIVE, resources/spec/01-layout.ebnf) say S4's
+  // lazy branch asks for an OPEN paragraph, and that a code fence body cannot
+  // hold one at all.
+  //
+  // An UNTERMINATED fence is the opposite answer and keeps the old one: it opens
+  // no block, so the paragraph above it is still open (corpus
+  // `367-an-unterminated-fence-at-a-content-column-opens-no-block-so-the-paragraph-stays-open`).
+  if (bodyClosesAFenceAt(bodyLines, last)) return false
+
   return opensParagraph(bodyLines[last], false, tableOpenAfter(bodyLines.slice(0, last)))
+}
+
+// Whether the body's line `last` CLOSES a fence opened earlier in the body.
+//
+// Tracked from the top rather than pattern-matched on the one line, because a
+// bare ``` is an opener and a closer in the same shape: which one it is depends
+// on every line above it. A code fence's payload is OPAQUE and is skipped
+// wholesale - a `:::` line inside one is content, and reading it as a colon
+// fence's closer would make the real closer look like an opener and fold the
+// line below back into the body.
+function bodyClosesAFenceAt(bodyLines, last) {
+  let closedAt = -1
+  let k = 0
+  while (k <= last) {
+    const code = FENCE.exec(bodyLines[k])
+    if (code && parseFenceInfo(code[2]) !== null) {
+      const end = findCloser(bodyLines, k, code[1])
+      // An unterminated fence opens no block, so nothing below it is closed
+      // either: the paragraph above stays open and `opensParagraph` answers.
+      if (end === -1 || end > last) return false
+      closedAt = end
+      k = end + 1
+      continue
+    }
+    if (isColonBlockOpener(bodyLines[k]) && !COLON_CLOSER.test(bodyLines[k])) {
+      const run = COLON_FENCE.exec(bodyLines[k])[1]
+      const end = findColonCloserSkippingCode(bodyLines, k, run, last)
+      if (end === -1) return false
+      closedAt = end
+      k = end + 1
+      continue
+    }
+    k++
+  }
+  return closedAt === last
+}
+
+// The colon fence opened at `openIdx` closes on a BARE run of its own length
+// (PART 2). Code-fence payloads in between are opaque and are stepped over.
+function findColonCloserSkippingCode(bodyLines, openIdx, run, last) {
+  let j = openIdx + 1
+  while (j <= last) {
+    const code = FENCE.exec(bodyLines[j])
+    if (code && parseFenceInfo(code[2]) !== null) {
+      const inner = findCloser(bodyLines, j, code[1])
+      if (inner === -1 || inner > last) return -1
+      j = inner + 1
+      continue
+    }
+    const closer = COLON_CLOSER.exec(bodyLines[j])
+    if (closer && closer[1].length === run.length) return j
+    j++
+  }
+  return -1
 }
 
 // A sub-BLOCK attached to an open list item after a blank line: it nests and
