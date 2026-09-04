@@ -236,6 +236,17 @@ const MANIFEST = [
   // - and two name coverage that carve#1878 may or may not close.
   { repo: 'spec', path: 'tests/html-import-contract.check.mjs', name: 'NOT_COVERED_HERE', kind: 'js', policy: 'manual', guard: 'two-way', owner: 'npm run html-import:check' },
   { repo: 'spec', path: 'tests/ast-positions.test.mjs', name: 'DECLARED_OVER_REACH', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/ast-positions.test.mjs' },
+  // carve#1928's ruling made a LEAF begin at its markup, so fourteen corpus
+  // documents are owed by carve-js and carve-rs until they move. `manual` for
+  // the reason DECLARED_UNREACHABLE below is: the count is judged by the test
+  // that owns the list, which compares it against a live measurement and so
+  // fails in BOTH directions, and the reasons on each row are for the reader.
+  //
+  // NOT `declared`: that policy needs `<slug><two spaces><reason>`, and
+  // `liveRows` collapses every whitespace run in a `js` row to one space - so
+  // `declared` on a `js` entry reports every row UNDECLARED and can never pass.
+  // Filed as markup-carve/carve#1939; when it is fixed this entry can move.
+  { repo: 'spec', path: 'tests/ast-positions.test.mjs', name: 'DECLARED_LEAF_INDENT_START', kind: 'js', policy: 'manual', guard: 'two-way', owner: 'tests/ast-positions.test.mjs' },
   { repo: 'spec', path: 'tests/the-two-import-exits-agree.test.mjs', name: 'UNMET', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/the-two-import-exits-agree.test.mjs' },
   { repo: 'spec', path: 'tests/optional-corpus.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/optional-corpus.test.mjs' },
   { repo: 'spec', path: 'tests/examples-tier3.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/a-tier3-example-ahead-of-the-pin-is-declared.test.mjs' },

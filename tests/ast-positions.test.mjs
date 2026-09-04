@@ -344,7 +344,13 @@ test('no corpus document has a span starting on a line terminator', () => {
         // pinned below and fails in both directions, so nothing is lost by
         // filtering it out here.
         !f.startsWith('span reaches past its last child') &&
-        !f.startsWith('span covers more than its own markup'),
+        !f.startsWith('span covers more than its own markup') &&
+        // AND NOT carve#1928's leaf/indent class, declared document by document
+        // in the opening-markup test below, for the same reason: this test's
+        // subject is a span starting on a line terminator, and fourteen
+        // findings of another class landing in it would bury the one it exists
+        // to catch.
+        !f.startsWith('pos does not begin at the markup that opens'),
     )
     assert.deepEqual(unexpected, [], `${name}\n${unexpected.join('\n')}`)
   }
@@ -937,6 +943,42 @@ test('a nested list starting part way into the indent run is accepted', () => {
   assert.deepEqual(findingsFor(doc, source), [])
 })
 
+/*
+ * THE CORPUS, DECLARED RED, for the START rule.
+ *
+ * markup-carve/carve#1928 ruled that a LEAF span begins at its markup and only
+ * a CONTAINER keeps the indent latitude, so `checkOpeningMarkup` stopped walking
+ * the leading run for leaf types. Fourteen corpus documents place a `comment`
+ * one to three codepoints into that run in the carve-js this repository pins,
+ * and each is now reported rather than passing on latitude the ruling withdrew.
+ *
+ * Every one is the same shape: the span starts on a space and the `%` is one to
+ * three codepoints later. carve-php already begins at the markup and owes none
+ * of them; the ports are markup-carve/carve-js#1631 and
+ * markup-carve/carve-rs#1549.
+ *
+ * IT FAILS IN BOTH DIRECTIONS, like DECLARED_OVER_REACH below: a document that
+ * starts violating is not on the list and fails, and one that stops is on the
+ * list with a count that no longer matches. Deleting lines here is the closing
+ * step of each engine's fix.
+ */
+const DECLARED_LEAF_INDENT_START = [
+  '183-a-comment-is-recognized-at-any-column.crv 1  a comment at an item content column; carve-js starts 1 codepoint short of the `%`',
+  '187-a-comment-fence-is-a-comment-at-any-column-too.crv 1  the fence spelling of the same shape, 1 short',
+  '189-a-comment-under-a-nested-item-does-not-close-it.crv 1  nested item, 1 short',
+  '191-a-blank-after-a-comment-still-ends-the-item.crv 1  nested item, 1 short',
+  '192-a-comment-fence-under-a-nested-item-does-not-close-it-either.crv 1  nested item, fence spelling, 1 short',
+  '26-comments-7.crv 1  indented comment, 2 short',
+  '26-comments-8.crv 1  indented comment, 2 short',
+  '430-below-a-definition-body-s-column-an-invisible-line-folds-as-text-5.crv 1  below a description body column, 2 short',
+  '444-an-opener-at-or-past-a-description-body-s-column-closes-its-paragraph-9.crv 1  carve#1928 own row: offset 25 vs the `%` at 26; carve-php already at 26',
+  '446-a-degraded-comment-fence-leaves-a-lazy-follower-where-the-line-form-does-9.crv 1  degraded fence, 2 short',
+  '449-a-comment-below-a-description-body-s-column-ends-the-body-11.crv 1  description body column, 1 short',
+  '449-a-comment-below-a-description-body-s-column-ends-the-body-12.crv 1  description body column, 2 short',
+  '449-a-comment-below-a-description-body-s-column-ends-the-body-13.crv 1  description body column, 1 short',
+  '449-a-comment-below-a-description-body-s-column-ends-the-body-6.crv 1  description body column, 3 short',
+]
+
 test('no corpus document begins a span away from its opening markup', () => {
   // The synthetic documents above prove the rule fires; this proves it does not
   // fire on a real one, over every type the table names. The EXAMINED count is
@@ -945,6 +987,7 @@ test('no corpus document begins a span away from its opening markup', () => {
   const dir = resolve(repo, 'tests/corpus')
   const cases = readdirSync(dir).filter((name) => name.endsWith('.crv'))
   let examined = 0
+  const measured = new Map()
   for (const name of cases) {
     const raw = readFileSync(resolve(dir, name), 'utf8')
     // Measured against the source PART 0 INPUT hands the parser, not the
@@ -957,8 +1000,16 @@ test('no corpus document begins a span away from its opening markup', () => {
     const source = replaceNulls(raw)
     const findings = []
     examined += checkOpeningMarkup(parse(raw), [...source], findings)
-    assert.deepEqual(findings, [], `${name}\n${findings.join('\n')}`)
+    if (findings.length > 0) measured.set(name, findings.length)
   }
+  assert.deepEqual(
+    [...measured.entries()].map(([name, count]) => `${name} ${count}`).sort(),
+    // The KEY half only. Each row also carries a reason after two spaces,
+    // which is what `npm run declarations:pr` requires of a declared ledger -
+    // a bare slug there is a window TOLERATED rather than declared.
+    [...DECLARED_LEAF_INDENT_START].map((row) => row.split(/\s{2,}/)[0]).sort(),
+    'update DECLARED_LEAF_INDENT_START in the commit that moves the engines, never to quiet a run',
+  )
   assert.ok(examined > 1000, `only ${examined} span(s) reached the opening-markup rule`)
 })
 

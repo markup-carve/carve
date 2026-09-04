@@ -487,6 +487,41 @@ export const OPENING_MARKUP = new Map(
  * all. Zero findings and zero examined are the same output from a clean run
  * and from a run that never happened.
  */
+/**
+ * The types whose span may begin PART WAY into the line's leading indentation.
+ *
+ * BLOCK CONTAINERS ONLY, which is markup-carve/carve#1928's ruling: a LEAF span
+ * begins at its markup, a CONTAINER keeps the indent latitude. The reason the
+ * latitude exists is container-specific - the indent is what places a nested
+ * item's marker, and a nested list's span legitimately starts at its parent's
+ * content column rather than at the marker (corpus 245 and two others). That
+ * reason does not reach a leaf, and until the ruling nothing narrowed it, so a
+ * leaf inherited the latitude by accident and PART 12 §4's sentence had two
+ * conformant readings.
+ *
+ * Measured over the corpus before it was narrowed: of 3362 spans this rule
+ * examines, exactly three types passed ONLY because of the walk - `list` (10)
+ * and `list_item` (12), which are the reason it exists, and `comment` (14),
+ * which is the leaf the ruling moves. Every other type already matched at its
+ * own `startOffset`, so naming the containers costs nothing that was relying on
+ * it.
+ *
+ * A TYPE SET rather than "has children", for the reason `OPENING_MARKUP` is
+ * one: an EMPTY container is still a container, and a leaf that happens to hold
+ * inline children (a `heading`, a `link`) is still reached by its own markup
+ * rather than placed by an indent run.
+ */
+export const INDENT_LATITUDE = new Set([
+  'admonition',
+  'block_quote',
+  'definition_list',
+  'div',
+  'line_block',
+  'list',
+  'list_item',
+  'table',
+])
+
 export function checkOpeningMarkup(doc, codepoints, findings) {
   let examined = 0
   for (const [node, path] of walkNodes(doc)) {
@@ -500,16 +535,21 @@ export function checkOpeningMarkup(doc, codepoints, findings) {
     if (!pos || !Number.isInteger(pos.startOffset) || !Number.isInteger(pos.endOffset)) continue
     if (pos.startOffset > codepoints.length) continue
     // LEADING INDENTATION, and the line's own - not any whitespace the span
-    // happens to open on. The clause puts the indent inside the span because the
-    // indent is what places a nested item's marker, and a nested list's span
-    // legitimately starts PART WAY into that run, at its parent's content
-    // column (corpus 245 and two others). What the run may not do is skip
-    // whitespace that follows text on the line: a span opening on a space in
-    // mid-line has not begun at the construct's markup, and walking past it
+    // happens to open on. The clause puts the indent inside a CONTAINER's span
+    // because the indent is what places a nested item's marker, and a nested
+    // list's span legitimately starts PART WAY into that run, at its parent's
+    // content column (corpus 245 and two others). What the run may not do is
+    // skip whitespace that follows text on the line: a span opening on a space
+    // in mid-line has not begun at the construct's markup, and walking past it
     // turned that into a pass.
+    //
+    // A LEAF GETS NO SUCH LATITUDE (markup-carve/carve#1928). The reason above
+    // is about placing a child's marker, so it says nothing about a construct
+    // with no children to place, and §4 reads literally there: the span begins
+    // at the markup. `INDENT_LATITUDE` is the set the reason reaches.
     let at = pos.startOffset
-    let indented = true
-    for (let k = at - 1; k >= 0; k--) {
+    let indented = INDENT_LATITUDE.has(node.type)
+    for (let k = at - 1; indented && k >= 0; k--) {
       const c = codepoints[k]
       if (c === '\n' || c === '\r') break
       if (c !== ' ' && c !== '\t') { indented = false; break }
