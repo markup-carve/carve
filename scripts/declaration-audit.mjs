@@ -246,7 +246,7 @@ const MANIFEST = [
   // `liveRows` collapses every whitespace run in a `js` row to one space - so
   // `declared` on a `js` entry reports every row UNDECLARED and can never pass.
   // Filed as markup-carve/carve#1939; when it is fixed this entry can move.
-  { repo: 'spec', path: 'tests/ast-positions.test.mjs', name: 'DECLARED_LEAF_INDENT_START', kind: 'js', policy: 'manual', guard: 'two-way', owner: 'tests/ast-positions.test.mjs' },
+  { repo: 'spec', path: 'tests/ast-positions.test.mjs', name: 'DECLARED_LEAF_INDENT_START', kind: 'js', policy: 'declared', guard: 'two-way', owner: 'tests/ast-positions.test.mjs' },
   { repo: 'spec', path: 'tests/the-two-import-exits-agree.test.mjs', name: 'UNMET', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/the-two-import-exits-agree.test.mjs' },
   { repo: 'spec', path: 'tests/optional-corpus.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/optional-corpus.test.mjs' },
   { repo: 'spec', path: 'tests/examples-tier3.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/a-tier3-example-ahead-of-the-pin-is-declared.test.mjs' },
@@ -527,6 +527,50 @@ function topLevelEntries(inner) {
   return parts.map((p) => p.trim()).filter((p) => p.length > 0)
 }
 
+/**
+ * Collapse whitespace runs that lie OUTSIDE string literals, leaving what is
+ * inside one byte for byte.
+ *
+ * A row read from source is a slab of code, so the newline and indentation
+ * wrapping a multi-line entry are layout and must go. The spaces INSIDE a
+ * literal are what a human typed, and the `declared` policy reads a two-space
+ * run there as the separator between a row's key and its reason. Collapsing
+ * both alike left that policy unable to pass on ANY source-derived kind - `js`,
+ * `php` and `rust` all reported every row undeclared, whatever the source said
+ * (carve#1939).
+ *
+ * Collapsing outside literals only is what separates the two cases. Preserving
+ * every two-space run instead would make a multi-line entry's own indentation
+ * look like a separator, so a row with no reason at all would read as declared
+ * - the mirror of the defect, and the harder one to notice.
+ */
+function collapseBetweenLiterals(text) {
+  let out = ''
+  let i = 0
+  while (i < text.length) {
+    const c = text[i]
+    if (c === '"' || c === "'" || c === '`') {
+      out += c
+      i += 1
+      while (i < text.length) {
+        if (text[i] === '\\') { out += text.slice(i, i + 2); i += 2; continue }
+        out += text[i]
+        if (text[i] === c) { i += 1; break }
+        i += 1
+      }
+      continue
+    }
+    if (/\s/.test(c)) {
+      out += ' '
+      while (i < text.length && /\s/.test(text[i])) i += 1
+      continue
+    }
+    out += c
+    i += 1
+  }
+  return out
+}
+
 /** Rows of a `.txt` ledger: every line that is neither blank nor a `#` comment. */
 function txtRows(src) {
   return src.split('\n').map((l) => l.trimEnd()).filter((l) => l.trim() !== '' && !l.trimStart().startsWith('#'))
@@ -629,7 +673,7 @@ function liveRows(entry, src) {
   const inner = outer.length === 1 && /^\[[\s\S]*\]$/.test(outer[0])
     ? topLevelEntries(outer[0].slice(1, -1))
     : outer
-  return inner.map((row) => row.replace(/\s+/g, ' ').slice(0, 120))
+  return inner.map((row) => collapseBetweenLiterals(row).slice(0, 120))
 }
 
 /* ------------------------------------------------------------------ input */
@@ -673,7 +717,7 @@ function listFiles(repo, dir) {
 
 /* ------------------------------------------------------------------- main */
 
-export const __internals = { blankComments, declarationIndex, bracketedBlock, topLevelEntries, liveRows, classifyPinDistance, gitPinStatus, isDeclarationName, undeclaredLedgerRows, MANIFEST }
+export const __internals = { blankComments, collapseBetweenLiterals, declarationIndex, bracketedBlock, topLevelEntries, liveRows, classifyPinDistance, gitPinStatus, isDeclarationName, undeclaredLedgerRows, MANIFEST }
 
 if (process.env.CARVE_DECL_AUDIT_LIB === '1') {
   // Imported for its helpers by the self-test; do not run the audit.

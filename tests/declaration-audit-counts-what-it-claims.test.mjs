@@ -32,7 +32,7 @@ import { join } from 'node:path'
 
 process.env.CARVE_DECL_AUDIT_LIB = '1'
 const { __internals } = await import('../scripts/declaration-audit.mjs')
-const { liveRows, blankComments, classifyPinDistance, gitPinStatus, isDeclarationName, MANIFEST } = __internals
+const { liveRows, blankComments, classifyPinDistance, gitPinStatus, isDeclarationName, undeclaredLedgerRows, MANIFEST } = __internals
 
 const rows = (kind, name, src) => {
   const out = liveRows({ kind, name }, src)
@@ -125,13 +125,69 @@ test('a missing declaration is an ERROR, never zero', () => {
 })
 
 test('every manifest entry names a policy and a guard the reporter understands', () => {
-  const policies = new Set(['owed', 'permitted', 'split', 'manual'])
+  // `declared` belongs here as much as the rest: the reporter has always
+  // implemented it, and leaving it out of this set meant an entry could only
+  // reach it through `prPolicy`, which nothing validated at all (carve#1939).
+  const policies = new Set(['owed', 'permitted', 'split', 'manual', 'declared'])
   const guards = new Set(['two-way', 'one-way', 'none'])
   for (const entry of MANIFEST) {
     assert.ok(policies.has(entry.policy), `${entry.path} :: ${entry.name} has policy ${entry.policy}`)
+    if (entry.prPolicy !== undefined) {
+      assert.ok(policies.has(entry.prPolicy), `${entry.path} :: ${entry.name} has prPolicy ${entry.prPolicy}`)
+    }
     assert.ok(guards.has(entry.guard), `${entry.path} :: ${entry.name} has guard ${entry.guard}`)
     assert.ok(entry.owner, `${entry.path} :: ${entry.name} names no owner - an entry nobody owns cannot be retired`)
   }
+})
+
+test('the `declared` policy can pass, and fail, on a source-derived list', () => {
+  // It could do NEITHER until carve#1939. `liveRows` collapsed every whitespace
+  // run in a row read from source, which removed the two-space separator that
+  // `undeclaredLedgerRows` searches for - so `declared` reported every row
+  // undeclared on `js`, `php` and `rust` alike, whatever the source said. A
+  // policy that is selectable, documented and unreachable is the carve#755
+  // shape, and it went unnoticed because only `txt` entries had used it.
+  //
+  // Both directions are asserted per kind. Passing alone would be satisfied by
+  // a check that cannot fail, which is the failure being retired here.
+  const declared = {
+    js: "const D = [\n  'alpha.crv 1  a reason a human wrote',\n]",
+    php: "const D = [\n    'alpha.crv 1  a reason a human wrote',\n];",
+    rust: 'const D: &[&str] = &[\n    "alpha.crv 1  a reason a human wrote",\n];',
+  }
+  const bare = {
+    js: "const D = [\n  'alpha.crv 1',\n]",
+    php: "const D = [\n    'alpha.crv 1',\n];",
+    rust: 'const D: &[&str] = &[\n    "alpha.crv 1",\n];',
+  }
+  for (const kind of ['js', 'php', 'rust']) {
+    assert.deepEqual(
+      undeclaredLedgerRows(rows(kind, 'D', declared[kind])),
+      [],
+      `a ${kind} row carrying a reason must count as declared`,
+    )
+    assert.equal(
+      undeclaredLedgerRows(rows(kind, 'D', bare[kind])).length,
+      1,
+      `a ${kind} row with no reason must still be reported`,
+    )
+  }
+})
+
+test('a multi-line row does not read its own indentation as a separator', () => {
+  // The mirror defect, and the one that would be harder to see: preserving
+  // every two-space run rather than only what is inside a literal would let the
+  // layout of a row spanning several source lines stand in for a reason, so a
+  // list declaring nothing would pass. The collapse runs BETWEEN literals only.
+  // The first entry spans two source lines, and there are two entries so the
+  // `new Map([...])` unwrap does not flatten them. Its indentation is therefore
+  // INSIDE the row, which is the only place a phantom separator can come from.
+  const src = "const D = [\n  ['alpha.crv',\n    1],\n  ['beta.crv', 2],\n]"
+  const live = rows('js', 'D', src)
+  assert.equal(live[0], "['alpha.crv', 1]", 'layout between literals collapses to a single space')
+  const faults = undeclaredLedgerRows(live)
+  assert.equal(faults.length, 2, 'neither bare row may be rescued by its own layout')
+  for (const fault of faults) assert.match(fault, /no reason given/)
 })
 
 test('a staleness anchor belongs only to a guard that claims to be two-directional', () => {
