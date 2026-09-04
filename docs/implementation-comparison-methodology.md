@@ -61,7 +61,9 @@ Corpus added since this run: `441-a-definition-between-two-open-content-columns-
 and
 `449-a-comment-below-a-description-body-s-column-ends-the-body`
 and
-`450-a-closed-fence-in-a-description-body-ends-it`.
+`450-a-closed-fence-in-a-description-body-ends-it`
+and
+`451-a-container-in-a-host-body-owns-a-line-past-its-own-content-column`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -82,6 +84,14 @@ markup-carve/carve-php#1882, markup-carve/carve-rs#1537), and the other six are
 its controls, which every engine already reproduces - so a hand-edited
 denominator would be wrong for the folds and right for the controls, in one
 number that could not say which.
+Section 451 is measured rather than argued: the pinned build reads SIX of its
+nine rows differently from the executable spec, a definition consumed past an
+inner container content column and a lazy run ending early at a closer
+(markup-carve/carve-js#1637), and all six are declared in
+`resources/engine-pin-drift.txt`. A hand-edited `1550 / 1550` would therefore
+be false in the JS column by six, and unmeasured in the other two: the engine
+checkouts on this host are mid-work and their builds do not match any commit
+the run could name.
 `tests/implementation-comparison-counts.test.mjs` reads this line and counts the
 fixtures each category contributes, so the numbers cannot be asserted, only
 derived, and the line has to be DELETED by whoever next runs
