@@ -1,0 +1,162 @@
+A container in a host body owns a line past its own content column
+
+```
+- a
+  ::: note
+   [r]: /url
+  :::
+
+[r][]
+.
+<ul>
+  <li>a
+    <aside class="admonition note" aria-label="Note">
+      <p>[r]: /url</p>
+    </aside>
+  </li>
+</ul>
+<p>[r][]</p>
+```
+
+```
+:: t
+:  a
+   ::: note
+    [r]: /url
+   :::
+
+[r][]
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>a</p>
+    <aside class="admonition note" aria-label="Note">
+
+    </aside>
+  </dd>
+</dl>
+<p><a href="/url">r</a></p>
+```
+
+```
+see[^f]
+
+[^f]: a
+    > q
+     [r]: /url
+
+[r][]
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<p><a href="/url">r</a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>a</p>
+      <blockquote><p>q</p></blockquote>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+> a
+> ::: note
+>  [r]: /url
+> :::
+
+[r][]
+.
+<blockquote>
+  <p>a</p>
+  <aside class="admonition note" aria-label="Note">
+    <p>[r]: /url</p>
+  </aside>
+</blockquote>
+<p>[r][]</p>
+```
+
+```
+- a
+  > q
+   [r]: /url
+
+[r][]
+.
+<ul>
+  <li>a
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+<p><a href="/url">r</a></p>
+```
+
+```
+:: t
+:  a
+   > q
+    [r]: /url
+
+[r][]
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>a</p>
+    <blockquote><p>q</p></blockquote>
+  </dd>
+</dl>
+<p><a href="/url">r</a></p>
+```
+
+```
+- a
+  ::: note
+   first
+
+   second
+  :::
+.
+<ul>
+  <li>a
+    <aside class="admonition note" aria-label="Note">
+      <p>first</p>
+      <p>second</p>
+    </aside>
+  </li>
+</ul>
+```
+
+```
+- a
+  > q
+   first
+
+   second
+.
+<ul>
+  <li><p>a</p>
+    <blockquote><p>q
+first</p></blockquote>
+    <p>second</p>
+  </li>
+</ul>
+```
+
+```
+> a
+  ::: note
+   [r]: /url
+  :::
+
+[r][]
+.
+<blockquote><p>a
+::: note
+[r]: /url
+:::</p></blockquote>
+<p>[r][]</p>
+```
