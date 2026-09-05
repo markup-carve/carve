@@ -1565,6 +1565,35 @@ function bodyClosesAFenceAt(bodyLines, last) {
   return closedAt === last
 }
 
+// An unterminated code fence on a nested item's lead owns the rest of a
+// description body just as it owns the rest of a list item. A closer belongs
+// to that nested item only when it reaches the item's content column; a
+// flush-left fence-shaped line is payload, not a closer.
+function descriptionLeadHasUnterminatedNestedFence(line, lines, start, bodyColumn, endsBodyAt) {
+  let text = line
+  let contentColumn = bodyColumn
+  let nested = false
+  for (;;) {
+    const marker = matchMarkerAt(indentCols(text))
+    if (!marker || marker.indent !== 0) break
+    nested = true
+    contentColumn += marker.markerWidth
+    text = marker.text
+  }
+  if (!nested) return false
+  const fence = FENCE.exec(text)
+  if (!fence || parseFenceInfo(fence[2]) === null) return false
+  for (let k = start; k < lines.length; k++) {
+    if (endsBodyAt(k)) break
+    const measured = indentCols(lines[k] ?? '')
+    if (measured.col < contentColumn) continue
+    const candidate = dedentMeasured(measured, lines[k], contentColumn).text
+    const closer = PURE_FENCE.exec(candidate)
+    if (closer && closer[1][0] === fence[1][0] && closer[1].length >= fence[1].length) return false
+  }
+  return true
+}
+
 // The colon fence opened at `openIdx` closes on a BARE run of its own length
 // (PART 2). Code-fence payloads in between are opaque and are stepped over.
 function findColonCloserSkippingCode(bodyLines, openIdx, run, last) {
@@ -2347,8 +2376,25 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (!pullPending) {
             bodyLines.push(stripIndent(dm[2]).replace(/[ \t]+$/, ''))
           }
+          const endsBodyAt = (at) => {
+            const cur = lines[at] ?? ''
+            return isEntry(cur) ||
+              (isBlank(cur) && !isDefinitionContinuationLine(lines[at + 1], bodyColumn))
+          }
+          const nestedLeadOwnsBody = descriptionLeadHasUnterminatedNestedFence(
+            bodyLines[0] ?? '', lines, i, bodyColumn, endsBodyAt,
+          )
           while (i < n) {
             const cur = lines[i] ?? ''
+            if (nestedLeadOwnsBody) {
+              if (endsBodyAt(i)) break
+              const measured = indentCols(cur)
+              bodyLines.push(measured.col >= bodyColumn
+                ? dedentMeasured(measured, cur, bodyColumn).text
+                : LAZY + measured.rest)
+              i++
+              continue
+            }
             if (isEntry(cur)) break
             if (isBlank(cur)) {
               // a blank before an indented line is an internal paragraph break;

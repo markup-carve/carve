@@ -69,7 +69,9 @@ and
 and
 `453-a-row-whose-every-cell-is-blank-is-not-a-table`
 and
-`454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item`.
+`454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item`
+and
+`455-an-unterminated-fence-on-a-nested-lead-in-a-description-body-owns-its-body`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -116,6 +118,12 @@ while carve-php, carve-rs and carve-js main open the block (the pin lags
 markup-carve/carve-js#1634). Its other two rows every engine already
 reproduces. A hand-edited denominator would be wrong for two and right for
 two, in one number that could not say which.
+Section 455 lags for all four of its rows: an unterminated fence on a nested
+lead in a description body, which all three engines answer three different
+wrong ways (markup-carve/carve-js#1650, markup-carve/carve-php#1913,
+markup-carve/carve-rs#1559) - none of them the ruled fence-owns-body answer.
+A hand-edited denominator would be wrong for all four, since no engine
+reproduces the ruling yet.
 `tests/implementation-comparison-counts.test.mjs` reads this line and counts the
 fixtures each category contributes, so the numbers cannot be asserted, only
 derived, and the line has to be DELETED by whoever next runs

@@ -619,6 +619,7 @@ index: examples/edge-cases/index.md
   a-closed-fence-in-a-description-body-ends-it
   a-container-in-a-host-body-owns-a-line-past-its-own-content-column
   a-block-opener-past-a-nested-footnote-definition-opens-in-the-item
+  an-unterminated-fence-on-a-nested-lead-in-a-description-body-owns-its-body
   an-empty-unterminated-container-ends-at-a-flush-left-line
   an-abbreviation-definition-outside-document-level-is-not-an-invisible-line
 [edge-attributes] Attributes
