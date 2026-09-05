@@ -67,7 +67,9 @@ and
 and
 `452-an-empty-unterminated-container-ends-at-a-flush-left-line`
 and
-`453-a-row-whose-every-cell-is-blank-is-not-a-table`.
+`453-a-row-whose-every-cell-is-blank-is-not-a-table`
+and
+`454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -108,6 +110,12 @@ the empty-row cases all three engines still open as tables
 markup-carve/carve-rs#1556), and the other four are controls every engine
 already reproduces. A hand-edited denominator would be wrong for three and
 right for four, in one number that could not say which.
+Section 454 lags for two of its four rows: a heading and a quote one column
+past a nested footnote definition, which the pinned build demotes to text
+while carve-php, carve-rs and carve-js main open the block (the pin lags
+markup-carve/carve-js#1634). Its other two rows every engine already
+reproduces. A hand-edited denominator would be wrong for two and right for
+two, in one number that could not say which.
 `tests/implementation-comparison-counts.test.mjs` reads this line and counts the
 fixtures each category contributes, so the numbers cannot be asserted, only
 derived, and the line has to be DELETED by whoever next runs

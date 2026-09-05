@@ -4149,6 +4149,13 @@ function collectItems(lines, i, list, state, ind, meas) {
         // parser, which knows the descendant's content column, rebases it.
         // Rebasing it against this ancestor would hoist the block one level.
         const descendantOwned = (subCol >= 0 && col >= subCol) || (headSubCol >= 0 && col >= headSubCol)
+        // A footnote definition is invisible and leaves no paragraph open. Its
+        // body starts two columns past the definition, so a block opener one
+        // column past it is the item's next block, not definition residue.
+        if (defBodyIndent !== null && col === contentCol + 1 && opensSubBlock(lm.rest)) {
+          authoredBlockBase = null
+          authoredBlockLimit = null
+        }
         if (authoredBlockLimit !== null && i >= authoredBlockLimit && !insideFence()) {
           authoredBlockBase = null
           authoredBlockLimit = null
