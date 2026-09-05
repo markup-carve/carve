@@ -45,7 +45,7 @@ const repo = resolve(here, '..')
 
 process.env.CARVE_DECL_AUDIT_LIB = '1'
 const { __internals } = await import('../scripts/declaration-audit.mjs')
-const { undeclaredLedgerRows, MANIFEST } = __internals
+const { undeclaredLedgerRows, MANIFEST, perPrPolicy } = __internals
 
 const workflow = readFileSync(join(repo, '.github/workflows/ci.yml'), 'utf8')
 const pkg = JSON.parse(readFileSync(join(repo, 'package.json'), 'utf8'))
@@ -87,21 +87,41 @@ test('the per-PR workflow still gates undeclared drift, which is what the lenien
   )
 })
 
-test('exactly two manifest entries are judged differently per-PR, and they are the engine-lag ledgers', () => {
-  const relaxed = MANIFEST.filter((entry) => entry.prPolicy !== undefined)
+test('per-PR relaxes exactly the two engine-lag ledgers and the siblings own lag, nothing else', () => {
+  // The SPEC entries whose per-PR policy differs from their release policy are
+  // the two engine-lag ledgers, via the manifest `prPolicy` they opted into.
+  const specRelaxed = MANIFEST.filter(
+    (e) => e.repo === 'spec' && perPrPolicy(e) !== e.policy,
+  )
   assert.deepEqual(
-    relaxed.map((entry) => [entry.path, entry.policy, entry.prPolicy]).sort(),
+    specRelaxed.map((e) => [e.path, e.policy, perPrPolicy(e)]).sort(),
     [
       ['resources/engine-fmt-drift.txt', 'owed', 'declared'],
       ['resources/engine-pin-drift.txt', 'owed', 'declared'],
     ],
-    'a third ledger now reads differently per-PR - only the two engine-lag ledgers describe a window a PR opens',
+    'a spec ledger other than the two engine-lag ones now reads differently per-PR',
   )
-  // The AST divergence ledgers and the rest stay owed in BOTH modes. Named
-  // rather than counted, because the count is what a relaxation would keep.
-  const owedInBothModes = new Set(
-    MANIFEST.filter((e) => e.policy === 'owed' && e.prPolicy === undefined).map((e) => e.path),
-  )
+
+  // Every SIBLING repo's OWED lag reads as `manual` per-PR and stays `owed` for
+  // release - carve#1908: a sibling's declared gap never gates a spec PR, but a
+  // tag still requires the whole fleet clean. Paired both directions so a rule
+  // that relaxed nothing, or that relaxed release too, would fail here.
+  const siblingOwed = MANIFEST.filter((e) => e.repo !== 'spec' && e.policy === 'owed')
+  assert.ok(siblingOwed.length > 0, 'expected sibling owed entries; the manifest shape changed')
+  for (const e of siblingOwed) {
+    assert.equal(perPrPolicy(e), 'manual', `${e.repo} ${e.path} :: ${e.name} still gates a spec PR per-PR`)
+    assert.equal(e.policy, 'owed', `${e.repo} ${e.path} :: ${e.name} stopped being owed for release`)
+  }
+
+  // A sibling's NON-owed entry (e.g. an explicit `manual`) is untouched, so the
+  // relaxation is about the `owed` lag and not a blanket sibling pass.
+  for (const e of MANIFEST.filter((x) => x.repo !== 'spec' && x.policy !== 'owed')) {
+    assert.equal(perPrPolicy(e), e.policy, `${e.repo} ${e.path} :: ${e.name} was relaxed but was not owed`)
+  }
+
+  // The spec's own AST divergence ledgers and the UNDECLARED sweep stay owed in
+  // BOTH modes - the leniency is for siblings and the two declared windows, not
+  // for the spec's own debt.
   for (const path of [
     'resources/ast-span-divergence.txt',
     'resources/ast-value-divergence.txt',
@@ -109,7 +129,9 @@ test('exactly two manifest entries are judged differently per-PR, and they are t
     'resources/converter-drift.txt',
     'resources/oracle-divergence.txt',
   ]) {
-    assert.ok(owedInBothModes.has(path), `${path} is no longer owed per-PR`)
+    const e = MANIFEST.find((x) => x.repo === 'spec' && x.path === path)
+    assert.ok(e, `${path} left the manifest`)
+    assert.equal(perPrPolicy(e), 'owed', `${path} is no longer owed per-PR`)
   }
 })
 
