@@ -1,0 +1,10 @@
+[^f]: outer
+
+  [^g]: mid
+
+    [^h]: inner
+
+   [r]: /url
+   TAILWORD
+
+x[^f] [^g] [^h] [t][r]
