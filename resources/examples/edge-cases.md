@@ -34388,3 +34388,113 @@ An alignment run is deliberate the same way, and holds its row a table too.
 ```
 
 :::
+
+## A block opener past a nested footnote definition opens in the item
+
+A footnote definition is INVISIBLE - it leaves no paragraph open on the page.
+Its body reaches two columns past the definition, so a line ONE column past it
+is not body residue; it is the enclosing item's next block. A block opener there
+opens its block, and the item stays tight, exactly as it would with no
+definition between. The oracle used to demote the opener to paragraph text and
+turn the item loose - `<p># h</p>` for a heading visible in the source and
+absent from the render - which no engine does (markup-carve/carve#1949).
+
+::: compare
+
+```carve
+- body
+
+  [^g]: n
+   # h
+
+after
+```
+
+```html
+<ul>
+  <li>body
+    <h1 id="h">h</h1>
+  </li>
+</ul>
+<p>after</p>
+```
+
+:::
+
+A quote marker opens its blockquote the same way.
+
+::: compare
+
+```carve
+- body
+
+  [^g]: n
+   > z
+
+after
+```
+
+```html
+<ul>
+  <li>body
+    <blockquote><p>z</p></blockquote>
+  </li>
+</ul>
+<p>after</p>
+```
+
+:::
+
+A line that opens NOTHING is the control: `prose` one column past the
+definition is an ordinary paragraph in the item, and the item is loose because a
+blank line separates it from `body`. This is the answer that does not move.
+
+::: compare
+
+```carve
+- body
+
+  [^g]: n
+   prose
+
+after
+```
+
+```html
+<ul>
+  <li><p>body</p>
+    <p>prose</p>
+  </li>
+</ul>
+<p>after</p>
+```
+
+:::
+
+A list marker opens a sublist, which is what makes the rule about MARKERS and
+not about the column: the same column that carries a heading, a quote and a
+sublist carries plain text as a paragraph.
+
+::: compare
+
+```carve
+- body
+
+  [^g]: n
+   - item
+
+after
+```
+
+```html
+<ul>
+  <li>body
+    <ul>
+      <li>item</li>
+    </ul>
+  </li>
+</ul>
+<p>after</p>
+```
+
+:::
