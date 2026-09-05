@@ -1,0 +1,38 @@
+A wrapped attribute block ends at its quote and reaches no line below it
+
+```
+> > q
+> > {.k
+> > #x}
+tail
+.
+<blockquote>
+  <blockquote><p>q</p></blockquote>
+</blockquote>
+<p>tail</p>
+```
+
+```
+> > q
+> > {.k #x}
+tail
+.
+<blockquote>
+  <blockquote><p>q</p></blockquote>
+</blockquote>
+<p>tail</p>
+```
+
+```
+> > q
+> > {.k
+> > #x}
+> > after
+.
+<blockquote>
+  <blockquote>
+    <p>q</p>
+    <p class="k" id="x">after</p>
+  </blockquote>
+</blockquote>
+```

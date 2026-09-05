@@ -1530,6 +1530,31 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
   return opensParagraph(bodyLines[last], false, tableOpenAfter(bodyLines.slice(0, last)))
 }
 
+// A wrapped attribute block closes the paragraph at every quote depth. Its
+// final physical line does not begin with `{`, so the quote's incremental
+// single-line tracker cannot recognize that boundary on its own.
+function bodyEndsWrappedAttr(bodyLines, depth = 0) {
+  let last = bodyLines.length - 1
+  while (last >= 0 && bodyLines[last].trim() === '') last--
+  if (last < 0) return false
+  // A wrapped attribute block's final line is the `}` that closes it, at every
+  // quote depth (`#x}`, or `> #x}` one level out). A last line that does not end
+  // in `}` cannot be one, so the scan below - and the recursion - is skipped.
+  // Without this the predicate rescans the whole trailing paragraph for every
+  // lazy line, which is quadratic on a long plain quote (carve#1956).
+  if (!bodyLines[last].trimEnd().endsWith('}')) return false
+  for (let k = last; k >= 0 && bodyLines[k].trim() !== ''; k--) {
+    if (bodyLines[k][0] !== '{') continue
+    const al = tryAttrLine(bodyLines, k)
+    return !!(al && al.next === last + 1 && al.next > k + 1)
+  }
+  if (!QUOTE.test(bodyLines[last]) || depth >= MAX_NESTING_DEPTH) return false
+  let first = last
+  while (first > 0 && QUOTE.test(bodyLines[first - 1])) first--
+  const inner = bodyLines.slice(first, last + 1).map((l) => QUOTE.exec(l)[1] ?? '')
+  return bodyEndsWrappedAttr(inner, depth + 1)
+}
+
 // Whether the body's line `last` CLOSES a fence opened earlier in the body.
 //
 // Tracked from the top rather than pattern-matched on the one line, because a
@@ -3064,7 +3089,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // The line is not framed here: the item collector pushes a comment
         // UNFRAMED for exactly this reason, so a comment reaching a nested quote
         // still arrives as itself.
-        if (lines[i] !== undefined && qOpenPara && !isBlank(lines[i]) &&
+        if (lines[i] !== undefined && qOpenPara && !bodyEndsWrappedAttr(inner) && !isBlank(lines[i]) &&
             !COMMENT_LINE.test(lines[i]) &&
             !peekInterrupts(i) && !COLON_CLOSER.test(lines[i]) && !CAPTION.test(lines[i])) {
           // lazy continuation folds into the open quoted paragraph (SS10 I6)

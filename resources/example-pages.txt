@@ -622,6 +622,7 @@ index: examples/edge-cases/index.md
   an-unterminated-fence-on-a-nested-lead-in-a-description-body-owns-its-body
   a-definition-nested-past-a-footnote-body-is-a-note-and-a-reference-below-it-resolves
   a-container-closer-closes-its-container-in-a-footnote-body-too
+  a-wrapped-attribute-block-ends-at-its-quote-and-reaches-no-line-below-it
   an-empty-unterminated-container-ends-at-a-flush-left-line
   an-abbreviation-definition-outside-document-level-is-not-an-invisible-line
 [edge-attributes] Attributes

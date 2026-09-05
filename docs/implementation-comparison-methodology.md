@@ -75,7 +75,9 @@ and
 and
 `456-a-definition-nested-past-a-footnote-body-is-a-note-and-a-reference-below-it-resolves`
 and
-`457-a-container-closer-closes-its-container-in-a-footnote-body-too`.
+`457-a-container-closer-closes-its-container-in-a-footnote-body-too`
+and
+`458-a-wrapped-attribute-block-ends-at-its-quote-and-reaches-no-line-below-it`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -136,6 +138,10 @@ Section 457 lags for both of its rows: a container closer inside a footnote
 body, where the pinned build keeps the closer as text. carve-rs already
 matches; carve-php and carve-js are ported (markup-carve/carve-php#1914,
 markup-carve/carve-js#1654). A hand-edited denominator would be wrong for both.
+Section 458 does NOT lag any engine: the wrapped-attribute boundary fix brings
+the oracle onto carve-rs and the pinned carve-js, which already produce it, so
+its three rows are added since the run but every engine reproduces them. It is
+listed because the published run predates it, not because any engine disagrees.
 `tests/implementation-comparison-counts.test.mjs` reads this line and counts the
 fixtures each category contributes, so the numbers cannot be asserted, only
 derived, and the line has to be DELETED by whoever next runs
