@@ -65,7 +65,9 @@ and
 and
 `451-a-container-in-a-host-body-owns-a-line-past-its-own-content-column`
 and
-`452-an-empty-unterminated-container-ends-at-a-flush-left-line`.
+`452-an-empty-unterminated-container-ends-at-a-flush-left-line`
+and
+`453-a-row-whose-every-cell-is-blank-is-not-a-table`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -100,6 +102,12 @@ MARKER-LINE spelling (markup-carve/carve-js#1641), where carve-php and carve-rs
 both answer the ruled way. Its other four rows every engine already reproduces,
 so a hand-edited denominator would be right for four and wrong for one, in one
 number that could not say which.
+Section 453 lags for three of its seven rows: `|||`, `| | |` and `|= |` are
+the empty-row cases all three engines still open as tables
+(markup-carve/carve-js#1643, markup-carve/carve-php#1910,
+markup-carve/carve-rs#1556), and the other four are controls every engine
+already reproduces. A hand-edited denominator would be wrong for three and
+right for four, in one number that could not say which.
 `tests/implementation-comparison-counts.test.mjs` reads this line and counts the
 fixtures each category contributes, so the numbers cannot be asserted, only
 derived, and the line has to be DELETED by whoever next runs

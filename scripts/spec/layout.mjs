@@ -822,7 +822,23 @@ function splitRow(line, openRun = 0, openRunAt = 0, kind = 'standard') {
    * `+ |` was published as a paragraph, because only the one-column shape
    * reaches a `cells.length === 1` test. All three engines absorb both.
    */
-  if (kind === 'standard' && cells.length === 1 && cells[0].trim() === '') return null // `||`
+  // A STANDARD ROW WHOSE EVERY CELL IS BLANK IS NOT A TABLE (carve#1950). The
+  // guard used to fire for one cell only - `||` was prose while `|||` opened a
+  // two-column table of empty `<td>`, and `|= |`, an empty HEADER cell, opened
+  // a `<thead>`-only table where the identical plain `| |` was rejected. The
+  // detector was counting delimiter slots and never asking whether a slot held
+  // anything, the same class as the lone-pipe panic (carve-rs#1553): a table
+  // whose every cell is empty carries no data, and degrading it to text is what
+  // the one- and two-pipe cases already do.
+  //
+  // BLANK IS EMPTY CONTENT WITH NO ALIGNMENT, VALIGN OR ATTRIBUTE - a header
+  // marker aside, since `|= |` is the case the ruling names. A cell carrying an
+  // alignment run, a valign run or an attribute block was authored deliberately
+  // and is left a table (`|< |`, `|^ |`, `|{.x} |`); only slots holding nothing
+  // a reader wrote are the empty ones. `parseCell` strips the marker run, which
+  // is what lets the header case be seen: its raw segment `= ` does not trim to
+  // empty, its content does.
+  if (kind === 'standard' && cells.every(isBlankCell)) return null // `||`, `|||`, `| | |`, `|= |`
   // `inCode` here is the run the row's closing pipe did NOT close: a
   // continuation row is scanned with it, and nothing else reads it.
   // `inCode` here is the run the row's closing pipe did NOT close, and it sits
@@ -1203,6 +1219,18 @@ function parseCell(seg) {
   // payload, which is decided where the block is read, a few lines up. All
   // three engines read it that way; this file was alone.
   return cell
+}
+
+// carve#1950: a cell holds nothing a reader wrote. Empty content, and no
+// alignment, valign or attribute run - each of those is a construct the author
+// spelled, so `|< |`, `|^ |` and `|{.x} |` stay tables. A HEADER marker is the
+// one exception the ruling names: `|= |` is an empty header cell and blank, so
+// the `header` flag is not consulted. Content-only, because `parseCell` has
+// already stripped the marker run - the header case's raw `= ` does not trim to
+// empty but its content does.
+function isBlankCell(seg) {
+  const cell = parseCell(seg)
+  return cell.content === '' && cell.align === null && cell.valign === null && cell.attrs === null
 }
 
 // PART 9 SS15: try to read one-or-more attribute blocks starting at
