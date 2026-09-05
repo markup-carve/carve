@@ -73,7 +73,9 @@ and
 and
 `455-an-unterminated-fence-on-a-nested-lead-in-a-description-body-owns-its-body`
 and
-`456-a-definition-nested-past-a-footnote-body-is-a-note-and-a-reference-below-it-resolves`.
+`456-a-definition-nested-past-a-footnote-body-is-a-note-and-a-reference-below-it-resolves`
+and
+`457-a-container-closer-closes-its-container-in-a-footnote-body-too`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -130,6 +132,10 @@ Section 456 lags for both of its rows: a nested-footnote stack where all three
 engines read the innermost definition as text, not a note
 (markup-carve/carve-php#1895, markup-carve/carve-js#1653, markup-carve/carve-rs#1560).
 A hand-edited denominator would be wrong for both.
+Section 457 lags for both of its rows: a container closer inside a footnote
+body, where the pinned build keeps the closer as text. carve-rs already
+matches; carve-php and carve-js are ported (markup-carve/carve-php#1914,
+markup-carve/carve-js#1654). A hand-edited denominator would be wrong for both.
 `tests/implementation-comparison-counts.test.mjs` reads this line and counts the
 fixtures each category contributes, so the numbers cannot be asserted, only
 derived, and the line has to be DELETED by whoever next runs

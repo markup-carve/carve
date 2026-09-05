@@ -1638,7 +1638,7 @@ const opensAuthoredBase = (line) => opensSubBlock(line) || isLinkDef(line) ||
  * returns left of it. This measures every leading run once and preserves any
  * payload indentation beyond the opener.
  */
-export function normalizeAuthoredBodyBases(lines, state = {}) {
+export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = false) {
   const out = []
   for (let index = 0; index < lines.length; index++) {
     const line = lines[index]
@@ -1669,6 +1669,30 @@ export function normalizeAuthoredBodyBases(lines, state = {}) {
         : dedentMeasured(sourceMeasured, source, base).text
     })
     const relativeEnd = Math.max(1, firstBlockEnd(candidate, 0, candidate.length, state))
+    // A definition inside a footnote-hosted colon container is consumed by
+    // the shared symbol table, but it does not end the container. Keep a
+    // closer at the rebased opener's column with that container; otherwise it
+    // is left at its authored indent and becomes paragraph text in the body.
+    if (footnoteBody) {
+      const colon = COLON_FENCE.exec(candidate[0])
+      if (colon && !COLON_CLOSER.test(candidate[0])) {
+        const close = findColonCloser(candidate, 0, colon[1].length)
+        // The closer must sit at the OPENER'S authored column. A line to the
+        // left of the opener stays unrebased in `candidate`, so a shallower
+        // bare `:::` at footnote level would otherwise be captured and reattach
+        // an outer line to this inner container, crossing a boundary the opener
+        // never reached (carve#1948). `close >= relativeEnd >= 1` guarantees the
+        // index is in range before the column read.
+        if (close >= relativeEnd && close < candidate.length &&
+            indentCols(candidate[close]).col === indentCols(candidate[0]).col) {
+          out.push(candidate[0])
+          out.push(...normalizeAuthoredBodyBases(candidate.slice(1, close), state, true))
+          out.push(candidate[close])
+          index += close
+          continue
+        }
+      }
+    }
     out.push(...candidate.slice(0, relativeEnd))
     index += relativeEnd - 1
   }
@@ -2139,7 +2163,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       if (!state.footnoteDefs.has(key)) {
         // FIRST definition wins (PART 9R state)
         const normalizedBody = state.authoredBodyBases
-          ? normalizeAuthoredBodyBases(bodyLines, state)
+          ? normalizeAuthoredBodyBases(bodyLines, state, true)
           : bodyLines
         const bodyBlocks = parseBlocks(normalizedBody, state, false)
         if (bodyBlocks.length === 0) {
