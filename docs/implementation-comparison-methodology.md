@@ -71,7 +71,9 @@ and
 and
 `454-a-block-opener-past-a-nested-footnote-definition-opens-in-the-item`
 and
-`455-an-unterminated-fence-on-a-nested-lead-in-a-description-body-owns-its-body`.
+`455-an-unterminated-fence-on-a-nested-lead-in-a-description-body-owns-its-body`
+and
+`456-a-definition-nested-past-a-footnote-body-is-a-note-and-a-reference-below-it-resolves`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -124,6 +126,10 @@ wrong ways (markup-carve/carve-js#1650, markup-carve/carve-php#1913,
 markup-carve/carve-rs#1559) - none of them the ruled fence-owns-body answer.
 A hand-edited denominator would be wrong for all four, since no engine
 reproduces the ruling yet.
+Section 456 lags for both of its rows: a nested-footnote stack where all three
+engines read the innermost definition as text, not a note
+(markup-carve/carve-php#1895, markup-carve/carve-js#1653, markup-carve/carve-rs#1560).
+A hand-edited denominator would be wrong for both.
 `tests/implementation-comparison-counts.test.mjs` reads this line and counts the
 fixtures each category contributes, so the numbers cannot be asserted, only
 derived, and the line has to be DELETED by whoever next runs
