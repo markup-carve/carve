@@ -717,7 +717,26 @@ function listFiles(repo, dir) {
 
 /* ------------------------------------------------------------------- main */
 
-export const __internals = { blankComments, collapseBetweenLiterals, declarationIndex, bracketedBlock, topLevelEntries, liveRows, classifyPinDistance, gitPinStatus, isDeclarationName, undeclaredLedgerRows, MANIFEST }
+// The policy an entry is judged under in PER-PR mode - the verdict, not the
+// entry, is what the mode changes (carve#1811).
+//
+//   - a manifest `prPolicy` wins where the entry opted in: the two engine-lag
+//     ledgers read as `declared`, so a well-formed window passes and a
+//     malformed one still fails.
+//   - a SIBLING repo's own OWED lag reads as `manual` (carve#1908): its gaps
+//     are declared and gated in the engine's own tree, and a spec PR never
+//     edits a sibling, so a sibling's lag cannot answer "is THIS pull request
+//     defective". The row stays visible and stays OWED in release mode.
+//   - everything else keeps its own policy.
+//
+// Release mode never calls this: a tag requires every owed list empty.
+function perPrPolicy(entry) {
+  if (entry.prPolicy !== undefined) return entry.prPolicy
+  if (entry.repo !== 'spec' && entry.policy === 'owed') return 'manual'
+  return entry.policy
+}
+
+export const __internals = { blankComments, perPrPolicy, collapseBetweenLiterals, declarationIndex, bracketedBlock, topLevelEntries, liveRows, classifyPinDistance, gitPinStatus, isDeclarationName, undeclaredLedgerRows, MANIFEST }
 
 if (process.env.CARVE_DECL_AUDIT_LIB === '1') {
   // Imported for its helpers by the self-test; do not run the audit.
@@ -807,7 +826,8 @@ for (const entry of MANIFEST) {
 
   // The verdict, not the entry, is what the mode changes. `prPolicy` applies
   // only in `per-pr` mode and only where the manifest opted in (carve#1811).
-  const policy = !strict && entry.prPolicy !== undefined ? entry.prPolicy : entry.policy
+  //
+  const policy = strict ? entry.policy : perPrPolicy(entry)
 
   let owed = rows.length
   let permitted = 0
