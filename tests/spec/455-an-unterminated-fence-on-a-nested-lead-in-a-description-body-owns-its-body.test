@@ -1,0 +1,84 @@
+An unterminated fence on a nested lead in a description body owns its body
+
+````
+:: t
+: - ``` x
+code
+```
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <pre><code class="language-x">code
+```
+</code></pre>
+      </li>
+    </ul>
+  </dd>
+</dl>
+````
+
+```
+:: t
+: - ~~~ x
+code
+~~~
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <pre><code class="language-x">code
+~~~
+</code></pre>
+      </li>
+    </ul>
+  </dd>
+</dl>
+```
+
+````
+:: t
+: - ```
+code
+```
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <pre><code>code
+```
+</code></pre>
+      </li>
+    </ul>
+  </dd>
+</dl>
+````
+
+````
+:: t
+: - ``` x
+code
+
+:: t2
+: plain
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <pre><code class="language-x">code
+</code></pre>
+      </li>
+    </ul>
+  </dd>
+  <dt>t2</dt>
+  <dd>plain</dd>
+</dl>
+````

@@ -34498,3 +34498,128 @@ after
 ```
 
 :::
+
+## An unterminated fence on a nested lead in a description body owns its body
+
+A fence's content is not re-scanned for structure, so an unterminated code
+fence opened on a nested item's LEAD line owns every line below it - including a
+flush-left closing fence, which becomes body text. markup-carve/carve#1900 ruled
+this for the LIST-ITEM host; the description body is the same construct one host
+over. The oracle used to leave the fence EMPTY, demote the body to a paragraph in
+the description body, and open a SECOND document-level fence on the flush-left
+closer - a `pre` no source line asked for (markup-carve/carve#1947).
+
+::: compare
+
+````carve
+:: t
+: - ``` x
+code
+```
+````
+
+````html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <pre><code class="language-x">code
+```
+</code></pre>
+      </li>
+    </ul>
+  </dd>
+</dl>
+````
+
+:::
+
+The tilde spelling owns its body the same way.
+
+::: compare
+
+````carve
+:: t
+: - ~~~ x
+code
+~~~
+````
+
+````html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <pre><code class="language-x">code
+~~~
+</code></pre>
+      </li>
+    </ul>
+  </dd>
+</dl>
+````
+
+:::
+
+An info-less fence does too; the flush-left closer is still its content.
+
+::: compare
+
+````carve
+:: t
+: - ```
+code
+```
+````
+
+````html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <pre><code>code
+```
+</code></pre>
+      </li>
+    </ul>
+  </dd>
+</dl>
+````
+
+:::
+
+The fence owns the body only to the END of the description body: a new term
+closes the body above it, and the fence with it, so a second term is a second
+term and not fence content.
+
+::: compare
+
+```carve
+:: t
+: - ``` x
+code
+
+:: t2
+: plain
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <pre><code class="language-x">code
+</code></pre>
+      </li>
+    </ul>
+  </dd>
+  <dt>t2</dt>
+  <dd>plain</dd>
+</dl>
+```
+
+:::
