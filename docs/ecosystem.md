@@ -141,11 +141,12 @@ Opt-in extensions that add non-core syntax.
 
 ## AI / agent tooling
 
-Skills and context packs that teach AI coding agents to author Carve.
+Skills and servers that let AI coding agents author, validate and convert Carve.
 
 | Project | Target | Status |
 |---|---|---|
 | [carve-skill](https://github.com/markup-carve/carve-skill) | Claude Code / agents | Authoring skill - a syntax card, the Markdown/Djot trap list, and a `carve lint` validation loop so agents write valid `.crv` the first time. |
+| [carve-mcp](https://github.com/markup-carve/carve-mcp) | MCP clients | Local stdio server exposing the carve-js linter, formatter, renderers, AST, HTML/Markdown/Djot import and concise authoring resources. No filesystem or network access by default. *Not yet published - run from source.* |
 
 ## Resources
 
