@@ -28,6 +28,8 @@ repository. In rough order of usefulness when implementing:
   `:type[content]{attrs}` extension syntax (optional - see tiers below).
 - **[Parsing Ambiguities](./parsing-ambiguities)** and **[Divergence from Djot](./divergence-from-djot)**
   - the corners where Carve makes a specific, tested choice.
+- **[Source-preserving patches](./source-patches)** - the shared wire contract
+  for tools that change source without rewriting unrelated bytes.
 
 ## Conformance tiers
 

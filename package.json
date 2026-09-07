@@ -15,7 +15,7 @@
     "html-import:check": "node --test tests/html-import-contract.check.mjs",
     "escape:check": "node --test tests/escape-corpus.check.mjs",
     "docs:dev": "node scripts/publish-schema.mjs && npm run docs:pages && vitepress dev docs",
-    "docs:build": "node --test tests/docs-controlled-vocabulary.test.mjs && node scripts/publish-schema.mjs && npm run docs:pages && vitepress build docs",
+    "docs:build": "node --test tests/docs-controlled-vocabulary.test.mjs tests/source-patch-schema.test.mjs && node scripts/publish-schema.mjs && npm run docs:pages && vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "corpus:build": "node scripts/generate-corpus.mjs",
     "docs:pages": "node scripts/generate-example-pages.mjs",

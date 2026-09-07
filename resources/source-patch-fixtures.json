@@ -1,0 +1,13 @@
+{
+  "fingerprints": [
+    { "source": "", "fingerprint": "fnv1a64:cbf29ce484222325" },
+    { "source": "a", "fingerprint": "fnv1a64:af63dc4c8601ec8c" },
+    { "source": "abc", "fingerprint": "fnv1a64:e71fa2190541574b" },
+    { "source": "lead ä\n", "fingerprint": "fnv1a64:c6f20701944350f0" }
+  ],
+  "replacements": [
+    { "source": "# Title   ", "replacement": "# Title\n" },
+    { "source": "¤", "replacement": "ä" },
+    { "source": "see → here", "replacement": "see ⇒ here" }
+  ]
+}
