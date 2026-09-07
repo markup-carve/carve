@@ -40,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **The host does not change which column a definition reaches** (carve#1921).
 - **An unterminated comment fence opens no span in the item collector**
   (carve#1920).
-- **§28's degradation is a total classification, ownership included**
+- **Degradation is a total classification, ownership included**
   (carve#1919).
 - **An opener at or past a description body's column closes its paragraph**
   (carve#1917).
