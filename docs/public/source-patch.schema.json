@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://markup-carve.github.io/carve/source-patch.schema.json",
+  "title": "Carve source patch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "sourceFingerprint", "sourceBytes", "edits", "unresolved"],
+  "properties": {
+    "version": { "const": 1 },
+    "sourceFingerprint": { "type": "string", "pattern": "^fnv1a64:[0-9a-f]{16}$" },
+    "sourceBytes": { "type": "integer", "minimum": 0 },
+    "edits": { "type": "array", "items": { "$ref": "#/$defs/edit" } },
+    "unresolved": { "type": "array", "items": { "$ref": "#/$defs/suggestion" } }
+  },
+  "$defs": {
+    "edit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end", "replacement", "kind", "code"],
+      "properties": {
+        "start": { "type": "integer", "minimum": 0 },
+        "end": { "type": "integer", "minimum": 0 },
+        "replacement": { "type": "string" },
+        "kind": { "enum": ["formatting", "syntax-migration", "quick-fix", "refactor"] },
+        "code": { "type": "string", "minLength": 1 }
+      }
+    },
+    "suggestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end", "replacement", "kind", "code", "message"],
+      "properties": {
+        "start": { "type": "integer", "minimum": 0 },
+        "end": { "type": "integer", "minimum": 0 },
+        "replacement": { "type": "string" },
+        "kind": { "enum": ["formatting", "syntax-migration", "quick-fix", "refactor"] },
+        "code": { "type": "string", "minLength": 1 },
+        "message": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
