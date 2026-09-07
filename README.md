@@ -163,6 +163,15 @@ The reference implementations are tested with the same Carve documents and
 expected output. Current differences are recorded in the
 [implementation comparison](https://markup-carve.github.io/carve/implementation-comparison).
 
+## Influences
+
+- **Markdown** - ubiquitous baseline; paragraph interruption without a blank line
+- **[Djot](https://djot.net/)** (John MacFarlane) - rigorous parsing, attributes, foundation
+- **Org-mode** - `/italic/` syntax, TODO states
+- **Creole** - `|=` table headers
+- **AsciiDoc** - admonitions, document structure
+- **CriticMarkup** - editorial annotations
+
 ## Development
 
 This repository contains the specification, corpus, and documentation site.
