@@ -850,3 +850,24 @@ test('the checked-render loss report has the shared closed shape', () => {
   assert.equal(validateReport({ ...report, unknown: true }), false)
   assert.equal(validateReport({ ...report, losses: [{ ...report.losses[0], code: 'other' }] }), false)
 })
+
+const sourcePatchSchema = JSON.parse(readFileSync(resolve(root, 'resources/source-patch.schema.json'), 'utf8'))
+const validateSourcePatch = new Ajv2020({ strict: true }).compile(sourcePatchSchema)
+const sourceEdit = { start: 1, end: 2, replacement: '', kind: 'formatting', code: 'canonical-format' }
+const sourcePatch = { version: 1, sourceFingerprint: 'fnv1a64:af63dc4c8601ec8c', sourceBytes: 2, edits: [sourceEdit], unresolved: [] }
+
+test('the source patch schema accepts the shared wire shape', () => {
+  assert.equal(validateSourcePatch(sourcePatch), true, JSON.stringify(validateSourcePatch.errors))
+  assert.equal(validateSourcePatch({ ...sourcePatch, unresolved: [{ ...sourceEdit, message: 'Review this change.' }] }), true, JSON.stringify(validateSourcePatch.errors))
+})
+
+test('the source patch schema rejects malformed wire fields', () => {
+  assert.equal(validateSourcePatch({ ...sourcePatch, version: 2 }), false)
+  assert.equal(validateSourcePatch({ ...sourcePatch, sourceFingerprint: 'short' }), false)
+  assert.equal(validateSourcePatch({ ...sourcePatch, edits: [{ ...sourceEdit, kind: 'unknown' }] }), false)
+  assert.equal(validateSourcePatch({ ...sourcePatch, unknown: true }), false)
+})
+
+test('the published source patch schema id matches its build destination', () => {
+  assert.equal(sourcePatchSchema.$id, 'https://markup-carve.github.io/carve/source-patch.schema.json')
+})
