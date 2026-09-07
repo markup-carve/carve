@@ -506,6 +506,33 @@ Press [Ctrl+C]{kbd}.
 The technical point is not merely convenience. Native syntax gives the parser a
 clear semantic target and gives implementations a common contract.
 
+## Where the parts come from
+
+Carve takes its parsing rationale from Djot and its authoring ergonomics from
+Markdown. Neither is a fork: the ideas were adopted deliberately and the
+divergences are recorded in [Divergence from Djot](./divergence-from-djot) and
+[Coming from Markdown](./migrate-from-markdown).
+
+**From Djot** - linear parsing with no backtracking, local inline
+tokenization, single-character emphasis, arbitrary `{#id .class key=value}`
+attributes on any element, generic `:::` containers, and the rule that content
+means the same thing inside a container as outside it. The parser contract
+above is Djot's model, kept.
+
+**From Markdown** - paragraph interruption. A block opener on a new line
+starts a block with no blank line required (PART 9 §10). Djot requires the
+blank line; Carve follows Markdown here because writers expect a list or
+heading to start where they wrote it.
+
+**From Creole** - `|=` for table headers. The wiki markup got this right:
+marking the header cells themselves needs no separator row under the first row,
+so a table stays readable in source and a header can appear anywhere a row can.
+
+Carve's own additions - visual mnemonics, captions, cross-references,
+auto-resolving wiki links, list continuation, admonitions, abbreviations,
+comments, mentions and tags, and target-aware rendering - are the subject of
+the section above and of the [Case Study](./case-study/).
+
 ## Concrete ambiguities Carve resolves
 
 ## Paths vs italics

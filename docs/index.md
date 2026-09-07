@@ -104,6 +104,15 @@ Core syntax is always available. Some features, including citations, automatic
 URL linking, and diagrams, must be enabled separately. The [optional features
 table](./extensions#feature-tiers-quick-reference) lists their availability.
 
+## Influences
+
+- **Markdown** - ubiquitous baseline; paragraph interruption without a blank line
+- **[Djot](https://djot.net/)** (John MacFarlane) - rigorous parsing, attributes, foundation
+- **Org-mode** - `/italic/` syntax, TODO states
+- **Creole** - `|=` table headers
+- **AsciiDoc** - admonitions, document structure
+- **CriticMarkup** - editorial annotations
+
 ## Reference
 
 - [Formal grammar](./grammar)
