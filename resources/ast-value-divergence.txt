@@ -168,3 +168,14 @@
 #
 # which is the FIXED direction the pair exists to report. The row and
 # `LAST_MEASURED` in tests/ast-values.test.mjs go together, as their notes say.
+
+# AND AGAIN 2026-09-07, for the carve#1963 release gate. carve-php has not ported
+# markup-carve/carve#1962 (a wrapped attribute block does not reach past a quote's
+# closing boundary), so on 458-a-wrapped-attribute-block-ends-at-its-quote it
+# attaches the block to a paragraph carve-js and carve-rs never build, and that
+# paragraph carries three attribute fields the other two do not. One document,
+# three fields, one lag - tracked with the span rows in markup-carve/carve#1965.
+
+paragraph.attrs.classes 1 markup-carve/carve#1965
+paragraph.attrs.id 1 markup-carve/carve#1965
+paragraph.attrs.order 1 markup-carve/carve#1965

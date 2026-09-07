@@ -687,3 +687,36 @@
 # carve-rs#1308, and the same run reports BINDING PARITY differing from carve-rs
 # on the four `410` documents. That is a stale `ext/carve/Cargo.toml` pin in
 # carve-rb, not a span this file could declare.
+
+# RE-MEASURED 2026-09-07 for the carve#1963 release gate, at carve-js 9e5319f2,
+# carve-rs (markup-carve/carve-rs#1568) and carve-php (markup-carve/carve-php#1921)
+# over 1685 corpus documents plus 3 synthetic samples. The comment-span findings
+# #1963 names are FIXED in those two engine PRs, not declared. What remains is
+# four rows across three documents, each a legitimate cross-engine difference the
+# bump exposed - none flagged by the source-side PART 12 SS4 checker
+# (checkOpeningMarkup / checkStopsAtChildren), so none is provably one engine's
+# violation. Named per document and suspected owner in markup-carve/carve#1965.
+#
+# NOT DECLARED HERE: the `list`, `list_item`, `code_block` rows and the 455-half
+# of the two definition rows are carve-js's `endOffset past end of source` bug on
+# the `455` family, fixed separately; they clear with that fix and the counts
+# below are the residual after it.
+#
+#   definition_description (extent)  447-...-13  js and rs span the description
+#                                    over its hoisted footnote and link-ref-def
+#                                    SIBLINGS; php stops earlier (carve#1522).
+#   definition_list (extent)         447-...-13  follows the description shape.
+#   footnote (extent)                456-...     js starts the hoisted note one
+#                                    codepoint into the indent; rs and php on the
+#                                    `[` marker. `footnote` is not in
+#                                    OPENING_MARKUP, so no side is source-named.
+#   block_quote (extent)             458-...     php has not ported carve#1962; it
+#                                    spans the quote past its closing boundary,
+#                                    js and rs end at it.
+#
+# markup-carve/carve#1965, markup-carve/carve#1963.
+
+definition_description (extent) 1
+definition_list (extent) 1
+footnote (extent) 1
+block_quote (extent) 1
