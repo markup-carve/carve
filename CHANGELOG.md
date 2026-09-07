@@ -7,6 +7,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-09-07
+
+### Added
+
+- **The task marker's state is recorded in the AST** (carve#1867, carve#1871,
+  carve#1868). A list item's task marker carries its state on the item, an
+  extended state names itself, and the task-state conditional stays inside the
+  validator subset.
+
+### Changed
+
+- **A wrapped attribute block does not reach past a quote's closing boundary**
+  (carve#1962).
+- **A colon-fence closer closes its container in a footnote body too**
+  (carve#1960).
+- **A nested-footnote stack has one canonical spec reading** (carve#1959).
+- **An unterminated fence on a nested lead in a description body owns its body**
+  (carve#1958).
+- **A block opener past a nested footnote definition opens in the item**
+  (carve#1957).
+- **A row whose every cell is blank is not a table** (carve#1954).
+- **An empty unterminated container ends at a flush-left line** (carve#1953).
+- **A container in a host body holding a line past its own content column is
+  pinned** (carve#1952).
+- **A leaf span begins at its markup; a container keeps the indent latitude**
+  (carve#1940).
+- **A comment below a description body's column ends the body** (carve#1934).
+- **A marker at an enclosing item's content column folds into a quote below it**
+  (carve#1922).
+- **The corpus is the authority on a disagreement between engines** (carve#1925).
+- **The host does not change which column a definition reaches** (carve#1921).
+- **An unterminated comment fence opens no span in the item collector**
+  (carve#1920).
+- **§28's degradation is a total classification, ownership included**
+  (carve#1919).
+- **An opener at or past a description body's column closes its paragraph**
+  (carve#1917).
+- **A degraded `%%%` is the `%%` line form in a list item** (carve#1907).
+- **The oracle's quote host applies the comment column exemption** (carve#1902).
+- **An exhausted work budget no longer licenses collecting nothing**
+  (carve#1898).
+- **A definition between two open content columns reaches the outer one**
+  (carve#1897).
+- **A new quote marker does not reach a dead container's column** (carve#1894).
+- **An unaffordable line keeps its text, and no limit returns a short document**
+  (carve#1883).
+- **`structure-split` is retired and the degradation taxonomy is gated in both
+  directions** (carve#1879).
+- **Which characters the description marker's content test ignores is pinned**
+  (carve#1873).
+
+### Fixed
+
+- **A description stops at its last child, like every other closerless
+  container** (carve#1943).
+- **A closed fence in a description body ends it** (carve#1935).
+
 ## [0.1.4] - 2026-08-27
 
 ### Added
@@ -1243,4 +1300,6 @@ advance to `0.1.0` together as the first lockstep minor release.
   content strip bidi-override/isolate controls (removed, not entity-escaped, to
   prevent round-trip reintroduction)
 
+[Unreleased]: https://github.com/markup-carve/carve/compare/0.1.5...HEAD
+[0.1.5]: https://github.com/markup-carve/carve/compare/0.1.4...0.1.5
 [0.1.0]: https://github.com/markup-carve/carve/releases/tag/0.1.0
