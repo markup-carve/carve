@@ -1665,9 +1665,44 @@ const opensAuthoredBase = (line) => opensSubBlock(line) || isLinkDef(line) ||
  */
 export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = false) {
   const out = []
+  // Whether a nested note has been flushed to column 0 whose fixed body column
+  // (2) a following plain paragraph could wrongly reach. It arms the paragraph
+  // dedent below and is disarmed by the next structural block, whose own
+  // continuations must keep their indent (raised by codex review).
+  let flushedNote = false
   for (let index = 0; index < lines.length; index++) {
     const line = lines[index]
     const measured = indentCols(line)
+    if (footnoteBody && measured.rest !== '' && FOOTNOTE_DEF.test(measured.rest)) {
+      // A NESTED NOTE is flushed to column 0 - the collector recognizes a note
+      // only there - together with its WHOLE body: every following line that
+      // reaches the note's own body column, `c + 2` (PART 9 §16), blank runs
+      // tolerated. A note's body stands two columns past its OWN marker, not the
+      // frame's fixed 2; measuring from the marker is what gives the mid and
+      // inner notes their own reach, where the fixed reading had only an outer
+      // and an inner sink and dropped a trailing line in the band between them
+      // to the outer note (markup-carve/carve#1946, carve-js#1664,
+      // carve-php#1895). Capturing the subtree in one piece lets the recursive
+      // collector rebuild the nested notes level by level with a consistent
+      // column. A NOTE ONE COLUMN SHY of this note's body column does not reach
+      // it, so the walk stops and it becomes the next note here - a sibling, not
+      // a child.
+      const c = measured.col
+      const bodyCol = c + FOOTNOTE_BODY_COLUMN
+      let last = index
+      for (let end = index + 1; end < lines.length; end++) {
+        const lm = indentCols(lines[end])
+        if (lm.rest === '') continue
+        if (lm.col >= bodyCol) { last = end; continue }
+        break
+      }
+      for (let k = index; k <= last; k++) {
+        out.push(isBlank(lines[k]) ? lines[k] : dedent(lines[k], c))
+      }
+      index = last
+      flushedNote = true
+      continue
+    }
     const establishesBase = measured.col > 0 && opensAuthoredBase(measured.rest)
     // A LIST ITEM IS A CONTAINER TOO (carve#1781). `opensSubBlock` answers a
     // different question - whether a blank-separated sub-block leaves a list
@@ -1681,9 +1716,21 @@ export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = fal
     const protectsInnermostContainer = measured.col === 0 &&
       (opensSubBlock(measured.rest) || matchMarkerAt(measured) !== null)
     if (!establishesBase && !protectsInnermostContainer) {
-      out.push(line)
+      // A plain PARAGRAPH sibling of a note just flushed to column 0 keeps a
+      // leading indent that is not structural: the note's body column is now the
+      // fixed 2, so a paragraph at the note's marker column would read as that
+      // note's content. Strip its indent to keep it out (markup-carve/carve#1946).
+      // Only when a note WAS flushed - without one there is nothing to over-reach,
+      // and the indent may belong to a preceding block whose lazy continuation
+      // this is (the `dd` of a definition list keeps its indented follower).
+      const noteSiblingParagraph = footnoteBody && flushedNote && measured.col > 0 &&
+        matchMarkerAt(measured) === null && !opensSubBlock(measured.rest)
+      out.push(noteSiblingParagraph ? dedent(line, measured.col) : line)
       continue
     }
+    // A structural block (a container, a list marker) ends the note-sibling run:
+    // its own indented continuations are its content, not an over-reach.
+    flushedNote = false
 
     const base = establishesBase ? measured.col : 0
     const candidate = lines.slice(index).map((source) => {
