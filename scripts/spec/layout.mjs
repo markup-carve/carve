@@ -1530,6 +1530,35 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
   return opensParagraph(bodyLines[last], false, tableOpenAfter(bodyLines.slice(0, last)))
 }
 
+// Whether a description body's last block is a footnote definition that absorbed
+// its opener - the note marker at body column 0 with every following line
+// reaching the note's own body column, `marker + 2` (PART 9 SS16). The only open
+// paragraph such a body has is the NOTE's, whose body column column 0 cannot
+// reach, so a flush-left line after it is a document sibling and not a lazy
+// continuation of the `dd` (markup-carve/carve#1974, carve-js#1667,
+// carve-php#1929, carve-rs#1577). `bodyLeavesParagraphOpen` reads the absorbed
+// continuation as an open paragraph, which is right for a line at the body's own
+// columns and wrong for column 0: PART 0 owner selection gives column 0 to the
+// document, so the column-0 test is made here instead.
+function descriptionBodyEndsInAbsorbedNote(bodyLines) {
+  let last = -1
+  for (let k = bodyLines.length - 1; k >= 0; k--) {
+    if (!isBlank(bodyLines[k])) { last = k; break }
+  }
+  if (last < 0) return false
+  let opener = last
+  while (opener >= 0 && indentCols(bodyLines[opener]).col > 0) opener--
+  // A bare note marker at the end already ends the body (`opensParagraph`
+  // answers false for it); this predicate is for the case the marker owns a
+  // continuation run that the marker line no longer terminates.
+  if (opener < 0 || opener === last || !FOOTNOTE_DEF.test(bodyLines[opener])) return false
+  const bodyCol = indentCols(bodyLines[opener]).col + FOOTNOTE_BODY_COLUMN
+  for (let k = opener + 1; k <= last; k++) {
+    if (!isBlank(bodyLines[k]) && indentCols(bodyLines[k]).col < bodyCol) return false
+  }
+  return true
+}
+
 // A wrapped attribute block closes the paragraph at every quote depth. Its
 // final physical line does not begin with `{`, so the quote's incremental
 // single-line tracker cannot recognize that boundary on its own.
@@ -2609,6 +2638,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
              */
             if (authoredCol === 0 &&
                 (FOOTNOTE_DEF.test(dedented) || isLinkDef(dedented) || tryAttrLine([dedented], 0))) break
+            // A COLUMN-0 LINE AFTER A DESCRIPTION-HOSTED NOTE IS A DOCUMENT
+            // SIBLING (carve#1974). The note absorbed its floor-reaching opener,
+            // so the body's only open paragraph is the note's, at body column 2;
+            // column 0 does not reach it (PART 0 owner selection). The fold below
+            // reads the absorbed continuation as an open paragraph and pulled the
+            // line into the `dd`. Column-dependent by design - lines at the body's
+            // own columns still fold, which is why the test is made here and not
+            // in `bodyLeavesParagraphOpen`.
+            if (authoredCol === 0 && descriptionBodyEndsInAbsorbedNote(asRead(bodyLines))) break
             /*
              * A COMMENT BELOW THE BODY'S COLUMN ENDS IT (carve#1930). This arm
              * is only reached for a line BELOW the body's content column, and
