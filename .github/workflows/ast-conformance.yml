@@ -437,8 +437,24 @@ jobs:
       # This step FAILS if it cannot file. A reporter that swallows its own
       # errors is exactly the defect it exists to fix, so a missing permission
       # or a rate limit turns the job red rather than passing quietly.
+      # NOT `always()`. A CANCELLED RUN IS EVIDENCE OF NOTHING. The concurrency
+      # group above cancels an older manual dispatch when a newer one arrives,
+      # and under `always()` the superseded run reached this step, read its own
+      # interrupted jobs back as failures, and filed "AST conformance is failing
+      # on main" (carve#1977). The re-run that superseded it was green on the
+      # SAME commit twelve minutes later, which is what closed the ticket.
+      #
+      # The spurious ticket is the visible half. The worse half is the gate
+      # union below: a cancelled run's truncated gate list merges into the
+      # required set, so a later green run can be held open for gates that no
+      # red evidence ever measured.
+      #
+      # `!cancelled()` still reports a job the RUN failed and then cancelled its
+      # siblings for - that run's conclusion is failure, not cancellation, so
+      # the fail-fast cancellations stay listed as context beside the real
+      # failure.
       - name: File the verdict where someone reads it
-        if: always()
+        if: ${{ !cancelled() }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
