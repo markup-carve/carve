@@ -1,0 +1,6 @@
+[^f]: outer
+
+   [^g]: mid
+  [r]: /url
+
+x[^f] [^g] [t][r]
