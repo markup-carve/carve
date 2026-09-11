@@ -625,6 +625,7 @@ index: examples/edge-cases/index.md
   a-wrapped-attribute-block-ends-at-its-quote-and-reaches-no-line-below-it
   a-trailing-line-after-a-consumed-definition-is-placed-by-column-reach
   a-nested-note-s-floor-is-two-columns-past-its-own-marker
+  a-column-0-line-after-a-description-hosted-note-is-a-document-sibling
   an-empty-unterminated-container-ends-at-a-flush-left-line
   an-abbreviation-definition-outside-document-level-is-not-an-invisible-line
 [edge-attributes] Attributes
