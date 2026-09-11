@@ -624,6 +624,7 @@ index: examples/edge-cases/index.md
   a-container-closer-closes-its-container-in-a-footnote-body-too
   a-wrapped-attribute-block-ends-at-its-quote-and-reaches-no-line-below-it
   a-trailing-line-after-a-consumed-definition-is-placed-by-column-reach
+  a-nested-note-s-floor-is-two-columns-past-its-own-marker
   an-empty-unterminated-container-ends-at-a-flush-left-line
   an-abbreviation-definition-outside-document-level-is-not-an-invisible-line
 [edge-attributes] Attributes

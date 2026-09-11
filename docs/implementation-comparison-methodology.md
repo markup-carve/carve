@@ -76,9 +76,10 @@ and
 `456-a-definition-nested-past-a-footnote-body-is-a-note-and-a-reference-below-it-resolves`
 and
 `457-a-container-closer-closes-its-container-in-a-footnote-body-too`,
-`458-a-wrapped-attribute-block-ends-at-its-quote-and-reaches-no-line-below-it`
+`458-a-wrapped-attribute-block-ends-at-its-quote-and-reaches-no-line-below-it`,
+`459-a-trailing-line-after-a-consumed-definition-is-placed-by-column-reach`
 and
-`459-a-trailing-line-after-a-consumed-definition-is-placed-by-column-reach`.
+`460-a-nested-note-s-floor-is-two-columns-past-its-own-marker`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
