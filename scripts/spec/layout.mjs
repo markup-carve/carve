@@ -1546,8 +1546,12 @@ function descriptionBodyEndsInAbsorbedNote(bodyLines) {
     if (!isBlank(bodyLines[k])) { last = k; break }
   }
   if (last < 0) return false
+  // Walk back to the note's marker, crossing its own body. A blank run is note
+  // content when a continuation follows it, so it is crossed too - a note whose
+  // last paragraph sits below an internal blank still ends at the marker, not at
+  // the blank (raised by codex review).
   let opener = last
-  while (opener >= 0 && indentCols(bodyLines[opener]).col > 0) opener--
+  while (opener >= 0 && (isBlank(bodyLines[opener]) || indentCols(bodyLines[opener]).col > 0)) opener--
   // A bare note marker at the end already ends the body (`opensParagraph`
   // answers false for it); this predicate is for the case the marker owns a
   // continuation run that the marker line no longer terminates.
