@@ -95,6 +95,13 @@
 #
 # THIS FILE IS EMPTY OF DECLARATIONS AGAIN, which is the intended end state.
 
+# Djot definition-list structure added under markup-carve/carve-rs#1579. These
+# lines describe the interval between the shared case landing and each engine
+# PR merging; remove each line when that engine's fix reaches main.
+rust/36-djot-definition-list-survives  Djot definition lists still pass through as prose.
+js/36-djot-definition-list-survives  Djot definition lists still pass through as prose.
+php/36-djot-definition-list-survives  Djot definition lists still pass through as prose.
+
 # Full HTML-import fixture sweep added by carve#1600, measured 2026-08-24 on
 # clean current mains: carve-rs 9cf16d05, carve-js 05e1cc27, carve-php 06c27aaa.
 # Each entry is removed when that engine reproduces the normative fixture.

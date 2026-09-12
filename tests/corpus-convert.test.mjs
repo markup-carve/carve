@@ -76,6 +76,15 @@ const { bbcodeToCarve, carveToHtml, djotToCarve, htmlToCarve, markdownToCarve } 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, 'corpus-convert')
 
+// Site generators conventionally consume a leading YAML envelope before
+// handing the body to Djot. It is already valid Carve frontmatter, so migration
+// preserves it while the independent Djot oracle reads only the body.
+const djotBody = (source) => {
+  if (!source.startsWith('---\n')) return source
+  const close = source.indexOf('\n---\n', 4)
+  return close === -1 ? source : source.slice(close + 5)
+}
+
 /*
  * The source formats this repo can drive from the pinned build.
  *
@@ -142,7 +151,12 @@ const PINNED_UNIMPLEMENTED = {}
  * that starts matching fails as STALE until the entry is deleted in the commit
  * that moves the pin, and the meaning assertion still runs regardless.
  */
-const PINNED_DRIFT = {}
+const PINNED_DRIFT = {
+  '36-djot-definition-list-survives': 'the pinned carve-js has not shipped the structural Djot importer fix tracked by markup-carve/carve-rs#1579',
+}
+const PINNED_SOURCE_DRIFT = {
+  '34-djot-site-frontmatter-is-not-djot': 'the pinned carve-js rewrites delimiters inside the frontmatter envelope (markup-carve/carve-rs#1579)',
+}
 
 /**
  * The visible text of an HTML fragment.
@@ -167,6 +181,8 @@ const textOf = (html) =>
     .replace(/&mdash;/g, '—')
     // Ampersand last, or `&amp;#35;` would decode twice into `#`.
     .replace(/&amp;/g, '&')
+    // Text/emoji presentation selectors do not change the character's meaning.
+    .replace(/[\uFE0E\uFE0F]/g, '')
     .replace(/\s+/g, ' ')
     .trim()
 
@@ -283,6 +299,16 @@ test('convert then render matches the pinned bytes', () => {
   assert.ok(ran >= 10, `only ${ran} converter case(s) actually ran against the pinned build`)
 })
 
+test('a Djot site-frontmatter adapter preserves the envelope bytes', () => {
+  const source = readFileSync(resolve(corpusDir, '34-djot-site-frontmatter-is-not-djot/input.djot'), 'utf8')
+  const migrated = djotToCarve(source)
+  const migratedBody = djotBody(migrated)
+  const sourceBody = djotBody(source)
+  assert.equal(migratedBody, sourceBody)
+  const matches = migrated.slice(0, migrated.length - migratedBody.length) === source.slice(0, source.length - sourceBody.length)
+  assert.equal(matches, false, `PINNED_SOURCE_DRIFT is stale: ${PINNED_SOURCE_DRIFT['34-djot-site-frontmatter-is-not-djot']}`)
+})
+
 test('the migrated document says what the source language says', () => {
   const wrong = []
   for (const { slug, dir, inputs } of cases) {
@@ -290,7 +316,8 @@ test('the migrated document says what the source language says', () => {
     const source = readFileSync(resolve(dir, inputs[0]), 'utf8')
     const expected = readFileSync(resolve(dir, 'expected.html'), 'utf8')
     const ours = textOf(expected)
-    const theirs = textOf(FORMATS[format].oracle(source))
+    const oracleSource = slug === '34-djot-site-frontmatter-is-not-djot' ? djotBody(source) : source
+    const theirs = textOf(FORMATS[format].oracle(oracleSource))
     if (ours !== theirs) {
       wrong.push(`${slug}\n    ${format} reader: ${JSON.stringify(theirs)}\n       migrated: ${JSON.stringify(ours)}`)
     }
