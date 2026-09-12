@@ -79,7 +79,9 @@ and
 `458-a-wrapped-attribute-block-ends-at-its-quote-and-reaches-no-line-below-it`,
 `459-a-trailing-line-after-a-consumed-definition-is-placed-by-column-reach`
 and
-`460-a-nested-note-s-floor-is-two-columns-past-its-own-marker`.
+`460-a-nested-note-s-floor-is-two-columns-past-its-own-marker`
+and
+`461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
