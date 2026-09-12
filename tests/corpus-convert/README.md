@@ -29,7 +29,9 @@ extensions force: an HTML case's SOURCE and any case's expected RENDER would
 both want to be `NN-slug.html`. It is also the shape
 [`../html-import/`](../html-import/) already uses.
 
-Source formats currently driven: `md`, `html`, `bbcode`, `djot`. The
+Source formats currently driven: `md`, `html`, `bbcode`, `djot`. BBCode has no
+single normative grammar, so its independent source oracle checks visible text
+while the expected render and cross-engine gate assert tag structure. The
 extension-to-format mapping lives in `scripts/lib/converter-formats.mjs`, which
 both runners read, so a new format is added in one place.
 
@@ -61,6 +63,13 @@ The reasoning is that under-converting leaves readable text while inventing
 markup the source did not have makes the migrated document render differently
 from anything its author saw. Failing toward literal is the recoverable
 direction.
+
+One host convention sits outside Djot's grammar: a leading `---` YAML envelope.
+Static-site generators normally consume it before invoking Djot, while Carve
+uses the same envelope natively. A Djot importer therefore preserves that
+envelope and gives only the remaining body to the Djot reader. Without this
+adapter boundary, underscores in YAML values become Djot emphasis and the
+delimiter lines become document content.
 
 That is why `a ^b^ c` and `d ==e== f` come back as text here, and why
 `a ~b~ c` comes back struck: a single tilde IS GFM strikethrough.
