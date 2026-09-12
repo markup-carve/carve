@@ -85,6 +85,19 @@ const djotBody = (source) => {
   return close === -1 ? source : source.slice(close + 5)
 }
 
+const bbcodeTextOracle = (source) => {
+  const literal = []
+  let text = source.replace(/\[(?:code(?:=[^\]]*)?|c|icode|noparse)\](.*?)\[\/(?:code|c|icode|noparse)\]/gis, (_whole, body) => {
+    const token = `\u{f0000}${literal.length}\u{f0001}`
+    literal.push(body)
+    return token
+  })
+  text = text
+    .replace(/\[img(?:=[^\]]*)?\].*?\[\/img\]/gis, ' ')
+    .replace(/\[\/?[a-z*][^\]]*\]/gi, ' ')
+  return text.replace(/\u{f0000}(\d+)\u{f0001}/gu, (_whole, index) => literal[Number(index)])
+}
+
 /*
  * The source formats this repo can drive from the pinned build.
  *
@@ -107,12 +120,12 @@ const FORMATS = {
   bbcode: {
     convert: (source) => bbcodeToCarve(source),
     /*
-     * No BBCode reader is available here, so every BBCode case's input is
-     * chosen to carry no BBCode tag at all. Its text is then the input itself,
-     * which is exactly the `plain` profile - text in, text out - and the class
-     * four of carve#1130's six rows lived in.
+     * BBCode has no normative parser or single grammar. This deliberately tiny
+     * independent oracle checks only visible text: tags become boundaries and
+     * images contribute no visible prose. Exact element structure is
+     * still asserted by expected.html and by the three-engine gate.
      */
-    oracle: (source) => source,
+    oracle: bbcodeTextOracle,
   },
   djot: {
     /*
@@ -151,12 +164,8 @@ const PINNED_UNIMPLEMENTED = {}
  * that starts matching fails as STALE until the entry is deleted in the commit
  * that moves the pin, and the meaning assertion still runs regardless.
  */
-const PINNED_DRIFT = {
-  '36-djot-definition-list-survives': 'the pinned carve-js has not shipped the structural Djot importer fix tracked by markup-carve/carve-rs#1579',
-}
-const PINNED_SOURCE_DRIFT = {
-  '34-djot-site-frontmatter-is-not-djot': 'the pinned carve-js rewrites delimiters inside the frontmatter envelope (markup-carve/carve-rs#1579)',
-}
+const PINNED_DRIFT = {}
+const PINNED_SOURCE_DRIFT = {}
 
 /**
  * The visible text of an HTML fragment.
@@ -306,7 +315,8 @@ test('a Djot site-frontmatter adapter preserves the envelope bytes', () => {
   const sourceBody = djotBody(source)
   assert.equal(migratedBody, sourceBody)
   const matches = migrated.slice(0, migrated.length - migratedBody.length) === source.slice(0, source.length - sourceBody.length)
-  assert.equal(matches, false, `PINNED_SOURCE_DRIFT is stale: ${PINNED_SOURCE_DRIFT['34-djot-site-frontmatter-is-not-djot']}`)
+  const drift = PINNED_SOURCE_DRIFT['34-djot-site-frontmatter-is-not-djot']
+  assert.equal(matches, drift === undefined, drift === undefined ? 'the frontmatter envelope changed' : `PINNED_SOURCE_DRIFT is stale: ${drift}`)
 })
 
 test('the migrated document says what the source language says', () => {

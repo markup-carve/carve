@@ -29,7 +29,9 @@ extensions force: an HTML case's SOURCE and any case's expected RENDER would
 both want to be `NN-slug.html`. It is also the shape
 [`../html-import/`](../html-import/) already uses.
 
-Source formats currently driven: `md`, `html`, `bbcode`, `djot`. The
+Source formats currently driven: `md`, `html`, `bbcode`, `djot`. BBCode has no
+single normative grammar, so its independent source oracle checks visible text
+while the expected render and cross-engine gate assert tag structure. The
 extension-to-format mapping lives in `scripts/lib/converter-formats.mjs`, which
 both runners read, so a new format is added in one place.
 

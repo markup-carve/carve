@@ -5,13 +5,13 @@
   "htmlImportPopulation": {
     "completed": 1693,
     "canonicalFixedPoints": 1692,
-    "renderedTextPreserved": 1677,
+    "renderedTextPreserved": 1676,
     "expectedRejections": [
       "182-openers-past-the-nesting-cap-are-one-paragraph.crv"
     ]
   },
   "renderImportRoundTrips": {
     "html": 688,
-    "markdown": 413
+    "markdown": 412
   }
 }

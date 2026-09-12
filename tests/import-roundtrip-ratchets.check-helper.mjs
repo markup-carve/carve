@@ -18,6 +18,14 @@ const baseline = JSON.parse(
 const visibleText = (html) =>
   new JSDOM(html).window.document.body.textContent.replace(/\s+/g, ' ').trim()
 
+// The carve-js pin at 8392a032 makes the reference in corpus row 442-...-8
+// resolve. On its HTML round-trip, the imported empty ordered item is then
+// written as literal `+`, so that row loses visible-text preservation (-1).
+// Its Markdown changes make rows 447-...-11 and -14 round-trip, while
+// 453-...-3, 454-... and 454-...-2 no longer do, for a net count of -1.
+// This is an inspected snapshot, not an endorsement of those three losses;
+// the ratchet keeps them visible for a dedicated writer/parser correction.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {

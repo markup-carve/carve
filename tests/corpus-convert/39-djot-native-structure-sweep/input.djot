@@ -1,0 +1,35 @@
+# Heading
+
+> quoted _text_
+
+- [x] done
+- [ ] pending
+
+`code` [link](https://example.com) <https://example.com> ![alt](image.png)
+
+{=highlight=} {+insert+} {-delete-} H~2~O x^2^ $`x+y` [span]{.mark}
+
+hard\
+break
+
+Before {% hidden %} after :smile: "smart" -- ... `<i>raw inline</i>`{=html}
+
+``` js
+const value = "_literal_";
+```
+
+``` =html
+<b>raw</b>
+```
+
+::: note
+container
+:::
+
+| left | right |
+|------|-------|
+| a    | b     |
+
+[reference][ref]
+
+[ref]: /target
