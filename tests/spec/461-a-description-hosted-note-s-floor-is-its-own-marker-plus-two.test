@@ -1,0 +1,56 @@
+A description-hosted note's floor is its own marker plus two
+
+```
+:: t
+:  [^f]: note
+     - nested
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<p>tail</p>
+```
+
+```
+:: t
+:  [^f]: note
+     b
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<p>tail</p>
+```
+
+```
+:: t
+:  [^f]: note
+    - nested
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>nested
+tail</li>
+    </ul>
+  </dd>
+</dl>
+```
+
+```
+:: t
+:  [^f]: note
+     - nested
+   tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>tail</dd>
+</dl>
+```

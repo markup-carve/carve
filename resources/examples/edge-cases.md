@@ -35047,3 +35047,112 @@ x[^f] [^g] [t][r]
 ```
 
 :::
+
+
+## A description-hosted note's floor is its own marker plus two
+
+A footnote definition written into a description body has a body floor two
+columns past its OWN marker (PART 9 §16), the same per-marker floor that governs
+a note nested inside another note. A line at or past that floor is the note's
+whatever it is made of, and a line at column 0 below it belongs to the document
+(markup-carve/carve#1974).
+
+A block opener at the note's floor is the note's. The `dd`'s content column
+is 3, so `[^f]` stands at 3 and its body floor is 5; the list opener at 5
+reaches it. `[^f]` is never referenced, so the note takes the list and drops,
+and `tail` at column 0 is below both the note's floor and the description's
+base column - a top-level sibling, not lazy continuation of the item.
+
+::: compare
+
+```carve
+:: t
+:  [^f]: note
+     - nested
+tail
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<p>tail</p>
+```
+
+:::
+
+PLAIN CONTINUATION AT THE SAME COLUMN IS THE SAME LINE. The floor is a
+column, and a line either reaches it or does not; nothing turns on whether
+the line opens a block. This is the parity the ruling names, and it is the
+row that keeps an engine from reading one floor for openers and another for
+prose.
+
+::: compare
+
+```carve
+:: t
+:  [^f]: note
+     b
+tail
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<p>tail</p>
+```
+
+:::
+
+One column shy of the floor, the other side of the boundary: at 4 against a
+floor of 5 the note reaches nothing, the list is an ordinary description
+child, and `tail` lazily continues the item.
+
+::: compare
+
+```carve
+:: t
+:  [^f]: note
+    - nested
+tail
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>nested
+tail</li>
+    </ul>
+  </dd>
+</dl>
+```
+
+:::
+
+The trailing line at the DESCRIPTION's own content column. The note still
+takes the list; `tail` at 3 reaches the description and stays in it, which
+is what makes the column-0 row above a statement about the column rather
+than about the note.
+
+::: compare
+
+```carve
+:: t
+:  [^f]: note
+     - nested
+   tail
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>tail</dd>
+</dl>
+```
+
+:::

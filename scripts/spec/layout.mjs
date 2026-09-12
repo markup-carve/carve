@@ -1459,6 +1459,43 @@ function opensParagraph(text, atBlockPosition = false, tableOpen = false) {
  * body's only line is prose and holds an open paragraph; the same line under a
  * table row is that table's last row and holds none.
  */
+/*
+ * The description body WITHOUT the note a footnote definition takes with it.
+ *
+ * A `dd` holding `[^f]: note` and the lines that reach the note's floor renders
+ * as though neither were written (§16: a definition is document-level metadata
+ * and the container that held it keeps no trace). So the lines are in
+ * `bodyLines` while the collector runs and are not the description's to hold a
+ * paragraph open with - and S4's lazy branch asks for an open paragraph in the
+ * container the line would fold INTO.
+ *
+ * Without this, a column-0 line under such a body folded into the `dd` on the
+ * strength of a paragraph the note owns. `:: t` / `:  [^f]: note` / `<5sp>more`
+ * / `tail` put `tail` in the description, while the same document with nothing
+ * under the definition put it at document level - the note taking one more line
+ * moved an unrelated line into the description (markup-carve/carve#1974).
+ */
+function descriptionBodyWithoutItsNotes(bodyLines) {
+  let k = bodyLines.length - 1
+  // The trailing run the note's floor can claim: blanks, and lines that reach
+  // the body column. §16 allows blank lines between a note body's chunks.
+  while (k >= 0 && (bodyLines[k].trim() === '' ||
+                    indentCols(bodyLines[k]).col >= FOOTNOTE_BODY_COLUMN)) {
+    k--
+  }
+  // Cut only when a DEFINITION stands under that run. Anything else and the
+  // run is the description's own indented content.
+  if (k < 0 || !FOOTNOTE_DEF.test(bodyLines[k])) return bodyLines
+
+  // The DEFINITION LINE STAYS. What the note takes is the run under it, and the
+  // question this answers is whether the description has an open paragraph - a
+  // definition line opens none, which is already the answer for a `dd` holding
+  // nothing but the definition. Cutting the line too would report the body
+  // EMPTY, and an empty body deliberately answers the other way (the `:  ` plus
+  // pulled-block shape), so the line below would fold right back in.
+  return bodyLines.slice(0, k + 1)
+}
+
 function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
   let last = -1
   for (let k = bodyLines.length - 1; k >= 0; k--) {
@@ -2669,7 +2706,16 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               i++
               continue
             }
-            if (foldablePlain(dedented) && bodyLeavesParagraphOpen(asRead(bodyLines))) {
+            // AT COLUMN 0 THE PARAGRAPH MUST BE THE DESCRIPTION'S OWN. A note
+            // the body holds is extracted before the `dd` renders, so a
+            // paragraph left open inside it is not one this line can continue
+            // (markup-carve/carve#1974). Columns 1 and 2 are unchanged: that
+            // band is above the `dd`'s base column and §10 I5 calls it lazy
+            // paragraph text wherever the paragraph came from.
+            const foldTarget = authoredCol === 0
+              ? descriptionBodyWithoutItsNotes(bodyLines)
+              : bodyLines
+            if (foldablePlain(dedented) && bodyLeavesParagraphOpen(asRead(foldTarget))) {
               bodyLines.push(dedented)
               i++
               continue
