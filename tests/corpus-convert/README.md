@@ -62,6 +62,13 @@ markup the source did not have makes the migrated document render differently
 from anything its author saw. Failing toward literal is the recoverable
 direction.
 
+One host convention sits outside Djot's grammar: a leading `---` YAML envelope.
+Static-site generators normally consume it before invoking Djot, while Carve
+uses the same envelope natively. A Djot importer therefore preserves that
+envelope and gives only the remaining body to the Djot reader. Without this
+adapter boundary, underscores in YAML values become Djot emphasis and the
+delimiter lines become document content.
+
 That is why `a ^b^ c` and `d ==e== f` come back as text here, and why
 `a ~b~ c` comes back struck: a single tilde IS GFM strikethrough.
 

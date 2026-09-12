@@ -1,0 +1,5 @@
+Here's the reference.[^foo] Here's another reference.[^bar]
+
+[^foo]: This is a note
+
+[^bar]: This is another note
