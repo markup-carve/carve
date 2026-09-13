@@ -1,3 +1,8 @@
+---
+title: "File inclusion"
+description: "The processor-level {{ … }} directive: syntax, the host resolver contract, fragment containment, cross-file collisions, reported dependencies, source mapping and the limits that bound an expansion."
+---
+
 # File inclusion (NORMATIVE)
 
 This document is normative. It specifies Carve's file-inclusion (transclusion)

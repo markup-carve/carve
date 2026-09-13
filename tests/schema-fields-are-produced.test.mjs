@@ -55,6 +55,8 @@ const repo = resolve(here, '..')
  * excuse a different one.
  */
 const OPT_IN_ONLY = {
+  'pos.*':
+    'file inclusion (PART 9 section 19): `pos.file` names the file an included node came from, and inclusion is opt-in - the core corpus pins the directive staying LITERAL, so no core document can produce one. The include-conformance suite covers it instead',
   'citation.*': 'citations (Tier-2): the citation item shape, including its resolution results',
   'citation_group.*': 'citations (Tier-2): the group wrapper and the integral `+` form',
   'citation_definition.*':
