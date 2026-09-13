@@ -26,6 +26,13 @@ const visibleText = (html) =>
 // This is an inspected snapshot, not an endorsement of those three losses;
 // the ratchet keeps them visible for a dedicated writer/parser correction.
 
+// Corpus 462 is the only joiner behind the +1 on every count below, and it moves
+// EVERY one: an include directive with no resolver is a paragraph of literal
+// text, so it imports, is a fixed point of the writer, preserves its visible
+// text and round-trips through both HTML and Markdown. A count that had not
+// moved with it would be the finding here - literal text failing one of those
+// is a writer or importer bug, not a property of the directive.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {
