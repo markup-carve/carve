@@ -10,7 +10,7 @@
   "files": {},
   "expected": {
     "html": "<p>a {{ x.crv }} b {{ }} c {{ y.crv }} d</p>",
-    "fmt": "a {{ x.crv }} b \\{\\{ \\}\\} c {{ y.crv }} d\n",
+    "fmt": "a {{ x.crv }} b {{ }} c {{ y.crv }} d\n",
     "warnings": [],
     "dependencies": []
   }

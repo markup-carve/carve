@@ -11,7 +11,7 @@
     "child": "# Top"
   },
   "expected": {
-    "html": "<section id=\"One\">\n  <h1>One</h1>\n  <aside class=\"admonition note\">\n    <h2 id=\"Inner\">Inner</h2>\n    <h3 id=\"Top\">Top</h3>\n  </aside>\n</section>",
+    "html": "<section id=\"One\">\n  <h1>One</h1>\n  <aside class=\"admonition note\" aria-label=\"Note\">\n    <h2 id=\"Inner\">Inner</h2>\n    <h3 id=\"Top\">Top</h3>\n  </aside>\n</section>",
     "fmt": "# One\n\n::: note\n## Inner\n\n{{ child @shift:auto }}\n:::\n",
     "warnings": [],
     "dependencies": [

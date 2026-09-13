@@ -11,7 +11,7 @@
   "files": {},
   "expected": {
     "html": "<pre><code class=\"language-txt\">{{ chapter.crv }}\n</code></pre>",
-    "fmt": "``` txt\n{{ chapter.crv }}\n```\n",
+    "fmt": "```txt\n{{ chapter.crv }}\n```\n",
     "warnings": [],
     "dependencies": []
   }

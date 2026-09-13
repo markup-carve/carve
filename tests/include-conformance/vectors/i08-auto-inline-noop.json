@@ -12,7 +12,7 @@
   },
   "expected": {
     "html": "<section id=\"One\">\n  <h1>One</h1>\n  <section id=\"Two\">\n    <h2>Two</h2>\n    <p>See a fragment here.</p>\n  </section>\n</section>",
-    "fmt": "# One\n\n## Two\n\nSee {{ child @shift:auto }} here\\.\n",
+    "fmt": "# One\n\n## Two\n\nSee {{ child @shift:auto }} here.\n",
     "warnings": [],
     "dependencies": [
       {

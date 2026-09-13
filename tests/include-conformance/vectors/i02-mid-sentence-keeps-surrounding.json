@@ -12,7 +12,7 @@
   },
   "expected": {
     "html": "<p>Intro: a <em>short</em> fragment tail.</p>",
-    "fmt": "Intro\\: {{ child }} tail\\.\n",
+    "fmt": "Intro: {{ child }} tail.\n",
     "warnings": [],
     "dependencies": [
       {

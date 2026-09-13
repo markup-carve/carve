@@ -13,7 +13,7 @@
   },
   "expected": {
     "html": "<p>Here {{ x.crv <span class=\"mention\"><strong>@bogus</strong></span>:1 <span class=\"tag\"><strong>#intro</strong></span> }} now.</p>",
-    "fmt": "Here {{ x.crv @bogus:1 #intro }} now\\.\n",
+    "fmt": "Here {{ x.crv @bogus:1 #intro }} now.\n",
     "warnings": [
       {
         "rule": "include-unknown-option"

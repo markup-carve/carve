@@ -12,7 +12,7 @@
   },
   "expected": {
     "html": "<p>Before middle after.</p>",
-    "fmt": "Before {{ child }} after\\.\n",
+    "fmt": "Before {{ child }} after.\n",
     "warnings": [],
     "dependencies": [
       {

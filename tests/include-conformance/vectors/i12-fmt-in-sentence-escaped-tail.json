@@ -10,7 +10,7 @@
   "files": {},
   "expected": {
     "html": "<p>See {{ chapter.crv }} for more.</p>",
-    "fmt": "See {{ chapter.crv }} for more\\.\n",
+    "fmt": "See {{ chapter.crv }} for more.\n",
     "warnings": [],
     "dependencies": []
   }

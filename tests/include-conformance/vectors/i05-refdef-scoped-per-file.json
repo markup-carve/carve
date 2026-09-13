@@ -12,7 +12,7 @@
   },
   "expected": {
     "html": "<p>Parent <a href=\"https://parent.example\">p</a>.</p>\n<p>Child <a href=\"https://child.example\">c</a>.</p>",
-    "fmt": "Parent [p](https://parent.example)\\.\n\n{{ child }}\n",
+    "fmt": "Parent [p][ref].\n\n{{ child }}\n\n[ref]: https://parent.example\n",
     "warnings": [],
     "dependencies": [
       {

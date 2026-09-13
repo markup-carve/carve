@@ -10,7 +10,7 @@
   "files": {},
   "expected": {
     "html": "<p>{{ <span class=\"tag\"><strong>#intro</strong></span> }}</p>",
-    "fmt": "\\{\\{ #intro \\}\\}\n",
+    "fmt": "{{ #intro }}\n",
     "warnings": [],
     "dependencies": []
   }

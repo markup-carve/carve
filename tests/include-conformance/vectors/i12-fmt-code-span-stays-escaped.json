@@ -11,7 +11,7 @@
   "files": {},
   "expected": {
     "html": "<p>Use <code>{{ chapter.crv }}</code> here.</p>",
-    "fmt": "Use `{{ chapter.crv }}` here\\.\n",
+    "fmt": "Use `{{ chapter.crv }}` here.\n",
     "warnings": [],
     "dependencies": []
   }

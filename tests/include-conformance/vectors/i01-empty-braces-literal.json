@@ -10,7 +10,7 @@
   "files": {},
   "expected": {
     "html": "<p>{{ }}</p>",
-    "fmt": "\\{\\{ \\}\\}\n",
+    "fmt": "{{ }}\n",
     "warnings": [],
     "dependencies": []
   }

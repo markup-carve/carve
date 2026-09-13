@@ -12,7 +12,7 @@
   },
   "expected": {
     "html": "<p>Before.</p>\n<pre><code class=\"language-js\">let x = 1;\n</code></pre>\n<p>After.</p>",
-    "fmt": "Before\\.\n\n{{ child }}\n\nAfter\\.\n",
+    "fmt": "Before.\n\n{{ child }}\n\nAfter.\n",
     "warnings": [],
     "dependencies": [
       {

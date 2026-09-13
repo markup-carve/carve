@@ -12,7 +12,7 @@
   },
   "expected": {
     "html": "<pre><code class=\"language-js\">{{ child }}\n</code></pre>\n<p>EXPANDED</p>",
-    "fmt": "``` js\n{{ child }}\n```\n\n{{ child }}\n",
+    "fmt": "```js\n{{ child }}\n```\n\n{{ child }}\n",
     "warnings": [],
     "dependencies": [
       {

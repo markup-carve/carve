@@ -12,7 +12,7 @@
     "b": "Second[^a].\n\n[^a]: two"
   },
   "expected": {
-    "html": "<p>First<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>.</p>\n<p>Second<a id=\"fnref2\" href=\"#fn2\" role=\"doc-noteref\"><sup>2</sup></a>.</p>\n<section role=\"doc-endnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>one<a href=\"#fnref1\" role=\"doc-backlink\">↩</a></p>\n    </li>\n    <li id=\"fn2\">\n      <p>two<a href=\"#fnref2\" role=\"doc-backlink\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "html": "<p>First<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>.</p>\n<p>Second<a id=\"fnref2\" href=\"#fn2\" role=\"doc-noteref\"><sup>2</sup></a>.</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>one<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n    <li id=\"fn2\">\n      <p>two<a href=\"#fnref2\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
     "fmt": "{{ a }}\n\n{{ b }}\n",
     "warnings": [
       {

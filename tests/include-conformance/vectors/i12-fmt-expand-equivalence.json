@@ -16,7 +16,7 @@
   "checkFmtExpandEquivalence": true,
   "expected": {
     "html": "<section id=\"Chapter\">\n  <h1>Chapter</h1>\n  <p>Body.</p>\n  <p>See inline bit and here:</p>\n  <section id=\"Quoted-path\">\n    <h2>Quoted path</h2>\n  </section>\n</section>",
-    "fmt": "{{ a.crv }}\n\nSee {{ b.crv }} and here\\:\n\n{{ \"c d.crv\" @shift:auto }}\n",
+    "fmt": "{{ a.crv }}\n\nSee {{ b.crv }} and here:\n\n{{ \"c d.crv\" @shift:auto }}\n",
     "warnings": [],
     "dependencies": [
       {

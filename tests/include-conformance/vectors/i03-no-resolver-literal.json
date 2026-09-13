@@ -10,7 +10,7 @@
   "files": {},
   "expected": {
     "html": "<p>See {{ child.crv }} here.</p>",
-    "fmt": "See {{ child.crv }} here\\.\n",
+    "fmt": "See {{ child.crv }} here.\n",
     "warnings": [],
     "dependencies": []
   }

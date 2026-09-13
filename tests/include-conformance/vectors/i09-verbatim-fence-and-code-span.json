@@ -12,7 +12,7 @@
   },
   "expected": {
     "html": "<pre><code class=\"language-txt\">{{ child }}\n</code></pre>\n<p>Use <code>{{ child }}</code>.</p>",
-    "fmt": "``` txt\n{{ child }}\n```\n\nUse `{{ child }}`\\.\n",
+    "fmt": "```txt\n{{ child }}\n```\n\nUse `{{ child }}`.\n",
     "warnings": [],
     "dependencies": []
   }

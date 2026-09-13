@@ -10,7 +10,7 @@
   "files": {},
   "expected": {
     "html": "<p>{{ <span class=\"mention\"><strong>@lines</strong></span>:2-4 }}</p>",
-    "fmt": "\\{\\{ @lines\\:2\\-4 \\}\\}\n",
+    "fmt": "{{ @lines:2-4 }}\n",
     "warnings": [],
     "dependencies": []
   }
