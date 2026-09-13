@@ -11,6 +11,11 @@ server. The playground uses the [JavaScript
 parser](https://github.com/markup-carve/carve-js) tested by this project's
 shared input/output tests.
 
+Looking for direct visual editing instead of source-to-preview rendering? Open
+the **[Carve visual editor](https://markup-carve.github.io/carve-wysiwyg/)**.
+It provides rich WYSIWYG authoring while keeping the underlying Carve source
+available for inspection.
+
 ::: details Sharing a document as a link
 The **share button** in the toolbar puts the whole document in the URL fragment, so a playground state is bookmarkable and sendable. The fragment never reaches a server: it is compressed and base64-encoded in the browser, and decoded there again. Very large documents are refused rather than turned into a link that arrives truncated.
 
