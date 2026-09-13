@@ -949,6 +949,37 @@ export const vectors = [
       'root/link.crv': { symlink: 'secret.crv' },
     },
   },
+  // --- I5 which ids participate --------------------------------------------
+  {
+    name: 'i05-auto-heading-id-collision-is-silent',
+    description:
+      'Two children whose auto heading ids collide are disambiguated without a warning: I5 covers ids the author wrote.',
+    rules: ['I5'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    // Two chapters opening with the same heading is one of the most common
+    // shapes a book has, and inside a single file the same disambiguation
+    // happens at stamp time silently. Warning here would report a collision
+    // nobody created. The ids must still come out UNIQUE, which the html pins.
+    entry: '{{ a.crv }}\n\n{{ b.crv }}\n',
+    files: {
+      'a.crv': '# Overview\n\nFirst.\n',
+      'b.crv': '# Overview\n\nSecond.\n',
+    },
+  },
+  {
+    name: 'i05-explicit-heading-id-collision-warns',
+    description: 'An explicit id collision across files is renamed AND reported: it is a cross-reference target.',
+    rules: ['I5'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{ a.crv }}\n\n{{ b.crv }}\n',
+    files: {
+      'a.crv': '{#intro}\n# A\n\nFirst.\n',
+      'b.crv': '{#intro}\n# B\n\nSecond.\n',
+    },
+  },
+
   // --- I15 the Carve target does not expand --------------------------------
   {
     name: 'i15-carve-target-does-not-expand',

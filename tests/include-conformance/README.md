@@ -180,13 +180,13 @@ rules):
 | I2 block vs inline | 7 | I9a recognition run | 7 |
 | I3 resolution model | 2 | I10 containment (filesystem) | 6 |
 | I4 fragment containment / attribution | 5 | I11 dependency reporting | 11 |
-| I5 cross-file collisions | 4 | I12 formatter preservation | 16 |
+| I5 cross-file collisions | 6 | I12 formatter preservation | 16 |
 | I6 limits (cycle/depth/budget) | 5 | I13 no side effects | 7 |
 | I7 errors + no-leak | 4 | I14 one recognition set | 8 |
 | I8 heading shift + auto | 16 | I15 the Carve target does not expand | 2 |
 | heading-include | 3 | multi-directive / quoted-path | 1 / 2 |
 
-**96 vectors total.**
+**98 vectors total.**
 
 ### What the virtual model cannot express
 

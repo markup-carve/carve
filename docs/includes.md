@@ -424,6 +424,15 @@ across file boundaries. The processor MUST resolve duplicates of either
    resolve to it.
 3. **Warning per rename.** Every rename emits a Warning so the collision is
    visible and debuggable.
+4. **Automatic ids are out of scope.** An id the author did not write - the slug
+   a heading derives from its own text - is disambiguated the way it already is
+   inside a single document, and **without** a Warning. Two chapters opening
+   `# Overview` collide on an id nobody asked for, and that is one of the most
+   common shapes a book has; reporting it as a collision would make the warning
+   channel useless for the ones that matter. A processor that parses each child
+   as its own document (I4) still has to RENAME here, because each child stamps
+   its own slug independently and nothing re-stamps after the merge - the rule
+   is about what is REPORTED, not about letting duplicate ids reach the output.
 
 ### File-local identifiers are scoped, not renamed
 
