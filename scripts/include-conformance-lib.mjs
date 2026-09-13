@@ -36,6 +36,27 @@ const SPEC_ROOT = path.resolve(HERE, '..')
  *   2. a sibling ../carve-js/dist/index.js next to the spec repo.
  *   3. the installed @markup-carve/carve package (once includes land on main).
  */
+/**
+ * The filesystem resolver is NOT on the main entry.
+ *
+ * carve-js keeps it behind a `./node` subpath so the browser bundle cannot
+ * contain code that opens a file - the same property carve-rs spells as a
+ * cargo feature. Filesystem-mode vectors (i10-fs-*) need it, so the node entry
+ * is merged in beside the main one when it is there, and its absence is not an
+ * error: a carve-js old enough to export it from the main entry still works.
+ */
+async function withNodeEntry(mod, from) {
+  if (typeof mod.fileSystemResolver === 'function') return mod
+  const nodeEntry = from.replace(/index\.js$/, 'node.js')
+  if (nodeEntry === from) return mod
+  try {
+    const node = await import(pathToFileURL(nodeEntry).href)
+    return { ...mod, ...node }
+  } catch {
+    return mod
+  }
+}
+
 export async function loadCarve() {
   const env = process.env.CARVE_JS
   // An EXPLICIT CARVE_JS pins the reference engine: if it is set but fails to
@@ -44,7 +65,8 @@ export async function loadCarve() {
   if (env) {
     const candidate = env.endsWith('.js') ? env : path.join(env, 'dist/index.js')
     try {
-      return { mod: await import(pathToFileURL(candidate).href), from: candidate }
+      const mod = await import(pathToFileURL(candidate).href)
+      return { mod: await withNodeEntry(mod, candidate), from: candidate }
     } catch (e) {
       throw new Error(
         `CARVE_JS is set to "${env}" but ${candidate} could not be imported ` +
@@ -56,13 +78,15 @@ export async function loadCarve() {
   // No explicit pin: try optional fallbacks, skipping ones that are simply absent.
   const sibling = path.resolve(SPEC_ROOT, '..', 'carve-js', 'dist', 'index.js')
   try {
-    return { mod: await import(pathToFileURL(sibling).href), from: sibling }
+    const mod = await import(pathToFileURL(sibling).href)
+    return { mod: await withNodeEntry(mod, sibling), from: sibling }
   } catch {
     // sibling checkout not present -> try the package
   }
   try {
     const resolved = createRequire(import.meta.url).resolve('@markup-carve/carve')
-    return { mod: await import(pathToFileURL(resolved).href), from: resolved }
+    const mod = await import(pathToFileURL(resolved).href)
+    return { mod: await withNodeEntry(mod, resolved), from: resolved }
   } catch {
     // fall through to the explicit error
   }
@@ -242,9 +266,23 @@ export function runVector(vector, carve) {
     // filesystem case the entry embeds a real absolute path, so fold it too.
     const fmt = foldTmpInText(renderCarve(parse(entry, { positions: true })), baseReal)
 
+    // I15: the Carve TARGET does not expand. Modeled as the decision itself
+    // rather than copied from `fmt` above - what an engine has to reproduce is
+    // "render this entry to Carve WITH the resolver configured", and the whole
+    // content of the rule is that the resolver makes no difference there.
+    //
+    // `fmt` cannot carry this. It is computed from the pre-expansion document
+    // by construction (that is what pins I12), so an engine that expands before
+    // calling its writer satisfies `fmt` and still hands back a different
+    // document. One engine did exactly that.
+    const carveTarget = expandsForTarget('carve')
+      ? foldTmpInText(renderCarve(resolve(result.doc)), baseReal)
+      : fmt
+
     const out = {
       html,
       fmt,
+      ...(vector.checkCarveTarget ? { carveTarget } : {}),
       warnings: normalizeWarnings(result.warnings, baseReal),
       dependencies: normalizeDependencies(result.dependencies, baseReal),
       rawWarningMessages: result.warnings.map((w) => w.message),
@@ -264,6 +302,17 @@ export function runVector(vector, carve) {
   } finally {
     if (base) rmSync(base, { recursive: true, force: true })
   }
+}
+
+/**
+ * Whether the include pass runs for a given output target (spec I15).
+ *
+ * Only the Carve target opts out, and it is a rule about the PIPELINE rather
+ * than about the writer: expansion answers "what does this document say", the
+ * Carve target answers "what does this document consist of".
+ */
+export function expandsForTarget(target) {
+  return target !== 'carve'
 }
 
 export const EXPECTED_FIELDS = ['html', 'fmt', 'warnings', 'dependencies']

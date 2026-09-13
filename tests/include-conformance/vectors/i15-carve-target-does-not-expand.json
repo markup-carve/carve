@@ -1,0 +1,27 @@
+{
+  "name": "i15-carve-target-does-not-expand",
+  "description": "With a resolver configured, the HTML target expands and the Carve target returns the author's document.",
+  "rules": [
+    "I15",
+    "I12"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "Intro.\n\n{{ chapters/one.crv }}\n",
+  "files": {
+    "chapters/one.crv": "Chapter body.\n"
+  },
+  "checkCarveTarget": true,
+  "expected": {
+    "html": "<p>Intro.</p>\n<p>Chapter body.</p>",
+    "fmt": "Intro.\n\n{{ chapters/one.crv }}\n",
+    "carveTarget": "Intro.\n\n{{ chapters/one.crv }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "chapters/one.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

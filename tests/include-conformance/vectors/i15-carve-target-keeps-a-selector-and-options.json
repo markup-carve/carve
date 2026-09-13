@@ -1,0 +1,32 @@
+{
+  "name": "i15-carve-target-keeps-a-selector-and-options",
+  "description": "The Carve target returns a directive with its selector and options intact.",
+  "rules": [
+    "I15",
+    "I12",
+    "I9a"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ chapters/one.crv #intro @shift:1 }}\n",
+  "files": {
+    "chapters/one.crv": "# Intro\n\nBody.\n"
+  },
+  "checkCarveTarget": true,
+  "expected": {
+    "html": "<p>{{ chapters/one.crv <span class=\"tag\"><strong>#intro</strong></span> <span class=\"mention\"><strong>@shift</strong></span>:1 }}</p>",
+    "fmt": "{{ chapters/one.crv #intro @shift:1 }}\n",
+    "carveTarget": "{{ chapters/one.crv #intro @shift:1 }}\n",
+    "warnings": [
+      {
+        "rule": "include-section"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "chapters/one.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

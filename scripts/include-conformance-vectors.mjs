@@ -949,6 +949,39 @@ export const vectors = [
       'root/link.crv': { symlink: 'secret.crv' },
     },
   },
+  // --- I15 the Carve target does not expand --------------------------------
+  {
+    name: 'i15-carve-target-does-not-expand',
+    description:
+      'With a resolver configured, the HTML target expands and the Carve target returns the author\'s document.',
+    rules: ['I15', 'I12'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    // Deliberately a directive that RESOLVES: the interesting case is an
+    // engine that CAN expand and must not, on this target. A directive that
+    // fails to resolve stays literal for an unrelated reason and would pass
+    // this vector on an engine that expands everything it can.
+    entry: 'Intro.\n\n{{ chapters/one.crv }}\n',
+    files: {
+      'chapters/one.crv': 'Chapter body.\n',
+    },
+    checkCarveTarget: true,
+  },
+  {
+    name: 'i15-carve-target-keeps-a-selector-and-options',
+    description: 'The Carve target returns a directive with its selector and options intact.',
+    rules: ['I15', 'I12', 'I9a'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    // The selector and the option slot are spelled with tag and mention
+    // syntax, so a writer reached through the wrong path can lose or re-escape
+    // them independently of whether expansion ran.
+    entry: '{{ chapters/one.crv #intro @shift:1 }}\n',
+    files: {
+      'chapters/one.crv': '# Intro\n\nBody.\n',
+    },
+    checkCarveTarget: true,
+  },
   {
     name: 'i10-fs-absolute-path-denied',
     description: 'An absolute path outside the root is denied by default.',

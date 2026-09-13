@@ -229,6 +229,38 @@ interrupted by emphasis, a link, or a code span is therefore **not** recognized
 and stays literal - the same rule that keeps a bare-path directive with active
 inline markers literal.
 
+## Writing Carve back out
+
+Two obligations, both about the same thing: a document that goes through a
+processor and comes back as **Carve source** must be the document the author
+wrote.
+
+**I12: the writer preserves a directive verbatim.** A Carve writer MUST NOT
+escape the braces of a well-formed directive. Escaping renders as the same
+literal text, so nothing downstream looks wrong - which is exactly why this
+needs stating: formatting a document would silently destroy every include in it
+and no round-trip invariant would catch it, because the escaped form and the
+directive form render identically.
+
+**I15: a processor targeting Carve source MUST NOT expand.** Expansion answers
+"what does this document say"; the Carve target answers "what does this document
+consist of", and those are different questions. A processor that expands first
+returns a DIFFERENT document - every child inlined, every directive gone - which
+is the same loss I12 forbids, reached by another route. So a `fmt` command, a
+`--carve` render, or any pipeline whose output is Carve source leaves directives
+unexpanded, whether or not a resolver is configured.
+
+The two are separable and both are needed. I12 is about the writer's escaping;
+I15 is about whether the expansion pass runs at all before the writer sees the
+document. An engine can satisfy either one while failing the other, and one
+did: all three engines preserved the directive in the writer while one of them
+expanded before calling it, so `render --carve` returned a flattened book on one
+engine and the author's source on the other two.
+
+This says nothing about other targets. Rendering the same document to HTML with
+a resolver configured expands normally; it is the Carve target specifically that
+round-trips.
+
 ## The host resolver
 
 The **resolution model** keeps the parser pure and pushes all filesystem
