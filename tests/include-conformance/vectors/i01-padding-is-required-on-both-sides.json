@@ -1,0 +1,19 @@
+{
+  "name": "i01-padding-is-required-on-both-sides",
+  "description": "One whitespace character is required on each side: {{c.crv}} and {{ c.crv}} are literal text.",
+  "rules": [
+    "I1"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{c.crv}}\n\n{{ c.crv}}\n\n{{c.crv }}\n",
+  "files": {
+    "c.crv": "body\n"
+  },
+  "expected": {
+    "html": "<p>{{c.crv}}</p>\n<p>{{ c.crv}}</p>\n<p>{{c.crv }}</p>",
+    "fmt": "{{c.crv}}\n\n{{ c.crv}}\n\n{{c.crv }}\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

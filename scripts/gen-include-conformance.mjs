@@ -42,6 +42,7 @@ const INPUT_FIELDS = [
   'forbiddenSubstrings',
   'checkFmtExpandEquivalence',
   'checkCarveTarget',
+  'checkFlattened',
 ]
 
 function inputOf(vector) {
@@ -117,6 +118,7 @@ async function main() {
         fmt: result.fmt,
         // I15, only where the vector asks for it: the Carve output a processor
         // produces WITH the resolver configured.
+        ...(vector.checkFlattened ? { flattened: result.flattened } : {}),
         ...(vector.checkCarveTarget ? { carveTarget: result.carveTarget } : {}),
         warnings: result.warnings,
         dependencies: result.dependencies,

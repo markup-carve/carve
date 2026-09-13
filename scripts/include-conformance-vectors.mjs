@@ -949,6 +949,72 @@ export const vectors = [
       'root/link.crv': { symlink: 'secret.crv' },
     },
   },
+  // --- I1 the directive's padding is a RUN ---------------------------------
+  {
+    name: 'i01-padding-is-a-run-of-whitespace',
+    description: 'Extra spaces and tabs around the path are padding, not a reason to leave the directive literal.',
+    rules: ['I1'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    // An engine requiring EXACTLY one space turns an aligned directive into
+    // prose with no warning, which is the one failure mode section 19's error
+    // rules exist to avoid.
+    entry: '{{   c.crv   }}\n\n{{\tc.crv\t}}\n',
+    files: { 'c.crv': 'body\n' },
+  },
+  {
+    name: 'i01-padding-is-required-on-both-sides',
+    description: 'One whitespace character is required on each side: {{c.crv}} and {{ c.crv}} are literal text.',
+    rules: ['I1'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{c.crv}}\n\n{{ c.crv}}\n\n{{c.crv }}\n',
+    files: { 'c.crv': 'body\n' },
+  },
+
+  // --- I2 inline position reaches every inline run --------------------------
+  {
+    name: 'i02-directive-in-a-table-cell',
+    description: 'A directive in a table cell is an inline include, like one in a paragraph or a heading.',
+    rules: ['I2'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    // A cell reaches inline content with no paragraph in between, so an engine
+    // walking a list of BLOCK kinds to find inline runs misses it.
+    entry: '| A | {{ c.crv }} |\n|---|---|\n| 1 | 2 |\n',
+    files: { 'c.crv': 'cell' },
+  },
+
+  // --- I5 footnotes are global in the ASSEMBLED document --------------------
+  {
+    name: 'i05-footnote-reference-crosses-the-boundary',
+    description: 'A child referring to a note the parent defines resolves, and so does the reverse.',
+    rules: ['I5'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    // Both directions in one document. A reference is judged undefined at PARSE
+    // time, when only one file is in hand, so an engine that does not revisit
+    // that after the merge freezes both as literal text.
+    entry: '[^p]: Parent note.\n\nSee [^c].\n\n{{ c.crv }}\n',
+    files: { 'c.crv': 'Child sees [^p].\n\n[^c]: Child note.\n' },
+  },
+  {
+    name: 'i05-merged-footnote-definitions-collect-at-the-end',
+    description: "A definition an include brought in lands where parsing the equivalent flat file puts it.",
+    rules: ['I5', 'I4'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    // The html golden cannot see this: footnotes are collected globally at
+    // render time, so a definition left interleaved between the parent's blocks
+    // renders identically. `flattened` is what shows the assembled tree.
+    entry: '{{ a.crv }}\n\n{{ b.crv }}\n',
+    files: {
+      'a.crv': '# A\n\nbody [^n].\n\n[^n]: note a\n',
+      'b.crv': '# B\n\nbody [^m].\n\n[^m]: note b\n',
+    },
+    checkFlattened: true,
+  },
+
   // --- I4 a child is parsed as a WHOLE DOCUMENT ----------------------------
   {
     name: 'i04-child-frontmatter-is-the-child-s-own',

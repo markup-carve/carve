@@ -54,6 +54,7 @@ goldens).
 | `forbiddenSubstrings` | optional | Substrings that MUST NOT appear in any warning message (I7 no-leak). |
 | `checkFmtExpandEquivalence` | optional | When true, the runner also asserts that expanding the **formatted** entry yields the same html + dependency set (I12 stronger invariant). |
 | `checkCarveTarget` | optional | When true, the vector carries `expected.carveTarget` (I15). |
+| `checkFlattened` | optional | When true, the vector carries `expected.flattened`. |
 
 `options` keys: `sourcePath` (warning attribution, I4), `maxDepth` /
 `maxBytes` (I6 limit overrides), `allowAbsolute` (filesystem), `resolverIds`
@@ -73,6 +74,7 @@ resolver throws the given message, exercising the I7 no-leak path).
 |---|---|
 | `html` | The expanded-then-rendered HTML. |
 | `fmt` | The Carve serializer output of the **pre-expansion** document. This pins I12/I14: the directive must survive formatting. It is deliberately *not* the serialization of the expanded document. |
+| `flattened` | Optional. The Carve source of the **expanded** document - what `carve flatten` writes. Pins the shape of the assembled tree, which `html` cannot: footnotes are collected globally at render time, so a merged definition left interleaved between the parent's blocks renders identically to one collected at the end. |
 | `carveTarget` | Optional (I15). The Carve source the processor produces for this entry **with the resolver configured**, through whatever path it uses for a Carve-target render. It must equal `fmt`. This is a separate golden because `fmt` cannot pin it: `fmt` is computed from the pre-expansion document by construction, so an engine that expands before calling its writer satisfies `fmt` and still returns a different document - which one engine did, inlining every child on `render --carve` while passing all 94 vectors. |
 | `warnings` | Normalized warning list, in document order (see below). |
 | `dependencies` | Normalized dependency set, in first-encounter order (I11). |
@@ -176,17 +178,17 @@ rules):
 
 | Rule | Vectors | Rule | Vectors |
 |---|---|---|---|
-| I1 syntax / path-required | 13 | I9 verbatim protection | 5 |
-| I2 block vs inline | 7 | I9a recognition run | 7 |
+| I1 syntax / path-required | 15 | I9 verbatim protection | 5 |
+| I2 block vs inline | 8 | I9a recognition run | 7 |
 | I3 resolution model | 2 | I10 containment (filesystem) | 6 |
-| I4 fragment containment / attribution | 7 | I11 dependency reporting | 11 |
-| I5 cross-file collisions | 6 | I12 formatter preservation | 16 |
+| I4 fragment containment / attribution | 8 | I11 dependency reporting | 11 |
+| I5 cross-file collisions | 8 | I12 formatter preservation | 16 |
 | I6 limits (cycle/depth/budget) | 5 | I13 no side effects | 7 |
 | I7 errors + no-leak | 4 | I14 one recognition set | 8 |
 | I8 heading shift + auto | 16 | I15 the Carve target does not expand | 2 |
 | heading-include | 3 | multi-directive / quoted-path | 1 / 2 |
 
-**100 vectors total.**
+**105 vectors total.**
 
 ### What the virtual model cannot express
 

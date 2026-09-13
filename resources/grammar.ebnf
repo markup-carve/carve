@@ -3425,7 +3425,15 @@ abbreviation_expansion = {character - newline}+ ;
 (* PROCESSOR-LEVEL (PART 9 §19): includes are NOT part of the core parser
    and the directive is deliberately NOT reachable from `block`/`inline` --
    a conformant core may leave `{{ … }}` literal. *)
-include_directive = "{{", space, include_path, [include_section], [include_options], space, "}}" ;
+include_directive = "{{", whitespace+, include_path, [include_section], [include_options], whitespace+, "}}" ;
+(* The padding is a RUN, not one space. One whitespace character is required on
+   each side - `{{c.crv}}` and `{{ c.crv}}` are literal text - because that is
+   what keeps a path from starting at `{`. Beyond the first, more changes
+   nothing: a bare path already stops at the first space and a quoted path
+   carries its own delimiters. Refusing the extra would turn an aligned
+   directive into ordinary prose with NO warning, which is the one failure mode
+   section 19's error rules exist to avoid. Tabs count, as they do everywhere
+   else whitespace does. *)
 include_path = bare_include_path | quoted_include_path ;
 bare_include_path = {character - ('#' | '@' | '}' | ' ' | newline)}+ ;
 (* A path carrying a space is DOUBLE-QUOTED, and only then: the bare form stops
@@ -3434,7 +3442,7 @@ bare_include_path = {character - ('#' | '@' | '}' | ' ' | newline)}+ ;
    inside the quoted form. *)
 quoted_include_path = '"', {('\\', '"') | (character - ('"' | newline))}+, '"' ;
 include_section = '#', identifier ;
-include_options = {space, '@', identifier, ':', attribute_value}+ ;
+include_options = {whitespace+, '@', identifier, ':', attribute_value}+ ;
 
 (* ============================================================================
    PART 7: LEXICAL ELEMENTS

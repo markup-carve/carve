@@ -279,9 +279,17 @@ export function runVector(vector, carve) {
       ? foldTmpInText(renderCarve(resolve(result.doc)), baseReal)
       : fmt
 
+    // The EXPANDED document written back as Carve - what `carve flatten` emits.
+    // The html golden cannot pin the assembled tree's shape: footnotes are
+    // collected globally at render time either way, so a merged definition left
+    // sitting between the parent's blocks renders identically to one collected
+    // at the end, and only the writer shows the difference.
+    const flattened = foldTmpInText(renderCarve(result.doc), baseReal)
+
     const out = {
       html,
       fmt,
+      ...(vector.checkFlattened ? { flattened } : {}),
       ...(vector.checkCarveTarget ? { carveTarget } : {}),
       warnings: normalizeWarnings(result.warnings, baseReal),
       dependencies: normalizeDependencies(result.dependencies, baseReal),

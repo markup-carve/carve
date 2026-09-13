@@ -44,6 +44,15 @@ security.
   `}`) or **double-quoted** (`"my chapter.crv"`) when it contains spaces. The
   path is resolved **relative to the including file**; resolution is the host's
   job (see [The host resolver](#the-host-resolver)).
+The padding around the path is a **run** of whitespace, not one space. At least
+one character is required on each side - `{{path}}` and `{{ path}}` are ordinary
+text, because that requirement is what keeps a path from starting at `{` - but
+beyond the first, more changes nothing: a bare path stops at the first space
+anyway and a quoted path carries its own delimiters. Refusing extra padding
+would turn an aligned directive into prose with **no** warning, which is the one
+failure mode the [Errors](#errors) rules exist to avoid. Tabs count, as they do
+wherever else whitespace does.
+
 - **`#section`** includes only the subtree rooted at the heading whose id equals
   `section`: that heading through the content up to (but not including) the next
   heading of the **same or higher** level. The id is matched the same way a
@@ -452,6 +461,21 @@ across file boundaries. The processor MUST resolve duplicates of either
    as its own document (I4) still has to RENAME here, because each child stamps
    its own slug independently and nothing re-stamps after the merge - the rule
    is about what is REPORTED, not about letting duplicate ids reach the output.
+
+### Footnotes are answered in the assembled document
+
+A footnote reference is judged against the **assembled** document, not against
+the file it was written in. A child referring to a note the parent defines
+resolves, and so does a parent referring to one a child brings in. An engine
+that decides "undefined" while parsing a single file, and does not revisit it
+after the merge, freezes both as literal text.
+
+Definitions an include brings in are **collected the same way the document's own
+are**. A definition written mid-document is collected by an ordinary parse; a
+merged child's definition must end up where parsing the equivalent flat file
+would put it, or the assembled tree - and any Carve written from it - disagrees
+with the same document typed by hand. This is invisible in rendered HTML, since
+footnotes are collected globally at render time either way.
 
 ### File-local identifiers are scoped, not renamed
 

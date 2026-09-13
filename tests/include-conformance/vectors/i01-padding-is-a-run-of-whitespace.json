@@ -1,0 +1,24 @@
+{
+  "name": "i01-padding-is-a-run-of-whitespace",
+  "description": "Extra spaces and tabs around the path are padding, not a reason to leave the directive literal.",
+  "rules": [
+    "I1"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{   c.crv   }}\n\n{{\tc.crv\t}}\n",
+  "files": {
+    "c.crv": "body\n"
+  },
+  "expected": {
+    "html": "<p>body</p>\n<p>body</p>",
+    "fmt": "{{   c.crv   }}\n\n{{\tc.crv\t}}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "c.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

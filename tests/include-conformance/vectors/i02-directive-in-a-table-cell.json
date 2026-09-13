@@ -1,0 +1,24 @@
+{
+  "name": "i02-directive-in-a-table-cell",
+  "description": "A directive in a table cell is an inline include, like one in a paragraph or a heading.",
+  "rules": [
+    "I2"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "| A | {{ c.crv }} |\n|---|---|\n| 1 | 2 |\n",
+  "files": {
+    "c.crv": "cell"
+  },
+  "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">A</th><th scope=\"col\">cell</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>1</td><td>2</td></tr>\n  </tbody>\n</table>",
+    "fmt": "|= A |= {{ c.crv }} |\n| 1 | 2 |\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "c.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

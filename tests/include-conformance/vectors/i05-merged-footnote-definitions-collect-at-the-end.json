@@ -1,0 +1,32 @@
+{
+  "name": "i05-merged-footnote-definitions-collect-at-the-end",
+  "description": "A definition an include brought in lands where parsing the equivalent flat file puts it.",
+  "rules": [
+    "I5",
+    "I4"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.crv }}\n\n{{ b.crv }}\n",
+  "files": {
+    "a.crv": "# A\n\nbody [^n].\n\n[^n]: note a\n",
+    "b.crv": "# B\n\nbody [^m].\n\n[^m]: note b\n"
+  },
+  "checkFlattened": true,
+  "expected": {
+    "html": "<section id=\"A\">\n  <h1>A</h1>\n  <p>body <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>.</p>\n</section>\n<section id=\"B\">\n  <h1>B</h1>\n  <p>body <a id=\"fnref2\" href=\"#fn2\" role=\"doc-noteref\"><sup>2</sup></a>.</p>\n</section>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>note a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n    <li id=\"fn2\">\n      <p>note b<a href=\"#fnref2\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "fmt": "{{ a.crv }}\n\n{{ b.crv }}\n",
+    "flattened": "# A\n\nbody [^n].\n\n# B\n\nbody [^m].\n\n[^n]: note a\n\n[^m]: note b\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.crv",
+        "resolved": true
+      },
+      {
+        "id": "b.crv",
+        "resolved": true
+      }
+    ]
+  }
+}
