@@ -2522,6 +2522,10 @@
         "endOffset": {
           "type": "integer",
           "minimum": 0
+        },
+        "file": {
+          "type": "string",
+          "description": "Identity of the file these coordinates are measured in, when that is NOT the document being parsed: the canonical id of the file an include pulled the node in from (PART 9 section 19). Absent means the top-level document, so a tree with no includes is unchanged. Without it an included span is ambiguous - a child's first paragraph and the parent's first paragraph both report line 1."
         }
       },
       "additionalProperties": false

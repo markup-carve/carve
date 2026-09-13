@@ -302,13 +302,23 @@ The specification is normative on the **outcome** and permissive on the
   can cut a fence or a div in half and manufacture exactly such a torn
   construct. The tear is bounded to the fragment; the parent document is never
   affected.
-- Source positions **SHOULD** be remapped so that source-mapped hosts (editors,
-  highlighters, error reporters) can attribute an included span to the child
-  file rather than to the directive. Carve's AST already carries the machinery:
-  a `Position` distinguishes original-document coordinates from snippet-local
-  offsets for re-parsed nested content (`carve-js` `src/ast.ts`, the `Position`
-  interface). Included content is the same shape of problem as a re-parsed
-  container snippet.
+- Source positions **MUST** identify the file they are measured in, so that
+  source-mapped hosts (editors, highlighters, error reporters) can attribute an
+  included span to the child file rather than to the directive. A node an
+  include pulled in keeps the coordinates of **its own file** and carries that
+  file's canonical id in `pos.file`; a node from the document being parsed has
+  no `pos.file`, so a document with no includes is unchanged.
+
+  Line and column alone cannot carry this. A child's first paragraph and the
+  parent's first paragraph both report line 1, and nothing in the tree
+  distinguishes them - a host jumping to "line 1" would open the wrong file.
+  The identity is the one the resolver returned (spec I11's canonical id), so
+  it matches the dependency list entry for the same file.
+
+  Nested includes attribute to the file the node actually came from, not to the
+  file that pulled its parent in: a grandchild's nodes carry the grandchild's
+  id. A processor therefore stamps a resolved child AFTER expanding that
+  child's own includes, and only where no identity is already recorded.
 
 Worked example - `snippet.crv` ends inside an unclosed fence:
 
