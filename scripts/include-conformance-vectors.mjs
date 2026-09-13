@@ -976,7 +976,12 @@ export const vectors = [
     // The selector and the option slot are spelled with tag and mention
     // syntax, so a writer reached through the wrong path can lose or re-escape
     // them independently of whether expansion ran.
-    entry: '{{ chapters/one.crv #intro @shift:1 }}\n',
+    // The selector must MATCH: an auto heading id preserves case, so `#Intro`
+    // is the id of `# Intro`. Written `#intro` the include is refused and the
+    // directive stays literal for an unrelated reason - which passes this
+    // vector on an engine that expands everything it can, i.e. exactly the
+    // engine it exists to catch.
+    entry: '{{ chapters/one.crv #Intro @shift:1 }}\n',
     files: {
       'chapters/one.crv': '# Intro\n\nBody.\n',
     },
