@@ -6,7 +6,13 @@
    and the directive is deliberately NOT reachable from `block`/`inline` --
    a conformant core may leave `{{ … }}` literal. *)
 include_directive = "{{", space, include_path, [include_section], [include_options], space, "}}" ;
-include_path = {character - ('#' | '@' | '}' | ' ')}+ ;
+include_path = bare_include_path | quoted_include_path ;
+bare_include_path = {character - ('#' | '@' | '}' | ' ' | newline)}+ ;
+(* A path carrying a space is DOUBLE-QUOTED, and only then: the bare form stops
+   at the first space, so an unquoted `my chapter.crv` ends the path at `my`
+   and the rest is read as the option slot it is not. `\"` is a literal quote
+   inside the quoted form. *)
+quoted_include_path = '"', {('\\', '"') | (character - ('"' | newline))}+, '"' ;
 include_section = '#', identifier ;
 include_options = {space, '@', identifier, ':', attribute_value}+ ;
 
