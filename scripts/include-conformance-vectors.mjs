@@ -949,6 +949,37 @@ export const vectors = [
       'root/link.crv': { symlink: 'secret.crv' },
     },
   },
+  // --- I4 a child is parsed as a WHOLE DOCUMENT ----------------------------
+  {
+    name: 'i04-child-frontmatter-is-the-child-s-own',
+    description: "A child's leading frontmatter is consumed by the child's own parse, not rendered as a thematic break.",
+    rules: ['I4'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    // "Parsed as a self-contained document" has to mean the WHOLE document
+    // grammar, not just the block layer: frontmatter is only frontmatter at the
+    // start of a document, so a child parsed as a fragment renders its own
+    // metadata as a thematic break, a paragraph and another thematic break.
+    entry: 'Top.\n\n{{ child.crv }}\n',
+    files: {
+      'child.crv': '---\ntitle: Child\n---\n\nChild body.\n',
+    },
+  },
+  {
+    name: 'i04-child-gets-the-same-inline-vocabulary',
+    description: 'Mentions and tags inside an included child are recognized, as they are in the parent.',
+    rules: ['I4'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    // Included content is parsed the way typed content is. An engine that
+    // carries part of the inline vocabulary outside its bare block parser can
+    // pass every other vector and still render `@alice` in a child as text.
+    entry: 'Top.\n\n{{ child.crv }}\n',
+    files: {
+      'child.crv': 'Hi @alice and #topic here.\n',
+    },
+  },
+
   // --- I5 which ids participate --------------------------------------------
   {
     name: 'i05-auto-heading-id-collision-is-silent',

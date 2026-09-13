@@ -229,6 +229,25 @@ interrupted by emphasis, a link, or a code span is therefore **not** recognized
 and stays literal - the same rule that keeps a bare-path directive with active
 inline markers literal.
 
+### A child is parsed as a WHOLE document, not as a fragment
+
+I4's containment has a second half that is easy to under-implement: the child is
+parsed by the **whole document grammar**, not by the block layer alone.
+
+Two things fall out of that, and both have been got wrong in an engine that
+passed every other rule:
+
+- **Frontmatter is only frontmatter at the start of a document.** A child parsed
+  as a fragment renders its own leading `--- … ---` as a thematic break, a
+  paragraph and another thematic break. The child's frontmatter is consumed by
+  the child's own parse; it does not appear in the assembled document and does
+  not become the parent's metadata.
+- **The inline vocabulary is the same one.** Included content is parsed the way
+  content typed into the parent is, so whatever the parent recognizes in a
+  paragraph the child recognizes too. An engine carrying part of that vocabulary
+  outside its bare parser can render `@alice` in a child as plain text while the
+  same child, opened on its own, produces a mention.
+
 ## Writing Carve back out
 
 Two obligations, both about the same thing: a document that goes through a
