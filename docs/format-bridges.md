@@ -71,12 +71,25 @@ in the sense that matters here: the construct is not editable, and an editor
 that hands the document back has to reproduce a blob it does not understand. It
 belongs in the report.
 
-Built-in HTML, Markdown, and Djot migration entry points in carve-js and
+Built-in HTML, Markdown, Djot, and BBCode migration entry points in carve-js and
 carve-rs return a shared migration-result shape: converted Carve source plus a
 machine-readable report with the source format and diagnostics whose entries
 carry fidelity and confidence. Prefer that result over
 a bare string when importing stored content, so degraded or dropped constructs
 can become a review gate instead of a log message.
+
+The version 2 contract uses `preserved`, `normalized`, `degraded`, and
+`dropped`, with `exact`, `inferred`, or `fallback` confidence. Cases for every
+supported inbound family live in `tests/importer-fidelity/manifest.json` and
+are validated against `resources/importer-fidelity-schema.json`. The manifest
+also names the release-gate owner: this repository replays the four reference
+importers, while `pandoc-carve` and `pdf-to-carve` replay their own fixtures in
+the environments that provide those input paths.
+The published schema describes the fixture manifest; its `schemaVersion` is not
+the version of any one language binding's report. The same manifest is
+published as `importer-fidelity-manifest.json` for downstream fixture sync.
+The report envelope itself is defined by
+`resources/migration-report-schema.json`.
 
 The reverse direction has a stricter rule: a name the bridge does not know is an
 **error**, not a skip. An editor that grew a node type nobody mapped is exactly

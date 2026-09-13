@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- A version 2 importer-fidelity schema and replayable fixture manifest cover
+  HTML, Markdown, Djot, BBCode, Pandoc JSON, and PDF extraction JSON as a shared
+  release contract for importers.
+
 ## [0.1.5] - 2026-09-07
 
 ### Added

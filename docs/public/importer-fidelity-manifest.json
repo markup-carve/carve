@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 2,
+  "cases": [
+    {
+      "id": "html-unwrap",
+      "sourceFormat": "html",
+      "runner": "reference",
+      "input": "<section><p>x</p></section>",
+      "expected": {
+        "diagnostics": [
+          {
+            "code": "element-unwrapped",
+            "fidelity": "degraded",
+            "confidence": "exact"
+          }
+        ]
+      }
+    },
+    {
+      "id": "markdown-unverified",
+      "sourceFormat": "markdown",
+      "runner": "reference",
+      "input": "**strong**",
+      "expected": {
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          }
+        ]
+      }
+    },
+    {
+      "id": "html-style-degraded",
+      "sourceFormat": "html",
+      "runner": "reference",
+      "input": "<p style=\"color:red\">x</p>",
+      "expected": {
+        "diagnostics": [
+          {
+            "code": "style-unmapped",
+            "fidelity": "degraded",
+            "confidence": "exact"
+          }
+        ]
+      }
+    },
+    {
+      "id": "html-attribute-dropped",
+      "sourceFormat": "html",
+      "runner": "reference",
+      "input": "<p onclick=\"alert(1)\">x</p>",
+      "expected": {
+        "diagnostics": [
+          {
+            "code": "attribute-dropped",
+            "fidelity": "dropped",
+            "confidence": "exact"
+          }
+        ]
+      }
+    },
+    {
+      "id": "djot-unverified",
+      "sourceFormat": "djot",
+      "runner": "reference",
+      "input": "_emphasis_",
+      "expected": {
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          }
+        ]
+      }
+    },
+    {
+      "id": "bbcode-unverified",
+      "sourceFormat": "bbcode",
+      "runner": "reference",
+      "input": "[b]strong[/b]",
+      "expected": {
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          }
+        ]
+      }
+    },
+    {
+      "id": "pandoc-preserved",
+      "sourceFormat": "pandoc-json",
+      "runner": "external",
+      "repository": "markup-carve/pandoc-carve",
+      "input": "{\"pandoc-api-version\":[1,23,1],\"meta\":{},\"blocks\":[]}",
+      "expected": {
+        "diagnostics": []
+      }
+    },
+    {
+      "id": "pdf-extraction-preserved",
+      "sourceFormat": "pdf-extraction-json",
+      "runner": "external",
+      "repository": "markup-carve/pdf-to-carve",
+      "input": "{\"version\":1,\"blocks\":[]}",
+      "expected": {
+        "diagnostics": []
+      }
+    }
+  ]
+}

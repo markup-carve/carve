@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://markup-carve.github.io/carve/migration-report-schema.json",
+  "title": "Carve migration fidelity report",
+  "type": "object",
+  "required": ["schemaVersion", "sourceFormat", "diagnostics"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "enum": [2] },
+    "sourceFormat": {
+      "enum": ["html", "markdown", "djot", "bbcode", "pandoc-json", "pdf", "image", "pdf-extraction-json", "carve"]
+    },
+    "mode": { "type": "string" },
+    "adapter": { "type": "string" },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "message", "severity", "fidelity", "confidence"],
+        "additionalProperties": false,
+        "properties": {
+          "code": { "type": "string", "minLength": 1 },
+          "message": { "type": "string" },
+          "severity": { "type": "string", "minLength": 1 },
+          "fidelity": { "enum": ["preserved", "normalized", "degraded", "dropped"] },
+          "confidence": { "enum": ["exact", "inferred", "fallback"] },
+          "path": {
+            "oneOf": [
+              { "type": "string" },
+              { "type": "array", "items": { "oneOf": [{ "type": "string" }, { "type": "integer" }] } }
+            ]
+          },
+          "line": { "type": "integer", "minimum": 1 },
+          "column": { "type": "integer", "minimum": 1 },
+          "direction": { "type": "string" },
+          "details": { "type": "object" },
+          "sourceLocation": {}
+        }
+      }
+    }
+  }
+}
