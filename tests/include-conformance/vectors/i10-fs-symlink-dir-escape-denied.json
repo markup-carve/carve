@@ -1,0 +1,34 @@
+{
+  "name": "i10-fs-symlink-dir-escape-denied",
+  "description": "An escape through a symlinked directory component is denied.",
+  "rules": [
+    "I10"
+  ],
+  "mode": "filesystem",
+  "resolver": "filesystem",
+  "tree": {
+    "root/main.crv": "{{ linkdir/secret.crv }}\n",
+    "outside/secret.crv": "TOP SECRET\n",
+    "root/linkdir": {
+      "symlink": "outside"
+    }
+  },
+  "entryPath": "root/main.crv",
+  "root": "root",
+  "expected": {
+    "html": "<p>{{ linkdir/secret.crv }}</p>",
+    "fmt": "{{ linkdir/secret.crv }}\n",
+    "warnings": [
+      {
+        "rule": "include-unresolved",
+        "file": "<TMP>/root/main.crv"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "linkdir/secret.crv",
+        "resolved": false
+      }
+    ]
+  }
+}

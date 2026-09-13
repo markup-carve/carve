@@ -1,0 +1,28 @@
+{
+  "name": "i07-binary-content-non-text",
+  "description": "Binary (NUL-bearing) content is not text: warn and stay literal.",
+  "rules": [
+    "I7"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child }}",
+  "files": {
+    "child": "binary\u0000payload"
+  },
+  "expected": {
+    "html": "<p>{{ child }}</p>",
+    "fmt": "{{ child }}\n",
+    "warnings": [
+      {
+        "rule": "include-non-text"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": false
+      }
+    ]
+  }
+}

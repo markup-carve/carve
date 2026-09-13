@@ -1,0 +1,18 @@
+{
+  "name": "i12-fmt-code-span-stays-escaped",
+  "description": "A directive in a code span keeps the core escaping (I9 keeps it inert there).",
+  "rules": [
+    "I12",
+    "I9"
+  ],
+  "mode": "virtual",
+  "resolver": "none",
+  "entry": "Use `{{ chapter.crv }}` here.",
+  "files": {},
+  "expected": {
+    "html": "<p>Use <code>{{ chapter.crv }}</code> here.</p>",
+    "fmt": "Use `{{ chapter.crv }}` here\\.\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "i14-fmt-multiple-section-options",
+  "description": "Multiple directives carrying #section / options survive (recognition reassembles across nodes).",
+  "rules": [
+    "I14",
+    "I9a"
+  ],
+  "mode": "virtual",
+  "resolver": "none",
+  "entry": "a {{ x.crv #intro }} b {{ y.crv #outro }} c",
+  "files": {},
+  "expected": {
+    "html": "<p>a {{ x.crv <span class=\"tag\"><strong>#intro</strong></span> }} b {{ y.crv <span class=\"tag\"><strong>#outro</strong></span> }} c</p>",
+    "fmt": "a {{ x.crv #intro }} b {{ y.crv #outro }} c\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

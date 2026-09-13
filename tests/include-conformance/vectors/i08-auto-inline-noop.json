@@ -1,0 +1,24 @@
+{
+  "name": "i08-auto-inline-noop",
+  "description": "auto on an inline include is a no-op (inline content has no headings).",
+  "rules": [
+    "I8"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "# One\n\n## Two\n\nSee {{ child @shift:auto }} here.",
+  "files": {
+    "child": "a fragment"
+  },
+  "expected": {
+    "html": "<section id=\"One\">\n  <h1>One</h1>\n  <section id=\"Two\">\n    <h2>Two</h2>\n    <p>See a fragment here.</p>\n  </section>\n</section>",
+    "fmt": "# One\n\n## Two\n\nSee {{ child @shift:auto }} here\\.\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

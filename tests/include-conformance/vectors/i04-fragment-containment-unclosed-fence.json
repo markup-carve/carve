@@ -1,0 +1,24 @@
+{
+  "name": "i04-fragment-containment-unclosed-fence",
+  "description": "An unclosed fence in the child closes at child EOF and does not swallow parent content.",
+  "rules": [
+    "I4"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "Before.\n\n{{ child }}\n\nAfter.",
+  "files": {
+    "child": "```js\nlet x = 1;"
+  },
+  "expected": {
+    "html": "<p>Before.</p>\n<pre><code class=\"language-js\">let x = 1;\n</code></pre>\n<p>After.</p>",
+    "fmt": "Before\\.\n\n{{ child }}\n\nAfter\\.\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

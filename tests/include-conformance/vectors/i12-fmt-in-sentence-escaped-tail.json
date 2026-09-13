@@ -1,0 +1,17 @@
+{
+  "name": "i12-fmt-in-sentence-escaped-tail",
+  "description": "A directive inside a sentence is preserved; only the surrounding prose is escaped.",
+  "rules": [
+    "I12"
+  ],
+  "mode": "virtual",
+  "resolver": "none",
+  "entry": "See {{ chapter.crv }} for more.",
+  "files": {},
+  "expected": {
+    "html": "<p>See {{ chapter.crv }} for more.</p>",
+    "fmt": "See {{ chapter.crv }} for more\\.\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

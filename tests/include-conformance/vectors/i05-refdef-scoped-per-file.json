@@ -1,0 +1,24 @@
+{
+  "name": "i05-refdef-scoped-per-file",
+  "description": "A reference-definition label reused by parent and child resolves per file, no rename, no warning.",
+  "rules": [
+    "I5"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "Parent [p][ref].\n\n[ref]: https://parent.example\n\n{{ child }}",
+  "files": {
+    "child": "Child [c][ref].\n\n[ref]: https://child.example"
+  },
+  "expected": {
+    "html": "<p>Parent <a href=\"https://parent.example\">p</a>.</p>\n<p>Child <a href=\"https://child.example\">c</a>.</p>",
+    "fmt": "Parent [p](https://parent.example)\\.\n\n{{ child }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

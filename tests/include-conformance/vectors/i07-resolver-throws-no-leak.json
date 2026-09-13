@@ -1,0 +1,34 @@
+{
+  "name": "i07-resolver-throws-no-leak",
+  "description": "A throwing resolver yields a normalized warning; the raw error (with an absolute path) never reaches the message.",
+  "rules": [
+    "I7",
+    "I11"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child.crv }}",
+  "files": {},
+  "options": {
+    "resolverThrows": "ENOENT: no such file or directory, open '/home/someone/private/vault/child.crv'"
+  },
+  "forbiddenSubstrings": [
+    "/home/someone/private/vault",
+    "ENOENT"
+  ],
+  "expected": {
+    "html": "<p>{{ child.crv }}</p>",
+    "fmt": "{{ child.crv }}\n",
+    "warnings": [
+      {
+        "rule": "include-unresolved"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "child.crv",
+        "resolved": false
+      }
+    ]
+  }
+}

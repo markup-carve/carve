@@ -1,0 +1,23 @@
+{
+  "name": "i01-inverted-line-range",
+  "description": "An inverted line range is not a valid option; warns and stays literal.",
+  "rules": [
+    "I1"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @lines:3-1 }}",
+  "files": {
+    "child": "a\nb\nc"
+  },
+  "expected": {
+    "html": "<p>{{ child <span class=\"mention\"><strong>@lines</strong></span>:3-1 }}</p>",
+    "fmt": "{{ child @lines:3-1 }}\n",
+    "warnings": [
+      {
+        "rule": "include-unknown-option"
+      }
+    ],
+    "dependencies": []
+  }
+}

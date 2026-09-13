@@ -1,0 +1,32 @@
+{
+  "name": "i11-missing-target-unresolved-dep",
+  "description": "A missing target is a member, marked unresolved (never read).",
+  "rules": [
+    "I11"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ present }}\n\n{{ absent }}",
+  "files": {
+    "present": "Here."
+  },
+  "expected": {
+    "html": "<p>Here.</p>\n<p>{{ absent }}</p>",
+    "fmt": "{{ present }}\n\n{{ absent }}\n",
+    "warnings": [
+      {
+        "rule": "include-unresolved"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "present",
+        "resolved": true
+      },
+      {
+        "id": "absent",
+        "resolved": false
+      }
+    ]
+  }
+}

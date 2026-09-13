@@ -1,0 +1,24 @@
+{
+  "name": "i12-fmt-multi-option-verbatim",
+  "description": "A multi-option directive (unknown option + section) serializes byte-identically, author token order preserved.",
+  "rules": [
+    "I12",
+    "I14"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "Here {{ x.crv @bogus:1 #intro }} now.",
+  "files": {
+    "x.crv": "body"
+  },
+  "expected": {
+    "html": "<p>Here {{ x.crv <span class=\"mention\"><strong>@bogus</strong></span>:1 <span class=\"tag\"><strong>#intro</strong></span> }} now.</p>",
+    "fmt": "Here {{ x.crv @bogus:1 #intro }} now\\.\n",
+    "warnings": [
+      {
+        "rule": "include-unknown-option"
+      }
+    ],
+    "dependencies": []
+  }
+}

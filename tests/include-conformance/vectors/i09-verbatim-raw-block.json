@@ -1,0 +1,19 @@
+{
+  "name": "i09-verbatim-raw-block",
+  "description": "A directive inside a raw block stays literal.",
+  "rules": [
+    "I9"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "```=html\n{{ child }}\n```",
+  "files": {
+    "child": "EXPANDED"
+  },
+  "expected": {
+    "html": "{{ child }}",
+    "fmt": "```=html\n{{ child }}\n```\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

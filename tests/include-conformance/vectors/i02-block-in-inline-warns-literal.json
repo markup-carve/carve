@@ -1,0 +1,29 @@
+{
+  "name": "i02-block-in-inline-warns-literal",
+  "description": "Multi-block content at an inline position is an error: warn and stay literal.",
+  "rules": [
+    "I2",
+    "I7"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "See {{ child }}.",
+  "files": {
+    "child": "One.\n\nTwo."
+  },
+  "expected": {
+    "html": "<p>See {{ child }}.</p>",
+    "fmt": "See {{ child }}\\.\n",
+    "warnings": [
+      {
+        "rule": "include-block-in-inline"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "i12-fmt-shift-preserved",
+  "description": "A stated (signed) shift survives formatting.",
+  "rules": [
+    "I12"
+  ],
+  "mode": "virtual",
+  "resolver": "none",
+  "entry": "{{ chapter.crv @shift:+1 }}",
+  "files": {},
+  "expected": {
+    "html": "<p>{{ chapter.crv <span class=\"mention\"><strong>@shift</strong></span>:+1 }}</p>",
+    "fmt": "{{ chapter.crv @shift:+1 }}\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

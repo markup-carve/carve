@@ -1,0 +1,32 @@
+{
+  "name": "i13-no-side-effect-unresolvable",
+  "description": "An unresolvable directive reserves nothing; the later legitimate id stays \"dup\".",
+  "rules": [
+    "I13"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "Text {{ missing }} text.\n\n{{ later }}",
+  "files": {
+    "later": "{#dup}\n# Later\n\nSee [^note].\n\n[^note]: Later note."
+  },
+  "expected": {
+    "html": "<p>Text {{ missing }} text.</p>\n<section id=\"dup\">\n  <h1>Later</h1>\n  <p>See <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>.</p>\n</section>\n<section role=\"doc-endnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>Later note.<a href=\"#fnref1\" role=\"doc-backlink\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "fmt": "Text {{ missing }} text\\.\n\n{{ later }}\n",
+    "warnings": [
+      {
+        "rule": "include-unresolved"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "missing",
+        "resolved": false
+      },
+      {
+        "id": "later",
+        "resolved": true
+      }
+    ]
+  }
+}

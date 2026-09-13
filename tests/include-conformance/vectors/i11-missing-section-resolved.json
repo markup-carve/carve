@@ -1,0 +1,28 @@
+{
+  "name": "i11-missing-section-resolved",
+  "description": "A missing #section keeps the dependency RESOLVED (the file was read) and warns.",
+  "rules": [
+    "I11"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child #nope }}",
+  "files": {
+    "child": "# Real"
+  },
+  "expected": {
+    "html": "<p>{{ child <span class=\"tag\"><strong>#nope</strong></span> }}</p>",
+    "fmt": "{{ child #nope }}\n",
+    "warnings": [
+      {
+        "rule": "include-section"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

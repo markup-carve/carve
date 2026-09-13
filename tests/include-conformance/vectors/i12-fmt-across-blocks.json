@@ -1,0 +1,17 @@
+{
+  "name": "i12-fmt-across-blocks",
+  "description": "Directives across paragraphs, a blockquote and a list item all survive formatting.",
+  "rules": [
+    "I12"
+  ],
+  "mode": "virtual",
+  "resolver": "none",
+  "entry": "{{ a.crv }}\n\nprose {{ b.crv }} prose\n\n> quoted {{ c.crv }} here\n\n- item {{ d.crv }} tail\n",
+  "files": {},
+  "expected": {
+    "html": "<p>{{ a.crv }}</p>\n<p>prose {{ b.crv }} prose</p>\n<blockquote><p>quoted {{ c.crv }} here</p></blockquote>\n<ul>\n  <li>item {{ d.crv }} tail</li>\n</ul>",
+    "fmt": "{{ a.crv }}\n\nprose {{ b.crv }} prose\n\n> quoted {{ c.crv }} here\n\n- item {{ d.crv }} tail\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "i08-shift-positive-clamp",
+  "description": "@shift:1 shifts headings; a level past 6 is clamped with a warning and kept.",
+  "rules": [
+    "I8"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @shift:1 }}",
+  "files": {
+    "child": "# A\n\n###### B"
+  },
+  "expected": {
+    "html": "<section id=\"A\">\n  <h2>A</h2>\n  <section id=\"B\">\n    <h6>B</h6>\n  </section>\n</section>",
+    "fmt": "{{ child @shift:1 }}\n",
+    "warnings": [
+      {
+        "rule": "include-heading-clamp",
+        "file": "child"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

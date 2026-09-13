@@ -1,0 +1,24 @@
+{
+  "name": "i01-lines-range",
+  "description": "@lines:N-M pulls in an inclusive 1-based physical line range.",
+  "rules": [
+    "I1"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @lines:2-3 }}",
+  "files": {
+    "child": "skip\nOne\nTwo\nskip"
+  },
+  "expected": {
+    "html": "<p>One\nTwo</p>",
+    "fmt": "{{ child @lines:2-3 }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

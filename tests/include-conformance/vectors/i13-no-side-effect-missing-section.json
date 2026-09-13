@@ -1,0 +1,33 @@
+{
+  "name": "i13-no-side-effect-missing-section",
+  "description": "A missing-section directive reserves nothing.",
+  "rules": [
+    "I13"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "Text {{ child #nope }} text.\n\n{{ later }}",
+  "files": {
+    "later": "{#dup}\n# Later\n\nSee [^note].\n\n[^note]: Later note.",
+    "child": "{#dup}\n# S\n\nBody."
+  },
+  "expected": {
+    "html": "<p>Text {{ child <span class=\"tag\"><strong>#nope</strong></span> }} text.</p>\n<section id=\"dup\">\n  <h1>Later</h1>\n  <p>See <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>.</p>\n</section>\n<section role=\"doc-endnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>Later note.<a href=\"#fnref1\" role=\"doc-backlink\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "fmt": "Text {{ child #nope }} text\\.\n\n{{ later }}\n",
+    "warnings": [
+      {
+        "rule": "include-section"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      },
+      {
+        "id": "later",
+        "resolved": true
+      }
+    ]
+  }
+}
