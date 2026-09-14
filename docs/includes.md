@@ -302,13 +302,56 @@ would break cross-implementation parity.
 The host supplies a **resolver** with this contract:
 
 > Given `(path, section?, options?, includingFileContext)`, return the resolved
-> Carve source text, **or** an error.
+> Carve source text and a canonical **id** for the target, **or** an error.
+
+The `path` here is an **opaque target string**: a filesystem host reads it as a
+path, and another medium reads it as whatever names a document there (see
+[When the medium is not a filesystem](#when-the-medium-is-not-a-filesystem)).
 
 - **No resolver configured** means the directive is left **literal**: the
   processor emits the verbatim <code v-pre>{{ … }}</code> text. This is the default state, and it
   is what keeps browser / WASM builds inert by construction.
 - The resolver is **opt-in** and MUST be off for untrusted input unless the host
   has satisfied the [Security](#security) requirements.
+
+### When the medium is not a filesystem
+
+A resolver is a function, and the processor never learns what is behind it. A
+host whose documents live in a database, an object store, a CMS, a git tree or
+an in-memory map implements the same contract as one reading files, and this is
+the better-tested path rather than an exotic one: 99 of the corpus's conformance
+vectors resolve through an in-memory resolver, and only six need a real
+filesystem, which is why carve-rs can build with its filesystem resolver
+compiled out and still pass them.
+
+**On the words `path` and `file`.** The directive's first part is called a
+**path** because that is what an author writes and reads, and `pos.file` names
+the unit of inclusion. Neither promises a filesystem. To a resolver the path is
+an **opaque target string**: interpret it as a row key, an object name, a slug
+or a URL as the medium requires. `pos.file` likewise holds whatever **identity**
+the resolver returned for that target.
+
+What a host on such a medium still owes:
+
+- **A stable identity per target.** The canonical id a resolver returns is what
+  cycle detection compares and what dependency reporting publishes. Two
+  spellings that name the same document MUST return the same id, or a cycle
+  escapes the guard and a preview watches something that never changes.
+- **Containment, in whatever namespace the medium has.** The rule that outlives
+  directories is: resolve to a canonical identity **first**, then test whether
+  that identity is inside the permitted set - never validate the spelling of the
+  request. A tenant, a collection or a key prefix plays the part `root` plays
+  for files.
+- **A per-target size limit.** The byte budget bounds expanded OUTPUT, not the
+  work done to obtain it, so a resolver with no limit of its own reads an
+  oversized record in full before expansion refuses it.
+- **Treat the target as untrusted input.** It comes from a document, so it must
+  not be interpolated into a query, a URL or a command. It is a key to look up,
+  not a fragment to compose with.
+
+Everything else is the processor's and applies unchanged whatever the medium:
+the byte budget, the depth limit, cycle detection, the bound on resolver calls,
+the warning cap, and the rule that a refused directive is left literal.
 
 ### The containment root
 
