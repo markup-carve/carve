@@ -38,6 +38,39 @@
       "expected": { "status": "denied", "denial": "outside-root" }
     },
     {
+      "name": "missing-target-inside-root",
+      "description": "A target whose canonical result is inside the root but does not exist is refused as missing, not as a containment denial: containment permits a path exactly when its canonical result stays inside the root.",
+      "requirement": "S2-contained-paths",
+      "kind": "filesystem",
+      "tree": {
+        "root/main.crv": ""
+      },
+      "root": "root",
+      "from": "root/main.crv",
+      "request": "gone.crv",
+      "expected": {
+        "status": "denied",
+        "denial": "not-found"
+      }
+    },
+    {
+      "name": "missing-target-through-dotdot-inside-root",
+      "description": "A missing target does not turn a permitted dot-dot spelling into an escape: the canonical result is inside the root, so the refusal is still a miss.",
+      "requirement": "S2-contained-paths",
+      "kind": "filesystem",
+      "tree": {
+        "root/book/main.crv": "",
+        "root/shared/present.crv": "ok\n"
+      },
+      "root": "root",
+      "from": "root/book/main.crv",
+      "request": "../shared/gone.crv",
+      "expected": {
+        "status": "denied",
+        "denial": "not-found"
+      }
+    },
+    {
       "name": "remote-without-allowlist", "description": "A remote URL cannot trigger a fetch without an explicit host allowlist.",
       "requirement": "S3-remote-allowlist", "kind": "remote", "request": "https://example.invalid/chapter.crv", "allowedRemoteHosts": [],
       "expected": { "status": "denied", "denial": "remote-not-allowed", "remoteFetches": [] }
