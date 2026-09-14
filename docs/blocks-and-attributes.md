@@ -94,8 +94,8 @@ language-tagged fence:
 {.diff}
 ```js
   let fileIcon = document.querySelector("li.file-entry > span.icon");
-- fileIcon.classList.add("icon-file-text");
-+ fileIcon.classList.remove("icon-file-text");
+- fileIcon.classList.remove("icon-file-text");
++ fileIcon.classList.add("icon-file-text");
 ```
 ````
 
@@ -117,21 +117,27 @@ For each code block whose `<pre>` has the `diff` class, create a fresh
 transformer and pass it alongside the fence language:
 
 ```js
+const language = [...code.classList]
+  .find((name) => name.startsWith('language-'))
+  ?.slice('language-'.length)
+
 const transformers = pre.classList.contains('diff')
   ? [diffCodeTransformer()]
   : []
 
 const highlighted = highlighter.codeToHtml(code.textContent, {
-  lang: 'javascript',
+  lang: language,
   theme: 'github-light',
   transformers,
 })
 ```
 
 The transformer removes the first marker character before language
-tokenization, then restores it and annotates added and removed lines. It is
-intended for instructional code differences. Use a regular `diff` fence for a
-complete patch containing file headers, hunk headers, or other patch metadata.
+tokenization, then restores it as a `.diff-marker` text span and annotates
+added and removed lines. The baseline CSS colors that span and the line
+background; it does not generate a second marker. This is intended for
+instructional code differences. Use a regular `diff` fence for a complete
+patch containing file headers, hunk headers, or other patch metadata.
 
 ### Container fences: titles and labels
 
