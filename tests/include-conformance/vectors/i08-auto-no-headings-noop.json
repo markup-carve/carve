@@ -1,0 +1,24 @@
+{
+  "name": "i08-auto-no-headings-noop",
+  "description": "auto over content with no headings is a no-op and warns about nothing.",
+  "rules": [
+    "I8"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "# One\n\n## Two\n\n{{ child @shift:auto }}",
+  "files": {
+    "child": "Just a paragraph."
+  },
+  "expected": {
+    "html": "<section id=\"One\">\n  <h1>One</h1>\n  <section id=\"Two\">\n    <h2>Two</h2>\n    <p>Just a paragraph.</p>\n  </section>\n</section>",
+    "fmt": "# One\n\n## Two\n\n{{ child @shift:auto }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

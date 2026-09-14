@@ -1,0 +1,26 @@
+{
+  "name": "i02-heading-include-whole-text",
+  "description": "A heading built entirely from an include; the id is the slug of the included text.",
+  "rules": [
+    "I2",
+    "I9a",
+    "heading-include"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "# {{ title.crv }}",
+  "files": {
+    "title.crv": "My Title"
+  },
+  "expected": {
+    "html": "<section id=\"My-Title\">\n  <h1>My Title</h1>\n</section>",
+    "fmt": "# {{ title.crv }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "title.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

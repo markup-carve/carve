@@ -1,0 +1,26 @@
+{
+  "name": "i01-quoted-path-roundtrip",
+  "description": "A double-quoted path with a space resolves after the core smart-quotes it.",
+  "rules": [
+    "I1",
+    "quoted-path"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ \"my chapter.crv\" }}",
+  "files": {
+    "my chapter.crv": "spaced path body"
+  },
+  "checkFmtExpandEquivalence": true,
+  "expected": {
+    "html": "<p>spaced path body</p>",
+    "fmt": "{{ \"my chapter.crv\" }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "my chapter.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

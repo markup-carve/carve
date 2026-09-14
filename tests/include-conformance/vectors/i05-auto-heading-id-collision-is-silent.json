@@ -1,0 +1,29 @@
+{
+  "name": "i05-auto-heading-id-collision-is-silent",
+  "description": "Two children whose auto heading ids collide are disambiguated without a warning: I5 covers ids the author wrote.",
+  "rules": [
+    "I5"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.crv }}\n\n{{ b.crv }}\n",
+  "files": {
+    "a.crv": "# Overview\n\nFirst.\n",
+    "b.crv": "# Overview\n\nSecond.\n"
+  },
+  "expected": {
+    "html": "<section id=\"Overview\">\n  <h1>Overview</h1>\n  <p>First.</p>\n</section>\n<section id=\"Overview-2\">\n  <h1>Overview</h1>\n  <p>Second.</p>\n</section>",
+    "fmt": "{{ a.crv }}\n\n{{ b.crv }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.crv",
+        "resolved": true
+      },
+      {
+        "id": "b.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

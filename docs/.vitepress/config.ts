@@ -134,6 +134,7 @@ export default defineConfig({
             text: 'Write',
             items: [
               { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
+              { text: 'File Inclusion', link: '/includes' },
               { text: 'Diagrams & Charts', link: '/diagrams' },
               { text: 'SVG Images', link: '/svg-images' },
               { text: 'Styling Recipes', link: '/recipes' },
@@ -222,6 +223,7 @@ export default defineConfig({
           items: [
             { text: 'Technical Rationale', link: '/technical-rationale' },
             { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
+            { text: 'File Inclusion', link: '/includes' },
             { text: 'Validation', link: '/validation' },
             { text: 'Optional Features & Extensions', link: '/extensions' },
             { text: 'Write an Extension', link: '/extension-tutorial' },

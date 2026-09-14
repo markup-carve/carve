@@ -750,5 +750,6 @@ index: examples/edge-cases/index.md
   url-list-attributes-are-probed-token-wise
   openers-past-the-nesting-cap-are-one-paragraph
   a-format-character-before-a-scheme-is-not-stripped-and-is-inert
+  include-directive-with-no-resolver-renders-literal
   45-inline-extensions-9
   36-autolinks-2

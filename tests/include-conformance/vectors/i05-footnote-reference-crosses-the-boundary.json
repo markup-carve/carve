@@ -1,0 +1,24 @@
+{
+  "name": "i05-footnote-reference-crosses-the-boundary",
+  "description": "A child referring to a note the parent defines resolves, and so does the reverse.",
+  "rules": [
+    "I5"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "[^p]: Parent note.\n\nSee [^c].\n\n{{ c.crv }}\n",
+  "files": {
+    "c.crv": "Child sees [^p].\n\n[^c]: Child note.\n"
+  },
+  "expected": {
+    "html": "<p>See <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>.</p>\n<p>Child sees <a id=\"fnref2\" href=\"#fn2\" role=\"doc-noteref\"><sup>2</sup></a>.</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>Child note.<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n    <li id=\"fn2\">\n      <p>Parent note.<a href=\"#fnref2\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "fmt": "See [^c].\n\n{{ c.crv }}\n\n[^p]: Parent note.\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "c.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

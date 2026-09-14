@@ -1,0 +1,26 @@
+{
+  "name": "i04-attribution-omitted-without-sourcepath",
+  "description": "With no sourcePath the top-level document has no identity, so no file is attributed.",
+  "rules": [
+    "I4"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ missing }}",
+  "files": {},
+  "expected": {
+    "html": "<p>{{ missing }}</p>",
+    "fmt": "{{ missing }}\n",
+    "warnings": [
+      {
+        "rule": "include-unresolved"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "missing",
+        "resolved": false
+      }
+    ]
+  }
+}

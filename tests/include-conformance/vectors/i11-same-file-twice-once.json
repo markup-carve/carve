@@ -1,0 +1,24 @@
+{
+  "name": "i11-same-file-twice-once",
+  "description": "The same file included twice is reported once.",
+  "rules": [
+    "I11"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child }}\n\n{{ child }}",
+  "files": {
+    "child": "Body."
+  },
+  "expected": {
+    "html": "<p>Body.</p>\n<p>Body.</p>",
+    "fmt": "{{ child }}\n\n{{ child }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

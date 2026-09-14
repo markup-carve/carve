@@ -1,0 +1,23 @@
+{
+  "name": "i01-unknown-option-literal",
+  "description": "An unknown option warns and leaves the directive literal.",
+  "rules": [
+    "I1"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @nope:1 }}",
+  "files": {
+    "child": "text"
+  },
+  "expected": {
+    "html": "<p>{{ child <span class=\"mention\"><strong>@nope</strong></span>:1 }}</p>",
+    "fmt": "{{ child @nope:1 }}\n",
+    "warnings": [
+      {
+        "rule": "include-unknown-option"
+      }
+    ],
+    "dependencies": []
+  }
+}

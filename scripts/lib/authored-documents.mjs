@@ -108,7 +108,13 @@ export function authoredDocuments() {
  * does not is a citation definition, which is Tier-2 and outside the subset
  * `scripts/spec` models at all.
  *
- * The last move was 96 -> 98: the reader-facing extension guide adds one
+ * The last move was 98 -> 104: docs/includes.md, the PART 9 section 19 page,
+ * carries six samples (`docs/includes.md#1` through `#6`). All six are answered
+ * - a directive is ordinary paragraph text to the oracle, which is exactly the
+ * property the page documents: with no resolver configured nothing expands, so
+ * the subset `scripts/spec` models reads every one of them.
+ *
+ * Before that, 96 -> 98: the reader-facing extension guide adds one
  * unknown-extension fallback example, and the reader-facing AST guide adds one
  * small tree-shape example. Both are answered. The earlier captioned reference
  * image sample covers PART 9R R7's
@@ -128,5 +134,5 @@ export function authoredDocuments() {
  * message says which way it moved and what to do, because a red gate whose fix
  * is "look up how this file works" is a red gate that gets deleted.
  */
-export const AUTHORED_POPULATION = 98
-export const AUTHORED_ANSWERED = 97
+export const AUTHORED_POPULATION = 104
+export const AUTHORED_ANSWERED = 103

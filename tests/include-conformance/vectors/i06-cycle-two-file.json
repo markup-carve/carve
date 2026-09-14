@@ -1,0 +1,34 @@
+{
+  "name": "i06-cycle-two-file",
+  "description": "A -> B -> A inclusion cycle is caught; the directive stays literal.",
+  "rules": [
+    "I6"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a }}",
+  "files": {
+    "a": "{{ b }}",
+    "b": "{{ a }}"
+  },
+  "expected": {
+    "html": "<p>{{ a }}</p>",
+    "fmt": "{{ a }}\n",
+    "warnings": [
+      {
+        "rule": "include-cycle",
+        "file": "b"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "a",
+        "resolved": true
+      },
+      {
+        "id": "b",
+        "resolved": true
+      }
+    ]
+  }
+}

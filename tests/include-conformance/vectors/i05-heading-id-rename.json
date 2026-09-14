@@ -1,0 +1,34 @@
+{
+  "name": "i05-heading-id-rename",
+  "description": "Duplicate explicit heading ids across includes are renamed deterministically (-2).",
+  "rules": [
+    "I5"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a }}\n\n{{ b }}",
+  "files": {
+    "a": "{#dup}\n# A",
+    "b": "{#dup}\n# B"
+  },
+  "expected": {
+    "html": "<section id=\"dup\">\n  <h1>A</h1>\n</section>\n<section id=\"dup-2\">\n  <h1>B</h1>\n</section>",
+    "fmt": "{{ a }}\n\n{{ b }}\n",
+    "warnings": [
+      {
+        "rule": "include-heading-id-rename",
+        "file": "b"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "a",
+        "resolved": true
+      },
+      {
+        "id": "b",
+        "resolved": true
+      }
+    ]
+  }
+}

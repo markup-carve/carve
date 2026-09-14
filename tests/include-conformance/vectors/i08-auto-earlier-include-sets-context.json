@@ -1,0 +1,29 @@
+{
+  "name": "i08-auto-earlier-include-sets-context",
+  "description": "A heading merged by an earlier include sets the context for a later auto.",
+  "rules": [
+    "I8"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ first }}\n\n{{ second @shift:auto }}",
+  "files": {
+    "first": "# First\n\n## Deeper",
+    "second": "# SecondTop"
+  },
+  "expected": {
+    "html": "<section id=\"First\">\n  <h1>First</h1>\n  <section id=\"Deeper\">\n    <h2>Deeper</h2>\n    <section id=\"SecondTop\">\n      <h3>SecondTop</h3>\n    </section>\n  </section>\n</section>",
+    "fmt": "{{ first }}\n\n{{ second @shift:auto }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "first",
+        "resolved": true
+      },
+      {
+        "id": "second",
+        "resolved": true
+      }
+    ]
+  }
+}

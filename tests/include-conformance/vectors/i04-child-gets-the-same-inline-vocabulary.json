@@ -1,0 +1,24 @@
+{
+  "name": "i04-child-gets-the-same-inline-vocabulary",
+  "description": "Mentions and tags inside an included child are recognized, as they are in the parent.",
+  "rules": [
+    "I4"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "Top.\n\n{{ child.crv }}\n",
+  "files": {
+    "child.crv": "Hi @alice and #topic here.\n"
+  },
+  "expected": {
+    "html": "<p>Top.</p>\n<p>Hi <span class=\"mention\"><strong>@alice</strong></span> and <span class=\"tag\"><strong>#topic</strong></span> here.</p>",
+    "fmt": "Top.\n\n{{ child.crv }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

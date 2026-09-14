@@ -81,7 +81,9 @@ and
 and
 `460-a-nested-note-s-floor-is-two-columns-past-its-own-marker`
 and
-`461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling`.
+`461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling`
+and
+`462-include-directive-with-no-resolver-renders-literal`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -146,6 +148,12 @@ Section 458 does NOT lag any engine: the wrapped-attribute boundary fix brings
 the oracle onto carve-rs and the pinned carve-js, which already produce it, so
 its three rows are added since the run but every engine reproduces them. It is
 listed because the published run predates it, not because any engine disagrees.
+Section 462 does NOT lag any engine either, and for a reason worth stating
+because the feature behind it is new: it pins what a `{{ path }}` directive does
+with NO resolver configured, which is nothing - it stays literal text. That is
+what every engine already produces, including one that has never heard of PART 9
+section 19, because expansion is processor-level and off by default. It is
+listed because the published run predates the row.
 `tests/implementation-comparison-counts.test.mjs` reads this line and counts the
 fixtures each category contributes, so the numbers cannot be asserted, only
 derived, and the line has to be DELETED by whoever next runs

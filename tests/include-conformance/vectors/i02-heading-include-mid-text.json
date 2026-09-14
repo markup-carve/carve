@@ -1,0 +1,26 @@
+{
+  "name": "i02-heading-include-mid-text",
+  "description": "A directive inside a heading expands; the section id is the slug of the post-expansion text.",
+  "rules": [
+    "I2",
+    "I9a",
+    "heading-include"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "# a {{ x.crv }} b",
+  "files": {
+    "x.crv": "Xtext"
+  },
+  "expected": {
+    "html": "<section id=\"a-Xtext-b\">\n  <h1>a Xtext b</h1>\n</section>",
+    "fmt": "# a {{ x.crv }} b\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "x.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "i12-fmt-verbatim-wellformed",
+  "description": "A well-formed directive formats verbatim, not escaped.",
+  "rules": [
+    "I12"
+  ],
+  "mode": "virtual",
+  "resolver": "none",
+  "entry": "{{ chapter.crv }}",
+  "files": {},
+  "expected": {
+    "html": "<p>{{ chapter.crv }}</p>",
+    "fmt": "{{ chapter.crv }}\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

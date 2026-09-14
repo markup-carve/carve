@@ -1,0 +1,24 @@
+{
+  "name": "i01-section-subtree",
+  "description": "#section pulls in the heading subtree up to the next same-or-higher heading.",
+  "rules": [
+    "I1"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child #pick }}",
+  "files": {
+    "child": "# A\n\nskip\n\n{#pick}\n# B\n\nyes\n\n## C\n\nmore\n\n# D\n\nskip"
+  },
+  "expected": {
+    "html": "<section id=\"pick\">\n  <h1>B</h1>\n  <p>yes</p>\n  <section id=\"C\">\n    <h2>C</h2>\n    <p>more</p>\n  </section>\n</section>",
+    "fmt": "{{ child #pick }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

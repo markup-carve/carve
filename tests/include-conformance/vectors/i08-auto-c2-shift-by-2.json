@@ -1,0 +1,24 @@
+{
+  "name": "i08-auto-c2-shift-by-2",
+  "description": "auto with C=2 and child top level 1 shifts by 2.",
+  "rules": [
+    "I8"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "# One\n\n## Two\n\n{{ child @shift:auto }}",
+  "files": {
+    "child": "# Top\n\n## Sub"
+  },
+  "expected": {
+    "html": "<section id=\"One\">\n  <h1>One</h1>\n  <section id=\"Two\">\n    <h2>Two</h2>\n    <section id=\"Top\">\n      <h3>Top</h3>\n      <section id=\"Sub\">\n        <h4>Sub</h4>\n      </section>\n    </section>\n  </section>\n</section>",
+    "fmt": "# One\n\n## Two\n\n{{ child @shift:auto }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

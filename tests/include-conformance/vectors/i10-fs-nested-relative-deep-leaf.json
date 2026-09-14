@@ -1,0 +1,37 @@
+{
+  "name": "i10-fs-nested-relative-deep-leaf",
+  "description": "Nested relative includes resolve against the actual parent directory, not the root.",
+  "rules": [
+    "I10",
+    "I11"
+  ],
+  "mode": "filesystem",
+  "resolver": "filesystem",
+  "tree": {
+    "main.crv": "{{ parts/part.crv }}\n",
+    "parts/part.crv": "{{ chapters/ch.crv }}\n",
+    "parts/chapters/ch.crv": "{{ sections/leaf.crv }}\n",
+    "parts/chapters/sections/leaf.crv": "Deep leaf.\n"
+  },
+  "entryPath": "main.crv",
+  "root": ".",
+  "expected": {
+    "html": "<p>Deep leaf.</p>",
+    "fmt": "{{ parts/part.crv }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "<TMP>/parts/part.crv",
+        "resolved": true
+      },
+      {
+        "id": "<TMP>/parts/chapters/ch.crv",
+        "resolved": true
+      },
+      {
+        "id": "<TMP>/parts/chapters/sections/leaf.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

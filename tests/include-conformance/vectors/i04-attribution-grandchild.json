@@ -1,0 +1,41 @@
+{
+  "name": "i04-attribution-grandchild",
+  "description": "A failure deep in the chain is attributed to the grandchild, not an ancestor.",
+  "rules": [
+    "I4"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ chapter.crv }}",
+  "files": {
+    "chapter.crv": "Chapter.\n\n{{ section.crv }}",
+    "section.crv": "Section.\n\n{{ missing.crv }}"
+  },
+  "options": {
+    "sourcePath": "book.crv"
+  },
+  "expected": {
+    "html": "<p>Chapter.</p>\n<p>Section.</p>\n<p>{{ missing.crv }}</p>",
+    "fmt": "{{ chapter.crv }}\n",
+    "warnings": [
+      {
+        "rule": "include-unresolved",
+        "file": "section.crv"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "chapter.crv",
+        "resolved": true
+      },
+      {
+        "id": "section.crv",
+        "resolved": true
+      },
+      {
+        "id": "missing.crv",
+        "resolved": false
+      }
+    ]
+  }
+}
