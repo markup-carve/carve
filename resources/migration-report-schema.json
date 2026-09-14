@@ -4,11 +4,13 @@
   "title": "Carve migration fidelity report",
   "type": "object",
   "required": ["schemaVersion", "sourceFormat", "diagnostics"],
-  "additionalProperties": false,
+  "additionalProperties": true,
   "properties": {
-    "schemaVersion": { "enum": [2] },
+    "schemaVersion": { "const": 2 },
     "sourceFormat": {
-      "enum": ["html", "markdown", "djot", "bbcode", "pandoc-json", "pdf", "image", "pdf-extraction-json", "carve"]
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Format at the boundary where fidelity assessment begins. An empty diagnostics array asserts complete construct-level assessment."
     },
     "mode": { "type": "string" },
     "adapter": { "type": "string" },
@@ -17,11 +19,11 @@
       "items": {
         "type": "object",
         "required": ["code", "message", "severity", "fidelity", "confidence"],
-        "additionalProperties": false,
+        "additionalProperties": true,
         "properties": {
-          "code": { "type": "string", "minLength": 1 },
-          "message": { "type": "string" },
-          "severity": { "type": "string", "minLength": 1 },
+          "code": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "message": { "type": "string", "minLength": 1 },
+          "severity": { "enum": ["info", "warning", "error"] },
           "fidelity": { "enum": ["preserved", "normalized", "degraded", "dropped"] },
           "confidence": { "enum": ["exact", "inferred", "fallback"] },
           "path": {
@@ -35,7 +37,13 @@
           "direction": { "type": "string" },
           "details": { "type": "object" },
           "sourceLocation": {}
-        }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "code": { "enum": ["fidelity-unverified", "diagnostics-truncated"] } }, "required": ["code"] },
+            "then": { "properties": { "fidelity": { "const": "dropped" }, "confidence": { "const": "fallback" } } }
+          }
+        ]
       }
     }
   }

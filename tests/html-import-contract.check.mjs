@@ -1,12 +1,15 @@
 import assert from 'node:assert/strict'
 import { readdir, readFile } from 'node:fs/promises'
 import { test } from 'node:test'
+import Ajv2020 from 'ajv/dist/2020.js'
 import './binding-contract.check-helper.mjs'
 import './html-import-construct-coverage.check-helper.mjs'
 import './import-roundtrip-ratchets.check-helper.mjs'
 import { carveToCarve, carveToHtml, htmlToCarve } from '@markup-carve/carve'
 
 const root = new URL('./html-import/', import.meta.url)
+const migrationReportSchema = JSON.parse(await readFile(new URL('../resources/migration-report-schema.json', import.meta.url), 'utf8'))
+const validateMigrationReport = new Ajv2020().compile(migrationReportSchema)
 
 test('every HTML import fixture publishes all four contract files', async () => {
   const fixtures = await readdir(root, { withFileTypes: true })
@@ -273,8 +276,24 @@ function diagnosticsMatch(expected, actual) {
     : `expected.report.json: fixture rows [${wanted.join(', ')}] are not a subsequence of [${got.join(', ')}]`
 }
 
+function fidelityDiagnosticsMatch(expected, actual) {
+  const fields = ({ code, fidelity, confidence }) => ({ code, fidelity, confidence })
+  const wanted = (expected.diagnostics ?? []).map(fields)
+  const got = (actual.diagnostics ?? []).map(fields)
+  const allowed = new Set(wanted.map(({ code }) => code))
+  const unexpected = got.filter(({ code }) => !allowed.has(code))
+  if (unexpected.length) return `migration report adds code(s) the fixture does not name: ${unexpected.map(({ code }) => code).join(', ')}`
+  let at = 0
+  for (const row of got) {
+    if (at < wanted.length && JSON.stringify(row) === JSON.stringify(wanted[at])) at++
+  }
+  return at === wanted.length
+    ? null
+    : `migration report does not reproduce the fixture's fidelity classifications`
+}
+
 test('the pinned build imports every fixture the way the fixture says', async () => {
-  const { htmlToCarve, htmlToAst, toAstJson } = await import('@markup-carve/carve')
+  const { htmlToCarve, htmlToAst, migrateHtml, toAstJson } = await import('@markup-carve/carve')
   const fixtures = (await readdir(root, { withFileTypes: true })).filter((e) => e.isDirectory())
   assert.ok(fixtures.length > 0)
   const reproduced = []
@@ -286,10 +305,13 @@ test('the pinned build imports every fixture the way the fixture says', async ()
     const expectedAst = JSON.parse(await read('expected.ast.json'))
 
     const source = htmlToCarve(html)
+    const fidelity = migrateHtml(html)
     const ast = htmlToAst(html)
     const failures = [
       source.value === expectedCrv ? null : `expected.crv: got ${JSON.stringify(source.value)}`,
       diagnosticsMatch(expectedReport, source.report),
+      validateMigrationReport(fidelity.report) ? null : `migration report schema: ${JSON.stringify(validateMigrationReport.errors)}`,
+      fidelityDiagnosticsMatch(expectedReport, fidelity.report),
       // `diagnostics` is compared above, by subsequence rather than element for
       // element, so the whole-object check must not compare it again.
       subsetOf(withoutDiagnostics(expectedReport), source.report, 'expected.report.json'),

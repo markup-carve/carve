@@ -79,17 +79,35 @@ a bare string when importing stored content, so degraded or dropped constructs
 can become a review gate instead of a log message.
 
 The version 2 contract uses `preserved`, `normalized`, `degraded`, and
-`dropped`, with `exact`, `inferred`, or `fallback` confidence. Cases for every
-supported inbound family live in `tests/importer-fidelity/manifest.json` and
-are validated against `resources/importer-fidelity-schema.json`. The manifest
-also names the release-gate owner: this repository replays the four reference
-importers, while `pandoc-carve` and `pdf-to-carve` replay their own fixtures in
-the environments that provide those input paths.
+`dropped`, with `exact`, `inferred`, or `fallback` confidence. The existing
+HTML-import and converter corpora gate the built-in importers' output and
+diagnostics. Cross-repository cases live in
+`tests/importer-fidelity/manifest.json`, are validated against
+`resources/importer-fidelity-schema.json`, and name the downstream repository
+that must replay both their output and diagnostics.
 The published schema describes the fixture manifest; its `schemaVersion` is not
 the version of any one language binding's report. The same manifest is
 published as `importer-fidelity-manifest.json` for downstream fixture sync.
 The report envelope itself is defined by
 `resources/migration-report-schema.json`.
+
+Fidelity is ordered `preserved < normalized < degraded < dropped`. A loss gate
+fails by default when any finding is `degraded` or `dropped`; `preserved` and
+`normalized` do not fail it. Gate failure and tool failure MUST use distinct
+nonzero exits, although a CLI may choose the actual numbers. A tool failure
+writes no fidelity report. An empty diagnostic array asserts that the producer
+performed complete construct-level assessment at the named `sourceFormat`
+boundary. When that is not true, the producer MUST emit `fidelity-unverified`
+as `dropped` with `fallback` confidence. `diagnostics-truncated` has the same
+fail-closed classification.
+
+The producer's `fidelity` is final: bindings MUST NOT reclassify it, and
+fidelity MUST NOT be inferred from human-readable message text. Report and
+diagnostic objects are intentionally open; consumers MUST ignore members they
+do not understand. This reserves additive producer, dialect, and structured
+location metadata without another schema-version break. A diagnostic `path`
+is an opaque, producer-defined human locator and MUST NOT be resolved as a
+portable machine path.
 
 The reverse direction has a stricter rule: a name the bridge does not know is an
 **error**, not a skip. An editor that grew a node type nobody mapped is exactly

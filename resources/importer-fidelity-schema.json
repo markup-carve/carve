@@ -20,6 +20,7 @@
           "id",
           "sourceFormat",
           "runner",
+          "repository",
           "input",
           "expected"
         ],
@@ -30,16 +31,12 @@
           },
           "sourceFormat": {
             "enum": [
-              "html",
-              "markdown",
-              "djot",
-              "bbcode",
               "pandoc-json",
               "pdf-extraction-json"
             ]
           },
           "runner": {
-            "enum": ["reference", "external"]
+            "const": "external"
           },
           "repository": {
             "type": "string",
@@ -51,9 +48,13 @@
           "expected": {
             "type": "object",
             "required": [
-              "diagnostics"
+              "diagnostics",
+              "output"
             ],
             "properties": {
+              "output": {
+                "type": "string"
+              },
               "diagnostics": {
                 "type": "array",
                 "items": {
@@ -90,13 +91,6 @@
             "additionalProperties": false
           }
         },
-        "allOf": [
-          {
-            "if": { "properties": { "runner": { "const": "external" } }, "required": ["runner"] },
-            "then": { "required": ["repository"] },
-            "else": { "not": { "required": ["repository"] } }
-          }
-        ],
         "additionalProperties": false
       }
     }

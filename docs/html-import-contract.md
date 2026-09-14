@@ -1145,7 +1145,9 @@ lossy decision should be observable. The common diagnostic codes are:
   here too would tell a filter nothing about which of the two it is looking at.
 - `style-unmapped`: CSS had no explicit semantic mapping.
 - `table-degraded`: a table could not be represented structurally.
-- `raw-preserved`: unsupported trusted markup was retained as raw HTML.
+- `raw-preserved`: unsupported trusted markup was retained as opaque raw HTML.
+  Its bytes survive, but structured editing is unavailable, so migration
+  fidelity is `degraded` rather than `preserved`.
 - `structure-unspellable`: the import produced a structure Carve source has
   no spelling for, so it survives in the AST and not in written Carve. The
   AST-returning entry point loses nothing and reports nothing; the one that
@@ -1156,7 +1158,9 @@ lossy decision should be observable. The common diagnostic codes are:
   case is `<math alttext="...">` with no `<annotation encoding="...">`: MathML
   never says what `alttext` contains, so reading it as TeX is a guess, and the
   math node may hold something that is not TeX at all.
-- `diagnostics-truncated`: the diagnostic cap was reached.
+- `diagnostics-truncated`: the diagnostic cap was reached. Because omitted
+  findings may include irreversible loss, its fidelity is `dropped` with
+  `fallback` confidence.
 
 **Every code here has a producer.** A code the format names and nothing can emit
 is a promise to a consumer that no import will keep, and `structure-split` was
