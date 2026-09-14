@@ -233,6 +233,7 @@ export default defineConfig({
             { text: 'Source-preserving Patches', link: '/source-patches' },
             { text: 'Import HTML', link: '/html-import' },
             { text: 'Format Conversion', link: '/format-bridges' },
+            { text: 'Development', link: '/development' },
             { text: 'Formal Grammar', link: '/grammar' },
             {
               text: 'Specification Rules',

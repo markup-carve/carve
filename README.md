@@ -174,12 +174,4 @@ expected output. Current differences are recorded in the
 
 ## Development
 
-This repository contains the specification, corpus, and documentation site.
-
-```bash
-npm install
-npm test
-npm run docs:build
-```
-
-See [MAINTAINING.md](MAINTAINING.md) for release and cross-implementation work.
+Contributor setup, testing, and maintenance notes are in the [development guide](docs/development.md).
