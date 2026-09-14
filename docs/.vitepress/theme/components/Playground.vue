@@ -5,6 +5,8 @@ import { carveToHtml, markdownToCarve } from '@markup-carve/carve'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { carveExtensions } from '../../carve-extensions.js'
 // @ts-expect-error - local ESM helper without TS resolution context
+import { PLAYGROUND_CODE_LANGUAGES } from '../../playground-code-languages.js'
+// @ts-expect-error - local ESM helper without TS resolution context
 import { renderMathIn } from '../../render-math.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { encodeShare, decodeShare } from '../../share-link.js'
@@ -480,11 +482,7 @@ function getHighlighter(): Promise<unknown> {
       const carveGrammar = (await import('@markup-carve/carve-grammars/textmate/carve.tmLanguage.json')).default
       return createHighlighter({
         themes: ['github-light', 'github-dark'],
-        langs: [
-          'python', 'yaml', 'json', 'bash', 'javascript', 'typescript', 'tsx',
-          'html', 'css', 'rust', 'php', 'markdown', 'sql', 'go', 'c',
-          carveGrammar as never,
-        ],
+        langs: [...PLAYGROUND_CODE_LANGUAGES, carveGrammar as never],
       })
     })()
   }

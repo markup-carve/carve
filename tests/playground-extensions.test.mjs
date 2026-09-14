@@ -1,5 +1,6 @@
 /**
- * Corpus-coverage guard for the docs Playground extension set.
+ * Corpus-coverage guards for the docs Playground's extension and highlighted
+ * code-language sets.
  *
  * carve-js ships a growing set of extension factories. The docs Playground (and
  * the build-time vite-plugin-carve render) only loads the subset listed in
@@ -14,10 +15,13 @@
  */
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { carveToHtml } from '@markup-carve/carve'
+import { createHighlighter } from 'shiki'
 import {
   unclassifiedExtensions,
   carveExtensions,
 } from '../docs/.vitepress/carve-extensions.js'
+import { PLAYGROUND_CODE_LANGUAGES } from '../docs/.vitepress/playground-code-languages.js'
 
 test('every carve-js extension is classified as ENABLED or EXCLUDED', () => {
   const unclassified = unclassifiedExtensions()
@@ -39,5 +43,25 @@ test('carveExtensions() builds the enabled set without throwing', () => {
   assert.ok(Array.isArray(exts) && exts.length > 0, 'expected a non-empty extension array')
   for (const ext of exts) {
     assert.equal(typeof ext.name, 'string', 'each enabled extension must expose a string name')
+  }
+})
+
+test('the Playground loads Shiki support for diff fences', async () => {
+  const source = '```diff\n-old\n+new\n```\n'
+  assert.match(carveToHtml(source), /class="language-diff"/)
+
+  const highlighter = await createHighlighter({
+    themes: ['github-light'],
+    langs: PLAYGROUND_CODE_LANGUAGES,
+  })
+  try {
+    assert.ok(highlighter.getLoadedLanguages().includes('diff'))
+    const highlighted = highlighter.codeToHtml('-old\n+new\n', {
+      lang: 'diff',
+      theme: 'github-light',
+    })
+    assert.match(highlighted, /<span[^>]+>\+new<\/span>/)
+  } finally {
+    highlighter.dispose()
   }
 })
