@@ -19,6 +19,10 @@ The **share button** in the toolbar puts the whole document in the URL fragment,
 
 <Playground />
 
+## Visual editor
+
+Prefer direct visual editing to this source-to-preview flow? The [Carve visual editor](https://markup-carve.github.io/carve-wysiwyg/) offers rich WYSIWYG authoring while keeping the underlying Carve source available for inspection.
+
 ## Build-time example
 
 This example is read from a `.crv` file and converted to HTML during the
