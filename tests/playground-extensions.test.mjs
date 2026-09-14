@@ -16,6 +16,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { carveToHtml } from '@markup-carve/carve'
+import { diffCodeTransformer } from '@markup-carve/carve-grammars/shiki/diff'
 import { createHighlighter } from 'shiki'
 import {
   unclassifiedExtensions,
@@ -61,6 +62,34 @@ test('the Playground loads Shiki support for diff fences', async () => {
       theme: 'github-light',
     })
     assert.match(highlighted, /<span[^>]+>\+new<\/span>/)
+  } finally {
+    highlighter.dispose()
+  }
+})
+
+test('a .diff code block combines diff lines with its fence language', async () => {
+  const source = '{.diff}\n```js\n  let oldName = true;\n- const oldName = true;\n+ const newName = true;\n```\n'
+  assert.match(carveToHtml(source), /<pre class="diff"><code class="language-js">/)
+
+  const highlighter = await createHighlighter({
+    themes: ['github-light'],
+    langs: ['javascript'],
+  })
+  try {
+    const highlighted = highlighter.codeToHtml(
+      '  let oldName = true;\n- const oldName = true;\n+ const newName = true;\n',
+      {
+        lang: 'js',
+        theme: 'github-light',
+        transformers: [diffCodeTransformer()],
+      },
+    )
+    assert.match(highlighted, /class="shiki github-light has-diff"/)
+    assert.match(highlighted, /class="line diff remove"/)
+    assert.match(highlighted, /class="line diff add"/)
+    assert.match(highlighted, /class="diff-marker">-<\/span>/)
+    assert.match(highlighted, /class="diff-marker">\+<\/span>/)
+    assert.match(highlighted, /style="color:[^"]+"> const<\/span>/)
   } finally {
     highlighter.dispose()
   }

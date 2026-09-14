@@ -2,6 +2,7 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { withBase } from 'vitepress'
 import { carveToHtml, markdownToCarve } from '@markup-carve/carve'
+import { diffCodeTransformer } from '@markup-carve/carve-grammars/shiki/diff'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { carveExtensions } from '../../carve-extensions.js'
 // @ts-expect-error - local ESM helper without TS resolution context
@@ -506,9 +507,11 @@ async function highlightCode(): Promise<void> {
     const lang = cls ? cls.slice('language-'.length) : ''
     if (!loaded.includes(lang)) continue // unknown language: leave the plain block
     try {
+      const isLanguageDiff = pre.classList.contains('diff')
       const out = hl.codeToHtml(code.textContent ?? '', {
         lang,
         themes: { light: 'github-light', dark: 'github-dark' },
+        transformers: isLanguageDiff ? [diffCodeTransformer()] : [],
       }) as string
       const tmp = document.createElement('div')
       tmp.innerHTML = out
