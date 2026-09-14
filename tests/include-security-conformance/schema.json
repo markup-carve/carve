@@ -39,7 +39,7 @@
               "resolverCalls": { "type": "array", "items": { "type": "string" } },
               "remoteFetches": { "type": "array", "items": { "type": "string" } },
               "status": { "enum": ["allowed", "denied", "unsupported"] },
-              "denial": { "enum": ["outside-root", "remote-not-allowed", "depth", "budget", "resolver-calls"] },
+              "denial": { "enum": ["outside-root", "not-found", "remote-not-allowed", "depth", "budget", "resolver-calls"] },
               "canonicalId": { "type": "string" },
               "maxVisitedDepth": { "type": "integer", "minimum": 0 },
               "chargedBytes": { "type": "integer", "minimum": 0 }

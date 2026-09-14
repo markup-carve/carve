@@ -93,6 +93,15 @@ dependency `id`/order, that is a divergence the suite is meant to surface.
   `include-budget`, `include-selection-conflict`, `include-block-in-inline`,
   `include-section`, `include-heading-clamp`, `include-heading-id-rename`,
   `include-footnote-rename`, `include-unknown-option`.
+  There is deliberately **no id for a refusal**: a containment denial and a
+  missing file share `include-unresolved`, because §19's Errors table has one row
+  for both. Four goldens pin the shared id (`i10-fs-dotdot-escape-denied`,
+  `i10-fs-symlink-dir-escape-denied`, `i10-fs-symlink-file-and-dotdot-denied`,
+  `i10-fs-absolute-path-denied`), so a processor that split them fails here
+  today. The refusal **class** is observable one layer down, at the resolver
+  seam, where `tests/include-security-conformance` pins it as `denial`. A host
+  may publish a finer diagnostic of its own (markup-carve/carve-lsp#193) as long
+  as this rule id does not move.
 - **`file`** — the attributed file (I4), present only when the engine attributes
   the warning. Portable as written in virtual mode; folded to the `<TMP>`
   sentinel in filesystem mode (see below).

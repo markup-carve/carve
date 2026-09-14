@@ -15,6 +15,26 @@ ordering, or fallback text.
 portable `denial` class, never as warning text: a refusal class and the absence
 of a resolver call are the two observables, and both are portable.
 
+One class is deliberately NOT a security decision. `not-found` is the CONTROL
+that makes the others falsifiable: with only refusals in the corpus, a resolver
+answering `outside-root` for every failure passed every vector, so the
+containment class could not be told apart from "deny everything" (carve#1994).
+It spells the section 19 Errors row "Unreadable / missing path", whose ruled
+outcome - left literal with a Warning - is the same `status: denied`.
+
+The class is the RESOLVER's, not the author's. Section 19 has one Errors row
+for a refusal and a miss alike, and the include-conformance canonical rule set
+has no id for a refusal, so the cross-engine warning stays `include-unresolved`
+for both (see that suite's README). A host MAY publish a finer diagnostic of
+its own - markup-carve/carve-lsp#193 does - as long as the shared rule id does
+not move.
+
+What is still NOT pinned is whether the class may vary with the target's
+EXISTENCE. A resolver that checks existence before containment reports a miss
+for an absent out-of-root target and a containment denial for a present one,
+and passes every vector here. Whether the two must be indistinguishable is
+unruled: carve#1999.
+
 ## Adapter contract
 
 Each implementation reads `vectors.json` and handles every `kind`:
@@ -61,3 +81,10 @@ tolerated - an engine's red is expected and tracked, not discovered.
   additionally pins the vector count at 12. carve-js and carve-php implement
   includes but carry no security adapter at all. Delete this entry when the last
   adapter reads the limit.
+- `not-found` (carve#1994). Two `S2-contained-paths` vectors pin that a target
+  which canonicalizes INSIDE the root but is absent is refused as a miss, not as
+  a containment denial. Adapter side again: carve-lsp drives the `filesystem`
+  kinds through its real resolver, whose denial set already carries `not-found`
+  (carve-lsp#193), so only its vector-count pin has to move; carve-rs runs the
+  `graph` kinds only and is unaffected. Delete this entry when carve-lsp's count
+  pin reads 16.
