@@ -188,6 +188,7 @@ const textOf = (html) =>
     .replace(/&quot;/g, '"')
     .replace(/&nbsp;/g, ' ')
     .replace(/&mdash;/g, '—')
+    .replace(/&copy;/g, '©')
     // Ampersand last, or `&amp;#35;` would decode twice into `#`.
     .replace(/&amp;/g, '&')
     // Text/emoji presentation selectors do not change the character's meaning.

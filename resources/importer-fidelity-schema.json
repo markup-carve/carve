@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://markup-carve.github.io/carve/importer-fidelity-schema.json",
+  "title": "Carve importer fidelity fixture manifest",
+  "description": "Exchange format for replayable importer fixtures; schemaVersion versions this manifest rather than an individual engine's report.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "cases"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 2
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "sourceFormat",
+          "runner",
+          "repository",
+          "input",
+          "expected"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "sourceFormat": {
+            "enum": [
+              "pandoc-json",
+              "pdf-extraction-json"
+            ]
+          },
+          "runner": {
+            "const": "external"
+          },
+          "repository": {
+            "type": "string",
+            "pattern": "^markup-carve/[a-z0-9-]+$"
+          },
+          "input": {
+            "type": "string"
+          },
+          "expected": {
+            "type": "object",
+            "required": [
+              "diagnostics",
+              "output"
+            ],
+            "properties": {
+              "output": {
+                "type": "string"
+              },
+              "diagnostics": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "fidelity",
+                    "confidence"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "fidelity": {
+                      "enum": [
+                        "preserved",
+                        "normalized",
+                        "degraded",
+                        "dropped"
+                      ]
+                    },
+                    "confidence": {
+                      "enum": [
+                        "exact",
+                        "inferred",
+                        "fallback"
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

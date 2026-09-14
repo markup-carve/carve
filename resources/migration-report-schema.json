@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://markup-carve.github.io/carve/migration-report-schema.json",
+  "title": "Carve migration fidelity report",
+  "type": "object",
+  "required": ["schemaVersion", "sourceFormat", "diagnostics"],
+  "additionalProperties": true,
+  "properties": {
+    "schemaVersion": { "const": 2 },
+    "sourceFormat": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Format at the boundary where fidelity assessment begins. An empty diagnostics array asserts complete construct-level assessment."
+    },
+    "mode": { "type": "string" },
+    "adapter": { "type": "string" },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "message", "severity", "fidelity", "confidence"],
+        "additionalProperties": true,
+        "properties": {
+          "code": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "message": { "type": "string", "minLength": 1 },
+          "severity": { "enum": ["info", "warning", "error"] },
+          "fidelity": { "enum": ["preserved", "normalized", "degraded", "dropped"] },
+          "confidence": { "enum": ["exact", "inferred", "fallback"] },
+          "path": {
+            "oneOf": [
+              { "type": "string" },
+              { "type": "array", "items": { "oneOf": [{ "type": "string" }, { "type": "integer" }] } }
+            ]
+          },
+          "line": { "type": "integer", "minimum": 1 },
+          "column": { "type": "integer", "minimum": 1 },
+          "direction": { "type": "string" },
+          "details": { "type": "object" },
+          "sourceLocation": {}
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "code": { "enum": ["fidelity-unverified", "diagnostics-truncated"] } }, "required": ["code"] },
+            "then": { "properties": { "fidelity": { "const": "dropped" }, "confidence": { "const": "fallback" } } }
+          }
+        ]
+      }
+    }
+  }
+}
