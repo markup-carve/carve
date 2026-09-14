@@ -24,6 +24,10 @@ import { source as DEFAULT_SOURCE } from '../../examples/demo.crv'
 // rendering in-page like the JS and Rust engines.
 const PHP_SANDBOX_URL = 'https://sandbox.dereuromark.de/sandbox/carve'
 
+// Hosted WYSIWYG editor (carve-wysiwyg), linked from the toolbar for authors
+// who want direct visual editing rather than this source-to-preview flow.
+const CARVE_WYSIWYG_URL = 'https://markup-carve.github.io/carve-wysiwyg/'
+
 const source = ref(DEFAULT_SOURCE)
 const fullscreen = ref(false)
 
@@ -732,6 +736,15 @@ void mermaidInit
           </svg>
         </button>
         <span class="pg-sr-only" role="status" aria-live="polite">{{ shareMessage }}</span>
+        <a
+          class="pg-btn"
+          :href="CARVE_WYSIWYG_URL"
+          target="_blank"
+          rel="noopener"
+          title="Direct WYSIWYG authoring, versus this source-to-preview playground"
+        >
+          Visual editor ↗
+        </a>
         <button class="pg-btn pg-import" type="button" @click="openImport">
           Import Markdown
         </button>
