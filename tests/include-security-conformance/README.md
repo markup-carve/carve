@@ -48,9 +48,16 @@ and `resources/converter-drift.txt`, that window is DECLARED rather than
 tolerated - an engine's red is expected and tracked, not discovered.
 
 - `S7-call-bound`, `S8-post-call-bound-no-read` (carve#1990). The §19 bound on
-  resolver invocations per render. Known to be implemented by carve-lsp
-  (markup-carve/carve-lsp#191). Every other engine is expected to fail
-  `call-bound-on-unresolvable-targets` and
-  `call-bound-exhaustion-skips-later-resolver` until its own ticket lands; the
-  new `maxResolverCalls` limit and the `resolver-calls` denial class also have
-  to reach each adapter. Delete this entry when the last engine ships the bound.
+  resolver invocations per render. Measured through each engine's own source on
+  2026-09-14: carve-js, carve-php, carve-rs and carve-lsp ALL enforce the bound
+  already, each with the recommended default of 1000. The window is therefore
+  entirely on the ADAPTER side, which is why the vectors could sit unwritten
+  this long - no engine had to change for them to pass, and no adapter asked.
+  An adapter that does not pass `maxResolverCalls` through runs the vector under
+  its engine default of 1000, records every call, and goes red. carve-rs
+  (`tests/include_security_conformance.rs`) and carve-lsp
+  (`src/include-security-conformance.test.ts`) have adapters and must grow the
+  limit, the `resolver-calls` denial class and the two requirement ids; carve-lsp
+  additionally pins the vector count at 12. carve-js and carve-php implement
+  includes but carry no security adapter at all. Delete this entry when the last
+  adapter reads the limit.
