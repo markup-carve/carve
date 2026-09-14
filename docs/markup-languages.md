@@ -212,6 +212,7 @@ code
 | Python documentation | reST |
 | Personal knowledge base | Org Mode |
 | New projects wanting consistency | Djot |
+| Rich documents with predictable parsing and built-in constructs | Carve |
 | Extreme minimalism | Gemtext |
 | Wiki content | MediaWiki or Creole |
 
