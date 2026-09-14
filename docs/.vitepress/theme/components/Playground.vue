@@ -2,12 +2,11 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { withBase } from 'vitepress'
 import { carveToHtml, markdownToCarve } from '@markup-carve/carve'
+import { diffCodeTransformer } from '@markup-carve/carve-grammars/shiki/diff'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { carveExtensions } from '../../carve-extensions.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { PLAYGROUND_CODE_LANGUAGES } from '../../playground-code-languages.js'
-// @ts-expect-error - local ESM helper without TS resolution context
-import { diffCodeTransformer } from '../../diff-code-transformer.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { renderMathIn } from '../../render-math.js'
 // @ts-expect-error - local ESM helper without TS resolution context

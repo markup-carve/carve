@@ -16,13 +16,13 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { carveToHtml } from '@markup-carve/carve'
+import { diffCodeTransformer } from '@markup-carve/carve-grammars/shiki/diff'
 import { createHighlighter } from 'shiki'
 import {
   unclassifiedExtensions,
   carveExtensions,
 } from '../docs/.vitepress/carve-extensions.js'
 import { PLAYGROUND_CODE_LANGUAGES } from '../docs/.vitepress/playground-code-languages.js'
-import { diffCodeTransformer } from '../docs/.vitepress/diff-code-transformer.js'
 
 test('every carve-js extension is classified as ENABLED or EXCLUDED', () => {
   const unclassified = unclassifiedExtensions()
