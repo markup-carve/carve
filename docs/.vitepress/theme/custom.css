@@ -548,6 +548,31 @@
   background: transparent;
 }
 
+/* `{.diff}` keeps the fence language for tokenization and marks unified-diff
+ * lines independently. The marker is restored after Shiki highlights the
+ * marker-free source, so it cannot distort the underlying language grammar. */
+.carve-render .shiki.has-diff .line {
+  display: inline-block;
+  width: 100%;
+}
+.carve-render .shiki.has-diff .line.diff.add {
+  background: color-mix(in srgb, var(--vp-c-green-1) 14%, transparent);
+}
+.carve-render .shiki.has-diff .line.diff.remove {
+  background: color-mix(in srgb, var(--vp-c-red-1) 14%, transparent);
+}
+.carve-render .shiki.has-diff .diff-marker {
+  display: inline-block;
+  width: 1ch;
+  font-weight: 700;
+}
+.carve-render .shiki.has-diff .line.diff.add .diff-marker {
+  color: var(--vp-c-green-1);
+}
+.carve-render .shiki.has-diff .line.diff.remove .diff-marker {
+  color: var(--vp-c-red-1);
+}
+
 /*
  * Disclosure summaries (the `details` extension / raw <details>) are
  * clickable: Carve emits a bare <summary> without VitePress's custom-block

@@ -7,6 +7,8 @@ import { carveExtensions } from '../../carve-extensions.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { PLAYGROUND_CODE_LANGUAGES } from '../../playground-code-languages.js'
 // @ts-expect-error - local ESM helper without TS resolution context
+import { diffCodeTransformer } from '../../diff-code-transformer.js'
+// @ts-expect-error - local ESM helper without TS resolution context
 import { renderMathIn } from '../../render-math.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { encodeShare, decodeShare } from '../../share-link.js'
@@ -506,9 +508,11 @@ async function highlightCode(): Promise<void> {
     const lang = cls ? cls.slice('language-'.length) : ''
     if (!loaded.includes(lang)) continue // unknown language: leave the plain block
     try {
+      const isLanguageDiff = pre.classList.contains('diff')
       const out = hl.codeToHtml(code.textContent ?? '', {
         lang,
         themes: { light: 'github-light', dark: 'github-dark' },
+        transformers: isLanguageDiff ? [diffCodeTransformer()] : [],
       }) as string
       const tmp = document.createElement('div')
       tmp.innerHTML = out
