@@ -302,6 +302,21 @@ const MANIFEST = [
   // document that upstream renumbered - so it excuses nothing and no check
   // reports it.
   { repo: 'carve-php', path: 'tests/TestCase/Renderer/NoWhitespaceOnlyLineTest.php', name: 'KNOWN_REMAINING', kind: 'php', policy: 'owed', guard: 'two-way', staleness: 'public function testKnownRemainingIsStillBehindOnWhatItClaims', owner: 'markup-carve/carve-php#1689' },
+  // A per-slug declaration of a converter corpus case this engine is known to
+  // lose against the pinned corpus (markup-carve/carve-php#1943). `manual`, not
+  // `declared`: the reverse direction IS mechanically gated, but by the engine's
+  // own `testEveryDeclaredDriftStillDiverges()` (named in `staleness`), which
+  // deletes each row the moment it stops diverging - this audit cannot re-judge
+  // it because `liveRows` collapses the `'slug' => 'reason'` row's whitespace, so
+  // the `declared` format check can never pass on a php-array row. Printed here
+  // for the reader; the engine test is the gate.
+  { repo: 'carve-php', path: 'tests/TestCase/Converter/ConverterCorpusTest.php', name: 'DECLARED_DRIFT', kind: 'php', policy: 'manual', guard: 'two-way', staleness: 'testEveryDeclaredDriftStillDiverges', owner: 'tests/TestCase/Converter/ConverterCorpusTest.php' },
+  // Empty cross-engine skip-list for the include/transclusion conformance
+  // vectors (markup-carve/carve-php#373). ONE-WAY: testVector only SKIPS a
+  // listed vector, nothing asserts a listed vector still differs, so a row
+  // would go stale silently. Harmless while empty - the audit fails an unwired
+  // list only once it holds a row; give it a reverse guard before adding one.
+  { repo: 'carve-php', path: 'tests/TestCase/Transform/IncludeConformanceTest.php', name: 'KNOWN_DIFFERENCES', kind: 'php', policy: 'owed', guard: 'one-way', owner: 'tests/TestCase/Transform/IncludeConformanceTest.php' },
 
   // -- carve-rs --------------------------------------------------------------
   { repo: 'carve-rs', path: 'tests/corpus.rs', name: 'KNOWN_GAPS', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/corpus.rs' },
@@ -315,6 +330,9 @@ const MANIFEST = [
   // implements. Meeting one that is NOT listed is the failure, which is the
   // opposite direction from every other row here.
   { repo: 'carve-rs', path: 'tests/the_report_answers_to_the_published_schema.rs', name: 'KNOWN_KEYWORDS', kind: 'rust', policy: 'permitted', guard: 'two-way', owner: 'validator capability list, not an exemption' },
+  // The carve-rs twin of carve-php's include KNOWN_DIFFERENCES: an empty
+  // one-way skip-list for the include/transclusion conformance vectors.
+  { repo: 'carve-rs', path: 'tests/include_conformance.rs', name: 'KNOWN_DIFFERENCES', kind: 'rust', policy: 'owed', guard: 'one-way', owner: 'tests/include_conformance.rs' },
 ]
 
 /**
