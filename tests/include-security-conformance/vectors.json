@@ -66,6 +66,16 @@
       "name": "budget-exhaustion-skips-later-resolver", "description": "After exhaustion, later siblings are refused without resolver I/O.",
       "requirement": "S6-post-budget-no-read", "kind": "graph", "entry": "{{ large }} {{ must-not-read }}", "files": { "large": "12345", "must-not-read": "secret" }, "maxDepth": 8, "maxBytes": 4,
       "expected": { "resolverCalls": ["large"], "chargedBytes": 5, "status": "denied", "denial": "budget" }
+    },
+    {
+      "name": "call-bound-on-unresolvable-targets", "description": "The call bound holds where the byte budget cannot reach: an unresolved target charges no bytes, so only a bound on invocations stops the I/O.",
+      "requirement": "S7-call-bound", "kind": "graph", "entry": "{{ gone-1 }} {{ gone-2 }} {{ gone-3 }} {{ gone-4 }} {{ gone-5 }}", "files": {}, "maxDepth": 8, "maxBytes": 1000, "maxResolverCalls": 3,
+      "expected": { "resolverCalls": ["gone-1", "gone-2", "gone-3"], "chargedBytes": 0, "status": "denied", "denial": "resolver-calls" }
+    },
+    {
+      "name": "call-bound-exhaustion-skips-later-resolver", "description": "The directive AT the bound is resolved and charged; the one past it is refused without resolver I/O.",
+      "requirement": "S8-post-call-bound-no-read", "kind": "graph", "entry": "{{ gone-1 }} {{ gone-2 }} {{ at-bound }} {{ must-not-read }}", "files": { "at-bound": "12345", "must-not-read": "secret" }, "maxDepth": 8, "maxBytes": 1000, "maxResolverCalls": 3,
+      "expected": { "resolverCalls": ["gone-1", "gone-2", "at-bound"], "chargedBytes": 5, "status": "denied", "denial": "resolver-calls" }
     }
   ]
 }
