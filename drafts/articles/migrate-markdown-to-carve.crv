@@ -1,0 +1,262 @@
+---
+title: "From Markdown to Carve without rewriting your documents"
+description: "A practical migration: convert a Markdown file, inspect the few syntax changes that matter, and add linting before publishing."
+status: draft
+audience: "Markdown authors evaluating Carve"
+suggested-venues: "DerEuroMark, dev.to, ecosystem newsletters"
+---
+
+# From Markdown to Carve without rewriting your documents
+
+Trying a new markup language should not begin with retyping your archive.
+Carve has enough in common with Markdown that most of a document can move
+mechanically: headings, links, images, block quotes, code spans, fenced code,
+and ordinary lists all have familiar forms. The parts that differ are the ones
+worth reviewing rather than the whole file.
+
+This walkthrough converts one real Markdown-shaped article, checks the result,
+and then uses a few Carve features that remove the HTML usually hiding in a
+Markdown document.
+
+## Start with the converter
+
+Install one of the Carve command-line implementations. The Rust binary is a
+direct route to the shared command:
+
+```sh
+cargo install carve-lang
+```
+
+Then convert a file:
+
+```sh
+carve migrate --from markdown article.md > article.crv
+```
+
+The JavaScript and PHP command-line implementations expose the same migration
+command. If you are integrating conversion into an application, equivalent APIs
+are available in JavaScript, Rust, and PHP.
+
+The converter handles the mechanical work. It is not a promise that every
+Markdown extension has an equivalent, because “Markdown” may mean CommonMark,
+GFM, Pandoc Markdown, kramdown, or a site-specific mixture. Treat the generated
+file like the result of a code migration: review it once, then let tooling keep
+it valid.
+
+## Review the four differences that matter most
+
+Most source survives unchanged. These are the places where a quick review pays
+off.
+
+### 1. Emphasis uses visual mnemonics
+
+Markdown overloads stars and underscores for italic and bold. Carve assigns one
+visible effect to each delimiter:
+
+```carve
+/italic text/
+*bold text*
+/*bold and italic*/
+_underlined text_
+~struck text~
+=highlighted text=
+```
+
+The mnemonic is the syntax: a slash leans, a star is visually heavy, an
+underscore sits below the word, and a tilde crosses through it.
+
+This is the change most likely to fool your eyes during a manual copy. In
+particular, `_text_` is underline in Carve, not italic. The converter rewrites
+parsed Markdown emphasis, so do not run a global search-and-replace over the
+raw source.
+
+### 2. Put heading attributes above the heading
+
+Pandoc and kramdown commonly put an id at the end of a heading:
+
+```md
+## Installation {#install}
+```
+
+In Carve, block attributes precede their block:
+
+```carve
+{#install}
+## Installation
+```
+
+This is not cosmetic. A trailing `{#install}` is heading text in Carve and can
+change the generated id, breaking links while still producing plausible HTML.
+Because the Markdown is still valid text, find these before converting:
+
+```sh
+rg '\{[#.]' content --glob '*.md'
+```
+
+The converter preserves a trailing attribute as escaped literal text, such as
+`\{\#install}`, rather than guessing which Markdown dialect authored it. The
+linter does not flag that escaped form. Use the search above as the check, then
+remove the backslashes and move `{#install}` above the heading in the generated
+Carve file.
+
+### 3. Give lists a blank line
+
+Carve does not let a list marker interrupt a paragraph. This text stays one
+paragraph:
+
+```carve
+The release has two phases.
+1. Prepare the package.
+2. Publish it.
+```
+
+To start a list, add a blank line:
+
+```carve
+The release has two phases.
+
+1. Prepare the package.
+2. Publish it.
+```
+
+That rule prevents an ordinary line beginning with a number from unexpectedly
+changing the surrounding block structure. It also removes Markdown's special
+case in which an ordered list may interrupt a paragraph only when it starts at
+`1`.
+
+Markdown's `+ item` bullet is another special case: `+` is a continuation
+marker in Carve, not a bullet. Use `-` or `*` for unordered lists.
+
+### 4. Make raw output explicit
+
+Bare HTML written directly in Carve is text. During migration, however, the
+converter preserves Markdown's parsed HTML by writing an explicit `{=html}` raw
+span or `=html` block. That keeps trusted articles working, but it also means
+converted HTML remains live by default.
+
+When trusted source really needs target-specific output, the explicit block
+form is:
+
+````carve
+```=html
+<video controls src="demo.webm"></video>
+```
+````
+
+This is easier to find in review and only fires for the named renderer. Disable
+raw HTML when converting or rendering untrusted input:
+
+```sh
+carve migrate --from markdown comments.md | carve --safe
+```
+
+Or in JavaScript:
+
+```js
+carveToHtml(userInput, { allowRawHtml: false })
+```
+
+URL and attribute hardening remains active independently, but explicit raw
+output is a trust boundary rather than a sanitizer.
+
+## Let the linter find silent mistakes
+
+Run the linter on the converted document:
+
+```sh
+carve lint article.crv
+```
+
+It catches problems that a parser cannot reject because they are still valid
+text: a broken cross-reference, a duplicate heading id, a hand-written
+Markdown-style heading attribute in the wrong place, doubled Markdown emphasis,
+or a legacy raw fence. As noted above, it does not flag a trailing heading
+attribute that the converter has already escaped.
+
+For a directory of articles, make linting part of CI. `find` avoids relying on
+shell-specific recursive glob settings:
+
+```sh
+find content -name '*.crv' -exec carve lint {} +
+```
+
+A clean lint result means the linter's known silent traps are absent. It does not
+replace the pre-conversion heading-attribute search or a rendered preview,
+especially when the original depended on a Markdown plugin.
+
+## Compare the HTML shape and anchors
+
+Carve wraps a heading and its following content in a `<section>` by default,
+placing the heading id on that wrapper. It also preserves case in generated ids:
+
+```html
+<!-- A typical Markdown renderer -->
+<h2 id="page-heading">Page Heading</h2>
+<p>A paragraph.</p>
+
+<!-- Carve's default HTML -->
+<section id="Page-Heading">
+  <h2>Page Heading</h2>
+  <p>A paragraph.</p>
+</section>
+```
+
+Audit inbound fragment links and CSS or JavaScript that expects every rendered
+block to be a direct child of the content container. An explicit heading id
+stabilizes links. If the wrapper is incompatible with an existing site, check
+whether your engine version supports rendering with `sections: false`.
+
+## Replace workarounds only after the move
+
+First get an equivalent document. Then simplify the parts that were awkward in
+Markdown.
+
+A callout no longer needs embedded HTML:
+
+```carve
+::: warning "Back up first"
+The migration changes stored source files. Commit or copy them before running
+it over a directory.
+:::
+```
+
+A figure can carry a real caption and a stable cross-reference:
+
+```carve
+{#migration-flow}
+![A document moving through conversion, linting, and review](migration-flow.svg)
+^ Figure #: The migration workflow
+```
+
+Later prose can refer to `</#migration-flow>`. The renderer supplies the figure
+number, so inserting an earlier figure does not leave a stale “Figure 3” in the
+text.
+
+Tables can express headers without a separator row and can merge cells:
+
+```carve
+|= Stage  |= Owner |= Result          |
+| Convert | Tool   | Draft source     |
+| Review  | Author | Approved wording |
+| Publish | <      | HTML and feeds   |
+```
+
+The `<` cell extends the cell on its left. These are document structures, not
+HTML snippets, so non-HTML renderers can decide how to preserve or gracefully
+degrade them.
+
+## Migrate one boundary at a time
+
+You do not need to switch an entire site to evaluate Carve. Start with a single
+article or documentation section whose build can route `.crv` files through a
+Carve renderer. Keep assets and URLs where they are, compare the rendered HTML,
+and add the lint command before expanding the boundary.
+
+That produces a useful decision even if you stop: you learn which features in
+your documents are standard structure, which depend on a Markdown flavor, and
+which are really raw HTML workarounds.
+
+The [migration guide](https://markup-carve.github.io/carve/migrate-from-markdown)
+has the complete syntax map. The
+[playground](https://markup-carve.github.io/carve/playground) is the quickest
+way to test a fragment without installing anything.

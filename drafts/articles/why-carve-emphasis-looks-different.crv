@@ -1,0 +1,166 @@
+---
+title: "Why Carve writes /italic/ and *bold*"
+description: "The design argument for memorable delimiters, uniform boundaries, and intentionally breaking Markdown compatibility."
+status: draft
+audience: "Markup-language users and implementers"
+suggested-venues: "talk.commonmark.org, dev.to, Lobsters when appropriate"
+---
+
+# Why Carve writes `/italic/` and `*bold*`
+
+The first thing a Markdown user notices about Carve is also the thing most
+likely to start an argument:
+
+```carve
+/italic/
+*bold*
+_underline_
+~strikethrough~
+=highlight=
+```
+
+Why spend compatibility on punctuation everyone already knows?
+
+Because familiarity is not the only kind of usability. A syntax can be familiar
+because people have memorized it, or understandable because the source itself
+suggests what it will do. Carve chose the second kind for inline styling, then
+made the boundary rule uniform across all five delimiters.
+
+That trade is worth examining directly.
+
+## Markdown's notation is historical, not inevitable
+
+Markdown inherited email and plain-text conventions rather than designing a
+complete visual system. Asterisks and underscores both became emphasis, and a
+doubled delimiter became strong emphasis:
+
+```md
+*italic*  _also italic_
+**bold**  __also bold__
+```
+
+This is familiar to millions of developers. It is also redundant: four source
+spellings cover two effects, while underline has no standard spelling at all.
+Strikethrough usually arrives through GFM as tilde delimiters.
+
+Carve starts from a different question: if each effect had one single-character
+delimiter, which character would best hint at the result?
+
+## The source previews the effect
+
+A slash leans forward like italic type. An underscore is a line under the text.
+A tilde passes through the vertical middle of lower-case letters. An equals sign
+resembles the parallel edges of a marker stroke. The star is the heaviest common
+plain-text mark, so it carries bold.
+
+None of these is a perfect miniature rendering. Plain text cannot literally
+change weight or draw a line through a word. The goal is a mnemonic strong
+enough that a new author can reconstruct the syntax instead of consulting a
+cheat sheet.
+
+One character also keeps nested combinations readable:
+
+```carve
+/*important aside*/
+*bold with /a quieter phrase/ inside*
+```
+
+There is no delimiter-run arithmetic and no choice between equivalent
+spellings.
+
+## The more important decision is the boundary rule
+
+Choosing attractive punctuation would not help if ordinary text accidentally
+triggered it. Carve therefore applies the same word-boundary principle to its
+inline delimiters: punctuation inside a word stays punctuation.
+
+```carve
+snake_case
+/usr/local/bin
+key=value
+one~two
+```
+
+Those examples remain literal text. Formatting begins only where the delimiter
+is allowed to open and ends where it is allowed to close.
+
+When formatting inside a word is intentional, braces make the boundary
+explicit:
+
+```carve
+H{,2,}O
+mc{^2^}
+x{*very*}large
+```
+
+Superscript and subscript are braced-only because caret and comma occur too
+naturally in prose to make safe bare delimiters. The inner marks still carry the
+mnemonic: the caret points up and the comma hangs below the baseline.
+
+This combination matters more than any one character. A memorable delimiter
+without predictable boundaries is a source of accidental markup. A rigorous
+boundary rule with arbitrary delimiters is learnable but forgettable. Carve is
+trying to get both properties at once.
+
+## Why not keep Markdown aliases too?
+
+Accepting both systems sounds friendly:
+
+```text
+*italic* and /italic/
+**bold** and *bold*
+```
+
+It is not actually possible to give `*text*` both meanings within one inline
+dialect. An option could select a compatibility mode, but then the same
+delimiter would mean italic in that mode and bold in core Carve.
+
+That is the flavor problem Carve is meant to avoid. Compatibility aliases also
+keep parser rules, formatters, documentation, and editor grammars responsible
+for spellings the language no longer wants authors to produce.
+
+So Carve makes a clean break: Markdown is an import format, not a second inline
+syntax mode. A converter can preserve the meaning of `*italic*` by writing
+`/italic/`. Once converted, each Carve styling delimiter has one meaning.
+
+## A migration cost is still a cost
+
+The choice has an obvious downside. Experienced Markdown authors will type
+`**bold**` from muscle memory, and existing documents cannot simply be renamed
+from `.md` to `.crv`. Search results, keyboards, and editors all reflect
+Markdown's installed base.
+
+Carve addresses that cost with conversion and diagnostics rather than pretending
+it does not exist:
+
+```sh
+carve migrate --from markdown article.md > article.crv
+carve lint article.crv
+```
+
+The converter works from the parsed Markdown structure, so it can distinguish
+emphasis from literal punctuation. The linter flags familiar spellings such as
+`**bold**` and `~~strike~~` when they leak into hand-written Carve.
+
+The payoff only makes sense for content that will be edited again. For a frozen
+archive, conversion may offer little. For a living documentation set, a CMS, or
+a format taught to new authors, the continuing benefit can outweigh the
+one-time migration.
+
+## Syntax should optimize for its authors
+
+There is no universally best emphasis notation. A format embedded in GitHub
+should optimize for Markdown compatibility. A format intended as a source for
+rich, long-lived documents can reasonably optimize for learnability,
+predictability, and one meaning per spelling.
+
+Carve's delimiter choice is therefore not “Markdown got italics wrong.” It is a
+more specific claim: once a new language has already accepted the compatibility
+cost of being new, it should spend that freedom on a coherent system rather
+than reproduce every historical choice.
+
+Try the five delimiters in the
+[Carve playground](https://markup-carve.github.io/carve/playground), then type
+an identifier, a path, and an equation beside them. The interesting question is
+not whether the syntax looks unfamiliar for the first minute. It is whether you
+still need to look it up ten minutes later.

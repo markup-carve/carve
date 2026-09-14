@@ -1,0 +1,184 @@
+---
+title: "Same document, same output: stopping markup parsers from drifting apart"
+description: "How a shared corpus turns cross-language parser compatibility from a promise into a testable release property."
+status: draft
+audience: "Library maintainers, platform engineers, and technical writers"
+suggested-venues: "JavaScript Weekly, PHP Weekly, This Week in Rust, programming communities"
+---
+
+# Same document, same output: stopping markup parsers from drifting apart
+
+Your editor preview looks right. Production does not.
+
+That small mismatch is one of the most expensive failure modes in a markup
+stack. The author trusts a JavaScript preview, the server renders with PHP, a
+native tool generates the release notes, and each parser makes a slightly
+different decision about the same punctuation. Nothing crashes. The document
+merely changes meaning somewhere between authoring and publishing.
+
+Carve treats that as a conformance failure, not an unavoidable property of
+having implementations in several languages.
+
+## A specification is necessary but not sufficient
+
+A written grammar defines what should happen. It does not prove that two
+programs do it.
+
+Differences creep in through ordinary implementation choices:
+
+- one parser normalizes a heading id before resolving a cross-reference;
+- another accepts an unterminated fence that its peers leave as prose;
+- one sanitizer checks only the first URL in a multi-URL attribute;
+- a renderer inserts a newline where another emits adjacent tags;
+- an optional feature ships in one ecosystem before the others.
+
+All of those can survive unit tests written independently inside each project.
+The tests agree with their local implementation because they inherited the same
+assumption.
+
+The useful question is therefore not “does every repository have tests?” It is
+“do the repositories test the same observable contract?”
+
+## Use documents and expected output as the contract
+
+Carve keeps a shared conformance corpus alongside the language definition. A
+case pairs authored `.crv` with its expected result. Implementations consume
+those same cases rather than translating prose into separate local fixtures.
+
+A simplified conceptual case looks like this (the repository's actual shared
+fixtures store input and output together in `.test` files):
+
+````text
+input.crv
+---------
+{#install}
+## Install
+
+See </#install>.
+
+expected.html
+-------------
+<section id="install">
+  <h2>Install</h2>
+  <p>See <a href="#install">Install</a>.</p>
+</section>
+````
+
+The real corpus covers much less comfortable inputs: nesting boundaries,
+unresolved references, malformed fences, spans, table cells, Unicode, output
+escaping, and constructs that must deliberately remain literal.
+
+The expected bytes matter. DOM equivalence would allow harmless serialization
+differences, but byte comparison buys a stronger operational property: caches,
+snapshots, previews, and generated artifacts do not churn when the rendering
+runtime changes.
+
+## Share the case, not just its name
+
+Copying fixtures into each implementation creates a new synchronization
+problem. A test called `nested-lists` may exist everywhere while containing
+three generations of expected output.
+
+The corpus should have one source of truth, and consumers should pin the exact
+revision they test. A new language rule then becomes a coordinated change:
+
+. add or update the normative case;
+. make each implementation pass it;
+. advance the pinned corpus revision;
+. release only with the relationship visible.
+
+Pinning is important. Following the corpus's moving main branch would make an
+old implementation fail because the language changed overnight. Copying it
+would hide that the implementation is old. A recorded revision says precisely
+which contract a build claims.
+
+## Test more than HTML
+
+Markup compatibility is broader than one happy-path renderer. Carve's common
+implementation surface includes parsing and HTML, Markdown, plain-text, ANSI,
+and canonical-Carve output. It also includes lint diagnostics and optional
+features where the engine exposes them.
+
+Different targets reveal different bugs:
+
+- HTML exercises structure, attributes, escaping, and URL safety.
+- Plain text exposes whether hidden definitions or generated labels leak.
+- ANSI output tests presentation without giving the renderer HTML elements to
+  lean on.
+- Canonical Carve tests whether source can be serialized without changing its
+  meaning.
+- A second parse after serialization catches output that looks plausible but is
+  not structurally stable.
+
+Cross-reading is especially valuable: let implementation A format a document,
+then require implementations B and C to parse that result to the same structure.
+That detects a private dialect hiding behind an apparently valid formatter.
+
+## Keep safety inside conformance
+
+Security behavior cannot be a note saying “remember to sanitize.” If separate
+renderers disagree about a dangerous URL or attribute, choosing a runtime also
+chooses a security policy.
+
+Carve makes baseline URL and attribute hardening part of the rendering contract.
+Tests exercise denied schemes, event-handler attributes, script-bearing CSS,
+invisible bidirectional controls, nesting limits, and output-amplification
+bounds. Explicit raw HTML remains a trusted-content feature and must be disabled
+for untrusted input, but the protections around ordinary links, images, and
+attributes are not optional polish.
+
+The broader lesson is simple: a security statement shared by several
+implementations should have shared adversarial fixtures. Otherwise it is a
+documentation aspiration.
+
+## Distinguish parity from availability
+
+“All implementations are identical” is usually too broad to be useful.
+Packages have language-native APIs, release schedules, and integrations. An
+extension may exist in JavaScript before it reaches Rust or PHP. A binding may
+wrap the Rust engine rather than implement the parser again.
+
+A precise compatibility claim has three parts:
+
+- *scope:* which syntax tier, renderer, or diagnostic is being compared;
+- *version:* which engine and corpus revisions were tested;
+- *observation:* semantic equivalence or byte-identical output.
+
+Carve publishes a dated technical snapshot in its
+[comparison methodology](https://markup-carve.github.io/carve/implementation-comparison-methodology)
+instead of turning a changing test count into a timeless slogan. Users can
+choose an engine by runtime while maintainers can see where a release trails the
+shared contract.
+
+## What this changes for application architecture
+
+Once parity is continuously tested, a mixed-runtime pipeline becomes less
+risky.
+
+A browser can preview with JavaScript while a PHP server publishes the same
+source. A Rust command-line tool can validate documents in CI. Python, Ruby, Go,
+and WebAssembly consumers can use bindings around the native engine without
+inventing another syntax interpretation.
+
+The practical benefit is not the number of language logos. It is that content
+stops depending on which component happened to render it.
+
+## Build compatibility as a release property
+
+For any markup format with more than one parser, the pattern is reusable:
+
+. Write normative examples as executable input/output pairs.
+. Store them once and pin them from every implementation.
+. Compare observable output, including malformed and adversarial source.
+. Test serializers by feeding their output to a different parser.
+. Publish dated compatibility evidence and name gaps honestly.
+. Prevent releases from claiming a corpus revision they did not pass.
+
+That does not eliminate implementation bugs. It turns drift from a user report
+into a failed build, which is where the problem is cheapest to solve.
+
+The Carve
+[conformance suite](https://github.com/markup-carve/carve/tree/main/tests/spec)
+and [formal grammar](https://markup-carve.github.io/carve/grammar) are public.
+They are useful not only as proof about Carve, but as a concrete example of how
+a text format can make “works the same everywhere” falsifiable.
