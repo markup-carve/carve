@@ -84,6 +84,55 @@ $new  = modern();     // [tl! ++]
 ```
 ````
 
+#### Language-aware instructional diffs
+
+When a short code sample should keep its language highlighting while marking
+added and removed lines, put the `.diff` block attribute above the
+language-tagged fence:
+
+````carve
+{.diff}
+```js
+  let fileIcon = document.querySelector("li.file-entry > span.icon");
+- fileIcon.classList.add("icon-file-text");
++ fileIcon.classList.remove("icon-file-text");
+```
+````
+
+The two signals stay independent: `js` identifies the language of the code,
+while `.diff` asks the host to present its leading `+`, `-`, and space
+characters as diff markers. Core HTML preserves both as
+`<pre class="diff"><code class="language-js">…</code></pre>`; applying the
+presentation is the host's responsibility.
+
+Sites using Shiki can use the browser-safe transformer and baseline CSS from
+[`@markup-carve/carve-grammars`](https://github.com/markup-carve/carve-grammars):
+
+```js
+import { diffCodeTransformer } from '@markup-carve/carve-grammars/shiki/diff'
+import '@markup-carve/carve-grammars/shiki/carve.css'
+```
+
+For each code block whose `<pre>` has the `diff` class, create a fresh
+transformer and pass it alongside the fence language:
+
+```js
+const transformers = pre.classList.contains('diff')
+  ? [diffCodeTransformer()]
+  : []
+
+const highlighted = highlighter.codeToHtml(code.textContent, {
+  lang: 'javascript',
+  theme: 'github-light',
+  transformers,
+})
+```
+
+The transformer removes the first marker character before language
+tokenization, then restores it and annotates added and removed lines. It is
+intended for instructional code differences. Use a regular `diff` fence for a
+complete patch containing file headers, hunk headers, or other patch metadata.
+
 ### Container fences: titles and labels
 
 A `:::` fence line takes the same two metadata tokens as a code fence, after the type word and in the same fixed order: an optional quoted `"header"` and an optional bracketed `[label]`. This is the one-line way to title an admonition or name a tab panel:
