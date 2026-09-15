@@ -644,6 +644,16 @@ Inclusion is a §25 / security-model concern. The full treatment is on the
   including `../shared/glossary.crv` whose target is inside the project root; and
   it is too weak, because symbolic links and absolute paths escape a root with no
   `..` present at all.
+- **A refusal MUST NOT reveal whether the target exists.** Containment is
+  decided on the **canonical candidate**, which is constructible for a missing
+  path too - canonicalize the longest existing prefix, then re-append the
+  remainder lexically - so a resolver can always answer from the spelling plus
+  the root. A processor that reads first and decides containment afterwards
+  reports a miss for an absent out-of-root target and a containment denial for a
+  present one, which makes the refusal class an **existence oracle** for paths
+  outside the root: anyone who can get a document rendered and read its warnings
+  learns whether a path is on the host, without ever reading it. Both targets
+  MUST be refused as containment denials.
 - **The root defaults to the top-level document's directory** for file-based
   entry points, is supplied explicitly for string input, and is fixed for the
   whole expansion - see [The containment root](#the-containment-root).

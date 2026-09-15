@@ -71,6 +71,39 @@
       }
     },
     {
+      "name": "out-of-root-present-target-is-outside-root",
+      "description": "The present half of the pair. A target whose canonical result is outside the root is a containment denial.",
+      "requirement": "S2-contained-paths",
+      "kind": "filesystem",
+      "tree": {
+        "root/main.crv": "",
+        "present.crv": "secret\n"
+      },
+      "root": "root",
+      "from": "root/main.crv",
+      "request": "../present.crv",
+      "expected": {
+        "status": "denied",
+        "denial": "outside-root"
+      }
+    },
+    {
+      "name": "out-of-root-absent-target-is-outside-root",
+      "description": "The absent half of the pair, identical to it but for the target being missing. Containment is decided on the canonical candidate, which is constructible for a missing path, so the refusal MUST NOT depend on whether the target exists: a resolver that reads first answers not-found here and outside-root above, and that difference is an existence oracle for paths outside the root.",
+      "requirement": "S2-contained-paths",
+      "kind": "filesystem",
+      "tree": {
+        "root/main.crv": ""
+      },
+      "root": "root",
+      "from": "root/main.crv",
+      "request": "../present.crv",
+      "expected": {
+        "status": "denied",
+        "denial": "outside-root"
+      }
+    },
+    {
       "name": "remote-without-allowlist", "description": "A remote URL cannot trigger a fetch without an explicit host allowlist.",
       "requirement": "S3-remote-allowlist", "kind": "remote", "request": "https://example.invalid/chapter.crv", "allowedRemoteHosts": [],
       "expected": { "status": "denied", "denial": "remote-not-allowed", "remoteFetches": [] }
