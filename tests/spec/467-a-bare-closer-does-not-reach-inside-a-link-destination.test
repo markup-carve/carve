@@ -1,0 +1,13 @@
+A bare closer does not reach inside a link destination
+
+```
+/see [x](http://a.b/c) now/
+.
+<p><em>see <a href="http://a.b/c">x</a> now</em></p>
+```
+
+```
+/see <http://a.b/c> now/
+.
+<p><em>see <a href="http://a.b/c">http://a.b/c</a> now</em></p>
+```

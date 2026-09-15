@@ -91,7 +91,11 @@ and
 and
 `465-an-underscore-pair-in-text-is-escaped-where-the-line-would-pair-it`
 and
-`466-the-round-trip-comparison-normalizes-a-named-list`.
+`466-the-round-trip-comparison-normalizes-a-named-list`
+and
+`467-a-bare-closer-does-not-reach-inside-a-link-destination`
+and
+`468-an-underscore-pair-split-across-a-line-break-is-escaped`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -167,6 +171,11 @@ there, and markup-carve/carve#2027 ruled that it may not. carve-php already
 matches.
 Section 464 lags no engine on HTML; carve-js still writes the marker-line form
 its `.fmt` pins rule out (markup-carve/carve#2017).
+Section 467 lags all three engines for both of its rows: a bare closer inside a
+link destination or autolink closes a span opened before the link, and
+markup-carve/carve#2027 ruled that it may not.
+Section 468 lags no engine on HTML; carve-rs leaves its split underscore pair
+bare in Markdown (markup-carve/carve-rs#1653).
 `tests/implementation-comparison-counts.test.mjs` reads this line and counts the
 fixtures each category contributes, so the numbers cannot be asserted, only
 derived, and the line has to be DELETED by whoever next runs

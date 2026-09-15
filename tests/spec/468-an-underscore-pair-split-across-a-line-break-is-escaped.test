@@ -1,0 +1,9 @@
+An underscore pair split across a line break is escaped
+
+```
+/x/_y
+z_ w
+.
+<p><em>x</em>_y
+z_ w</p>
+```

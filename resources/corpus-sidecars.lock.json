@@ -129,6 +129,7 @@
   "465-an-underscore-pair-in-text-is-escaped-where-the-line-would-pair-it.md": "30c7be3c5d84198c",
   "466-the-round-trip-comparison-normalizes-a-named-list-2.md": "81e8d82a5181308d",
   "466-the-round-trip-comparison-normalizes-a-named-list.md": "ffa1d841a4d173aa",
+  "468-an-underscore-pair-split-across-a-line-break-is-escaped.md": "8eb7c80e091df781",
   "67-empty-delimiters.fmt": "1ddcc7a16215a783",
   "69-opaque-spans-inside-a-container-6.fmt": "3c18672808741328",
   "70-blocks-that-render-to-nothing-3.ansi": "0c111ed9ca806d61",
