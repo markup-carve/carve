@@ -1,0 +1,7 @@
+An underscore pair in text is escaped where the line would pair it
+
+```
+/x/_y_ in company_id and a_b_c and a _ b _ c
+.
+<p><em>x</em>_y_ in company_id and a_b_c and a _ b _ c</p>
+```

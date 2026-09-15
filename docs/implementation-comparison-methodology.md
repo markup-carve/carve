@@ -87,7 +87,11 @@ and
 and
 `463-a-bare-closer-does-not-reach-inside-a-braced-inline`
 and
-`464-a-block-that-opens-a-tight-item-is-written-on-the-marker-line`.
+`464-a-block-that-opens-a-tight-item-is-written-on-the-marker-line`
+and
+`465-an-underscore-pair-in-text-is-escaped-where-the-line-would-pair-it`
+and
+`466-the-round-trip-comparison-normalizes-a-named-list`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the

@@ -390,6 +390,25 @@
       pin it and the fixture is a hand-built payload entering through the AST
       ingest (tests/an-unspellable-block-does-not-cancel-list-adjacency.test.mjs).
 
+  10k. THE ROUND-TRIP COMPARISON NORMALIZES A NAMED LIST -- NORMATIVE [CARVE-P11-043].
+      A round trip preserves MEANING, not one serialization. Two renderings of
+      a document compare equal when they differ only by an entry on this list,
+      which is CLOSED:
+
+      N1 `<del>` and `<s>` are one tag.
+      N2 A nested emphasis of DIFFERENT strengths whose child spans the whole
+         parent may commute, so `<strong><em>x</em></strong>` and
+         `<em><strong>x</strong></em>` are one document.
+
+      Everything else is byte-exact. EQUAL strengths are not on the list:
+      `<em><em>x</em></em>` against `<strong>x</strong>` is an italic turned
+      bold, which is a different document.
+
+      THE LIST IS ENUMERATED AND MECHANICAL, never a judgment about what means
+      the same. The defects this comparison has found were found because it was
+      exact, and an open-ended equivalence would hide the next one. An entry is
+      written here or it does not exist.
+
   11. THE MARKDOWN TARGET'S CROSS-REFERENCES -- NORMATIVE [CARVE-P11-038]. A resolved
       cross-reference is emitted as a Markdown link to the target heading's id,
       and the target heading gains an explicit `{#id}` suffix. Both halves are

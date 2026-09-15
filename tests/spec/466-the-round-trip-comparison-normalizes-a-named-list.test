@@ -1,0 +1,13 @@
+The round-trip comparison normalizes a named list
+
+```
+{~ ~}
+.
+<p><s> </s></p>
+```
+
+```
+/*x*/
+.
+<p><strong><em>x</em></strong></p>
+```
