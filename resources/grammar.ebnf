@@ -5621,6 +5621,17 @@ EOF = (* end of file *) ;
            (the processor emits the verbatim `{{ … }}`). This mirrors the
            bibliography loader precedent (host resolves, parser stays pure;
            docs/extensions.md §6.1) and preserves browser / WASM parity.
+           OPT-IN, AND OFF FOR UNTRUSTED INPUT: configuring a resolver is an
+           explicit host act and never a default. A host MUST leave the
+           resolver off for untrusted input unless it has satisfied the
+           security model of PART 9 §25 (File inclusion) -- a containment root
+           that is absolute and host-supplied (I10), containment decided on the
+           canonical path after symlink resolution (I10), no remote fetch
+           without an explicit allowlist, and the bounds of I6. Default-off is
+           what keeps a processor that merely parses a hostile document from
+           reaching the filesystem at all, and the cost of getting the default
+           backwards is not a wrong rendering but a read the host never asked
+           for.
 
         I4 MECHANISM (normative on OUTCOME, permissive on mechanism). The
            observable result MUST be AS IF the resolved content appeared inline
@@ -5810,6 +5821,19 @@ EOF = (* end of file *) ;
            document path and therefore no inferable root; a host MUST supply the
            root explicitly, otherwise inclusion stays DISABLED and directives
            remain LITERAL (I3). This preserves the opt-in posture for embedders.
+           A CONFIGURED ROOT MUST BE ABSOLUTE: a root spec that is not an
+           absolute path is REFUSED -- inclusion stays DISABLED and directives
+           remain LITERAL, exactly as for a host that supplied no root at all.
+           The test is ABSOLUTENESS, not emptiness after trimming. `"   "` is a
+           legal POSIX directory name, so a whitespace-only spec is refused for
+           being RELATIVE rather than for being blank, and a directory genuinely
+           named with spaces stays reachable by its absolute path. A relative
+           spec has no base this specification can name: every canonicalizer in
+           the ecosystem resolves one against the PROCESS WORKING DIRECTORY,
+           which reaches the very directory the paragraph above forbids as a
+           default, by a route that paragraph does not cover. The
+           processor-neutral vectors in `tests/include-security-conformance/`
+           pin the blank, whitespace-only, relative and absolute specs.
            ONE ROOT PER EXPANSION: relative include paths resolve relative to the
            INCLUDING file (I1), but containment is checked against the single
            TOP-LEVEL root. The root MUST NOT re-base per included file; a
@@ -5837,7 +5861,12 @@ EOF = (* end of file *) ;
            nested children, DE-DUPLICATED, in a DETERMINISTIC order.
            IDENTITY: each target is identified by the resolver's CANONICAL ID
            where one is supplied -- the same identity the cycle guard uses in
-           I6 -- and otherwise by the RESOLVED PATH.
+           I6 -- and otherwise by the RESOLVED PATH. Two spellings that name
+           the same document MUST return the same id. A resolver that answers
+           `a/b.crv` and `a/./b.crv` with different ids breaks both readers of
+           that identity at once: the cycle guard in I6 stops seeing a repeat,
+           and a host watching the published set watches two names for one
+           document, so an edit invalidates neither reliably.
            ATTEMPTED TARGETS ARE INCLUDED: the set MUST contain targets that
            were ATTEMPTED but NOT resolved -- missing or unreadable, binary,
            containment-denied (I10), cycle-broken (I6), and depth- or
@@ -5852,6 +5881,41 @@ EOF = (* end of file *) ;
            rely on it regardless of which engine backs it. Without it, preview
            invalidation cannot be implemented correctly. See docs/includes.md
            (Reported dependencies, and Editor and IDE integration).
+
+        I12 THE WRITER PRESERVES A DIRECTIVE VERBATIM. A Carve writer MUST NOT
+           escape the braces of a well-formed directive. It is written back out
+           as the author spelled it -- path, selector and every option -- so a
+           document that goes through a processor and comes back as CARVE
+           SOURCE still includes what it included before. A directive carrying
+           an unknown option or a `#section` that is not a valid identifier is
+           still well-formed in SHAPE and is preserved too: a typo the author
+           can see and fix is worth more than a directive the formatter
+           silently dropped. What makes this worth stating is that the damage is
+           invisible at every target -- with no resolver configured an escaped
+           directive renders as the same literal text the unescaped one does --
+           so a writer that escapes destroys every include in a book while no
+           round-trip invariant goes red. A `{{ … }}` inside a code span or any
+           other verbatim context is not a directive to begin with (I9), and
+           what the writer does there is unchanged.
+           (The ids `I13` and `I14` are in use by
+           `tests/include-conformance` for rules this section does not state.
+           The gap between I12 and I15 is deliberate: renumbering I15 into it
+           would break that suite.)
+
+        I15 A PROCESSOR TARGETING CARVE SOURCE DOES NOT EXPAND. Where the
+           OUTPUT TARGET is Carve source -- a `fmt` command, a `--carve`
+           render, any pipeline whose product is Carve -- the expansion pass
+           MUST NOT run, whether or not a resolver is configured. Expansion
+           answers "what does this document say"; the Carve target answers
+           "what does this document consist of". A processor that expands first
+           returns a DIFFERENT document, every child inlined and every
+           directive gone, which is the loss I12 forbids reached by the other
+           route. The two are separable and both are needed: I12 governs the
+           writer's escaping, I15 governs whether the expansion pass runs
+           before the writer ever sees the document, and an engine can satisfy
+           either while failing the other. No other target is affected -- the
+           same document rendered to HTML with a resolver configured expands
+           normally.
 
    20. RAW PASSTHROUGH -- NORMATIVE [CARVE-P9-040] (governs `raw_inline` in PART 3 and the
       semantics of `raw_block` in PART 2). The BLOCK form (```=FORMAT
@@ -6630,6 +6694,22 @@ EOF = (* end of file *) ;
         total work stays O(n): in particular an empty abbreviation term is
         rejected, a reference is not resolved by rescanning the whole output
         per occurrence, and a crossref target is not cloned without bound.
+      - FILE INCLUSION. The `{{ … }}` directive (syntax in PART 6, semantics
+        in §19) is the one construct that can make a processor read something
+        the author of the input did not supply, so it is OFF until a host turns
+        it on. The parser performs no I/O; a HOST-SUPPLIED resolver does the
+        reading, and with none configured every directive stays literal
+        (§19 I3). A host that enables the resolver for UNTRUSTED input owes the
+        rest of the model: a single containment root, supplied explicitly and
+        ABSOLUTE, never defaulting to the process working directory;
+        containment decided on the CANONICAL path after symlink resolution
+        rather than on the spelling of the request; no remote fetch without an
+        explicit allowlist; and the cycle, depth, size and call bounds that
+        keep expansion finite. Included content is parsed, not trusted -- it
+        receives the same sanitization as its parent. §19 I3, I6 and I10 state
+        these in full, and the processor-neutral vectors in
+        `tests/include-security-conformance/` pin them separately from the
+        include-language suite.
       - NON-HTML TARGETS. The Markdown, plain-text, and terminal (ANSI)
         renderers MUST NOT become injection vectors either. The TERMINAL
         target MUST strip text, code, math AND URL values of every control

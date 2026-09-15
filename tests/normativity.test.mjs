@@ -660,14 +660,50 @@ test('the obligations ledger declares its gaps out loud', () => {
   const { unstated, weaker } = audit()
   // Writing the ledger found five more of the carve#1995 shape plus one clause
   // that states something weaker than the page does. Closing any of them moves
-  // these numbers, which is the point of pinning them.
-  assert.equal(unstated.length, 5)
+  // these numbers, which is the point of pinning them - the five UNSTATED rows
+  // became citations when PART 9 §19 gained I12 and I15 and I3, I10 and I11
+  // gained a sentence each.
+  assert.equal(unstated.length, 0)
   assert.equal(weaker.length, 1)
-  assert.ok(
-    unstated.some((row) => row.text.startsWith('I15:')),
-    'I15 is stated on the page and in no clause',
-  )
   assert.equal(weaker[0].clause, 'WEAKER PART 9 §19 I4')
+})
+
+test('every obligation the includes page states names the clause that now carries it', () => {
+  // The other half of the count above: a zero is only worth pinning if the five
+  // rows that reached it point somewhere. Each pair is asserted on its own, so a
+  // regression names the obligation that lost its home rather than a total.
+  const { ledger } = audit()
+  const clauseFor = (opening) => ledger.find((row) => row.text.startsWith(opening))?.clause
+  assert.equal(clauseFor('I12: the writer preserves a directive verbatim'), 'PART 9 §19 I12')
+  assert.equal(clauseFor('I15: a processor targeting Carve source MUST NOT expand'), 'PART 9 §19 I15')
+  assert.equal(clauseFor('- The resolver is opt-in and MUST be off for untrusted input'), 'PART 9 §19 I3')
+  assert.equal(clauseFor('Two spellings that name the same document'), 'PART 9 §19 I11')
+  assert.equal(clauseFor('- A configured root MUST be absolute'), 'PART 9 §19 I10')
+})
+
+test('a clause that loses the sentence its row anchors on is reported', () => {
+  // THE PROOF THE FIVE NEW ROWS CAN FAIL. An anchor is only worth writing if
+  // deleting the sentence it names turns the audit red, and a row citing a
+  // clause that exists would otherwise pass on the clause id alone.
+  const { ledger } = audit()
+  const section = specPart9Sections().get('19')
+  const clauses = clausesOf(section.text)
+  const flat = (s) => s.replace(/\s+/g, ' ').trim().toLowerCase()
+  // Selected by obligation text, not by clause: I10 alone is cited by four rows.
+  const cases = [
+    ['I3', '- The resolver is opt-in and MUST be off for untrusted input'],
+    ['I10', '- A configured root MUST be absolute'],
+    ['I11', 'Two spellings that name the same document'],
+    ['I12', 'I12: the writer preserves a directive verbatim'],
+    ['I15', 'I15: a processor targeting Carve source MUST NOT expand'],
+  ]
+  for (const [id, opening] of cases) {
+    const row = ledger.find((r) => r.text.startsWith(opening))
+    assert.equal(row?.clause, `PART 9 §19 ${id}`)
+    assert.ok(clauses.has(id), `PART 9 §19 ${id} exists`)
+    assert.ok(flat(clauses.get(id)).includes(flat(row.anchor)), `§19 ${id} carries "${row.anchor}"`)
+    assert.equal(flat(clauses.get(id)).replace(flat(row.anchor), '').includes(flat(row.anchor)), false)
+  }
 })
 
 test('the Errors-table check fails on exactly the rows carve#1995 found', () => {
