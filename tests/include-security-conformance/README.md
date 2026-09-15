@@ -98,6 +98,51 @@ Denial values are portable classes, not required diagnostic strings. Unknown
 kinds, requirements, or expected fields must fail an adapter. Every adapter
 must also pin the corpus version and vector count so accidental omissions fail.
 
+### Which side of the seam an observable comes from
+
+Every observable belongs to one side of the seam between the adapter and the
+implementation, and `schema.json` says which on each one as `x-seam`. The
+corpus test pins that map whole, so an observable added without a side - or
+with a side that moves - fails here.
+
+- **`x-seam: "processor"`** - `status`, `denial`, `canonicalId`,
+  `maxVisitedDepth`, `chargedBytes`. The implementation's own answer, published
+  by it and reported UNCHANGED. An adapter MUST NOT reconstruct one from
+  anything it holds itself, even when it could compute a believable value.
+- **`x-seam: "adapter"`** - `resolverCalls`, `remoteFetches`. What the adapter
+  records at the seam it supplies, and it MUST NOT be derived from the
+  implementation's output: a call that did not happen is observed as its
+  absence, which is the whole of `budget-exhaustion-skips-later-resolver`.
+
+Expanding the corpus's own notation is not a reconstruction. `<ABS:>` and
+`<ROOT>` are the corpus spelling out its temporary tree, the same carve-out
+`rootSpec` already carries.
+
+The rule generalizes a defect that was found separately (carve#2022). All three
+engines answered `chargedBytes` differently and none of them from the same
+place: carve-js summed the sources its own recording resolver had handed back,
+which is a plausible tally and is not the engine's - the vectors read 12 / 12 / 5
+while the engine charged 7, 8 and 0, and that suite passed whole. carve-php
+computed it correctly, and carve-rs declined to compare it at all, stating that
+`IncludeResult` published no counter - so those rows passed because the
+observable had been declared unreadable. Three adapters, three answers, and
+nothing said where the number was supposed to come from. The same reach is open
+on every other processor-side observable: `canonicalId` is one `realpath` away
+from the request, and `maxVisitedDepth` is derivable from `resolverCalls` by
+modeling the graph.
+
+**A vector cannot gate this, and the corpus does not pretend to.** Measured on
+the reference adapter: an adapter that sums its own resolver's returns passes
+all 23 vectors while the implementation is conformant, because a correct
+implementation charges exactly what the resolver handed over. The two readings
+separate only when the implementation is WRONG, which is precisely when the
+corpus is being relied on. The sides are therefore an adapter contract stated
+here and gated in `schema.json`, not a row anyone can add. Every adapter reads
+the implementation's own total today - carve-js `result.chargedBytes`
+(markup-carve/carve-js#1704), carve-php `$expander->chargedBytes()` (markup-carve/carve-php#1965),
+carve-rs `IncludeResult::charged_bytes` (markup-carve/carve-rs#1609), carve-lsp
+`result.bytes` - so no window is open on it.
+
 ## Corpus ahead of the engines
 
 Adding a vector makes every adapter answer it, so a vector can land before an
