@@ -44,11 +44,16 @@ the process working directory, which is the value the section forbids. What a
 spec that is neither blank nor absolute means is NOT pinned here and is not
 ruled anywhere: see carve#2004.
 
-What is still NOT pinned is whether the class may vary with the target's
-EXISTENCE. A resolver that checks existence before containment reports a miss
-for an absent out-of-root target and a containment denial for a present one,
-and passes every vector here. Whether the two must be indistinguishable is
-unruled: carve#1999.
+Whether the class may vary with the target's EXISTENCE is ruled, and pinned.
+A refusal MUST NOT depend on whether the target exists (carve#1999): containment
+is decided on the canonical candidate, which is constructible for a missing path
+too, so a resolver can always answer from the spelling plus the root. The paired
+`out-of-root-present-target-is-outside-root` /
+`out-of-root-absent-target-is-outside-root` vectors differ only in whether the
+out-of-root target is on disk and expect the same class from both. A resolver
+that checks existence before containment reports a miss for the absent one, which
+is an existence oracle for paths outside the root; before the pair it passed every
+vector here.
 
 ## Adapter contract
 
@@ -114,7 +119,7 @@ tolerated - an engine's red is expected and tracked, not discovered.
   a containment denial. Adapter side again: carve-lsp drives the `filesystem`
   kinds through its real resolver, whose denial set already carries `not-found`
   (carve-lsp#193), so only its vector-count pin has to move. Delete this entry
-  when every count pin reads 19, which is the count as of the entry below.
+  when every count pin reads the current count.
 - `S9-root-configuration`, `rootSpec`, `no-root` (carve#2003). Where the
   containment root comes from. This window is NOT adapter-only, which is what
   separates it from the two entries above. Measured on 2026-09-15 against each
@@ -149,3 +154,13 @@ tolerated - an engine's red is expected and tracked, not discovered.
   a downstream count green; a ticket per repo follows this merge. Delete this
   entry when the last engine refuses a blank spec and the last adapter reads
   `rootSpec`.
+
+- The out-of-root existence pair (carve#1999). Adapter side only: the pair adds
+  no requirement id, no kind and no denial class, so an adapter that already
+  reads `S2-contained-paths` and `outside-root` answers both vectors with the
+  code it has. What moves is every count pin - carve-lsp (version, count,
+  requirement set, member reads), carve-php (the same four, carve-php#1954) and
+  carve-rs (version, total count, the `graph` count, the driven count,
+  carve-rs#1598). Those pins fail closed by design, so no vector was shrunk to
+  keep a downstream count green. Delete this entry when the last count pin is
+  current.
