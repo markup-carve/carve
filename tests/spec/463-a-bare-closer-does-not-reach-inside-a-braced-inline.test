@@ -1,0 +1,19 @@
+A bare closer does not reach inside a braced inline
+
+```
+~{/x/}{/y~/}
+.
+<p>~<em>x</em><em>y~</em></p>
+```
+
+```
+~a{+b~+} c~
+.
+<p><s>a<ins>b~</ins> c</s></p>
+```
+
+```
+*a {_b* c_} d*
+.
+<p><strong>a <u>b* c</u> d</strong></p>
+```
