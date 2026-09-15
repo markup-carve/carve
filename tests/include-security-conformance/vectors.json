@@ -162,6 +162,42 @@
       }
     },
     {
+      "name": "relative-root-spec-configures-no-root",
+      "description": "A root spec that is not absolute is not a root. A relative spec has no base the specification names, and every canonicalizer resolves one against the process working directory - the value section 19 forbids the root defaulting to, reached by a route the default rule does not cover. Inclusion stays disabled, so a target that is inside the INTENDED root and exists is still not resolved. This is the vector a trim-and-compare spelling cannot pass: \".\" is not blank after trimming, and only an absoluteness test refuses it.",
+      "requirement": "S9-root-configuration",
+      "kind": "filesystem",
+      "tree": {
+        "root/main.crv": "",
+        "root/child.crv": "ok\n"
+      },
+      "rootSpec": ".",
+      "from": "root/main.crv",
+      "request": "child.crv",
+      "expected": {
+        "status": "denied",
+        "denial": "no-root",
+        "resolverCalls": []
+      }
+    },
+    {
+      "name": "whitespace-root-spec-configures-no-root",
+      "description": "Whitespace-only falls out of the same rule rather than needing one of its own: \"   \" is a legal POSIX directory name, so it is refused because it is RELATIVE, not because it is blank. A directory genuinely named with spaces stays reachable by its absolute path.",
+      "requirement": "S9-root-configuration",
+      "kind": "filesystem",
+      "tree": {
+        "root/main.crv": "",
+        "root/child.crv": "ok\n"
+      },
+      "rootSpec": "   ",
+      "from": "root/main.crv",
+      "request": "child.crv",
+      "expected": {
+        "status": "denied",
+        "denial": "no-root",
+        "resolverCalls": []
+      }
+    },
+    {
       "name": "absolute-root-spec-is-honored",
       "description": "An absolute configured value IS a root, and one wider than the including file's directory at that: the dot-dot target resolves. Without this a processor could refuse every spec and pin nothing.",
       "requirement": "S9-root-configuration",
