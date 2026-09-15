@@ -758,22 +758,14 @@
         total work stays O(n): in particular an empty abbreviation term is
         rejected, a reference is not resolved by rescanning the whole output
         per occurrence, and a crossref target is not cloned without bound.
-      - FILE INCLUSION. The `{{ … }}` directive (syntax in PART 6, semantics
-        in §19) is the one construct that can make a processor read something
-        the author of the input did not supply, so it is OFF until a host turns
-        it on. The parser performs no I/O; a HOST-SUPPLIED resolver does the
-        reading, and with none configured every directive stays literal
-        (§19 I3). A host that enables the resolver for UNTRUSTED input owes the
-        rest of the model: a single containment root, supplied explicitly and
-        ABSOLUTE, never defaulting to the process working directory;
-        containment decided on the CANONICAL path after symlink resolution
-        rather than on the spelling of the request; no remote fetch without an
-        explicit allowlist; and the cycle, depth, size and call bounds that
-        keep expansion finite. Included content is parsed, not trusted -- it
-        receives the same sanitization as its parent. §19 I3, I6 and I10 state
-        these in full, and the processor-neutral vectors in
-        `tests/include-security-conformance/` pin them separately from the
-        include-language suite.
+      - FILE INCLUSION. The `{{ … }}` directive (§19) does no I/O in the parser
+        and stays literal until a host configures a resolver (§19 I3). Enabling
+        it for UNTRUSTED input requires one explicit, absolute containment root
+        that never defaults to the process working directory, containment
+        decided on the canonical path after symlink resolution, no remote fetch
+        without an explicit allowlist, and the cycle, depth, size and call
+        bounds (§19 I6, I10). Included content receives the same sanitization as
+        its parent.
       - NON-HTML TARGETS. The Markdown, plain-text, and terminal (ANSI)
         renderers MUST NOT become injection vectors either. The TERMINAL
         target MUST strip text, code, math AND URL values of every control

@@ -16,11 +16,9 @@
 #
 # UNSTATED is a DECLARED GAP, not an exemption: the obligation is on the page
 # and in no clause. That is exactly what carve#1995 was, and writing this ledger
-# found six more of the same shape. Five of those six were closed by writing the
-# clauses - PART 9 §19 I12 and I15 are new, and I3, I10 and I11 each gained the
-# sentence their row anchors on. WEAKER means the clause exists and states
-# something weaker than the page does - I4 makes source-position remapping a
-# SHOULD while the page writes MUST, and that one is still open. Every run
+# found six more of the same shape; five now cite clauses. WEAKER means the
+# clause exists and states something weaker than the page does - I4 makes
+# source-position remapping a SHOULD while the page writes MUST. Every run
 # prints both.
 #
 # THE ANCHOR is how a row detects a clause that LOSES the obligation. It is a
