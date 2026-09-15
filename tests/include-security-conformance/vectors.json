@@ -104,6 +104,41 @@
       }
     },
     {
+      "name": "out-of-root-through-present-directory-is-outside-root",
+      "description": "The present half of the pair. The escape is routed through an intermediate directory that IS on disk, so the whole path canonicalizes in one step and the containment answer never depends on how a remainder is re-appended.",
+      "requirement": "S2-contained-paths",
+      "kind": "filesystem",
+      "tree": {
+        "root/main.crv": "",
+        "root/mid/keep.crv": "keep\n",
+        "outside.crv": "secret\n"
+      },
+      "root": "root",
+      "from": "root/main.crv",
+      "request": "mid/../../outside.crv",
+      "expected": {
+        "status": "denied",
+        "denial": "outside-root"
+      }
+    },
+    {
+      "name": "out-of-root-through-absent-directory-is-outside-root",
+      "description": "The absent half, identical to it but for the intermediate directory being missing. The whole path no longer canonicalizes - POSIX resolution stops at the absent segment - so containment falls to the canonical candidate, and its remainder must have its dot-dot segments COLLAPSED before the answer is read off. Re-appending the remainder verbatim leaves a string that is lexically inside the root and fails the existence check instead, which reports the escape as not-found: no leak, but the refusal class now moves with whether an intermediate directory happens to exist.",
+      "requirement": "S2-contained-paths",
+      "kind": "filesystem",
+      "tree": {
+        "root/main.crv": "",
+        "outside.crv": "secret\n"
+      },
+      "root": "root",
+      "from": "root/main.crv",
+      "request": "mid/../../outside.crv",
+      "expected": {
+        "status": "denied",
+        "denial": "outside-root"
+      }
+    },
+    {
       "name": "remote-without-allowlist", "description": "A remote URL cannot trigger a fetch without an explicit host allowlist.",
       "requirement": "S3-remote-allowlist", "kind": "remote", "request": "https://example.invalid/chapter.crv", "allowedRemoteHosts": [],
       "expected": { "status": "denied", "denial": "remote-not-allowed", "remoteFetches": [] }
