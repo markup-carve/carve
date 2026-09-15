@@ -41,8 +41,14 @@ class pins existing normative text rather than adding any.
 A blank spec is the one spelling that text settles on its own: an empty string
 is not a pathname, and every canonicalizer that accepts one anyway answers with
 the process working directory, which is the value the section forbids. What a
-spec that is neither blank nor absolute means is NOT pinned here and is not
-ruled anywhere: see carve#2004.
+spec that is neither blank nor absolute means is ruled too, and pinned: a root
+spec that is not ABSOLUTE is refused (carve#2004), because a relative one has
+no base the section names and every canonicalizer resolves it against the
+process working directory. The test is absoluteness, not emptiness after
+trimming: `relative-root-spec-configures-no-root` uses `.`, which no
+trim-and-compare refuses, and `whitespace-root-spec-configures-no-root` rides
+on the same rule because `"   "` is a legal POSIX directory name that is merely
+relative - such a directory stays reachable by its absolute path.
 
 Whether the class may vary with the target's EXISTENCE is ruled, and pinned.
 A refusal MUST NOT depend on whether the target exists (carve#1999): containment
@@ -164,3 +170,26 @@ tolerated - an engine's red is expected and tracked, not discovered.
   carve-rs#1598). Those pins fail closed by design, so no vector was shrunk to
   keep a downstream count green. Delete this entry when the last count pin is
   current.
+
+- `relative-root-spec-configures-no-root`,
+  `whitespace-root-spec-configures-no-root` (carve#2004). A root spec that is
+  not absolute is refused. Adapter-side for the two vectors themselves - no
+  requirement id, kind or class was added, the pair sits on `S9-root-configuration`
+  and `no-root` - but NOT adapter-only on the merits. Measured on 2026-09-15
+  against each engine's pushed `main`:
+  - carve-js `fileSystemResolver(root)` refuses a blank and a whitespace-only
+    value (`root.trim() === ''`, carve-js#1690) and then runs `realpathSync(root)`,
+    so a relative spec still roots containment at the process working directory.
+  - carve-php `FilesystemIncludeResolver::__construct` refuses the same two
+    (`trim($root) === ''`, carve-php#1957) and then calls `realpath($root)`, with
+    the same consequence.
+  - carve-rs `FileSystemResolver::new` is `std::fs::canonicalize(root)?` with no
+    guard at all. It refuses `""` only because that call errors, and accepts a
+    whitespace-only or relative spec wherever the named directory exists.
+  - carve-lsp validates the configured value in the server and already refuses a
+    non-absolute spec (carve-lsp#195), which is the implementation this ruling
+    follows.
+
+  A ticket per non-conformant engine follows this merge. Every count pin moves
+  again; no vector was shrunk to keep one green. Delete this entry when the last
+  engine refuses a non-absolute spec and the last adapter reads `rootSpec`.

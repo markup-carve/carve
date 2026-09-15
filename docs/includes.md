@@ -368,6 +368,20 @@ root comes from depends on whether the entry point carries a path at all.
   **MUST** supply the root explicitly; otherwise inclusion stays disabled and
   directives remain literal. This preserves the opt-in posture for embedders: an
   application that converts a string never gains filesystem reach by accident.
+- **A configured root MUST be absolute.** A root spec a host supplies that is
+  not an absolute path is **refused**: inclusion stays disabled and directives
+  remain literal, exactly as for a host that supplied no root at all. The test
+  is **absoluteness**, not emptiness after trimming - `"   "` is a legal POSIX
+  directory name, so whitespace-only is refused because it is relative, and a
+  directory genuinely named with spaces stays reachable by its absolute path.
+  A relative spec has no base the specification can name: every canonicalizer
+  in the ecosystem resolves one against the **process working directory**,
+  which reaches the very directory the bullet above forbids as a default, by a
+  route that bullet does not cover. `"."` roots containment at the working
+  directory and `".."` at its parent. A front end is free to compute an
+  absolute root of its own - a CLI may expand `--include-root .` in its
+  argument parsing before handing it over - because what is required is that
+  the root BE absolute, not that no one may derive it.
 - **One root for the whole expansion.** Relative include paths resolve relative
   to the **including file** (I1), but containment is checked against the single
   **top-level** root. The root **MUST NOT** re-base per included file. A re-based
