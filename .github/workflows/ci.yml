@@ -162,6 +162,14 @@ jobs:
       - name: Conformance
         run: npm test
 
+      # ON pull_request, NOT on a schedule. Every input is inside the repo - a
+      # docs page, resources/spec/ and two ledgers - so nothing outside a pull
+      # request can turn it red overnight, which is the failure mode that makes
+      # a scheduled gate stop being read (markup-carve/intellij-carve#128). Red
+      # here always means this diff.
+      - name: Normative pages state nothing the spec source does not
+        run: npm run normative:check
+
       - name: HTML import contract
         run: npm run html-import:check
 

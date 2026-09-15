@@ -35,6 +35,7 @@
     "core:check": "node scripts/formal-core-check.mjs",
     "grammar:reach": "node scripts/grammar-reachability-check.mjs",
     "engine:report": "node scripts/engine-report.mjs",
+    "normative:check": "node scripts/normative-page-audit.mjs",
     "declarations:check": "node scripts/declaration-audit.mjs",
     "declarations:pr": "node scripts/declaration-audit.mjs --mode=per-pr",
     "bump-carve-pin": "node scripts/bump-carve-pin.mjs",

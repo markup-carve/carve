@@ -1,6 +1,7 @@
 ---
 title: "File inclusion"
 description: "The processor-level {{ … }} directive: syntax, the host resolver contract, fragment containment, cross-file collisions, reported dependencies, source mapping and the limits that bound an expansion."
+normative: true
 ---
 
 # File inclusion (NORMATIVE)
@@ -641,6 +642,7 @@ Inclusion is bounded to keep expansion linear and terminating:
 Every failure path is **visible**, never a silent drop. Each of these emits a
 **Warning** and leaves the directive **literal**:
 
+<!-- normative-obligations: PART 9 §19 I3 I6 I7 -->
 | Condition | Result |
 |---|---|
 | Unreadable / missing path | Warning + literal directive |

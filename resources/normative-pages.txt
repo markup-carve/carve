@@ -1,0 +1,15 @@
+# Pages declared NORMATIVE -- the scope of scripts/normative-page-audit.mjs
+#
+# A page is in scope iff its frontmatter carries `normative: true`. This file
+# pins that set so the declaration cannot be added or removed in silence: the
+# audit fails when a page declares itself and is not listed, and when a listed
+# page stops declaring itself. Same guard shape as
+# resources/normative-clauses.txt, for the same reason.
+#
+# The list is SHORT ON PURPOSE. Several other pages call themselves normative
+# in prose (docs/extension-contract.md, docs/html-import-contract.md,
+# docs/ast-json-contract.md and more), and every one of them would bring an
+# obligations ledger of its own. Declaring them is follow-up work, not an
+# oversight here: a page enters this list when someone has read its obligations
+# against the spec source, not when someone notices the page exists.
+docs/includes.md
