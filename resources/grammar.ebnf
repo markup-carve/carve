@@ -4331,11 +4331,13 @@ EOF = (* end of file *) ;
          their delimiters demoted to literal (the djot model -- an opener that
          gets closed demotes the still-open candidates between).
       E2a OPAQUE CONSTRUCTS. A bare delimiter never pairs across the boundary
-         of a CODE SPAN (with raw inline and inline math) or a BRACED INLINE
+         of a CODE SPAN (with raw inline and inline math), a BRACED INLINE
          (the forced spans of §22, `{+ +}`, `{- -}`, `{~ ~> ~}`, `{# #}`,
-         `{% %}`), in either direction: inside a braced inline only entries
-         pushed there are reachable, and those still open at its closer demote
-         to literal. `~{/x/}{/y~/}` -> ~<em>x</em><em>y~</em>.
+         `{% %}`), a LINK DESTINATION (the `(…)` of an inline link or image,
+         title included) or an AUTOLINK, in either direction: inside a braced
+         inline only entries pushed there are reachable, and those still open
+         at its closer demote to literal.
+         `~{/x/}{/y~/}` -> ~<em>x</em><em>y~</em>.
       E3 NO SAME-TYPE NESTING (§3). While a d-span is open, a further d
          that would open does NOT push -- it is literal content. Hence
          /usr/local/ -> <em>usr/local</em> (01-emphasis-6); the/path/here
