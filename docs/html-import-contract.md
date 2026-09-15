@@ -440,11 +440,10 @@ leaves untouched.
 
 ## An HTML comment imports as a Carve comment
 
-An HTML comment was dropped in every mode with nothing reported, and the usual
-reason for dropping - the language has no spelling for the shape - does not
-apply: **Carve has comments** (markup-carve/carve#1709). Dropping one was
-therefore a choice to lose bytes the format can represent, in a mode whose whole
-job is fidelity, and it was a choice nobody had made.
+The usual reason for dropping an HTML comment - the language has no spelling
+for the shape - does not apply: **Carve has comments**
+(markup-carve/carve#1709). Dropping one would therefore be a choice to lose
+bytes the format can represent, in a mode whose whole job is fidelity.
 
 **An HTML comment imports as a `comment` node, in every mode.** A comment
 renders nothing in either language, so this is invisible in the output and
@@ -469,7 +468,7 @@ rather than being escapable:
 
 **Do not truncate or escape a comment to force it into the inline form.** A
 comment that came back shorter, or with characters the author did not write, is
-a silent content change; the drop plus its row is the honest answer, and the row
+a silent content change; the drop plus its row is the correct answer, and the row
 is the point.
 
 **The comment is not relocated to make it spellable.** Moving an inline comment
@@ -584,12 +583,11 @@ discarding the single property that distinguishes U+00A0 from a space, and the
 paragraph it leaves behind is the unspellable one above - so it fails
 `parse(fmt(x)) == parse(x)` on a document the importer built itself.
 
-**The drop is reported and the keep is not**, and that asymmetry is the whole
-argument. Dropping a block the input had is a real loss, so it takes
-`element-dropped` - a code that already exists, so no vocabulary grows for
-this. Keeping a character costs nothing to declare because nothing is given up:
-it survives the write intact. A silent drop would be the one outcome the loss
-report exists to prevent.
+**The drop is reported and the keep is not.** Dropping a block the input had
+is a real loss, so it takes `element-dropped` - a code that already exists, so
+no vocabulary grows for this. Keeping a character costs nothing to declare
+because nothing is given up: it survives the write intact. A silent drop would
+be the one outcome the loss report exists to prevent.
 
 **The spacer argument is real and is not this rule.** Word, CKEditor and
 TinyMCE all emit `<p>&nbsp;</p>` as a layout spacer, so a migration may well
@@ -603,8 +601,8 @@ class reaches.
 
 A diagnostic states what the import gave up. It does not license giving up more
 than it names. An importer may lose what it declares AND NO MORE - so a source
-that damages a neighbouring construct on the way to the declared loss is wrong
-even though the row is present and honest about its own subject
+that damages a neighboring construct on the way to the declared loss is wrong
+even though the row is present and accurate about its own subject
 (markup-carve/carve#1608).
 
 An empty `<dd>` imports exactly, because Carve spells it:
@@ -731,12 +729,12 @@ RENDERED section back where the HTML had it, and that source renders the input
 in the input's order.
 
 This is not `structure-unspellable` and there is nothing to report. That code is
-for a structure Carve source has no spelling for, and here the language has one
-- which is also the whole argument. Treating placement as a rendering artifact
-would be defensible only if Carve could not say otherwise, and it can, so
-discarding a position the language can express is a loss with no justification
-behind it. Corpus document `122-footnotes-placement` is authored with the
-directive, so the shape is not a bridge-only corner.
+for a structure Carve source has no spelling for, and here the language has one.
+Treating placement as a rendering artifact would be defensible only if Carve
+could not say otherwise, and it can, so discarding a position the language can
+express is a loss with no justification behind it. Corpus document
+`122-footnotes-placement` is authored with the directive, so the shape is not a
+bridge-only corner.
 
 Where the section IS last, the directive is not written: the definitions already
 render there, and adding it would put a construct in the source that the input
@@ -802,7 +800,7 @@ that element keeps the generic `div` node where the class survives as a class.
 content, and no `:::` fence is written** (markup-carve/carve#1578,
 markup-carve/carve-rs#1315). Such a `<div>` carries nothing the container is
 needed for, so the fence would cost a reader two lines of markup and tell them
-nothing. The element not surviving the round trip is the honest outcome, because
+nothing. The element not surviving the round trip is the correct outcome, because
 there is nothing in it to survive, and nothing is diagnosed: a diagnostic
 announces a loss, and nothing lost its carrier here.
 
@@ -901,7 +899,7 @@ reach takes the same separator, and the test is the same one: re-reading the
 emitted slot must draw no token - no word, no delimiter run - from both sides
 of the join.
 
-A character that was TEXT and turns into a live delimiter once its neighbour
+A character that was TEXT and turns into a live delimiter once its neighbor
 arrives beside it is a different question, already answered by the writer's
 escaping rule: `<p>a *b</p><p>c* d</p>` flattens to `a \*b c\* d`, with the
 asterisks escaped because the writer reads its own output.
@@ -1200,7 +1198,7 @@ and two of the three disagreed with the third on a `<table>` losing something on
 both its `<caption>` and a cell.
 
 TWO THINGS THE BASIS IS NOT, and both of them coincide with it in some
-implementations, which is why naming them is worth a paragraph:
+implementations:
 
 - It is NOT the position at which the diagnostic was CONSTRUCTED. An importer
   that lifts footnote definitions out of the end of a document and imports them

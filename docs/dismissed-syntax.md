@@ -188,8 +188,8 @@ Great work! :thumbsup: :rocket:
 - Platform-specific rendering issues
 
 **Decision:** the `:name:` *syntax* was kept, but as a semantics-free
-**symbol** (djot's model): the parser records only the name, and mapping —
-emoji or anything else — is processor configuration (`symbols` map or an
+**symbol** (djot's model): the parser records only the name, and mapping,
+emoji or anything else, is processor configuration (`symbols` map or an
 inline-renderer extension handler), with a literal `:name:` fallback. What
 was dismissed is the built-in emoji database, not the syntax. See the
 Symbols section in `examples.md`.
@@ -252,7 +252,7 @@ This has <span class="special">inline HTML</span> embedded.
 - Raw blocks with an explicit format are cleaner
 
 **Decision:** Use a raw block with a format specifier (djot's `=FORMAT`
-syntax — symbol-based, no English keyword, symmetric with the inline
+syntax: symbol-based, no English keyword, symmetric with the inline
 `{=format}` form):
 ~~~
 ```=html
@@ -300,7 +300,7 @@ on `---` overloading in `technical-rationale.md`.
 **Rationale for proposal:**
 - Frees `#` to be the unambiguous tag sigil. Today `#` is dual-purpose: `# x`
   (with a space) is a heading, `#x` is a tag, disambiguated only by the space.
-  `= heading` + `#tag` gives "`#` always means tag" — matching how every social
+  `= heading` + `#tag` gives "`#` always means tag", matching how every social
   platform trains the reader.
 - The heading/non-heading collision becomes rarer: a line that *starts* with a
   highlight (`=hot=`) is far less common than a line that starts with a tag.
@@ -311,7 +311,7 @@ on `---` overloading in `technical-rationale.md`.
 **Why rejected:**
 - **Breaks the most universal lightweight-markup convention.** `#` headings are
   the one token every Markdown user knows, and Carve explicitly builds on
-  Markdown's basics — this is the single largest adoption tax available.
+  Markdown's basics. This is the single largest adoption tax available.
 - **It moves the ambiguity, it doesn't remove it.** `=text=` is highlight, so
   `= heading` vs `=highlight=` falls back on the same space-after rule that
   `#`/`#tag` already uses. The `#`/tag collision is *already* resolved
@@ -324,7 +324,7 @@ on `---` overloading in `technical-rationale.md`.
   the very language it came from.
 - Pure churn: the heading marker is special-cased in the grammar, both parsers,
   the corpus, and all four highlighters (tree-sitter, vscode, zed, carve-lsp).
-- Parsing cost is *not* a factor either way — prefix `=` is O(n) and
+- Parsing cost is *not* a factor either way: prefix `=` is O(n) and
   lookahead-free, exactly like `#`. The decision is mnemonics/familiarity, not
   parser architecture.
 
@@ -420,7 +420,7 @@ Ship it{:+1:}now
   grammars, the editor plugins (vim, emacs, sublime, vscode, intellij, zed,
   helix), the corpus, and all three engines. That is a large, permanent bill
   for a case with no user behind it.
-- **A workaround exists if it is ever truly needed.** `word[:+1:]{}` renders
+- **A workaround exists if it is ever needed.** `word[:+1:]{}` renders
   the symbol intraword today (the bracket satisfies the guard; the span carries
   the attributes). It is deliberately NOT documented: it is a coincidence, not
   an interface, and it emits an empty attribute block and a `<span>` wrapper.
@@ -443,7 +443,7 @@ trailing colon and stays literal exactly as it did before. The corpus pins that
 directly (`138-unclaimed-openers-stay-literal`), so the day this form ships,
 the fixture that protects it is already there.
 
-What DID change is the cost side of the argument, in this form's favour. The
+What DID change is the cost side of the argument, in this form's favor. The
 language attribute proved a `{:`-opening attribute costs one alternative in the
 attribute rule and one action, because it desugars into an existing key/value.
 A braced symbol would still be a new INLINE form, which is the bill the third
@@ -564,7 +564,7 @@ today, so a future proposal may take `@[label]` on its own merits but cannot tak
 **Why deferred:**
 - No concrete demand has appeared. The gap is real but symmetric-looking rather than reported
 - It is not free: a syntax form has to land in all three engines plus the canonical writer, and the degrade behavior (`::{bad!}` falls back to a paragraph) needs pinning in each
-- The whole-`<dl>` attribute already covers the common case, and an `<dt>` that genuinely needs an id can be reached with a heading or a span
+- The whole-`<dl>` attribute already covers the common case, and an `<dt>` that needs an id can be reached with a heading or a span
 
 **Decision:** Deferred, not rejected. This is an intentional non-goal for now rather than a hole nobody noticed - the analysis and the concrete design are kept in [carve#277](https://github.com/markup-carve/carve/issues/277) so it can be picked up if a real need shows up.
 

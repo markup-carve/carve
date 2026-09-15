@@ -286,10 +286,9 @@ wrote.
 
 **I12: the writer preserves a directive verbatim.** A Carve writer MUST NOT
 escape the braces of a well-formed directive. Escaping renders as the same
-literal text, so nothing downstream looks wrong - which is exactly why this
-needs stating: formatting a document would silently destroy every include in it
-and no round-trip invariant would catch it, because the escaped form and the
-directive form render identically.
+literal text, so nothing downstream looks wrong. Formatting a document would
+silently destroy every include in it and no round-trip invariant would catch it,
+because the escaped form and the directive form render identically.
 
 **I15: a processor targeting Carve source MUST NOT expand.** Expansion answers
 "what does this document say"; the Carve target answers "what does this document

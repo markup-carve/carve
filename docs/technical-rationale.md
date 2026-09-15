@@ -11,7 +11,7 @@ Markdown and Djot.
 
 If you want the short version:
 
-- Markdown won by being easy to start with, but its syntax family carries real
+- Markdown won by being easy to start with, but its syntax family carries
   ambiguity, flavor drift, and parser complexity.
 - Djot fixes the parser model: deterministic block parsing, linear-time inline
   resolution, delimiter-stack emphasis, and a clearer separation between syntax
@@ -157,14 +157,14 @@ This is a conscious trade, not an oversight:
 - It stays **linear-time** because the block pre-pass already walks every line
   once; "does a matching closer follow?" is memoized during that single walk
   rather than rescanned per verbatim opener. Without that memo a naive
-  implementation is O(n²), so the pre-scan is the load-bearing detail.
+  implementation is O(n²), so the pre-scan is what keeps it linear.
 - It is **not** the "bounded local lookahead" the inline layer uses; it is a
   bounded *block-level* forward scan, bounded by the enclosing container.
 
 The payoff is a usability guarantee neither CommonMark nor Djot give: a stray
 ` ``` ` inside prose cannot turn the remainder into a code block. Carve accepts
 the narrower parser contract to buy that. Everything else in block
-structure — headings, quotes, bullet lists, thematic breaks, table rows — is
+structure (headings, quotes, bullet lists, thematic breaks, table rows) is
 still decided from the line beginning alone, with no lookahead.
 
 ## No backtracking for emphasis resolution
@@ -334,8 +334,8 @@ everyone else mistrusts.
 
 ## What Carve does better
 
-Carve's improvement is not just "different syntax." It is a tighter contract
-between source text, parser behavior, and user expectation.
+Carve's improvement is a tighter contract between source text, parser behavior,
+and user expectation.
 
 ### 1. Block structure is fixed before inline parsing
 
@@ -383,9 +383,8 @@ Examples:
 
 ### 6. The language is easier to implement and easier to trust
 
-The goal is not merely elegance. The goal is that a second implementation can
-read the spec and corpus and reach the same result without importing a pile of
-historical parser folklore.
+The goal is that a second implementation can read the spec and corpus and reach
+the same result without importing a pile of historical parser folklore.
 
 That improves:
 
@@ -427,8 +426,7 @@ _underline_
 {,sub,}
 ```
 
-The goal is not novelty for its own sake. The goal is that the delimiter gives
-the user a cue about the output:
+The goal is that the delimiter gives the user a cue about the output:
 
 - `/` leans like italics
 - `*` feels heavy
@@ -503,8 +501,8 @@ Example:
 Press [Ctrl+C]{kbd}.
 ```
 
-The technical point is not merely convenience. Native syntax gives the parser a
-clear semantic target and gives implementations a common contract.
+Native syntax gives the parser a clear semantic target and gives implementations
+a common contract.
 
 ## Where the parts come from
 
@@ -565,7 +563,7 @@ Carve reuses `^`, but only with hard contextual boundaries:
 - line-start `^` after a figure-like block means caption
 - table-cell `^` as the sole cell content means rowspan
 - `^[` opens an inline footnote
-- superscript is the braced `{^text^}` only — a bare inline `^` is literal
+- superscript is the braced `{^text^}` only: a bare inline `^` is literal
   text, so it never competes with the channels above
 
 Examples:
@@ -684,7 +682,7 @@ Carve is designed so implementers can rely on:
 - a normative grammar plus conformance corpus
 - fewer "special cases because Markdown did it that way"
 
-That should lower the cost of building a second implementation that actually
+That should lower the cost of building a second implementation that
 matches the first one.
 
 ## What this buys authors

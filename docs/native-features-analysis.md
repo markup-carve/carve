@@ -243,7 +243,7 @@ this section stays at the feature level.
   in the margin by CSS, so it needs no syntax of its own. `[>` is unclaimed and
   `[>foo]` is literal text. See `dismissed-syntax.md`. (Both note forms that do
   exist, `[^label]` and inline `^[content]`, are implemented; see §16.)
-- Setext (underline) headings — intentionally excluded (matches djot).
+- Setext (underline) headings: intentionally excluded (matches djot).
 
 ### Deliberate gaps (will not implement)
 

@@ -187,8 +187,8 @@ about what was lost.
 **A name is only half a vocabulary**
 
 Naming the node a type becomes leaves the attributes to each implementation, and
-that is where two bridges to the same model actually drifted: one wrote `ref`,
-`rawRef` and `autolink` on the link mark where the other wrote `carveRef`,
+that is where two bridges to the same model drifted: one wrote `ref`, `rawRef`
+and `autolink` on the link mark where the other wrote `carveRef`,
 `carveRawRef` and `carveAutolink`; one recorded a list's marker style and the
 other its tightness, neither both. Every one of those names round-trips
 perfectly within its own bridge, so no test either implementation had could see
@@ -240,8 +240,8 @@ them to survive. An attributed container carries them as data:
 ```
 
 That crosses into a ProseMirror document as the generic Carve div node with both
-data attributes intact, and comes back spelled the same way. A genuinely new
-*editor* node - one with its own ProseMirror name - belongs in the shared map
-first so every bridge uses the same vocabulary.
+data attributes intact, and comes back spelled the same way. A new *editor*
+node - one with its own ProseMirror name - belongs in the shared map first so
+every bridge uses the same vocabulary.
 
 ::::

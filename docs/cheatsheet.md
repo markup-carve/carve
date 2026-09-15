@@ -164,7 +164,7 @@ horizontal marker may stand alone; a vertical marker always needs a horizontal
 partner. Where that partner should stay whatever the column already says, `?`
 stands in for it: `?^`, `?~` and `?v` set the vertical axis only and leave the
 horizontal one to the column. The run is glued to the pipe and terminated by a
-space -- and it is atomic, so a run that is rejected takes the `=` with it. On `|=` it sets column defaults; on a plain `|` it overrides that cell.
+space. It is atomic, so a run that is rejected takes the `=` with it. On `|=` it sets column defaults; on a plain `|` it overrides that cell.
 Table attributes can set headerless defaults:
 `{aligns="right,center" valigns="top," widths="30,70"}`. Use
 `{header-rows=N footer-rows=N}` before a pipe table for explicit `thead`/`tfoot`
@@ -221,7 +221,7 @@ numbers the whole group (`</#panel-id>` then renders as "Figure 2a"):
 ^ Figure #: The pair
 ```
 
-A caption spans multiple lines like a paragraph — following lines fold in until
+A caption spans multiple lines like a paragraph: following lines fold in until
 a blank line or a block that would interrupt a paragraph (a list marker folds
 in, it does not end the caption):
 

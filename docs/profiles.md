@@ -178,7 +178,7 @@ from the render path. Denying them changes:
 - **the violation report** - under `error`, a host learns the document carried
   metadata or side commentary it did not ask for, and can refuse it.
 
-Frontmatter is the case where this is load-bearing rather than tidy. Carve's own
+Frontmatter is the case where this matters for more than tidiness. Carve's own
 renderers never emit it, but hosts routinely do - a title into a template, an
 author into a byline - which is why [Security](/security) PART 9 §25 requires a
 safe loader for it and escaping for any value later rendered. A profile that
@@ -311,7 +311,7 @@ Presets: **`unrestricted`** (all schemes/hosts), **`internalOnly`**
 
 - Profiles are a **core** capability in every implementation (a safety feature,
   not an opt-in plugin).
-- The filter runs **once, on the parsed AST**, before any renderer — so the
+- The filter runs **once, on the parsed AST**, before any renderer, so the
   guarantee is renderer-agnostic.
 - `to_text` is the safe default: it never silently deletes content, only its
   markup.

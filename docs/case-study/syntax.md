@@ -33,7 +33,7 @@ YAML frontmatter at document start. Well-established convention.
 ```
 
 Keep what works. The `#` convention is universal. Carve has **ATX
-headings only** — setext (underline) headings are intentionally absent,
+headings only**. Setext (underline) headings are intentionally absent,
 matching djot: a `---` underline collides with the thematic break and
 the frontmatter delimiter, reintroducing the ambiguity djot removed.
 
@@ -78,12 +78,12 @@ renders as
 </section>
 ```
 
-Skipped levels nest by the heading number — a `# H1` followed by
+Skipped levels nest by the heading number: a `# H1` followed by
 `### H3` puts the H3 section two levels deep inside the H1 section,
 without synthesizing an intermediate H2.
 
 The fragment URL `https://example.com/page#intro` resolves the same
-way whether the id is on `<h1>` or `<section>` — browsers locate the
+way whether the id is on `<h1>` or `<section>`: browsers locate the
 first element matching the id. Existing `</#id>` cross-references and
 `[Heading][]` implicit references keep working unchanged. See PART 9
 §13 of the grammar for the full algorithm.
@@ -137,7 +137,7 @@ heading text by the following algorithm, applied in order:
 | `# !!!` | `s` |
 | `# Setup` then `# Setup` | `Setup`, then `Setup-2` |
 
-Identifiers **preserve case and non-ASCII characters** — matching djot.js /
+Identifiers **preserve case and non-ASCII characters**, matching djot.js /
 djot-php (per [jgm/djot#393](https://github.com/jgm/djot/pull/393)). Cross-references
 resolve **case-insensitively**, so a lowercase `</#id>` still finds a capitalized
 heading and links to the target's actual (case-preserved) id. The rendered `id` is
@@ -148,7 +148,7 @@ CSS selector. Processors MAY apply the opt-in `lowercaseHeadingIds` /
 
 Non-ASCII ids are valid HTML5 and resolve in browsers (the fragment is
 percent-encoded when shared, e.g. `…/page#%C3%BCber-uns`). For **ASCII-only**
-anchors — no percent-encoding, friendlier to legacy autolinkers — implementations
+anchors (no percent-encoding, friendlier to legacy autolinkers), implementations
 offer an opt-in fold: carve-js's `asciiHeadingIds` parse option and carve-php's
 `AsciiHeadingIdsExtension`, which transliterate the id (`Über uns` → `uber-uns`). It
 is never the default; attach an explicit `{#id}` to pin any specific anchor.
@@ -188,7 +188,7 @@ The `/italic/` syntax comes from Org-mode, where it has worked well for decades.
 ```
 
 A direct consequence: a **doubled** bare delimiter never opens nested
-same-type emphasis, so it stays literal text — uniformly across all five
+same-type emphasis, so it stays literal text, uniformly across all five
 single-character delimiters.
 ```
 **x**   --> **x**     (literal, not nested bold)
@@ -257,7 +257,7 @@ See </#intro> for background.
 The `</#id>` syntax auto-fills link text from the target heading.
 No need to repeat yourself or keep text in sync.
 
-`</#id>` resolves against the document's full identifier namespace —
+`</#id>` resolves against the document's full identifier namespace:
 both explicit `{#id}` attributes and the automatic identifiers defined
 under "Automatic Identifiers" above. So `# Getting Started` is reachable
 as `</#getting-started>` without an explicit attribute. When a bare
@@ -427,7 +427,7 @@ The `^` prefix on the following line creates a `<figure>` with `<figcaption>`.
 ```
 
 Carve bullets are `-` and `*` only. Unlike Markdown and Djot, `+` is **not**
-a bullet in Carve — it is the list-continuation marker (PART 9 §17), so a
+a bullet in Carve: it is the list-continuation marker (PART 9 §17), so a
 `+ x` line is paragraph text, never a list item.
 
 Use whichever of `-`/`*` you prefer for a given list. The two markers are
@@ -490,8 +490,8 @@ fixes the dialect, the `<ol type>`, and `start`; a marker outside that
 dialect (or the other delimiter) starts a new list (PART 9 §11).
 
 Unlike the other blocks, a **list marker does not interrupt a paragraph** (the
-§10 paragraph rule): a list — bullet (`- `/`* `, task) or ordered (`1.`, `2.`,
-`1985.`, `a.`, `i.`, any value) — needs a blank line before it. Both marker
+§10 paragraph rule): a list, bullet (`- `/`* `, task) or ordered (`1.`, `2.`,
+`1985.`, `a.`, `i.`, any value), needs a blank line before it. Both marker
 classes behave identically here. An ordered marker is too common in prose
 ("step 2.", "version 1985.", "upgrade to 1. today") to interrupt, and a
 hard-wrapped prose line that happens to begin with a bullet should not silently
@@ -603,8 +603,8 @@ text directly (`<li>text</li>`); a loose item wraps each paragraph in `<p>`
 (PART 9 §17).
 
 **Compact list blocks** (Carve deviation from djot): a blank line before an
-item's sub-*block* — a sub-list, block quote, fenced code, fenced div,
-heading or table — does **not** loosen the list. The item stays tight with the
+item's sub-*block* (a sub-list, block quote, fenced code, fenced div,
+heading or table) does **not** loosen the list. The item stays tight with the
 block attached, so checklists-with-notes and steps-with-code stay compact. Only
 a real second paragraph or a blank between sibling items loosens it. The blank
 line is optional for a recognized opener; when present, it affects layout and
@@ -612,7 +612,7 @@ looseness, not whether the opener is structural.
 
 **List continuation marker** (Carve addition): a lone `+` at the marker column
 attaches the following flush-left block to the current item with no blank line,
-keeping the list tight — handy for code/tables you would rather not indent.
+keeping the list tight (handy for code/tables you would rather not indent).
 Because `+` is not a Carve bullet (unlike Markdown/djot, which treat `+` as a
 list marker), this is unambiguous: there is no `+` list it could be mistaken
 for. See the [examples](/examples) and PART 9 §17.
@@ -741,7 +741,7 @@ Keep triple backtick - it's universal and well-established:
 
 **With a label:** the fence info string is a single language token plus an
 optional bracketed label (PART 9 §11). A multiword or `{…}` info string is
-**not** a fence — it falls back to an inline code span — so attributes go in a
+**not** a fence (it falls back to an inline code span), so attributes go in a
 label, not braces:
 ~~~
 ```python [Example 1]
@@ -841,7 +841,7 @@ The `^` prefix adds a `<caption>` element to the table.
 #### Alignment
 
 Alignment is set by an explicit marker glued **directly** to the cell-opening
-pipe — no whitespace between the pipe and the marker. Whitespace *inside* a
+pipe: no whitespace between the pipe and the marker. Whitespace *inside* a
 cell is cosmetic padding only and never affects alignment.
 
 | Marker            | On          | Alignment                              |
@@ -858,7 +858,7 @@ Mnemonics: `<` left, `>` right, `~` center.
 ```
 
 The `Age` column is right-aligned, `City` centered, `Name` left (default).
-The ragged source whitespace above is irrelevant — only the markers matter.
+The ragged source whitespace above is irrelevant; only the markers matter.
 
 **Disambiguation.** A `<`, `>`, or `~` *immediately* after `|` or `|=` (no
 space) is an alignment marker. A lone `<` or `^` that is a cell's
@@ -904,7 +904,7 @@ renders as:
 ```
 
 `VALUE` is exactly one of `left`, `right`, `center`, serialized as
-`text-align: VALUE;` (one space after the colon, trailing semicolon) — the
+`text-align: VALUE;` (one space after the colon, trailing semicolon), the
 same output as djot-php.
 
 #### Colspan (`<`)
@@ -1005,13 +1005,13 @@ attributes always come from a preceding attribute line.
 This entire paragraph gets these attributes.
 ```
 
-A leading `{...}` line does not render — it attaches to the next block
+A leading `{...}` line does not render; it attaches to the next block
 element. Several rules apply (PART 9 §15):
 
 - **Reach:** the attributes float forward to the next block, even across
   a blank line. A run with no following block (e.g. at end of document)
   is dropped.
-- **Accumulation:** consecutive attribute lines merge in source order —
+- **Accumulation:** consecutive attribute lines merge in source order:
   `id` last-wins, `key=value` last-wins per key, and **classes
   accumulate** (no de-duplication):
 
@@ -1029,7 +1029,7 @@ element. Several rules apply (PART 9 §15):
   <p id="id2" key="val2" class="foo bar baz">Okay</p>
   ```
 
-- **Multi-line:** a single block may wrap — the `}` need not be on the
+- **Multi-line:** a single block may wrap: the `}` need not be on the
   opening line:
   ```
   {#id
@@ -1118,7 +1118,7 @@ This action cannot be undone.
 
 Carve renders a `:::` block by a **two-branch rule** on the type
 identifier (PART 9 §12). (This is a rendering-strategy split *within* the
-core `:::` mechanism — unrelated to the Tier-1/2/3 conformance tiers; both
+core `:::` mechanism, unrelated to the Tier-1/2/3 conformance tiers; both
 branches are Tier-1 core.)
 
 **Canonical admonition types** render as a semantic `<aside>`
@@ -1133,7 +1133,7 @@ exact class names:
 </aside>
 ```
 
-**Custom types — any other type** render as a generic block-level
+**Custom types (any other type)** render as a generic block-level
 `<div>` carrying the verbatim type as its class. This is the carve
 fenced-div primitive that the block-extension mechanism (§4.20) builds
 on (`::: tabs`, `::: mermaid`, `::: codepen` → `<div class="tabs">`
@@ -1164,7 +1164,7 @@ Project-specific call-out.
 
 A `<p class="admonition-title">…</p>` line is emitted **only** when an
 explicit `quoted_title` is given (both tiers). The quote characters are
-delimiters and are stripped — they never appear in the rendered title,
+delimiters and are stripped: they never appear in the rendered title,
 and the title is never folded into the class. Carve does **not**
 synthesize a default title from the type name; `::: note` without `"…"`
 produces no title element at all.
@@ -1181,8 +1181,8 @@ produces no title element at all.
 
 #### Generic divs (no type word)
 
-A `:::` opener with **no type word** — bare `:::` or an attributes-only
-`::: {…}` — is djot's generic container: a plain `<div>` carrying only
+A `:::` opener with **no type word** (bare `:::` or an attributes-only
+`::: {…}`) is djot's generic container: a plain `<div>` carrying only
 the opener's attributes (no class added). This is the no-class case the
 two tiers above don't cover.
 
@@ -1212,7 +1212,7 @@ So `::: word` is a typed block (canonical admonition / custom div); bare
 
 **Nesting by fence length.** A fence is a run of three or more colons. A
 block is closed only by a bare fence of *equal-or-greater* length, so a
-longer opener nests shorter blocks — a `:::` inside a `::::` block is
+longer opener nests shorter blocks: a `:::` inside a `::::` block is
 content, not a closer. (Equal-length fences do not nest; use a longer
 outer fence.) This applies to admonitions and generic divs alike:
 
@@ -1397,7 +1397,7 @@ closing quote `’` when the preceding character is alphanumeric (`it's`,
 digit pair `'24'` → `’24’`); otherwise it opens `‘` in an open context
 (`'word'` → `‘word’`, `rock 'n' roll` → `rock ‘n’ roll`).
 
-Fractions (`1/2`, `3/4`, …) are **not** converted — they collide with
+Fractions (`1/2`, `3/4`, …) are **not** converted: they collide with
 dates (`1/2/2024`) and paths, and djot has none (see
 [dismissed syntax](../dismissed-syntax), PART 9 §8).
 
@@ -1765,8 +1765,8 @@ Keeping them separate means:
 
 ### 4.24 HTML Serialization
 
-The exact bytes a conformant renderer emits — attribute order, escaping,
-indentation, void elements, tight/loose `<p>` wrapping, table styles —
+The exact bytes a conformant renderer emits (attribute order, escaping,
+indentation, void elements, tight/loose `<p>` wrapping, table styles)
 are pinned normatively in **`resources/grammar.ebnf` PART 10** (HTML
 Serialization Conventions). They exist so a second implementation (for
 example carve-php) can match the corpus without copying the reference

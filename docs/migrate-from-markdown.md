@@ -299,9 +299,9 @@ The `:name[content]` (inline) and `::: name` (block) syntax is available for cus
 
 Bare `<span>` and `<div>` tags in **hand-written Carve source** are **always literal text** - they are never interpreted as HTML. This is the key safety difference from Markdown, which passes raw HTML through by default.
 
-Migrating from Markdown does not leave the HTML behind, though: the importer preserves it rather than dropping it to literal text. A block-level element becomes a ```` ```=html ```` block; a native inline tag (`<b>`, `<strong>`, `<i>`, `<em>`, `<code>`, `<mark>`, `<sup>`, `<sub>`, `<del>`, `<s>`, `<ins>`) becomes its Carve construct; and any other inline tag becomes a `` `...`{=html} `` span. So `<span>note</span>` in your Markdown arrives as `` `<span>note</span>`{=html} `` (kept verbatim) and `<b>bold</b>` as `*bold*` (rendered `<strong>`) - the content is preserved rather than needing the manual replacement earlier versions required.
+Migrating from Markdown does not leave the HTML behind, though: the importer preserves it rather than dropping it to literal text. A block-level element becomes a ```` ```=html ```` block; a native inline tag (`<b>`, `<strong>`, `<i>`, `<em>`, `<code>`, `<mark>`, `<sup>`, `<sub>`, `<del>`, `<s>`, `<ins>`) becomes its Carve construct; and any other inline tag becomes a `` `...`{=html} `` span. So `<span>note</span>` in your Markdown arrives as `` `<span>note</span>`{=html} `` (kept verbatim) and `<b>bold</b>` as `*bold*` (rendered `<strong>`).
 
-When you genuinely want verbatim HTML, use the explicit raw constructs - a ```` ```=html ```` block or `` `...`{=html} `` inline. These passthrough constructs are on by default for trusted content. For untrusted input, turn the passthrough off so even those are escaped:
+When you want verbatim HTML, use the explicit raw constructs - a ```` ```=html ```` block or `` `...`{=html} `` inline. These passthrough constructs are on by default for trusted content. For untrusted input, turn the passthrough off so even those are escaped:
 
 ```ts
 import { carveToHtml } from '@markup-carve/carve'

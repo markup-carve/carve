@@ -18,7 +18,7 @@ ranges address the original UTF-8 input, start-inclusive and end-exclusive.
 Entries are sorted by path and ranges must not exceed the UTF-8 source length.
 
 Version 1 carries the original source, BOM and line-ending facts, plus ranges
-for every honestly positioned node. Everything else a node may carry is an
+for every accurately positioned node. Everything else a node may carry is an
 optional measured fact. Missing means unknown, never a guessed default: a
 producer that did not measure a fact omits it, and a consumer must not read an
 omission as a default value.

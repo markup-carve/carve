@@ -5,7 +5,7 @@ description: Build a Tier-3 extension end to end, in carve-js and carve-php, usi
 # Writing an extension: a QR-code case study
 
 This is the hands-on companion to the normative
-[Extensions Contract](./extensions). It builds **one real Tier-3 extension** -
+[Extensions Contract](./extensions). It builds **one Tier-3 extension** -
 a `qr` fenced block - end to end, and in doing so touches every layer you would
 use for any extension: choosing syntax, turning a node into HTML at render time,
 keeping a pure transform testable, static vs. client rendering, and the
@@ -125,12 +125,12 @@ type is a *hyphenated* token `` ```qr-wifi ``, `` ```qr-vcard ``, etc. It must b
 hyphenated, not a second word: `` ```qr wifi `` is, per the grammar's
 [invalid-fence fallback](./extensions), *not* a code block at all (a bare second
 info word disqualifies the fence), so the type has to be part of the single
-`language_info` token — and `-` is a valid token character.
+`language_info` token, and `-` is a valid token character.
 
 ::: tip Authors never escape
 WiFi / MeCard / vCard treat `\ ; , :` (and `"` for WiFi) as **structural**, but
 that is the *builder's* problem, not the author's. The author always writes the
-plain value — `password: pa;ss`, `org: ACME, Inc` — and `buildQrPayload`
+plain value (`password: pa;ss`, `org: ACME, Inc`), and `buildQrPayload`
 escapes it. The fenced-code body is verbatim (no inline parsing), so what the
 author types is exactly what the builder receives; keeping all escaping inside
 the builder is what makes the input friendly. Forget the escaping and a value
@@ -359,7 +359,7 @@ See [Security](./security) for the document-level model.
 
 QR showed the build-time-image shape. A `map` block shows the *same*
 pure-builder + render-seam split, but with **three interchangeable render modes**
-behind one syntax — the choice most "embed" extensions face.
+behind one syntax, the choice most "embed" extensions face.
 
 The author writes a coordinate (and optional caption):
 
@@ -384,12 +384,12 @@ export function parseMap(body: string): { lat: number; lon: number; zoom: number
 }
 ```
 
-Everything after this is just *which seam* turns the model into HTML — all three
+Everything after this is just *which seam* turns the model into HTML; all three
 take the same `parseMap` output.
 
 ### Mode A — build-time SVG (self-contained, offline, no key)
 
-No network, no API key, no client JS — the coordinate becomes a small inline SVG
+No network, no API key, no client JS: the coordinate becomes a small inline SVG
 with a pin. Best for email, PDF, archival HTML. The numbers flow only into
 **numeric SVG attributes**, so there is nothing to escape and nothing to inject.
 
@@ -403,8 +403,8 @@ with a pin. Best for email, PDF, archival HTML. The numbers flow only into
 </figure>
 ```
 
-A `style:` line (or a 4th comma field) lets the builder pick a palette — still
-one self-contained SVG, no network. Here is the *actual* output for three
+A `style:` line (or a 4th comma field) lets the builder pick a palette (still
+one self-contained SVG, no network). Here is the *actual* output for three
 styles (these render inline in this page):
 
 ````
@@ -453,7 +453,7 @@ style: light
 
 </div>
 
-The `style` is just data the builder maps to a palette — adding one is a table
+The `style` is just data the builder maps to a palette; adding one is a table
 entry, not a new code path. (For Mode B the same `style` becomes the provider's
 `style=` query param: `osm-bright`, `dark-matter`, `satellite`, …)
 
@@ -476,7 +476,7 @@ const src =
 
 When the reader needs to pan/zoom, emit a provider iframe instead (OpenStreetMap
 needs no key). This is the Mermaid-style "ship a marker, the browser hydrates"
-path — use `fencedRender`'s text mode, or emit the iframe directly:
+path: use `fencedRender`'s text mode, or emit the iframe directly:
 
 ```html
 <iframe loading="lazy" title="Map — 52.520, 13.405"
@@ -501,7 +501,7 @@ const map = {
 
 carve-php is the exact shape from QR's Step 4 (`register()` + `on('render.code_block')`,
 `getLanguage() === 'map'`). The lesson: **one syntax, a pure model, and a seam you
-pick per medium** — offline SVG, build-time image, or live embed — without the
+pick per medium** (offline SVG, build-time image, or live embed) without the
 author changing a thing.
 
 ## Where this fits
