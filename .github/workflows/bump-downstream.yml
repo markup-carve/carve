@@ -542,7 +542,24 @@ jobs:
           # Draft PRs (non-conforming) are left for a human to implement first.
           # Requires "Allow auto-merge" enabled on the downstream repo, and a
           # required status check on main (else --auto merges immediately).
+          # Every protected main in the org requires an up-to-date branch, and
+          # GitHub never updates one by itself, so a bump that goes BEHIND while
+          # main moves would sit on auto-merge forever (carve#2016).
           if [ -z "$draft" ] && [ -n "$existing" ]; then
+            state=UNKNOWN
+            for _ in 1 2 3 4 5; do
+              state=$(gh pr view "$existing" --repo "$REPO" --json mergeStateStatus \
+                --jq .mergeStateStatus 2>/dev/null || echo UNKNOWN)
+              [ "$state" = UNKNOWN ] || break
+              sleep 5
+            done
+            if [ "$state" = BEHIND ]; then
+              if gh api "repos/$REPO/pulls/$existing/update-branch" -X PUT --silent; then
+                echo "Updated $REPO PR #$existing onto main."
+              else
+                echo "::warning::could not update $REPO#$existing onto main - auto-merge stalls while it is BEHIND"
+              fi
+            fi
             if gh pr merge "$existing" --repo "$REPO" --squash --auto 2>/dev/null; then
               echo "Auto-merge (squash) enabled on $REPO PR #$existing."
             else
