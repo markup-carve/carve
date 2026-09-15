@@ -22,9 +22,9 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L83) | 9 | A COMPOSITE FIGURE GROUPS ITS PANELS UNDER ONE CAPTION |
 | [`CARVE-P9-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L391) | 9 | T9 A HEADER CELL STATES WHAT IT HEADS |
 | [`CARVE-P9-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L494) | 9 | SMART TYPOGRAPHY RUNS BY DEFAULT |
-| [`CARVE-P9-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L276) | 9 | BLOCK RENDERING |
-| [`CARVE-P9-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L420) | 9 | AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME |
-| [`CARVE-P9-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L450) | 9 | HEADING SECTION WRAPPING |
+| [`CARVE-P9-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L298) | 9 | BLOCK RENDERING |
+| [`CARVE-P9-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L442) | 9 | AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME |
+| [`CARVE-P9-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L472) | 9 | HEADING SECTION WRAPPING |
 | [`CARVE-P9-025`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L2) | 9 | FOOTNOTES |
 | [`CARVE-P9-026`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L42) | 9 | THE BACKLINK CARRIES AN ACCESSIBLE NAME |
 | [`CARVE-P9-027`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L52) | 9 | THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME |

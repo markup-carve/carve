@@ -448,6 +448,7 @@ index: examples/edge-cases/index.md
   adjacent-slash-and-underscore-emphasis-nest
   quote-flanking-after-an-escaped-character
   a-combined-bold-italic-span-may-cross-a-line
+  a-bare-closer-does-not-reach-inside-a-braced-inline
   a-tag-inside-a-literal-brace-run-is-still-a-tag
   a-math-span-s-base-class-keeps-the-class-slot-in-place
   a-marker-glued-to-a-name-opens-nothing

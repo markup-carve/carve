@@ -24,3 +24,6 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+463-a-bare-closer-does-not-reach-inside-a-braced-inline  a bare closer reaches inside a braced inline in the pinned build; carve#2027 ruled it may not
+463-a-bare-closer-does-not-reach-inside-a-braced-inline-2  a bare closer reaches inside a braced inline in the pinned build; carve#2027 ruled it may not
+463-a-bare-closer-does-not-reach-inside-a-braced-inline-3  a bare closer reaches inside a braced inline in the pinned build; carve#2027 ruled it may not

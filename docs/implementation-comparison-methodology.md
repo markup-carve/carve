@@ -83,7 +83,9 @@ and
 and
 `461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling`
 and
-`462-include-directive-with-no-resolver-renders-literal`.
+`462-include-directive-with-no-resolver-renders-literal`
+and
+`463-a-bare-closer-does-not-reach-inside-a-braced-inline`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -153,6 +155,10 @@ with NO resolver configured, which is nothing - it stays literal text. That is
 what every engine already produces, including one that has never heard of PART 9
 section 19, because expansion is processor-level and off by default. It is
 listed because the published run predates the row.
+Section 463 lags carve-js and carve-rs for all three of its rows: a bare closer
+inside a braced inline (`~{/x/}{/y~/}`) closes a span opened before the braces
+there, and markup-carve/carve#2027 ruled that it may not. carve-php already
+matches.
 `tests/implementation-comparison-counts.test.mjs` reads this line and counts the
 fixtures each category contributes, so the numbers cannot be asserted, only
 derived, and the line has to be DELETED by whoever next runs
