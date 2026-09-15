@@ -5677,15 +5677,26 @@ EOF = (* end of file *) ;
            a Warning. Total expanded output is charged against the same per-
            render byte budget as other amplifying features -- `max(1 MB,
            8 x input length)` (§25); once exceeded, further expansion degrades
-           to the literal directive with a Warning. Once the budget is
-           exhausted, later directives MUST be refused BEFORE invoking their
-           resolver, so the byte bound limits reads as well as emitted output.
+           to the literal directive with a Warning. The byte budget bounds the
+           expanded OUTPUT; it does NOT bound the WORK done to produce it,
+           because a target is resolved before its size is known and a document
+           may carry one directive per dozen bytes. Implementations MUST
+           therefore enforce a FINITE bound on RESOLVER INVOCATIONS per render;
+           the RECOMMENDED default is at least 1000, and the host MAY configure
+           it. A directive past the bound is left literal with a Warning and
+           MUST NOT be passed to the resolver. The byte budget and the
+           resolver-call bound are whole-render TOTALS that only ever grow, so
+           once either is exhausted, later directives MUST be refused BEFORE
+           invoking their resolver -- not resolved and then refused -- and the
+           two bounds therefore limit reads as well as emitted output.
 
         I7 ERRORS. Unreadable path, binary / non-text content, BOTH selection
            mechanisms present (`#section` + a line-range, I1), block-structured
-           content in INLINE position (I2), cycle, depth-exceeded, and
-           size-exceeded EACH emit a Warning and leave the
-           directive LITERAL (visible and debuggable). Inclusion NEVER silently
+           content in INLINE position (I2), cycle, depth-exceeded,
+           size-exceeded, call-bound-exceeded, and a directive reached AFTER
+           byte-budget or call-bound exhaustion EACH emit a Warning and leave
+           the directive LITERAL (visible and debuggable). The last two are
+           never passed to the resolver at all (I6). Inclusion NEVER silently
            drops a directive. See PART 9 §25 (File inclusion) for the security
            model: parser stays pure, resolver is host-supplied and MUST enforce
            canonical path containment after symlink resolution and MUST NOT
