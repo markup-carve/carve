@@ -588,7 +588,7 @@ The marker holds exactly one character (PART 9 `task_state`). `x` / `X` render a
 **checked** box; ` `, `-`, `_`, `>`, `?` all render an **unchecked** box. A
 character outside that set is not a task marker at all.
 
-The four non-space markers carry an author convention - cancelled, paused,
+The four non-space markers carry an author convention - canceled, paused,
 deferred, unsure - and the box cannot show which. So the item names it:
 `- [-] dropped` renders `<li data-task-state="-">`, which a stylesheet can
 reach, and the AST records the same character in `taskState` so the formatter

@@ -954,7 +954,7 @@ A row may name an issue only where one of those still declares the debt.
 
 A third ledger, `resources/ast-extent-findings.txt`, records the other half of
 §4: a span that is PRESENT and points at the wrong codepoint. Those findings are
-produced by `checkStopsAtChildren` and its neighbours, which read the SOURCE
+produced by `checkStopsAtChildren` and its neighbors, which read the SOURCE
 rather than another engine - the only way a rule every engine breaks the same
 way can be seen at all, since the three-way panel compares the engines against
 each other and reads a unanimous defect as agreement. Until
