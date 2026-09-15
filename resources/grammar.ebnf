@@ -8697,6 +8697,11 @@ EOF = (* end of file *) ;
           immediately after it in the line the writer is building holds that
           same character, put there by the writer as MARKUP and not behind a
           backslash. Adjacent -> escape it. Not adjacent -> emit it bare.
+          `_` TAKES A SECOND CONDITION, ALSO ON THE EMITTED LINE: it is also
+          escaped when another live `_` on that line could close the emphasis
+          it could open, by CommonMark 6.2 read for the underscore. A run that
+          flanks on both sides can neither open nor close, so `company_id`
+          stays bare while `*x*_y_` is written `*x*\_y\_`.
       M1c A PARAGRAPH LINE MUST NOT BECOME A LIST. When a text character at a
           paragraph line's content position would begin a Markdown list marker,
           the target escapes the marker character: `-` and `+` before a space
@@ -8783,6 +8788,12 @@ EOF = (* end of file *) ;
       it over the EMITTED LINE, and show it survives a case where the writer's
       own output supplies the collision. Until that argument is made and
       written down here, M1 stands unchanged for everything M1b does not name.
+
+      THE UNDERSCORE'S SECOND CONDITION IS THAT ARGUMENT, MADE. It is stated
+      over the emitted line, and the collision M1a guards against cannot
+      arise: this writer emits no `_` as markup, and a condition that only
+      ADDS an escape can never drop one that was holding a run boundary
+      apart. It binds every engine at once, like the rest of the clause.
 
       M2 IS WHY A LINE-LEVEL TEST REACHES WHERE §2 NEEDS A PARSER. M1 governs
       a character that reached the writer inside a TEXT node -- one the Carve
@@ -9186,6 +9197,25 @@ EOF = (* end of file *) ;
       NO CARVE SOURCE REACHES THIS, so nothing in the parse-driven corpus can
       pin it and the fixture is a hand-built payload entering through the AST
       ingest (tests/an-unspellable-block-does-not-cancel-list-adjacency.test.mjs).
+
+  10k. THE ROUND-TRIP COMPARISON NORMALIZES A NAMED LIST -- NORMATIVE [CARVE-P11-043].
+      A round trip preserves MEANING, not one serialization. Two renderings of
+      a document compare equal when they differ only by an entry on this list,
+      which is CLOSED:
+
+      N1 `<del>` and `<s>` are one tag.
+      N2 A nested emphasis of DIFFERENT strengths whose child spans the whole
+         parent may commute, so `<strong><em>x</em></strong>` and
+         `<em><strong>x</strong></em>` are one document.
+
+      Everything else is byte-exact. EQUAL strengths are not on the list:
+      `<em><em>x</em></em>` against `<strong>x</strong>` is an italic turned
+      bold, which is a different document.
+
+      THE LIST IS ENUMERATED AND MECHANICAL, never a judgment about what means
+      the same. The defects this comparison has found were found because it was
+      exact, and an open-ended equivalence would hide the next one. An entry is
+      written here or it does not exist.
 
   11. THE MARKDOWN TARGET'S CROSS-REFERENCES -- NORMATIVE [CARVE-P11-038]. A resolved
       cross-reference is emitted as a Markdown link to the target heading's id,

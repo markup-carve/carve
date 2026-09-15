@@ -35297,3 +35297,60 @@ A table below a table stays inside the item in a quote host too.
 ```
 
 :::
+
+## An underscore pair in text is escaped where the line would pair it
+
+PART 11 §8a M1b. On the Markdown target a literal `_` is escaped when another
+live `_` on the emitted line could close the emphasis it could open. A run that
+flanks on both sides can neither open nor close, so `company_id` stays bare, and
+so does an underscore no second one can pair with.
+
+Adjacency alone missed this: both underscores of `_y_` are text, neither stands
+beside a delimiter, and every reader turned the author's text into emphasis
+(markup-carve/carve-js#1716).
+
+::: compare
+
+```carve
+/x/_y_ in company_id and a_b_c and a _ b _ c
+```
+
+```html
+<p><em>x</em>_y_ in company_id and a_b_c and a _ b _ c</p>
+```
+
+:::
+
+## The round-trip comparison normalizes a named list
+
+PART 11 §10k. A round trip preserves meaning, not one serialization, so two
+renderings compare equal when they differ only by a NAMED entry: `<del>` and
+`<s>` are one tag, and a nested emphasis of different strengths whose child
+spans the whole parent may commute.
+
+The list is closed. Equal strengths are not on it, because an emphasis inside
+an emphasis and a single strong are different documents.
+
+::: compare
+
+```carve
+{~ ~}
+```
+
+```html
+<p><s> </s></p>
+```
+
+:::
+
+::: compare
+
+```carve
+/*x*/
+```
+
+```html
+<p><strong><em>x</em></strong></p>
+```
+
+:::
