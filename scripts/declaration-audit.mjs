@@ -287,6 +287,12 @@ const MANIFEST = [
   // ONE-WAY, and it hid four stale rows. Nothing asserts a listed document
   // still loses, so a document that STOPS losing sits here reading as coverage.
   { repo: 'carve-js', path: 'test/ast-round-trip-preserves-source.test.ts', name: 'KNOWN_LOSSES', kind: 'js', policy: 'owed', guard: 'two-way', staleness: "it('still loses what it says it loses'", owner: 'markup-carve/carve-js#1449' },
+  // The include-security adapter carve-js#1697 added. Both are capability lists
+  // in the same direction as carve-php's KNOWN_KEYS and carve-rs's KNOWN_KINDS:
+  // a corpus member or expected field the adapter does not name FAILS it, so
+  // neither can excuse anything.
+  { repo: 'carve-js', path: 'test/include-security-conformance.test.ts', name: 'KNOWN_VECTOR_KEYS', kind: 'js', policy: 'permitted', guard: 'two-way', owner: 'adapter capability list, not an exemption' },
+  { repo: 'carve-js', path: 'test/include-security-conformance.test.ts', name: 'KNOWN_EXPECTED_KEYS', kind: 'js', policy: 'permitted', guard: 'two-way', owner: 'adapter capability list, not an exemption' },
 
   // -- carve-php -------------------------------------------------------------
   { repo: 'carve-php', path: 'tests/CarveCorpusTest.php', name: 'KNOWN_GAPS', kind: 'php', policy: 'owed', guard: 'two-way', owner: 'tests/CarveCorpusTest.php' },
