@@ -16,9 +16,12 @@
 #
 # UNSTATED is a DECLARED GAP, not an exemption: the obligation is on the page
 # and in no clause. That is exactly what carve#1995 was, and writing this ledger
-# found six more of the same shape. WEAKER means the clause exists and states
+# found six more of the same shape. Five of those six were closed by writing the
+# clauses - PART 9 §19 I12 and I15 are new, and I3, I10 and I11 each gained the
+# sentence their row anchors on. WEAKER means the clause exists and states
 # something weaker than the page does - I4 makes source-position remapping a
-# SHOULD while the page writes MUST. Every run prints both.
+# SHOULD while the page writes MUST, and that one is still open. Every run
+# prints both.
 #
 # THE ANCHOR is how a row detects a clause that LOSES the obligation. It is a
 # short distinctive phrase that must appear in the cited clause, compared with
@@ -35,13 +38,13 @@ docs/includes.md :: PART 9 §19 I1 :: mutually exclusive :: The two selection me
 docs/includes.md :: PART 9 §19 I2 :: inline-only content :: An inline include is constrained to inline-only content: the
 docs/includes.md :: PART 9 §19 I9 :: is ordinary LITERAL text and is NEVER resolved :: Because recognition is grammar-level, a processor MUST NOT
 docs/includes.md :: PART 9 §19 I9a :: CONTIGUOUS RUN of inline nodes :: A processor MUST therefore recognize a directive over a
-docs/includes.md :: UNSTATED :: - :: I12: the writer preserves a directive verbatim. A Carve writer
-docs/includes.md :: UNSTATED :: - :: I15: a processor targeting Carve source MUST NOT expand.
-docs/includes.md :: UNSTATED :: - :: - The resolver is opt-in and MUST be off for untrusted input
-docs/includes.md :: UNSTATED :: - :: Two spellings that name the same document MUST return the same
+docs/includes.md :: PART 9 §19 I12 :: MUST NOT escape the braces of a well-formed directive :: I12: the writer preserves a directive verbatim. A Carve writer
+docs/includes.md :: PART 9 §19 I15 :: the expansion pass MUST NOT run :: I15: a processor targeting Carve source MUST NOT expand.
+docs/includes.md :: PART 9 §19 I3 :: off for untrusted input unless it has satisfied :: - The resolver is opt-in and MUST be off for untrusted input
+docs/includes.md :: PART 9 §19 I11 :: Two spellings that name the same document MUST return the same id :: Two spellings that name the same document MUST return the same
 docs/includes.md :: PART 9 §19 I10 :: MUST NOT default to the process working directory :: The root MUST NOT default to the process working directory:
 docs/includes.md :: PART 9 §19 I10 :: a host MUST supply the root explicitly :: A host MUST supply the root explicitly; otherwise inclusion
-docs/includes.md :: UNSTATED :: - :: - A configured root MUST be absolute. A root spec a host
+docs/includes.md :: PART 9 §19 I10 :: A CONFIGURED ROOT MUST BE ABSOLUTE :: - A configured root MUST be absolute. A root spec a host
 docs/includes.md :: PART 9 §19 I10 :: The root MUST NOT re-base per included file :: The root MUST NOT re-base per included file.
 docs/includes.md :: PART 9 §19 I4 :: AS IF the resolved content appeared inline :: - The observable result MUST be as if the resolved content had
 docs/includes.md :: WEAKER PART 9 §19 I4 :: Source positions SHOULD be remapped :: - Source positions MUST identify the file they are measured in,
