@@ -8,11 +8,32 @@
       E1 CLASSIFY. At each unescaped bare delimiter d outside code spans /
          raw inline, evaluate bare_opener(d) and bare_closer(d). Neither
          holds -> literal text.
-      E2 CLOSE FIRST. A d satisfying bare_closer(d) with an open d-entry on
-         the stack closes the NEAREST such entry. Spans NEST, never
-         overlap: entries pushed above the closed one are popped and their
-         delimiters demoted to literal (the djot model -- an opener that
+      E2 CLOSE FIRST. A d satisfying bare_closer(d) with a REACHABLE open
+         d-entry on the stack (E2a) closes the NEAREST such entry. Spans NEST,
+         never overlap: entries pushed above the closed one are popped and
+         their delimiters demoted to literal (the djot model -- an opener that
          gets closed demotes the still-open candidates between).
+      E2a A CODE SPAN AND A BRACED INLINE ARE OPAQUE TO A BARE CLOSER. A bare
+         delimiter never pairs across the boundary of either construct, in
+         either direction. A CODE SPAN -- with the raw-inline and inline-math
+         forms spelled with its backticks -- holds no delimiters at all (E1).
+         A BRACED INLINE is any member of the braced family: the forced
+         `{X … X}` spans (§22) and the editorial and comment forms `{+ +}`,
+         `{- -}`, `{~ ~> ~}`, `{# #}` and `{% %}`. Inside one, a bare d is classified
+         as usual, but only entries pushed INSIDE that braced inline are
+         reachable: an entry opened before its `{X` cannot be closed from
+         within, and a d there that neither opens nor closes an entry inside
+         the braces is literal content. Bare entries still open when the
+         braced closer arrives demote to literal, as E2 already does for the
+         entries above a closed one. So `~{/x/}{/y~/}` ->
+         ~<em>x</em><em>y~</em>, the leading `~` demoting at E5, while
+         `~a{+b~+} c~` -> <s>a<ins>b~</ins> c</s> closes at the `~` outside
+         the braces.
+         WHY BOTH ARE NAMED. The closer would otherwise split `{/y~/}` into a
+         literal `{/y` and a stray `/}`, silently changing what the braces
+         held, and no author writes that shape. The rule is one rule over both
+         kinds so that a construct added to either kind later is opaque by
+         being that kind, not by being added to a list.
       E3 NO SAME-TYPE NESTING (§3). While a d-span is open, a further d
          that would open does NOT push -- it is literal content. Hence
          /usr/local/ -> <em>usr/local</em> (01-emphasis-6); the/path/here
@@ -22,7 +43,8 @@
       E4 OPEN. Otherwise a d satisfying bare_opener(d) pushes an entry.
       E5 END OF BLOCK. Entries still open demote to literal.
       Forced `{X … X}` spans (§22) push/pop on the SAME stack; only the
-      boundary tests are skipped.
+      boundary tests are skipped, and each is a boundary a bare closer does
+      not reach across (E2a).
       CONSEQUENCES (pinned): SAME-DELIMITER ADJACENCY is bare_opener's
       <!(d) / !(d) guards -- a doubled bare delimiter is literal, never
       nested same-type emphasis: `**x**`, `~~x~~`, `==x==` like `//x//`,
