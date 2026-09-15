@@ -8699,8 +8699,9 @@ EOF = (* end of file *) ;
           immediately after it in the line the writer is building holds that
           same character, put there by the writer as MARKUP and not behind a
           backslash. Adjacent -> escape it. Not adjacent -> emit it bare.
-          `_` TAKES A SECOND CONDITION, ALSO ON THE EMITTED LINE: it is also
-          escaped when another live `_` on that line could close the emphasis
+          `_` TAKES A SECOND CONDITION, OVER THE INLINE CONTENT IT IS EMITTED
+          IN (a paragraph, heading or table cell, across its line breaks): it
+          is also escaped when another live `_` there could close the emphasis
           it could open, by CommonMark 6.2 read for the underscore. A run that
           flanks on both sides can neither open nor close, so `company_id`
           stays bare while `*x*_y_` is written `*x*\_y\_`.
@@ -8792,9 +8793,9 @@ EOF = (* end of file *) ;
       written down here, M1 stands unchanged for everything M1b does not name.
 
       THE UNDERSCORE'S SECOND CONDITION IS THAT ARGUMENT, MADE. It is stated
-      over the emitted line, and the collision M1a guards against cannot
-      arise: this writer emits no `_` as markup, and a condition that only
-      ADDS an escape can never drop one that was holding a run boundary
+      over the emitted inline content, and the collision M1a guards against
+      cannot arise: this writer emits no `_` as markup, and a condition that
+      only ADDS an escape can never drop one that was holding a run boundary
       apart. It binds every engine at once, like the rest of the clause.
 
       M2 IS WHY A LINE-LEVEL TEST REACHES WHERE §2 NEEDS A PARSER. M1 governs
