@@ -660,18 +660,14 @@ test('the obligations ledger declares its gaps out loud', () => {
   const { unstated, weaker } = audit()
   // Writing the ledger found five more of the carve#1995 shape plus one clause
   // that states something weaker than the page does. Closing any of them moves
-  // these numbers, which is the point of pinning them - the five UNSTATED rows
-  // became citations when PART 9 §19 gained I12 and I15 and I3, I10 and I11
-  // gained a sentence each.
+  // these numbers, which is the point of pinning them.
   assert.equal(unstated.length, 0)
   assert.equal(weaker.length, 1)
   assert.equal(weaker[0].clause, 'WEAKER PART 9 §19 I4')
 })
 
 test('every obligation the includes page states names the clause that now carries it', () => {
-  // The other half of the count above: a zero is only worth pinning if the five
-  // rows that reached it point somewhere. Each pair is asserted on its own, so a
-  // regression names the obligation that lost its home rather than a total.
+  // Asserted one by one, so a regression names the obligation that lost its home.
   const { ledger } = audit()
   const clauseFor = (opening) => ledger.find((row) => row.text.startsWith(opening))?.clause
   assert.equal(clauseFor('I12: the writer preserves a directive verbatim'), 'PART 9 §19 I12')
@@ -682,9 +678,7 @@ test('every obligation the includes page states names the clause that now carrie
 })
 
 test('a clause that loses the sentence its row anchors on is reported', () => {
-  // THE PROOF THE FIVE NEW ROWS CAN FAIL. An anchor is only worth writing if
-  // deleting the sentence it names turns the audit red, and a row citing a
-  // clause that exists would otherwise pass on the clause id alone.
+  // Deleting the anchored sentence must fail, not just a missing clause id.
   const { ledger } = audit()
   const section = specPart9Sections().get('19')
   const clauses = clausesOf(section.text)
