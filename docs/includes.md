@@ -462,6 +462,11 @@ The specification is normative on the **outcome** and permissive on the
   id. A processor therefore stamps a resolved child AFTER expanding that
   child's own includes, and only where no identity is already recorded.
 
+  An **inline** include's leading and trailing text joins the host's text
+  run, which PART 12 §1a coalesces, and the merged run carries the host's span.
+  Provenance is kept per node, not per character: every other node the child
+  contributes still names the child's file.
+
 Worked example - `snippet.crv` ends inside an unclosed fence:
 
 ~~~carve

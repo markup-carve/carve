@@ -47,6 +47,10 @@
       source at any offset, and §4 rates a span that selects the wrong text
       worse than no span at all. So such a run publishes NONE.
 
+      A run an inline include (PART 9 §19) assembled from more than one file
+      is the exception: it spans its pieces from the file that holds the run,
+      from the first one's start to the last one's end.
+
       `escaped_text` is NOT `text` and does not merge with it: PART 12 §5 keeps
       the two distinct on the wire because an escape is authored form, and
       collapsing them would lose the distinction the type exists to carry.
