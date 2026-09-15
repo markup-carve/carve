@@ -5,11 +5,11 @@ already normative in PART 9 section 19. It is deliberately separate from the
 broader include-language suite in draft PR #291.
 
 The vectors cover only observable security decisions: resolver activation,
-canonical filesystem containment, remote-fetch attempts, graph depth, charged
-bytes, the bound on resolver invocations, and resolver calls after either total
-is exhausted. They do not specify rendered or formatted output, warning
-wording, section selection, heading shifts, collision handling, dependency
-ordering, or fallback text.
+where the containment root comes from, canonical filesystem containment,
+remote-fetch attempts, graph depth, charged bytes, the bound on resolver
+invocations, and resolver calls after either total is exhausted. They do not
+specify rendered or formatted output, warning wording, section selection,
+heading shifts, collision handling, dependency ordering, or fallback text.
 
 "Left literal with a Warning" is therefore observed as `status: denied` plus the
 portable `denial` class, never as warning text: a refusal class and the absence
@@ -29,6 +29,21 @@ for both (see that suite's README). A host MAY publish a finer diagnostic of
 its own - markup-carve/carve-lsp#193 does - as long as the shared rule id does
 not move.
 
+`no-root` is the class for a configured value that does not name a root at
+all. Every other vector hands the adapter a root that is already a real
+absolute directory, so the corpus could only ever ask whether containment holds
+GIVEN a good root; the step where a bad configured value becomes a good-looking
+root sat upstream of every vector (carve#2003). Section 19's Containment root
+section rules that step already - a host **MUST** supply the root explicitly,
+and the root **MUST NOT** default to the process working directory - so the
+class pins existing normative text rather than adding any.
+
+A blank spec is the one spelling that text settles on its own: an empty string
+is not a pathname, and every canonicalizer that accepts one anyway answers with
+the process working directory, which is the value the section forbids. What a
+spec that is neither blank nor absolute means is NOT pinned here and is not
+ruled anywhere: see carve#2004.
+
 What is still NOT pinned is whether the class may vary with the target's
 EXISTENCE. A resolver that checks existence before containment reports a miss
 for an absent out-of-root target and a containment denial for a present one,
@@ -41,9 +56,21 @@ Each implementation reads `vectors.json` and handles every `kind`:
 
 - `activation`: run the source in the stated mode and record resolver calls.
 - `filesystem`: materialize `tree` in a temporary directory, then resolve
-  `request` from `from` under `root`. An object with a `symlink` member denotes
+  `request` from `from` under the root. An object with a `symlink` member denotes
   a symlink whose target is relative to the temporary tree. `<ABS:path>` denotes
-  that temporary tree's absolute path to `path`.
+  that temporary tree's absolute path to `path`, in `rootSpec` as well as in
+  `request`.
+
+  A vector names the root exactly one way, and the schema refuses both at once:
+
+  - `root` is a path the ADAPTER materializes and canonicalizes before handing
+    it over. Containment is then the only question.
+  - `rootSpec` is the value the HOST was configured with, passed through the
+    implementation's own root-configuration seam UNCHANGED. The assertion is
+    about what that seam materializes it to - a root, with resolution
+    continuing against it, or no root at all, which is `denial: no-root` with
+    an empty `resolverCalls`. A spec must never be pre-canonicalized by the
+    adapter, because the canonicalization is the behavior under test.
 - `remote`: pass `request` through the real include-resolution path and record
   network fetch attempts. An allowlist permits fetching; it does not require a
   processor to implement remote includes, so `unsupported` is conformant.
@@ -78,13 +105,47 @@ tolerated - an engine's red is expected and tracked, not discovered.
   (`tests/include_security_conformance.rs`) and carve-lsp
   (`src/include-security-conformance.test.ts`) have adapters and must grow the
   limit, the `resolver-calls` denial class and the two requirement ids; carve-lsp
-  additionally pins the vector count at 12. carve-js and carve-php implement
-  includes but carry no security adapter at all. Delete this entry when the last
-  adapter reads the limit.
+  additionally pins the vector count. carve-php grew an adapter of its own in
+  carve-php#1954 and reads the limit; carve-js implements includes and still
+  carries no security adapter. Delete this entry when the last adapter reads the
+  limit.
 - `not-found` (carve#1994). Two `S2-contained-paths` vectors pin that a target
   which canonicalizes INSIDE the root but is absent is refused as a miss, not as
   a containment denial. Adapter side again: carve-lsp drives the `filesystem`
   kinds through its real resolver, whose denial set already carries `not-found`
-  (carve-lsp#193), so only its vector-count pin has to move; carve-rs runs the
-  `graph` kinds only and is unaffected. Delete this entry when carve-lsp's count
-  pin reads 16.
+  (carve-lsp#193), so only its vector-count pin has to move. Delete this entry
+  when every count pin reads 19, which is the count as of the entry below.
+- `S9-root-configuration`, `rootSpec`, `no-root` (carve#2003). Where the
+  containment root comes from. This window is NOT adapter-only, which is what
+  separates it from the two entries above. Measured on 2026-09-15 against each
+  engine's pushed `main`, through the constructor each one exposes for the
+  configured value:
+  - carve-js `fileSystemResolver(root)` runs `realpathSync(root)` with no
+    validation. `realpathSync("")` returns the process working directory, so a
+    blank configured value roots containment there - the default section 19
+    forbids by name.
+  - carve-php `new FilesystemIncludeResolver($root)` guards with
+    `realpath($root) === false || !is_dir(...)`, and that guard does not catch a
+    blank value: `realpath('')` also answers with the process working directory
+    and `is_dir` accepts it.
+  - carve-rs `FileSystemResolver::new(root)` returns `Err` from
+    `std::fs::canonicalize("")`, so it refuses - correctly, and without the
+    requirement being stated anywhere it could be gated.
+  - carve-lsp validates the configured value in the server (carve-lsp#195).
+
+  Two engines therefore go red on `blank-root-spec-configures-no-root` on the
+  merits, not only for want of an adapter, and each needs a ticket. Every
+  adapter additionally has to read `rootSpec` and the `no-root` class, and pass
+  the spec through unchanged.
+
+  All three adapters now pin a count, and this addition moves all three. Read
+  from each repo's pushed `main` on 2026-09-15, hours after the last two landed:
+  carve-lsp pins version, count 14, the requirement set and every member read;
+  carve-php pins the same four (carve-php#1954); carve-rs pins version, total
+  count 14, the `graph` count 6 and the driven count (carve-rs#1598). Each is
+  already two behind #2001 and is five behind after this, and the
+  member-and-requirement pins fail closed on `rootSpec` and `S9` besides. That
+  is the gate working rather than a defect here, so no vector was shrunk to keep
+  a downstream count green; a ticket per repo follows this merge. Delete this
+  entry when the last engine refuses a blank spec and the last adapter reads
+  `rootSpec`.

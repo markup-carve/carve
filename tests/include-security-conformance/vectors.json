@@ -109,6 +109,58 @@
       "name": "call-bound-exhaustion-skips-later-resolver", "description": "The directive AT the bound is resolved and charged; the one past it is refused without resolver I/O.",
       "requirement": "S8-post-call-bound-no-read", "kind": "graph", "entry": "{{ gone-1 }} {{ gone-2 }} {{ at-bound }} {{ must-not-read }}", "files": { "at-bound": "12345", "must-not-read": "secret" }, "maxDepth": 8, "maxBytes": 1000, "maxResolverCalls": 3,
       "expected": { "resolverCalls": ["gone-1", "gone-2", "at-bound"], "chargedBytes": 5, "status": "denied", "denial": "resolver-calls" }
+    },
+    {
+      "name": "blank-root-spec-configures-no-root",
+      "description": "A blank configured value is not a root. Section 19 requires a host to supply the root explicitly, and forbids the root defaulting to the process working directory - which is exactly where a blank spec lands when it is canonicalized instead of refused. Inclusion stays disabled, so a target that is inside the INTENDED root and exists is still not resolved.",
+      "requirement": "S9-root-configuration",
+      "kind": "filesystem",
+      "tree": {
+        "root/main.crv": "",
+        "root/child.crv": "ok\n"
+      },
+      "rootSpec": "",
+      "from": "root/main.crv",
+      "request": "child.crv",
+      "expected": {
+        "status": "denied",
+        "denial": "no-root",
+        "resolverCalls": []
+      }
+    },
+    {
+      "name": "absolute-root-spec-is-honored",
+      "description": "An absolute configured value IS a root, and one wider than the including file's directory at that: the dot-dot target resolves. Without this a processor could refuse every spec and pin nothing.",
+      "requirement": "S9-root-configuration",
+      "kind": "filesystem",
+      "tree": {
+        "root/book/main.crv": "",
+        "root/shared/ok.crv": "ok\n"
+      },
+      "rootSpec": "<ABS:root>",
+      "from": "root/book/main.crv",
+      "request": "../shared/ok.crv",
+      "expected": {
+        "status": "allowed",
+        "canonicalId": "<ROOT>/shared/ok.crv"
+      }
+    },
+    {
+      "name": "absolute-root-spec-still-contains",
+      "description": "The root a spec configures is the one it named, not a wider one: containment is still decided against it. Without this a processor could materialize every spec to the filesystem root and pass the vector above.",
+      "requirement": "S9-root-configuration",
+      "kind": "filesystem",
+      "tree": {
+        "root/main.crv": "",
+        "outside.crv": "secret\n"
+      },
+      "rootSpec": "<ABS:root>",
+      "from": "root/main.crv",
+      "request": "../outside.crv",
+      "expected": {
+        "status": "denied",
+        "denial": "outside-root"
+      }
     }
   ]
 }
