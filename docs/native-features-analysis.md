@@ -163,7 +163,7 @@ These should remain implementation-specific, not part of Carve syntax:
 3. Table multi-line (`+`), rowspan (`^`), colspan (`<`)
 
 **Native, confirmed in spec:**
-1. Semantic elements via `:type[content]` extension syntax
+1. Semantic elements via the attribute form (`[Ctrl+C]{kbd}`, see section 3)
 2. Angle-bracket autolinks (`<url>` / `<email>`) - bare URLs stay literal
 
 **Keep as implementation extensions:**

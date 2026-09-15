@@ -1211,10 +1211,12 @@ So `::: word` is a typed block (canonical admonition / custom div); bare
 `:::` or `::: {…}` is a generic `<div>` (PART 9 §12).
 
 **Nesting by fence length.** A fence is a run of three or more colons. A
-block is closed only by a bare fence of *equal-or-greater* length, so a
-longer opener nests shorter blocks: a `:::` inside a `::::` block is
-content, not a closer. (Equal-length fences do not nest; use a longer
-outer fence.) This applies to admonitions and generic divs alike:
+block is closed only by a bare fence of *exactly* its opener's length
+(PART 9 §12), so equal-length fences nest (`::: note` may hold `::: tip`),
+and a bare fence of any other length is not a closer: it opens a block.
+Longer-outer and longer-inner documents both parse; `carve fmt` writes the
+outermost container as `:::` and adds a colon per level inward. This
+applies to admonitions and generic divs alike:
 
 ```
 :::: note
