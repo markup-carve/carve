@@ -124,6 +124,8 @@
   "45-inline-extensions-11.txt": "3f92f93771ab969d",
   "45-inline-extensions-9.fmt": "9d3cd43ec98d8d6c",
   "45-inline-extensions-9.txt": "9d3cd43ec98d8d6c",
+  "464-a-block-that-opens-a-tight-item-is-written-on-the-marker-line-2.fmt": "624a219a174ff49f",
+  "464-a-block-that-opens-a-tight-item-is-written-on-the-marker-line.fmt": "a9450a942328ea0a",
   "67-empty-delimiters.fmt": "1ddcc7a16215a783",
   "69-opaque-spans-inside-a-container-6.fmt": "3c18672808741328",
   "70-blocks-that-render-to-nothing-3.ansi": "0c111ed9ca806d61",

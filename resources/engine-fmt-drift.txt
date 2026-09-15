@@ -14,3 +14,6 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
+464-a-block-that-opens-a-tight-item-is-written-on-the-marker-line  the pinned writer leaks the U+E006 marker-column sentinel after the item marker; carve-js main writes clean bytes
+464-a-block-that-opens-a-tight-item-is-written-on-the-marker-line-2  the pinned writer leaks the U+E006 marker-column sentinel after the item marker; carve-js main writes clean bytes
+464-a-block-that-opens-a-tight-item-is-written-on-the-marker-line-3  the pinned writer leaks the U+E006 marker-column sentinel after the item marker; carve-js main writes clean bytes

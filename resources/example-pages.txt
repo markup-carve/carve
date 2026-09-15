@@ -306,6 +306,7 @@ index: examples/edge-cases/index.md
   a-floating-attribute-does-not-widen-a-list-item-s-content-column
   the-continuation-marker-attaches-one-block-in-every-container
   the-continuation-marker-s-column-gate-reaches-every-container
+  a-block-that-opens-a-tight-item-is-written-on-the-marker-line
   an-empty-description-body-claims-no-line-below-column-0
   an-empty-description-body-is-written-with-the-empty-sentinel
   a-colon-followed-by-only-whitespace-is-not-a-description

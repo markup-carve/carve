@@ -1253,6 +1253,12 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-042",
+      "part": "11",
+      "title": "A BLOCK THAT OPENS A TIGHT ITEM IS WRITTEN ON THE MARKER LINE",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P12-001",
       "part": "12",
       "title": "AST TYPE NAMES FOLLOW THE PROFILE VOCABULARY",

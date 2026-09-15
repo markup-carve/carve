@@ -8724,6 +8724,12 @@ EOF = (* end of file *) ;
       have, where the canonical spelling carries an empty children list, and §1
       quantifies over `parse`, not over the render.
 
+   7e. A BLOCK THAT OPENS A TIGHT ITEM IS WRITTEN ON THE MARKER LINE -- NORMATIVE [CARVE-P11-042].
+      Where a tight list item's first block must be followed by a continuation
+      marker, the writer puts that block on the marker line and the `+` on the
+      next line (`- > p`, then `+`), never a bare `- +` with the block at
+      column 0 below it.
+
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE [CARVE-P11-022]. The Markdown renderer is not
       the canonical writer and does not follow §2. It has a different
       re-parser to answer to, so it escapes on a different rule:
