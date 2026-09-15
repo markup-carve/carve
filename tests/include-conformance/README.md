@@ -161,6 +161,40 @@ sibling `../carve-js/dist/index.js`, then to an installed `@markup-carve/carve`.
 Regenerate after any **deliberate** carve-js behavior change, review the diff,
 and commit the updated goldens.
 
+## A ruling with no golden yet
+
+A golden is only as good as the engine it was generated from, so a rule this
+corpus cannot yet generate is DECLARED here rather than approximated - the same
+retention rule `resources/engine-pin-drift.txt` carries, and the same shape as
+the security suite's "Corpus ahead of the engines" (carve#1992).
+
+- **The directive closer** (carve#2000, normative text merged in #2013). The
+  closer is the first `}}` OUTSIDE any quoted run, so both of these end at the
+  pair that FOLLOWS the closing quote:
+
+  ```
+  {{ "a }} more" @k:v }} end
+  {{ ch.crv @label:"a }} more" }} end
+  ```
+
+  No golden exists because generating one today would bake in the reading the
+  ruling overturned. Measured against each engine's pushed `main` on
+  2026-09-15: carve-js's `DIRECTIVE_SCAN_RE` gets the path half right and stops
+  the value half at the first `}}`; carve-rs mirrors it and says so in its own
+  comment; carve-php's `DIRECTIVE_SCAN` excludes `}` outright and gets both
+  halves wrong. Filed as carve-js#1698, carve-php#1964 and carve-rs#1607.
+
+  Meanwhile the rule is not unarbitrated. `scripts/spec/include-directive.mjs`
+  recognizes the directive engine-free and
+  `tests/the-directive-closer-falls-outside-a-quoted-run.test.mjs` runs both
+  spellings through it in `npm test`, reading the two inputs out of the clause
+  itself. That is an arbiter the goldens do not have - it answers to the spec
+  rather than to whichever engine last generated.
+
+  To close this: once ONE engine reads the closer as ruled, add the two inputs
+  to `scripts/include-conformance-vectors.mjs` under rule `I1`, generate against
+  THAT engine, read the golden before committing it, and delete this entry.
+
 ## How to add a vector
 
 1. Add an input object to `scripts/include-conformance-vectors.mjs` (`name`,
