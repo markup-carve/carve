@@ -3434,6 +3434,25 @@ include_directive = "{{", whitespace+, include_path, [include_section], [include
    directive into ordinary prose with NO warning, which is the one failure mode
    section 19's error rules exist to avoid. Tabs count, as they do everywhere
    else whitespace does. *)
+(* THE CLOSER is the first "}}" that falls OUTSIDE any quoted run. A quoted run
+   -- `quoted_include_path` here, or the `quoted_value` form of an option's
+   `attribute_value` (PART 4) -- MAY contain the "}}" pair: both productions
+   exclude only their own quote character, the backslash and the newline, so a
+   "}}" between the quotes belongs to the quoted run and does NOT end the
+   directive. Both spellings therefore close at the "}}" that FOLLOWS the
+   closing quote, and what comes after it is ordinary text:
+
+     {{ "a }} more" @k:v }} end
+     {{ ch.crv @label:"a }} more" }} end
+
+   A recognizer that scans for the first "}}" without tracking quoting ends the
+   first of those at its PATH's pair and the second at its VALUE's, which is the
+   divergence this clause settles: the two were measured to disagree, and the
+   grammar as written was always on the side of admitting the pair.
+   An UNTERMINATED quote does not open a run. It falls back to the unquoted
+   reading, so it can never pair with a quote further along the line, and the
+   closer is again the first "}}" - which is what leaves a malformed directive
+   as the literal text section 19 says it is. *)
 include_path = bare_include_path | quoted_include_path ;
 bare_include_path = {character - ('#' | '@' | '}' | ' ' | newline)}+ ;
 (* A path carrying a space is DOUBLE-QUOTED, and only then: the bare form stops

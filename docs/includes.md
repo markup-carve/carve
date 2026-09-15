@@ -65,6 +65,26 @@ wherever else whitespace does.
   - Every other `@key` is **reserved**. A processor that does not recognize an
     option SHOULD treat the directive as unresolvable (Warning, literal).
 
+**The closer is the first `}}` outside any quoted run.** A quoted run - a
+quoted path, or the quoted form of an option value - MAY contain the `}}` pair:
+`quoted_include_path` and `quoted_value` each exclude only their own quote
+character, the backslash and the newline, so a `}}` between the quotes belongs
+to the run and does not end the directive. Both of these close at the `}}` that
+**follows** the closing quote, leaving ` end` as ordinary text:
+
+```
+{{ "a }} more" @k:v }} end
+{{ ch.crv @label:"a }} more" }} end
+```
+
+A recognizer that scans for the first `}}` without tracking quoting ends the
+first of those at its path's pair and the second at its value's - the two halves
+were measured to disagree, and the grammar as written was always on the side of
+admitting the pair. An **unterminated** quote does not open a run: it falls back
+to the unquoted reading, so it can never pair with a quote further along the
+line, and the closer is again the first `}}`, which is what leaves a malformed
+directive as the literal text the [Errors](#errors) rules describe.
+
 ### Selection vs transform options
 
 Directive options fall into two disjoint kinds:
