@@ -14,11 +14,11 @@ test('include security corpus is complete and schema-valid', () => {
   const validate = new Ajv2020({ allErrors: true, strict: false }).compile(schema)
   assert.equal(validate(corpus), true, JSON.stringify(validate.errors))
   assert.equal(corpus.version, 1)
-  assert.equal(corpus.vectors.length, 16)
-  assert.equal(new Set(corpus.vectors.map(({ name }) => name)).size, 16)
+  assert.equal(corpus.vectors.length, 19)
+  assert.equal(new Set(corpus.vectors.map(({ name }) => name)).size, 19)
   assert.deepEqual([...new Set(corpus.vectors.map(({ requirement }) => requirement))].sort(), [
     'S1-opt-in', 'S2-contained-paths', 'S3-remote-allowlist',
     'S4-depth-bound', 'S5-byte-bound', 'S6-post-budget-no-read',
-    'S7-call-bound', 'S8-post-call-bound-no-read',
+    'S7-call-bound', 'S8-post-call-bound-no-read', 'S9-root-configuration',
   ])
 })

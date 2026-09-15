@@ -317,6 +317,16 @@ const MANIFEST = [
   // would go stale silently. Harmless while empty - the audit fails an unwired
   // list only once it holds a row; give it a reverse guard before adding one.
   { repo: 'carve-php', path: 'tests/TestCase/Transform/IncludeConformanceTest.php', name: 'KNOWN_DIFFERENCES', kind: 'php', policy: 'owed', guard: 'one-way', owner: 'tests/TestCase/Transform/IncludeConformanceTest.php' },
+  // The include-security adapter carve-php#1954 added. KNOWN_KEYS is a
+  // capability list in KNOWN_KEYWORDS' direction, not an exemption: a corpus
+  // member it does not name FAILS the adapter, which is what keeps a newly
+  // added limit from silently never applying.
+  { repo: 'carve-php', path: 'tests/TestCase/Transform/IncludeSecurityConformanceTest.php', name: 'KNOWN_KEYS', kind: 'php', policy: 'permitted', guard: 'two-way', owner: 'adapter capability list, not an exemption' },
+  // A real waiver, owed against carve-php#1953: vectors whose chargedBytes this
+  // engine answers differently, with the value it actually produces. The
+  // staleness half is the adapter's own test, which fails the moment a row
+  // stops diverging.
+  { repo: 'carve-php', path: 'tests/TestCase/Transform/IncludeSecurityConformanceTest.php', name: 'DIVERGENCES', kind: 'php', policy: 'owed', guard: 'two-way', staleness: 'testNoDeclaredDivergenceIsStale', owner: 'markup-carve/carve-php#1953' },
 
   // -- carve-rs --------------------------------------------------------------
   { repo: 'carve-rs', path: 'tests/corpus.rs', name: 'KNOWN_GAPS', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/corpus.rs' },
@@ -330,6 +340,13 @@ const MANIFEST = [
   // implements. Meeting one that is NOT listed is the failure, which is the
   // opposite direction from every other row here.
   { repo: 'carve-rs', path: 'tests/the_report_answers_to_the_published_schema.rs', name: 'KNOWN_KEYWORDS', kind: 'rust', policy: 'permitted', guard: 'two-way', owner: 'validator capability list, not an exemption' },
+  // The include-security adapter carve-rs#1598 added. All three are capability
+  // lists in the same direction as the row above: a corpus kind, requirement id
+  // or denial class the adapter does not name is an assertion failure, so none
+  // of them can excuse anything.
+  { repo: 'carve-rs', path: 'tests/include_security_conformance.rs', name: 'KNOWN_KINDS', kind: 'rust', policy: 'permitted', guard: 'two-way', owner: 'adapter capability list, not an exemption' },
+  { repo: 'carve-rs', path: 'tests/include_security_conformance.rs', name: 'KNOWN_REQUIREMENTS', kind: 'rust', policy: 'permitted', guard: 'two-way', owner: 'adapter capability list, not an exemption' },
+  { repo: 'carve-rs', path: 'tests/include_security_conformance.rs', name: 'KNOWN_DENIALS', kind: 'rust', policy: 'permitted', guard: 'two-way', owner: 'adapter capability list, not an exemption' },
   // The carve-rs twin of carve-php's include KNOWN_DIFFERENCES: an empty
   // one-way skip-list for the include/transclusion conformance vectors.
   { repo: 'carve-rs', path: 'tests/include_conformance.rs', name: 'KNOWN_DIFFERENCES', kind: 'rust', policy: 'owed', guard: 'one-way', owner: 'tests/include_conformance.rs' },
