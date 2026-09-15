@@ -85,7 +85,9 @@ and
 and
 `462-include-directive-with-no-resolver-renders-literal`
 and
-`463-a-bare-closer-does-not-reach-inside-a-braced-inline`.
+`463-a-bare-closer-does-not-reach-inside-a-braced-inline`
+and
+`464-a-block-that-opens-a-tight-item-is-written-on-the-marker-line`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -159,6 +161,8 @@ Section 463 lags carve-js and carve-rs for all three of its rows: a bare closer
 inside a braced inline (`~{/x/}{/y~/}`) closes a span opened before the braces
 there, and markup-carve/carve#2027 ruled that it may not. carve-php already
 matches.
+Section 464 lags no engine on HTML; carve-js still writes the marker-line form
+its `.fmt` pins rule out (markup-carve/carve#2017).
 `tests/implementation-comparison-counts.test.mjs` reads this line and counts the
 fixtures each category contributes, so the numbers cannot be asserted, only
 derived, and the line has to be DELETED by whoever next runs
