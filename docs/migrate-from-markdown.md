@@ -58,7 +58,7 @@ The table below covers the constructs you use most often. Items marked **same** 
 | Strikethrough | `~~strike~~` (GFM) | `~strike~` | Single tilde in Carve |
 | Tables | GFM pipe tables with a `\|---\|` row | `\|=` header cells | **Changed** - see below (GFM delimiter row also accepted) |
 | Footnotes | `[^label]` + `[^label]: text` (GitHub extension) | same | Plus inline `^[...]` |
-| Raw HTML | Inline and block, on by default | Bare tags are literal; explicit `=html` passthrough only | See below |
+| Raw HTML | Inline and block, on by default | Imported, not dropped: block to a `=html` block, native inline (`<b>`, `<code>`, ...) to its Carve construct, other inline to `` `...`{=html} `` | **Changed** - see below |
 | Keys, abbreviations, dates | raw `<kbd>`, `<abbr title="…">`, `<time datetime="…">` | `[Tab]{kbd}`, `[HTML]{abbr="…"}`, `[today]{time="…"}` | Carve adds this - raw HTML is off, so a span attribute is how you reach those elements. Three are core (`abbr`, `time`, `kbd`); `samp`, `var`, `cite` and `dfn` need the SemanticSpan extension |
 
 ## Emphasis: the most important change
@@ -297,7 +297,9 @@ The `:name[content]` (inline) and `::: name` (block) syntax is available for cus
 
 ## Raw HTML
 
-Bare `<span>` and `<div>` tags in your source are **always literal text** in Carve - they are never interpreted as HTML. This is the key safety difference from Markdown, which passes raw HTML through by default.
+Bare `<span>` and `<div>` tags in **hand-written Carve source** are **always literal text** - they are never interpreted as HTML. This is the key safety difference from Markdown, which passes raw HTML through by default.
+
+Migrating from Markdown does not leave the HTML behind, though: the importer preserves it rather than dropping it to literal text. A block-level element becomes a ```` ```=html ```` block; a native inline tag (`<b>`, `<strong>`, `<i>`, `<em>`, `<code>`, `<mark>`, `<sup>`, `<sub>`, `<del>`, `<s>`, `<ins>`) becomes its Carve construct; and any other inline tag becomes a `` `...`{=html} `` span. So `<span>note</span>` in your Markdown arrives as `` `<span>note</span>`{=html} `` (kept verbatim) and `<b>bold</b>` as `*bold*` (rendered `<strong>`) - the content is preserved rather than needing the manual replacement earlier versions required.
 
 When you genuinely want verbatim HTML, use the explicit raw constructs - a ```` ```=html ```` block or `` `...`{=html} `` inline. These passthrough constructs are on by default for trusted content. For untrusted input, turn the passthrough off so even those are escaped:
 
@@ -382,5 +384,5 @@ When moving a document from Markdown to Carve:
 - [ ] Verify `~~strike~~` became `~strike~` (single tilde)
 - [ ] Move any heading `{#id}` onto the line above the heading - `carve lint` finds them, and left in place the `#id` becomes a tag AND changes the heading's anchor
 - [ ] Check block-marker indentation: top-level markers require column 0. Inside a container, a recognized opener must reach the innermost container's minimum content column; a deeper opener is structural too, and `carve fmt` moves it back to the minimum column
-- [ ] Decide on raw HTML: bare `<tags>` become literal text, so replace them with Carve constructs (or use an explicit `` `...`{=html} `` / ```` ```=html ```` passthrough for trusted content; use the engine's safe mode for untrusted input)
+- [ ] Review imported raw HTML: block elements become `=html` blocks, native inline tags become their Carve constructs, and other inline tags become `` `...`{=html} `` spans - all preserved automatically, no manual replacement needed. For untrusted input, use the engine's safe mode so the passthrough is escaped
 - [ ] Audit CSS and JS for direct-child assumptions - headings now nest their content in `<section>` (see [Headings are wrapped in `<section>`](#headings-are-wrapped-in-section))
