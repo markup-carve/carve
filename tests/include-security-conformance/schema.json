@@ -37,14 +37,15 @@
             "type": "object",
             "minProperties": 1,
             "additionalProperties": false,
+            "$comment": "Every observable declares the SIDE of the seam it comes from. \"processor\" is the implementation's own answer, published by it and reported unchanged; an adapter MUST NOT reconstruct one from anything it holds itself. \"adapter\" is what the adapter records at the seam it supplies to the implementation, and MUST NOT be derived from the implementation's output. See the README section of the same name.",
             "properties": {
-              "resolverCalls": { "type": "array", "items": { "type": "string" } },
-              "remoteFetches": { "type": "array", "items": { "type": "string" } },
-              "status": { "enum": ["allowed", "denied", "unsupported"] },
-              "denial": { "enum": ["outside-root", "not-found", "no-root", "remote-not-allowed", "depth", "budget", "resolver-calls"] },
-              "canonicalId": { "type": "string" },
-              "maxVisitedDepth": { "type": "integer", "minimum": 0 },
-              "chargedBytes": { "type": "integer", "minimum": 0 }
+              "resolverCalls": { "x-seam": "adapter", "type": "array", "items": { "type": "string" } },
+              "remoteFetches": { "x-seam": "adapter", "type": "array", "items": { "type": "string" } },
+              "status": { "x-seam": "processor", "enum": ["allowed", "denied", "unsupported"] },
+              "denial": { "x-seam": "processor", "enum": ["outside-root", "not-found", "no-root", "remote-not-allowed", "depth", "budget", "resolver-calls"] },
+              "canonicalId": { "x-seam": "processor", "type": "string" },
+              "maxVisitedDepth": { "x-seam": "processor", "type": "integer", "minimum": 0 },
+              "chargedBytes": { "x-seam": "processor", "type": "integer", "minimum": 0 }
             }
           }
         }
