@@ -1,0 +1,377 @@
+---yaml
+title: "Transclusion Is Easy Until Two Documents Become One"
+description: "Why reusable markup needs rules for identifiers, references, footnotes, provenance, and collisions—and how Carve compares with Djot and Markdown-based systems."
+---
+
+{#transclusion-document-identity}
+# Transclusion Is Easy Until Two Documents Become One
+
+Including one document inside another looks deceptively simple. Find a marker,
+read some text, replace the marker, and run the markup parser. That model works
+right up to the moment both documents contain a heading called “Introduction,”
+a footnote named `note`, or an explicit identifier such as `#overview`.
+
+At that point, inclusion stops being a text-substitution feature. It becomes a
+document-composition problem.
+
+Carve calls this feature /file inclusion/, or *transclusion*: source from another
+Carve or text resource is placed into the document at the include site. Its
+syntax is compact:
+
+```carve
+{{ chapters/security.crv }}
+{{ chapters/security.crv #threat-model }}
+{{ chapters/security.crv @shift:auto }}
+```
+
+The important part is not the braces. It is the contract around them. A useful
+transclusion system must answer questions that a naïve preprocessor can avoid
+only until production content exposes them:
+
+- Which identifiers belong to the final document?
+- Which names remain local to the included file?
+- What happens when two files claim the same identifier?
+- Do references follow a renamed target?
+- When are footnotes collected and numbered?
+- Does including a chapter change its heading hierarchy?
+- Can diagnostics still point to the original file?
+- Can an editor discover every dependency, including a missing one?
+
+Those questions matter whether the source is a file, configuration entry,
+database row, CMS record, object-storage key, or approved HTTP response. Storage
+is an implementation detail. Identity is a semantic concern.
+
+{#why-plain-concatenation-breaks}
+## Why plain concatenation breaks
+
+Imagine a parent and a reusable chapter:
+
+```carve
+%% parent.crv
+{#overview}
+## Overview
+
+{{ child.crv }}
+```
+
+```carve
+%% child.crv
+{#overview}
+## Overview
+
+See </#overview>.
+```
+
+After blind substitution, the assembled HTML wants two elements with
+`id="overview"`. HTML does not provide useful duplicate-ID semantics. A fragment
+such as `#overview`, DOM lookup, accessibility relationship, or script selector
+can reach the wrong element. Which one wins may depend on the browser API or
+consumer.
+
+Silently dropping the second identifier is not enough. The cross-reference in
+the child was written to reach the child’s heading. If the heading is renamed
+but the reference is not, the document is unique but incorrect.
+
+The same problem appears in less obvious namespaces:
+
+- Two included files define `[^note]`.
+- Two headings generate the same automatic slug.
+- Two figures, equations, citations, or glossary entries share a key.
+- Two components expose the same ARIA relationship target.
+- A table of contents is built before inclusion and misses child headings.
+- A child’s relative link is resolved against the parent’s directory.
+
+A preprocessor can solve these problems, but only by becoming aware of the
+markup grammar and the assembled document. At that point it is no longer “just
+text replacement.” It is a composition engine.
+
+{#identity-has-scopes}
+## Identity has scopes
+
+The crucial design decision is that not every name should be global.
+
+Carve divides relevant names by whether another file can observe them.
+
+{#document-visible-identities}
+### Document-visible identities
+
+Explicit heading identifiers and footnote labels are visible in the assembled
+document. A link can target a heading brought in by another file, and footnotes
+are collected and numbered for the final document. These identities therefore
+need document-wide uniqueness.
+
+Carve resolves collisions deterministically:
+
+1. The first occurrence in expanded document order keeps its name.
+2. A later collision receives the smallest available numeric suffix: `-2`,
+   then `-3`, and so on.
+3. References belonging to the renamed target follow the rename.
+4. Every explicit rename emits a warning with source provenance.
+
+The result is stable and debuggable. “Stable” matters for caches, tests, deep
+links, incremental builds, and collaboration: the same inputs and include order
+must produce the same identities.
+
+There is still an unavoidable consequence. Moving an include earlier in the
+document can change which duplicate keeps the unsuffixed identifier. Explicit
+collisions are therefore warnings, not an invisible convenience. Authors who
+need durable public fragments should assign genuinely unique IDs rather than
+depend on collision order.
+
+{#automatic-heading-identifiers}
+### Automatic heading identifiers
+
+Repeated heading text is normal. A book may contain “Overview” in every
+chapter. Treating each generated slug as an author error would create warning
+noise precisely where reuse is most valuable.
+
+Carve therefore handles automatic heading identifiers through the document’s
+ordinary slug de-duplication. The first `Overview` gets its normal slug, and
+later headings receive numeric suffixes. Unlike an explicit-ID collision, this
+does not warn because the author did not claim a particular identifier.
+
+This distinction is subtle and useful:
+
+- An /automatic/ collision is expected document layout.
+- An /explicit/ collision is conflicting author intent.
+
+Both must produce unique output, but only one deserves a diagnostic.
+
+{#file-local-identities}
+### File-local identities
+
+Reference-definition labels are different. Consider two files that both use
+the convenient label `docs`:
+
+```carve
+%% parent.crv
+Read [the parent documentation][docs].
+
+[docs]: /parent
+```
+
+```carve
+%% child.crv
+Read [the child documentation][docs].
+
+[docs]: /child
+```
+
+Those labels are authoring metadata rather than public document targets. Carve
+resolves each reference within the file that defines it before merging the
+child into its parent. Both files can keep the readable label `docs`, and each
+link reaches its intended destination.
+
+Making every label global would force reusable files to coordinate private
+names. Renaming every label would create churn without protecting any public
+identity. File-local scope is the more composable rule.
+
+{#footnotes-after-assembly}
+### Footnotes after assembly
+
+Footnotes cross the file boundary in the other direction. A parent may refer to
+a footnote supplied by a child, or a child may refer to a footnote defined by
+the parent. Carve judges those references against the assembled document and
+collects definitions the same way it would if the equivalent source had been
+written in one file.
+
+That ordering prevents a common AST-pipeline bug: parsing the child alone,
+marking a footnote reference as permanently unresolved, and never revisiting it
+after the documents are merged.
+
+{#structure-is-identity-too}
+## Structure is identity too
+
+Identifiers are not the only cross-file concern. Heading levels determine the
+outline, table of contents, section numbering, and often accessibility
+navigation.
+
+A reusable chapter might start with `# Installation`, while its include site is
+already below `## Guide`. Copying the chapter verbatim produces a second
+top-level section. Hard-coding lower headings in the child makes the file fit one
+location but prevents reuse elsewhere.
+
+Carve makes the choice explicit:
+
+```carve
+## Guide
+
+{{ installation.crv @shift:auto }}
+```
+
+`@shift:auto` places the included content one level below the surrounding
+heading context. A numeric shift is available when the author wants direct
+control. Heading levels are clamped to the valid range with a warning, while
+IDs and cross-references remain attached to their headings.
+
+This is stronger than an ambient “normalize all includes” option. The include
+site records the structural decision, so the same child can be embedded at
+different depths intentionally.
+
+{#how-other-markup-systems-compare}
+## How other markup systems compare
+
+The comparison is less about surface syntax than about which layer owns the
+composition contract.
+
+{#commonmark-and-gfm}
+### CommonMark and GFM
+
+[CommonMark](https://spec.commonmark.org/) does not define file inclusion.
+GitHub Flavored Markdown does not turn an arbitrary include marker into
+transclusion either. Products built on Markdown commonly add a template engine,
+shortcode, or source preprocessor.
+
+That is perfectly capable of producing a correct document if the host performs
+a global semantic pass afterward. The deficit is portability: collision rules,
+relative-path behavior, source provenance, and missing-dependency behavior
+belong to the particular product rather than Markdown. Moving the same source
+to another renderer can expose the directive as text or produce different IDs.
+
+Pure text preprocessing has another trap. If expansion happens before parsing,
+the final parser can usually de-duplicate automatic heading slugs globally. But
+the preprocessor has lost the file boundary unless it records provenance. That
+makes it difficult to preserve file-local reference labels or explain which
+included file introduced an explicit collision.
+
+If each file is parsed separately and ASTs are merged later, provenance is
+easier to retain—but identifiers and references may already have been resolved
+inside isolated documents. The host then needs a deliberate re-binding pass.
+
+{#djot}
+### Djot
+
+[Djot](https://github.com/jgm/djot) specifies automatic heading identifiers and
+numeric suffixes for uniqueness within a document. Its JavaScript implementation
+also supports AST filters, which gives a host a strong foundation for custom
+composition.
+
+Djot does not currently specify a portable file-inclusion directive or a
+cross-file collision contract. An application can preprocess Djot source or
+recognize an application-specific marker and splice parsed AST nodes with a
+filter. It must then choose when to generate heading IDs, how to scope reference
+definitions, whether to re-bind footnotes, and how to retain source locations.
+
+In other words, Djot can implement the same behavior. Different Djot hosts are
+not required to implement the same behavior.
+
+{#mdbook}
+### mdBook
+
+[mdBook](https://rust-lang.github.io/mdBook/format/mdbook.html#including-files)
+adds `{{#include ...}}` through a preprocessor. It is especially effective for
+including code files, line ranges, and named regions. The included material is
+then interpreted as Markdown.
+
+This is a practical host extension, but its contract is tailored to a book
+builder rather than standardized Markdown. Document-global behavior depends on
+the downstream Markdown renderer and the way mdBook divides chapters into
+pages. An ID only needs to be unique within one HTML page, while a single-file
+output format may create a wider collision domain.
+
+{#quarto-and-pandoc}
+### Quarto and Pandoc
+
+[Quarto includes](https://quarto.org/docs/authoring/includes.html) are explicitly
+equivalent to copying and pasting included text into the main file. The
+documentation warns that relative references resolve from the main file and
+that included metadata can have unexpected effects. Include shortcodes must
+also occupy their own line, so they cannot be inserted into arbitrary inline or
+list contexts.
+
+Quarto’s own footnote documentation tells authors that footnote IDs must be
+unique across chapters for formats that combine a book into one document. That
+is an honest statement of the collision domain, but it leaves coordination to
+authors rather than specifying rename-and-rebind behavior. Pandoc provides an
+`identifier-prefix` option that is useful when producing fragments for later
+inclusion, again requiring the pipeline or author to choose and carry a prefix.
+
+These tools are powerful. Their trade-off is that identity management is a
+build configuration concern rather than a property of the include directive.
+
+{#what-carves-contract-adds}
+## What Carve’s contract adds
+
+Carve keeps the core parser pure: without a resolver, an include directive stays
+literal. A host opts into transclusion by supplying a resolver. That resolver
+may read a project file, query a database, call a CMS, load an object, or fetch
+from an allowlisted online service.
+
+Once a resolver is present, the include expansion has shared semantics across
+implementations:
+
+- Includes are recognized in grammar-aware positions, never inside verbatim
+  code.
+- Block and inline includes have distinct structural requirements.
+- Children are parsed as whole documents and retain their provenance.
+- Relative nested paths are resolved using the including resource’s identity.
+- Explicit heading IDs and footnote labels are deterministically renamed on
+  collision, and their references follow.
+- Automatic heading slugs use ordinary document-wide de-duplication.
+- Reference-definition labels remain file-local.
+- Footnotes are re-bound against the assembled document.
+- Heading shifts preserve target identity while adapting structure.
+- Resolved and unresolved dependencies are reported to the host.
+- Cycles, depth, resolver calls, and expanded bytes are bounded.
+- Refused or unresolved directives remain visible with diagnostics rather than
+  disappearing silently.
+
+This does not mean Carve solves every possible global namespace automatically.
+Extension-defined identities—citation keys, equation labels, diagram names,
+component IDs, or application-specific anchors—need rules from that extension
+or host. Likewise, the current inclusion collision contract specifically names
+explicit heading IDs, automatic heading slugs, footnote labels, and reference
+definitions; an application that emits arbitrary HTML `id` attributes from
+other nodes must still guarantee their uniqueness.
+
+That boundary is important. A language should standardize identities it owns,
+and expose enough provenance and traversal hooks for extensions to standardize
+theirs. Pretending every string called `id` has identical semantics would be as
+wrong as pretending every label should be global.
+
+{#a-checklist-for-any-transclusion-system}
+## A checklist for any transclusion system
+
+Whether the input is Carve, Djot, Markdown, or a proprietary format, an online
+host should be able to answer all of the following before enabling reusable
+content:
+
+1. What is the canonical identity of an included resource?
+2. Which namespaces are document-global, file-local, or extension-local?
+3. How are duplicate explicit identifiers handled?
+4. Are references rewritten when their target is renamed?
+5. When are automatic slugs generated: before or after assembly?
+6. Are footnotes, citations, and numbered objects resolved before or after
+   assembly?
+7. Are relative paths based on the parent, child, or a fixed project root?
+8. Can diagnostics identify the original resource and position?
+9. Does the dependency graph include failed lookup attempts?
+10. Are cycles, depth, total bytes, calls, and remote latency bounded?
+11. Does unresolved content remain visible and diagnosable?
+12. Can the source be written back without flattening away its include
+    directives?
+
+If the answer is “the template engine pastes strings,” the system is not
+finished. It may be sufficient for trusted fragments with no identifiers, but
+it has not defined document composition.
+
+{#the-real-feature}
+## The real feature is deterministic composition
+
+The most visible part of transclusion is the include directive. The most
+valuable part is everything users do not have to repair after expansion.
+
+A robust system preserves local meaning while creating one coherent final
+document. It keeps identifiers unique, references connected, footnotes
+resolvable, heading structure intentional, source locations useful, and failure
+visible. It also makes these results deterministic across implementations.
+
+That is the larger opportunity in Carve’s approach. The resolver keeps storage
+and authority in the host, while the language contract defines what it means to
+combine the resolved content. Markdown and Djot hosts can build equivalent
+systems—and sophisticated ones do—but without a shared transclusion contract,
+each ecosystem integration must rediscover the same identity problems and make
+its own compatibility promises.
+
+For the complete normative behavior, see Carve’s
+[File inclusion documentation](https://markup-carve.github.io/carve/includes).
