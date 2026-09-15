@@ -18,6 +18,7 @@ import { execFileSync } from 'node:child_process'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { extractNormativeClauses, readInventory } from '../scripts/normative-clauses.mjs'
+import { audit, clausesOf, conditionStated, obligationTables, part9Sections as specPart9Sections } from '../scripts/normative-page-audit.mjs'
 import { classifyLayoutComment, ownershipTransition } from '../scripts/spec/layout.mjs'
 import { bareCitation, eachClause, qualifiedCitation } from '../scripts/lib/citations.mjs'
 
@@ -634,4 +635,70 @@ test('comments are classified as source-bearing tokens before visible ownership'
     { kind: 'line_comment', start: 0, end: 1 },
   )
   assert.equal(classifyLayoutComment(['ordinary'], 0), null)
+})
+
+/*
+ * A page that claims to state a section IN FULL is checked against it.
+ *
+ * carve#1995: an obligation four engines implement and
+ * tests/include-security-conformance gates lived only on docs/includes.md, and
+ * the full gate set was green against that. scripts/normative-page-audit.mjs is
+ * the gate that was missing; its header states exactly what it detects and what
+ * it cannot. These tests keep BOTH halves honest - that it passes today, and
+ * that it can still fail on the shape it exists for.
+ */
+
+test('every obligation on a declared normative page names a clause that exists', () => {
+  const { declared, findings } = audit()
+  assert.deepEqual(findings, [])
+  // Widening the scope is a deliberate diff, not a side effect: a page enters
+  // this set when someone has read its obligations against the spec source.
+  assert.deepEqual(declared, ['docs/includes.md'])
+})
+
+test('the obligations ledger declares its gaps out loud', () => {
+  const { unstated, weaker } = audit()
+  // Writing the ledger found five more of the carve#1995 shape plus one clause
+  // that states something weaker than the page does. Closing any of them moves
+  // these numbers, which is the point of pinning them.
+  assert.equal(unstated.length, 5)
+  assert.equal(weaker.length, 1)
+  assert.ok(
+    unstated.some((row) => row.text.startsWith('I15:')),
+    'I15 is stated on the page and in no clause',
+  )
+  assert.equal(weaker[0].clause, 'WEAKER PART 9 §19 I4')
+})
+
+test('the Errors-table check fails on exactly the rows carve#1995 found', () => {
+  // THE PROOF THAT IT CAN FAIL. The two conditions carve#1995 found contain no
+  // `MUST` at all, so no keyword scan could see them; what makes them visible
+  // is that their vocabulary has to be present in the cited clauses. Delete the
+  // word the fix brought in - every mention of a resolver CALL - and the clause
+  // texts are back to their pre-#1995 state on this axis.
+  const page = readFileSync(resolve(repo, 'docs/includes.md'), 'utf8')
+  const [table] = obligationTables(page)
+  const section = specPart9Sections().get(table.section)
+  const clauses = clausesOf(section.text)
+  const texts = table.cited.map((id) => clauses.get(id))
+  const withoutCalls = texts.map((text) => text.replace(/calls?/gi, ''))
+
+  const before = table.conditions.filter((c) => !conditionStated(c, texts))
+  assert.deepEqual(before, [], 'every condition is stated today')
+
+  const after = table.conditions.filter((c) => !conditionStated(c, withoutCalls))
+  assert.deepEqual(after, [
+    'Resolver calls exceed the call bound',
+    'A directive after budget or call-bound exhaustion',
+  ])
+})
+
+test('a cited clause that covers no row is reported', () => {
+  // The bounded two-way half: a citation cannot be padded with clauses until it
+  // matches. I1 is a real §19 clause and states none of the Errors conditions.
+  const page = readFileSync(resolve(repo, 'docs/includes.md'), 'utf8')
+  const [table] = obligationTables(page)
+  const clauses = clausesOf(specPart9Sections().get(table.section).text)
+  const earned = table.conditions.some((c) => conditionStated(c, [clauses.get('I1')]))
+  assert.equal(earned, false)
 })
