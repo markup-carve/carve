@@ -61,6 +61,19 @@ that checks existence before containment reports a miss for the absent one, whic
 is an existence oracle for paths outside the root; before the pair it passed every
 vector here.
 
+The same ruling reaches an escape routed through an intermediate directory that
+is ABSENT, and that route is pinned separately because a resolver can get the
+first pair right and still lose it (carve#2021). Once the whole path no longer
+canonicalizes, containment falls to the canonical candidate, and the remainder
+re-appended to the canonicalized prefix must have its dot-dot segments
+COLLAPSED. Re-appending it verbatim leaves a string that is lexically inside the
+root and fails the existence check instead, so the escape is reported
+`not-found`. Nothing outside the root is read - POSIX resolution stops at the
+absent segment - but the class now moves with whether an intermediate directory
+happens to exist, which is the oracle the ruling closed, reached from the other
+side. The `out-of-root-through-present-directory-is-outside-root` /
+`out-of-root-through-absent-directory-is-outside-root` pair states it.
+
 ## Adapter contract
 
 Each implementation reads `vectors.json` and handles every `kind`:
@@ -238,3 +251,39 @@ tolerated - an engine's red is expected and tracked, not discovered.
   A ticket per non-conformant engine follows this merge. Every count pin moves
   again; no vector was shrunk to keep one green. Delete this entry when the last
   engine refuses a non-absolute spec and the last adapter reads `rootSpec`.
+
+- The out-of-root ABSENT-DIRECTORY pair (carve#2021). No requirement id, kind or
+  denial class was added - the pair sits on `S2-contained-paths` and
+  `outside-root` - so every adapter answers it with the code it has, and what
+  moves is the count pins: carve-js 23, carve-php 23 and carve-rs 23 (its
+  `graph` and root-spec sub-counts are unchanged, both new vectors being
+  `filesystem`), and carve-lsp, which is separately still at 19. Those pins fail
+  closed by design; no vector was shrunk to keep one green, and a ticket per repo
+  follows this merge.
+
+  What the pair gates per engine, measured on 2026-09-15 against each repo's
+  pushed `main`, is uneven, and two of the four answer it VACUOUSLY:
+  - carve-php `FilesystemIncludeResolver::canonicalCandidate` walks to the
+    longest existing prefix and re-appends through `reappend`, which collapses
+    the dot-dot segments. This is the engine that found the gap, and the pair
+    gates that collapse directly.
+  - carve-lsp `fileSystemResolver` answers from `path.resolve`, which collapses
+    before any syscall, and `missingCandidate` collapses again through
+    `path.join`. Genuinely green.
+  - carve-js `fileSystemResolver` also collapses in `path.resolve`, so the
+    defect's shape cannot arise there - but its resolver refuses everything with
+    `null` and publishes no class, so the adapter recovers `denial` itself in
+    `classifyRefusal`, whose first branch is an `existsSync` on the adapter's own
+    `path.resolve` result. Both halves are answered without the engine being
+    asked. Green, from the side of the seam the `x-seam` annotation now names as
+    the wrong one (carve#2022).
+  - carve-rs `FileSystemResolver::resolve` canonicalizes, which requires the
+    target to exist, so a refusal and a miss are one answer. Its adapter declares
+    `INDISTINGUISHABLE_FILESYSTEM_DENIALS` and compares `status` alone for those
+    two classes, so both halves pass on `status: denied` and the class the pair
+    exists to pin is never compared.
+
+  So the pair is falsifiable - the reference adapter reds on exactly the absent
+  half when the collapse is dropped - and today it gates one engine on the
+  merits. Delete this entry when the last count pin is current and both
+  remaining engines can answer the class from their own side.
