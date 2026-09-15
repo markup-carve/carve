@@ -148,8 +148,7 @@ Section 458 does NOT lag any engine: the wrapped-attribute boundary fix brings
 the oracle onto carve-rs and the pinned carve-js, which already produce it, so
 its three rows are added since the run but every engine reproduces them. It is
 listed because the published run predates it, not because any engine disagrees.
-Section 462 does NOT lag any engine either, and for a reason worth stating
-because the feature behind it is new: it pins what a `{{ path }}` directive does
+Section 462 does NOT lag any engine either: it pins what a `{{ path }}` directive does
 with NO resolver configured, which is nothing - it stays literal text. That is
 what every engine already produces, including one that has never heard of PART 9
 section 19, because expansion is processor-level and off by default. It is
@@ -230,7 +229,7 @@ check (markup-carve/carve#671). It has 83 now.
 
 Nothing above measures the depth at which a renderer refuses, and the three
 engines refuse at three different depths. That is by design rather than by
-neglect, and it is worth stating because the numbers look like a disagreement.
+neglect.
 
 PART 9 §25 requires each implementation to DERIVE its render-ceiling margin from
 the worst per-level cost of **its own unit**, and forbids adopting another
@@ -393,7 +392,7 @@ nesting and trailing body. Six additional families cross the seams that a
 container-scoped floating attributes, terminal container children, ordered
 marker spellings, caption positions and `+`-attached block positions.
 
-The distinction is the point. The corpus pins constructs; nothing in it pins
+The corpus pins constructs; nothing in it pins
 what happens when two constructs meet, and a pair space is larger than a
 hand-written case list. Every cross-engine divergence in carve#427 lived in that
 gap: nested headings were covered, attributes were covered, and no case gave a
@@ -416,8 +415,8 @@ CARVE_RS_DIR=/path/to/carve-rs CARVE_PHP_DIR=/path/to/carve-php npm run combinat
 npm run combinatorial:check -- --inventory
 ```
 
-The output names each engine's revision, branch and dirty state. That is not
-decoration: a CLI engine is whatever its checkout happens to be sitting on, and
+The output names each engine's revision, branch and dirty state, because a CLI
+engine is whatever its checkout happens to be sitting on, and
 the first run of this script reported two divergence classes that were nothing
 but an out-of-date working copy. Check those lines before investigating a
 finding.
@@ -747,7 +746,7 @@ path". The last such case was `smart-quotes-locale-de`, held there because
 carve-js had no quote-locale option; carve-js#996 added one, the adapter drives
 it, and the case now reaches all three engines.
 
-That distinction is still the point for whatever lands next. A missing adapter
+That distinction still applies to whatever lands next. A missing adapter
 is this repo's backlog; a missing option is the engine's, and the difference
 decides who fixes it - no amount of harness work moves a capability gap.
 
@@ -774,7 +773,7 @@ every run:
   `scripts/lib/converter-formats.mjs` with the reason. There are no declared
   importer gaps today: carve-rs#1275 added the last missing BBCode path. A format an engine can
   neither convert nor explain fails the run; a declared gap the engine has
-  quietly closed is a stale entry and fails too - the runner probes the engine
+  closed is a stale entry and fails too - the runner probes the engine
   itself rather than trusting the table.
 - **A known-behind conversion** is drift: it lives in
   `resources/converter-drift.txt` as `engine/case  reason`, the converter

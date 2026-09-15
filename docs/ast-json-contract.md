@@ -385,11 +385,11 @@ An implementation that cannot place a node **omits `pos` rather than inventing
 one**, and says so. Absent is a fact a consumer can act on; a wrong span is not.
 
 A **reassembled** node - one the producer joined from pieces the source
-separates, or synthesized outright - **must omit `pos`**. It is conformant doing
-so**. A table cell continued on a `+` line, the hard break a line block makes
+separates, or synthesized outright - **must omit `pos`**, and it is conformant doing
+so. A table cell continued on a `+` line, the hard break a line block makes
 from a soft one, line-block content rebuilt around an indentation sentinel, and
 a `text` run coalesced across such a gap all have values that are not a slice of
-the source at any offset, so no honest span exists. The exemption is narrow: it
+the source at any offset, so no true span exists. The exemption is narrow: it
 covers nodes that *cannot* be placed, not nodes that have not been placed yet.
 
 ## A block image is a field, not a shape you re-derive
@@ -614,8 +614,8 @@ the text they claim.
 ## Round trip
 
 `parse(x)` serialized and deserialized must equal `parse(x)` (§6). A serializer
-that loses a field is not a lossy convenience; it is a consumer breaking silently
-one document later. Both halves are checked over the whole corpus.
+that loses a field breaks a consumer silently one document later. Both halves
+are checked over the whole corpus.
 
 ## A value the schema calls absent is normalized away
 
@@ -763,9 +763,9 @@ parse path.
 | carve-rs | `\u0000carve:footnotes-placement\u0000` in rendered HTML | a text node carrying that string pulls the endnotes section into itself, `<p><section role="doc-endnotes">…</section></p>` ([carve-rs#1217][rs1217]) |
 | carve-js | term and expansion joined on a NUL for the PART 11 section 10f abbreviation pair key | `("A"·NUL·"b", "c")` and `("A", "b"·NUL·"c")` key identically, and one occurrence of the first drops the SECOND definition line - deleting the author's text ([carve-js#1294][js1294]) |
 
-Neither sentinel has to change once the rule holds. That is the point of
-putting it at the boundary instead of patching each collision: a guarantee the
-parser makes and the ingest does not is not a guarantee.
+Neither sentinel has to change once the rule holds, which is why the rule sits
+at the boundary instead of patching each collision: a guarantee the parser makes
+and the ingest does not is not a guarantee.
 
 Before the rule, all three engines let a NUL through the ingest and then
 disagreed about it (carve-js `8f83eea` and carve-php `b845640` measured
@@ -857,18 +857,17 @@ where a refusal is required. The schema already described every one of those;
 nothing consulted it. Validate the payload against it and refuse with a typed
 error, rather than agreeing leniencies field by field.
 
-The cost is real and is the point: this rejects trees two engines accept today,
-and every future addition to the schema becomes a potential rejection for a
-producer that has not caught up. That is what makes the schema the contract
-instead of a description of one.
+This rejects trees two engines accept today, and every future addition to the
+schema becomes a potential rejection for a producer that has not caught up.
+That is what makes the schema the contract instead of a description of one.
 
 The VALUE of `srcByteLength` is not checked. It is derivable and nothing depends
 on it, so all three engines ignore it - §12 is about the field being **there**,
 and §12(d) about its type and sign, not about the number being right.
 
-One trap sits under the unknown-type rule, and it is worth knowing before you
-implement it. `attrs.keyValues` is the schema's only free-form map, its keys are
-ordinary attribute identifiers, and `type` is a legal one:
+One trap sits under the unknown-type rule. `attrs.keyValues` is the schema's
+only free-form map, its keys are ordinary attribute identifiers, and `type` is a
+legal one:
 
 ```
 [x](/u){type=widget}
@@ -962,7 +961,7 @@ each other and reads a unanimous defect as agreement. Until
 [carve#1637](https://github.com/markup-carve/carve/issues/1637) that reading was
 theoretical: the findings reached a counter that could not fail, so a run printed
 thirty of them per engine and exited green. There is no `permitted` status in
-that file - a reassembled node has no honest span, which is why the position
+that file - a reassembled node has no true span, which is why the position
 waivers have one, and a span that exists and is wrong has no such reading - so
 every line names the engine issue that will delete it, and the count fails when
 it moves in either direction.
@@ -990,15 +989,14 @@ value WITH a span, so a true span exists
 ([carve-php#1351](https://github.com/markup-carve/carve-php/issues/1351)). Four
 findings over three documents, with nothing outstanding in carve-js or carve-rs.
 The corpus grew 298 documents between that measurement and the 833-document one
-above, which is the whole reason an undated "the gap is closed" sentence is worth
+above, which is why an undated "the gap is closed" sentence is worth
 nothing here - a re-measurement is what says so, and only for the corpus it ran
 over.
 
 That one defect is the ONLY thing either ledger still declares, and it survived
 a day in which the span ledger was re-measured six times and rewritten five. It
-is the constant because nobody has started it, not because it is small - which
-is a useful thing to know about a ledger: what stays in it is what nobody is
-working on.
+is the constant because nobody has started it, not because it is small: what
+stays in a ledger is what nobody is working on.
 
 Every other position finding is `permitted` under §4.
 
@@ -1077,8 +1075,8 @@ moved `resources/ast-position-waivers.txt`, which had not moved all day: a
 continuation row's carried text now has its own span, so two permitted omissions
 retire and a third halves.
 
-Which is the point of dating these paragraphs rather than writing them in the
-present tense. The block above says a row "will not clear when carve-php catches
+That is why these paragraphs are dated rather than written in the present
+tense. The block above says a row "will not clear when carve-php catches
 up" and names it the one worth watching; it cleared within two hours, in the
 other engine, for an unrelated reason. Every remaining span row is carve-php
 alone - the first time that day the panel had one engine on every row, and the
@@ -1202,7 +1200,7 @@ once the construct stopped existing in that position.
 
 That is also why the §3a row is worth keeping while the others go. The spec
 says what the shape is, then the engines conform, then the pin moves; a row is
-the honest record of where an engine is in that order, and it has to be deleted
+the accurate record of where an engine is in that order, and it has to be deleted
 when the order finishes rather than left behind as a fact.
 
 :::

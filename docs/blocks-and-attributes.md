@@ -424,10 +424,10 @@ nested list's own indent. Writing it on a container the blank lines already
 loosened is legal and does nothing.
 
 ::: info There is no `{tight}`
-Deliberately, and the asymmetry is the point. **Tight is always spellable** -
+Deliberately. **Tight is always spellable** -
 remove the blank lines. Only loose has a shape with no spelling, so a `{tight}`
 key would be surface with nothing behind it, and it would create the one
-genuinely ambiguous document this design does not have: blank lines saying
+ambiguous document this design does not have: blank lines saying
 loose, attribute saying tight.
 :::
 

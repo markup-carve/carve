@@ -46,7 +46,7 @@ parses and renders the native syntax correctly against the spec corpus.
 
 A partial tool (highlighting-only, an editor grammar, a one-way converter) is
 still welcome in the ecosystem - it is listed on the [Ecosystem](./ecosystem)
-page with an honest status tag rather than claimed as a full implementation.
+page with an accurate status tag rather than claimed as a full implementation.
 
 ## Testing against the corpus
 

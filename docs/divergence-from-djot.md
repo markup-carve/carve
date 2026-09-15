@@ -15,7 +15,7 @@ and smart typography all carry over - the last of those with the same rules but
 a smaller AST shape (see section 12 below). Definition lists are one of the
 deliberate breaks (see section 9 below).
 
-So why diverge at all? Because a handful of Djot's choices optimize for
+Carve diverges because a handful of Djot's choices optimize for
 "Markdown-compatible" over "unambiguous to author and read." Carve is willing to
 break source-compatibility in a few specific places to remove footguns and make
 the common case correct by default. This page lists every deliberate break and
@@ -544,9 +544,8 @@ Plain text and ANSI used to emit the glyph whatever the switch said, in all
 three engines - accepted and ignored, which is worse than unimplemented. That
 gap is closed ([carve#560][st-issue]).
 
-One thing worth stating about the ANSI target, because it is the kind of
-arithmetic that looks like it must change and does not: the heading rule is a
-COLUMN count of the RENDERED heading, so it does not move with the mode. `The
+On the ANSI target, the heading rule is a COLUMN count of the RENDERED heading,
+so it does not move with the mode. `The
 renderer's output` is 21 columns whether the apostrophe is typed as `'` or
 curled to `’` - each is one character - and the rule under it is 21 either way.
 
@@ -555,8 +554,7 @@ cases pin it, one per target, and all four are rendered by all three engines
 through the comparison harness: `29-smart-typography-off` (HTML),
 `31-markdown-typography-source`, `34-plain-typography-source` and
 `35-ansi-typography-source`. A regression fails there instead of leaving this
-paragraph quietly wrong - which is the state it was in for as long as it named
-three calls that no longer matched any engine.
+paragraph wrong.
 
 [st-issue]: https://github.com/markup-carve/carve/issues/560
 
@@ -582,9 +580,8 @@ renders with a curly apostrophe or a straight one.
 
 Both languages spell a container `:::`, close it with a bare colon fence, nest
 equal-length fences, and close a container that never got a closer at the end
-of the input. Carve used to differ on the last two of those and no longer does.
-What remains is the closer rule itself, and it pulls three smaller differences
-along with it.
+of the input. They differ on the closer rule itself, and it pulls three smaller
+differences along with it.
 
 **Djot: a closer is at least as long as its opener. Carve: exactly as long.**
 Djot's rule is the code fence's rule, borrowed. Carve treats the length as a
@@ -673,8 +670,7 @@ directly under prose silently stayed prose - it surprises authors arriving from
 Markdown more often than it helps. The mirror case, prose written directly under
 a heading, was left folding: same two lines, order swapped, opposite doctrines.
 `docs/parsing-ambiguities.md` called it "the biggest authoring trap in the heading
-syntax", and a documented trap is still a trap. Now both orderings answer the
-same way.
+syntax". Now both orderings answer the same way.
 
 It also makes one model true across the language. The grammar describes a
 heading as "a bounded title, not an open paragraph" while giving it
@@ -686,8 +682,7 @@ construction, Markdown never offered it, and the rendered result was a raw
 newline inside the `h1`. A Djot document that wraps a heading renders
 differently in Carve, which is what `carve lint --from-djot` reports.
 
-Pinned in the corpus as `82-single-line-headings*` - the five cases that used to
-pin the folding rules, kept as the regression guard for what replaced them.
+Pinned in the corpus as the five `84-single-line-headings*` cases.
 
 ## 15. Block markers are column-strict and their separator is a literal space
 

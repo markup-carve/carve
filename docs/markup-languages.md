@@ -5,7 +5,7 @@ description: A neutral survey of the wider lightweight-markup landscape, from As
 # Modern Markup Languages Comparison
 
 ::: info Who this is for
-**Anyone surveying the field.** A neutral tour of the wider lightweight-markup landscape, Carve included but not centered. For the Carve-centric take, see [Carve vs Markdown/Djot/MDX](/comparison).
+**Anyone surveying the field.** A neutral tour of lightweight markup languages, Carve included but not centered. For the Carve-centric take, see [Carve vs Markdown/Djot/MDX](/comparison).
 :::
 
 A broad, neutral survey of the lightweight markup languages available today.
@@ -54,7 +54,7 @@ syntaxes together instead.
 **Notes on the Djot column:**
 
 - **Strikethrough:** Djot has no strikethrough. Its nearest elements are *delete* `{-text-}` (`<del>`) and *insert* `{+text+}` (`<ins>`); plain `~text~` is subscript, not a line-through.
-- **Subscript / Superscript:** the braces are optional in Djot — `~text~`/`^text^` work as shorthand, and the `{~ ~}`/`{^ ^}` forms are only needed when the span contains spaces or ambiguous boundaries. In Carve the braces are mandatory: `{,text,}` / `{^text^}` are the only sub/sup forms, and a bare `,` or `^` is always literal.
+- **Subscript / Superscript:** the braces are optional in Djot: `~text~`/`^text^` work as shorthand, and the `{~ ~}`/`{^ ^}` forms are only needed when the span contains spaces or ambiguous boundaries. In Carve the braces are mandatory: `{,text,}` / `{^text^}` are the only sub/sup forms, and a bare `,` or `^` is always literal.
 
 ## Syntax Examples
 
@@ -218,4 +218,4 @@ code
 
 ## Conclusion
 
-The markup landscape has evolved significantly since Markdown's introduction in 2004. While Markdown remains dominant due to familiarity, alternatives like Djot offer cleaner semantics and predictable parsing. AsciiDoc and reST serve well for comprehensive documentation needs. The choice depends on your ecosystem, complexity requirements, and how much you value specification clarity over ubiquity.
+While Markdown remains dominant due to familiarity, alternatives like Djot offer cleaner semantics and predictable parsing. AsciiDoc and reST suit large documentation projects. The choice depends on your ecosystem, complexity requirements, and how much you value specification clarity over ubiquity.

@@ -71,7 +71,7 @@ states whether an application may turn off a feature that normally starts on.
 
 A `:name[…]` / `::: name` whose word has no registered handler renders via the
 generic fallback (`<span>` / `<div class="name">`), so a document using an
-unknown extension word still parses and stays readable — only its *rendering*
+unknown extension word still parses and stays readable; only its *rendering*
 differs by processor. The narrative below details each tier.
 
 - Tier 1: corpus categories 01–88 (admonitions, footnotes, cross-references,
@@ -80,11 +80,11 @@ differs by processor. The narrative below details each tier.
   (the eight admonitions + `line-block`) are cataloged in [`examples/extensions.md`](/examples/extensions). Smart
   typography and `@mention` / `#tag` / `:symbol:` parsing are also default-on and
   corpus-pinned, but per grammar PART 9 §19 a processor MAY disable them.
-- Tier 2: configuration over Tier-1 syntax — mention/tag→URL, symbol map (e.g. emoji glyphs),
+- Tier 2: configuration over Tier-1 syntax, covering mention/tag→URL, symbol map (e.g. emoji glyphs),
   locale smart-quote sets, bare-URL autolinking, citations (§4), code
   callouts (`<n>` markers inside fenced code + a bound explanation list; §10),
   and SemanticSpan (§11: the four names core does not reserve, plus the
-  soft-deprecated `:name[…]` spelling for all seven) —
+  soft-deprecated `:name[…]` spelling for all seven),
   plus four block features that ship in carve-js, carve-php and carve-rs and
   carry pinned cases in `tests/corpus-optional`: ListTable (a `::: list-table`
   div whose nested list renders as a real HTML `<table>`, so cells can hold
@@ -133,7 +133,7 @@ differs by processor. The narrative below details each tier.
   "Section 1.2 - Title"; opt-in, no new syntax; §9),
   HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks,
   ColorSwatch (inline `:color[value]` -> a validated color chip; carve-php,
-  carve-js and carve-rs — see the [extension tutorial](./extension-tutorial)),
+  carve-js and carve-rs; see the [extension tutorial](./extension-tutorial)),
   and the opt-in heading-id transforms (LowercaseHeadingIds, AsciiHeadingIds).
 
   `FencedRender` is the generic form of the Mermaid pattern: one configurable
@@ -153,7 +153,7 @@ differs by processor. The narrative below details each tier.
   parser ends *script data* on the literal `</script>` regardless of the
   script's MIME type, a json-mode renderer **MUST** neutralize script-data
   terminators in the body (rewrite `</` so `</script>`, `<!--`, and `<script`
-  cannot break out) before emitting -- a Tier-3 requirement mirroring the core
+  cannot break out) before emitting; this is a Tier-3 requirement mirroring the core
   attribute hardening (grammar PART 9 §25). Even then, an HTML
   sanitizer run *after* conversion usually strips the whole element. Every json-mode type has a
   non-script alternative: render that same language in **text mode** instead, so
@@ -326,7 +326,7 @@ An extension is a named unit contributing any subset of four things, run as:
   document whose list item holds two lines calls the matcher with a two-line
   array at index 0, then with the whole document at index 3.
 
-  The consequence worth naming: **the same `(lines, position)` pair can occur
+  The consequence: **the same `(lines, position)` pair can occur
   twice for different lines.** A footnote definition produces `position = 0`
   against the whole document and `position = 0` again against a two-line
   fragment. A matcher keying on `position == 0` to mean "start of document" is
@@ -1024,7 +1024,7 @@ preceding attribute line, never inline on the opener):
   `depth`/`from`/`to` keys are stripped from the output.
 - Entries link to each heading's resolved, dedup-aware id (so links match the
   emitted heading anchors). **Every heading is included in document order**,
-  recursing into containers (`::: note`, blockquotes, divs) — those headings
+  recursing into containers (`::: note`, blockquotes, divs); those headings
   render with id anchors, so they belong in the TOC. Footnote-definition
   headings get no id and are excluded. (A heading inside a list item is subject
   to the core list-interruption rules, which currently differ across engines;
@@ -1151,7 +1151,7 @@ TocPlacement::new()
 ### 8b.2 `::: footnotes` — endnotes placement
 
 A `::: footnotes` block relocates the endnotes section to that spot instead of
-the document end. This is **core** (no extension needed) — the marker itself is
+the document end. This is **core** (no extension needed); the marker itself is
 the opt-in.
 
 - All footnotes are flushed at the marker, including those referenced *after*
@@ -1608,7 +1608,7 @@ itself is anonymous. Each panel therefore takes a role and a name of its own:
 - There is no separate attribute for it, and none is introduced: an author
   renames a panel by renaming its tab.
 - **`role="group"`, not `role="tabpanel"`.** The control that reveals this panel
-  is a `radio`, not a `tab`. `group` is all the CSS mode can honestly claim.
+  is a `radio`, not a `tab`. `group` is all the CSS mode can accurately claim.
 - **Not `<section>`.** One landmark per panel is N landmarks per tab set, which
   is the noise §1.5's sibling ruling removed from untitled admonitions.
 - **A bare `aria-labelledby` would not do instead.** ARIA marks `aria-label` and
@@ -1722,7 +1722,7 @@ single-select `tablist` has no state for: two panels are revealed, both take a
 normal tab stop, and no assistive technology can report which tab the set is on.
 So the only question is which single item the rule keeps, and first-wins is what
 the `css` default already does with `checked`. That makes the two modes agree,
-which is the whole point of this section binding both.
+which is why this section binds both.
 
 Last-wins would mean an author scrolling a long tab set and marking the item in
 front of them silently unselects one above, with nothing in the rendered page

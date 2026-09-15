@@ -257,7 +257,7 @@ motivated it are retained in carve#610, carve#642, carve#708 and carve#881.
 
 ## Block-attribute line breaks
 
-PART 4 once named two neighbouring questions it declined to decide. The first,
+PART 4 once named two neighboring questions it declined to decide. The first,
 a newline inside a quoted value, is now settled by A QUOTED VALUE STOPS AT THE
 NEWLINE. The second is still open and was measured rather than ruled:
 carve-php caps a block-attribute block at one line break where the other two

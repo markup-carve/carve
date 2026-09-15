@@ -20,25 +20,25 @@ author sees.
 than Djot (Djot's `_`/`*` rule is purely whitespace-flanking; Carve adds
 word-boundary conditions so intraword `a/b/c`, `foo_bar_baz`, and `snake_case`
 stay literal). This rule applies to *every* bare delimiter
-(`/ * _ ~ =` — all single-char), so `foo*bar*baz` and `foo~bar~baz` are
+(`/ * _ ~ =`, all single-char), so `foo*bar*baz` and `foo~bar~baz` are
 literal too. For deliberate intraword emphasis use the forced `{X … X}` family
 (PART 9 §22), e.g. `foo{*bar*}baz`. The normative statement lives in
 `resources/grammar.ebnf` PART 9 §9 and §22; in summary, for any bare delimiter:
 - **opens** only if *not* followed by whitespace **and** preceded by the start
-  of the line/block, whitespace, or punctuation — but not by an alphanumeric,
+  of the line/block, whitespace, or punctuation, but not by an alphanumeric,
   `_`, or the same delimiter (so `(/x/)` and `a./b/` open, while `snake_/case/`
   and `//a/` do not)
 - **closes** only if *not* preceded by whitespace **and** *not* followed by an
-  alphanumeric (so `x /a/b y` stays literal — the candidate closer is followed
+  alphanumeric (so `x /a/b y` stays literal: the candidate closer is followed
   by `b`)
 - inner `/` characters become literal content (same-type spans do not nest)
 
-The **same-delimiter adjacency** part of that rule — a delimiter adjacent to
-another of the same delimiter (before or after) does not open — applies to all
-five single-character delimiters. So a doubled delimiter is always literal:
-`**x**`, `~~x~~`, and `==x==` render verbatim, exactly like `//x//` and
+The **same-delimiter adjacency** part of that rule applies to all five
+single-character delimiters: a delimiter adjacent to another of the same
+delimiter (before or after) does not open. So a doubled delimiter is always
+literal: `**x**`, `~~x~~`, and `==x==` render verbatim, exactly like `//x//` and
 `__x__`. (`^` and `,` are not
-delimiters at all — superscript/subscript are the braced `{^x^}` / `{,x,}`
+delimiters at all; superscript/subscript are the braced `{^x^}` / `{,x,}`
 forms only.)
 
 **This means a path in an emphasizing position still italicizes:**
@@ -113,8 +113,8 @@ x^2^ + y^2^                    # Literal ^ (no bare superscript)
 | Value |
 | ^2^   |
 ```
-This is literal text `^2^` in a cell (not rowspan — the `^` is not alone; not
-superscript — there is no bare superscript). Superscript in a cell is the
+This is literal text `^2^` in a cell (not rowspan: the `^` is not alone; not
+superscript: there is no bare superscript). Superscript in a cell is the
 braced `| {^2^} |`.
 
 ---
@@ -271,7 +271,7 @@ See *[the docs](url) for more* info
 
 **Parsing:** An opener matches a valid closer of the same type (a delimiter
 closes only when not preceded by whitespace, see §1). Same-type delimiters
-*inside* the span are literal content — same-type spans do not nest — so
+*inside* the span are literal content (same-type spans do not nest), so
 `/usr/local/` is `<em>usr/local</em>`, not `<em>usr</em>local/`. Different-type
 spans nest fully (`*Bold with /italic/ inside*`). Resolution uses a delimiter
 stack in a single left-to-right pass: linear time, no backtracking.
@@ -305,11 +305,11 @@ stack in a single left-to-right pass: linear time, no backtracking.
 
 **Line comments:**
 - `%%` is a comment marker when **preceded by whitespace or at the start of
-  the inline run** (line start counts) — including a *trailing* comment after
+  the inline run** (line start counts), including a *trailing* comment after
   text: `Visible. %% this tail is a comment` keeps only `Visible.`
 - The comment runs to the end of the line; it never crosses a line break
 - Without preceding whitespace `%%` is literal: `The value is 50%% increase`
-  stays literal text — percentages are safe
+  stays literal text, so percentages are safe
 - `\%%` (escaped first percent) is literal
 - A **whole-line** comment may be **indented**: leading whitespace before `%%`
   does not matter, so an indented line whose first non-whitespace content is
@@ -326,7 +326,7 @@ stack in a single left-to-right pass: linear time, no backtracking.
 - `%%%` must start the line to open/close; the **leading run of `%` is the
   delimiter and any trailing text on that line is ignored**, so `%%% TODO`,
   `%%% notes` and `%%%html` all open a comment and `%%% end` closes one
-- `%%%` has **no info string** — a raw passthrough block is a *code* fence with
+- `%%%` has **no info string**: a raw passthrough block is a *code* fence with
   an `=FORMAT` info string (```` ```=html ````), so `%%% html` is a comment and
   its body stays hidden, never raw output
 - Content can contain anything except the same-length delimiter
@@ -334,7 +334,7 @@ stack in a single left-to-right pass: linear time, no backtracking.
 - An **unterminated** `%%%` (no matching closer anywhere ahead) does **not** open
   a block: the line falls back to a `%%` line comment, so the following blocks
   still render instead of vanishing. Same rule as `:::`, and for the same
-  reason — an unclosed opener must not swallow the rest of the document
+  reason: an unclosed opener must not swallow the rest of the document
 - `carve fmt` keeps an opener's trailing text as the comment's first body line
   (nothing is lost); a closer's trailing text is dropped
 
@@ -481,7 +481,7 @@ Some other text
   attaches one following flush-left block to that container (a list item, a
   block quote, a footnote body or a definition description)
 - A `+ ... |` line (pipe structure) is a table continuation
-- Any other `+ x` line is ordinary paragraph text — `+` never starts a list
+- Any other `+ x` line is ordinary paragraph text; `+` never starts a list
 
 ---
 
@@ -540,7 +540,7 @@ removed and renders literally, because `key => value` is prose about code.
 
 ## 17. Block Openers Interrupt Paragraphs (Paragraph Interruption)
 
-**Rule:** a **visible** block — *except a list marker* — interrupts an open
+**Rule:** a **visible** block (*except a list marker*) interrupts an open
 paragraph with no blank line before it, at the document top level **and** inside
 nested content (list item, block quote, admonition/div body). A continuation
 line that begins such a block is parsed as that block; the paragraph ends on the
@@ -559,14 +559,14 @@ does not interrupt a paragraph, so a hard-wrapped prose line beginning with a
 bullet stays prose. Add a blank line before the marker to start a list.
 
 **Symmetric list rule.** Neither a bullet (`- `/`* `, `- [x]` task) nor an
-ordered marker (`1.`, `2.`, `1985.`, `a.`, `i.`) interrupts a paragraph — they
+ordered marker (`1.`, `2.`, `1985.`, `a.`, `i.`) interrupts a paragraph; they
 behave identically. This avoids the CommonMark `1.`-only heuristic Djot removed,
 and removes the old false positive where a wrapped prose line became a list.
 
 **A heading and a blockquote are different:** a list marker **ends** an open
 heading (a bounded title) and starts a top-level **sibling list**. A blockquote
 is *not* ended: a quoted line ends in an open paragraph, so a list marker folds
-into it as lazy continuation — `> q` / `- a` is **one** quote whose paragraph is
+into it as lazy continuation: `> q` / `- a` is **one** quote whose paragraph is
 `q\n- a`, not a quote plus a sibling list. Nothing folds into a heading at all,
 plain text included - a heading ends at the newline (§18). The blockquote half
 of this matches Djot; the heading half deliberately does not.
@@ -583,7 +583,7 @@ of this matches Djot; the heading half deliberately does not.
 
 **Invisible constructs** (link/footnote/abbreviation reference definitions,
 `%%`/`%%%` comments, and `{…}` block-attribute lines) interrupt with no blank
-line, as they always have — they produce no block of their own, so they are
+line, as they always have: they produce no block of their own, so they are
 collected/consumed (an attribute line floats forward to the next block, §15).
 
 | Input | Result | Reason |
@@ -633,9 +633,7 @@ outside
 
 Heading **plus** paragraph: `<h1 id="Title">Title</h1>` then `<p>outside</p>`.
 
-This used to be one heading holding both lines, with id `Title-outside`, and
-this document called it the biggest authoring trap in the heading syntax. That
-older behavior is gone; see `divergence-from-djot` §14 for the rationale.
+See `divergence-from-djot` §14 for the rationale.
 
 ```carve
 # Title
@@ -643,7 +641,7 @@ older behavior is gone; see `divergence-from-djot` §14 for the rationale.
 outside
 ```
 
-Identical output - the blank line is no longer load-bearing.
+Identical output: the blank line changes nothing.
 
 ---
 

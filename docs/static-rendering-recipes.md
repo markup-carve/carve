@@ -47,7 +47,7 @@ Two rules of thumb:
 - **Match the target.** For static *HTML* (browser, email), KaTeX/MathJax SSR to
   **MathML or SVG** is crisp and accessible. For *PDF via dompdf*, MathML/CSS
   support is weak, so a rasterized image (MathJax SVG rendered to PNG, or a PNG
-  service) is more reliable. There is a genuine quality-vs-toolchain trade here;
+  service) is more reliable. There is a quality-vs-toolchain trade here;
   the SVG path is the principled one, the raster path is the pragmatic one.
 
 ## Closure signatures per engine

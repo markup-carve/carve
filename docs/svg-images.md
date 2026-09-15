@@ -48,7 +48,7 @@ the safe path for untrusted input. Set the alt text with `{alt="…"}`.
 ### Inline (opt-in, host-gated)
 
 Inline mode emits a live `<svg>` in the DOM, so `currentColor`, CSS classes and
-dark-mode all apply — ideal for themeable icons:
+dark-mode all apply, which makes it ideal for themeable icons:
 
 ```` carve
 {inline}
@@ -76,7 +76,7 @@ sandboxed.
 > **Inline is a host capability, not an author one.** A fence body and its
 > attributes both come from the same author, so a bare `{inline}` must never let
 > that author break out of the sandbox. Only the host, by turning on
-> `allowInline`, opts in — and it should do so only for **trusted** content.
+> `allowInline`, opts in, and it should do so only for **trusted** content.
 
 ## Security
 
@@ -95,7 +95,7 @@ sandboxed.
   (e.g. DOMPurify's SVG profile). See [Security](/security).
 
 Opt-in flags widen what inline mode keeps, each off by default: `allowStyle`
-(the `style` attribute, value-scrubbed — the `<style>` *element* is always
+(the `style` attribute, value-scrubbed; the `<style>` *element* is always
 dropped), `allowLinks` (`<a>` + external `href`), `allowAnimation` (SMIL), and
 `allowExternalImages` (`<image>` with an external raster `href`).
 

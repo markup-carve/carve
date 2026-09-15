@@ -37,7 +37,7 @@ Parse in this precedence order:
    them are literal content (same-type spans do not nest), so `/usr/local/`
    is `<em>usr/local</em>`, *not* `<em>usr</em>local/`.
 3. **Different-type spans nest**, resolved with a delimiter stack in a single
-   left-to-right pass — linear time, no backtracking (Design Principle 1).
+   left-to-right pass: linear time, no backtracking (Design Principle 1).
 
 This is *not* "shortest span / earliest opening wins": that rule would truncate
 `/usr/local/` to `<em>usr</em>` and break nested emphasis. See
@@ -93,7 +93,7 @@ Inline
 ```
 
 (`id` is optional in the parsed AST but always populated after the
-identifier-resolution pass — automatic or explicit — so consumers
+identifier-resolution pass (automatic or explicit), so consumers
 downstream of resolution can treat it as required.)
 
 ### 6.2 Source Mapping

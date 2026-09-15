@@ -39,7 +39,7 @@ rule IDs, source ranges, and rule-specific details rather than display text.
 By default `carve lint` reports the semantic rules below plus the
 Djot/Markdown constructs that actually mis-render in Carve (`**bold**`,
 `~~strike~~`, `^sup^`, and `+` bullets). It does **not** flag valid Carve
-whose meaning merely differs from Djot — `_x_` (underline, not emphasis),
+whose meaning merely differs from Djot: `_x_` (underline, not emphasis),
 `~x~` (strikethrough, not subscript), and `{=x=}` (highlight) are intentional
 in hand-written Carve, so surfacing them there is noise.
 
@@ -366,8 +366,8 @@ meaning.
 
 **A lint rule id is spec surface.** Two implementations reporting the same
 condition MUST use the same id, for the same reason two implementations parsing
-the same document must use the same node type: anything keyed on the id — a CI
-filter, an editor suppression, a `# carve-lint-disable` comment — is otherwise
+the same document must use the same node type: anything keyed on the id (a CI
+filter, an editor suppression, a `# carve-lint-disable` comment) is otherwise
 unshareable, and a document's tooling config stops being portable the moment a
 second engine touches it.
 
@@ -388,6 +388,6 @@ document-structure problems; they are not a claim of WCAG conformance or a
 replacement for testing the rendered page with accessibility tools.
 
 The CLI also reports Djot/Markdown delimiter collisions from the migration
-checker — mis-rendering constructs by default, plus the Djot semantic shifts
-under `--from-djot` — so `carve lint` is the broadest single validation
+checker (mis-rendering constructs by default, plus the Djot semantic shifts
+under `--from-djot`), so `carve lint` is the broadest single validation
 command.

@@ -69,9 +69,9 @@ Modes:
 
 **Notes on the Djot column:**
 
-- **Bullet markers:** Markdown, Djot and rST all accept `+` as a bullet; Carve does **not**. Carve bullets are `-` and `*` only — `+` is reserved as the list-continuation marker (a lone `+` attaches a following block to the current item). A Markdown/Djot `+` bullet therefore renders as a paragraph in Carve; the auto-migration tool rewrites it to `-`, and `djotMigrationWarnings` flags it.
+- **Bullet markers:** Markdown, Djot and rST all accept `+` as a bullet; Carve does **not**. Carve bullets are `-` and `*` only: `+` is reserved as the list-continuation marker (a lone `+` attaches a following block to the current item). A Markdown/Djot `+` bullet therefore renders as a paragraph in Carve; the auto-migration tool rewrites it to `-`, and `djotMigrationWarnings` flags it.
 - **Underline:** Djot has no underline element; `{+ +}` is *insert* (`<ins>`), browser-underlined by default.
-- **Strikethrough:** Djot has no strikethrough. `~t~` is Djot *subscript*; the closest struck-out element is *delete* `{-t-}` (`<del>`). Carve's `~t~` strikethrough therefore collides with Djot subscript — see migration warnings.
+- **Strikethrough:** Djot has no strikethrough. `~t~` is Djot *subscript*; the closest struck-out element is *delete* `{-t-}` (`<del>`). Carve's `~t~` strikethrough therefore collides with Djot subscript (see migration warnings).
 - **Admonitions:** Djot has only generic divs (`:::` + a class). Named/styled admonition *types* are renderer-defined, not built into the Djot spec.
 
 ### 8.2 Learning Curve

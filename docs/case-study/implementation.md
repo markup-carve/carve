@@ -12,7 +12,7 @@ description: How the reference parser was built, and what the first implementati
 2. **Block Parser**: Resolves block structure before any inline parsing, as in
    Djot. (Djot's spec does not use the term "two-pass"; it guarantees that block
    structure is determined first and that reference resolution is
-   order-independent — see Design Principles 1–2.)
+   order-independent. See Design Principles 1–2.)
 3. **Inline Parser**: Parses inline content within blocks
 4. **AST Builder**: Constructs typed AST nodes
 5. **Renderer**: Transforms AST to output format

@@ -96,8 +96,8 @@ correct for interactive HTML.
 
 The hazard is every other target. When the group extension is absent (static
 HTML, or any build that did not enable it) or cannot apply (Markdown, plain
-text, ANSI, PDF), the label has historically been dropped. The panels then stack
-with no indication of which is which:
+text, ANSI, PDF), a renderer without the fallback drops the label. The panels
+then stack with no indication of which is which:
 
 ```
 :::: tabs

@@ -83,7 +83,7 @@ different tree shapes can sometimes render the same bytes.
 
 Authored identifiers, classes, and key/value attributes appear in `attrs`.
 Resolved information may also appear there when consumers need it without
-replaying the whole document—for example, a heading’s final identifier.
+replaying the whole document, for example a heading’s final identifier.
 
 The schema closes every node type. An unknown property makes the payload
 invalid; reject it with a typed validation error rather than silently dropping

@@ -95,7 +95,7 @@ def hello():
 - **Strengths**: Incredibly powerful, outlining, TODO states, time tracking
 - **Weaknesses**: Emacs-centric, `#+` syntax is ugly, steep learning curve
 - **Lesson**: Plain text can be a complete productivity system.
-  Checkboxes and TODO states are genuinely useful.
+  Checkboxes and TODO states are useful.
   The `/italic/` convention works!
 
 #### Textile
@@ -113,7 +113,7 @@ This is *strong* and _emphasis_ and -deleted- and +inserted+.
 
 - **Strengths**: Intuitive emphasis, simple links, readable
 - **Weaknesses**: Largely abandoned, some ambiguous cases
-- **Lesson**: `"text":url` for links is genuinely more readable.
+- **Lesson**: `"text":url` for links is more readable.
   The `|_.` for headers is clever.
 
 #### Creole

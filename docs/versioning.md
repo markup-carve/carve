@@ -25,7 +25,7 @@ Implementations declare which spec version they conform to. The `carve fmt
 ```
 
 So a document carries the spec version it was last processed under, and this page
-tells you what changed since — together they answer whether a document needs
+tells you what changed since; together they answer whether a document needs
 attention after a spec upgrade.
 
 ## Change categories
@@ -229,6 +229,5 @@ which is written per merge and cut into sections at each tag.
 
 This page carried its own copy, and the copy was wrong: both entries it filed
 under a future `0.2` had already shipped in released `0.1.4` - the alignment-run
-terminator and the two-axis table model alike. A second changelog nothing gates
-does not stay a summary, it becomes a contradiction, so there is one file and
-this is a pointer to it.
+terminator and the two-axis table model alike. An ungated second changelog
+drifts into contradiction, so there is one file and this is a pointer to it.
