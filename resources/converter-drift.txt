@@ -134,17 +134,3 @@
 # stale shape: the run named each of them and failed on nothing else.
 #
 # THIS FILE IS EMPTY OF DECLARATIONS AGAIN, which is the intended end state.
-
-# PART 11 §1c and §1b, ruled at carve#2066 and carve#2067: an importer unwraps
-# a same-kind span nested in a braced one, and flattens a hard break in a table
-# cell to one space, reporting `structure-unspellable` for each. No engine main
-# writes either yet. Each line goes in the commit that proves the engine fix.
-rust/html-import--same-kind-strong-nesting  carve#2066 (markup-carve/carve-rs#1725)
-rust/html-import--same-kind-superscript-nesting  carve#2066 (markup-carve/carve-rs#1725)
-rust/html-import--table-cell-hard-break  carve#2067 (markup-carve/carve-rs#1714)
-js/html-import--same-kind-strong-nesting  carve#2066 (markup-carve/carve-js#1804)
-js/html-import--same-kind-superscript-nesting  carve#2066 (markup-carve/carve-js#1804)
-js/html-import--table-cell-hard-break  carve#2067 (markup-carve/carve-js#1803)
-php/html-import--same-kind-strong-nesting  carve#2066 (carve-php ticket not filed yet)
-php/html-import--same-kind-superscript-nesting  carve#2066 (carve-php ticket not filed yet)
-php/html-import--table-cell-hard-break  carve#2067 (carve-php ticket not filed yet)

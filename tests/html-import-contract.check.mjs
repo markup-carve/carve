@@ -176,11 +176,7 @@ test('every expected.crv is a fixed point of the canonical writer', async () => 
  * that disagrees and is not listed is red; a listed fixture that now agrees is
  * red too, so the line goes out with the pin bump that fixed it.
  */
-const PIN_LAG = new Map([
-  ['same-kind-strong-nesting', 'PART 11 §1c inline wrapper (carve#2066): markup-carve/carve-js#1804'],
-  ['same-kind-superscript-nesting', 'PART 11 §1c inline wrapper (carve#2066): markup-carve/carve-js#1804'],
-  ['table-cell-hard-break', 'PART 11 §1b hard break (carve#2067): markup-carve/carve-js#1803'],
-])
+const PIN_LAG = new Map([])
 
 /*
  * A DIAGNOSTIC is a pattern: the page calls diagnostic objects MINIMUM matches,

@@ -7887,11 +7887,12 @@ EOF = (* end of file *) ;
       second node beside it, a text run, a NO-BREAK SPACE (§7) -- keeps its
       wrapper and no ceiling is reached.
 
-      AN INLINE WRAPPER REACHES THE SAME CEILING. A span nested directly in a
-      span of the same kind has no spelling where both levels need the braced
-      form, because PART 9 §9 E3 leaves the inner opener literal. A writer
-      refuses that tree; an importer unwraps the inner level and reports
-      `structure-unspellable`, so `<sup><sup>x</sup></sup>` imports as
+      AN INLINE WRAPPER REACHES THE SAME CEILING. A span nested at any depth
+      in a span of the same kind has no spelling where both levels need the
+      braced form, because PART 9 §9 E3 leaves the inner opener literal while
+      the outer span is open: the inner `{/` in `{/a *b {/c/}*/}` is text. A
+      writer refuses that tree; an importer unwraps the inner level and
+      reports `structure-unspellable`, so `<sup><sup>x</sup></sup>` imports as
       `{^x^}`.
 
       DECIDED ON THE SPELLING, NEVER ON RESOLUTION -- and PART 9R R7 does not
