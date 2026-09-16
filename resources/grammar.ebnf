@@ -7838,6 +7838,13 @@ EOF = (* end of file *) ;
       bounded at the boundary: the words and the constructs on either side of
       it survive as themselves.
 
+      A HARD BREAK IN SUCH A SLOT IS FLATTENED THE SAME WAY. No spelling
+      carries a hard break in a single-line slot, so the producer writes one
+      space in its place, or nothing where the slot holds no token on one side
+      of it: `<td>x<br>y</td>` writes `| x y |` and `<td>x<br></td>` writes
+      `| x |`. A producer with a diagnostic channel reports each break as
+      `structure-unspellable`.
+
    1c. A WRAPPER ITS OWN CONTENT SPELLS AWAY IS A DECLARED CEILING --
       NORMATIVE [CARVE-P11-004]. §1b settles what a producer owes where an
       inline-only slot forces a flatten. This settles the other place §1's
@@ -7879,6 +7886,13 @@ EOF = (* end of file *) ;
       name them one at a time. A block whose content spells anything ELSE -- a
       second node beside it, a text run, a NO-BREAK SPACE (§7) -- keeps its
       wrapper and no ceiling is reached.
+
+      AN INLINE WRAPPER REACHES THE SAME CEILING. A span nested directly in a
+      span of the same kind has no spelling where both levels need the braced
+      form, because PART 9 §9 E3 leaves the inner opener literal. A writer
+      refuses that tree; an importer unwraps the inner level and reports
+      `structure-unspellable`, so `<sup><sup>x</sup></sup>` imports as
+      `{^x^}`.
 
       DECIDED ON THE SPELLING, NEVER ON RESOLUTION -- and PART 9R R7 does not
       change that. R7's promotion phase reads the RESOLVED tree; this clause
