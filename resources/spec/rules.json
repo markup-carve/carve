@@ -521,6 +521,12 @@
       "scope": "imports-security-extensions"
     },
     {
+      "id": "CARVE-P9-071",
+      "part": "9",
+      "title": "THE CLIPBOARD TYPE",
+      "scope": "imports-security-extensions"
+    },
+    {
       "id": "CARVE-P9-003",
       "part": "9",
       "title": "A CONTINUATION ROW LEAVES NO PARAGRAPH OPEN",

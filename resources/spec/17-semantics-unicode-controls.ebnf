@@ -349,3 +349,7 @@
    here unchanged. Suppressing the element row and the attribute row TOGETHER
    silences both, which is a loss of exactly the kind the report exists to
    name. *)
+(* 30. THE CLIPBOARD TYPE -- NORMATIVE [CARVE-P9-071]. A Carve document on a
+      clipboard is carried under the type `text/x-carve`. A host whose clipboard
+      API requires the `web ` prefix for a custom type writes `web text/x-carve`
+      there; the prefix is the host's transport, not part of the name. *)

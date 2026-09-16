@@ -63,6 +63,15 @@ Syntax highlighting, structural editing, and diagnostics inside editors.
 | [rouge-carve](https://github.com/markup-carve/rouge-carve) | Rouge | Lexer coloring Carve source wherever Rouge highlights. |
 | [carve-lsp](https://github.com/markup-carve/carve-lsp) | LSP | Language server - syntax diagnostics, Djot/Markdown collision hints. *Early.* |
 
+### Copying a Carve document
+
+An integration that puts Carve source on the clipboard carries it as
+`text/x-carve` ([`CARVE-P9-071`](/rules/imports-security-extensions)), next to a
+`text/plain` flavor for targets that know no Carve. Browser and Electron hosts
+must write it as `web text/x-carve`: the unprefixed type fails only when the
+write runs, so await `navigator.clipboard.write` and report its rejection, or a
+copy that put nothing on the clipboard looks like success.
+
 ## Framework integrations
 
 Carve embedded in another tool or framework.
