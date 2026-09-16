@@ -160,6 +160,21 @@ test('link_destination is a different production and still admits a format chara
   assert.match(html, /<a href="https:\/\/e\ufeff\.com\/">/, 'the inline destination lost the character')
 })
 
+// CARVE-P3-002: every White_Space character ends an inline destination, so none links.
+for (const [n, name] of [
+  [0x000b, 'LINE TABULATION'],
+  [0x000c, 'FORM FEED'],
+  [0x00a0, 'NO-BREAK SPACE'],
+  [0x2028, 'LINE SEPARATOR'],
+  [0x202f, 'NARROW NO-BREAK SPACE'],
+  [0x3000, 'IDEOGRAPHIC SPACE'],
+]) {
+  test(`U+${n.toString(16).toUpperCase().padStart(4, '0')} ${name} ends an inline destination`, () => {
+    const html = renderDoc(parse(`[t](a${cp(n)}b)\n`))
+    assert.doesNotMatch(html, /<a /, 'the destination absorbed a whitespace character')
+  })
+}
+
 test('every codepoint the tables name was actually examined', () => {
   // Zero findings from zero rows reads exactly like a clean run. This asserts
   // the denominator: each table row is rendered once, and the totals below are

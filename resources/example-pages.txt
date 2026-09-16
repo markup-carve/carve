@@ -506,6 +506,8 @@ index: examples/edge-cases/index.md
   link-destination-parentheses-balance
   empty-link-and-image-titles-are-preserved
   a-backslash-in-a-link-destination-is-a-literal-character
+  an-empty-link-destination-is-not-a-link
+  a-quote-is-an-ordinary-link-destination-character
   autolink-display-keeps-the-raw-content
   link-reference-definition-separator-must-be-a-space
   a-reference-definition-cannot-take-its-destination-from-the-next-line
