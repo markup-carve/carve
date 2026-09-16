@@ -489,6 +489,7 @@ index: examples/edge-cases/index.md
   19-smart-typography-dashes-and-quotes-8
   19-smart-typography-dashes-and-quotes-9
   12-inline-code-6
+  12-inline-code-7
   29-non-breaking-space-3
   40-superscript-and-subscript-2
   46-symbols-2

@@ -1,0 +1,35 @@
+{
+  "name": "i11-fs-missing-target-below-the-root-names-where-it-would-appear",
+  "description": "An unresolved target in a file below the root is resolved against that file, like a resolved one.",
+  "rules": [
+    "I11"
+  ],
+  "mode": "filesystem",
+  "resolver": "filesystem",
+  "tree": {
+    "main.crv": "{{ sub/frag.crv }}\n",
+    "sub/frag.crv": "{{ missing.crv }}\n"
+  },
+  "entryPath": "main.crv",
+  "root": ".",
+  "expected": {
+    "html": "<p>{{ missing.crv }}</p>",
+    "fmt": "{{ sub/frag.crv }}\n",
+    "warnings": [
+      {
+        "rule": "include-unresolved",
+        "file": "<TMP>/sub/frag.crv"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "<TMP>/sub/frag.crv",
+        "resolved": true
+      },
+      {
+        "id": "<TMP>/sub/missing.crv",
+        "resolved": false
+      }
+    ]
+  }
+}

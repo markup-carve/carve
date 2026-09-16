@@ -75,7 +75,9 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
 (* UNCLOSED RUN. An opener with no equal-length closer ahead is NOT literal
    text: it opens a verbatim span that runs to END_OF_BLOCK (the block's
    trailing whitespace is stripped; no surrounding single-space strip, which
-   applies only to a closed span). Such an unclosed run is OPAQUE -- an
+   applies only to a closed span). The strip applies wherever the run ends:
+   at END_OF_BLOCK, or at the `X}` closing an enclosing forced span (PART 9
+   §22). Such an unclosed run is OPAQUE -- an
    emphasis delimiter or link tail after it is verbatim content, so the
    surrounding construct never closes. Matches djot upstream. *)
 (* A trailing `{…}` on a code span is the generic inline-attribute

@@ -1,0 +1,37 @@
+{
+  "name": "i11-fs-escaping-target-below-the-root-keeps-its-spelling",
+  "description": "A containment-denied target in a file below the root is not resolved against that file; its id stays as written.",
+  "rules": [
+    "I10",
+    "I11"
+  ],
+  "mode": "filesystem",
+  "resolver": "filesystem",
+  "tree": {
+    "root/main.crv": "{{ sub/frag.crv }}\n",
+    "root/sub/frag.crv": "{{ ../../secret.crv }}\n",
+    "secret.crv": "TOP SECRET\n"
+  },
+  "entryPath": "root/main.crv",
+  "root": "root",
+  "expected": {
+    "html": "<p>{{ ../../secret.crv }}</p>",
+    "fmt": "{{ sub/frag.crv }}\n",
+    "warnings": [
+      {
+        "rule": "include-unresolved",
+        "file": "<TMP>/root/sub/frag.crv"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "<TMP>/root/sub/frag.crv",
+        "resolved": true
+      },
+      {
+        "id": "../../secret.crv",
+        "resolved": false
+      }
+    ]
+  }
+}

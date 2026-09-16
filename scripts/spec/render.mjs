@@ -362,6 +362,18 @@ function renderSemanticSpan(text, list) {
   return html
 }
 
+// unclosed run: verbatim to where the run ends, trailing whitespace stripped,
+// NO single-space strip
+// The strip is PART 2's `whitespace` - a space or a tab - plus the newlines
+// the run crossed on its way to the end of the block. `\s` is wider than
+// the rule: it holds the no-break space, which every other clause calls
+// CONTENT, so a run ending in one silently lost it. The same narrowing
+// applies at the math and literal bodies, which share this extraction.
+function unclosedCode(content) {
+  const trim = hardBreaks ? /[ \t]+$/ : /[ \t\n]+$/
+  return `<code>${escapeHtml(content.sourceString.replace(trim, ''))}</code>`
+}
+
 const sem = g.createSemantics().addOperation('h', {
   inlines(items) {
     // The bare single-char emphasis delimiters are NOT resolved by the PEG.
@@ -377,15 +389,10 @@ const sem = g.createSemantics().addOperation('h', {
   code2: codeOp,
   code3: codeOp,
   codeU(_o, _r, content) {
-    // unclosed run: verbatim to end of block, trailing whitespace stripped,
-    // NO single-space strip
-    // The strip is PART 2's `whitespace` - a space or a tab - plus the newlines
-    // the run crossed on its way to the end of the block. `\s` is wider than
-    // the rule: it holds the no-break space, which every other clause calls
-    // CONTENT, so a run ending in one silently lost it. The same narrowing
-    // applies at the math and literal bodies, which share this extraction.
-    const trim = hardBreaks ? /[ \t]+$/ : /[ \t\n]+$/
-    return `<code>${escapeHtml(content.sourceString.replace(trim, ''))}</code>`
+    return unclosedCode(content)
+  },
+  fCodeU(_o, _r, content) {
+    return unclosedCode(content)
   },
   nl(_n) {
     // A SOFT BREAK, and the only place one is visible AS a break. A newline

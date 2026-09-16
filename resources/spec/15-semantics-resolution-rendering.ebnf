@@ -844,6 +844,10 @@
            where one is supplied -- the same identity the cycle guard uses in
            I6 -- and otherwise by the RESOLVED PATH. Two spellings that name
            the same document MUST return the same id (`a/b.crv`, `a/./b.crv`).
+           An unresolved target's id is resolved against the including file
+           like a resolved one, so it names where the file would appear; a
+           path that escapes the containment root (I10) keeps the directive's
+           spelling.
            ATTEMPTED TARGETS ARE INCLUDED: the set MUST contain targets that
            were ATTEMPTED but NOT resolved -- missing or unreadable, binary,
            containment-denied (I10), cycle-broken (I6), and depth- or

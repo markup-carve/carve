@@ -2251,7 +2251,9 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
 (* UNCLOSED RUN. An opener with no equal-length closer ahead is NOT literal
    text: it opens a verbatim span that runs to END_OF_BLOCK (the block's
    trailing whitespace is stripped; no surrounding single-space strip, which
-   applies only to a closed span). Such an unclosed run is OPAQUE -- an
+   applies only to a closed span). The strip applies wherever the run ends:
+   at END_OF_BLOCK, or at the `X}` closing an enclosing forced span (PART 9
+   §22). Such an unclosed run is OPAQUE -- an
    emphasis delimiter or link tail after it is verbatim content, so the
    surrounding construct never closes. Matches djot upstream. *)
 (* A trailing `{…}` on a code span is the generic inline-attribute
@@ -5892,6 +5894,10 @@ EOF = (* end of file *) ;
            where one is supplied -- the same identity the cycle guard uses in
            I6 -- and otherwise by the RESOLVED PATH. Two spellings that name
            the same document MUST return the same id (`a/b.crv`, `a/./b.crv`).
+           An unresolved target's id is resolved against the including file
+           like a resolved one, so it names where the file would appear; a
+           path that escapes the containment root (I10) keeps the directive's
+           spelling.
            ATTEMPTED TARGETS ARE INCLUDED: the set MUST contain targets that
            were ATTEMPTED but NOT resolved -- missing or unreadable, binary,
            containment-denied (I10), cycle-broken (I6), and depth- or
@@ -8786,11 +8792,13 @@ EOF = (* end of file *) ;
           space, and the test belongs on the emitted line like every other one
           here.
 
-      M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN AN ATX HEADING --
-          NORMATIVE [CARVE-P11-044]. A `#` is escaped when it stands at the line's content
+      M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX
+          HEADING -- NORMATIVE [CARVE-P11-044]. A `#` is escaped when it stands at the line's content
           position, as M2b measures it, and opens a run of one to six hashes
           closed by a space, a tab or the line's end. The escape goes on the
-          `#` that opens the run; anywhere else on the line it is emitted bare.
+          `#` that opens the run; anywhere else on the line it is emitted bare,
+          except that on a line emitted as a heading a trailing run of any
+          length after a space or tab is escaped the same way.
 
             a               ->  a
                # heading    ->  \# heading
