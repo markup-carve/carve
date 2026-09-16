@@ -150,6 +150,8 @@
       "from": "root/sub/main.crv",
       "request": "gone.crv",
       "expected": {
+        "status": "denied",
+        "denial": "not-found",
         "dependencies": [{ "id": "<ROOT>/sub/gone.crv", "resolved": false }]
       }
     },
@@ -165,6 +167,8 @@
       "from": "root/sub/main.crv",
       "request": "../../gone.crv",
       "expected": {
+        "status": "denied",
+        "denial": "outside-root",
         "dependencies": [{ "id": "../../gone.crv", "resolved": false }]
       }
     },
