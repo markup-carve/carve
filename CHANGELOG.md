@@ -19,8 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   HTML, Markdown, Djot, BBCode, Pandoc JSON, and PDF extraction JSON as a shared
   release contract for importers (carve#1985).
 - **An include-security conformance suite** (carve#1990, carve#1994,
-  carve#2003, carve#2021, carve#2022). Published vectors and a schema an
-  implementer runs against the containment, refusal and resolver-bound rules.
+  carve#2003, carve#2021, carve#2022, carve#2060). Published vectors and a
+  schema an implementer runs against the containment, refusal, resolver-bound
+  and dependency-id rules.
 
 ### Changed
 
@@ -39,9 +40,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **A merged include run spans its host pieces** (carve#2044). PART 12 §1a; a
   run assembled from one file keeps the old rule.
 - **An unresolved include target's id names where the file would be**
-  (carve#2054). A path escaping the containment root keeps the directive's
-  spelling instead. A target reported while missing and again once it exists
-  carries the same id in both reports, so a watching host sees one dependency.
+  (carve#2054, carve#2060). A path escaping the containment root keeps the
+  directive's spelling instead, as do a target the resolver refuses although
+  it exists and a request carrying a URI scheme. A target reported while
+  missing and again once it exists carries the same id in both reports, so a
+  watching host sees one dependency.
 - **The include directive's closer is the first `}}` outside a quoted run**
   (carve#2000).
 - **The resolver-call bound is normative in PART 9 §19** (carve#1995), and the

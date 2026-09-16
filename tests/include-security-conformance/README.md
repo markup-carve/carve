@@ -106,7 +106,12 @@ Each implementation reads `vectors.json` and handles every `kind`:
   omits is the adapter's own default, which must be at least as generous as the
   §19 recommendation.
 
-`<ROOT>` in an expected canonical id denotes the materialized project root.
+`dependencies` is the I11 set the implementation publishes after expanding one
+`{{ request }}` directive from `from`, each entry an `id` and a `resolved` flag.
+Compute it before any refusal probe writes into the tree, or the probe turns a
+missing target into a present one.
+
+`<ROOT>` in an expected canonical id or dependency id denotes the materialized project root.
 Denial values are portable classes, not required diagnostic strings. Unknown
 kinds, requirements, or expected fields must fail an adapter. Every adapter
 must also pin the corpus version and vector count so accidental omissions fail.
@@ -119,7 +124,7 @@ corpus test pins that map whole, so an observable added without a side - or
 with a side that moves - fails here.
 
 - **`x-seam: "processor"`** - `status`, `denial`, `canonicalId`,
-  `maxVisitedDepth`, `chargedBytes`. The implementation's own answer, published
+  `maxVisitedDepth`, `chargedBytes`, `dependencies`. The implementation's own answer, published
   by it and reported UNCHANGED. An adapter MUST NOT reconstruct one from
   anything it holds itself, even when it could compute a believable value.
 - **`x-seam: "adapter"`** - `resolverCalls`, `remoteFetches`. What the adapter

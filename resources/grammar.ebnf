@@ -5897,7 +5897,8 @@ EOF = (* end of file *) ;
            An unresolved target's id is resolved against the including file
            like a resolved one, so it names where the file would appear; a
            path that escapes the containment root (I10) keeps the directive's
-           spelling.
+           spelling. So does a target that exists but the resolver refuses.
+           So does a request carrying a URI scheme, which names no place.
            ATTEMPTED TARGETS ARE INCLUDED: the set MUST contain targets that
            were ATTEMPTED but NOT resolved -- missing or unreadable, binary,
            containment-denied (I10), cycle-broken (I6), and depth- or
