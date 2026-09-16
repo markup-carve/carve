@@ -55,10 +55,16 @@ const LOCATION_FIELDS = new Set(['pos', 'srcByteLength'])
  * unattainable by construction for every source carrying an escape - which is
  * two of the three fixtures this check ships with.
  */
+const isEmptyDelimitedComment = (node) =>
+  node?.type === 'comment' && node.block === false && node.delimited === true && node.content === ''
+
 const normalize = (value) => {
   if (Array.isArray(value)) {
     const out = []
     for (const item of value.map(normalize)) {
+      // PART 11 §10k N3: an empty delimited comment compares equal to nothing,
+      // so the separator a producer writes between two code spans is dropped.
+      if (isEmptyDelimitedComment(item)) continue
       const previous = out[out.length - 1]
       if (previous?.type === 'text' && item?.type === 'text') {
         out[out.length - 1] = { type: 'text', value: previous.value + item.value }
