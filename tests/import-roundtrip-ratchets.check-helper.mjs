@@ -60,10 +60,9 @@ const visibleText = (html) =>
 // so CommonMark does not read an empty link, and 470-...-5, where it
 // percent-encodes `<` and `>` in the destination.
 
-// 12-inline-code-8 and -9 import and preserve their text. The pinned build reads
-// their links as literal text (carve-js#1815), so -8 round-trips through HTML as
-// that text; -9 does not, because its comment has no HTML to return from. Neither
-// round-trips through Markdown, where the writer escapes the literal brackets.
+// 12-inline-code-8 and -9 import and preserve their text. -8 round-trips through
+// HTML; -9 does not, because its comment has no HTML to return from. Neither
+// round-trips through Markdown, which has no underline, span attributes or comment.
 
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
