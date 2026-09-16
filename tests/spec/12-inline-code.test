@@ -72,3 +72,18 @@ A {=`y=}[note]{.k} here.
 <p><a href="u">n</a></p>
 <p><a href="u`">m</a> and <a href="`v">m</a> and <a href="w">n</a></p>
 ```
+
+```
+x{*$`a*} here
+
+x{~$$`b~} here
+
+x{/!`c/} here
+
+x{_!`d`_} here
+.
+<p>x<strong><span class="math inline" role="math">\(a\)</span></strong> here</p>
+<p>x<s><span class="math display" role="math">\[b\]</span></s> here</p>
+<p>x<em>c</em> here</p>
+<p>x<u>d</u> here</p>
+```

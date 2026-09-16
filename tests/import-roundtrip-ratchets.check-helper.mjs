@@ -64,6 +64,10 @@ const visibleText = (html) =>
 // HTML; -9 does not, because its comment has no HTML to return from. Neither
 // round-trips through Markdown, which has no underline, span attributes or comment.
 
+// 12-inline-code-10 imports and preserves its text but round-trips through neither
+// format: the HTML import reads a literal back as plain text, and the Markdown
+// writer has no spelling for math or a literal inside emphasis.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {
