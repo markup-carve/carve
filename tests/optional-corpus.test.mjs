@@ -69,6 +69,15 @@ const featureRunners = {
       mentionUrl: '/users/{name}',
       tagUrl: '/topics/{name}',
     }),
+  'social-link-resolvers': (source, render) =>
+    render(source, {
+      resolveMention: ({ name }) => {
+        if (name === 'alice') return '/people/42'
+        if (name === 'unsafe') return 'javascript:alert(1)'
+        return null
+      },
+      resolveTag: ({ name }) => (name === 'release' ? '/collections/stable' : null),
+    }),
   'symbol-map': (source, render) =>
     render(source, {
       symbols: {
@@ -143,8 +152,6 @@ const featureRunners = {
  * here is a statement about this file, and fails.
  */
 const DECLARED_UNIMPLEMENTED = {
-  'social-link-resolvers':
-    'the resolver contract is specified ahead of the pinned reference engine implementation',
   'smart-quotes-locale-de':
     'locale quote selection is an implementation extension/configuration, not canonical Djot syntax',
 }

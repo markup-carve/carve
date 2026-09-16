@@ -126,6 +126,7 @@ const DECLARED_UNREACHABLE = {
   'rust:list-table-columns-1344': 'no CLI flag for the list-table extension',
   'rust:list-table-local-headers-1248': 'no CLI flag for the list-table extension',
   'rust:semantic-span': 'no CLI flag for the semantic-span extension',
+  'rust:social-link-resolvers': 'no CLI path for host resolver callbacks',
   'rust:spoiler': 'no CLI flag for the spoiler extension',
   'rust:tabs': 'no CLI flag for the tabs extension',
   'rust:tabs-aria': 'no CLI flag for the tabs extension, and none for its mode',

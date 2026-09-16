@@ -71,6 +71,7 @@ const TRIGGERS = {
   'fence-delimiter-indentation': '  ```\n  x\n  ```\n',
   'list-item-body-detached': '1. item\n\n  # heading\n',
   'list-item-block-overindented': '-{.x1} item\n\n       # heading\n',
+  'empty-include-path': '{{ #section }}\n',
   'carve-version-unsupported': '---\ncarve-version: 99.0\n---\n\nx\n',
   'unclosed-container-fence': '::: note\nbody\n',
   'colon-fence-length-mismatch': ':::: note\nbody\n:::\n',

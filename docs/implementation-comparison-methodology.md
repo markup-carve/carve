@@ -177,21 +177,20 @@ with NO resolver configured, which is nothing - it stays literal text. That is
 what every engine already produces, including one that has never heard of PART 9
 section 19, because expansion is processor-level and off by default. It is
 listed because the published run predates the row.
-Section 463 lags carve-js and carve-rs for all three of its rows: a bare closer
-inside a braced inline (`~{/x/}{/y~/}`) closes a span opened before the braces
-there, and markup-carve/carve#2027 ruled that it may not. carve-php already
-matches.
-Section 464 lags no engine on HTML; carve-js still writes the marker-line form
-its `.fmt` pins rule out (markup-carve/carve#2017).
-Section 467 lags all three engines for both of its rows: a bare closer inside a
-link destination or autolink closes a span opened before the link, and
-markup-carve/carve#2027 ruled that it may not.
+Section 463 no longer lags an engine. A bare closer inside a braced inline
+(`~{/x/}{/y~/}`) used to close a span opened before the braces; markup-carve/carve#2027
+ruled that it may not, and all three now match.
+Section 464 lags no engine on HTML or on the canonical Carve spelling
+(markup-carve/carve#2017).
+Section 467 no longer lags an engine. A bare closer inside a link destination
+or autolink used to close a span opened before the link; markup-carve/carve#2027
+ruled that it may not, and all three now match.
 Section 468 lags no engine on HTML; carve-rs leaves its split underscore pair
 bare in Markdown (markup-carve/carve-rs#1653).
-`12-inline-code-7` lags carve-rs on HTML: it keeps the space an unclosed run
-leaves before a forced span's closer (markup-carve/carve#2051).
-`84-single-line-headings-6` through `-10` lag no engine on HTML; all three
-still write a heading's trailing hash run bare in Markdown
+`12-inline-code-7` no longer lags an engine: all three drop the space before
+the forced span's closer (markup-carve/carve#2051).
+`84-single-line-headings-6` through `-10` no longer lag an engine on HTML or
+Markdown; all three escape the heading's trailing hash run
 (markup-carve/carve#2052).
 `tests/implementation-comparison-counts.test.mjs` reads this line and counts the
 fixtures each category contributes, so the numbers cannot be asserted, only
@@ -324,7 +323,7 @@ engine lacks it.
 | `smart-quotes-locale-de` | pass | pass | pass |
 | `smart-typography-default` | pass | pass | pass |
 | `smart-typography-off` | pass | pass | pass |
-| `social-link-resolvers` | skipped | skipped | skipped |
+| `social-link-resolvers` | skipped | pass | pass |
 | `social-link-templates` | pass | pass | pass |
 | `source-line-after-generated-id` | skipped | pass | pass |
 | `spoiler` | skipped | pass | pass |
@@ -339,14 +338,13 @@ row where carve-php is the engine this tool cannot reach.
 
 | Implementation | Optional pass | Skipped | Mismatches | Errors | Avg CLI ms/file |
 |----------------|---------------|---------|------------|--------|-----------------|
-| Rust | `12 / 12` | `38` | `0` | `0` | `3.06` |
-| JS | `49 / 49` | `1` | `0` | `0` | `91.61` |
-| PHP | `47 / 47` | `3` | `0` | `0` | `61.96` |
+| Rust | `12 / 12` | `38` | `0` | `0` | `7.94` |
+| JS | `50 / 50` | `0` | `0` | `0` | `100.03` |
+| PHP | `48 / 48` | `2` | `0` | `0` | `67.55` |
 
 Optional cross-implementation diffs: `0`
 
-Read the `Skipped` column against a corpus of 50. The resolver case is ahead of
-all three engines. Of the remaining cases, carve-js reaches all 49 and
+Read the `Skipped` column against a corpus of 50. carve-js reaches all 50 and
 carve-php all but two; carve-rs runs twelve, because it is driven through its
 BINARY here and an opt-in feature needs a command-line switch to reach it, which
 most of them do not have (carve#496). A skip is not a failure and not a
@@ -686,16 +684,16 @@ came to say 4 when the corpus held 33.
 Implementation summary
 profile=optional/opt-in corpus=optional corpus_pairs=50 shard=0/1 targets=html,markdown,plain,ansi
 target_note=optional corpus renders each case on the target its manifest entry pins (html unless stated); --targets filters that set
-rust: pass=12/12 mismatch=0 error=0 skipped=38 runs=12 avg_ms=3.06
+rust: pass=12/12 mismatch=0 error=0 skipped=38 runs=12 avg_ms=7.94
   mismatching documents: 0
-js: pass=49/49 mismatch=0 error=0 skipped=1 runs=49 avg_ms=91.61
+js: pass=50/50 mismatch=0 error=0 skipped=0 runs=50 avg_ms=100.03
   mismatching documents: 0
-php: pass=47/47 mismatch=0 error=0 skipped=3 runs=47 avg_ms=61.96
+php: pass=48/48 mismatch=0 error=0 skipped=2 runs=48 avg_ms=67.55
   mismatching documents: 0
 cross_impl_diffs=0
 
 Target agreement (implementations compared against each other)
-html: compared=41 diffs=0 errors=0 fixtures=yes
+html: compared=42 diffs=0 errors=0 fixtures=yes
 markdown: compared=3 diffs=0 errors=0 fixtures=yes
 plain: compared=3 diffs=0 errors=0 fixtures=yes
 ansi: compared=2 diffs=0 errors=0 fixtures=yes
@@ -751,12 +749,9 @@ tabs (html): js, php
 tabs-aria (html): js, php
 tabs-aria (html): js, php
 tabs (html): js, php
-social-link-resolvers (html): none
+social-link-resolvers (html): js, php
 
-NOT COMPARED: 1 of 50 optional cases reached fewer than two engines, so it
-contributes no agreement evidence. This is not a pass.
-  fewer than two engines: social-link-resolvers (1)
-    social-link-resolvers: the resolver contract is specified ahead of implementations in carve-js, carve-php and carve-rs
+All optional cases reached at least two engines.
 
 Extension capability matrix
 rust: inline matcher, block matcher, after_parse, before_render, inline extension renderer, block extension renderer
@@ -765,17 +760,17 @@ php: inline matcher, block matcher, parsed-document hook, before-render hook, re
 extension_profile_note=optional Tier-2 cases run only where an implementation exposes the matching adapter.
 ```
 
-**The resolver case is deliberately ahead of the engines.** The optional
-corpus pins the shared contract before carve-js, carve-php, or carve-rs exposes
-the corresponding processor hook. It remains unscored until implementations
-adopt the contract.
+The resolver case runs through the host callback APIs in carve-js and
+carve-php. carve-rs implements the same API in the library, but its command-line
+interface cannot accept host callbacks, so the comparison runner cannot reach
+that implementation.
 
 It was 30 of 33 uncompared until carve#521, and exactly one after that until
 carve-js gained locale-aware smart quotes (carve-js#996). The features were implemented
 everywhere all along; what was missing was a way for this tool to switch them
 on. carve-js and carve-php are driven through an inline script here, so a
 shared table of feature to extension name reached both without either engine
-changing - covering citations, which is 16 of the 41 on its own.
+changing, with the citation cases forming the largest group.
 
 The rest need a renderer or parser OPTION rather than an extension, and an
 option is per-engine API, so there is no shared table for them.
