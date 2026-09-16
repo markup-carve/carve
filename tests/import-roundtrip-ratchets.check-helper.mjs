@@ -33,6 +33,21 @@ const visibleText = (html) =>
 // moved with it would be the finding here - literal text failing one of those
 // is a writer or importer bug, not a property of the directive.
 
+// The 59ae4a60 pin repairs both round trips for all three corpus 464 tight-item
+// cases. Corpus 467-...-2 stops matching byte for byte after the corrected
+// autolink is imported as an explicit link, so HTML moves by a net +2.
+// Markdown also moves by +2: corpus 467-... gains a round trip, while 276-...-5
+// and 84-...-5 stop matching because the corrected writer escapes a literal
+// tilde run and a paragraph-leading hash. Those escapes preserve the parsed
+// structures instead of changing them into a fence or heading. All seven
+// per-document changes were compared directly against d81c0278.
+
+// Corpus 9c845248 adds six documents. The four new top-level heading cases
+// contribute HTML round trips. The nested heading in 84-...-10 also contributes
+// a Markdown round trip under 59ae4a60; the other new heading cases and
+// 12-inline-code-7 do not. This accounts for every change from 1707 to 1713
+// documents instead of carrying forward the counts measured under d81c0278.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {

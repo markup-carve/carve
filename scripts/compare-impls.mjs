@@ -279,10 +279,7 @@ const PLAIN_EXTENSION_FEATURES = {
  * stamp ordering the second case turns on, so both are wired below instead
  * (carve#535).
  */
-const UNREACHABLE_REASONS = {
-  'social-link-resolvers':
-    'the resolver contract is specified ahead of implementations in carve-js, carve-php and carve-rs',
-}
+const UNREACHABLE_REASONS = {}
 
 // Cases that ask an engine for the author's source runs instead of the glyph.
 // One per target, because a manifest entry names one feature and one target -
@@ -433,6 +430,24 @@ const impls = [
             process.stdout.write(${entry}(source, {
               mentionUrl: '/users/{name}',
               tagUrl: '/topics/{name}',
+            }));
+          `,
+        ]
+      }
+      if (feature === 'social-link-resolvers') {
+        return [
+          'node',
+          '--input-type=module',
+          '-e',
+          `
+            import { readFileSync } from 'node:fs';
+            import { ${entry} } from './dist/index.js';
+            const source = readFileSync(process.argv[1], 'utf8');
+            process.stdout.write(${entry}(source, {
+              resolveMention: ({ name }) => name === 'alice'
+                ? '/people/42'
+                : name === 'unsafe' ? 'javascript:alert(1)' : null,
+              resolveTag: ({ name }) => name === 'release' ? '/collections/stable' : null,
             }));
           `,
         ]
@@ -609,6 +624,25 @@ const impls = [
             $converter->addExtension(new MarkupCarve\\Carve\\Extension\\MentionsExtension(
               mentionUrl: '/users/{name}',
               tagUrl: '/topics/{name}',
+            ));
+            echo $converter->convert(file_get_contents($argv[1]));
+          `,
+        ]
+      }
+      if (feature === 'social-link-resolvers') {
+        return [
+          'php',
+          '-r',
+          `
+            require 'vendor/autoload.php';
+            $converter = new MarkupCarve\\Carve\\CarveConverter();
+            $converter->addExtension(new MarkupCarve\\Carve\\Extension\\MentionsExtension(
+              mentionResolver: static fn ($input) => match ($input->name) {
+                'alice' => '/people/42',
+                'unsafe' => 'javascript:alert(1)',
+                default => null,
+              },
+              tagResolver: static fn ($input) => $input->name === 'release' ? '/collections/stable' : null,
             ));
             echo $converter->convert(file_get_contents($argv[1]));
           `,
