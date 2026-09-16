@@ -117,7 +117,9 @@ and
 and
 `12-inline-code-9`
 and
-`12-inline-code-10`.
+`12-inline-code-10`
+and
+`152-leading-attribute-brace-before-an-inline-span-stays-literal-2`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the

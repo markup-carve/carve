@@ -68,6 +68,10 @@ const visibleText = (html) =>
 // format: the HTML import reads a literal back as plain text, and the Markdown
 // writer has no spelling for math or a literal inside emphasis.
 
+// 152-leading-attribute-brace-before-an-inline-span-stays-literal-2 imports and
+// preserves its text but round-trips through neither format: its straight quotes
+// render as curly ones and come back as those characters.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {
