@@ -139,6 +139,36 @@
       }
     },
     {
+      "name": "missing-target-is-named-where-it-would-appear",
+      "description": "I11: a missing target inside the root is reported under the id it would have, resolved against the including file rather than the root. Paired with the next vector: an engine that never resolves an unresolved id fails this one.",
+      "requirement": "S2-contained-paths",
+      "kind": "filesystem",
+      "tree": {
+        "root/sub/main.crv": ""
+      },
+      "root": "root",
+      "from": "root/sub/main.crv",
+      "request": "gone.crv",
+      "expected": {
+        "dependencies": [{ "id": "<ROOT>/sub/gone.crv", "resolved": false }]
+      }
+    },
+    {
+      "name": "missing-escaping-target-keeps-its-spelling",
+      "description": "I11: a missing target outside the root keeps the directive's spelling, so no path outside the root is published for a host to watch. Paired with the previous vector: an engine that resolves every unresolved id fails this one.",
+      "requirement": "S2-contained-paths",
+      "kind": "filesystem",
+      "tree": {
+        "root/sub/main.crv": ""
+      },
+      "root": "root",
+      "from": "root/sub/main.crv",
+      "request": "../../gone.crv",
+      "expected": {
+        "dependencies": [{ "id": "../../gone.crv", "resolved": false }]
+      }
+    },
+    {
       "name": "remote-without-allowlist", "description": "A remote URL cannot trigger a fetch without an explicit host allowlist.",
       "requirement": "S3-remote-allowlist", "kind": "remote", "request": "https://example.invalid/chapter.crv", "allowedRemoteHosts": [],
       "expected": { "status": "denied", "denial": "remote-not-allowed", "remoteFetches": [] }

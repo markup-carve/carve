@@ -14,8 +14,8 @@ test('include security corpus is complete and schema-valid', () => {
   const validate = new Ajv2020({ allErrors: true, strict: false }).compile(schema)
   assert.equal(validate(corpus), true, JSON.stringify(validate.errors))
   assert.equal(corpus.version, 1)
-  assert.equal(corpus.vectors.length, 25)
-  assert.equal(new Set(corpus.vectors.map(({ name }) => name)).size, 25)
+  assert.equal(corpus.vectors.length, 27)
+  assert.equal(new Set(corpus.vectors.map(({ name }) => name)).size, 27)
   assert.deepEqual([...new Set(corpus.vectors.map(({ requirement }) => requirement))].sort(), [
     'S1-opt-in', 'S2-contained-paths', 'S3-remote-allowlist',
     'S4-depth-bound', 'S5-byte-bound', 'S6-post-budget-no-read',
@@ -43,6 +43,7 @@ test('every expected observable declares which side of the seam it comes from', 
       canonicalId: 'processor',
       maxVisitedDepth: 'processor',
       chargedBytes: 'processor',
+      dependencies: 'processor',
     },
   )
   // The other direction, which the schema cannot state: a side declared for an

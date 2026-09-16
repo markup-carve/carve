@@ -495,6 +495,8 @@ during the expansion.
   is resolved against the including file the same way, so `sub/frag.crv` asking
   for a missing `missing.crv` names `sub/missing.crv`, not `missing.crv`, which
   is the path a watcher needs. A path that escapes the containment root keeps its spelling.
+  So does a target that exists but the resolver refuses, and so does a request
+  carrying a URI scheme, which names no place for the id to point at.
 - **Attempted targets are included, not just successful ones.** The set MUST
   contain targets that were **attempted but not resolved**: missing or
   unreadable, binary, containment-denied, cycle-broken, and depth- or

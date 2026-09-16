@@ -45,7 +45,17 @@
               "denial": { "x-seam": "processor", "enum": ["outside-root", "not-found", "no-root", "remote-not-allowed", "depth", "budget", "resolver-calls"] },
               "canonicalId": { "x-seam": "processor", "type": "string" },
               "maxVisitedDepth": { "x-seam": "processor", "type": "integer", "minimum": 0 },
-              "chargedBytes": { "x-seam": "processor", "type": "integer", "minimum": 0 }
+              "chargedBytes": { "x-seam": "processor", "type": "integer", "minimum": 0 },
+              "dependencies": {
+                "x-seam": "processor",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["id", "resolved"],
+                  "additionalProperties": false,
+                  "properties": { "id": { "type": "string" }, "resolved": { "type": "boolean" } }
+                }
+              }
             }
           }
         }
