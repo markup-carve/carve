@@ -121,7 +121,6 @@ const CLOSING_SPELLINGS = {
   at: ['a @ b', 'inlines'],
   sqEsc: ["{title='a\\'b'}", 'attrs'],
   spaceChar: ['```\na\n``` \n', 'doc'],
-  rich: ['/*a // b*/', 'inlines'],
   delimRun: ['/*a // b*/', 'inlines'],
   dRun: ['/*a // b*/', 'inlines'],
 }
