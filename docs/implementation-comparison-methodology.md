@@ -111,7 +111,11 @@ and
 and
 `84-single-line-headings-9`
 and
-`84-single-line-headings-10`.
+`84-single-line-headings-10`
+and
+`12-inline-code-8`
+and
+`12-inline-code-9`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -196,6 +200,9 @@ the forced span's closer (markup-carve/carve#2051).
 `84-single-line-headings-6` through `-10` no longer lag an engine on HTML or
 Markdown; all three escape the heading's trailing hash run
 (markup-carve/carve#2052).
+`12-inline-code-8` and `-9` lag carve-js and carve-rs, which read a link after an
+earlier construct's backtick as literal text (markup-carve/carve-js#1815,
+markup-carve/carve-rs#1733).
 `tests/implementation-comparison-counts.test.mjs` reads this line and counts the
 fixtures each category contributes, so the numbers cannot be asserted, only
 derived, and the line has to be DELETED by whoever next runs

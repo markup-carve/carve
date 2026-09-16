@@ -24,3 +24,5 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+12-inline-code-8  a backtick before a link keeps the link literal in the pinned build; markup-carve/carve-js#1815
+12-inline-code-9  a backtick before a link keeps the link literal in the pinned build; markup-carve/carve-js#1815

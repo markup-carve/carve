@@ -1953,6 +1953,49 @@ A forced span's closer ends an unclosed run inside it, and the run's trailing wh
 
 :::
 
+The run is over at that closer, so a link, image or span after it opens as usual. Link text is scanned from its own `[`.
+
+::: compare
+
+```carve
+Run {*`make*}[the docs](u).
+
+A {_``x_}![logo](p.png) here.
+
+A {=`y=}[note]{.k} here.
+
+{+`added+} [n](u)
+```
+
+```html
+<p>Run <strong><code>make</code></strong><a href="u">the docs</a>.</p>
+<p>A <u><code>x</code></u><img src="p.png" alt="logo"> here.</p>
+<p>A <mark><code>y</code></mark><span class="k">note</span> here.</p>
+<p><ins><code>added</code></ins> <a href="u">n</a></p>
+```
+
+:::
+
+A backtick that is content of an earlier construct opens no run at all, so it does not stop a link after that construct.
+
+::: compare
+
+```carve
+[a]{title="`"} and [n](u)
+
+{% a ` %}[n](u)
+
+[m](u`) and [m](`v) and [n](w)
+```
+
+```html
+<p><span title="`">a</span> and <a href="u">n</a></p>
+<p><a href="u">n</a></p>
+<p><a href="u`">m</a> and <a href="`v">m</a> and <a href="w">n</a></p>
+```
+
+:::
+
 ## Attributes
 
 ::: compare
