@@ -60,7 +60,7 @@ states whether an application may turn off a feature that normally starts on.
 | The extension **syntax** `:name[…]` (inline) and `::: name` (block) | <Badge type="tip" text="core" /> | on | no — the *handlers* are Tier-2/3 |
 | Smart typography, `@mention`, `#tag`, `:symbol:` parsing | <Badge type="tip" text="core" /> | on | **yes** (§19) |
 | Citations `[@key]`, bare-URL autolinking, code callouts `<n>` | <Badge type="info" text="standard" /> | off | — |
-| Mention/tag → URL templates, symbol map (e.g. emoji glyphs), locale smart-quote sets | <Badge type="info" text="standard" /> | off | — |
+| Mention/tag → link templates or resolvers, symbol map (e.g. emoji glyphs), locale smart-quote sets | <Badge type="info" text="standard" /> | off | — |
 | ListTable (§5), Details, Spoiler, Tabs — shipped in all three engines and pinned in `tests/corpus-optional` | <Badge type="info" text="standard" /> | off | — |
 | Mermaid / FencedRender, MathBlock, Glossary, Index, HeadingNumbers, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
 | Bibliography (§6) — an **option on Citations**, not a separate registration: the host passes a CSL-JSON pool to the Citations extension | <Badge type="warning" text="extension" /> | off | — |
@@ -80,7 +80,7 @@ differs by processor. The narrative below details each tier.
   (the eight admonitions + `line-block`) are cataloged in [`examples/extensions.md`](/examples/extensions). Smart
   typography and `@mention` / `#tag` / `:symbol:` parsing are also default-on and
   corpus-pinned, but per grammar PART 9 §19 a processor MAY disable them.
-- Tier 2: configuration over Tier-1 syntax, covering mention/tag→URL, symbol map (e.g. emoji glyphs),
+- Tier 2: configuration over Tier-1 syntax, covering mention/tag link templates and resolvers, symbol map (e.g. emoji glyphs),
   locale smart-quote sets, bare-URL autolinking, citations (§4), code
   callouts (`<n>` markers inside fenced code + a bound explanation list; §10),
   and SemanticSpan (§11: the four names core does not reserve, plus the
@@ -176,6 +176,49 @@ differs by processor. The narrative below details each tier.
   the class first, carve-js emits attributes in author source order. (This is a
   pre-existing core-math divergence, not specific to MathBlock; the no-attribute
   output is identical everywhere.)
+
+### Mention and tag link resolvers
+
+URL templates remain the compact option for deterministic routes:
+
+```js
+{
+  mentionUrl: '/users/{name}',
+  tagUrl: '/topics/{name}',
+}
+```
+
+A host that needs aliases, database identifiers, tenant routing, or access
+control may instead configure a resolver for either node kind. API names vary
+by implementation, but each resolver receives the parsed kind and name, the
+node's attributes, and opaque host context. It returns one complete link
+destination or an unresolved result.
+
+```js
+{
+  resolveMention({ name, context }) {
+    return context.users.get(name)?.url ?? null
+  },
+  resolveTag({ name, context }) {
+    return context.topics.get(name)?.url ?? null
+  },
+}
+```
+
+The resolver controls only the destination. It cannot replace the label,
+inject HTML, add attributes, or return Carve source. `@alice` therefore remains
+the visible label even when the resolver maps it to `/people/42`.
+
+Resolver configuration takes precedence over a URL template for the same kind.
+An unresolved result or resolver error produces the ordinary inert `<span>`;
+it does not fall through to the template. This makes an authoritative lookup
+able to reject a deleted user or a tag hidden from the current tenant.
+
+Template placeholders receive a percent-encoded name. Resolver callbacks
+receive the exact parsed name and return a complete destination, which is not
+encoded again. Both paths pass through the normal URL-scheme denylist. A host
+that performs I/O inside a resolver owns authorization, containment, timeouts,
+and request bounds. Carve invokes no resolver unless the host configures one.
 
 Footnotes are **not** Tier 3. Reference footnotes `[^id]` and inline footnotes
 `^[content]` are both implemented Tier-1 core (`resources/grammar.ebnf` PART 9

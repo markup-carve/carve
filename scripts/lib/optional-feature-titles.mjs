@@ -29,6 +29,7 @@ export const optionalFeatureTitles = new Map([
   ['tabs-aria', 'Tabs in aria mode'],
   ['semantic-span', 'SemanticSpan'],
   ['social-link-templates', 'Mention and tag URL templates'],
+  ['social-link-resolvers', 'Mention and tag link resolvers'],
   ['symbol-map', 'Symbol map'],
   ['smart-quotes-locale-de', 'Smart quotes (de locale)'],
   ['bare-url-autolink', 'Bare-URL autolinking'],

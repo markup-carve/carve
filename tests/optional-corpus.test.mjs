@@ -143,6 +143,8 @@ const featureRunners = {
  * here is a statement about this file, and fails.
  */
 const DECLARED_UNIMPLEMENTED = {
+  'social-link-resolvers':
+    'the resolver contract is specified ahead of the pinned reference engine implementation',
   'smart-quotes-locale-de':
     'locale quote selection is an implementation extension/configuration, not canonical Djot syntax',
 }
