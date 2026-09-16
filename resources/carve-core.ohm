@@ -302,9 +302,12 @@ CarveCore {
   // `looseAttrs` is admitted so a nested bare span's trailing `{...}` attribute
   // block is consumed here (the removed bare-span rules used to grab it via
   // their `attrs?`); the SS9 stack over these tokens then re-attaches it.
-  fInner<d>  = ~(d "}") (rich | span | word | spComment | bracedComment | inlineSpace | litDelim
+  fInner<d>  = ~(d "}") (fCodeU<d> | rich | span | word | spComment | bracedComment | inlineSpace | litDelim
              | looseAttrs | bang | dollar | ellipsis | dashRun | dot | dash | plus | pct
              | lt | gt | dquote | squote | hash | nl | other)
+  // An unclosed run inside a forced span ends at the span's `X}` (PART 3
+  // UNCLOSED RUN, PART 9 SS22).
+  fCodeU<d>  = ~(code3 | code2 | code1) "\u0060" "\u0060"* (~(d "}") any)*
 
   // editorial: {+ins+} {-del-} {~old~>new~} {# comment #} (+ the doubled
   // {++...++} / {--...--} forms whose extra marker chars stay literal)

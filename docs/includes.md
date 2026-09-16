@@ -491,7 +491,10 @@ during the expansion.
   **deterministic** order.
 - **Identity.** Each target is identified by the resolver's **canonical id**
   where the resolver supplies one - the same identity the cycle guard uses (see
-  [Limits](#limits)) - and otherwise by the resolved path.
+  [Limits](#limits)) - and otherwise by the resolved path. An unresolved target
+  is resolved against the including file the same way, so `sub/frag.crv` asking
+  for a missing `missing.crv` names `sub/missing.crv`, not `missing.crv`, which
+  is the path a watcher needs. A path that escapes the containment root keeps its spelling.
 - **Attempted targets are included, not just successful ones.** The set MUST
   contain targets that were **attempted but not resolved**: missing or
   unreadable, binary, containment-denied, cycle-broken, and depth- or

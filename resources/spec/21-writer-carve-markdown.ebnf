@@ -606,7 +606,9 @@
           NORMATIVE [CARVE-P11-044]. A `#` is escaped when it stands at the line's content
           position, as M2b measures it, and opens a run of one to six hashes
           closed by a space, a tab or the line's end. The escape goes on the
-          `#` that opens the run; anywhere else on the line it is emitted bare.
+          `#` that opens the run; anywhere else on the line it is emitted bare,
+          except that on a line emitted as a heading a trailing run of any
+          length after a space or tab is escaped the same way.
 
             a               ->  a
                # heading    ->  \# heading

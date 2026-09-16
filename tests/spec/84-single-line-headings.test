@@ -55,3 +55,49 @@ outside
 .
 <p>#</p>
 ```
+
+```
+# a ##
+.
+<section id="a">
+  <h1>a ##</h1>
+</section>
+```
+
+```
+# a #
+.
+<section id="a">
+  <h1>a #</h1>
+</section>
+```
+
+```
+# a ### b ###
+.
+<section id="a-b">
+  <h1>a ### b ###</h1>
+</section>
+```
+
+```
+# a #######
+.
+<section id="a">
+  <h1>a #######</h1>
+</section>
+```
+
+```
+> - a
+>
+>   ### b ###
+.
+<blockquote>
+  <ul>
+    <li>a
+      <h3 id="b">b ###</h3>
+    </li>
+  </ul>
+</blockquote>
+```

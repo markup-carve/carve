@@ -2223,6 +2223,92 @@ spaces leave the line as paragraph text.
 
 :::
 
+A trailing hash run is heading text. The Markdown target escapes the run's first `#` so a CommonMark reader does not strip it as a closing sequence (PART 11 §8a M1f).
+
+::: compare
+
+```carve
+# a ##
+```
+
+```html
+<section id="a">
+  <h1>a ##</h1>
+</section>
+```
+
+:::
+
+A single trailing hash is a run of one.
+
+::: compare
+
+```carve
+# a #
+```
+
+```html
+<section id="a">
+  <h1>a #</h1>
+</section>
+```
+
+:::
+
+Only the trailing run closes a Markdown heading, so a run with text after it stays bare.
+
+::: compare
+
+```carve
+# a ### b ###
+```
+
+```html
+<section id="a-b">
+  <h1>a ### b ###</h1>
+</section>
+```
+
+:::
+
+The run has no length limit.
+
+::: compare
+
+```carve
+# a #######
+```
+
+```html
+<section id="a">
+  <h1>a #######</h1>
+</section>
+```
+
+:::
+
+A heading inside a container is a heading line too.
+
+::: compare
+
+```carve
+> - a
+>
+>   ### b ###
+```
+
+```html
+<blockquote>
+  <ul>
+    <li>a
+      <h3 id="b">b ###</h3>
+    </li>
+  </ul>
+</blockquote>
+```
+
+:::
+
 ## Blockquote lazy continuation stops at a fenced block
 
 Lazy continuation only extends an open paragraph. A non-`>` line that lands inside an open fenced code block ends the quote instead of being swallowed into the code. After the quote ends, `b` starts a paragraph and the trailing `> c` interrupts it into a fresh block quote (§10 — a `>` marker interrupts a paragraph). In the second example the mid-paragraph ` ``` ` has no closer, so it does not interrupt (§10 closer lookahead); it is then an unclosed inline verbatim run that renders as a `<code>` span to the end of the block (matching djot and carve-php), and the lazy line still folds in.

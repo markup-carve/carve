@@ -39,3 +39,9 @@ code</code></p>
 .
 <p>*a <code> b*</code></p>
 ```
+
+```
+{~` ~}
+.
+<p><s><code></code></s></p>
+```

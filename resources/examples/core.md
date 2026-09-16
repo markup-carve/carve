@@ -1939,6 +1939,20 @@ An unclosed run is opaque: an emphasis delimiter or link tail after it is verbat
 
 :::
 
+A forced span's closer ends an unclosed run inside it, and the run's trailing whitespace is stripped there as at the end of a block.
+
+::: compare
+
+```carve
+{~` ~}
+```
+
+```html
+<p><s><code></code></s></p>
+```
+
+:::
+
 ## Attributes
 
 ::: compare
