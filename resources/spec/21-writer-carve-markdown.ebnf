@@ -546,7 +546,7 @@
 
       M1a THE ASTERISK KEEPS M1 UNCONDITIONALLY. A literal `*` reaching this
           target in a text node is escaped, whatever else stands on the line.
-      M1b `_`, `#` AND `[` ARE ESCAPED IF AND ONLY IF the character is
+      M1b `_` AND `[` ARE ESCAPED IF AND ONLY IF the character is
           ADJACENT ON THE EMITTED LINE to an UNESCAPED DELIMITER OF THE SAME
           CHARACTER -- that is, the position immediately before it or
           immediately after it in the line the writer is building holds that
@@ -598,9 +598,22 @@
           reader gives the character back.
 
           CONDITIONAL, BECAUSE M1b ALREADY ARGUES FOR IT. `<` is the same shape
-          as `_`, `#` and `[`: significant before a tag name, inert before a
+          as `_` and `[`: significant before a tag name, inert before a
           space, and the test belongs on the emitted line like every other one
           here.
+
+      M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN AN ATX HEADING --
+          NORMATIVE [CARVE-P11-044]. A `#` is escaped when it stands at the line's content
+          position, as M2b measures it, and opens a run of one to six hashes
+          closed by a space, a tab or the line's end. The escape goes on the
+          `#` that opens the run; anywhere else on the line it is emitted bare.
+
+            a               ->  a
+               # heading    ->  \# heading
+
+          THE READING IS POSITIONAL, WHICH IS WHY M1b DOES NOT REACH IT. `_`
+          and `[` collide with a delimiter of their own character; a `#` does
+          not, and M2b already gives it this test on the `escaped_text` side.
 
       THE FINDING IS §3'S, ONE TARGET OUT. §3 records, for the canonical
       writer, that "whether a character is significant depends on the line,

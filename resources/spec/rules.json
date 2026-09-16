@@ -1151,6 +1151,12 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-044",
+      "part": "11",
+      "title": "M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN AN ATX HEADING",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P11-025",
       "part": "11",
       "title": "THE MARKDOWN TARGET'S AUTHORED ESCAPE NARROWS TOO",
