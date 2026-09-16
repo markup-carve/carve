@@ -14,4 +14,3 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
-12-inline-code-7  the pinned writer spells the empty code span as an unclosed run that swallows the strikethrough closer; markup-carve/carve-js#1773
