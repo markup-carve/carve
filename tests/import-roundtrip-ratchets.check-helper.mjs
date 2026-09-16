@@ -48,6 +48,12 @@ const visibleText = (html) =>
 // 12-inline-code-7 do not. This accounts for every change from 1707 to 1713
 // documents instead of carrying forward the counts measured under d81c0278.
 
+// Under 75734e8 12-inline-code-7 gains its HTML round trip (carve-js#1778), and
+// 84-...-10 loses its Markdown one: the writer now escapes the heading's
+// trailing hash run as #2056 requires, and the importer keeps that backslash in
+// Carve where none is needed. Both readings render the same heading; the old
+// round trip passed on Markdown that dropped the hashes.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {
