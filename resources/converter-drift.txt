@@ -134,3 +134,10 @@
 # stale shape: the run named each of them and failed on nothing else.
 #
 # THIS FILE IS EMPTY OF DECLARATIONS AGAIN, which is the intended end state.
+
+# carve#2068: text ending in `:name` before a node that opens with `[` is
+# written with the colon escaped. No engine main does yet. Each line goes in
+# the commit that proves the engine fix.
+rust/html-import--extension-sigil-escape  carve#2068 (markup-carve/carve-rs#1726)
+js/html-import--extension-sigil-escape  carve#2068 (markup-carve/carve-js#1808)
+php/html-import--extension-sigil-escape  carve#2068 (markup-carve/carve-php#2069)
