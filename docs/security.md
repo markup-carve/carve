@@ -305,8 +305,11 @@ does not launder an attack:
 ## What you still own
 
 - **Social-token URLs.** `@mention` and `#tag` render as inert spans unless you
-  provide `mentionUrl` / `tagUrl` templates. Those templates are your trusted
-  configuration; the token name is URL-encoded into them.
+  provide `mentionUrl` / `tagUrl` templates or host resolvers. Template names
+  are URL-encoded. A resolver receives the exact parsed name and returns a
+  complete destination, so it owns lookup authorization, tenant containment,
+  timeouts, and request bounds. Both paths still pass through Carve's URL-scheme
+  denylist, and neither path may return HTML or replacement Carve content.
 - **Arbitrary attributes on non-link elements.** Carve strips event handlers
   and script-bearing values from every element (see *Attribute hardening*
   above), but it is not a full HTML sanitizer: it does not allowlist which

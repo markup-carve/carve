@@ -280,6 +280,8 @@ const PLAIN_EXTENSION_FEATURES = {
  * (carve#535).
  */
 const UNREACHABLE_REASONS = {
+  'social-link-resolvers':
+    'the resolver contract is specified ahead of implementations in carve-js, carve-php and carve-rs',
 }
 
 // Cases that ask an engine for the author's source runs instead of the glyph.
@@ -1528,7 +1530,7 @@ if (isOptional) {
   if (skippedCases > 0) {
     const worst = [...unreachable.entries()].sort((a, b) => b[1] - a[1])
     console.log(
-      `\nNOT COMPARED: ${skippedCases} of ${pairs.length} optional cases reached fewer than two engines, so they contribute no agreement evidence. This is not a pass.`,
+      `\nNOT COMPARED: ${skippedCases} of ${pairs.length} optional cases reached fewer than two engines, so ${skippedCases === 1 ? 'it contributes' : 'they contribute'} no agreement evidence. This is not a pass.`,
     )
     console.log(
       `  fewer than two engines: ${worst.map(([f, n]) => `${f} (${n})`).join(', ')}`,

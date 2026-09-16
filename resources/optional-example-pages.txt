@@ -25,6 +25,7 @@ kind: core-configured
 out: examples/extensions.md
 order: 2
   social-link-templates
+  social-link-resolvers
   symbol-map
   smart-quotes-locale-de
   bare-url-autolink

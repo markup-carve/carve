@@ -537,6 +537,43 @@
       - Mentions (`@user`), tags (`#tag`) and smart typography are ON by
         default in the conformant core; a processor MAY disable them. The
         corpus pins the default-on behavior.
+      - SOCIAL LINK RESOLUTION -- NORMATIVE [CARVE-P9-070]. Mention and tag
+        syntax is core; turning either node into a link is opt-in processor
+        configuration. A host MAY supply a MENTION resolver, a TAG resolver,
+        or both. For each parsed node of the configured kind, the processor
+        gives the resolver the node's kind (`mention` or `tag`), its exact
+        parsed name, its AST attributes, and an opaque read-only host context.
+        The resolver returns ONE complete link destination or UNRESOLVED. An
+        implementation MAY expose this as a synchronous or asynchronous API;
+        the observable result is the same.
+
+        THE RESULT CHANGES ONLY THE DESTINATION. A resolved mention or tag is
+        rendered through the same link form as a configured URL template. Its
+        visible label remains the authored `@name` or `#name`; its structural
+        `mention` / `tag` class and AST attributes remain governed by PART 3
+        and PART 10. A resolver cannot return HTML, replacement inline content,
+        classes, attributes, or another Carve node. Its result is never parsed
+        as Carve and never starts another resolution pass.
+
+        RESOLVER PRECEDENCE IS PER KIND. When a resolver is configured for a
+        kind, it is authoritative for that kind: a returned UNRESOLVED value or
+        an error renders the ordinary inert `<span>` and MUST NOT fall through
+        to that kind's URL template. A processor SHOULD report a resolver error
+        as a diagnostic, but MUST NOT fail the whole render solely because one
+        social token did not resolve. When no resolver is configured for the
+        kind, the existing `mentionUrl` / `tagUrl` template behavior applies.
+        When neither mechanism is configured, the node remains an inert span.
+
+        A TEMPLATE receives a percent-encoded name before substitution. A
+        resolver receives the exact parsed name and returns a complete
+        destination, so the processor MUST NOT encode or interpolate that
+        result a second time. Both template and resolver destinations MUST pass
+        the PART 9 section 25 URL-scheme denylist; a denied destination is
+        UNRESOLVED and renders the inert span. The callback is host code, not a
+        permission to perform network or database access: a host that does so
+        owns authentication, authorization, timeouts, request bounds, and
+        tenant containment. The processor invokes at most one configured
+        social resolver per parsed node and MUST NOT rescan a returned value.
       - FILE INCLUSION / TRANSCLUSION (`{{ … }}`) is a PROCESSOR-LEVEL
         directive, NOT part of the core parser. Its syntax is PART 6; its
         normative semantics are below and mirrored, with worked examples, in
