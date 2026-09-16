@@ -307,6 +307,7 @@ engine lacks it.
 | `smart-quotes-locale-de` | pass | pass | pass |
 | `smart-typography-default` | pass | pass | pass |
 | `smart-typography-off` | pass | pass | pass |
+| `social-link-resolvers` | skipped | skipped | skipped |
 | `social-link-templates` | pass | pass | pass |
 | `source-line-after-generated-id` | skipped | pass | pass |
 | `spoiler` | skipped | pass | pass |
@@ -321,13 +322,14 @@ row where carve-php is the engine this tool cannot reach.
 
 | Implementation | Optional pass | Skipped | Mismatches | Errors | Avg CLI ms/file |
 |----------------|---------------|---------|------------|--------|-----------------|
-| Rust | `12 / 12` | `37` | `0` | `0` | `3.06` |
-| JS | `49 / 49` | `0` | `0` | `0` | `91.61` |
-| PHP | `47 / 47` | `2` | `0` | `0` | `61.96` |
+| Rust | `12 / 12` | `38` | `0` | `0` | `3.06` |
+| JS | `49 / 49` | `1` | `0` | `0` | `91.61` |
+| PHP | `47 / 47` | `3` | `0` | `0` | `61.96` |
 
 Optional cross-implementation diffs: `0`
 
-Read the `Skipped` column against a corpus of 49. carve-js reaches all of it and
+Read the `Skipped` column against a corpus of 50. The resolver case is ahead of
+all three engines. Of the remaining cases, carve-js reaches all 49 and
 carve-php all but two; carve-rs runs twelve, because it is driven through its
 BINARY here and an opt-in feature needs a command-line switch to reach it, which
 most of them do not have (carve#496). A skip is not a failure and not a
@@ -665,13 +667,13 @@ came to say 4 when the corpus held 33.
 
 ```text
 Implementation summary
-profile=optional/opt-in corpus=optional corpus_pairs=49 shard=0/1 targets=html,markdown,plain,ansi
+profile=optional/opt-in corpus=optional corpus_pairs=50 shard=0/1 targets=html,markdown,plain,ansi
 target_note=optional corpus renders each case on the target its manifest entry pins (html unless stated); --targets filters that set
-rust: pass=12/12 mismatch=0 error=0 skipped=37 runs=12 avg_ms=3.06
+rust: pass=12/12 mismatch=0 error=0 skipped=38 runs=12 avg_ms=3.06
   mismatching documents: 0
-js: pass=49/49 mismatch=0 error=0 skipped=0 runs=49 avg_ms=91.61
+js: pass=49/49 mismatch=0 error=0 skipped=1 runs=49 avg_ms=91.61
   mismatching documents: 0
-php: pass=47/47 mismatch=0 error=0 skipped=2 runs=47 avg_ms=61.96
+php: pass=47/47 mismatch=0 error=0 skipped=3 runs=47 avg_ms=61.96
   mismatching documents: 0
 cross_impl_diffs=0
 
@@ -732,8 +734,12 @@ tabs (html): js, php
 tabs-aria (html): js, php
 tabs-aria (html): js, php
 tabs (html): js, php
+social-link-resolvers (html): none
 
-All optional cases reached at least two engines.
+NOT COMPARED: 1 of 50 optional cases reached fewer than two engines, so it
+contributes no agreement evidence. This is not a pass.
+  fewer than two engines: social-link-resolvers (1)
+    social-link-resolvers: the resolver contract is specified ahead of implementations in carve-js, carve-php and carve-rs
 
 Extension capability matrix
 rust: inline matcher, block matcher, after_parse, before_render, inline extension renderer, block extension renderer
@@ -742,10 +748,10 @@ php: inline matcher, block matcher, parsed-document hook, before-render hook, re
 extension_profile_note=optional Tier-2 cases run only where an implementation exposes the matching adapter.
 ```
 
-**Every optional case now reaches at least two engines.** That line at the
-bottom of the block is the one to read: for the first time the optional corpus
-carries agreement evidence for all of it, with no case left contributing
-nothing.
+**The resolver case is deliberately ahead of the engines.** The optional
+corpus pins the shared contract before carve-js, carve-php, or carve-rs exposes
+the corresponding processor hook. It remains unscored until implementations
+adopt the contract.
 
 It was 30 of 33 uncompared until carve#521, and exactly one after that until
 carve-js gained locale-aware smart quotes (carve-js#996). The features were implemented

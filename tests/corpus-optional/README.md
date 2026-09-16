@@ -21,6 +21,8 @@ The spec does **not** prescribe how a runner maps a feature id to local setup.
 Examples:
 
 - `social-link-templates` → mention/tag URL template config
+- `social-link-resolvers` → host callbacks returning a complete destination or
+  an unresolved result for each parsed mention/tag node
 - `symbol-map` → `:name:` symbol map (e.g. shortcode-to-glyph for emoji)
 - `smart-quotes-locale-de` → locale-aware quote extension/config
 - `bare-url-autolink` → bare-URL autolink extension/config

@@ -515,6 +515,12 @@
       "scope": "parsing"
     },
     {
+      "id": "CARVE-P9-070",
+      "part": "9",
+      "title": "SOCIAL LINK RESOLUTION",
+      "scope": "imports-security-extensions"
+    },
+    {
       "id": "CARVE-P9-003",
       "part": "9",
       "title": "A CONTINUATION ROW LEAVES NO PARAGRAPH OPEN",

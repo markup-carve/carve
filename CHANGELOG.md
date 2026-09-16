@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- A standard host-resolver contract can map parsed mentions and tags to link
+  destinations while preserving their labels, attributes, inert fallback, and
+  URL-scheme checks. Existing URL templates remain supported.
 - A version 2 importer-fidelity schema and replayable fixture manifest cover
   HTML, Markdown, Djot, BBCode, Pandoc JSON, and PDF extraction JSON as a shared
   release contract for importers.
