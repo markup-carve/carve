@@ -97,6 +97,10 @@ and
 and
 `468-an-underscore-pair-split-across-a-line-break-is-escaped`
 and
+`469-an-empty-link-destination-is-not-a-link`
+and
+`470-a-quote-is-an-ordinary-link-destination-character`
+and
 `12-inline-code-7`
 and
 `84-single-line-headings-6`

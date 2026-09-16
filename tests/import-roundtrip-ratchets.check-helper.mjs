@@ -54,6 +54,12 @@ const visibleText = (html) =>
 // Carve where none is needed. Both readings render the same heading; the old
 // round trip passed on Markdown that dropped the hashes.
 
+// Corpus 469 and 470 add eight documents; all eight import and preserve their
+// text. HTML misses only 469-...-3, whose smart quotes return as literal curly
+// quotes. Markdown misses 469-..., -2 and -3, where the writer escapes the `]`
+// so CommonMark does not read an empty link, and 470-...-5, where it
+// percent-encodes `<` and `>` in the destination.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {

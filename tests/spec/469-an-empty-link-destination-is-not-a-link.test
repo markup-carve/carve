@@ -1,0 +1,19 @@
+An empty link destination is not a link
+
+```
+[x]()
+.
+<p>[x]()</p>
+```
+
+```
+![x]()
+.
+<p>![x]()</p>
+```
+
+```
+[x]( "t")
+.
+<p>[x]( “t”)</p>
+```

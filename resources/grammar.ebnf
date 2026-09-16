@@ -2334,14 +2334,16 @@ link_text = inline_content ;
    need not be resolved during parsing -- must apply the rule at that later
    point too, in every such target and not only in the one whose output makes
    the nesting visible as markup. *)
-link_destination = {destination_escape | balanced_parens
-                   | (url_char - '(' - ')') | '\' | unicode_url_char}+ ;
-balanced_parens = '(', {destination_escape | balanced_parens
-                       | (url_char - '(' - ')') | '\' | unicode_url_char}, ')' ;
+link_destination = {destination_escape | balanced_parens | destination_char}+ ;
+balanced_parens = '(', {destination_escape | balanced_parens | destination_char}, ')' ;
 destination_escape = '\', ('(' | ')' | '\') ;
-(* The destination is ANY run of URL characters: absolute (`https://…`),
+destination_char = (* any character except '(', ')' and Unicode whitespace *) ;
+(* The destination is a NON-EMPTY run of characters: absolute (`https://…`),
    relative (`/path`, `./file`), or a bare fragment (`#section`) -- there is
-   no scheme requirement. It ends at the first whitespace (a following
+   no scheme requirement. `[t]()` and `![t]()` are literal text. A quote is
+   an ordinary destination character, since a title opens only after the
+   space that ends the destination: `[t](a"b "c")` links to `a"b` with title
+   `c`. It ends at the first whitespace (a following
    quoted run is the title) or at the first `)` that has NO unmatched `(`
    left to pair with. Parentheses BALANCE, to any depth, so
    `[x](http://a/b(c))` links to `http://a/b(c)` and `[y](e)f)` links to `e`
@@ -2363,7 +2365,7 @@ destination_escape = '\', ('(' | ')' | '\') ;
    two-line case). *)
 unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
 (* WHITESPACE HERE IS UNICODE WHITESPACE -- NORMATIVE [CARVE-P3-002], and it always was:
-   `unicode_url_char` says "non-whitespace" without qualifying it to ASCII.
+   `destination_char` excludes whitespace without qualifying it to ASCII.
    So a NARROW NO-BREAK SPACE, an IDEOGRAPHIC SPACE and a THIN SPACE end an
    inline destination exactly as a plain space does, and an unbracketed
    destination cannot contain one -- an href MUST NOT carry one.
@@ -2567,7 +2569,7 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    `a"b"c`, emitted as `title="a&quot;b&quot;c"`). This matches the
    inline-link title. *)
 (* A reference definition requires a NON-EMPTY `link_destination` (one or
-   more `url_char`s after the `':' space`). A bare `[r]:` -- with nothing
+   more characters after the `':' space`). A bare `[r]:` -- with nothing
    after the colon, or only trailing whitespace -- does NOT form a
    definition; the line stays literal paragraph text. *)
 (* --- Inline Spans --- *)
@@ -2649,8 +2651,8 @@ control_char = (* any character in Unicode General_Category Cc *) ;
    `unicode_url_char - format_char` rather than "any non-whitespace,
    non-control character".
 
-   `link_destination` IS UNCHANGED. It admits `unicode_url_char` in its own
-   right, so a format character in an inline destination or a reference
+   `link_destination` IS UNCHANGED. It is built from `destination_char`,
+   not `url_char`, so a format character in an inline destination or a reference
    definition is still an ordinary destination character (corpus
    `240-a-zero-width-character-in-a-reference-definition-destination`). The
    two productions exclude different characters -- notably the backslash --
@@ -3638,7 +3640,7 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
    THE TWO WIDER NOTIONS ARE MARKED AS SUCH, and a construct carrying no such
    mark takes this definition. WHITESPACE HERE IS UNICODE WHITESPACE beside
-   `unicode_url_char` (PART 3) means the Unicode White_Space property, for a
+   `unicode_url_char` and `destination_char` (PART 3) means the Unicode White_Space property, for a
    destination only. PART 9 §25's scheme probe strips a wider class again --
    the C0 controls, which include both characters above, plus the Unicode
    spaces and the BOM -- and gives its reason there: it strips what a URL

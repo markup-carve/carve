@@ -1,0 +1,31 @@
+A quote is an ordinary link destination character
+
+```
+[x](a"b)
+.
+<p><a href="a&quot;b">x</a></p>
+```
+
+```
+[x](a"b "t")
+.
+<p><a href="a&quot;b" title="t">x</a></p>
+```
+
+```
+[x](")
+.
+<p><a href="&quot;">x</a></p>
+```
+
+```
+[x]("t")
+.
+<p><a href="&quot;t&quot;">x</a></p>
+```
+
+```
+[x](a`b{c}d|e^f<g>h)
+.
+<p><a href="a`b{c}d|e^f&lt;g&gt;h">x</a></p>
+```

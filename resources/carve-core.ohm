@@ -386,8 +386,10 @@ CarveCore {
   // carrying one is written plainly; the run ends at the first `)` with no
   // opener left to pair with. An escaped parenthesis, and an escaped
   // backslash, are the only escapes, and neither opens nor closes a level.
-  dest       = destChar*
-  destChar   = destEsc | destParens | (~("(" | ")" | " " | "\t" | newline) any)
+  // Non-empty, and every Unicode White_Space character ends it (carve#2069).
+  dest       = destChar+
+  destChar   = destEsc | destParens
+             | (~("(" | ")" | " " | "\t" | "\u000B" | "\u000C" | newline | uSpace) any)
   destEsc    = "\\" ("(" | ")" | "\\")
   destParens = "(" destChar* ")"
   // NO TAB. `link_title` is spelled `space` in grammar.ebnf. The slot is
