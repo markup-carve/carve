@@ -253,6 +253,11 @@
       "slug": "49-tabs-css-single-selection",
       "feature": "tabs",
       "description": "The same document under css: one radio carries checked, on the first marked item, so both modes select the same tab."
+    },
+    {
+      "slug": "50-social-link-resolvers",
+      "feature": "social-link-resolvers",
+      "description": "Host resolvers map @alice to /people/42 and #release to /collections/stable; unresolved @missing and #private plus a denied javascript: result for @unsafe keep their inert span rendering."
     }
   ]
 }
