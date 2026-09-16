@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   carve#2003, carve#2021, carve#2022, carve#2060). Published vectors and a
   schema an implementer runs against the containment, refusal, resolver-bound
   and dependency-id rules.
+- **A Carve document on the clipboard is `text/x-carve`** (carve#2050).
+  `CARVE-P9-071`; a host whose clipboard API needs the prefix writes
+  `web text/x-carve`.
 
 ### Changed
 
