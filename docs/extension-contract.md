@@ -205,6 +205,34 @@ destination or an unresolved result.
 }
 ```
 
+Here is a complete carve-js example. The application passes its own lookup
+state through `socialContext`; Carve returns that value to each callback
+without interpreting it.
+
+```js
+import { carveToHtml } from '@markup-carve/carve'
+
+const socialContext = {
+  users: new Map([['alice', '/people/42']]),
+  topics: new Map([['release', '/collections/stable']]),
+}
+
+const html = carveToHtml(
+  'Known @alice and #release; unknown @missing.',
+  {
+    socialContext,
+    resolveMention: ({ name, context }) => context.users.get(name) ?? null,
+    resolveTag: ({ name, context }) => context.topics.get(name) ?? null,
+  },
+)
+```
+
+The result links the two known names and leaves the missing user inert:
+
+```html
+<p>Known <a class="mention" href="/people/42">@alice</a> and <a class="tag" href="/collections/stable">#release</a>; unknown <span class="mention"><strong>@missing</strong></span>.</p>
+```
+
 The resolver controls only the destination. It cannot replace the label,
 inject HTML, add attributes, or return Carve source. `@alice` therefore remains
 the visible label even when the resolver maps it to `/people/42`.
