@@ -9,12 +9,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **File inclusion and transclusion, PART 9 §19** (carve#291). The reserved
+  `{{ }}` directive pulls in another document, with a resolver contract, a
+  cycle guard, a containment root, work bounds and dependency reporting (I11).
 - A standard host-resolver contract can map parsed mentions and tags to link
   destinations while preserving their labels, attributes, inert fallback, and
-  URL-scheme checks. Existing URL templates remain supported.
+  URL-scheme checks. Existing URL templates remain supported (carve#2047).
 - A version 2 importer-fidelity schema and replayable fixture manifest cover
   HTML, Markdown, Djot, BBCode, Pandoc JSON, and PDF extraction JSON as a shared
-  release contract for importers.
+  release contract for importers (carve#1985).
+- **An include-security conformance suite** (carve#1990, carve#1994,
+  carve#2003, carve#2021, carve#2022). Published vectors and a schema an
+  implementer runs against the containment, refusal and resolver-bound rules.
+
+### Changed
+
+- **A bare delimiter never pairs across an opaque construct** (carve#2027,
+  carve#2031). E2a names link destinations and autolinks beside code spans and
+  braced inlines, so `/` no longer closes inside a URL.
+- **The `_` escape condition reads the block's inline content, not one line**
+  (carve#2042, carve#2046). M1b's pair test spans line breaks; adjacency stays
+  per line.
+- **`#` is escaped by position, and a heading line's trailing hash run with it**
+  (carve#2048, carve#2052). M1f, `CARVE-P11-044`.
+- **The round-trip comparison normalizes a closed, enumerated list**
+  (carve#2042). §10k, `CARVE-P11-043`. Everything off the list is byte-exact.
+- **An unclosed code run ends at an enclosing forced span's closer**
+  (carve#2051), rather than running to the end of the block.
+- **A merged include run spans its host pieces** (carve#2044). PART 12 §1a; a
+  run assembled from one file keeps the old rule.
+- **An unresolved include target's id names where the file would be**
+  (carve#2054). A path escaping the containment root keeps the directive's
+  spelling instead. A target reported while missing and again once it exists
+  carries the same id in both reports, so a watching host sees one dependency.
+- **The include directive's closer is the first `}}` outside a quoted run**
+  (carve#2000).
+- **The resolver-call bound is normative in PART 9 §19** (carve#1995), and the
+  five include obligations are stated in the spec source rather than only on
+  the page (carve#2019).
+- **A containment root that is not absolute is refused** (carve#2004), and a
+  refusal does not reveal that an out-of-root target exists (carve#1999).
+- **A block that opens a tight item is written on the marker line**
+  (carve#2034).
+- **A trailing line after a consumed definition is placed by column-reach**
+  (carve#1946).
+- **A nested note's floor is its own marker** (carve#1971).
+- **A column-0 line after a description-hosted note is a top-level sibling**
+  (carve#1974).
+- **Markdown raw HTML is imported rather than dropped** (carve#2002).
 
 ## [0.1.5] - 2026-09-07
 
