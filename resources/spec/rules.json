@@ -1159,7 +1159,7 @@
     {
       "id": "CARVE-P11-044",
       "part": "11",
-      "title": "M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN AN ATX HEADING",
+      "title": "M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX HEADING",
       "scope": "canonical-writing"
     },
     {

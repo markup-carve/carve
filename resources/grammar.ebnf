@@ -8792,8 +8792,8 @@ EOF = (* end of file *) ;
           space, and the test belongs on the emitted line like every other one
           here.
 
-      M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN AN ATX HEADING --
-          NORMATIVE [CARVE-P11-044]. A `#` is escaped when it stands at the line's content
+      M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX
+          HEADING -- NORMATIVE [CARVE-P11-044]. A `#` is escaped when it stands at the line's content
           position, as M2b measures it, and opens a run of one to six hashes
           closed by a space, a tab or the line's end. The escape goes on the
           `#` that opens the run; anywhere else on the line it is emitted bare,
