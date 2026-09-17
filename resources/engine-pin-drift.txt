@@ -24,5 +24,3 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-472-substitution-content-is-inline-and-only-a-top-level-arrow-splits-it  substitution content is literal in the pinned build; markup-carve/carve-js#1827
-472-substitution-content-is-inline-and-only-a-top-level-arrow-splits-it-2  substitution content is literal in the pinned build; markup-carve/carve-js#1827

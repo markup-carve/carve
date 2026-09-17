@@ -2751,18 +2751,26 @@
       "title": "substitution (inline)",
       "required": [
         "type",
-        "oldText",
-        "newText"
+        "old",
+        "new"
       ],
       "properties": {
         "type": {
           "const": "substitution"
         },
-        "oldText": {
-          "type": "string"
+        "old": {
+          "type": "array",
+          "description": "The deleted half, as inline content.",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
         },
-        "newText": {
-          "type": "string"
+        "new": {
+          "type": "array",
+          "description": "The inserted half, as inline content.",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
