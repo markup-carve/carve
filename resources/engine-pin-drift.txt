@@ -24,11 +24,5 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-12-inline-code-11  the pinned build bounds a code span at the enclosing forced or editorial closer; markup-carve/carve-js#1828
-12-inline-code-12  the pinned build drops a line break at a forced closer inside a line block; markup-carve/carve-js#1842
-471-a-forced-opener-of-an-open-kind-is-literal-2  the pinned build nests a forced opener inside an open bare span of its kind; markup-carve/carve-js#1831
-471-a-forced-opener-of-an-open-kind-is-literal-3  the pinned build nests a bare delimiter inside a forced span of its kind; markup-carve/carve-js#1831
-471-a-forced-opener-of-an-open-kind-is-literal-5  the pinned build lets a forced closer inside a braced span of another kind close the outer span; markup-carve/carve-js#1841
-471-a-forced-opener-of-an-open-kind-is-literal-6  the pinned build lets a forced closer inside a braced span of another kind close the outer span; markup-carve/carve-js#1841
 472-substitution-content-is-inline-and-only-a-top-level-arrow-splits-it  substitution content is literal in the pinned build; markup-carve/carve-js#1827
 472-substitution-content-is-inline-and-only-a-top-level-arrow-splits-it-2  substitution content is literal in the pinned build; markup-carve/carve-js#1827

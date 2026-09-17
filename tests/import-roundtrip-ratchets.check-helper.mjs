@@ -89,6 +89,11 @@ const visibleText = (html) =>
 // pinned build reads substitution content literally, and the importer writes
 // the two halves as `{- -}` and `{+ +}` with the delimiters escaped.
 
+// Under 6ca06f8d the Markdown count moves by a net +1: 276-...-3, 278-... and
+// 75-...-5 gain a round trip and 276-... and 276-...-2 lose one, all from the
+// Markdown fence fixes in carve-js#1824, #1826 and #1837. 453-...-7 gains
+// visible-text preservation, from the blank-row refusal in carve-js#1830.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {
