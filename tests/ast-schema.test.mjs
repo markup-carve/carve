@@ -444,7 +444,11 @@ test('the corpus is non-trivial', () => {
  * that starts validating again has to leave this list in the commit that bumps
  * the pin, or the list becomes a blanket excuse with no expiry.
  */
-const SCHEMA_ROLLOUT_PENDING = new Map([])
+const SCHEMA_ROLLOUT_PENDING = new Map([
+  ['01-emphasis-15.crv', 'substitution halves as inline arrays (markup-carve/carve-js#1827): the pin writes oldText and newText'],
+  ['33-editorial-markup.crv', 'substitution halves as inline arrays (markup-carve/carve-js#1827): the pin writes oldText and newText'],
+  ['388-an-empty-brace-pair-is-not-a-construct-2.crv', 'substitution halves as inline arrays (markup-carve/carve-js#1827): the pin writes oldText and newText'],
+])
 
 test('every corpus document serializes to a schema-valid AST', () => {
   const failures = []
