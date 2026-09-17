@@ -117,20 +117,16 @@ const engines = [
  * excuse, and the case it covers would go on being reported as unmeasured.
  */
 const DECLARED_UNREACHABLE = {
-  'rust:bare-url-autolink': 'no CLI flag for the autolink extension',
-  'rust:citations-author-date': 'no CLI flag for the citations extension',
-  'rust:citations-numbered': 'no CLI flag for the citations extension',
-  'rust:code-callouts': 'no CLI flag for the code-callouts extension',
-  'rust:details': 'no CLI flag for the details extension',
-  'rust:list-table': 'no CLI flag for the list-table extension',
-  'rust:list-table-columns-1344': 'no CLI flag for the list-table extension',
-  'rust:list-table-local-headers-1248': 'no CLI flag for the list-table extension',
-  'rust:semantic-span': 'no CLI flag for the semantic-span extension',
+  'rust:bare-url-autolink': 'the CLI cannot select one extension by name (markup-carve/carve-rs#1755)',
+  'rust:citations-author-date': 'the CLI cannot select one extension by name (markup-carve/carve-rs#1755)',
+  'rust:citations-numbered': 'the CLI cannot select one extension by name (markup-carve/carve-rs#1755)',
+  'rust:list-table': 'the CLI cannot select one extension by name (markup-carve/carve-rs#1755)',
+  'rust:list-table-columns-1344': 'the CLI cannot select one extension by name (markup-carve/carve-rs#1755)',
+  'rust:list-table-local-headers-1248': 'the CLI cannot select one extension by name (markup-carve/carve-rs#1755)',
+  'rust:semantic-span': 'the CLI cannot select one extension by name (markup-carve/carve-rs#1755)',
   'rust:social-link-resolvers': 'no CLI path for host resolver callbacks',
-  'rust:spoiler': 'no CLI flag for the spoiler extension',
-  'rust:tabs': 'no CLI flag for the tabs extension',
-  'rust:tabs-aria': 'no CLI flag for the tabs extension, and none for its mode',
-  'php:symbol-map': 'the symbol map is not reachable from CarveConverter::create()',
+  'rust:tabs': 'the CLI cannot select one extension by name (markup-carve/carve-rs#1755)',
+  'rust:tabs-aria': 'the CLI cannot select one extension by name, nor set the tabs mode (markup-carve/carve-rs#1755)',
   // "`section-wrapper-off` and `source-line-after-generated-id` reach carve-js
   // and carve-php" - docs/implementation-comparison-methodology.md, on the same run.
   'rust:section-wrapper-off': 'no CLI flag for the sections opt-out',
