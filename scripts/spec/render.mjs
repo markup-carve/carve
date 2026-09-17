@@ -526,7 +526,7 @@ const sem = g.createSemantics().addOperation('h', {
   hardBreak(_bs, _tail) {
     // The rule CONSUMES the newline (PART 3), so this emits it: one line
     // boundary, one break, whether the boundary was spelled with a backslash
-    // or not. In a line block that is the whole of PART 9 SS23's A BACKSLASH
+    // or not. In a line block that is the whole of PART 9 SS23's A '\\'
     // BREAK IS NOT ADDITIVE - there is no soft break left for the container
     // to harden, so nothing synthesizes a second `<br>`.
     //
@@ -981,6 +981,10 @@ function buildToks(children, literalDelim) {
 //   { k: 'd', ch, at }      a bare delimiter candidate (source index `at`)
 //   { k: 'attrs', node, at, h }  a trailing `{...}` block (may attach to a span)
 //   { k: 't', h }           an already-rendered leaf fragment
+// Source offsets of attribute blocks that reached the render with nothing to
+// attach to. renderInlineInner reads this after a pass and re-runs the text.
+let unattachedAttrs = []
+
 function resolveEmphasis(toks, src, literalDelim) {
   // E1 CLASSIFY: evaluate bare_opener(d) / bare_closer(d) at each candidate.
   for (const t of toks) classify(t, src)
@@ -1057,7 +1061,11 @@ function resolveEmphasis(toks, src, literalDelim) {
       }
       if (t.k === 'd') out += escapeHtml(t.ch)
       else if (t.k === 'attrs') {
-        if (!consumed.has(i)) out += t.h
+        // UNATTACHED, so its braces are ordinary content and must not fence off
+        // what is inside them (carve#2084). renderInlineInner re-reads the text
+        // with this brace escaped, which is the same document and puts the
+        // block's characters back into the surrounding inline stream.
+        if (!consumed.has(i)) unattachedAttrs.push(t.at)
       } else out += t.h
       i++
     }
@@ -1391,9 +1399,26 @@ function renderInlineInner(text) {
   // Emphasis is resolved by the PART 9 SS9 delimiter stack in the `inlines`
   // semantic (resolveEmphasis) -- no pre-scan / refusal needed here.
   if (bracketDepthExceeds(text, MAX_NESTING_DEPTH)) throw new Refuse('inline nesting exceeds MAX_NESTING_DEPTH')
-  const m = g.match(text, 'inlines')
-  if (m.failed()) throw new Refuse(`inline: ${m.shortMessage}`)
-  return sem(m).h()
+  const saved = unattachedAttrs
+  let source = text
+  // Each pass escapes ONE unattached block, so the number of blocks bounds the
+  // loop and a pass that finds none is the answer.
+  for (let pass = 0; ; pass++) {
+    unattachedAttrs = []
+    const m = g.match(source, 'inlines')
+    if (m.failed()) {
+      unattachedAttrs = saved
+      throw new Refuse(`inline: ${m.shortMessage}`)
+    }
+    const out = sem(m).h()
+    const offsets = unattachedAttrs
+    if (offsets.length === 0 || pass > offsets.length + 1) {
+      unattachedAttrs = saved
+      return out
+    }
+    const first = Math.min.apply(null, offsets)
+    source = source.slice(0, first) + '\\' + source.slice(first)
+  }
 }
 
 // ---------------------------------------------------------------------------

@@ -127,7 +127,9 @@ and
 and
 `471-a-forced-opener-of-an-open-kind-is-literal`
 and
-`472-substitution-content-is-inline-and-only-a-top-level-arrow-splits-it`.
+`472-substitution-content-is-inline-and-only-a-top-level-arrow-splits-it`
+and
+`152-leading-attribute-brace-before-an-inline-span-stays-literal-3`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the

@@ -17,3 +17,12 @@ x{*a { b*} c
 <p>x{title=“<a href="u">a”}</a></p>
 <p>x<strong>a { b</strong> c</p>
 ```
+
+```
+x*{title="`"} y
+
+*x*{title="`"} y
+.
+<p>x*{title=“<code>"} y</code></p>
+<p><strong title="`">x</strong> y</p>
+```
