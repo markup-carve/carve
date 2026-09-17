@@ -7902,7 +7902,10 @@ EOF = (* end of file *) ;
       in a span of the same kind has no spelling where both levels need the
       braced form, because PART 9 §9 E3 leaves the inner opener literal while
       the outer span is open: the inner `{/` in `{/a *b {/c/}*/}` is text. A
-      writer refuses that tree; an importer unwraps the inner level and
+      braced span of another kind between the two levels starts its own
+      scope, so the inner span nests and no ceiling is reached:
+      `{/b{*c{/d/}*}/}` keeps both emphases. A writer refuses a tree that
+      does reach the ceiling; an importer unwraps the inner level and
       reports `structure-unspellable`, so `<sup><sup>x</sup></sup>` imports as
       `{^x^}`.
 
