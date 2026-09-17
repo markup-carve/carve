@@ -394,6 +394,13 @@ const sem = g.createSemantics().addOperation('h', {
   fCodeU(_o, _r, content) {
     return unclosedCode(content)
   },
+  fPrefixU(prefix, run) {
+    const p = prefix.sourceString
+    const body = escapeHtml(run.child(2).sourceString.replace(hardBreaks ? /[ \t]+$/ : /[ \t\n]+$/, ''))
+    if (p === '!') return body
+    const [o, c, kind] = p === '$' ? ['\\(', '\\)', 'inline'] : ['\\[', '\\]', 'display']
+    return `<span class="math ${kind}" role="math">${o}${body}${c}</span>`
+  },
   nl(_n) {
     // A SOFT BREAK, and the only place one is visible AS a break. A newline
     // inside a code span, a math run, a literal or a raw passthrough never

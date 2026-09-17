@@ -1996,6 +1996,29 @@ A backtick that is content of an earlier construct opens no run at all, so it do
 
 :::
 
+The closer bounds a run behind a math or literal prefix the same way, and a literal nests in a forced span like any other construct.
+
+::: compare
+
+```carve
+x{*$`a*} here
+
+x{~$$`b~} here
+
+x{/!`c/} here
+
+x{_!`d`_} here
+```
+
+```html
+<p>x<strong><span class="math inline" role="math">\(a\)</span></strong> here</p>
+<p>x<s><span class="math display" role="math">\[b\]</span></s> here</p>
+<p>x<em>c</em> here</p>
+<p>x<u>d</u> here</p>
+```
+
+:::
+
 ## Attributes
 
 ::: compare
