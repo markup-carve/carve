@@ -94,6 +94,9 @@ const visibleText = (html) =>
 // Markdown fence fixes in carve-js#1824, #1826 and #1837. 453-...-7 gains
 // visible-text preservation, from the blank-row refusal in carve-js#1830.
 
+// 152-...-3 imports, is a fixed point and keeps its text. Neither round trip
+// moves: its straight quotes render curly and come back as those characters.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {

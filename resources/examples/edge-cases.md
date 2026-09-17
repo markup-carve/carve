@@ -5856,6 +5856,23 @@ x{*a { b*} c
 
 :::
 
+A bare delimiter that opens nothing takes no block either: the characters stay content, so the run inside them reaches the end of the block. A delimiter that does close a span still takes the block.
+
+::: compare
+
+```carve
+x*{title="`"} y
+
+*x*{title="`"} y
+```
+
+```html
+<p>x*{title=“<code>"} y</code></p>
+<p><strong title="`">x</strong> y</p>
+```
+
+:::
+
 ## Attribute block after a mention stays literal
 
 Mentions and tags are inert stable spans that do not take attributes (they share the soft-break / hard-break / plain-text class in this respect). A `{…}` glued after one stays literal text rather than attaching or vanishing.
