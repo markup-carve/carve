@@ -26,7 +26,11 @@
          /usr/local/ -> <em>usr/local</em> (01-emphasis-6); the/path/here
          literal (first `/` has no left boundary); unbalanced trailing runs
          stay literal: /b// -> <em>b</em>/ and /x// -> <em>x</em>/
-         (edge-cases.md §1).
+         (edge-cases.md §1). OPEN means reachable under E2a, for a forced
+         delimiter as for a bare one: inside a braced inline only the span
+         that opened it and the entries pushed there count, so the inner
+         `{*c*}` in `{*a {/b {*c*} d/} e*}` nests, and a `*}` there closes
+         nothing outside the `{/ /}`.
       E4 OPEN. Otherwise a d satisfying bare_opener(d) pushes an entry.
       E5 END OF BLOCK. Entries still open demote to literal.
       Forced `{X … X}` spans (§22) push/pop on the SAME stack; only the

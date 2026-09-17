@@ -14,3 +14,4 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
+471-a-forced-opener-of-an-open-kind-is-literal-7  the pinned writer drops the braces of the `{/ /}` scope, so the inner strong no longer nests; markup-carve/carve-js#1841

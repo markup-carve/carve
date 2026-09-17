@@ -123,7 +123,9 @@ and
 and
 `12-inline-code-11`
 and
-`12-inline-code-12`.
+`12-inline-code-12`
+and
+`471-a-forced-opener-of-an-open-kind-is-literal`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -211,6 +213,11 @@ Markdown; all three escape the heading's trailing hash run
 `12-inline-code-8` and `-9` lag carve-js and carve-rs, which read a link after an
 earlier construct's backtick as literal text (markup-carve/carve-js#1815,
 markup-carve/carve-rs#1733).
+Section 471 lags the engines on five of its seven rows. Two nest a forced
+opener inside an open span of its kind (markup-carve/carve-js#1831,
+markup-carve/carve-php#2111, markup-carve/carve-rs#1741), and three do not give
+a braced span of another kind its own scope (markup-carve/carve-js#1841,
+markup-carve/carve-php#2135, markup-carve/carve-rs#1747).
 `tests/implementation-comparison-counts.test.mjs` reads this line and counts the
 fixtures each category contributes, so the numbers cannot be asserted, only
 derived, and the line has to be DELETED by whoever next runs

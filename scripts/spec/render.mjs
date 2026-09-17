@@ -575,7 +575,7 @@ const sem = g.createSemantics().addOperation('h', {
     // A forced `{X ... X}` span emphasizes intraword; nested spans of OTHER
     // delimiters resolve normally, but the forced delimiter X itself stays
     // literal inside (PART 9 SS22). Run the same SS9 stack, holding X literal.
-    const body = resolveEmphasis(buildToks(inner.children, dch), this.source.sourceString)
+    const body = resolveEmphasis(buildToks(inner.children, dch), this.source.sourceString, dch)
     return `<${tag}${a}>${body}</${tag}>`
   },
   edIns(_o, content, _c, attrs) {
@@ -897,6 +897,44 @@ function bareCloser(d, prev, next) {
   return prev !== undefined && !isWs(prev) && (next === undefined || !isWordCh(next))
 }
 
+// The `forced` node under an `inline` / `fInner` child, through the wrapper
+// rules that carry no other meaning, or null where the child is not one.
+function forcedUnder(alt) {
+  let n = alt
+  while (n.ctorName === 'rich' || n.ctorName === 'forcedSpan') n = n.child(0)
+  return n.ctorName === 'forced' ? n : null
+}
+
+// E1 CLASSIFY for one candidate.
+function classify(t, src) {
+  if (t.k !== 'd') return
+  const prev = t.at > 0 ? src[t.at - 1] : undefined
+  const prev2 = t.at > 1 ? src[t.at - 2] : undefined
+  const next = src[t.at + 1]
+  t.canOpen = bareOpener(t.ch, prev, prev2, next)
+  t.canClose = bareCloser(t.ch, prev, next)
+}
+
+// E3 refused this forced span's opener, so the span is its own characters:
+// two delimiter candidates around the content it had, and a trailing
+// attribute block that now attaches to whatever the closer closes.
+function demoteForced(t, literalDelim) {
+  const n = t.node
+  const out = [
+    { k: 't', h: '{' },
+    { k: 'd', ch: t.ch, at: n.child(1).source.startIdx },
+    ...buildToks(n.child(2).children, literalDelim),
+    { k: 'd', ch: t.ch, at: n.child(3).source.startIdx },
+    { k: 't', h: '}' },
+  ]
+  const attrs = n.child(5)
+  if (attrs.numChildren > 0) {
+    const node = attrs.child(0)
+    out.push({ k: 'attrs', node, at: node.source.startIdx, h: escapeHtml(node.sourceString) })
+  }
+  return out
+}
+
 // Build the flat token stream from a list of CST child nodes (inline* or
 // fInner*). A bare `/ * _ ~ =` becomes a delimiter candidate; every other
 // alternative renders to an HTML fragment now. `literalDelim` (the forced
@@ -906,6 +944,18 @@ function buildToks(children, literalDelim) {
   for (const c of children) {
     const alt = c.child(0)
     const name = alt.ctorName
+    // A forced span is a stack entry, not a leaf: E3 holds its opener literal
+    // while a span of its kind is open, so the decision waits for the stack.
+    const forcedNode = forcedUnder(alt)
+    if (forcedNode && STACK_DELIMS.has(forcedNode.child(1).sourceString)) {
+      toks.push({
+        k: 'f',
+        ch: forcedNode.child(1).sourceString,
+        node: forcedNode,
+        at: alt.source.startIdx,
+      })
+      continue
+    }
     if (name === 'litDelim') {
       const ch = alt.child(0).sourceString
       // Only / * _ ~ = are stack candidates; ^ and , have no bare span.
@@ -931,22 +981,28 @@ function buildToks(children, literalDelim) {
 //   { k: 'd', ch, at }      a bare delimiter candidate (source index `at`)
 //   { k: 'attrs', node, at, h }  a trailing `{...}` block (may attach to a span)
 //   { k: 't', h }           an already-rendered leaf fragment
-function resolveEmphasis(toks, src) {
+function resolveEmphasis(toks, src, literalDelim) {
   // E1 CLASSIFY: evaluate bare_opener(d) / bare_closer(d) at each candidate.
-  for (const t of toks) {
-    if (t.k !== 'd') continue
-    const prev = t.at > 0 ? src[t.at - 1] : undefined
-    const prev2 = t.at > 1 ? src[t.at - 2] : undefined
-    const next = src[t.at + 1]
-    t.canOpen = bareOpener(t.ch, prev, prev2, next)
-    t.canClose = bareCloser(t.ch, prev, next)
-  }
+  for (const t of toks) classify(t, src)
   // One pass with a delimiter stack. `openers` holds indices (into toks) of
   // still-open candidates, in source order. `openMap` records paired spans.
   const openers = []
   const openMap = new Map() // open index -> close index
   for (let j = 0; j < toks.length; j++) {
     const t = toks[j]
+    if (t.k === 'f') {
+      // E3: while a span of this kind is open, the forced opener is literal.
+      if (openers.some((oi) => toks[oi].ch === t.ch)) {
+        const rep = demoteForced(t, literalDelim)
+        for (const r of rep) classify(r, src)
+        toks.splice(j, 1, ...rep)
+        j--
+        continue
+      }
+      t.k = 't'
+      t.h = t.node.h()
+      continue
+    }
     if (t.k !== 'd') continue
     const d = t.ch
     // E2 CLOSE FIRST: a valid closer closes the NEAREST matching open entry;

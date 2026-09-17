@@ -79,6 +79,11 @@ const visibleText = (html) =>
 // 12-inline-code-12 imports, is a fixed point and preserves its text. It misses
 // both round trips: the importer writes its line block back as `::: line-block`.
 
+// Section 471 adds seven documents. All seven import, are fixed points, preserve
+// their text and round-trip through HTML. None round-trips through Markdown,
+// where the literal `{*` and the emphasis around it come back as a different
+// pairing once the writer escapes them.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {
