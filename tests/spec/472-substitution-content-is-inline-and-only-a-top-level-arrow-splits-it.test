@@ -1,0 +1,28 @@
+Substitution content is inline, and only a top-level arrow splits it
+
+```
+{~`a~>b~}
+
+{~a `x~>y` b~}
+
+{~/old/~>/new/~}
+
+{~a\~>b~}
+.
+<p><s><code>a~&gt;b</code></s></p>
+<p><s>a <code>x~&gt;y</code> b</s></p>
+<p><del><em>old</em></del><ins><em>new</em></ins></p>
+<p><s>a~&gt;b</s></p>
+```
+
+```
+{~$`a~>b`~>c~}
+
+{~!`a~>b`~>c~}
+
+{~a{# ~> #}b~>c~}
+.
+<p><del><span class="math inline" role="math">\(a~&gt;b\)</span></del><ins>c</ins></p>
+<p><del>a~&gt;b</del><ins>c</ins></p>
+<p><del>a<span class="critic-comment"> ~&gt; </span>b</del><ins>c</ins></p>
+```

@@ -323,7 +323,16 @@ CarveCore {
   // en dash below. `edSub` is deliberately NOT widened: a half-empty
   // substitution is a real edit (`{~a~>~}` deletes `a`).
   edDel      = "{-" (~"-}" edScan)+ "-}" attrs?
-  edSub      = "{~" (~"~>" ~"~}" edChar)* "~>" (~"~}" edChar)* "~}" attrs?
+  // The `~>` and `~}` a substitution needs are TOP-LEVEL: the search skips
+  // verbatim content, so a pair whose only `~>` sits in code is a forced
+  // strikethrough (PART 9 SS22, carve#2083). An unclosed run ends at `~}`.
+  edSub      = "{~" edSubItem<"~>">* "~>" edSubItem<"~}">* "~}" attrs?
+  edSubItem<stop> = ~stop ~"~}" edSubAtom
+  // A `$` or `!` prefix needs no alternative of its own: the backtick run
+  // behind it is what carries the arrow, and this rule skips that run.
+  edSubAtom  = escape | edSubCode | bracedComment | edCommentBody | edChar
+  edSubCode  = code3 | code2 | code1 | edSubCodeU
+  edSubCodeU = "\u0060" "\u0060"* (~"~}" any)*
   edComment  = edCommentBody attrs?
   // The body, without the attribute block - see `litInlineBody`.
   edCommentBody = "{#" (~"#}" edChar)+ "#}"

@@ -303,9 +303,8 @@ comment_content = (* any text until the matching `#}`, preserved literally;
 
    `substitution` is NOT widened: a half-empty substitution is a real edit --
    `{~a~>~}` deletes and `{~~>b~}` inserts -- so the fully empty `{~~>~}` still
-   renders two empty elements. `substitution` is an OPEN divergence: its
-   production says `inline_content`, and all three implementations render
-   `{~*b*~>*e*~}` with the asterisks literal. *)
+   renders two empty elements. `substitution` takes `inline_content` on both
+   sides, so `{~*b*~>*e*~}` emphasizes both (carve#2083). *)
 (* ADDITION AND DELETION ATTRIBUTES BIND TO THEIR ELEMENT -- NORMATIVE [CARVE-P3-017]: an addition / deletion is an ordinary inline node,
    so a trailing `{...}` attribute block attaches to its `<ins>` / `<del>`,
    exactly like a span, code span, link, or emphasis: `{+a+}{.a}` ->
