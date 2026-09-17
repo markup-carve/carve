@@ -1,0 +1,1 @@
+{"type":"document","children":[{"type":"paragraph","children":[{"type":"text","value":"a"},{"type":"emphasis","children":[{"type":"text","value":"b"},{"type":"strong","children":[{"type":"text","value":"c"},{"type":"emphasis","children":[{"type":"text","value":"d"}]}]}]},{"type":"text","value":"e"}]}],"srcByteLength":0}

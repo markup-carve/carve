@@ -1483,6 +1483,10 @@ The shared set is deliberately small and each directory has one subject:
 | `whitespace-only-block` | a `<p>` holding one no-break space, kept as itself, beside the ASCII-space and tab spellings that carry nothing and are dropped with a row |
 | `table-degraded` | a `<thead>` between two `<tbody>` runs, which the row-grouping field cannot describe: the head is a prefix of the rows and the foot a suffix |
 | `task-state-is-consumed` | a `data-task-state` read as the item's state beside a ticked box that needs none, and a value outside the enumeration that stays the author's attribute |
+| `same-kind-strong-nesting` | a strong directly inside a strong where both levels need braces, whose inner level is unwrapped with a row (PART 11 §1c) |
+| `same-kind-superscript-nesting` | the same nesting on a braced-only kind, where the unwrap loses the second raise and the row says so |
+| `same-kind-indirect-nesting` | an emphasis inside a strong inside an emphasis, unwrapped the same way because the ceiling holds at any depth |
+| `table-cell-hard-break` | a `<br>` in a cell written as one space between words and as nothing at the cell's end, one row per break (PART 11 §1b) |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one
