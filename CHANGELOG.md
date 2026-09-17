@@ -7,62 +7,98 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-09-17
+
+### Changed (breaking for AST consumers)
+
+- **A `substitution` node carries its halves as `old` and `new` arrays of
+  inline nodes**, replacing the `oldText` and `newText` strings (carve#2094).
+  An empty half is `[]`, and both keys are required.
+
 ### Added
 
 - **File inclusion and transclusion, PART 9 §19** (carve#291). The reserved
-  `{{ }}` directive pulls in another document, with a resolver contract, a
-  cycle guard, a containment root, work bounds and dependency reporting (I11).
-- A standard host-resolver contract can map parsed mentions and tags to link
-  destinations while preserving their labels, attributes, inert fallback, and
-  URL-scheme checks. Existing URL templates remain supported (carve#2047).
-- A version 2 importer-fidelity schema and replayable fixture manifest cover
-  HTML, Markdown, Djot, BBCode, Pandoc JSON, and PDF extraction JSON as a shared
-  release contract for importers (carve#1985).
+  `{{ }}` directive, with a resolver contract, a cycle guard, a containment
+  root, work bounds and dependency reporting (I11).
+- **A host-resolver contract for mentions and tags** (carve#2047), keeping
+  labels, attributes, the inert fallback and URL-scheme checks.
 - **An include-security conformance suite** (carve#1990, carve#1994,
-  carve#2003, carve#2021, carve#2022, carve#2060). Published vectors and a
-  schema an implementer runs against the containment, refusal, resolver-bound
-  and dependency-id rules.
-- **A Carve document on the clipboard is `text/x-carve`** (carve#2050).
-  `CARVE-P9-071`; a host whose clipboard API needs the prefix writes
-  `web text/x-carve`.
+  carve#2003, carve#2021, carve#2022, carve#2060).
+- **A version 2 importer-fidelity schema and fixture manifest** across HTML,
+  Markdown, Djot, BBCode, Pandoc JSON and PDF extraction JSON (carve#1985).
+- **A Carve document on the clipboard is `text/x-carve`** (carve#2050),
+  `CARVE-P9-071`.
 
 ### Changed
 
+#### Inline parsing
+
 - **A bare delimiter never pairs across an opaque construct** (carve#2027,
-  carve#2031). E2a names link destinations and autolinks beside code spans and
-  braced inlines, so `/` no longer closes inside a URL.
-- **The `_` escape condition reads the block's inline content, not one line**
-  (carve#2042, carve#2046). M1b's pair test spans line breaks; adjacency stays
-  per line.
-- **`#` is escaped by position, and a heading line's trailing hash run with it**
-  (carve#2048, carve#2052). M1f, `CARVE-P11-044`.
-- **The round-trip comparison normalizes a closed, enumerated list**
-  (carve#2042). §10k, `CARVE-P11-043`. Everything off the list is byte-exact.
-- **An unclosed code run ends at an enclosing forced span's closer**
-  (carve#2051), rather than running to the end of the block.
-- **A merged include run spans its host pieces** (carve#2044). PART 12 §1a; a
-  run assembled from one file keeps the old rule.
-- **An unresolved include target's id names where the file would be**
-  (carve#2054, carve#2060). A path escaping the containment root keeps the
-  directive's spelling instead, as do a target the resolver refuses although
-  it exists and a request carrying a URI scheme. A target reported while
-  missing and again once it exists carries the same id in both reports, so a
-  watching host sees one dependency.
-- **The include directive's closer is the first `}}` outside a quoted run**
-  (carve#2000).
-- **The resolver-call bound is normative in PART 9 §19** (carve#1995), and the
-  five include obligations are stated in the spec source rather than only on
-  the page (carve#2019).
-- **A containment root that is not absolute is refused** (carve#2004), and a
-  refusal does not reveal that an out-of-root target exists (carve#1999).
+  carve#2031). E2a adds link destinations and autolinks.
+- **E3 applies to forced openers** (carve#2078). A `{X` of a kind already open
+  is content, and a bare same-kind delimiter inside a forced span is content.
+- **A braced inline starts its own scope for E3 and E2** (carve#2091), so a
+  same-kind span nests inside a braced span of another kind.
+- **A lone delimiter of a forced span's own kind is content** (carve#2096), so
+  `{==h==}` opens.
+- **An unclosed code run ends at an enclosing forced or editorial closer**
+  (carve#2051), **its closer is searched for in the rest of the block**
+  (carve#2079), and **a trailing line break goes with the strip except in a
+  line block** (carve#2089).
+- **Substitution content is inline, and only a top-level `~>` splits it**
+  (carve#2083). A pair with no top-level arrow is a forced strikethrough.
+- **A link destination takes any character except `(`, `)` and whitespace**
+  (carve#2069); `[x]()` is not a link.
+- **A backtick an earlier construct used up does not stop a later link**
+  (carve#2074).
+
+#### Writing (PART 11)
+
+- **A hard break in a single-line slot is flattened to one space** (carve#2067),
+  §1b.
+- **The §1c ceiling covers a same-kind inline wrapper at any depth**
+  (carve#2066), unless a braced span of another kind sits between the two
+  levels (carve#2105).
+- **The round-trip comparison normalizes a closed list** (carve#2042), §10k,
+  `CARVE-P11-043`. N3 adds an empty delimited comment, which separates two
+  adjacent code spans; where an escape works, the escape is written
+  (carve#2086, carve#2068).
+- **The `_` escape condition reads the block's inline content** (carve#2042,
+  carve#2046), M1b.
+- **`#` is escaped by position, with a heading line's trailing hash run**
+  (carve#2048, carve#2052), M1f, `CARVE-P11-044`.
+- **A text-final extension name before a bracket node is escaped as `\:`**
+  (carve#2068).
 - **A block that opens a tight item is written on the marker line**
   (carve#2034).
+
+#### Includes and security
+
+- **A merged include run spans its host pieces** (carve#2044), PART 12 §1a.
+- **An unresolved include target's id names where the file would be**
+  (carve#2054, carve#2060). A path escaping the root, a target the resolver
+  refuses and a URI request keep the directive's spelling.
+- **The directive's closer is the first `}}` outside a quoted run**
+  (carve#2000).
+- **The resolver-call bound and the five include obligations are normative**
+  (carve#1995, carve#2019).
+- **A containment root that is not absolute is refused** (carve#2004), and a
+  refusal does not reveal that an out-of-root target exists (carve#1999).
+
+#### Layout and importers
+
 - **A trailing line after a consumed definition is placed by column-reach**
   (carve#1946).
 - **A nested note's floor is its own marker** (carve#1971).
 - **A column-0 line after a description-hosted note is a top-level sibling**
   (carve#1974).
 - **Markdown raw HTML is imported rather than dropped** (carve#2002).
+
+### Fixed
+
+- **The executable grammar now agrees with the text** on a math or literal
+  run inside a forced span (carve#2077) and on an attribute block that
+  attaches to nothing (carve#2084).
 
 ## [0.1.5] - 2026-09-07
 
@@ -1357,6 +1393,7 @@ advance to `0.1.0` together as the first lockstep minor release.
   content strip bidi-override/isolate controls (removed, not entity-escaped, to
   prevent round-trip reintroduction)
 
-[Unreleased]: https://github.com/markup-carve/carve/compare/0.1.5...HEAD
+[Unreleased]: https://github.com/markup-carve/carve/compare/0.1.6...HEAD
+[0.1.6]: https://github.com/markup-carve/carve/compare/0.1.5...0.1.6
 [0.1.5]: https://github.com/markup-carve/carve/compare/0.1.4...0.1.5
 [0.1.0]: https://github.com/markup-carve/carve/releases/tag/0.1.0
