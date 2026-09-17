@@ -1,0 +1,43 @@
+A forced opener of an open kind is literal
+
+```
+a{*{*x*}*}b
+.
+<p>a<strong>{*x</strong>*}b</p>
+```
+
+```
+*a {*b*} c*
+.
+<p><strong>a {*b</strong>} c*</p>
+```
+
+```
+{*a *b* c*}
+.
+<p><strong>a *b* c</strong></p>
+```
+
+```
+{/a *b {/c/}*/}
+.
+<p><em>a *b {/c</em>*/}</p>
+```
+
+```
+{*a {/b {*c*} d/} e*}
+.
+<p><strong>a <em>b <strong>c</strong> d</em> e</strong></p>
+```
+
+```
+{*a {/b *} d/} e*}
+.
+<p><strong>a <em>b *} d</em> e</strong></p>
+```
+
+```
+*a {/b *c* d/} e*
+.
+<p><strong>a <em>b <strong>c</strong> d</em> e</strong></p>
+```

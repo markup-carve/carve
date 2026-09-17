@@ -299,9 +299,14 @@ CarveCore {
   // not a superscript. An empty pair is not the construct, so its characters
   // are text (carve#1447).
   forced<d>  = "{" d fInner<d>+ d "}" attrs?
-  fInner<d>  = ~(d "}") (fCodeU<d> | fPrefixU<d> | rich | span | word | spComment | bracedComment | inlineSpace | litDelim
+  // A forced opener of the SAME kind does not open while this span is open
+  // (PART 9 SS9 E3), so it is refused here and its characters fall through to
+  // `other` and `litDelim`. `editorial` and `bracedDash` are tried ahead of the
+  // guard: they share the `{~` spelling and are not forced spans.
+  fInner<d>  = ~(d "}") (fCodeU<d> | fPrefixU<d> | editorial | bracedDash | ~forced<d> rich
+             | span | word | spComment | bracedComment | inlineSpace | litDelim
              | bang | dollar | ellipsis | dashRun | dot | dash | plus | pct
-             | lt | gt | dquote | squote | hash | nl | other | "{" | "}")
+             | lt | gt | dquote | squote | hash | nl | other | "{" | "}" | anyChar)
   // An unclosed run inside a forced span ends at the span's `X}` (PART 3
   // UNCLOSED RUN, PART 9 SS22).
   fCodeU<d>  = ~(code3 | code2 | code1) "\u0060" "\u0060"* (~(d "}") any)*

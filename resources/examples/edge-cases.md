@@ -35615,3 +35615,97 @@ the destination is part of the `href`.
 ```
 
 :::
+
+## A forced opener of an open kind is literal
+
+PART 9 §9 E3. Forced spans push and pop on the same stack as bare ones, so a
+`{X` whose kind is already open is content, and a bare `X` inside a forced span
+of that kind is content under §22.
+
+::: compare
+
+```carve
+a{*{*x*}*}b
+```
+
+```html
+<p>a<strong>{*x</strong>*}b</p>
+```
+
+:::
+
+::: compare
+
+```carve
+*a {*b*} c*
+```
+
+```html
+<p><strong>a {*b</strong>} c*</p>
+```
+
+:::
+
+::: compare
+
+```carve
+{*a *b* c*}
+```
+
+```html
+<p><strong>a *b* c</strong></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{/a *b {/c/}*/}
+```
+
+```html
+<p><em>a *b {/c</em>*/}</p>
+```
+
+:::
+
+A braced span of another kind starts its own scope, so an opener of the outer
+kind nests inside it, and a closer inside it cannot reach the outer span. The
+bare outer span behaves the same way.
+
+::: compare
+
+```carve
+{*a {/b {*c*} d/} e*}
+```
+
+```html
+<p><strong>a <em>b <strong>c</strong> d</em> e</strong></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{*a {/b *} d/} e*}
+```
+
+```html
+<p><strong>a <em>b *} d</em> e</strong></p>
+```
+
+:::
+
+::: compare
+
+```carve
+*a {/b *c* d/} e*
+```
+
+```html
+<p><strong>a <em>b <strong>c</strong> d</em> e</strong></p>
+```
+
+:::
