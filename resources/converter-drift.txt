@@ -134,10 +134,3 @@
 # stale shape: the run named each of them and failed on nothing else.
 #
 # THIS FILE IS EMPTY OF DECLARATIONS AGAIN, which is the intended end state.
-
-# PART 11 §10k N3, ruled at markup-carve/carve-js#1818: two adjacent code spans
-# are written with an empty delimited comment between them. No engine main
-# writes it yet. Each line goes in the commit that proves the engine fix.
-rust/html-import--adjacent-code-spans  carve#2086 (markup-carve/carve-rs ticket pending)
-js/html-import--adjacent-code-spans  carve#2086 (markup-carve/carve-js#1818)
-php/html-import--adjacent-code-spans  carve#2086 (markup-carve/carve-php ticket pending)
