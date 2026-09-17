@@ -1475,6 +1475,7 @@ The shared set is deliberately small and each directory has one subject:
 | `destination-less-link` | an anchor and an image with no destination the source can carry, which come back as their content rather than as `[t]()` |
 | `marker-shaped-cell` | a table cell whose whole payload is a span marker, escaped so the cell survives |
 | `symbol-sigil-escape` | a symbol sigil in imported text, escaped so it stays the text the HTML held |
+| `extension-sigil-escape` | text ending in `:name` before a span and before a link, whose colon is escaped so the two do not join into an inline extension |
 | `detached-caption-caret` | a paragraph that looks like a caption line under an image, escaped so it stays a paragraph |
 | `note-reference-in-a-span` | a span whose text opens a note-reference label, escaped beside the unlabeled caret that needs no escape |
 | `empty-definition-description` | an empty `<dd>`, dropped with a row that declares it, where the bare colon line would have taken the `<dt>` too |
