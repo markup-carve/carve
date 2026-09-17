@@ -340,39 +340,38 @@ engine lacks it.
 | Feature | Rust | JS | PHP |
 |---------|------|----|-----|
 | `ansi-typography-source` | pass | pass | pass |
-| `bare-url-autolink` | skipped | pass | pass |
-| `citations-author-date` | skipped | pass | pass |
-| `citations-numbered` | skipped | pass | pass |
-| `code-callouts` | skipped | pass | pass |
-| `details` | skipped | pass | pass |
-| `list-table` | skipped | pass | pass |
-| `list-table-columns-1344` | skipped | pass | pass |
-| `list-table-local-headers-1248` | skipped | pass | pass |
+| `bare-url-autolink` | pass | pass | pass |
+| `citations-author-date` | pass | pass | pass |
+| `citations-numbered` | pass | pass | pass |
+| `code-callouts` | pass | pass | pass |
+| `details` | pass | pass | pass |
+| `list-table` | pass | pass | pass |
+| `list-table-columns-1344` | pass | pass | pass |
+| `list-table-local-headers-1248` | pass | pass | pass |
 | `markdown-typography-source` | pass | pass | pass |
 | `plain-typography-source` | pass | pass | pass |
-| `section-wrapper-off` | skipped | pass | pass |
-| `semantic-span` | skipped | pass | pass |
+| `section-wrapper-off` | pass | pass | pass |
+| `semantic-span` | pass | pass | pass |
 | `smart-quotes-locale-de` | pass | pass | pass |
 | `smart-typography-default` | pass | pass | pass |
 | `smart-typography-off` | pass | pass | pass |
 | `social-link-resolvers` | skipped | pass | pass |
 | `social-link-templates` | pass | pass | pass |
-| `source-line-after-generated-id` | skipped | pass | pass |
-| `spoiler` | skipped | pass | pass |
+| `source-line-after-generated-id` | pass | pass | pass |
+| `spoiler` | pass | pass | pass |
 | `symbol-map` | pass | pass | skipped |
-| `tabs` | skipped | pass | pass |
-| `tabs-aria` | skipped | pass | pass |
+| `tabs` | pass | pass | pass |
+| `tabs-aria` | pass | pass | pass |
 
-carve-rs reaches the eight that a command-line switch can turn on, because it is
-driven through its BINARY here; the rest need a renderer or parser option, which
-is per-engine API and has no shared adapter (carve#496). `symbol-map` is the one
-row where carve-php is the engine this tool cannot reach.
+carve-rs reaches every row except host resolver callbacks through its binary.
+The callbacks remain library-only because command-line values cannot carry host
+functions. `symbol-map` is the one row where carve-php is not reached.
 
 | Implementation | Optional pass | Skipped | Mismatches | Errors | Avg CLI ms/file |
 |----------------|---------------|---------|------------|--------|-----------------|
-| Rust | `12 / 12` | `38` | `0` | `0` | `7.94` |
-| JS | `50 / 50` | `0` | `0` | `0` | `100.03` |
-| PHP | `48 / 48` | `2` | `0` | `0` | `67.55` |
+| Rust | `49 / 49` | `1` | `0` | `0` | `4.23` |
+| JS | `50 / 50` | `0` | `0` | `0` | `94.35` |
+| PHP | `49 / 49` | `1` | `0` | `0` | `59.80` |
 
 Optional cross-implementation diffs: `0`
 
@@ -716,11 +715,11 @@ came to say 4 when the corpus held 33.
 Implementation summary
 profile=optional/opt-in corpus=optional corpus_pairs=50 shard=0/1 targets=html,markdown,plain,ansi
 target_note=optional corpus renders each case on the target its manifest entry pins (html unless stated); --targets filters that set
-rust: pass=12/12 mismatch=0 error=0 skipped=38 runs=12 avg_ms=7.94
+rust: pass=49/49 mismatch=0 error=0 skipped=1 runs=49 avg_ms=4.23
   mismatching documents: 0
-js: pass=50/50 mismatch=0 error=0 skipped=0 runs=50 avg_ms=100.03
+js: pass=50/50 mismatch=0 error=0 skipped=0 runs=50 avg_ms=94.35
   mismatching documents: 0
-php: pass=48/48 mismatch=0 error=0 skipped=2 runs=48 avg_ms=67.55
+php: pass=49/49 mismatch=0 error=0 skipped=1 runs=49 avg_ms=59.80
   mismatching documents: 0
 cross_impl_diffs=0
 
@@ -735,52 +734,52 @@ Optional feature coverage
 social-link-templates (html): rust, js, php
 symbol-map (html): rust, js
 smart-quotes-locale-de (html): rust, js, php
-bare-url-autolink (html): js, php
-citations-numbered (html): js, php
-citations-author-date (html): js, php
-citations-numbered (html): js, php
-citations-numbered (html): js, php
-citations-numbered (html): js, php
-code-callouts (html): js, php
-code-callouts (html): js, php
-code-callouts (html): js, php
-citations-numbered (html): js, php
-citations-numbered (html): js, php
-citations-numbered (html): js, php
-citations-numbered (html): js, php
-citations-numbered (html): js, php
-citations-numbered (html): js, php
-citations-numbered (html): js, php
-citations-numbered (html): js, php
-citations-numbered (html): js, php
-citations-numbered (html): js, php
-citations-numbered (html): js, php
-citations-numbered (html): js, php
-details (html): js, php
-list-table (html): js, php
-spoiler (html): js, php
-tabs (html): js, php
+bare-url-autolink (html): rust, js, php
+citations-numbered (html): rust, js, php
+citations-author-date (html): rust, js, php
+citations-numbered (html): rust, js, php
+citations-numbered (html): rust, js, php
+citations-numbered (html): rust, js, php
+code-callouts (html): rust, js, php
+code-callouts (html): rust, js, php
+code-callouts (html): rust, js, php
+citations-numbered (html): rust, js, php
+citations-numbered (html): rust, js, php
+citations-numbered (html): rust, js, php
+citations-numbered (html): rust, js, php
+citations-numbered (html): rust, js, php
+citations-numbered (html): rust, js, php
+citations-numbered (html): rust, js, php
+citations-numbered (html): rust, js, php
+citations-numbered (html): rust, js, php
+citations-numbered (html): rust, js, php
+citations-numbered (html): rust, js, php
+citations-numbered (html): rust, js, php
+details (html): rust, js, php
+list-table (html): rust, js, php
+spoiler (html): rust, js, php
+tabs (html): rust, js, php
 smart-typography-off (html): rust, js, php
 symbol-map (markdown): rust, js
 markdown-typography-source (markdown): rust, js, php
-section-wrapper-off (html): js, php
-source-line-after-generated-id (html): js, php
+section-wrapper-off (html): rust, js, php
+source-line-after-generated-id (html): rust, js, php
 plain-typography-source (plain): rust, js, php
 ansi-typography-source (ansi): rust, js, php
 plain-typography-source (plain): rust, js, php
 markdown-typography-source (markdown): rust, js, php
 ansi-typography-source (ansi): rust, js, php
 smart-typography-default (plain): rust, js, php
-semantic-span (html): js, php
-semantic-span (html): js, php
-list-table (html): js, php
-citations-numbered (html): js, php
-list-table-columns-1344 (html): js, php
-list-table-local-headers-1248 (html): js, php
-tabs (html): js, php
-tabs-aria (html): js, php
-tabs-aria (html): js, php
-tabs (html): js, php
+semantic-span (html): rust, js, php
+semantic-span (html): rust, js, php
+list-table (html): rust, js, php
+citations-numbered (html): rust, js, php
+list-table-columns-1344 (html): rust, js, php
+list-table-local-headers-1248 (html): rust, js, php
+tabs (html): rust, js, php
+tabs-aria (html): rust, js, php
+tabs-aria (html): rust, js, php
+tabs (html): rust, js, php
 social-link-resolvers (html): js, php
 
 All optional cases reached at least two engines.
@@ -823,9 +822,9 @@ That distinction still applies to whatever lands next. A missing adapter
 is this repo's backlog; a missing option is the engine's, and the difference
 decides who fixes it - no amount of harness work moves a capability gap.
 
-carve-rs is driven through its binary and exposes no flag for the sections
-switch or the source-line stamp, so `section-wrapper-off` and
-`source-line-after-generated-id` still need a CLI path there (carve#496).
+carve-rs is driven through its binary. Its named-extension, section, source-line,
+tabs-mode, and citation-mode flags now reach every optional corpus configuration
+that does not require a host callback (markup-carve/carve-rs#1755).
 
 ## Converter corpus
 
