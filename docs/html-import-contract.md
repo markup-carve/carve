@@ -1486,7 +1486,7 @@ The shared set is deliberately small and each directory has one subject:
 | `task-state-is-consumed` | a `data-task-state` read as the item's state beside a ticked box that needs none, and a value outside the enumeration that stays the author's attribute |
 | `same-kind-strong-nesting` | a strong directly inside a strong where both levels need braces, whose inner level is unwrapped with a row (PART 11 §1c) |
 | `same-kind-superscript-nesting` | the same nesting on a braced-only kind, where the unwrap loses the second raise and the row says so |
-| `same-kind-indirect-nesting` | an emphasis inside a strong inside an emphasis, unwrapped the same way because the ceiling holds at any depth |
+| `same-kind-indirect-nesting` | an emphasis inside a strong inside an emphasis, kept because the braced strong between them starts its own scope (PART 9 §9 E3, #2091) |
 | `table-cell-hard-break` | a `<br>` in a cell written as one space between words and as nothing at the cell's end, one row per break (PART 11 §1b) |
 | `adjacent-code-spans` | two `<code>` elements with nothing between them, separated by an empty delimited comment so the backtick runs do not merge (PART 11 §10k N3) |
 
