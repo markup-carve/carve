@@ -168,7 +168,7 @@ CarveCore {
              | mathD | mathI | litInline | codeA | nbspEsc | hardBreak | escape | imageRef | image | bracketed
              | autolink | bang | dollar
              | ellipsis | dashRun | dot | dash | plus | pct | lt | gt
-             | dquote | squote | hash | looseAttrs | nl | other | anyChar
+             | dquote | squote | hash | nl | other | anyChar
   // BARE EMPHASIS ($9 delimiter stack): the five bare delimiters / * _ ~ =
   // are NOT resolved by the PEG here. Each bare delimiter that is not glued
   // into a `word` (intraword absorption, below) or consumed by a leaf
@@ -299,12 +299,9 @@ CarveCore {
   // not a superscript. An empty pair is not the construct, so its characters
   // are text (carve#1447).
   forced<d>  = "{" d fInner<d>+ d "}" attrs?
-  // `looseAttrs` is admitted so a nested bare span's trailing `{...}` attribute
-  // block is consumed here (the removed bare-span rules used to grab it via
-  // their `attrs?`); the SS9 stack over these tokens then re-attaches it.
   fInner<d>  = ~(d "}") (fCodeU<d> | fPrefixU<d> | rich | span | word | spComment | bracedComment | inlineSpace | litDelim
-             | looseAttrs | bang | dollar | ellipsis | dashRun | dot | dash | plus | pct
-             | lt | gt | dquote | squote | hash | nl | other)
+             | bang | dollar | ellipsis | dashRun | dot | dash | plus | pct
+             | lt | gt | dquote | squote | hash | nl | other | "{" | "}")
   // An unclosed run inside a forced span ends at the span's `X}` (PART 3
   // UNCLOSED RUN, PART 9 SS22).
   fCodeU<d>  = ~(code3 | code2 | code1) "\u0060" "\u0060"* (~(d "}") any)*
@@ -652,8 +649,10 @@ CarveCore {
   bracedComment = "{%" (~"%}" any)* "%}"
   inlineSpace = " "
 
-  // A bare delimiter that opened nothing is literal text.
-  litDelim   = delim
+  // A bare delimiter that opened nothing is literal text. The attribute block
+  // rides on the delimiter because only a closer can carry one (PART 9 SS9);
+  // anywhere else its braces are text and constructs run through them.
+  litDelim   = delim looseAttrs?
   bang       = "!" ~"["
   dollar     = "$" ~"`" ~"$"
   // single punctuation is plain text; RUNS that smart-typography or the
@@ -706,8 +705,6 @@ CarveCore {
   anyChar    = ~newline any
   // paragraphs are inline-parsed as ONE text with embedded soft breaks
   nl         = "\n"
-  // a valid-shaped attribute block with no abutting carrier is LITERAL
-  // text (PART 9 SS14/SS15); an invalid payload still refuses
   looseAttrs = attrs
   // a `:` opening an inline extension (:name[...]) is Full Carve -> refuse;
   // a plain colon is text. A bare `:name:` symbol shortcode with no map is

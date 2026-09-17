@@ -5,3 +5,15 @@ Leading attribute brace before an inline span stays literal
 .
 <p>{k=v}<ins>i</ins></p>
 ```
+
+```
+x{.k title="`"} y
+
+x{title="[a"}](u)
+
+x{*a { b*} c
+.
+<p>x{.k title=“<code>"} y</code></p>
+<p>x{title=“<a href="u">a”}</a></p>
+<p>x<strong>a { b</strong> c</p>
+```

@@ -907,19 +907,18 @@ function buildToks(children, literalDelim) {
     const alt = c.child(0)
     const name = alt.ctorName
     if (name === 'litDelim') {
-      const ch = alt.sourceString
+      const ch = alt.child(0).sourceString
       // Only / * _ ~ = are stack candidates; ^ and , have no bare span.
       if (STACK_DELIMS.has(ch) && ch !== literalDelim) {
         toks.push({ k: 'd', ch, at: alt.source.startIdx })
-        continue
+      } else {
+        toks.push({ k: 't', h: escapeHtml(ch) })
       }
-      toks.push({ k: 't', h: escapeHtml(ch) })
-      continue
-    }
-    if (name === 'looseAttrs') {
-      // A trailing `{...}` block may attach to a resolved span; if it does
-      // not, it renders as its literal fallback (alt.h()).
-      toks.push({ k: 'attrs', node: alt, at: alt.source.startIdx, h: alt.h() })
+      const loose = alt.child(1).children[0]
+      if (loose) {
+        // Attaches to the span this delimiter closes; otherwise its literal fallback.
+        toks.push({ k: 'attrs', node: loose, at: loose.source.startIdx, h: loose.h() })
+      }
       continue
     }
     toks.push({ k: 't', h: c.h() })

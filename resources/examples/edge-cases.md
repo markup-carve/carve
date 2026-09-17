@@ -5836,6 +5836,26 @@ An unattached `{…}` attribute block that opens a line has nothing to its left 
 
 :::
 
+The braces of an unattached block are text like any other, so a code span or link that starts inside them runs past the `}`, and a lone brace inside a forced span is text too.
+
+::: compare
+
+```carve
+x{.k title="`"} y
+
+x{title="[a"}](u)
+
+x{*a { b*} c
+```
+
+```html
+<p>x{.k title=“<code>"} y</code></p>
+<p>x{title=“<a href="u">a”}</a></p>
+<p>x<strong>a { b</strong> c</p>
+```
+
+:::
+
 ## Attribute block after a mention stays literal
 
 Mentions and tags are inert stable spans that do not take attributes (they share the soft-break / hard-break / plain-text class in this respect). A `{…}` glued after one stays literal text rather than attaching or vanishing.
