@@ -104,33 +104,16 @@ const engines = [
  * from the run docs/implementation-comparison-methodology.md publishes rather than from
  * reading the adapters back to themselves:
  *
- *   rust: pass=5/5 ... skipped=28
- *   symbol-map (html): rust, js
- *
- * carve-rs is driven through its CLI, which has flags for the render OPTIONS
- * and none for the Tier-2 extensions, so every extension-shaped feature is out
- * of its reach from here. carve-php's optional adapters go through
- * `CarveConverter::create()`, which the symbol map is not wired into.
+ * carve-rs is driven through its CLI. Registry-backed extensions and render
+ * options are now reachable there. Host resolver callbacks are not representable
+ * as command-line values, so that pair remains explicit below.
  *
  * The list fails in both directions. A pair that is unreachable and not listed
  * is a silent skip; a pair that is listed and has BECOME reachable is a stale
  * excuse, and the case it covers would go on being reported as unmeasured.
  */
 const DECLARED_UNREACHABLE = {
-  'rust:bare-url-autolink': 'the CLI cannot select one extension by name (markup-carve/carve-rs#1755)',
-  'rust:citations-author-date': 'the CLI cannot select one extension by name (markup-carve/carve-rs#1755)',
-  'rust:citations-numbered': 'the CLI cannot select one extension by name (markup-carve/carve-rs#1755)',
-  'rust:list-table': 'the CLI cannot select one extension by name (markup-carve/carve-rs#1755)',
-  'rust:list-table-columns-1344': 'the CLI cannot select one extension by name (markup-carve/carve-rs#1755)',
-  'rust:list-table-local-headers-1248': 'the CLI cannot select one extension by name (markup-carve/carve-rs#1755)',
-  'rust:semantic-span': 'the CLI cannot select one extension by name (markup-carve/carve-rs#1755)',
   'rust:social-link-resolvers': 'no CLI path for host resolver callbacks',
-  'rust:tabs': 'the CLI cannot select one extension by name (markup-carve/carve-rs#1755)',
-  'rust:tabs-aria': 'the CLI cannot select one extension by name, nor set the tabs mode (markup-carve/carve-rs#1755)',
-  // "`section-wrapper-off` and `source-line-after-generated-id` reach carve-js
-  // and carve-php" - docs/implementation-comparison-methodology.md, on the same run.
-  'rust:section-wrapper-off': 'no CLI flag for the sections opt-out',
-  'rust:source-line-after-generated-id': 'no CLI flag for the sections opt-out or the line stamp',
 }
 const reachable = new Map(engines.map(([e, next]) => [e, reachableBy(e, next)]))
 const unreachableDeclared = new Set(tableKeys('UNREACHABLE_REASONS'))

@@ -281,14 +281,28 @@ const PLAIN_EXTENSION_FEATURES = {
  */
 const UNREACHABLE_REASONS = {}
 
+// Optional features selected through carve-rs's repeatable registry-key flag.
+// Values after the key configure extensions whose optional corpus case does not
+// use the registry default.
+const RUST_EXTENSION_FEATURES = {
+  'bare-url-autolink': ['autolink'],
+  'citations-numbered': ['citations'],
+  'citations-author-date': ['citations', '--citation-mode', 'author-date'],
+  'code-callouts': ['code-callouts'],
+  details: ['details'],
+  'list-table': ['list-table'],
+  'list-table-columns-1344': ['list-table'],
+  'list-table-local-headers-1248': ['list-table'],
+  'semantic-span': ['semantic-span'],
+  spoiler: ['spoiler'],
+  tabs: ['tabs'],
+  'tabs-aria': ['tabs', '--tabs-mode', 'aria'],
+}
+
 // Cases that ask an engine for the author's source runs instead of the glyph.
-// One per target, because a manifest entry names one feature and one target -
+// One per target, because a manifest entry names one feature and one target,
 // and because an engine carrying the mode on one target and dropping it on
 // another is precisely the state carve#560 recorded.
-// Features the rust CLI reaches with `--extensions`, its one all-or-nothing
-// switch for the bundled interactive set.
-const BUNDLED_EXTENSION_FEATURES = new Set(['code-callouts', 'details', 'spoiler'])
-
 const SOURCE_TYPOGRAPHY_FEATURES = new Set([
   'smart-typography-off',
   'markdown-typography-source',
@@ -349,12 +363,16 @@ const impls = [
       if (feature === 'smart-quotes-locale-de') {
         return [...rustBaseCommand, '--quote-locale', 'de', ...flags]
       }
-      // `--extensions` turns on the bundled interactive set as a whole, which
-      // is what these three cases pin. It cannot select one by name, so the
-      // features that need a single extension stay declared unreachable
-      // (markup-carve/carve-rs#1755).
-      if (BUNDLED_EXTENSION_FEATURES.has(feature)) {
-        return [...rustBaseCommand, '--extensions', ...flags]
+      const extension = RUST_EXTENSION_FEATURES[feature]
+      if (extension) {
+        const [key, ...options] = extension
+        return [...rustBaseCommand, '--extension', key, ...options, ...flags]
+      }
+      if (feature === 'section-wrapper-off') {
+        return [...rustBaseCommand, '--no-sections', ...flags]
+      }
+      if (feature === 'source-line-after-generated-id') {
+        return [...rustBaseCommand, '--no-sections', '--source-lines', ...flags]
       }
       // One flag, whichever target the case pins: the mode is a property of
       // the renderer, and every presentation renderer carries it.
