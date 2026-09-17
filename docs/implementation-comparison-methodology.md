@@ -224,9 +224,6 @@ opener inside an open span of its kind (markup-carve/carve-js#1831,
 markup-carve/carve-php#2111, markup-carve/carve-rs#1741), and three do not give
 a braced span of another kind its own scope (markup-carve/carve-js#1841,
 markup-carve/carve-php#2135, markup-carve/carve-rs#1747).
-Section 472 lags all three engines, which read substitution content literally
-and split it at the first `~>` (markup-carve/carve-js#1827,
-markup-carve/carve-php#2104).
 `tests/implementation-comparison-counts.test.mjs` reads this line and counts the
 fixtures each category contributes, so the numbers cannot be asserted, only
 derived, and the line has to be DELETED by whoever next runs

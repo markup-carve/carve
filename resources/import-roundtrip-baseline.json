@@ -1,6 +1,6 @@
 {
   "engine": "@markup-carve/carve",
-  "engineCommit": "6ca06f8d7b4e0a987277e923cf3292d5860cf87a",
+  "engineCommit": "d60649e0539e61918f8664726f42c268439c45ac",
   "corpusDocuments": 1738,
   "htmlImportPopulation": {
     "completed": 1737,

@@ -67,8 +67,6 @@ const OPT_IN_ONLY = {
 const ENGINE_ROLLOUT_PENDING = {
   'figure.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
   'table.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
-  'substitution.old': 'substitution halves as inline arrays (markup-carve/carve-js#1827): the pin still writes oldText',
-  'substitution.new': 'substitution halves as inline arrays (markup-carve/carve-js#1827): the pin still writes newText',
 }
 
 /**
