@@ -2248,12 +2248,17 @@ code_span = backtick_run, code_span_content, [backtick_run], [attributes] ;
 backtick_run = '`'+ ;  (* the OPENER is a MAXIMAL run; the CLOSER is a run of
    the SAME count, also maximal (not part of a longer run) *)
 code_span_content = (* any chars except a closing backtick_run of equal count *) ;
-(* UNCLOSED RUN. An opener with no equal-length closer ahead is NOT literal
-   text: it opens a verbatim span that runs to END_OF_BLOCK (the block's
-   trailing whitespace is stripped; no surrounding single-space strip, which
-   applies only to a closed span). The strip applies wherever the run ends:
+(* UNCLOSED RUN. An opener with no equal-length closer ANYWHERE LATER IN THE
+   BLOCK is NOT literal text: it opens a verbatim span that runs to
+   END_OF_BLOCK (the block's trailing whitespace is stripped; no surrounding
+   single-space strip, which applies only to a closed span). A forced or
+   editorial `X}` bounds where an unclosed run ENDS, never where its closer is
+   searched for, so a closer past that `X}` still closes the span. The strip
+   applies wherever the run ends:
    at END_OF_BLOCK, or at the `X}` closing an enclosing forced span (PART 9
-   §22). Such an unclosed run is OPAQUE -- an
+   §22). Line breaks are stripped with the rest, except in a line block
+   (PART 9 §23), where a line break is content. Such an unclosed run is
+   OPAQUE -- an
    emphasis delimiter or link tail after it is verbatim content, so the
    surrounding construct never closes. Matches djot upstream. *)
 (* A trailing `{…}` on a code span is the generic inline-attribute

@@ -311,18 +311,23 @@ CarveCore {
   // editorial: {+ins+} {-del-} {~old~>new~} {# comment #} (+ the doubled
   // {++...++} / {--...--} forms whose extra marker chars stay literal)
   editorial  = edSub | edIns | edDel | edComment
-  edIns      = "{+" (~"+}" edChar)+ "+}" attrs?
+  edIns      = "{+" (~"+}" edScan)+ "+}" attrs?
   // Every editorial form needs CONTENT (`+`, not `*`), like the forced spans
   // above: an opener meeting its own closer is not the construct (carve#1447).
   // The one string the empty deletion spelled is `{--}`, and that is the braced
   // en dash below. `edSub` is deliberately NOT widened: a half-empty
   // substitution is a real edit (`{~a~>~}` deletes `a`).
-  edDel      = "{-" (~"-}" edChar)+ "-}" attrs?
+  edDel      = "{-" (~"-}" edScan)+ "-}" attrs?
   edSub      = "{~" (~"~>" ~"~}" edChar)* "~>" (~"~}" edChar)* "~}" attrs?
   edComment  = edCommentBody attrs?
   // The body, without the attribute block - see `litInlineBody`.
   edCommentBody = "{#" (~"#}" edChar)+ "#}"
   edChar     = any
+  // A closed code span is skipped whole while scanning for the closer, so a
+  // run whose closer sits later in the block stays one span (PART 3 UNCLOSED
+  // RUN). A run with no closer is consumed as itself and ends at the closer.
+  edScan     = escape | code3 | code2 | code1 | backtickRun | any
+  backtickRun = "\u0060"+
 
   // raw inline passthrough: a code span whose trailing block is EXACTLY
   // {=format} (PART 9 SS20)
