@@ -35727,6 +35727,29 @@ bare outer span behaves the same way.
 
 :::
 
+A lone delimiter of the span's own kind is content, whether it touches the opener or stands apart from it, so the pair opens either way.
+
+::: compare
+
+```carve
+{==h==}
+
+{//x//}
+
+{= =h= =}
+
+{/ /x/ /}
+```
+
+```html
+<p><mark>=h=</mark></p>
+<p><em>/x/</em></p>
+<p><mark> =h= </mark></p>
+<p><em> /x/ </em></p>
+```
+
+:::
+
 ## Substitution content is inline, and only a top-level arrow splits it
 
 A `{~ … ~}` pair is a substitution when it holds a top-level `~>`. The search

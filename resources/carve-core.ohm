@@ -302,8 +302,10 @@ CarveCore {
   // A forced opener of the SAME kind does not open while this span is open
   // (PART 9 SS9 E3), so it is refused here and its characters fall through to
   // `other` and `litDelim`. `editorial` and `bracedDash` are tried ahead of the
-  // guard: they share the `{~` spelling and are not forced spans.
-  fInner<d>  = ~(d "}") (fCodeU<d> | fPrefixU<d> | editorial | bracedDash | ~forced<d> rich
+  // guard: they share the `{~` spelling and are not forced spans. A RUN of the
+  // span's own delimiter is refused with it, so its characters are taken one
+  // at a time and the closer is still there to be matched (carve#2096).
+  fInner<d>  = ~(d "}") (fCodeU<d> | fPrefixU<d> | editorial | bracedDash | ~forced<d> ~dRun<d> rich
              | span | word | spComment | bracedComment | inlineSpace | litDelim
              | bang | dollar | ellipsis | dashRun | dot | dash | plus | pct
              | lt | gt | dquote | squote | hash | nl | other | "{" | "}" | anyChar)
