@@ -84,6 +84,11 @@ const visibleText = (html) =>
 // where the literal `{*` and the emphasis around it come back as a different
 // pairing once the writer escapes them.
 
+// Section 472 adds two documents. Both import, are fixed points and keep their
+// text, so those three counts move with them. Neither round trip does: the
+// pinned build reads substitution content literally, and the importer writes
+// the two halves as `{- -}` and `{+ +}` with the delimiters escaped.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {

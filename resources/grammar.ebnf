@@ -3007,9 +3007,8 @@ comment_content = (* any text until the matching `#}`, preserved literally;
 
    `substitution` is NOT widened: a half-empty substitution is a real edit --
    `{~a~>~}` deletes and `{~~>b~}` inserts -- so the fully empty `{~~>~}` still
-   renders two empty elements. `substitution` is an OPEN divergence: its
-   production says `inline_content`, and all three implementations render
-   `{~*b*~>*e*~}` with the asterisks literal. *)
+   renders two empty elements. `substitution` takes `inline_content` on both
+   sides, so `{~*b*~>*e*~}` emphasizes both (carve#2083). *)
 (* ADDITION AND DELETION ATTRIBUTES BIND TO THEIR ELEMENT -- NORMATIVE [CARVE-P3-017]: an addition / deletion is an ordinary inline node,
    so a trailing `{...}` attribute block attaches to its `<ins>` / `<del>`,
    exactly like a span, code span, link, or emphasis: `{+a+}{.a}` ->
@@ -6023,7 +6022,10 @@ EOF = (* end of file *) ;
       - `{~ … ~}` DISAMBIGUATION. The brace pair is editorial SUBSTITUTION when
         it contains a top-level `~>` ({~old~>new~} -> <del>old</del><ins>new
         </ins>), and forced STRIKETHROUGH otherwise ({~old~} ->
-        <s>old</s>). The `~>` test is the discriminator.
+        <s>old</s>). The `~>` test is the discriminator. TOP-LEVEL means the
+        search skips verbatim content -- code, math, an inline literal, a
+        comment -- and an escaped `\~>`, so {~`a~>b~} is <s><code>a~>b</code>
+        </s>.
       - `{= … =}` is forced highlight (<mark>), distinct from the raw-inline
         `{=format}` attribute on a code span (`` `x`{=html} ``), which has no
         trailing `=` before the `}`.

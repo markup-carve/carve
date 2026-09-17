@@ -68,7 +68,10 @@
       - `{~ … ~}` DISAMBIGUATION. The brace pair is editorial SUBSTITUTION when
         it contains a top-level `~>` ({~old~>new~} -> <del>old</del><ins>new
         </ins>), and forced STRIKETHROUGH otherwise ({~old~} ->
-        <s>old</s>). The `~>` test is the discriminator.
+        <s>old</s>). The `~>` test is the discriminator. TOP-LEVEL means the
+        search skips verbatim content -- code, math, an inline literal, a
+        comment -- and an escaped `\~>`, so {~`a~>b~} is <s><code>a~>b</code>
+        </s>.
       - `{= … =}` is forced highlight (<mark>), distinct from the raw-inline
         `{=format}` attribute on a code span (`` `x`{=html} ``), which has no
         trailing `=` before the `}`.
