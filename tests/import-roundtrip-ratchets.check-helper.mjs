@@ -72,6 +72,13 @@ const visibleText = (html) =>
 // preserves its text but round-trips through neither format: its straight quotes
 // render as curly ones and come back as those characters.
 
+// 12-inline-code-11 imports, is a fixed point, preserves its text and round-trips
+// through HTML as the pinned build reads it. Markdown does not carry the forced
+// and editorial spans, so it misses there.
+
+// 12-inline-code-12 imports, is a fixed point and preserves its text. It misses
+// both round trips: the importer writes its line block back as `::: line-block`.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {

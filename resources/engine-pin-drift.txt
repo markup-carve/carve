@@ -24,3 +24,5 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+12-inline-code-11  the pinned build bounds a code span at the enclosing forced or editorial closer; markup-carve/carve-js#1828
+12-inline-code-12  the pinned build drops a line break at a forced closer inside a line block; markup-carve/carve-js#1842

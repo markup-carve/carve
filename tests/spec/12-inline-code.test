@@ -87,3 +87,34 @@ x{_!`d`_} here
 <p>x<em>c</em> here</p>
 <p>x<u>d</u> here</p>
 ```
+
+```
+x{*`a*} and `b`
+
+{*x`a*}`*}
+
+x{+`a+} and `b`
+
+{+x`a+}`+}
+.
+<p>x{*<code>a*} and </code>b<code></code></p>
+<p><strong>x<code>a*}</code></strong></p>
+<p>x{+<code>a+} and </code>b<code></code></p>
+<p><ins>x<code>a+}</code></ins></p>
+```
+
+```
+x{*`a
+*}
+
+::: |
+x{*`a
+*}
+:::
+.
+<p>x<strong><code>a</code></strong></p>
+<div class="line-block">
+  <p>x<strong><code>a
+</code></strong></p>
+</div>
+```

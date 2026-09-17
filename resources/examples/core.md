@@ -2019,6 +2019,53 @@ x{_!`d`_} here
 
 :::
 
+A run whose equal-length closer sits later in the block is a closed code span, even where a forced or editorial closer falls inside it.
+
+::: compare
+
+```carve
+x{*`a*} and `b`
+
+{*x`a*}`*}
+
+x{+`a+} and `b`
+
+{+x`a+}`+}
+```
+
+```html
+<p>x{*<code>a*} and </code>b<code></code></p>
+<p><strong>x<code>a*}</code></strong></p>
+<p>x{+<code>a+} and </code>b<code></code></p>
+<p><ins>x<code>a+}</code></ins></p>
+```
+
+:::
+
+The strip at a forced closer takes a trailing line break too, as at the end of a paragraph. In a line block the break is content and stays.
+
+:::: compare
+
+```carve
+x{*`a
+*}
+
+::: |
+x{*`a
+*}
+:::
+```
+
+```html
+<p>x<strong><code>a</code></strong></p>
+<div class="line-block">
+  <p>x<strong><code>a
+</code></strong></p>
+</div>
+```
+
+::::
+
 ## Attributes
 
 ::: compare
