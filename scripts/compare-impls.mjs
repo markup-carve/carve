@@ -285,6 +285,10 @@ const UNREACHABLE_REASONS = {}
 // One per target, because a manifest entry names one feature and one target -
 // and because an engine carrying the mode on one target and dropping it on
 // another is precisely the state carve#560 recorded.
+// Features the rust CLI reaches with `--extensions`, its one all-or-nothing
+// switch for the bundled interactive set.
+const BUNDLED_EXTENSION_FEATURES = new Set(['code-callouts', 'details', 'spoiler'])
+
 const SOURCE_TYPOGRAPHY_FEATURES = new Set([
   'smart-typography-off',
   'markdown-typography-source',
@@ -344,6 +348,13 @@ const impls = [
       }
       if (feature === 'smart-quotes-locale-de') {
         return [...rustBaseCommand, '--quote-locale', 'de', ...flags]
+      }
+      // `--extensions` turns on the bundled interactive set as a whole, which
+      // is what these three cases pin. It cannot select one by name, so the
+      // features that need a single extension stay declared unreachable
+      // (markup-carve/carve-rs#1755).
+      if (BUNDLED_EXTENSION_FEATURES.has(feature)) {
+        return [...rustBaseCommand, '--extensions', ...flags]
       }
       // One flag, whichever target the case pins: the mode is a property of
       // the renderer, and every presentation renderer carries it.
@@ -575,6 +586,25 @@ const impls = [
             require 'vendor/autoload.php';
             $renderer = new MarkupCarve\\Carve\\Renderer\\HtmlRenderer();
             $renderer->setSmartTypography(MarkupCarve\\Carve\\Renderer\\SmartTypographyMode::Source);
+            $converter = MarkupCarve\\Carve\\CarveConverter::create(renderer: $renderer);
+            echo $converter->convert(file_get_contents($argv[1]));
+          `,
+        ]
+      }
+      // The map is a constructor argument on the HTML renderer, and
+      // CarveConverter::create() takes a renderer, so the same shape as the two
+      // adapters below reaches it. The MARKDOWN renderer takes no such
+      // argument, so the markdown case on this feature still has no php
+      // adapter (markup-carve/carve-php#2151).
+      if (feature === 'symbol-map') {
+        return [
+          'php',
+          '-r',
+          `
+            require 'vendor/autoload.php';
+            $renderer = new MarkupCarve\\Carve\\Renderer\\HtmlRenderer(symbols: [
+              'rocket' => '🚀', 'tada' => '🎉', '+1' => '👍', 'UPPER' => '⬆️',
+            ]);
             $converter = MarkupCarve\\Carve\\CarveConverter::create(renderer: $renderer);
             echo $converter->convert(file_get_contents($argv[1]));
           `,
