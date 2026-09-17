@@ -399,6 +399,11 @@
       N2 A nested emphasis of DIFFERENT strengths whose child spans the whole
          parent may commute, so `<strong><em>x</em></strong>` and
          `<em><strong>x</strong></em>` are one document.
+      N3 An EMPTY delimited comment compares equal to nothing, so a producer
+         may separate two constructs that would otherwise merge with an empty
+         `{% ... %}`, which is how two adjacent code spans are kept apart.
+         Where an escape separates them, the escape is written instead: it is
+         what §2 already emits and it leaves no node (carve#2068).
 
       Everything else is byte-exact. EQUAL strengths are not on the list:
       `<em><em>x</em></em>` against `<strong>x</strong>` is an italic turned

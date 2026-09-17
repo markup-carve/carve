@@ -1488,6 +1488,7 @@ The shared set is deliberately small and each directory has one subject:
 | `same-kind-superscript-nesting` | the same nesting on a braced-only kind, where the unwrap loses the second raise and the row says so |
 | `same-kind-indirect-nesting` | an emphasis inside a strong inside an emphasis, unwrapped the same way because the ceiling holds at any depth |
 | `table-cell-hard-break` | a `<br>` in a cell written as one space between words and as nothing at the cell's end, one row per break (PART 11 §1b) |
+| `adjacent-code-spans` | two `<code>` elements with nothing between them, separated by an empty delimited comment so the backtick runs do not merge (PART 11 §10k N3) |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one
