@@ -97,6 +97,9 @@ const visibleText = (html) =>
 // 152-...-3 imports, is a fixed point and keeps its text. Neither round trip
 // moves: its straight quotes render curly and come back as those characters.
 
+// 471-...-8 imports, is a fixed point, keeps its text and round-trips through
+// HTML. Markdown has no forced span, so it misses there.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {
