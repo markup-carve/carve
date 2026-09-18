@@ -173,6 +173,7 @@ out: examples/core.md
   47-numbered-cross-references-5
   47-numbered-cross-references-8
   47-numbered-cross-references-9
+  47-numbered-cross-references-11
 
 [extensions] Examples: Extensions
 > Features that ship off and must be switched on, covering both corpus-pinned Tier-2 behavior and snapshot-verified Tier-3 extensions.
@@ -712,6 +713,7 @@ index: examples/edge-cases/index.md
   02-headings-6
   47-numbered-cross-references-6
   47-numbered-cross-references-7
+  47-numbered-cross-references-10
   15-heading-ids-4
   15-heading-ids-5
   15-heading-ids-6

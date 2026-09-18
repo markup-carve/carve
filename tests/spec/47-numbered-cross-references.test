@@ -131,3 +131,23 @@ See </#eq-emc>.
 </figure>
 <p>See <a href="#eq-emc">Equation 1</a>.</p>
 ```
+
+```
+![a](a.jpg)
+^ a *# x* b
+.
+<figure>
+  <img src="a.jpg" alt="a">
+  <figcaption>a <strong># x</strong> b</figcaption>
+</figure>
+```
+
+```
+![a](a.jpg)
+^ # x
+.
+<figure>
+  <img src="a.jpg" alt="a">
+  <figcaption>1 x</figcaption>
+</figure>
+```

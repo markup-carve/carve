@@ -985,7 +985,11 @@ function buildToks(children, literalDelim) {
 // attach to. renderInlineInner reads this after a pass and re-runs the text.
 let unattachedAttrs = []
 
-function resolveEmphasis(toks, src, literalDelim) {
+// E1-E5 over a token stream: which candidates pair, as `open index -> close
+// index`. Split out because the caption `#` placeholder asks the same question
+// the renderer does -- which offsets sit inside a span -- over a stream that
+// carries positions instead of HTML.
+function pairDelims(toks, src, literalDelim) {
   // E1 CLASSIFY: evaluate bare_opener(d) / bare_closer(d) at each candidate.
   for (const t of toks) classify(t, src)
   // One pass with a delimiter stack. `openers` holds indices (into toks) of
@@ -1034,6 +1038,11 @@ function resolveEmphasis(toks, src, literalDelim) {
     }
     // E1 / E5 literal: candidate left unpaired (rendered as its literal char).
   }
+  return openMap
+}
+
+function resolveEmphasis(toks, src, literalDelim) {
+  const openMap = pairDelims(toks, src, literalDelim)
   // Build the span tree by walking the paired ranges (properly nested).
   const consumed = new Set() // attrs tokens attached to a span
   const renderRange = (lo, hi) => {
@@ -1420,6 +1429,44 @@ function renderInlineInner(text) {
     source = source.slice(0, first) + '\\' + source.slice(first)
   }
 }
+
+/*
+ * The source offset of a caption's `#` number placeholder, or -1 for none.
+ *
+ * PART 9 SS4c puts the placeholder at the FIRST bare `#` in the caption's
+ * TOP-LEVEL text: `#word` is a tag and `\#` an escape, so neither reaches the
+ * `hash` token, and a `#` inside inline markup is literal. The scan therefore
+ * walks the same token stream and SS9 pairing the renderer walks, over a stream
+ * that carries source offsets instead of HTML, and steps over every paired
+ * span. Every leaf -- a code span, a link, a forced span -- is one token here,
+ * so a `#` it encloses is never seen.
+ */
+export function captionPlaceholder(text) {
+  if (bracketDepthExceeds(text, MAX_NESTING_DEPTH)) return -1
+  const m = g.match(text, 'inlines')
+  if (m.failed()) return -1
+  return capSem(m).capIdx()
+}
+
+const capSem = g.createSemantics().addOperation('capIdx', {
+  inlines(items) {
+    const toks = items.children.map((c) => {
+      const alt = c.child(0)
+      const at = alt.source.startIdx
+      const ch = alt.ctorName === 'litDelim' ? alt.child(0).sourceString : ''
+      return STACK_DELIMS.has(ch) ? { k: 'd', ch, at } : { k: alt.ctorName, at }
+    })
+    const openMap = pairDelims(toks, this.source.sourceString)
+    for (let i = 0; i < toks.length; i++) {
+      if (openMap.has(i)) {
+        i = openMap.get(i)
+        continue
+      }
+      if (toks[i].k === 'hash') return toks[i].at
+    }
+    return -1
+  },
+})
 
 // ---------------------------------------------------------------------------
 // Heading slugs (grammar.ebnf PART 2 HEADING IDENTIFIERS, executable subset)

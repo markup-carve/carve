@@ -769,6 +769,44 @@ See </#eq-emc>.
 
 :::
 
+A `#` inside inline markup is literal. Write the markup around the label and
+leave the placeholder outside it.
+
+::: compare
+
+```carve
+![a](a.jpg)
+^ a *# x* b
+```
+
+```html
+<figure>
+  <img src="a.jpg" alt="a">
+  <figcaption>a <strong># x</strong> b</figcaption>
+</figure>
+```
+
+:::
+
+No label word is required before the placeholder. A caption that opens on the
+bare `#` numbers under the empty label.
+
+::: compare
+
+```carve
+![a](a.jpg)
+^ # x
+```
+
+```html
+<figure>
+  <img src="a.jpg" alt="a">
+  <figcaption>1 x</figcaption>
+</figure>
+```
+
+:::
+
 ## Diagrams and charts
 
 `FencedRender` claims a fenced code block by its language word and emits a single

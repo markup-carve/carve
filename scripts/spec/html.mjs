@@ -33,7 +33,7 @@ const LABELS = {
   admonitionExample: 'Example',
   admonitionQuote: 'Quote',
 }
-import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, deTypography, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, FOOTNOTE_FRAMES } from './render.mjs'
+import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, captionPlaceholder, deTypography, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, FOOTNOTE_FRAMES } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -886,8 +886,10 @@ function renderItem(item, list, depth, ctx) {
 }
 
 // PART 9R R5: the FIRST bare `#` in a caption's top-level text is a number
-// placeholder; each label word draws from its own sequence. An id on the
-// captioned block registers the "Label N" text for crossrefs (R4).
+// placeholder; the text before it is the LABEL, and each label draws from its
+// own sequence. An id on the captioned block registers the "Label N" text for
+// crossrefs (R4). No label word is required -- `^ # x` numbers under the empty
+// label (carve#2112).
 //
 // PART 9 SS4c: a PANEL of a composite figure is not a sequence unit, so a
 // caption rendered under `ctx.inPanel` keeps its `#` literal and registers
@@ -906,9 +908,10 @@ function panelLetter(k) {
 }
 function numberCaption(text, ctx, id, panelIds) {
   if (ctx.inPanel) return text
-  const m = /^(\S+)([^#]*?)(?<!\\)#(?=[\s:.]|$)/.exec(text)
-  if (!m) return text
-  const label = m[1]
+  const at = captionPlaceholder(text)
+  if (at === -1) return text
+  // PART 7 whitespace, not the host language's Unicode class.
+  const label = text.slice(0, at).replace(/[ \t\n\r]+$/, '')
   const n = (ctx.captionSeq.get(label) ?? 0) + 1
   ctx.captionSeq.set(label, n)
   if (id) ctx.captionIds.set(id.toLowerCase(), `${label} ${n}`)
@@ -917,7 +920,7 @@ function numberCaption(text, ctx, id, panelIds) {
       if (pid) ctx.captionIds.set(pid.toLowerCase(), `${label} ${n}${panelLetter(k)}`)
     })
   }
-  return text.replace(/(?<!\\)#(?=[\s:.]|$)/, String(n))
+  return text.slice(0, at) + n + text.slice(at + 1)
 }
 
 // --- tables: PART 9 SS5 T5 span walk + serialization -------------------------
