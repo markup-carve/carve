@@ -97,8 +97,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **The executable grammar now agrees with the text** on a math or literal
-  run inside a forced span (carve#2077) and on an attribute block that
-  attaches to nothing (carve#2084).
+  run inside a forced span (carve#2077), on an attribute block that
+  attaches to nothing (carve#2084), and on a caption's `#` number placeholder,
+  which is literal inside inline markup and needs no label word before it
+  (carve#2112).
 
 ## [0.1.5] - 2026-09-07
 
