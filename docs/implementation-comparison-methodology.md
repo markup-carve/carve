@@ -129,7 +129,11 @@ and
 and
 `472-substitution-content-is-inline-and-only-a-top-level-arrow-splits-it`
 and
-`152-leading-attribute-brace-before-an-inline-span-stays-literal-3`.
+`152-leading-attribute-brace-before-an-inline-span-stays-literal-3`
+and
+`47-numbered-cross-references-10`
+and
+`47-numbered-cross-references-11`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -217,6 +221,9 @@ Markdown; all three escape the heading's trailing hash run
 `12-inline-code-8` and `-9` lag carve-js and carve-rs, which read a link after an
 earlier construct's backtick as literal text (markup-carve/carve-js#1815,
 markup-carve/carve-rs#1733).
+`47-numbered-cross-references-10` lags carve-php, which numbers a `#` inside
+emphasis (markup-carve/carve-php#2169); `-11` lags no engine, since all three
+already number a caption that opens on the bare `#` (markup-carve/carve#2112).
 Section 471 lags the engines on five of its eight rows, and the eighth lags
 carve-rs alone, which nests a lone delimiter of the span's own kind
 (markup-carve/carve-rs#1741). Two nest a forced
