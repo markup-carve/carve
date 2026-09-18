@@ -100,6 +100,11 @@ const visibleText = (html) =>
 // 471-...-8 imports, is a fixed point, keeps its text and round-trips through
 // HTML. Markdown has no forced span, so it misses there.
 
+// Section 47 adds two caption rows (markup-carve/carve#2112). Both import, are
+// fixed points and keep their text. Only `-10` round-trips through HTML: `-11`
+// renders its placeholder as the drawn `1`, which the importer reads back as
+// literal text. Markdown writes no caption line, so neither moves that count.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {
