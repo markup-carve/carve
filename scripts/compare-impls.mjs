@@ -569,6 +569,20 @@ const impls = [
       // HTML against another engine's Markdown.
       // The Markdown renderer takes its own settings, so a markdown-target
       // case gets its own factory rather than the html one.
+      if (target === 'markdown' && feature === 'symbol-map') {
+        return [
+          'php',
+          '-r',
+          `
+            require 'vendor/autoload.php';
+            $renderer = new MarkupCarve\\Carve\\Renderer\\MarkdownRenderer(symbols: [
+              'rocket' => '🚀', 'tada' => '🎉', '+1' => '👍', 'UPPER' => '⬆️',
+            ]);
+            $converter = MarkupCarve\\Carve\\CarveConverter::create(renderer: $renderer);
+            echo $converter->convert(file_get_contents($argv[1]));
+          `,
+        ]
+      }
       if (target === 'markdown' && feature === 'markdown-typography-source') {
         return [
           'php',
@@ -609,11 +623,10 @@ const impls = [
           `,
         ]
       }
-      // The map is a constructor argument on the HTML renderer, and
+      // The map is a constructor argument on both renderers, and
       // CarveConverter::create() takes a renderer, so the same shape as the two
-      // adapters below reaches it. The MARKDOWN renderer takes no such
-      // argument, so the markdown case on this feature still has no php
-      // adapter (markup-carve/carve-php#2151).
+      // adapters below reaches it. The markdown branch above uses the Markdown
+      // renderer's copy of the argument (markup-carve/carve-php#2151).
       if (feature === 'symbol-map') {
         return [
           'php',
