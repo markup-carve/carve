@@ -101,6 +101,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   attaches to nothing (carve#2084), and on a caption's `#` number placeholder,
   which is literal inside inline markup and needs no label word before it
   (carve#2112).
+- **The table-cell hard-break fixture pins a break at the edge of a span
+  inside the cell** (carve#2113), the §1b case the engines diverged on while
+  the fixture reported them conformant.
 
 ## [0.1.5] - 2026-09-07
 
