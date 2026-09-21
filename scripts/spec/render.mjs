@@ -873,7 +873,11 @@ sem.addOperation('parseAttrs', {
 // tokens; this resolver pairs them into spans.
 const STACK_DELIMS = new Set(['/', '*', '_', '~', '='])
 const TAG = { '/': 'em', '*': 'strong', _: 'u', '~': 's', '=': 'mark' }
-const isWordCh = (c) => c !== undefined && /[\p{L}\p{N}]/u.test(c)
+// `alnum` in the guard templates below is the grammar header's `letter |
+// digit` over PART 7's enumerated ASCII alphabet, so `é` is punctuation to
+// these guards: `café*bold*` opens a strong span and `y *x*é` closes one, as
+// all three engines read them (carve#2126).
+const isAlnum = (c) => c !== undefined && /[A-Za-z0-9]/.test(c)
 const isWs = (c) => c === undefined || /\s/.test(c)
 
 // The formal word-boundary guard templates (grammar.ebnf PART 3):
@@ -889,7 +893,7 @@ const isWs = (c) => c === undefined || /\s/.test(c)
 // /a/_b_, snake_/case/, a_/_a_). The other delimiters `* ~ =` DO open after
 // `/` (e.g. `a/~y~` -> `a/<s>y</s>`), so the guard is `/ _`-specific.
 function bareOpener(d, prev, prev2, next) {
-  if (prev !== undefined && (isWordCh(prev) || prev === d)) return false
+  if (prev !== undefined && (isAlnum(prev) || prev === d)) return false
   // Path protection for `/` and `_`: they do NOT open immediately after a `/`
   // or `_` UNLESS that preceding delimiter sits at a clean left boundary (its
   // own preceding char is whitespace/undefined) -- i.e. the preceding delimiter
@@ -907,7 +911,7 @@ function bareOpener(d, prev, prev2, next) {
   return !isWs(next) && next !== d
 }
 function bareCloser(d, prev, next) {
-  return prev !== undefined && !isWs(prev) && (next === undefined || !isWordCh(next))
+  return prev !== undefined && !isWs(prev) && (next === undefined || !isAlnum(next))
 }
 
 // The `forced` node under an `inline` / `fInner` child, through the wrapper
@@ -984,9 +988,51 @@ function buildToks(children, literalDelim) {
       }
       continue
     }
+    // A construct carrying PART 9 §7's left-boundary condition keeps its
+    // offset and its source: the condition is only decidable after the
+    // delimiter stack has run (`applyMarkerBoundary`). Inside a span the
+    // alternative arrives wrapped in `rich`, as `forcedUnder` also unwraps.
+    let marker = alt
+    while (marker.ctorName === 'rich') marker = marker.child(0)
+    if (MARKER_RULES.has(marker.ctorName)) {
+      toks.push({ k: 't', h: c.h(), at: marker.source.startIdx, raw: marker.sourceString })
+      continue
+    }
     toks.push({ k: 't', h: c.h() })
   }
   return toks
+}
+
+// PART 9 §7: a mention, tag or symbol opens at the start of the content or
+// after a character that is NOT a word character. Its word character is
+// `[A-Za-z0-9_]`, which is `alnum` plus the one delimiter that is also a word
+// character, so this is the only guard the `_` reaches.
+const MARKER_RULES = new Set(['mention', 'tag', 'shortcode', 'symbolAttr'])
+const isWordCh = (c) => c !== undefined && /[A-Za-z0-9_]/.test(c)
+
+/*
+ * A bare delimiter that PAIRED as an opener is markup, not content, so it is
+ * not the character standing before the marker: `_@ex_` is an underlined
+ * mention in all three engines while `a_@ex` and `_@ex` are literal text. Only
+ * `pairDelims` knows which, so this cannot be a lookahead in the grammar.
+ *
+ * A suppressed construct is a NON-PARSE, not a literal token: the marker is
+ * text and the rest goes back through the inline pass, so `a_:+-:` renders the
+ * typographic `a_:±:` rather than the symbol name.
+ */
+function applyMarkerBoundary(toks, openMap, src) {
+  for (let i = 0; i < toks.length; i++) {
+    const t = toks[i]
+    if (t.raw === undefined) continue
+    let at = t.at
+    for (let j = i - 1; j >= 0; j--) {
+      const left = toks[j]
+      if (left.k !== 'd' || left.at !== at - 1 || !openMap.has(j)) break
+      at = left.at
+    }
+    if (!isWordCh(at > 0 ? src[at - 1] : undefined)) continue
+    t.h = escapeHtml(t.raw[0]) + renderInline(t.raw.slice(1), t.raw[0])
+  }
 }
 
 // Resolve a flat token stream (leaf HTML fragments interleaved with bare
@@ -1056,6 +1102,7 @@ function pairDelims(toks, src, literalDelim) {
 
 function resolveEmphasis(toks, src, literalDelim) {
   const openMap = pairDelims(toks, src, literalDelim)
+  applyMarkerBoundary(toks, openMap, src)
   // Build the span tree by walking the paired ranges (properly nested).
   const consumed = new Set() // attrs tokens attached to a span
   const renderRange = (lo, hi) => {
