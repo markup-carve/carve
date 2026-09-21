@@ -183,88 +183,31 @@ const QUOTE = /^>(?: (.*)|)$/
 // still a definition and `[a]: /u<NBSP>` is not - a no-break space is content
 // under that same ruling, and content after the production is what the anchor
 // rejects.
-const LINK_DEF = /^\[([^\]@][^\]]*)\]: \p{White_Space}*(\P{White_Space}+)(?: "((?:\\"|[^"])*)")?[ \t]*$/u
+//
+// THE TITLE IS `link_title`, BOTH QUOTE FORMS, and the trailing slot is exactly
+// one space and then a block the `attributes` production accepts (carve#2122).
+// An invalid block is leftover content and the anchor rejects the line
+// (CARVE-P3-006). The block is matched as `\{.*\}` and validated by the
+// grammar rather than by a brace scan, so a quoted `}` in a value and a `{` or
+// quote inside the destination (`/u{x} {.c}`, `it's {.c}`) read correctly. With
+// no space the braces are destination (`[a]: /u{.c}`).
+const LINK_DEF = /^\[([^\]@][^\]]*)\]: \p{White_Space}*(\P{White_Space}+)(?: (?:"((?:\\"|[^"])*)"|'((?:\\'|[^'])*)'))?(?: (\{.*\}))?[ \t]*$/u
 
 /*
- * The production's own test, and the only spelling of it.
- *
- * `LINK_DEF` reads the line AFTER its optional trailing attribute block has
- * been split off, because `[space, attributes]` is part of the production and
- * the block is peeled by a scan rather than matched by the regex (see
- * `splitTrailingAttrBlock` below for why it cannot be a regex). While the
- * regex ended in a swallow-everything tail that did not matter: `[a]: /u {.c}`
- * matched it raw, so the eight places that ask "is this line a definition"
- * could test the raw line and get the right answer by accident.
- *
- * With the line anchored it matters at every one of them, and there are eight
- * - paragraph interruption, lazy continuation, the def-list fold, the
- * container scan, the item fold and the marker scan. That is the carve#922
- * shape: one rule spelled once and read in eight places, where narrowing the
- * one spelling silently changes all eight. So the split is done HERE, once,
- * and no caller tests `LINK_DEF` against a raw line.
+ * The production's own test, and the only spelling of it. Every place that
+ * asks "is this line a definition" (paragraph interruption, lazy continuation,
+ * the def-list fold, the container scan, the item fold and the marker scan)
+ * calls this, so narrowing the rule changes all of them at once (carve#922).
  */
-const isLinkDef = (line) => LINK_DEF.test(splitTrailingAttrBlock(line)[0])
-
-/*
- * Split a TRAILING attribute block off a definition line (carve#604).
- *
- * Scanned rather than matched: an attribute value may hold a `}` inside quotes
- * (`{data-x="}"}`), and `\{[^}]*\}` stops at that brace, fails to parse, and
- * drops every attribute on the line silently. The scan tracks quote state, so
- * only a `}` outside quotes closes the block.
- *
- * The block must be preceded by a SPACE and end the line, so `[a]: /u{.x}`
- * keeps the braces in the DESTINATION, as the production's `space, attributes`
- * requires. A tab does not separate it either: the slot is padding, and padding
- * takes `space` because it sits after the first non-whitespace character of the
- * line (PART 7, MARKER SEPARATORS AND PADDING SLOTS; carve#901).
- * Returns [lineWithoutBlock, blockText|null].
- */
-function splitTrailingAttrBlock(line) {
-  const trimmedEnd = line.replace(/[ \t]+$/, '')
-  if (!trimmedEnd.endsWith('}')) return [line, null]
-  let quote = null
-  let open = -1
-  for (let i = 0; i < trimmedEnd.length; i++) {
-    const c = trimmedEnd[i]
-    if (quote) {
-      if (c === '\\') i++
-      else if (c === quote) quote = null
-      continue
-    }
-    if (c === '"' || c === "'") { quote = c; continue }
-    if (c === '{') { if (open === -1) open = i; continue }
-    if (c === '}' && open !== -1 && i === trimmedEnd.length - 1) {
-      // Must be separated from what precedes it by a run of SPACES (PART 7).
-      // The whole run is checked, not just the character adjacent to the `{`:
-      // `[a]: /u<TAB><SP>{.c}` puts a space next to the brace while the run
-      // still holds a tab, and the trailing-strip below would then swallow the
-      // tab and attach the block anyway.
-      //
-      // AND THE RUN IS EXACTLY ONE SPACE (carve#912). The production is
-      // `[space, attributes]`, one character, and this accepted any run of
-      // them - so `[a]: /u<SP><SP>{.c}` attached the block here, as it did in
-      // all three engines. The ruling is that the production is right and the
-      // four lax artifacts narrow.
-      //
-      // WHERE THE REJECTED BLOCK GOES depends on the run, and the two cases
-      // are NOT the same. A ZERO-space run glues the braces to the
-      // destination, so `[a]: /u{.c}` gives href `/u{.c}` - `link_destination`
-      // simply reads them, and the line is still a definition. A TWO-space run
-      // does not: whitespace ends the destination, so `{.c}` is left over.
-      // Until carve#911 that leftover fell into a swallow-everything tail on
-      // `LINK_DEF` and was silently DROPPED - the outcome PART 7 names as the
-      // one to avoid. With the line anchored at end of line there is no tail,
-      // so the leftover makes the production fail and the line falls back to
-      // prose, which is what the clause promises.
-      if (open === 0) return [line, null]
-      const sep = /[ \t]*$/.exec(trimmedEnd.slice(0, open))[0]
-      if (sep !== ' ') return [line, null]
-      return [trimmedEnd.slice(0, open).replace(/\s+$/, ''), trimmedEnd.slice(open)]
-    }
-  }
-  return [line, null]
+function matchLinkDef(line) {
+  const m = LINK_DEF.exec(line)
+  if (!m) return null
+  const attrs = m[5] === undefined ? undefined : parseAttrList(m[5])
+  if (attrs === null) return null
+  const title = m[3] !== undefined ? m[3].replaceAll('\\"', '"') : m[4]?.replaceAll("\\'", "'")
+  return { label: m[1], url: m[2], title, attrs }
 }
+const isLinkDef = (line) => matchLinkDef(line) !== null
 // The marker line must carry inline content (PART 9 SS16 production:
 // `"]:", space, inline_content`); a bare `[^label]:` is an ordinary
 // paragraph line (corpus 132).
@@ -429,7 +372,7 @@ function isCaptionableParagraph(para) {
 // quoted brace while leaving the rest as content.
 //
 // Declared once so the four readers cannot drift apart again: it was fixed for
-// definition lines first (carve#604, splitTrailingAttrBlock), then for the two
+// definition lines first (carve#604), then for the two
 // markers, and the two table readers were still on the short run (carve#716).
 // Matches `{`, a payload of quoted runs and bare characters, then `}`.
 const ATTR_PAYLOAD = /(?:[^}'"\\]|\\.|'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")*/.source
@@ -2309,16 +2252,16 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       i++
       continue
     }
-    const [defLine, defAttrText] = splitTrailingAttrBlock(line)
-    if ((m = LINK_DEF.exec(defLine))) {
+    const def = matchLinkDef(line)
+    if (def) {
       // LAST definition wins (PART 9R state)
-      state.linkDefs.set(labelKey(m[1]), {
-        rawLabel: m[1],
-        url: m[2],
-        title: m[3]?.replaceAll('\\"', '"'),
+      state.linkDefs.set(labelKey(def.label), {
+        rawLabel: def.label,
+        url: def.url,
+        title: def.title,
         // Raw list, not a rendered string: R1 merges it with the link site's
         // own attributes per SS15 A3, which needs both lists (carve#604).
-        attrs: defAttrText ? parseAttrList(defAttrText) ?? undefined : undefined,
+        attrs: def.attrs,
       })
       i++
       continue
@@ -3574,9 +3517,9 @@ function foldedDefinitionEnd(lines, start, end, seen) {
       continue
     }
     const footnote = FOOTNOTE_DEF.exec(rest)
-    const link = isLinkDef(rest) ? LINK_DEF.exec(splitTrailingAttrBlock(rest)[0]) : null
+    const link = matchLinkDef(rest)
     if (!footnote && !link) continue
-    const key = labelKey(footnote ? footnote[1] : link[1])
+    const key = labelKey(footnote ? footnote[1] : link.label)
     const table = footnote ? seen.footnoteDefs : seen.linkDefs
     const kind = footnote ? 'f' : 'l'
     if (col > 0 && (claimed.has(kind + key) || !table.has(key))) return k
