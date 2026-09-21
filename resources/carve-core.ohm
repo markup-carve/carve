@@ -670,8 +670,12 @@ CarveCore {
   // `prev === '_'` in bareOpener), and the `_` itself must stay a candidate so
   // it can CLOSE an open underline span (`_z_/y/` -> <u>z</u>/y/, matching the
   // engines + §9 close-first). A former `underGlue = "_" delim &wordChar` rule
-  // swallowed that closing `_` into a text run and diverged.
-  wordChar   = letter | digit
+  // swallowed that closing `_` into a text run and diverged. The `_` half of
+  // PART 9 §7's boundary is a resolver guard instead (render.mjs).
+  // ASCII: `word` is a run of the enumerated alphabet, so `é` is not part of
+  // one and `é#tag` / `mé@ex` / `é:rocket:{.big}` reach their own rules,
+  // where all three engines read them (carve#2126).
+  wordChar   = alnumCh
   delim      = "/" | "*" | "_" | "~" | "^" | "=" | ","
 
   // a whitespace-preceded %% consumes the rest of the LINE (SS21); the
