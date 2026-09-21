@@ -83,7 +83,12 @@ test('a symbol shortcode name is ASCII', () => {
 
 test('an email autolink is ASCII on both sides of the @', () => {
   assert.equal(html('<me@exämple.com>\n'), '<p>&lt;me@exämple.com&gt;</p>')
-  assert.equal(html('<mé@example.com>\n'), '<p>&lt;mé@example.com&gt;</p>')
+  // No autolink, and the leftover text is not inert: PART 9 §7 lets a mention
+  // open after `é`, which is what all three engines render (carve#2126).
+  assert.equal(
+    html('<mé@example.com>\n'),
+    '<p>&lt;mé<span class="mention"><strong>@example.com</strong></span>&gt;</p>',
+  )
   // The TLD is its own run in the production and needs its own row.
   assert.equal(html('<me@example.cöm>\n'), '<p>&lt;me@example.cöm&gt;</p>')
   assert.match(html('<me@example.com>\n'), /<a href="mailto:me@example\.com">/)
