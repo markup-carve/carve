@@ -129,7 +129,9 @@ CarveCore {
   // same language. That is carve#916's option 1 and it is still open.
   langInfo   = " "? langToken
   langToken  = langChar+
-  langChar   = letter | digit | "-" | "_" | "+" | "#" | "." | "/"
+  // ASCII, per `language_info = (letter | digit | '-' | '_' | '+' | '#' |
+  // '.' | '/')+` over the enumerated alphabet.
+  langChar   = asciiLetter | digit | "-" | "_" | "+" | "#" | "." | "/"
   // only a closer of the OPEN fence's character ends the body: a `~~~`
   // line inside a backtick block (and vice versa) is ordinary content
   codeLine<closer> = ~closer (~newline any)* newline
@@ -249,7 +251,10 @@ CarveCore {
   tag        = "#" tagName gluedMarker*
   gluedMarker = ("@" | "#") tagName
   tagName    = tagChar+ (tagDot tagChar+)*
-  tagChar    = letter | digit | "_" | "-"
+  // ASCII, per `name_word = (letter | digit | '_' | '-')+` in grammar.ebnf,
+  // where `letter` is the enumerated ASCII alphabet (carve#844's rule, applied
+  // to the rest of the identifier family).
+  tagChar    = asciiLetter | digit | "_" | "-"
   tagDot     = "." &tagChar
 
   // --- Math (PART 3: `$` / `$$` + a verbatim span; bare `$` is literal) ---
@@ -488,10 +493,13 @@ CarveCore {
   // the production never described. Only the BODY admits non-ASCII (carve#844).
   scheme     = asciiLetter (asciiLetter | digit | "+" | "-" | ".")*
   asciiLetter = "a".."z" | "A".."Z"
-  emailBody  = emailLocal "@" (emailSeg ".")+ letter+
+  // ASCII too, per `email_char = letter | digit | '.' | '-' | '_' | '+'`.
+  // `scheme` was narrowed in carve#844 and the address beside it was not, so
+  // `<me@exämple.com>` autolinked here and stayed literal in all three engines.
+  emailBody  = emailLocal "@" (emailSeg ".")+ asciiLetter+
   emailLocal = emailChar+
-  emailSeg   = (letter | digit | "-" | "_")+
-  emailChar  = letter | digit | "-" | "_" | "." | "+"
+  emailSeg   = (asciiLetter | digit | "-" | "_")+
+  emailChar  = asciiLetter | digit | "-" | "_" | "." | "+"
   // The ASCII enumeration of `url_char`, plus every character outside ASCII
   // that is neither whitespace nor a FORMAT character (carve#844). The ASCII
   // exclusions are unchanged and deliberate - `"`, `\`, backtick, `{`, `}`,
@@ -632,8 +640,12 @@ CarveCore {
   // and all three engines follow it - `{--flag}` and `{#-id}` are literal
   // text everywhere but here (carve#722). A dash is still fine after the
   // first character, which is what `identRest` is for.
-  identStart = letter | "_"
-  identRest  = letter | digit | "_" | "-"
+  // ASCII, per PART 7: `identifier = (letter | '_'), {letter | digit | '_' |
+  // '-'}` over the enumerated ASCII alphabet. Ohm's built-in `letter` follows
+  // Unicode, so `{.é}`, `{#é}`, `{é=1}`, `{é}` and `:é[x]` parsed here and are
+  // literal text in carve-js, carve-php and carve-rs.
+  identStart = asciiLetter | "_"
+  identRest  = asciiLetter | digit | "_" | "-"
 
   // A word absorbs any bare delimiter glued between two word characters -
   // this IS the left word-boundary / no-intraword rule, structurally.
@@ -742,7 +754,9 @@ CarveCore {
              | "+" | "," | "-" | "." | "/" | ":" | ";" | "<" | "=" | ">"
              | "?" | "@" | "[" | "\\" | "]" | "^" | "_" | "`" | "{" | "|"
              | "}" | "~"
-  alnumCh    = letter | digit
+  // ASCII: `symbol_name` and `ordered_marker` both read the enumerated
+  // alphabet, so `:é:{.big}` is literal text rather than an attributed symbol.
+  alnumCh    = asciiLetter | digit
   spaceChar  = " " | "\t"
   newline    = "\n" | "\r\n"
   lineEnd    = newline | end

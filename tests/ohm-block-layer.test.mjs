@@ -178,7 +178,8 @@ const CASES = {
   },
   langChar: {
     accept: ['a', 'Z', '7', '-', '_', '+', '#', '.', '/'],
-    reject: [' ', TAB, '!', '', 'ab'],
+    // `é` is a letter to ohm's built-in and not to `language_info`.
+    reject: [' ', TAB, '!', '', 'ab', 'é'],
   },
 
   // --- paragraph ------------------------------------------------------------
