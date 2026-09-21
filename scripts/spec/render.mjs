@@ -54,8 +54,21 @@ const DENY = new Set(['javascript', 'vbscript', 'data', 'file',
  * need no unescaping; a backslash before anything else is an ordinary
  * character and is left alone.
  */
+const unescapeDest = (text) => text.replace(/\\([()\\])/g, '$1')
+
 export function destValue(dest) {
-  return dest.sourceString.replace(/\\([()\\])/g, '$1')
+  return unescapeDest(dest.sourceString)
+}
+
+// A reference definition's destination is the same `link_destination`: its
+// value, or null when the run is not one (an unbalanced parenthesis).
+export function matchDestination(text) {
+  return g.match(text, 'dest').succeeded() ? unescapeDest(text) : null
+}
+
+// Is `text` exactly one image, inline or reference form (PART 9 SS4 host)?
+export function isImageSource(text) {
+  return g.match(text, 'image').succeeded() || g.match(text, 'imageRef').succeeded()
 }
 
 export function checkUrl(url) {

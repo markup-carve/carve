@@ -17,7 +17,7 @@
  * disagreement before (carve#646).
  */
 
-import { parseAttrList, parseBlockAttrList, parseAttrBlock } from './render.mjs'
+import { parseAttrList, parseBlockAttrList, parseAttrBlock, matchDestination, isImageSource } from './render.mjs'
 import { labelKey } from './label-key.mjs'
 import layoutTransitions from '../../resources/spec/layout-transitions.json' with { type: 'json' }
 
@@ -202,10 +202,11 @@ const LINK_DEF = /^\[([^\]@][^\]]*)\]: \p{White_Space}*(\P{White_Space}+)(?: (?:
 function matchLinkDef(line) {
   const m = LINK_DEF.exec(line)
   if (!m) return null
+  const url = matchDestination(m[2])
   const attrs = m[5] === undefined ? undefined : parseAttrList(m[5])
-  if (attrs === null) return null
+  if (url === null || attrs === null) return null
   const title = m[3] !== undefined ? m[3].replaceAll('\\"', '"') : m[4]?.replaceAll("\\'", "'")
-  return { label: m[1], url: m[2], title, attrs }
+  return { label: m[1], url, title, attrs }
 }
 const isLinkDef = (line) => matchLinkDef(line) !== null
 // The marker line must carry inline content (PART 9 SS16 production:
@@ -332,7 +333,6 @@ export function bracketRunEnd(line, open) {
 // the RESOLVED tree and is settled in exactly one later place: the promotion
 // phase in html.mjs. Do not read this function as that answer - an unresolved
 // reference image is captionable-SHAPED and is not a block image.
-const CAPTIONABLE_IMAGE_TAIL = /^(?:\([^)]*\)|\[[^\]]*\])(?:\{[^}]*\})?$/
 const CAPTIONABLE_MATH = /^\$\$`.*`$/
 function isCaptionableParagraph(para) {
   // The whole paragraph, not its first line. An image's ALT is `brContent*`,
@@ -357,8 +357,10 @@ function isCaptionableParagraph(para) {
   if (!line.startsWith('![')) return null
   const altEnd = bracketRunEnd(line, 1)
   if (altEnd === -1) return null
-  const tail = line.slice(altEnd)
-  return !tail.includes('\n') && CAPTIONABLE_IMAGE_TAIL.test(tail) ? 'image' : null
+  // The image itself is matched by the grammar, so a balanced `(...)` in the
+  // destination, a `)` in the title and a quoted `}` in the block all count
+  // (carve#2122).
+  return !line.slice(altEnd).includes('\n') && isImageSource(line) ? 'image' : null
 }
 // The run after the marker is SPACES ONLY: `-\titem` is a paragraph in every
 // engine, so a tab here must not open a list (PART 9 SS11). Its width is the
