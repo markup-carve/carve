@@ -1,0 +1,27 @@
+A comment inside a forced span or the combined token ends at its closer
+
+```
+{*a %% b*} y
+.
+<p><strong>a</strong> y</p>
+```
+
+```
+{_a %% b_} y
+.
+<p><u>a</u> y</p>
+```
+
+```
+/*a %% b*/ y
+.
+<p><strong><em>a</em></strong> y</p>
+```
+
+```
+/*a %%c
+b*/ y
+.
+<p><strong><em>a
+b</em></strong> y</p>
+```

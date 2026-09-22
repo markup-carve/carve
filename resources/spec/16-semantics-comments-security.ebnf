@@ -16,9 +16,12 @@
 
    21a. DELIMITED INLINE COMMENTS -- NORMATIVE [CARVE-P9-042] (governs `braced_comment` in
       PART 3). `%%` runs to the end of its inline RUN, so mid-line commenting
-      already works wherever the structure supplies a boundary -- a table cell
-      ends at `|`, link text at `]`. Plain prose supplies none, and this is the
-      form for it: `foo {% bar %} baz` renders `<p>foo  baz</p>`.
+      already works wherever the structure supplies a boundary: a table cell
+      ends at `|`, link text at `]`, and ANY CONSTRUCT WITH AN EXPLICIT CLOSER
+      ends at that closer -- a forced span `{X...X}` at its `X}`, the combined
+      `/*...*/` token at its `*/`, and the rest of the braced family the same
+      way. Plain prose supplies none, and this is the form for it:
+      `foo {% bar %} baz` renders `<p>foo  baz</p>`.
       - SPELLING. `{%` opens, the FIRST `%}` closes. One character per meaning,
         like the rest of the braced family ({^x^}, {,x,}, {+x+}, {-x-}), and the
         same spelling Djot uses, so a Djot document's comments keep working.

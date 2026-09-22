@@ -167,7 +167,9 @@ and
 and
 `488-a-quote-after-a-bare-delimiter-follows-what-that-delimiter-does`
 and
-`489-a-caption-s-placeholder-is-any-that-does-not-begin-a-tag`.
+`489-a-caption-s-placeholder-is-any-that-does-not-begin-a-tag`
+and
+`490-a-comment-inside-a-forced-span-or-the-combined-token-ends-at-its-closer`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -300,6 +302,10 @@ markup-carve/carve-rs#1820), and carve-js, carve-php and the pinned build on
 the word-glued row (markup-carve/carve-js#1900, markup-carve/carve-php#2228).
 markup-carve/carve#2165 brought the executable reference to CARVE-P2-022, and
 carve-rs reads every row but the controls the same way.
+Section 490 does NOT lag any engine: carve-js, carve-php, carve-rs and the
+pinned build already end a `%%` comment at a forced span's closer or the
+combined token's `*/`, and markup-carve/carve#2167 brought the executable
+reference to them.
 Section 463 no longer lags an engine. A bare closer inside a braced inline
 (`~{/x/}{/y~/}`) used to close a span opened before the braces; markup-carve/carve#2027
 ruled that it may not, and all three now match.
