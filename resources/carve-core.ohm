@@ -201,7 +201,10 @@ CarveCore {
   // delimiters fell through. `fInner` carries the same guard (carve#2096).
   // Only `*`: the closer's `/` stands behind it, where `~("*/")` already
   // stops the run.
-  biInner    = ~("*/") (~dRun<"*"> rich | word | " " ~("*/") | nl | litDelim | other)
+  // Any other character is content, as `bi_content` says (carve#2159); a
+  // space or tab only where no closer follows it.
+  biInner    = ~("*/") (~dRun<"*"> rich | word | spComment | spaceChar ~("*/") | nl | nbspEsc | hardBreak
+             | litDelim | other | bracedComment | ~spaceChar anyChar)
 
   // constructs allowed inside any span (everything except spans themselves,
   // which are listed per-delimiter to exclude self-nesting)

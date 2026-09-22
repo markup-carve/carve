@@ -113,6 +113,7 @@ const INVENTORY = [
   { base: '483-an-empty-term-marker-in-a-description-body-is-text-3', crv: ['trailing-WS'], html: [] },
   { base: '483-an-empty-term-marker-in-a-description-body-is-text-4', crv: ['trailing-WS'], html: [] },
   { base: '483-an-empty-term-marker-in-a-description-body-is-text-5', crv: ['trailing-WS'], html: [] },
+  { base: '486-any-character-is-content-of-the-combined-bold-italic-token-2', crv: ['NBSP'], html: [] },
   // The no-break space is the case: it is non-ASCII, so it passes into the
   // heading id unchanged instead of being slugged to a separator, and the
   // id carries the character rather than an entity.

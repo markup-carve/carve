@@ -53,6 +53,5 @@ spaceOrEnd     LOOKAHEAD  only in `boldItalic = "/*" ~spaceOrEnd biInner+ "*/" a
 
 at             GAP  `other` admits it, so an `@` NOT followed by a word character reaches it: `a @ b`
 sqEsc          GAP  a `\'` inside a single-quoted attribute value: `{title='a\'b'}`
-spaceChar      GAP  trailing whitespace on a fence closer, which `btClose`/`tdClose` admit
 delimRun       GAP  a doubled delimiter run inside bold-italic reaches it: `/*a // b*/`
 dRun           GAP  reached with `delimRun`, by the same spelling
