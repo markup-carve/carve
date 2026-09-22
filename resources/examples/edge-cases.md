@@ -36780,3 +36780,235 @@ not a div
 ```
 
 :::::
+
+## A closer does not rescue a marker-line colon opener whose body folded in
+
+A `:::` on a list item's marker line is demoted to text when its body arrives by
+lazy folding (*Only lazy folding demotes a marker-line colon opener*). A closer
+at the item's content column adds no body, so it does not stop the demotion:
+the opener and the folded lines are one paragraph, and the closer-shaped line is
+then read on its own. A bare run interrupts a paragraph (§10 I4), so it opens an
+empty div that closes with the item (markup-carve/carve#2147).
+
+::::: compare
+
+````carve
+- :::
+ y
+  :::
+````
+
+```html
+<ul>
+  <li>:::
+y
+    <div>
+    </div>
+  </li>
+</ul>
+```
+
+:::::
+
+::::: compare
+
+````carve
+- ::: note
+ y
+  :::
+````
+
+```html
+<ul>
+  <li>::: note
+y
+    <div>
+    </div>
+  </li>
+</ul>
+```
+
+:::::
+
+The same holds for an ordered item, for several folded lines, with a blank line
+before the run, and for a nested item, where the run sits at the inner item's
+column and the div opens there.
+
+::::: compare
+
+````carve
+1. ::: d
+ y
+   :::
+````
+
+```html
+<ol>
+  <li>::: d
+y
+    <div>
+    </div>
+  </li>
+</ol>
+```
+
+:::::
+
+::::: compare
+
+````carve
+- ::: d
+ y
+ z
+  :::
+````
+
+```html
+<ul>
+  <li>::: d
+y
+z
+    <div>
+    </div>
+  </li>
+</ul>
+```
+
+:::::
+
+::::: compare
+
+````carve
+- ::: d
+ y
+
+  :::
+````
+
+```html
+<ul>
+  <li>::: d
+y
+    <div>
+    </div>
+  </li>
+</ul>
+```
+
+:::::
+
+::::: compare
+
+````carve
+- x
+  - ::: d
+   y
+    :::
+````
+
+```html
+<ul>
+  <li>x
+    <ul>
+      <li>::: d
+y
+        <div>
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::::
+
+CONTROL. An opener that acquires body at the column still opens, with or without
+lines folded in after it; one written later in the item, or on a quote's line, is
+not a marker-line opener and keeps its container.
+
+::::: compare
+
+````carve
+- ::: d
+  :::
+````
+
+```html
+<ul>
+  <li>
+    <div class="d">
+
+    </div>
+  </li>
+</ul>
+```
+
+:::::
+
+::::: compare
+
+````carve
+- ::: d
+  x
+ y
+  :::
+````
+
+```html
+<ul>
+  <li>
+    <div class="d">
+      <p>x
+y</p>
+    </div>
+  </li>
+</ul>
+```
+
+:::::
+
+::::: compare
+
+````carve
+- a
+  ::: d
+ y
+  :::
+````
+
+```html
+<ul>
+  <li>a
+    <div class="d">
+
+    </div>
+  </li>
+</ul>
+<p>y
+:::</p>
+```
+
+:::::
+
+::::: compare
+
+````carve
+> ::: d
+y
+> :::
+````
+
+```html
+<blockquote>
+  <div class="d">
+
+  </div>
+</blockquote>
+<p>y</p>
+<blockquote>
+  <div>
+  </div>
+</blockquote>
+```
+
+:::::

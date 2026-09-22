@@ -1,0 +1,156 @@
+A closer does not rescue a marker-line colon opener whose body folded in
+
+```
+- :::
+ y
+  :::
+.
+<ul>
+  <li>:::
+y
+    <div>
+    </div>
+  </li>
+</ul>
+```
+
+```
+- ::: note
+ y
+  :::
+.
+<ul>
+  <li>::: note
+y
+    <div>
+    </div>
+  </li>
+</ul>
+```
+
+```
+1. ::: d
+ y
+   :::
+.
+<ol>
+  <li>::: d
+y
+    <div>
+    </div>
+  </li>
+</ol>
+```
+
+```
+- ::: d
+ y
+ z
+  :::
+.
+<ul>
+  <li>::: d
+y
+z
+    <div>
+    </div>
+  </li>
+</ul>
+```
+
+```
+- ::: d
+ y
+
+  :::
+.
+<ul>
+  <li>::: d
+y
+    <div>
+    </div>
+  </li>
+</ul>
+```
+
+```
+- x
+  - ::: d
+   y
+    :::
+.
+<ul>
+  <li>x
+    <ul>
+      <li>::: d
+y
+        <div>
+        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- ::: d
+  :::
+.
+<ul>
+  <li>
+    <div class="d">
+
+    </div>
+  </li>
+</ul>
+```
+
+```
+- ::: d
+  x
+ y
+  :::
+.
+<ul>
+  <li>
+    <div class="d">
+      <p>x
+y</p>
+    </div>
+  </li>
+</ul>
+```
+
+```
+- a
+  ::: d
+ y
+  :::
+.
+<ul>
+  <li>a
+    <div class="d">
+
+    </div>
+  </li>
+</ul>
+<p>y
+:::</p>
+```
+
+```
+> ::: d
+y
+> :::
+.
+<blockquote>
+  <div class="d">
+
+  </div>
+</blockquote>
+<p>y</p>
+<blockquote>
+  <div>
+  </div>
+</blockquote>
+```
