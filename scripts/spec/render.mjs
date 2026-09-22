@@ -401,7 +401,7 @@ const sem = g.createSemantics().addOperation('h', {
     // Build a flat token stream (leaf HTML fragments + bare-delimiter
     // candidates) and run the PART 9 SS9 delimiter-stack pass over it.
     return resolveEmphasis(
-      buildToks(items.children),
+      () => buildToks(items.children),
       this.source.sourceString,
       '',
       this.source.startIdx,
@@ -412,7 +412,7 @@ const sem = g.createSemantics().addOperation('h', {
     // The combined token owns BOTH `/` and `*`, so §9 E3 holds both literal
     // inside it while the other three delimiters resolve normally.
     const body = resolveEmphasis(
-      buildToks(inner.children, '/*'),
+      () => buildToks(inner.children, '/*'),
       this.source.sourceString,
       '/*',
       inner.source.startIdx,
@@ -611,7 +611,7 @@ const sem = g.createSemantics().addOperation('h', {
     // delimiters resolve normally, but the forced delimiter X itself stays
     // literal inside (PART 9 SS22). Run the same SS9 stack, holding X literal.
     const body = resolveEmphasis(
-      buildToks(inner.children, dch),
+      () => buildToks(inner.children, dch),
       this.source.sourceString,
       dch,
       inner.source.startIdx,
@@ -932,20 +932,14 @@ const isWs = (c) => c === undefined || /\s/.test(c)
 // The `'_'` term is the template's own, so it blocks EVERY delimiter, while
 // slash_if(d) = '/' for d in { '/', '_' } blocks only italic and underline --
 // `* ~ =` do open after `/` (`a/~y~` -> `a/<s>y</s>`).
-function bareOpener(d, prev, prev2, next) {
+function bareOpener(d, prev, next) {
   if (prev !== undefined && (isAlnum(prev) || prev === d)) return false
-  // A preceding `_` or `/` blocks UNLESS it sits at a clean left boundary of
-  // its own, where it is an opener rather than content: `_*x*_` and `/_x_/`
-  // nest, while `a_*x*`, `/a/_b_` and `snake_/case/` stay literal. Only the
-  // character is decidable here, so the boundary stands in for the pairing.
-  if (
-    (prev === '_' || ((d === '/' || d === '_') && prev === '/')) &&
-    prev2 !== undefined &&
-    !isWs(prev2)
-  ) {
-    return false
-  }
   return !isWs(next) && next !== d
+}
+// A `_` (or a `/` before `/` or `_`) blocks the opener after it unless that
+// guard opens a span that closes, which only pairing decides (`pairGuarded`).
+function guardedBy(d, prev) {
+  return prev === '_' || ((d === '/' || d === '_') && prev === '/')
 }
 function bareCloser(d, prev, next) {
   return prev !== undefined && !isWs(prev) && (next === undefined || !isAlnum(next))
@@ -960,12 +954,11 @@ function forcedUnder(alt) {
 }
 
 // E1 CLASSIFY for one candidate.
-function classify(t, src) {
+function classify(t, src, blocked) {
   if (t.k !== 'd') return
   const prev = t.at > 0 ? src[t.at - 1] : undefined
-  const prev2 = t.at > 1 ? src[t.at - 2] : undefined
   const next = src[t.at + 1]
-  t.canOpen = !t.closeOnly && bareOpener(t.ch, prev, prev2, next)
+  t.canOpen = !t.closeOnly && !blocked?.has(t.at) && bareOpener(t.ch, prev, next)
   t.canClose = bareCloser(t.ch, prev, next)
 }
 
@@ -1174,9 +1167,9 @@ let unattachedAttrs = []
 // index`. Split out because the caption `#` placeholder asks the same question
 // the renderer does -- which offsets sit inside a span -- over a stream that
 // carries positions instead of HTML.
-function pairDelims(toks, src, literalDelims = '') {
+function pairDelims(toks, src, literalDelims = '', blocked) {
   // E1 CLASSIFY: evaluate bare_opener(d) / bare_closer(d) at each candidate.
-  for (const t of toks) classify(t, src)
+  for (const t of toks) classify(t, src, blocked)
   // One pass with a delimiter stack. `openers` holds indices (into toks) of
   // still-open candidates, in source order. `openMap` records paired spans.
   const openers = []
@@ -1189,7 +1182,7 @@ function pairDelims(toks, src, literalDelims = '') {
       // delimiter literal in the first place.
       if (literalDelims.includes(t.ch) || openers.some((oi) => toks[oi].ch === t.ch)) {
         const rep = demoteForced(t, literalDelims)
-        for (const r of rep) classify(r, src)
+        for (const r of rep) classify(r, src, blocked)
         toks.splice(j, 1, ...rep)
         j--
         continue
@@ -1228,8 +1221,31 @@ function pairDelims(toks, src, literalDelims = '') {
   return openMap
 }
 
-function resolveEmphasis(toks, src, literalDelims = '', contentAt = 0) {
-  const openMap = pairDelims(toks, src, literalDelims)
+// Pair, then block every opener whose guard did not open a span of its own,
+// and pair again. Blocking only removes openers, so the loop ends. `build`
+// renders the quotes too, so each retry rewinds the glyph they read.
+function pairGuarded(build, src, literalDelims = '') {
+  const blocked = new Set()
+  for (;;) {
+    const quote = lastQuoteGlyph
+    const toks = build()
+    const openMap = pairDelims(toks, src, literalDelims, blocked)
+    const opens = new Set([...openMap.keys()].map((i) => toks[i].at))
+    let grew = false
+    for (const i of openMap.keys()) {
+      const t = toks[i]
+      if (guardedBy(t.ch, src[t.at - 1]) && !opens.has(t.at - 1)) {
+        blocked.add(t.at)
+        grew = true
+      }
+    }
+    if (!grew) return { toks, openMap }
+    lastQuoteGlyph = quote
+  }
+}
+
+function resolveEmphasis(build, src, literalDelims = '', contentAt = 0) {
+  const { toks, openMap } = pairGuarded(build, src, literalDelims)
   resolveNameRun(toks, openMap)
   applyMarkerBoundary(toks, openMap, src, contentAt)
   // Build the span tree by walking the paired ranges (properly nested).
@@ -1640,13 +1656,14 @@ export function captionPlaceholder(text) {
 
 const capSem = g.createSemantics().addOperation('capIdx', {
   inlines(items) {
-    const toks = items.children.map((c) => {
-      const alt = c.child(0)
-      const at = alt.source.startIdx
-      const ch = alt.ctorName === 'litDelim' ? alt.child(0).sourceString : ''
-      return STACK_DELIMS.has(ch) ? { k: 'd', ch, at } : { k: alt.ctorName, at }
-    })
-    const openMap = pairDelims(toks, this.source.sourceString)
+    const build = () =>
+      items.children.map((c) => {
+        const alt = c.child(0)
+        const at = alt.source.startIdx
+        const ch = alt.ctorName === 'litDelim' ? alt.child(0).sourceString : ''
+        return STACK_DELIMS.has(ch) ? { k: 'd', ch, at } : { k: alt.ctorName, at }
+      })
+    const { toks, openMap } = pairGuarded(build, this.source.sourceString)
     for (let i = 0; i < toks.length; i++) {
       if (openMap.has(i)) {
         i = openMap.get(i)

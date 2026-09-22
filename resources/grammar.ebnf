@@ -2789,7 +2789,9 @@ bare_closer(d) = <&(non_ws), d, !(alnum) ;
      (same-delimiter adjacency, PART 9 §9: a doubled delimiter never
      opens), and -- for d in { '/', '_' } only -- NOT `/`
      (slash_if(d), path protection); d is NOT followed by whitespace and NOT
-     by another d.
+     by another d. The one exemption: d opens directly after a `_` or `/`
+     when that `_` or `/` itself opens a span that closes (`_*x*_` nests,
+     `_*x* q` stays literal).
    - closer: d is NOT preceded by whitespace and NOT followed by an
      alphanumeric. (A following same-delimiter is allowed: in `/x//` the
      first `/` after `x` closes; the trailing `/` stays literal.)

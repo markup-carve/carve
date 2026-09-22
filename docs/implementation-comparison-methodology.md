@@ -155,7 +155,9 @@ and
 and
 `482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in`
 and
-`483-an-empty-term-marker-in-a-description-body-is-text`.
+`483-an-empty-term-marker-in-a-description-body-is-text`
+and
+`484-a-delimiter-after-an-underscore-or-slash-opens-only-when-that-one-pairs`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -263,6 +265,10 @@ ruled shape and misses the nested item and the paragraph-then-opener control
 Section 483 lags all three engines on five of its six rows, which end a
 description body at an empty term marker (markup-carve/carve-js#1891,
 markup-carve/carve-php#2218, markup-carve/carve-rs#1812).
+Section 484 does NOT lag any engine: carve-js, carve-php and carve-rs already
+keep a delimiter literal after a `_` or `/` that does not pair, and it is the
+executable reference that markup-carve/carve#2156 brought to them. It is listed
+because the published run predates the row.
 Section 463 no longer lags an engine. A bare closer inside a braced inline
 (`~{/x/}{/y~/}`) used to close a span opened before the braces; markup-carve/carve#2027
 ruled that it may not, and all three now match.
