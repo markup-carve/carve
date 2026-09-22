@@ -133,7 +133,9 @@ and
 and
 `47-numbered-cross-references-10`
 and
-`47-numbered-cross-references-11`.
+`47-numbered-cross-references-11`
+and
+`473-a-run-of-asterisks-inside-a-combined-token-is-content`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -203,6 +205,11 @@ with NO resolver configured, which is nothing - it stays literal text. That is
 what every engine already produces, including one that has never heard of PART 9
 section 19, because expansion is processor-level and off by default. It is
 listed because the published run predates the row.
+Section 473 does NOT lag any engine: carve-js, carve-php and carve-rs all read a
+run of asterisks inside `/*...*/` as content, and it is the executable reference
+that markup-carve/carve#2135 brought to them. It is listed because the published
+run predates the row; a counts-only run over the whole corpus scored 1892/1892 on
+every engine with no cross-implementation diff.
 Section 463 no longer lags an engine. A bare closer inside a braced inline
 (`~{/x/}{/y~/}`) used to close a span opened before the braces; markup-carve/carve#2027
 ruled that it may not, and all three now match.

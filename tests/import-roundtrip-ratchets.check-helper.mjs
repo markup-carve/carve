@@ -26,6 +26,13 @@ const visibleText = (html) =>
 // This is an inspected snapshot, not an endorsement of those three losses;
 // the ratchet keeps them visible for a dedicated writer/parser correction.
 
+// Corpus 473's two rows add +2 to completed, canonicalFixedPoints and
+// renderedTextPreserved, and 0 to both round-trip counts. The importer writes a
+// combined `/*...*/` back as a nested `*/.../*` and the Markdown writer escapes
+// the literal `*` inside it, so each document comes back as an equivalent span
+// in a different spelling: byte-equality with the authored form is what the two
+// round-trip counters ask for, and an escape the writer must add fails it.
+
 // Corpus 462 is the only joiner behind the +1 on every count below, and it moves
 // EVERY one: an include directive with no resolver is a paragraph of literal
 // text, so it imports, is a fixed point of the writer, preserves its visible

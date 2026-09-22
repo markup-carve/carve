@@ -195,7 +195,13 @@ CarveCore {
   // multi-line span and the delimiter stack paired the two characters
   // separately, giving em-outside-strong where the single-line form and
   // all three engines give strong-outside-em (grammar.ebnf bold_italic).
-  biInner    = ~("*/") (rich | word | " " ~("*/") | nl | litDelim | other)
+  // A RUN of `*` is refused, so its characters are taken one at a time and the
+  // closer is still there to be matched -- `dRun` took `/***/`'s third `*` and
+  // a PEG repetition cannot give it back, so the production failed and the
+  // delimiters fell through. `fInner` carries the same guard (carve#2096).
+  // Only `*`: the closer's `/` stands behind it, where `~("*/")` already
+  // stops the run.
+  biInner    = ~("*/") (~dRun<"*"> rich | word | " " ~("*/") | nl | litDelim | other)
 
   // constructs allowed inside any span (everything except spans themselves,
   // which are listed per-delimiter to exclude self-nesting)

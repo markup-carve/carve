@@ -443,6 +443,7 @@ index: examples/edge-cases/index.md
   editorial-markup-takes-a-trailing-attribute
   emphasis-opener-slash-adjacency
   bold-italic-delimiter-needs-content
+  a-run-of-asterisks-inside-a-combined-token-is-content
   emphasis-span-closes-before-a-following-delimiter
   unclaimed-openers-stay-literal
   inline-literal
