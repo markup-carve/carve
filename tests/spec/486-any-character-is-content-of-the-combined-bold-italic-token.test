@@ -1,0 +1,59 @@
+Any character is content of the combined bold-italic token
+
+```
+/*a	b*/ y
+.
+<p><strong><em>a	b</em></strong> y</p>
+```
+
+```
+/*a<b*/ y
+
+/*a # b*/ y
+
+/*a{b}c*/ y
+
+/*a€b*/ y
+
+/*a b*/ y
+.
+<p><strong><em>a&lt;b</em></strong> y</p>
+<p><strong><em>a # b</em></strong> y</p>
+<p><strong><em>a{b}c</em></strong> y</p>
+<p><strong><em>a€b</em></strong> y</p>
+<p><strong><em>a&nbsp;b</em></strong> y</p>
+```
+
+```
+/*a\ b*/ y
+.
+<p><strong><em>a&nbsp;b</em></strong> y</p>
+```
+
+```
+/*a\
+b*/ y
+.
+<p><strong><em>a<br>
+b</em></strong> y</p>
+```
+
+```
+/*a{%c%}b*/ y
+.
+<p><strong><em>ab</em></strong> y</p>
+```
+
+```
+/*a	*/ y
+.
+<p><em>*a	*</em> y</p>
+```
+
+```
+/*a %%c
+b*/ y
+.
+<p><strong><em>a
+b</em></strong> y</p>
+```

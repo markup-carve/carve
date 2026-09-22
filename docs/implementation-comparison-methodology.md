@@ -159,7 +159,9 @@ and
 and
 `484-a-delimiter-after-an-underscore-or-slash-opens-only-when-that-one-pairs`
 and
-`485-a-quote-after-an-escaped-quote-closes`.
+`485-a-quote-after-an-escaped-quote-closes`
+and
+`486-any-character-is-content-of-the-combined-bold-italic-token`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -274,6 +276,10 @@ because the published run predates the row.
 Section 485 does NOT lag any engine either: all three already close a quote
 after an escaped quote, and markup-carve/carve#2158 brought the executable
 reference to them.
+Section 486 lags no engine at main: all three keep the combined token whole
+around a tab or any other character, which markup-carve/carve#2159 brought the
+executable reference to. The pinned carve-js misses the tab-before-closer
+control, which carve-js main fixed (markup-carve/carve-js#1887).
 Section 463 no longer lags an engine. A bare closer inside a braced inline
 (`~{/x/}{/y~/}`) used to close a span opened before the braces; markup-carve/carve#2027
 ruled that it may not, and all three now match.

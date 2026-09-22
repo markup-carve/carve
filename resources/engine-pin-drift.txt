@@ -42,3 +42,4 @@
 483-an-empty-term-marker-in-a-description-body-is-text-3  the pinned build ends a description body at an empty term marker; markup-carve/carve-js#1891
 483-an-empty-term-marker-in-a-description-body-is-text-4  the pinned build ends a description body at an empty term marker; markup-carve/carve-js#1891
 483-an-empty-term-marker-in-a-description-body-is-text-5  the pinned build ends a description body at an empty term marker; markup-carve/carve-js#1891
+486-any-character-is-content-of-the-combined-bold-italic-token-6  the pinned build closes a bare delimiter after a tab; markup-carve/carve-js#1887
