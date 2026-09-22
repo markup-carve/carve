@@ -1221,7 +1221,8 @@ function resolveRefsOnce(html, ctx) {
  * other three did not.
  */
 function refKey(text) {
-  return stripTags(text).trim().replace(/\s+/g, ' ').normalize('NFC').toLowerCase()
+  // R1's run, not `\s`: a no-break space or an em space is content (PART 7).
+  return stripTags(text).replace(/^[ \t\n\f\r]+|[ \t\n\f\r]+$/g, '').replace(/[ \t\n\f\r]+/g, ' ').normalize('NFC').toLowerCase()
 }
 
 /* Register a heading in the implicit-reference index. FIRST wins. */

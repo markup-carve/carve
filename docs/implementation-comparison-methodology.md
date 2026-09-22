@@ -161,7 +161,9 @@ and
 and
 `485-a-quote-after-an-escaped-quote-closes`
 and
-`486-any-character-is-content-of-the-combined-bold-italic-token`.
+`486-any-character-is-content-of-the-combined-bold-italic-token`
+and
+`487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -280,6 +282,11 @@ Section 486 lags no engine at main: all three keep the combined token whole
 around a tab or any other character, which markup-carve/carve#2159 brought the
 executable reference to. The pinned carve-js misses the tab-before-closer
 control, which carve-js main fixed (markup-carve/carve-js#1887).
+Section 487 lags carve-rs on three of its twelve rows: the combined token after
+a form feed (markup-carve/carve-rs#1817) and the two heading references around
+a no-break space (markup-carve/carve-rs#1818). carve-js and carve-php read all
+twelve the ruled way, and markup-carve/carve#2157 brought the executable
+reference to them.
 Section 463 no longer lags an engine. A bare closer inside a braced inline
 (`~{/x/}{/y~/}`) used to close a span opened before the braces; markup-carve/carve#2027
 ruled that it may not, and all three now match.

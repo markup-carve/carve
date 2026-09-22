@@ -1,0 +1,123 @@
+A form feed or a no-break space is content wherever whitespace is tested
+
+```
+a /x/ b
+
+a /x/ b
+.
+<p>a <em>x</em> b</p>
+<p>a <em>x</em> b</p>
+```
+
+```
+`  `
+.
+<p><code></code></p>
+```
+
+```
+|a|b|
+.
+<p>|a|b|</p>
+```
+
+```
+:: 
+: d
+.
+<dl>
+  <dt></dt>
+  <dd>d</dd>
+</dl>
+```
+
+```
+:: t
+: d
+.
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+```
+
+```
+:: t
+: +
+
+b
+.
+<dl>
+  <dt>t</dt>
+  <dd>+</dd>
+</dl>
+<p>b</p>
+```
+
+```
+- +
+
+b
+.
+<ul>
+  <li>+</li>
+</ul>
+<p>b</p>
+```
+
+```
+- a
+  - +
+
+b
+.
+<ul>
+  <li>a
+    <ul>
+      <li>+</li>
+    </ul>
+  </li>
+</ul>
+<p>b</p>
+```
+
+```
+---yaml
+a: 1
+---
+
+t
+.
+<p>---yaml
+a: 1</p>
+<hr>
+<p>t</p>
+```
+
+```
+# a b
+
+[a b][]
+.
+<section id="a b">
+  <h1>a&nbsp;b</h1>
+  <p>[a b][]</p>
+</section>
+```
+
+```
+#  ab
+
+[ab][]
+.
+<section id=" ab">
+  <h1>&nbsp;ab</h1>
+  <p>[ab][]</p>
+</section>
+```
+
+```
+/*x*/ y
+.
+<p><strong><em>x</em></strong> y</p>
+```

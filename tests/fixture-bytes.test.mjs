@@ -114,6 +114,18 @@ const INVENTORY = [
   { base: '483-an-empty-term-marker-in-a-description-body-is-text-4', crv: ['trailing-WS'], html: [] },
   { base: '483-an-empty-term-marker-in-a-description-body-is-text-5', crv: ['trailing-WS'], html: [] },
   { base: '486-any-character-is-content-of-the-combined-bold-italic-token-2', crv: ['NBSP'], html: [] },
+  { base: '487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested', crv: ['FF'], html: ['FF'] },
+  { base: '487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested-2', crv: ['FF'], html: ['FF'] },
+  { base: '487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested-3', crv: ['FF'], html: ['FF'] },
+  { base: '487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested-4', crv: ['FF'], html: ['FF'] },
+  { base: '487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested-5', crv: ['FF'], html: ['FF'] },
+  { base: '487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested-6', crv: ['FF'], html: ['FF'] },
+  { base: '487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested-7', crv: ['FF'], html: ['FF'] },
+  { base: '487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested-8', crv: ['FF'], html: ['FF'] },
+  { base: '487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested-9', crv: ['FF'], html: ['FF'] },
+  { base: '487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested-10', crv: ['NBSP'], html: ['NBSP'] },
+  { base: '487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested-11', crv: ['NBSP'], html: ['NBSP'] },
+  { base: '487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested-12', crv: ['FF'], html: ['FF'] },
   // The no-break space is the case: it is non-ASCII, so it passes into the
   // heading id unchanged instead of being slugged to a separator, and the
   // id carries the character rather than an entity.

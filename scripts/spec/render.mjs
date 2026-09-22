@@ -11,7 +11,7 @@ import { readFileSync } from 'node:fs'
 import { resolve as presolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import * as ohm from 'ohm-js'
-import { MAX_CODE_RUN, Refuse } from './layout.mjs'
+import { MAX_CODE_RUN, Refuse, trimWs } from './layout.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const g = ohm.grammar(readFileSync(presolve(here, '../../resources/carve-core.ohm'), 'utf8'))
@@ -82,7 +82,7 @@ export function checkUrl(url) {
 // Inline semantics
 function codeText(content) {
   let text = content.sourceString
-  if (/^ .* $/.test(text) && text.trim() !== '') text = text.slice(1, -1)
+  if (/^ .* $/.test(text) && trimWs(text) !== '') text = text.slice(1, -1)
   return text
 }
 function codeOp(_o, content, _c) {
@@ -923,7 +923,7 @@ const TAG = { '/': 'em', '*': 'strong', _: 'u', '~': 's', '=': 'mark' }
 // these guards: `café*bold*` opens a strong span and `y *x*é` closes one, as
 // all three engines read them (carve#2126).
 const isAlnum = (c) => c !== undefined && /[A-Za-z0-9]/.test(c)
-const isWs = (c) => c === undefined || /\s/.test(c)
+const isWs = (c) => c === undefined || c === ' ' || c === '\t' || c === '\n' || c === '\r'
 
 // The formal word-boundary guard templates (grammar.ebnf PART 3):
 //   bare_opener(d) = <!(alnum | '_' | d | slash_if(d)), d, !(ws | d)
