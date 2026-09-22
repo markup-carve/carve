@@ -1593,8 +1593,10 @@ function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt) 
 function descriptionCloserAhead(run, lines, from, bodyColumn, endsBodyAt) {
   for (let j = from; j < lines.length && !endsBodyAt(j); j++) {
     const m = indentCols(lines[j])
-    const text = m.col >= bodyColumn ? dedentMeasured(m, lines[j], bodyColumn).text : m.rest
-    const c = PURE_FENCE.exec(text)
+    // Searched past, never matched: a closer below the column is not written
+    // inside the body (carve#2145).
+    if (m.col < bodyColumn) continue
+    const c = PURE_FENCE.exec(dedentMeasured(m, lines[j], bodyColumn).text)
     if (c && c[1][0] === run[0] && c[1].length >= run.length) return true
   }
   return false
@@ -2693,8 +2695,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               i++
               continue
             }
-            if (foldablePlain(dedented) && bodyLeavesParagraphOpen(asRead(bodyLines))) {
-              bodyLines.push(dedented)
+            // §10 I4: a fence line interrupts only when a closer follows it, so
+            // one without is paragraph text and folds - the item collector's
+            // test, asked of the authored line the same way. It is framed LAZY,
+            // as the item frames it, so the body's own parse cannot read it
+            // back as a closer.
+            const lazyFence = !foldablePlain(dedented) && FENCE.test(dedented) &&
+              !(FENCE.test(cur) && hasCloser(lines, i))
+            if ((foldablePlain(dedented) || lazyFence) && bodyLeavesParagraphOpen(asRead(bodyLines))) {
+              bodyLines.push(lazyFence ? LAZY + dedented : dedented)
               i++
               continue
             }
@@ -3868,11 +3877,14 @@ function collectItems(lines, i, list, state, ind, meas) {
         // circular - the fence opened only if the below-column line folded, and
         // the line folded only if the fence had not opened - and it moved
         // corpus 276-7, which every engine answers the other way.
+        //
+        // The below-column line itself cannot be the closer: it is not written
+        // inside the item (carve#2145), so it is searched past and never matched.
         body.push(lm2.col >= blockBase
           ? dedentMeasured(lm2, raw, blockBase).text
           : lm2.col >= contentCol
             ? dedentMeasured(lm2, raw, contentCol).text
-            : lm2.rest)
+            : LAZY + lm2.rest)
       }
       return hasCloser(body, 0)
     }
