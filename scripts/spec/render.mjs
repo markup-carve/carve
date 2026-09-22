@@ -684,6 +684,13 @@ const sem = g.createSemantics().addOperation('h', {
   spComment(_sp, _pp, _rest) {
     return ''
   },
+  // Bounded twins (PART 9 SS21a): same emission, a narrower run.
+  fSpComment(_sp, _pp, _rest) {
+    return ''
+  },
+  biSpComment(_sp, _pp, _rest) {
+    return ''
+  },
   bracedComment(_open, _content, _close) {
     return ''
   },

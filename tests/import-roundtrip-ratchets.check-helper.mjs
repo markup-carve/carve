@@ -29,6 +29,9 @@ const visibleText = (html) =>
 // Corpus 489's nine rows add +9 to each population count, +2 to the HTML round
 // trip and 0 to the Markdown one, as measured with the pinned carve-js.
 
+// Corpus 490's four rows add +4 to each population count and 0 to both round
+// trips, as measured with the pinned carve-js.
+
 // Corpus 488's seven rows add +7 to each population count and 0 to both round
 // trips, as measured with the pinned carve-js.
 

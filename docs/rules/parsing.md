@@ -113,16 +113,16 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9-035`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L341) | 9 | L7 ONE CONSUMED BOOLEAN SPELLS THE LOOSENESS NO BLANK LINE CAN |
 | [`CARVE-P9-041`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L2) | 9 | TRAILING LINE COMMENTS |
 | [`CARVE-P9-042`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L17) | 9 | DELIMITED INLINE COMMENTS |
-| [`CARVE-P9-043`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L50) | 9 | FORCED INTRAWORD EMPHASIS |
-| [`CARVE-P9-044`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L84) | 9 | LINE BLOCK (VERSE) |
-| [`CARVE-P9-045`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L97) | 9 | A BACKSLASH BREAK IS NOT ADDITIVE |
-| [`CARVE-P9-046`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L117) | 9 | AN INLINE CONSTRUCT IS NOT A DEPTH THE RULE STOPS AT |
-| [`CARVE-P9-047`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L175) | 9 | NO BLOCK CONSTRUCT IS RECOGNIZED INSIDE ONE |
-| [`CARVE-P9-048`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L190) | 9 | AN INVISIBLE LINE IS REMOVED AT THE BLOCK LAYER |
-| [`CARVE-P9-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L217) | 9 | THE NODE'S SURVIVAL DOES NOT DEPEND ON HOW THE BOUNDARY ABOVE IT WAS SPELLED |
-| [`CARVE-P9-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L275) | 9 | LOCAL HARD-BREAK BLOCK |
-| [`CARVE-P9-051`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L337) | 9 | THE FOLD PRESUMES AN OPEN PARAGRAPH |
-| [`CARVE-P9-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L368) | 9 | AN INVISIBLE LINE FOLDS LIKE ANY OTHER |
-| [`CARVE-P9-053`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L400) | 9 | A COMMENT IS THE ONE EXCEPTION |
+| [`CARVE-P9-043`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L53) | 9 | FORCED INTRAWORD EMPHASIS |
+| [`CARVE-P9-044`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L87) | 9 | LINE BLOCK (VERSE) |
+| [`CARVE-P9-045`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L100) | 9 | A BACKSLASH BREAK IS NOT ADDITIVE |
+| [`CARVE-P9-046`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L120) | 9 | AN INLINE CONSTRUCT IS NOT A DEPTH THE RULE STOPS AT |
+| [`CARVE-P9-047`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L178) | 9 | NO BLOCK CONSTRUCT IS RECOGNIZED INSIDE ONE |
+| [`CARVE-P9-048`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L193) | 9 | AN INVISIBLE LINE IS REMOVED AT THE BLOCK LAYER |
+| [`CARVE-P9-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L220) | 9 | THE NODE'S SURVIVAL DOES NOT DEPEND ON HOW THE BOUNDARY ABOVE IT WAS SPELLED |
+| [`CARVE-P9-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L278) | 9 | LOCAL HARD-BREAK BLOCK |
+| [`CARVE-P9-051`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L340) | 9 | THE FOLD PRESUMES AN OPEN PARAGRAPH |
+| [`CARVE-P9-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L371) | 9 | AN INVISIBLE LINE FOLDS LIKE ANY OTHER |
+| [`CARVE-P9-053`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L403) | 9 | A COMMENT IS THE ONE EXCEPTION |
 | [`CARVE-P9-060`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L72) | 9 | BLOCK COMMENT FENCES |
 | [`CARVE-P12-040`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L167) | 12 | TABLE ALIGNMENT RUNS CARRY TWO INDEPENDENT AXES |

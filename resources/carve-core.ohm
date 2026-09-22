@@ -203,7 +203,7 @@ CarveCore {
   // stops the run.
   // Any other character is content, as `bi_content` says (carve#2159); a
   // space or tab only where no closer follows it.
-  biInner    = ~("*/") (~dRun<"*"> rich | word | spComment | spaceChar ~("*/") | nl | nbspEsc | hardBreak
+  biInner    = ~("*/") (~dRun<"*"> rich | word | biSpComment | spaceChar ~("*/") | nl | nbspEsc | hardBreak
              | litDelim | other | bracedComment | ~spaceChar anyChar)
 
   // constructs allowed inside any span (everything except spans themselves,
@@ -332,7 +332,7 @@ CarveCore {
   // span's own delimiter is refused with it, so its characters are taken one
   // at a time and the closer is still there to be matched (carve#2096).
   fInner<d>  = ~(d "}") (fCodeU<d> | fPrefixU<d> | editorial | bracedDash | ~forced<d> ~dRun<d> rich
-             | span | word | spComment | bracedComment | inlineSpace | litDelim
+             | span | word | fSpComment<d> | bracedComment | inlineSpace | litDelim
              | bang | dollar | ellipsis | dashRun | dot | dash | plus | pct
              | lt | gt | dquote | squote | hash | nl | other | "{" | "}" | anyChar)
   // An unclosed run inside a forced span ends at the span's `X}` (PART 3
@@ -708,6 +708,11 @@ CarveCore {
   // a whitespace-preceded %% consumes the rest of the LINE (SS21); the
   // space itself is consumed too
   spComment  = " " "%%" (~newline any)*
+  // Bounded twins for the two constructs whose content is parsed inline
+  // rather than cut first (PART 9 SS21a): a forced span's own closer, and
+  // the combined token's `*/`, are boundaries the run does not cross either.
+  fSpComment<d> = " " "%%" (~newline ~(d "}") any)*
+  biSpComment = " " "%%" (~newline ~"*/" any)*
   // {% ... %} consumes through the FIRST closer, including soft line breaks.
   // It has no leading-space requirement or consumption (SS21a).
   bracedComment = "{%" (~"%}" any)* "%}"

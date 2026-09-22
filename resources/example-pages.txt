@@ -463,6 +463,7 @@ index: examples/edge-cases/index.md
   quote-flanking-after-an-escaped-character
   a-quote-after-a-bare-delimiter-follows-what-that-delimiter-does
   a-caption-s-placeholder-is-any-that-does-not-begin-a-tag
+  a-comment-inside-a-forced-span-or-the-combined-token-ends-at-its-closer
   a-quote-after-an-escaped-quote-closes
   a-combined-bold-italic-span-may-cross-a-line
   a-bare-closer-does-not-reach-inside-a-braced-inline
