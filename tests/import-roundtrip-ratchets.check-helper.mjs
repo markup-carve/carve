@@ -26,6 +26,12 @@ const visibleText = (html) =>
 // This is an inspected snapshot, not an endorsement of those three losses;
 // the ratchet keeps them visible for a dedicated writer/parser correction.
 
+// Corpus 476's two rows add +2 to completed, canonicalFixedPoints and
+// renderedTextPreserved and 0 to both round trips. The pinned build still folds
+// the fence into the caption or the quoted paragraph (markup-carve/carve-js#1880),
+// so the source it canonicalizes is an inline code run across lines, and the
+// writer re-spells that run.
+
 // Corpus 473's two rows add +2 to completed, canonicalFixedPoints and
 // renderedTextPreserved, and 0 to both round-trip counts. The importer writes a
 // combined `/*...*/` back as a nested `*/.../*` and the Markdown writer escapes

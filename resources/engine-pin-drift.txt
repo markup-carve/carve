@@ -24,3 +24,6 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-7  the pinned build reads the fence as paragraph text inside the item; markup-carve/carve-js#1880
+476-an-item-s-fence-is-read-once-whatever-block-it-follows  the pinned build folds the fence into the caption; markup-carve/carve-js#1880
+476-an-item-s-fence-is-read-once-whatever-block-it-follows-2  the pinned build folds the fence into the quoted paragraph; markup-carve/carve-js#1880

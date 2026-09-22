@@ -139,7 +139,9 @@ and
 and
 `474-glued-attribute-blocks-on-an-inline-element-merge`
 and
-`475-footnote-references-take-an-attribute-run-editorial-substitution-and-comment-take-none`.
+`475-footnote-references-take-an-attribute-run-editorial-substitution-and-comment-take-none`
+and
+`476-an-item-s-fence-is-read-once-whatever-block-it-follows`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -214,6 +216,11 @@ run of asterisks inside `/*...*/` as content, and it is the executable reference
 that markup-carve/carve#2135 brought to them. It is listed because the published
 run predates the row; a counts-only run over the whole corpus scored 1892/1892 on
 every engine with no cross-implementation diff.
+Section 476 lags all three engines, which fold the fence into the caption or
+the quoted paragraph while still ending the item at the below-column line; so
+does the moved row `276-...-7`, whose published result predates the move
+(markup-carve/carve-js#1880, markup-carve/carve-php#2205,
+markup-carve/carve-rs#1800).
 Section 463 no longer lags an engine. A bare closer inside a braced inline
 (`~{/x/}{/y~/}`) used to close a span opened before the braces; markup-carve/carve#2027
 ruled that it may not, and all three now match.

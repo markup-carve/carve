@@ -1,0 +1,41 @@
+An item's fence is read once, whatever block it follows
+
+````
+- ![a](i)
+  ^ cap
+  ```
+  b
+ y
+  ```
+.
+<ul>
+  <li>
+    <figure>
+      <img src="i" alt="a">
+      <figcaption>cap</figcaption>
+    </figure>
+    <pre><code>b
+</code></pre>
+  </li>
+</ul>
+<p>y
+<code></code></p>
+````
+
+````
+- > q
+  ```
+  b
+ y
+  ```
+.
+<ul>
+  <li>
+    <blockquote><p>q</p></blockquote>
+    <pre><code>b
+</code></pre>
+  </li>
+</ul>
+<p>y
+<code></code></p>
+````

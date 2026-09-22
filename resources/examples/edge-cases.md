@@ -14004,17 +14004,16 @@ mechanisms to pass, and only the fence-shaped rule passes both:
 
 :::::
 
-The same clause reaches one shape further: a fence opened on a CONTINUATION line
-rather than on the marker line. S1 stops at the item either way, so the item
-closes at the below-column line and its closer never joins the body. What the
-truncated item then holds is §10 I4's business, not this clause's: `a` opened a
-paragraph, the fence that follows has no closer left inside the item, and I4
-says such a fence does not interrupt - so the delimiter run is paragraph text.
+The same clause reaches one shape further: a fence opened on a CONTINUATION line,
+after `a` has opened a paragraph. §10 I4 decides first whether the fence
+interrupts `a`, and its closer lookahead does not stop at the below-column line
+(PART 1, THE CLOSER LOOKAHEAD DOES NOT STOP AT A BELOW-COLUMN LINE), so it finds
+the closer and a real code block opens. That open body is what makes ` y` end
+the item, and the block runs to the item's end with its closer left outside.
 
-This row is pinned because the executable spec's answer moves here too, and an
-unpinned move is the drift this corpus exists to prevent. No engine was measured
-on it - the ticket measured the marker-line spelling - so it is carried by the
-engine tickets rather than presented as a cross-reader agreement.
+The item's own parse takes the same answer. Asking I4 again over the truncated
+item would find no closer and read the run as paragraph text - one line read two
+ways in one parse, with a paragraph open that ` y` would then have folded into.
 
 ::::: compare
 
@@ -14029,8 +14028,9 @@ engine tickets rather than presented as a cross-reader agreement.
 ```html
 <ul>
   <li>a
-<code>
-b</code></li>
+    <pre><code>b
+</code></pre>
+  </li>
 </ul>
 <p>y
 <code></code></p>
@@ -35950,3 +35950,65 @@ block after either one is text.
 ```
 
 :::
+
+## An item's fence is read once, whatever block it follows
+
+A fence on an item's continuation line whose closer sits past a below-column line
+opens a code block (see *A fence opened on a list marker line, body below the
+content column*), and that holds after a caption or a quote as it does after a
+paragraph. Each reader that asks §10 I4 about the fence line takes the answer the
+item collector gave, so the fence is not folded into the caption or the quoted
+paragraph while the item ends at ` y` as though it had opened. With the closer
+inside the item the same documents open the same block.
+
+::::: compare
+
+````carve
+- ![a](i)
+  ^ cap
+  ```
+  b
+ y
+  ```
+````
+
+```html
+<ul>
+  <li>
+    <figure>
+      <img src="i" alt="a">
+      <figcaption>cap</figcaption>
+    </figure>
+    <pre><code>b
+</code></pre>
+  </li>
+</ul>
+<p>y
+<code></code></p>
+```
+
+:::::
+
+::::: compare
+
+````carve
+- > q
+  ```
+  b
+ y
+  ```
+````
+
+```html
+<ul>
+  <li>
+    <blockquote><p>q</p></blockquote>
+    <pre><code>b
+</code></pre>
+  </li>
+</ul>
+<p>y
+<code></code></p>
+```
+
+:::::
