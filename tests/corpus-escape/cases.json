@@ -475,9 +475,9 @@
       "name": "a-numeric-character-reference",
       "input": "a &#8212; b",
       "expected": {
-        "plain": "a &#8212; b",
-        "markdown": "a &#8212; b",
-        "djot": "a &#8212; b"
+        "plain": "a &\\#8212; b",
+        "markdown": "a &\\#8212; b",
+        "djot": "a &\\#8212; b"
       }
     },
     {

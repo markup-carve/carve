@@ -3,7 +3,7 @@
  * IS STRICT ABOUT IT.
  *
  * `scripts/declaration-audit.mjs --mode=per-pr` passes a DECLARED row in the
- * two ENGINE-LAG ledgers, because they exist to describe the window between a
+ * ENGINE-LAG ledgers, because they exist to describe the window between a
  * spec rule landing and an engine shipping it - "normal", in
  * resources/engine-pin-drift.txt's own words, and "DECLARED rather than
  * tolerated" (carve#1811). resources/engine-fmt-drift.txt describes the same
@@ -16,6 +16,9 @@
  * the pin has caught up on. For the pin ledger that is
  * `npm run engine:report -- --check`; for the fmt ledger it is
  * tests/corpus-fmt-roundtrip.test.mjs, which runs per-PR under `npm test`.
+ * The converter window has two halves: tests/corpus-convert.test.mjs checks the
+ * pinned build per PR, and the scheduled cross-engine workflow runs
+ * `npm run compare:convert` against current engine mains.
  *
  * So the leniency has a precondition, and a precondition nobody checks is the
  * carve#755 shape: delete that step from the per-PR workflow and undeclared
@@ -48,6 +51,7 @@ const { __internals } = await import('../scripts/declaration-audit.mjs')
 const { undeclaredLedgerRows, MANIFEST, perPrPolicy } = __internals
 
 const workflow = readFileSync(join(repo, '.github/workflows/ci.yml'), 'utf8')
+const scheduledWorkflow = readFileSync(join(repo, '.github/workflows/ast-conformance.yml'), 'utf8')
 const pkg = JSON.parse(readFileSync(join(repo, 'package.json'), 'utf8'))
 
 test('the per-PR workflow runs the per-PR verdict, and that script asks for it', () => {
@@ -85,21 +89,33 @@ test('the per-PR workflow still gates undeclared drift, which is what the lenien
     /loadWriterOnlyDrift/,
     'the roundtrip test no longer ratchets engine-fmt-drift.txt, so a stale line there excuses nothing forever',
   )
+  assert.match(
+    pkg.scripts.test,
+    /tests\/corpus-convert\.test\.mjs/,
+    'npm test no longer checks the pinned converter drift in either direction',
+  )
+  assert.match(
+    scheduledWorkflow,
+    /run: npm run compare:convert\b/,
+    'the scheduled workflow no longer checks current engine converter drift in either direction',
+  )
 })
 
-test('per-PR relaxes exactly the two engine-lag ledgers and the siblings own lag, nothing else', () => {
+test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, nothing else', () => {
   // The SPEC entries whose per-PR policy differs from their release policy are
-  // the two engine-lag ledgers, via the manifest `prPolicy` they opted into.
+  // the engine-lag ledgers, via the manifest `prPolicy` they opted into.
   const specRelaxed = MANIFEST.filter(
     (e) => e.repo === 'spec' && perPrPolicy(e) !== e.policy,
   )
   assert.deepEqual(
     specRelaxed.map((e) => [e.path, e.policy, perPrPolicy(e)]).sort(),
     [
+      ['resources/converter-drift.txt', 'owed', 'declared'],
       ['resources/engine-fmt-drift.txt', 'owed', 'declared'],
       ['resources/engine-pin-drift.txt', 'owed', 'declared'],
+      ['tests/corpus-convert.test.mjs', 'owed', 'manual'],
     ],
-    'a spec ledger other than the two engine-lag ones now reads differently per-PR',
+    'a spec ledger other than the engine-lag ones now reads differently per-PR',
   )
 
   // Every SIBLING repo's OWED lag reads as `manual` per-PR and stays `owed` for
@@ -126,7 +142,6 @@ test('per-PR relaxes exactly the two engine-lag ledgers and the siblings own lag
     'resources/ast-span-divergence.txt',
     'resources/ast-value-divergence.txt',
     'resources/ast-extent-findings.txt',
-    'resources/converter-drift.txt',
     'resources/oracle-divergence.txt',
   ]) {
     const e = MANIFEST.find((x) => x.repo === 'spec' && x.path === path)

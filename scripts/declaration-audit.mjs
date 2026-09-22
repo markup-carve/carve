@@ -55,7 +55,7 @@
  * `owed` list must be EMPTY and the carve-js pin must be current.
  *
  * `--mode=per-pr` answers "is this pull request defective?", which is a
- * different question, and the two ENGINE-LAG ledgers are where the two part
+ * different question, and the ENGINE-LAG ledgers are where the two part
  * company. resources/engine-pin-drift.txt exists to DESCRIBE the window
  * between a spec rule landing and an engine shipping it - its own header says
  * that window "is normal and the report exists to describe it", and that it is
@@ -71,10 +71,13 @@
  * the same way. It held zero rows when carve#1811 landed, which is the only
  * reason the omission was invisible: the difference bites the first time a
  * ruling opens a writer-half window and not before.
+ * resources/converter-drift.txt describes the same window for current
+ * importers. Its pinned-build twin has its own two-way test and reads as
+ * `manual` here.
  *
  * So in `per-pr` mode:
  *
- *   - both engine-lag ledgers are judged as `declared`: a well-formed row
+ *   - each engine-lag ledger is judged as `declared`: a well-formed row
  *     PASSES, and a row that is not a declaration at all (no reason, or a key
  *     listed twice, so one of the two reasons is silently discarded) FAILS.
  *   - pin staleness REPORTS instead of failing.
@@ -91,12 +94,12 @@
  * silently behind - is gated per-PR by a LIVE check that fails in EITHER
  * direction, an undeclared slug or a declared slug the pin has caught up on.
  * For the pin ledger that is `npm run engine:report -- --check`; for the fmt
- * ledger it is tests/corpus-fmt-roundtrip.test.mjs, which reports undeclared
- * writer drift and carries its own staleness ratchet over the writer-only
- * file, and which runs per-PR under `npm test`. `per-pr` mode defers to those
+ * ledger it is tests/corpus-fmt-roundtrip.test.mjs. The converter's pinned
+ * half runs per PR in tests/corpus-convert.test.mjs, and its current-main half
+ * runs in the scheduled cross-engine workflow. `per-pr` mode defers to those
  * checks by name rather than dropping the question, and
- * tests/the-per-pr-audit-defers-to-a-live-check.test.mjs fails if either step
- * ever leaves the per-PR workflow.
+ * tests/the-per-pr-audit-defers-to-a-live-check.test.mjs fails if a check
+ * leaves its workflow.
  *
  * Exit 0 in release mode only when every `owed` list is empty, every entry was
  * reachable and parseable, and no declaration-shaped constant exists that this
@@ -208,11 +211,11 @@ const MANIFEST = [
   { repo: 'spec', path: 'resources/ast-span-divergence.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'npm run ast:check' },
   { repo: 'spec', path: 'resources/ast-value-divergence.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'npm run ast:check' },
   { repo: 'spec', path: 'resources/ast-extent-findings.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'npm run ast:check' },
-  // ONE OF THE TWO ENGINE-LAG ENTRIES: see the `prPolicy` note on the
+  // ONE OF THE ENGINE-LAG ENTRIES: see the `prPolicy` note on the
   // engine-pin ledger below. Same window, described from the writer side.
   { repo: 'spec', path: 'resources/engine-fmt-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run fmt:check' },
-  { repo: 'spec', path: 'resources/converter-drift.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'npm run compare:convert' },
-  // THE OTHER ENGINE-LAG ENTRY, AND THE ONE THE RULE WAS WRITTEN FOR. Both
+  { repo: 'spec', path: 'resources/converter-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run compare:convert' },
+  // ANOTHER ENGINE-LAG ENTRY, AND THE ONE THE RULE WAS WRITTEN FOR. All
   // are owed before a tag and declared inside a pull request: see the
   // two-verdicts note at the top of this file (carve#1811). `prPolicy` is
   // deliberately a per-entry opt-in rather than a blanket relaxation of
@@ -252,7 +255,7 @@ const MANIFEST = [
   { repo: 'spec', path: 'tests/examples-tier3.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/a-tier3-example-ahead-of-the-pin-is-declared.test.mjs' },
   { repo: 'spec', path: 'tests/every-labels-key-reaches-the-output.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/every-labels-key-reaches-the-output.test.mjs' },
   { repo: 'spec', path: 'tests/ast-schema.test.mjs', name: 'SCHEMA_ROLLOUT_PENDING', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/ast-schema.test.mjs' },
-  { repo: 'spec', path: 'tests/corpus-convert.test.mjs', name: 'PINNED_DRIFT', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'per-PR twin of resources/converter-drift.txt' },
+  { repo: 'spec', path: 'tests/corpus-convert.test.mjs', name: 'PINNED_DRIFT', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', owner: 'per-PR twin of resources/converter-drift.txt' },
   // Capability statements about the PINNED build and about each engine's CLI,
   // not pin lag: no rule separates one that will clear from one that never
   // will, so they are printed for a reader instead of judged.

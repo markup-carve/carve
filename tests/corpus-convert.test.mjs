@@ -164,7 +164,9 @@ const PINNED_UNIMPLEMENTED = {}
  * that starts matching fails as STALE until the entry is deleted in the commit
  * that moves the pin, and the meaning assertion still runs regardless.
  */
-const PINNED_DRIFT = {}
+const PINNED_DRIFT = {
+  '46-bbcode-empty-quotes-survive': 'predates carve#2171',
+}
 const PINNED_SOURCE_DRIFT = {}
 
 /**
@@ -214,13 +216,13 @@ test('the converter corpus is read, so it can fail', () => {
   assert.ok(cases.length >= 10, `found ${cases.length} converter cases`)
 })
 
-test('every case holds exactly one input and one expected render', () => {
+test('every case holds exactly one input, one expected render, and at most one canonical source', () => {
   const wrong = []
   for (const { slug, files, inputs } of cases) {
     if (inputs.length !== 1) wrong.push(`${slug}: ${inputs.length} input file(s)`)
     else if (!FORMATS[inputs[0].slice('input.'.length)]) wrong.push(`${slug}: unknown source format "${inputs[0]}"`)
     if (!files.includes('expected.html')) wrong.push(`${slug}: no expected.html`)
-    const extra = files.filter((f) => f !== 'expected.html' && !f.startsWith('input.'))
+    const extra = files.filter((f) => !['expected.html', 'expected.crv'].includes(f) && !f.startsWith('input.'))
     if (extra.length) wrong.push(`${slug}: unexpected file(s) ${extra.join(', ')}`)
   }
   assert.deepEqual(wrong, [], `malformed converter case(s):\n  ${wrong.join('\n  ')}`)
@@ -278,7 +280,7 @@ test('convert then render matches the pinned bytes', () => {
   const wrong = []
   let ran = 0
   let skipped = 0
-  for (const { slug, dir, inputs } of cases) {
+  for (const { slug, dir, files, inputs } of cases) {
     const format = inputs[0].slice('input.'.length)
     if (FORMATS[format].convert === null) {
       // Declared above; the cross-engine runner covers these cases.
@@ -288,11 +290,17 @@ test('convert then render matches the pinned bytes', () => {
     ran++
     const source = readFileSync(resolve(dir, inputs[0]), 'utf8')
     const expected = readFileSync(resolve(dir, 'expected.html'), 'utf8')
-    const actual = carveToHtml(FORMATS[format].convert(source))
+    const converted = FORMATS[format].convert(source)
+    const actual = carveToHtml(converted)
     const withNewline = actual.endsWith('\n') ? actual : `${actual}\n`
-    if (withNewline !== expected) {
+    const canonicalPath = resolve(dir, 'expected.crv')
+    const canonical = files.includes('expected.crv') ? readFileSync(canonicalPath, 'utf8') : null
+    if (withNewline !== expected || (canonical !== null && converted !== canonical)) {
       if (Object.hasOwn(PINNED_DRIFT, slug)) continue // declared: the pin is behind the ruling
-      wrong.push(`${slug}\n    expected: ${JSON.stringify(expected)}\n      actual: ${JSON.stringify(withNewline)}`)
+      wrong.push(
+        `${slug}\n    expected: ${JSON.stringify(expected)}\n      actual: ${JSON.stringify(withNewline)}` +
+        (canonical === null ? '' : `\n  source expected: ${JSON.stringify(canonical)}\n    source actual: ${JSON.stringify(converted)}`),
+      )
     } else if (Object.hasOwn(PINNED_DRIFT, slug)) {
       wrong.push(
         `${slug}: PINNED_DRIFT declares this case (${PINNED_DRIFT[slug]}) but the pinned build now matches - delete the STALE entry in the commit that moves the pin`,
