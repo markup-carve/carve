@@ -26,6 +26,11 @@ const visibleText = (html) =>
 // This is an inspected snapshot, not an endorsement of those three losses;
 // the ratchet keeps them visible for a dedicated writer/parser correction.
 
+// Corpus 477's ten rows add +10 to each population count, +8 to the HTML round
+// trip and +7 to the Markdown one. Its two substitution rows come back as a
+// deletion then an insertion, which is what HTML and Markdown can say, and its
+// captioned image loses the caption line Markdown has no syntax for.
+
 // Corpus 476's two rows add +2 to completed, canonicalFixedPoints and
 // renderedTextPreserved and 0 to both round trips. The pinned build still folds
 // the fence into the caption or the quoted paragraph (markup-carve/carve-js#1880),
