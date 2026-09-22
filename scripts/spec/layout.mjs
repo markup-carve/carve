@@ -273,6 +273,10 @@ const CAPTION = /^\^ +(?=.*[^ \t\n\r\f])(.*?)[ \t]*$/
 // comment) are skipped whole, because a `]` inside them is content and cannot
 // be escaped. An UNCLOSED backtick run opens a verbatim span to the end of the
 // block (PART 3 code_span), so the run has no close on this line: -1.
+// The longest run `codeClosed` in resources/carve-core.ohm pairs; the inline
+// pass refuses a longer one, and this scanner stops at the same bound.
+export const MAX_CODE_RUN = 8
+
 export function bracketRunEnd(line, open) {
   if (line[open] !== '[') return -1
   let depth = 0
@@ -285,15 +289,11 @@ export function bracketRunEnd(line, open) {
     }
     if (c === '`') {
       const run = /^`+/.exec(line.slice(i))[0]
-      // THE 1..3 TIER, because that is what the inline layer this feeds
-      // accepts. resources/carve-core.ohm reads `code = code3 | code2 | code1 |
-      // codeU` and says of the last one that longer runs are out of Core: a run
-      // of four or more matches `codeU` and opens a verbatim span to the end of
-      // the block whether or not an equal run follows. A scanner that paired
-      // them anyway would hand this pass a close the inline pass does not
-      // believe in, and the two answers meeting produced a `<figure>` wrapped
-      // around a paragraph - a shape neither layer would have emitted alone.
-      if (run.length > 3) return -1
+      // THE SAME TIERS the inline layer pairs: a scanner that paired a run the
+      // inline pass does not would hand this pass a close it does not believe
+      // in, and the two answers meeting produced a `<figure>` wrapped around a
+      // paragraph - a shape neither layer would have emitted alone.
+      if (run.length > MAX_CODE_RUN) return -1
       const closer = new RegExp('(?<!`)`{' + run.length + '}(?!`)', 'g')
       closer.lastIndex = i + run.length
       const hit = closer.exec(line)

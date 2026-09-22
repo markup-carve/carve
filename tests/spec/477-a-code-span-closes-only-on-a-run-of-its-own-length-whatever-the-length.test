@@ -1,0 +1,65 @@
+A code span closes only on a run of its own length, whatever the length
+
+`````
+a ````b```` c
+.
+<p>a <code>b</code> c</p>
+`````
+
+`````
+a ````b``` c
+.
+<p>a <code>b``` c</code></p>
+`````
+
+`````
+a ````b```c```` d
+.
+<p>a <code>b```c</code> d</p>
+`````
+
+```
+a `b``c` d
+.
+<p>a <code>b``c</code> d</p>
+```
+
+`````````
+a ````````b```````` c
+.
+<p>a <code>b</code> c</p>
+`````````
+
+`````
+{*a ````b```` c*} d
+.
+<p><strong>a <code>b</code> c</strong> d</p>
+`````
+
+`````
+{~a ````~>```` b~>c~} d
+.
+<p><del>a <code>~&gt;</code> b</del><ins>c</ins> d</p>
+`````
+
+`````
+{~a ````~}```` b~>c~} d
+.
+<p><del>a <code>~}</code> b</del><ins>c</ins> d</p>
+`````
+
+`````
+{+a ````+}```` b+} c
+.
+<p><ins>a <code>+}</code> b</ins> c</p>
+`````
+
+`````
+![a ````]```` b](i)
+^ cap
+.
+<figure>
+  <img src="i" alt="a ````]```` b">
+  <figcaption>cap</figcaption>
+</figure>
+`````

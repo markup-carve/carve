@@ -449,6 +449,7 @@ index: examples/edge-cases/index.md
   unclaimed-openers-stay-literal
   inline-literal
   all-space-verbatim-content
+  a-code-span-closes-only-on-a-run-of-its-own-length-whatever-the-length
   adjacent-slash-and-underscore-emphasis-nest
   quote-flanking-after-an-escaped-character
   a-combined-bold-italic-span-may-cross-a-line

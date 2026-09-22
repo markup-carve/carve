@@ -11,7 +11,7 @@ import { readFileSync } from 'node:fs'
 import { resolve as presolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import * as ohm from 'ohm-js'
-import { Refuse } from './layout.mjs'
+import { MAX_CODE_RUN, Refuse } from './layout.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const g = ohm.grammar(readFileSync(presolve(here, '../../resources/carve-core.ohm'), 'utf8'))
@@ -87,6 +87,11 @@ function codeText(content) {
 }
 function codeOp(_o, content, _c) {
   return `<code>${escapeHtml(codeText(content))}</code>`
+}
+// The matched span under a `code` node: a closed `codeRun`, or `codeU`.
+const codeInner = (code) => {
+  const n = code.child(0)
+  return n.ctorName === 'codeClosed' ? n.child(0) : n
 }
 
 // attribute block -> ordered list of [kind, name, value]
@@ -414,9 +419,10 @@ const sem = g.createSemantics().addOperation('h', {
     )
     return `<strong${a}><em>${body}</em></strong>`
   },
-  code1: codeOp,
-  code2: codeOp,
-  code3: codeOp,
+  codeClosed(run) {
+    return run.h()
+  },
+  codeRun: codeOp,
   codeU(_o, _r, content) {
     return unclosedCode(content)
   },
@@ -627,7 +633,7 @@ const sem = g.createSemantics().addOperation('h', {
   },
   rawInline(code, _ob, fmt, _cb) {
     // PART 9 SS20: emitted UNESCAPED for the html format, dropped otherwise
-    const text = codeText(code.child(0).child(1))
+    const text = codeText(codeInner(code).child(1))
     return fmt.sourceString === 'html' ? text : ''
   },
   litInline(span, attrs) {
@@ -637,7 +643,7 @@ const sem = g.createSemantics().addOperation('h', {
     // removed. Bare text when no attribute block is present; a <span> carrying
     // the attributes when one is. Body extraction mirrors mathSpan (codeU
     // carries its content in a different child slot).
-    const inner = code.child(0)
+    const inner = codeInner(code)
     const body = escapeHtml(
       inner.ctorName === 'codeU'
         ? inner.child(2).sourceString.replace(hardBreaks ? /[ \t]+$/ : /[ \t\n]+$/, '')
@@ -1331,7 +1337,7 @@ function mathSpan(kind, code, attrs) {
       if (hardenAttr(a[1], '')) rest += ` ${a[1]}=""`
     }
   }
-  const inner = code.child(0)
+  const inner = codeInner(code)
   // codeU (unclosed run) carries its content in a different child slot
   const body = escapeHtml(
     inner.ctorName === 'codeU'
@@ -1591,6 +1597,7 @@ function renderInlineInner(text) {
   // Emphasis is resolved by the PART 9 SS9 delimiter stack in the `inlines`
   // semantic (resolveEmphasis) -- no pre-scan / refusal needed here.
   if (bracketDepthExceeds(text, MAX_NESTING_DEPTH)) throw new Refuse('inline nesting exceeds MAX_NESTING_DEPTH')
+  if (text.includes('`'.repeat(MAX_CODE_RUN + 1))) throw new Refuse('inline backtick run past the code span tiers')
   const saved = unattachedAttrs
   let source = text
   // Each pass escapes ONE unattached block, so the number of blocks bounds the
