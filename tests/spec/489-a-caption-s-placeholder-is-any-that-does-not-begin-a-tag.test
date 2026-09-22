@@ -1,0 +1,91 @@
+A caption's placeholder is any `#` that does not begin a tag
+
+```
+![p](p.png)
+^ Figure #* q
+.
+<figure>
+  <img src="p.png" alt="p">
+  <figcaption>Figure 1* q</figcaption>
+</figure>
+```
+
+```
+![p](p.png)
+^ Figure #, q
+.
+<figure>
+  <img src="p.png" alt="p">
+  <figcaption>Figure 1, q</figcaption>
+</figure>
+```
+
+```
+![p](p.png)
+^ Figure ## q
+.
+<figure>
+  <img src="p.png" alt="p">
+  <figcaption>Figure 1# q</figcaption>
+</figure>
+```
+
+```
+![p](p.png)
+^ Figure #é q
+.
+<figure>
+  <img src="p.png" alt="p">
+  <figcaption>Figure 1é q</figcaption>
+</figure>
+```
+
+```
+![p](p.png)
+^ Figure #1 q
+.
+<figure>
+  <img src="p.png" alt="p">
+  <figcaption>Figure <span class="tag"><strong>#1</strong></span> q</figcaption>
+</figure>
+```
+
+```
+![p](p.png)
+^ Figure #-a q
+.
+<figure>
+  <img src="p.png" alt="p">
+  <figcaption>Figure <span class="tag"><strong>#-a</strong></span> q</figcaption>
+</figure>
+```
+
+```
+![p](p.png)
+^ Figure x #* y #: z
+.
+<figure>
+  <img src="p.png" alt="p">
+  <figcaption>Figure x 1* y #: z</figcaption>
+</figure>
+```
+
+```
+![p](p.png)
+^ Figure#* q
+.
+<figure>
+  <img src="p.png" alt="p">
+  <figcaption>Figure1* q</figcaption>
+</figure>
+```
+
+```
+![p](p.png)
+^ Figure x#tag q
+.
+<figure>
+  <img src="p.png" alt="p">
+  <figcaption>Figure x#tag q</figcaption>
+</figure>
+```

@@ -752,7 +752,10 @@ CarveCore {
   squote     = "'"
   // a bare `#` (not a tag opener: followed by space/colon/dot/end) is
   // literal - needed for caption number placeholders and prose
-  hash       = "#" &(" " | ":" | "." | newline | end)
+  // CARVE-P2-022's BARE `#`: one that does not begin a tag. `tag` is tried
+  // first and claims every `#` that does, so what reaches here is the whole
+  // complement -- which is what the caption placeholder reads.
+  hash       = "#"
   dot        = "." ~".."
   dash       = "-" ~"-"
   plus       = "+" ~"-"

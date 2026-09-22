@@ -26,6 +26,9 @@ const visibleText = (html) =>
 // This is an inspected snapshot, not an endorsement of those three losses;
 // the ratchet keeps them visible for a dedicated writer/parser correction.
 
+// Corpus 489's nine rows add +9 to each population count, +2 to the HTML round
+// trip and 0 to the Markdown one, as measured with the pinned carve-js.
+
 // Corpus 488's seven rows add +7 to each population count and 0 to both round
 // trips, as measured with the pinned carve-js.
 
