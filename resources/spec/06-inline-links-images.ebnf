@@ -66,7 +66,7 @@ ascii_punctuation = '!' | '"' | '#' | '$' | '%' | '&' | "'" | '(' | ')'
                   | '^' | '_' | '`' | '{' | '|' | '}' | '~' ;
 
 (* --- Code Spans --- *)
-code_span = backtick_run, code_span_content, [backtick_run], [attributes] ;
+code_span = backtick_run, code_span_content, [backtick_run], [attribute_run] ;
    (* the closing backtick_run is OPTIONAL: an unclosed run runs to end of
       block -- see UNCLOSED RUN below *)
 backtick_run = '`'+ ;  (* the OPENER is a MAXIMAL run; the CLOSER is a run of
@@ -105,7 +105,7 @@ raw_inline = backtick_run, code_span_content, backtick_run, '{=', format_name, '
 (* A `!` PREFIX on a verbatim code span is an inline literal, mirroring
    `math_inline = '$', code_span` (§18). The span content is HTML-ESCAPED and
    emitted by EVERY renderer (never dropped), but WITHOUT the `<code>` wrapper
-   -- it is prose, not code. The trailing `[attributes]` is the ORDINARY
+   -- it is prose, not code. The trailing `[attribute_run]` is the ORDINARY
    code-span attribute block: with attributes an emitted `<span>` carries them,
    with none bare escaped text is emitted. Unlike `{=format}` (raw_inline, §20)
    the content is escaped and never target-routed. The `!` binds to a following
@@ -118,9 +118,9 @@ link = inline_link | reference_link | collapsed_reference_link ;
 (* autolink and auto_text_link (crossref) are listed directly in
    inline_element, not here. *)
 
-inline_link = '[', link_text, ']', '(', link_destination, [link_title], ')', [attributes] ;
-reference_link = '[', link_text, ']', '[', reference_label, ']', [attributes] ;
-collapsed_reference_link = '[', link_text, ']', '[', ']', [attributes] ;
+inline_link = '[', link_text, ']', '(', link_destination, [link_title], ')', [attribute_run] ;
+reference_link = '[', link_text, ']', '[', reference_label, ']', [attribute_run] ;
+collapsed_reference_link = '[', link_text, ']', '[', ']', [attribute_run] ;
 
 link_text = inline_content ;
 (* SEMANTIC CONSTRAINT: the link text ends at the matching `]` -- the close
@@ -407,10 +407,10 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    character after ']': '(' -> inline_link, '[' -> reference link, '{' ->
    inline_span. A bare '[text]' with none of those is literal text (carve
    has no shortcut reference links). See PART 9 §14. *)
-inline_span = '[', inline_content, ']', attributes ;
+inline_span = '[', inline_content, ']', attribute_run ;
 
-autolink = '<', (url_autolink | email_autolink), '>', [attributes] ;
-(* A trailing `[attributes]` block attaches to the autolink (generic
+autolink = '<', (url_autolink | email_autolink), '>', [attribute_run] ;
+(* A trailing `[attribute_run]` attaches to the autolink (generic
    inline-attribute carrier, examples.md): `<https://example.com>{.ext}`
    -> `<a href="https://example.com" class="ext">https://example.com</a>`.
    It uses the same slot as every other inline carrier. *)
@@ -495,9 +495,9 @@ control_char = (* any character in Unicode General_Category Cc *) ;
 (* An image has the same three forms as a link (inline / reference / collapsed
    reference); only the leading `!` and the `<img src>` output differ. *)
 image = inline_image | reference_image | collapsed_reference_image ;
-inline_image = '!', '[', alt_text, ']', '(', image_source, [image_title], ')', [attributes] ;
-reference_image = '!', '[', alt_text, ']', '[', reference_label, ']', [attributes] ;
-collapsed_reference_image = '!', '[', alt_text, ']', '[', ']', [attributes] ;
+inline_image = '!', '[', alt_text, ']', '(', image_source, [image_title], ')', [attribute_run] ;
+reference_image = '!', '[', alt_text, ']', '[', reference_label, ']', [attribute_run] ;
+collapsed_reference_image = '!', '[', alt_text, ']', '[', ']', [attribute_run] ;
 alt_text = {character} ;
 (* SEMANTIC CONSTRAINT: the alt text ends at the matching `]` -- THE SAME
    close as `link_text`, balanced-bracket, escape- and LITERAL-SPAN-aware. Not
@@ -521,7 +521,7 @@ image_title = link_title ;
    image renders as literal source (the `!` plus the bracketed text) and --
    unlike a reference link -- never matches heading text. There is NO shortcut
    `![alt]` reference image, mirroring the absence of a shortcut reference
-   link. Trailing [attributes] attach to the resolved <img>. *)
+   link. A trailing [attribute_run] attaches to the resolved <img>. *)
 
 (* A caption (`^ ` line) may follow a standalone image paragraph on the
    next line, wrapping it in a <figure> -- caption placement is PART 9 §4;

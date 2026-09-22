@@ -9,7 +9,7 @@ math = math_inline | math_display ;
 math_inline = '$', code_span ;
 math_display = "$$", code_span ;
 (* TRAILING ATTRIBUTES on math -- NORMATIVE [CARVE-P3-012]: math reuses `code_span`, which
-   carries the generic `[attributes]` slot, so `$\`x\`{.c}` / `$$\`x\`{.c}`
+   carries the generic `[attribute_run]` slot, so `$\`x\`{.c}` / `$$\`x\`{.c}`
    parse a trailing attribute block and APPLY it to the math span, merging
    classes into the existing `math inline` / `math display` class
    (`<span class="math inline c">`); `#id` / `key=value` are applied too.
@@ -80,14 +80,14 @@ bare_closer(d) = <&(non_ws), d, !(alnum) ;
    nesting) is PART 9 §9; the `01-emphasis` corpus cases pin it.
    Forced `{X … X}` spans bypass BOTH guards entirely (PART 9 §22). *)
 
-emphasis = bare_opener('/'), emphasis_content, bare_closer('/'), [attributes] ;  (* italic *)
-strong = bare_opener('*'), strong_content, bare_closer('*'), [attributes] ;       (* bold *)
-bold_italic = bare_opener('/'), '*', bi_content, '*', bare_closer('/'), [attributes] ;
+emphasis = bare_opener('/'), emphasis_content, bare_closer('/'), [attribute_run] ;  (* italic *)
+strong = bare_opener('*'), strong_content, bare_closer('*'), [attribute_run] ;       (* bold *)
+bold_italic = bare_opener('/'), '*', bi_content, '*', bare_closer('/'), [attribute_run] ;
    (* the combined `/*` opener: the boundary guards apply to the OUTER `/`;
       the inner `*` is part of the two-char token, not separately guarded *)
-underline = bare_opener('_'), underline_content, bare_closer('_'), [attributes] ;
-strikethrough = bare_opener('~'), strike_content, bare_closer('~'), [attributes] ;
-highlight = bare_opener('='), highlight_content, bare_closer('='), [attributes] ;  (* single-char; was "==" *)
+underline = bare_opener('_'), underline_content, bare_closer('_'), [attribute_run] ;
+strikethrough = bare_opener('~'), strike_content, bare_closer('~'), [attribute_run] ;
+highlight = bare_opener('='), highlight_content, bare_closer('='), [attribute_run] ;  (* single-char; was "==" *)
 (* there is NO bare superscript/subscript production -- `^` and `,` are
    always literal outside the forced forms; see the rationale note above
    and forced_super / forced_sub below *)
@@ -97,17 +97,17 @@ highlight = bare_opener('='), highlight_content, bare_closer('='), [attributes] 
    emphasizes intraword. The closing brace bounds the span; the inner delimiter
    characters are literal unless they open a nested forced span. Every mark has
    a forced form: *)
-forced_emphasis   = "{/", forced_content, "/}", [attributes] ;   (* italic    *)
-forced_strong     = "{*", forced_content, "*}", [attributes] ;   (* bold      *)
-forced_underline  = "{_", forced_content, "_}", [attributes] ;   (* underline *)
-forced_super      = "{^", forced_content, "^}", [attributes] ;   (* sup       *)
-forced_sub        = "{,", forced_content, ",}", [attributes] ;   (* sub       *)
+forced_emphasis   = "{/", forced_content, "/}", [attribute_run] ;   (* italic    *)
+forced_strong     = "{*", forced_content, "*}", [attribute_run] ;   (* bold      *)
+forced_underline  = "{_", forced_content, "_}", [attribute_run] ;   (* underline *)
+forced_super      = "{^", forced_content, "^}", [attribute_run] ;   (* sup       *)
+forced_sub        = "{,", forced_content, ",}", [attribute_run] ;   (* sub       *)
 (* `{~ … ~}` is forced strikethrough UNLESS it contains a top-level `~>`, in
    which case it is editorial substitution (PART 9 §22 disambiguation). *)
-forced_strike     = "{~", forced_content, "~}", [attributes] ;
+forced_strike     = "{~", forced_content, "~}", [attribute_run] ;
 (* `{= … =}` is forced highlight (see Editorial Markup below for the
    distinction from the raw-inline `{=format}` attribute). *)
-forced_highlight  = "{=", forced_content, "=}", [attributes] ;
+forced_highlight  = "{=", forced_content, "=}", [attribute_run] ;
 forced_content    = (inline_element | text_run | literal_special)+ ;
 (* AN EMPTY BRACE PAIR IS NOT A CONSTRUCT -- NORMATIVE [CARVE-P3-014]. The `+`
    above is load-bearing: an opener that meets its own closer with nothing
@@ -124,10 +124,10 @@ forced_content    = (inline_element | text_run | literal_special)+ ;
    divergence (see Editorial Markup below) and needs its own decision. *)
 
 (* TRAILING ATTRIBUTES -- each emphasis-family span MAY carry a trailing
-   `[attributes]` block: the generic inline-attribute carrier that attaches
+   `[attribute_run]`: the generic inline-attribute carrier that attaches
    to the immediately-preceding inline node (the general rule, examples.md
    "Trailing attribute block edge cases"). `*x*{.real}` ->
-   `<strong class="real">x</strong>`. It is the SAME `[attributes]` slot
+   `<strong class="real">x</strong>`. It is the SAME `[attribute_run]` slot
    every other inline carrier uses (code_span, link, image, inline_span,
    extension_inline, autolink). Pinned by corpus
    80-trailing-attribute-block-edge-cases. *)
@@ -259,7 +259,7 @@ citation_definition = '[@', citation_key, "]:", space, [attributes], inline_cont
    Like the other definition kinds it renders nothing where it sits. *)
 
 (* --- Extensions --- *)
-extension_inline = ':', extension_name, '[', extension_content, ']', [attributes] ;
+extension_inline = ':', extension_name, '[', extension_content, ']', [attribute_run] ;
 extension_name = identifier ;
 (* `identifier` already permits a leading `_`, so `_` is a valid extension
    name: `:_[x]` -> `<span class="ext-_">x</span>` (a name outside the
@@ -279,8 +279,8 @@ extension_content = {character - ']'} ;
 (* --- Editorial Markup (CriticMarkup-inspired) --- *)
 editorial_markup = addition | deletion | substitution | editorial_comment ;
 
-addition = "{+", inline_content, "+}", [attributes] ;
-deletion = "{-", inline_content, "-}", [attributes] ;
+addition = "{+", inline_content, "+}", [attribute_run] ;
+deletion = "{-", inline_content, "-}", [attribute_run] ;
 substitution = "{~", inline_content, "~>", inline_content, "~}" ;
 editorial_comment = "{#", comment_content, "#}" ;
 comment_content = (* any text until the matching `#}`, preserved literally;
@@ -381,7 +381,7 @@ symbol_boundary = (* :name:: no word character directly before the opening
    `:rocket:{.big}` -> `<span class="big">🚀</span>` (mapped) /
    `<span class="big">:rocket:</span>` (unmapped). Without attributes no
    wrapper is emitted. *)
-symbol = ':', symbol_name, ':', [attributes] ;
+symbol = ':', symbol_name, ':', [attribute_run] ;
 symbol_name = (letter | digit | '+' | '-'), {letter | digit | '_' | '+' | '-'} ;
 (* The FIRST name character is a letter, a digit, `+` or `-`, so the reaction
    shortcodes `:+1:` / `:-1:` parse (they are the most common ones in the

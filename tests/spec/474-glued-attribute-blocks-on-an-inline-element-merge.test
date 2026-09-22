@@ -1,0 +1,25 @@
+Glued attribute blocks on an inline element merge
+
+```
+*x*{.k}{.j}
+.
+<p><strong class="k j">x</strong></p>
+```
+
+```
+`c`{#a .k}{#b k=1}{.k k=2}
+.
+<p><code id="b" class="k" k="2">c</code></p>
+```
+
+```
+*a*{.k} {.j}
+
+*b*{.k}{???}
+
+*c*{.k}{*d*}
+.
+<p><strong class="k">a</strong> {.j}</p>
+<p><strong class="k">b</strong>{???}</p>
+<p><strong class="k">c</strong><strong>d</strong></p>
+```
