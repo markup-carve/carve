@@ -27,3 +27,5 @@
 276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-7  the pinned build reads the fence as paragraph text inside the item; markup-carve/carve-js#1880
 476-an-item-s-fence-is-read-once-whatever-block-it-follows  the pinned build folds the fence into the caption; markup-carve/carve-js#1880
 476-an-item-s-fence-is-read-once-whatever-block-it-follows-2  the pinned build folds the fence into the quoted paragraph; markup-carve/carve-js#1880
+478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column-3  the pinned build reads the fence as paragraph text inside the description; markup-carve/carve-js#1880
+478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column-5  the pinned build ends the description at the below-column line; markup-carve/carve-js#1880
