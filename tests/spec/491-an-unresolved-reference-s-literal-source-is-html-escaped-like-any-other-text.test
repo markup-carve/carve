@@ -1,0 +1,25 @@
+An unresolved reference's literal source is HTML-escaped like any other text
+
+```
+[ x][]
+
+![ x][]
+.
+<p>[&nbsp;x][]</p>
+<p>![&nbsp;x][]</p>
+```
+
+```
+[x][a & b]
+
+[x][]{title="a & b"}
+.
+<p>[x][a &amp; b]</p>
+<p>[x][]{title="a &amp; b"}</p>
+```
+
+```
+[x][]
+.
+<p>[x][]</p>
+```

@@ -32,6 +32,9 @@ const visibleText = (html) =>
 // Corpus 490's four rows add +4 to each population count and 0 to both round
 // trips, as measured with the pinned carve-js.
 
+// Corpus 491's three rows add +3 to each population count and 0 to both
+// round trips, as measured with the pinned carve-js.
+
 // Corpus 488's seven rows add +7 to each population count and 0 to both round
 // trips, as measured with the pinned carve-js.
 

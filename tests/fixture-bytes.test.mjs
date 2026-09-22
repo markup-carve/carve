@@ -126,6 +126,7 @@ const INVENTORY = [
   { base: '487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested-10', crv: ['NBSP'], html: ['NBSP'] },
   { base: '487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested-11', crv: ['NBSP'], html: ['NBSP'] },
   { base: '487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested-12', crv: ['FF'], html: ['FF'] },
+  { base: '491-an-unresolved-reference-s-literal-source-is-html-escaped-like-any-other-text', crv: ['NBSP'], html: [] },
   // The no-break space is the case: it is non-ASCII, so it passes into the
   // heading id unchanged instead of being slugged to a separator, and the
   // id carries the character rather than an entity.
