@@ -26,6 +26,9 @@ const visibleText = (html) =>
 // This is an inspected snapshot, not an endorsement of those three losses;
 // the ratchet keeps them visible for a dedicated writer/parser correction.
 
+// Corpus 484's six rows add +6 to each population count, +4 to the HTML round
+// trip and 0 to the Markdown one, as measured with the pinned carve-js.
+
 // Corpus 483's six rows add +6 to each population count, +1 to the HTML round
 // trip and 0 to the Markdown one: Markdown has no definition list, and the HTML
 // importer reads a paragraph's soft break back as a space.

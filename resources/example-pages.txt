@@ -457,6 +457,7 @@ index: examples/edge-cases/index.md
   all-space-verbatim-content
   a-code-span-closes-only-on-a-run-of-its-own-length-whatever-the-length
   adjacent-slash-and-underscore-emphasis-nest
+  a-delimiter-after-an-underscore-or-slash-opens-only-when-that-one-pairs
   quote-flanking-after-an-escaped-character
   a-combined-bold-italic-span-may-cross-a-line
   a-bare-closer-does-not-reach-inside-a-braced-inline
