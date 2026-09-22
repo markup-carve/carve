@@ -1,0 +1,85 @@
+An empty term marker in a description body is text
+
+```
+:: t
+: a
+:: 
+c
+.
+<dl>
+  <dt>t</dt>
+  <dd>a
+::
+c</dd>
+</dl>
+```
+
+```
+:: t
+: a
+::  
+c
+.
+<dl>
+  <dt>t</dt>
+  <dd>a
+::
+c</dd>
+</dl>
+```
+
+```
+:: t
+: a
+:: 
+.
+<dl>
+  <dt>t</dt>
+  <dd>a
+::</dd>
+</dl>
+```
+
+```
+:: t
+: a
+  b
+:: 
+c
+.
+<dl>
+  <dt>t</dt>
+  <dd>a
+b
+::
+c</dd>
+</dl>
+```
+
+```
+:: t
+: a
+:: 
+: c
+.
+<dl>
+  <dt>t</dt>
+  <dd>a
+::</dd>
+  <dd>c</dd>
+</dl>
+```
+
+```
+:: t
+: a
+::
+c
+.
+<dl>
+  <dt>t</dt>
+  <dd>a
+::
+c</dd>
+</dl>
+```

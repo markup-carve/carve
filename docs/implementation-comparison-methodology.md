@@ -153,7 +153,9 @@ and
 and
 `481-a-bare-colon-run-interrupts-a-paragraph-whether-or-not-a-line-follows-it`
 and
-`482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in`.
+`482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in`
+and
+`483-an-empty-term-marker-in-a-description-body-is-text`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -258,6 +260,9 @@ Section 482 lags carve-js on all six of its ruled rows and carve-php on five
 (markup-carve/carve-js#1889, markup-carve/carve-php#2216). carve-rs reads the
 ruled shape and misses the nested item and the paragraph-then-opener control
 (markup-carve/carve-rs#1808).
+Section 483 lags all three engines on five of its six rows, which end a
+description body at an empty term marker (markup-carve/carve-js#1891,
+markup-carve/carve-php#2218, markup-carve/carve-rs#1812).
 Section 463 no longer lags an engine. A bare closer inside a braced inline
 (`~{/x/}{/y~/}`) used to close a span opened before the braces; markup-carve/carve#2027
 ruled that it may not, and all three now match.

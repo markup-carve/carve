@@ -106,6 +106,13 @@ const INVENTORY = [
   // trailing whitespace there. An editor that expands it to spaces moves the
   // document onto the one-space row and the ruling goes untested.
   { base: '439-a-colon-followed-by-only-whitespace-is-not-a-description-7', crv: ['trailing-WS'], html: [] },
+  // The term-marker twin (markup-carve/carve-js#1891): `::` then trailing spaces.
+  // An editor that trims them turns each row into the `::` control.
+  { base: '483-an-empty-term-marker-in-a-description-body-is-text', crv: ['trailing-WS'], html: [] },
+  { base: '483-an-empty-term-marker-in-a-description-body-is-text-2', crv: ['trailing-WS'], html: [] },
+  { base: '483-an-empty-term-marker-in-a-description-body-is-text-3', crv: ['trailing-WS'], html: [] },
+  { base: '483-an-empty-term-marker-in-a-description-body-is-text-4', crv: ['trailing-WS'], html: [] },
+  { base: '483-an-empty-term-marker-in-a-description-body-is-text-5', crv: ['trailing-WS'], html: [] },
   // The no-break space is the case: it is non-ASCII, so it passes into the
   // heading id unchanged instead of being slugged to a separator, and the
   // id carries the character rather than an entity.

@@ -37,3 +37,8 @@
 482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-4  the pinned build lets a closer rescue a marker-line opener whose body folded in; markup-carve/carve-js#1889
 482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-5  the pinned build lets a closer rescue a marker-line opener whose body folded in; markup-carve/carve-js#1889
 482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-6  the pinned build lets a closer rescue a marker-line opener whose body folded in; markup-carve/carve-js#1889
+483-an-empty-term-marker-in-a-description-body-is-text  the pinned build ends a description body at an empty term marker; markup-carve/carve-js#1891
+483-an-empty-term-marker-in-a-description-body-is-text-2  the pinned build ends a description body at an empty term marker; markup-carve/carve-js#1891
+483-an-empty-term-marker-in-a-description-body-is-text-3  the pinned build ends a description body at an empty term marker; markup-carve/carve-js#1891
+483-an-empty-term-marker-in-a-description-body-is-text-4  the pinned build ends a description body at an empty term marker; markup-carve/carve-js#1891
+483-an-empty-term-marker-in-a-description-body-is-text-5  the pinned build ends a description body at an empty term marker; markup-carve/carve-js#1891
