@@ -1034,6 +1034,15 @@ function buildToks(children, literalDelims = '') {
     // alternative arrives wrapped in `rich`, as `forcedUnder` also unwraps.
     let marker = alt
     while (marker.ctorName === 'rich') marker = marker.child(0)
+    if (QUOTE_RULES.has(marker.ctorName)) {
+      toks.push({ k: 't', h: c.h(), quote: { at: marker.source.startIdx, single: marker.ctorName === 'squote' } })
+      continue
+    }
+    // An escaped quote renders straight and is what the next quote reads.
+    if (marker.ctorName === 'escape' && QUOTE_CHARS.has(marker.child(1).sourceString)) {
+      toks.push({ k: 't', h: c.h(), straight: marker.child(1).sourceString })
+      continue
+    }
     if (MARKER_RULES.has(marker.ctorName)) {
       const at = marker.source.startIdx
       const t = { k: 't', h: c.h(), at, raw: marker.sourceString, full: marker.sourceString }
@@ -1243,8 +1252,51 @@ function pairGuarded(build, src, literalDelims = '') {
   }
 }
 
+// PART 3 decides each quote by its preceding character, and the start of a
+// span's content counts as start-of-content. Both need the pairing, so every
+// quote in the run is decided here, in source order, from the glyph that stood
+// before the run.
+function applyQuotes(toks, openMap, src, contentAt, startGlyph) {
+  const opens = new Set()
+  for (const i of openMap.keys()) opens.add(toks[i].at)
+  const candidates = new Set()
+  for (const t of toks) if (t.k === 'd') candidates.add(t.at)
+  let last = startGlyph
+  let seen = false
+  for (const t of toks) {
+    if (t.straight !== undefined) {
+      seen = true
+      last = t.straight
+      continue
+    }
+    if (t.quote === undefined) continue
+    seen = true
+    const { at, single } = t.quote
+    const open = single ? '\u2018' : '\u201c'
+    const close = single ? '\u2019' : '\u201d'
+    const prev = at > 0 ? src[at - 1] : quotePrevCtx
+    const next = src[at + 1] ?? ''
+    let decided
+    if (single && /[0-9]/.test(next) && !/[\p{L}\p{N}]/u.test(prev)) decided = close
+    else if (EMPHASIS_DELIMS.has(prev)) {
+      // The delimiter before it: an opener puts the quote at the start of a
+      // span's content; one that pairs nothing is an ordinary character. A
+      // delimiter that is not a candidate at all belongs to the span this run
+      // is inside, and the quote opening the run stands at its content start.
+      decided = candidates.has(at - 1) ? (opens.has(at - 1) ? open : close) : at === contentAt ? open : close
+    } else if (prev === '') decided = open
+    else if (QUOTE_CHARS.has(prev)) decided = last === '\u201c' || last === '\u2018' ? open : close
+    else decided = QUOTE_OPEN_PREV.has(prev) ? open : close
+    t.h = decided
+    last = decided
+  }
+  if (seen) lastQuoteGlyph = last
+}
+
 function resolveEmphasis(build, src, literalDelims = '', contentAt = 0) {
+  const startGlyph = lastQuoteGlyph
   const { toks, openMap } = pairGuarded(build, src, literalDelims)
+  applyQuotes(toks, openMap, src, contentAt, startGlyph)
   resolveNameRun(toks, openMap)
   applyMarkerBoundary(toks, openMap, src, contentAt)
   // Build the span tree by walking the paired ranges (properly nested).
@@ -1468,21 +1520,18 @@ const QUOTE_CHARS = new Set(['"', "'"])
 // (`"'q'"` nests), after a closing one it closes (`""` is a pair). The
 // character alone cannot say - both spellings are the same byte.
 let lastQuoteGlyph = ''
-// Bare emphasis delimiters (PART 9 §9). A quote directly inside one sees what
-// precedes the delimiter, not the delimiter itself: the engines decide on the
-// start of the emphasis CONTENT, so `*'q'*` opens while `a*'q'*` - where the
-// `*` is intraword and opens nothing - closes (carve#348).
-// Only the delimiters that are NOT already an opening context in their own
-// right. `/` and `=` are in the set above - `a="b"` and a line-leading `/"q"`
-// open on them directly - so skipping those would land the lookbehind on the
-// word before and close the quote.
+// A quote directly after a bare delimiter that OPENS a span stands at the
+// START of that span's content, which is an opening context (carve#348).
+// After a delimiter that opens nothing the delimiter IS the preceding
+// character, and none of these three is an opening context, so the quote
+// closes. Pairing decides which, so `applyQuotes` settles it after the stack
+// has run. `/` and `=` are in the opening set already, either way.
 const EMPHASIS_DELIMS = new Set(['*', '_', '~'])
+const QUOTE_RULES = new Set(['dquote', 'squote'])
 function smartQuote(node, open, close, single) {
   const src = node.source.sourceString
   const at = node.source.startIdx
-  let back = at - 1
-  while (back >= 0 && EMPHASIS_DELIMS.has(src[back])) back--
-  const prev = back >= 0 ? src[back] : quotePrevCtx
+  const prev = at > 0 ? src[at - 1] : quotePrevCtx
   const next = src[at + 1] ?? ''
   if (single && /[0-9]/.test(next) && !/[\p{L}\p{N}]/u.test(prev)) {
     lastQuoteGlyph = close
