@@ -2746,7 +2746,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const close = findColonCloser(lines, i, cf[1].length)
           const end = close === -1 ? n : close
           const body = lines.slice(i + 1, end)
-          if (close === -1 && body.some((l) => l.startsWith(LAZY)) && body.every((l) => isBlank(l) || l.startsWith(LAZY))) {
+          // A closer adds no body, so it does not stop the demotion either: what
+          // follows the demoted opener is read on its own, a bare run by §10 I4
+          // (carve#2147). Only a list item's marker-line opener is ever handed
+          // lazy lines, so nothing else reaches this test.
+          if (body.some((l) => l.startsWith(LAZY)) && body.every((l) => isBlank(l) || l.startsWith(LAZY))) {
             // A marker-line opener whose only "body" came from below-content
             // lazy folding did not actually acquire container body lines.
             //

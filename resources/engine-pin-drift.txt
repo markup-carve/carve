@@ -31,3 +31,9 @@
 478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column-5  the pinned build ends the description at the below-column line; markup-carve/carve-js#1880
 479-a-closer-below-the-container-s-column-does-not-count-4  the pinned build counts a flush-left closer for a description's fence; markup-carve/carve-js#1883
 480-a-bare-colon-opener-in-a-description-body-is-an-opener-7  the pinned build reads the fence as paragraph text inside the description; markup-carve/carve-js#1880
+482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in  the pinned build lets a closer rescue a marker-line opener whose body folded in; markup-carve/carve-js#1889
+482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-2  the pinned build lets a closer rescue a marker-line opener whose body folded in; markup-carve/carve-js#1889
+482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-3  the pinned build lets a closer rescue a marker-line opener whose body folded in; markup-carve/carve-js#1889
+482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-4  the pinned build lets a closer rescue a marker-line opener whose body folded in; markup-carve/carve-js#1889
+482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-5  the pinned build lets a closer rescue a marker-line opener whose body folded in; markup-carve/carve-js#1889
+482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-6  the pinned build lets a closer rescue a marker-line opener whose body folded in; markup-carve/carve-js#1889

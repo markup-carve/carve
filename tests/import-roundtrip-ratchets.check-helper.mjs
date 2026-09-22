@@ -26,6 +26,10 @@ const visibleText = (html) =>
 // This is an inspected snapshot, not an endorsement of those three losses;
 // the ratchet keeps them visible for a dedicated writer/parser correction.
 
+// Corpus 482's ten rows add +10 to each population count, +5 to the HTML round
+// trip and 0 to the Markdown one. The HTML importer unwraps an unlabeled div
+// and reads a paragraph's soft break back as a space; Markdown has no div.
+
 // Corpus 481's seven rows add +7 to each population count and 0 to both round
 // trips. Their empty unlabeled divs carry nothing the HTML importer can spell
 // and Markdown has no div; the absorbed control returns its soft breaks as
