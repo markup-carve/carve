@@ -1974,6 +1974,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
   // container could not derive that one - a tab in the run, or a line it
   // synthesized - so it is walked here, once.
   const meas = seeded ?? new Array(n)
+  // I4 answers the enclosing collector already gave for these lines.
+  const fenceOpens = state.fenceOpensAt?.get(lines)
   const ind = (idx) => {
     const m = meas[idx]
     if (m !== undefined && m !== null) return m
@@ -1990,7 +1992,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     if (isTableRow(line)) return true
     if (isColonParagraphInterrupt(line) || bareColonHasFollowingBody(lines, idx)) return true
     const fence = FENCE.exec(line)
-    if (fence && hasCloser(lines, idx)) return true // I4
+    if (fence && (hasCloser(lines, idx) || fenceOpens?.has(idx))) return true // I4
     // ABBR_DEF only at document level: elsewhere the line is paragraph text,
     // so it neither opens a block nor interrupts one (PART 12 SS7).
     if (isLinkDef(line) || FOOTNOTE_DEF.test(line) || (top && ABBR_DEF.test(line))) return true // I5
@@ -3255,7 +3257,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (colonInterruptsParagraph(lines, i, para)) break // I1/I4
         }
         const f = FENCE.exec(lines[i])
-        if (f && parseFenceInfo(f[2]) && hasCloser(lines, i)) break // I4: interrupts
+        if (f && parseFenceInfo(f[2]) && (hasCloser(lines, i) || fenceOpens?.has(i))) break // I4: interrupts
       }
       para.push(stripIndent(lines[i]).replace(/[ \t]+$/, ''))
       i++
@@ -3721,6 +3723,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     }
     let contentCol = head.indent + head.markerWidth
     const itemLines = []
+    const fenceOpensAt = new Set()
     // Measurements for the body lines, carried to the item's own parse so it
     // does not re-walk indentation this collector has already walked
     // (carve#752). `null` means "not derivable here" - a line this collector
@@ -4393,7 +4396,12 @@ function collectItems(lines, i, list, state, ind, meas) {
           authoredBlockBase = openerBase
           authoredBlockLimit = authoredBlockEnd(lines, i, openerBase, state)
         }
-        trackFence(dedented, bodyFenceOpens(i, dedented, localBase), i)
+        const opens = bodyFenceOpens(i, dedented, localBase)
+        // The item's own parse asks I4 over the item's lines, and a closer the
+        // lookahead found past a below-column line is not among them. Hand it
+        // the answer given here so the line is read one way (carve#1399).
+        if (opens) fenceOpensAt.add(itemLines.length - 1)
+        trackFence(dedented, opens, i)
         // A COMMENT IS INVISIBLE, SO IT LEAVES NO PARAGRAPH OPEN. §24 C3 says a
         // comment "does end the open PARAGRAPH" (carve#677), of BOTH spellings
         // - the `%%` line and the `%%%` fence, "whose body and closer travel
@@ -4711,6 +4719,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       }
       break
     }
+    if (fenceOpensAt.size) (state.fenceOpensAt ??= new WeakMap()).set(itemLines, fenceOpensAt)
     item.blocks = parseBlocks(itemLines, state, false, true, itemMeas)
     list.items.push(item)
     // Returning rather than breaking leaves `i` on the marker line, so the
