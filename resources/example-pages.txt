@@ -656,6 +656,7 @@ index: examples/edge-cases/index.md
   boolean-attributes
   unquoted-attribute-values-may-contain-dots-and-colons
   adjacent-attribute-blocks-on-one-line-merge
+  glued-attribute-blocks-on-an-inline-element-merge
   classes-are-deduplicated
   code-span-and-image-trailing-attributes-are-strict
   a-bare-attribute-block-on-its-own-line-is-literal

@@ -99,6 +99,9 @@ const attrSem = g.createSemantics().addOperation('parseAttrs', {
   attrs(_o, _s1, first, _s2, rest, _s3, _c) {
     return [first.parseAttrs(), ...rest.children.map((c) => c.parseAttrs())]
   },
+  attrRun(blocks) {
+    return blocks.children.flatMap((b) => b.parseAttrs())
+  },
   // Same shape, different separator: `blockAttrs` admits a newline because a
   // standalone attribute LINE may span lines (`block_attributes` in
   // grammar.ebnf), and `attrs` above may not.
@@ -751,14 +754,17 @@ const sem = g.createSemantics().addOperation('h', {
   hash(_h, _la) {
     return '#'
   },
-  looseAttrs(a) {
+  looseAttrs(blocks) {
     // The BRACES are literal, their CONTENTS are inline content. A brace run
     // that attaches to nothing is text (SS15 A7, PART 2 headings), and the
     // text inside it goes on being text - so a `#word` in there is a tag
     // (SS19), which is what all three engines emit. Escaping the whole run
-    // rendered `{#id .cls}` verbatim and lost the tag.
-    const src = a.sourceString
-    return '{' + renderInline(src.slice(1, -1)) + '}'
+    // rendered `{#id .cls}` verbatim and lost the tag. Block by block, because
+    // one interior spanning a run would read the `}{` between two blocks as
+    // content (carve#2136).
+    return blocks.children
+      .map((b) => '{' + renderInline(b.sourceString.slice(1, -1)) + '}')
+      .join('')
   },
   word(first, rest) {
     return escapeHtml(this.sourceString)
@@ -810,6 +816,10 @@ sem.addOperation('applyTail(text, source)', {
     const { text } = this.args
     return renderSemanticSpan(text, this.parseAttrs())
   },
+  attrRun(_blocks) {
+    const { text } = this.args
+    return renderSemanticSpan(text, this.parseAttrs())
+  },
   emptyAttrs(_o, _sp, _c) {
     const { text } = this.args
     return `<span>${text}</span>`
@@ -830,6 +840,16 @@ sem.addOperation('titleText', {
 sem.addOperation('parseAttrs', {
   attrs(_o, _s1, first, _s2, rest, _s3, _c) {
     return [first.parseAttrs(), ...rest.children.map((c) => c.parseAttrs())]
+  },
+  // A GLUED RUN IS ONE LIST (CARVE-P4-002, carve#2136). Concatenating in source
+  // order is enough: renderAttrs over the flat list is SS15 A3 - classes
+  // accumulate and deduplicate at the first class's position, an id or key
+  // keeps its last value at its first position - so no second merge is needed.
+  attrRun(blocks) {
+    return blocks.children.flatMap((b) => b.parseAttrs())
+  },
+  looseAttrs(blocks) {
+    return blocks.children.flatMap((b) => b.parseAttrs())
   },
   attrItem(item) {
     return item.parseAttrs()

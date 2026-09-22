@@ -77,7 +77,7 @@
         trailing `=` before the `}`.
       - ESCAPING. A literal `{/` (etc.) is written `\{/` -- one backslash on the
         brace is enough; the inner delimiter need not be escaped.
-      - ATTRIBUTES. A forced span MAY carry a trailing `[attributes]` block like
+      - ATTRIBUTES. A forced span MAY carry a trailing `[attribute_run]` like
         any bare span: {*x*}{.c} -> <strong class="c">x</strong>.
       (corpus 01-emphasis-12 forced-intraword, 01-emphasis-13 forced-nesting.)
 

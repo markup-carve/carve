@@ -135,7 +135,9 @@ and
 and
 `47-numbered-cross-references-11`
 and
-`473-a-run-of-asterisks-inside-a-combined-token-is-content`.
+`473-a-run-of-asterisks-inside-a-combined-token-is-content`
+and
+`474-glued-attribute-blocks-on-an-inline-element-merge`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the

@@ -189,7 +189,7 @@ CarveCore {
 
   // Combined form /*x*/ -> <strong><em> (grammar.ebnf bold_italic); matched
   // before emph so the two-char token wins over nested /-then-* parsing.
-  boldItalic = "/*" ~spaceOrEnd biInner+ "*/" attrs?
+  boldItalic = "/*" ~spaceOrEnd biInner+ "*/" attrRun?
   // `nl` belongs here: a paragraph folds across lines, so a combined
   // /*...*/ span may too. Without it the production failed on any
   // multi-line span and the delimiter stack paired the two characters
@@ -223,7 +223,7 @@ CarveCore {
   // 1..3 tier; longer runs are out of Core). Single-space strip is applied
   // by the renderer per the code_span rule.
   codeA      = rawInline | codeAttrd
-  codeAttrd  = code attrs?
+  codeAttrd  = code attrRun?
   code       = code3 | code2 | code1 | codeU
   // UNCLOSED RUN (PART 3 code_span): an opener with no equal-run closer
   // ahead opens a verbatim span to the END OF BLOCK; opaque; no
@@ -269,8 +269,8 @@ CarveCore {
   tagDot     = "." &tagChar
 
   // --- Math (PART 3: `$` / `$$` + a verbatim span; bare `$` is literal) ---
-  mathI      = "$" code attrs?
-  mathD      = "$$" code attrs?
+  mathI      = "$" code attrRun?
+  mathD      = "$$" code attrRun?
 
   // --- Inline literal (PART 9 SS27): "!" prefix on a verbatim code span,
   // mirroring math's "$" prefix. Content is HTML-escaped and emitted by every
@@ -285,7 +285,7 @@ CarveCore {
   // CONTENT is literal, and an attribute value is not that span's content -
   // `code` already stopped short of `attrs?` there for the same reason. One
   // spelling of the body, read from both places, so the two cannot drift.
-  litInline  = litInlineBody attrs?
+  litInline  = litInlineBody attrRun?
   litInlineBody = "!" code
 
   // --- Cross-reference with auto text (PART 3 auto_text_link) -------------
@@ -314,7 +314,7 @@ CarveCore {
   // one-or-more repetition and docs/parsing-ambiguities.md ss16 says `{^^}` is
   // not a superscript. An empty pair is not the construct, so its characters
   // are text (carve#1447).
-  forced<d>  = "{" d fInner<d>+ d "}" attrs?
+  forced<d>  = "{" d fInner<d>+ d "}" attrRun?
   // A forced opener of the SAME kind does not open while this span is open
   // (PART 9 SS9 E3), so it is refused here and its characters fall through to
   // `other` and `litDelim`. `editorial` and `bracedDash` are tried ahead of the
@@ -334,13 +334,13 @@ CarveCore {
   // editorial: {+ins+} {-del-} {~old~>new~} {# comment #} (+ the doubled
   // {++...++} / {--...--} forms whose extra marker chars stay literal)
   editorial  = edSub | edIns | edDel | edComment
-  edIns      = "{+" (~"+}" edScan)+ "+}" attrs?
+  edIns      = "{+" (~"+}" edScan)+ "+}" attrRun?
   // Every editorial form needs CONTENT (`+`, not `*`), like the forced spans
   // above: an opener meeting its own closer is not the construct (carve#1447).
   // The one string the empty deletion spelled is `{--}`, and that is the braced
   // en dash below. `edSub` is deliberately NOT widened: a half-empty
   // substitution is a real edit (`{~a~>~}` deletes `a`).
-  edDel      = "{-" (~"-}" edScan)+ "-}" attrs?
+  edDel      = "{-" (~"-}" edScan)+ "-}" attrRun?
   // The `~>` and `~}` a substitution needs are TOP-LEVEL: the search skips
   // verbatim content, so a pair whose only `~>` sits in code is a forced
   // strikethrough (PART 9 SS22, carve#2083). An unclosed run ends at `~}`.
@@ -367,7 +367,7 @@ CarveCore {
 
   // --- Inline extensions: :name[content] -> ext span (PART 8 rank 9);
   // content ends at the FIRST unescaped "]" (corpus 16-5)
-  extension  = ":" extName "[" extContent "]" attrs?
+  extension  = ":" extName "[" extContent "]" attrRun?
   extName    = identStart identRest*
   extContent = (escape | (~"]" any))*
 
@@ -377,7 +377,7 @@ CarveCore {
   // bare `shortcode` form). The attribute block is CONSUMED here so it attaches
   // to this span rather than the surrounding text. A bare `:name:` with no
   // attribute block stays literal text (see `shortcode`).
-  symbolAttr = ":" shortcodeName ":" attrs
+  symbolAttr = ":" shortcodeName ":" attrRun
   // An UNattributed `:name:` shortcode. Core has no symbol map, so it renders
   // literally -- but it must still be CONSUMED as one token, or its inner
   // characters would fall through to smart typography (`:+-:` would become
@@ -414,9 +414,9 @@ CarveCore {
   // a spelling.
   brContent  = escape | litInlineBody | code | edCommentBody | nested | (~"]" any)
   nested     = "[" brContent* "]"
-  brTail     = linkTail | refTail | attrs | emptyAttrs
-  linkTail   = "(" dest destTitle? ")" attrs?
-  refTail    = "[" refLabel? "]" attrs?
+  brTail     = linkTail | refTail | attrRun | emptyAttrs
+  linkTail   = "(" dest destTitle? ")" attrRun?
+  refTail    = "[" refLabel? "]" attrRun?
   refLabel   = (~"]" ~newline any)+
   // A destination's parentheses BALANCE (grammar link_destination), so a URL
   // carrying one is written plainly; the run ends at the first `)` with no
@@ -466,14 +466,14 @@ CarveCore {
   qChar      = qEsc | (~"\"" ~newline any)
   qEsc       = "\\" "\""
 
-  image      = "!" "[" altText "]" "(" dest destTitle? ")" attrs?
+  image      = "!" "[" altText "]" "(" dest destTitle? ")" attrRun?
   // `![alt][ref]` resolves against the SAME linkDefs entry a reference link
   // does, taking url, title and attrs from it (PART 9R R1). Without this rule
   // the `!` fell through to `bang` and the rest matched `bracketed`, so an
   // image reference rendered as a literal "!" followed by an <a> (carve#604
   // follow-up). Tried BEFORE `image` in the inline alternation so the
   // bracket form wins over the paren form for the same prefix.
-  imageRef   = "!" "[" altText "]" "[" refLabel? "]" attrs?
+  imageRef   = "!" "[" altText "]" "[" refLabel? "]" attrRun?
   // AN IMAGE IS A LINK WITH A `!` (grammar.ebnf, PART 3 Images: "An image has
   // the same three forms as a link ...; only the leading `!` and the `<img
   // src>` output differ"). The bracketed run is therefore the SAME run, closed
@@ -495,7 +495,7 @@ CarveCore {
   altText    = brContent*
 
   // --- Autolinks (PART 3): URL or email in angle brackets ------------------
-  autolink   = "<" (urlBody | emailBody) ">" attrs?
+  autolink   = "<" (urlBody | emailBody) ">" attrRun?
   urlBody    = scheme ":" urlChar+
   // ASCII, per `scheme = letter, {letter | digit | '+' | '-' | '.'}` in
   // grammar.ebnf, where `letter` is the enumerated ASCII alphabet. ohm's
@@ -552,6 +552,12 @@ CarveCore {
 
   // --- Attribute block (PART 4, strict identifiers) ------------------------
   attrs      = "{" attrSp* attrItem (attrSp+ attrItem)* attrSp* "}"
+  // THE INLINE SLOT IS A RUN [CARVE-P4-002]: glued blocks, merged by PART 9
+  // SS15 A3 in the `parseAttrs` action. A space or anything that is not an
+  // attribute block ends it, which `attrs+` already says (carve#2136).
+  // footnoteRef, inlineNote, edSub and edComment keep `attrs?`: grammar.ebnf
+  // gives them no attribute slot, and whether it should is carve#2138.
+  attrRun    = attrs+
   // SPACE ONLY, the A7 position of PART 4's THE INLINE INTERIOR IS SPACE-ONLY.
   // This ran on `(" " | "\t")*` until carve#906, and it is a SECOND site rather
   // than a use of `attrSp`: narrowing `attrSp` alone leaves `[x]{<TAB>}` a valid
@@ -753,7 +759,7 @@ CarveCore {
   anyChar    = ~newline any
   // paragraphs are inline-parsed as ONE text with embedded soft breaks
   nl         = "\n"
-  looseAttrs = attrs
+  looseAttrs = attrs+
   // a `:` opening an inline extension (:name[...]) is Full Carve -> refuse;
   // a plain colon is text. A bare `:name:` symbol shortcode with no map is
   // literal text in Core, matching Full Carve's mapless fallback; the
