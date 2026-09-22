@@ -1472,6 +1472,12 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
   // `367-an-unterminated-fence-at-a-content-column-opens-no-block-so-the-paragraph-stays-open`).
   if (bodyClosesAFenceAt(bodyLines, last)) return false
 
+  // A TRAILING BARE `:::` OPENS AN EMPTY CONTAINER. It is closer-shaped, so
+  // `opensParagraph` cannot tell it from a closer - but the line above says it
+  // closes nothing, and a `:::` opener is not guarded (§10 I4). An empty
+  // container leaves no paragraph open (carve#1938, carve#2147).
+  if (COLON_CLOSER.test(bodyLines[last])) return false
+
   return opensParagraph(bodyLines[last], false, tableOpenAfter(bodyLines.slice(0, last)))
 }
 
@@ -2008,7 +2014,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
   // container could not derive that one - a tab in the run, or a line it
   // synthesized - so it is walked here, once.
   const meas = seeded ?? new Array(n)
-  // I4 answers the enclosing collector already gave for these lines.
+  // Fence lines the enclosing collector already found to open, whose closer or
+  // following body lies past these lines (§10 I4, §12).
   const fenceOpens = state.fenceOpensAt?.get(lines)
   const ind = (idx) => {
     const m = meas[idx]
@@ -2024,9 +2031,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     if (line === undefined) return false
     if (startsVisibleBlock(line)) return true
     if (isTableRow(line)) return true
+    if (fenceOpens?.has(idx)) return true
     if (isColonParagraphInterrupt(line) || bareColonHasFollowingBody(lines, idx)) return true
     const fence = FENCE.exec(line)
-    if (fence && (hasCloser(lines, idx) || fenceOpens?.has(idx))) return true // I4
+    if (fence && hasCloser(lines, idx)) return true // I4
     // ABBR_DEF only at document level: elsewhere the line is paragraph text,
     // so it neither opens a block nor interrupts one (PART 12 SS7).
     if (isLinkDef(line) || FOOTNOTE_DEF.test(line) || (top && ABBR_DEF.test(line))) return true // I5
@@ -2712,6 +2720,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const normalizedBody = state.authoredBodyBases
             ? normalizeAuthoredBodyBases(bodyLines, state)
             : bodyLines
+          // A trailing bare `:::` that closes nothing opened (§10 I4 does not
+          // guard a `:::` opener); the body's own parse would ask for a line
+          // after it, and none is inside the body.
+          const lastLine = normalizedBody.findLastIndex((l) => l.trim() !== '')
+          if (openFence === -1 && lastLine !== -1 && COLON_CLOSER.test(normalizedBody[lastLine])) {
+            openFence = lastLine
+          }
           if (openFence !== -1) (state.fenceOpensAt ??= new WeakMap()).set(normalizedBody, new Set([openFence]))
           node.items.push({ ddBlocks: normalizedBody.length ? parseBlocks(normalizedBody, state, false) : [] })
           continue
@@ -3298,11 +3313,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         if (isLinkDef(lines[i]) || FOOTNOTE_DEF.test(lines[i]) || (top && ABBR_DEF.test(lines[i]))) break
         if (startsVisibleBlock(lines[i])) break // I1
         if (isTableRow(lines[i])) break // I1: valid table row
+        if (fenceOpens?.has(i)) break
         {
           if (colonInterruptsParagraph(lines, i, para)) break // I1/I4
         }
         const f = FENCE.exec(lines[i])
-        if (f && parseFenceInfo(f[2]) && (hasCloser(lines, i) || fenceOpens?.has(i))) break // I4: interrupts
+        if (f && parseFenceInfo(f[2]) && hasCloser(lines, i)) break // I4: interrupts
       }
       para.push(stripIndent(lines[i]).replace(/[ \t]+$/, ''))
       i++
