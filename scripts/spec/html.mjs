@@ -33,7 +33,7 @@ const LABELS = {
   admonitionExample: 'Example',
   admonitionQuote: 'Quote',
 }
-import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, captionPlaceholder, deTypography, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, FOOTNOTE_FRAMES } from './render.mjs'
+import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, captionPlaceholder, deTypography, makeSlugger, checkUrl, escapeAttr, escapeHtml, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, FOOTNOTE_FRAMES } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -1116,7 +1116,10 @@ function resolveImageRef(parsed, ctx, literal) {
   // UNRESOLVED -> LITERAL, attribute block INCLUDED. The block is part of
   // what the author wrote, and dropping it deleted content silently. All
   // three engines emit it verbatim (carve#679).
-  if (!def) return `![${alt}][${label ?? ''}]${attrSrc ?? ''}`
+  // LITERAL means what the author typed, HTML-escaped like any other text
+  // node (PART 10 SS2): `&`/`<`/`>` and a no-break space all need it, the
+  // same as every other piece of content this renderer emits.
+  if (!def) return `![${escapeHtml(alt)}][${escapeHtml(label ?? '')}]${escapeHtml(attrSrc ?? '')}`
   const t = def.title ? ` title="${escapeAttr(def.title)}"` : ''
   const a = def.attrs?.length
     ? renderBlockAttrs([def.attrs, attrList ?? []])
@@ -1188,7 +1191,8 @@ function resolveRefsOnce(html, ctx) {
       // never wrote, with the markers that identify it as a reference silently
       // consumed. All three engines emit the source; nothing pinned it because
       // no corpus case paired an unresolved reference with a decorated label.
-      return `[${source ?? text}][${label ?? ''}]${attrSrc ?? ''}`
+      // Same PART 10 SS2 escaping as the image-reference literal above.
+      return `[${escapeHtml(source ?? text)}][${escapeHtml(label ?? '')}]${escapeHtml(attrSrc ?? '')}`
     }
     const t = def.title ? ` title="${escapeAttr(def.title)}"` : ''
     // R1: the definition's attributes transfer to the link, and the link's own

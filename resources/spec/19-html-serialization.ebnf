@@ -86,9 +86,15 @@
    2. ATTRIBUTE QUOTING + ESCAPING. Attribute values are double-quoted.
       In an attribute value escape `&`->&amp;, `<`->&lt;, `>`->&gt;,
       `"`->&quot;, `'`->&apos;. In text/content escape `&`,`<`,`>` (NOT
-      quotes). No other entities are produced. This describes only the
-      QUOTING of values that survive filtering: dangerous attribute names,
-      values, and URL schemes are dropped/blanked FIRST per PART 9 §25.
+      quotes). ONE EXCEPTION: a NO-BREAK SPACE (U+00A0) in text content
+      serializes as `&nbsp;`, the one entity beyond the three, so it
+      renders visibly distinct from an ordinary space with no external
+      CSS -- matching the escaped-space spelling `\ ` (PART 3) and a line
+      block's preserved indentation (PART 9 §23), both of which already
+      serialize the same way. No other entities are produced. This
+      describes only the QUOTING of values that survive filtering:
+      dangerous attribute names, values, and URL schemes are
+      dropped/blanked FIRST per PART 9 §25.
 
    3. VOID ELEMENTS are written WITHOUT a trailing slash: `<hr>`,
       `<img …>`, `<br>`. A hard break serializes as `<br>` + newline.

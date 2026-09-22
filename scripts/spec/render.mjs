@@ -30,7 +30,7 @@ const escapeMarkup = (s) =>
     .replaceAll('>', '&gt;')
 
 // TEXT serializes a no-break space as the entity (PART 9 section 23).
-const escapeHtml = (s) => escapeMarkup(s).replaceAll(' ', '&nbsp;')
+export const escapeHtml = (s) => escapeMarkup(s).replaceAll(' ', '&nbsp;')
 
 // An ATTRIBUTE does not. All three engines write the character itself in
 // an attribute value, and both spellings parse to the same id - but the

@@ -169,7 +169,9 @@ and
 and
 `489-a-caption-s-placeholder-is-any-that-does-not-begin-a-tag`
 and
-`490-a-comment-inside-a-forced-span-or-the-combined-token-ends-at-its-closer`.
+`490-a-comment-inside-a-forced-span-or-the-combined-token-ends-at-its-closer`
+and
+`491-an-unresolved-reference-s-literal-source-is-html-escaped-like-any-other-text`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -306,6 +308,11 @@ Section 490 does NOT lag any engine: carve-js, carve-php, carve-rs and the
 pinned build already end a `%%` comment at a forced span's closer or the
 combined token's `*/`, and markup-carve/carve#2167 brought the executable
 reference to them.
+Section 491 lags carve-rs on its first document, where an unresolved
+reference's literal source loses a no-break space instead of folding it to
+`&nbsp;` (markup-carve/carve-rs#1823, open). carve-js, carve-php and the
+pinned build already fold it, and markup-carve/carve#2168 brought the
+executable reference to PART 10 SS2's one-entity exception.
 Section 463 no longer lags an engine. A bare closer inside a braced inline
 (`~{/x/}{/y~/}`) used to close a span opened before the braces; markup-carve/carve#2027
 ruled that it may not, and all three now match.
