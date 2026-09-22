@@ -36147,3 +36147,145 @@ decides whether a caption line below finds its image.
 ```
 
 :::::
+
+## A definition body's open code fence ends at a line below its column
+
+A FENCED BODY IS NOT A PARAGRAPH (PART 1, CARVE-P0-013), in a definition body as
+in a list item: a line below the body's column has no paragraph to fold into,
+so the body ends there and the line is read at document level. Whether the
+fence opened is §10 I4's question, asked the way *An item's fence is read once,
+whatever block it follows* asks it (markup-carve/carve#2143).
+
+::::: compare
+
+````carve
+:: t
+: ```
+ y
+  ```
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <pre><code>
+</code></pre>
+  </dd>
+</dl>
+<p>y
+<code></code></p>
+```
+
+:::::
+
+::::: compare
+
+````carve
+:: t
+: ```
+  b
+ y
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <pre><code>b
+</code></pre>
+  </dd>
+</dl>
+<p>y</p>
+```
+
+:::::
+
+After a paragraph the fence opens because its closer follows, past the
+below-column line, and the body's own parse takes the same answer.
+
+::::: compare
+
+````carve
+:: t
+: a
+  ```
+  b
+ y
+  ```
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>a</p>
+    <pre><code>b
+</code></pre>
+  </dd>
+</dl>
+<p>y
+<code></code></p>
+```
+
+:::::
+
+CONTROL. A fence the body already closed leaves the paragraph after it open, so
+the line folds into that paragraph as it does under a list item.
+
+::::: compare
+
+````carve
+:: t
+: ```
+  b
+  ```
+  c
+ y
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <pre><code>b
+</code></pre>
+    <p>c
+y</p>
+  </dd>
+</dl>
+```
+
+:::::
+
+The closer has to be reachable. A blank line followed by a line below the
+column ends the body (carve#1379), and a fence-shaped line past that is not
+this fence's closer, so the fence opened nothing and ` y` folds into the
+paragraph it stayed part of.
+
+::::: compare
+
+````carve
+:: t
+: a
+  ```
+  b
+ y
+
+z
+  ```
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>a
+<code>
+b
+y</code></dd>
+</dl>
+<p>z
+<code></code></p>
+```
+
+:::::

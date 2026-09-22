@@ -1568,6 +1568,38 @@ function bodyClosesAFenceAt(bodyLines, last) {
   return closedAt === last
 }
 
+// The body index of a code fence a description body OPENED and has not closed,
+// or -1. A FENCED BODY IS NOT A PARAGRAPH (CARVE-P0-013), so a line below the
+// body's column cannot fold into it and ends the body. Whether the fence opened
+// is §10 I4's question: at block start it runs to the end of the container,
+// after a paragraph only when a closer follows - and the search does not stop
+// at a below-column line (CARVE-P0-014), as the item collector's does not.
+function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt) {
+  for (let k = 0; k < bodyLines.length; k++) {
+    const f = FENCE.exec(bodyLines[k])
+    if (!f || parseFenceInfo(f[2]) === null) continue
+    const end = findCloser(bodyLines, k, f[1])
+    if (end !== -1) {
+      k = end
+      continue
+    }
+    const prefix = bodyLines.slice(0, k)
+    const atStart = prefix.every((l) => l.trim() === '') || !bodyLeavesParagraphOpen(prefix)
+    if (atStart || descriptionCloserAhead(f[1], lines, from, bodyColumn, endsBodyAt)) return k
+  }
+  return -1
+}
+
+function descriptionCloserAhead(run, lines, from, bodyColumn, endsBodyAt) {
+  for (let j = from; j < lines.length && !endsBodyAt(j); j++) {
+    const m = indentCols(lines[j])
+    const text = m.col >= bodyColumn ? dedentMeasured(m, lines[j], bodyColumn).text : m.rest
+    const c = PURE_FENCE.exec(text)
+    if (c && c[1][0] === run[0] && c[1].length >= run.length) return true
+  }
+  return false
+}
+
 // An unterminated code fence on a nested item's lead owns the rest of a
 // description body just as it owns the rest of a list item. A closer belongs
 // to that nested item only when it reaches the item's content column; a
@@ -2457,6 +2489,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             return isEntry(cur) ||
               (isBlank(cur) && !isDefinitionContinuationLine(lines[at + 1], bodyColumn))
           }
+          let openFence = -1
           const nestedLeadOwnsBody = descriptionLeadHasUnterminatedNestedFence(
             bodyLines[0] ?? '', lines, i, bodyColumn, endsBodyAt,
           )
@@ -2650,6 +2683,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
              * `dd` recognizes it; it is framed here too so all four kinds reach
              * the body by one path rather than by two that agree today.
              */
+            openFence = descriptionOpenFenceAt(asRead(bodyLines), lines, i, bodyColumn, endsBodyAt)
+            if (openFence !== -1) break
             if (authoredCol > 0 && bodyLeavesParagraphOpen(asRead(bodyLines)) &&
                 !startsVisibleBlock(dedented) &&
                 (isLinkDef(dedented) || FOOTNOTE_DEF.test(dedented) ||
@@ -2668,6 +2703,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const normalizedBody = state.authoredBodyBases
             ? normalizeAuthoredBodyBases(bodyLines, state)
             : bodyLines
+          if (openFence !== -1) (state.fenceOpensAt ??= new WeakMap()).set(normalizedBody, new Set([openFence]))
           node.items.push({ ddBlocks: normalizedBody.length ? parseBlocks(normalizedBody, state, false) : [] })
           continue
         }

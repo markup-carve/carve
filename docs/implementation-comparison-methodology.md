@@ -143,7 +143,9 @@ and
 and
 `476-an-item-s-fence-is-read-once-whatever-block-it-follows`
 and
-`477-a-code-span-closes-only-on-a-run-of-its-own-length-whatever-the-length`.
+`477-a-code-span-closes-only-on-a-run-of-its-own-length-whatever-the-length`
+and
+`478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -226,6 +228,11 @@ markup-carve/carve-rs#1800).
 Section 477 lags carve-php on one row of ten, the substitution whose code
 span holds `~}` (markup-carve/carve-php#2209). carve-js and carve-rs, and the
 pinned carve-js build, reproduce all ten.
+Section 478 lags all three engines on two of its five rows, which read the fence
+and the description the two ways section 476 describes for a list item
+(markup-carve/carve-js#1880, markup-carve/carve-php#2205, markup-carve/carve-rs#1800),
+and carve-php on a third, the control whose line folds after a closed fence
+(markup-carve/carve-php#2210).
 Section 463 no longer lags an engine. A bare closer inside a braced inline
 (`~{/x/}{/y~/}`) used to close a span opened before the braces; markup-carve/carve#2027
 ruled that it may not, and all three now match.
