@@ -396,7 +396,10 @@ const sem = g.createSemantics().addOperation('h', {
   },
   boldItalic(_o, inner, _c, attrs) {
     const a = renderAttrs(attrsOf(attrs))
-    return `<strong${a}><em>${inner.children.map((c) => c.h()).join('')}</em></strong>`
+    // The combined token owns BOTH `/` and `*`, so §9 E3 holds both literal
+    // inside it while the other three delimiters resolve normally.
+    const body = resolveEmphasis(buildToks(inner.children, '/*'), this.source.sourceString, '/*')
+    return `<strong${a}><em>${body}</em></strong>`
   },
   code1: codeOp,
   code2: codeOp,
@@ -929,13 +932,19 @@ function classify(t, src) {
 // E3 refused this forced span's opener, so the span is its own characters:
 // two delimiter candidates around the content it had, and a trailing
 // attribute block that now attaches to whatever the closer closes.
-function demoteForced(t, literalDelim) {
+function demoteForced(t, literalDelims = '') {
   const n = t.node
+  // The enclosing span holds this delimiter literal, so the demoted
+  // characters are content rather than candidates.
+  const delim = (child) =>
+    literalDelims.includes(t.ch)
+      ? { k: 't', h: escapeHtml(t.ch) }
+      : { k: 'd', ch: t.ch, at: child.source.startIdx }
   const out = [
     { k: 't', h: '{' },
-    { k: 'd', ch: t.ch, at: n.child(1).source.startIdx },
-    ...buildToks(n.child(2).children, literalDelim),
-    { k: 'd', ch: t.ch, at: n.child(3).source.startIdx },
+    delim(n.child(1)),
+    ...buildToks(n.child(2).children, literalDelims),
+    delim(n.child(3)),
     { k: 't', h: '}' },
   ]
   const attrs = n.child(5)
@@ -948,9 +957,10 @@ function demoteForced(t, literalDelim) {
 
 // Build the flat token stream from a list of CST child nodes (inline* or
 // fInner*). A bare `/ * _ ~ =` becomes a delimiter candidate; every other
-// alternative renders to an HTML fragment now. `literalDelim` (the forced
-// span's own delimiter, if any) is held literal rather than made a candidate.
-function buildToks(children, literalDelim) {
+// alternative renders to an HTML fragment now. `literalDelims` (the enclosing
+// span's own delimiters, if any) are held literal rather than made candidates:
+// one character for a forced span, both of `/*` for the combined token.
+function buildToks(children, literalDelims = '') {
   const toks = []
   for (const c of children) {
     const alt = c.child(0)
@@ -970,7 +980,7 @@ function buildToks(children, literalDelim) {
     if (name === 'litDelim') {
       const ch = alt.child(0).sourceString
       // Only / * _ ~ = are stack candidates; ^ and , have no bare span.
-      if (STACK_DELIMS.has(ch) && ch !== literalDelim) {
+      if (STACK_DELIMS.has(ch) && !literalDelims.includes(ch)) {
         toks.push({ k: 'd', ch, at: alt.source.startIdx })
       } else {
         toks.push({ k: 't', h: escapeHtml(ch) })
@@ -1042,7 +1052,7 @@ let unattachedAttrs = []
 // index`. Split out because the caption `#` placeholder asks the same question
 // the renderer does -- which offsets sit inside a span -- over a stream that
 // carries positions instead of HTML.
-function pairDelims(toks, src, literalDelim) {
+function pairDelims(toks, src, literalDelims = '') {
   // E1 CLASSIFY: evaluate bare_opener(d) / bare_closer(d) at each candidate.
   for (const t of toks) classify(t, src)
   // One pass with a delimiter stack. `openers` holds indices (into toks) of
@@ -1053,8 +1063,10 @@ function pairDelims(toks, src, literalDelim) {
     const t = toks[j]
     if (t.k === 'f') {
       // E3: while a span of this kind is open, the forced opener is literal.
-      if (openers.some((oi) => toks[oi].ch === t.ch)) {
-        const rep = demoteForced(t, literalDelim)
+      // The enclosing span counts as open, which is what holds its own
+      // delimiter literal in the first place.
+      if (literalDelims.includes(t.ch) || openers.some((oi) => toks[oi].ch === t.ch)) {
+        const rep = demoteForced(t, literalDelims)
         for (const r of rep) classify(r, src)
         toks.splice(j, 1, ...rep)
         j--
@@ -1094,8 +1106,8 @@ function pairDelims(toks, src, literalDelim) {
   return openMap
 }
 
-function resolveEmphasis(toks, src, literalDelim) {
-  const openMap = pairDelims(toks, src, literalDelim)
+function resolveEmphasis(toks, src, literalDelims = '') {
+  const openMap = pairDelims(toks, src, literalDelims)
   applyMarkerBoundary(toks, openMap, src)
   // Build the span tree by walking the paired ranges (properly nested).
   const consumed = new Set() // attrs tokens attached to a span
