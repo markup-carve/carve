@@ -758,7 +758,7 @@ const sem = g.createSemantics().addOperation('h', {
   squote(_q) {
     return smartQuote(this, '\u2018', '\u2019', true)
   },
-  hash(_h, _la) {
+  hash(_h) {
     return '#'
   },
   looseAttrs(blocks) {
