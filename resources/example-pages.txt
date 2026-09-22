@@ -452,6 +452,7 @@ index: examples/edge-cases/index.md
   bold-italic-delimiter-needs-content
   a-run-of-asterisks-inside-a-combined-token-is-content
   any-character-is-content-of-the-combined-bold-italic-token
+  a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested
   emphasis-span-closes-before-a-following-delimiter
   unclaimed-openers-stay-literal
   inline-literal

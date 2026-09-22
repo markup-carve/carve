@@ -26,6 +26,11 @@ const visibleText = (html) =>
 // This is an inspected snapshot, not an endorsement of those three losses;
 // the ratchet keeps them visible for a dedicated writer/parser correction.
 
+// Corpus 487's twelve rows add +12 to completion and fixed points, +11 to
+// text preservation, +1 to the HTML round trip and +4 to the Markdown one, as
+// measured with the pinned carve-js. The text loss is 487-...-4, whose term
+// holds only a form feed.
+
 // Corpus 486's seven rows add +7 to each population count, 0 to the HTML round
 // trip and +2 to the Markdown one, as measured with the pinned carve-js.
 

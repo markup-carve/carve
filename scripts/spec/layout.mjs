@@ -276,6 +276,9 @@ const CAPTION = /^\^ +(?=.*[^ \t\n\r\f])(.*?)[ \t]*$/
 // The longest run `codeClosed` in resources/carve-core.ohm pairs; the inline
 // pass refuses a longer one, and this scanner stops at the same bound.
 export const MAX_CODE_RUN = 8
+// PART 7's four whitespace characters (CARVE-P7-003). JS `trim()` and `\s`
+// also take a form feed, a vertical tab and the Unicode spaces, all content.
+export const trimWs = (s) => s.replace(/^[ \t\n\r]+|[ \t\n\r]+$/g, '')
 
 export function bracketRunEnd(line, open) {
   if (line[open] !== '[') return -1
@@ -751,7 +754,7 @@ function splitRow(line, openRun = 0, openRunAt = 0, kind = 'standard') {
   // T2: a row CLOSES with a pipe (`standard_row` ends in `'|'`). A line-initial
   // `|` with content dangling after the last pipe is prose, at a block start as
   // much as mid-paragraph -- there is no lenient open form.
-  if (cur.trim() !== '') return null
+  if (trimWs(cur) !== '') return null
   if (cells.length === 0) return null // T2: `||` has no cell
   /*
    * T2's MINIMUM-CELL GUARD IS THE STANDARD ROW'S (carve#1354). "At least one
@@ -1241,7 +1244,7 @@ function isBlank(line) {
 // and the rule "ignores trailing whitespace" so `::` and `:: ` behave alike.
 // Without the `\S`, `:: ` was a paragraph and `::··` a definition list -
 // stripping one trailing space changed the structure (carve#512).
-const DEFLIST_TERM = /^:: (?=[ \t]*\S)/
+const DEFLIST_TERM = /^:: (?=[ \t]*[^ \t\n\r])/
 function startsVisibleBlock(line) {
   return HEADING.test(line) || HR.test(line) || QUOTE.test(line) || DEFLIST_TERM.test(line)
 }
@@ -1882,7 +1885,7 @@ export function parse(src, { authoredBodyBases = true } = {}) {
   // whole of that reading, and it is deliberately spelled with the same two
   // characters PART 2's `whitespace` admits - a form feed or a no-break space
   // is CONTENT, so `---<FF>` is not an opener and falls through as before.
-  if (lines[0] !== undefined && /^---(?:[ \t]*$|(?! *[^\S ])( (?! )|[A-Za-z0-9]+\s*$))/.test(lines[0])) {
+  if (lines[0] !== undefined && /^---(?:[ \t]*$|(?! *[^\S ])( (?! )|[A-Za-z0-9]+[ \t]*$))/.test(lines[0])) {
     for (let j = 1; j < lines.length; j++) {
       if (/^---[ \t]*$/.test(lines[j])) {
         lines.splice(0, j + 1)
@@ -2418,12 +2421,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       while (i < n) {
         const cur0 = unlazy(lines[i] ?? '')
         let dm
-        if ((dm = /^:: (?=[ \t]*\S)(.*)$/.exec(cur0))) {
+        if ((dm = /^:: (?=[ \t]*[^ \t\n\r])(.*)$/.exec(cur0))) {
           // term (dt): folds plain wrapped continuation lines so a wrapped term
           // line does not strand its definition. (This used to say "like a
           // heading". A heading ends at its newline and folds nothing; the term
           // is the key half of a key-value entry, and keeps its fold.)
-          let dt = dm[1].trim()
+          let dt = trimWs(dm[1])
           i++
           while (i < n) {
             const cur = lines[i] ?? ''
@@ -2479,7 +2482,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // form) opened a pulled-in block: the NEXT flush-left line begins it.
           // This is a distinct signal from an empty definition body, so an empty
           // `:  ` never swallows the following flush-left block.
-          let pullPending = CONT_MARKER.test(dm[2].trim())
+          let pullPending = CONT_MARKER.test(trimWs(dm[2]))
           if (!pullPending) {
             bodyLines.push(stripIndent(dm[2]).replace(/[ \t]+$/, ''))
           }
@@ -4015,7 +4018,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     // it, and the round-trip ratchet carried the document as declared drift
     // (markup-carve/carve-js#1491).
     let attachNext = false
-    if (head.text.trim() === '+') {
+    if (trimWs(head.text) === '+') {
       itemLines.length = 0
       itemMeas.length = 0
       attachNext = true
