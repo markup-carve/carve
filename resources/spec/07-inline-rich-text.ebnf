@@ -154,13 +154,13 @@ highlight_content = (inline_element | text_run | literal_special)+ ;
    sidenote is footnote content placed by CSS, not a separate construct) --
    see docs/dismissed-syntax.md. *)
 footnote = reference_footnote | inline_footnote ;
-reference_footnote = "[^", footnote_label, ']' ;
+reference_footnote = "[^", footnote_label, ']', [attribute_run] ;
 (* A label is a physical-line identifier. It may contain spaces and tabs, but
    never a source newline: a definition marker occupies one line, and admitting
    a newline only on the reference side would create an identifier no valid
    definition can bind. Matching is exact; whitespace is not normalized. *)
 footnote_label = {character - ']' - newline}+ ;
-inline_footnote = "^[", inline_content, ']' ;
+inline_footnote = "^[", inline_content, ']', [attribute_run] ;
 (* the closing `]` is the balanced, escape- and LITERAL-SPAN-aware close
    (PART 9 §16) -- the same scan `link_text` states, and the same three spans
    it skips; footnote recognition is DISABLED inside the content *)
@@ -308,7 +308,15 @@ comment_content = (* any text until the matching `#}`, preserved literally;
 (* ADDITION AND DELETION ATTRIBUTES BIND TO THEIR ELEMENT -- NORMATIVE [CARVE-P3-017]: an addition / deletion is an ordinary inline node,
    so a trailing `{...}` attribute block attaches to its `<ins>` / `<del>`,
    exactly like a span, code span, link, or emphasis: `{+a+}{.a}` ->
-   `<ins class="a">…</ins>`. *)
+   `<ins class="a">…</ins>`.
+
+   SUBSTITUTION AND EDITORIAL COMMENT TAKE NONE. Neither production has an
+   attribute slot, so a block after one matches nothing and is text:
+   `{~a~>b~}{.k}` -> `<del>a</del><ins>b</ins>{.k}` and `{#c#}{.k}` ->
+   `<span class="critic-comment">c</span>{.k}`. A substitution renders two
+   elements and has no single one to carry attributes (attaching to both
+   would repeat an `id`), and a comment's content is inert (CARVE-P3-016)
+   (carve#2138). *)
 (* DISAMBIGUATION (PART 9 §22). `{~ … ~}` is editorial SUBSTITUTION when it
    contains a top-level `~>`, and forced STRIKETHROUGH otherwise. `{# … #}`
    stays editorial comment (`#` is not an emphasis delimiter, no collision). *)

@@ -293,7 +293,7 @@ CarveCore {
   xrefId     = (~">" ~space ~newline any)+
 
   // --- Footnotes (PART 3; a bare `^` is literal, so `^[` is unambiguous) --
-  footnoteRef = "[^" fnLabel "]" attrs?
+  footnoteRef = "[^" fnLabel "]" attrRun?
   // A physical-line identifier: spaces and tabs are data, newlines are not.
   // This mirrors the one-line definition marker and grammar.ebnf §16.
   fnLabel    = (~"]" ~newline any)+
@@ -303,7 +303,7 @@ CarveCore {
   // which is why `^[]{.c}` renders `^<span class="c"></span>` rather than a
   // note. Stated here rather than in the semantics: the rendering of the
   // literal fallback is the bracketed rule's, not this one's.
-  inlineNote = "^[" ~((" " | "\t")* "]") brContent* "]" attrs?
+  inlineNote = "^[" ~((" " | "\t")* "]") brContent* "]" attrRun?
 
   // --- Forced intraword spans {X...X} (PART 9 SS22) and editorial markup.
   // A same-type delimiter inside a forced span is literal until the `X}`
@@ -344,14 +344,14 @@ CarveCore {
   // The `~>` and `~}` a substitution needs are TOP-LEVEL: the search skips
   // verbatim content, so a pair whose only `~>` sits in code is a forced
   // strikethrough (PART 9 SS22, carve#2083). An unclosed run ends at `~}`.
-  edSub      = "{~" edSubItem<"~>">* "~>" edSubItem<"~}">* "~}" attrs?
+  edSub      = "{~" edSubItem<"~>">* "~>" edSubItem<"~}">* "~}"
   edSubItem<stop> = ~stop ~"~}" edSubAtom
   // A `$` or `!` prefix needs no alternative of its own: the backtick run
   // behind it is what carries the arrow, and this rule skips that run.
   edSubAtom  = escape | edSubCode | bracedComment | edCommentBody | edChar
   edSubCode  = code3 | code2 | code1 | edSubCodeU
   edSubCodeU = "\u0060" "\u0060"* (~"~}" any)*
-  edComment  = edCommentBody attrs?
+  edComment  = edCommentBody
   // The body, without the attribute block - see `litInlineBody`.
   edCommentBody = "{#" (~"#}" edChar)+ "#}"
   edChar     = any
@@ -555,8 +555,8 @@ CarveCore {
   // THE INLINE SLOT IS A RUN [CARVE-P4-002]: glued blocks, merged by PART 9
   // SS15 A3 in the `parseAttrs` action. A space or anything that is not an
   // attribute block ends it, which `attrs+` already says (carve#2136).
-  // footnoteRef, inlineNote, edSub and edComment keep `attrs?`: grammar.ebnf
-  // gives them no attribute slot, and whether it should is carve#2138.
+  // edSub and edComment take no attribute block at all (CARVE-P3-017,
+  // carve#2138): a block after one is not theirs, so it reads as text.
   attrRun    = attrs+
   // SPACE ONLY, the A7 position of PART 4's THE INLINE INTERIOR IS SPACE-ONLY.
   // This ran on `(" " | "\t")*` until carve#906, and it is a SECOND site rather
