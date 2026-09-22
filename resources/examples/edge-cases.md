@@ -36289,3 +36289,177 @@ y</code></dd>
 ```
 
 :::::
+
+## A closer below the container's column does not count
+
+The closer lookahead runs past a line below the content column but never matches
+one (PART 1, A BELOW-COLUMN LINE IS SEARCHED PAST, NEVER MATCHED). A flush-left
+run, or one a column short, is not written inside the item, so the fence opens
+nothing and the lines fold into the paragraph as text (markup-carve/carve#2145).
+
+::::: compare
+
+````carve
+- a
+  ```
+  b
+ y
+```
+````
+
+```html
+<ul>
+  <li>a
+<code>
+b
+y
+</code></li>
+</ul>
+```
+
+:::::
+
+::::: compare
+
+````carve
+- a
+  ```
+  b
+ y
+ ```
+````
+
+```html
+<ul>
+  <li>a
+<code>
+b
+y
+</code></li>
+</ul>
+```
+
+:::::
+
+A run past the content column is inside the item but is no closer either: a fence
+delimiter sits exactly at its container's content column (CARVE-P2-006). The one
+that counts is at the column, as in *A fence opened on a list marker line, body
+below the content column*.
+
+::::: compare
+
+````carve
+- a
+  ```
+  b
+ y
+   ```
+````
+
+```html
+<ul>
+  <li>a
+<code>
+b
+y
+</code></li>
+</ul>
+```
+
+:::::
+
+A definition body reads the same way, on both sides.
+
+::::: compare
+
+````carve
+:: t
+: a
+  ```
+  b
+ y
+```
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>a
+<code>
+b
+y
+</code></dd>
+</dl>
+```
+
+:::::
+
+::::: compare
+
+````carve
+:: t
+: a
+  ```
+  b
+ y
+   ```
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>a
+<code>
+b
+y
+</code></dd>
+</dl>
+```
+
+:::::
+
+The flush-left run folds because §10 I4 lets a fence interrupt a paragraph only
+when a closer follows it. That holds in a definition body with nothing else in
+play, as it does under a list item.
+
+::::: compare
+
+````carve
+:: t
+: a
+```
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>a
+<code></code></dd>
+</dl>
+```
+
+:::::
+
+CONTROL. With a closer after it the same run does interrupt, so the description
+ends and the fence opens a block at document level.
+
+::::: compare
+
+````carve
+:: t
+: a
+```
+b
+```
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>a</dd>
+</dl>
+<pre><code>b
+</code></pre>
+```
+
+:::::

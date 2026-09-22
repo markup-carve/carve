@@ -29,3 +29,4 @@
 476-an-item-s-fence-is-read-once-whatever-block-it-follows-2  the pinned build folds the fence into the quoted paragraph; markup-carve/carve-js#1880
 478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column-3  the pinned build reads the fence as paragraph text inside the description; markup-carve/carve-js#1880
 478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column-5  the pinned build ends the description at the below-column line; markup-carve/carve-js#1880
+479-a-closer-below-the-container-s-column-does-not-count-4  the pinned build counts a flush-left closer for a description's fence; markup-carve/carve-js#1883

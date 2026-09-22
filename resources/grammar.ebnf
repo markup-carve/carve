@@ -757,6 +757,19 @@
         wrongly: the item ends at ` y`, because this fence does have its closer
         and a real body is open.
 
+        A BELOW-COLUMN LINE IS SEARCHED PAST, NEVER MATCHED. A closer counts
+        only when it is written inside the container; one below the content
+        column is not, so it cannot make the fence a real body. In
+
+            - a
+              ```
+              b
+             y
+            ```
+
+        the flush-left run is not a closer, the fence opens nothing, and ` y`
+        and the run fold into the item's paragraph as text.
+
         A BLANK LINE and a TERMINATED fence are the controls, and both are
         unchanged: a blank closes the paragraph so S4's otherwise governs,
         and a fence with a closer is a BLOCK whose body leaves no
