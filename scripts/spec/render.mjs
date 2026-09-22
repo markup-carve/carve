@@ -886,23 +886,17 @@ const isWs = (c) => c === undefined || /\s/.test(c)
 // END counts as whitespace (a run may not open at end of block); a following
 // same delimiter is allowed for a closer (`/x//` -> the first `/` after x
 // closes; the trailing `/` stays literal).
-// slash_if(d) = '/' for d in { '/', '_' }: italic and underline additionally
-// never open when the immediately preceding character is `/` -- for `/` this
-// coincides with same-delimiter adjacency, for `_` it is the extra
-// cross-delimiter guard the reference engines apply (path protection:
-// /a/_b_, snake_/case/, a_/_a_). The other delimiters `* ~ =` DO open after
-// `/` (e.g. `a/~y~` -> `a/<s>y</s>`), so the guard is `/ _`-specific.
+// The `'_'` term is the template's own, so it blocks EVERY delimiter, while
+// slash_if(d) = '/' for d in { '/', '_' } blocks only italic and underline --
+// `* ~ =` do open after `/` (`a/~y~` -> `a/<s>y</s>`).
 function bareOpener(d, prev, prev2, next) {
   if (prev !== undefined && (isAlnum(prev) || prev === d)) return false
-  // Path protection for `/` and `_`: they do NOT open immediately after a `/`
-  // or `_` UNLESS that preceding delimiter sits at a clean left boundary (its
-  // own preceding char is whitespace/undefined) -- i.e. the preceding delimiter
-  // is itself a true opener (`/_x_/`, `_/x/_` nest), not a closer or mid-path
-  // delimiter (`/a/_b_`, `snake_/case/`, `a_/_a_` stay literal). The other
-  // delimiters `* ~ =` open after `/` or `_` unconditionally (`_*x*_`, `*x*_y_`).
+  // A preceding `_` or `/` blocks UNLESS it sits at a clean left boundary of
+  // its own, where it is an opener rather than content: `_*x*_` and `/_x_/`
+  // nest, while `a_*x*`, `/a/_b_` and `snake_/case/` stay literal. Only the
+  // character is decidable here, so the boundary stands in for the pairing.
   if (
-    (d === '/' || d === '_') &&
-    (prev === '/' || prev === '_') &&
+    (prev === '_' || ((d === '/' || d === '_') && prev === '/')) &&
     prev2 !== undefined &&
     !isWs(prev2)
   ) {
