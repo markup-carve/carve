@@ -666,8 +666,8 @@
         THE CLOSER LOOKAHEAD DOES NOT STOP AT A BELOW-COLUMN LINE. §24 C3 folds
         such a line as lazy text while a paragraph is open, so a closer written
         below it is still written inside the container. Stopping there makes the
-        question circular -- the fence opens only if the line folds, and the
-        line folds only if the fence did not open -- and it answers
+        question circular: the fence opens only if the line folds, and the line
+        folds only if the fence did not open. Not stopping answers
 
             - a
               ```
@@ -675,8 +675,8 @@
              y
               ```
 
-        wrongly: the item ends at ` y`, because this fence does have its closer
-        and a real body is open.
+        the one way the clauses allow: the fence has its closer, so a real code
+        block opens, and that open body is what ends the item at ` y`.
 
         A BELOW-COLUMN LINE IS SEARCHED PAST, NEVER MATCHED. A closer counts
         only when it is written inside the container; one below the content
