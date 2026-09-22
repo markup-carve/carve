@@ -26,6 +26,11 @@ const visibleText = (html) =>
 // This is an inspected snapshot, not an endorsement of those three losses;
 // the ratchet keeps them visible for a dedicated writer/parser correction.
 
+// Corpus 481's seven rows add +7 to each population count and 0 to both round
+// trips. Their empty unlabeled divs carry nothing the HTML importer can spell
+// and Markdown has no div; the absorbed control returns its soft breaks as
+// spaces from HTML and its colon runs escaped from Markdown.
+
 // Corpus 480's seven rows add +7 to each population count and 0 to both round
 // trips. An unlabeled div carries nothing the HTML importer can spell, so it is
 // unwrapped, and Markdown has neither a definition list nor a div.

@@ -939,17 +939,6 @@ function isColonParagraphInterrupt(line) {
   return isColonBlockOpener(line) && !COLON_CLOSER.test(line)
 }
 
-function hasFollowingBody(lines, idx) {
-  for (let j = idx + 1; j < lines.length; j++) {
-    if (!isBlank(lines[j])) return true
-  }
-  return false
-}
-
-function bareColonHasFollowingBody(lines, idx) {
-  return COLON_CLOSER.test(lines[idx] ?? '') && hasFollowingBody(lines, idx)
-}
-
 function paraHasInvalidColonOpener(para) {
   return para.some((l) => {
     const cf = COLON_FENCE.exec(l)
@@ -958,19 +947,19 @@ function paraHasInvalidColonOpener(para) {
 }
 
 /** SS12's interruption rule for one colon-fence LINE, decoupled from where the
- *  line was read. `followingBody` is whether any non-blank line follows it,
- *  `para` the lines of the paragraph currently open. Kept as a function of its
- *  three inputs so the block reader and the list-item collector below can share
- *  ONE spelling of the rule: the collector used to carry its own, a bare
- *  `COLON_FENCE.test(line)`, which closed the paragraph for a fence that had
- *  been ABSORBED into it and never interrupted anything (carve#891). */
-function colonFenceInterrupts(line, followingBody, para) {
+ *  line was read; `para` is the paragraph currently open. A bare `:::`
+ *  interrupts unless an invalid opener earlier in the paragraph has it absorbed
+ *  (CARVE-P9-016) - whether any line follows it does not enter (§10 I4). One
+ *  spelling, shared by the block reader and the collectors: the list-item
+ *  collector used to carry its own, which closed the paragraph for a fence that
+ *  had been ABSORBED into it (carve#891). */
+function colonFenceInterrupts(line, para) {
   if (isColonParagraphInterrupt(line)) return true
-  return COLON_CLOSER.test(line) && followingBody && !paraHasInvalidColonOpener(para)
+  return COLON_CLOSER.test(line) && !paraHasInvalidColonOpener(para)
 }
 
 function colonInterruptsParagraph(lines, idx, para) {
-  return colonFenceInterrupts(lines[idx], bareColonHasFollowingBody(lines, idx), para)
+  return colonFenceInterrupts(lines[idx], para)
 }
 
 const COMMENT_LINE = /^[ \t]*%%/
@@ -2014,8 +2003,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
   // container could not derive that one - a tab in the run, or a line it
   // synthesized - so it is walked here, once.
   const meas = seeded ?? new Array(n)
-  // Fence lines the enclosing collector already found to open, whose closer or
-  // following body lies past these lines (§10 I4, §12).
+  // Fence lines the enclosing collector already found to open, whose closer
+  // lies past these lines (§10 I4).
   const fenceOpens = state.fenceOpensAt?.get(lines)
   const ind = (idx) => {
     const m = meas[idx]
@@ -2032,7 +2021,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     if (startsVisibleBlock(line)) return true
     if (isTableRow(line)) return true
     if (fenceOpens?.has(idx)) return true
-    if (isColonParagraphInterrupt(line) || bareColonHasFollowingBody(lines, idx)) return true
+    if (isColonParagraphInterrupt(line) || COLON_CLOSER.test(line)) return true
     const fence = FENCE.exec(line)
     if (fence && hasCloser(lines, idx)) return true // I4
     // ABBR_DEF only at document level: elsewhere the line is paragraph text,
@@ -2720,13 +2709,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const normalizedBody = state.authoredBodyBases
             ? normalizeAuthoredBodyBases(bodyLines, state)
             : bodyLines
-          // A trailing bare `:::` that closes nothing opened (§10 I4 does not
-          // guard a `:::` opener); the body's own parse would ask for a line
-          // after it, and none is inside the body.
-          const lastLine = normalizedBody.findLastIndex((l) => l.trim() !== '')
-          if (openFence === -1 && lastLine !== -1 && COLON_CLOSER.test(normalizedBody[lastLine])) {
-            openFence = lastLine
-          }
           if (openFence !== -1) (state.fenceOpensAt ??= new WeakMap()).set(normalizedBody, new Set([openFence]))
           node.items.push({ ddBlocks: normalizedBody.length ? parseBlocks(normalizedBody, state, false) : [] })
           continue
@@ -3080,13 +3062,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // `else qOpenPara = true` treated the line as prose.
         //
         // The exception is SS12's absorption (carve#902, corpus 260): a bare
-        // `:::` with no body after it, or one under a paragraph that already
-        // holds an INVALID colon opener, is swallowed as paragraph text and the
-        // paragraph stays open. That is the same predicate the block reader
-        // uses, applied to the STRIPPED line and to the quote's own paragraph -
+        // `:::` under a paragraph that already holds an INVALID colon opener is
+        // swallowed as paragraph text and the paragraph stays open
+        // (CARVE-P9-016). That is the same predicate the block reader uses,
+        // applied to the STRIPPED line and to the quote's own paragraph -
         // spelling it a second way here is how the two answers would drift.
         const absorbedColon = qOpenPara && COLON_CLOSER.test(l) &&
-          !colonFenceInterrupts(l, hasFollowingBody(lines, idx), qPara)
+          !colonFenceInterrupts(l, qPara)
         // Asked with the run as it stood BEFORE this line, then advanced: a
         // continuation row is a row relative to what is above it, never to
         // itself.
@@ -4509,7 +4491,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         // (carve#891). Same rule, same spelling, as the block reader's
         // colonInterruptsParagraph.
         else if (COLON_FENCE.test(dedented)) {
-          if (colonFenceInterrupts(dedented, hasFollowingBody(lines, i), para)) closePara()
+          if (colonFenceInterrupts(dedented, para)) closePara()
           else openParaWith(dedented)
         }
         // A TABLE ROW closes the paragraph, and so does the continuation row

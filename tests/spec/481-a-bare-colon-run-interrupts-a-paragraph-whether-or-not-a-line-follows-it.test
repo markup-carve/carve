@@ -1,0 +1,84 @@
+A bare colon run interrupts a paragraph whether or not a line follows it
+
+```
+text
+not a div
+:::
+.
+<p>text
+not a div</p>
+<div>
+</div>
+```
+
+```
+- a
+  :::
+.
+<ul>
+  <li>a
+    <div>
+    </div>
+  </li>
+</ul>
+```
+
+```
+> a
+> :::
+.
+<blockquote>
+  <p>a</p>
+  <div>
+  </div>
+</blockquote>
+```
+
+```
+- a
+  :::
+y
+.
+<ul>
+  <li>a
+    <div>
+    </div>
+  </li>
+</ul>
+<p>y</p>
+```
+
+```
+![a](i)
+^ cap
+:::
+.
+<figure>
+  <img src="i" alt="a">
+  <figcaption>cap</figcaption>
+</figure>
+<div>
+</div>
+```
+
+```
+:::: d
+text
+:::
+.
+<div class="d">
+  <p>text</p>
+  <div>
+  </div>
+</div>
+```
+
+```
+::: {.x}
+not a div
+:::
+.
+<p>::: {.x}
+not a div
+:::</p>
+```
