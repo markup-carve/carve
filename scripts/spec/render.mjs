@@ -392,13 +392,23 @@ const sem = g.createSemantics().addOperation('h', {
     // The bare single-char emphasis delimiters are NOT resolved by the PEG.
     // Build a flat token stream (leaf HTML fragments + bare-delimiter
     // candidates) and run the PART 9 SS9 delimiter-stack pass over it.
-    return resolveEmphasis(buildToks(items.children), this.source.sourceString)
+    return resolveEmphasis(
+      buildToks(items.children),
+      this.source.sourceString,
+      '',
+      this.source.startIdx,
+    )
   },
   boldItalic(_o, inner, _c, attrs) {
     const a = renderAttrs(attrsOf(attrs))
     // The combined token owns BOTH `/` and `*`, so §9 E3 holds both literal
     // inside it while the other three delimiters resolve normally.
-    const body = resolveEmphasis(buildToks(inner.children, '/*'), this.source.sourceString, '/*')
+    const body = resolveEmphasis(
+      buildToks(inner.children, '/*'),
+      this.source.sourceString,
+      '/*',
+      inner.source.startIdx,
+    )
     return `<strong${a}><em>${body}</em></strong>`
   },
   code1: codeOp,
@@ -591,7 +601,12 @@ const sem = g.createSemantics().addOperation('h', {
     // A forced `{X ... X}` span emphasizes intraword; nested spans of OTHER
     // delimiters resolve normally, but the forced delimiter X itself stays
     // literal inside (PART 9 SS22). Run the same SS9 stack, holding X literal.
-    const body = resolveEmphasis(buildToks(inner.children, dch), this.source.sourceString, dch)
+    const body = resolveEmphasis(
+      buildToks(inner.children, dch),
+      this.source.sourceString,
+      dch,
+      inner.source.startIdx,
+    )
     return `<${tag}${a}>${body}</${tag}>`
   },
   edIns(_o, content, _c, attrs) {
@@ -925,7 +940,7 @@ function classify(t, src) {
   const prev = t.at > 0 ? src[t.at - 1] : undefined
   const prev2 = t.at > 1 ? src[t.at - 2] : undefined
   const next = src[t.at + 1]
-  t.canOpen = bareOpener(t.ch, prev, prev2, next)
+  t.canOpen = !t.closeOnly && bareOpener(t.ch, prev, prev2, next)
   t.canClose = bareCloser(t.ch, prev, next)
 }
 
@@ -962,7 +977,8 @@ function demoteForced(t, literalDelims = '') {
 // one character for a forced span, both of `/*` for the combined token.
 function buildToks(children, literalDelims = '') {
   const toks = []
-  for (const c of children) {
+  for (let ci = 0; ci < children.length; ci++) {
+    const c = children[ci]
     const alt = c.child(0)
     const name = alt.ctorName
     // A forced span is a stack entry, not a leaf: E3 holds its opener literal
@@ -999,7 +1015,27 @@ function buildToks(children, literalDelims = '') {
     let marker = alt
     while (marker.ctorName === 'rich') marker = marker.child(0)
     if (MARKER_RULES.has(marker.ctorName)) {
-      toks.push({ k: 't', h: c.h(), at: marker.source.startIdx, raw: marker.sourceString })
+      const at = marker.source.startIdx
+      const t = { k: 't', h: c.h(), at, raw: marker.sourceString, full: marker.sourceString }
+      toks.push(t)
+      if (NAME_RULES.has(marker.ctorName)) {
+        // The name's own `_` characters, plus the one `tagChar` gave up so a
+        // forced underline could close (`{_@ex_}`), reach the stack as
+        // candidates; `resolveNameRun` decides which of them the name keeps.
+        const next = children[ci + 1]?.child(0)
+        const tail =
+          next?.ctorName === 'litDelim' && next.child(0).sourceString === '_' ? next : undefined
+        if (tail) ci++
+        t.cuts = nameCuts(t, tail)
+        for (const cut of t.cuts) {
+          toks.push(cut)
+          // The borrowed delimiter keeps its trailing attribute block, which
+          // attaches to whatever it closes.
+          const loose = cut.loose
+          if (loose) toks.push({ k: 'attrs', node: loose, at: loose.source.startIdx, h: loose.h() })
+          toks.push(cut.seg)
+        }
+      }
       continue
     }
     toks.push({ k: 't', h: c.h() })
@@ -1007,11 +1043,69 @@ function buildToks(children, literalDelims = '') {
   return toks
 }
 
+// A name `_` is a CLOSER candidate and nothing else: the engines keep
+// `@x-_y_` whole, where an opener there would split it.
+function nameCuts(t, tail) {
+  const cuts = []
+  const push = (at, loose) => {
+    const cut = { k: 'd', ch: '_', at, closeOnly: true, ofName: t, loose }
+    cut.seg = { k: 't', h: '', ofName: t }
+    cuts.push(cut)
+  }
+  for (let i = 1; i < t.raw.length; i++) {
+    if (t.raw[i] === '_') push(t.at + i)
+  }
+  // `tagChar` gave this one up so a forced underline could close.
+  if (tail) {
+    t.full = t.raw + '_'
+    push(tail.source.startIdx, tail.child(1).children[0])
+  }
+  for (let n = 0; n < cuts.length; n++) {
+    const from = cuts[n].at - t.at + 1
+    const to = n + 1 < cuts.length ? cuts[n + 1].at - t.at : t.full.length
+    cuts[n].seg.text = t.full.slice(from, Math.max(from, to))
+  }
+  return cuts
+}
+
+// PART 9 §7's name run and §9's stack read the same character: `name_word`
+// admits `_`, and `_` is the underline delimiter. The name ends at the first
+// of its underscores that pairs; the rest of its source is ordinary content.
+// A name that keeps every one of them renders as the grammar matched it.
+function resolveNameRun(toks, openMap) {
+  const closed = new Set(openMap.values())
+  for (let i = 0; i < toks.length; i++) {
+    const t = toks[i]
+    if (!t.cuts) continue
+    let cut
+    for (let j = i + 1; j < toks.length && toks[j].ofName === t; j++) {
+      if (toks[j].k === 'd' && (openMap.has(j) || closed.has(j))) {
+        cut = toks[j]
+        break
+      }
+    }
+    for (const c of t.cuts) {
+      const kept = !cut || c.at < cut.at
+      if (kept) {
+        c.k = 't'
+        c.h = ''
+      }
+      c.seg.h = kept ? '' : escapeHtml(c.seg.text)
+    }
+    const name = cut ? t.full.slice(0, cut.at - t.at) : t.full
+    if (name === t.raw) continue
+    t.raw = name
+    t.h = name.length > 1 ? renderInline(name) : escapeHtml(name)
+  }
+}
+
 // PART 9 §7: a mention, tag or symbol opens at the start of the content or
 // after a character that is NOT a word character. Its word character is
 // `[A-Za-z0-9_]`, which is `alnum` plus the one delimiter that is also a word
 // character, so this is the only guard the `_` reaches.
 const MARKER_RULES = new Set(['mention', 'tag', 'shortcode', 'symbolAttr'])
+// The two whose name run is `name_word`, so the only two that can reach a `_`.
+const NAME_RULES = new Set(['mention', 'tag'])
 const isWordCh = (c) => c !== undefined && /[A-Za-z0-9_]/.test(c)
 
 /*
@@ -1024,7 +1118,7 @@ const isWordCh = (c) => c !== undefined && /[A-Za-z0-9_]/.test(c)
  * text and the rest goes back through the inline pass, so `a_:+-:` renders the
  * typographic `a_:±:` rather than the symbol name.
  */
-function applyMarkerBoundary(toks, openMap, src) {
+function applyMarkerBoundary(toks, openMap, src, contentAt) {
   for (let i = 0; i < toks.length; i++) {
     const t = toks[i]
     if (t.raw === undefined) continue
@@ -1034,7 +1128,10 @@ function applyMarkerBoundary(toks, openMap, src) {
       if (left.k !== 'd' || left.at !== at - 1 || !openMap.has(j)) break
       at = left.at
     }
-    if (!isWordCh(at > 0 ? src[at - 1] : undefined)) continue
+    // `contentAt` is where this span's content begins; §7's other opening
+    // position. The delimiter that opened the span is markup, not a character
+    // the marker stands behind.
+    if (!isWordCh(at > contentAt ? src[at - 1] : undefined)) continue
     t.h = escapeHtml(t.raw[0]) + renderInline(t.raw.slice(1), t.raw[0])
   }
 }
@@ -1106,9 +1203,10 @@ function pairDelims(toks, src, literalDelims = '') {
   return openMap
 }
 
-function resolveEmphasis(toks, src, literalDelims = '') {
+function resolveEmphasis(toks, src, literalDelims = '', contentAt = 0) {
   const openMap = pairDelims(toks, src, literalDelims)
-  applyMarkerBoundary(toks, openMap, src)
+  resolveNameRun(toks, openMap)
+  applyMarkerBoundary(toks, openMap, src, contentAt)
   // Build the span tree by walking the paired ranges (properly nested).
   const consumed = new Set() // attrs tokens attached to a span
   const renderRange = (lo, hi) => {

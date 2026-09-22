@@ -254,7 +254,12 @@ CarveCore {
   // ASCII, per `name_word = (letter | digit | '_' | '-')+` in grammar.ebnf,
   // where `letter` is the enumerated ASCII alphabet (carve#844's rule, applied
   // to the rest of the identifier family).
-  tagChar    = asciiLetter | digit | "_" | "-"
+  // A `_` against a brace is NOT name: it is the closer a forced underline
+  // needs (`{_@ex_}`) and the delimiter an attribute block attaches to
+  // (`_@ex_{.k}`). Every other `_` stays in the run and reaches the §9 stack
+  // from `nameCuts` in scripts/spec/render.mjs, which hands it back to the
+  // name when nothing pairs with it.
+  tagChar    = asciiLetter | digit | "_" ~("{" | "}") | "-"
   tagDot     = "." &tagChar
 
   // --- Math (PART 3: `$` / `$$` + a verbatim span; bare `$` is literal) ---
