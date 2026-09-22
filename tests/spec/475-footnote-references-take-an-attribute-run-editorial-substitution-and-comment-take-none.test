@@ -1,0 +1,40 @@
+Footnote references take an attribute run, editorial substitution and comment take none
+
+```
+a[^n]{.k}{.j} b
+
+[^n]: x
+.
+<p>a<a id="fnref1" href="#fn1" role="doc-noteref" class="k j"><sup>1</sup></a> b</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+a^[x]{.k}{.j} b
+.
+<p>a<a id="fnref1" href="#fn1" role="doc-noteref" class="k j"><sup>1</sup></a> b</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+{~a~>b~}{.k} c
+
+{#note#}{.k} c
+.
+<p><del>a</del><ins>b</ins>{.k} c</p>
+<p><span class="critic-comment">note</span>{.k} c</p>
+```

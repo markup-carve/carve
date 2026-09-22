@@ -618,13 +618,12 @@ const sem = g.createSemantics().addOperation('h', {
   edDel(_o, content, _c, attrs) {
     return `<del${renderAttrs(attrsOf(attrs))}>${renderInline(content.sourceString, '{')}</del>`
   },
-  edSub(_o, oldC, _ar, newC, _c, attrs) {
-    const a = renderAttrs(attrsOf(attrs))
-    return `<del${a}>${renderInline(oldC.sourceString, '{')}</del><ins${a}>${renderInline(newC.sourceString, '{')}</ins>`
+  edSub(_o, oldC, _ar, newC, _c) {
+    return `<del>${renderInline(oldC.sourceString, '{')}</del><ins>${renderInline(newC.sourceString, '{')}</ins>`
   },
-  edComment(body, attrs) {
+  edComment(body) {
     // comment content is verbatim (spaces preserved)
-    return `<span class="critic-comment"${renderAttrs(attrsOf(attrs))}>${escapeHtml(body.child(1).sourceString)}</span>`
+    return `<span class="critic-comment">${escapeHtml(body.child(1).sourceString)}</span>`
   },
   rawInline(code, _ob, fmt, _cb) {
     // PART 9 SS20: emitted UNESCAPED for the html format, dropped otherwise

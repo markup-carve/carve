@@ -137,7 +137,9 @@ and
 and
 `473-a-run-of-asterisks-inside-a-combined-token-is-content`
 and
-`474-glued-attribute-blocks-on-an-inline-element-merge`.
+`474-glued-attribute-blocks-on-an-inline-element-merge`
+and
+`475-footnote-references-take-an-attribute-run-editorial-substitution-and-comment-take-none`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the

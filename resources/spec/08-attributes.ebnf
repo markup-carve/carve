@@ -9,8 +9,8 @@ attribute_list = attribute, {space+, attribute} ;
    IN SOURCE ORDER below for how the blocks merge. Every inline production
    in this grammar that has an attribute slot spells it `[attribute_run]`.
    The list-marker slot, a table row or cell, and a citation definition line
-   keep a single `attributes`. Whether a footnote reference, an inline note
-   or editorial markup takes a slot at all is open (carve#2138). *)
+   keep a single `attributes`. Editorial substitution and editorial comment
+   take no slot at all (CARVE-P3-017, carve#2138). *)
 attribute_run = attributes, {attributes} ;
 (* interior padding is accepted: `{ .a }` and `{.a  .b}` are valid inline
    attribute blocks. The terminal is `space`, NOT `whitespace`: see
