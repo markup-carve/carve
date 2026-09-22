@@ -157,7 +157,9 @@ and
 and
 `483-an-empty-term-marker-in-a-description-body-is-text`
 and
-`484-a-delimiter-after-an-underscore-or-slash-opens-only-when-that-one-pairs`.
+`484-a-delimiter-after-an-underscore-or-slash-opens-only-when-that-one-pairs`
+and
+`485-a-quote-after-an-escaped-quote-closes`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -269,6 +271,9 @@ Section 484 does NOT lag any engine: carve-js, carve-php and carve-rs already
 keep a delimiter literal after a `_` or `/` that does not pair, and it is the
 executable reference that markup-carve/carve#2156 brought to them. It is listed
 because the published run predates the row.
+Section 485 does NOT lag any engine either: all three already close a quote
+after an escaped quote, and markup-carve/carve#2158 brought the executable
+reference to them.
 Section 463 no longer lags an engine. A bare closer inside a braced inline
 (`~{/x/}{/y~/}`) used to close a span opened before the braces; markup-carve/carve#2027
 ruled that it may not, and all three now match.

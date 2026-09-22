@@ -553,6 +553,8 @@ const sem = g.createSemantics().addOperation('h', {
     return `<a href="${escapeAttr(checkUrl(href))}"${a}>${escapeHtml(raw)}</a>`
   },
   escape(_bs, ch) {
+    // An escaped quote renders straight, so the quote after it closes (PART 3).
+    if (QUOTE_CHARS.has(ch.sourceString)) lastQuoteGlyph = ch.sourceString
     return escapeHtml(ch.sourceString)
   },
   nbspEsc(_bs, _sp) {
@@ -1222,12 +1224,10 @@ function pairDelims(toks, src, literalDelims = '', blocked) {
 }
 
 // Pair, then block every opener whose guard did not open a span of its own,
-// and pair again. Blocking only removes openers, so the loop ends. `build`
-// renders the quotes too, so each retry rewinds the glyph they read.
+// and pair again. Blocking only removes openers, so the loop ends.
 function pairGuarded(build, src, literalDelims = '') {
   const blocked = new Set()
   for (;;) {
-    const quote = lastQuoteGlyph
     const toks = build()
     const openMap = pairDelims(toks, src, literalDelims, blocked)
     const opens = new Set([...openMap.keys()].map((i) => toks[i].at))
@@ -1240,7 +1240,6 @@ function pairGuarded(build, src, literalDelims = '') {
       }
     }
     if (!grew) return { toks, openMap }
-    lastQuoteGlyph = quote
   }
 }
 
@@ -1464,7 +1463,7 @@ const QUOTE_OPEN_PREV = new Set([' ', '\t', '=', ':', '-', '/', '(', '[', '{'])
 // Carve reads both as content, and `\s` takes them.
 const FLANK_SPACE = /[ \t\n\r\u00a0]/
 const QUOTE_CHARS = new Set(['"', "'"])
-// The glyph the previous quote token resolved to, so a quote directly after
+// The glyph the previous quote resolved to, so a quote directly after
 // another one can tell which half it follows: after an OPENING quote it opens
 // (`"'q'"` nests), after a closing one it closes (`""` is a pair). The
 // character alone cannot say - both spellings are the same byte.
