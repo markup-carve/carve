@@ -1,0 +1,13 @@
+A run of asterisks inside a combined token is content
+
+```
+/***/
+.
+<p><strong><em>*</em></strong></p>
+```
+
+```
+/****/
+.
+<p><strong><em>**</em></strong></p>
+```
