@@ -96,10 +96,9 @@ make every profile return the same answer and every case would still pass.
 
 ## Divergences
 
-No engine diverges from the corpus today. Measured at carve-js `1568546`,
-carve-php `5d8d9ab` and carve-rs `d948992`, each pinning this repo at
-`3fdfd6e`: all three run the whole file, 57 cases under 3 profiles, and all 171
-comparisons agree.
+Each engine runs this file from its pinned specification checkout. A changed
+expectation therefore fails in that engine when its pin moves, unless the
+escaper has adopted the ruling first.
 
 Where the engines DID disagree, `cases.json` carried the answer that survives a
 render rather than a transcript of what an engine happened to print, and the
@@ -112,6 +111,7 @@ divergence is open.
 | `braced-highlight` | `djot` | `a {\=x=} b` | `a {=x=} b` | `{=x=}` is a highlight in Djot too, which is why the profile names `=` as handled. Escaping the inner `=` behind the brace renders `a {=x=} b` where the source meant `a <mark>x</mark> b`. |
 | `braced-unclosed` | `plain`, `markdown` | `a {^x b` | `a \{^x b` | A braced run spans a soft break: `a {^x` on one line and `y^} b` on the next renders `a <sup>x\ny</sup> b`. A line-oriented escaper that leaves an unclosed opener bare therefore lets the NEXT line close it, turning two lines of literal text into a superscript. |
 | `a-symbol-shortcode` | all | `a :rocket: b` | `a \:rocket: b` | `:name:` is a construct opener, so the bare form re-parses as a `symbol` node and, under a configured symbol map, renders the glyph where the source held text. PART 11 §5 lists `:` in the candidate set. Pinned end to end by the `symbol-sigil-escape` HTML import fixture. |
+| `a-numeric-character-reference` | all | `a &#8212; b` | `a &\#8212; b` | Carve has no character references, so the unescaped source reads as `&` followed by the tag `#8212`. Djot also treats the reference as literal text; HTML and Markdown importers decode their source-language entities before this escaper runs. |
 
 `a-colon-that-closes-no-shortcode` is the last row's negative: a colon that opens
 nothing is left bare, because escaping it would be the over-escaping PART 11 §2

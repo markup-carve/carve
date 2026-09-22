@@ -881,8 +881,9 @@ function loadPairs() {
  * compared. One renderer is what isolates a converter difference from a
  * renderer difference; the throwaway harness measured 4.1% of cases producing
  * byte-different Carve that renders identically (all of them carve-php's
- * escape-the-opening-delimiter-only style), which is why the produced `.crv`
- * is never compared directly.
+ * escape-the-opening-delimiter-only style), which is why produced `.crv` is
+ * compared only when a case supplies `expected.crv` to state a canonical
+ * spelling.
  *
  * `expected.html` IS AUTHORITATIVE, so cross-engine divergence needs no
  * separate gate: two engines that both match the fixture cannot differ, and an
@@ -934,6 +935,9 @@ async function runConvertMode() {
         format,
         file: join(dir, input),
         expected: readFileSync(expectedPath, 'utf8').trim(),
+        canonical: existsSync(join(dir, 'expected.crv'))
+          ? readFileSync(join(dir, 'expected.crv'), 'utf8')
+          : null,
       }
     })
 
@@ -953,6 +957,7 @@ async function runConvertMode() {
       format: 'html',
       file: join(dir, 'input.html'),
       expected: carveToHtml(readFileSync(join(dir, 'expected.crv'), 'utf8')).trim(),
+      canonical: null,
     })
   }
 
@@ -1087,7 +1092,8 @@ async function runConvertMode() {
           continue
         }
         rendered.push([impl.name, render.stdout])
-        if (render.stdout === kase.expected) {
+        const canonicalMatches = kase.canonical === null || raw === kase.canonical
+        if (render.stdout === kase.expected && canonicalMatches) {
           convertStats[impl.name].ok++
           continue
         }

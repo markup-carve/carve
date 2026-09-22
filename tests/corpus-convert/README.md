@@ -12,7 +12,7 @@ fixture set existed for the importers.
 
 ## Shape
 
-One directory per case, `NN-slug/`, holding exactly two files:
+One directory per case, `NN-slug/`, holding an input and expected render:
 
 ```
 tests/corpus-convert/
@@ -23,6 +23,13 @@ tests/corpus-convert/
 
 `input.<ext>` names the source format. `expected.html` is the render of the
 Carve the converter produced.
+
+A case may also carry `expected.crv` when the ruling requires one canonical
+source spelling that rendering cannot distinguish. The empty BBCode quote is
+the first such case: `>` and `> ` render the same element, but only `>` is a
+fixed point of the canonical writer. This comparison is byte-exact, including
+the final newline. Most cases must not add this file because equivalent Carve
+spellings are otherwise allowed to differ between importers.
 
 The directory shape rather than a flat `NN-slug.<ext>` pair is what the
 extensions force: an HTML case's SOURCE and any case's expected RENDER would
@@ -37,7 +44,7 @@ both runners read, so a new format is added in one place.
 
 ## Why the expected file is HTML and not Carve
 
-The three engines do not spell Carve the same way, deliberately. carve-php and
+The three engines usually do not spell Carve the same way, deliberately. carve-php and
 carve-js rewrite the source line by line, so their output keeps the author's
 spelling; carve-rs parses to an AST and writes canonically, so a setext heading
 comes back as `#` and an indented code block as a fence. Both are correct, and a
@@ -49,9 +56,11 @@ byte-different `.crv` that renders identically, and all 196 were the one
 deliberate difference where carve-php escapes only the opening delimiter of a
 pair and the other two escape both.
 
-So the comparison is SEMANTIC: source to `.crv` by each engine, then `.crv` to
-HTML by ONE engine, and the HTML is compared. Using a single engine for the
-render step is what isolates a converter difference from a renderer difference.
+So the default comparison is SEMANTIC: source to `.crv` by each engine, then
+`.crv` to HTML by ONE engine, and the HTML is compared. Using a single engine
+for the render step is what isolates a converter difference from a renderer
+difference. An optional `expected.crv` adds a byte comparison only where the
+ruling itself chooses one spelling.
 
 ## The dialect is CommonMark plus GFM
 
