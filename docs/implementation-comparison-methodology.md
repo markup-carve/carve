@@ -147,7 +147,9 @@ and
 and
 `478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column`
 and
-`479-a-closer-below-the-container-s-column-does-not-count`.
+`479-a-closer-below-the-container-s-column-does-not-count`
+and
+`480-a-bare-colon-opener-in-a-description-body-is-an-opener`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -239,6 +241,11 @@ Section 479 lags carve-rs on six of its seven rows, carve-php on four and
 carve-js on one, the definition body with a flush-left closer
 (markup-carve/carve-js#1883, markup-carve/carve-php#2211,
 markup-carve/carve-rs#1802, markup-carve/carve-rs#1803).
+Section 480 lags no engine on its five bare-opener rows. carve-php misses the
+control whose div holds a paragraph (markup-carve/carve-php#2210), and all three
+read the code-fence control two ways, as section 478 records
+(markup-carve/carve-js#1880, markup-carve/carve-php#2205,
+markup-carve/carve-rs#1800).
 Section 463 no longer lags an engine. A bare closer inside a braced inline
 (`~{/x/}{/y~/}`) used to close a span opened before the braces; markup-carve/carve#2027
 ruled that it may not, and all three now match.

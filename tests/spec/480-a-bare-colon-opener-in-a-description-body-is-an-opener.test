@@ -1,0 +1,119 @@
+A bare colon opener in a description body is an opener
+
+```
+:: t
+: :::
+ y
+  :::
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <div>
+    </div>
+  </dd>
+</dl>
+<p>y
+:::</p>
+```
+
+```
+:: t
+: :::
+y
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <div>
+    </div>
+  </dd>
+</dl>
+<p>y</p>
+```
+
+```
+:: t
+: a
+  :::
+y
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>a</p>
+    <div>
+    </div>
+  </dd>
+</dl>
+<p>y</p>
+```
+
+```
+:: t
+: a
+  :::
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>a</p>
+    <div>
+    </div>
+  </dd>
+</dl>
+```
+
+```
+:: t
+: :::
+  :::
+y
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <div>
+    </div>
+  </dd>
+</dl>
+<p>y</p>
+```
+
+```
+:: t
+: :::
+  a
+ y
+  :::
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <div>
+      <p>a
+y</p>
+    </div>
+  </dd>
+</dl>
+```
+
+````
+:: t
+: a
+  ```
+  :::
+ y
+  ```
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>a</p>
+    <pre><code>:::
+</code></pre>
+  </dd>
+</dl>
+<p>y
+<code></code></p>
+````
