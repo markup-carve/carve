@@ -163,7 +163,9 @@ and
 and
 `486-any-character-is-content-of-the-combined-bold-italic-token`
 and
-`487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested`.
+`487-a-form-feed-or-a-no-break-space-is-content-wherever-whitespace-is-tested`
+and
+`488-a-quote-after-a-bare-delimiter-follows-what-that-delimiter-does`.
 
 Each landed on a host with no engine checkouts, so the run above could not be
 retaken and its numbers describe the corpus WITHOUT them. Editing the
@@ -287,6 +289,9 @@ a form feed (markup-carve/carve-rs#1817) and the two heading references around
 a no-break space (markup-carve/carve-rs#1818). carve-js and carve-php read all
 twelve the ruled way, and markup-carve/carve#2157 brought the executable
 reference to them.
+Section 488 does NOT lag any engine: carve-js, carve-php, carve-rs and the
+pinned build all decide a quote after a bare delimiter by what that delimiter
+does, and markup-carve/carve#2164 brought the executable reference to them.
 Section 463 no longer lags an engine. A bare closer inside a braced inline
 (`~{/x/}{/y~/}`) used to close a span opened before the braces; markup-carve/carve#2027
 ruled that it may not, and all three now match.

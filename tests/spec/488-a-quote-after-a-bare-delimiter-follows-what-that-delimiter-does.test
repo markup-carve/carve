@@ -1,0 +1,61 @@
+A quote after a bare delimiter follows what that delimiter does
+
+```
+*"x"
+
+a *"x" b
+
+a **"x" b
+.
+<p>*”x”</p>
+<p>a *”x” b</p>
+<p>a **”x” b</p>
+```
+
+```
+a *"x"* b
+
+a ~*"x"* b
+.
+<p>a <strong>“x”</strong> b</p>
+<p>a ~<strong>“x”</strong> b</p>
+```
+
+```
+a.*"x"* b
+
+a,_"x"_ b
+.
+<p>a.<strong>“x”</strong> b</p>
+<p>a,<u>“x”</u> b</p>
+```
+
+```
+x{*"y"*}
+.
+<p>x<strong>“y”</strong></p>
+```
+
+```
+{*a *"x"*}
+.
+<p><strong>a *”x”</strong></p>
+```
+
+```
+*"'x'
+.
+<p>*”’x’</p>
+```
+
+```
+a*"x"* b
+
+/"x"
+
+="x"
+.
+<p>a*”x”* b</p>
+<p>/“x”</p>
+<p>=“x”</p>
+```
