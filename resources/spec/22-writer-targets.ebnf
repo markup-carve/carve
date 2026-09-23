@@ -69,6 +69,37 @@
         - issue \#123 fixed      ->  - issue #123 fixed
         > \#tag rest             ->  > #tag rest
 
+   8c. THE MARKDOWN TARGET USES RICH-TEXT DELIMITERS WHERE THEY READ BACK --
+      NORMATIVE [CARVE-P11-045]. The Markdown target spells `emphasis` with
+      `*`, `strong` with `**`, a `strong` node carrying `boldItalic: true`
+      around one whole `emphasis` child with `***`, and `strike` with `~~`.
+      A `***` read-back that commutes the two nesting levels is the same
+      construct under §10k N2.
+
+      The target MUST emit one of those four nodes as inline HTML (`<em>`,
+      `<strong>` or `<del>`, nested where needed) where its delimiter spelling
+      in the emitted bytes would not be read back as that construct under
+      CommonMark delimiter processing (with the GFM strikethrough extension
+      for `strike`). Where the delimiter spelling reads back, the target MUST
+      use it. Inline HTML is the smallest departure that restores the
+      construct, not an alternate canonical spelling.
+
+      The `underline`, `highlight`, `subscript` and `superscript` nodes have no
+      Markdown delimiter spelling and MUST use inline HTML: `<u>` for
+      `underline`, `<mark>` for `highlight`, `<sub>` for `subscript` and
+      `<sup>` for `superscript`.
+
+      THE TEST IS ON THE EMITTED BYTES, as in §1a. In the first document the
+      strong delimiter reads back as `strong`, so replacing it with `<strong>`
+      is a wider departure than the rule permits. In the second, `~~ ~~` does
+      not read back as `strike`, so the HTML fallback is required:
+
+        Carve       _*{*x*} q
+        Markdown    _\***x** q
+
+        Carve       {~ ~}
+        Markdown    <del> </del>
+
    9. THE MARKDOWN TARGET'S HARD BREAK -- NORMATIVE [CARVE-P11-026]. A `hard_break` is emitted
       as a BACKSLASH before the newline, never as two trailing spaces.
 

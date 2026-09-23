@@ -1175,6 +1175,12 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-045",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET USES RICH-TEXT DELIMITERS WHERE THEY READ BACK",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P11-026",
       "part": "11",
       "title": "THE MARKDOWN TARGET'S HARD BREAK",
