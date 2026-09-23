@@ -210,7 +210,13 @@ const MANIFEST = [
   // -- the spec repo's own ledgers ------------------------------------------
   { repo: 'spec', path: 'resources/ast-span-divergence.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'npm run ast:check' },
   { repo: 'spec', path: 'resources/ast-value-divergence.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'npm run ast:check' },
-  { repo: 'spec', path: 'resources/ast-extent-findings.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'npm run ast:check' },
+  // DECLARED INSIDE A PULL REQUEST, OWED BEFORE A TAG (carve#2179). A row
+  // here cannot parse unless its status is `owner/repo#N`, and `permitted` is
+  // refused outright, so a declaration is always tracked work with an owner
+  // and it leaves when that issue closes. The two AST ledgers above are NOT
+  // relaxed: their rows have nowhere to name an issue, so a declaration there
+  // would be an untraceable note rather than a window with an end.
+  { repo: 'spec', path: 'resources/ast-extent-findings.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run ast:check' },
   // ONE OF THE ENGINE-LAG ENTRIES: see the `prPolicy` note on the
   // engine-pin ledger below. Same window, described from the writer side.
   { repo: 'spec', path: 'resources/engine-fmt-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run fmt:check' },
@@ -225,6 +231,13 @@ const MANIFEST = [
   // 132 rows, every one `permitted`: PART 12 §4 exempts a REASSEMBLED node
   // forever. The last field decides, so a row that stops being permitted is
   // counted as owed without anyone editing this manifest.
+  //
+  // NOT given `prPolicy: 'declared'`, though an OWED row here fails a per-PR
+  // run exactly as carve#2179 describes. Measured: `declared` re-reads all
+  // 132 and accepts 129, so the relaxation reports three PERMITTED rows as
+  // undeclared - it trades one false failure for another. What this file
+  // wants is a split-aware PR policy: permitted always passes, owed passes
+  // when it names an engine issue. That shape does not exist yet.
   { repo: 'spec', path: 'resources/ast-position-waivers.txt', kind: 'txt', policy: 'split', guard: 'two-way', owner: 'tests/ast-waivers.test.mjs' },
   // A counts ratchet rather than a ledger, but it carries a per-document
   // allowlist inside it. Two-directional by construction - the whole object is
