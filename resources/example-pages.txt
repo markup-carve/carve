@@ -465,6 +465,7 @@ index: examples/edge-cases/index.md
   a-caption-s-placeholder-is-any-that-does-not-begin-a-tag
   a-comment-inside-a-forced-span-or-the-combined-token-ends-at-its-closer
   an-unresolved-reference-s-literal-source-is-html-escaped-like-any-other-text
+  adjacent-strong-spans-use-html-only-where-their-delimiters-merge
   a-quote-after-an-escaped-quote-closes
   a-combined-bold-italic-span-may-cross-a-line
   a-bare-closer-does-not-reach-inside-a-braced-inline

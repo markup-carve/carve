@@ -171,13 +171,16 @@ and
 and
 `490-a-comment-inside-a-forced-span-or-the-combined-token-ends-at-its-closer`
 and
-`491-an-unresolved-reference-s-literal-source-is-html-escaped-like-any-other-text`.
+`491-an-unresolved-reference-s-literal-source-is-html-escaped-like-any-other-text`
+and
+`492-adjacent-strong-spans-use-html-only-where-their-delimiters-merge`.
 
-Each landed on a host with no engine checkouts, so the run above could not be
-retaken and its numbers describe the corpus WITHOUT them. Editing the
-denominators by hand would publish a three-engine measurement nobody took, and
-one that is knowably wrong besides: carve-rs and carve-php both read a
-definition between two open content columns as lazy text today
+Entries through 491 landed on a host with no engine checkouts, so the run above
+could not be retaken and its numbers describe the corpus WITHOUT them. Section
+492 also postdates the snapshot, so it is excluded from the dated count.
+Editing the denominators by hand would publish a three-engine measurement
+nobody took, and one that is knowably wrong besides: carve-rs and carve-php
+both read a definition between two open content columns as lazy text today
 (markup-carve/carve-rs#1505, markup-carve/carve-php#1856), and the JS column
 would be wrong for section 443 as well, whose band the pinned build answers its
 own way (markup-carve/carve-js#1602), and for section 444, which no engine reads

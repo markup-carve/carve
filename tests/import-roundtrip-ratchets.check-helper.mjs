@@ -35,6 +35,12 @@ const visibleText = (html) =>
 // Corpus 491's three rows add +3 to each population count and 0 to both
 // round trips, as measured with the pinned carve-js.
 
+// Corpus 492's row adds +1 to each population count and the HTML round trip.
+// It misses the Markdown one: the pinned importer reads
+// `**a**<strong>b</strong>` back as `*a**b*`, dropping the braces, so the
+// second strong span returns as literal `*b*`. This keeps that importer defect
+// visible for a carve-js fix.
+
 // Corpus 488's seven rows add +7 to each population count and 0 to both round
 // trips, as measured with the pinned carve-js.
 
