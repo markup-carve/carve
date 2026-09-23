@@ -181,6 +181,45 @@ else
   skip "no CHANGELOG.md"
 fi
 
+# 5a. ...and that section accounts for EVERY merge in the release.
+#
+# Step 5 asks whether the section EXISTS, which passes happily on a section
+# covering 3 of 24 changes - the state four repositories were measured in on
+# 2026-09-22 (carve-rs 0.1.7 documented 3 of 24, carve-php 0.1.10 one of 22,
+# carve-js 0.1.8 one of 18, and this repository shipped 0.1.6 with an empty
+# [Unreleased] and left it empty for 33 more merges). The completeness gate
+# walks the merges back to the previous tag and names the ones the section
+# cites nowhere.
+#
+# Run from whichever implementation the target repo carries. Every repo also
+# runs its own copy in CI, but two of them cannot be gated there: a Packagist
+# webhook publishes carve-php on tag push, and this repo's tag is created by
+# publishing the draft release. For those, a run HERE is the only one that
+# happens before the release is out.
+#
+# A missing `gh` credential fails rather than skips, for the reason step 7
+# gives: a claim that is checkable and unchecked has not been checked.
+GATE=""
+if [ -f CHANGELOG.md ]; then
+  if [ -f scripts/changelog-completeness.mjs ]; then
+    GATE="node scripts/changelog-completeness.mjs"
+  elif [ -f tools/check-changelog-completeness.py ]; then
+    GATE="python3 tools/check-changelog-completeness.py"
+  elif [ -f scripts/changelog-completeness.php ]; then
+    GATE="php scripts/changelog-completeness.php"
+  fi
+fi
+
+if [ -z "$GATE" ]; then
+  skip "no changelog completeness gate in this repo"
+elif GATE_OUT="$($GATE "$VERSION" 2>&1)"; then
+  ok "the $VERSION section cites every shipped-source merge since the last tag"
+  printf '%s\n' "$GATE_OUT" | sed 's/^/         /'
+else
+  bad "the $VERSION section leaves shipped-source merges uncited - see below"
+  printf '%s\n' "$GATE_OUT" | sed 's/^::error:://' | sed 's/^/         /'
+fi
+
 # 6. Spec submodule initialized (if the repo vendors one).
 if [ -f .gitmodules ] && grep -q 'carve' .gitmodules 2>/dev/null; then
   SPEC="$(git config -f .gitmodules --get-regexp 'submodule\..*\.path' 2>/dev/null | awk '{print $2}' | head -1)"

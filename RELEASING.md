@@ -42,6 +42,21 @@ CI green:
    the `lastTag..main` range (the draft release notes are the source of truth for
    scope), then cut it to `## [X.Y.Z] - YYYY-MM-DD` and open a fresh empty
    `## [Unreleased]` above it.
+
+   Do not reconcile it by eye. The completeness gate names every merge whose
+   diff moved shipped source and is cited nowhere in the section:
+
+   ```sh
+   npm run changelog:check -- X.Y.Z --section Unreleased    # before the cut
+   npm run changelog:check -- X.Y.Z                         # after it
+   ```
+
+   It reads CHANGELOG.md from the git revision rather than the working tree, so
+   commit the entries before believing a failure. Each repo has its own copy -
+   `scripts/changelog-completeness.mjs` here, in carve-js and in
+   tree-sitter-carve, `tools/check-changelog-completeness.py` in carve-rs,
+   `scripts/changelog-completeness.php` in carve-php - and all four take the
+   same arguments.
 3. **`carve` only - reconcile the engine pin drift.** `resources/engine-pin-drift.txt`
    lists the corpus documents the pinned reference build does not reproduce, and
    a release is the moment that list has to be true rather than merely present:
@@ -98,8 +113,9 @@ CI green:
    (cd ../carve-php && git pull --ff-only && composer install)
    ```
 4. **Run the pre-tag check** (fails on a stale version field, an un-cut
-   changelog, a dirty tree, a missing tag, an uninitialized spec submodule, or a
-   drift entry the pinned build now reproduces):
+   changelog, a section that leaves merges uncited, a dirty tree, a missing tag,
+   an uninitialized spec submodule, or a drift entry the pinned build now
+   reproduces):
 
    ```sh
    bash scripts/pre-tag-check.sh X.Y.Z
@@ -156,6 +172,32 @@ The publish step is gated so a mistake cannot ship the wrong version:
   block. The pre-tag check is the only gate here - run it before tagging.
 - **tree-sitter-carve**: no automated publish workflow; publish manually and run
   the pre-tag check first.
+
+A third layer asks whether the section is COMPLETE rather than present. The
+guards above pass on a section covering three of twenty-four merges, which is
+the state four repositories were found in on 2026-09-22 - this one worst of
+all, with 0.1.6 shipped and `[Unreleased]` still empty 33 merges later. The
+completeness gate walks the merges back to the previous tag, asks GitHub what
+each pull request closes (an entry cites the ISSUE, not the pull request), and
+names every merge that moved shipped source and is cited nowhere:
+
+- **carve-js, carve-rs, tree-sitter-carve**: a step in the release workflow,
+  ahead of the publish step.
+- **carve-php**: a tag-push Release Gate. The Packagist webhook cannot be held
+  back, so it reports rather than blocks.
+- **carve**: nothing publishes on a tag here, so the gate runs in
+  `pre-tag-check.sh`, which is what stands between a draft release and the
+  publish button. `.github/workflows/release-gate.yml` runs it again on the tag
+  itself: that one cannot hold a release back, but it goes red while the tag is
+  still young enough to move. Run it yourself any time with
+  `npm run changelog:check`.
+
+What counts as shipped source differs per repository: `src/` in an engine, and
+here the clause source, the grammar, the corpus source and the fixture sets an
+engine vendors. The script's own header argues the cut, including what it
+deliberately leaves out and which exclusion to revisit first. Deliberate
+exclusions go in `.changelog-exempt` as `<number>: <reason>`; a bare number is
+refused, and every exemption that applies is printed on a passing run.
 
 A second layer guards the constants, which no publish workflow used to read.
 Each of these fails on every push, not only at tag time, so a missed bump
