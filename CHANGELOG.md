@@ -7,6 +7,162 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.7] - 2026-09-25
+
+### Changed (breaking for writer output)
+
+- **The Markdown target's rich-text spelling is normative** (carve#2177,
+  carve#2180). PART 11 §8c, `CARVE-P11-045`. The target spells emphasis with
+  `*`, strong with `**`, the combined token with `***` and strike with `~~`,
+  and MUST fall back to inline HTML where those delimiters in the emitted bytes
+  would not read back as the same construct. `underline`, `highlight`,
+  `subscript` and `superscript` have no Markdown delimiter and always use
+  `<u>`, `<mark>`, `<sub>` and `<sup>`. A writer that spelled any of these
+  another way now produces different bytes.
+- **A numeric character reference's hash is escaped in every profile**
+  (carve#2171, carve#2172, carve#2174). `a &#8212; b` is written
+  `a &\#8212; b` under `plain`, `markdown` and `djot`, because Carve has no
+  character references and the bare form reads back as `&` followed by the tag
+  `#8212`. The escape corpus's expectation changed, so an escaper that matched
+  the old bytes fails once its specification pin moves.
+
+### Changed
+
+#### Attributes
+
+- **An inline element takes a glued run of attribute blocks, merged into one
+  list** (carve#2136, carve#2139). `CARVE-P4-002`; `attribute_run` replaces the
+  single slot in the 26 inline productions that had one, and `*x*{.k}{.j}`
+  carries both classes. A run ends at a space, at a brace group that is not a
+  valid block, or at a glued construct. The list-marker slot, table rows and
+  cells, and a citation definition line stay at one block.
+- **A footnote reference and an inline note take an attribute run; editorial
+  substitution and comment take none** (carve#2138, carve#2140). The corpus
+  already required the first slot and the EBNF lacked it. `CARVE-P3-017` now
+  names only addition and deletion, so a block written after `{~a~>b~}` or
+  `{#note#}` is text; attaching to a substitution repeated an `id`.
+
+#### Inline parsing
+
+- **A delimiter after `_` or `/` opens only when that one pairs** (carve#2156,
+  carve#2160). `CARVE-P3-013` gains the exemption: `_*x* q` is literal,
+  `_*x*_ q` is an underline around a strong span.
+- **A comment inside a forced span or the combined token ends at that
+  construct's closer** (carve#2167, carve#2170). §21a is widened from two named
+  examples to any construct with an explicit closer.
+
+#### Block layout
+
+- **A closer below the container's content column does not count** (carve#2145,
+  carve#2149). `CARVE-P0-014`: a closer counts only when it is written inside
+  the container, so one below the column cannot make a fence a real body.
+- **A closer does not rescue a marker-line colon opener whose body folded in**
+  (carve#2147, carve#2154). A `:::` on a list item's marker line stays demoted
+  to text when its body arrives by lazy folding, whether or not a closer
+  follows; the closer-shaped line is then read on its own.
+- **The closer-lookahead sentence under `CARVE-P0-014` states its answer
+  plainly** (carve#2142, carve#2150), with the meaning unchanged. The old
+  wording read as if ending the item at the below-column line were the wrong
+  answer.
+
+#### HTML serialization
+
+- **An unresolved reference's literal source is escaped like any other text**
+  (carve#2168, carve#2173). The source, the label and an attribute-block value
+  were spliced in raw, so `&`, `<` and `>` reached the output unescaped. PART 10
+  SS2 also names the no-break-space entity as the one exception to "no other
+  entities are produced", matching the escaped space and a line block's
+  preserved indentation.
+
+### Fixed
+
+The executable reference and the Ohm grammar disagreed with normative text that
+already existed. Each of these moves the shipped oracle, not a rule.
+
+#### Inline parsing
+
+- **A code span pairs a run of any length, and a run past the last tier is
+  refused** (carve#2144, carve#2146). The reference spelled three tiers, so a
+  four-backtick run took part of itself as content. The same bound now serves
+  the forced-span guard, a substitution's atom, the insertion and deletion scan,
+  and the layout scanner.
+- **Any character is content of the combined bold-italic token** (carve#2159,
+  carve#2162), including a tab, `<`, `>`, `#`, braces, a no-break space, an
+  escaped space, a hard break and a comment. **A run of asterisks inside the
+  token is content too** (carve#2135, carve#2137): `/***/` is a strong span
+  around an emphasized `*`.
+- **The combined token runs the PART 9 §9 delimiter stack** (carve#2131,
+  carve#2133), so `~`, `=` and `_` spans resolve inside it while `/` and `*`
+  stay literal.
+- **A quote is decided by the character before it** (carve#2158, carve#2161,
+  carve#2164, carve#2166). Quotes in a run are decided after pairing, in source
+  order, from the glyph that stood before the run; an escaped quote keeps its
+  place in that chain, so the quote after it closes.
+- **`bare_opener` reads its own underscore term** (carve#2129, carve#2132), so
+  `a_*x*` is literal where `_*x*_` still nests.
+- **A name run gives up the underline closer it cannot keep** (carve#2130,
+  carve#2134). A mention or tag name reaches the delimiter stack as a candidate
+  at every `_`, so `_@ex_` is an underlined mention.
+- **The word-boundary classes read the alphabet the clauses spell**
+  (carve#2126, carve#2128). PART 9 §7's `[A-Za-z0-9_]` and the grammar's ASCII
+  `alnum` replace Ohm's Unicode `letter`, in both directions: `é#tag` is a tag,
+  `a_#tag` is literal.
+- **A form feed or a no-break space is content wherever whitespace is tested**
+  (carve#2157, carve#2163). Every `\s` and `trim()` in the reference that read a
+  document differently now reads PART 7's set: the bare-delimiter guard, code
+  span padding, the table row end, the term and continuation markers, the
+  frontmatter opener and the heading-reference key.
+- **A caption's placeholder is any `#` that does not begin a tag** (carve#2165,
+  carve#2169). `CARVE-P2-022` lists "any non-tag-name character" and the
+  reference took only whitespace, `:` and `.`, so most captions went unnumbered.
+
+#### Block layout
+
+- **An item's fence is read by one `§10 I4` answer, not two** (carve#2141). The
+  collector's answer is handed to the item's own parse, so a fence whose closer
+  lands past the item's end is a code block in both readings. Corpus
+  `276-…-7`, which contradicted the clause written about that exact document,
+  is rewritten to it.
+- **A definition body's open code fence ends at a line below its column**
+  (carve#2143, carve#2148). `CARVE-P0-013` says a fenced body is not a
+  paragraph, so the line has nothing to fold into.
+- **A bare colon opener in a description body is an opener** (carve#2147,
+  carve#2152), not only a closer, so a line below the body's column no longer
+  folds into the empty container it opened.
+- **A bare colon run interrupts a paragraph whether or not a line follows it**
+  (carve#2151, carve#2153). The reference required a non-blank line after the
+  run, which contradicted `CARVE-P9-016`'s own example at the end of a
+  container. Absorption after an invalid opener is unchanged.
+
+#### Reference definitions and identifiers
+
+- **The reference definition reads both title quotes and rejects an invalid
+  trailing block** (carve#2122, carve#2123). `[a]: /u 'T'` is a definition,
+  `[a]: /u {#}` is prose under `CARVE-P3-006`, and a brace or quote inside the
+  destination no longer hides a valid trailing block.
+- **The two hand-spelled destination readers follow `link_destination`**
+  (carve#2122, carve#2124). `[a]: a(b` is prose, because `destination_char`
+  excludes the parentheses and `CARVE-P3-005` anchors the definition at the end
+  of the line. The captionable-image test now matches the `image` rules, so a
+  destination holding `)` or a title or attribute value holding `}` still builds
+  a figure.
+- **Every identifier production reads the ASCII alphabet** (carve#2125,
+  carve#2127). `identStart`, `tagChar`, `alnumCh`, the email rules and
+  `langChar` were built on Ohm's Unicode `letter`, so the reference accepted ten
+  shapes the production refuses.
+
+### Corpus
+
+- **The conformance corpus grows from 1740 to 1856 documents**, sections 473 to
+  492. Every ruling and reference fix above is pinned there.
+- **An empty term marker in a description body is text** (carve#2155). Settled
+  by the production rather than by a ruling: `:: ` carries no term text, so the
+  line folds into the body. All three engines end the body instead, and section
+  483 gives them a shape to converge on.
+- **Empty and whitespace-only BBCode quotes survive as canonical `>` blocks**
+  (carve#2174). A converter case can now opt into a byte-exact `expected.crv`
+  check where rendering cannot distinguish the ruled spelling.
+
 ## [0.1.6] - 2026-09-18
 
 ### Changed (breaking for AST consumers)
@@ -1398,7 +1554,8 @@ advance to `0.1.0` together as the first lockstep minor release.
   content strip bidi-override/isolate controls (removed, not entity-escaped, to
   prevent round-trip reintroduction)
 
-[Unreleased]: https://github.com/markup-carve/carve/compare/0.1.6...HEAD
+[Unreleased]: https://github.com/markup-carve/carve/compare/0.1.7...HEAD
+[0.1.7]: https://github.com/markup-carve/carve/compare/0.1.6...0.1.7
 [0.1.6]: https://github.com/markup-carve/carve/compare/0.1.5...0.1.6
 [0.1.5]: https://github.com/markup-carve/carve/compare/0.1.4...0.1.5
 [0.1.0]: https://github.com/markup-carve/carve/releases/tag/0.1.0
