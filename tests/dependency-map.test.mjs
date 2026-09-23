@@ -20,7 +20,7 @@ import * as nodePath from 'node:path'
 import { parseDependencyLedger, auditDependencyLedger } from '../scripts/lib/drift-ledger.mjs'
 import { test } from 'node:test'
 
-import { classify, parseManifest, renderMermaid, releaseLayers, renderReleaseOrder, ciReferences, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange } from '../tools/dependency-map.mjs'
+import { classify, parseManifest, renderMermaid, releaseLayers, renderReleaseOrder, ciReferences, ciInstalls, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange } from '../tools/dependency-map.mjs'
 
 const cases = [
   ['github: shorthand', '@markup-carve/carve', 'github:markup-carve/carve-js#3ba8ba32', 'carve-js', '3ba8ba32'],
@@ -224,6 +224,63 @@ test('an org-prefixed string that is not a repo is rejected', () => {
   // whole value is that its rows are real.
   const yaml = '# /-/org/markup-carve/package, an ORGANIZATION READ - not a package'
   assert.deepEqual([...ciReferences(yaml, 'carve-wasm', KNOWN)], [])
+})
+
+test('a pip install from a git url is a pin, with its ref', () => {
+  const yaml = [
+    '        run: |',
+    '          pip install zensical',
+    '          pip install "git+https://github.com/markup-carve/carve-rs@main"',
+    '          pip install git+https://github.com/markup-carve/carve-go.git@v0.1.3',
+    '          pip install git+https://github.com/markup-carve/package',
+  ].join('\n')
+  assert.deepEqual(ciInstalls(yaml, 'zensical-carve-demo', KNOWN), [
+    { target: 'carve-rs', ref: 'main' },
+    { target: 'carve-go', ref: 'v0.1.3' },
+  ])
+})
+
+test('an npm install reads every github shorthand on the line', () => {
+  const yaml = 'run: npm install --no-save github:markup-carve/carve#0.1.6 github:markup-carve/carve-rs#v1'
+  assert.deepEqual(ciInstalls(yaml, 'x', KNOWN), [
+    { target: 'carve', ref: '0.1.6' },
+    { target: 'carve-rs', ref: 'v1' },
+  ])
+})
+
+test('python -m pip and a continued line are still installs', () => {
+  const yaml = [
+    '          python -m pip install git+https://github.com/markup-carve/carve-go@v0.1.3',
+    '          pip install \\',
+    '            git+https://github.com/markup-carve/carve-rs@main',
+  ].join('\n')
+  assert.deepEqual(ciInstalls(yaml, 'x', KNOWN), [
+    { target: 'carve-go', ref: 'v0.1.3' },
+    { target: 'carve-rs', ref: 'main' },
+  ])
+})
+
+test('a git url outside an install command is not a pin', () => {
+  const yaml = [
+    '      # pip install "git+https://github.com/markup-carve/carve-rs@main"',
+    '      - run: echo git+https://github.com/markup-carve/carve-rs@main',
+    '        env:',
+    '          SOURCE: git+https://github.com/markup-carve/carve-go@main',
+  ].join('\n')
+  assert.deepEqual(ciInstalls(yaml, 'x', KNOWN), [])
+})
+
+test('a Homebrew formula pins the release it downloads, once per tag', () => {
+  const rb = [
+    'url "https://github.com/markup-carve/carve-rs/releases/download/0.1.6/carve-0.1.6-aarch64-apple-darwin.tar.gz"',
+    'url "https://github.com/markup-carve/carve-rs/releases/download/0.1.6/carve-0.1.6-x86_64-apple-darwin.tar.gz"',
+    'url "https://github.com/other/tool/releases/download/1.0/tool.tar.gz"',
+  ].join('\n')
+  const edges = parseManifest('brew', 'Formula/carve.rb', rb)
+  assert.equal(edges.length, 1)
+  assert.equal(edges[0].target, 'carve-rs')
+  assert.equal(edges[0].kind, 'git')
+  assert.equal(edges[0].ref, '0.1.6')
 })
 
 test('a repo does not depend on itself through its own CI', () => {

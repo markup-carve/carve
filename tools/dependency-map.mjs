@@ -148,7 +148,9 @@ async function repoManifestPaths(repo, branch) {
     const depth = entry.path.split('/').length
     if (depth > 3) continue
     const base = entry.path.split('/').pop()
-    if (MANIFESTS.has(base)) wanted.push({ path: entry.path, kind: MANIFESTS.get(base) })
+    // A tap formula names no package: its pin is the release-asset url it downloads.
+    if (/^Formula\/[^/]+\.rb$/.test(entry.path)) wanted.push({ path: entry.path, kind: 'brew' })
+    else if (MANIFESTS.has(base)) wanted.push({ path: entry.path, kind: MANIFESTS.get(base) })
     else if (base.endsWith('.gemspec') || base.endsWith('.rockspec')) {
       wanted.push({ path: entry.path, kind: 'ruby' })
     }
@@ -256,6 +258,33 @@ function ciReferences(text, self, known) {
     found.add(name)
   }
   return found
+}
+
+/*
+ * AN INSTALL IN CI IS A PIN, not a checkout. A demo that builds its site with
+ * `pip install "git+https://github.com/markup-carve/x@main"` ships whatever
+ * that ref serves, and has no manifest to say so. Returned as git edges so the
+ * ref is resolved like any other: a branch reads as unpinned, a tag as released.
+ */
+function ciInstalls(text, self, known) {
+  const found = new Map()
+  const org = ORG.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const spec = new RegExp(
+    `(?:git\\+https?://github\\.com/|github:)${org}/([a-z0-9][a-z0-9.-]*?)(?:\\.git)?(?:[@#]([\\w./-]+))?(?=["'\\s]|$)`,
+    'gi',
+  )
+  for (const line of text.replace(/\\\r?\n/g, ' ').split('\n')) {
+    // Only a command that installs: a comment, an echo or an env value naming the url is not one.
+    const command = line.replace(/^\s*(?:-\s*)?(?:run:\s*)?/, '')
+    if (!/^(?:uv\s+|python3?\s+-m\s+)?(?:pip3?|npm|pnpm|yarn)\s+(?:install|add|i)\b/i.test(command)) continue
+    for (const match of command.matchAll(spec)) {
+      const [, name, ref = null] = match
+      if (name === self || !known.has(name)) continue
+      const key = `${name}@${ref ?? ''}`
+      if (!found.has(key)) found.set(key, { target: name, ref })
+    }
+  }
+  return [...found.values()]
 }
 
 async function readFile(repo, path, branch) {
@@ -472,6 +501,17 @@ function parseManifest(kind, path, text, gitlinks) {
     }
     for (const match of text.matchAll(/^\s*["']?([\w-]*carve[\w-]*)["']?\s*[>=~]{1,2}\s*["']?([\d.]+)/gm)) {
       push(match[1], match[2], 'dependency')
+    }
+    return edges
+  }
+
+  if (kind === 'brew') {
+    const seen = new Set()
+    for (const match of text.matchAll(/github\.com\/([\w.-]+)\/([\w.-]+)\/releases\/download\/([^/"\s]+)\//g)) {
+      const [, owner, target, tag] = match
+      if (owner.toLowerCase() !== ORG.toLowerCase() || seen.has(`${target}@${tag}`)) continue
+      seen.add(`${target}@${tag}`)
+      edges.push({ kind: 'git', ref: tag, target, name: '(formula)', spec: `${target}@${tag}`, field: 'formula', path })
     }
     return edges
   }
@@ -1234,7 +1274,7 @@ function renderMarkdown(edges, { repos, skipped, generatedFrom, states, source }
 
 // ---------------------------------------------------------------------------
 
-export { classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange }
+export { classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, ciInstalls, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange }
 
 /*
  * What this run was generated FROM, for staleSourceBanner above.
@@ -1300,10 +1340,18 @@ async function main() {
     // CI SECOND, so a repo that both declares and checks out a target keeps the
     // declared edge: the pin is the stronger statement and the dedupe below is
     // first-one-wins per (repo, target, ref).
-    const declared = new Set(found.map((edge) => edge.target))
+    const texts = []
     for (const path of workflows ?? []) {
       const text = await readFile(repo.name, path, repo.default_branch)
-      if (!text) continue
+      if (text) texts.push({ path, text })
+    }
+    for (const { path, text } of texts) {
+      for (const { target, ref } of ciInstalls(text, repo.name, liveNames)) {
+        found.push({ kind: 'git', ref, target, name: target, spec: ref ? `${target}@${ref}` : target, field: 'workflow install', path, repo: repo.name })
+      }
+    }
+    const declared = new Set(found.map((edge) => edge.target))
+    for (const { path, text } of texts) {
       for (const target of ciReferences(text, repo.name, liveNames)) {
         if (declared.has(target)) continue
         found.push({

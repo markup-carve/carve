@@ -1,9 +1,10 @@
 # Dependencies between org repos that no manifest, bundle header or CI
 # checkout can be read for.
 #
-# `tools/dependency-map.mjs` finds an edge four ways: a package manifest, a
-# submodule gitlink, a provenance header inside a committed build, and a
-# workflow that checks another repo out. Each of those is a machine-readable
+# `tools/dependency-map.mjs` finds an edge six ways: a package manifest, a
+# submodule gitlink, a Homebrew formula's release url, a provenance header
+# inside a committed build, a workflow that installs another repo from git,
+# and a workflow that checks another repo out. Each of those is a machine-readable
 # statement by the repo itself, and between them they cover most of the org.
 #
 # They do not cover everything, and the two gaps are opposite in shape:
