@@ -111,16 +111,14 @@
 
         </blockquote>
 
-      with one exception, and it is an exception rather than a rule: a BARE
-      `:::` div -- no type word, no class -- closes on the next line instead.
-
-        <div>
-        </div>
-
-      So the four shapes are, exhaustively: bare div compact; div with a word
-      class, admonition, and blockquote all with the blank line. A body that
-      renders to nothing is an empty body -- a container holding only a comment
-      takes the same shape as one holding nothing.
+      This includes a bare `:::` div, a div with a word class, an admonition,
+      a blockquote, a figure group, a line block and a local hard-break block.
+      The container kind does not change the body slot. A body that renders to
+      nothing is an empty body -- a container holding only a comment takes the
+      same shape as one holding nothing. A rendered caption or div label is
+      visible container content and therefore fills the body slot. PART 9 §23
+      turns a comment-only line in a line block into an empty verse paragraph;
+      that paragraph is visible body content (`<p></p>`), not an empty body.
 
    5. PARAGRAPH WRAPPING follows the tight/loose rule (§17): a tight list
       item's text has no <p>; a loose item's paragraphs are wrapped.

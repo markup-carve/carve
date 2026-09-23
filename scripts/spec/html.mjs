@@ -420,9 +420,8 @@ function renderBlock(b, depth, ctx) {
       if (b.label !== null) parts.push(`${pad2}  <p class="div-label">${renderInline(b.label)}</p>`)
       for (const c of b.children) parts.push(renderBlock(c, depth + 1, ctx))
       if (parts.length === 0) {
-        // empty body: a bare div collapses to one line break; a typed block
-        // keeps its empty body line (both corpus/oracle-pinned)
-        if (b.type === null) return `${open}\n${pad2}${closeTag}`
+        // Every empty container keeps its body slot. PART 10 section 4 applies
+        // the same shape to a bare div, typed div, admonition and blockquote.
         return `${open}\n\n${pad2}${closeTag}`
       }
       return `${open}\n${parts.join('\n')}\n${pad2}${closeTag}`
@@ -489,9 +488,7 @@ function renderBlock(b, depth, ctx) {
       const parts = []
       if (inner !== '') parts.push(inner)
       if (cap !== undefined) parts.push(`${pad2}  <figcaption>${renderInline(cap)}</figcaption>`)
-      // an EMPTY uncaptioned group keeps the bare-container empty-body line
-      // (the PART 10 SS4 exception the generic div takes).
-      if (parts.length === 0) return `${pad2}<figure${attrStr}>\n${pad2}</figure>`
+      if (parts.length === 0) return `${pad2}<figure${attrStr}>\n\n${pad2}</figure>`
       return `${pad2}<figure${attrStr}>\n${parts.join('\n')}\n${pad2}</figure>`
     }
     case 'line-block': {
@@ -560,7 +557,7 @@ function renderBlock(b, depth, ctx) {
       })
       // Same rule as the line block above, same defect, same fix.
       const hbAttrs = renderBlockAttrs([...(b.battrs ?? []), [['class', 'hardbreaks']]])
-      if (parts.length === 0) return `${pad2}<div${hbAttrs}></div>`
+      if (parts.length === 0) return `${pad2}<div${hbAttrs}>\n\n${pad2}</div>`
       return `${pad2}<div${hbAttrs}>\n${parts.join('\n')}\n${pad2}</div>`
     }
     case 'deflist': {

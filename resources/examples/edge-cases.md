@@ -4337,6 +4337,7 @@ the stray `:::` opens a second, top-level div with an empty body:
   </li>
 </ul>
 <div>
+
 </div>
 ```
 
@@ -13199,6 +13200,7 @@ re-classified at top level, where it opens a div of its own:
 :::note
 body</p></blockquote>
 <div>
+
 </div>
 ```
 
@@ -36487,6 +36489,7 @@ question and is not decided here (markup-carve/carve#2147).
   <dt>t</dt>
   <dd>
     <div>
+
     </div>
   </dd>
 </dl>
@@ -36509,6 +36512,7 @@ y
   <dt>t</dt>
   <dd>
     <div>
+
     </div>
   </dd>
 </dl>
@@ -36535,6 +36539,7 @@ y
   <dd>
     <p>a</p>
     <div>
+
     </div>
   </dd>
 </dl>
@@ -36557,6 +36562,7 @@ y
   <dd>
     <p>a</p>
     <div>
+
     </div>
   </dd>
 </dl>
@@ -36578,6 +36584,7 @@ y
   <dt>t</dt>
   <dd>
     <div>
+
     </div>
   </dd>
 </dl>
@@ -36658,6 +36665,7 @@ not a div
 <p>text
 not a div</p>
 <div>
+
 </div>
 ```
 
@@ -36674,6 +36682,7 @@ not a div</p>
 <ul>
   <li>a
     <div>
+
     </div>
   </li>
 </ul>
@@ -36692,6 +36701,7 @@ not a div</p>
 <blockquote>
   <p>a</p>
   <div>
+
   </div>
 </blockquote>
 ```
@@ -36713,6 +36723,7 @@ y
 <ul>
   <li>a
     <div>
+
     </div>
   </li>
 </ul>
@@ -36735,6 +36746,7 @@ y
   <figcaption>cap</figcaption>
 </figure>
 <div>
+
 </div>
 ```
 
@@ -36756,6 +36768,7 @@ text
 <div class="d">
   <p>text</p>
   <div>
+
   </div>
 </div>
 ```
@@ -36803,6 +36816,7 @@ empty div that closes with the item (markup-carve/carve#2147).
   <li>:::
 y
     <div>
+
     </div>
   </li>
 </ul>
@@ -36823,6 +36837,7 @@ y
   <li>::: note
 y
     <div>
+
     </div>
   </li>
 </ul>
@@ -36847,6 +36862,7 @@ column and the div opens there.
   <li>::: d
 y
     <div>
+
     </div>
   </li>
 </ol>
@@ -36869,6 +36885,7 @@ y
 y
 z
     <div>
+
     </div>
   </li>
 </ul>
@@ -36890,6 +36907,7 @@ z
   <li>::: d
 y
     <div>
+
     </div>
   </li>
 </ul>
@@ -36913,6 +36931,7 @@ y
       <li>::: d
 y
         <div>
+
         </div>
       </li>
     </ul>
@@ -37007,6 +37026,7 @@ y
 <p>y</p>
 <blockquote>
   <div>
+
   </div>
 </blockquote>
 ```
@@ -38102,3 +38122,87 @@ because the two delimiter runs otherwise merge into one strong span.
 ```
 
 :::
+
+## Empty containers share one HTML body shape
+
+PART 10 SS4 keeps one blank body line when an empty container renders. The
+container kind does not change that slot.
+
+:::: compare
+
+```carve
+:::
+Visible body.
+:::
+```
+
+```html
+<div>
+  <p>Visible body.</p>
+</div>
+```
+
+::::
+
+A comment-only body has the same shape because the comment publishes no HTML.
+The line-block case is the PART 9 §23 exception: its comment-only line becomes
+an empty verse paragraph, so the body is visible rather than empty.
+
+:::: compare
+
+```carve
+:::
+%% hidden
+%% hidden too
+:::
+
+::: custom
+%% hidden
+:::
+
+::: note
+%% hidden
+:::
+
+::: >
+%% hidden
+:::
+
+::: |
+%% hidden
+:::
+
+::: \
+%% hidden
+:::
+
+::: figure
+%% hidden
+:::
+```
+
+```html
+<div>
+
+</div>
+<div class="custom">
+
+</div>
+<aside class="admonition note" aria-label="Note">
+
+</aside>
+<blockquote>
+
+</blockquote>
+<div class="line-block">
+  <p></p>
+</div>
+<div class="hardbreaks">
+
+</div>
+<figure class="carve-figure-group">
+
+</figure>
+```
+
+::::

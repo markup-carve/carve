@@ -173,11 +173,14 @@ and
 and
 `491-an-unresolved-reference-s-literal-source-is-html-escaped-like-any-other-text`
 and
-`492-adjacent-strong-spans-use-html-only-where-their-delimiters-merge`.
+`492-adjacent-strong-spans-use-html-only-where-their-delimiters-merge`
+and
+`493-empty-containers-share-one-html-body-shape`.
 
 Entries through 491 landed on a host with no engine checkouts, so the run above
 could not be retaken and its numbers describe the corpus WITHOUT them. Section
-492 also postdates the snapshot, so it is excluded from the dated count.
+492 and 493 also postdate the snapshot, so they are excluded from the dated
+count.
 Editing the denominators by hand would publish a three-engine measurement
 nobody took, and one that is knowably wrong besides: carve-rs and carve-php
 both read a definition between two open content columns as lazy text today

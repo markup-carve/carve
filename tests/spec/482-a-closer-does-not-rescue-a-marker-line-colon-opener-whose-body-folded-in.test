@@ -9,6 +9,7 @@ A closer does not rescue a marker-line colon opener whose body folded in
   <li>:::
 y
     <div>
+
     </div>
   </li>
 </ul>
@@ -23,6 +24,7 @@ y
   <li>::: note
 y
     <div>
+
     </div>
   </li>
 </ul>
@@ -37,6 +39,7 @@ y
   <li>::: d
 y
     <div>
+
     </div>
   </li>
 </ol>
@@ -53,6 +56,7 @@ y
 y
 z
     <div>
+
     </div>
   </li>
 </ul>
@@ -68,6 +72,7 @@ z
   <li>::: d
 y
     <div>
+
     </div>
   </li>
 </ul>
@@ -85,6 +90,7 @@ y
       <li>::: d
 y
         <div>
+
         </div>
       </li>
     </ul>
@@ -151,6 +157,7 @@ y
 <p>y</p>
 <blockquote>
   <div>
+
   </div>
 </blockquote>
 ```

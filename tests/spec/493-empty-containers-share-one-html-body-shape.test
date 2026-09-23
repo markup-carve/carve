@@ -1,0 +1,64 @@
+Empty containers share one HTML body shape
+
+```
+:::
+Visible body.
+:::
+.
+<div>
+  <p>Visible body.</p>
+</div>
+```
+
+```
+:::
+%% hidden
+%% hidden too
+:::
+
+::: custom
+%% hidden
+:::
+
+::: note
+%% hidden
+:::
+
+::: >
+%% hidden
+:::
+
+::: |
+%% hidden
+:::
+
+::: \
+%% hidden
+:::
+
+::: figure
+%% hidden
+:::
+.
+<div>
+
+</div>
+<div class="custom">
+
+</div>
+<aside class="admonition note" aria-label="Note">
+
+</aside>
+<blockquote>
+
+</blockquote>
+<div class="line-block">
+  <p></p>
+</div>
+<div class="hardbreaks">
+
+</div>
+<figure class="carve-figure-group">
+
+</figure>
+```

@@ -7558,16 +7558,14 @@ EOF = (* end of file *) ;
 
         </blockquote>
 
-      with one exception, and it is an exception rather than a rule: a BARE
-      `:::` div -- no type word, no class -- closes on the next line instead.
-
-        <div>
-        </div>
-
-      So the four shapes are, exhaustively: bare div compact; div with a word
-      class, admonition, and blockquote all with the blank line. A body that
-      renders to nothing is an empty body -- a container holding only a comment
-      takes the same shape as one holding nothing.
+      This includes a bare `:::` div, a div with a word class, an admonition,
+      a blockquote, a figure group, a line block and a local hard-break block.
+      The container kind does not change the body slot. A body that renders to
+      nothing is an empty body -- a container holding only a comment takes the
+      same shape as one holding nothing. A rendered caption or div label is
+      visible container content and therefore fills the body slot. PART 9 §23
+      turns a comment-only line in a line block into an empty verse paragraph;
+      that paragraph is visible body content (`<p></p>`), not an empty body.
 
    5. PARAGRAPH WRAPPING follows the tight/loose rule (§17): a tight list
       item's text has no <p>; a loose item's paragraphs are wrapped.
@@ -8579,7 +8577,9 @@ EOF = (* end of file *) ;
       (`::: \`). THERE IS NO EXCEPTION ON THIS TARGET: the shape does not vary
       by container kind, by type word, or by attribute. A body that renders
       nothing is an empty body here as it is in PART 10 §4, so a container
-      holding only a comment takes this shape too.
+      holding only a comment takes this shape too. A comment-only line in a
+      line block has already become the empty verse line defined by PART 9
+      §23, so its paragraph remains body content.
 
       IT REACHES THE CONSTRUCTS THAT HAVE A CLOSER LINE, which is what a colon
       fence has and a block quote does not. An empty block quote is a `>` line
@@ -8591,13 +8591,10 @@ EOF = (* end of file *) ;
       nothing serializes to, and this asks the same of the same document at
       the other target, so one rule for "an empty body" serves both.
 
-      THE EXCEPTION IS NOT IMPORTED WITH IT. §4 says of its bare-div exception,
-      in its own words, that it "has no principle behind it" and that the split
-      is on "a property of the RENDERING PATH and not of the document". What
-      carries the exception there does not travel to a target it was never
-      about, so this clause takes the uniform rule §4 itself prefers. The two
-      targets therefore agree on the rule and differ on one shape: a bare `:::`
-      div closes compactly in HTML and takes the blank line here.
+      THE TWO TARGETS AGREE. PART 10 §4 gives the same blank body line to a
+      bare div, typed div, admonition and blockquote. This clause applies that
+      shape to every colon-fenced container the Carve writer emits, including
+      line blocks and local hard-break blocks.
 
    7b. A FOOTNOTE DEFINITION WITH NO BLOCKS IS WRITTEN WITH THE SENTINEL
       `{empty}` -- NORMATIVE [CARVE-P11-019]. A `footnote_definition` whose body holds NO
@@ -10288,18 +10285,6 @@ EOF = (* end of file *) ;
       version of this format gives that property a meaning, an engine that
       dropped it rendered a document that says something else and reported
       success; an engine that refused sent the caller to a version mismatch.
-
-      A DOCUMENTED LEGACY ALIAS IS THE ONE NARROW EXCEPTION. An implementation
-      MAY accept a property it once published itself, PROVIDED it decodes that
-      property onto a field the schema DOES name and says so in its
-      documentation -- `footnote.id`, which two engines published before §7
-      settled on `label`, is the case this is written for. Such a property is
-      not "a property the ingest cannot understand", which is what this clause
-      is about; refusing it would not protect a caller from a half-read tree,
-      it would take away the only reader that reads those stored trees whole.
-      The exception does NOT extend to a property the implementation merely
-      tolerates, and an implementation MUST NOT accept the alias on a type that
-      never carried it.
 
       THIS DOES NOT CLOSE THE DOOR ON EXTENSION DATA. An extension that wants
       to carry its own state across a round trip needs a DECLARED place to put
