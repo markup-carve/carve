@@ -364,12 +364,12 @@ if (malformed.length || missing.length) {
         // A follow-up usually names the ruling it belongs to in its body, and
         // that ruling is usually already written up. Saying so turns the
         // finding into a one-word edit of an entry that exists.
-        const neighbours = [...new Set(localReferences(bodies.get(number) ?? ''))]
+        const neighbors = [...new Set(localReferences(bodies.get(number) ?? ''))]
             .filter((n) => n !== number && cited.has(n))
             .slice(0, 3);
-        if (neighbours.length) {
+        if (neighbors.length) {
             console.log(
-                `::error::  #${number} names ${neighbours.map((n) => `#${n}`).join(', ')}, which the ` +
+                `::error::  #${number} names ${neighbors.map((n) => `#${n}`).join(', ')}, which the ` +
                 `section does cite - add this number to that entry, or exempt it`,
             );
         }
