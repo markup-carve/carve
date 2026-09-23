@@ -333,6 +333,34 @@ carve-php  333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv  
 #
 # All six issues are closed. A new gap goes here, one line per engine, document
 # and type, with the issue that tracks it - never `permitted`.
+#
+# AND TWO DID, on 2026-09-23, so the section is no longer empty. Both arrived
+# with the fence and unresolved-reference work of the day before, and both were
+# probed directly on the document named rather than read off the run:
+#
+#   carve-rs   a description body's fenced code block carries no position, and
+#              the description then ends at its last placed child.
+#              markup-carve/carve-rs#1833
+#   carve-php  an unresolved reference's literal caption text and the soft break
+#              before it carry none, so the paragraph ends at the image.
+#              markup-carve/carve-php#2250
+#
+# NEITHER IS `permitted`, for the same reason both times: the other two engines
+# place the node, at one extent, over contiguous source. That is the proof an
+# honest span exists, and §4 exempts only what cannot be placed.
+
+carve-rs   450-a-closed-fence-in-a-description-body-ends-it-2.crv                             code_block  1  markup-carve/carve-rs#1833
+carve-rs   450-a-closed-fence-in-a-description-body-ends-it-4.crv                             code_block  1  markup-carve/carve-rs#1833
+carve-rs   478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column-3.crv      code_block  1  markup-carve/carve-rs#1833
+carve-rs   480-a-bare-colon-opener-in-a-description-body-is-an-opener-7.crv                   code_block  1  markup-carve/carve-rs#1833
+carve-php  209-an-unresolved-reference-image-takes-no-caption.crv                             soft_break  1  markup-carve/carve-php#2250
+carve-php  209-an-unresolved-reference-image-takes-no-caption.crv                             text        1  markup-carve/carve-php#2250
+carve-php  352-a-bracketed-construct-s-identifiers-stay-on-one-line-3.crv                     soft_break  1  markup-carve/carve-php#2250
+carve-php  352-a-bracketed-construct-s-identifiers-stay-on-one-line-3.crv                     text        1  markup-carve/carve-php#2250
+carve-php  434-an-unresolved-image-gives-its-whole-caption-slot-back-at-any-depth.crv         soft_break  2  markup-carve/carve-php#2250
+carve-php  434-an-unresolved-image-gives-its-whole-caption-slot-back-at-any-depth.crv         text        2  markup-carve/carve-php#2250
+carve-php  434-an-unresolved-image-gives-its-whole-caption-slot-back-at-any-depth-3.crv       soft_break  1  markup-carve/carve-php#2250
+carve-php  434-an-unresolved-image-gives-its-whole-caption-slot-back-at-any-depth-3.crv       text        1  markup-carve/carve-php#2250
 
 carve-js   349-a-container-whose-table-ends-on-a-continuation-row-3.crv             table_cell  1  permitted
 carve-js   349-a-container-whose-table-ends-on-a-continuation-row-3.crv             text        1  permitted

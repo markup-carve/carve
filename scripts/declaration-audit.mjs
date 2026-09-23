@@ -33,7 +33,7 @@
  * fail is worth as much as a stale row (markup-carve/carve#755).
  *
  * A NON-EMPTY LIST IS NOT AUTOMATICALLY A FAILURE. resources/ast-position-
- * waivers.txt is 132 rows and every one of them is `permitted` - a node the
+ * waivers.txt is 144 rows and 132 of them are `permitted` - a node the
  * producer REASSEMBLED, which PART 12 §4 exempts forever. Each entry below
  * therefore carries a POLICY: `owed` must be empty, `permitted` may not be,
  * `split` decides per row from the row's own last field, and `manual` prints
@@ -222,9 +222,10 @@ const MANIFEST = [
   // `owed`, so relaxing a third ledger stays a visible edit here.
   { repo: 'spec', path: 'resources/engine-pin-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run engine:report -- --check' },
   { repo: 'spec', path: 'resources/oracle-divergence.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'tests/the-oracle-reads-the-authored-documents.test.mjs' },
-  // 132 rows, every one `permitted`: PART 12 §4 exempts a REASSEMBLED node
+  // 144 rows, 132 of them `permitted`: PART 12 §4 exempts a REASSEMBLED node
   // forever. The last field decides, so a row that stops being permitted is
-  // counted as owed without anyone editing this manifest.
+  // counted as owed without anyone editing this manifest - which is what the
+  // twelve owed rows added on 2026-09-23 exercise for the first time.
   { repo: 'spec', path: 'resources/ast-position-waivers.txt', kind: 'txt', policy: 'split', guard: 'two-way', owner: 'tests/ast-waivers.test.mjs' },
   // A counts ratchet rather than a ledger, but it carries a per-document
   // allowlist inside it. Two-directional by construction - the whole object is

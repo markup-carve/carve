@@ -32,7 +32,44 @@
 # only where `checkOpeningMarkup` / `checkStopsAtChildren` in
 # scripts/spec/ast-positions.mjs can see it.
 #
+#
+# WHICH ISSUE OWNS WHICH ROW, as of 2026-09-23. A row is a TYPE and an issue is
+# a DEFECT, so the mapping is not one to one:
+#
+#   markup-carve/carve-rs#1832   an inline code span opened on an indented
+#     continuation line starts in the indentation instead of at its backtick.
+#     `code (extent)` and `soft_break (extent)` - the indent is charged to one
+#     of the two, so the pair moves together.
+#   markup-carve/carve-rs#1833   a description body's fenced code block is
+#     published with no position, and the containers around it stop at their
+#     last placed child. `code_block (presence)`, `definition_list (extent)`
+#     and `definition_description (extent)`.
+#   markup-carve/carve-php#2250  an unresolved reference's literal caption text
+#     and its soft break carry no position. `text (presence)`,
+#     `soft_break (presence)`, `paragraph (extent)`, and one of the four
+#     documents under `list (extent)` and `list_item (extent)`.
+#   markup-carve/carve-php#2251  a code block ended by the item that holds it
+#     spans only its opening fence line. `code_block (extent)`, and the other
+#     three documents under those two list rows.
+#
+# THE TWO LIST ROWS ARE SHARED on purpose. A container is narrowed by whichever
+# child below it is misplaced, so closing either issue lowers those counts
+# without emptying them, and a reader who finds only one issue on them has half
+# the story.
+#
 # HOW A MEASUREMENT IS RECORDED. In the pull request that took it, not here. This
 # file states what is declared NOW; the run that established it, the engine
 # commits it was taken at, and what moved since are the PR's job, where they are
 # immutable and nobody has to scroll past them to reach the rows.
+
+code (extent) 5
+soft_break (extent) 5
+code_block (presence) 4
+definition_list (extent) 3
+definition_description (extent) 3
+text (presence) 4
+soft_break (presence) 4
+paragraph (extent) 4
+code_block (extent) 3
+list (extent) 4
+list_item (extent) 4

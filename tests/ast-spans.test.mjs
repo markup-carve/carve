@@ -262,13 +262,31 @@ test('a malformed declaration line is an error, never a silent skip', () => {
 // line its own offset is on, so carve-php stops naming line 2 column 3 for an
 // end offset all three agree is 8.
 //
-// AN EMPTY MAP HERE IS NOT A WEAKER TEST. The AGREED direction is exercised by
-// its own unit test above, against a literal one-row declaration, and the NEW
-// direction is exercised below by adding a row this file does not declare. What
-// this map pins is only that the shipped ledger matches the last run, and the
-// last run measured nothing - see resources/ast-span-divergence.txt for the six
-// undeclared rows that were closed in the engines before they ever reached it.
-const LAST_MEASURED = new Map()
+// AND IT STOPPED BEING EMPTY ON 2026-09-23, measured at carve-js 520d4a2,
+// carve-rs ec8de2a and carve-php 9a39a65 over 1855 corpus documents plus 3
+// synthetic samples, 40,120 spans
+// (https://github.com/markup-carve/carve/actions/runs/35860305062, reproduced
+// locally against the same three mains). Eleven rows over sixteen documents,
+// and four engine defects behind them - carve-rs#1832 and #1833, carve-php#2250
+// and #2251. resources/ast-span-divergence.txt maps each row to its issue.
+//
+// FOUR DEFECTS, ELEVEN ROWS, because a row is a TYPE: the misplaced child and
+// every container it narrows each get one. `list (extent)` and
+// `list_item (extent)` carry documents from two different issues for that
+// reason, so neither count empties when one of them closes.
+const LAST_MEASURED = new Map([
+  ['code (extent)', 5],
+  ['soft_break (extent)', 5],
+  ['code_block (presence)', 4],
+  ['definition_list (extent)', 3],
+  ['definition_description (extent)', 3],
+  ['text (presence)', 4],
+  ['soft_break (presence)', 4],
+  ['paragraph (extent)', 4],
+  ['code_block (extent)', 3],
+  ['list (extent)', 4],
+  ['list_item (extent)', 4],
+])
 
 const asMeasured = (counts) =>
   new Map(
