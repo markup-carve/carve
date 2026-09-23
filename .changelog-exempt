@@ -1,0 +1,20 @@
+# Pull requests that moved shipped source and are cited in no changelog
+# section, with the reason each one is excluded. Read by
+# scripts/changelog-completeness.mjs.
+#
+# Format: <number>: <reason>
+#
+# A bare number is refused, and every entry that APPLIES to the release being
+# checked is printed on a passing run too - an exclusion nobody can see is how
+# a gate stops meaning anything.
+#
+# The five below are all from the 0.1.6 range. They are recorded here rather
+# than written into a section that has already shipped, so that a run against
+# that tag still reproduces green. From 0.1.7 on, the answer to a finding is an
+# entry in the section, not a line in this file.
+
+1982: 0.1.6 - converter-corpus coverage for Djot, BBCode and CommonMark structures, written up nowhere at the time. No clause and no fixture ruling moved with it.
+1993: 0.1.6 - follow-up to carve#1990, which the section cites: it corrects the resolver-call-bound claim that entry describes.
+2035: 0.1.6 - density edit of the clauses from carve#2030 and carve#2031. Every MUST, anchor phrase and constraint unchanged, no fixture moved.
+2085: 0.1.6 - the part of carve#2084 an engine already agreed on; the section cites that ruling and the issue stayed open for the shape this does not reach.
+2101: 0.1.6 - a fixture catching up with the carve#2091 ruling the section cites, which it predates.

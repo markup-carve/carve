@@ -38,6 +38,7 @@
     "normative:check": "node scripts/normative-page-audit.mjs",
     "declarations:check": "node scripts/declaration-audit.mjs",
     "declarations:pr": "node scripts/declaration-audit.mjs --mode=per-pr",
+    "changelog:check": "node scripts/changelog-completeness.mjs",
     "bump-carve-pin": "node scripts/bump-carve-pin.mjs",
     "sync-carve-wasm": "node scripts/sync-carve-wasm.mjs",
     "links:check": "node scripts/check-external-links.mjs",

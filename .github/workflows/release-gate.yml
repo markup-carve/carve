@@ -1,0 +1,53 @@
+name: Release Gate
+
+# This repository publishes nothing on a tag: the tag appears when a maintainer
+# publishes the prepared draft release, so there is no publish job for a gate to
+# sit in front of. `scripts/pre-tag-check.sh` is the gate that runs BEFORE that
+# button, and this is the automated second look. It cannot hold a release back,
+# but a red run on the tag tells a maintainer the notes went out incomplete
+# while the tag is still young enough to move. Same shape, and the same reason,
+# as markup-carve/carve-php's release gate.
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+  # A rehearsal against whatever package.json currently declares, so the first
+  # time this runs is not the moment a tag makes it awkward.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  changelog:
+    name: the changelog section accounts for every merge in this release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The gate walks every merge back to the previous tag, so it needs the
+          # tags and the history behind them.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      # A `chore: cut X.Y.Z` commit writes the `## [X.Y.Z]` section and then
+      # development carries on over it. Nobody reopens the section, so the tag
+      # ships notes describing cut day alone - here, 0.1.6 shipped and
+      # `[Unreleased]` stayed empty for the 33 merges after it. The version and
+      # section guards in pre-tag-check ask whether the section EXISTS, which
+      # passes on that; this asks whether it is COMPLETE. The script reports the
+      # absent-section case too, and needs no install.
+      - name: Every merge since the previous tag is cited
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            node scripts/changelog-completeness.mjs
+          else
+            node scripts/changelog-completeness.mjs "${GITHUB_REF_NAME}"
+          fi
