@@ -34,9 +34,9 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P10-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L249) | 10 | THE OTHER SEMANTIC NAMES ARE AN EXTENSION |
 | [`CARVE-P10-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L268) | 10 | AN EXTENDED TASK STATE NAMES ITSELF ON THE ITEM |
 | [`CARVE-P12-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L205) | 12 | A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST |
-| [`CARVE-P12-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L332) | 12 | SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR |
-| [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L406) | 12 | A CAPTION MAY CARRY AN OPTIONAL STRUCTURED SHORT CAPTION |
-| [`CARVE-P12-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L431) | 12 | A TABLE MAY CARRY AN OPTIONAL ROW GROUPING |
+| [`CARVE-P12-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L333) | 12 | SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR |
+| [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L407) | 12 | A CAPTION MAY CARRY AN OPTIONAL STRUCTURED SHORT CAPTION |
+| [`CARVE-P12-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L432) | 12 | A TABLE MAY CARRY AN OPTIONAL ROW GROUPING |
 | [`CARVE-P12-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L2) | 12 | A FIGURE MAY WRAP A TABLE, AND NO CARVE SOURCE SPELLS IT |
 | [`CARVE-P12-037`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L65) | 12 | A CITATION DEFINITION IS A NODE |
 | [`CARVE-P12-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L102) | 12 | A CITATION ITEM IS A POSITIONED INLINE NODE |

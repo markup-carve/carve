@@ -1123,6 +1123,13 @@
           ],
           "description": "Which generated content is placed here. A kind outside this list is an `admonition`, not a directive."
         },
+        "title": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          },
+          "description": "Optional quoted opener title, carried as inline nodes just like an admonition title."
+        },
         "children": {
           "type": "array",
           "items": {

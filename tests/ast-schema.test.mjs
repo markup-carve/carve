@@ -71,6 +71,19 @@ test('citation items are typed nodes, positioned where they can be placed', () =
   assert.equal(validate(withItems([{ type: 'citation', key: 'smith', suppressAuthor: false }])), true, firstErrors())
 })
 
+test('a directive keeps a quoted title without changing its type', () => {
+  const directive = {
+    type: 'directive', kind: 'toc', children: [],
+    title: [{ type: 'text', value: 'Contents' }],
+  }
+  const document = (node) => ({ type: 'document', srcByteLength: 0, children: [node] })
+
+  assert.equal(validate(document(directive)), true, firstErrors())
+  assert.equal(validate(document({ ...directive, title: 'Contents' })), false)
+  assert.equal(validate(document({ ...directive, title: [{ type: 'paragraph', children: [] }] })), false)
+  assert.equal(validate(document({ ...directive, kind: 'note' })), false)
+})
+
 test('source layout is a separate closed versioned sidecar', () => {
   const layoutSchema = JSON.parse(readFileSync(resolve(root, 'resources/ast-source-layout-schema.json'), 'utf8'))
   const validateLayout = new Ajv2020({ strict: true }).compile(layoutSchema)

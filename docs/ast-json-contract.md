@@ -1138,6 +1138,14 @@ that a pass-through is the answer that cannot be right
 `footnotes`, `glossary`, `index`, `references`, `toc` - is a `directive`. Every
 other named container is an `admonition`.
 
+A directive may carry `title`, the quoted opener text as inline nodes, just as
+an admonition does. The title does not change its type. The Carve writer restores
+the quoted opener. Each target renders the title before the directive's authored
+or generated content using the title markup of a custom-kind admonition. In
+HTML that is a `<p class="admonition-title">` inside a generic directive `<div>`,
+or immediately before a generated container such as the endnotes `<section>`
+([carve#2247](https://github.com/markup-carve/carve/issues/2247)).
+
 `admonition` covered all three, so a table of contents was an admonition and a
 consumer dispatching on `type` to decide whether to draw a callout had to carry a
 list of kinds that are not callouts. The list existed either way; putting it in
@@ -1199,7 +1207,8 @@ where both are present, `lines` is the finer statement
 
 Which fields of a node hold other nodes depends on the type carrying them -
 `content` is a node list on `inline_extension` and a verbatim string on
-`code_block`, `title` is a node list on `admonition` and a string on `link`.
+`code_block`, `title` is a node list on `admonition` or `directive` and a string
+on `link`.
 §12(c) says to read that off the schema rather than keep a list of field names.
 [`node-roles.json`](https://markup-carve.github.io/carve/node-roles.json) is
 that reading, derived from the schema and published beside it:
