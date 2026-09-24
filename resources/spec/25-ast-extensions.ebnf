@@ -112,19 +112,8 @@
       the same typed, positioned node contract as every other content-bearing
       value in the tree and belongs to the inline profile vocabulary.
 
-      IT IS NOT AN INDEPENDENT INLINE CHILD. A `citation` occurs in
-      `citation_group.items` and nowhere else, so `inlineNode` does not dispatch
-      on it and a paragraph holding one directly is not a valid tree. Being a
-      typed positioned node is what this clause asks for; being admissible
-      wherever an inline goes is not, and the schema said both until
-      [carve#2227](https://github.com/markup-carve/carve/issues/2227).
-
-      THE SOURCE CANNOT SPELL ONE. PART 7 makes the bracket the unit
-      (`citation_group = '[', ['+'], citation_item, {';', citation_item}, ']'`),
-      and an item's `prefix`, `locator` and `suffix` are positions within it. No
-      clause of any PART defines what a bare citation renders to on any target,
-      and all three engines refuse the payload: carve-php and carve-rs at decode,
-      carve-js in the renderer after accepting the tree.
+      BELONGING TO THAT VOCABULARY IS NOT THE SAME AS BEING AN INLINE CHILD:
+      §37 holds that rule, and the inline dispatch does not name `citation`.
 
       §4 GOVERNS THE POSITION, AS IT DOES EVERYWHERE ELSE. "The `pos` of §4" is
       that clause whole, exemptions included: a node the producer could not
@@ -742,5 +731,33 @@
       required to check. Where a producer publishes both, `lines` is the finer
       statement
       ([carve#2202](https://github.com/markup-carve/carve/issues/2202)).
+
+   37. A CITATION IS ONLY EVER AN ITEM OF A GROUP -- NORMATIVE [CARVE-P12-059].
+      The inline dispatch does NOT name `citation`. The type stays declared,
+      and `citation_group.items` references it directly, so nothing about a
+      group's payload moves.
+
+      A CITATION IS NOT AN INDEPENDENT INLINE. PART 7 makes the bracket the
+      unit a source spells -- `citation_group = '[', ['+'], citation_item,
+      {';', citation_item}, ']'` -- and an item's `prefix`, `locator` and
+      `suffix` mean nothing outside one. No clause defines what a bare
+      citation renders to in any target, because no target was ever asked.
+
+      ALL THREE ENGINES ALREADY AGREE, and none of them by coincidence:
+      carve-php has no `Citation` node class, carve-rs has no `Citation`
+      variant in its inline enum, and carve-js lists only `CitationGroup` in
+      its inline union. The dispatch entry reached further than any of them,
+      and further than §18a asks: that clause requires an item to be a typed,
+      positioned node belonging to the inline profile vocabulary, which the
+      `$defs` entry and the vocabulary name satisfy on their own.
+
+      THE COST OF LEAVING IT WAS NOT SYMMETRIC. carve-rs and carve-php refuse
+      the payload at DECODE, which is the right shape of failure. carve-js
+      accepted it and threw in the RENDERER -- `renderHtml: unknown inline
+      citation` -- which is §9(b)'s "accepts a tree and then renders only part
+      of it" arriving through the schema rather than around it. Narrowing the
+      union is what lets §12(d) refuse the shape at the boundary, the same
+      argument §24 makes one union over
+      ([carve#2227](https://github.com/markup-carve/carve/issues/2227)).
 
    ============================================================================ *)

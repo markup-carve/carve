@@ -1546,7 +1546,7 @@
     "inlineNode": {
       "type": "object",
       "title": "Any inline node",
-      "description": "Dispatches on `type`.",
+      "description": "Dispatches on `type`.\n\n`citation` is NOT listed. It is a declared node type and `citation_group.items` references it directly, but a citation is only ever an item of a group: PART 7 makes the bracket the unit a source spells, an item's `prefix`, `locator` and `suffix` mean nothing outside one, and no clause defines what a bare citation renders to in any target. Listing it here admitted a shape every engine refuses (carve#2227).",
       "required": [
         "type"
       ],
