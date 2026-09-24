@@ -175,11 +175,15 @@ and
 and
 `492-adjacent-strong-spans-use-html-only-where-their-delimiters-merge`
 and
-`493-empty-containers-share-one-html-body-shape`.
+`493-empty-containers-share-one-html-body-shape`
+and
+`494-an-explicit-table-head-span-keeps-one-row-group`
+and
+`495-a-table-foot-span-keeps-one-row-group`.
 
 Entries through 491 landed on a host with no engine checkouts, so the run above
 could not be retaken and its numbers describe the corpus WITHOUT them. Section
-492 and 493 also postdate the snapshot, so they are excluded from the dated
+492 through 495 also postdate the snapshot, so they are excluded from the dated
 count.
 Editing the denominators by hand would publish a three-engine measurement
 nobody took, and one that is knowably wrong besides: carve-rs and carve-php

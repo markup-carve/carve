@@ -1007,6 +1007,11 @@ function renderTable(node, depth, ctx) {
     while (headCount < rows.length && rows[headCount].isHead) headCount++
   }
   const footStart = rows.length - footCount
+  const crossesSection = rows.some((row, r) => row.cells.some((cell, c) => {
+    if (consumed.has(key(r, c)) || (cell.rowspan ?? 1) <= 1) return false
+    const end = r + cell.rowspan - 1
+    return (r < headCount && end >= headCount) || (r < footStart && end >= footStart)
+  }))
   const renderCell = (cell, r, c) => {
     const isHeader = cell.header || r < headCount
     const tag = isHeader ? 'th' : 'td'
@@ -1086,9 +1091,12 @@ function renderTable(node, depth, ctx) {
     for (let r = from; r < to; r++) out.push(`${pad}    ${renderRow(rows[r], r)}`)
     out.push(`${pad}  </${tag}>`)
   }
-  if (headCount > 0) section('thead', 0, headCount)
-  if (footStart > bodyStart) section('tbody', bodyStart, footStart)
-  if (footStart < rows.length) section('tfoot', footStart, rows.length)
+  if (crossesSection) section('tbody', 0, rows.length)
+  else {
+    if (headCount > 0) section('thead', 0, headCount)
+    if (footStart > bodyStart) section('tbody', bodyStart, footStart)
+    if (footStart < rows.length) section('tfoot', footStart, rows.length)
+  }
   out.push(`${pad}</table>`)
   return out.join('\n')
 }

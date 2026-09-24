@@ -1,0 +1,14 @@
+A table foot span keeps one row group
+
+```
+{footer-rows=1}
+| a | b |
+| ^ | c |
+.
+<table>
+  <tbody>
+    <tr><td rowspan="2">a</td><td>b</td></tr>
+    <tr><td>c</td></tr>
+  </tbody>
+</table>
+```

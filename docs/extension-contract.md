@@ -780,9 +780,9 @@ and carve-rs; off by default, enable per processor.
 - A single-paragraph cell collapses to inline content (`<td>text</td>`); a
   multi-block cell keeps its `<p>`/`<ul>`/... wrappers.
 - Ragged rows pad with empty `<td>` to the widest effective row (spans counted).
-- A rowspan is clamped at the `<thead>`/`<tbody>` boundary - a header-row span
-  does not reach into the body; the same clamp applies at the `<tbody>`/`<tfoot>`
-  boundary (HTML cannot reliably span across row groups).
+- A visible rowspan crossing a row-group boundary keeps its span. The entire
+  table uses one `<tbody>` in that case; cell types and scopes still follow the
+  authored header, body, and foot groups.
 - A cell's own list-item attributes carry onto its `<td>`/`<th>`; a computed
   `rowspan`/`colspan` wins over an author-written one.
 - The `<table>` output matches the equivalent pipe table's span markup.
@@ -805,10 +805,10 @@ byte-identical to the plain div.
 ### 5.4 Conformance (`tests/corpus-optional`)
 
 Tier-2, so not in the mandatory corpus. The shared optional corpus pins the
-caption (case 26), leading header rows/columns (42), column metadata and the
-foot (44), and local row/cell headers (45); run it per §3 whenever the feature
-is enabled. The three implementations additionally pin malformed degradation,
-spans, ragged padding, and row-group boundary clamping in their own suites.
+  caption (case 26), leading header rows/columns (42), column metadata and the
+  foot (44), and local row/cell headers (45); run it per §3 whenever the feature
+  is enabled. The three implementations additionally pin malformed degradation,
+  spans across row-group boundaries, and ragged padding in their own suites.
 
 ### 5.5 Out of scope (impls MAY differ)
 
