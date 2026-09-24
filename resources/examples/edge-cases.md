@@ -3524,10 +3524,8 @@ boundary: a header cell can span into the body rows below, rendering as
 
 ```html
 <table>
-  <thead>
-    <tr><th scope="col" rowspan="3">H</th><th scope="col">G</th></tr>
-  </thead>
   <tbody>
+    <tr><th scope="col" rowspan="3">H</th><th scope="col">G</th></tr>
     <tr><td>b</td></tr>
     <tr><td>c</td></tr>
   </tbody>
@@ -38215,3 +38213,50 @@ an empty verse paragraph, so the body is visible rather than empty.
 ```
 
 ::::
+
+## An explicit table head span keeps one row group
+
+When a header cell spans into a body row, the table uses one `<tbody>` and
+keeps the cell's header scope.
+
+::: compare
+
+```carve
+{header-rows=1}
+| H | G |
+| ^ | b |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><th scope="col" rowspan="2">H</th><th scope="col">G</th></tr>
+    <tr><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+## A table foot span keeps one row group
+
+A body cell spanning into a footer row uses the same single-body layout.
+
+::: compare
+
+```carve
+{footer-rows=1}
+| a | b |
+| ^ | c |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td rowspan="2">a</td><td>b</td></tr>
+    <tr><td>c</td></tr>
+  </tbody>
+</table>
+```
+
+:::

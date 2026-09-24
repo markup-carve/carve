@@ -131,6 +131,14 @@
       space after the colon, trailing semicolon); a cell with no effective
       alignment emits NO style attribute. `rowspan`/`colspan` are emitted
       only when their count is > 1.
+      A visible resolved rowspan that crosses a row-group boundary cannot occupy its
+      authored slots if those groups become separate HTML sections. In that
+      case the whole table uses one `<tbody>` containing every row, in source
+      order, instead of separate `<thead>`, `<tbody>` and `<tfoot>` sections.
+      Cell kind, `scope`, alignment and the resolved span count are computed
+      from the original partition; only the HTML section wrappers change.
+      This applies to derived and explicit partitions and to ListTable body
+      groups. Tables with no crossing rowspan keep their sections.
       A ROW IS A ROW, IN EVERY SECTION -- NORMATIVE [CARVE-P10-002]. `<thead>`,
       `<tbody>` and `<tfoot>` are each written on their own lines with ONE ROW
       PER LINE, indented one level inside the section:
