@@ -1556,7 +1556,6 @@
             "abbreviation",
             "autolink",
             "caption_number",
-            "citation",
             "citation_group",
             "code",
             "comment",
@@ -1595,21 +1594,6 @@
         }
       },
       "allOf": [
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "citation"
-              }
-            },
-            "required": [
-              "type"
-            ]
-          },
-          "then": {
-            "$ref": "#/$defs/citation"
-          }
-        },
         {
           "if": {
             "properties": {

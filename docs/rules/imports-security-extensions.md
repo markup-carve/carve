@@ -40,4 +40,4 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L2) | 12 | A FIGURE MAY WRAP A TABLE, AND NO CARVE SOURCE SPELLS IT |
 | [`CARVE-P12-037`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L65) | 12 | A CITATION DEFINITION IS A NODE |
 | [`CARVE-P12-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L102) | 12 | A CITATION ITEM IS A POSITIONED INLINE NODE |
-| [`CARVE-P12-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L125) | 12 | A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA |
+| [`CARVE-P12-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L139) | 12 | A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA |
