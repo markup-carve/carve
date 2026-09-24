@@ -385,4 +385,36 @@
       walk is a function of the markers, so the two cannot disagree in a tree
       any producer built. A reader is not required to re-run the walk to check.
 
+   27. A TABLE CELL MAY CARRY BLOCK CONTENT INSTEAD OF INLINE -- NORMATIVE
+      [CARVE-P12-049]. A `table_cell` carries EITHER `children`, the inline
+      content every source-spelled cell has, OR `blocks`, a list of block
+      nodes. Exactly one: never both, and never neither.
+
+      Carve 0.1 source has no spelling for a block inside a cell, so a parser
+      never produces `blocks`. It exists because the models a bridge reaches
+      DO: an HTML `<td>` holds flow content and a Pandoc `Cell` holds
+      `[Block]`, so a cell holding a list, two paragraphs, a quotation or a
+      code block had nowhere to land and was flattened to its text. A
+      canonical Carve writer loses the field and reports the loss, the way it
+      already does for `shortCaption` and for a `figure` wrapping a `table`.
+
+      WHY A SECOND FIELD RATHER THAN A WIDER `children`. Widening the inline
+      list to admit blocks changes the COMMON case for every consumer and
+      every engine, and puts inline and block content in one array where a
+      walker would have to test each entry. Two fields cost a walker one
+      branch, in the one place block content can appear; one widened field
+      costs every reader of every cell.
+
+      THE COUNTS AND THE MARKERS ARE UNAFFECTED. `span`, `colspan`, `rowspan`,
+      `align`, `valign` and `attrs` sit on the cell and say nothing about how
+      its content is spelled, so §26's resolved extent applies to a block cell
+      exactly as it does to an inline one.
+
+      IT IS NOT A PLACE TO PUT A PARAGRAPH A SOURCE CELL ALREADY HOLDS. A
+      source-spelled cell publishes `children`. A producer that wrapped that
+      inline content in a `paragraph` and published `blocks` would be
+      describing the same document two ways, which §1a's coalescing rule
+      rejects one layer down for the same reason
+      ([carve#2191](https://github.com/markup-carve/carve/issues/2191)).
+
    ============================================================================ *)

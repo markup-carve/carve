@@ -1575,6 +1575,12 @@
       "part": "12",
       "title": "A SPANNING CELL PUBLISHES ITS RESOLVED EXTENT",
       "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-049",
+      "part": "12",
+      "title": "A TABLE CELL MAY CARRY BLOCK CONTENT INSTEAD OF INLINE",
+      "scope": "ast-interchange"
     }
   ],
   "retired": [

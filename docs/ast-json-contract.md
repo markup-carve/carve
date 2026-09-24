@@ -901,6 +901,39 @@ union IS the enforcement - narrowing it is what lets §12(d) answer, rather than
 adding a sixth leniency list beside it
 ([carve#2189](https://github.com/markup-carve/carve/issues/2189)).
 
+## A table cell carries inline content or block content, never both
+
+A `table_cell` has `children`, the inline content every source-spelled cell
+carries, or `blocks`, a list of block nodes. Exactly one of the two.
+
+```json
+{ "type": "table_cell", "header": false,
+  "blocks": [ { "type": "list", "ordered": false, "tight": true, "items": [ "..." ] } ] }
+```
+
+Carve 0.1 source has no spelling for a block inside a cell, so a parser never
+produces `blocks`. The models a bridge reaches do: an HTML `<td>` holds flow
+content and a Pandoc `Cell` holds `[Block]`, so a cell holding a list, two
+paragraphs, a quotation or a code block had nowhere to land and flattened to its
+text. A canonical Carve writer loses the field and reports the loss, the way it
+already does for `shortCaption`.
+
+**Why a second field rather than a wider `children`.** Widening the inline list
+to admit blocks changes the common case for every consumer, and puts inline and
+block content in one array where a walker has to test each entry. Two fields cost
+a walker one branch, in the one place block content can appear. One widened field
+costs every reader of every cell.
+
+**It is not a place to put a paragraph a source cell already holds.** A
+source-spelled cell publishes `children`; a producer that wrapped the same inline
+content in a `paragraph` and published `blocks` would be describing one document
+two ways, which the coalescing rule rejects one layer down for the same reason
+([carve#2191](https://github.com/markup-carve/carve/issues/2191)).
+
+The cell's `span`, `colspan`, `rowspan`, `align`, `valign` and `attrs` say nothing
+about how its content is spelled, so everything above about resolved extent
+applies to a block cell unchanged.
+
 ## A spanning cell publishes its resolved extent
 
 The continuation cells say what the author wrote. The origin cell says what it
