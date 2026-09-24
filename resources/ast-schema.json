@@ -98,7 +98,7 @@
     "admonition": {
       "type": "object",
       "title": "admonition (block)",
-      "description": "A typed `::: word` container. Its own type rather than a `div` carrying a class, so a profile can deny callouts while allowing generic containers.",
+      "description": "A CALLOUT: a named `:::` container presenting the blocks written inside it, set apart - note, warning, tip, danger and the like. A container whose kind names generated content is a `directive` instead, and an anonymous or attribute-only one is a `div` (carve#2195).",
       "required": [
         "type",
         "kind",
@@ -109,7 +109,8 @@
           "const": "admonition"
         },
         "kind": {
-          "type": "string"
+          "type": "string",
+          "description": "The callout kind, as authored. A kind naming generated content (`bibliography`, `footnotes`, `glossary`, `index`, `references`, `toc`) belongs on a `directive` instead. That is not yet REFUSED here: the schema names the type before the engines publish it, and `admonition.kind` gains `not` in the commit that moves the pin to a build emitting `directive` (carve#2195)."
         },
         "title": {
           "type": "array",
@@ -213,6 +214,7 @@
             "comment",
             "definition_list",
             "div",
+            "directive",
             "figure",
             "figure_group",
             "footnote",
@@ -379,6 +381,21 @@
           },
           "then": {
             "$ref": "#/$defs/div"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "directive"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/directive"
           }
         },
         {
@@ -1069,6 +1086,49 @@
           "items": {
             "$ref": "#/$defs/blockNode"
           }
+        },
+        "label": {
+          "type": "string",
+          "description": "Opener `[label]` grouping id. Inert in core."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "directive": {
+      "type": "object",
+      "title": "directive (block)",
+      "description": "A generated-content directive: a named `:::` container whose kind asks the renderer to PLACE something the document already contains, rather than to present the blocks written inside it. Split from `admonition` because a table of contents is not a callout, and a consumer deciding whether to draw one had to carry a list of kinds that are not callouts (carve#2195).",
+      "required": [
+        "type",
+        "kind"
+      ],
+      "properties": {
+        "type": {
+          "const": "directive"
+        },
+        "kind": {
+          "enum": [
+            "bibliography",
+            "footnotes",
+            "glossary",
+            "index",
+            "references",
+            "toc"
+          ],
+          "description": "Which generated content is placed here. A kind outside this list is an `admonition`, not a directive."
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/blockNode"
+          },
+          "description": "Blocks written inside the opener. Usually empty: a directive's content is generated, not authored."
         },
         "label": {
           "type": "string",

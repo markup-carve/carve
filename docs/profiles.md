@@ -27,7 +27,7 @@ spelling.
 `list_item`, `table`, `table_row`, `table_cell`, `thematic_break`, `div`,
 `admonition`, `raw_block`, `footnote`, `frontmatter`, `definition_list`,
 `definition_term`, `definition_description`, `section`, `line_block`,
-`comment`, `figure`, `figure_group`, `block_extension`, `abbreviation_def`,
+`comment`, `figure`, `figure_group`, `directive`, `block_extension`, `abbreviation_def`,
 `link_reference_definition`, `citation_definition`.
 
 **Inline:** `text`, `emphasis`, `strong`, `underline`, `strike`,

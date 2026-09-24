@@ -61,6 +61,8 @@ const OPT_IN_ONLY = {
   'citation_group.*': 'citations (Tier-2): the group wrapper and the integral `+` form',
   'block_extension.*':
     'extension block (interchange-only): Carve 0.1 source spells no block extension, so no corpus document can produce one (carve#2200)',
+  'directive.*':
+    'carve#2195 splits `directive` out of `admonition`; the pinned build publishes neither the type nor its fields yet',
   'section.*':
     'sectioning (interchange-only): sectioning is implicit in heading level, so no Carve 0.1 source spells a section and no corpus document can produce one (carve#2207)',
   'citation_definition.*':
