@@ -94,10 +94,78 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   entities are produced", matching the escaped space and a line block's
   preserved indentation.
 
+### Added
+
+#### AST interchange
+
+Carve 0.1 source spells none of these. They reach a tree from a format bridge,
+an importer or an editing API, and a canonical writer loses them and reports the
+loss.
+
+- **A stored tree may be wrapped in a versioned envelope** (carve#2199,
+  carve#2222). `CARVE-P12-055`, `resources/ast-envelope-schema.json`:
+  `astVersion` and `document` required, `vocabulary` and `extensions` optional.
+  The tree inside is unchanged, and `astVersion` versions the interchange
+  contract rather than the language.
+- **A block extension carries a required core fallback** (carve#2200,
+  carve#2223). `CARVE-P12-056`, the twin `inline_extension` never had: a
+  Tier-3 block whose payload is not Carve content gets a declared home and a
+  defined rendering for a reader that does not implement it.
+- **A table cell may carry block content** (carve#2191, carve#2205).
+  `CARVE-P12-049`: `children` or `blocks`, exactly one, so an imported cell
+  holding flow content no longer flattens to text.
+- **A spanning table cell publishes its resolved extent** (carve#2190,
+  carve#2204). `CARVE-P12-048`: `colspan` and `rowspan` on the origin cell,
+  beside the authored markers, so no consumer re-runs the span walk.
+- **A line block may publish its lines** (carve#2202, carve#2226).
+  `CARVE-P12-058`: `lines`, beside `children`, so a hard break inside a verse
+  line stops being indistinguishable from a line boundary.
+- **Sectioning, small caps and ruby are interchange types** (carve#2207,
+  carve#2216; carve#2210, carve#2212; carve#2221). `CARVE-P12-052` and
+  `CARVE-P12-050`.
+- **A display equation may carry a label and a number** (carve#2209,
+  carve#2214). `CARVE-P12-051`.
+- **The node-role table is derived once and published** (carve#2201,
+  carve#2220). `resources/node-roles.json`, at its own `$id`: which fields of
+  which type hold nodes, so each engine stops deriving it separately.
+
+### Changed
+
+#### AST interchange
+
+- **A footnote reference spells its target `label`** (carve#2193, carve#2213).
+  `CARVE-P12-047`. Both halves of the pair use one name; `id` on the wire is
+  refused rather than aliased, and it collided with `attrs.id`, a different
+  value entirely.
+- **A citation carries its own mode** (carve#2203, carve#2218).
+  `CARVE-P12-053`. The group keeps `mode` as the authored shorthand, and a
+  Pandoc `Cite` mixing modes now has an encoding.
+- **A named `:::` container is a callout, a directive or a div** (carve#2195,
+  carve#2225). `CARVE-P12-057`: `::: toc` and the other generated-content kinds
+  become `directive`, so a consumer no longer carries a list of kinds that are
+  not callouts. `admonition.kind` does not yet refuse those kinds (carve#2231).
+- **A boolean attribute's AST semantics are stated** (carve#2206).
+
 ### Fixed
 
 The executable reference and the Ohm grammar disagreed with normative text that
 already existed. Each of these moves the shipped oracle, not a rule.
+
+#### AST interchange
+
+- **Three shapes the schema described and could not refuse** (carve#2189,
+  carve#2192, carve#2197). `CARVE-P12-046` and `CARVE-P12-047`: a `children`
+  array admits only content blocks, `citation` no longer requires `pos` - which
+  had left a synthesized citation with no conformant encoding at all - and a
+  reference node must name its target.
+- **A bare citation is no longer an inline** (carve#2227, carve#2228,
+  carve#2229). `CARVE-P12-059`. The dispatch admitted a shape every engine
+  refused, and one of them accepted it at decode and threw in all four
+  renderers.
+- **The profile vocabulary and the schema name the same types** (carve#2207,
+  carve#2216). `caption` was never a node and is gone from the vocabulary.
+- **A rowspan crossing a row-group boundary keeps its extent** (carve#2224),
+  and the renderer puts those rows in one body group.
 
 #### Inline parsing
 
