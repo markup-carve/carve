@@ -59,11 +59,11 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-051`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L480) | 12 | A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER |
 | [`CARVE-P12-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L510) | 12 | SECTIONING IS INTERCHANGE-ONLY |
 | [`CARVE-P12-053`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L553) | 12 | A CITATION ITEM CARRIES ITS OWN MODE |
-| [`CARVE-P12-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L576) | 12 | RUBY ANNOTATIONS SURVIVE INTERCHANGE |
-| [`CARVE-P12-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L617) | 12 | A BLOCK EXTENSION DECLARES A CORE FALLBACK |
-| [`CARVE-P12-056`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L653) | 12 | A STORED TREE IS WRAPPED IN A VERSIONED ENVELOPE |
-| [`CARVE-P12-057`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L706) | 12 | A NAMED CONTAINER IS A CALLOUT, A DIRECTIVE OR A DIV |
-| [`CARVE-P12-058`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L744) | 12 | A LINE BLOCK MAY PUBLISH ITS LINES |
-| [`CARVE-P12-059`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L780) | 12 | A CITATION IS ONLY EVER AN ITEM OF A GROUP |
-| [`CARVE-P12-060`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L808) | 12 | NODE IDENTITY IS A SEPARATE OPT-IN SIDECAR |
-| [`CARVE-P12-061`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L848) | 12 | A COUNT WITH NO MARKERS IS INGESTED AS THE SPAN |
+| [`CARVE-P12-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L578) | 12 | RUBY ANNOTATIONS SURVIVE INTERCHANGE |
+| [`CARVE-P12-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L619) | 12 | A BLOCK EXTENSION DECLARES A CORE FALLBACK |
+| [`CARVE-P12-056`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L655) | 12 | A STORED TREE IS WRAPPED IN A VERSIONED ENVELOPE |
+| [`CARVE-P12-057`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L708) | 12 | A NAMED CONTAINER IS A CALLOUT, A DIRECTIVE OR A DIV |
+| [`CARVE-P12-058`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L746) | 12 | A LINE BLOCK MAY PUBLISH ITS LINES |
+| [`CARVE-P12-059`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L782) | 12 | A CITATION IS ONLY EVER AN ITEM OF A GROUP |
+| [`CARVE-P12-060`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L810) | 12 | NODE IDENTITY IS A SEPARATE OPT-IN SIDECAR |
+| [`CARVE-P12-061`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L850) | 12 | A COUNT WITH NO MARKERS IS INGESTED AS THE SPAN |

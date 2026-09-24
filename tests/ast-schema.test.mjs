@@ -71,6 +71,21 @@ test('citation items are typed nodes, positioned where they can be placed', () =
   assert.equal(validate(withItems([{ type: 'citation', key: 'smith', suppressAuthor: false }])), true, firstErrors())
 })
 
+test('a citation group mode requires the mode on every item', () => {
+  const citation = { type: 'citation', key: 'smith', suppressAuthor: false }
+  const document = (group) => ({
+    type: 'document', srcByteLength: 0,
+    children: [{ type: 'paragraph', children: [{ type: 'citation_group', raw: '[@smith]', ...group }] }],
+  })
+
+  assert.equal(validate(document({ mode: 'integral', items: [{ ...citation, mode: 'integral' }] })), true, firstErrors())
+  assert.equal(validate(document({ mode: 'integral', items: [citation] })), false)
+  assert.equal(validate(document({ mode: 'integral', items: [{ ...citation, mode: 'integral' }, citation] })), false)
+  assert.equal(validate(document({ items: [{ ...citation, mode: 'integral' }, citation] })), true, firstErrors())
+  assert.equal(validate(document({ items: [{ ...citation, mode: 'integral' }] })), true, firstErrors())
+  assert.equal(validate(document({ mode: 'integral', items: [] })), true, firstErrors())
+})
+
 test('source layout is a separate closed versioned sidecar', () => {
   const layoutSchema = JSON.parse(readFileSync(resolve(root, 'resources/ast-source-layout-schema.json'), 'utf8'))
   const validateLayout = new Ajv2020({ strict: true }).compile(layoutSchema)
