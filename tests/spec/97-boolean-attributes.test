@@ -8,7 +8,11 @@ Press [Tab]{kbd} to indent.
 
 ```
 {.callout open}
-Details here.
+Bare spelling.
+
+{.callout open=""}
+Explicit empty string.
 .
-<p class="callout" open="">Details here.</p>
+<p class="callout" open="">Bare spelling.</p>
+<p class="callout" open="">Explicit empty string.</p>
 ```

@@ -905,7 +905,7 @@ as more than restyled Djot:
   999. Use numbered markers when the source must remain readable as Djot or
   Markdown. `carve fmt` preserves whichever form opened the list.
 - **Boolean attributes** - a bare word in `{…}` (`[text]{featured}`,
-  `{.note open}`) is a value-less attribute rendered `name=""`. Canonical djot
+  `{.note open}`) is an empty-string attribute rendered `name=""`. Canonical djot
   rejects bare words (the whole block stays literal); carve accepts them,
   following djot-php (grammar §14). The three core semantic names below are
   consumed instead of rendered; four more are consumed where the SemanticSpan

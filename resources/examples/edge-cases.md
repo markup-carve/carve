@@ -3381,10 +3381,12 @@ Check if (x < 5) holds, and 3<4 too.
 
 ## Boolean attributes
 
-A bare word in a `{…}` block (no `#` / `.` / `=`) is a value-less (boolean)
-attribute, normally rendered `name=""`. It works in any attribute position and
-mixes with id / class / key=value. The nine semantic span names are the core
-exception: on `[content]{attrs}` they select their semantic wrapper.
+A bare word in a `{…}` block (no `#` / `.` / `=`) is a boolean attribute. It
+has the same empty-string AST value as `name=""` and normally renders
+`name=""`. It works in any attribute position and mixes with id / class /
+key=value. The three core semantic span names are the exception: on
+`[content]{attrs}` they select their semantic wrapper. Four more names do so
+when the SemanticSpan extension is enabled.
 
 ::: compare
 
@@ -3405,14 +3407,21 @@ alongside a class:
 
 ```carve
 {.callout open}
-Details here.
+Bare spelling.
+
+{.callout open=""}
+Explicit empty string.
 ```
 
 ```html
-<p class="callout" open="">Details here.</p>
+<p class="callout" open="">Bare spelling.</p>
+<p class="callout" open="">Explicit empty string.</p>
 ```
 
 :::
+
+The bare and explicit empty-string spellings have the same meaning. The
+canonical writer uses the bare one for both.
 
 ## Table span marker in first column
 
@@ -25836,8 +25845,8 @@ para</p>
 
 :::
 
-The writer follows, and nothing extra pins it. PART 11 §6c shortens a value-less
-attribute to its bare name, and it cannot do that here - `{_u=""}` written as
+The writer follows, and nothing extra pins it. PART 11 §6c shortens an
+empty-string attribute to its bare name, and it cannot do that here - `{_u=""}` written as
 `{_u}` would be text, and `{_x_=""}` would be an underline, either way a
 document that no longer says what it said. §1's `parse(fmt(x)) == parse(x)` is
 gated across all three engines over this corpus, so the case below breaks each

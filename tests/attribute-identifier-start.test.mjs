@@ -22,15 +22,37 @@
  * The UNDERSCORE has a boundary of its own since carve#1450, and it is not the
  * same shape: it stays legal first everywhere the identifier appears EXCEPT in
  * `boolean_attribute`, because a bare `{_x_}` is also a forced underline. Both
- * halves are asserted below.
+ * halves are asserted below. This file also pins the public AST value shared by
+ * the bare and explicit empty-string forms of that production.
  */
 
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { carveToAstJson } from '@markup-carve/carve'
 import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
 const html = (src) => renderDoc(parse(src)).trim()
+const spanAttrs = (source) => carveToAstJson(source).children[0].children[0].attrs
+
+test('a bare boolean and an explicit empty value have the same public AST representation', () => {
+  const bare = spanAttrs('[x]{featured}\n')
+  const explicitEmpty = spanAttrs('[x]{featured=""}\n')
+
+  assert.deepEqual(bare, { keyValues: { featured: '' }, order: ['featured'] })
+  assert.deepEqual(explicitEmpty, bare)
+
+  const blocks = carveToAstJson(
+    '{#notice .callout open}\nBare.\n\n{#notice .callout open=""}\nExplicit.\n',
+  ).children
+  assert.deepEqual(blocks[1].attrs, blocks[0].attrs)
+  assert.deepEqual(blocks[0].attrs, {
+    id: 'notice',
+    classes: ['callout'],
+    keyValues: { open: '' },
+    order: ['#id', '.class', 'open'],
+  })
+})
 
 test('a dash-first bare attribute is literal text', () => {
   // Rendered with smart typography, so the `--` becomes an en dash - which is
