@@ -277,6 +277,33 @@ bridge's own parse, so the supported subset is the bridge's to document - and a
 second bridge naming a different subset is the drift this section exists to
 catch.
 
+**A rich image description has three landing places, and none of them is a new field**
+
+Pandoc's `Image` carries `[Inline]` as its description; an HTML `<figcaption>`
+on an imported figure carries flow content. Carve's `image.alt` is a flat
+string, which is correct rather than a limitation: an HTML `alt` attribute is
+plain text, and it is alternative text for a reader who cannot see the image,
+not a visible caption.
+
+So a bridge reading rich description content picks one of three, and says which:
+
+1. **Flatten it** to accessible plain text in `alt`, reported as `normalized` -
+   the visible result is unchanged, the markup is gone.
+2. **Promote the image to a `figure`**, where `caption` already holds inline
+   content, when the content reads as a caption rather than as alternative
+   text. This is the lossless path and the one to prefer where the image stands
+   alone in its block.
+3. **Keep the unrepresentable form in an interchange wrapper**, when an exact
+   round trip matters more than a clean tree - the same preservation node the
+   ProseMirror map defines, carrying the source and the type it stands in for.
+
+Adding an inline caption field beside `alt` was considered and refused
+([carve#2194](https://github.com/markup-carve/carve/issues/2194)): two
+descriptions on one node with no stated rule about which a screen reader gets,
+and which of them renders, is worse than a documented conversion. `figure` is
+already the home for rich content, and an inline image that needs markup is
+describing itself as a figure.
+
 **An application's own node type**
 
 A bridge does not need to know about an application's private constructs for
