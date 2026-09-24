@@ -208,14 +208,28 @@ const REPOS = {
  */
 const MANIFEST = [
   // -- the spec repo's own ledgers ------------------------------------------
+  // NOT RELAXED, and the reason still holds here: a span row is
+  // `<type> (presence|extent) <count>`, with the issue mapping in header prose,
+  // so a `declared` policy over it would have nothing to check (carve#2179).
   { repo: 'spec', path: 'resources/ast-span-divergence.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'npm run ast:check' },
-  { repo: 'spec', path: 'resources/ast-value-divergence.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'npm run ast:check' },
+  // RELAXED, because the reason that covered both AST ledgers was only ever
+  // true of the span one. A VALUE row is `<type.field>  <count>  <who diverges
+  // and where it is tracked>`, and `tests/ast-values.test.mjs` has asserted
+  // since 2026-08-17 that every row names a fully qualified `owner/repo#N` -
+  // so the reference field carve#2179 called hypothetical has been there and
+  // enforced the whole time.
+  //
+  // The porting window that PR asked to wait for arrived on 2026-09-24:
+  // carve#2204 gave a spanning cell a resolved `colspan`/`rowspan`, carve-js
+  // and carve-rs publish both, carve-php publishes neither
+  // (markup-carve/carve-php#2298). Without this, no pull request could record
+  // that window at all, and the daily AST conformance run stayed red on a gap
+  // whose only fix lives in another repo (carve#2175).
+  { repo: 'spec', path: 'resources/ast-value-divergence.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run ast:check' },
   // DECLARED INSIDE A PULL REQUEST, OWED BEFORE A TAG (carve#2179). A row
   // here cannot parse unless its status is `owner/repo#N`, and `permitted` is
   // refused outright, so a declaration is always tracked work with an owner
-  // and it leaves when that issue closes. The two AST ledgers above are NOT
-  // relaxed: their rows have nowhere to name an issue, so a declaration there
-  // would be an untraceable note rather than a window with an end.
+  // and it leaves when that issue closes.
   { repo: 'spec', path: 'resources/ast-extent-findings.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run ast:check' },
   // ONE OF THE ENGINE-LAG ENTRIES: see the `prPolicy` note on the
   // engine-pin ledger below. Same window, described from the writer side.
@@ -275,7 +289,12 @@ const MANIFEST = [
   { repo: 'spec', path: 'tests/corpus-convert.test.mjs', name: 'PINNED_UNIMPLEMENTED', kind: 'js', policy: 'manual', guard: 'two-way', owner: 'the pinned build exports no djotToCarve' },
   { repo: 'spec', path: 'tests/optional-feature-adapters.test.mjs', name: 'DECLARED_UNREACHABLE', kind: 'js', policy: 'manual', guard: 'two-way', owner: 'per-engine CLI reachability' },
   { repo: 'spec', path: 'tests/ast-spans.test.mjs', name: 'LAST_MEASURED', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/ast-spans.test.mjs' },
-  { repo: 'spec', path: 'tests/ast-values.test.mjs', name: 'LAST_MEASURED', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/ast-values.test.mjs' },
+  // The measurement twin of `resources/ast-value-divergence.txt`, and it moves
+  // in the same commit, so it reads as that ledger does inside a pull request.
+  // `manual` rather than `declared` for the reason PINNED_DRIFT carries it: the
+  // rows are `['<type.field>', <count>]` and hold no reference to check - the
+  // reference is on the ledger row this mirrors.
+  { repo: 'spec', path: 'tests/ast-values.test.mjs', name: 'LAST_MEASURED', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', owner: 'tests/ast-values.test.mjs' },
   // Engine-rollout and opt-in exemptions in the schema-field sweep. Neither is
   // separable by a rule - `definition_list.loose` is owed and clears with the
   // engine bumps, the two `shortCaption` fields are structural and never will -
