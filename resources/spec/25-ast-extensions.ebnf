@@ -553,11 +553,15 @@
       The node and every pair MUST survive AST encode/decode under §6.
 
       CARVE 0.1 SOURCE HAS NO SPELLING FOR RUBY. A source parser never
-      synthesizes it. A canonical Carve writer emits every pair as
-      `base(annotation)` and reports `ruby-flattened` under PART 2. When the
-      node carries `attrs`, the writer wraps the complete fallback in one
-      ordinary attributed span. It MUST NOT discard either side or invent a
-      source spelling.
+      synthesizes it. For canonical Carve output, the writer first replaces
+      each pair with its base, a text `(`, its annotation and a text `)` in
+      that order, then writes and escapes that inline sequence under PART 11
+      §1a and §2. An empty annotation therefore remains visible as `()`.
+      When the node carries `attrs`, the writer wraps the complete fallback in
+      one ordinary attributed span. It reports `ruby-flattened` under PART 2.
+      The ordinary source round-trip compares against this flattened sequence,
+      not the interchange-only `ruby` node. The writer MUST NOT discard either
+      side or invent a source spelling.
 
       HTML emits one `<ruby>` in pair order, with generated `<rp>(</rp>` and
       `<rp>)</rp>` around each `<rt>`. The outer element receives `attrs`.

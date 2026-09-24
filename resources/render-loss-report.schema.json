@@ -45,6 +45,7 @@
           {
             "properties": {
               "code": { "const": "ruby-flattened" },
+              "nodeType": { "const": "inline" },
               "format": false
             }
           }

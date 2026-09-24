@@ -126,11 +126,12 @@ hardening.
 ## Ruby keeps base and annotation paired
 
 A valid HTML `ruby` imports as the interchange-only `ruby` inline node from
-PART 12 §30. The importer applies the WHATWG ruby segmentation algorithm to
+PART 12 §31. The importer applies the WHATWG ruby segmentation algorithm to
 the parsed DOM. Each valid segment becomes one `pairs` entry: its base nodes
 go in `base`, and its first associated `rt` content goes in `annotation`.
-An empty `rt` is valid and produces `annotation: []`. Whitespace follows the
-WHATWG algorithm rather than a second Carve-specific segmentation rule.
+An empty `rt` is valid and produces `annotation: []`; for example,
+`<ruby>字<rt></rt></ruby>` falls back visibly as `字()`. Whitespace follows
+the WHATWG algorithm rather than a second Carve-specific segmentation rule.
 Each additional associated `rt` becomes ordinary `(<annotation>)` content
 immediately after its pair and reports `element-unwrapped` with degraded
 fidelity. Nested `ruby` elements are read recursively.
@@ -157,8 +158,11 @@ the same code with degraded fidelity. Either case splits a run; other valid
 segments remain structured. The importer never emits an empty `pairs` array
 or an empty `base`.
 
-Attributes on the outer `ruby` become `ruby.attrs`. Attributes on `rt`, `rb`
-or `rtc` report `attribute-dropped` without removing their visible content.
+When the whole element maps to one structured `ruby` node and no fallback
+content, attributes on the outer element become `ruby.attrs`. If segmentation
+splits the element into structured and ordinary content, one attributed `span`
+wraps the complete output and the inner `ruby` nodes carry no copy. Attributes
+on `rt`, `rb` or `rtc` report `attribute-dropped` without removing their visible content.
 Every recursive pass reaches base before annotation in pair order, including
 URL sanitization. Safe, semantic and roundtrip modes use the same mapping.
 Past the ordinary DOM or AST depth bound, import returns or throws the existing

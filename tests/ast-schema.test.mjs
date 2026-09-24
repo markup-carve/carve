@@ -987,6 +987,10 @@ test('the checked-render loss report has the shared closed shape', () => {
     losses: [{ ...rubyReport.losses[0], format: 'html' }],
   }), false)
   assert.equal(validateReport({
+    ...rubyReport,
+    losses: [{ ...rubyReport.losses[0], nodeType: 'block' }],
+  }), false)
+  assert.equal(validateReport({
     ...report,
     losses: [{ code: 'raw-format-dropped', target: 'html', nodeType: 'inline', message: 'missing format' }],
   }), false)

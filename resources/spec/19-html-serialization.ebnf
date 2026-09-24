@@ -235,7 +235,7 @@
       inline content, and the canonical writer emits the span with its
       attributes, an empty-string one spelled bare per PART 11 §6c.
 
-      Accessible ruby is NOT reserved here: it requires structured
+      Accessible ruby is NOT reserved here: PART 12 §31 gives it structured
       base/annotation children rather than a single inline container.
 
    10. THE OTHER SEMANTIC NAMES ARE AN EXTENSION -- NORMATIVE [CARVE-P10-008]. `samp`, `var`,
