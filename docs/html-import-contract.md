@@ -1165,8 +1165,10 @@ The shape is pinned as the `derived-endnotes-section` fixture.
   ["`roundtrip` rebuilds a figure only when a Carve spelling reproduces it"](#roundtrip-rebuilds-a-figure-only-when-a-carve-spelling-reproduces-it).
 
 All modes remove `script`, `style`, `template`, `noscript`, and event-handler
-attributes. `roundtrip` may recover source embedded by a Carve renderer, but
-must never execute it.
+attributes, with one exception: inside an element `roundtrip` keeps as raw
+HTML, the bytes stay whole and each refused attribute is reported as
+`attribute-preserved` instead (carve#2261). `roundtrip` may recover source
+embedded by a Carve renderer, but must never execute it.
 
 ## Result and diagnostics
 
@@ -1181,9 +1183,11 @@ lossy decision should be observable. The common diagnostic codes are:
   kept whole under `raw-preserved`. Nothing was lost, so it is NOT
   `attribute-dropped`: a consumer that filters on the code rather than reading
   the prose would be told a drop happened that did not. An importer that
-  preserves an element as raw HTML MUST report the element's own refused
-  attributes under this code instead. Its severity MUST be `error` where the
-  attribute is one a renderer refuses for safety - an event handler, an
+  preserves an element as raw HTML MUST report under this code the refused
+  attributes of that element AND of every element inside it, because all of
+  them are in the kept bytes (carve#2261). The order is the element's own
+  rows, its `raw-preserved` row, then each descendant's rows in document
+  order. Its severity MUST be `error` where the attribute is one a renderer refuses for safety - an event handler, an
   injection sink, a value carrying a denied URL scheme - and `info` otherwise.
   The `error` is not a failed import; it is the strongest thing the report can
   say, and this row earns it because `roundtrip` is the mode that is not safe
