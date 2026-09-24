@@ -1006,6 +1006,38 @@ An engine may keep decoding `id` on ingest. That is §11's narrow exception
 unchanged, and `footnote.id` is the case the clause was written for. It covers
 reading a stored tree; a producer emits `label`.
 
+## Where the nodes are, as data
+
+Which fields of a node hold other nodes depends on the type carrying them -
+`content` is a node list on `inline_extension` and a verbatim string on
+`code_block`, `title` is a node list on `admonition` and a string on `link`.
+§12(c) says to read that off the schema rather than keep a list of field names.
+[`node-roles.json`](https://markup-carve.github.io/carve/node-roles.json) is
+that reading, derived from the schema and published beside it:
+
+```json
+{ "figure": { "target": { "role": "single-node", "admits": ["block_quote", "code_block", "image", "paragraph", "table"] } },
+  "table":  { "rows": { "role": "node-sequence", "admits": ["table_row"] },
+              "columns": { "role": "record-sequence" } } }
+```
+
+Three roles, which is what a generic walker needs and no more: `node-sequence`
+is an array of nodes, `single-node` is one node, and `record-sequence` is an
+array of plain records that carry no `type` and so no position of their own. A
+field holding a string, a number or a boolean has no role and is absent - the
+table answers where the nodes are, not what fields exist, which the schema
+already answers.
+
+**It is published because every engine was deriving it separately, and not to
+the same depth.** carve-js generates eight tables from the schema, including the
+per-position admitted types and the required-field sets; carve-rs generates
+four and makes up the difference with rules written in its decoder. The
+measurement is [carve#2197](https://github.com/markup-carve/carve/issues/2197):
+regenerating was the entire implementation in one engine and a no-op in the
+other, for one schema change. An implementation copies this table the way
+carve-php copies carve-grammars' ProseMirror map, rather than restating it
+([carve#2201](https://github.com/markup-carve/carve/issues/2201)).
+
 ## What is not in it
 
 Formatter-internal nodes (PART 11, and the `raw_text` case the profiles
