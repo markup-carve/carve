@@ -1250,3 +1250,53 @@ test('PART 12 §39 names the three fields whose precedence it settles', () => {
       'An implementer reading the clause has to see the field the rule is about.',
   )
 })
+
+/** The text of PART 12 §35, the clause that splits the named containers. */
+function namedContainerClause() {
+  const grammar = readFileSync(resolve(root, 'resources/grammar.ebnf'), 'utf8')
+  const start = grammar.indexOf('   35. A NAMED CONTAINER IS A CALLOUT, A DIRECTIVE OR A DIV')
+  assert.notEqual(start, -1, 'PART 12 §35 is not where this test looks for it')
+  const end = grammar.indexOf('\n   36. ', start)
+  assert.notEqual(end, -1, 'PART 12 §35 has no §36 after it')
+  return grammar.slice(start, end)
+}
+
+test('a directive carries the title its opener spells', () => {
+  // `::: toc "Contents"` is spellable, and before carve#2247 `directive` had no
+  // slot for it, so the title was dropped with no diagnostic.
+  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
+  const title = [{ type: 'text', value: 'Contents', pos }]
+  const doc = (node) => ({ type: 'document', srcByteLength: 1, children: [node] })
+
+  assert.equal(validate(doc({ type: 'directive', kind: 'toc', title, children: [] })), true, firstErrors())
+  // Optional: an untitled directive is unchanged.
+  assert.equal(validate(doc({ type: 'directive', kind: 'toc' })), true, firstErrors())
+  // Inline content, not a string and not blocks.
+  assert.equal(validate(doc({ type: 'directive', kind: 'toc', title: 'Contents' })), false)
+  assert.equal(
+    validate(doc({ type: 'directive', kind: 'toc', title: [{ type: 'paragraph', children: [], pos }] })),
+    false,
+  )
+})
+
+test('directive.title is the shape admonition.title already is', () => {
+  // §35 says the field follows `admonition`, so the two subschemas are one
+  // convention rather than two. A divergence here is what "matching
+  // `admonition`" was ruled against (carve#2247).
+  assert.deepEqual(
+    { ...schema.$defs.directive.properties.title, description: undefined },
+    { ...schema.$defs.admonition.properties.title, description: undefined },
+  )
+})
+
+test('PART 12 §35 defines the title field a directive declares', () => {
+  const clause = namedContainerClause()
+  const missing = ['title', 'admonition.title'].filter((name) => !clause.includes('`' + name + '`'))
+  assert.deepEqual(
+    missing,
+    [],
+    'PART 12 §35 gives a directive a title and does not name: ' +
+      `${missing.join(', ')}. A field with no clause cannot be implemented, ` +
+      'and the clause has to say whose rule it follows.',
+  )
+})

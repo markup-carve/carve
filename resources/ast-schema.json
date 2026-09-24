@@ -1140,6 +1140,13 @@
           ],
           "description": "Which generated content is placed here. A kind outside this list is an `admonition`, not a directive."
         },
+        "title": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          },
+          "description": "The opener's quoted title, as `admonition.title` carries it. The opener admits one on every named container, so `::: toc \"Contents\"` spells it here; it does not move the dispatch (carve#2247)."
+        },
         "children": {
           "type": "array",
           "items": {
