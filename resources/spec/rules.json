@@ -1635,6 +1635,12 @@
       "part": "12",
       "title": "A NAMED CONTAINER IS A CALLOUT, A DIRECTIVE OR A DIV",
       "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-058",
+      "part": "12",
+      "title": "A LINE BLOCK MAY PUBLISH ITS LINES",
+      "scope": "ast-interchange"
     }
   ],
   "retired": [
