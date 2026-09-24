@@ -1641,6 +1641,12 @@
       "part": "12",
       "title": "A LINE BLOCK MAY PUBLISH ITS LINES",
       "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-059",
+      "part": "12",
+      "title": "A CITATION IS ONLY EVER AN ITEM OF A GROUP",
+      "scope": "ast-interchange"
     }
   ],
   "retired": [

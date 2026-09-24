@@ -1022,3 +1022,25 @@ test('the source patch schema rejects malformed wire fields', () => {
 test('the published source patch schema id matches its build destination', () => {
   assert.equal(sourcePatchSchema.$id, 'https://markup-carve.github.io/carve/source-patch.schema.json')
 })
+
+test('a citation is only ever an item of a group', () => {
+  // The inline dispatch does not name `citation`, so a bare one is refused
+  // wherever an inline node goes - while a group's payload is untouched,
+  // because `citation_group.items` refs the type directly (carve#2227).
+  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
+  const citation = { type: 'citation', key: 'x', suppressAuthor: false, pos }
+  const para = (children) => ({ type: 'document', srcByteLength: 0, children: [{ type: 'paragraph', children }] })
+
+  assert.equal(validate(para([{ type: 'text', value: 'see ' }, citation])), false)
+  assert.equal(validate(para([{ type: 'link', href: '/u', children: [citation] }])), false)
+  assert.equal(
+    validate(para([{ type: 'citation_group', raw: '[@x]', items: [citation] }])),
+    true,
+    firstErrors(),
+  )
+  // Nor inside another citation's own inline slots.
+  assert.equal(
+    validate(para([{ type: 'citation_group', raw: '[@x]', items: [{ ...citation, prefix: [citation] }] }])),
+    false,
+  )
+})

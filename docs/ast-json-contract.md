@@ -1679,6 +1679,30 @@ reports the loss instead. Where the two do differ, the item is authoritative,
 being the finer statement
 ([carve#2203](https://github.com/markup-carve/carve/issues/2203)).
 
+## A citation is only ever an item of a group
+
+The inline dispatch does not name `citation`. The type stays declared and
+`citation_group.items` references it directly, so nothing about a group's payload
+moves - but a bare citation is no longer valid anywhere an inline node goes.
+
+PART 7 makes the bracket the unit a source spells, and an item's `prefix`,
+`locator` and `suffix` mean nothing outside one. No clause defines what a bare
+citation renders to in any target, because no target was ever asked.
+
+All three engines already agreed, none of them by coincidence: carve-php has no
+`Citation` node class, carve-rs has no `Citation` variant in its inline enum, and
+carve-js lists only `CitationGroup` in its inline union. The dispatch entry
+reached further than any of them, and further than §18a asks - that clause wants
+an item to be a typed, positioned node in the inline profile vocabulary, which
+the `$defs` entry and the vocabulary name satisfy on their own.
+
+**The cost of leaving it was not symmetric.** carve-rs and carve-php refuse the
+payload at decode, which is the right shape of failure. carve-js accepted it and
+threw in the renderer - `renderHtml: unknown inline citation` - which is §9(b)'s
+"accepts a tree and then renders only part of it", arriving through the schema
+rather than around it
+([carve#2227](https://github.com/markup-carve/carve/issues/2227)).
+
 ## Citation items are positioned nodes
 
 Each item inside `citation_group.items` is a `citation` node. It carries
