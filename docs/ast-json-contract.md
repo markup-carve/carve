@@ -1053,6 +1053,61 @@ loss** rather than refusing the tree - an unknown extension is not an unknown
 field, and the node states its own degradation
 ([carve#2200](https://github.com/markup-carve/carve/issues/2200)).
 
+## A stored tree is wrapped in a versioned envelope
+
+The tree is strict-closed and carries no version. That is the right posture - a
+payload from a newer contract fails rather than being half-read - and it leaves a
+reader unable to say *which* failure it hit. A corrupt tree, a vocabulary the
+build does not know, and a document needing an extension it does not implement
+all arrive as one validation error, where §12 asks for "an error of its own,
+naming what was wrong".
+
+At a storage or process boundary, wrap it:
+
+```json
+{
+  "astVersion": "1.0",
+  "vocabulary": "https://markup-carve.org/ast/core",
+  "extensions": [{ "id": "https://markup-carve.org/ext/citations", "version": "1" }],
+  "document": { "type": "document", "children": [], "srcByteLength": 0 }
+}
+```
+
+**The tree does not move.** `document` is exactly what this page describes.
+`carve --json` still writes it bare, an in-memory handoff still passes it bare,
+and every rule here applies to it unchanged. The envelope wraps; it does not
+amend.
+
+**`astVersion` is the contract's version, not the language's.** It is
+`major.minor` and does not track the Carve version: the language is versioned for
+authors, this is versioned for readers of a tree. A major bump removes, renames
+or reinterprets something; a minor bump adds. It starts at `1.0`, and a leading
+zero is refused so the `0.x`-reads-as-major convention never applies here.
+
+What a reader does:
+
+- **a higher major is refused**, with a typed error naming the version it got and
+  the version it implements - not a schema failure, since the payload may be
+  well-formed under a contract this build predates;
+- **a higher minor is accepted** only where every extension the payload marks
+  `required` is one the reader implements. A minor adds, so the tree is readable
+  except for what the additions carry, and `required` is the payload's own
+  statement of whether those additions are load-bearing;
+- **a required extension it does not implement is refused, named.** Rendering the
+  understood parts and reporting success is what §9(b) forbids one level down;
+- **an absent `vocabulary` means the core one.** A profile that denies types does
+  not change it: a denied type is one the document does not use, not a different
+  vocabulary.
+
+A producer emits the version its own build implements rather than echoing what it
+read - re-emitting an ingested `astVersion` republishes a claim the producer
+cannot keep.
+
+`additionalProperties: false` holds on the envelope and on every node inside it.
+Versioning solves evolution without weakening the ingest, and §11 already ruled
+that a pass-through is the answer that cannot be right
+([carve#2199](https://github.com/markup-carve/carve/issues/2199)).
+
 ## Where the nodes are, as data
 
 Which fields of a node hold other nodes depends on the type carrying them -

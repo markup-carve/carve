@@ -1623,6 +1623,12 @@
       "part": "12",
       "title": "A BLOCK EXTENSION DECLARES A CORE FALLBACK",
       "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-056",
+      "part": "12",
+      "title": "A STORED TREE IS WRAPPED IN A VERSIONED ENVELOPE",
+      "scope": "ast-interchange"
     }
   ],
   "retired": [
