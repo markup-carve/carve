@@ -1557,6 +1557,18 @@
       "part": "12",
       "title": "`fmt` WRITES THE SOURCE SPELLING, NOT `blockImage`",
       "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P12-046",
+      "part": "12",
+      "title": "A CHILDREN ARRAY HOLDS ONLY A CONTENT BLOCK",
+      "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-047",
+      "part": "12",
+      "title": "A REFERENCE NODE CARRIES ITS TARGET",
+      "scope": "ast-interchange"
     }
   ],
   "retired": [

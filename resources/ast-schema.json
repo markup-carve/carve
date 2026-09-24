@@ -196,8 +196,8 @@
     },
     "blockNode": {
       "type": "object",
-      "title": "Any block node",
-      "description": "Dispatches on `type`. An unlisted type is rejected: PART 9 section 8 makes the identifiers spec surface, and they are `snake_case` always.",
+      "title": "Any block node a `children` array may hold",
+      "description": "Dispatches on `type`. An unlisted type is rejected: PART 9 section 8 makes the identifiers spec surface, and they are `snake_case` always.\n\nA container-internal type is NOT listed here. `table_row`, `table_cell`, `list_item`, `definition_term` and `definition_description` exist only inside the container that owns them - `table.rows`, `table_row.cells`, `list.items` and `definition_list.items` name them directly - so a `children` array holding one is a tree no parser can produce. Listing them here made that payload valid, which left PART 12 section 12(d) unable to refuse it (carve#2189).",
       "required": [
         "type"
       ],
@@ -210,9 +210,7 @@
             "citation_definition",
             "code_block",
             "comment",
-            "definition_description",
             "definition_list",
-            "definition_term",
             "div",
             "figure",
             "figure_group",
@@ -222,13 +220,10 @@
             "image",
             "line_block",
             "list",
-            "list_item",
             "link_reference_definition",
             "paragraph",
             "raw_block",
             "table",
-            "table_cell",
-            "table_row",
             "thematic_break"
           ]
         }
@@ -343,21 +338,6 @@
           "if": {
             "properties": {
               "type": {
-                "const": "definition_description"
-              }
-            },
-            "required": [
-              "type"
-            ]
-          },
-          "then": {
-            "$ref": "#/$defs/definition_description"
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {
                 "const": "definition_list"
               }
             },
@@ -367,21 +347,6 @@
           },
           "then": {
             "$ref": "#/$defs/definition_list"
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "definition_term"
-              }
-            },
-            "required": [
-              "type"
-            ]
-          },
-          "then": {
-            "$ref": "#/$defs/definition_term"
           }
         },
         {
@@ -523,21 +488,6 @@
           "if": {
             "properties": {
               "type": {
-                "const": "list_item"
-              }
-            },
-            "required": [
-              "type"
-            ]
-          },
-          "then": {
-            "$ref": "#/$defs/list_item"
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {
                 "const": "paragraph"
               }
             },
@@ -577,36 +527,6 @@
           },
           "then": {
             "$ref": "#/$defs/table"
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "table_cell"
-              }
-            },
-            "required": [
-              "type"
-            ]
-          },
-          "then": {
-            "$ref": "#/$defs/table_cell"
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "table_row"
-              }
-            },
-            "required": [
-              "type"
-            ]
-          },
-          "then": {
-            "$ref": "#/$defs/table_row"
           }
         },
         {
@@ -686,8 +606,7 @@
       "required": [
         "type",
         "key",
-        "suppressAuthor",
-        "pos"
+        "suppressAuthor"
       ],
       "properties": {
         "type": {
@@ -737,7 +656,7 @@
         },
         "pos": {
           "$ref": "#/$defs/pos",
-          "description": "The complete citation item, from its optional prefix through its optional suffix."
+          "description": "The complete citation item, from its optional prefix through its optional suffix. Present on a parsed citation; omitted where PART 12 section 4 exempts the node, as on one an importer or an editing API synthesized (carve#2192)."
         }
       },
       "additionalProperties": false
@@ -1278,7 +1197,8 @@
       "title": "footnote_ref (inline)",
       "description": "A reference to a definition. Split from `inline_footnote` because a profile has to be able to deny one without the other (carve#405).",
       "required": [
-        "type"
+        "type",
+        "id"
       ],
       "properties": {
         "type": {

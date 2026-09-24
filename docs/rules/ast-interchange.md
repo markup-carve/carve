@@ -9,7 +9,7 @@ description: "The core serialized tree shape, source positions, and cross-implem
 
 The core serialized tree shape, source positions, and cross-implementation AST guarantees.
 
-This view contains 36 of 255 active rules. Every rule remains mandatory where applicable.
+This view contains 38 of 257 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -47,7 +47,9 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L228) | 12 | A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST |
 | [`CARVE-P12-031`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L258) | 12 | A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST |
 | [`CARVE-P12-035`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L497) | 12 | A COMPOSITE FIGURE IS ITS OWN NODE TYPE |
-| [`CARVE-P12-041`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L193) | 12 | U+0000 IS REPLACED ON INGEST |
-| [`CARVE-P12-042`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L226) | 12 | AN INGESTED VALUE THE SCHEMA CALLS ABSENT IS NORMALIZED AWAY |
-| [`CARVE-P12-043`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L249) | 12 | A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH |
-| [`CARVE-P12-044`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L274) | 12 | AN INGESTED `blockImage` VALUE IS AUTHORITATIVE |
+| [`CARVE-P12-041`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L203) | 12 | U+0000 IS REPLACED ON INGEST |
+| [`CARVE-P12-042`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L236) | 12 | AN INGESTED VALUE THE SCHEMA CALLS ABSENT IS NORMALIZED AWAY |
+| [`CARVE-P12-043`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L259) | 12 | A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH |
+| [`CARVE-P12-044`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L284) | 12 | AN INGESTED `blockImage` VALUE IS AUTHORITATIVE |
+| [`CARVE-P12-046`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L310) | 12 | A CHILDREN ARRAY HOLDS ONLY A CONTENT BLOCK |
+| [`CARVE-P12-047`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L339) | 12 | A REFERENCE NODE CARRIES ITS TARGET |

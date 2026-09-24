@@ -43,7 +43,7 @@ const schema = JSON.parse(readFileSync(resolve(root, 'resources/ast-schema.json'
 const ajv = new Ajv2020({ allErrors: true, strict: true })
 const validate = ajv.compile(schema)
 
-test('citation items are typed positioned nodes', () => {
+test('citation items are typed nodes, positioned where they can be placed', () => {
   const pos = { startLine: 1, endLine: 1, startColumn: 2, endColumn: 12, startOffset: 1, endOffset: 11 }
   const citation = { type: 'citation', key: 'smith', suppressAuthor: false, pos }
   const group = { type: 'citation_group', items: [citation], raw: '[@smith]', pos }
@@ -52,10 +52,23 @@ test('citation items are typed positioned nodes', () => {
     srcByteLength: 12,
     children: [{ type: 'paragraph', children: [group], pos }],
   }
+  const withItems = (items) => ({
+    ...document,
+    children: [{ type: 'paragraph', children: [{ ...group, items }], pos }],
+  })
 
   assert.equal(validate(document), true, firstErrors())
-  assert.equal(validate({ ...document, children: [{ type: 'paragraph', children: [{ ...group, items: [{ key: 'smith', suppressAuthor: false, pos }] }], pos }] }), false)
-  assert.equal(validate({ ...document, children: [{ type: 'paragraph', children: [{ ...group, items: [{ type: 'citation', key: 'smith', suppressAuthor: false }] }], pos }] }), false)
+  assert.equal(validate(withItems([{ key: 'smith', suppressAuthor: false, pos }])), false)
+
+  /*
+   * An unplaced citation is VALID. PART 12 section 4 exempts a node the producer
+   * could not place - one an importer or an editing API synthesized has no span
+   * at any offset - and the schema requires `pos` on no other node for exactly
+   * that reason. Requiring it here left a synthesized citation with no
+   * conformant encoding at all: omitting the field failed the schema, and
+   * supplying one violated section 4 (carve#2192).
+   */
+  assert.equal(validate(withItems([{ type: 'citation', key: 'smith', suppressAuthor: false }])), true, firstErrors())
 })
 
 test('source layout is a separate closed versioned sidecar', () => {

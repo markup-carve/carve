@@ -10667,7 +10667,7 @@ EOF = (* end of file *) ;
 
    18a. A CITATION ITEM IS A POSITIONED INLINE NODE -- NORMATIVE [CARVE-P12-038].
       Every item in `citation_group.items` carries `type: "citation"` and the
-      required `pos` of PART 12 §4, spanning its optional prefix, `-` author
+      `pos` of PART 12 §4, spanning its optional prefix, `-` author
       suppression marker, `@key`, locator and suffix. Its existing `key`,
       `prefix`, `locator`, `locatorLabel`, `locatorValue`, `suffix`,
       `suppressAuthor`, `number` and `useIndex` fields are unchanged.
@@ -10677,6 +10677,16 @@ EOF = (* end of file *) ;
       replace one citation without replacing its group. It therefore follows
       the same typed, positioned node contract as every other content-bearing
       value in the tree and belongs to the inline profile vocabulary.
+
+      §4 GOVERNS THE POSITION, AS IT DOES EVERYWHERE ELSE. "The `pos` of §4" is
+      that clause whole, exemptions included: a node the producer could not
+      place omits the field, and a synthesized one MUST omit it. The schema
+      read this sentence as a hard requirement and marked `pos` required on
+      `citation` alone, which left a citation an importer or an editing API
+      built with no conformant encoding at all - omitting the field failed the
+      schema, and supplying one violated §4. A parser still places every
+      citation it reads; nothing about a parsed tree moves
+      ([carve#2192](https://github.com/markup-carve/carve/issues/2192)).
 
    19. A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA -- NORMATIVE [CARVE-P12-039]. A
       `table` MAY carry `columns`, an array whose entry at index N describes
@@ -10862,5 +10872,48 @@ EOF = (* end of file *) ;
       it" is deriving R7 a third time, in a pipeline with no access to the
       phase (`docs/html-import.md`, the detached-caption case). It reads
       `blockImage` on the tree it built instead.
+
+   24. A CHILDREN ARRAY HOLDS ONLY A CONTENT BLOCK -- NORMATIVE [CARVE-P12-046].
+      Nine fields in `resources/ast-schema.json` hold a list of block nodes,
+      and all nine are spelled `children`: on `document`, `admonition`,
+      `block_quote`, `definition_description`, `div`, `figure_group`,
+      `footnote`, `line_block` and `list_item`. The types they admit are the
+      CONTENT blocks. A CONTAINER-INTERNAL type is not among them.
+
+      `table_row`, `table_cell`, `list_item`, `definition_term` and
+      `definition_description` exist only inside the container that owns them.
+      `table.rows`, `table_row.cells`, `list.items` and
+      `definition_list.items` name each of them directly, so a `children`
+      array holding one is a tree no parser produces and no renderer has a
+      case for.
+
+      THE UNION IS THE ENFORCEMENT. §12(d) refuses a payload by validating it
+      against the schema, so a union listing a type makes that type valid
+      wherever the union appears -- and the block union listed all five. A
+      document whose only child was a `table_row` therefore validated, and the
+      engines split on it: carve-js accepted it, carve-rs refused it with a
+      rule written in its decoder that the schema does not state, and no
+      ledger could declare the divergence because a schema check cannot see a
+      shape the schema permits. Narrowing the union is what makes §12(d) able
+      to answer, rather than adding a sixth leniency list beside it
+      ([carve#2189](https://github.com/markup-carve/carve/issues/2189)).
+
+      A `list_item` REACHES ITS OWN CHILDREN THE SAME WAY. It holds content
+      blocks, so a nested `list` is a child of an item and a nested
+      `list_item` is not -- which is what the source already says.
+
+   25. A REFERENCE NODE CARRIES ITS TARGET -- NORMATIVE [CARVE-P12-047]. A node
+      whose whole purpose is to point at something names what it points at,
+      and the schema marks that field `required`. `link` requires `href`,
+      `image` requires `src`, `heading_ref` requires `target`, `footnote`
+      requires `label`.
+
+      `footnote_ref` did not, so `{"type":"footnote_ref"}` validated: a
+      reference to nothing, which §3a cannot have produced -- a pre-resolve
+      tree records what the author wrote, and nobody writes a footnote
+      reference with no label. Resolution results stay optional, as §5 has
+      them: `number` arrives when the document resolves the reference and is
+      absent when nothing does
+      ([carve#2193](https://github.com/markup-carve/carve/issues/2193)).
 
    ============================================================================ *)
