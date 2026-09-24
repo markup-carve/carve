@@ -47,9 +47,14 @@ CI green:
    diff moved shipped source and is cited nowhere in the section:
 
    ```sh
-   npm run changelog:check -- X.Y.Z --section Unreleased    # before the cut
+   npm run changelog:check                                  # before the cut
    npm run changelog:check -- X.Y.Z                         # after it
    ```
+
+   With no version it reads every heading above the first tagged one, which is
+   the section you are writing. It used to default to `package.json`'s version
+   as of that version's own tag, so a bare run answered about a release that had
+   already shipped and was green whatever the pending section said (carve#2238).
 
    It reads CHANGELOG.md from the git revision rather than the working tree, so
    commit the entries before believing a failure. Each repo has its own copy -
@@ -190,7 +195,11 @@ names every merge that moved shipped source and is cited nowhere:
   publish button. `.github/workflows/release-gate.yml` runs it again on the tag
   itself: that one cannot hold a release back, but it goes red while the tag is
   still young enough to move. Run it yourself any time with
-  `npm run changelog:check`.
+  `npm run changelog:check`, and `.github/workflows/changelog-drift.yml` runs
+  the same bare invocation daily against `main`, filing one tracking issue while
+  the pending section is behind. That is the only thing that asks between a merge
+  and a tag; per-pull-request is deliberately not where this lives, since only
+  the release-cutting change writes a section.
 
 What counts as shipped source differs per repository: `src/` in an engine, and
 here the clause source, the grammar, the corpus source and the fixture sets an
