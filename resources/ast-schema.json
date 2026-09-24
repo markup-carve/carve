@@ -2724,7 +2724,7 @@
     "section": {
       "type": "object",
       "title": "section (block)",
-      "description": "An explicit sectioning wrapper. Carve 0.1 source has no spelling for one - sectioning is implicit in heading level - so a parser does not produce it and a canonical Carve writer flattens it back to its headings and reports the loss. It exists so the nesting a format with explicit sections carries (HTML5 `section`, JATS `sec`, DocBook `section`, DITA, TEI, and Pandoc's `--section-divs`) survives a bridge instead of being flattened and re-derived by every consumer that needs it (carve#2207).",
+      "description": "An explicit sectioning wrapper. Carve 0.1 source has no spelling for one - sectioning is implicit in heading level - so a parser does not produce it and a canonical Carve writer flattens it back to its headings and reports `structure-unspellable` on the conversion-diagnostics channel of PART 11 section 1d. It exists so the nesting a format with explicit sections carries (HTML5 `section`, JATS `sec`, DocBook `section`, DITA, TEI, and Pandoc's `--section-divs`) survives a bridge instead of being flattened and re-derived by every consumer that needs it (carve#2207).",
       "required": [
         "type",
         "children"
@@ -3226,7 +3226,7 @@
         },
         "blocks": {
           "type": "array",
-          "description": "Block content, in place of the inline `children`. A cell carries one or the other, never both. Carve 0.1 source has no spelling for a block inside a cell, so a parser does not produce this field; it exists so an HTML `<td>` holding flow content, or a Pandoc `Cell` holding `[Block]`, survives a bridge instead of flattening to text. A canonical Carve writer loses it and reports the loss.",
+          "description": "Block content, in place of the inline `children`. A cell carries one or the other, never both. Carve 0.1 source has no spelling for a block inside a cell, so a parser does not produce this field; it exists so an HTML `<td>` holding flow content, or a Pandoc `Cell` holding `[Block]`, survives a bridge instead of flattening to text. A canonical Carve writer loses it and reports `field-unspellable` for `table_cell.blocks` on the conversion-diagnostics channel of PART 11 section 1d.",
           "items": {
             "$ref": "#/$defs/blockNode"
           }
