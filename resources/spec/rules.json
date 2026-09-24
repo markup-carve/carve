@@ -1617,6 +1617,12 @@
       "part": "12",
       "title": "RUBY ANNOTATIONS SURVIVE INTERCHANGE",
       "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-055",
+      "part": "12",
+      "title": "A BLOCK EXTENSION DECLARES A CORE FALLBACK",
+      "scope": "ast-interchange"
     }
   ],
   "retired": [

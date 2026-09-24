@@ -621,6 +621,8 @@ const NOT_PRODUCIBLE = {
     'citations (Tier-2) - off in a default-profile run, and with the extension off `[@key]: entry` is ordinary paragraph text (PART 12 section 18)',
   small_caps:
     'structural publishing node: Carve 0.1 source has no spelling; produced only by AST and format-bridge consumers (carve#2210)',
+  block_extension:
+    'extension block: Carve 0.1 source spells no block extension, so no corpus document can produce one; it reaches a tree from an extension host or a format bridge (carve#2200)',
   section:
     'structural publishing node: sectioning is implicit in heading level, so Carve 0.1 source has no spelling; produced only by importers from a format that has explicit sections (carve#2207)',
   ruby:

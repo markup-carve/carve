@@ -53,6 +53,7 @@
         "admits": [
           "abbreviation_def",
           "admonition",
+          "block_extension",
           "block_quote",
           "citation_definition",
           "code_block",
@@ -82,6 +83,37 @@
         "admits": [
           "abbreviation_def",
           "admonition",
+          "block_extension",
+          "block_quote",
+          "citation_definition",
+          "code_block",
+          "comment",
+          "definition_list",
+          "div",
+          "figure",
+          "figure_group",
+          "footnote",
+          "frontmatter",
+          "heading",
+          "image",
+          "line_block",
+          "list",
+          "link_reference_definition",
+          "paragraph",
+          "raw_block",
+          "section",
+          "table",
+          "thematic_break"
+        ]
+      }
+    },
+    "block_extension": {
+      "fallback": {
+        "role": "single-node",
+        "admits": [
+          "abbreviation_def",
+          "admonition",
+          "block_extension",
           "block_quote",
           "citation_definition",
           "code_block",
@@ -295,6 +327,7 @@
         "admits": [
           "abbreviation_def",
           "admonition",
+          "block_extension",
           "block_quote",
           "citation_definition",
           "code_block",
@@ -423,6 +456,7 @@
         "admits": [
           "abbreviation_def",
           "admonition",
+          "block_extension",
           "block_quote",
           "citation_definition",
           "code_block",
@@ -452,6 +486,7 @@
         "admits": [
           "abbreviation_def",
           "admonition",
+          "block_extension",
           "block_quote",
           "citation_definition",
           "code_block",
@@ -624,6 +659,7 @@
         "admits": [
           "abbreviation_def",
           "admonition",
+          "block_extension",
           "block_quote",
           "citation_definition",
           "code_block",
@@ -696,6 +732,7 @@
         "admits": [
           "abbreviation_def",
           "admonition",
+          "block_extension",
           "block_quote",
           "citation_definition",
           "code_block",
@@ -950,6 +987,7 @@
         "admits": [
           "abbreviation_def",
           "admonition",
+          "block_extension",
           "block_quote",
           "citation_definition",
           "code_block",
@@ -1032,6 +1070,7 @@
         "admits": [
           "abbreviation_def",
           "admonition",
+          "block_extension",
           "block_quote",
           "citation_definition",
           "code_block",
@@ -1106,6 +1145,7 @@
         "admits": [
           "abbreviation_def",
           "admonition",
+          "block_extension",
           "block_quote",
           "citation_definition",
           "code_block",
@@ -1638,6 +1678,7 @@
         "admits": [
           "abbreviation_def",
           "admonition",
+          "block_extension",
           "block_quote",
           "citation_definition",
           "code_block",

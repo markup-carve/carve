@@ -59,6 +59,8 @@ const OPT_IN_ONLY = {
     'file inclusion (PART 9 section 19): `pos.file` names the file an included node came from, and inclusion is opt-in - the core corpus pins the directive staying LITERAL, so no core document can produce one. The include-conformance suite covers it instead',
   'citation.*': 'citations (Tier-2): the citation item shape, including its resolution results',
   'citation_group.*': 'citations (Tier-2): the group wrapper and the integral `+` form',
+  'block_extension.*':
+    'extension block (interchange-only): Carve 0.1 source spells no block extension, so no corpus document can produce one (carve#2200)',
   'section.*':
     'sectioning (interchange-only): sectioning is implicit in heading level, so no Carve 0.1 source spells a section and no corpus document can produce one (carve#2207)',
   'citation_definition.*':

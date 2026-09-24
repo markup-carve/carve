@@ -206,6 +206,7 @@
           "enum": [
             "abbreviation_def",
             "admonition",
+            "block_extension",
             "block_quote",
             "citation_definition",
             "code_block",
@@ -273,6 +274,21 @@
           },
           "then": {
             "$ref": "#/$defs/admonition"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "block_extension"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/block_extension"
           }
         },
         {
@@ -582,6 +598,59 @@
         "fenced": {
           "description": "True when the quote was authored as a ::: > container rather than with > line markers. The two spellings are one node; this records which one, so the canonical writer can write back what it read. Absent on a >-prefixed quote.",
           "const": true
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "block_extension": {
+      "type": "object",
+      "title": "block_extension (block)",
+      "description": "A block construct an extension owns, carried with a core FALLBACK so a reader that does not implement the extension still has something real to render, write and report. The twin of `inline_extension`, which had no block equivalent, so a Tier-3 block whose payload is not Carve content had to smuggle it through `attrs.keyValues` as strings or lose it (carve#2200). Carve 0.1 source spells no block extension, so a parser produces none.",
+      "required": [
+        "type",
+        "name",
+        "fallback"
+      ],
+      "properties": {
+        "type": {
+          "const": "block_extension"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Globally qualified, so two extensions cannot collide: `org.example.diagram`, not `diagram`."
+        },
+        "version": {
+          "type": "string",
+          "description": "The extension's own version, opaque here. Absent means the extension does not version its payload."
+        },
+        "fallback": {
+          "$ref": "#/$defs/blockNode",
+          "description": "REQUIRED. The core block a reader that does not implement this extension renders, writes and counts instead. It is not a placeholder: it is what the document MEANS to such a reader, so the renderer, the canonical writer and the loss report all have a defined answer rather than three separate special cases."
+        },
+        "payload": {
+          "type": "object",
+          "required": [
+            "format"
+          ],
+          "properties": {
+            "format": {
+              "type": "string",
+              "minLength": 1,
+              "description": "A media type naming how `value` is encoded, so a reader can tell whether it can parse it at all."
+            },
+            "value": {
+              "description": "The extension's own data. Opaque to this schema and to every core renderer."
+            }
+          },
+          "additionalProperties": false,
+          "description": "The extension's data, which is NOT Carve content and is never rendered by a core target. Subject to the ingest bound of §9 like any other nesting, and to §25's trust rules like any other content a renderer did not produce."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"

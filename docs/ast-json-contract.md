@@ -1014,6 +1014,45 @@ An engine may keep decoding `id` on ingest. That is §11's narrow exception
 unchanged, and `footnote.id` is the case the clause was written for. It covers
 reading a stored tree; a producer emits `label`.
 
+## A block extension declares a core fallback
+
+`inline_extension` had no block twin. A Tier-3 block whose payload is Carve
+content could already ride as a `div` or an `admonition`; one whose payload is
+**not** Carve content - a diagram spec, an executable cell, a query, an embedded
+component - had nowhere to put it, so it went through `attrs.keyValues` as
+strings or was lost. §11 already named that hole: "extension data needs a
+declared home, not the absence of a check".
+
+```json
+{
+  "type": "block_extension",
+  "name": "org.example.diagram",
+  "version": "1",
+  "fallback": { "type": "code_block", "lang": "mermaid", "content": "graph TD ..." },
+  "payload": { "format": "application/vnd.example.diagram+json", "value": {} }
+}
+```
+
+**The fallback is required, and that is the whole design.** It is not a
+placeholder: it is what the document *means* to a reader that does not implement
+the extension, so the HTML renderer, the canonical writer and the loss report
+each have a defined answer instead of three separate special cases. An unknown
+specialization stays usable through its known base - the useful half of DITA's
+generalization, without DITA's machinery.
+
+**The payload is not Carve content.** `format` names how `value` is encoded, so a
+reader can tell whether it can parse it at all. No core target renders it, §9's
+ingest bound covers its nesting like any other, and §25's trust rules cover it
+like any other content a renderer did not produce.
+
+A `name` is globally qualified so two extensions cannot collide: `diagram` is not
+a name, `org.example.diagram` is.
+
+A reader that does not know the name **renders the fallback and reports the
+loss** rather than refusing the tree - an unknown extension is not an unknown
+field, and the node states its own degradation
+([carve#2200](https://github.com/markup-carve/carve/issues/2200)).
+
 ## Where the nodes are, as data
 
 Which fields of a node hold other nodes depends on the type carrying them -
