@@ -876,6 +876,44 @@ on `inline_extension` and a verbatim string on `code_block` - so read it off the
 schema. The one position it must never reach is inside `attrs.keyValues`, whose
 values are strings and hold no nodes.
 
+## A children array holds only a content block
+
+Nine fields hold a list of block nodes, and all nine are called `children`:
+`document`, `admonition`, `block_quote`, `definition_description`, `div`,
+`figure_group`, `footnote`, `line_block` and `list_item`. What they admit are
+the content blocks. `table_row`, `table_cell`, `list_item`, `definition_term`
+and `definition_description` are reached from the container that owns them -
+`table.rows`, `table_row.cells`, `list.items`, `definition_list.items` - and
+from nowhere else.
+
+The block union used to list all five, so this validated:
+
+```json
+{"type":"document","children":[{"type":"table_row","cells":[]}],"srcByteLength":0}
+```
+
+A tree no parser produces and no renderer has a case for. The engines split on
+it, which is the part worth keeping: carve-js accepted it, carve-rs refused it
+with a rule written in its decoder that the schema does not state, and no ledger
+declared the divergence, because a schema check cannot see a shape the schema
+permits. §12(d) refuses a payload by validating it against the schema, so the
+union IS the enforcement - narrowing it is what lets §12(d) answer, rather than
+adding a sixth leniency list beside it
+([carve#2189](https://github.com/markup-carve/carve/issues/2189)).
+
+## A reference node carries its target
+
+A node whose whole purpose is to point at something names what it points at,
+and that field is `required`: `href` on `link`, `src` on `image`, `target` on
+`heading_ref`, `label` on `footnote`.
+
+`footnote_ref` was the exception, so `{"type":"footnote_ref"}` validated - a
+reference to nothing, which §3a cannot have produced, since a pre-resolve tree
+records what the author wrote and nobody writes a footnote reference with no
+label. Resolution results stay optional as §5 has them: `number` arrives when the
+document resolves the reference and is absent when nothing does
+([carve#2193](https://github.com/markup-carve/carve/issues/2193)).
+
 ## What is not in it
 
 Formatter-internal nodes (PART 11, and the `raw_text` case the profiles
@@ -1344,9 +1382,18 @@ twice.
 
 Each item inside `citation_group.items` is a `citation` node. It carries
 `type: "citation"`, its existing `key`, `prefix`, `locator`, `suffix`,
-resolution fields, and a required `pos` covering the complete item.
+resolution fields, and a `pos` covering the complete item.
 
 The position makes every authored locator and prefix navigable without treating
 the group as one indivisible range. It also puts citation items in the inline
 profile vocabulary, so diagnostics, editor selections and AST transforms use
 the same node contract as every other content-bearing value.
+
+**The position follows §4, exemptions included.** A parser places every citation
+it reads, so a parsed tree carries one on each item. A citation that did not come
+from Carve source - one an importer built, or an editing API - is a synthesized
+node, and §4 says a synthesized node omits `pos` rather than inventing one. The
+schema marked the field `required` on `citation` and on no other node, which left
+that citation with no conformant encoding at all: omitting the field failed the
+schema, supplying one violated §4. It is optional now, like every other node's
+([carve#2192](https://github.com/markup-carve/carve/issues/2192)).
