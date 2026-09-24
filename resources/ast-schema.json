@@ -2881,8 +2881,7 @@
       "title": "table_cell (block)",
       "required": [
         "type",
-        "header",
-        "children"
+        "header"
       ],
       "properties": {
         "type": {
@@ -2895,6 +2894,13 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "blocks": {
+          "type": "array",
+          "description": "Block content, in place of the inline `children`. A cell carries one or the other, never both. Carve 0.1 source has no spelling for a block inside a cell, so a parser does not produce this field; it exists so an HTML `<td>` holding flow content, or a Pandoc `Cell` holding `[Block]`, survives a bridge instead of flattening to text. A canonical Carve writer loses it and reports the loss.",
+          "items": {
+            "$ref": "#/$defs/blockNode"
           }
         },
         "span": {
@@ -2937,7 +2943,28 @@
           "$ref": "#/$defs/pos"
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "required": [
+            "children"
+          ],
+          "properties": {
+            "children": true,
+            "blocks": false
+          }
+        },
+        {
+          "required": [
+            "blocks"
+          ],
+          "properties": {
+            "blocks": true,
+            "children": false
+          }
+        }
+      ],
+      "description": "A table cell. Its content is EITHER the inline `children` every source-spelled cell carries, OR the block `blocks` a format bridge needs - exactly one of the two, never both and never neither (carve#2191)."
     },
     "table_row": {
       "type": "object",
