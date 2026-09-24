@@ -84,10 +84,13 @@
       use it. Inline HTML is the smallest departure that restores the
       construct, not an alternate canonical spelling.
 
-      The `underline`, `highlight`, `subscript` and `superscript` nodes have no
+      The `underline`, `highlight`, `subscript`, `superscript` and `small_caps`
+      nodes have no
       Markdown delimiter spelling and MUST use inline HTML: `<u>` for
       `underline`, `<mark>` for `highlight`, `<sub>` for `subscript` and
-      `<sup>` for `superscript`.
+      `<sup>` for `superscript`. `small_caps` uses
+      `<span class="smallcaps">`, merging its other attributes under the
+      ordinary span rules.
 
       THE TEST IS ON THE EMITTED BYTES, as in §1a. In the first document the
       strong delimiter reads back as `strong`, so replacing it with `<strong>`

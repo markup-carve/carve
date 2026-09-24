@@ -1428,6 +1428,7 @@
             "math",
             "mention",
             "raw_inline",
+            "small_caps",
             "smart_punctuation",
             "soft_break",
             "span",
@@ -1802,6 +1803,21 @@
           },
           "then": {
             "$ref": "#/$defs/raw_inline"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "small_caps"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/small_caps"
           }
         },
         {
@@ -2594,6 +2610,33 @@
       "properties": {
         "type": {
           "const": "strike"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "small_caps": {
+      "type": "object",
+      "title": "small_caps (inline)",
+      "description": "An interchange-only small-caps span. Carve 0.1 source has no spelling for this wrapper, so parsers do not produce it and canonical source writers omit the wrapper while preserving attributes on an ordinary attributed span. Conversion APIs with diagnostics should report the loss.",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "small_caps"
         },
         "children": {
           "type": "array",

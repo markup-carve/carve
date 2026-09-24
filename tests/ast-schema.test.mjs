@@ -92,6 +92,26 @@ test('figures and tables accept an optional structural short caption', () => {
   assert.equal(validate({ type: 'document', children: [{ ...figure, shortCaption: 'label' }], srcByteLength: 1 }), false)
 })
 
+test('small caps are a structural inline wrapper with children', () => {
+  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 5, startOffset: 0, endOffset: 4 }
+  const smallCaps = { type: 'small_caps', children: [{ type: 'text', value: 'NASA', pos }], pos }
+  const document = {
+    type: 'document',
+    srcByteLength: 4,
+    children: [{ type: 'paragraph', children: [smallCaps], pos }],
+  }
+
+  assert.equal(validate(document), true, firstErrors())
+  assert.equal(validate({
+    ...document,
+    children: [{ type: 'paragraph', children: [{ ...smallCaps, children: 'NASA' }], pos }],
+  }), false)
+  assert.equal(validate({
+    ...document,
+    children: [{ type: 'paragraph', children: [{ ...smallCaps, value: 'NASA' }], pos }],
+  }), false)
+})
+
 test('a figure targets a table, which no Carve source spells', () => {
   // PART 12 §17 from both directions. The table branch is the one an HTML
   // importer produces from `<figure><table>…<figcaption>` and no Carve source
@@ -509,6 +529,8 @@ const NOT_PRODUCIBLE = {
   citation_group: 'citations (Tier-2) - off in a default-profile run, exercised by tests/corpus-optional',
   citation_definition:
     'citations (Tier-2) - off in a default-profile run, and with the extension off `[@key]: entry` is ordinary paragraph text (PART 12 section 18)',
+  small_caps:
+    'structural publishing node: Carve 0.1 source has no spelling; produced only by AST and format-bridge consumers (carve#2210)',
 }
 
 test('every node type the schema declares is produced by a corpus document, or named as unproducible', () => {

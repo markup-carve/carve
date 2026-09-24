@@ -1581,6 +1581,12 @@
       "part": "12",
       "title": "A TABLE CELL MAY CARRY BLOCK CONTENT INSTEAD OF INLINE",
       "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-050",
+      "part": "12",
+      "title": "SMALL CAPS SURVIVE INTERCHANGE",
+      "scope": "ast-interchange"
     }
   ],
   "retired": [
