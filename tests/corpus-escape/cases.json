@@ -481,6 +481,15 @@
       }
     },
     {
+      "name": "a-hexadecimal-character-reference",
+      "input": "a &#x2014; b",
+      "expected": {
+        "plain": "a &\\#x2014; b",
+        "markdown": "a &\\#x2014; b",
+        "djot": "a &\\#x2014; b"
+      }
+    },
+    {
       "name": "a-hash-before-a-dash",
       "input": "a #-x b",
       "expected": {

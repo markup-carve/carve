@@ -811,15 +811,6 @@ version, and no engine can render a field it does not implement whatever it
 does with it. Refusing makes the mismatch visible where it can still be
 handled.
 
-**One narrow exception.** An implementation may accept a property it once
-published itself, provided it decodes that property onto a field the schema
-does name and documents it. `footnote.id` - what carve-js and carve-php
-published before §7 settled on `label` - is the case this is written for. Such
-a property is not one the ingest cannot understand, which is what the clause is
-about; refusing it would not protect a caller from a half-read tree, it would
-take away the only reader that reads those stored trees whole. The exception
-does not extend to a property an implementation merely tolerates.
-
 **Extension data needs a declared home, not the absence of a check.** Until the
 schema names one, extension state on the wire is invalid for the same reason
 any other unnamed property is, and an extension relying on a pass-through is

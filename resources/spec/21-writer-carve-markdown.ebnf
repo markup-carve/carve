@@ -301,7 +301,9 @@
       (`::: \`). THERE IS NO EXCEPTION ON THIS TARGET: the shape does not vary
       by container kind, by type word, or by attribute. A body that renders
       nothing is an empty body here as it is in PART 10 §4, so a container
-      holding only a comment takes this shape too.
+      holding only a comment takes this shape too. A comment-only line in a
+      line block has already become the empty verse line defined by PART 9
+      §23, so its paragraph remains body content.
 
       IT REACHES THE CONSTRUCTS THAT HAVE A CLOSER LINE, which is what a colon
       fence has and a block quote does not. An empty block quote is a `>` line
@@ -313,13 +315,10 @@
       nothing serializes to, and this asks the same of the same document at
       the other target, so one rule for "an empty body" serves both.
 
-      THE EXCEPTION IS NOT IMPORTED WITH IT. §4 says of its bare-div exception,
-      in its own words, that it "has no principle behind it" and that the split
-      is on "a property of the RENDERING PATH and not of the document". What
-      carries the exception there does not travel to a target it was never
-      about, so this clause takes the uniform rule §4 itself prefers. The two
-      targets therefore agree on the rule and differ on one shape: a bare `:::`
-      div closes compactly in HTML and takes the blank line here.
+      THE TWO TARGETS AGREE. PART 10 §4 gives the same blank body line to a
+      bare div, typed div, admonition and blockquote. This clause applies that
+      shape to every colon-fenced container the Carve writer emits, including
+      line blocks and local hard-break blocks.
 
    7b. A FOOTNOTE DEFINITION WITH NO BLOCKS IS WRITTEN WITH THE SENTINEL
       `{empty}` -- NORMATIVE [CARVE-P11-019]. A `footnote_definition` whose body holds NO

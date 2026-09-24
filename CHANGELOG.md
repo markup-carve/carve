@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed (breaking for writer output)
+
+- **Every empty block container keeps one blank HTML body line** (CARVE-P10-001).
+  Empty line blocks, local hard-break blocks and figure groups now follow the
+  same framing rule as divs, admonitions and block quotes.
+
+### Removed
+
+- **`footnote.id` is no longer a permitted AST compatibility alias.** A
+  footnote definition uses `label`; an ingest rejects `id` like any other
+  unnamed property.
+
 ## [0.1.7] - 2026-09-25
 
 ### Changed (breaking for writer output)
