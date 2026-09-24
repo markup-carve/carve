@@ -11300,4 +11300,42 @@ EOF = (* end of file *) ;
       answer that cannot be right
       ([carve#2199](https://github.com/markup-carve/carve/issues/2199)).
 
+   35. A NAMED CONTAINER IS A CALLOUT, A DIRECTIVE OR A DIV -- NORMATIVE
+      [CARVE-P12-057]. `:::` produces one of three types. An ANONYMOUS or
+      attribute-only container is a `div`. A named one whose kind names
+      GENERATED CONTENT - `bibliography`, `footnotes`, `glossary`, `index`,
+      `references`, `toc` - is a `directive`. Every other named container is
+      an `admonition`.
+
+      WHY THE SPLIT. `admonition` covered all three, so a table of contents was
+      an admonition, and a consumer dispatching on `type` to decide whether to
+      draw a callout had to carry a list of kinds that are NOT callouts. The
+      list existed either way; putting it in the schema makes it one list that
+      every consumer reads instead of one each consumer writes.
+
+      THE REFUSAL IS STAGED. `admonition.kind` does NOT yet refuse the
+      directive kinds: the schema names the type before any engine publishes
+      it, and a corpus document still carries `admonition` with kind
+      `footnotes`. `not` is added to `admonition.kind` in the commit that moves
+      the pin to a build emitting `directive`. Until then the split is a rule
+      the schema states and does not check, which is a debt this clause names
+      rather than hides.
+
+      FOLDING THEM INTO `div` WAS REFUSED. One syntax producing one type
+      parameterised by `kind` reads well and costs a real capability: a
+      profile can deny `admonition` without denying `div`, and a fold takes
+      away the ability to refuse callouts while keeping generic containers.
+      Three types keep that, and the vocabulary gains a word rather than
+      losing one.
+
+      AN EXTENSION-DEFINED CONTAINER KEEPS ITS QUALIFIED NAME and declares the
+      base it generalizes to, so a processor that knows only the base can still
+      handle it - the same reading the block extension clause takes for a payload it
+      cannot parse.
+
+      A DIRECTIVE'S `children` ARE USUALLY EMPTY. Its content is generated
+      from the document, not authored between the markers; blocks written there
+      are carried and the renderer decides what they mean
+      ([carve#2195](https://github.com/markup-carve/carve/issues/2195)).
+
    ============================================================================ *)

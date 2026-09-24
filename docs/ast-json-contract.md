@@ -1108,6 +1108,31 @@ Versioning solves evolution without weakening the ingest, and §11 already ruled
 that a pass-through is the answer that cannot be right
 ([carve#2199](https://github.com/markup-carve/carve/issues/2199)).
 
+## A named container is a callout, a directive or a div
+
+`:::` produces one of three types. An anonymous or attribute-only container is a
+`div`. A named one whose kind names **generated content** - `bibliography`,
+`footnotes`, `glossary`, `index`, `references`, `toc` - is a `directive`. Every
+other named container is an `admonition`.
+
+`admonition` covered all three, so a table of contents was an admonition and a
+consumer dispatching on `type` to decide whether to draw a callout had to carry a
+list of kinds that are not callouts. The list existed either way; putting it in
+the schema makes it one list every consumer reads instead of one each consumer
+writes.
+
+**Folding them into `div` was refused.** One syntax producing one type
+parameterised by `kind` reads well and costs a real capability: a profile can deny
+`admonition` without denying `div`, and a fold takes away the ability to refuse
+callouts while keeping generic containers.
+
+**The refusal is staged.** `admonition.kind` does not yet reject the directive
+kinds - the schema names the type before any engine publishes it, and a corpus
+document still carries `admonition` with kind `footnotes`. `not` arrives on
+`admonition.kind` in the commit that moves the pin to a build emitting
+`directive`. Until then the split is a rule the schema states and does not check
+([carve#2195](https://github.com/markup-carve/carve/issues/2195)).
+
 ## Where the nodes are, as data
 
 Which fields of a node hold other nodes depends on the type carrying them -

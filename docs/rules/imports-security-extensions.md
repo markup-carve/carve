@@ -9,7 +9,7 @@ description: "Optional and host-facing behavior, importer contracts, security li
 
 Optional and host-facing behavior, importer contracts, security limits, diagnostics, and extension surfaces.
 
-This view contains 26 of 267 active rules. Every rule remains mandatory where applicable.
+This view contains 26 of 268 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
