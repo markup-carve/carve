@@ -167,29 +167,6 @@ const PINNED_UNIMPLEMENTED = {}
  */
 const PINNED_DRIFT = {
   '46-bbcode-empty-quotes-survive': 'predates carve#2171',
-  '47-markdown-table-body-rows-are-written-unpadded': 'predates markup-carve/carve-js#1922',
-  '48-markdown-a-table-row-is-fitted-to-the-header': 'predates markup-carve/carve-js#1923',
-  '49-markdown-a-tilde-fence-becomes-a-backtick-fence': 'predates markup-carve/carve-js#1925',
-  '50-markdown-an-over-long-fence-is-narrowed': 'predates markup-carve/carve-js#1925',
-  '51-markdown-a-quoted-tilde-fence-stays-code': 'predates markup-carve/carve-js#1925',
-  '52-markdown-ordered-items-are-numbered-on': 'predates markup-carve/carve-js#1925',
-  '53-markdown-a-bullet-change-starts-a-second-list': 'predates markup-carve/carve-js#1925',
-  '54-markdown-a-nested-quote-under-a-quote-paragraph': 'predates markup-carve/carve-js#1925',
-  '55-markdown-an-unclosed-fence-closes-with-its-container': 'predates markup-carve/carve-js#1931',
-  '56-markdown-a-wider-number-moves-its-item-content': 'predates markup-carve/carve-js#1931',
-  '57-markdown-a-loose-list-is-written-with-blank-lines': 'predates markup-carve/carve-js#1931',
-  '58-markdown-an-over-indented-continuation-line-moves-to-the-item': 'predates markup-carve/carve-js#1933',
-  '59-markdown-a-marker-between-list-levels-is-a-sibling': 'predates markup-carve/carve-js#1933',
-  '60-markdown-a-lazy-line-after-a-quote-in-an-item': 'predates markup-carve/carve-js#1933',
-  '61-markdown-a-pipe-table-under-an-item-belongs-to-it': 'predates markup-carve/carve-js#1936',
-  '62-markdown-a-tab-after-a-marker-is-its-padding': 'predates markup-carve/carve-js#1936',
-  '63-markdown-indented-code-on-an-item-line-is-code': 'predates markup-carve/carve-js#1936',
-  '64-markdown-dash-runs-in-text-stay-hyphens': 'predates markup-carve/carve-js#1940',
-  '65-markdown-a-multi-line-setext-heading-in-an-item': 'predates markup-carve/carve-js#1942',
-  '66-markdown-a-one-item-list-parted-by-a-blank-is-loose': 'predates markup-carve/carve-js#1948',
-  '67-markdown-quoted-item-marker-padding-collapses': 'predates markup-carve/carve-js#1948',
-  '68-markdown-a-quoted-lazy-line-four-columns-in-is-text': 'predates markup-carve/carve-js#1948',
-  '69-markdown-only-one-interrupts-an-item-paragraph': 'predates markup-carve/carve-js#1940',
 }
 const PINNED_SOURCE_DRIFT = {}
 

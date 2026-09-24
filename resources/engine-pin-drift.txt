@@ -24,38 +24,3 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-116-fence-opener-with-a-nested-list-body-inside-a-list-item-6  the pinned build omits the empty line-block body line; markup-carve/carve-js#1934
-271-the-flush-left-line-after-a-container-a-quoted-line-opened-4  the pinned build omits the empty line-block body line; markup-carve/carve-js#1934
-276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-7  the pinned build reads the fence as paragraph text inside the item; markup-carve/carve-js#1880
-476-an-item-s-fence-is-read-once-whatever-block-it-follows  the pinned build folds the fence into the caption; markup-carve/carve-js#1880
-476-an-item-s-fence-is-read-once-whatever-block-it-follows-2  the pinned build folds the fence into the quoted paragraph; markup-carve/carve-js#1880
-478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column-3  the pinned build reads the fence as paragraph text inside the description; markup-carve/carve-js#1880
-478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column-5  the pinned build ends the description at the below-column line; markup-carve/carve-js#1880
-479-a-closer-below-the-container-s-column-does-not-count-4  the pinned build counts a flush-left closer for a description's fence; markup-carve/carve-js#1883
-480-a-bare-colon-opener-in-a-description-body-is-an-opener  the pinned build omits the empty line-block body line; markup-carve/carve-js#1934
-480-a-bare-colon-opener-in-a-description-body-is-an-opener-2  the pinned build omits the empty line-block body line; markup-carve/carve-js#1934
-480-a-bare-colon-opener-in-a-description-body-is-an-opener-3  the pinned build omits the empty line-block body line; markup-carve/carve-js#1934
-480-a-bare-colon-opener-in-a-description-body-is-an-opener-4  the pinned build omits the empty line-block body line; markup-carve/carve-js#1934
-480-a-bare-colon-opener-in-a-description-body-is-an-opener-5  the pinned build omits the empty line-block body line; markup-carve/carve-js#1934
-480-a-bare-colon-opener-in-a-description-body-is-an-opener-7  the pinned build reads the fence as paragraph text inside the description; markup-carve/carve-js#1880
-481-a-bare-colon-run-interrupts-a-paragraph-whether-or-not-a-line-follows-it  the pinned build omits the empty line-block body line; markup-carve/carve-js#1934
-481-a-bare-colon-run-interrupts-a-paragraph-whether-or-not-a-line-follows-it-2  the pinned build omits the empty line-block body line; markup-carve/carve-js#1934
-481-a-bare-colon-run-interrupts-a-paragraph-whether-or-not-a-line-follows-it-3  the pinned build omits the empty line-block body line; markup-carve/carve-js#1934
-481-a-bare-colon-run-interrupts-a-paragraph-whether-or-not-a-line-follows-it-4  the pinned build omits the empty line-block body line; markup-carve/carve-js#1934
-481-a-bare-colon-run-interrupts-a-paragraph-whether-or-not-a-line-follows-it-5  the pinned build omits the empty line-block body line; markup-carve/carve-js#1934
-481-a-bare-colon-run-interrupts-a-paragraph-whether-or-not-a-line-follows-it-6  the pinned build omits the empty line-block body line; markup-carve/carve-js#1934
-482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in  the pinned build lets a closer rescue a marker-line opener whose body folded in; markup-carve/carve-js#1889
-482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-2  the pinned build lets a closer rescue a marker-line opener whose body folded in; markup-carve/carve-js#1889
-482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-3  the pinned build lets a closer rescue a marker-line opener whose body folded in; markup-carve/carve-js#1889
-482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-4  the pinned build lets a closer rescue a marker-line opener whose body folded in; markup-carve/carve-js#1889
-482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-5  the pinned build lets a closer rescue a marker-line opener whose body folded in; markup-carve/carve-js#1889
-482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-6  the pinned build lets a closer rescue a marker-line opener whose body folded in; markup-carve/carve-js#1889
-482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-10  the pinned build omits the empty line-block body line; markup-carve/carve-js#1934
-483-an-empty-term-marker-in-a-description-body-is-text  the pinned build ends a description body at an empty term marker; markup-carve/carve-js#1891
-483-an-empty-term-marker-in-a-description-body-is-text-2  the pinned build ends a description body at an empty term marker; markup-carve/carve-js#1891
-483-an-empty-term-marker-in-a-description-body-is-text-3  the pinned build ends a description body at an empty term marker; markup-carve/carve-js#1891
-483-an-empty-term-marker-in-a-description-body-is-text-4  the pinned build ends a description body at an empty term marker; markup-carve/carve-js#1891
-483-an-empty-term-marker-in-a-description-body-is-text-5  the pinned build ends a description body at an empty term marker; markup-carve/carve-js#1891
-486-any-character-is-content-of-the-combined-bold-italic-token-6  the pinned build closes a bare delimiter after a tab; markup-carve/carve-js#1887
-489-a-caption-s-placeholder-is-any-that-does-not-begin-a-tag-8  the pinned build leaves a word-glued caption placeholder unnumbered; markup-carve/carve-js#1900
-493-empty-containers-share-one-html-body-shape-2  the pinned build omits unified empty container body lines; markup-carve/carve-js#1934

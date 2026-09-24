@@ -1,6 +1,6 @@
 {
   "engine": "@markup-carve/carve",
-  "engineCommit": "4b6683fd9e585115a51a65e00a05d5fbdeed94a9",
+  "engineCommit": "cae6667c5e496180424ef7a04fee8d9044f4b454",
   "corpusDocuments": 1858,
   "htmlImportPopulation": {
     "completed": 1857,
@@ -11,7 +11,8 @@
     ]
   },
   "renderImportRoundTrips": {
-    "html": 748,
-    "markdown": 439
-  }
+    "html": 741,
+    "markdown": 379
+  },
+  "renderImportRoundTripsNote": "html 748 -> 741 and markdown 439 -> 379 when the pin moved past the Markdown importer rulings carve-js#1922 through #1936 (carve#2213). 60 documents lost, 0 gained, every one a list: the writer puts a blank line before a tight item's sublist, which CommonMark reads as loose, and the importer used to read it back as tight so the two defects cancelled. Fixing the reading half exposed the writing half. Tracked at markup-carve/carve-js#1966; the counts move back up when it lands."
 }

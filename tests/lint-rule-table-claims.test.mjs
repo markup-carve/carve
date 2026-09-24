@@ -65,6 +65,7 @@ const TRIGGERS = {
   'duplicate-footnote-definition': 'x[^a]\n\n[^a]: one\n\n[^a]: two\n',
   'unused-footnote-definition': 'text\n\n[^a]: never used\n',
   'heading-trailing-attribute': '# Title {#id}\n',
+  'fence-opener-fallback': '``` php extra bad info\ncode\n```\n',
   'raw-block-syntax': '```raw html\nx\n```\n',
   'blockquote-marker-without-space': '>quoted\n',
   'block-marker-as-text': '  ::: note\n',
