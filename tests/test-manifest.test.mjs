@@ -18,6 +18,8 @@ import { tmpdir } from 'node:os'
 import { resolve, dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { fleetEnv, specCommit } from './synthetic-fleet.helper.mjs'
+
 const here = dirname(fileURLToPath(import.meta.url))
 const repo = resolve(here, '..')
 
@@ -96,8 +98,21 @@ test('the AST verdict cannot close on narrower or disposable evidence', () => {
   assert.match(workflow, /if \[ -n "\$missing" \]; then[\s\S]*?#\$issue remains open/)
 })
 
-function run(command, args, cwd) {
-  return spawnSync(command, args, { cwd, encoding: 'utf8' })
+function run(command, args, cwd, env) {
+  return spawnSync(command, args, { cwd, encoding: 'utf8', env: env ? { ...process.env, ...env } : process.env })
+}
+
+/**
+ * The pre-tag check now asks whether the three engines pin the same spec commit
+ * (step 9). These tests are about TAG NAMES, and without a fleet of their own
+ * they would read the real sibling checkouts and go red whenever three other
+ * repositories happen to disagree - a failure naming nothing anyone changed.
+ * So they get an agreeing fleet, pinned to a commit of this repository.
+ */
+function agreeingFleet() {
+  const root = mkdtempSync(join(tmpdir(), 'carve-pre-tag-fleet-'))
+  const pin = specCommit(repo)
+  return fleetEnv(root, { 'carve-js': pin, 'carve-rs': pin, 'carve-php': pin })
 }
 
 function releaseRepository() {
@@ -121,7 +136,7 @@ function releaseRepository() {
 test('the pre-tag check separates a prefixed tag from the bare version', () => {
   const work = releaseRepository()
   const checker = resolve(repo, 'scripts/pre-tag-check.sh')
-  const result = run('bash', [checker, '0.1.4', work, '--tag', 'v0.1.4'], repo)
+  const result = run('bash', [checker, '0.1.4', work, '--tag', 'v0.1.4'], repo, agreeingFleet())
 
   assert.equal(result.status, 0, result.stdout + result.stderr)
   assert.match(result.stdout, /tag v0\.1\.4 not yet present/)
@@ -133,7 +148,7 @@ test('the pre-tag check tests the real prefixed ref for existence', () => {
   const work = releaseRepository()
   const checker = resolve(repo, 'scripts/pre-tag-check.sh')
   assert.equal(run('git', ['tag', 'v0.1.4'], work).status, 0)
-  const result = run('bash', [checker, '0.1.4', '--tag', 'v0.1.4', work], repo)
+  const result = run('bash', [checker, '0.1.4', '--tag', 'v0.1.4', work], repo, agreeingFleet())
 
   assert.equal(result.status, 1, result.stdout + result.stderr)
   assert.match(result.stdout, /\[FAIL\] tag v0\.1\.4 already exists locally/)
@@ -143,7 +158,7 @@ test('the pre-tag check tests the real prefixed ref for existence', () => {
 test('the pre-tag check keeps the existing bare-tag invocation', () => {
   const work = releaseRepository()
   const checker = resolve(repo, 'scripts/pre-tag-check.sh')
-  const result = run('bash', [checker, '0.1.4', work], repo)
+  const result = run('bash', [checker, '0.1.4', work], repo, agreeingFleet())
 
   assert.equal(result.status, 0, result.stdout + result.stderr)
   assert.match(result.stdout, /tag 0\.1\.4 not yet present/)

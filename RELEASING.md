@@ -114,8 +114,8 @@ CI green:
    ```
 4. **Run the pre-tag check** (fails on a stale version field, an un-cut
    changelog, a section that leaves merges uncited, a dirty tree, a missing tag,
-   an uninitialized spec submodule, or a drift entry the pinned build now
-   reproduces):
+   an uninitialized spec submodule, a drift entry the pinned build now
+   reproduces, or three engines that do not pin the same spec commit):
 
    ```sh
    bash scripts/pre-tag-check.sh X.Y.Z
@@ -223,9 +223,45 @@ surfaces in the PR that missed it:
   which is the one place in the org where a mistyped tag reaches a registry
   unopposed. Run the pre-tag check by hand before tagging it.
 
+## The engines have to agree on which spec they implement
+
+Each engine's CI runs `scripts/check-spec-pin-ancestry.sh`, which asserts its
+pinned spec commit is reachable from spec `main`. That catches a pin left on the
+pre-squash head of a merged branch, and it says nothing about how far behind the
+pin is - a commit five hundred back is still reachable.
+
+So carve-php pinned `6e78b03f` while carve-js and carve-rs pinned `c8164160`,
+the AST schema change from #2197, and carve-php accepted two payload shapes the
+other two refuse and refused one they accept. All three pin jobs were green, and
+correctly so: reachability is a per-repo property, agreement is a fleet property,
+and no per-repo gate can see it.
+
+`pre-tag-check.sh` step 9 compares the `spec` (carve-js) and `tests/spec`
+(carve-rs, carve-php) gitlinks across all three at `origin/main` and names each
+repo, its pin and the distance between them. Run it on its own with:
+
+```sh
+npm run fleet:pin                  # the three engines at origin/main
+npm run fleet:pin -- --ref worktree  # as they are checked out
+```
+
+A missing engine checkout fails rather than skipping - a fleet verdict computed
+from two engines is not a fleet verdict, and the one that is missing is where a
+divergence would sit. Point the run at a clone with `CARVE_JS_DIR`,
+`CARVE_RS_DIR` or `CARVE_PHP_DIR`.
+
+Holding one engine back is a legitimate call, so declare it in
+`.fleet-pin-exempt` as `<repo>@<sha>: <reason>`. The reason is required, and
+every exemption that applies is printed on a passing run. The sha is part of the
+key: once that engine's pin moves, or once it rejoins the fleet, the line is
+reported as stale and has to be renewed or deleted, so an exemption cannot
+outlive the divergence it describes and cover the next one.
+
 ## Never
 
 - Never tag before `pre-tag-check.sh` passes.
+- Never tag a round in which the three engines pin different spec commits, unless
+  the divergence is written down in `.fleet-pin-exempt` with its reason.
 - Never pass a boolean to `gh api` with `-f`. It becomes a string, and a
   string on `draft` reads as false - see the section above.
 - Never tag `carve` on a drift file nobody reconciled. CI gates that drift is
