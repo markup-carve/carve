@@ -550,6 +550,7 @@
       resolution, cloning, equality, patching and rendering MUST reach both
       arrays. One `ruby` counts as one inline nesting level. AST ingest still
       measures depth in each implementation's own unit under §9(c).
+      The node and every pair MUST survive AST encode/decode under §6.
 
       CARVE 0.1 SOURCE HAS NO SPELLING FOR RUBY. A source parser never
       synthesizes it. A canonical Carve writer emits every pair as

@@ -131,6 +131,9 @@ the parsed DOM. Each valid segment becomes one `pairs` entry: its base nodes
 go in `base`, and its first associated `rt` content goes in `annotation`.
 An empty `rt` is valid and produces `annotation: []`. Whitespace follows the
 WHATWG algorithm rather than a second Carve-specific segmentation rule.
+Each additional associated `rt` becomes ordinary `(<annotation>)` content
+immediately after its pair and reports `element-unwrapped` with degraded
+fidelity. Nested `ruby` elements are read recursively.
 
 `rp` is fallback presentation and does not enter the AST. Empty `rp`, ASCII
 parentheses and fullwidth parentheses, ignoring surrounding HTML whitespace,
