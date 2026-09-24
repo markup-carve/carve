@@ -1470,6 +1470,26 @@ shape against the schema and carries a tripwire that fails on the pinned build
 the day it does, so this paragraph cannot go stale the way the rows above have
 twice.
 
+## A citation item carries its own mode
+
+A `citation` may carry `mode`. Absent means parenthetical, and
+`citation_group.mode` is the authored shorthand that sets it - the leading `+`
+after `[` is the only spelling Carve 0.1 source has, and it applies to the whole
+group, so every item of a source-spelled group carries its group's value.
+
+It sits on the item because the exchanged model puts it there. Pandoc's
+`CitationMode` is three-valued and per citation, so a `Cite` mixing an
+author-in-text citation with a parenthetical one had no encoding while the mode
+lived only on the group. The group keeps its field: that is what the author
+wrote, and §3a records the document rather than a rendering of it.
+
+No corpus document moves. A parse fills every item of a group identically from
+the group's own value, so the only trees whose items differ are ones an importer
+or an editing API built, and a canonical Carve writer cannot spell one - it
+reports the loss instead. Where the two do differ, the item is authoritative,
+being the finer statement
+([carve#2203](https://github.com/markup-carve/carve/issues/2203)).
+
 ## Citation items are positioned nodes
 
 Each item inside `citation_group.items` is a `citation` node. It carries
