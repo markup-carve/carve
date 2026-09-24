@@ -461,6 +461,83 @@ test('every UNDEFINED_FACT entry names a fact the schema still declares', () => 
   )
 })
 
+/** The node-identity sidecar schema, read fresh so no test mutates another's copy. */
+function identitySchema() {
+  return JSON.parse(readFileSync(resolve(root, 'resources/ast-node-identity-schema.json'), 'utf8'))
+}
+
+/** The text of PART 12 §38, the clause that defines the identity sidecar. */
+function identityClause() {
+  const grammar = readFileSync(resolve(root, 'resources/grammar.ebnf'), 'utf8')
+  const start = grammar.indexOf('   38. NODE IDENTITY IS A SEPARATE OPT-IN SIDECAR')
+  assert.notEqual(start, -1, 'PART 12 §38 is not where this test looks for it')
+  const end = grammar.indexOf('\n   ==========', start)
+  assert.notEqual(end, -1, 'PART 12 §38 has no PART terminator after it')
+  return grammar.slice(start, end)
+}
+
+test('node identity is a separate closed versioned sidecar', () => {
+  const validateIdentity = new Ajv2020({ strict: true }).compile(identitySchema())
+  const sidecar = { version: 1, session: 's-7f3', nodes: [{ id: 'n4', path: '/children/3' }] }
+  assert.equal(validateIdentity(sidecar), true, JSON.stringify(validateIdentity.errors))
+  assert.equal(validateIdentity({ ...sidecar, version: 2 }), false, 'an unimplemented version validated')
+  assert.equal(validateIdentity({ ...sidecar, unknown: true }), false, 'an unnamed root property validated')
+  assert.equal(validateIdentity({ version: 1, nodes: [] }), false, 'a sidecar with no session validated')
+  assert.equal(validateIdentity({ ...sidecar, nodes: [{ id: 'n4' }] }), false, 'an entry with no path validated')
+  assert.equal(validateIdentity({ ...sidecar, nodes: [{ path: '/children/3' }] }), false, 'an entry with no id validated')
+  // §38 carries no span: `pos` on the node the path addresses is the one copy.
+  assert.equal(
+    validateIdentity({ ...sidecar, nodes: [{ id: 'n4', path: '/children/3', startOffset: 0 }] }),
+    false,
+    'an entry restating an offset validated',
+  )
+})
+
+test('an identity sidecar is not a field of the tree', () => {
+  // §38's first sentence, from the tree's side: the ids stay outside the AST,
+  // so an ordinary consumer pays nothing and §6 round trip holds with and
+  // without a sidecar. §11 already rejects an unnamed property - this asserts
+  // it reaches THESE names, which is the shape an implementer reaches for.
+  const root_ = { type: 'document', children: [], srcByteLength: 0 }
+  assert.equal(validate(root_), true, firstErrors())
+  assert.equal(validate({ ...root_, nodeIdentity: {} }), false, 'a root carrying nodeIdentity validated')
+  assert.equal(validate({ ...root_, nodeIds: {} }), false, 'a root carrying nodeIds validated')
+  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
+  assert.equal(
+    validate({ ...root_, srcByteLength: 1, children: [{ type: 'paragraph', children: [], nodeId: 'n4', pos }] }),
+    false,
+    'a node carrying nodeId validated',
+  )
+})
+
+test('every property the identity schema declares is defined in PART 12 §38', () => {
+  const clause = identityClause()
+  const schemaDoc = identitySchema()
+  const declared = [...Object.keys(schemaDoc.properties), ...Object.keys(schemaDoc.$defs.nodeIdentity.properties)]
+  const undefinedHere = declared.filter((name) => !clause.includes('`' + name + '`')).sort()
+  assert.deepEqual(
+    undefinedHere,
+    [],
+    `the identity schema declares propert(ies) PART 12 §38 does not define: ${undefinedHere.join(', ')}. ` +
+      'A declared field with no clause cannot be implemented. Define it in §38.',
+  )
+})
+
+test('every property the identity schema declares carries a description', () => {
+  const schemaDoc = identitySchema()
+  const entries = [...Object.entries(schemaDoc.properties), ...Object.entries(schemaDoc.$defs.nodeIdentity.properties)]
+  const bare = entries
+    .filter(([name, subschema]) => name !== 'version' && name !== 'nodes' && typeof subschema.description !== 'string')
+    .map(([name]) => name)
+    .sort()
+  assert.deepEqual(
+    bare,
+    [],
+    `identity schema propert(ies) carry no description: ${bare.join(', ')}. ` +
+      'The schema is published on its own, so a consumer reading only the schema needs the pointer to §38.',
+  )
+})
+
 test('shared source-layout fixtures validate', () => {
   const layoutSchema = JSON.parse(readFileSync(resolve(root, 'resources/ast-source-layout-schema.json'), 'utf8'))
   const validateLayout = new Ajv2020({ strict: true }).compile(layoutSchema)

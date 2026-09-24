@@ -11403,4 +11403,44 @@ EOF = (* end of file *) ;
       argument §24 makes one union over
       ([carve#2227](https://github.com/markup-carve/carve/issues/2227)).
 
+   38. NODE IDENTITY IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE [CARVE-P12-060]. A
+      producer MAY return ephemeral node ids beside an AST only when the caller
+      asks for them, and MUST NOT put them in the tree: §§2, 7, 11 and 12
+      keep it closed, and two documents differing only in sidecar content are
+      the same document under §6.
+
+      THESE ARE NOT `attrs.id`. That id is what the author wrote and belongs to
+      the document; this one is machinery and belongs to the session. A
+      producer MUST NOT derive either from the other.
+
+      The sidecar validates against `resources/ast-node-identity-schema.json`.
+      `version` is 1, and each entry of `nodes` binds an `id` to a `path`, an
+      RFC 6901 pointer into the accompanying canonical AST as in §13. Both are
+      unique within a sidecar.
+
+        {"version":1,"session":"s-7f3","nodes":[{"id":"n4","path":"/children/3"}]}
+
+      THE PATH IS THE BINDING, NOT THE IDENTITY. A pointer moves when a sibling
+      is inserted before it, so it holds only for the tree the sidecar came
+      with. A producer re-emits the whole sidecar after an edit, carrying the
+      SAME `id` at the new path for a node it still recognizes; a consumer MUST
+      NOT carry a path across an edit.
+
+      AN ID THE EDIT INVALIDATED IS ABSENT, not tombstoned. A node the producer
+      no longer recognizes has no entry in the next sidecar, and that absence
+      is how a consumer learns its anchor is gone. An id is never reused for a
+      different node within one `session`.
+
+      IDS DO NOT SURVIVE A CANONICAL WRITE. Carve source has no spelling for
+      them, so a re-parse mints fresh ones, and `session` is the opaque token
+      naming the minting a sidecar belongs to: a consumer MUST NOT match ids
+      across two sidecars whose `session` values differ.
+
+      NO SPAN IS RESTATED. A node's offsets are `pos` on the node the path
+      addresses, in codepoints per §4; a second copy could disagree.
+
+      DEFAULT OUTPUT DOES NOT MOVE. An AST decoder does not accept this sidecar
+      as an AST, and an identity reader refuses a version it does not
+      implement.
+
    ============================================================================ *)

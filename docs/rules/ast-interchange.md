@@ -9,7 +9,7 @@ description: "The core serialized tree shape, source positions, and cross-implem
 
 The core serialized tree shape, source positions, and cross-implementation AST guarantees.
 
-This view contains 50 of 270 active rules. Every rule remains mandatory where applicable.
+This view contains 51 of 271 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -65,3 +65,4 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-057`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L672) | 12 | A NAMED CONTAINER IS A CALLOUT, A DIRECTIVE OR A DIV |
 | [`CARVE-P12-058`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L710) | 12 | A LINE BLOCK MAY PUBLISH ITS LINES |
 | [`CARVE-P12-059`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L735) | 12 | A CITATION IS ONLY EVER AN ITEM OF A GROUP |
+| [`CARVE-P12-060`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L763) | 12 | NODE IDENTITY IS A SEPARATE OPT-IN SIDECAR |
