@@ -513,4 +513,28 @@
       inline array, so there is nothing a profile could deny separately from
       its host. Listing it gave implementations a name that named nothing.
 
+   31. A CITATION ITEM CARRIES ITS OWN MODE -- NORMATIVE [CARVE-P12-053].
+      A `citation` MAY carry `mode`, its citation mode. Absent means
+      parenthetical. `citation_group.mode` is the AUTHORED shorthand that sets
+      it: the leading `+` after `[` is the only spelling Carve 0.1 source has,
+      and it applies to the whole group, so every item of a source-spelled
+      group carries the same value as its group.
+
+      IT SITS ON THE ITEM BECAUSE THE EXCHANGED MODEL PUTS IT THERE. Pandoc's
+      `CitationMode` is three-valued and per citation, so a `Cite` mixing an
+      author-in-text citation with a parenthetical one had no encoding while
+      the mode lived only on the group. The group keeps its field, because
+      that is what the author wrote and §3a records the document rather than a
+      rendering of it.
+
+      NO CORPUS DOCUMENT MOVES. A parse from Carve source fills every item of
+      a group identically from the group's own value, so the only trees where
+      the items differ are ones an importer or an editing API built. A
+      canonical Carve writer cannot spell such a group and reports the loss.
+
+      THE TWO CANNOT DISAGREE IN A SOURCE-SPELLED TREE, and a reader is not
+      required to check. Where they do differ the ITEM is authoritative, since
+      it is the finer statement
+      ([carve#2203](https://github.com/markup-carve/carve/issues/2203)).
+
    ============================================================================ *)

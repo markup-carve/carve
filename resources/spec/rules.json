@@ -1605,6 +1605,12 @@
       "part": "12",
       "title": "SECTIONING IS INTERCHANGE-ONLY",
       "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-053",
+      "part": "12",
+      "title": "A CITATION ITEM CARRIES ITS OWN MODE",
+      "scope": "ast-interchange"
     }
   ],
   "retired": [

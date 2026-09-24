@@ -662,6 +662,10 @@
           "type": "boolean",
           "description": "`-@key`: suppress the author in author-date mode."
         },
+        "mode": {
+          "const": "integral",
+          "description": "This item's citation mode. Set from the group's `+` shorthand, which is the only way Carve 0.1 source spells it, so every item of a source-spelled group carries the same value. Absent means parenthetical. It sits on the ITEM because the models a bridge reaches put it there - Pandoc's `CitationMode` is per citation - and a group whose items differ is reachable from an importer even though no Carve source spells one (carve#2203)."
+        },
         "number": {
           "type": "integer",
           "description": "Assigned during resolution in numbered mode."
