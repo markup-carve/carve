@@ -9,7 +9,7 @@ description: "The core serialized tree shape, source positions, and cross-implem
 
 The core serialized tree shape, source positions, and cross-implementation AST guarantees.
 
-This view contains 52 of 273 active rules. Every rule remains mandatory where applicable.
+This view contains 53 of 274 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -67,3 +67,4 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-059`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L790) | 12 | A CITATION IS ONLY EVER AN ITEM OF A GROUP |
 | [`CARVE-P12-060`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L818) | 12 | NODE IDENTITY IS A SEPARATE OPT-IN SIDECAR |
 | [`CARVE-P12-061`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L858) | 12 | A COUNT WITH NO MARKERS IS INGESTED AS THE SPAN |
+| [`CARVE-P12-062`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L884) | 12 | AN ANNOTATION RANGE IS A SEPARATE OPT-IN SIDECAR |

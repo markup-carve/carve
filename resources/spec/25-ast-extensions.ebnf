@@ -881,4 +881,42 @@
       cannot state one. Accepted: a format with no continuation cell has no
       marker to orphan, and a tree that carries markers keeps them.
 
+   40. AN ANNOTATION RANGE IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE
+      [CARVE-P12-062]. A producer MAY return annotation ranges beside an AST
+      only when the caller asks for them, and MUST NOT put them in the tree:
+      the inline tree nests and a range need not, and two documents differing
+      only in sidecar content are the same document under §6.
+
+      The sidecar validates against
+      `resources/ast-annotation-range-schema.json`. `version` is 1, and each
+      entry of `ranges` carries an `id`, a `kind`, a `start` and an `end`, and
+      MAY carry `data`, the holder's payload, which core never reads. An
+      anchor is a `path`, an RFC 6901 pointer into the accompanying canonical
+      AST as in §38, and an `offset` in codepoints per §4 from the start of
+      that node's own text.
+
+        {"version":1,"ranges":[{"id":"c-12","kind":"comment",
+        "start":{"path":"/children/3","offset":4},
+        "end":{"path":"/children/4","offset":9}}]}
+
+      RANGES OVERLAP FREELY. Two ranges may cross, and either may cross a node
+      boundary; nothing re-brackets the tree to make one nest, which is the
+      capability the sidecar exists for. `start` never follows `end` in
+      document order, and a range whose anchors are equal is the empty point a
+      cursor is.
+
+      `kind` IS AN OPEN VOCABULARY, matched by equality, and core defines no
+      member of it: a closed list would name kinds no clause renders. One core
+      did not define is globally qualified as an extension name is in §34.
+
+      AN ANCHOR THE EDIT INVALIDATED IS ABSENT, not tombstoned, exactly as §38
+      rules an id: the producer re-emits the whole sidecar against the new tree
+      and drops a range it can no longer place, and a consumer MUST NOT carry a
+      path across an edit.
+
+      ANCHORS DO NOT SURVIVE A CANONICAL WRITE, because Carve source has no
+      spelling for them. `id` is the holder's, not `attrs.id` and not a §38
+      node id, and a holder keeps it across a write the anchors do not survive
+      ([carve#2232](https://github.com/markup-carve/carve/issues/2232)).
+
    ============================================================================ *)
