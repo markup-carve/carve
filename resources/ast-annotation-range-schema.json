@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://markup-carve.github.io/carve/ast-annotation-range-schema.json",
+  "title": "Carve AST annotation-range sidecar",
+  "type": "object",
+  "required": ["version", "ranges"],
+  "properties": {
+    "version": { "const": 1 },
+    "ranges": { "type": "array", "items": { "$ref": "#/$defs/annotationRange" } }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "anchor": {
+      "type": "object",
+      "required": ["path", "offset"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^(?:|(?:/(?:[^~/]|~[01])*)+)$", "description": "PART 12 §40: RFC 6901 pointer into the accompanying canonical AST, as in §38. The binding for THIS tree only." },
+        "offset": { "type": "integer", "minimum": 0, "description": "PART 12 §40: codepoints per §4, counted from the start of the addressed node's own text." }
+      },
+      "additionalProperties": false
+    },
+    "annotationRange": {
+      "type": "object",
+      "required": ["id", "kind", "start", "end"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "description": "PART 12 §40: the holder's own id for the annotation, unique within a sidecar. Not attrs.id and not a §38 node id." },
+        "kind": { "type": "string", "minLength": 1, "description": "PART 12 §40: what the range annotates, an open vocabulary matched by equality. A kind core does not define is qualified as in §34." },
+        "start": { "$ref": "#/$defs/anchor" },
+        "end": { "$ref": "#/$defs/anchor" },
+        "data": { "type": "object", "description": "PART 12 §40: the holder's payload, opaque to core. Nothing in Carve reads it." }
+      },
+      "additionalProperties": false
+    }
+  }
+}

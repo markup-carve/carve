@@ -121,6 +121,10 @@ An anchor that has to survive an edit needs more than a pointer, because a
 pointer moves when a sibling is inserted before it. See
 [Node identity in JSON](./ast-node-identity).
 
+A range that does not nest inside the inline tree - a comment across two
+emphases, a search hit across a link boundary - is carried beside the tree too.
+See [Annotation ranges in JSON](./ast-annotation-ranges).
+
 After changing a tree:
 
 1. validate its JSON shape;

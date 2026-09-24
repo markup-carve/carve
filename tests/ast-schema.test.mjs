@@ -1300,3 +1300,114 @@ test('PART 12 §35 defines the title field a directive declares', () => {
       'and the clause has to say whose rule it follows.',
   )
 })
+
+/** The annotation-range sidecar schema, read fresh so no test mutates another's copy. */
+function rangeSchema() {
+  return JSON.parse(readFileSync(resolve(root, 'resources/ast-annotation-range-schema.json'), 'utf8'))
+}
+
+/** The text of PART 12 §40, the clause that defines the annotation-range sidecar. */
+function rangeClause() {
+  const grammar = readFileSync(resolve(root, 'resources/grammar.ebnf'), 'utf8')
+  const start = grammar.indexOf('   40. AN ANNOTATION RANGE IS A SEPARATE OPT-IN SIDECAR')
+  assert.notEqual(start, -1, 'PART 12 §40 is not where this test looks for it')
+  const end = grammar.indexOf('\n   ==========', start)
+  assert.notEqual(end, -1, 'PART 12 §40 has no PART terminator after it')
+  return grammar.slice(start, end)
+}
+
+test('an annotation range is a separate closed versioned sidecar', () => {
+  const validateRanges = new Ajv2020({ strict: true }).compile(rangeSchema())
+  const range = {
+    id: 'comment-12',
+    kind: 'comment',
+    start: { path: '/children/3', offset: 4 },
+    end: { path: '/children/4', offset: 9 },
+  }
+  const sidecar = { version: 1, ranges: [range] }
+  assert.equal(validateRanges(sidecar), true, JSON.stringify(validateRanges.errors))
+  // The crossing range is the point of the shape: two anchors, different nodes.
+  assert.equal(validateRanges({ version: 1, ranges: [range, { ...range, id: 'hit-1', kind: 'search' }] }), true)
+  assert.equal(validateRanges({ ...sidecar, version: 2 }), false, 'an unimplemented version validated')
+  assert.equal(validateRanges({ ...sidecar, unknown: true }), false, 'an unnamed root property validated')
+  assert.equal(validateRanges({ ranges: [] }), false, 'a sidecar with no version validated')
+  assert.equal(validateRanges({ version: 1, ranges: [{ ...range, kind: undefined }] }), false, 'a range with no kind validated')
+  assert.equal(validateRanges({ version: 1, ranges: [{ ...range, start: { path: '/children/3' } }] }), false, 'an anchor with no offset validated')
+  assert.equal(validateRanges({ version: 1, ranges: [{ ...range, end: { path: '/children/4', offset: -1 } }] }), false, 'a negative offset validated')
+  // §40 restates no span: the anchor is a path and an offset, not a byte range.
+  assert.equal(
+    validateRanges({ version: 1, ranges: [{ ...range, start: { path: '/children/3', offset: 4, startByte: 0 } }] }),
+    false,
+    'an anchor restating a byte validated',
+  )
+})
+
+test('an annotation range is not a field of the tree', () => {
+  // §40's first sentence from the tree's side: the ranges stay outside the AST,
+  // so §6 equality holds with and without a sidecar and an ordinary consumer
+  // pays nothing. §11 rejects an unnamed property - this asserts it reaches the
+  // names an implementer would reach for first.
+  const bare = { type: 'document', children: [], srcByteLength: 0 }
+  assert.equal(validate(bare), true, firstErrors())
+  assert.equal(validate({ ...bare, ranges: [] }), false, 'a root carrying ranges validated')
+  assert.equal(validate({ ...bare, annotationRanges: {} }), false, 'a root carrying annotationRanges validated')
+  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
+  assert.equal(
+    validate({ ...bare, srcByteLength: 1, children: [{ type: 'paragraph', children: [], ranges: [], pos }] }),
+    false,
+    'a node carrying ranges validated',
+  )
+})
+
+test('every property the annotation-range schema declares is defined in PART 12 §40', () => {
+  const clause = rangeClause()
+  const schemaDoc = rangeSchema()
+  const declared = [
+    ...Object.keys(schemaDoc.properties),
+    ...Object.keys(schemaDoc.$defs.annotationRange.properties),
+    ...Object.keys(schemaDoc.$defs.anchor.properties),
+  ]
+  const undefinedHere = declared.filter((name) => !namedInClause(clause, name)).sort()
+  assert.deepEqual(
+    undefinedHere,
+    [],
+    `the annotation-range schema declares propert(ies) PART 12 §40 does not define: ${undefinedHere.join(', ')}. ` +
+      'A declared field with no clause cannot be implemented. Define it in §40.',
+  )
+})
+
+test('every property the annotation-range schema declares carries a description', () => {
+  const schemaDoc = rangeSchema()
+  const entries = [
+    ...Object.entries(schemaDoc.properties),
+    ...Object.entries(schemaDoc.$defs.annotationRange.properties),
+    ...Object.entries(schemaDoc.$defs.anchor.properties),
+  ]
+  const bare = entries
+    .filter(([name, subschema]) => !['version', 'ranges', 'start', 'end'].includes(name) && typeof subschema.description !== 'string')
+    .map(([name]) => name)
+    .sort()
+  assert.deepEqual(
+    bare,
+    [],
+    `annotation-range schema propert(ies) carry no description: ${bare.join(', ')}. ` +
+      'The schema is published on its own, so a consumer reading only the schema needs the pointer to §40.',
+  )
+})
+
+test('PART 12 §40 settles the four points carve#2232 left open', () => {
+  const clause = rangeClause()
+  const unsettled = [
+    ['the anchor form', 'RFC 6901'],
+    ['what an edit invalidates', 'not tombstoned'],
+    ['the kind vocabulary', 'OPEN VOCABULARY'],
+    ['a canonical write', 'DO NOT SURVIVE A CANONICAL WRITE'],
+  ].filter(([, phrase]) => !clause.includes(phrase))
+  assert.deepEqual(
+    unsettled.map(([what]) => what),
+    [],
+    'PART 12 §40 leaves open: ' +
+      `${unsettled.map(([what]) => what).join(', ')}. The ruling on carve#2234 ` +
+      'requires each to be settled with the schema and said in the clause.',
+  )
+})
