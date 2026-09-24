@@ -1653,6 +1653,12 @@
       "part": "12",
       "title": "NODE IDENTITY IS A SEPARATE OPT-IN SIDECAR",
       "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-061",
+      "part": "12",
+      "title": "A COUNT WITH NO MARKERS IS INGESTED AS THE SPAN",
+      "scope": "ast-interchange"
     }
   ],
   "retired": [

@@ -1193,3 +1193,45 @@ test('a citation is only ever an item of a group', () => {
     false,
   )
 })
+
+/** The text of PART 12 §39, the clause that rules a count with no markers. */
+function countOnlyClause() {
+  const grammar = readFileSync(resolve(root, 'resources/grammar.ebnf'), 'utf8')
+  const start = grammar.indexOf('   39. A COUNT WITH NO MARKERS IS INGESTED AS THE SPAN')
+  assert.notEqual(start, -1, 'PART 12 §39 is not where this test looks for it')
+  const end = grammar.indexOf('\n   ==========', start)
+  assert.notEqual(end, -1, 'PART 12 §39 has no PART terminator after it')
+  return grammar.slice(start, end)
+}
+
+test('a count with no continuation cell is a shape the schema admits', () => {
+  // §39 rules the DECODER, not the wire shape: an HTML or Pandoc bridge's tree
+  // carries the counts and no markers, and the schema has to let it through for
+  // a reader to derive the covered positions from it (carve#2240). A schema
+  // that refused this shape would make the clause unreachable.
+  const cell = (extra) => ({ type: 'table_cell', header: false, children: [], ...extra })
+  const doc = (cells) => ({
+    type: 'document',
+    srcByteLength: 1,
+    children: [{ type: 'table', rows: [{ type: 'table_row', cells }] }],
+  })
+
+  assert.equal(validate(doc([cell({ colspan: 2, rowspan: 2 })])), true, firstErrors())
+  // And the shape a producer writes, counts beside the markers, still validates.
+  assert.equal(
+    validate(doc([cell({ colspan: 2 }), cell({ span: 'colspan' })])),
+    true,
+    firstErrors(),
+  )
+})
+
+test('PART 12 §39 names the three fields whose precedence it settles', () => {
+  const clause = countOnlyClause()
+  const missing = ['colspan', 'rowspan', 'span'].filter((name) => !clause.includes('`' + name + '`'))
+  assert.deepEqual(
+    missing,
+    [],
+    `PART 12 §39 decides which of the counts and the markers wins, and does not name: ${missing.join(', ')}. ` +
+      'An implementer reading the clause has to see the field the rule is about.',
+  )
+})
