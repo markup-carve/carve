@@ -901,6 +901,36 @@ union IS the enforcement - narrowing it is what lets §12(d) answer, rather than
 adding a sixth leniency list beside it
 ([carve#2189](https://github.com/markup-carve/carve/issues/2189)).
 
+## A spanning cell publishes its resolved extent
+
+The continuation cells say what the author wrote. The origin cell says what it
+means:
+
+```
+| a | < | b |
+| ^ | c | d |
+```
+
+Cell `a` carries `colspan: 2` and `rowspan: 2`; the `<` and `^` cells keep their
+`span` and carry no count. Absent means 1, and an ingested 1 is normalized away
+for the reason §22 gives for a list's `start`.
+
+**The markers stay.** §3a records the document rather than a rendering of it, so
+the counts are added alongside the authored construct - the same rule that lets a
+resolved reference keep `ref` and `rawRef` beside `href`.
+
+**A marker that found no origin contributes nothing.** The span walk is a total
+function: a `^` in the first row, a `<` in the first column, or a marker whose
+every intermediate position is consumed renders as an empty cell and extends
+nobody, so no count moves. That marker is still published, still carrying `span`.
+
+It is published for §5's reason, and it is the strongest case §5 has. Recomputing
+it means reimplementing `T5 SPAN WALK [CARVE-P9-002]`, a normative total function
+with an orphan case and a blocked case, in every consumer that renders HTML or
+reaches a table model with integer spans. Unlike a generated heading id, a wrong
+answer changes the shape of the table rather than the text of one anchor
+([carve#2190](https://github.com/markup-carve/carve/issues/2190)).
+
 ## A reference node carries its target
 
 A node whose whole purpose is to point at something names what it points at,

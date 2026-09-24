@@ -2904,6 +2904,16 @@
           ],
           "description": "Set by a `^` (rowspan) or `<` (colspan) continuation cell."
         },
+        "colspan": {
+          "type": "integer",
+          "minimum": 2,
+          "description": "Resolved number of columns this cell occupies, from the span walk of PART 9 §13 T5. Published on the ORIGIN cell, alongside the `<` markers that extended it rather than instead of them. Absent means 1, and an ingested 1 is normalized away (PART 12 §22)."
+        },
+        "rowspan": {
+          "type": "integer",
+          "minimum": 2,
+          "description": "Resolved number of rows this cell occupies, from the span walk of PART 9 §13 T5. Published on the ORIGIN cell, alongside the `^` markers that extended it rather than instead of them. Absent means 1, and an ingested 1 is normalized away (PART 12 §22)."
+        },
         "align": {
           "enum": [
             "left",
