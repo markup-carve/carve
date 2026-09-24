@@ -9,7 +9,7 @@ description: "Canonical Carve source, Markdown and plain-text targets, round tri
 
 Canonical Carve source, Markdown and plain-text targets, round trips, and escaping.
 
-This view contains 46 of 264 active rules. Every rule remains mandatory where applicable.
+This view contains 46 of 265 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -42,22 +42,22 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P11-044`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L607) | 11 | M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX HEADING |
 | [`CARVE-P11-025`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L2) | 11 | THE MARKDOWN TARGET'S AUTHORED ESCAPE NARROWS TOO |
 | [`CARVE-P11-045`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L72) | 11 | THE MARKDOWN TARGET USES RICH-TEXT DELIMITERS WHERE THEY READ BACK |
-| [`CARVE-P11-026`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L106) | 11 | THE MARKDOWN TARGET'S HARD BREAK |
-| [`CARVE-P11-027`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L122) | 11 | A LIST ITEM'S CONTINUATION LINES ARE ALIGNED |
-| [`CARVE-P11-028`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L134) | 11 | AN UNUSED DEFINITION SURVIVES THE NON-HTML TARGETS |
-| [`CARVE-P11-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L161) | 11 | A TABLE ROW KEEPS ITS OWN CELL COUNT |
-| [`CARVE-P11-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L176) | 11 | ADJACENT BLOCKS THAT WOULD MERGE KEEP THE CONTINUATION MARKER |
-| [`CARVE-P11-031`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L190) | 11 | MULTIPLE CARVE HEADER ROWS SURVIVE THE MARKDOWN TARGET |
-| [`CARVE-P11-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L203) | 11 | A PRESENTATION TARGET KEEPS A CAPTION, A FENCE TITLE AND A FENCE LABEL |
-| [`CARVE-P11-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L269) | 11 | A REFERENCED ABBREVIATION DEFINITION SPLITS BY TARGET |
-| [`CARVE-P11-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L327) | 11 | A COMPOSITE FIGURE SURVIVES EVERY TARGET |
-| [`CARVE-P11-035`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L371) | 11 | THE PLAIN-TEXT TARGET PRESERVES LIST DEPTH |
-| [`CARVE-P11-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L379) | 11 | A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES |
-| [`CARVE-P11-037`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L404) | 11 | AN UNSPELLABLE BLOCK DOES NOT CANCEL THE ADJACENCY IT CANNOT SPELL |
-| [`CARVE-P11-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L451) | 11 | THE MARKDOWN TARGET'S CROSS-REFERENCES |
+| [`CARVE-P11-026`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L110) | 11 | THE MARKDOWN TARGET'S HARD BREAK |
+| [`CARVE-P11-027`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L126) | 11 | A LIST ITEM'S CONTINUATION LINES ARE ALIGNED |
+| [`CARVE-P11-028`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L138) | 11 | AN UNUSED DEFINITION SURVIVES THE NON-HTML TARGETS |
+| [`CARVE-P11-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L165) | 11 | A TABLE ROW KEEPS ITS OWN CELL COUNT |
+| [`CARVE-P11-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L180) | 11 | ADJACENT BLOCKS THAT WOULD MERGE KEEP THE CONTINUATION MARKER |
+| [`CARVE-P11-031`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L194) | 11 | MULTIPLE CARVE HEADER ROWS SURVIVE THE MARKDOWN TARGET |
+| [`CARVE-P11-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L207) | 11 | A PRESENTATION TARGET KEEPS A CAPTION, A FENCE TITLE AND A FENCE LABEL |
+| [`CARVE-P11-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L273) | 11 | A REFERENCED ABBREVIATION DEFINITION SPLITS BY TARGET |
+| [`CARVE-P11-034`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L331) | 11 | A COMPOSITE FIGURE SURVIVES EVERY TARGET |
+| [`CARVE-P11-035`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L375) | 11 | THE PLAIN-TEXT TARGET PRESERVES LIST DEPTH |
+| [`CARVE-P11-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L383) | 11 | A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES |
+| [`CARVE-P11-037`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L408) | 11 | AN UNSPELLABLE BLOCK DOES NOT CANCEL THE ADJACENCY IT CANNOT SPELL |
+| [`CARVE-P11-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L455) | 11 | THE MARKDOWN TARGET'S CROSS-REFERENCES |
 | [`CARVE-P11-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L259) | 11 | A RESOLUTION RESULT ABOUT THE WRAPPER IS NOT CONTENT OF IT |
 | [`CARVE-P11-040`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L472) | 11 | AN EMPTY DESCRIPTION BODY IS WRITTEN WITH THE SENTINEL `{empty}` |
 | [`CARVE-P11-041`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L191) | 11 | A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE |
 | [`CARVE-P11-042`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L515) | 11 | A BLOCK THAT OPENS A TIGHT ITEM IS WRITTEN ON THE MARKER LINE |
-| [`CARVE-P11-043`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L427) | 11 | THE ROUND-TRIP COMPARISON NORMALIZES A NAMED LIST |
+| [`CARVE-P11-043`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L431) | 11 | THE ROUND-TRIP COMPARISON NORMALIZES A NAMED LIST |
 | [`CARVE-P12-045`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L297) | 12 | `fmt` WRITES THE SOURCE SPELLING, NOT `blockImage` |

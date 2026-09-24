@@ -80,6 +80,14 @@ ordinary attributed span. A conversion API with diagnostics should report that
 the distinction was lost. Exporters may map it to a corresponding construct.
 The node does not imply uppercasing or other text changes.
 
+A `ruby` inline node carries an ordered, non-empty `pairs` array. Each pair has
+a non-empty inline `base` and an inline `annotation`, which may be empty. This
+keeps per-character and grouped readings without guessing from string lengths.
+Carve 0.1 source has no ruby spelling. HTML and Markdown render native `<ruby>`;
+plain, ANSI and canonical Carve output use `base(annotation)`, with checked
+rendering reporting `ruby-flattened`. Outer attributes stay on `<ruby>` or on
+the attributed span used by the Carve fallback.
+
 A `math` node may carry an authored numbering `label`, such as `Equation` or
 `Eq.`. Resolution leaves the label in place and gives a labeled display equation
 a positive integer `number` from the same label bucket used by captions, unless

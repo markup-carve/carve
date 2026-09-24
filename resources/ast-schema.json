@@ -1448,6 +1448,7 @@
             "math",
             "mention",
             "raw_inline",
+            "ruby",
             "small_caps",
             "smart_punctuation",
             "soft_break",
@@ -1823,6 +1824,21 @@
           },
           "then": {
             "$ref": "#/$defs/raw_inline"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "ruby"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/ruby"
           }
         },
         {
@@ -2709,6 +2725,58 @@
         },
         "pos": {
           "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ruby": {
+      "type": "object",
+      "title": "ruby (inline)",
+      "description": "An interchange-only ruby annotation. Carve 0.1 source has no spelling for the paired base and annotation structure.",
+      "required": [
+        "type",
+        "pairs"
+      ],
+      "properties": {
+        "type": {
+          "const": "ruby"
+        },
+        "pairs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/rubyPair"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rubyPair": {
+      "type": "object",
+      "title": "ruby base/annotation pair",
+      "required": [
+        "base",
+        "annotation"
+      ],
+      "properties": {
+        "base": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "annotation": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
         }
       },
       "additionalProperties": false

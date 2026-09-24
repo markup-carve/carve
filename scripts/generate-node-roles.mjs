@@ -62,6 +62,10 @@ function membersOf(node) {
 
 /** A plain record position: an inline object schema with properties and no `type`. */
 function isRecord(node) {
+  if (node !== null && typeof node === 'object' && typeof node.$ref === 'string') {
+    const target = defs[node.$ref.replace('#/$defs/', '')]
+    return target !== undefined && isRecord(target)
+  }
   return (
     node !== null &&
     typeof node === 'object' &&
