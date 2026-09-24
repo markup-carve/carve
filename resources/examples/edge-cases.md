@@ -3381,12 +3381,12 @@ Check if (x < 5) holds, and 3<4 too.
 
 ## Boolean attributes
 
-A bare word in a `{…}` block (no `#` / `.` / `=`) is a boolean attribute. It
-has the same empty-string AST value as `name=""` and normally renders
-`name=""`. It works in any attribute position and mixes with id / class /
-key=value. The three core semantic span names are the exception: on
-`[content]{attrs}` they select their semantic wrapper. Four more names do so
-when the SemanticSpan extension is enabled.
+A bare word in a `{…}` block (no `#` / `.` / `=`) is a value-less boolean
+attribute. In the AST it has the same empty-string value as `name=""`, and it
+normally renders `name=""`. It works in any attribute position and mixes
+with id / class / key=value. The three core semantic span names are the
+exception: on `[content]{attrs}` they select their semantic wrapper. Four more
+names do so when the SemanticSpan extension is enabled.
 
 ::: compare
 

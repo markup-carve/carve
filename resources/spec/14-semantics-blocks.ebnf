@@ -603,10 +603,10 @@
           when mixed with valid attributes (`{.ok .1}`), so the run stays
           literal. No other leading character is newly accepted.
           A digit/`-`/`_` AFTER the first character is valid (`{.a1}`).
-      BOOLEAN ATTRIBUTES -- NORMATIVE [CARVE-P9-022]. A bare identifier with no
-      written value (`[text]{featured}`, `{.note open}`, `{disabled}` on a block
-      line) is a boolean attribute. It has the same empty-string AST value as
-      `name=""` and renders `name=""`. It is matched after the
+      BOOLEAN ATTRIBUTES -- NORMATIVE [CARVE-P9-022]. A bare identifier
+      (`[text]{featured}`, `{.note open}`, `{disabled}` on a block line) is a
+      value-less boolean attribute in source. It has the same empty-string AST
+      value as `name=""` and renders `name=""`. It is matched after the
       `key_value_attribute` form (so `k=v` stays a key/value) and mixes freely
       with id/class/key=value in source order; multiple are allowed; a
       digit-first bare word is not a valid name (the block stays literal, as for
