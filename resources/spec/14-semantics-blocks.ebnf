@@ -549,8 +549,10 @@
         endnotes placement (§16), and HeadingNumbers all resolve
         against the SLUG rather than against the element that carries
         it, so they behave identically under either setting. The option
-        is HTML-only: no other render target emits `<section>`, and the
-        AST has no `section` node for it to affect (PART 12).
+        is HTML-only: no other render target emits `<section>`. It does
+        not reach PART 12 §30's interchange `section` node, which is
+        content rather than a wrapper derived from a heading run, and
+        which HTML emits under either setting.
       - The two-pass id resolution (collect explicit ids first, then
         auto-slug headings with collision-dedup) is unaffected by this
         rule -- only the EMISSION site of the id moves from <h*> to

@@ -417,6 +417,24 @@
       for `table_cell.blocks` on the PART 11 §1d channel, the way it already
       reports `shortCaption` and a `figure` wrapping a `table`.
 
+      HTML PUTS THE BLOCKS IN THE CELL, as flow content in the `<td>` or `<th>`
+      under the ordinary block rules. The cell's own fields are unaffected.
+
+      THE THREE LINE-ORIENTED TARGETS FLATTEN. Markdown, plain and ANSI each
+      write a cell on ONE LINE, so `blocks` reaches an inline-only slot and
+      flattens under PART 11 §1b: each block's inline content in document order,
+      separated by one space where both sides contribute a token. A list
+      contributes its items' inline content in item order and no markers; a code
+      block contributes its payload with each newline becoming one space. ANSI
+      styles the flattened inlines as usual and adds no block decoration.
+
+        table_cell{ blocks: [ p "one", p "two" ] }  ->  | one two |
+
+      THE FLATTEN IS REPORTED, once per flattened cell, as `field-unspellable`
+      for `table_cell.blocks` on the PART 11 §1d channel. It dissolves a block
+      boundary rather than dropping a wrapper, which is why it is reported where
+      a lost wrapper is not, and it is NOT a render loss.
+
       WHY A SECOND FIELD RATHER THAN A WIDER `children`. Widening the inline
       list to admit blocks changes the COMMON case for every consumer and
       every engine, and puts inline and block content in one array where a
@@ -499,6 +517,20 @@
       contains one, and a canonical Carve writer flattens one back to its
       headings and reports `structure-unspellable` for `section` on the PART 11
       §1d channel.
+
+      HTML EMITS ONE `<section>`, merging `attrs` under the ordinary
+      block-element rules and rendering `children` as blocks. Markdown, plain and
+      ANSI emit `children` in document order with no wrapper and report nothing:
+      the wrapper is gone and every block is intact. `level` renders on NO
+      target. It records what the source format stated, and the heading inside
+      the section is what a reader sees.
+
+      THE DERIVED WRAPPER DOES NOT DOUBLE. PART 9 §13 walks TOP-LEVEL blocks and
+      a `section` is a container, so a heading inside one is not top-level: it
+      emits no derived `<section>` and keeps its id on the `<h*>`, exactly as a
+      heading in a blockquote or a div does. A reader sees ONE wrapper, the
+      authored one, whether §13's `sections` option is on or off, and a fragment
+      URL resolves to the heading's id the way it does under `sections: false`.
 
       IT EXISTS BECAUSE THE FORMATS ON THE OTHER SIDE OF A BRIDGE HAVE IT.
       HTML5 `section`, JATS `sec`, DocBook `section`, DITA and TEI all carry
