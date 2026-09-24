@@ -1156,6 +1156,14 @@ document still carries `admonition` with kind `footnotes`. `not` arrives on
 `directive`. Until then the split is a rule the schema states and does not check
 ([carve#2195](https://github.com/markup-carve/carve/issues/2195)).
 
+**A directive may carry a `title`.** The opener admits a quoted title on every
+named container, so `::: toc "Contents"` spells one. `directive.title` is
+optional and holds the quoted text as authored inline content, exactly as
+`admonition.title` does. The dispatch does not move - the kind alone still
+decides the type - and what a target renders for a titled directive is
+`admonition`'s existing rule
+([carve#2247](https://github.com/markup-carve/carve/issues/2247)).
+
 ## A line block may publish its lines
 
 `line_block.children` holds the blocks; `lines` says where each stanza's lines
