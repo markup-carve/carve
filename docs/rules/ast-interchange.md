@@ -53,8 +53,8 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-044`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L284) | 12 | AN INGESTED `blockImage` VALUE IS AUTHORITATIVE |
 | [`CARVE-P12-046`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L310) | 12 | A CHILDREN ARRAY HOLDS ONLY A CONTENT BLOCK |
 | [`CARVE-P12-047`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L339) | 12 | A REFERENCE NODE CARRIES ITS TARGET |
-| [`CARVE-P12-048`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L353) | 12 | A SPANNING CELL PUBLISHES ITS RESOLVED EXTENT |
-| [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L388) | 12 | A TABLE CELL MAY CARRY BLOCK CONTENT INSTEAD OF INLINE |
-| [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L420) | 12 | SMALL CAPS SURVIVE INTERCHANGE |
-| [`CARVE-P12-051`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L443) | 12 | A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER |
-| [`CARVE-P12-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L473) | 12 | SECTIONING IS INTERCHANGE-ONLY |
+| [`CARVE-P12-048`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L368) | 12 | A SPANNING CELL PUBLISHES ITS RESOLVED EXTENT |
+| [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L403) | 12 | A TABLE CELL MAY CARRY BLOCK CONTENT INSTEAD OF INLINE |
+| [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L435) | 12 | SMALL CAPS SURVIVE INTERCHANGE |
+| [`CARVE-P12-051`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L458) | 12 | A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER |
+| [`CARVE-P12-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L488) | 12 | SECTIONING IS INTERCHANGE-ONLY |

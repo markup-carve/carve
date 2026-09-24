@@ -994,6 +994,18 @@ label. Resolution results stay optional as §5 has them: `number` arrives when t
 document resolves the reference and is absent when nothing does
 ([carve#2193](https://github.com/markup-carve/carve/issues/2193)).
 
+**And it is spelled `label`**, the name its definition uses. The pair used to
+disagree - a `footnote` carried `label`, a `footnote_ref` carried `id` for the
+identical string. `label` is the settled half: §7 renamed `footnote.id` to it,
+and `link_reference_definition` spells it the same way, so the reference is what
+moves. `id` was the worse of the two names here anyway, because every node also
+carries `attrs.id` - an authored `{#x}`, not a lookup key - so one name stood for
+two unrelated values on the same object.
+
+An engine may keep decoding `id` on ingest. That is §11's narrow exception
+unchanged, and `footnote.id` is the case the clause was written for. It covers
+reading a stored tree; a producer emits `label`.
+
 ## What is not in it
 
 Formatter-internal nodes (PART 11, and the `raw_text` case the profiles

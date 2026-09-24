@@ -1211,18 +1211,18 @@
     "footnote_ref": {
       "type": "object",
       "title": "footnote_ref (inline)",
-      "description": "A reference to a definition. Split from `inline_footnote` because a profile has to be able to deny one without the other (carve#405).",
+      "description": "A reference to a definition. Split from `inline_footnote` because a profile has to be able to deny one without the other (carve#405). The label is spelled `label`, the same name its `footnote` definition uses; an engine that once published `id` may keep decoding that property onto this field under PART 12 section 11's narrow exception (carve#2193).",
       "required": [
         "type",
-        "id"
+        "label"
       ],
       "properties": {
         "type": {
           "const": "footnote_ref"
         },
-        "id": {
+        "label": {
           "type": "string",
-          "description": "Reference label of `[^label]`, matched against the document's `footnote` definitions."
+          "description": "Reference label of `[^label]`, matched against the document's `footnote` definitions by the same string that node carries in its own `label`."
         },
         "number": {
           "type": "integer",
