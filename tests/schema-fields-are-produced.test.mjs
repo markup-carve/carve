@@ -67,6 +67,8 @@ const OPT_IN_ONLY = {
 const ENGINE_ROLLOUT_PENDING = {
   'figure.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
   'table.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
+  'table_cell.colspan': 'resolved span (carve#2190): the schema names it before the engines publish it. Delete both entries in the commit that moves the pin to a build that does',
+  'table_cell.rowspan': 'resolved span (carve#2190): the schema names it before the engines publish it. Delete both entries in the commit that moves the pin to a build that does',
 }
 
 /**

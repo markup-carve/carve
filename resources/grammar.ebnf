@@ -10916,4 +10916,39 @@ EOF = (* end of file *) ;
       absent when nothing does
       ([carve#2193](https://github.com/markup-carve/carve/issues/2193)).
 
+   26. A SPANNING CELL PUBLISHES ITS RESOLVED EXTENT -- NORMATIVE [CARVE-P12-048].
+      A `table_cell` that the span walk of PART 9 §13 T5 extended carries
+      `colspan`, `rowspan`, or both: the number of columns and rows the cell
+      occupies once every `<` and `^` marker that reached it has been consumed.
+      They sit on the ORIGIN cell. Absent means 1, and an ingested 1 is
+      normalized away on the reasoning §22 gives for a list's `start`.
+
+      THE MARKERS STAY. A continuation cell keeps its `span`, because that is
+      what the author wrote and §3a records the document rather than a
+      rendering of it. The counts are ADDED ALONGSIDE, the same rule that lets
+      a resolved reference keep `ref` and `rawRef` beside `href` and a resolved
+      footnote reference keep its label beside its number (§5).
+
+      A MARKER THAT FOUND NO ORIGIN CONTRIBUTES NOTHING. T5 is a total
+      function: a `^` in the first row, a `<` in the first column, or a marker
+      every intermediate position of which is consumed renders as an empty
+      cell and extends nobody, so no cell's count moves. The marker is still
+      published, still carrying `span`.
+
+      WHY IT IS PUBLISHED AT ALL. §5 serializes a resolution result a consumer
+      could recompute whenever recomputing it means reimplementing the
+      resolution rules, and names a generated heading id, a footnote number and
+      a caption number for that reason. The span walk is the largest of the
+      set: a NORMATIVE total function with an orphan case and a blocked case,
+      which every consumer that renders HTML or reaches a table model with
+      integer spans would otherwise implement again, separately, from prose.
+      Two consumers doing that is the divergence this part exists to prevent -
+      and unlike a heading id, a wrong answer here silently changes the shape
+      of the table rather than the text of one anchor.
+
+      THE COUNT IS NOT A SECOND SPELLING OF THE MARKERS. A payload whose
+      counts contradict its markers is invalid, in the sense §11 means: the
+      walk is a function of the markers, so the two cannot disagree in a tree
+      any producer built. A reader is not required to re-run the walk to check.
+
    ============================================================================ *)

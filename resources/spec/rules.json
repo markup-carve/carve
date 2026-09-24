@@ -1569,6 +1569,12 @@
       "part": "12",
       "title": "A REFERENCE NODE CARRIES ITS TARGET",
       "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-048",
+      "part": "12",
+      "title": "A SPANNING CELL PUBLISHES ITS RESOLVED EXTENT",
+      "scope": "ast-interchange"
     }
   ],
   "retired": [
