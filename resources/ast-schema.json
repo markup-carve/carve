@@ -2256,11 +2256,17 @@
         },
         "lines": {
           "type": "array",
-          "description": "The block's LINES, each one an inline sequence. Absent means the lines are whatever splitting `children` on `hard_break` yields, which is what every consumer did before this field and is ambiguous: an authored hard break inside a verse line and a line boundary are the same node, so the split is right only because nothing else produces a `hard_break` there - an invariant no clause states. Present, it settles the question, and a hard break inside a line stays a hard break. Preserved indentation is a leading run of U+E000 per line either way (carve#2202).",
+          "description": "PART 12 §36: the block's LINES as RANGES, parallel to `children` - entry `i` holds the lines of the stanza `children[i]`, so `lines` never spans a stanza. Each entry is an array of RFC 6901 pointers relative to that stanza, one per line and in document order, naming where the line STOPS: the `hard_break` that closes it, or `/children/-`, the past-the-end pointer, for the last line. Line `n` is the content between pointer `n-1` and pointer `n`, excluding both, so a run spanning a boundary is neither re-bracketed nor duplicated. A `hard_break` no pointer names is authored content. Absent means the lines are whatever splitting `children` on `hard_break` yields, which over-counts a trailing break and under-counts a boundary inside a run (carve#2235).",
           "items": {
             "type": "array",
+            "minItems": 1,
+            "contains": {
+              "const": "/children/-"
+            },
+            "maxContains": 1,
             "items": {
-              "$ref": "#/$defs/inlineNode"
+              "type": "string",
+              "pattern": "^(?:/(?:[^~/]|~[01])*)+$"
             }
           }
         },
@@ -2272,7 +2278,7 @@
         }
       },
       "additionalProperties": false,
-      "description": "Verse, addresses and anything else whose line breaks are content. `children` carries the blocks as every consumer already reads them; `lines` carries the same content as the lines it actually is, added alongside rather than instead (PART 12 §5)."
+      "description": "Verse, addresses and anything else whose line breaks are content. `children` carries the blocks as every consumer already reads them; `lines` says where each stanza's lines begin and end, added alongside rather than instead (PART 12 §5)."
     },
     "link": {
       "type": "object",

@@ -64,7 +64,7 @@ const OPT_IN_ONLY = {
   'directive.*':
     'carve#2195 splits `directive` out of `admonition`; the pinned build publishes neither the type nor its fields yet',
   'line_block.lines':
-    'the derived line split, published alongside `children` (carve#2202): the pinned build does not emit it yet',
+    'the per-stanza line ranges, published alongside `children` (carve#2235): the pinned build does not emit them yet',
   'section.*':
     'sectioning (interchange-only): sectioning is implicit in heading level, so no Carve 0.1 source spells a section and no corpus document can produce one (carve#2207)',
   'citation_definition.*':

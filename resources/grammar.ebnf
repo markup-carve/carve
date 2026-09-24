@@ -11351,29 +11351,40 @@ EOF = (* end of file *) ;
       ([carve#2195](https://github.com/markup-carve/carve/issues/2195)).
 
    36. A LINE BLOCK MAY PUBLISH ITS LINES -- NORMATIVE [CARVE-P12-058]. A
-      `line_block` MAY carry `lines`, an array whose entries are the block's
-      LINES, each one an inline sequence. `children` is unchanged and still
+      `line_block` MAY carry `lines`, parallel to `children`: entry `i` holds
+      the LINES of the stanza `children[i]`. `children` is unchanged and still
       required.
 
-      ABSENT, THE LINES ARE WHAT SPLITTING `children` ON `hard_break` YIELDS.
-      That is what every consumer did before this field, and it is ambiguous:
-      an authored hard break inside a verse line and a line boundary are the
-      SAME NODE, so the split is correct only because nothing else produces a
-      `hard_break` there - an invariant no clause states and none could,
-      since a line block's content is ordinary inline content.
+      A LINE IS A RANGE, NOT A SEQUENCE. Each entry is an array of RFC 6901
+      pointers relative to its stanza, one per line and in document order,
+      naming where that line STOPS: the `hard_break` that closes it, or
+      `/children/-`, the past-the-end pointer, for the last line. Line `n` is
+      the content between pointer `n-1` and pointer `n`, excluding both, so a
+      run spanning a boundary is neither re-bracketed nor duplicated and no
+      half is synthesized.
 
-      PRESENT, IT SETTLES THE QUESTION, and a hard break inside a line stays a
-      hard break. This is §5's added-alongside rule: the derived reading is
-      published beside the authored construct rather than replacing it, the
-      same way a resolved reference keeps `ref` and `rawRef` beside `href`.
+      A `hard_break` NO POINTER NAMES IS AUTHORED CONTENT. Below, the boundary
+      sits inside the `strong` and the trailing `\` closes nothing, so the
+      stanza has two lines and publishes
+      `"lines": [["/children/0/children/1", "/children/-"]]`:
+
+        ::: |
+        *Roses are red
+        Violets are blue*\
+        :::
+
+      `lines` DOES NOT SPAN STANZAS. A blank line ends a stanza, `children`
+      keeps that boundary, and no line crosses one, so a consumer reading one
+      entry is reading one stanza's lines.
 
       PRESERVED INDENTATION IS UNAFFECTED. A leading run of U+E000 is per line
       either way, and §4's sentinel rule governs it unchanged.
 
-      THE TWO CANNOT DISAGREE in a tree a parser produced, and a reader is not
-      required to check. Where a producer publishes both, `lines` is the finer
-      statement
-      ([carve#2202](https://github.com/markup-carve/carve/issues/2202)).
+      ABSENT, THE LINES ARE WHAT SPLITTING `children` ON `hard_break` YIELDS,
+      which over-counts a trailing break and under-counts a boundary inside a
+      run. Where both are present they cannot disagree in a tree a parser
+      produced, and `lines` is the finer statement
+      ([carve#2235](https://github.com/markup-carve/carve/issues/2235)).
 
    37. A CITATION IS ONLY EVER AN ITEM OF A GROUP -- NORMATIVE [CARVE-P12-059].
       The inline dispatch does NOT name `citation`. The type stays declared,
