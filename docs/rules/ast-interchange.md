@@ -9,7 +9,7 @@ description: "The core serialized tree shape, source positions, and cross-implem
 
 The core serialized tree shape, source positions, and cross-implementation AST guarantees.
 
-This view contains 45 of 265 active rules. Every rule remains mandatory where applicable.
+This view contains 46 of 266 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -60,3 +60,4 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L488) | 12 | SECTIONING IS INTERCHANGE-ONLY |
 | [`CARVE-P12-053`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L516) | 12 | A CITATION ITEM CARRIES ITS OWN MODE |
 | [`CARVE-P12-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L539) | 12 | RUBY ANNOTATIONS SURVIVE INTERCHANGE |
+| [`CARVE-P12-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L580) | 12 | A BLOCK EXTENSION DECLARES A CORE FALLBACK |

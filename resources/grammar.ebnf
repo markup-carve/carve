@@ -11211,4 +11211,41 @@ EOF = (* end of file *) ;
       attributes. A later source spelling MUST map to this node rather than
       introduce a second representation.
 
+   33. A BLOCK EXTENSION DECLARES A CORE FALLBACK -- NORMATIVE
+      [CARVE-P12-055]. A `block_extension` carries a globally qualified
+      `name`, a REQUIRED `fallback` block, and MAY carry `version` and
+      `payload`. Carve 0.1 source spells none, so a parser produces none.
+
+      IT IS THE TWIN `inline_extension` NEVER HAD. A Tier-3 block whose
+      payload is Carve content could already ride as a `div` or an
+      `admonition`. One whose payload is NOT Carve content - a diagram spec,
+      an executable cell, a query, an embedded component - had nowhere to put
+      it, so it was smuggled through `attrs.keyValues` as strings or lost.
+      §11 already named that hole: "extension data needs a declared home, not
+      the absence of a check".
+
+      THE FALLBACK IS REQUIRED, AND THAT IS THE WHOLE DESIGN. It is not a
+      placeholder: it is what the document MEANS to a reader that does not
+      implement the extension, so the HTML renderer, the canonical writer and
+      the loss report each have a defined answer instead of three separate
+      special cases. An unknown specialization stays usable through its known
+      base - the useful half of DITA's generalization, without DITA's
+      machinery.
+
+      THE PAYLOAD IS NOT CARVE CONTENT. `format` names how `value` is
+      encoded so a reader can tell whether it can parse it at all. No core
+      target renders it, §9's ingest bound covers its nesting like any other,
+      and §25's trust rules cover it like any other content a renderer did not
+      produce.
+
+      A NAME IS QUALIFIED so two extensions cannot collide. `diagram` is not a
+      name; `org.example.diagram` is.
+
+      A READER THAT DOES NOT KNOW THE NAME RENDERS THE FALLBACK AND REPORTS
+      THE LOSS. It does not refuse the tree: an unknown extension is not an
+      unknown FIELD, and the node states its own degradation. Where the
+      envelope of §32 marks the extension `required`, the refusal happens
+      there, before the tree is read
+      ([carve#2200](https://github.com/markup-carve/carve/issues/2200)).
+
    ============================================================================ *)
