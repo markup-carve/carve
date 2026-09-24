@@ -1,0 +1,164 @@
+name: Changelog drift
+
+# `changelog-completeness` ran in ONE place: release-gate.yml, on tag push. By
+# then the release is being cut, so the gate blocks the tag instead of prompting
+# the work, and nothing between a merge and the tag asked the question. Measured
+# on carve#2238: the pending 0.1.7 section covered 30 of 63 merges since 0.1.6,
+# and none of the 18 that had moved shipped source. Second time in two releases.
+#
+# SCHEDULED rather than per-pull-request, deliberately. Only the release-cutting
+# change writes a section, and a gate asking each pull request "does the
+# CHANGELOG mention you" would put every one of them in conflict with every
+# other over the same few lines - the reason `.changelog-exempt` says exemptions
+# stop being the answer from 0.1.7 on is that the entry belongs in the section,
+# and the section belongs to the cut. So this asks once a day, of `main`, and
+# files where the backlog already looks.
+#
+# The reporter is ast-conformance.yml's, kept deliberately: one tracking issue,
+# opened by the first red run, edited by every later one, closed by the first
+# green one. Closing it by hand does not mute it, because the lookup below
+# matches OPEN issues only.
+
+on:
+  schedule:
+    # 06:00 UTC, after the 04:00 conformance run, so a morning reader finds both.
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: changelog-drift-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name == 'workflow_dispatch' }}
+
+jobs:
+  drift:
+    name: the unreleased section accounts for every merge since the last tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The gate walks every merge back to the previous tag and resolves the
+          # pending section against the tags that exist, so both are needed. With
+          # a shallow checkout it reads the whole history instead and its answer
+          # is meaningless rather than wrong.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      # No version argument: the gate reads every heading above the first tagged
+      # one. The step records its own exit status as an output BEFORE failing, so
+      # the reporter below can read the verdict off a red step rather than
+      # re-running the gate.
+      - name: Which merges the unreleased section does not account for
+        id: measure
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -o pipefail
+          node scripts/changelog-completeness.mjs 2>&1 | tee /tmp/changelog-drift.txt && status=0 || status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          {
+            echo '## Changelog completeness'
+            echo
+            echo '```text'
+            cat /tmp/changelog-drift.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "$status"
+
+      # THE READER. A scheduled job reports into a run nobody is obliged to open,
+      # `main` shows green push CI while it is red, and that is the whole shape
+      # carve#755 catalogues. So the run files its own verdict as a ticket.
+      #
+      # Tickets are scoped to the default branch: one filed against a branch that
+      # is later deleted can never receive the green run that would close it.
+      #
+      # This step FAILS if it cannot file. A reporter that swallows its own
+      # errors is the defect it exists to fix.
+      - name: File the verdict where someone reads it
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          STATUS: ${{ steps.measure.outputs.status }}
+          HEAD_SHA: ${{ github.sha }}
+          REF_NAME: ${{ github.ref_name }}
+          EVENT_NAME: ${{ github.event_name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+
+          if [ "$REF_NAME" != "$DEFAULT_BRANCH" ]; then
+            echo "Changelog drift tickets are scoped to $DEFAULT_BRANCH; $REF_NAME keeps its Actions verdict only."
+            exit 0
+          fi
+
+          TITLE="The unreleased changelog section is behind the merges since the last tag"
+          MARKER="<!-- changelog-drift-verdict ref=$REF_NAME -->"
+
+          # Listed rather than searched: the search index lags a fresh issue by
+          # enough to file a duplicate. Matched on the marker rather than the
+          # title, so renaming the issue does not fork it into two.
+          open_issues="$(gh api "repos/$REPO/issues?state=open&per_page=100" --paginate \
+            | jq -r --arg m "$MARKER" \
+                '.[] | select(.pull_request == null) | select((.body // "") | contains($m)) | .number')"
+          issue="${open_issues%%$'\n'*}"
+
+          if [ "${STATUS:-1}" = "0" ]; then
+            echo "The unreleased section accounts for every merge on $HEAD_SHA."
+            if [ -n "$issue" ]; then
+              gh issue comment "$issue" --repo "$REPO" --body \
+                "Green again: run $RUN_URL on \`$HEAD_SHA\`. Closing. The next red run opens a fresh ticket rather than reopening this one."
+              gh issue close "$issue" --repo "$REPO"
+              echo "Closed #$issue."
+            fi
+            exit 0
+          fi
+
+          {
+            echo "$MARKER"
+            echo
+            echo "\`changelog-completeness\` is failing against the unreleased part of"
+            echo "CHANGELOG.md. Nothing else asks this between a merge and a tag, so the"
+            echo "alternative to this ticket is finding out on cut day."
+            echo
+            echo "| | |"
+            echo "| --- | --- |"
+            echo "| run | $RUN_URL |"
+            echo "| commit | \`$HEAD_SHA\` |"
+            echo "| trigger | \`$EVENT_NAME\` |"
+            echo
+            echo "### What it reported"
+            echo
+            echo '```text'
+            cat /tmp/changelog-drift.txt
+            echo '```'
+            echo
+            echo "### How to clear it"
+            echo
+            echo "Write the missing merges into the section being prepared. An entry per"
+            echo "pull request is not the bar and neither is an exemption: \`.changelog-exempt\`"
+            echo "is for a merge no reader of the notes needs, and from 0.1.7 on the answer to"
+            echo "a finding is an entry. Reproduce locally with \`npm run changelog:check\`,"
+            echo "which now reads the same sections this run did."
+            echo
+            echo "This ticket is filed and maintained by the workflow. It is EDITED by each"
+            echo "later red run and CLOSED by the first green one. Closing it by hand does"
+            echo "not silence it: the next red run files a new one."
+          } > /tmp/changelog-drift-verdict.md
+
+          if [ -n "$issue" ]; then
+            gh issue edit "$issue" --repo "$REPO" --body-file /tmp/changelog-drift-verdict.md
+            echo "Updated #$issue."
+          else
+            url="$(gh issue create --repo "$REPO" --title "$TITLE" \
+              --body-file /tmp/changelog-drift-verdict.md)"
+            echo "Filed $url."
+          fi

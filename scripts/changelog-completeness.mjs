@@ -16,6 +16,16 @@
  * EXISTS and carries notes; that passes happily on a section covering 3 of 24
  * changes. Existence is not completeness, so this asks the other question.
  *
+ * AND IT ASKS IT BEFORE THE TAG. It runs from `release-gate.yml` on tag push,
+ * which blocks the tag rather than prompting the work, and a run with no
+ * version used to read the section that had already shipped - green by
+ * construction. `changelog-drift.yml` now runs it daily against the unreleased
+ * part of the file and files one tracking issue, so the gap costs somebody a
+ * ticket within a day instead of surfacing on cut day (carve#2238). It is NOT
+ * a per-pull-request gate: only the release-cutting change writes the section,
+ * and a gate demanding an entry per pull request would put every one of them in
+ * conflict with every other.
+ *
  * Ported from carve-js `scripts/changelog-completeness.mjs`, with the shipped
  * set and the citation reader adapted (see the two notes below).
  *
@@ -95,12 +105,13 @@
  *
  * Run:  node scripts/changelog-completeness.mjs [version] [options]
  *
- *   version        the release to check; defaults to package.json's version
+ *   version        the release to check; with none, every heading above the
+ *                  first tagged one - the unreleased part of the file
  *   --at <rev>     read history and CHANGELOG.md as of this revision; defaults
  *                  to the tag when it exists, otherwise HEAD
  *   --previous <t> measure from this tag instead of the highest version tag
  *                  below `version`
- *   --section <h>  the heading to read; defaults to `version`
+ *   --section <h>  read ONE named heading instead, and nothing else
  *   --repo <o/n>   this repository's slug; defaults to GITHUB_REPOSITORY, then
  *                  the origin remote
  *   --root <dir>   the checkout to read; defaults to the working directory
@@ -157,6 +168,50 @@ const NOT_SHIPPED = [
 
 const EXEMPT_FILE = '.changelog-exempt';
 
+// ---------------------------------------------------------------------------
+// WHICH SECTION A RUN WITH NO VERSION MEANS. It used to mean package.json's
+// version, which is the release that already SHIPPED: the run read that
+// section as of its own tag, where the gate passed on the day it was cut. So
+// `npm run changelog:check` answered a question nobody had and reported green
+// while the section being written covered 30 of 63 merges (carve#2238).
+//
+// It now means the UNRELEASED part of the file: every heading above the first
+// one a tag carries. `Unreleased` never carries one, so it is in the set when
+// it is there, and a cut-but-untagged `## [X.Y.Z]` is in it too. Both hold
+// notes for work that has not gone out, so a citation in either is not a gap,
+// and the range measured is the same either way - from the highest existing
+// tag to HEAD.
+
+export const VERSION_TAG = /^v?(\d+)\.(\d+)\.(\d+)$/;
+
+/** Every `## [heading]` in the file, in document order. */
+export const sectionHeadings = (changelog) =>
+    changelog.split('\n')
+        .map((line) => line.match(/^## \[?([^\]\s]+)\]?/))
+        .filter(Boolean)
+        .map((m) => m[1]);
+
+/**
+ * The headings above the first one a tag carries, nearest the top first. Empty
+ * when the topmost heading is already tagged, which is what a file with nothing
+ * pending looks like.
+ */
+export const unreleasedSections = (changelog, tags) => {
+    const shipped = new Set(tags.filter((t) => VERSION_TAG.test(t)).map((t) => t.replace(/^v/, '')));
+    const out = [];
+    for (const heading of sectionHeadings(changelog)) {
+        if (shipped.has(heading.replace(/^v/, ''))) break;
+        out.push(heading);
+    }
+    return out;
+};
+
+export const __internals = { VERSION_TAG, sectionHeadings, unreleasedSections };
+
+if (process.env.CARVE_CHANGELOG_LIB === '1') {
+  // Imported for its helpers by the self-test; do not run the gate.
+} else {
+
 const args = process.argv.slice(2);
 const flag = (name, fallback) => {
     const at = args.indexOf(name);
@@ -176,13 +231,26 @@ const run = (cmd, rest, input) =>
     execFileSync(cmd, rest, { cwd: root, encoding: 'utf8', input, maxBuffer: 256 * 1024 * 1024 }).trim();
 const git = (...rest) => run('git', rest);
 
-const version = (positional[0] ?? JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8')).version)
-    .replace(/^v/, '');
-const section = flag('--section', version);
-
 const revExists = (rev) => {
     try { git('rev-parse', '--verify', '--quiet', `${rev}^{commit}`); return true; } catch { return false; }
 };
+
+const readChangelog = (rev) => {
+    try { return git('show', `${rev}:CHANGELOG.md`); }
+    catch { return readFileSync(resolve(root, 'CHANGELOG.md'), 'utf8'); }
+};
+
+// A run with no version asks about the unreleased part of the file. Only the
+// sections above the first tagged one are read, and `previous` is the highest
+// tag there is, because nothing above it has shipped.
+const pending = positional[0] ? [] : unreleasedSections(readChangelog('HEAD'), git('tag', '--merged', 'HEAD').split('\n').map((t) => t.trim()));
+
+const version = (positional[0] ?? pending[0] ?? JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8')).version)
+    .replace(/^v/, '');
+const section = flag('--section', version);
+// `--section` names ONE section; otherwise a pending run reads every unreleased
+// one, since a note in any of them is a note that has not gone out.
+const alsoRead = flag('--section') ? [] : pending.filter((h) => h !== section);
 const at = flag('--at', revExists(version) ? version : 'HEAD');
 
 const slug = (() => {
@@ -199,7 +267,6 @@ const local = new Set([name.toLowerCase(), slug.toLowerCase()]);
 // ---------------------------------------------------------------------------
 // The range: from the highest version tag strictly below this release.
 
-const VERSION_TAG = /^v?(\d+)\.(\d+)\.(\d+)$/;
 const order = (a, b) => {
     const x = a.match(VERSION_TAG).slice(1).map(Number);
     const y = b.match(VERSION_TAG).slice(1).map(Number);
@@ -210,9 +277,12 @@ const order = (a, b) => {
 const previous = (() => {
     const given = flag('--previous');
     if (given) return given;
-    const below = git('tag', '--merged', at)
-        .split('\n').map((t) => t.trim())
-        .filter((t) => VERSION_TAG.test(t) && order(t, version) < 0);
+    const tags = git('tag', '--merged', at)
+        .split('\n').map((t) => t.trim()).filter((t) => VERSION_TAG.test(t));
+    // `Unreleased` is not a version, so "strictly below it" has no meaning: for
+    // a pending run every tag is below the section, and the highest is the one
+    // the range starts at.
+    const below = VERSION_TAG.test(version) ? tags.filter((t) => order(t, version) < 0) : tags;
     return below.length ? below.sort(order).pop() : undefined;
 })();
 
@@ -298,27 +368,26 @@ for (let i = 0; i < numbers.length; i += 50) {
 // What the section cites. A reference to ANOTHER repository is not a citation
 // of this one, so the qualifier is checked rather than grepping `#N`.
 
-const changelog = (() => {
-    try { return git('show', `${at}:CHANGELOG.md`); }
-    catch { return readFileSync(resolve(root, 'CHANGELOG.md'), 'utf8'); }
-})();
+const changelog = readChangelog(at);
 
-const sectionText = (() => {
+const textOf = (heading) => {
     const lines = changelog.split('\n');
-    const head = new RegExp(`^## \\[?${section.replace(/\./g, '\\.')}\\]?(\\s|\\]|$)`);
+    const head = new RegExp(`^## \\[?${heading.replace(/\./g, '\\.')}\\]?(\\s|\\]|$)`);
     const start = lines.findIndex((l) => head.test(l));
     if (start < 0) return undefined;
     const rest = lines.slice(start + 1);
     const end = rest.findIndex((l) => /^## /.test(l));
     return (end < 0 ? rest : rest.slice(0, end)).join('\n');
-})();
+};
+
+const sectionText = textOf(section);
 
 if (sectionText === undefined) {
     console.log(`::error::CHANGELOG.md has no '## [${section}]' section to check`);
     process.exit(1);
 }
 
-const cited = new Set(localReferences(sectionText));
+const cited = new Set([section, ...alsoRead].flatMap((h) => localReferences(textOf(h) ?? '')));
 
 // ---------------------------------------------------------------------------
 // Deliberate exclusions stay VISIBLE. An exemption with no reason is refused,
@@ -377,16 +446,19 @@ if (malformed.length || missing.length) {
     if (missing.length) {
         console.log(
             `changelog-completeness: ${missing.length} of ${shipping.size} pull request(s) ${from} moved ` +
-            `shipped source and are cited nowhere in the ${section} section. Write them up, or exempt ` +
-            `one with a reason in ${EXEMPT_FILE}.`,
+            `shipped source and are cited nowhere in ${[section, ...alsoRead].map((h) => `[${h}]`).join(' or ')}. ` +
+            `Write them up, or exempt one with a reason in ${EXEMPT_FILE}.`,
         );
     }
     process.exit(1);
 }
 
+const read = [section, ...alsoRead].map((h) => `[${h}]`).join(' and ');
 console.log(
-    `changelog-completeness: the ${section} section accounts for all ${shipping.size - skipped.length} ` +
+    `changelog-completeness: ${read} account(s) for all ${shipping.size - skipped.length} ` +
     `shipped-source pull request(s) ${from}` +
     (skipped.length ? `, ${skipped.length} exempt` : '') +
     (unattributed.length ? `, ${unattributed.length} commit(s) carrying no pull request` : ''),
 );
+
+}
