@@ -65,8 +65,13 @@ const OPT_IN_ONLY = {
 
 /** Fields permitted by the schema before the corresponding engine rollout. */
 const ENGINE_ROLLOUT_PENDING = {
+  // TODO(carve#2209): add resolver fixtures for counter sharing, id collisions,
+  // figure and figure-group ownership, and numbered cross-references when
+  // engines emit these fields.
   'figure.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
   'small_caps.*': 'structural publishing node: Carve 0.1 source has no spelling; produced only by AST and format-bridge consumers (carve#2210)',
+  'math.label': 'equation interchange field: Carve 0.1 source has no direct spelling; produced only by AST and format-bridge consumers (carve#2209)',
+  'math.number': 'resolved equation number: the schema names it before the engines publish it (carve#2209)',
   'table.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
   'table_cell.blocks': 'structural interchange field: Carve 0.1 source has no spelling for a block inside a cell; produced only by AST/Pandoc/HTML-import consumers (carve#2191)',
   'table_cell.colspan': 'resolved span (carve#2190): the schema names it before the engines publish it. Delete both entries in the commit that moves the pin to a build that does',

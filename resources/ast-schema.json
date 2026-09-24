@@ -2359,6 +2359,17 @@
         "content": {
           "type": "string"
         },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^\\S(?:[\\s\\S]*\\S)?$",
+          "description": "Authored equation-number label, such as `Equation` or `Eq.`. It selects the numbering bucket and supplies the visible prefix; `attrs.id` is the cross-reference key."
+        },
+        "number": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Equation number assigned during resolution. Present only on display math; absent before resolution."
+        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
@@ -2366,6 +2377,29 @@
           "$ref": "#/$defs/pos"
         }
       },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "number": {}
+            },
+            "required": [
+              "number"
+            ]
+          },
+          "then": {
+            "required": [
+              "label"
+            ],
+            "properties": {
+              "label": {},
+              "display": {
+                "const": true
+              }
+            }
+          }
+        }
+      ],
       "additionalProperties": false
     },
     "mention": {
