@@ -57,8 +57,9 @@
     "@markup-carve/vite-plugin-carve": "git+https://github.com/markup-carve/vite-plugin-carve.git#0b3552413ff1de6302921c8144497931fbd0124f",
     "@mermaid-lint/cli": "^0.53.1",
     "ajv": "^8.20.0",
+    "commonmark": "^0.31.2",
+    "gfm-wasm": "1.0.1",
     "markdown-it-container": "^4.0.0",
-    "marked": "^16.4.2",
     "ohm-js": "^17.5.0",
     "vitepress": "^1.5.0"
   },

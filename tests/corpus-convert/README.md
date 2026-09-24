@@ -91,8 +91,19 @@ That is why `a ^b^ c` and `d ==e== f` come back as text here, and why
 [`../corpus-convert.test.mjs`](../corpus-convert.test.mjs), on every PR, against
 the build this repo pins. Two assertions per case: the render matches
 `expected.html` byte for byte, AND its visible text matches what a reader of the
-SOURCE language produces for the same input - `marked` in GFM mode for a
-Markdown case, the source document itself for an HTML case.
+SOURCE language produces for the same input - cmark-gfm with its GFM
+extensions for a Markdown case, the source document itself for an HTML case.
+
+The Markdown reader is cmark-gfm because the importers follow cmark-gfm where
+Markdown parsers disagree (carve#2187). marked, the reader before it, puts
+`2. b` under `- a` in a nested list; cmark-gfm and CommonMark keep it as
+paragraph text, since only `1.` may interrupt a paragraph. The build is
+[`gfm-wasm`](https://github.com/thelovekesh/gfm-wasm), cmark-gfm compiled to
+WebAssembly, so no native toolchain is needed. It renders in cmark-gfm's safe
+mode only, which drops raw HTML, so
+[`../../scripts/lib/markdown-oracle.mjs`](../../scripts/lib/markdown-oracle.mjs)
+puts each raw HTML literal back from commonmark.js and fails loudly if the two
+readers disagree on what is raw HTML.
 
 The second assertion is what keeps the expectations answerable. A corpus written
 by recording what an engine currently does pins that engine to itself; a second
