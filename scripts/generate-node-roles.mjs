@@ -17,6 +17,7 @@
  * A position's ROLE is what a generic walker needs and nothing more:
  *
  *   node-sequence    an array of nodes        (`children`, `rows`, `items`)
+ *   node-matrix      an array of node arrays  (`line_block.lines`)
  *   single-node      one node                 (`figure.target`)
  *   record-sequence  an array of plain records, which carry no `type` and so
  *                    no position of their own (`table.columns`)
@@ -86,6 +87,13 @@ for (const [name, def] of Object.entries(defs)) {
       const members = membersOf(value.items)
       if (members) fields[field] = { role: 'node-sequence', admits: members }
       else if (isRecord(value.items)) fields[field] = { role: 'record-sequence' }
+      else if (value.items?.type === 'array') {
+        // An array of node arrays. A walker that only knew `node-sequence`
+        // would descend one level and find arrays where it expected nodes, so
+        // the nesting is named rather than left to be discovered.
+        const inner = membersOf(value.items.items)
+        if (inner) fields[field] = { role: 'node-matrix', admits: inner }
+      }
       continue
     }
     const members = membersOf(value)

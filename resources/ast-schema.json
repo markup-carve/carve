@@ -2270,6 +2270,16 @@
             "$ref": "#/$defs/blockNode"
           }
         },
+        "lines": {
+          "type": "array",
+          "description": "The block's LINES, each one an inline sequence. Absent means the lines are whatever splitting `children` on `hard_break` yields, which is what every consumer did before this field and is ambiguous: an authored hard break inside a verse line and a line boundary are the same node, so the split is right only because nothing else produces a `hard_break` there - an invariant no clause states. Present, it settles the question, and a hard break inside a line stays a hard break. Preserved indentation is a leading run of U+E000 per line either way (carve#2202).",
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/inlineNode"
+            }
+          }
+        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
@@ -2277,7 +2287,8 @@
           "$ref": "#/$defs/pos"
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "description": "Verse, addresses and anything else whose line breaks are content. `children` carries the blocks as every consumer already reads them; `lines` carries the same content as the lines it actually is, added alongside rather than instead (PART 12 §5)."
     },
     "link": {
       "type": "object",

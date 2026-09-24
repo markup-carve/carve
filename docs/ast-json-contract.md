@@ -1133,6 +1133,36 @@ document still carries `admonition` with kind `footnotes`. `not` arrives on
 `directive`. Until then the split is a rule the schema states and does not check
 ([carve#2195](https://github.com/markup-carve/carve/issues/2195)).
 
+## A line block may publish its lines
+
+`line_block.children` holds the blocks; `lines` holds the same content as the
+lines it actually is, each an inline sequence:
+
+```json
+{ "type": "line_block",
+  "children": ["..."],
+  "lines": [[{ "type": "text", "value": "Roses are red" }],
+            [{ "type": "text", "value": "Violets are blue" }]] }
+```
+
+**Absent, the lines are what splitting `children` on `hard_break` yields.** That
+is what every consumer did before this field, and it is ambiguous: an authored
+hard break inside a verse line and a line boundary are the same node, so the
+split is right only because nothing else produces a `hard_break` there - an
+invariant no clause states, and none could, since a line block's content is
+ordinary inline content.
+
+**Present, it settles the question**, and a hard break inside a line stays a hard
+break. This is §5's added-alongside rule: the derived reading published beside
+the authored construct rather than replacing it, the same way a resolved
+reference keeps `ref` and `rawRef` beside `href`. `children` is unchanged and
+still required, so no consumer has to move.
+
+Preserved indentation is unaffected - a leading run of U+E000 is per line either
+way. The two cannot disagree in a tree a parser produced, and a reader is not
+required to check; where both are present, `lines` is the finer statement
+([carve#2202](https://github.com/markup-carve/carve/issues/2202)).
+
 ## Where the nodes are, as data
 
 Which fields of a node hold other nodes depends on the type carrying them -
