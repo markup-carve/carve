@@ -787,8 +787,6 @@ const NOT_PRODUCIBLE = {
     'structural publishing node: Carve 0.1 source has no spelling; produced only by AST and format-bridge consumers (carve#2210)',
   block_extension:
     'extension block: Carve 0.1 source spells no block extension, so no corpus document can produce one; it reaches a tree from an extension host or a format bridge (carve#2200)',
-  directive:
-    'carve#2195 splits it out of `admonition`: the pinned build still publishes a directive kind as an admonition, so no corpus document produces one yet. Delete the entry in the commit that moves the pin.',
   section:
     'structural publishing node: sectioning is implicit in heading level, so Carve 0.1 source has no spelling; produced only by importers from a format that has explicit sections (carve#2207)',
   ruby:

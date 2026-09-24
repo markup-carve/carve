@@ -61,10 +61,6 @@ const OPT_IN_ONLY = {
   'citation_group.*': 'citations (Tier-2): the group wrapper and the integral `+` form',
   'block_extension.*':
     'extension block (interchange-only): Carve 0.1 source spells no block extension, so no corpus document can produce one (carve#2200)',
-  'directive.*':
-    'carve#2195 splits `directive` out of `admonition`; the pinned build publishes neither the type nor its fields yet',
-  'line_block.lines':
-    'the per-stanza line ranges, published alongside `children` (carve#2235): the pinned build does not emit them yet',
   'section.*':
     'sectioning (interchange-only): sectioning is implicit in heading level, so no Carve 0.1 source spells a section and no corpus document can produce one (carve#2207)',
   'citation_definition.*':
@@ -83,6 +79,8 @@ const ENGINE_ROLLOUT_PENDING = {
   'math.label': 'equation interchange field: Carve 0.1 source has no direct spelling; produced only by AST and format-bridge consumers (carve#2209)',
   'math.number': 'resolved equation number: the schema names it before the engines publish it (carve#2209)',
   'table.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
+  'directive.title': 'no corpus case spells a titled directive yet, because carve-php and carve-rs do not render one (carve#2264)',
+  'directive.label': 'no corpus case spells a labeled directive yet; it lands with the titled case (carve#2264)',
   'table_cell.blocks': 'structural interchange field: Carve 0.1 source has no spelling for a block inside a cell; produced only by AST/Pandoc/HTML-import consumers (carve#2191)',
 }
 
