@@ -24,3 +24,6 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+101-table-header-cell-rowspan  pinned JavaScript renderer still separates a header cell's crossing rowspan into thead and tbody
+494-an-explicit-table-head-span-keeps-one-row-group  pinned JavaScript renderer still separates explicit header and body groups
+495-a-table-foot-span-keeps-one-row-group  pinned JavaScript renderer still separates body and foot groups
