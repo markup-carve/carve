@@ -223,6 +223,7 @@
             "link_reference_definition",
             "paragraph",
             "raw_block",
+            "section",
             "table",
             "thematic_break"
           ]
@@ -512,6 +513,21 @@
           },
           "then": {
             "$ref": "#/$defs/raw_block"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "section"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/section"
           }
         },
         {
@@ -2545,6 +2561,39 @@
         },
         "content": {
           "type": "string"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "section": {
+      "type": "object",
+      "title": "section (block)",
+      "description": "An explicit sectioning wrapper. Carve 0.1 source has no spelling for one - sectioning is implicit in heading level - so a parser does not produce it and a canonical Carve writer flattens it back to its headings and reports the loss. It exists so the nesting a format with explicit sections carries (HTML5 `section`, JATS `sec`, DocBook `section`, DITA, TEI, and Pandoc's `--section-divs`) survives a bridge instead of being flattened and re-derived by every consumer that needs it (carve#2207).",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "section"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/blockNode"
+          }
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6,
+          "description": "The heading level this section corresponds to, where the source format states one. Absent means the level is whatever the nesting implies."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"

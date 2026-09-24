@@ -1599,6 +1599,12 @@
       "part": "12",
       "title": "A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER",
       "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-052",
+      "part": "12",
+      "title": "SECTIONING IS INTERCHANGE-ONLY",
+      "scope": "ast-interchange"
     }
   ],
   "retired": [

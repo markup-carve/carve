@@ -589,6 +589,8 @@ const NOT_PRODUCIBLE = {
     'citations (Tier-2) - off in a default-profile run, and with the extension off `[@key]: entry` is ordinary paragraph text (PART 12 section 18)',
   small_caps:
     'structural publishing node: Carve 0.1 source has no spelling; produced only by AST and format-bridge consumers (carve#2210)',
+  section:
+    'structural publishing node: sectioning is implicit in heading level, so Carve 0.1 source has no spelling; produced only by importers from a format that has explicit sections (carve#2207)',
 }
 
 test('every node type the schema declares is produced by a corpus document, or named as unproducible', () => {
