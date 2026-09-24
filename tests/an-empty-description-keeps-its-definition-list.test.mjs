@@ -1,21 +1,16 @@
 /*
- * AN EMPTY DESCRIPTION IS WRITTEN, SO ITS ENTRY STAYS IN ITS LIST.
+ * An empty description keeps its entry in the list.
  *
- * An empty `<dd>` is spelled `: {empty}` (PART 11 SS7d), so an import that
- * meets one writes the entry and keeps the list whole. Nothing is lost and
- * nothing is added: the surviving term does not inherit a description, and no
- * separator has to be invented to hold the two entries apart.
+ * An empty `<dd>` is written as `: {empty}` (PART 11 SS7d). The importer can
+ * keep the entry without giving its term the next entry's description.
  *
- * WHY THIS FILE EXISTS BESIDE THE FIXTURE. The contract check compares the
- * fixture against the pinned build. Nothing there reads what the fixture's
- * source MEANS, so its bytes are measured here against the oracle - the reading
- * the spec repo owns without waiting for an engine.
+ * The contract check compares the fixture with the pinned build. This test also
+ * checks the fixture's meaning against the spec parser without depending on
+ * that build.
  *
- * THE BLANK LINE IS THE PART WORTH PINNING. A blank line between two entries
- * does not separate them: `:: t1`, a blank line, `:: t2`, `:  d2` is ONE list
- * whose two terms share `d2`, which hands the first term a description it never
- * had. The sentinel is what keeps the entries distinct, and the assertion that
- * it does means nothing without one that the obvious alternative does not.
+ * A blank line does not separate two entries. Without the sentinel, `:: t1`,
+ * a blank line, `:: t2`, and `:  d2` form one list whose terms share `d2`.
+ * The test checks both readings to show why the sentinel is needed.
  */
 
 import { test } from 'node:test'

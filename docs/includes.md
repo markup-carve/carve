@@ -4,21 +4,19 @@ description: "The processor-level {{ … }} directive: syntax, the host resolver
 normative: true
 ---
 
-# File inclusion (NORMATIVE)
+# File inclusion
 
-This document is normative. It specifies Carve's file-inclusion (transclusion)
-directive, <code v-pre>{{ … }}</code>. The directive is **processor-level**: it is not part of
-the core parser, and a conformant core leaves it literal. The authority for the
-syntax is `resources/grammar.ebnf` PART 6; the authority for the semantics is
-PART 9 §19, which this page states in full with worked examples.
+This page gives the normative rules for Carve's file-inclusion (transclusion) directive,
+<code v-pre>{{ … }}</code>. Inclusion is a processor feature. The core parser does not
+expand files and leaves the directive as text. The syntax is defined in
+`resources/grammar.ebnf` PART 6; the rules below state PART 9 §19 with examples.
 
 ## What inclusion is (and is not)
 
-File inclusion pulls the source of another Carve (or text) file into the current
-document at the point of the directive, as if its content had been authored
-inline. It is the one feature that introduces *source you did not write inline*,
-so its contract is deliberately strict about resolution, collisions, limits, and
-security.
+File inclusion inserts another Carve or text file at the directive's position,
+as if its contents had been written there. Because that content comes from
+another file, the rules also cover path resolution, name collisions, limits,
+and security.
 
 - **Processor-level.** The core parser performs **no file I/O**. Expansion is a
   host-driven pass layered on top of the parser.
@@ -393,7 +391,7 @@ root comes from depends on whether the entry point carries a path at all.
   remain literal, exactly as for a host that supplied no root at all. The test
   is **absoluteness**, not emptiness after trimming - `"   "` is a legal POSIX
   directory name, so whitespace-only is refused because it is relative, and a
-  directory genuinely named with spaces stays reachable by its absolute path.
+  directory whose name contains only spaces stays reachable by its absolute path.
   A relative spec has no base the specification can name: every canonicalizer
   in the ecosystem resolves one against the **process working directory**,
   which reaches the very directory the bullet above forbids as a default, by a
@@ -590,7 +588,7 @@ The parent's `[a][]` resolves to `/PARENT` and the child's to `/CHILD`. This is
 
 **Rationale.** A reference-definition label is never addressable from another
 file, so renaming it would be pure churn plus a spurious warning. An explicit
-heading id or a footnote label genuinely is document-visible, so a duplicate
+heading id or a footnote label is visible in the document, so a duplicate
 there must be resolved and surfaced.
 
 ### Scope and ordering
