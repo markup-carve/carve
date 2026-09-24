@@ -112,6 +112,20 @@
       the same typed, positioned node contract as every other content-bearing
       value in the tree and belongs to the inline profile vocabulary.
 
+      IT IS NOT AN INDEPENDENT INLINE CHILD. A `citation` occurs in
+      `citation_group.items` and nowhere else, so `inlineNode` does not dispatch
+      on it and a paragraph holding one directly is not a valid tree. Being a
+      typed positioned node is what this clause asks for; being admissible
+      wherever an inline goes is not, and the schema said both until
+      [carve#2227](https://github.com/markup-carve/carve/issues/2227).
+
+      THE SOURCE CANNOT SPELL ONE. PART 7 makes the bracket the unit
+      (`citation_group = '[', ['+'], citation_item, {';', citation_item}, ']'`),
+      and an item's `prefix`, `locator` and `suffix` are positions within it. No
+      clause of any PART defines what a bare citation renders to on any target,
+      and all three engines refuse the payload: carve-php and carve-rs at decode,
+      carve-js in the renderer after accepting the tree.
+
       §4 GOVERNS THE POSITION, AS IT DOES EVERYWHERE ELSE. "The `pos` of §4" is
       that clause whole, exemptions included: a node the producer could not
       place omits the field, and a synthesized one MUST omit it. The schema

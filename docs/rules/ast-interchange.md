@@ -47,20 +47,20 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L228) | 12 | A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST |
 | [`CARVE-P12-031`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L258) | 12 | A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST |
 | [`CARVE-P12-035`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L497) | 12 | A COMPOSITE FIGURE IS ITS OWN NODE TYPE |
-| [`CARVE-P12-041`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L203) | 12 | U+0000 IS REPLACED ON INGEST |
-| [`CARVE-P12-042`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L236) | 12 | AN INGESTED VALUE THE SCHEMA CALLS ABSENT IS NORMALIZED AWAY |
-| [`CARVE-P12-043`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L259) | 12 | A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH |
-| [`CARVE-P12-044`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L284) | 12 | AN INGESTED `blockImage` VALUE IS AUTHORITATIVE |
-| [`CARVE-P12-046`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L310) | 12 | A CHILDREN ARRAY HOLDS ONLY A CONTENT BLOCK |
-| [`CARVE-P12-047`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L339) | 12 | A REFERENCE NODE CARRIES ITS TARGET |
-| [`CARVE-P12-048`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L368) | 12 | A SPANNING CELL PUBLISHES ITS RESOLVED EXTENT |
-| [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L403) | 12 | A TABLE CELL MAY CARRY BLOCK CONTENT INSTEAD OF INLINE |
-| [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L435) | 12 | SMALL CAPS SURVIVE INTERCHANGE |
-| [`CARVE-P12-051`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L458) | 12 | A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER |
-| [`CARVE-P12-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L488) | 12 | SECTIONING IS INTERCHANGE-ONLY |
-| [`CARVE-P12-053`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L516) | 12 | A CITATION ITEM CARRIES ITS OWN MODE |
-| [`CARVE-P12-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L539) | 12 | RUBY ANNOTATIONS SURVIVE INTERCHANGE |
-| [`CARVE-P12-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L580) | 12 | A BLOCK EXTENSION DECLARES A CORE FALLBACK |
-| [`CARVE-P12-056`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L616) | 12 | A STORED TREE IS WRAPPED IN A VERSIONED ENVELOPE |
-| [`CARVE-P12-057`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L669) | 12 | A NAMED CONTAINER IS A CALLOUT, A DIRECTIVE OR A DIV |
-| [`CARVE-P12-058`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L707) | 12 | A LINE BLOCK MAY PUBLISH ITS LINES |
+| [`CARVE-P12-041`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L217) | 12 | U+0000 IS REPLACED ON INGEST |
+| [`CARVE-P12-042`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L250) | 12 | AN INGESTED VALUE THE SCHEMA CALLS ABSENT IS NORMALIZED AWAY |
+| [`CARVE-P12-043`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L273) | 12 | A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH |
+| [`CARVE-P12-044`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L298) | 12 | AN INGESTED `blockImage` VALUE IS AUTHORITATIVE |
+| [`CARVE-P12-046`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L324) | 12 | A CHILDREN ARRAY HOLDS ONLY A CONTENT BLOCK |
+| [`CARVE-P12-047`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L353) | 12 | A REFERENCE NODE CARRIES ITS TARGET |
+| [`CARVE-P12-048`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L382) | 12 | A SPANNING CELL PUBLISHES ITS RESOLVED EXTENT |
+| [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L417) | 12 | A TABLE CELL MAY CARRY BLOCK CONTENT INSTEAD OF INLINE |
+| [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L449) | 12 | SMALL CAPS SURVIVE INTERCHANGE |
+| [`CARVE-P12-051`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L472) | 12 | A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER |
+| [`CARVE-P12-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L502) | 12 | SECTIONING IS INTERCHANGE-ONLY |
+| [`CARVE-P12-053`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L530) | 12 | A CITATION ITEM CARRIES ITS OWN MODE |
+| [`CARVE-P12-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L553) | 12 | RUBY ANNOTATIONS SURVIVE INTERCHANGE |
+| [`CARVE-P12-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L594) | 12 | A BLOCK EXTENSION DECLARES A CORE FALLBACK |
+| [`CARVE-P12-056`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L630) | 12 | A STORED TREE IS WRAPPED IN A VERSIONED ENVELOPE |
+| [`CARVE-P12-057`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L683) | 12 | A NAMED CONTAINER IS A CALLOUT, A DIRECTIVE OR A DIV |
+| [`CARVE-P12-058`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L721) | 12 | A LINE BLOCK MAY PUBLISH ITS LINES |
