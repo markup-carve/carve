@@ -1611,6 +1611,12 @@
       "part": "12",
       "title": "A CITATION ITEM CARRIES ITS OWN MODE",
       "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-054",
+      "part": "12",
+      "title": "RUBY ANNOTATIONS SURVIVE INTERCHANGE",
+      "scope": "ast-interchange"
     }
   ],
   "retired": [

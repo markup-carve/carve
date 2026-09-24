@@ -126,7 +126,7 @@ hardening.
 ## Ruby keeps base and annotation paired
 
 A valid HTML `ruby` imports as the interchange-only `ruby` inline node from
-PART 12 §31. The importer applies the WHATWG ruby segmentation algorithm to
+PART 12 §32. The importer applies the WHATWG ruby segmentation algorithm to
 the parsed DOM. Each valid segment becomes one `pairs` entry: its base nodes
 go in `base`, and its first associated `rt` content goes in `annotation`.
 An empty `rt` is valid and produces `annotation: []`; for example,

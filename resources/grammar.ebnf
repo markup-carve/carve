@@ -2101,8 +2101,9 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    implementation MUST NOT encode those two source shapes identically.
 
 
-   RENDER-LOSS REPORTING -- NORMATIVE [CARVE-P2-024]. Target routing may intentionally omit a
-   raw node, but a checked renderer MUST make that omission observable. Its
+   RENDER-LOSS REPORTING -- NORMATIVE [CARVE-P2-024]. Target routing may
+   intentionally omit a raw node or flatten a `ruby` node, but a checked
+   renderer MUST make that loss observable. Its
    result has `value`, `losses`, `totalLosses`, and `truncated`. Each omitted
    raw node contributes one loss in document order with the stable code
    `raw-format-dropped`, its verbatim `format`, the selected `target`, a
@@ -2111,8 +2112,15 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    `totalLosses` counts the complete render, and `truncated` says whether the
    bounded array omitted entries.
 
-   A loss records WHAT THE SELECTED RENDERER ACTUALLY DROPS, not every raw node
-   in the tree. Matching HTML passes through (or is visibly escaped by a safe
+   Each flattened `ruby` inline node contributes one loss in document order
+   with the stable code `ruby-flattened`, the selected `target`, `nodeType` of
+   `inline`, its `pos` when recorded, and a short message. It has NO `format`.
+   Plain, ANSI and canonical Carve output keep both sides visibly as
+   `base(annotation)` but lose their association. HTML and Markdown preserve
+   native ruby and report no loss.
+
+   A loss records WHAT THE SELECTED RENDERER ACTUALLY DROPS OR FLATTENS, not
+   every raw or ruby node in the tree. Matching HTML passes through (or is visibly escaped by a safe
    policy) with no loss. Markdown visibly escapes HTML raw content with no loss.
    ANSI visibly degrades a raw BLOCK to `[raw:format] content` with no loss, but
    reports a raw INLINE it omits. Plain text reports every raw node it omits.
@@ -2124,7 +2132,8 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    every binding MUST expose the checked result and strict form. A CLI MUST keep
    rendered stdout pure, summarize losses on stderr, fail with
    `--strict-losses`, offer a machine-readable JSON report, and permit the
-   explicit exception `--allow-loss raw-format-dropped`. Import-loss reports
+   explicit exceptions `--allow-loss raw-format-dropped` and
+   `--allow-loss ruby-flattened`. Import-loss reports
    are separate: they describe source-to-AST migration, while this report
    describes AST-to-target rendering. *)
 
@@ -7732,7 +7741,7 @@ EOF = (* end of file *) ;
       inline content, and the canonical writer emits the span with its
       attributes, an empty-string one spelled bare per PART 11 §6c.
 
-      Accessible ruby is NOT reserved here: it requires structured
+      Accessible ruby is NOT reserved here: PART 12 §32 gives it structured
       base/annotation children rather than a single inline container.
 
    10. THE OTHER SEMANTIC NAMES ARE AN EXTENSION -- NORMATIVE [CARVE-P10-008]. `samp`, `var`,
@@ -9090,13 +9099,17 @@ EOF = (* end of file *) ;
       use it. Inline HTML is the smallest departure that restores the
       construct, not an alternate canonical spelling.
 
-      The `underline`, `highlight`, `subscript`, `superscript` and `small_caps`
-      nodes have no
+      The `underline`, `highlight`, `subscript`, `superscript`, `small_caps`
+      and `ruby` nodes have no
       Markdown delimiter spelling and MUST use inline HTML: `<u>` for
       `underline`, `<mark>` for `highlight`, `<sub>` for `subscript` and
       `<sup>` for `superscript`. `small_caps` uses
       `<span class="smallcaps">`, merging its other attributes under the
-      ordinary span rules.
+      ordinary span rules. `ruby` uses `<ruby>`, with one base run and one
+      `<rt>` per pair plus generated `<rp>(</rp>` / `<rp>)</rp>` fallback.
+      Its base and annotation children use the Markdown inline writer inside
+      those HTML tags, and its outer attributes follow the ordinary HTML
+      attribute rules.
 
       THE TEST IS ON THE EMITTED BYTES, as in §1a. In the first document the
       strong delimiter reads back as `strong`, so replacing it with `<strong>`
@@ -11157,5 +11170,45 @@ EOF = (* end of file *) ;
       required to check. Where they do differ the ITEM is authoritative, since
       it is the finer statement
       ([carve#2203](https://github.com/markup-carve/carve/issues/2203)).
+   32. RUBY ANNOTATIONS SURVIVE INTERCHANGE -- NORMATIVE [CARVE-P12-054]. A
+      `ruby` inline node carries `pairs`, a non-empty ordered array. Each pair
+      is a closed object with exactly `base` and `annotation`: `base` is a
+      non-empty array of inline nodes and `annotation` is an array of inline
+      nodes which MAY be empty. The ruby node MAY also carry `attrs` and `pos`
+      under the ordinary inline-node rules. It has NO parallel `children`
+      field; the two arrays are what preserve the association.
+
+      PAIRS ARE STRUCTURE, NOT NODES. They carry no `type`, `attrs` or `pos`.
+      Their order is reading order, and every traversal walks `base` before
+      `annotation` in pair order. Sanitization, URL policy, profile enforcement,
+      resolution, cloning, equality, patching and rendering MUST reach both
+      arrays. One `ruby` counts as one inline nesting level. AST ingest still
+      measures depth in each implementation's own unit under §9(c).
+      A consumer that ingests a conforming serialized `ruby` node MUST
+      reproduce the node and every pair unchanged when it serializes that tree
+      again.
+
+      CARVE 0.1 SOURCE HAS NO SPELLING FOR RUBY. A source parser never
+      synthesizes it. For canonical Carve output, the writer first replaces
+      each pair with its base, a text `(`, its annotation and a text `)` in
+      that order, then writes and escapes that inline sequence under PART 11
+      §1a and §2. An empty annotation therefore remains visible as `()`.
+      When the node carries `attrs`, the writer wraps the complete fallback in
+      one ordinary attributed span. It reports `ruby-flattened` under PART 2.
+      The ordinary source round-trip compares against this flattened sequence,
+      not the interchange-only `ruby` node. The writer MUST NOT discard either
+      side or invent a source spelling.
+
+      HTML emits one `<ruby>` in pair order, with generated `<rp>(</rp>` and
+      `<rp>)</rp>` around each `<rt>`. The outer element receives `attrs`.
+      Plain and ANSI emit `base(annotation)` and report `ruby-flattened`.
+      PART 11 §8c defines Markdown output.
+
+      PROFILES USE THE EXISTING `disallowedAction`. For `to_text`, the text
+      content is each base followed by `(`, its annotation and `)` in pair
+      order. `strip` removes the node and subtree; `error` rejects it. Ruby is
+      not a SemanticSpan, an `inline_extension` or a span carrying magic
+      attributes. A later source spelling MUST map to this node rather than
+      introduce a second representation.
 
    ============================================================================ *)
