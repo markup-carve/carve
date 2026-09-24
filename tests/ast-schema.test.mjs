@@ -112,6 +112,38 @@ test('small caps are a structural inline wrapper with children', () => {
   }), false)
 })
 
+test('ruby keeps ordered base and annotation pairs', () => {
+  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 3, startOffset: 0, endOffset: 2 }
+  const pair = {
+    base: [{ type: 'text', value: '漢', pos }],
+    annotation: [{ type: 'text', value: 'かん' }],
+  }
+  const ruby = { type: 'ruby', pairs: [pair, { base: [{ type: 'text', value: '字' }], annotation: [] }], pos }
+  const document = {
+    type: 'document',
+    srcByteLength: 6,
+    children: [{ type: 'paragraph', children: [ruby], pos }],
+  }
+
+  assert.equal(validate(document), true, firstErrors())
+  assert.equal(validate({
+    ...document,
+    children: [{ type: 'paragraph', children: [{ ...ruby, pairs: [] }], pos }],
+  }), false)
+  assert.equal(validate({
+    ...document,
+    children: [{ type: 'paragraph', children: [{ ...ruby, pairs: [{ ...pair, base: [] }] }], pos }],
+  }), false)
+  assert.equal(validate({
+    ...document,
+    children: [{ type: 'paragraph', children: [{ ...ruby, children: pair.base }], pos }],
+  }), false)
+  assert.equal(validate({
+    ...document,
+    children: [{ type: 'paragraph', children: [{ ...ruby, pairs: [{ ...pair, attrs: {} }] }], pos }],
+  }), false)
+})
+
 test('display math accepts an authored label and resolved number', () => {
   const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 12, startOffset: 0, endOffset: 11 }
   const equation = {
@@ -591,6 +623,8 @@ const NOT_PRODUCIBLE = {
     'structural publishing node: Carve 0.1 source has no spelling; produced only by AST and format-bridge consumers (carve#2210)',
   section:
     'structural publishing node: sectioning is implicit in heading level, so Carve 0.1 source has no spelling; produced only by importers from a format that has explicit sections (carve#2207)',
+  ruby:
+    'structural publishing node: Carve 0.1 source has no spelling; produced only by AST and HTML-import consumers (carve#2208)',
 }
 
 test('every node type the schema declares is produced by a corpus document, or named as unproducible', () => {
@@ -942,6 +976,20 @@ test('the checked-render loss report has the shared closed shape', () => {
     truncated: false,
   }
   assert.equal(validateReport(report), true, JSON.stringify(validateReport.errors))
+  const rubyReport = {
+    losses: [{ code: 'ruby-flattened', target: 'plain', nodeType: 'inline', message: 'Flattened ruby annotation', pos }],
+    totalLosses: 1,
+    truncated: false,
+  }
+  assert.equal(validateReport(rubyReport), true, JSON.stringify(validateReport.errors))
+  assert.equal(validateReport({
+    ...rubyReport,
+    losses: [{ ...rubyReport.losses[0], format: 'html' }],
+  }), false)
+  assert.equal(validateReport({
+    ...report,
+    losses: [{ code: 'raw-format-dropped', target: 'html', nodeType: 'inline', message: 'missing format' }],
+  }), false)
   assert.equal(validateReport({ ...report, unknown: true }), false)
   assert.equal(validateReport({ ...report, losses: [{ ...report.losses[0], code: 'other' }] }), false)
 })

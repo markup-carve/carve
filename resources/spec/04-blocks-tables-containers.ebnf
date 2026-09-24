@@ -542,8 +542,9 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    implementation MUST NOT encode those two source shapes identically.
 
 
-   RENDER-LOSS REPORTING -- NORMATIVE [CARVE-P2-024]. Target routing may intentionally omit a
-   raw node, but a checked renderer MUST make that omission observable. Its
+   RENDER-LOSS REPORTING -- NORMATIVE [CARVE-P2-024]. Target routing may intentionally omit
+   content or flatten structure a target cannot represent, but a checked
+   renderer MUST make that loss observable. Its
    result has `value`, `losses`, `totalLosses`, and `truncated`. Each omitted
    raw node contributes one loss in document order with the stable code
    `raw-format-dropped`, its verbatim `format`, the selected `target`, a
@@ -552,8 +553,15 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    `totalLosses` counts the complete render, and `truncated` says whether the
    bounded array omitted entries.
 
-   A loss records WHAT THE SELECTED RENDERER ACTUALLY DROPS, not every raw node
-   in the tree. Matching HTML passes through (or is visibly escaped by a safe
+   Each flattened `ruby` inline node contributes one loss in document order
+   with the stable code `ruby-flattened`, the selected `target`, `nodeType` of
+   `inline`, its `pos` when recorded, and a short message. It has NO `format`.
+   Plain, ANSI and canonical Carve output keep both sides visibly as
+   `base(annotation)` but lose their association. HTML and Markdown preserve
+   native ruby and report no loss.
+
+   A loss records WHAT THE SELECTED RENDERER ACTUALLY DROPS OR FLATTENS, not
+   every raw or ruby node in the tree. Matching HTML passes through (or is visibly escaped by a safe
    policy) with no loss. Markdown visibly escapes HTML raw content with no loss.
    ANSI visibly degrades a raw BLOCK to `[raw:format] content` with no loss, but
    reports a raw INLINE it omits. Plain text reports every raw node it omits.
@@ -565,7 +573,8 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    every binding MUST expose the checked result and strict form. A CLI MUST keep
    rendered stdout pure, summarize losses on stderr, fail with
    `--strict-losses`, offer a machine-readable JSON report, and permit the
-   explicit exception `--allow-loss raw-format-dropped`. Import-loss reports
+   explicit exceptions `--allow-loss raw-format-dropped` and
+   `--allow-loss ruby-flattened`. Import-loss reports
    are separate: they describe source-to-AST migration, while this report
    describes AST-to-target rendering. *)
 

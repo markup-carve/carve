@@ -536,5 +536,38 @@
       required to check. Where they do differ the ITEM is authoritative, since
       it is the finer statement
       ([carve#2203](https://github.com/markup-carve/carve/issues/2203)).
+   32. RUBY ANNOTATIONS SURVIVE INTERCHANGE -- NORMATIVE [CARVE-P12-054]. A
+      `ruby` inline node carries `pairs`, a non-empty ordered array. Each pair
+      is a closed object with exactly `base` and `annotation`: `base` is a
+      non-empty array of inline nodes and `annotation` is an array of inline
+      nodes which MAY be empty. The ruby node MAY also carry `attrs` and `pos`
+      under the ordinary inline-node rules. It has NO parallel `children`
+      field; the two arrays are what preserve the association.
+
+      PAIRS ARE STRUCTURE, NOT NODES. They carry no `type`, `attrs` or `pos`.
+      Their order is reading order, and every traversal walks `base` before
+      `annotation` in pair order. Sanitization, URL policy, profile enforcement,
+      resolution, cloning, equality, patching and rendering MUST reach both
+      arrays. One `ruby` counts as one inline nesting level. AST ingest still
+      measures depth in each implementation's own unit under §9(c).
+
+      CARVE 0.1 SOURCE HAS NO SPELLING FOR RUBY. A source parser never
+      synthesizes it. A canonical Carve writer emits every pair as
+      `base(annotation)` and reports `ruby-flattened` under PART 2. When the
+      node carries `attrs`, the writer wraps the complete fallback in one
+      ordinary attributed span. It MUST NOT discard either side or invent a
+      source spelling.
+
+      HTML emits one `<ruby>` in pair order, with generated `<rp>(</rp>` and
+      `<rp>)</rp>` around each `<rt>`. The outer element receives `attrs`.
+      Plain and ANSI emit `base(annotation)` and report `ruby-flattened`.
+      PART 11 §8c defines Markdown output.
+
+      PROFILES USE THE EXISTING `disallowedAction`. For `to_text`, the text
+      content is each base followed by `(`, its annotation and `)` in pair
+      order. `strip` removes the node and subtree; `error` rejects it. Ruby is
+      not a SemanticSpan, an `inline_extension` or a span carrying magic
+      attributes. A later source spelling MUST map to this node rather than
+      introduce a second representation.
 
    ============================================================================ *)

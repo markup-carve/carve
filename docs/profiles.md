@@ -35,7 +35,8 @@ spelling.
 `soft_break`, `hard_break`, `raw_inline`, `escaped_text`, `footnote_ref`,
 `inline_footnote`, `heading_ref`, `citation_group`, `citation`, `caption_number`,
 `span`, `superscript`, `subscript`, `highlight`, `insert`, `delete`,
-`substitution`, `critic_comment`, `symbol`, `math`, `abbreviation`, `small_caps`.
+`substitution`, `critic_comment`, `symbol`, `math`, `abbreviation`, `small_caps`,
+`ruby`.
 
 A caption is **not** in this list, because it is not a node: `figure`, `figure_group`
 and `table` each carry their caption as an inline array, so there is nothing for a
@@ -161,7 +162,8 @@ Deny always beats allow; an allowlist is a closed set.
 - **`to_text`** (default) — replace the node with its rendered text content
   (children flattened to text). Non-destructive: the words survive, the markup
   does not. A disallowed `link` keeps its label text; a disallowed `image`
-  keeps its alt text.
+  keeps its alt text. A disallowed `ruby` has no `children`; its text content is
+  each pair's base followed by `(`, its annotation, and `)` in pair order.
 - **`strip`** — remove the node and its subtree entirely.
 - **`error`** — abort and report a profile violation (type + reason).
 

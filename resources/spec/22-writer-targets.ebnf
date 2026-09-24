@@ -84,13 +84,17 @@
       use it. Inline HTML is the smallest departure that restores the
       construct, not an alternate canonical spelling.
 
-      The `underline`, `highlight`, `subscript`, `superscript` and `small_caps`
-      nodes have no
+      The `underline`, `highlight`, `subscript`, `superscript`, `small_caps`
+      and `ruby` nodes have no
       Markdown delimiter spelling and MUST use inline HTML: `<u>` for
       `underline`, `<mark>` for `highlight`, `<sub>` for `subscript` and
       `<sup>` for `superscript`. `small_caps` uses
       `<span class="smallcaps">`, merging its other attributes under the
-      ordinary span rules.
+      ordinary span rules. `ruby` uses `<ruby>`, with one base run and one
+      `<rt>` per pair plus generated `<rp>(</rp>` / `<rp>)</rp>` fallback.
+      Its base and annotation children use the Markdown inline writer inside
+      those HTML tags, and its outer attributes follow the ordinary HTML
+      attribute rules.
 
       THE TEST IS ON THE EMITTED BYTES, as in §1a. In the first document the
       strong delimiter reads back as `strong`, so replacing it with `<strong>`

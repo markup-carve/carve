@@ -25,15 +25,30 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["code", "format", "target", "nodeType", "message"],
+        "required": ["code", "target", "nodeType", "message"],
         "properties": {
-          "code": { "const": "raw-format-dropped" },
+          "code": { "enum": ["raw-format-dropped", "ruby-flattened"] },
           "format": { "type": "string" },
           "target": { "enum": ["html", "markdown", "plain", "ansi", "carve"] },
           "nodeType": { "enum": ["inline", "block"] },
           "message": { "type": "string" },
           "pos": { "$ref": "#/$defs/pos" }
         },
+        "oneOf": [
+          {
+            "properties": {
+              "code": { "const": "raw-format-dropped" },
+              "format": { "type": "string" }
+            },
+            "required": ["format"]
+          },
+          {
+            "properties": {
+              "code": { "const": "ruby-flattened" },
+              "format": false
+            }
+          }
+        ],
         "additionalProperties": false
       }
     },

@@ -123,6 +123,48 @@ needs a mode branch. An event handler on one of them is still stripped and
 still diagnosed: the mapping renames the element, it does not exempt it from
 hardening.
 
+## Ruby keeps base and annotation paired
+
+A valid HTML `ruby` imports as the interchange-only `ruby` inline node from
+PART 12 §30. The importer applies the WHATWG ruby segmentation algorithm to
+the parsed DOM. Each valid segment becomes one `pairs` entry: its base nodes
+go in `base`, and its first associated `rt` content goes in `annotation`.
+An empty `rt` is valid and produces `annotation: []`. Whitespace follows the
+WHATWG algorithm rather than a second Carve-specific segmentation rule.
+
+`rp` is fallback presentation and does not enter the AST. Empty `rp`, ASCII
+parentheses and fullwidth parentheses, ignoring surrounding HTML whitespace,
+are accepted without a diagnostic. Any other non-empty `rp` is dropped with
+`element-dropped` and `fidelity: "degraded"`; base and annotation content
+still survive.
+
+The obsolete `rb` and `rtc` elements use a compatibility path. `rb` unwraps
+into base content before segmentation. Each `rtc` is removed before
+segmentation and retained in DOM order. Its `rt` wrappers unwrap into one
+content sequence, and its `rp` children follow the rule above. After all output
+for the original `ruby` element, each retained `rtc` becomes ordinary inline
+`(<content>)` and reports `element-unwrapped` with degraded fidelity. This
+preserves a second annotation level visibly without inventing an association
+the first-version AST cannot hold.
+
+A base segment with no annotation becomes ordinary inline base content with
+no parentheses and reports `element-unwrapped` with normalized fidelity. An
+annotation with no base becomes ordinary `(<annotation>)` content and reports
+the same code with degraded fidelity. Either case splits a run; other valid
+segments remain structured. The importer never emits an empty `pairs` array
+or an empty `base`.
+
+Attributes on the outer `ruby` become `ruby.attrs`. Attributes on `rt`, `rb`
+or `rtc` report `attribute-dropped` without removing their visible content.
+Every recursive pass reaches base before annotation in pair order, including
+URL sanitization. Safe, semantic and roundtrip modes use the same mapping.
+Past the ordinary DOM or AST depth bound, import returns or throws the existing
+typed structural-limit error and never emits a partial tree.
+
+The AST-returning exit reports no structural loss for valid ruby. The
+source-writing exit uses readable `base(annotation)` fallback and reports
+`structure-unspellable`, because Carve 0.1 cannot retain the pairing.
+
 ## A destination Carve cannot carry is not a destination
 
 A `link` node needs a destination and an `image` node needs a source, and Carve
