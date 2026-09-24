@@ -20,7 +20,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-for (const name of ['ast-schema.json', 'ast-envelope-schema.json', 'node-roles.json', 'ast-source-layout-schema.json', 'ast-node-identity-schema.json', 'html-import-schema.json', 'importer-fidelity-schema.json', 'migration-report-schema.json', 'render-loss-report.schema.json', 'source-patch.schema.json']) {
+for (const name of ['ast-schema.json', 'ast-envelope-schema.json', 'node-roles.json', 'ast-source-layout-schema.json', 'ast-node-identity-schema.json', 'html-import-schema.json', 'importer-fidelity-schema.json', 'migration-report-schema.json', 'render-loss-report.schema.json', 'conversion-diagnostics.schema.json', 'source-patch.schema.json']) {
   const source = resolve(root, 'resources', name)
   const target = resolve(root, 'docs/public', name)
   const schema = JSON.parse(readFileSync(source, 'utf8'))

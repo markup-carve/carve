@@ -413,8 +413,9 @@
       DO: an HTML `<td>` holds flow content and a Pandoc `Cell` holds
       `[Block]`, so a cell holding a list, two paragraphs, a quotation or a
       code block had nowhere to land and was flattened to its text. A
-      canonical Carve writer loses the field and reports the loss, the way it
-      already does for `shortCaption` and for a `figure` wrapping a `table`.
+      canonical Carve writer loses the field and reports `field-unspellable`
+      for `table_cell.blocks` on the PART 11 §1d channel, the way it already
+      reports `shortCaption` and a `figure` wrapping a `table`.
 
       WHY A SECOND FIELD RATHER THAN A WIDER `children`. Widening the inline
       list to admit blocks changes the COMMON case for every consumer and
@@ -454,9 +455,9 @@
       small-caps wrapper. When the node carries `attrs`, it MUST preserve them
       on an ordinary attributed span around those children. It MUST NOT discard
       the children, change their letter case, or invent small-caps source
-      syntax. A bridge or API which exposes conversion diagnostics SHOULD
-      report the structural loss. A source spelling can be specified separately
-      without changing the interchange node.
+      syntax. It reports `structure-unspellable` for `small_caps` on the PART 11
+      §1d channel. A source spelling can be specified separately without
+      changing the interchange node.
 
    29. A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER -- NORMATIVE
       [CARVE-P12-051]. A `math` node MAY carry `label`, a non-empty authored
@@ -483,10 +484,10 @@
 
       Carve 0.1 source has no direct spelling for either field. Parsers do not
       synthesize `label`; the field enters through an AST consumer or format
-      bridge. A canonical source writer preserves the formula and reports the
-      unspellable label and number through its conversion diagnostics. An
-      exporter MAY map the pair to its target's equation label and numbering
-      model.
+      bridge. A canonical source writer preserves the formula and reports one
+      `field-unspellable` entry per dropped field, `math.label` and
+      `math.number`, on the PART 11 §1d channel. An exporter MAY map the pair
+      to its target's equation label and numbering model.
 
    30. SECTIONING IS INTERCHANGE-ONLY -- NORMATIVE [CARVE-P12-052]. A `section`
       carries `children`, the blocks it encloses, and MAY carry `level`, the
@@ -496,7 +497,8 @@
       and PART 9 derives every structure that depends on it from the heading
       run. A parser therefore produces no `section`, no corpus document
       contains one, and a canonical Carve writer flattens one back to its
-      headings and reports the loss.
+      headings and reports `structure-unspellable` for `section` on the PART 11
+      §1d channel.
 
       IT EXISTS BECAUSE THE FORMATS ON THE OTHER SIDE OF A BRIDGE HAVE IT.
       HTML5 `section`, JATS `sec`, DocBook `section`, DITA and TEI all carry
