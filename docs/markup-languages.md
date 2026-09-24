@@ -136,9 +136,9 @@ code
 | **CommonMark** | Standardize Markdown with unambiguous spec |
 | **GFM** | Extend CommonMark for developer workflows (tables, task lists, code) |
 | **Djot** | Predictable parsing, consistent rules, no edge cases |
-| **AsciiDoc** | Comprehensive technical documentation with semantic markup |
+| **AsciiDoc** | Technical documentation with semantic markup |
 | **reST** | Extensible, explicit, Python ecosystem standard |
-| **Org Mode** | Everything-in-one: notes, todos, literate programming |
+| **Org Mode** | Notes, tasks, and literate programming in one format |
 | **Gemtext** | Radical simplicity, one link per line, no inline formatting |
 
 ## Strengths & Weaknesses
@@ -168,7 +168,7 @@ code
 - **Cons**: Verbose, whitespace-sensitive
 
 ### Org Mode
-- **Pros**: Incredibly powerful, literate programming
+- **Pros**: Supports literate programming and task management
 - **Cons**: Emacs-centric, complex
 
 ### Gemtext
@@ -215,7 +215,3 @@ code
 | Rich documents with predictable parsing and built-in constructs | Carve |
 | Extreme minimalism | Gemtext |
 | Wiki content | MediaWiki or Creole |
-
-## Conclusion
-
-While Markdown remains dominant due to familiarity, alternatives like Djot offer cleaner semantics and predictable parsing. AsciiDoc and reST suit large documentation projects. The choice depends on your ecosystem, complexity requirements, and how much you value specification clarity over ubiquity.

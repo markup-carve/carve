@@ -1,24 +1,16 @@
 /*
- * PART 9 §16a AN IMPORTER DOES NOT BAKE A DERIVED NAME INTO SOURCE, pinned on
- * the fixture's own bytes (markup-carve/carve#1500).
+ * PART 9 §16a: imported source does not keep a derived name
+ * (markup-carve/carve#1500).
  *
- * WHY THIS EXISTS BESIDE THE FIXTURE. tests/html-import-contract.check.mjs
- * runs `tests/html-import/derived-accessible-name` through the pinned engine,
- * and while that engine still launders the derived name the fixture sits under
- * a declared PIN_LAG entry. A lagging fixture is compared only for INEQUALITY,
- * so its expectations could be rewritten to say anything at all - including the
- * over-broad rule the clause explicitly does not adopt - and the contract check
- * would stay green, because the engine disagrees with that too.
+ * tests/html-import-contract.check.mjs compares the fixture with the pinned
+ * engine. If both were wrong in the same way, that check would still pass.
+ * This test checks the rule against the fixture itself.
  *
- * The clause names its own test and it is not a round trip: the assertion has
- * to be that a DERIVED name is ABSENT from the imported source. The untitled
- * admonition is the reason - it round-trips to byte-identical HTML while being
- * permanently unlocalizable, so a round-trip assertion passes with the defect
- * present.
+ * The assertion checks that the derived name is absent from imported source.
+ * An untitled admonition can round-trip to identical HTML while still carrying
+ * an unlocalizable generated name, so an HTML round-trip would miss this defect.
  *
- * So both halves are read off the fixture directly, and they fail in opposite
- * directions: dropping too little leaves the derived value in, and dropping too
- * much takes the authored one with it.
+ * The test also checks that an authored name remains in the fixture.
  */
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
