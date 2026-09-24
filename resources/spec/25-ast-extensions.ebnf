@@ -811,4 +811,30 @@
       as an AST, and an identity reader refuses a version it does not
       implement.
 
+   39. A COUNT WITH NO MARKERS IS INGESTED AS THE SPAN -- NORMATIVE
+      [CARVE-P12-061]. A reader that meets a `table_cell` carrying `colspan` or
+      `rowspan` with no continuation cell over the positions it covers DERIVES
+      those positions from the count. Against a well-formed grid the covered
+      positions are a function of the counts, so inverting the walk of PART 9
+      §13 T5 is a derivation and not a guess. An HTML or Pandoc tree arrives
+      this way because neither format HAS a continuation cell for a bridge to
+      have written.
+
+      THE MARKERS WIN WHERE A TREE CARRIES BOTH AND THEY DISAGREE. A
+      continuation cell's `span` is the document record under §3a; a count is a
+      resolution result under §5, and a derived value never overrides the value
+      it was derived from. §26 already calls such a payload invalid; this says
+      which half a reader that accepts it keeps.
+
+      REFUSAL IS FOR ARITHMETIC, NOT FOR A MISSING MARKER. A count reaching
+      past the table's last row or column, or one whose positions another
+      cell's count already occupies, has no derivation: that is a malformed
+      tree, refused with an error of its own in the sense §9(b) means. A count
+      with no markers is an interchange shape, and nothing refuses it.
+
+      AN ORPHAN MARKER IS NOT EXPRESSIBLE THIS WAY. §26 publishes a marker that
+      found no origin carrying `span` and moving no count, so a count-only tree
+      cannot state one. Accepted: a format with no continuation cell has no
+      marker to orphan, and a tree that carries markers keeps them.
+
    ============================================================================ *)

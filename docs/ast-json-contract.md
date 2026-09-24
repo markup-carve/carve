@@ -989,6 +989,29 @@ reaches a table model with integer spans. Unlike a generated heading id, a wrong
 answer changes the shape of the table rather than the text of one anchor
 ([carve#2190](https://github.com/markup-carve/carve/issues/2190)).
 
+## A count with no markers is ingested as the span
+
+A reader that meets `colspan` or `rowspan` with no continuation cell over the
+positions it covers derives those positions from the count. Against a
+well-formed grid the covered positions are a function of the counts, so
+inverting the span walk is a derivation rather than a guess. HTML and Pandoc
+trees arrive this way: neither format has a continuation cell for a bridge to
+have written.
+
+**The markers win where a tree carries both and they disagree.** A continuation
+cell's `span` is the document record; a count is a resolution result, and a
+derived value never overrides the value it was derived from.
+
+**Refusal is for arithmetic, not for a missing marker.** A count reaching past
+the table's last row or column, or one whose positions another cell's count
+already occupies, has no derivation and is refused. A count with no markers is
+an interchange shape, and nothing refuses it.
+
+What this cannot express is an orphan marker: one that found no origin is
+published carrying `span` and moves no count, so a count-only tree cannot state
+one. Accepted, because a format with no continuation cell has no marker to
+orphan ([carve#2240](https://github.com/markup-carve/carve/issues/2240)).
+
 ## A reference node carries its target
 
 A node whose whole purpose is to point at something names what it points at,
