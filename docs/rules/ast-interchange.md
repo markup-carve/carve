@@ -9,7 +9,7 @@ description: "The core serialized tree shape, source positions, and cross-implem
 
 The core serialized tree shape, source positions, and cross-implementation AST guarantees.
 
-This view contains 42 of 262 active rules. Every rule remains mandatory where applicable.
+This view contains 43 of 263 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -57,3 +57,4 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L388) | 12 | A TABLE CELL MAY CARRY BLOCK CONTENT INSTEAD OF INLINE |
 | [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L420) | 12 | SMALL CAPS SURVIVE INTERCHANGE |
 | [`CARVE-P12-051`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L443) | 12 | A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER |
+| [`CARVE-P12-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L473) | 12 | SECTIONING IS INTERCHANGE-ONLY |

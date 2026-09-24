@@ -470,4 +470,32 @@
       exporter MAY map the pair to its target's equation label and numbering
       model.
 
+   30. SECTIONING IS INTERCHANGE-ONLY -- NORMATIVE [CARVE-P12-052]. A `section`
+      carries `children`, the blocks it encloses, and MAY carry `level`, the
+      heading level the source format stated for it.
+
+      Carve source spells no section: sectioning is implicit in heading level,
+      and PART 9 derives every structure that depends on it from the heading
+      run. A parser therefore produces no `section`, no corpus document
+      contains one, and a canonical Carve writer flattens one back to its
+      headings and reports the loss.
+
+      IT EXISTS BECAUSE THE FORMATS ON THE OTHER SIDE OF A BRIDGE HAVE IT.
+      HTML5 `section`, JATS `sec`, DocBook `section`, DITA and TEI all carry
+      sectioning explicitly, and an importer reading one had to flatten it into
+      headings - discarding nesting that every consumer wanting it then
+      re-derived from `heading.level`, separately. That is the same cost §26
+      removed for a table's resolved span, one structure up.
+
+      THE LEVEL IS WHAT THE SOURCE SAID, NOT WHAT THE NESTING IMPLIES. A
+      format that states a level publishes it; one that does not omits the
+      field, and the nesting is the answer. The two cannot disagree in a tree
+      an importer built, so a reader is not required to check
+      ([carve#2207](https://github.com/markup-carve/carve/issues/2207)).
+
+      A CAPTION IS NOT A NODE, and the profile vocabulary no longer says it is.
+      `figure`, `figure_group` and `table` each carry their caption as an
+      inline array, so there is nothing a profile could deny separately from
+      its host. Listing it gave implementations a name that named nothing.
+
    ============================================================================ *)
