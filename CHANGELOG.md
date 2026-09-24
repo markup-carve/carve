@@ -23,6 +23,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed (breaking for writer output)
 
+- **`footnote.id` is no longer a permitted AST compatibility alias** (#2184). A
+  footnote definition uses `label`, and an ingest rejects `id` like any other
+  unknown field. The alias was undocumented and had no structural invariant
+  behind it; removing it leaves one canonical footnote field before
+  stabilization.
+- **Every empty block container renders one blank HTML body line** (#2184),
+  replacing the compact forms, which had no author-facing rule behind them.
+  Visible-body counting is defined for rendered children, labels and captions.
 - **The Markdown target's rich-text spelling is normative** (carve#2177,
   carve#2180). PART 11 §8c, `CARVE-P11-045`. The target spells emphasis with
   `*`, strong with `**`, the combined token with `***` and strike with `~~`,
