@@ -538,6 +538,78 @@ test('every property the identity schema declares carries a description', () => 
   )
 })
 
+/** The text of PART 12 §36, the clause that defines `line_block.lines`. */
+function lineBlockClause() {
+  const grammar = readFileSync(resolve(root, 'resources/grammar.ebnf'), 'utf8')
+  const start = grammar.indexOf('   36. A LINE BLOCK MAY PUBLISH ITS LINES')
+  assert.notEqual(start, -1, 'PART 12 §36 is not where this test looks for it')
+  const end = grammar.indexOf('\n   37. ', start)
+  assert.notEqual(end, -1, 'PART 12 §36 has no §37 after it')
+  return grammar.slice(start, end)
+}
+
+test('a line block publishes its lines as per-stanza ranges', () => {
+  /*
+   * The tree is the one carve-js publishes for the two shapes carve#2235
+   * measured, in one document: the boundary sits inside the `strong`, and the
+   * trailing `\` adds a `hard_break` that closes no line.
+   *
+   *   ::: |
+   *   *Roses are red
+   *   Violets are blue*\
+   *   :::
+   */
+  const stanza = {
+    type: 'paragraph',
+    children: [
+      {
+        type: 'strong',
+        children: [
+          { type: 'text', value: 'Roses are red' },
+          { type: 'hard_break' },
+          { type: 'text', value: 'Violets are blue' },
+        ],
+      },
+      { type: 'hard_break' },
+    ],
+  }
+  const withLines = (lines) => ({
+    type: 'document',
+    srcByteLength: 40,
+    children: [{ type: 'line_block', children: [stanza], ...(lines === undefined ? {} : { lines }) }],
+  })
+
+  assert.equal(validate(withLines()), true, firstErrors())
+  assert.equal(validate(withLines([['/children/0/children/1', '/children/-']])), true, firstErrors())
+  // One line, because no pointer names the trailing break: it is content.
+  assert.equal(validate(withLines([['/children/-']])), true, firstErrors())
+
+  // The superseded reading, where an entry was the line's inline sequence.
+  assert.equal(validate(withLines([[{ type: 'text', value: 'Only' }]])), false, 'an inline sequence validated')
+  // Not grouped per stanza, so nothing says which stanza a line belongs to.
+  assert.equal(validate(withLines(['/children/-'])), false, 'a flat pointer list validated')
+  // A boundary list cannot say where the last line stops, and its length is
+  // one short of the line count.
+  assert.equal(validate(withLines([['/children/0/children/1']])), false, 'a stanza with no end pointer validated')
+  assert.equal(
+    validate(withLines([['/children/-', '/children/-']])),
+    false,
+    'a stanza ending twice validated',
+  )
+  assert.equal(validate(withLines([[]])), false, 'a stanza with no lines validated')
+  assert.equal(validate(withLines([['children/0', '/children/-']])), false, 'a relative path validated')
+})
+
+test('PART 12 §36 names the end pointer the schema requires', () => {
+  // The past-the-end pointer is a literal in both, so a change to one that
+  // leaves the other alone is a schema no implementer can read off the clause.
+  const sentinel = schema.$defs.line_block.properties.lines.items.contains.const
+  assert.ok(
+    lineBlockClause().includes('`' + sentinel + '`'),
+    `PART 12 §36 does not name ${sentinel}, the pointer the schema requires of every stanza's last line.`,
+  )
+})
+
 test('shared source-layout fixtures validate', () => {
   const layoutSchema = JSON.parse(readFileSync(resolve(root, 'resources/ast-source-layout-schema.json'), 'utf8'))
   const validateLayout = new Ajv2020({ strict: true }).compile(layoutSchema)

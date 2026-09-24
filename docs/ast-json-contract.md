@@ -1135,33 +1135,42 @@ document still carries `admonition` with kind `footnotes`. `not` arrives on
 
 ## A line block may publish its lines
 
-`line_block.children` holds the blocks; `lines` holds the same content as the
-lines it actually is, each an inline sequence:
+`line_block.children` holds the blocks; `lines` says where each stanza's lines
+begin and end. **A line is a range, not a sequence.** `lines` is parallel to
+`children` - entry `i` covers the stanza `children[i]` - and each entry is an
+array of RFC 6901 pointers relative to that stanza, one per line, naming where
+the line stops: the `hard_break` that closes it, or `/children/-` for the last
+line. Line `n` is the content between pointer `n-1` and pointer `n`, excluding
+both.
+
+Here the boundary sits inside the `strong` and the trailing `\` closes nothing,
+so the stanza has two lines:
+
+```carve
+::: |
+*Roses are red
+Violets are blue*\
+:::
+```
 
 ```json
 { "type": "line_block",
   "children": ["..."],
-  "lines": [[{ "type": "text", "value": "Roses are red" }],
-            [{ "type": "text", "value": "Violets are blue" }]] }
+  "lines": [["/children/0/children/1", "/children/-"]] }
 ```
 
-**Absent, the lines are what splitting `children` on `hard_break` yields.** That
-is what every consumer did before this field, and it is ambiguous: an authored
-hard break inside a verse line and a line boundary are the same node, so the
-split is right only because nothing else produces a `hard_break` there - an
-invariant no clause states, and none could, since a line block's content is
-ordinary inline content.
+Nothing is re-bracketed, so an `id` on a run spanning two lines is published
+once and no half is synthesized for §4 to give a span to. **A `hard_break` no
+pointer names is authored content**, which is how the trailing break above stays
+inside line two.
 
-**Present, it settles the question**, and a hard break inside a line stays a hard
-break. This is §5's added-alongside rule: the derived reading published beside
-the authored construct rather than replacing it, the same way a resolved
-reference keeps `ref` and `rawRef` beside `href`. `children` is unchanged and
-still required, so no consumer has to move.
-
+`lines` does not span stanzas: a blank line ends one, `children` keeps that
+boundary, and a consumer reading one entry is reading one stanza's lines.
 Preserved indentation is unaffected - a leading run of U+E000 is per line either
-way. The two cannot disagree in a tree a parser produced, and a reader is not
-required to check; where both are present, `lines` is the finer statement
-([carve#2202](https://github.com/markup-carve/carve/issues/2202)).
+way. Absent, the lines are what splitting `children` on `hard_break` yields,
+which over-counts a trailing break and under-counts a boundary inside a run;
+where both are present, `lines` is the finer statement
+([carve#2235](https://github.com/markup-carve/carve/issues/2235)).
 
 ## Where the nodes are, as data
 

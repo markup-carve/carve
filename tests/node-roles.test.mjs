@@ -64,6 +64,8 @@ test('every node-holding field the schema declares has a role', () => {
           (typeof value.items?.$ref === 'string' ||
             Array.isArray(value.items?.anyOf) ||
             Array.isArray(value.items?.oneOf) ||
+            // No field is an array of node arrays since §36 made a line a
+            // range, so one added later fails here rather than going unroled.
             typeof value.items?.items?.$ref === 'string'))
       if (!holdsNode) continue
       // `attrs`/`pos` are the only shared `$ref`s, and they are skipped above.
@@ -74,7 +76,7 @@ test('every node-holding field the schema declares has a role', () => {
 })
 
 test('a role is one of the three the contract names', () => {
-  const roles = new Set(['node-sequence', 'node-matrix', 'single-node', 'record-sequence'])
+  const roles = new Set(['node-sequence', 'single-node', 'record-sequence'])
   for (const [owner, fields] of Object.entries(table.roles)) {
     for (const [field, spec] of Object.entries(fields)) {
       assert.ok(roles.has(spec.role), `${owner}.${field} has role "${spec.role}"`)
