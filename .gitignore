@@ -18,5 +18,6 @@ screenshots/
 
 # Generated at docs build from resources/ast-schema.json (scripts/publish-schema.mjs)
 docs/public/ast-schema.json
+docs/public/node-roles.json
 docs/examples/
 docs/.vitepress/generated-examples.json
