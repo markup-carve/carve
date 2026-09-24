@@ -5573,6 +5573,14 @@ EOF = (* end of file *) ;
       Author `{attrs}` after the span merge onto the <span> (the base
       `math …` class is kept; see PART 10 §1).
 
+      A directly numbered display equation renders its label and number after
+      the math span as one U+0020 followed by
+      `<span class="equation-number">LABEL NUMBER</span>`, with one U+0020
+      between LABEL and NUMBER and no brackets. `attrs.id` remains on the math
+      span, so a resolved cross-reference lands on the formula. Plain, ANSI and
+      Markdown append one U+0020 followed by the same `LABEL NUMBER` text, with
+      no brackets, under their ordinary inline escaping rules.
+
       A MATH SPAN CARRIES ROLE MATH -- NORMATIVE [CARVE-P9-037]. The delimiters are written
       for a typesetter to find. Until one runs -- and if none ever does, which
       is the default -- the span is a plain `<span>` full of backslashes and
@@ -5637,8 +5645,10 @@ EOF = (* end of file *) ;
       - `</#id>` to a NUMBERED CAPTION (a figure / table / listing / equation
         whose caption carries a number placeholder and an `{#id}`) yields the
         caption's LABEL + NUMBER ("Figure 1"), markup preserved, NOT the
-        caption prose. A `</#id>` to an id that is neither a heading nor a
-        numbered caption stays unresolved and renders literally.
+        caption prose. A directly numbered display equation resolves through
+        its `attrs.id` and yields its string LABEL + NUMBER ("Equation 1"). A
+        `</#id>` to an id that is neither a heading nor either numbered target
+        stays unresolved and renders literally.
       - Mentions (`@user`), tags (`#tag`) and smart typography are ON by
         default in the conformant core; a processor MAY disable them. The
         corpus pins the default-on behavior.
@@ -7165,7 +7175,7 @@ EOF = (* end of file *) ;
                     reserved first in document order, then auto-slugs, with
                     -2/-3/... collision dedup
      captionIds   : id -> (kind in {figure, table, listing, equation},
-                    number)                          -- from R5
+                    label, number)                   -- from R5/R5a
      footnoteSeq  : ONE shared document-order counter for both footnote
                     forms
 
@@ -7374,8 +7384,10 @@ EOF = (* end of file *) ;
    R4 CROSSREFS (behavior detail in PART 9 §19). </#id> folds
       case-insensitively and matches against the case-preserved headingIds
       (an ASCII spelling of a non-ASCII id does NOT resolve; corpus
-      15-heading-ids), then against captionIds for numbered captions (the
-      link text is then LABEL + NUMBER, e.g. "Figure 1", markup preserved).
+      15-heading-ids), then against captionIds for numbered captions and
+      directly numbered display equations. The link text is LABEL + NUMBER,
+      e.g. "Figure 1" or "Eq. 2"; caption markup is preserved, while a direct
+      equation's label is a string.
       Resolution is ONE LEVEL: cloned heading text is not re-expanded, so
       self-references and cycles are safe. Unresolved -> literal.
       WHAT IS CLONED IS THE HEADING'S INLINE NODES -- NORMATIVE [CARVE-P9R-005].
@@ -7392,12 +7404,14 @@ EOF = (* end of file *) ;
       derivation site destroys the source run exactly as flattening at the
       index site does. Stated once here rather than per consumer.
       THE LABEL IS TAKEN BEFORE ANY RENDER-STAGE INJECTION. A heading's
-      cloned nodes are its AUTHORED inline content. Whatever a render-stage
+      cloned nodes are its AUTHORED inline content. The `number` that R5a adds
+      to display math in a heading is not cloned, so derived display text shows
+      the formula without that number. Whatever a render-stage
       transform later adds to the heading -- a `section-number` span, a
       permalink anchor -- is not part of the label and never appears in
-      derived text, so an implementation that resolves cross-references
-      AFTER such a transform must clone from the PRISTINE heading and not
-      from the live one. That is normative rather than incidental because two
+      derived text, so an implementation that resolves cross-references AFTER
+      such a transform must clone from the PRISTINE heading and not from the
+      live one. That is normative rather than incidental because two
       implementations may differ HERE BY CONSTRUCTION: one resolves
       cross-references before the numbering transform runs, the other after
       it, and both follow the same words unless the words say which side of
@@ -7405,10 +7419,44 @@ EOF = (* end of file *) ;
       NUMBERING, PREFIXING AND JOINING REMAIN THE EXTENSION'S OWN
       BUSINESS. This governs what the TITLE part is made of, not the label
       word, not the number, and not the separator around them.
-   R5 NUMBERED CAPTIONS. Per kind, in document order, each caption whose
+   R5 NUMBERED CAPTIONS. Per bucket key, in document order, each caption whose
       top-level text carries a bare `#` placeholder receives the next
-      number of its kind (PART 2, CAPTION NUMBER PLACEHOLDER); an {#id} on
-      the caption registers it in captionIds for R4.
+      number for the label's plain-text bucket key (PART 2, CAPTION NUMBER
+      PLACEHOLDER); an {#id} on
+      the caption registers it in captionIds for R4. For every captionIds
+      collision, including collisions between two captions or between a
+      caption and an equation, the first registration in document order wins;
+      the later target remains numbered but does not replace it.
+   R5a LABELED DISPLAY EQUATIONS ARE NUMBERED -- NORMATIVE [CARVE-P9R-009].
+      A `math` node carrying `display: true` and an authored `label` draws the
+      next number in that label's caption bucket. The label has no leading or
+      trailing whitespace, so its value is the same plain-text key that PART 2
+      derives from a caption label, and it uses R5's document-order counter.
+      `label: "Equation"` therefore interleaves with
+      captions whose label is `Equation`; `Eq.` and labels in other languages
+      remain independent just as they do for captions. Resolution publishes the
+      integer as `math.number` beside the authored `label`.
+
+      The node's `attrs.id`, when present, registers the label and number in
+      captionIds for R4 with kind `equation`. `label` supplies visible text and
+      is NOT the id. Keys are NFC-normalized and matched case-insensitively, as
+      R4 matches the other id tables. R5's first-registration rule resolves
+      collisions within captionIds. R4's heading-first lookup still makes a
+      collision with a heading id resolve to the heading.
+      Inline math never draws a number, even if an ingested node carries a
+      label.
+
+      A display-math node at any depth in a `figure` target or a `figure_group`
+      draws no direct number when that figure or group's caption carries R5's
+      number placeholder. For nested figures and groups, the nearest enclosing
+      numbered figure or group owns the node. One numbered caption suppresses
+      direct numbering for every display-math descendant in its target or
+      children. The equations keep their authored labels, but
+      their `number` fields stay absent and their own `attrs.id` values do not
+      register in captionIds. A reference to such an equation id therefore
+      remains unresolved unless the numbered caption independently registers
+      that same id. A caption without the placeholder owns no number and does
+      not suppress R5a.
    R6 SECTION WRAPPING consumes headingIds after dedup -- the stateful
       emission algorithm in PART 9 §13.
    R7 BLOCK IMAGE PROMOTION -- NORMATIVE [CARVE-P9R-007]. Block-image status is a
@@ -11012,5 +11060,35 @@ EOF = (* end of file *) ;
       syntax. A bridge or API which exposes conversion diagnostics SHOULD
       report the structural loss. A source spelling can be specified separately
       without changing the interchange node.
+
+   29. A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER -- NORMATIVE
+      [CARVE-P12-051]. A `math` node MAY carry `label`, a non-empty authored
+      string with no leading or trailing whitespace, used as its visible
+      numbering prefix and counter bucket. The
+      cross-reference identifier remains `attrs.id`. The label survives
+      resolution unchanged. A resolved labeled display equation also carries
+      `number`, a positive integer assigned by PART 9R R5a, unless the math sits
+      inside a `figure` whose caption carries a number placeholder and owns the
+      number. The number is added beside the label under §5's added-alongside
+      rule; it never replaces it. "Inside" means at any depth in a figure's
+      target or a `figure_group`'s children. For nested figures and groups, the
+      nearest enclosing numbered figure or group owns the node. One numbered
+      caption suppresses direct numbering for every display-math descendant in
+      its target or children. Those equations retain `label`, but have no
+      `number` and do not register their own `attrs.id` values as numbered
+      cross-reference targets.
+
+      Only a node carrying `display: true` may carry `number`. An inline math
+      node carrying `number` is invalid on ingest. A label on inline math is
+      retained for interchange but draws no number and registers no numbered
+      cross-reference target. A number without a label is invalid: it has no
+      counter bucket or visible prefix.
+
+      Carve 0.1 source has no direct spelling for either field. Parsers do not
+      synthesize `label`; the field enters through an AST consumer or format
+      bridge. A canonical source writer preserves the formula and reports the
+      unspellable label and number through its conversion diagnostics. An
+      exporter MAY map the pair to its target's equation label and numbering
+      model.
 
    ============================================================================ *)

@@ -440,4 +440,34 @@
       report the structural loss. A source spelling can be specified separately
       without changing the interchange node.
 
+   29. A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER -- NORMATIVE
+      [CARVE-P12-051]. A `math` node MAY carry `label`, a non-empty authored
+      string with no leading or trailing whitespace, used as its visible
+      numbering prefix and counter bucket. The
+      cross-reference identifier remains `attrs.id`. The label survives
+      resolution unchanged. A resolved labeled display equation also carries
+      `number`, a positive integer assigned by PART 9R R5a, unless the math sits
+      inside a `figure` whose caption carries a number placeholder and owns the
+      number. The number is added beside the label under §5's added-alongside
+      rule; it never replaces it. "Inside" means at any depth in a figure's
+      target or a `figure_group`'s children. For nested figures and groups, the
+      nearest enclosing numbered figure or group owns the node. One numbered
+      caption suppresses direct numbering for every display-math descendant in
+      its target or children. Those equations retain `label`, but have no
+      `number` and do not register their own `attrs.id` values as numbered
+      cross-reference targets.
+
+      Only a node carrying `display: true` may carry `number`. An inline math
+      node carrying `number` is invalid on ingest. A label on inline math is
+      retained for interchange but draws no number and registers no numbered
+      cross-reference target. A number without a label is invalid: it has no
+      counter bucket or visible prefix.
+
+      Carve 0.1 source has no direct spelling for either field. Parsers do not
+      synthesize `label`; the field enters through an AST consumer or format
+      bridge. A canonical source writer preserves the formula and reports the
+      unspellable label and number through its conversion diagnostics. An
+      exporter MAY map the pair to its target's equation label and numbering
+      model.
+
    ============================================================================ *)

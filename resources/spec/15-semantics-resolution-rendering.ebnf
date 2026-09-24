@@ -468,6 +468,14 @@
       Author `{attrs}` after the span merge onto the <span> (the base
       `math …` class is kept; see PART 10 §1).
 
+      A directly numbered display equation renders its label and number after
+      the math span as one U+0020 followed by
+      `<span class="equation-number">LABEL NUMBER</span>`, with one U+0020
+      between LABEL and NUMBER and no brackets. `attrs.id` remains on the math
+      span, so a resolved cross-reference lands on the formula. Plain, ANSI and
+      Markdown append one U+0020 followed by the same `LABEL NUMBER` text, with
+      no brackets, under their ordinary inline escaping rules.
+
       A MATH SPAN CARRIES ROLE MATH -- NORMATIVE [CARVE-P9-037]. The delimiters are written
       for a typesetter to find. Until one runs -- and if none ever does, which
       is the default -- the span is a plain `<span>` full of backslashes and
@@ -532,8 +540,10 @@
       - `</#id>` to a NUMBERED CAPTION (a figure / table / listing / equation
         whose caption carries a number placeholder and an `{#id}`) yields the
         caption's LABEL + NUMBER ("Figure 1"), markup preserved, NOT the
-        caption prose. A `</#id>` to an id that is neither a heading nor a
-        numbered caption stays unresolved and renders literally.
+        caption prose. A directly numbered display equation resolves through
+        its `attrs.id` and yields its string LABEL + NUMBER ("Equation 1"). A
+        `</#id>` to an id that is neither a heading nor either numbered target
+        stays unresolved and renders literally.
       - Mentions (`@user`), tags (`#tag`) and smart typography are ON by
         default in the conformant core; a processor MAY disable them. The
         corpus pins the default-on behavior.

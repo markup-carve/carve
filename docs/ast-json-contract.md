@@ -80,6 +80,15 @@ ordinary attributed span. A conversion API with diagnostics should report that
 the distinction was lost. Exporters may map it to a corresponding construct.
 The node does not imply uppercasing or other text changes.
 
+A `math` node may carry an authored numbering `label`, such as `Equation` or
+`Eq.`. Resolution leaves the label in place and gives a labeled display equation
+a positive integer `number` from the same label bucket used by captions, unless
+a `figure` around the math has a numbered caption that owns the number.
+`attrs.id` remains the cross-reference identifier. Inline math may retain a
+label from interchange, but it never receives a number. Carve 0.1 source does
+not spell either field directly, so parsers do not synthesize them and
+source-writing conversion reports their loss.
+
 A `figure` may target a `table` (§17). That is a different document from a
 table carrying its own `caption`: the wrapper renders `<figure>` and
 `<figcaption>` around the table, while `table.caption` renders `<caption>`

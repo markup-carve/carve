@@ -112,6 +112,64 @@ test('small caps are a structural inline wrapper with children', () => {
   }), false)
 })
 
+test('display math accepts an authored label and resolved number', () => {
+  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 12, startOffset: 0, endOffset: 11 }
+  const equation = {
+    type: 'math',
+    display: true,
+    content: 'E = mc^2',
+    label: 'Equation',
+    number: 1,
+    attrs: { id: 'eq-emc' },
+    pos,
+  }
+  const document = {
+    type: 'document',
+    srcByteLength: 11,
+    children: [{ type: 'paragraph', children: [equation], pos }],
+  }
+
+  assert.equal(validate(document), true, firstErrors())
+  assert.equal(validate({
+    ...document,
+    children: [{ type: 'paragraph', children: [{ ...equation, display: false }], pos }],
+  }), false)
+  assert.equal(validate({
+    ...document,
+    children: [{ type: 'paragraph', children: [{ ...equation, label: '' }], pos }],
+  }), false)
+  assert.equal(validate({
+    ...document,
+    children: [{ type: 'paragraph', children: [{ ...equation, label: '   ' }], pos }],
+  }), false)
+  assert.equal(validate({
+    ...document,
+    children: [{ type: 'paragraph', children: [{ ...equation, label: ' Equation' }], pos }],
+  }), false)
+  assert.equal(validate({
+    ...document,
+    children: [{ type: 'paragraph', children: [{ ...equation, label: 'Equation ' }], pos }],
+  }), false)
+  assert.equal(validate({
+    ...document,
+    children: [{ type: 'paragraph', children: [{ ...equation, number: 0 }], pos }],
+  }), false)
+  assert.equal(validate({
+    ...document,
+    children: [{ type: 'paragraph', children: [{ ...equation, number: 1.5 }], pos }],
+  }), false)
+  const { label: _label, ...numberWithoutLabel } = equation
+  assert.equal(validate({
+    ...document,
+    children: [{ type: 'paragraph', children: [numberWithoutLabel], pos }],
+  }), false)
+  const { number: _number, ...labeledInline } = equation
+  assert.equal(validate({
+    ...document,
+    children: [{ type: 'paragraph', children: [{ ...labeledInline, display: false }], pos }],
+  }), true, firstErrors())
+})
+
 test('a figure targets a table, which no Carve source spells', () => {
   // PART 12 §17 from both directions. The table branch is the one an HTML
   // importer produces from `<figure><table>…<figcaption>` and no Carve source

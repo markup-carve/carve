@@ -965,6 +965,12 @@
       "scope": "resolution-rendering"
     },
     {
+      "id": "CARVE-P9R-009",
+      "part": "9R",
+      "title": "R5a LABELED DISPLAY EQUATIONS ARE NUMBERED",
+      "scope": "resolution-rendering"
+    },
+    {
       "id": "CARVE-P10-001",
       "part": "10",
       "title": "AN EMPTY CONTAINER BODY",
@@ -1586,6 +1592,12 @@
       "id": "CARVE-P12-050",
       "part": "12",
       "title": "SMALL CAPS SURVIVE INTERCHANGE",
+      "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-051",
+      "part": "12",
+      "title": "A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER",
       "scope": "ast-interchange"
     }
   ],
