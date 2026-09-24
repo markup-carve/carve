@@ -141,3 +141,28 @@ rust/46-bbcode-empty-quotes-survive  markup-carve/carve#2171: preserve an empty 
 # stale shape: the run named each of them and failed on nothing else.
 #
 # THIS FILE IS EMPTY OF DECLARATIONS AGAIN, which is the intended end state.
+
+# The Markdown importer rulings carve-js shipped in markup-carve/carve-js#1922
+# through #1948: import writes what `carve fmt` writes and reads what cmark-gfm
+# reads. Measured 2026-09-24 against carve-rs `c236c754`, carve-js `bce255b9`
+# and carve-php `4b8cce25`: carve-rs and carve-js pass all 22 cases, carve-php
+# still passes the source spelling through on 19 of them.
+php/47-markdown-table-body-rows-are-written-unpadded  markup-carve/carve-js#1922 not ported: body rows keep their source padding
+php/48-markdown-a-table-row-is-fitted-to-the-header  markup-carve/carve-js#1923 not ported: body rows keep every cell they have
+php/49-markdown-a-tilde-fence-becomes-a-backtick-fence  markup-carve/carve-js#1925 not ported: the fence stays `~~~`
+php/50-markdown-an-over-long-fence-is-narrowed  markup-carve/carve-js#1925 not ported: the fence keeps its five backticks
+php/52-markdown-ordered-items-are-numbered-on  markup-carve/carve-js#1925 not ported: `1.` `1.` `1.` is kept
+php/54-markdown-a-nested-quote-under-a-quote-paragraph  markup-carve/carve-js#1925 not ported: no empty `>` line before the nested quote
+php/56-markdown-a-wider-number-moves-its-item-content  markup-carve/carve-js#1931 not ported: `9.` twice, continuation left at column 3
+php/57-markdown-a-loose-list-is-written-with-blank-lines  markup-carve/carve-js#1931 not ported: only the source blank line is written
+php/58-markdown-an-over-indented-continuation-line-moves-to-the-item  markup-carve/carve-js#1933 not ported: the line keeps its six columns
+php/59-markdown-a-marker-between-list-levels-is-a-sibling  markup-carve/carve-js#1933 not ported: ` - c` is kept one column in
+php/60-markdown-a-lazy-line-after-a-quote-in-an-item  markup-carve/carve-js#1933 not ported: the lazy line gets no quote marker
+php/61-markdown-a-pipe-table-under-an-item-belongs-to-it  markup-carve/carve-js#1936 not ported: the item table stays pipe text
+php/62-markdown-a-tab-after-a-marker-is-its-padding  markup-carve/carve-js#1936 not ported: the tab after the marker is kept
+php/63-markdown-indented-code-on-an-item-line-is-code  markup-carve/carve-js#1936 not ported: the item-line code is not fenced
+php/64-markdown-dash-runs-in-text-stay-hyphens  markup-carve/carve-js#1940 not ported: `--` and `---` are not escaped
+php/65-markdown-a-multi-line-setext-heading-in-an-item  markup-carve/carve-js#1942 not ported: the item setext heading is not folded
+php/66-markdown-a-one-item-list-parted-by-a-blank-is-loose  markup-carve/carve-js#1948 not ported: the heading leaves the item, no `{loose}`
+php/67-markdown-quoted-item-marker-padding-collapses  markup-carve/carve-js#1948 not ported: `> -  a` keeps its padding
+php/68-markdown-a-quoted-lazy-line-four-columns-in-is-text  markup-carve/carve-js#1948 not ported: the lazy line leaves the quote
