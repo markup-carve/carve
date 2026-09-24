@@ -169,9 +169,7 @@ const DECLARED_UNIMPLEMENTED = {
  * An entry is deleted in the commit that moves the pin past it; the check below
  * fails an entry whose case already matches, so a stale one cannot sit here.
  */
-const AHEAD_OF_PIN = {
-  '51-list-table-cross-group-rowspan': 'the pinned JavaScript ListTable renderer still clamps spans at body-group boundaries',
-}
+const AHEAD_OF_PIN = {}
 
 /*
  * THE RATCHET ON THE EXCUSE, because an entry above can only ever turn a

@@ -214,6 +214,8 @@ index: examples/edge-cases/index.md
   a-table-cell-s-marker-run-ends-at-a-space
   table-row-attributes
   table-header-cell-rowspan
+  an-explicit-table-head-span-keeps-one-row-group
+  a-table-foot-span-keeps-one-row-group
   blocked-span-marker-renders-as-empty-cell
   colspan-marker-scans-left-past-a-consumed-cell
   a-pipe-pair-with-no-cell-is-not-a-table

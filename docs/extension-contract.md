@@ -806,10 +806,9 @@ byte-identical to the plain div.
 
 Tier-2, so not in the mandatory corpus. The shared optional corpus pins the
   caption (case 26), leading header rows/columns (42), column metadata and the
-  foot (44), local row/cell headers (45), and a span crossing local body groups
-  (51); run it per §3 whenever the feature is enabled. The three implementations
-  additionally pin malformed degradation, spans, and ragged padding in their
-  own suites.
+  foot (44), and local row/cell headers (45); run it per §3 whenever the feature
+  is enabled. The three implementations additionally pin malformed degradation,
+  spans across row-group boundaries, and ragged padding in their own suites.
 
 ### 5.5 Out of scope (impls MAY differ)
 

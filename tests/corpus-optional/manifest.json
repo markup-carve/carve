@@ -258,11 +258,6 @@
       "slug": "50-social-link-resolvers",
       "feature": "social-link-resolvers",
       "description": "Host resolvers map @alice to /people/42 and #release to /collections/stable; unresolved @missing and #private plus a denied javascript: result for @unsafe keep their inert span rendering."
-    },
-    {
-      "slug": "51-list-table-cross-group-rowspan",
-      "feature": "list-table-local-headers-1248",
-      "description": "A visible rowspan crossing local body groups keeps its span and renders all rows inside one tbody."
     }
   ]
 }
