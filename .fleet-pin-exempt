@@ -1,0 +1,16 @@
+# Engines deliberately held at a spec commit the rest of the fleet has moved off.
+# Read by scripts/fleet-spec-pin-check.mjs.
+#
+# One per line, `<repo>@<sha>: <reason>`. The reason is required: an exemption
+# nobody can audit is how this gate would quietly stop meaning anything, so a
+# bare repo name is an error rather than a skip. Every exemption that applies is
+# printed on a passing run too, so what was waived stays visible.
+#
+# The sha is part of the key on purpose. An exemption naming only the repo
+# outlives the divergence it describes and silences the next one; keyed on the
+# pin, it stops applying the moment the pin moves. A line whose sha no longer
+# matches, or whose engine has rejoined the fleet, is reported as an error
+# telling you to delete it.
+#
+# Empty on purpose. The fleet agreeing is the normal state, and a divergence
+# that nobody chose is the finding this gate exists for.

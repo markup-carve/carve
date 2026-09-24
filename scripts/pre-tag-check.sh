@@ -18,6 +18,13 @@
 # release workflow).
 set -u
 
+# Where THIS script lives, resolved before the run cds into the target repo.
+# Steps 7 and 8 test `scripts/...` relative to the working directory, so they
+# only fire when the repo being checked IS the spec repo. Step 9 asks a question
+# about all three engines at once, and the answer is the same whichever repo is
+# being tagged, so it is reached through the script's own directory instead.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 VERSION="${1:-}"
 if [ -z "$VERSION" ]; then
   echo "usage: pre-tag-check.sh <version> [repo-dir] [--tag <tag>]" >&2
@@ -325,6 +332,33 @@ if [ -f scripts/declaration-audit.mjs ]; then
   else
     bad "declaration lists are not clear - see below"
     printf '%s\n' "$AUDIT_OUT" | sed 's/^/         /'
+  fi
+fi
+
+# 9. The three engines implement the SAME spec (carve#2197 shipped because
+#    nothing asked).
+#
+# Every engine's CI runs scripts/check-spec-pin-ancestry.sh, which asserts the
+# pinned spec commit is REACHABLE from spec main. That is a dangling-pin check
+# and it is correct. It is also true of any commit ever merged, so it passed on
+# carve-php pinned SEVEN BEHIND the AST schema carve-js and carve-rs had, and
+# carve-php shipped an ingest divergence with three green pin jobs behind it.
+#
+# Reachability is a per-repo property and every repo already checks its own.
+# Agreement is a fleet property; it cannot be measured from inside one repo, so
+# no per-repo gate could ever have caught this and none of them was at fault.
+#
+# .fleet-pin-exempt declares a divergence that is deliberate, with its reason,
+# and the reason is printed on a passing run - the .changelog-exempt shape in
+# step 5a, for the same reason: a gate with no way to say "yes, on purpose" is
+# a gate somebody eventually deletes.
+if [ -f "$SCRIPT_DIR/fleet-spec-pin-check.mjs" ]; then
+  if FLEET_OUT="$(node "$SCRIPT_DIR/fleet-spec-pin-check.mjs" 2>&1)"; then
+    ok "carve-js, carve-rs and carve-php pin the same spec commit"
+    printf '%s\n' "$FLEET_OUT" | sed 's/^/         /'
+  else
+    bad "the engines do not pin the same spec commit - see below"
+    printf '%s\n' "$FLEET_OUT" | sed 's/^/         /'
   fi
 fi
 
