@@ -479,6 +479,48 @@
       }
     },
     "directive": {
+      "title": {
+        "role": "node-sequence",
+        "admits": [
+          "abbreviation",
+          "autolink",
+          "caption_number",
+          "citation_group",
+          "code",
+          "comment",
+          "critic_comment",
+          "delete",
+          "emphasis",
+          "escaped_text",
+          "footnote_ref",
+          "hard_break",
+          "heading_ref",
+          "highlight",
+          "image",
+          "inline_extension",
+          "inline_footnote",
+          "insert",
+          "link",
+          "literal_inline",
+          "math",
+          "mention",
+          "raw_inline",
+          "ruby",
+          "small_caps",
+          "smart_punctuation",
+          "soft_break",
+          "span",
+          "strike",
+          "strong",
+          "subscript",
+          "substitution",
+          "superscript",
+          "symbol",
+          "tag",
+          "text",
+          "underline"
+        ]
+      },
       "children": {
         "role": "node-sequence",
         "admits": [

@@ -741,6 +741,14 @@
       are carried and the renderer decides what they mean
       ([carve#2195](https://github.com/markup-carve/carve/issues/2195)).
 
+      A DIRECTIVE MAY CARRY A `title`. The opener admits a quoted title on
+      every named container, so `::: toc "Contents"` spells one: the field is
+      optional and holds that text as authored inline content, exactly as
+      `admonition.title` does. The DISPATCH DOES NOT MOVE - the kind alone
+      decides the type, an untitled directive is unchanged, and a titled one
+      renders by `admonition`'s existing rule
+      ([carve#2247](https://github.com/markup-carve/carve/issues/2247)).
+
    36. A LINE BLOCK MAY PUBLISH ITS LINES -- NORMATIVE [CARVE-P12-058]. A
       `line_block` MAY carry `lines`, parallel to `children`: entry `i` holds
       the LINES of the stanza `children[i]`. `children` is unchanged and still
