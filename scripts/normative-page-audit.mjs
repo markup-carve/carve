@@ -1,63 +1,18 @@
 #!/usr/bin/env node
 /*
- * DOES A NORMATIVE PAGE STATE ANYTHING THE SPEC SOURCE DOES NOT?
+ * Check that obligations on declared normative pages have homes in the spec.
+ * A page opts in with `normative: true`; resources/normative-pages.txt pins
+ * the set. Each MUST or MUST NOT sentence needs a clause and an anchor in
+ * resources/normative-page-obligations.txt.
  *
- * The repo's single-source-of-truth policy says the grammar is normative and
- * PART 9 holds the semantic constraints; docs/includes.md opens by claiming it
- * states §19 "in full". Nothing checked the claim, and carve#1995 is what that
- * cost: an obligation four engines implement and tests/include-security-
- * conformance gates, living only on the page. The whole gate set was green
- * against it.
+ * Marked tables are checked row by row against their cited clauses, including
+ * rows without a MUST keyword. Each cited clause must cover at least one row.
+ * The comparison uses content words and short shared prefixes. It catches
+ * missing coverage but cannot prove that two sentences mean the same thing.
+ * A human must review each anchor.
  *
- * WHAT THIS CHECKS, AND WHAT IT DOES NOT. Read this before trusting a green
- * run - the honest scope is the point of carve#2007, not a caveat on it.
- *
- *   1. SCOPE IS DECLARED, NOT ASSUMED. A page is in scope iff its frontmatter
- *      carries `normative: true`, and the set of such pages is pinned in
- *      resources/normative-pages.txt. Both directions fail: an undeclared page
- *      in the list, and a declared page missing from it. Silencing the gate by
- *      deleting a declaration therefore shows up in the diff, which is the same
- *      guard resources/normative-clauses.txt carries for clause removal.
- *
- *   2. OBLIGATION TABLES - the shape that got through. The two conditions
- *      carve#1995 found are ROWS of the Errors table and contain no `MUST` at
- *      all, so no keyword scan could ever have seen them. A table marked
- *      `<!-- normative-obligations: PART 9 §19 I3 I6 I7 -->` is compared
- *      against those clauses CONTENT-WORD BY CONTENT-WORD: every row must be
- *      covered by the union, and every named clause must cover at least one row
- *      so the citation cannot be padded until it matches. This is the check
- *      that catches #1995; see the test for the proof that it does.
- *
- *      Matching is lexical, with a shared-prefix rule so `exceeds` reaches
- *      `exceeded` and `exhaustion` reaches `exhausted`. It answers "is this
- *      condition's vocabulary present in the clause", not "does the clause mean
- *      the same thing". A row reworded into the clause's own words while saying
- *      something new passes.
- *
- *   3. MUST SENTENCES - a ledger with an anchor. Every `MUST` / `MUST NOT`
- *      sentence on a declared page needs a row in
- *      resources/normative-page-obligations.txt naming the clause that states
- *      it AND a short distinctive ANCHOR phrase that must still appear in that
- *      clause, compared with whitespace collapsed and case folded so the EBNF's
- *      hard wrapping cannot break it. So the gate fails on all four of: a new
- *      obligation with no row, a row matching no obligation, a cited clause
- *      that does not exist, and a clause that still exists but has LOST the
- *      sentence the row points at.
- *
- *      What it does not do is judge an obligation it was never told about. The
- *      anchor is a human's reading, and no automatic substitute exists: measured
- *      on this page, the lexical overlap between a real obligation and its
- *      clause (0.50 - 1.00 across the fourteen) and between an INVENTED
- *      obligation and its best clause anywhere (0.33 - 0.60) OVERLAP, so no
- *      similarity threshold separates a restatement from a novel rule. What the
- *      ledger buys is that a new obligation cannot land without a human naming
- *      its home in the same diff.
- *
- *   4. ONE DIRECTION ONLY. Page implies spec. A clause no page explains is not
- *      reported: that backlog is large and would make the gate red from birth,
- *      which is the state carve#128 in intellij-carve describes as unread. The
- *      bounded two-way half is inside check 2, where every cited clause must
- *      earn its citation.
+ * The audit runs from page to spec. It does not require every spec clause to
+ * appear on a page. See carve#1995 and carve#2007 for the failures this guards.
  *
  *   node scripts/normative-page-audit.mjs
  */
