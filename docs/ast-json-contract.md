@@ -72,6 +72,14 @@ of source serialization: a Carve 0.1 writer omits the field, and conversion
 APIs with diagnostics should report that loss. It is also independent
 of the proposed `^^` author syntax.
 
+A `small_caps` inline node carries `children` so format bridges can preserve
+small caps from Pandoc, DocBook, TEI, and other structured formats. Carve
+0.1 source has no spelling for the wrapper: parsers do not produce it, and the
+canonical writer writes its children and preserves its attributes on an
+ordinary attributed span. A conversion API with diagnostics should report that
+the distinction was lost. Exporters may map it to a corresponding construct.
+The node does not imply uppercasing or other text changes.
+
 A `figure` may target a `table` (§17). That is a different document from a
 table carrying its own `caption`: the wrapper renders `<figure>` and
 `<figcaption>` around the table, while `table.caption` renders `<caption>`

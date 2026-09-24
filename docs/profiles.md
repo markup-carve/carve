@@ -35,7 +35,7 @@ spelling.
 `soft_break`, `hard_break`, `raw_inline`, `escaped_text`, `footnote_ref`,
 `inline_footnote`, `heading_ref`, `citation_group`, `citation`, `caption_number`,
 `span`, `superscript`, `subscript`, `highlight`, `insert`, `delete`,
-`substitution`, `critic_comment`, `symbol`, `math`, `abbreviation`.
+`substitution`, `critic_comment`, `symbol`, `math`, `abbreviation`, `small_caps`.
 
 An **`autolink`** is its own type, not a `link`. The two differ in what the
 author wrote and in what a formatter must be able to reproduce: an autolink

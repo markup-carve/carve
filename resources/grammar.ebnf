@@ -9042,10 +9042,13 @@ EOF = (* end of file *) ;
       use it. Inline HTML is the smallest departure that restores the
       construct, not an alternate canonical spelling.
 
-      The `underline`, `highlight`, `subscript` and `superscript` nodes have no
+      The `underline`, `highlight`, `subscript`, `superscript` and `small_caps`
+      nodes have no
       Markdown delimiter spelling and MUST use inline HTML: `<u>` for
       `underline`, `<mark>` for `highlight`, `<sub>` for `subscript` and
-      `<sup>` for `superscript`.
+      `<sup>` for `superscript`. `small_caps` uses
+      `<span class="smallcaps">`, merging its other attributes under the
+      ordinary span rules.
 
       THE TEST IS ON THE EMITTED BYTES, as in §1a. In the first document the
       strong delimiter reads back as `strong`, so replacing it with `<strong>`
@@ -10986,5 +10989,28 @@ EOF = (* end of file *) ;
       describing the same document two ways, which §1a's coalescing rule
       rejects one layer down for the same reason
       ([carve#2191](https://github.com/markup-carve/carve/issues/2191)).
+
+   28. SMALL CAPS SURVIVE INTERCHANGE -- NORMATIVE [CARVE-P12-050]. A
+      `small_caps` inline node carries `children`, plus optional `attrs` and
+      `pos` under the ordinary inline-node rules. It records a semantic
+      small-caps distinction supplied by an AST consumer or format bridge.
+
+      CARVE 0.1 SOURCE HAS NO SPELLING FOR THIS WRAPPER. A source parser never
+      synthesizes it. The node survives AST encode/decode by §6, and a
+      structured exporter MAY map it to its target's equivalent small-caps
+      construct.
+
+      HTML renders `<span class="smallcaps">`, merging the node's attributes
+      under the ordinary span rules. Plain and ANSI output render the children
+      without changing their letter case. PART 11 §8c defines the Markdown
+      target.
+
+      A canonical Carve source writer MUST write the children without the
+      small-caps wrapper. When the node carries `attrs`, it MUST preserve them
+      on an ordinary attributed span around those children. It MUST NOT discard
+      the children, change their letter case, or invent small-caps source
+      syntax. A bridge or API which exposes conversion diagnostics SHOULD
+      report the structural loss. A source spelling can be specified separately
+      without changing the interchange node.
 
    ============================================================================ *)
