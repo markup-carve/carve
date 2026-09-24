@@ -227,6 +227,56 @@ Pandoc's side needs no shared map, because it reads the serialized
 pins. Any engine that can write that JSON can feed the bridge, not only the one
 it ships beside.
 
+**Five readings where the two models differ in kind**
+
+Most of the vocabulary maps by name. Five places do not: the models hold the
+same information in a different SHAPE, so a bridge has to choose a reading, and
+two bridges choosing separately is how the ProseMirror pair drifted. These are
+the readings, measured against pandoc-carve rather than proposed for it. A
+second bridge to Pandoc implements these, and does not re-decide them.
+
+| | Carve | Pandoc | reading |
+|---|---|---|---|
+| definition lists | a flat run of `definition_term` and `definition_description` | `[([Inline], [[Block]])]`, grouped | a term run opens a group; the descriptions after it belong to that group |
+| citation mode | `suppressAuthor` per item, `mode` on the group | `CitationMode`, three-valued, per citation | `suppressAuthor` picks `SuppressAuthor`, otherwise `NormalCitation` |
+| quotes | a pair of `smart_punctuation` nodes with content between | `Quoted`, wrapping its content | pair within one inline sequence, else emit the glyph |
+| line blocks | paragraphs whose lines are separated by `hard_break` | `LineBlock`, a list of lines | split on `hard_break`; a U+E000 run becomes U+00A0 |
+| document metadata | `frontmatter` holding `format` and raw `content` | `Meta`, structured | the bridge parses; the tree stays raw |
+
+**Definition lists.** Pandoc's term slot is a single `[Inline]`, so a run of two
+terms sharing one description joins with a `LineBreak` rather than producing two
+entries. A description with no term before it attaches to the group already
+open - not to an empty term list, which would invent an entry the source does
+not have. The grouping is not published in the tree on purpose: two engines that
+published it grouped the same document differently, and a plain grouping object
+can carry no `pos`.
+
+**Citation mode.** Carve source cannot spell a group whose items have different
+modes, so the tree is right to carry one `mode` for the group. The cost lands on
+the way back: a Pandoc `Cite` mixing `AuthorInText` with `NormalCitation` has no
+encoding here, and belongs in the loss report. A typed locator flattens into
+`citationSuffix`, since Pandoc's `Citation` has no locator field - reported as
+`normalized`, not `degraded`, because the visible text is unchanged.
+
+**Quotes.** Synthesizing `Quoted` is worth doing and safe as long as the pairing
+is conservative. A pair that opens and closes inside one inline sequence becomes
+`Quoted`; anything else - an unmatched opener, a pair straddling an emphasis
+boundary - emits the glyph, which is what the `smart_punctuation` node already
+resolves to. That bound is what keeps re-pairing from guessing: a bridge never
+reaches across a construct boundary to find a partner.
+
+**Line blocks.** Split `children` on `hard_break` to recover the lines. A leading
+run of U+E000 is preserved indentation and maps to U+00A0, per the sentinel rule
+in the [AST contract](./ast-json-contract). An authored hard break inside a verse
+line and a line boundary are the same node, so the two are indistinguishable on
+the way back; that is a known degradation rather than a bug to fix in the tree.
+
+**Document metadata.** `frontmatter.content` stays raw, because §3a wants the
+document and not a reading of it. The YAML lands in Pandoc's `Meta` through the
+bridge's own parse, so the supported subset is the bridge's to document - and a
+second bridge naming a different subset is the drift this section exists to
+catch.
+
 **An application's own node type**
 
 A bridge does not need to know about an application's private constructs for
