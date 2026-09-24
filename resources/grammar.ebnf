@@ -3362,8 +3362,9 @@ language_subtag    = ( letter | digit ), { letter | digit } ;
 id_attribute = '#', explicit_identifier ;
 class_attribute = '.', explicit_identifier ;
 key_value_attribute = identifier, '=', attribute_value ;
-(* A bare identifier with no value is a BOOLEAN (value-less) attribute,
-   rendered `name=""` (a carve extension beyond canonical djot, matching
+(* A bare identifier is a VALUE-LESS BOOLEAN attribute in source. It has the same
+   empty-string AST value as `name=""` and renders `name=""` (a carve
+   extension beyond canonical djot, matching
    djot-php; matched after key_value_attribute so `k=v` is not read as a bare
    `k`). It mixes freely with the other forms. See PART 9 §14. *)
 boolean_attribute = identifier - ('_', {character}) ;
@@ -4971,9 +4972,10 @@ EOF = (* end of file *) ;
           when mixed with valid attributes (`{.ok .1}`), so the run stays
           literal. No other leading character is newly accepted.
           A digit/`-`/`_` AFTER the first character is valid (`{.a1}`).
-      BOOLEAN (value-less) ATTRIBUTES -- NORMATIVE [CARVE-P9-022]. A bare identifier with no
-      value (`[text]{featured}`, `{.note open}`, `{disabled}` on a block line)
-      is a boolean attribute, rendered `name=""`. It is matched after the
+      BOOLEAN ATTRIBUTES -- NORMATIVE [CARVE-P9-022]. A bare identifier
+      (`[text]{featured}`, `{.note open}`, `{disabled}` on a block line) is a
+      value-less boolean attribute in source. It has the same empty-string AST
+      value as `name=""` and renders `name=""`. It is matched after the
       `key_value_attribute` form (so `k=v` stays a key/value) and mixes freely
       with id/class/key=value in source order; multiple are allowed; a
       digit-first bare word is not a valid name (the block stays literal, as for
@@ -4988,7 +4990,7 @@ EOF = (* end of file *) ;
       (`<span samp="">x</span>`), and only the Tier-2 SemanticSpan extension
       consumes them (§10). All seven are boolean attributes everywhere else,
       including in the AST and in the canonical writer, which writes the span
-      back as `[Tab]{kbd}` -- a value-less attribute is spelled bare there
+      back as `[Tab]{kbd}` -- an empty-string attribute is spelled bare there
       (PART 11 §6c).
       A COLON is not an `identifier` character, so a colon-bearing name is
       unrecognized in every form -- `{xml:lang="en"}`, `{.sm:hover}`, `{#a:b}`
@@ -7680,7 +7682,7 @@ EOF = (* end of file *) ;
       This rule changes only HTML rendering. The AST remains an ordinary `span`
       carrying the authored attributes, plain and ANSI targets render its
       inline content, and the canonical writer emits the span with its
-      attributes, a value-less one spelled bare per PART 11 §6c.
+      attributes, an empty-string one spelled bare per PART 11 §6c.
 
       Accessible ruby is NOT reserved here: it requires structured
       base/annotation children rather than a single inline container.
@@ -8353,11 +8355,13 @@ EOF = (* end of file *) ;
       move, where the writer emits the shortest form that happens to survive
       re-parsing rather than the form that says what it means.
 
-   6c. A VALUE-LESS ATTRIBUTE IS WRITTEN AS A BOOLEAN -- NORMATIVE [CARVE-P11-012]. An
-      attribute whose value is the empty string comes back as the bare name:
+   6c. AN EMPTY-STRING ATTRIBUTE IS WRITTEN AS A BOOLEAN -- NORMATIVE [CARVE-P11-012]. An
+      attribute whose AST value is the empty string comes back as the bare name:
       `[x]{kbd}`, not `[x]{kbd=""}`. `boolean_attribute` is the production the
-      language has for "this attribute is present and carries no value"
-      (PART 4), so that is the form the writer emits.
+      language has for "this attribute is present and has an empty value"
+      (PART 4), so that is the form the writer emits. `{kbd}` and `{kbd=""}`
+      therefore parse to the same value; their authored distinction is not in
+      the ordinary AST and the writer uses the canonical bare spelling.
 
       EXCEPT WHERE THE NAME STARTS WITH `_`, which `boolean_attribute` refuses.
       `_x_=""` stays `{_x_=""}`: emitting `{_x_}` would write a
@@ -8379,8 +8383,8 @@ EOF = (* end of file *) ;
       rather than the shorter `---`, and its reason is that a bare `---` is
       NOT a production for yaml frontmatter. A boolean attribute is the
       opposite case -- the grammar has a production for exactly this shape.
-      `{kbd=""}` says the value is an empty STRING, where the tree says the
-      attribute has no value at all.
+      `{kbd=""}` and `{kbd}` say the same thing in the tree. The latter uses
+      the dedicated production for that empty-string value.
 
       A COMPACT SEMANTIC SPAN IS WHERE IT SHOWS. `[Tab]{kbd}` is the form PART
       9 §10 documents and the form an author writes, and it is a name whose

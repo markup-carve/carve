@@ -643,7 +643,7 @@
     {
       "id": "CARVE-P9-022",
       "part": "9",
-      "title": "BOOLEAN (value-less) ATTRIBUTES",
+      "title": "BOOLEAN ATTRIBUTES",
       "scope": "parsing"
     },
     {
@@ -1087,7 +1087,7 @@
     {
       "id": "CARVE-P11-012",
       "part": "11",
-      "title": "A VALUE-LESS ATTRIBUTE IS WRITTEN AS A BOOLEAN",
+      "title": "AN EMPTY-STRING ATTRIBUTE IS WRITTEN AS A BOOLEAN",
       "scope": "canonical-writing"
     },
     {

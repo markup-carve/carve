@@ -1,5 +1,5 @@
 {.callout open}
 Bare spelling.
 
-{.callout open=""}
+{.callout open}
 Explicit empty string.

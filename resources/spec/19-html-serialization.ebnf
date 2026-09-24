@@ -233,7 +233,7 @@
       This rule changes only HTML rendering. The AST remains an ordinary `span`
       carrying the authored attributes, plain and ANSI targets render its
       inline content, and the canonical writer emits the span with its
-      attributes, a value-less one spelled bare per PART 11 §6c.
+      attributes, an empty-string one spelled bare per PART 11 §6c.
 
       Accessible ruby is NOT reserved here: it requires structured
       base/annotation children rather than a single inline container.

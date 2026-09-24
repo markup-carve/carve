@@ -131,8 +131,9 @@ language_subtag    = ( letter | digit ), { letter | digit } ;
 id_attribute = '#', explicit_identifier ;
 class_attribute = '.', explicit_identifier ;
 key_value_attribute = identifier, '=', attribute_value ;
-(* A bare identifier with no value is a BOOLEAN (value-less) attribute,
-   rendered `name=""` (a carve extension beyond canonical djot, matching
+(* A bare identifier is a VALUE-LESS BOOLEAN attribute in source. It has the same
+   empty-string AST value as `name=""` and renders `name=""` (a carve
+   extension beyond canonical djot, matching
    djot-php; matched after key_value_attribute so `k=v` is not read as a bare
    `k`). It mixes freely with the other forms. See PART 9 §14. *)
 boolean_attribute = identifier - ('_', {character}) ;
