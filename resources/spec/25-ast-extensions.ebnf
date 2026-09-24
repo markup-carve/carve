@@ -613,5 +613,57 @@
       envelope of §32 marks the extension `required`, the refusal happens
       there, before the tree is read
       ([carve#2200](https://github.com/markup-carve/carve/issues/2200)).
+   34. A STORED TREE IS WRAPPED IN A VERSIONED ENVELOPE -- NORMATIVE
+      [CARVE-P12-056]. At a STORAGE OR PROCESS boundary a Carve AST is carried
+      inside an envelope validating against
+      `resources/ast-envelope-schema.json`: `astVersion` and `document`
+      required, `vocabulary` and `extensions` optional, nothing else.
+
+      THE TREE DOES NOT MOVE. `document` is exactly what PART 12 describes and
+      `ast-schema.json` pins. `carve --json` still writes that tree bare, an
+      in-memory handoff still passes it bare, and every clause of this PART
+      applies to it unchanged. The envelope wraps; it does not amend.
+
+      WHY IT EXISTS. §11 and §12 close the tree, which is the right posture: a
+      payload from a newer contract fails rather than being half-read. What a
+      closed schema with NO VERSION cannot do is say WHICH failure it was. A
+      corrupt tree, a vocabulary this build does not know, and a document
+      needing an extension it does not implement all arrive as one validation
+      error - and §12 requires "an error of its own, naming what was wrong".
+      The envelope is what lets the reader name it.
+
+      `astVersion` IS THE CONTRACT'S VERSION, NOT THE LANGUAGE'S. It is
+      `major.minor` and it does not track the Carve version: the language is
+      versioned for authors and this is versioned for readers of a tree. A
+      MAJOR bump removes, renames or reinterprets a field or a meaning; a MINOR
+      bump adds a field or a node type. It starts at 1.0, and a leading zero is
+      refused so the 0.x reading of a major never applies here.
+
+      WHAT A READER DOES:
+
+      (a) A HIGHER MAJOR IS REFUSED, with a typed error naming the version it
+          got and the version it implements. Not a schema failure: the payload
+          may be perfectly well-formed under a contract this build predates.
+      (b) A HIGHER MINOR IS ACCEPTED only where every extension the payload
+          marks `required` is one the reader implements. A minor adds, so the
+          tree is readable except for what the additions carry, and the
+          `required` flag is the payload's own statement of whether those
+          additions are load-bearing.
+      (c) AN EXTENSION MARKED REQUIRED AND NOT IMPLEMENTED IS REFUSED, named.
+          Rendering the understood parts and reporting success is what §9(b)
+          forbids one level down, for the same reason.
+      (d) A MISSING `vocabulary` MEANS THE CORE ONE. A profile that denies
+          types does not change it: a denied type is one the document does not
+          use, not a different vocabulary.
+
+      A PRODUCER EMITS ONE CANONICAL VERSION - the contract its build
+      implements - rather than echoing what it read. Re-emitting an ingested
+      `astVersion` would republish a claim the producer cannot keep.
+
+      THE SCHEMA STAYS CLOSED. `additionalProperties: false` holds on the
+      envelope and on every node inside it. Versioning solves evolution without
+      weakening the ingest, and §11 already ruled that a pass-through is the
+      answer that cannot be right
+      ([carve#2199](https://github.com/markup-carve/carve/issues/2199)).
 
    ============================================================================ *)
