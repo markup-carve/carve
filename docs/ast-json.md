@@ -125,6 +125,10 @@ A range that does not nest inside the inline tree - a comment across two
 emphases, a search hit across a link boundary - is carried beside the tree too.
 See [Annotation ranges in JSON](./ast-annotation-ranges).
 
+`pos.file` names the file an included node came from and nothing else about it.
+For the format it arrived in, its bytes in that input, and the include chain
+above it, see [Provenance in JSON](./ast-provenance).
+
 After changing a tree:
 
 1. validate its JSON shape;

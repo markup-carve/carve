@@ -1411,3 +1411,109 @@ test('PART 12 §40 settles the four points carve#2232 left open', () => {
       'requires each to be settled with the schema and said in the clause.',
   )
 })
+
+/** The provenance sidecar schema, read fresh so no test mutates another's copy. */
+function provenanceSchema() {
+  return JSON.parse(readFileSync(resolve(root, 'resources/ast-provenance-schema.json'), 'utf8'))
+}
+
+/** The text of PART 12 §41, the clause that defines the provenance sidecar. */
+function provenanceClause() {
+  const grammar = readFileSync(resolve(root, 'resources/grammar.ebnf'), 'utf8')
+  const start = grammar.indexOf('   41. PROVENANCE IS A SEPARATE OPT-IN SIDECAR')
+  assert.notEqual(start, -1, 'PART 12 §41 is not where this test looks for it')
+  const end = grammar.indexOf('\n   ==========', start)
+  assert.notEqual(end, -1, 'PART 12 §41 has no PART terminator after it')
+  return grammar.slice(start, end)
+}
+
+test('provenance is a separate closed versioned sidecar', () => {
+  const validateProvenance = new Ajv2020({ strict: true }).compile(provenanceSchema())
+  const node = { path: '/children/3', source: 's1', startByte: 40, endByte: 68, origin: 'authored', step: 'md-import-1' }
+  const sidecar = {
+    version: 1,
+    sources: [{ id: 's0', uri: 'file:///book/index.crv' }, { id: 's1', uri: 'file:///book/ch1.md', format: 'markdown', parent: 's0' }],
+    nodes: [node],
+  }
+  assert.equal(validateProvenance(sidecar), true, JSON.stringify(validateProvenance.errors))
+  // A generated node with no byte range is the shape nothing authored has.
+  assert.equal(validateProvenance({ ...sidecar, nodes: [{ path: '/children/4', source: 's0', origin: 'generated' }] }), true)
+  assert.equal(validateProvenance({ ...sidecar, version: 2 }), false, 'an unimplemented version validated')
+  assert.equal(validateProvenance({ ...sidecar, unknown: true }), false, 'an unnamed root property validated')
+  assert.equal(validateProvenance({ version: 1, nodes: [] }), false, 'a sidecar with no sources validated')
+  assert.equal(validateProvenance({ ...sidecar, nodes: [{ ...node, origin: 'imported' }] }), false, 'a third origin validated')
+  assert.equal(validateProvenance({ ...sidecar, nodes: [{ ...node, endByte: undefined }] }), false, 'half a byte range validated')
+  assert.equal(validateProvenance({ ...sidecar, nodes: [{ ...node, source: undefined }] }), false, 'a node naming no source validated')
+  // §41 restates no codepoint offset: `pos` on the node is measured elsewhere.
+  assert.equal(validateProvenance({ ...sidecar, nodes: [{ ...node, startOffset: 0 }] }), false, 'a node restating an offset validated')
+})
+
+test('provenance is not a field of the tree', () => {
+  // §41's first sentence from the tree's side. §13 keeps filesystem paths out of
+  // the core tree, so the names an implementer would reach for first have to be
+  // refused there rather than merely discouraged.
+  const bare = { type: 'document', children: [], srcByteLength: 0 }
+  assert.equal(validate(bare), true, firstErrors())
+  assert.equal(validate({ ...bare, provenance: {} }), false, 'a root carrying provenance validated')
+  assert.equal(validate({ ...bare, sources: [] }), false, 'a root carrying sources validated')
+  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
+  assert.equal(
+    validate({ ...bare, srcByteLength: 1, children: [{ type: 'paragraph', children: [], origin: 'authored', pos }] }),
+    false,
+    'a node carrying origin validated',
+  )
+})
+
+test('every property the provenance schema declares is defined in PART 12 §41', () => {
+  const clause = provenanceClause()
+  const schemaDoc = provenanceSchema()
+  const declared = [
+    ...Object.keys(schemaDoc.properties),
+    ...Object.keys(schemaDoc.$defs.source.properties),
+    ...Object.keys(schemaDoc.$defs.nodeProvenance.properties),
+  ]
+  const undefinedHere = declared.filter((name) => !namedInClause(clause, name)).sort()
+  assert.deepEqual(
+    undefinedHere,
+    [],
+    `the provenance schema declares propert(ies) PART 12 §41 does not define: ${undefinedHere.join(', ')}. ` +
+      'A declared field with no clause cannot be implemented. Define it in §41.',
+  )
+})
+
+test('every property the provenance schema declares carries a description', () => {
+  const schemaDoc = provenanceSchema()
+  const entries = [
+    ...Object.entries(schemaDoc.properties),
+    ...Object.entries(schemaDoc.$defs.source.properties),
+    ...Object.entries(schemaDoc.$defs.nodeProvenance.properties),
+  ]
+  const bare = entries
+    .filter(([name, subschema]) => !['version', 'sources', 'nodes'].includes(name) && typeof subschema.description !== 'string')
+    .map(([name]) => name)
+    .sort()
+  assert.deepEqual(
+    bare,
+    [],
+    `provenance schema propert(ies) carry no description: ${bare.join(', ')}. ` +
+      'The schema is published on its own, so a consumer reading only the schema needs the pointer to §41.',
+  )
+})
+
+test('PART 12 §41 settles the five points carve#2233 left open', () => {
+  const clause = provenanceClause()
+  const unsettled = [
+    ['what ancestry hangs on', 'ANCESTRY IS ON THE SOURCE'],
+    ['bytes against codepoints', 'A BYTE RANGE IS NOT AN OFFSET'],
+    ['where a path may appear', 'FILESYSTEM PATH MAY APPEAR'],
+    ['node or range', 'PROVENANCE IS PER NODE'],
+    ['a canonical write', 'DOES NOT SURVIVE A CANONICAL WRITE'],
+  ].filter(([, phrase]) => !clause.includes(phrase))
+  assert.deepEqual(
+    unsettled.map(([what]) => what),
+    [],
+    'PART 12 §41 leaves open: ' +
+      `${unsettled.map(([what]) => what).join(', ')}. The ruling on carve#2234 ` +
+      'requires each to be settled with the schema and said in the clause.',
+  )
+})
