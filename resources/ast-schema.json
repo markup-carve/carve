@@ -804,6 +804,23 @@
     "citation_group": {
       "type": "object",
       "title": "citation_group (inline)",
+      "not": {
+        "type": "object",
+        "required": ["mode"],
+        "properties": {
+          "mode": {},
+          "items": {
+            "type": "array",
+            "contains": {
+              "not": {
+                "type": "object",
+                "required": ["mode"],
+                "properties": {"mode": {}}
+              }
+            }
+          }
+        }
+      },
       "required": [
         "type",
         "items",
@@ -825,7 +842,7 @@
         },
         "mode": {
           "const": "integral",
-          "description": "Set by a leading `+` after `[`. Absent means parenthetical."
+          "description": "Set by a leading `+` after `[`. Absent means no group shorthand; each item's mode governs."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"

@@ -1715,9 +1715,11 @@ wrote, and §3a records the document rather than a rendering of it.
 No corpus document moves. A parse fills every item of a group identically from
 the group's own value, so the only trees whose items differ are ones an importer
 or an editing API built, and a canonical Carve writer cannot spell one - it
-reports the loss instead. Where the two do differ, the item is authoritative,
-being the finer statement
-([carve#2203](https://github.com/markup-carve/carve/issues/2203)).
+reports the loss instead. A reader must refuse a group that carries `mode` if
+any item lacks it. The schema checks this. Without a group `mode`, items may
+carry different modes, and each item's value is authoritative
+([carve#2203](https://github.com/markup-carve/carve/issues/2203),
+[carve#2251](https://github.com/markup-carve/carve/issues/2251)).
 
 ## A citation is only ever an item of a group
 

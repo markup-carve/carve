@@ -569,10 +569,12 @@
       the items differ are ones an importer or an editing API built. A
       canonical Carve writer cannot spell such a group and reports the loss.
 
-      THE TWO CANNOT DISAGREE IN A SOURCE-SPELLED TREE, and a reader is not
-      required to check. Where they do differ the ITEM is authoritative, since
-      it is the finer statement
-      ([carve#2203](https://github.com/markup-carve/carve/issues/2203)).
+      A READER MUST REFUSE A GROUP WITH `mode` WHEN ANY ITEM LACKS IT. The
+      schema rejects that contradiction. Without group `mode`, items MAY carry
+      different modes; each item's value remains authoritative. No source-spelled
+      group has mixed item modes
+      ([carve#2203](https://github.com/markup-carve/carve/issues/2203),
+      [carve#2251](https://github.com/markup-carve/carve/issues/2251)).
    32. RUBY ANNOTATIONS SURVIVE INTERCHANGE -- NORMATIVE [CARVE-P12-054]. A
       `ruby` inline node carries `pairs`, a non-empty ordered array. Each pair
       is a closed object with exactly `base` and `annotation`: `base` is a
