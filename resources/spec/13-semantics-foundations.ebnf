@@ -249,9 +249,10 @@
              avail(r',c), skipping consumed positions.
          Origin found -> extend its colspan/rowspan across the marker's
          position and mark that position consumed. A `^` MAY reach a HEADER
-         cell: the rowspan crosses the thead/tbody boundary
+         cell: the rowspan crosses the authored header/body partition
          (`<th rowspan="N">`), for native `|=` and GFM-promoted headers
-         alike (corpus 101-table-header-cell-rowspan).
+         alike (corpus 101-table-header-cell-rowspan). PART 10 §7 puts every
+         row in one `<tbody>` when a rowspan crosses a row-group boundary.
          NO origin (the walk runs off the edge) -> the marker renders as an
          EMPTY cell (`<td></td>` / `<th></th>`, no content, no span); never
          dropped, never literal. Covers uniformly:

@@ -15,7 +15,7 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 
 | Rule | Part | Clause |
 |---|---:|---|
-| [`CARVE-P9-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L537) | 9 | SMART TYPOGRAPHY RECORDS SOURCE AND RESOLVED KIND |
+| [`CARVE-P9-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L538) | 9 | SMART TYPOGRAPHY RECORDS SOURCE AND RESOLVED KIND |
 | [`CARVE-P12-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L12) | 12 | AST TYPE NAMES FOLLOW THE PROFILE VOCABULARY |
 | [`CARVE-P12-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L17) | 12 | ADJACENT TEXT RUNS ARE COALESCED |
 | [`CARVE-P12-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L35) | 12 | TEXT COALESCING OCCURS DURING `parse(x)`, NOT SERIALIZATION |
