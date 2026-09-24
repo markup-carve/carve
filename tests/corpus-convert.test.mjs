@@ -32,7 +32,7 @@
  *
  *   MEANING. The TEXT of that render must equal the text the SOURCE LANGUAGE
  *   itself yields for the same input, read by something that is not Carve. For
- *   a Markdown case that reader is `marked` in GFM mode; for an HTML case it is
+ *   a Markdown case that reader is cmark-gfm with its GFM extensions; for an HTML case it is
  *   the source document; for a BBCode case whose input carries no tag it is the
  *   input verbatim. A converter that INVENTS markup fails here and nowhere
  *   else: a `<sup>` swallows the carets that were in the source, a fenced div
@@ -67,9 +67,9 @@ import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import * as pinned from '@markup-carve/carve'
-import { marked } from 'marked'
 import { parse as djotParse, renderHTML as djotRenderHTML } from '@djot/djot'
 import { FORMAT_EXTENSIONS } from '../scripts/lib/converter-formats.mjs'
+import { cmarkGfmToHtml } from '../scripts/lib/markdown-oracle.mjs'
 
 const { bbcodeToCarve, carveToHtml, djotToCarve, htmlToCarve, markdownToCarve } = pinned
 
@@ -108,8 +108,9 @@ const bbcodeTextOracle = (source) => {
 const FORMATS = {
   md: {
     convert: (source) => markdownToCarve(source),
-    // GFM, because that is the dialect carve#1130 ruled the contract on.
-    oracle: (source) => marked.parse(source, { gfm: true, async: false }),
+    // GFM is the dialect carve#1130 ruled the contract on, and cmark-gfm is
+    // the reader the importers follow where Markdown parsers disagree.
+    oracle: cmarkGfmToHtml,
   },
   html: {
     // The importer returns a document plus a diagnostic report; the corpus
@@ -188,6 +189,7 @@ const PINNED_DRIFT = {
   '66-markdown-a-one-item-list-parted-by-a-blank-is-loose': 'predates markup-carve/carve-js#1948',
   '67-markdown-quoted-item-marker-padding-collapses': 'predates markup-carve/carve-js#1948',
   '68-markdown-a-quoted-lazy-line-four-columns-in-is-text': 'predates markup-carve/carve-js#1948',
+  '69-markdown-only-one-interrupts-an-item-paragraph': 'predates markup-carve/carve-js#1940',
 }
 const PINNED_SOURCE_DRIFT = {}
 

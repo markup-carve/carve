@@ -978,7 +978,7 @@ every run:
 
 The per-PR half of the same corpus is `tests/corpus-convert.test.mjs`, which
 gates the pinned build and additionally holds every expectation against the
-SOURCE language's own reader (`marked` for Markdown, `djot.js` for Djot, the
+SOURCE language's own reader (cmark-gfm for Markdown, `djot.js` for Djot, the
 document itself for HTML), so the expected files answer to something that is
 not Carve.
 

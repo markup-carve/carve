@@ -166,3 +166,9 @@ php/65-markdown-a-multi-line-setext-heading-in-an-item  markup-carve/carve-js#19
 php/66-markdown-a-one-item-list-parted-by-a-blank-is-loose  markup-carve/carve-js#1948 not ported: the heading leaves the item, no `{loose}`
 php/67-markdown-quoted-item-marker-padding-collapses  markup-carve/carve-js#1948 not ported: `> -  a` keeps its padding
 php/68-markdown-a-quoted-lazy-line-four-columns-in-is-text  markup-carve/carve-js#1948 not ported: the lazy line leaves the quote
+
+# Only `1.` interrupts an item paragraph (markup-carve/carve-js#1940), pinned
+# once the meaning oracle moved to cmark-gfm (carve#2187). Measured 2026-09-24
+# against carve-rs `4742cb3f`, carve-js `063c0b91` and carve-php `4b8cce25`:
+# carve-rs and carve-js pass it.
+php/69-markdown-only-one-interrupts-an-item-paragraph  markup-carve/carve-js#1940 not ported: `2. b` is kept unescaped and reads as a nested list
