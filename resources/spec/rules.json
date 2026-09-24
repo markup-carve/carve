@@ -1647,6 +1647,12 @@
       "part": "12",
       "title": "A CITATION IS ONLY EVER AN ITEM OF A GROUP",
       "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-060",
+      "part": "12",
+      "title": "NODE IDENTITY IS A SEPARATE OPT-IN SIDECAR",
+      "scope": "ast-interchange"
     }
   ],
   "retired": [

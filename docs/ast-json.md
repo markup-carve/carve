@@ -117,6 +117,10 @@ undoable structural changes. Validate patches from untrusted callers and reject
 stale edits using the implementation’s document fingerprint or equivalent
 guard when available.
 
+An anchor that has to survive an edit needs more than a pointer, because a
+pointer moves when a sibling is inserted before it. See
+[Node identity in JSON](./ast-node-identity).
+
 After changing a tree:
 
 1. validate its JSON shape;

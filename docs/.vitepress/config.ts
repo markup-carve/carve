@@ -230,6 +230,7 @@ export default defineConfig({
             { text: 'Content Profiles', link: '/profiles' },
             { text: 'Parsed Document JSON', link: '/ast-json' },
             { text: 'Source Locations in JSON', link: '/ast-source-layout' },
+            { text: 'Node Identity in JSON', link: '/ast-node-identity' },
             { text: 'Source-preserving Patches', link: '/source-patches' },
             { text: 'Import HTML', link: '/html-import' },
             { text: 'Format Conversion', link: '/format-bridges' },
