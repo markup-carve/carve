@@ -29,7 +29,10 @@ source spelling that rendering cannot distinguish. The empty BBCode quote is
 the first such case: `>` and `> ` render the same element, but only `>` is a
 fixed point of the canonical writer. This comparison is byte-exact, including
 the final newline. Most cases must not add this file because equivalent Carve
-spellings are otherwise allowed to differ between importers.
+spellings are otherwise allowed to differ between importers. The Markdown cases
+from markup-carve/carve-js#1922 through #1948 whose ruling is a spelling (the
+one `carve fmt` writes, such as unpadded table rows or a backtick fence) carry
+one for the same reason.
 
 The directory shape rather than a flat `NN-slug.<ext>` pair is what the
 extensions force: an HTML case's SOURCE and any case's expected RENDER would
