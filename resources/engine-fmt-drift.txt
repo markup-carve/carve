@@ -14,5 +14,3 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
-490-a-comment-inside-a-forced-span-or-the-combined-token-ends-at-its-closer  the pinned writer strips the forced span's braces around a %% comment, and the bare form it writes runs the comment to the line break instead of stopping at the closer; markup-carve/carve-js#1906
-490-a-comment-inside-a-forced-span-or-the-combined-token-ends-at-its-closer-2  the pinned writer strips the forced span's braces around a %% comment, and the bare form it writes runs the comment to the line break instead of stopping at the closer; markup-carve/carve-js#1906

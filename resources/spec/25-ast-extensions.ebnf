@@ -350,6 +350,21 @@
       absent when nothing does
       ([carve#2193](https://github.com/markup-carve/carve/issues/2193)).
 
+      AND IT IS SPELLED `label`, THE NAME ITS DEFINITION USES. A `footnote`
+      carries `label` and so does a `footnote_ref`, for the identical string.
+      §7 settles that name on the definition and
+      `link_reference_definition` spells it the same way, so the reference
+      follows rather than the other way round. `id` is the worse of the two
+      names here in any case, because every node ALSO carries `attrs.id`, a
+      different value entirely: an authored `{#x}` rather than a lookup key,
+      so one name would stand for two things on the same object.
+
+      AN ENGINE MAY KEEP DECODING `id`. That is §11's narrow exception
+      unchanged -- a property an implementation once published, decoded onto a
+      field the schema does name -- and `footnote.id` is the case that clause
+      was written for. The exception covers READING a stored tree; a producer
+      emits `label`.
+
    26. A SPANNING CELL PUBLISHES ITS RESOLVED EXTENT -- NORMATIVE [CARVE-P12-048].
       A `table_cell` that the span walk of PART 9 §13 T5 extended carries
       `colspan`, `rowspan`, or both: the number of columns and rows the cell
