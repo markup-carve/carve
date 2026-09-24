@@ -293,6 +293,36 @@
       never create one, and a corpus sweep stays green under any widening
       whatsoever.
 
+   1d. THE CONVERSION-DIAGNOSTICS CHANNEL -- NORMATIVE [CARVE-P11-046]. A
+      producer handed a shape no Carve source spells reports it on a
+      CONVERSION-DIAGNOSTICS channel, whose wire shape is
+      `resources/conversion-diagnostics.schema.json`. The report has
+      `diagnostics`, `totalDiagnostics` and `truncated`, bounded and counted the
+      way the render-loss report of `CARVE-P2-024` is, and MAY carry `file`.
+
+      Each entry carries a `code`, the `node` type it is about, a short
+      human-readable `message`, and its source `pos` when recorded. There are two
+      codes. `structure-unspellable` says the producer dropped a whole node or
+      wrapper. `field-unspellable` says it dropped a named FIELD off a node it
+      still spells, and such an entry MUST carry `field`, the field's name on
+      that node. A `structure-unspellable` entry MUST NOT carry `field`.
+
+        { "code": "field-unspellable", "node": "math", "field": "label",
+          "message": "Carve source spells no equation label" }
+
+      THE FIELD IS WHY THIS IS NOT THAT REPORT. `CARVE-P2-024`'s `code` enum is
+      CLOSED at `raw-format-dropped` and `ruby-flattened`, and both name a whole
+      node one selected renderer dropped or flattened. It answers what THIS
+      RENDER dropped; this channel answers what the OUTPUT MODEL CANNOT SAY, on
+      every target at once, and it is the only one of the two that can name a
+      field.
+
+      THE RENDER-LOSS FLAGS DO NOT REACH IT. `--strict-losses` and `--allow-loss`
+      gate the `CARVE-P2-024` report, and neither grows a name for a code here. A
+      producer without a diagnostic channel still writes the output its clause
+      requires: the channel is what a producer MAY expose, never a condition on
+      writing.
+
    2. THE ESCAPING RULE -- NORMATIVE [CARVE-P11-006]. A character is escaped IF AND ONLY IF
       omitting the escape would change the re-parsed AST.
 
