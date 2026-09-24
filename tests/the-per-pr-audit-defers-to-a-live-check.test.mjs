@@ -104,11 +104,12 @@ test('the per-PR workflow still gates undeclared drift, which is what the lenien
 test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, nothing else', () => {
   // The SPEC entries whose per-PR policy differs from their release policy are
   // the engine-lag ledgers, via the manifest `prPolicy` they opted into, plus
-  // the AST extent ledger (carve#2179). That one is here because its rows
-  // cannot parse unless their status is `owner/repo#N` and `permitted` is
-  // refused outright, so a declaration is tracked work that leaves when the
-  // issue closes. The span and value ledgers are deliberately NOT here: their
-  // rows have nowhere to name an issue.
+  // the AST extent ledger (carve#2179) and the AST value ledger (carve#2175).
+  // Each is here for the same reason: its row cannot be written without naming
+  // an `owner/repo#N`, so a declaration is tracked work that leaves when the
+  // issue closes. The SPAN ledger stays out - its row is
+  // `<type> (presence|extent) <count>` with the issue mapping in header prose,
+  // so there is nothing for a `declared` policy to check.
   const specRelaxed = MANIFEST.filter(
     (e) => e.repo === 'spec' && perPrPolicy(e) !== e.policy,
   )
@@ -116,11 +117,13 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
     specRelaxed.map((e) => [e.path, e.policy, perPrPolicy(e)]).sort(),
     [
       ['resources/ast-extent-findings.txt', 'owed', 'declared'],
+      ['resources/ast-value-divergence.txt', 'owed', 'declared'],
       ['resources/converter-drift.txt', 'owed', 'declared'],
       ['resources/engine-fmt-drift.txt', 'owed', 'declared'],
+      ['tests/ast-values.test.mjs', 'owed', 'manual'],
       ['resources/engine-pin-drift.txt', 'owed', 'declared'],
       ['tests/corpus-convert.test.mjs', 'owed', 'manual'],
-    ],
+    ].sort(),
     'a spec ledger other than the engine-lag ones now reads differently per-PR',
   )
 
@@ -145,17 +148,17 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
   // BOTH modes - the leniency is for siblings and the declared windows, not for
   // the spec's own debt.
   //
-  // ast-extent-findings.txt LEFT this list in carve#2179. It was here on the
-  // rule that the spec's own debt is never relaxed, and that rule made the
-  // ledger unfillable: the per-PR audit counted a non-empty owed ledger as a
-  // finding, so a gap had to be fixed in the engine or left to redden the
-  // scheduled job, and a permanently red scheduled job gets muted. It is the
-  // one AST ledger whose rows cannot parse without an `owner/repo#N` status,
-  // so relaxing it buys a tracked window rather than an untraceable note. The
-  // other two stay, because their rows have nowhere to name an issue.
+  // ast-extent-findings.txt LEFT this list in carve#2179, and
+  // ast-value-divergence.txt left it in carve#2175. Both were here on the rule
+  // that the spec's own debt is never relaxed, and that rule made each ledger
+  // unfillable: the per-PR audit counted a non-empty owed ledger as a finding,
+  // so a gap had to be fixed in the engine or left to redden the scheduled job,
+  // and a permanently red scheduled job gets muted. Both hold rows that cannot
+  // be written without naming an `owner/repo#N`, so relaxing them buys a
+  // tracked window rather than an untraceable note. The span ledger stays,
+  // because its row has nowhere to name an issue.
   for (const path of [
     'resources/ast-span-divergence.txt',
-    'resources/ast-value-divergence.txt',
     'resources/oracle-divergence.txt',
   ]) {
     const e = MANIFEST.find((x) => x.repo === 'spec' && x.path === path)

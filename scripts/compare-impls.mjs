@@ -12,7 +12,7 @@ import {
   targetOf,
 } from './lib/corpus-targets.mjs'
 import { parseShard, selectShard } from './lib/shard.mjs'
-import { parseConverterLedger } from './lib/drift-ledger.mjs'
+import { parseConverterLedger, unusedConverterDeclaration } from './lib/drift-ledger.mjs'
 import { phpDir, rustBinary, rustDir } from './lib/engine-locations.mjs'
 import { comparisonGateHasFailures } from './lib/comparison-gate.mjs'
 import { miscount, shortfall } from './spec/participants.mjs'
@@ -1008,6 +1008,18 @@ async function runConvertMode() {
   const formatsInCorpus = [...new Set(cases.map((c) => c.format))].sort()
   const failures = []
 
+  // What the corpus HOLDS, and what this run MEASURED. The two differ under
+  // --limit, and the stale-line check below needs both to say which of the
+  // three reasons a declaration went unused.
+  const corpusSlugs = new Set([
+    ...readdirSync(corpusDir).filter((entry) => statSync(join(corpusDir, entry)).isDirectory()),
+    ...cases.filter((c) => c.slug.startsWith('html-import--')).map((c) => c.slug),
+  ])
+  const measuredSlugs = new Set(cases.map((c) => c.slug))
+  const activeNames = new Set(active.map((impl) => impl.name))
+  // `<engine>/<slug>` pairs a run reached but could not score.
+  const unscored = new Map()
+
   // Direction one: a format an engine can neither convert nor explain.
   // Direction two: a declared gap the engine has quietly closed. The probe
   // asks the ENGINE rather than trusting the adapter table, so the two cannot
@@ -1071,11 +1083,13 @@ async function runConvertMode() {
         const command = impl.convertCommand(kase.format)
         if (!command) {
           convertStats[impl.name].skipped++
+          unscored.set(`${impl.name}/${kase.slug}`, `it has no ${kase.format} importer (lib/converter-formats.mjs)`)
           continue
         }
         const converted = run(command, impl.cwd, [kase.file])
         if (!converted.ok) {
           convertStats[impl.name].error++
+          unscored.set(`${impl.name}/${kase.slug}`, 'the conversion errored')
           failures.push(`${impl.name} failed to convert ${kase.slug}: ${converted.stderr || converted.error || converted.status}`)
           continue
         }
@@ -1088,6 +1102,7 @@ async function runConvertMode() {
         const render = run(renderCommand, renderImpl.cwd, [crv])
         if (!render.ok) {
           convertStats[impl.name].error++
+          unscored.set(`${impl.name}/${kase.slug}`, "carve-js failed to render the engine's conversion")
           failures.push(`carve-js failed to render ${impl.name}'s conversion of ${kase.slug}: ${render.stderr || render.error || render.status}`)
           continue
         }
@@ -1120,12 +1135,14 @@ async function runConvertMode() {
     rmSync(tmp, { recursive: true, force: true })
   }
 
+  // A declaration that went unused is FOUR different facts, and only one of
+  // them means the line is stale. The classification lives in
+  // lib/drift-ledger.mjs, where a test can reach it (carve#2175).
   for (const [key, entry] of drift) {
-    if (!entry.used) {
-      failures.push(
-        `converter-drift.txt declares ${key} and the engine now matches (or the case is gone) - delete the STALE line in the commit that fixed it.`,
-      )
-    }
+    if (entry.used) continue
+    failures.push(
+      unusedConverterDeclaration(key, { activeNames, corpusSlugs, measuredSlugs, unscored }),
+    )
   }
 
   console.log('\nConverter summary')

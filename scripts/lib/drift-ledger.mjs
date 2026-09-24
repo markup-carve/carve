@@ -313,3 +313,42 @@ export function declaredObjectLedgers(source) {
   }
   return found
 }
+
+/**
+ * Why a `converter-drift.txt` declaration went unused, in the run's own words.
+ *
+ * FOUR facts arrive as one symptom. The entry was never matched, and that is
+ * true when the engine passed, when the case is gone, when a sliced run never
+ * reached it, and when the conversion or the render ERRORED. Only the first
+ * means the line is stale, and reporting all four as "the engine now matches
+ * (or the case is gone)" pointed a reader at a deletion in the three states
+ * where deleting is wrong - an errored engine reads exactly like a fixed one
+ * (carve#2175).
+ *
+ * Lives here rather than inside `runConvertMode` for the reason
+ * `parseConverterLedger` does: that function needs three engine checkouts
+ * before a single line of it runs, so nothing inside it is reachable to a test.
+ *
+ * @param {string} key `<engine>/<slug>`
+ * @param {{ activeNames: Set<string>, corpusSlugs: Set<string>, measuredSlugs: Set<string>, unscored: Map<string, string> }} run
+ * @returns {string}
+ */
+export function unusedConverterDeclaration(key, run) {
+  const slash = key.indexOf('/')
+  const engine = key.slice(0, slash)
+  const slug = key.slice(slash + 1)
+  if (!run.activeNames.has(engine)) {
+    return `converter-drift.txt declares ${key}, and ${engine} was not measured in this run - it says nothing about whether the line still holds.`
+  }
+  if (!run.corpusSlugs.has(slug)) {
+    return `converter-drift.txt declares ${key}, and the corpus has no case ${slug} - renamed or removed, so the line describes nothing. Repoint it or delete it.`
+  }
+  if (!run.measuredSlugs.has(slug)) {
+    return `converter-drift.txt declares ${key}, and this run did not reach ${slug} (--limit cut it) - a sliced run cannot call a line stale.`
+  }
+  const why = run.unscored.get(key)
+  if (why !== undefined) {
+    return `converter-drift.txt declares ${key}, and this run could not score it: ${why}. The line is not stale until a run scores the case and the engine passes.`
+  }
+  return `converter-drift.txt declares ${key} and the engine now matches - delete the STALE line in the commit that fixed it.`
+}

@@ -449,7 +449,17 @@ function reportValueDisagreements(present) {
     ],
   })
 
-  if (byKey.size > 0) {
+  // READ OFF THE RECONCILIATION, not off the panel. "All declared" used to print
+  // whenever the panel found anything at all, so a run whose reconciliation had
+  // just recorded two undeclared fields still said every one of them was
+  // declared - a line asserting the one fact the code above had already
+  // disproved (carve#2175).
+  if (problems.length > 0) {
+    console.log(
+      `  NOT all declared: resources/ast-value-divergence.txt disagrees with this panel in ` +
+        `${problems.length} place(s), listed at the end of the run.`,
+    )
+  } else if (byKey.size > 0) {
     console.log('  All declared in resources/ast-value-divergence.txt (carve#786).')
   } else {
     console.log('  resources/ast-value-divergence.txt declares nothing that still diverges.')
@@ -609,7 +619,14 @@ function reportSpanDisagreements(present) {
       'the one engine with no span-reaches-past-its-last-child finding at all.',
     ],
   })
-  if (byKey.size > 0) {
+  // Same reading as the value panel one screen up: the claim is the
+  // reconciliation's to make, not the panel's (carve#2175).
+  if (problems.length > 0) {
+    console.log(
+      `  NOT all declared: resources/ast-span-divergence.txt disagrees with this panel in ` +
+        `${problems.length} place(s), listed at the end of the run.`,
+    )
+  } else if (byKey.size > 0) {
     console.log('  All declared in resources/ast-span-divergence.txt (carve#534).')
   }
 }
@@ -1290,6 +1307,37 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
  * HTML byte-for-byte - which cannot see an AST-only change, because a link
  * reference definition renders nothing.
  */
+/**
+ * What the binding pins, and what this run built it against.
+ *
+ * Read off the two checkouts rather than asserted, so the note is evidence and
+ * not a guess that rots the next time either side moves.
+ */
+function bindingPinNote() {
+  const read = (path) => {
+    try {
+      return readFileSync(path, 'utf8')
+    } catch {
+      return null
+    }
+  }
+  const pinned = /^\s*carve_rs\s*=.*?version\s*=\s*"=?([^"]+)"/m.exec(
+    read(resolve(rbDir, 'ext/carve/Cargo.toml')) ?? '',
+  )?.[1]
+  const built = /^\s*version\s*=\s*"([^"]+)"/m.exec(read(resolve(rsDir, 'Cargo.toml')) ?? '')?.[1]
+  if (!pinned || !built) return []
+  if (pinned === built) {
+    return [`The pin and the built engine both say ${pinned}, so this is a gap in the binding, not a stale pin.`]
+  }
+  return [
+    `ext/carve/Cargo.toml pins carve-lang ${pinned}; this run built carve-rs main, which says ${built}.`,
+    'That pin names a PUBLISHED crate, so it can only move to a version crates.io serves.',
+    `Check that before reading the rows as a gap in the binding: if ${built} is not published,`,
+    'there is no bump to take and this gate is measuring the unreleased window',
+    '(markup-carve/carve-rb#142; markup-carve/carve-rb#143 resolves the same question live).',
+  ]
+}
+
 const rsShapes = enginePaths.get('carve-rs')
 if (rbShapes.size > 0 && rsShapes) {
   const drifted = []
@@ -1307,7 +1355,16 @@ if (rbShapes.size > 0 && rsShapes) {
     for (const name of drifted.slice(0, 10)) console.error(`  ${name}`)
     if (drifted.length > 10) console.error(`  … and ${drifted.length - 10} more`)
     console.error("A binding has no vote of its own - every one of these is carve-rb's, not carve-rs's.")
-    console.error('Usually a stale `ext/carve/Cargo.toml` pin; rebuild the extension after bumping it.\n')
+    console.error('Usually a stale `ext/carve/Cargo.toml` pin; rebuild the extension after bumping it.')
+    // WHICH KIND of stale, because the two have different fixes and only one of
+    // them is a fix anybody here can make. The pin names a crates.io RELEASE by
+    // org policy, and this job builds carve-rs from MAIN, so between a merge and
+    // a release the two are SUPPOSED to differ and there is nowhere for the pin
+    // to move. "Bump it" is unactionable advice in that state, and printing it
+    // anyway sent a reader looking for a version that does not exist
+    // (markup-carve/carve-rb#142, carve#2175).
+    for (const line of bindingPinNote()) console.error(line)
+    console.error('')
     // DEFERRED, not exited on. carve-php, the three-way panel and every closing
     // roll-up are all below this line; exiting here deleted them from the run.
     if (process.env.CARVE_REQUIRE_ALL_ENGINES === '1') {
@@ -1788,6 +1845,22 @@ if (ungatedProblems.length > 0) {
   console.error('These have no ledger by design. Fix the engine.')
 }
 
+/*
+ * ONE EXIT, after every verdict has printed.
+ *
+ * Each of these four used to exit where it stood, so the FIRST one to fail was
+ * the only one a run reported - the same defect this file already fixed twice
+ * inside the panels ("ACCUMULATED, not exited on"; "DEFERRED, not exited on"),
+ * reintroduced one level up where the roll-ups meet.
+ *
+ * It was not theoretical. On run 35999665301 two ledger rows drifted and
+ * BINDING PARITY was failing on 23 documents; the ledger block exited first, so
+ * the binding verdict never reached the tail the comment below promises it
+ * would, and a reader who fixed both ledgers would have found the run still red
+ * for a reason it had declined to restate (carve#2175).
+ */
+let failed = false
+
 const drifted = declarationDrift.filter((d) => d.problems.length > 0)
 if (drifted.length > 0) {
   for (const d of drifted) {
@@ -1797,10 +1870,10 @@ if (drifted.length > 0) {
     console.error('')
     for (const line of d.advice) console.error(line)
   }
-  process.exit(1)
+  failed = true
 }
 
-if (ungatedProblems.length > 0) process.exit(1)
+if (ungatedProblems.length > 0) failed = true
 
 if (adjacentTextRunCounts.length > 0) {
   const total = adjacentTextRunCounts.reduce((n, e) => n + e.count, 0)
@@ -1810,7 +1883,7 @@ if (adjacentTextRunCounts.length > 0) {
       .join(', ')}).`,
   )
   console.error("A node's children must hold no two adjacent text nodes.")
-  process.exit(1)
+  failed = true
 }
 
 // The deferred gates, drained after every engine has been measured and every
@@ -1821,5 +1894,7 @@ if (deferredGateFailures.length > 0) {
   console.error('')
   for (const line of deferredGateFailures) console.error(line)
   console.error('Reported in full above, gated here so the rest of the run still measured.')
-  process.exit(1)
+  failed = true
 }
+
+if (failed) process.exit(1)
