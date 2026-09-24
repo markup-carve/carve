@@ -1,86 +1,12 @@
 /*
- * The separator/padding split is a spec decision that nothing else can see.
+ * Check the grammar's distinction between marker separators and padding
+ * slots (PART 7). Both require a space; tabs are syntax only in leading
+ * indentation. The role determines how a failed match falls back.
  *
- * PART 7's MARKER SEPARATORS AND PADDING SLOTS clause names two roles for the
- * whitespace on a marker line: the slot that decides WHICH construct the line
- * opens is a MARKER SEPARATOR, and whitespace between two tokens on an
- * already-decided line is a PADDING SLOT. Both are spelled `space`, and a tab
- * satisfies neither.
- *
- * That last sentence is what carve#901 corrected. carve#878 split the roles
- * apart and widened every padding slot to `whitespace`, on the reading that a
- * slot carrying no recognition could admit a tab harmlessly; carve#894 widened
- * the code fence's three the same way. The rule is not about what a slot
- * recognizes but about WHERE it sits: a tab is syntax ONLY in a line's leading
- * indentation run, and every padding slot in this grammar sits after the first
- * non-whitespace character of its line. So the terminal is `space` on both
- * sides of the role line, and the role now decides only what a FAILED match
- * means, not which terminal the slot takes.
- *
- * Without this file the classification is unobservable. Every other gate reads
- * behavior, and no engine reads resources/grammar.ebnf, so flipping any of the
- * terminals leaves the whole suite green - the defect class tracked in
- * carve#755. Each site below therefore pins BOTH directions: the terminal the
- * production must carry, and the terminal it must NOT carry, so a silent
- * re-spelling in either direction fails here.
- *
- * TWO CHECKS RUN PER SITE, against two different artifacts:
- *
- *   1. the grammar text - what resources/grammar.ebnf spells.
- *   2. the ORACLE (scripts/spec/layout.mjs + resources/carve-core.ohm), which
- *      is executable, so every site is checked and none is skipped.
- *
- * Check 2 is why every site carries a tab/space fixture pair: the oracle is a
- * spec artifact rather than an implementation, so it tracks the production
- * immediately. carve#888 found the gap this closes from the other direction -
- * the oracle read `[t](/u<TAB>"T")` as literal text while grammar.ebnf had
- * spelled that slot `whitespace`, and nothing could see it. The same pair now
- * catches the reverse: an oracle that still admits a tab where the production
- * says `space`.
- *
- * Check 2 ran only at the PADDING sites until carve#887, and that asymmetry was
- * the hole. The four separator sites were compared against the grammar TEXT and
- * nothing else, so the oracle went on stripping `[ \t]+` after a colon fence -
- * opening an admonition, a div, a line block and a local hard-break block on a
- * tabbed opener - for as long as the four productions kept saying `space`. Both
- * artifacts are checked at every site now, which is what the header above
- * always claimed.
- *
- * THE ENGINE HALF NOW RUNS, and that is new. It was deferred at every site
- * through five revisions of its scope, each with its own written reason, and
- * all five have now cleared at once.
- *
- * What deferred it was never one fact. At the six original padding sites
- * carve-js itself was behind the production; at the five TABLE-CELL sites
- * (carve#904) and the four INLINE ATTRIBUTE sites (carve#906) all three
- * reference engines were; at the title and code-fence slots the engines had
- * narrowed and what lagged was the COMMIT this repo pins. Each reason said the
- * same thing about this file, though: asserting the behavior of the day would
- * pin a divergence and the fix would have to delete the assertion, while
- * asserting the corrected behavior would fail on an engine nobody had changed
- * yet. So the sites carried `engineDeferred` and the loop asserted only that
- * the reason still held - a check whose useful failure mode was the engine
- * catching up.
- *
- * It caught up. The pin moved from 52da7be to 816c3a3 and all 63 of those
- * checks went red at once, which is the outcome the deferral text predicted in
- * as many words: "clears on the next `npm run bump-carve-pin` rather than on
- * any engine work". The pinned build now rejects a tab at every padding slot,
- * every separator slot and every metadata slot, and renders byte-identically to
- * the oracle rather than to the space form. So the engine half asserts the
- * corrected behavior, alongside the oracle half, and the pair this file exists
- * to run is finally symmetric.
- *
- * WHAT THIS DOES NOT SAY. The loop runs ONE engine, the pinned
- * `@markup-carve/carve`, because that is the engine this repository executes.
- * carve-php and carve-rs are still behind the production at some of these slots
- * - the table cells, the inline attribute block, and the two title forms
- * carve-rs already narrowed - and that question lives where it always did, in
- * the cross-engine gates (claims:check, compare:impls) and in the tickets the
- * retired reasons named: markup-carve/carve-php#985 and markup-carve/carve-rs#757
- * for the inline attribute block, markup-carve/carve-js#836's siblings for the
- * rest. A green run here is a statement about the pinned build and nothing
- * wider.
+ * Each site checks the grammar text, the executable spec, and the pinned
+ * engine with paired space and tab inputs. This catches a rule whose grammar
+ * and parser disagree. It says nothing about other engines; their behavior is
+ * covered by the cross-engine checks. See carve#901 for the rule change.
  */
 
 import { test } from 'node:test'

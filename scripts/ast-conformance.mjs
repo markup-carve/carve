@@ -1,39 +1,15 @@
 #!/usr/bin/env node
 /*
- * PART 12 conformance check for serialized ASTs.
+ * Check serialized ASTs against PART 12 and resources/ast-schema.json. The
+ * schema checks node shapes; separate checks cover source positions and whether
+ * a span contains the text it represents. The reference engine is checked too.
  *
- * PART 12 says a parsed document is exchangeable: field names are spec surface,
- * every node carries `pos`, and a serialize/deserialize round trip must equal
- * the parse. Nothing verified any of that, which is how the engines' field
- * names diverged in the first place - carve-js calls a link's destination
- * `href`, carve-php calls it `destination` - and how a serializer can ship
- * without positions while the spec requires them.
+ *   node scripts/ast-conformance.mjs [--limit=N] [--satellite-limit=N]
  *
- * Every engine is checked against resources/ast-schema.json, the published
- * encoding of that contract, plus the two things a schema cannot express:
- * whether a node carries a POSITION at all, and whether the span it reports
- * actually covers the text the node came from.
- *
- * carve-js is still the reference in the sense PART 12 §1 means - the schema
- * describes its shape - but it is no longer the yardstick this script measures
- * with. Comparing engines against whatever the reference happened to emit meant
- * the reference could not itself be wrong, and a type it never emits was not
- * checked at all.
- *
- *   node scripts/ast-conformance.mjs [--limit=N]
- *
- * The reference engine is checked against the WHOLE corpus by default. A limit
- * only samples, and a sample is how three classes of wrong span went unreported
- * while this script said the reference was conformant: definition lists that
- * re-indent their body, and an escaped space extending a text node past its
- * value, both sit outside the first 200 documents. Use --limit only to iterate
- * quickly; CI should not pass one.
- *
- * Sibling checkouts, same convention as compare-impls.mjs:
- *   ../carve-js    (reference, required)
- *   ../carve-rs    (serializes through its own `carve --json`)
- *   ../carve-rb    (serializes carve-rs's tree through the Ruby binding)
- *   ../carve-php   (serializes through `bin/carve --json`)
+ * Either limit samples the corpus and must not be used for a full conformance
+ * verdict. Sibling engine checkouts follow the compare-impls.mjs convention:
+ * ../carve-js is required; ../carve-rs, ../carve-rb, and ../carve-php are
+ * checked when available.
  */
 
 import { execFileSync as nodeExecFileSync } from 'node:child_process'
@@ -68,40 +44,15 @@ import { rustBinary } from './lib/engine-locations.mjs'
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
 
-/*
- * The published contract, as data: resources/ast-schema.json.
- *
- * This used to be a hand-rolled comparison against whatever the reference
- * happened to emit over the corpus - so a field the reference never produced in
- * 504 documents was unchecked, and a node type the reference does not emit at
- * all was skipped in silence (`if (!reference) continue`). An engine could
- * publish `definition_term` nodes, or a `mention` carrying four extra internal
- * fields, and this script had nothing to say.
- *
- * The schema is checked against the reference in tests/ast-schema.test.mjs, so
- * "the schema says X" and "the reference does X" cannot drift apart quietly.
- */
+// tests/ast-schema.test.mjs checks the schema against the reference engine.
 const schema = JSON.parse(readFileSync(resolve(root, 'resources/ast-schema.json'), 'utf8'))
 const validateSchema = new Ajv2020({ allErrors: true, strict: true }).compile(schema)
 
 const limitArg = process.argv.find((a) => a.startsWith('--limit='))
 const limit = limitArg ? Number(limitArg.slice('--limit='.length)) : Infinity
 
-/*
- * The satellite engines serialize through a SUBPROCESS PER DOCUMENT, so they
- * cost about a tenth of a second each where the reference costs nothing.
- *
- * That is why they used to run over only the first twelve samples - and why
- * this script reported "carve-php: conformant" while carve-php had eight nodes
- * with no position. All eight sit in documents 41, 56, 63, 96 and 104; the
- * first twelve documents alphabetically contain none of them. The cap was not
- * a sampling decision, it was a check that could not fail, and it printed a
- * clean bill of health for an engine the full corpus finds non-conformant.
- *
- * They now run over everything by default (about 45 seconds each). A smaller
- * cap stays available for a quick local pass, and the report NAMES the count it
- * ran over, so a partial run can never again read as a complete one.
- */
+// Satellite engines use one subprocess per document. A limit is useful for a
+// quick local run; the report prints how many documents it checked.
 const satelliteLimitArg = process.argv.find((a) => a.startsWith('--satellite-limit='))
 const satelliteLimit = satelliteLimitArg
   ? Number(satelliteLimitArg.slice('--satellite-limit='.length))
@@ -112,44 +63,10 @@ const rbDir = process.env.CARVE_RB_DIR ?? resolve(root, '../carve-rb')
 const rsDir = process.env.CARVE_RS_DIR ?? resolve(root, '../carve-rs')
 const phpDir = process.env.CARVE_PHP_DIR ?? resolve(root, '../carve-php')
 
-/*
- * How many distinct findings to PRINT. This bounds output only - every document
- * is still checked and every finding still counted.
- *
- * It did not used to work that way. Each engine stopped collecting once it had
- * accumulated a fixed number of findings (40 for the reference, 20 for the
- * others), by passing a throwaway array to the checker for every later
- * document. Those documents were parsed, walked, and their findings dropped on
- * the floor - and since the summary line printed the capped total, a run that
- * had stopped looking was indistinguishable from a clean one.
- *
- * That hid a real defect. carve-js emitted the node type `critic-comment`,
- * hyphenated, which this file's own vocabulary gate is meant to reject - and it
- * never fired, because the one corpus document exercising it sorts past where
- * the reference hit its cap. The gate only started reporting once unrelated
- * position fixes dropped the finding count below 40 and the document came back
- * into view.
- */
-/*
- * How much output a per-document subprocess may produce.
- *
- * execFileSync defaults to 1 MB and REJECTS past it, so the runner used to
- * report `spawnSync php ENOBUFS` as a carve-php finding on
- * 182-openers-past-the-nesting-cap-are-one-paragraph - a document whose
- * serialized tree is larger than that. The engine was fine; the buffer was the
- * runner's. Worse, the document then dropped out of the three-way comparison
- * with two votes left, so the run counted a harness limit as an engine defect
- * AND quietly stopped comparing the one document most likely to expose one.
- */
-/*
- * How many documents get the unknown-property probe. It costs one extra
- * subprocess per document per engine, and the property under test is a codec
- * property rather than a per-document one - the same answer on every tree. The
- * count is printed with the finding-free line below so a sample can never read
- * as the whole corpus.
- */
+// Probe a few documents because the unknown-property rule is codec-wide.
 const UNKNOWN_PROPERTY_SAMPLE = Number(process.env.CARVE_UNKNOWN_PROBE_SAMPLE ?? 6)
 
+// Some serialized documents exceed execFileSync's 1 MB default buffer.
 const MAX_SUBPROCESS_OUTPUT = 256 * 1024 * 1024
 const SUBPROCESS_TIMEOUT_MS = 15_000
 const execFileSync = (file, args, options = {}) => nodeExecFileSync(file, args, {
@@ -165,20 +82,7 @@ function progress(engine, index, total, name) {
 
 const DISPLAY_LIMIT = Number(process.env.CARVE_DISPLAY_LIMIT ?? 8)
 
-/**
- * Describe a built artifact, and say plainly when it is OLDER THAN ITS SOURCE.
- *
- * This is the failure that made carve#475's own table wrong. The checker reads
- * whatever build is on disk and reports it as the engine's conformance, with
- * nothing in the output to say how old it is. An Aug 1 build of carve-rs
- * reported 144 schema violations - the pre-node definition-list shape the engine
- * had already stopped emitting - while the same checkout, rebuilt, reported 4
- * findings. Both runs looked identical.
- *
- * A stale build reading as a current one is strictly worse than the skip this
- * script already reports, because it produces a NUMBER, and a number gets
- * believed and filed.
- */
+/** Report when a built engine artifact is older than its source files. */
 function buildStatus(artifact, sourceDir, extensions) {
   let built
   try {

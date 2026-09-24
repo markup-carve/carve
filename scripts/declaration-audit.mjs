@@ -1,109 +1,31 @@
 #!/usr/bin/env node
 /*
- * ARE ALL THE DECLARATION LISTS CLEAR?
+ * Audit declaration lists in this repo and in the reference engines. A row
+ * can remain after a pin bump even when the corresponding gap has closed;
+ * two-way guards in each list must catch that stale state. This command checks
+ * which lists exist, parses their entries, and reports whether those guards
+ * are wired. It also finds declaration-shaped constants absent from the list
+ * manifest. It does not rerun every engine behavior check.
+ * Unwired non-empty lists, unreachable or unparseable entries, and unlisted
+ * declaration constants fail in both modes.
  *
- * One command, two populations, one exit code.
+ * Each list declares a policy: `owed` must be empty, `permitted` may retain
+ * rows, `split` reads the policy from each row, and `manual` reports rows for
+ * review. The spec lists come from this worktree; engine lists default to
+ * each checkout's `origin/main`.
  *
- * This repository's ledgers - resources/engine-pin-drift.txt and its
- * siblings - are only HALF of what a release has to be clear on. The other
- * half lives inside each engine, in the constants its own test files carry
- * against the `tests/spec` (or `spec`) submodule: AHEAD_OF_PIN, KNOWN_GAPS,
- * DECLARED_UNIMPLEMENTED, BEHIND_THE_RULING, KNOWN_LOSSES, AST_DIVERGENCES.
- * Every one of them silences a comparison, and NOTHING compared the two
- * populations against each other. A corpus bump cleans the ledger here and
- * leaves the vendored constant behind, and the only thing that would ever
- * notice is a human reading four repositories at once.
+ * `release` mode requires owed lists to be empty and the carve-js pin to be
+ * current. `per-pr` mode accepts well-formed rows in ledgers marked
+ * `prPolicy: 'declared'`, reports stale pins, and skips missing engine
+ * checkouts. Live checks still guard drift in both directions. The pin and
+ * format checks run in `engine:report -- --check` and
+ * corpus-fmt-roundtrip.test.mjs. Converter drift is checked by
+ * corpus-convert.test.mjs and the scheduled cross-engine run.
+ * See carve#1811 and the-per-pr-audit-defers-to-a-live-check.test.mjs.
  *
- * So this reads all of them and prints one table.
- *
- * THE THREE OUTCOMES AFTER A PIN BUMP, which is what the check is for:
- *
- *   1. the row is GONE           - the bump shipped the fix. Correct.
- *   2. the row is THERE and still reproduces
- *                                - the bump did not carry what we thought.
- *   3. the row is THERE and no longer reproduces
- *                                - a STALE declaration. The dangerous one:
- *                                  invisible until something re-measures.
- *
- * This script settles 1 against 2-or-3 by COUNTING - it reports what is still
- * declared. Telling 2 from 3 is the job of the two-directional guard each list
- * is supposed to carry, which is why every entry below records whether it HAS
- * one. A list whose `guard` is not `two-way` cannot produce outcome 3 at all,
- * and is reported as UNWIRED whether or not it is empty: a check that cannot
- * fail is worth as much as a stale row (markup-carve/carve#755).
- *
- * A NON-EMPTY LIST IS NOT AUTOMATICALLY A FAILURE. resources/ast-position-
- * waivers.txt is 132 rows and every one of them is `permitted` - a node the
- * producer REASSEMBLED, which PART 12 §4 exempts forever. Each entry below
- * therefore carries a POLICY: `owed` must be empty, `permitted` may not be,
- * `split` decides per row from the row's own last field, and `manual` prints
- * its rows for a human because no mechanical rule separates them.
- *
- *   node scripts/declaration-audit.mjs                # engines from origin/main
- *   node scripts/declaration-audit.mjs --ref worktree # engines as checked out
- *   node scripts/declaration-audit.mjs --no-fetch     # skip the git fetch
- *   node scripts/declaration-audit.mjs --mode=per-pr  # the per-PR verdict
- *
- * The spec repo half is always read from THIS working tree, because that is
- * the tree about to be tagged. The engine half defaults to each engine's
- * `origin/main`, because a local engine checkout is usually parked on a
- * feature branch and describes nothing anyone is about to release.
- *
- * TWO VERDICTS, ONE AUDIT (markup-carve/carve#1811).
- *
- * `--mode=release` (the default) answers "is this tree clear to tag?": every
- * `owed` list must be EMPTY and the carve-js pin must be current.
- *
- * `--mode=per-pr` answers "is this pull request defective?", which is a
- * different question, and the ENGINE-LAG ledgers are where the two part
- * company. resources/engine-pin-drift.txt exists to DESCRIBE the window
- * between a spec rule landing and an engine shipping it - its own header says
- * that window "is normal and the report exists to describe it", and that it is
- * "DECLARED rather than tolerated". A release cannot ship with that window
- * open; a PULL REQUEST is how the window opens in the first place. Gating both
- * on the same emptiness made every leading spec ruling red by construction,
- * which is what carve#1811 ruled on.
- *
- * resources/engine-fmt-drift.txt describes THE SAME WINDOW from the writer
- * side - the engine reads the new rule and writes the old spelling - and its
- * own header points at the pin ledger for its retention rule. A declared
- * window is declared regardless of which ledger describes it, so it is judged
- * the same way. It held zero rows when carve#1811 landed, which is the only
- * reason the omission was invisible: the difference bites the first time a
- * ruling opens a writer-half window and not before.
- * resources/converter-drift.txt describes the same window for current
- * importers. Its pinned-build twin has its own two-way test and reads as
- * `manual` here.
- *
- * So in `per-pr` mode:
- *
- *   - each engine-lag ledger is judged as `declared`: a well-formed row
- *     PASSES, and a row that is not a declaration at all (no reason, or a key
- *     listed twice, so one of the two reasons is silently discarded) FAILS.
- *   - pin staleness REPORTS instead of failing.
- *   - an engine checkout that is simply not there is SKIPPED rather than
- *     counted, because "no sibling clone" is a fact about the machine and not
- *     a finding about the PR.
- *
- * Everything else is identical in both modes. In particular the AST divergence
- * ledgers and the UNDECLARED sweep are NOT relaxed - they caught real holes
- * (carve#1793, carve#1794) and they stay owed per-PR.
- *
- * WHAT KEEPS THE LENIENCY FROM BEING A HOLE. The other half of each ledger's
- * contract - drift that is NOT declared, the carve#533 state of a pinned build
- * silently behind - is gated per-PR by a LIVE check that fails in EITHER
- * direction, an undeclared slug or a declared slug the pin has caught up on.
- * For the pin ledger that is `npm run engine:report -- --check`; for the fmt
- * ledger it is tests/corpus-fmt-roundtrip.test.mjs. The converter's pinned
- * half runs per PR in tests/corpus-convert.test.mjs, and its current-main half
- * runs in the scheduled cross-engine workflow. `per-pr` mode defers to those
- * checks by name rather than dropping the question, and
- * tests/the-per-pr-audit-defers-to-a-live-check.test.mjs fails if a check
- * leaves its workflow.
- *
- * Exit 0 in release mode only when every `owed` list is empty, every entry was
- * reachable and parseable, and no declaration-shaped constant exists that this
- * manifest does not name.
+ *   node scripts/declaration-audit.mjs [--mode=per-pr]
+ *   node scripts/declaration-audit.mjs --ref worktree
+ *   node scripts/declaration-audit.mjs --no-fetch
  */
 
 import { execFileSync } from 'node:child_process'

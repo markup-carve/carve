@@ -1,65 +1,19 @@
 /*
- * The converters, gated on what the migrated document SAYS.
+ * Check the pinned importers against the converter corpus on every PR.
+ * `scripts/compare-impls.mjs --corpus=convert` checks the other engines in the
+ * scheduled workflow.
  *
- * The conformance corpus pairs a `.crv` with an expected output per render
- * target, so `compare:impls` covers everything that READS Carve. Nothing
- * covered what writes it. The converters run the other direction - foreign
- * source to Carve - so every importer sat outside every gate, and carve#1130
- * lists six times in one stretch of work that a converter fix reached one
- * engine and not the others. Each of the six was found by a DIFFERENT engine's
- * suite or by hand-built differential scaffolding that was thrown away
- * afterwards; carve-php passed all 11,886 of its tests while dropping a
- * Markdown hard break and corrupting an indented code block.
+ * Each case has an input and expected HTML. The byte checks compare the
+ * converted Carve with `expected.crv` when present, then render it and compare
+ * with `expected.html`. Declared pin gaps are skipped. The meaning check
+ * compares the text of `expected.html` with an independent reading of the
+ * source format. That catches invented or lost text even if a recorded HTML
+ * expectation was wrong.
+ * Markdown uses cmark-gfm; Djot uses its reference parser; HTML uses the source
+ * document; BBCode uses a tag-stripping text oracle.
  *
- * This is the per-PR half, against the build this repo pins - the same split
- * `tests/corpus-fmt-roundtrip.test.mjs` has with `scripts/fmt-fixture-claims.mjs`.
- * The cross-engine half is `scripts/compare-impls.mjs --corpus=convert`, which
- * needs the three provisioned checkouts and runs in the scheduled conformance
- * workflow; this file is what runs on every PR without them.
- *
- * A CASE IS A DIRECTORY, `tests/corpus-convert/NN-slug/`, holding one
- * `input.<ext>` and one `expected.html`. The directory shape is
- * `tests/html-import/`'s, and it is what the extensions force: the source of an
- * HTML case and the expected render of any case would otherwise both want to be
- * `NN-slug.html`.
- *
- * TWO ASSERTIONS PER CASE, and only the second one makes the first answerable.
- *
- *   BYTES. Convert the source with the pinned build, render the produced Carve
- *   with the pinned build, compare to `expected.html`. This is a regression pin:
- *   it fails loudly on any change, and it says nothing about whether the new
- *   answer or the old one is right.
- *
- *   MEANING. The TEXT of that render must equal the text the SOURCE LANGUAGE
- *   itself yields for the same input, read by something that is not Carve. For
- *   a Markdown case that reader is cmark-gfm with its GFM extensions; for an HTML case it is
- *   the source document; for a BBCode case whose input carries no tag it is the
- *   input verbatim. A converter that INVENTS markup fails here and nowhere
- *   else: a `<sup>` swallows the carets that were in the source, a fenced div
- *   swallows both delimiter lines, an abbreviation definition removes its whole
- *   line, and every one of those is a text change an independent reader can see.
- *
- * WHY THE SECOND ONE IS THE POINT. A corpus written by recording what an engine
- * currently does pins the engine to itself: it goes red on a fix and green on a
- * regression that was already there when the bytes were taken. The nine
- * constructs carve-js#1060 fixed reached Carve precisely BECAUSE nothing in the
- * converter mentioned them - Carve already spells them the way the source does,
- * so leaving the source alone WAS the conversion. No amount of recorded output
- * finds that class; a second reader does, immediately.
- *
- * THE DIALECT IS DECIDED, and these expectations encode it rather than assume
- * it. carve#1130's ruling: CommonMark plus GFM is the contract, and anything
- * past it - Pandoc superscript, Obsidian highlight, dollar math - is a
- * constructor flag that defaults to off. That is why `a ^b^ c` and `d ==e== f`
- * come back as text while `a ~b~ c` comes back struck: single-tilde IS GFM
- * strikethrough, and the oracle says so without being asked.
- *
- * WHAT THIS FILE DOES NOT GATE. It runs ONE engine, so it cannot see a defect
- * that spares carve-js - which is most of carve#1130's six rows, since each was
- * a defect in some other engine. That half is the cross-engine runner
- * (`npm run compare:convert`), which walks this same corpus through every
- * engine that imports each format; this file gives it the corpus and stops
- * the pinned engine from drifting between its scheduled runs.
+ * Markdown means CommonMark plus GFM here (carve#1130). Other dialect syntax
+ * requires an explicit converter option.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'

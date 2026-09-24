@@ -1,49 +1,21 @@
 #!/usr/bin/env node
 /*
- * WHO DEPENDS ON WHOM ACROSS THE ORG, AND WHETHER THE PIN IS A RELEASE.
+ * Report dependencies between markup-carve repositories from manifests, CI
+ * workflows, submodules, and provenance headers in committed builds. The wiki's
+ * Version Map records releases but cannot derive these edges from prose.
  *
- * The wiki's Version Map answers "what shipped, where, when" for every taggable
- * repo, and it answers it well. It does not answer the other question, because
- * the dependency edges live inside its prose: `Engine carve-rs a33c42ad`,
- * `requires carve-php ^0.1.5`. A sentence is a snapshot of the moment someone
- * wrote it, so a pin that goes stale reads exactly like one that did not - and
- * the map cannot be re-derived to find out.
- *
- * That gap is not hypothetical. obsidian-carve bundles carve-js into its
- * released `main.js` from a commit 91 past the 0.1.4 tag, so the plugin ships a
- * build no release ever named, and the repo has no row on the map at all.
- *
- * So this reads the manifests instead of the prose. For every non-archived repo
- * in the org it finds each dependency on another org repo, resolves what the
- * pin actually points at, and says whether that is a released tag and how far
- * behind the target has moved since.
- *
- * IT REPORTS AND DOES NOT FAIL. Several repos pin an unreleased commit on
- * purpose - a binding tracking an engine fix that has not been tagged, a
- * satellite waiting on a coordinated minor - and a gate that reddened those
- * would be turned off within a week. The value is the diff between two runs.
- *
- * WHY EVERY PIN SPELLING IS PARSED, not the ones a grep would find. Searching
- * the org for `git+https://github.com/markup-carve` returns sixteen repos and
- * misses obsidian-carve, which uses npm's `github:owner/repo#ref` shorthand.
- * That is the same hole carve-grammars' own publish guard was rewritten to
- * close (markup-carve/carve-grammars#293): a check that cannot see two thirds
- * of its subject reports clean, and the repo is clean by luck. The spellings
- * below are that guard's acceptance table plus the ones only a lockfile or a
- * submodule uses.
+ * This command reports unreleased and lagging pins; it does not fail on them.
+ * Different release schedules can leave a pin behind intentionally.
  *
  * Usage:
  *   node tools/dependency-map.mjs                 # Markdown to stdout
- *   node tools/dependency-map.mjs --json          # the same data, unrendered
- *   node tools/dependency-map.mjs --out FILE      # write instead of printing
- *   node tools/dependency-map.mjs --org NAME      # default markup-carve
+ *   node tools/dependency-map.mjs --json          # data without rendering
+ *   node tools/dependency-map.mjs --out FILE      # write a file
+ *   node tools/dependency-map.mjs --org NAME      # default: markup-carve
  *   node tools/dependency-map.mjs --out F --changed-vs G
- *                                                 # ...and say whether F differs
- *                                                 # from G by more than the lag
- *                                                 # counters: substantive|cosmetic
+ *                                      # prints substantive or cosmetic change
  *
- * Needs `gh` authenticated. Roughly one request per repo plus a few per
- * dependency target; well inside the authenticated hourly limit.
+ * Requires an authenticated `gh` CLI.
  */
 
 import { execFile } from 'node:child_process'
@@ -54,7 +26,6 @@ import { promisify } from 'node:util'
 
 import { parseDependencyLedger, auditDependencyLedger } from '../scripts/lib/drift-ledger.mjs'
 
-/** This file lives in tools/, so the repo root is one level up. */
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
 const run = promisify(execFile)
@@ -83,7 +54,6 @@ async function api(path, { raw = false } = {}) {
   }
 }
 
-/** Map over items with a bounded number in flight. */
 async function mapLimit(items, limit, worker) {
   const results = new Array(items.length)
   let next = 0
@@ -118,36 +88,21 @@ async function repoManifestPaths(repo, branch) {
   const tree = await api(`repos/${ORG}/${repo}/git/trees/${branch}?recursive=1`)
   if (!tree?.tree) return { manifests: [], gitlinks: new Map() }
   const wanted = []
-  // A SUBMODULE'S PIN IS THE GITLINK, NOT `.gitmodules`. That file carries the
-  // url and the path and no commit at all, so reading it alone reports every
-  // submodule as tracking a branch - which is the opposite of what a gitlink
-  // is. The tree entry of type `commit` is the pinned sha, and this is the one
-  // request that already has it.
+  // A gitlink carries the submodule commit; `.gitmodules` only names its URL.
   const gitlinks = new Map()
   const workflows = []
   const vendored = []
   for (const entry of tree.tree) {
     if (entry.type === 'commit') gitlinks.set(entry.path, entry.sha)
     if (entry.type !== 'blob') continue
-    // CI is where an UNDECLARED dependency becomes readable. A repo that
-    // vendors a grammar or embeds an engine build usually also checks that
-    // repo out to test the copy is current, and that checkout names it.
+    // CI checkouts can reveal dependencies absent from manifests.
     if (/^\.github\/workflows\/[^/]+\.ya?ml$/.test(entry.path)) workflows.push(entry.path)
-    // A COMMITTED BUILD OF ANOTHER REPO. The build scripts that produce these
-    // stamp a provenance header, so the pin is IN the artifact rather than in a
-    // manifest - which is why a manifest reader calls the repo independent
-    // while it ships a megabyte of an engine. Candidates by extension only;
-    // the header read below is what decides.
+    // Check candidate artifacts for a provenance header below.
     if (VENDOR_CANDIDATE.test(entry.path)) vendored.push(entry.path)
-    // Only root manifests and one level down: a fixture deep in tests/ is not
-    // a dependency this repo ships, and reading them all turns a cheap report
-    // into a slow one.
-    // Three deep, not two: a Ruby or Python binding keeps its engine pin in
-    // `ext/<name>/Cargo.lock`, which a two-level walk cannot see - and that
-    // file IS the pin for the whole gem.
-    const depth = entry.path.split('/').length
-    if (depth > 3) continue
-    const base = entry.path.split('/').pop()
+    // Include `ext/<name>/Cargo.lock` while skipping deeper test fixtures.
+    const segments = entry.path.split('/')
+    if (segments.length > 3) continue
+    const base = segments.at(-1)
     // A tap formula names no package: its pin is the release-asset url it downloads.
     if (/^Formula\/[^/]+\.rb$/.test(entry.path)) wanted.push({ path: entry.path, kind: 'brew' })
     else if (MANIFESTS.has(base)) wanted.push({ path: entry.path, kind: MANIFESTS.get(base) })

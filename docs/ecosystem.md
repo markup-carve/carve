@@ -87,7 +87,7 @@ Carve embedded in another tool or framework.
 | [webpack-loader-carve](https://github.com/markup-carve/webpack-loader-carve) | webpack / Next.js | Build-time loader for importing `.crv` as rendered HTML modules. |
 | [obsidian-carve](https://github.com/markup-carve/obsidian-carve) | Obsidian | Community plugin with source and reading views for `.crv` notes. |
 | [symfony-carve](https://github.com/markup-carve/symfony-carve) | Symfony | Bundle to render Carve markup to HTML via carve-php. |
-| [symfony-carve-demo](https://github.com/markup-carve/symfony-carve-demo) | Symfony | Demo app showcasing the symfony-carve bundle. |
+| [symfony-carve-demo](https://github.com/markup-carve/symfony-carve-demo) | Symfony | Demo app for the symfony-carve bundle. |
 | [laravel-carve](https://github.com/markup-carve/laravel-carve) | Laravel | Integration with Blade directives, services, validation, and caching. |
 | [laravel-carve-demo](https://github.com/markup-carve/laravel-carve-demo) | Laravel | Runnable app demonstrating every feature of laravel-carve. |
 | [shopware-carve](https://github.com/markup-carve/shopware-carve) | Shopware 6 | Twig filters, CMS element, product/category fields, admin live preview, mail, and a CLI. |
