@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://markup-carve.github.io/carve/ast-provenance-schema.json",
+  "title": "Carve AST provenance sidecar",
+  "type": "object",
+  "required": ["version", "sources", "nodes"],
+  "properties": {
+    "version": { "const": 1 },
+    "sources": { "type": "array", "items": { "$ref": "#/$defs/source" } },
+    "nodes": { "type": "array", "items": { "$ref": "#/$defs/nodeProvenance" } }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "source": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "description": "PART 12 §41: the sidecar's own name for one input, unique within a sidecar and referenced by a node's source." },
+        "uri": { "type": "string", "minLength": 1, "description": "PART 12 §41: where the input came from. The sidecar is where a filesystem path may appear; pos.file stays the inline minimum per §13." },
+        "format": { "type": "string", "minLength": 1, "description": "PART 12 §41: the input's format where it was not Carve. ABSENT means unrecorded, never a guessed Carve." },
+        "parent": { "type": "string", "minLength": 1, "description": "PART 12 §41: the id of the source that included or imported this one. Absent on a root input; walking it reaches the root." }
+      },
+      "additionalProperties": false
+    },
+    "nodeProvenance": {
+      "type": "object",
+      "required": ["path", "source", "origin"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^(?:|(?:/(?:[^~/]|~[01])*)+)$", "description": "PART 12 §41: RFC 6901 pointer into the accompanying canonical AST, as in §38. Unique within a sidecar." },
+        "source": { "type": "string", "minLength": 1, "description": "PART 12 §41: the id of the sources entry this node came from." },
+        "startByte": { "type": "integer", "minimum": 0, "description": "PART 12 §41: start of the node's bytes IN THAT INPUT, as in §13 and not in the assembled document. Not an offset, which §4 counts in codepoints." },
+        "endByte": { "type": "integer", "minimum": 0, "description": "PART 12 §41: end of the node's bytes in that input, exclusive." },
+        "origin": { "enum": ["authored", "generated"], "description": "PART 12 §41: whether a person wrote the node or the processor produced it." },
+        "step": { "type": "string", "minLength": 1, "description": "PART 12 §41: opaque id of the transformation that produced the node. Core never reads it." }
+      },
+      "additionalProperties": false,
+      "dependentRequired": { "startByte": ["endByte"], "endByte": ["startByte"] }
+    }
+  }
+}

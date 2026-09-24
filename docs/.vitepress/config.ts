@@ -232,6 +232,7 @@ export default defineConfig({
             { text: 'Source Locations in JSON', link: '/ast-source-layout' },
             { text: 'Node Identity in JSON', link: '/ast-node-identity' },
             { text: 'Annotation Ranges in JSON', link: '/ast-annotation-ranges' },
+            { text: 'Provenance in JSON', link: '/ast-provenance' },
             { text: 'Source-preserving Patches', link: '/source-patches' },
             { text: 'Import HTML', link: '/html-import' },
             { text: 'Format Conversion', link: '/format-bridges' },

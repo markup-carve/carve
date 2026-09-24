@@ -22,5 +22,6 @@ docs/public/ast-envelope-schema.json
 docs/public/node-roles.json
 docs/public/ast-node-identity-schema.json
 docs/public/ast-annotation-range-schema.json
+docs/public/ast-provenance-schema.json
 docs/examples/
 docs/.vitepress/generated-examples.json

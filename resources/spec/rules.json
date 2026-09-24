@@ -1671,6 +1671,12 @@
       "part": "12",
       "title": "AN ANNOTATION RANGE IS A SEPARATE OPT-IN SIDECAR",
       "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-063",
+      "part": "12",
+      "title": "PROVENANCE IS A SEPARATE OPT-IN SIDECAR",
+      "scope": "ast-interchange"
     }
   ],
   "retired": [

@@ -11594,4 +11594,44 @@ EOF = (* end of file *) ;
       node id, and a holder keeps it across a write the anchors do not survive
       ([carve#2232](https://github.com/markup-carve/carve/issues/2232)).
 
+   41. PROVENANCE IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE [CARVE-P12-063]. A
+      producer MAY return provenance beside an AST only when the caller asks
+      for it, and MUST NOT put it in the tree: §13 already returns
+      source-fidelity metadata beside the AST rather than inline, and two
+      documents differing only in sidecar content are the same document under
+      §6.
+
+      The sidecar validates against `resources/ast-provenance-schema.json`.
+      `version` is 1. `sources` names each input once - an `id`, an optional
+      `uri`, an optional `format` and an optional `parent`, the id of the
+      source that included or imported it. `nodes` binds a `path`, an RFC 6901
+      pointer as in §38, to a `source`, a `startByte` and an `endByte` in THAT
+      input, an `origin` of `authored` or `generated`, and an optional `step`,
+      the transformation that produced the node.
+
+        {"version":1,"sources":[{"id":"s1","uri":"ch1.md","format":"markdown",
+        "parent":"s0"}],"nodes":[{"path":"/children/3","source":"s1",
+        "startByte":40,"endByte":68,"origin":"authored"}]}
+
+      ANCESTRY IS ON THE SOURCE, NOT THE NODE. A nested include reaches its
+      root by walking `parent`, recorded once per input instead of copied onto
+      every node that came from it. A root input has no `parent`, and PART 9
+      §19 already refuses a cycle.
+
+      A BYTE RANGE IS NOT AN OFFSET. The two bytes count the input they name,
+      start-inclusive and end-exclusive as in §13; §4's codepoint rule governs
+      `pos`, which is measured in the assembled document and not in that input.
+
+      THIS IS WHERE A FILESYSTEM PATH MAY APPEAR. `pos.file` stays the inline
+      minimum per §13, and a `uri` a caller did not ask for is one it never
+      receives. An ABSENT `format` is unrecorded, not Carve, because §13 reads
+      a missing fact as unknown and never as a guessed default.
+
+      PROVENANCE IS PER NODE. A range has no independent existence in the tree,
+      so §40's holder reads the nodes its anchors address.
+
+      IT DOES NOT SURVIVE A CANONICAL WRITE, which produces a new input, so
+      every byte range in the sidecar would then address text nothing emitted
+      ([carve#2233](https://github.com/markup-carve/carve/issues/2233)).
+
    ============================================================================ *)
