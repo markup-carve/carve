@@ -56,7 +56,8 @@ test('the clause mints from one id sequence and names only what can be named', (
 test('an author-written name still wins, and only a naming attribute does', () => {
   const body = clause()
   assert.match(body, /author's own `aria-label` or `aria-labelledby` still wins/)
-  assert.match(body, /any OTHER `aria-\*` the author\s+writes leaves the naming alone/)
+  assert.match(body, /any OTHER `aria-\*`\s+the author writes leaves the naming alone/)
+  assert.match(body, /WHERE THE MARKER'S ATTRIBUTES REACH\s+THE PLACED ELEMENT/)
 })
 
 test('a kind whose element cannot hold a paragraph keeps the tokens before it', () => {

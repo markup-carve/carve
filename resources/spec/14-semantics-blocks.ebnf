@@ -480,8 +480,10 @@
       title's minted id, an untitled one keeps the name the `labels` map
       supplies (§16a's `endnotes`, the TOC extension's `tocNav`), and an
       author's own `aria-label` or `aria-labelledby` still wins and mints no id,
-      matched the same case-insensitive way, while any OTHER `aria-*` the author
-      writes leaves the naming alone; the label falls back to
+      matched the same case-insensitive way, WHERE THE MARKER'S ATTRIBUTES REACH
+      THE PLACED ELEMENT (they reach the `<nav>`; the endnotes section takes none
+      of them, so nothing can override its name there), while any OTHER `aria-*`
+      the author writes leaves the naming alone; the label falls back to
       `<p class="div-label">` because no group extension consumes it. An
       untitled, unlabeled marker renders EXACTLY as it did before this clause,
       so the `::: footnotes` corpus pin does not move. On the non-HTML targets

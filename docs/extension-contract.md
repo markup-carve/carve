@@ -1263,7 +1263,8 @@ the opt-in.
   A marker that degrades to `<div class="footnotes">` carries them inside that
   div instead, with no naming attribute and no minted id (a plain `<div>` is
   role `generic`, where both are prohibited). An untitled, unlabeled marker
-  renders exactly as before.
+  renders exactly as before. The placed section takes none of the marker's own
+  attributes, so an `aria-label` written on the marker does not reach it.
 
 ### 8b.3 Degradation & conformance
 
