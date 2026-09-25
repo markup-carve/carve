@@ -180,6 +180,12 @@ jobs:
 
       - name: HTML import contract
         run: npm run html-import:check
+        # The binding-contract half reads four repositories' trees through the
+        # GitHub API. Unauthenticated from a runner that is one of 60 requests an
+        # hour per address, and the check fails rather than skipping when it is
+        # refused, so the token is what keeps a real red distinguishable.
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Escaper corpus
         run: npm run escape:check
