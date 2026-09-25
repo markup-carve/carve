@@ -1309,6 +1309,11 @@ Retiring a code is not a compatibility event and adding one back is not either:
 a reader must already tolerate a code it does not know, so the list may grow the
 day a shape needs it.
 
+**Known carve-php limitation.** If two input elements serialize to identical
+HTML, with one kept raw and the other written as Carve, the PHP report may assign
+`raw-preserved` and `attribute-preserved` to both. Those rows cannot reliably
+identify which element was kept ([carve-php#2360](https://github.com/markup-carve/carve-php/issues/2360)).
+
 `encoding-assumed` is deliberately not filed under `element-unwrapped`.
 Unwrapping is a note about the input's structure and loses no meaning;
 an assumed encoding is a warning about the output. A consumer told only that an
