@@ -10,7 +10,7 @@ releases fix bugs without changing behavior.
 
 ## Stored documents
 
-This file is about **repository and release** versioning. The companion question -
+This file is about repository and release versioning. The companion question -
 what a spec change means for `.crv` files that already exist - is answered by the
 [versioning and changelog page](docs/versioning.md), which is the source of truth
 for "did the language change in a way that affects my documents?".
@@ -49,7 +49,7 @@ Tier-2 / Tier-3 seam):
   Their syntax and HTML contract will not change without a minor bump.
 - **Tier-3 app-level extensions** (bibliography, glossary, index, heading
   numbers, Mermaid, table-of-contents, heading permalinks, ColorSwatch, QR,
-  static maps, and other host-dependent showcases)
+  static maps, and other host-dependent extensions)
   ship and are documented, but are **not covered by the 0.1 stability
   guarantee** - they may evolve in any release. Several depend on a host library
   or service and so cannot be normatively corpus-pinned like core.
@@ -63,7 +63,7 @@ converters / LSP as available-but-evolving.
 
 ## Core lockstep
 
-The four core repositories advance together on every **minor** and **major** release:
+The four core repositories advance together on every minor and major release:
 
 | Repository | Role |
 |------------|------|
@@ -90,19 +90,16 @@ version numbers at any level. Each satellite should document which core version
 it targets in its own README.
 
 The authoritative list of satellites is [the ecosystem page](docs/ecosystem.md),
-which is grouped by role (parsers, bindings, editor support, framework
-integrations, AI tooling). It is deliberately not duplicated here: the copy that
-used to live in this file drifted and ended up naming repositories that do not
-exist.
+grouped by role (parsers, bindings, editor support, framework integrations, AI
+tooling). Do not duplicate it here: a second copy drifts and ends up naming
+repositories that do not exist.
 
 ## Version map
 
-A table of which engine and satellite versions correspond to each grammar
-snapshot is maintained on the wiki:
+The wiki Home page carries a table of which engine and satellite versions
+correspond to each grammar snapshot:
 
 <https://github.com/markup-carve/carve/wiki/Version-Map>
-
-(The wiki Home page hosts this table.)
 
 ## Release tracking
 
@@ -110,7 +107,3 @@ The maintained release process lives in [`MAINTAINING.md`](MAINTAINING.md):
 the lockstep between the spec and the engines, what a pin bump has to sweep,
 the order for a cross-cutting behavior change, and the coordination rules that
 keep parallel automation from stacking duplicate or reverting PRs.
-
-This section used to point at issue `carve#65`, "Prepare first (0.1) release".
-That issue was a one-off for the 0.1 cut and closed with it, so it is not where
-release coordination lives.
