@@ -82,6 +82,12 @@ test('a declared importer that is no longer exported is a finding', () => {
   assert.match(findings[0], /^markdown is declared as `FromMarkdown` but no source file exports that name/)
 })
 
+test('a wasm_bindgen name is read whether it is quoted or bare', () => {
+  for (const attribute of ['#[wasm_bindgen(js_name = migrateDjot)]', '#[wasm_bindgen(js_name = "migrateDjot")]']) {
+    assert.match(attribute, exportProbe['carve-wasm']('migrateDjot'))
+  }
+})
+
 test('the surface filter keeps a binding source and drops what cannot export one', () => {
   for (const path of ['carve.go', 'src/lib.rs', 'lib/carve.rb', 'carve.pyi', 'ext/carve/src/lib.rs']) {
     assert.ok(isBindingSource(path), path)

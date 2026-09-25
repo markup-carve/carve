@@ -48,7 +48,8 @@ export const exportProbe = {
   'carve-go': (name) => new RegExp(String.raw`^func\s+${name}\s*\(`, 'm'),
   'carve-py': (name) => new RegExp(String.raw`wrap_pyfunction!\s*\(\s*${name}\s*,`),
   'carve-rb': (name) => new RegExp(String.raw`^\s*def\s+(?:self\.)?${name}\b`, 'm'),
-  'carve-wasm': (name) => new RegExp(String.raw`js_name\s*=\s*${name}\b`),
+  // The name may be quoted or bare: both are valid in a wasm_bindgen attribute.
+  'carve-wasm': (name) => new RegExp(String.raw`js_name\s*=\s*["']?${name}\b`),
 }
 
 const mentions = (sources, keyword) => {
