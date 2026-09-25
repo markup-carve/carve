@@ -520,10 +520,19 @@
       `aria-label` and `aria-labelledby` PROHIBITED on role `generic`, which a
       plain `<div>` maps to -- the same reason `docs/extension-contract.md`
       gives for a tab panel. The name swap reaches only a placed element that
-      can carry a name: the `<section role="doc-endnotes">`, the
-      `<nav class="toc">`, or whatever named region a Tier-3 kind emits. Where
-      the element cannot, the visible title is the whole of what the author
-      gets, which is the floor, not the landmark rule.
+      can carry a name: the `<section role="doc-endnotes">` and the
+      `<nav class="toc">`. Where the element cannot, the visible title is the
+      whole of what the author gets, which is the floor, not the landmark rule.
+
+      WHERE THE ELEMENT CANNOT HOLD A PARAGRAPH, THE TOKENS PRECEDE IT. A
+      `glossary` places one `<dl>` per definition list written inside it and an
+      `index` places a `<ul>`; HTML admits no `<p>` inside either, and wrapping
+      them to make room would change what an UNTITLED document renders. Those
+      kinds emit the title and then the label IMMEDIATELY BEFORE the generated
+      content and mint no id, which is where a `directive` that cannot name
+      itself leaves them. `footnotes`, `toc` and every degraded `<div>` take the
+      children form above, because their element holds flow content and carries
+      a name.
 
    13. HEADING SECTION WRAPPING -- NORMATIVE [CARVE-P9-019] (governs `atx_heading` in
       PART 2 and the renderer; matches djot, see `jgm/djot` official
