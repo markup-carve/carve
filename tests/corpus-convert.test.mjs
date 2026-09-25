@@ -119,9 +119,7 @@ const PINNED_UNIMPLEMENTED = {}
  * that starts matching fails as STALE until the entry is deleted in the commit
  * that moves the pin, and the meaning assertion still runs regardless.
  */
-const PINNED_DRIFT = {
-  '46-bbcode-empty-quotes-survive': 'predates carve#2171',
-}
+const PINNED_DRIFT = {}
 const PINNED_SOURCE_DRIFT = {}
 
 /**
