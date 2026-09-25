@@ -63,7 +63,7 @@
         -- a block quote, a list item, a div or directive body, a table cell, a
         definition description, a footnote definition -- does not place: it
         renders the `<div class="{kind}">` floor of §12 where it is written, and
-        the section is appended where an unmarked document puts it. A processor
+        the section goes where it would without THIS marker. A processor
         with lint diagnostics reports `footnotes-placement-in-container`.
       - BACKLINK PLACEMENT WHEN THE BODY DOES NOT END IN A PARAGRAPH. "The
         note's last paragraph" above presumes there is one. When the note

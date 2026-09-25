@@ -55,7 +55,13 @@ test('the clause names every container, not only the block quote', () => {
 test('the clause names the floor and where the section goes instead', () => {
   const body = clause()
   assert.match(body, /`<div class="\{kind\}">` floor/)
-  assert.match(body, /appended where an unmarked document puts it/)
+  assert.match(body, /goes where it would without THIS marker/)
+  // NOT "where an unmarked document puts it": a document carrying a contained
+  // marker AND a top-level one places the section at the top-level marker, so
+  // the document is not unmarked and the refusal does not send it to the end
+  // (carve-php#2404 has the case; carve#2298 corrected the same claim in
+  // docs/validation.md).
+  assert.doesNotMatch(body, /unmarked document/)
 })
 
 test('the clause names the diagnostic a refused marker reports', () => {
