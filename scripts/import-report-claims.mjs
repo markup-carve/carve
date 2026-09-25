@@ -22,11 +22,10 @@
  * because the contract fixes it - the element's own rows, its `raw-preserved`
  * row, then each descendant's rows in document order.
  *
- * WHAT IS NOT: every row whose subject is the `style` attribute. carve#2267 is
- * open and unsettled - `style` bypasses the refusal policy in all three engines
- * and answers through a call that records no owner - so pinning either answer
- * here would decide it by gate. Both the code and the position of those rows are
- * therefore invisible to this check.
+ * WHAT IS NOT: no row is held back. The `style` rows were left out while
+ * carve#2267 was unsettled; it is ruled, so their code, class, message and
+ * position are compared like every other row's, and the clause the engines have
+ * not reached yet is declared in CLAUSE_PENDING below.
  *
  * Needs the sibling engines, so it runs in the conformance workflow rather than
  * in `npm test`, and exits 2 without them: a checker that reports success having
@@ -54,18 +53,17 @@ const jsDir = resolve(process.env.CARVE_JS_DIR ?? resolve(root, '../carve-js'))
  *
  * `form` is the only case with two descendants, so it is the only one where
  * document order among them is observable, and the only one carrying both
- * own-attribute kinds. It also holds `style` on the element AND on a descendant,
- * which is the pair one engine was silent about - the rows this gate skips, so
- * the case doubles as the check that skipping them leaves the rest readable.
- * `output` is the INLINE arm, a separate walk in all three engines. `xmp` is
- * RAWTEXT: its content is character data, so there is no descendant element to
- * report, and the `javascript:` URL in those bytes stays inert because
- * re-parsing returns to RAWTEXT.
+ * own-attribute kinds. Its `style` pair carries the two classes carve#2267
+ * ruled: a denied URL scheme in `url(...)` on the element, benign CSS on a
+ * descendant. `output` is the INLINE arm, a separate walk in all three engines.
+ * `xmp` is RAWTEXT: its content is character data, so there is no descendant
+ * element to report, and the `javascript:` URL in those bytes stays inert
+ * because re-parsing returns to RAWTEXT.
  */
 const CASES = [
   {
     name: 'form (block arm, two descendants)',
-    html: '<form onclick="go()" action="javascript:alert(1)" style="color:red">'
+    html: '<form onclick="go()" action="javascript:alert(1)" style="background:url(javascript:alert(4))">'
       + '<a href="javascript:alert(2)" style="color:blue">link</a>'
       + '<button formaction="javascript:alert(3)">go</button></form>\n',
   },
@@ -110,10 +108,37 @@ const DECLARED = [
   },
 ]
 
-/** Whose subject is the `style` attribute, and so outside this comparison. */
-const isStyleRow = (d) =>
-  d.code === 'style-unmapped'
-  || (d.code.startsWith('attribute-') && /\battribute style\b/.test(d.message))
+/*
+ * A clause every engine is behind, with the ticket that moves each one.
+ *
+ * carve#2267 ruled that inside kept bytes a `style` is `attribute-preserved` -
+ * `error` for a refused declaration, `info` for benign CSS - and never
+ * `style-unmapped`, which names a mapping kept bytes do not run. In all three
+ * engines `style` still takes its own branch around the refusal policy, so all
+ * three answer `style-unmapped` and none reports a `style` under
+ * `attribute-preserved`.
+ *
+ * Checked in both directions, and deliberately not by row string: an entry
+ * naming rows nobody emits would go stale the moment a message changed and
+ * could never fire. It asserts the SHAPE of the gap instead - the wrong code
+ * present, the ruled code absent - so the first engine to land its fix turns
+ * this red and the rows move into the comparison above.
+ */
+const CLAUSE_PENDING = [
+  {
+    case: 'form (block arm, two descendants)',
+    clause: 'carve#2267',
+    tickets: {
+      js: 'markup-carve/carve-js#2043',
+      php: 'markup-carve/carve-php#2368',
+      rs: 'markup-carve/carve-rs#1892',
+    },
+  },
+]
+
+const isStyleUnmapped = (d) => d.code === 'style-unmapped'
+const isPreservedStyle = (d) =>
+  d.code === 'attribute-preserved' && /\bPreserved style\b/.test(d.message)
 
 const row = (d) => [d.code, d.severity, d.fidelity, d.confidence, d.path ?? '', d.message].join('|')
 
@@ -187,7 +212,7 @@ const failures = []
 
 for (const testCase of CASES) {
   const rows = new Map()
-  const skipped = new Map()
+  const styleShape = new Map()
   for (const engine of engines) {
     let payload
     try {
@@ -203,8 +228,11 @@ for (const testCase of CASES) {
       continue
     }
     const all = payload.diagnostics ?? []
-    rows.set(engine.name, all.filter((d) => !isStyleRow(d)).map(row))
-    skipped.set(engine.name, all.filter(isStyleRow).length)
+    rows.set(engine.name, all.map(row))
+    styleShape.set(engine.name, {
+      unmapped: all.filter(isStyleUnmapped).length,
+      preserved: all.filter(isPreservedStyle).length,
+    })
   }
 
   if (rows.size < engines.length) continue
@@ -217,6 +245,27 @@ for (const testCase of CASES) {
       failures.push(`${testCase.name}: ${name} reported no raw-preserved row, so this case no longer reaches the raw-keep path.`)
     } else if (list.length < 2) {
       failures.push(`${testCase.name}: ${name} reported ${list.length} comparable row(s); this case is meant to carry a refusal beside the raw-preserved row.`)
+    }
+  }
+
+  // Runs ahead of the comparison so a disagreement among the engines cannot
+  // also hide which of them is still behind the clause.
+  for (const entry of CLAUSE_PENDING.filter((e) => e.case === testCase.name)) {
+    for (const [name, shape] of styleShape) {
+      const ticket = entry.tickets[name] ?? entry.clause
+      if (shape.preserved > 0) {
+        failures.push(
+          `${testCase.name}: ${name} now reports a style under attribute-preserved, so ${entry.clause} `
+            + `is no longer pending for it (${ticket}). Delete it from CLAUSE_PENDING; these rows are gated above.`,
+        )
+      } else if (shape.unmapped === 0) {
+        failures.push(
+          `${testCase.name}: ${name} reports neither style-unmapped nor a preserved style, so this case no `
+            + `longer measures ${entry.clause} (${ticket}).`,
+        )
+      } else {
+        console.log(`PENDING ${testCase.name}: ${name} answers style-unmapped inside kept bytes; ${entry.clause} asks for attribute-preserved (${ticket})`)
+      }
     }
   }
 
@@ -268,8 +317,7 @@ for (const testCase of CASES) {
 
   const undeclaredOk = agreedLists.size === 1
   if (undeclaredOk) {
-    const counts = [...skipped].map(([name, n]) => `${name} ${n}`).join(', ')
-    console.log(`ok    ${testCase.name}: ${agreed.length} rows agree in ${undeclaredNames.join(' and ')}; style rows skipped: ${counts}`)
+    console.log(`ok    ${testCase.name}: ${agreed.length} rows agree in ${undeclaredNames.join(' and ')}`)
   }
 }
 
@@ -285,6 +333,6 @@ if (failures.length > 0) {
   process.exit(1)
 }
 console.log(
-  `\n${CASES.length} raw-keep cases compared across ${engines.length} engines, style rows aside, `
-    + `with ${DECLARED.length} declared divergence(s).`,
+  `\n${CASES.length} raw-keep cases compared row for row across ${engines.length} engines, `
+    + `with ${DECLARED.length} declared divergence(s) and ${CLAUSE_PENDING.length} pending clause(s).`,
 )
