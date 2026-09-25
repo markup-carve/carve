@@ -116,7 +116,7 @@ in each impl repo - weekly + manual dispatch, idempotent on a single
    PART 11 round-trip fixtures or the prose examples, since those still run
    through the pinned build.
 
-   A **Core-only** rule no longer needs step 1 to have landed first: the
+   A **Core-only** rule does not need step 1 to have landed first: the
    executable spec gates it. Keeping carve-js first is still the smoother path
    for a cross-cutting change, because the engine work usually exposes the edge
    cases the examples should pin.
