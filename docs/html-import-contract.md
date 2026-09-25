@@ -1211,10 +1211,10 @@ attribute. Inside an element `roundtrip` keeps as raw HTML, a `style` is
 reported as `attribute-preserved` and never as `style-unmapped`, which names a
 mapping kept bytes do not run: at `error` where a declaration carries a denied
 URL scheme in `url(...)` or a construct the CSS sanitizer refuses such as
-`expression(...)`, and at `info` otherwise. The message is `Preserved style with
-a denied URL scheme in a declaration value on <form>` or `Preserved style with a
-construct the CSS sanitizer refuses on <form>`, the element's own tag
-substituted (carve#2267).
+`expression(...)`, and at `info` otherwise. A refused declaration's message is
+`Preserved style with a denied URL scheme in a declaration value on <form>` or
+`Preserved style with a construct the CSS sanitizer refuses on <form>`, the
+element's own tag substituted (carve#2267).
 
 ## Result and diagnostics
 
