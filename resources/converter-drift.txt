@@ -162,3 +162,20 @@ rust/46-bbcode-empty-quotes-survive  markup-carve/carve#2171: preserve an empty 
 # commit closes without anything in this repo moving.
 #
 # THIS FILE IS EMPTY OF MARKDOWN-IMPORTER DECLARATIONS AGAIN.
+
+# PART 9 section 14, ruled at carve#2273: a Markdown label that is both a GFM
+# task checkbox and a defined link reference label is the CHECKBOX, because the
+# importers answer to cmark-gfm 0.29.0.gfm.13 (carve#2187) rather than to
+# GitHub's own reader.
+#
+# carve-rs takes the reference link. Measured at `8beadb6` in
+# markup-carve/carve-rs#1888, which also corrects the ruling's premise that
+# carve-rs was already right here: the reading arrived in carve-rs#1875, merged
+# eight minutes before the ruling landed.
+#
+# carve-php is NOT declared, deliberately. The only measurement of it is the
+# ruling's, at `d0a71410`, and carve-php ported a large Markdown-importer set on
+# 2026-09-24 (carve-php#2266, #2269, #2275) - the same shape of stale window the
+# note above this one describes. An undeclared divergence is red immediately,
+# which is what names the real set here rather than a guess.
+rust/70-markdown-a-task-label-that-is-also-a-reference-definition  markup-carve/carve-rs#1888: read the checkbox and leave the definition unused

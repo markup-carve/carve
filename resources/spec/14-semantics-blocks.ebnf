@@ -649,6 +649,13 @@
         - anything else (or end of input) -> the `[`...`]` is LITERAL
           text. Carve has no shortcut reference link: a bare `[label]`
           never resolves against a `[label]: url` definition.
+      A MARKDOWN LABEL THAT IS BOTH A CHECKBOX AND A DEFINED REFERENCE IS THE
+      CHECKBOX -- NORMATIVE [CARVE-P9-074]. Markdown HAS the shortcut form, so a
+      source reading `- [x] done` under a `[x]: /u` definition is ambiguous
+      there and not here. The importer answers to cmark-gfm 0.29.0.gfm.13, which
+      reads a GFM TASK ITEM and leaves the definition UNUSED. An unused
+      definition renders nothing, so an importer MAY write it through or omit
+      it; its absence is not a reported loss.
       An inline_span renders as
             <span {attrs}>{inline-rendered content}</span>
       where {attrs} is the attribute block applied verbatim (id, classes,
