@@ -43,5 +43,3 @@
 # The resolved span counts carve#2204 added to the schema. Both are optional, so
 # carve-php omitting them is valid and invisible to the schema check; only the
 # value panel can see it.
-table_cell.rowspan  9  carve-php publishes neither count (markup-carve/carve-php#2298); carve-js and carve-rs publish both
-table_cell.colspan  5  carve-php publishes neither count (markup-carve/carve-php#2298); carve-js and carve-rs publish both
