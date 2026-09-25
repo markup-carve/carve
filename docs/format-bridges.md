@@ -247,9 +247,9 @@ second bridge to Pandoc implements these, and does not re-decide them.
 | | Carve | Pandoc | reading |
 |---|---|---|---|
 | definition lists | a flat run of `definition_term` and `definition_description` | `[([Inline], [[Block]])]`, grouped | a term run opens a group; the descriptions after it belong to that group |
-| citation mode | `suppressAuthor` per item, `mode` on the group | `CitationMode`, three-valued, per citation | `suppressAuthor` picks `SuppressAuthor`, otherwise `NormalCitation` |
+| citation mode | `mode` per item, with `citation_group.mode` as the authored shorthand | `CitationMode`, three-valued, per citation | `suppressAuthor` picks `SuppressAuthor`; otherwise the item's own `mode` decides |
 | quotes | a pair of `smart_punctuation` nodes with content between | `Quoted`, wrapping its content | pair within one inline sequence, else emit the glyph |
-| line blocks | paragraphs whose lines are separated by `hard_break` | `LineBlock`, a list of lines | split on `hard_break`; a U+E000 run becomes U+00A0 |
+| line blocks | `lines`, naming where each line stops, over stanzas separated by `hard_break` | `LineBlock`, a list of lines | read `lines` where a stanza publishes them, split on `hard_break` where it does not; a U+E000 run becomes U+00A0 |
 | document metadata | `frontmatter` holding `format` and raw `content` | `Meta`, structured | the bridge parses; the tree stays raw |
 
 **Definition lists.** Pandoc's term slot is a single `[Inline]`, so a run of two
@@ -261,11 +261,16 @@ published it grouped the same document differently, and a plain grouping object
 can carry no `pos`.
 
 **Citation mode.** Carve source cannot spell a group whose items have different
-modes, so the tree is right to carry one `mode` for the group. The cost lands on
-the way back: a Pandoc `Cite` mixing `AuthorInText` with `NormalCitation` has no
-encoding here, and belongs in the loss report. A typed locator flattens into
-`citationSuffix`, since Pandoc's `Citation` has no locator field - reported as
-`normalized`, not `degraded`, because the visible text is unchanged.
+modes, but the exchanged tree can: the mode sits on the ITEM, which is where
+Pandoc's `CitationMode` sits, and `citation_group.mode` is the authored `+`
+shorthand that fills every item of a source-spelled group. So a Pandoc `Cite`
+mixing `AuthorInText` with `NormalCitation` crosses intact, with the group
+carrying no `mode` of its own - a reader refuses a group whose `mode` any item
+lacks, so the two cannot both be set halfway. What still belongs in the loss
+report is the way back to SOURCE: a canonical writer has one marker per cluster
+and flattens. A typed locator flattens into `citationSuffix`, since Pandoc's
+`Citation` has no locator field - reported as `normalized`, not `degraded`,
+because the visible text is unchanged.
 
 **Quotes.** Synthesizing `Quoted` is worth doing and safe as long as the pairing
 is conservative. A pair that opens and closes inside one inline sequence becomes
@@ -274,11 +279,16 @@ boundary - emits the glyph, which is what the `smart_punctuation` node already
 resolves to. That bound is what keeps re-pairing from guessing: a bridge never
 reaches across a construct boundary to find a partner.
 
-**Line blocks.** Split `children` on `hard_break` to recover the lines. A leading
-run of U+E000 is preserved indentation and maps to U+00A0, per the sentinel rule
-in the [AST contract](./ast-json-contract). An authored hard break inside a verse
-line and a line boundary are the same node, so the two are indistinguishable on
-the way back; that is a known degradation rather than a bug to fix in the tree.
+**Line blocks.** A stanza may publish `lines`: one pointer per line, naming the
+`hard_break` that closes it. Read those where they are there, because a line
+boundary can sit INSIDE an inline - `*a` on one line and `b*` on the next - and a
+scan over the stanza's own children cannot see it. Where a stanza publishes none,
+split `children` on `hard_break`, which is what a bridge did before the field
+existed and what it still does against an engine that omits it. A leading run of
+U+E000 is preserved indentation and maps to U+00A0, per the sentinel rule in the
+[AST contract](./ast-json-contract). Without `lines`, an authored hard break
+inside a verse line and a line boundary are the same node and stay
+indistinguishable on the way back.
 
 **Document metadata.** `frontmatter.content` stays raw, because §3a wants the
 document and not a reading of it. The YAML lands in Pandoc's `Meta` through the
