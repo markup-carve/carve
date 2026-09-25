@@ -1,17 +1,17 @@
 {
   "engine": "@markup-carve/carve",
   "engineCommit": "9f81a0a776a4ebf107afdb76746cb63e14dc0121",
-  "corpusDocuments": 1860,
+  "corpusDocuments": 1864,
   "htmlImportPopulation": {
-    "completed": 1859,
-    "canonicalFixedPoints": 1858,
-    "renderedTextPreserved": 1842,
+    "completed": 1863,
+    "canonicalFixedPoints": 1862,
+    "renderedTextPreserved": 1846,
     "expectedRejections": [
       "182-openers-past-the-nesting-cap-are-one-paragraph.crv"
     ]
   },
   "renderImportRoundTrips": {
-    "html": 741,
+    "html": 743,
     "markdown": 401
   },
   "renderImportRoundTripsNote": "html 748 -> 741 and markdown 439 -> 379 when the pin moved past the Markdown importer rulings carve-js#1922 through #1936 (carve#2213). 60 documents lost, 0 gained, every one a list: the writer puts a blank line before a tight item's sublist, which CommonMark reads as loose, and the importer used to read it back as tight so the two defects cancelled. Fixing the reading half exposed the writing half. Tracked at markup-carve/carve-js#1966. Pin 9f81a0a7 includes carve-js#1968, which fixed the tight-sublist writing half: markdown 379 -> 401, html unchanged at 741."

@@ -1,0 +1,58 @@
+A title or label fills the container body slot
+
+```
+::: note "Careful"
+:::
+.
+<aside class="admonition note" aria-labelledby="adm-1">
+  <p class="admonition-title" id="adm-1">Careful</p>
+</aside>
+```
+
+```
+::: [First]
+:::
+
+::: note [End]
+:::
+.
+<div>
+  <p class="div-label">First</p>
+</div>
+<aside class="admonition note" aria-label="Note">
+  <p class="div-label">End</p>
+</aside>
+```
+
+```
+::: note "Careful"
+Visible body.
+:::
+
+::: note "Careful"
+%% hidden
+:::
+.
+<aside class="admonition note" aria-labelledby="adm-1">
+  <p class="admonition-title" id="adm-1">Careful</p>
+  <p>Visible body.</p>
+</aside>
+<aside class="admonition note" aria-labelledby="adm-2">
+  <p class="admonition-title" id="adm-2">Careful</p>
+</aside>
+```
+
+```
+::: note
+:::
+
+:::
+:::
+.
+<aside class="admonition note" aria-label="Note">
+
+</aside>
+<div>
+
+</div>
+```
