@@ -67,13 +67,6 @@ test('a kind whose element cannot hold a paragraph keeps the tokens before it', 
   assert.match(body, /IMMEDIATELY BEFORE the generated\s+content and mint no id/)
 })
 
-test('a kind whose element cannot hold a paragraph keeps the tokens before it', () => {
-  const body = clause()
-  assert.match(body, /WHERE THE ELEMENT CANNOT HOLD A PARAGRAPH, THE TOKENS PRECEDE IT/)
-  assert.match(body, /`glossary` places one `<dl>`/)
-  assert.match(body, /IMMEDIATELY BEFORE the generated\s+content and mint no id/)
-})
-
 test('the clause leaves an untitled marker byte-identical', () => {
   assert.match(
     clause(),
