@@ -105,7 +105,8 @@ fail-closed classification.
 importer MUST also report each known construct-level loss. For example, GFM
 reads a checkbox on `1. [x] done`, but Carve spells task markers only on bullet
 items. The ordered item keeps `[x]` as text and reports
-`structure-unspellable` alongside `fidelity-unverified`.
+`structure-unspellable` as `dropped` with `exact` confidence alongside
+`fidelity-unverified`.
 
 The producer's `fidelity` is final: bindings MUST NOT reclassify it, and
 fidelity MUST NOT be inferred from human-readable message text. Report and

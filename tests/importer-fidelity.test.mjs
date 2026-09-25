@@ -68,7 +68,7 @@ test('a known ordered task loss is reported beside the incomplete-assessment row
   const result = migrateMarkdown('1. [x] done\n')
   const validate = new Ajv2020().compile(reportSchema)
   assert.equal(validate(result.report), true, JSON.stringify(validate.errors))
-  assert.match(result.value, /1\. \[x\] done/)
+  assert.equal(result.value, '1. [x] done\n')
   const rows = result.report.diagnostics.map(({ code, fidelity, confidence }) => ({ code, fidelity, confidence })).sort((a, b) => a.code.localeCompare(b.code))
   const expected = [
     { code: 'fidelity-unverified', fidelity: 'dropped', confidence: 'fallback' },
