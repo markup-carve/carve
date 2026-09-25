@@ -333,6 +333,26 @@ const INVENTORY = [
     crv: ['trailing-WS'],
     html: [],
   },
+  // The comment pairs (carve#2314). The run after `%% keep` is what the line
+  // form must drop and the run after `body` is what the `%%%` payload must
+  // keep, so stripping either turns the pair into its own opposite. The
+  // no-break space is the separator test: it is the first character the
+  // separator does not admit, so it is where the text begins.
+  {
+    base: '498-a-comment-line-s-text-is-content-and-a-block-body-is-payload',
+    crv: ['trailing-WS'],
+    html: [],
+  },
+  {
+    base: '498-a-comment-line-s-text-is-content-and-a-block-body-is-payload-3',
+    crv: ['NBSP'],
+    html: [],
+  },
+  {
+    base: '498-a-comment-line-s-text-is-content-and-a-block-body-is-payload-4',
+    crv: ['trailing-WS'],
+    html: [],
+  },
 ]
 
 function scan(text) {

@@ -183,7 +183,9 @@ and
 and
 `496-a-title-or-label-fills-the-container-body-slot`
 and
-`497-a-footnotes-placement-marker-inside-a-container-does-not-place`.
+`497-a-footnotes-placement-marker-inside-a-container-does-not-place`
+and
+`498-a-comment-line-s-text-is-content-and-a-block-body-is-payload`.
 
 Entries through 491 landed on a host with no engine checkouts, so the run above
 could not be retaken and its numbers describe the corpus WITHOUT them. Section
