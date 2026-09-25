@@ -1245,8 +1245,9 @@ refused it is the whole test, so an attribute that path consumes as an
 instruction rather than writing back, or whose key one of the writer's own
 markers owns, is refused inside kept bytes, where neither the instruction nor the
 marker runs. An attribute that path keeps and the renderer only hardens - a
-URL-list attribute under [CARVE-P9-055] - is not refused, and owes a row only
-where a token in its value carries a denied scheme (carve#2279).
+URL-list attribute under [`CARVE-P9-055`](/rules/imports-security-extensions) - is
+not refused, and owes a row only where a token in its value carries a denied
+scheme (carve#2279).
 
 ```
 Preserved round-trip marker attribute data-carve-src on <form> in the raw HTML this element is kept as
