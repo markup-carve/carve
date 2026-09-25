@@ -1246,9 +1246,13 @@ the opt-in.
   `<div class="footnotes"></div>` placeholder (no duplicate section).
 - A document with **no** `::: footnotes` marker is **byte-identical** to the
   default end-of-document rendering.
-- A marker in a document with no footnotes, or a `::: footnotes` nested inside a
-  footnote definition, degrades to an ordinary `<div class="footnotes">` and
-  never relocates.
+- A marker in a document with no footnotes degrades to an ordinary
+  `<div class="footnotes">` and never relocates.
+- So does a marker inside a block-level container - a block quote, a list item,
+  a div or directive body, a table cell, a definition description, a footnote
+  definition - and the section is then appended where an unmarked document puts
+  it (PART 9 §16, `CARVE-P9-073`). `carve lint` reports that one as
+  `footnotes-placement-in-container`.
 - A quoted title and an opener `[label]` render as the placed section's first
   children, before its `<hr>`, and the title becomes the section's accessible
   name in place of the `endnotes` default (PART 9 §12, `CARVE-P9-072`):

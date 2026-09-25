@@ -152,6 +152,12 @@ const NOT_IN_THE_PIN_YET = new Map([
     'specified by markup-carve/carve#1464; no engine emits it yet, and it ' +
       'supersedes table-alignment-run-padding once they do',
   ],
+  [
+    'footnotes-placement-in-container',
+    'specified by markup-carve/carve#2274; markup-carve/carve-js#2045 adds it, ' +
+      'and carve-php#2372 and carve-rs#1894 still place the section inside the ' +
+      'container',
+  ],
 ])
 
 /** The rules this map calls with options, i.e. the ones that are not default-on. */

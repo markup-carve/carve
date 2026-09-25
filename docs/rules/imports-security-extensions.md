@@ -9,19 +9,19 @@ description: "Optional and host-facing behavior, importer contracts, security li
 
 Optional and host-facing behavior, importer contracts, security limits, diagnostics, and extension surfaces.
 
-This view contains 26 of 276 active rules. Every rule remains mandatory where applicable.
+This view contains 26 of 277 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
 | Rule | Part | Clause |
 |---|---:|---|
 | [`CARVE-P2-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/04-blocks-tables-containers.ebnf#L545) | 2 | RENDER-LOSS REPORTING |
-| [`CARVE-P9-070`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L550) | 9 | SOCIAL LINK RESOLUTION |
+| [`CARVE-P9-070`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L557) | 9 | SOCIAL LINK RESOLUTION |
 | [`CARVE-P9-071`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L352) | 9 | THE CLIPBOARD TYPE |
 | [`CARVE-P9-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L467) | 9 | TABLE MARKER-PADDING DIAGNOSTICS SHARE ONE ID |
 | [`CARVE-P9-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L502) | 9 | HOSTS MAY OFFER A DOCUMENT-WIDE SMART TYPOGRAPHY SWITCH |
-| [`CARVE-P9-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L496) | 9 | AN IMPORTER WRITES THE CORE FORM, NEVER THE EXTENSION FENCE |
-| [`CARVE-P9-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L527) | 9 | CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES |
+| [`CARVE-P9-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L503) | 9 | AN IMPORTER WRITES THE CORE FORM, NEVER THE EXTENSION FENCE |
+| [`CARVE-P9-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L534) | 9 | CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES |
 | [`CARVE-P9-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L477) | 9 | SECURITY REQUIREMENTS |
 | [`CARVE-P9-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L549) | 9 | A URL-LIST ATTRIBUTE IS PROBED TOKEN-WISE, NOT AT ITS HEAD |
 | [`CARVE-P9-056`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L662) | 9 | A FLATTENED OPENER IS ORDINARY PARAGRAPH TEXT |

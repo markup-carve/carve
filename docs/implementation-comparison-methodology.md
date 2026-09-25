@@ -181,11 +181,13 @@ and
 and
 `495-a-table-foot-span-keeps-one-row-group`
 and
-`496-a-title-or-label-fills-the-container-body-slot`.
+`496-a-title-or-label-fills-the-container-body-slot`
+and
+`497-a-footnotes-placement-marker-inside-a-container-does-not-place`.
 
 Entries through 491 landed on a host with no engine checkouts, so the run above
 could not be retaken and its numbers describe the corpus WITHOUT them. Section
-492 through 496 also postdate the snapshot, so they are excluded from the dated
+492 through 497 also postdate the snapshot, so they are excluded from the dated
 count.
 Editing the denominators by hand would publish a three-engine measurement
 nobody took, and one that is knowably wrong besides: carve-rs and carve-php
@@ -325,6 +327,11 @@ reference's literal source loses a no-break space instead of folding it to
 `&nbsp;` (markup-carve/carve-rs#1823, open). carve-js, carve-php and the
 pinned build already fold it, and markup-carve/carve#2168 brought the
 executable reference to PART 10 SS2's one-entity exception.
+Section 497 lags carve-php and carve-rs, which place the endnotes section inside
+the block quote instead of degrading the marker
+(markup-carve/carve-php#2372, markup-carve/carve-rs#1894). carve-js and the
+pinned build already render the ruled shape, which is what made
+markup-carve/carve#2274 rulable rather than a three-way guess.
 Section 463 no longer lags an engine. A bare closer inside a braced inline
 (`~{/x/}{/y~/}`) used to close a span opened before the braces; markup-carve/carve#2027
 ruled that it may not, and all three now match.

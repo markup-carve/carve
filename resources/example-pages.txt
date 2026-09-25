@@ -584,6 +584,7 @@ index: examples/edge-cases/index.md
   cross-references-resolve-inside-footnote-bodies
   footnote-definition-inside-a-container-is-collected
   footnotes-placement
+  a-footnotes-placement-marker-inside-a-container-does-not-place
   footnote-definition-requires-an-inline-body
   footnote-definition-separator-must-be-a-space
   unresolved-footnote-reference-with-a-trailing-attribute-stays-literal
