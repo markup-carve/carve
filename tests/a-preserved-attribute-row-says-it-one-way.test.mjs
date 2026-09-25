@@ -77,7 +77,7 @@ test('the row set is derived from the refusal the rewriting path would make', ()
 test('an instruction and an owned key are refused in kept bytes; a hardened URL list is not', () => {
   const body = clause(ROW_SET)
   assert.match(body, /consumes as an instruction rather than writing back, or whose key one of the writer's own markers owns, is refused inside kept bytes/)
-  assert.match(body, /URL-list attribute under \[CARVE-P9-055\] - is not refused, and owes a row only where a token in its value carries a denied scheme/)
+  assert.match(body, /URL-list attribute under \[`CARVE-P9-055`\]\(\/rules\/imports-security-extensions\) - is not refused, and owes a row only where a token in its value carries a denied scheme/)
 })
 
 test('both clauses example a message the template accepts', () => {
