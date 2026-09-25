@@ -986,6 +986,27 @@ SOURCE language's own reader (cmark-gfm for Markdown, `djot.js` for Djot, the
 document itself for HTML), so the expected files answer to something that is
 not Carve.
 
+## Roundtrip import report
+
+`npm run import:report` compares what each engine SAYS about an import, not what
+it produces. Every fixture in `tests/html-import/` imports in `safe`, and the
+fixture contract forbids a fixture declaring its mode
+([carve#1886](https://github.com/markup-carve/carve/issues/1886)), so
+`roundtrip`-only rows had no cross-engine home; the converter comparison above
+pairs on the rendered document, and a report row renders nothing. Three engines
+reported the same raw-kept-element refusals three different ways until someone
+read one payload
+([carve#2268](https://github.com/markup-carve/carve/issues/2268)).
+
+It imports three raw-keep cases in `roundtrip` through all three engines and
+compares code, severity, fidelity, confidence, path and message string in
+document order. Rows whose subject is the `style` attribute are left out while
+[carve#2267](https://github.com/markup-carve/carve/issues/2267) is unsettled, so
+neither their code nor their position is checked. Divergences are declared in the
+script with their ticket and checked in both directions, like the converter drift
+file above. Without all three checkouts it exits 2 rather than reporting success
+having compared nothing.
+
 ## Scope
 
 The tool has two profiles:

@@ -1,0 +1,290 @@
+/*
+ * The `roundtrip` import report says the same thing in every engine.
+ *
+ * Nothing compared it (carve#2268). Every fixture in tests/html-import/ imports
+ * in `safe`, and the fixture contract forbids a fixture declaring its mode -
+ * `expected.report.json` IS the report, not a configuration (carve#1886) - so
+ * `roundtrip`-only rows had no home. `compare:convert` sweeps the same fixtures
+ * across engines but pairs on the RENDERED document, and a report row renders
+ * nothing, so it had nothing to pair on either. The existing vocabulary gate
+ * sweeps all three modes and checks only which CODES appear.
+ *
+ * Three engines then described the same raw-kept-element refusals three
+ * different ways for an unknown length of time, and it surfaced because someone
+ * read one payload: carve-js was silent about a descendant's attributes
+ * (carve-js#2021), carve-rs reported two of them as `attribute-dropped` when
+ * nothing was dropped (carve#2261), and the third answer was a wording
+ * difference nobody had compared.
+ *
+ * WHAT IS COMPARED: code, severity, fidelity, confidence, path and the message
+ * string, in DOCUMENT ORDER. Severity alone would have missed carve-js's
+ * silence; codes alone would have missed carve-rs's false rows; order matters
+ * because the contract fixes it - the element's own rows, its `raw-preserved`
+ * row, then each descendant's rows in document order.
+ *
+ * WHAT IS NOT: every row whose subject is the `style` attribute. carve#2267 is
+ * open and unsettled - `style` bypasses the refusal policy in all three engines
+ * and answers through a call that records no owner - so pinning either answer
+ * here would decide it by gate. Both the code and the position of those rows are
+ * therefore invisible to this check.
+ *
+ * Needs the sibling engines, so it runs in the conformance workflow rather than
+ * in `npm test`, and exits 2 without them: a checker that reports success having
+ * run nothing is the failure it exists to prevent.
+ */
+import { execFileSync } from 'node:child_process'
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { dirname, join, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { phpDir, rustBinary } from './lib/engine-locations.mjs'
+
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+// ABSOLUTE, always. `CARVE_JS_DIR` may be relative - the comparison page spells
+// it `../carve-js` - and a relative specifier passed to `import()` resolves
+// against THIS module's URL, not the working directory `existsSync` uses. The
+// two would then disagree: the check finds the sibling build and the import
+// looks for it inside the repo. Same reasoning as lib/engine-locations.mjs.
+const jsDir = resolve(process.env.CARVE_JS_DIR ?? resolve(root, '../carve-js'))
+
+/*
+ * Twenty tags reach the raw-keep path. These three are the ones that carry an
+ * axis no other case does; a fourth block or inline tag would re-measure a path
+ * already covered.
+ *
+ * `form` is the only case with two descendants, so it is the only one where
+ * document order among them is observable, and the only one carrying both
+ * own-attribute kinds. It also holds `style` on the element AND on a descendant,
+ * which is the pair one engine was silent about - the rows this gate skips, so
+ * the case doubles as the check that skipping them leaves the rest readable.
+ * `output` is the INLINE arm, a separate walk in all three engines. `xmp` is
+ * RAWTEXT: its content is character data, so there is no descendant element to
+ * report, and the `javascript:` URL in those bytes stays inert because
+ * re-parsing returns to RAWTEXT.
+ */
+const CASES = [
+  {
+    name: 'form (block arm, two descendants)',
+    html: '<form onclick="go()" action="javascript:alert(1)" style="color:red">'
+      + '<a href="javascript:alert(2)" style="color:blue">link</a>'
+      + '<button formaction="javascript:alert(3)">go</button></form>\n',
+  },
+  {
+    name: 'output (inline arm)',
+    html: '<p><output onclick="go()"><a href="javascript:alert(2)">link</a></output></p>\n',
+  },
+  {
+    name: 'xmp (RAWTEXT, no descendant element)',
+    html: '<xmp onclick="go()"><a href="javascript:alert(2)">link</a></xmp>\n',
+  },
+]
+
+/*
+ * Engines known to diverge, each with its ticket.
+ *
+ * `instead` pairs a row this engine writes with the row the others write in ITS
+ * PLACE, substituted where it stands so a declared wording difference cannot
+ * also excuse a move; `extra` are rows only this engine emits, and `absent` rows
+ * only the others do. Checked in BOTH directions: an engine that stops diverging
+ * fails on the stale entry, and a divergence wider than the entry describes
+ * fails as an undeclared one. Every other row, and the order of all of them, is
+ * still compared - a declaration excuses a row, never a case.
+ */
+const DECLARED = [
+  {
+    engine: 'rs',
+    case: 'form (block arm, two descendants)',
+    ticket: 'markup-carve/carve-rs#1881',
+    reason: 'names the non-handler sinks "active-content"; the spec calls them sinks and the other two engines say "injection-sink"',
+    instead: [[
+      'attribute-preserved|error|preserved|exact|/form[1]/button[2]|Preserved active-content attribute formaction on <button> inside the raw HTML <form> is kept as',
+      'attribute-preserved|error|preserved|exact|/form[1]/button[2]|Preserved injection-sink attribute formaction on <button> inside the raw HTML <form> is kept as',
+    ]],
+  },
+  {
+    engine: 'php',
+    case: 'xmp (RAWTEXT, no descendant element)',
+    ticket: 'markup-carve/carve-php#2357',
+    reason: 'walks the RAWTEXT bytes as markup, so it reports a refusal at /xmp[1]/a[1] for an element the DOM does not hold',
+    extra: ['attribute-preserved|error|preserved|exact|/xmp[1]/a[1]|Preserved href with a denied URL scheme on <a> inside the raw HTML <xmp> is kept as'],
+  },
+]
+
+/** Whose subject is the `style` attribute, and so outside this comparison. */
+const isStyleRow = (d) =>
+  d.code === 'style-unmapped'
+  || (d.code.startsWith('attribute-') && /\battribute style\b/.test(d.message))
+
+const row = (d) => [d.code, d.severity, d.fidelity, d.confidence, d.path ?? '', d.message].join('|')
+
+/*
+ * Drops ONE occurrence of each named row. A declaration excuses one row, not
+ * every copy of it: an engine that started emitting a declared row twice would
+ * pass a filter that removed them all, and a duplicated diagnostic is exactly
+ * the kind of report defect this gate exists to see.
+ */
+/*
+ * Replaces ONE occurrence of each pair's first row with its second, WHERE IT
+ * STANDS. A declared wording difference must not also excuse a move: dropping
+ * both sides of the pair before comparing would lose the position, and document
+ * order is part of the contract this gate measures.
+ */
+function substituteOnce(list, pairs) {
+  const out = [...list]
+  for (const [from, to] of pairs) {
+    const at = out.indexOf(from)
+    if (at !== -1) out[at] = to
+  }
+
+  return out
+}
+
+function withoutOnce(list, removals) {
+  const left = [...removals]
+  return list.filter((entry) => {
+    const at = left.indexOf(entry)
+    if (at === -1) return true
+    left.splice(at, 1)
+
+    return false
+  })
+}
+
+const engines = []
+if (existsSync(join(jsDir, 'dist/index.js'))) engines.push({ name: 'js', dir: jsDir })
+{
+  const bin = rustBinary()
+  if (bin) engines.push({ name: 'rs', bin, args: [] })
+}
+if (phpDir() && existsSync(join(phpDir(), 'bin/carve'))) {
+  engines.push({ name: 'php', bin: 'php', args: [resolve(phpDir(), 'bin/carve')] })
+}
+
+if (engines.length < 3) {
+  const found = engines.map((e) => e.name).join(', ') || 'none'
+  console.error(`import-report-claims: DID NOT RUN. Need all three engines, found ${engines.length} (${found}).`)
+  console.error('A missing checkout is not built, or is not where CARVE_JS_DIR / CARVE_RS_DIR / CARVE_PHP_DIR point.')
+  process.exit(2)
+}
+
+const lib = await import(join(jsDir, 'dist/index.js'))
+const tmp = mkdtempSync(join(tmpdir(), 'carve-import-report-'))
+
+function report(engine, html) {
+  if (engine.name === 'js') return lib.htmlToCarve(html, { mode: 'roundtrip' }).report
+  const input = join(tmp, 'case.html')
+  const out = join(tmp, 'report.json')
+  writeFileSync(input, html)
+  execFileSync(engine.bin, [...engine.args, 'migrate', '--from', 'html', '--mode', 'roundtrip', '--report', out, input], {
+    encoding: 'utf8',
+    maxBuffer: 1 << 26,
+  })
+
+  return JSON.parse(readFileSync(out, 'utf8'))
+}
+
+const failures = []
+
+for (const testCase of CASES) {
+  const rows = new Map()
+  const skipped = new Map()
+  for (const engine of engines) {
+    let payload
+    try {
+      payload = report(engine, testCase.html)
+    } catch (error) {
+      failures.push(`${testCase.name}: ${engine.name} did not import: ${error.message.split('\n')[0]}`)
+      continue
+    }
+    // A CLI that ignored --mode would report `attribute-dropped` and fail below
+    // anyway; naming it here says which of the two happened.
+    if (payload.mode !== 'roundtrip') {
+      failures.push(`${testCase.name}: ${engine.name} reported mode "${payload.mode}", not roundtrip.`)
+      continue
+    }
+    const all = payload.diagnostics ?? []
+    rows.set(engine.name, all.filter((d) => !isStyleRow(d)).map(row))
+    skipped.set(engine.name, all.filter(isStyleRow).length)
+  }
+
+  if (rows.size < engines.length) continue
+
+  // A vacuous agreement is the failure this gate is most likely to decay into:
+  // if the tag stopped being raw-kept, every engine would report nothing and
+  // "they agree" would be true and worthless.
+  for (const [name, list] of rows) {
+    if (!list.some((r) => r.startsWith('raw-preserved|'))) {
+      failures.push(`${testCase.name}: ${name} reported no raw-preserved row, so this case no longer reaches the raw-keep path.`)
+    } else if (list.length < 2) {
+      failures.push(`${testCase.name}: ${name} reported ${list.length} comparable row(s); this case is meant to carry a refusal beside the raw-preserved row.`)
+    }
+  }
+
+  const declared = DECLARED.filter((entry) => entry.case === testCase.name)
+  const undeclaredNames = [...rows.keys()].filter((name) => !declared.some((entry) => entry.engine === name))
+  // The agreed reading comes from the engines nothing is declared about, and
+  // there must be at least two of them: one engine left cannot arbitrate, and a
+  // third declaration would otherwise buy a green run.
+  const agreedLists = new Set(undeclaredNames.map((name) => JSON.stringify(rows.get(name))))
+  if (undeclaredNames.length < 2) {
+    failures.push(`${testCase.name}: ${undeclaredNames.length} engine(s) without a declared divergence; nothing can arbitrate this case.`)
+    continue
+  }
+  if (agreedLists.size > 1) {
+    failures.push(`${testCase.name}: ${undeclaredNames.join(', ')} disagree and no divergence is declared for them.`)
+    for (const name of undeclaredNames) for (const r of rows.get(name)) failures.push(`    ${name.padEnd(3)} ${r}`)
+    continue
+  }
+  const agreed = rows.get(undeclaredNames[0])
+
+  for (const entry of declared) {
+    const actual = rows.get(entry.engine)
+    const instead = entry.instead ?? []
+    const extra = entry.extra ?? []
+    const absent = entry.absent ?? []
+    const stale = [
+      ...[...instead.map(([from]) => from), ...extra].filter((r) => !actual.includes(r)).map((r) => `no longer emitted by ${entry.engine}: ${r}`),
+      ...[...instead.map(([, to]) => to), ...absent].filter((r) => !agreed.includes(r)).map((r) => `not the agreed row: ${r}`),
+      ...absent.filter((r) => actual.includes(r)).map((r) => `${entry.engine} emits it after all: ${r}`),
+    ]
+    if (stale.length > 0) {
+      failures.push(
+        `${testCase.name}: the declared divergence for ${entry.engine} (${entry.ticket}) no longer describes it. `
+          + 'Delete the entry so the rows are gated like every other one.',
+      )
+      for (const line of stale) failures.push(`    ${line}`)
+      continue
+    }
+    const reduced = withoutOnce(substituteOnce(actual, instead), extra)
+    const expected = withoutOnce(agreed, absent)
+    if (JSON.stringify(reduced) !== JSON.stringify(expected)) {
+      failures.push(`${testCase.name}: ${entry.engine} diverges beyond its declaration (${entry.ticket}).`)
+      failures.push(`    declared-aside ${entry.engine}: ${JSON.stringify(reduced)}`)
+      failures.push(`    agreed:          ${JSON.stringify(expected)}`)
+      continue
+    }
+    console.log(`DRIFT ${testCase.name}: ${entry.engine} - ${entry.reason} (${entry.ticket})`)
+  }
+
+  const undeclaredOk = agreedLists.size === 1
+  if (undeclaredOk) {
+    const counts = [...skipped].map(([name, n]) => `${name} ${n}`).join(', ')
+    console.log(`ok    ${testCase.name}: ${agreed.length} rows agree in ${undeclaredNames.join(' and ')}; style rows skipped: ${counts}`)
+  }
+}
+
+rmSync(tmp, { recursive: true, force: true })
+
+if (failures.length > 0) {
+  console.log('')
+  for (const line of failures) console.log(line)
+  console.error(
+    `\n${failures.length} finding(s): the roundtrip import report does not read the same in every engine. `
+      + 'Correct the engine, or declare the divergence with its ticket.',
+  )
+  process.exit(1)
+}
+console.log(
+  `\n${CASES.length} raw-keep cases compared across ${engines.length} engines, style rows aside, `
+    + `with ${DECLARED.length} declared divergence(s).`,
+)

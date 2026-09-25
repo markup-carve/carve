@@ -300,6 +300,23 @@ jobs:
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
         run: npm run degradation:check
 
+      # The `roundtrip` import report, compared row for row. Every fixture in
+      # tests/html-import/ imports in `safe` and the fixture contract forbids a
+      # fixture declaring its mode (carve#1886), so a roundtrip-only divergence
+      # had no home: three engines described the same raw-kept-element refusals
+      # three different ways, one of them inventing two dropped attributes, and
+      # it surfaced because a human read one payload (carve#2268).
+      #
+      # The step above it compares the RENDERED document for the same fixtures.
+      # A report row renders nothing, so that comparison cannot see this at all.
+      - name: Roundtrip import report, in every engine
+        if: always()
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+        run: npm run import:report
+
       # A `tests/corpus/<slug>.fmt` file is PART 11's canonical form for one
       # document - the exact source every conforming writer must produce for it.
       # tests/corpus-fmt-roundtrip.test.mjs reads those fixtures through the
