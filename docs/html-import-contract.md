@@ -234,6 +234,39 @@ reaches.
 `destination-less-link` pins the anchor, the image and the surviving-attribute
 side.
 
+## A denied destination is not a destination either
+
+A destination whose scheme PART 9 §25's sink denylist blanks (`javascript`,
+`vbscript`, `data`, `file` and the OS-handler schemes such as `ms-msdt`) is
+imported exactly like an empty one: no link or
+image node, only the content and any surviving attributes (carve#2254). The
+scheme is read the way the sink reads it, with controls and whitespace removed
+first, so `java&#9;script:` is denied too.
+
+```html
+<p><a href="javascript:alert(1)">click here</a></p>
+```
+
+```
+click here
+```
+
+Writing it would put a destination in the source that no Carve target ever
+emits. Every Carve renderer blanks it, and a tool without that denylist that
+turns the source into a link gets live script, because a browser percent-decodes a `javascript:` URL before it
+runs it. It is also what the empty-destination rule already produces for
+Carve's own rendering of this input, `href=""`, so importing the HTML and
+importing its render give the same document.
+
+It takes one row, `attribute-dropped` at `warning`, the level of a dropped
+event handler, with the message `Dropped href with a denied URL scheme on <a>`
+or `Dropped src with a denied URL scheme on <img>`. There is no separate
+`element-unwrapped` row: the unwrap follows from the drop and says nothing
+more. This applies in every mode, `roundtrip` included, since no Carve
+renderer writes such a destination for it to recover.
+
+`denied-scheme-destination` pins the anchor, the image and the split scheme.
+
 ## The escaping reaches the imported source
 
 Four of the shapes the import meaning sweep found are not import policy at all.
@@ -1164,11 +1197,12 @@ The shape is pinned as the `derived-endnotes-section` fixture.
   captioned wrapper is a property rather than a tag list, and it is stated under
   ["`roundtrip` rebuilds a figure only when a Carve spelling reproduces it"](#roundtrip-rebuilds-a-figure-only-when-a-carve-spelling-reproduces-it).
 
-All modes remove `script`, `style`, `template`, `noscript`, and event-handler
-attributes, with one exception: inside an element `roundtrip` keeps as raw
-HTML, the bytes stay whole and each refused attribute is reported as
-`attribute-preserved` instead (carve#2261). `roundtrip` may recover source
-embedded by a Carve renderer, but must never execute it.
+All modes remove `script`, `style`, `template`, `noscript`, event-handler
+attributes, and destinations with a denied scheme, with one exception: inside
+an element `roundtrip` keeps as raw HTML, the bytes stay whole and each refused
+attribute is reported as `attribute-preserved` instead (carve#2261).
+`roundtrip` may recover source embedded by a Carve renderer, but must never
+execute it.
 
 ## Result and diagnostics
 
@@ -1526,6 +1560,7 @@ The shared set is deliberately small and each directory has one subject:
 | `container-label-keeps-the-fence` | a `<div>` kept by its grouping label alone, an id-bearing one whose label comes back on the opener, and one whose label the lift refuses so it unwraps after all |
 | `diagnostic-order` | two losses in one table, whose rows follow the document and not the order the importer builds them in |
 | `destination-less-link` | an anchor and an image with no destination the source can carry, which come back as their content rather than as `[t]()` |
+| `denied-scheme-destination` | a `javascript:` anchor, a split-scheme anchor that keeps its `id`, and a `data:` image, which come back as their content with one warning each |
 | `marker-shaped-cell` | a table cell whose whole payload is a span marker, escaped so the cell survives |
 | `symbol-sigil-escape` | a symbol sigil in imported text, escaped so it stays the text the HTML held |
 | `extension-sigil-escape` | text ending in `:name` before a span and before a link, whose colon is escaped so the two do not join into an inline extension |
