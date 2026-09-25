@@ -181,6 +181,15 @@ const visibleText = (html) =>
 // renders its placeholder as the drawn `1`, which the importer reads back as
 // literal text. Markdown writes no caption line, so neither moves that count.
 
+// Section 496 adds four documents. All four import, are fixed points and keep
+// their visible text, so those three counts move by the full four. Only the
+// title-only and label-only rows round-trip through HTML: the third row's second
+// container holds a comment, which has no HTML to return from, so the import
+// comes back with an empty body, and the control's empty unlabeled div carries
+// nothing the importer can spell and is unwrapped. Markdown has no container at
+// all, so it writes each title and label as an ordinary paragraph and the empty
+// containers as nothing, and none of the four moves that count.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {

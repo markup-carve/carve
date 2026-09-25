@@ -779,6 +779,7 @@ index: examples/edge-cases/index.md
   26-comments-8
   41-line-blocks-9
   empty-containers-share-one-html-body-shape
+  a-title-or-label-fills-the-container-body-slot
 
 [edge-security] Security and limits
 > Trojan-Source stripping, scheme probes, attribute hardening and the nesting cap.
