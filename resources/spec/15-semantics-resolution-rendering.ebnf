@@ -58,13 +58,16 @@
         word the rest of this grammar uses for the construct. A host that
         renders them at the end and calls them endnotes sets the label; that is
         what the map is for.
-      - A PLACEMENT MARKER PLACES ONLY AT DOCUMENT TOP LEVEL -- NORMATIVE
-        [CARVE-P9-073]. A `::: footnotes` marker inside a block-level container
-        -- a block quote, a list item, a div or directive body, a table cell, a
-        definition description, a footnote definition -- does not place: it
-        renders the `<div class="{kind}">` floor of §12 where it is written, and
-        the section goes where it would without THIS marker. A processor
-        with lint diagnostics reports `footnotes-placement-in-container`.
+      - DOCUMENT-WIDE PLACEMENT MARKERS REQUIRE DOCUMENT TOP LEVEL -- NORMATIVE
+        [CARVE-P9-073]. A `::: footnotes`, `::: bibliography`, or
+        `::: references` marker inside a block-level container -- a block
+        quote, a list item, a div or directive body, a table cell, a definition
+        description, a footnote definition -- does not place its document-wide
+        region. It renders the `<div class="{kind}">` floor of §12 where it is
+        written, and the region goes where it would without THIS marker. A
+        processor with lint diagnostics reports `{kind}-placement-in-container`
+        for the kind it supports. This rule does not restrict `::: toc`,
+        `::: glossary`, or `::: index` inside a container.
       - BACKLINK PLACEMENT WHEN THE BODY DOES NOT END IN A PARAGRAPH. "The
         note's last paragraph" above presumes there is one. When the note
         body's LAST BLOCK is not a paragraph (a code block, a block quote, a

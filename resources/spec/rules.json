@@ -691,7 +691,7 @@
     {
       "id": "CARVE-P9-073",
       "part": "9",
-      "title": "A PLACEMENT MARKER PLACES ONLY AT DOCUMENT TOP LEVEL",
+      "title": "DOCUMENT-WIDE PLACEMENT MARKERS REQUIRE DOCUMENT TOP LEVEL",
       "scope": "resolution-rendering"
     },
     {

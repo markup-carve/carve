@@ -148,6 +148,14 @@ const UNPRODUCIBLE_IN_BUILD = new Set(['portable-quote-marker-space'])
  */
 const NOT_IN_THE_PIN_YET = new Map([
   [
+    'bibliography-placement-in-container',
+    'specified by CARVE-P9-073; the pinned build has no bibliography placement extension',
+  ],
+  [
+    'references-placement-in-container',
+    'specified by CARVE-P9-073; the pinned citations extension does not emit it yet',
+  ],
+  [
     'unattached-block-attribute',
     'specified by markup-carve/carve#1281; no engine implements it yet',
   ],

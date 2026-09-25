@@ -258,6 +258,11 @@
       "slug": "50-social-link-resolvers",
       "feature": "social-link-resolvers",
       "description": "Host resolvers map @alice to /people/42 and #release to /collections/stable; unresolved @missing and #private plus a denied javascript: result for @unsafe keep their inert span rendering."
+    },
+    {
+      "slug": "51-references-placement-inside-a-quote",
+      "feature": "citations-numbered",
+      "description": "A references marker inside a block quote renders its floor there and leaves the document reference list at the end (CARVE-P9-073)."
     }
   ]
 }
