@@ -106,7 +106,9 @@ importer MUST also report each known construct-level loss. For example, GFM
 reads a checkbox on `1. [x] done`, but Carve spells task markers only on bullet
 items. The ordered item keeps `[x]` as text and reports
 `structure-unspellable` as `dropped` with `exact` confidence alongside
-`fidelity-unverified`.
+`fidelity-unverified`. Its message is pinned once, for every entry point that
+reaches the loss, under
+[a lost checkbox on an ordered task item](./html-import-contract#a-lost-checkbox-on-an-ordered-task-item-says-it-one-way).
 
 The producer's `fidelity` is final: bindings MUST NOT reclassify it, and
 fidelity MUST NOT be inferred from human-readable message text. Report and

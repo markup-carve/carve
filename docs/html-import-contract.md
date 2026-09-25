@@ -1253,6 +1253,37 @@ scheme (carve#2279).
 Preserved round-trip marker attribute data-carve-src on <form> in the raw HTML this element is kept as
 ```
 
+## A lost checkbox on an ordered task item says it one way
+
+A checkbox the source format reads on an ordered list item survives as the
+item's bracket text, and the `structure-unspellable` row reporting it carries
+one message at every entry point:
+
+```
+An ordered task item is not spellable as a Carve task item; the checkbox marker was kept as text
+```
+
+The rule behind the loss is not in the row. `task_marker` hangs off
+`unordered_item` alone in `resources/spec/03-blocks-core.ebnf`, so no Carve
+source spells a box on an ordered item: the item keeps the characters the box
+was read from, in the position the box stood, and loses the task-item semantics.
+A row says what happened to this document, and a reader meeting the loss for the
+first time can find the reason here rather than in every row that hits it
+(carve-js#2062).
+
+The same loss with the same cause reads the same from either direction, so a
+consumer filtering on the message does not have to know which importer ran.
+The row's `path` still differs, because an HTML importer locates the `<input>`
+it read and a Markdown importer has no element to locate. Its remaining fields
+are fixed in [format bridges](./format-bridges#a-bridge-reports-it-never-guesses):
+`dropped` fidelity at `exact` confidence, beside `fidelity-unverified` where the
+entry point emits one.
+
+A position the source format reads no checkbox at owes no row. `> - [ ] a`,
+`- - [ ] a` and `1. - [ ] a` keep their bracket pair as text in the source
+format too, so nothing was lost there, and reporting a loss that did not happen
+is the same defect as staying silent about one that did (carve-js#2047).
+
 ## Result and diagnostics
 
 Import APIs return both the document and an ordered diagnostic list. Every
