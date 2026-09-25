@@ -623,6 +623,12 @@
       "scope": "resolution-rendering"
     },
     {
+      "id": "CARVE-P9-072",
+      "part": "9",
+      "title": "A DIRECTIVE'S TITLE AND LABEL RENDER INSIDE THE REGION IT PLACES",
+      "scope": "resolution-rendering"
+    },
+    {
       "id": "CARVE-P9-019",
       "part": "9",
       "title": "HEADING SECTION WRAPPING",
