@@ -984,7 +984,10 @@ way, no content lost.
 Tier-3, so not in the mandatory corpus. The contract is cross-impl parity: for
 the same document the implementations produce the same `<dl>`, the same
 `gloss-{slug}` ids, and the same `:term` resolution / degradation. Each
-implementation pins this in its own suite.
+implementation pins this in its own suite. The indentation boundary is
+[§8b.3](#_8b-3-degradation-conformance)'s: the `<dl>`'s own opening and closing
+tag carry the per-implementation indentation, one column for both, and its
+`<dt>`/`<dd>` rows are the byte-identical part.
 
 ## 8. Index (Tier-3)
 
@@ -1055,7 +1058,10 @@ Tier-3, not corpus-pinned. The contract is cross-impl parity: the same document
 yields the same `idx-{slug}-{n}` anchors, the same sorted `<ul>`, and the same
 back-links. Each implementation pins this in its own suite (occurrence
 anchoring, the codepoint sort, multi-occurrence back-links, and the
-no-marker / extension-off degradation).
+no-marker / extension-off degradation). The indentation boundary is
+[§8b.3](#_8b-3-degradation-conformance)'s: the `<ul class="index">`'s own opening
+and closing tag carry the per-implementation indentation, one column for both,
+and its items are the byte-identical part.
 
 Where a term's display text is derived from a heading, it is R4's clone of that
 heading's inline nodes and not a flattened string - the grammar's DERIVED
@@ -1277,11 +1283,35 @@ Both degrade gracefully (a labeled `<div>` floor).
 - **`::: footnotes`** is core and its full output is byte-identical across
   implementations, so it is **corpus-pinned** in the main corpus
   (`120-footnotes-placement`).
-- **`::: toc`** is a Tier-3 extension whose embedded output carries
-  per-implementation block indentation (like Glossary and Index), so it is
-  **not** corpus-pinned; the cross-impl contract is the byte-identical `<nav>`
-  list fragment, and each implementation pins the window selection, id
-  resolution, and degradation in its own suite.
+- **`::: toc`** is a Tier-3 extension, so it is **not** corpus-pinned; each
+  implementation pins the window selection, id resolution, and degradation in
+  its own suite.
+
+**Where the byte-identity contract starts and stops** is `CARVE-P10-010` (PART 10
+§4). The `<nav>`'s own opening and closing tag may carry the ambient block
+indentation or may sit at column 0 - both conform, neither is pinned, and one
+column serves both tags. The generated list between them is the contract: the
+`<ul>`, its items and the closing `</ul>`, byte-identical at column 0 wherever
+the marker was written.
+
+```html
+<section id="Heading">
+  <h1>Heading</h1>
+<nav class="toc" aria-label="Table of contents">
+<ul>
+<li><a href="#Heading">Heading</a></li>
+</ul>
+</nav>
+</section>
+```
+
+That boundary governs Glossary ([§7.5](#_7-5-conformance-not-corpus-pinned)) and
+Index ([§8.4](#_8-4-conformance-not-corpus-pinned)) identically: the placed
+element's own two tags carry the per-implementation indentation, everything the
+extension writes between them is the cross-impl contract, and where those lines
+sit is each extension's own statement rather than the marker's column. For those
+two the rows are one level inside the `<dl>` or the `<ul class="index">`, by the
+PART 10 §4 nesting rule.
 
 An entry's text is R4's clone of the heading's inline nodes, per the grammar's
 DERIVED DISPLAY TEXT CLONES THE SAME NODES clause (PART 9R R4), taken **before**

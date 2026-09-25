@@ -1043,6 +1043,12 @@
       "scope": "imports-security-extensions"
     },
     {
+      "id": "CARVE-P10-010",
+      "part": "10",
+      "title": "A PLACED ELEMENT'S OWN TAGS CARRY THE PER-IMPLEMENTATION INDENTATION",
+      "scope": "imports-security-extensions"
+    },
+    {
       "id": "CARVE-P11-001",
       "part": "11",
       "title": "EQUALITY IS MODULO ESCAPING",

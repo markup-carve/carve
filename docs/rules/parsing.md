@@ -9,7 +9,7 @@ description: "Input normalization, layout, block and inline recognition, attribu
 
 Input normalization, layout, block and inline recognition, attributes, and lexical boundaries.
 
-This view contains 111 of 279 active rules. Every rule remains mandatory where applicable.
+This view contains 111 of 280 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 

@@ -120,6 +120,36 @@
       turns a comment-only line in a line block into an empty verse paragraph;
       that paragraph is visible body content (`<p></p>`), not an empty body.
 
+      A PLACED ELEMENT'S OWN TAGS CARRY THE PER-IMPLEMENTATION INDENTATION -- NORMATIVE
+      [CARVE-P10-010]. A `directive` (PART 12 §35) places an element around content the
+      extension generates -- `<nav class="toc">`, `<dl class="glossary">`,
+      `<ul class="index">`, a degraded `<div class="{kind}">`. The two halves are pinned
+      differently.
+
+      THE OPENING AND CLOSING TAG may carry the nesting indentation above or may sit at
+      column 0. Both conform and neither is pinned, so a consumer comparing two
+      implementations does not compare those two lines' leading whitespace. ONE COLUMN
+      SERVES BOTH TAGS: an element whose opener and closer sit at different columns
+      conforms under neither choice.
+
+      THE GENERATED CONTENT between them is the cross-implementation contract,
+      BYTE-IDENTICAL including its own leading whitespace. Its column belongs to the
+      extension and is never read off the marker: `::: toc` writes the `<ul>`, its items
+      and the closing `</ul>` at column 0 wherever the marker was written.
+
+        <section id="Heading">
+          <h1>Heading</h1>
+        <nav class="toc" aria-label="Table of contents">
+        <ul>
+        <li><a href="#Heading">Heading</a></li>
+        </ul>
+        </nav>
+        </section>
+
+      `toc`, `glossary` and `index` are governed by this one wording. A kind's own
+      section in `docs/extension-contract.md` fixes where its generated lines sit and
+      may not redraw this boundary.
+
    5. PARAGRAPH WRAPPING follows the tight/loose rule (§17): a tight list
       item's text has no <p>; a loose item's paragraphs are wrapped.
 

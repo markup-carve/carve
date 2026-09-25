@@ -9,7 +9,7 @@ description: "Document-wide resolution, core semantic behavior, and HTML seriali
 
 Document-wide resolution, core semantic behavior, and HTML serialization.
 
-This view contains 39 of 279 active rules. Every rule remains mandatory where applicable.
+This view contains 39 of 280 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -48,9 +48,9 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9R-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L156) | 9R | AN UNANSWERABLE PROBE KEEPS THE CANDIDATE TEXT |
 | [`CARVE-P9R-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L280) | 9R | R5a LABELED DISPLAY EQUATIONS ARE NUMBERED |
 | [`CARVE-P10-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L107) | 10 | AN EMPTY CONTAINER BODY |
-| [`CARVE-P10-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L142) | 10 | A ROW IS A ROW, IN EVERY SECTION |
-| [`CARVE-P10-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L160) | 10 | SEMANTIC SPAN ATTRIBUTES |
-| [`CARVE-P10-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L172) | 10 | A DERIVED ATTRIBUTE YIELDS TO AN AUTHORED ONE OF THE SAME NAME |
-| [`CARVE-P10-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L181) | 10 | LEFTOVER ATTRIBUTES RIDE THE OUTERMOST SEMANTIC ELEMENT |
-| [`CARVE-P10-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L203) | 10 | THE REGISTRY HOLDS NO ELEMENT CARVE ALREADY SPELLS INLINE |
-| [`CARVE-P10-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L228) | 10 | THE CORE SEMANTIC NAMES ARE CLOSED |
+| [`CARVE-P10-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L172) | 10 | A ROW IS A ROW, IN EVERY SECTION |
+| [`CARVE-P10-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L190) | 10 | SEMANTIC SPAN ATTRIBUTES |
+| [`CARVE-P10-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L202) | 10 | A DERIVED ATTRIBUTE YIELDS TO AN AUTHORED ONE OF THE SAME NAME |
+| [`CARVE-P10-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L211) | 10 | LEFTOVER ATTRIBUTES RIDE THE OUTERMOST SEMANTIC ELEMENT |
+| [`CARVE-P10-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L233) | 10 | THE REGISTRY HOLDS NO ELEMENT CARVE ALREADY SPELLS INLINE |
+| [`CARVE-P10-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L258) | 10 | THE CORE SEMANTIC NAMES ARE CLOSED |
