@@ -113,26 +113,22 @@ const shippedDeclaration = () =>
  * Both this map and the ledger's row clear together, which is what those notes
  * asked for - the run reports FIXED and fails until they go.
  *
- * TWO ROWS AGAIN since 2026-09-24. carve#2204 added the resolved `colspan` and
- * `rowspan` to a spanning cell; carve-js and carve-rs publish both and
- * carve-php publishes neither (markup-carve/carve-php#2298). Measured in AST
- * conformance run 36029258478, at carve d85b13ae, over 1863 corpus documents,
- * each engine built from a fresh checkout of its own default branch:
+ * EMPTY AGAIN since 2026-09-25. carve#2204 had added the resolved `colspan` and
+ * `rowspan` to a spanning cell, which carve-js and carve-rs published and
+ * carve-php did not (markup-carve/carve-php#2298, now closed). AST conformance
+ * run 36108808818 reports both FIXED over 1863 documents, with the same panel
+ * finding the engines place every node identically across 40272 spans:
  *
- *      9 doc(s)  table_cell.rowspan
- *         carve-js=2  carve-rs=2  carve-php=(absent)
- *      5 doc(s)  table_cell.colspan
- *         carve-js=2  carve-rs=2  carve-php=(absent)
+ *   THREE-WAY VALUE COMPARISON does not match resources/ast-value-divergence.txt:
+ *     FIXED      table_cell.rowspan no longer diverges - delete its line
+ *     FIXED      table_cell.colspan no longer diverges - delete its line
  *
- * The counts are document counts over the corpus AT THAT SIZE, so a corpus
- * insertion that reaches a spanning cell moves them: the same run read 7 for
- * `rowspan` four and a half hours earlier, over 1861 documents. That is the
- * ledger's third direction working, not a defect in it.
+ * An empty map and an empty ledger reconcile to nothing, which is the state the
+ * panel is trying to reach. The three directions stay live regardless: a row
+ * added to the file without a measurement is FIXED, a row deleted from it is
+ * NEW, and a count edited on either side is COUNT.
  */
-const LAST_MEASURED = new Map([
-  ['table_cell.rowspan', 9],
-  ['table_cell.colspan', 5],
-])
+const LAST_MEASURED = new Map([])
 
 /** A measurement of `count` distinct documents - the reconciler counts them. */
 const documents = (count) =>
