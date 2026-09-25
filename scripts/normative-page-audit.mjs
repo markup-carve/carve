@@ -120,10 +120,33 @@ const flatten = (s) => s.replace(/\s+/g, ' ').trim().toLowerCase()
 
 const normalizeSentence = (s) => s.replace(/<[^>]+>/g, '').replace(/[`*_]/g, '').replace(/\s+/g, ' ').trim()
 
+/**
+ * Blank every fenced block, fences included. Fences pair by character and
+ * length, as the page renders them: a ``` line inside a ~~~ block is content,
+ * and an unclosed fence runs to the end of the page.
+ */
+export function blankFences(page) {
+  let open = null
+  return page
+    .split('\n')
+    .map((line) => {
+      const fence = /^\s*(`{3,}|~{3,})(.*)$/.exec(line)
+      if (open) {
+        if (fence && fence[1][0] === open[0] && fence[1].length >= open.length && !fence[2].trim()) open = null
+        return ''
+      }
+      if (fence && !(fence[1][0] === '`' && fence[2].includes('`'))) {
+        open = fence[1]
+        return ''
+      }
+      return line
+    })
+    .join('\n')
+}
+
 /** Sentences carrying an RFC-2119 MUST, fenced code excluded. */
 function mustSentences(page) {
-  return page
-    .replace(/```[\s\S]*?```/g, (m) => m.replace(/[^\n]/g, ' '))
+  return blankFences(page)
     .split(/(?<=[.!?])\s+|\n\n+/)
     .filter((s) => /\bMUST\b/.test(s))
     .map(normalizeSentence)

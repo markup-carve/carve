@@ -18,7 +18,7 @@ import { execFileSync } from 'node:child_process'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { extractNormativeClauses, readInventory } from '../scripts/normative-clauses.mjs'
-import { audit, clausesOf, conditionStated, obligationTables, part9Sections as specPart9Sections } from '../scripts/normative-page-audit.mjs'
+import { audit, blankFences, clausesOf, conditionStated, obligationTables, part9Sections as specPart9Sections } from '../scripts/normative-page-audit.mjs'
 import { classifyLayoutComment, ownershipTransition } from '../scripts/spec/layout.mjs'
 import { bareCitation, eachClause, qualifiedCitation } from '../scripts/lib/citations.mjs'
 
@@ -660,8 +660,9 @@ test('the obligations ledger declares its gaps out loud', () => {
   const { unstated, weaker } = audit()
   // Writing the ledger found five more of the carve#1995 shape plus one clause
   // that states something weaker than the page does. Closing any of them moves
-  // these numbers, which is the point of pinning them.
-  assert.equal(unstated.length, 0)
+  // these numbers, which is the point of pinning them. The eight UNSTATED rows
+  // were hidden from the audit until carve#2327 fixed its fence pairing.
+  assert.equal(unstated.length, 8)
   assert.equal(weaker.length, 1)
   assert.equal(weaker[0].clause, 'WEAKER PART 9 §19 I4')
 })
@@ -731,4 +732,14 @@ test('a cited clause that covers no row is reported', () => {
   const clauses = clausesOf(specPart9Sections().get(table.section).text)
   const earned = table.conditions.some((c) => conditionStated(c, [clauses.get('I1')]))
   assert.equal(earned, false)
+})
+
+test('a backtick line inside a tilde fence does not blank the prose after it', () => {
+  // carve#2327: a regex pairing backtick runs opened a "fence" at the ```js line
+  // inside a ~~~ block and hid 21 MUST lines of docs/includes.md from the ledger.
+  const page = ['~~~carve', '```js', '~~~', '', 'A host MUST do this.', '', '```', 'code MUST', '```', ''].join('\n')
+  const kept = blankFences(page).split('\n')
+  assert.equal(kept[4], 'A host MUST do this.')
+  assert.equal(kept[7], '')
+  assert.equal(blankFences('````\n```\nMUST\n````\nafter').split('\n')[4], 'after')
 })

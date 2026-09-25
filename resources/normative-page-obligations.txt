@@ -46,3 +46,25 @@ docs/includes.md :: PART 9 §19 I10 :: A CONFIGURED ROOT MUST BE ABSOLUTE :: - A
 docs/includes.md :: PART 9 §19 I10 :: The root MUST NOT re-base per included file :: The root MUST NOT re-base per included file.
 docs/includes.md :: PART 9 §19 I4 :: AS IF the resolved content appeared inline :: - The observable result MUST be as if the resolved content had
 docs/includes.md :: WEAKER PART 9 §19 I4 :: Source positions SHOULD be remapped :: - Source positions MUST identify the file they are measured in,
+docs/includes.md :: PART 9 §19 I11 :: MUST report, alongside the expanded document :: A processor that expands includes MUST report the set
+docs/includes.md :: PART 9 §19 I11 :: the set MUST contain targets that were ATTEMPTED :: - Attempted targets are included, not just successful ones.
+docs/includes.md :: PART 9 §19 I11 :: MUST be distinguishable as RESOLVED versus ATTEMPTED :: - Resolved versus attempted is observable. Each entry MUST
+docs/includes.md :: PART 9 §19 I5 :: DETERMINISTIC RENAME-ON-COLLISION :: The processor MUST resolve duplicates of either deterministically by
+docs/includes.md :: PART 9 §19 I5 :: it MUST NOT emit a Warning :: This is not a collision: it MUST NOT emit
+docs/includes.md :: PART 9 §19 I5 :: MUST NOT rename anything :: This is not a collision: it MUST NOT emit
+docs/includes.md :: PART 9 §19 I6 :: MUST detect inclusion CYCLES :: - Cycles. The processor MUST detect an inclusion cycle
+docs/includes.md :: PART 9 §19 I6 :: MUST enforce a FINITE include-depth limit :: - Depth. Implementations MUST enforce a finite include-depth limit;
+docs/includes.md :: PART 9 §19 I6 :: FINITE bound on RESOLVER INVOCATIONS :: Implementations MUST therefore enforce a finite bound on resolver
+docs/includes.md :: PART 9 §19 I6 :: MUST NOT be passed to the resolver :: A directive past the bound is left literal with
+docs/includes.md :: PART 9 §19 I6 :: MUST be refused BEFORE invoking their resolver :: Every remaining directive MUST degrade to literal without being
+docs/includes.md :: UNSTATED :: - :: A processor MAY cap the number of include Warnings
+docs/includes.md :: UNSTATED :: - :: A processor MAY cap the number of include Warnings
+docs/includes.md :: PART 9 §19 I7 :: MUST enforce canonical path containment :: - The host resolver MUST enforce path containment. Resolve
+docs/includes.md :: PART 9 §19 I10 :: MUST canonicalize the candidate path :: - Containment is canonical, not lexical. A processor MUST
+docs/includes.md :: UNSTATED :: - :: - A refusal MUST NOT reveal whether the target
+docs/includes.md :: UNSTATED :: - :: Both targets MUST be refused as containment denials.
+docs/includes.md :: UNSTATED :: - :: - Inclusion MUST remain disabled on these paths.
+docs/includes.md :: UNSTATED :: - :: - If such a host ever offers inclusion, it
+docs/includes.md :: UNSTATED :: - :: - If such a host ever offers inclusion, it
+docs/includes.md :: UNSTATED :: - :: Dependency tracking and invalidation. A preview MUST re-render when
+docs/includes.md :: PART 9 §19 I11 :: MUST report, alongside the expanded document :: Hosts do not have to infer the dependency set
