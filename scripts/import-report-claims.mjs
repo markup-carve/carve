@@ -37,6 +37,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { phpDir, rustBinary } from './lib/engine-locations.mjs'
+import { isRuledStyleRow } from './lib/ruled-style-message.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 // ABSOLUTE, always. `CARVE_JS_DIR` may be relative - the comparison page spells
@@ -132,9 +133,6 @@ const CLAUSE_PENDING = [
  * attribute style on <form>", so the gate reported php as reporting no style
  * row at all while php was the engine closest to the clause.
  */
-const RULED_STYLE_MESSAGE =
-  /^Preserved style with (?:a denied URL scheme in a declaration value|a construct the CSS sanitizer refuses) on <[a-z][a-z0-9]*>$/
-const isRuledStyleRow = (d) => d.code === 'attribute-preserved' && RULED_STYLE_MESSAGE.test(d.message)
 const isStyleRow = (d) =>
   d.code === 'style-unmapped'
   || (d.code === 'attribute-preserved' && /\b(?:attribute style|Preserved style)\b/.test(d.message))
