@@ -133,9 +133,12 @@
       conforms under neither choice.
 
       THE GENERATED CONTENT between them is the cross-implementation contract,
-      BYTE-IDENTICAL including its own leading whitespace. Its column belongs to the
-      extension and is never read off the marker: `::: toc` writes the `<ul>`, its items
-      and the closing `</ul>` at column 0 wherever the marker was written.
+      BYTE-IDENTICAL including its own leading whitespace. Where it is anchored is the
+      extension's own statement rather than the marker's column: `::: toc` writes the
+      `<ul>`, its items and the closing `</ul>` at column 0 wherever the marker was
+      written, while a `glossary` row and an `index` item sit one level inside their own
+      element and move with the column it took. A consumer compares the generated lines
+      modulo that one column and nothing else.
 
         <section id="Heading">
           <h1>Heading</h1>

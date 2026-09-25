@@ -1307,11 +1307,12 @@ the marker was written.
 
 That boundary governs Glossary ([§7.5](#_7-5-conformance-not-corpus-pinned)) and
 Index ([§8.4](#_8-4-conformance-not-corpus-pinned)) identically: the placed
-element's own two tags carry the per-implementation indentation, everything the
-extension writes between them is the cross-impl contract, and where those lines
-sit is each extension's own statement rather than the marker's column. For those
-two the rows are one level inside the `<dl>` or the `<ul class="index">`, by the
-PART 10 §4 nesting rule.
+element's own two tags carry the per-implementation indentation, and everything
+the extension writes between them is the cross-impl contract. Where those lines
+are anchored is each extension's own statement. The TOC list is at column 0; a
+glossary row and an index item are one level inside the `<dl>` or the
+`<ul class="index">` by the PART 10 §4 nesting rule, so they move with the column
+that element took, and a consumer compares them modulo that one column.
 
 An entry's text is R4's clone of the heading's inline nodes, per the grammar's
 DERIVED DISPLAY TEXT CLONES THE SAME NODES clause (PART 9R R4), taken **before**

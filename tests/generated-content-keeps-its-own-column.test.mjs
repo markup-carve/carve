@@ -44,7 +44,14 @@ test('the clause draws the boundary at the placed element\'s own two tags', () =
   assert.match(body, /neither is pinned/)
   assert.match(body, /ONE COLUMN\s+SERVES BOTH TAGS/)
   assert.match(body, /THE GENERATED CONTENT between them is the cross-implementation contract,\s+BYTE-IDENTICAL/)
-  assert.match(body, /never read off the marker/)
+  assert.match(body, /extension's own statement rather than the marker's column/)
+})
+
+test('the clause anchors the two shapes it covers, and says what a consumer compares', () => {
+  const body = clause()
+  assert.match(body, /`::: toc` writes the\s+`<ul>`, its items\s+and the closing `<\/ul>` at column 0 wherever the marker was\s+written/)
+  assert.match(body, /a `glossary` row and an `index` item sit one level inside their own\s+element and move with the column it took/)
+  assert.match(body, /compares the generated lines\s+modulo that one column and nothing else/)
 })
 
 test('the clause governs the three directives with one wording', () => {
