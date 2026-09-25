@@ -91,6 +91,10 @@ const TRIGGERS = {
     options: { platforms: ['github'] },
   },
   'footnote-labels-differ-only-in-whitespace': 'see [^a b] and [^a  b]\n\n[^a b]: one\n\n[^a  b]: two\n',
+  // A reference AND a definition, because the rule fires on a marker that
+  // cannot place the section, and a document with no note has no section to
+  // place.
+  'footnotes-placement-in-container': 'Intro[^a].\n\n> ::: footnotes\n> :::\n\n[^a]: only note\n',
   // A COMPLETE row, because the rule is gated on the parser's row predicate: a
   // leading `|` with no closing one is a paragraph, and there is no cell for
   // the block to be misplaced in.
@@ -151,12 +155,6 @@ const NOT_IN_THE_PIN_YET = new Map([
     'table-marker-run-padding',
     'specified by markup-carve/carve#1464; no engine emits it yet, and it ' +
       'supersedes table-alignment-run-padding once they do',
-  ],
-  [
-    'footnotes-placement-in-container',
-    'specified by markup-carve/carve#2274; markup-carve/carve-js#2045 adds it, ' +
-      'and carve-php#2372 and carve-rs#1894 still place the section inside the ' +
-      'container',
   ],
 ])
 
