@@ -2126,6 +2126,10 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    reports a raw INLINE it omits. Plain text reports every raw node it omits.
    The canonical Carve writer preserves raw nodes and reports none.
 
+   A render-time refusal, such as a nested `::: footnotes` placement marker
+   (CARVE-P9-073), MUST NOT appear in either machine-readable report; it is a
+   lint finding, and `--strict-losses` does not fail on it.
+
    A strict checked render MUST finish collecting the complete bounded report,
    then fail without returning or publishing `value` when `totalLosses > 0`.
    Existing string-returning APIs MAY remain compatibility conveniences, but
@@ -8233,6 +8237,10 @@ EOF = (* end of file *) ;
       producer without a diagnostic channel still writes the output its clause
       requires: the channel is what a producer MAY expose, never a condition on
       writing.
+
+      A render-time refusal MUST NOT appear in conversion diagnostics or render
+      losses; only lint can report it, so a host reading only the JSON reports
+      cannot observe it.
 
    2. THE ESCAPING RULE -- NORMATIVE [CARVE-P11-006]. A character is escaped IF AND ONLY IF
       omitting the escape would change the re-parsed AST.
