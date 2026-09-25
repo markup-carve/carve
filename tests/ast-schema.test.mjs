@@ -1277,6 +1277,19 @@ test('a directive carries the title its opener spells', () => {
   )
 })
 
+test('generated-content kinds are directives, not admonitions', () => {
+  const doc = (node) => ({ type: 'document', srcByteLength: 0, children: [node] })
+  for (const kind of schema.$defs.directive.properties.kind.enum) {
+    assert.equal(validate(doc({ type: 'directive', kind })), true, `${kind} must be a directive`)
+    assert.equal(
+      validate(doc({ type: 'admonition', kind, children: [] })),
+      false,
+      `${kind} must not be an admonition`,
+    )
+  }
+  assert.equal(validate(doc({ type: 'admonition', kind: 'note', children: [] })), true)
+})
+
 test('directive.title is the shape admonition.title already is', () => {
   // §35 says the field follows `admonition`, so the two subschemas are one
   // convention rather than two. A divergence here is what "matching

@@ -1149,11 +1149,9 @@ parameterised by `kind` reads well and costs a real capability: a profile can de
 `admonition` without denying `div`, and a fold takes away the ability to refuse
 callouts while keeping generic containers.
 
-**The refusal is staged.** `admonition.kind` does not yet reject the directive
-kinds - the schema names the type before any engine publishes it, and a corpus
-document still carries `admonition` with kind `footnotes`. `not` arrives on
-`admonition.kind` in the commit that moves the pin to a build emitting
-`directive`. Until then the split is a rule the schema states and does not check
+The schema rejects generated-content kinds on `admonition.kind`. The pinned
+reference engine publishes those containers as `directive`, so the split is
+checked in both directions
 ([carve#2195](https://github.com/markup-carve/carve/issues/2195)).
 
 **A directive may carry a `title`.** The opener admits a quoted title on every

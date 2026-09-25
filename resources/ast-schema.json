@@ -110,7 +110,17 @@
         },
         "kind": {
           "type": "string",
-          "description": "The callout kind, as authored. A kind naming generated content (`bibliography`, `footnotes`, `glossary`, `index`, `references`, `toc`) belongs on a `directive` instead. That is not yet REFUSED here: the schema names the type before the engines publish it, and `admonition.kind` gains `not` in the commit that moves the pin to a build emitting `directive` (carve#2195)."
+          "not": {
+            "enum": [
+              "bibliography",
+              "footnotes",
+              "glossary",
+              "index",
+              "references",
+              "toc"
+            ]
+          },
+          "description": "The callout kind, as authored. Generated-content kinds (`bibliography`, `footnotes`, `glossary`, `index`, `references`, `toc`) belong on a `directive` instead (carve#2195)."
         },
         "title": {
           "type": "array",
