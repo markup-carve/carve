@@ -113,17 +113,13 @@ const DECLARED = []
  * there" cannot describe them all. An engine emitting the pinned message turns
  * this red and its rows move into the comparison above.
  */
-const CLAUSE_PENDING = [
-  {
-    case: 'form (block arm, two descendants)',
-    clause: 'carve#2267',
-    tickets: {
-      js: 'markup-carve/carve-js#2043',
-      php: 'markup-carve/carve-php#2368',
-      rs: 'markup-carve/carve-rs#1892',
-    },
-  },
-]
+/*
+ * Empty on purpose. carve#2267's three engine tickets (carve-js#2043,
+ * carve-php#2368, carve-rs#1892) are all shipped, so the `style` rows are
+ * compared like every other row rather than excused here. The machinery stays
+ * for the next clause that lands ahead of the engines.
+ */
+const CLAUSE_PENDING = []
 
 /*
  * The clause's own message, and any row whose subject is `style`.
