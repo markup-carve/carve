@@ -1002,12 +1002,14 @@ read one payload
 
 It imports three raw-keep cases in `roundtrip` through all three engines and
 compares code, severity, fidelity, confidence, path and message string in
-document order. Rows whose subject is the `style` attribute are left out while
-[carve#2267](https://github.com/markup-carve/carve/issues/2267) is unsettled, so
-neither their code nor their position is checked. Divergences are declared in the
-script with their ticket and checked in both directions, like the converter drift
-file above. Without all three checkouts it exits 2 rather than reporting success
-having compared nothing.
+document order, `style` rows included. Divergences are declared in the script
+with their ticket and checked in both directions, like the converter drift file
+above. A clause no engine has reached yet is declared the same way and asserts
+the shape of the gap rather than a row string, so the first engine to land its
+fix turns the gate red instead of leaving a dead entry: that is where
+[carve#2267](https://github.com/markup-carve/carve/issues/2267) sits, with a
+ticket per engine. Without all three checkouts it exits 2 rather than reporting
+success having compared nothing.
 
 ## Scope
 
