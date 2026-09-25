@@ -100,16 +100,17 @@ const DECLARED = []
  *
  * carve#2267 ruled that inside kept bytes a `style` is `attribute-preserved` -
  * `error` for a refused declaration, `info` for benign CSS - and never
- * `style-unmapped`, which names a mapping kept bytes do not run. In all three
- * engines `style` still takes its own branch around the refusal policy, so all
- * three answer `style-unmapped` and none reports a `style` under
- * `attribute-preserved`.
+ * `style-unmapped`, which names a mapping kept bytes do not run. Measured on
+ * the 2026-09-25 conformance run: carve-js and carve-rs answer `style-unmapped`
+ * and say nothing about a descendant's `style`; carve-php reaches
+ * `attribute-preserved` but puts the refused declaration at `info` and writes
+ * its own message.
  *
- * Checked in both directions, and deliberately not by row string: an entry
- * naming rows nobody emits would go stale the moment a message changed and
- * could never fire. It asserts the SHAPE of the gap instead - the wrong code
- * present, the ruled code absent - so the first engine to land its fix turns
- * this red and the rows move into the comparison above.
+ * Checked in both directions, by the RULED shape rather than by the wrong rows:
+ * an entry naming today's rows would go stale on any wording change, and the
+ * three engines are at three different distances, so "the wrong row is still
+ * there" cannot describe them all. An engine emitting the pinned message turns
+ * this red and its rows move into the comparison above.
  */
 const CLAUSE_PENDING = [
   {
@@ -123,9 +124,20 @@ const CLAUSE_PENDING = [
   },
 ]
 
-const isStyleUnmapped = (d) => d.code === 'style-unmapped'
-const isPreservedStyle = (d) =>
-  d.code === 'attribute-preserved' && /\bPreserved style\b/.test(d.message)
+/*
+ * The clause's own message, and any row whose subject is `style`.
+ *
+ * The narrow reading cost a false finding on the run that measured this: a
+ * detector looking only for "Preserved style" missed carve-php's "Preserved
+ * attribute style on <form>", so the gate reported php as reporting no style
+ * row at all while php was the engine closest to the clause.
+ */
+const RULED_STYLE_MESSAGE =
+  /^Preserved style with (?:a denied URL scheme in a declaration value|a construct the CSS sanitizer refuses) on <[a-z][a-z0-9]*>$/
+const isRuledStyleRow = (d) => d.code === 'attribute-preserved' && RULED_STYLE_MESSAGE.test(d.message)
+const isStyleRow = (d) =>
+  d.code === 'style-unmapped'
+  || (d.code === 'attribute-preserved' && /\b(?:attribute style|Preserved style)\b/.test(d.message))
 
 const row = (d) => [d.code, d.severity, d.fidelity, d.confidence, d.path ?? '', d.message].join('|')
 
@@ -217,8 +229,9 @@ for (const testCase of CASES) {
     const all = payload.diagnostics ?? []
     rows.set(engine.name, all.map(row))
     styleShape.set(engine.name, {
-      unmapped: all.filter(isStyleUnmapped).length,
-      preserved: all.filter(isPreservedStyle).length,
+      any: all.filter(isStyleRow).length,
+      ruled: all.filter(isRuledStyleRow).length,
+      says: all.filter(isStyleRow).map((d) => `${d.code}/${d.severity}`).join(' '),
     })
   }
 
@@ -240,18 +253,18 @@ for (const testCase of CASES) {
   for (const entry of CLAUSE_PENDING.filter((e) => e.case === testCase.name)) {
     for (const [name, shape] of styleShape) {
       const ticket = entry.tickets[name] ?? entry.clause
-      if (shape.preserved > 0) {
+      if (shape.ruled > 0) {
         failures.push(
-          `${testCase.name}: ${name} now reports a style under attribute-preserved, so ${entry.clause} `
+          `${testCase.name}: ${name} now writes ${entry.clause}'s message for a refused style, so the clause `
             + `is no longer pending for it (${ticket}). Delete it from CLAUSE_PENDING; these rows are gated above.`,
         )
-      } else if (shape.unmapped === 0) {
+      } else if (shape.any === 0) {
         failures.push(
-          `${testCase.name}: ${name} reports neither style-unmapped nor a preserved style, so this case no `
-            + `longer measures ${entry.clause} (${ticket}).`,
+          `${testCase.name}: ${name} reports nothing about either style attribute, so this case no longer `
+            + `measures ${entry.clause} (${ticket}).`,
         )
       } else {
-        console.log(`PENDING ${testCase.name}: ${name} answers style-unmapped inside kept bytes; ${entry.clause} asks for attribute-preserved (${ticket})`)
+        console.log(`PENDING ${testCase.name}: ${name} answers ${shape.says} for style; ${entry.clause} asks for attribute-preserved/error with its own message (${ticket})`)
       }
     }
   }

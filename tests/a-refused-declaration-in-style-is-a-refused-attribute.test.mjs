@@ -51,9 +51,14 @@ test('the class is error for the two refused reasons and info otherwise', () => 
 
 test('the clause pins both message strings and what substitutes into them', () => {
   const body = clause()
-  assert.match(body, /`Preserved style with\na denied URL scheme in a declaration value on <form>`/)
-  assert.match(body, /`Preserved style with a\nconstruct the CSS sanitizer refuses on <form>`/)
-  assert.match(body, /the element's own tag\nsubstituted/)
+  // The template is the refused declaration's, not benign CSS's: both strings
+  // name a refusal reason, so neither can describe a row the clause puts at
+  // `info`.
+  // Read with the soft wraps collapsed: the strings are pinned, where the
+  // paragraph happens to break is not.
+  const flat = body.replace(/\s+/g, ' ')
+  assert.match(flat, /A refused declaration's message is `Preserved style with a denied URL scheme in a declaration value on <form>` or `Preserved style with a construct the CSS sanitizer refuses on <form>`/)
+  assert.match(flat, /the element's own tag substituted/)
 })
 
 test('nothing is removed, so the clause sits under the carve#2261 exemption', () => {
