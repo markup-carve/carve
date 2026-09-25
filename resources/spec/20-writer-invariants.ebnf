@@ -323,6 +323,10 @@
       requires: the channel is what a producer MAY expose, never a condition on
       writing.
 
+      A render-time refusal MUST NOT appear in conversion diagnostics or render
+      losses; only lint can report it, so a host reading only the JSON reports
+      cannot observe it.
+
    2. THE ESCAPING RULE -- NORMATIVE [CARVE-P11-006]. A character is escaped IF AND ONLY IF
       omitting the escape would change the re-parsed AST.
 
