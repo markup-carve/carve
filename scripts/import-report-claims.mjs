@@ -87,26 +87,13 @@ const CASES = [
  * fails on the stale entry, and a divergence wider than the entry describes
  * fails as an undeclared one. Every other row, and the order of all of them, is
  * still compared - a declaration excuses a row, never a case.
+ *
+ * Empty, and that is a measurement: carve-rs#1881 (the sink named
+ * "active-content") and carve-php#2357 (a refusal reported inside RAWTEXT) both
+ * closed, and the checker refused both entries as no longer describing their
+ * engine. The machinery stays for the next one.
  */
-const DECLARED = [
-  {
-    engine: 'rs',
-    case: 'form (block arm, two descendants)',
-    ticket: 'markup-carve/carve-rs#1881',
-    reason: 'names the non-handler sinks "active-content"; the spec calls them sinks and the other two engines say "injection-sink"',
-    instead: [[
-      'attribute-preserved|error|preserved|exact|/form[1]/button[2]|Preserved active-content attribute formaction on <button> inside the raw HTML <form> is kept as',
-      'attribute-preserved|error|preserved|exact|/form[1]/button[2]|Preserved injection-sink attribute formaction on <button> inside the raw HTML <form> is kept as',
-    ]],
-  },
-  {
-    engine: 'php',
-    case: 'xmp (RAWTEXT, no descendant element)',
-    ticket: 'markup-carve/carve-php#2357',
-    reason: 'walks the RAWTEXT bytes as markup, so it reports a refusal at /xmp[1]/a[1] for an element the DOM does not hold',
-    extra: ['attribute-preserved|error|preserved|exact|/xmp[1]/a[1]|Preserved href with a denied URL scheme on <a> inside the raw HTML <xmp> is kept as'],
-  },
-]
+const DECLARED = []
 
 /*
  * A clause every engine is behind, with the ticket that moves each one.
