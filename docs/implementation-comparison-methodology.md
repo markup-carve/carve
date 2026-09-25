@@ -651,10 +651,10 @@ The runner compares every render target, not just HTML: `--targets=all` (the
 default) covers `html`, `markdown`, `plain`, `carve` and `ansi`. Pass a
 comma-separated subset to narrow it.
 
-In the core corpus only `html` has expected-output fixtures. The other four are
-compared **implementation against implementation**, because identical output
-across the three engines is the invariant that matters there, and committing
-four more expected files per corpus case would not add to it. The `Target
+In the core corpus every case has an `html` fixture, and a non-HTML target has
+one wherever a case added it; everywhere else the non-HTML targets are compared
+**implementation against implementation**, because identical output across the
+three engines is the invariant that matters there. The `Target
 agreement` block in the output reports per-target `compared` / `diffs` /
 `errors` counts, and each disagreement prints a `DIFF [target] slug` line naming
 **which engines disagreed**, grouped by the output they wrote:
@@ -668,6 +668,26 @@ A line reading `rust+js+php` means all three wrote something different, and is
 the only shape from which no engine can be used as a reference.
 `cross_impl_diffs` is the total across every target compared, not the HTML
 count.
+
+### Declared engine lag on the Markdown target
+
+PART 11 §10l makes the Markdown target preserve a list's tight/loose
+distinction, and `tests/corpus/05-lists-19.md` pins it. Two engines are behind
+that clause and one is behind part of it, so the fixture half of the Markdown
+target is expected to name them until their fixes land:
+
+- carve-rs and carve-php write a blank separator before a nested list, which a
+  CommonMark reader turns into a loose outer item. 48 documents across the full
+  corpus: markup-carve/carve-rs#1900, markup-carve/carve-php#2380.
+- all three drop a flat list's looseness and write a separator before a nested
+  block quote in a tight item: markup-carve/carve-js#2050 carries those two for
+  the engine that is otherwise conformant.
+
+The golden is derived from the clause, not from an engine, so it stays as
+written until the engines meet it. This is the same window
+`resources/engine-pin-drift.txt` declares for the HTML target, kept here instead
+because that file is read by `npm run engine:report -- --check`, which measures
+HTML only and would report a line for this slug as stale on the day it landed.
 
 Comparison is trailing-newline-insensitive, matching the corpus runner and the
 profile parity battery: renderers legitimately differ on a final `\n`, so a
