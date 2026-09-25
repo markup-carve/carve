@@ -14,4 +14,3 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
-498-a-comment-line-s-text-is-content-and-a-block-body-is-payload  the pin keeps the trailing run in the comment node it publishes and drops it again when it writes, so fmt(x) re-parses to a shorter text than x. carve-js#2080 is the fix; delete this when the pin reaches it.

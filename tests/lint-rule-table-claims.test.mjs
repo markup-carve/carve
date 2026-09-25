@@ -36,7 +36,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { lintCarve } from '@markup-carve/carve'
+import { citations, lintCarve } from '@markup-carve/carve'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const page = readFileSync(resolve(root, 'docs/validation.md'), 'utf8')
@@ -95,6 +95,13 @@ const TRIGGERS = {
   // cannot place the section, and a document with no note has no section to
   // place.
   'footnotes-placement-in-container': 'Intro[^a].\n\n> ::: footnotes\n> :::\n\n[^a]: only note\n',
+  // Gated on the citations extension, not on a platform: without it a
+  // `::: references` marker is an ordinary directive and there is no
+  // document-wide list for the contained marker to fail to place.
+  'references-placement-in-container': {
+    source: 'Intro [@a].\n\n> ::: references\n> :::\n\n[@a]: Author. Title. 2020.\n',
+    options: { extensions: [citations()] },
+  },
   // A COMPLETE row, because the rule is gated on the parser's row predicate: a
   // leading `|` with no closing one is a paragraph, and there is no cell for
   // the block to be misplaced in.
@@ -150,10 +157,6 @@ const NOT_IN_THE_PIN_YET = new Map([
   [
     'bibliography-placement-in-container',
     'specified by CARVE-P9-073; the pinned build has no bibliography placement extension',
-  ],
-  [
-    'references-placement-in-container',
-    'specified by CARVE-P9-073; the pinned citations extension does not emit it yet',
   ],
   [
     'unattached-block-attribute',

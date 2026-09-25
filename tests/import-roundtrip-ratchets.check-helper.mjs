@@ -197,6 +197,13 @@ const visibleText = (html) =>
 // all, so it writes each title and label as an ordinary paragraph and the empty
 // containers as nothing, and none of the four moves that count.
 
+// Under 8e427ade the Markdown count gains six and loses none, all lists, from
+// carve-js#2088: 05-lists-12, 75-list-nesting-and-looseness-9,
+// 105-marker-line-nested-lists-3,
+// 144-nested-item-looseness-does-not-propagate-to-the-outer-item-3,
+// 401-a-marker-at-an-item-content-column-opens-a-sublist-first-in-the-item-or-not
+// and 413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not-3.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {
