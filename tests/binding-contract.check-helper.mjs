@@ -2,6 +2,8 @@ import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import { test } from 'node:test'
 
+import { exportProbe, isBindingSource, surfaceFindings } from './binding-importer-surface.helper.mjs'
+
 const contract = JSON.parse(
   await readFile(new URL('../resources/binding-contract.json', import.meta.url), 'utf8'),
 )
@@ -38,61 +40,68 @@ test('every carve-rs binding exposes every required output and declares every im
   }
 })
 
-const importerSurfaces = {
-  'carve-go': {
-    file: 'carve.go',
-    probes: {
-      html: /^func\s+(?<api>FromHTML)\s*\(/m,
-      markdown: /^func\s+(?<api>FromMarkdown)\s*\(/m,
-      djot: /^func\s+(?<api>From(?:Djot|DJOT))\s*\(/m,
-      bbcode: /^func\s+(?<api>From(?:Bbcode|BBCode))\s*\(/m,
+const token = process.env.GH_TOKEN ?? process.env.GITHUB_TOKEN
+const api = async (url) => {
+  const response = await fetch(url, {
+    signal: AbortSignal.timeout(20000),
+    headers: {
+      accept: 'application/vnd.github+json',
+      ...(token ? { authorization: `Bearer ${token}` } : {}),
     },
-  },
-  'carve-py': {
-    file: 'src/lib.rs',
-    probes: {
-      html: /wrap_pyfunction!\s*\(\s*(?<api>from_html)\s*,/,
-      markdown: /wrap_pyfunction!\s*\(\s*(?<api>from_markdown)\s*,/,
-      djot: /wrap_pyfunction!\s*\(\s*(?<api>from_djot)\s*,/,
-      bbcode: /wrap_pyfunction!\s*\(\s*(?<api>from_bbcode)\s*,/,
-    },
-  },
-  'carve-rb': {
-    file: 'lib/carve.rb',
-    probes: {
-      html: /^\s*def\s+(?:self\.)?(?<api>from_html)\s*\(/m,
-      markdown: /^\s*def\s+(?:self\.)?(?<api>from_markdown)\s*\(/m,
-      djot: /^\s*def\s+(?:self\.)?(?<api>from_djot)\s*\(/m,
-      bbcode: /^\s*def\s+(?:self\.)?(?<api>from_bbcode)\s*\(/m,
-    },
-  },
-  'carve-wasm': {
-    file: 'src/lib.rs',
-    probes: {
-      html: /#\[wasm_bindgen\([^\]]*js_name\s*=\s*["']?(?<api>htmlToCarve)\b/,
-      markdown: /#\[wasm_bindgen\([^\]]*js_name\s*=\s*["']?(?<api>fromMarkdown)\b/,
-      djot: /#\[wasm_bindgen\([^\]]*js_name\s*=\s*["']?(?<api>migrateDjot)\b/,
-      bbcode: /#\[wasm_bindgen\([^\]]*js_name\s*=\s*["']?(?<api>migrateBbcode)\b/,
-    },
-  },
+  })
+  assert.ok(response.ok, `cannot read ${url} (${response.status})${token ? '' : ' - no GH_TOKEN in the environment, so this ran against the unauthenticated rate limit'}`)
+  return response.json()
 }
 
-test('binding importer declarations match pinned and current exports', async () => {
-  await Promise.all(Object.entries(importerSurfaces).map(async ([name, surface]) => {
-    const binding = contract.bindings[name]
+/*
+ * The surface is the tree, not a file somebody named.
+ *
+ * Reading one path per binding made the whole check an assertion about where an
+ * importer that does not exist yet would be written. carve-go ships two files
+ * in the same package today; the one this used to read is not a promise about
+ * the second.
+ */
+async function bindingSources(name, revision) {
+  const tree = await api(`https://api.github.com/repos/markup-carve/${name}/git/trees/${revision}?recursive=1`)
+  assert.ok(!tree.truncated, `${name}@${revision}: the tree came back truncated, so the surface read is partial`)
+  const paths = tree.tree.filter((entry) => entry.type === 'blob' && isBindingSource(entry.path)).map((entry) => entry.path)
+  assert.ok(paths.length, `${name}@${revision}: no source file matched, so nothing was read`)
+
+  const sources = new Map()
+  await Promise.all(paths.map(async (path) => {
+    const url = `https://raw.githubusercontent.com/markup-carve/${name}/${revision}/${path}`
+    const response = await fetch(url, { signal: AbortSignal.timeout(20000) })
+    assert.ok(response.ok, `${name}: cannot read ${url} (${response.status})`)
+    sources.set(path, await response.text())
+  }))
+  return sources
+}
+
+test('the pinned surface each declaration rests on is reachable from main', async () => {
+  await Promise.all(Object.entries(contract.bindings).map(async ([name, binding]) => {
+    const compare = await api(`https://api.github.com/repos/markup-carve/${name}/compare/main...${binding.commit}`)
+    assert.ok(
+      ['identical', 'behind'].includes(compare.status),
+      `${name}: the recorded commit ${binding.commit} is ${compare.status} relative to main, so the surface ` +
+        'these declarations were measured against is not on the branch the binding ships from',
+    )
+  }))
+})
+
+test('binding importer declarations match the pinned and current surfaces', async () => {
+  const failures = []
+  await Promise.all(Object.entries(contract.bindings).map(async ([name, binding]) => {
     await Promise.all([binding.commit, 'main'].map(async (revision) => {
-      const url = `https://raw.githubusercontent.com/markup-carve/${name}/${revision}/${surface.file}`
-      const response = await fetch(url, { signal: AbortSignal.timeout(15000) })
-      assert.ok(response.ok, `${name}: cannot read ${url} (${response.status})`)
-      const source = await response.text()
-      for (const importer of contract.optionalImporters) {
-        const api = source.match(surface.probes[importer])?.groups?.api
-        assert.equal(
-          api,
-          binding.importers[importer],
-          `${name} ${importer}: declared API differs from the export at ${revision}`,
-        )
+      const sources = await bindingSources(name, revision)
+      for (const finding of surfaceFindings({
+        binding,
+        formats: contract.optionalImporters,
+        sources,
+        probe: exportProbe[name],
+      })) {
+        failures.push(`${name}@${revision}: ${finding}`)
       }
     }))
   }))
+  assert.deepEqual(failures.sort(), [], failures.join('\n'))
 })

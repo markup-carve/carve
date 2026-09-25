@@ -29,10 +29,13 @@ Higher-level bindings and satellite packages that wrap one of the engine impleme
 
 A binding over carve-rs exposes the complete core output surface: HTML,
 Markdown, plain text, ANSI, canonical Carve, and the published AST. Importers
-are optional, but each binding declares every HTML, Markdown, and Djot importer
-as either implemented or out of scope. The machine-readable declaration in
-`resources/binding-contract.json` checks that the required output set is exact
-and that every importer has exactly one declaration.
+are optional, but each binding declares every HTML, Markdown, Djot, and BBCode
+importer as either implemented or out of scope. The machine-readable declaration
+in `resources/binding-contract.json` checks that the required output set is
+exact, that every importer has exactly one declaration, and that both kinds of
+declaration hold against the source each binding ships: a declared importer
+names a real export, and an out-of-scope entry survives only while nothing in
+the binding's own sources names that format.
 
 | Project | Language | Notes |
 |---|---|---|
