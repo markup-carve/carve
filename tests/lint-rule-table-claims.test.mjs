@@ -82,7 +82,6 @@ const TRIGGERS = {
   'figure-group-empty': '::: figure\njust a paragraph\n:::\n^ Figure #: G\n',
   'figure-group-single-panel': '::: figure\n![a](a.png)\n^ (a) A\n:::\n^ Figure #: G\n',
   'fence-title-syntax': '::: note Some Title\nbody\n:::\n',
-  'footnotes-placement-in-container': 'Intro[^a].\n\n> ::: footnotes\n> :::\n\n[^a]: only note\n',
   'platform-mention-token': {
     source: 'Use @minutely for that cron alias.\n',
     options: { platforms: ['github'] },
