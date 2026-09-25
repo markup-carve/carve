@@ -664,9 +664,9 @@ through unchanged.
 The value is unreachable from Carve source, so no corpus document can pin it and
 the pin is a hand-built payload,
 [`tests/an-ingested-default-start-is-not-re-emitted.test.mjs`](https://github.com/markup-carve/carve/blob/main/tests/an-ingested-default-start-is-not-re-emitted.test.mjs).
-That blind spot is why the three engines drifted apart here unnoticed: carve-php
-drops the field, carve-js and carve-rs re-emit it, and carve-rs additionally
-spells it as `<ol start="1">`
+That blind spot let the three engines drift apart unnoticed: at the time,
+carve-php dropped the field, carve-js and carve-rs re-emitted it, and carve-rs
+also spelled it as `<ol start="1">`
 ([carve-js#1391](https://github.com/markup-carve/carve-js/issues/1391),
 [carve-rs#1293](https://github.com/markup-carve/carve-rs/issues/1293)).
 
@@ -792,12 +792,11 @@ Neither sentinel has to change once the rule holds, which is why the rule sits
 at the boundary instead of patching each collision: a guarantee the parser makes
 and the ingest does not is not a guarantee.
 
-Before the rule, all three engines let a NUL through the ingest and then
-disagreed about it (carve-js `8f83eea` and carve-php `b845640` measured
-2026-08-22; carve-rs as recorded in carve-rs#1217). Every one emits it on html, markdown
-and plain text; ANSI strips it, since it strips controls; and the canonical
-writer splits three ways - carve-js and carve-rs **delete** it, so `fmt` is
-silently lossy, while carve-php **emits** it.
+Before the rule, all three engines let a NUL through ingest and then disagreed
+about it (carve-js `8f83eea` and carve-php `b845640` measured 2026-08-22;
+carve-rs as recorded in carve-rs#1217). All three emitted it on HTML, Markdown
+and plain text; ANSI stripped it with other controls. Their canonical writers
+also split: carve-js and carve-rs deleted it, while carve-php emitted it.
 
 **An importer is the same boundary**, and *should* do the same where the format
 it reads has no rule of its own. Carve's Markdown importer performs the
@@ -873,8 +872,9 @@ where a refusal is required. The schema already described every one of those;
 nothing consulted it. Validate the payload against it and refuse with a typed
 error, rather than agreeing leniencies field by field.
 
-This rejects trees two engines accept today, and every future addition to the
-schema becomes a potential rejection for a producer that has not caught up.
+At the time of the ruling, this rejected trees two engines accepted. Every
+future addition to the schema becomes a potential rejection for a producer that
+has not caught up.
 That is what makes the schema the contract instead of a description of one.
 
 The VALUE of `srcByteLength` is not checked. It is derivable and nothing depends
@@ -1341,9 +1341,9 @@ above, which is why an undated "the gap is closed" sentence is worth
 nothing here - a re-measurement is what says so, and only for the corpus it ran
 over.
 
-That one defect is the ONLY thing either ledger still declares, and it survived
+That one defect was the only thing either ledger declared then, and it survived
 a day in which the span ledger was re-measured six times and rewritten five. It
-is the constant because nobody has started it, not because it is small: what
+was the constant because nobody had started it, not because it was small: what
 stays in a ledger is what nobody is working on.
 
 Every other position finding is `permitted` under §4.
@@ -1494,11 +1494,13 @@ of them lines that had described a node carve-js and carve-rs were placing all
 along.
 
 An empty declaration is a statement about the corpus, which is the only thing
-the run measures. Four collapsed-reference labels the corpus does not hold - one
-carrying `/emphasis/`, one an escape, one a nested link, one a symbol shortcode
-- do still split carve-php from the other two, and they split the HTML with it,
-so they are owed a fixture rather than a declaration
+the run measures. Until 2026-08-08, four collapsed-reference labels absent
+from the corpus split carve-php from the other two, HTML included: one held
+`/emphasis/`, one an escape, one a nested link, and one a symbol shortcode
 ([carve#1011](https://github.com/markup-carve/carve/issues/1011)).
+[carve-php#1098](https://github.com/markup-carve/carve-php/pull/1098) fixed them,
+and [carve#1021](https://github.com/markup-carve/carve/pull/1021) added them to
+the corpus.
 
 **This paragraph said the opposite until 2026-08-08**, recording carve-php as
 publishing the rendered text where the other two published the authored label.
