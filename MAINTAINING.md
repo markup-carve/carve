@@ -5,20 +5,20 @@ The spec and three implementations move in lockstep:
 | Repo | Role |
 |------|------|
 | [`carve`](https://github.com/markup-carve/carve) | Specification. `resources/grammar.ebnf` is **normative**; `resources/examples/*.md` generates the `tests/corpus/*.crv` + `*.html` pairs that are the **cross-impl conformance contract**. |
-| [`carve-js`](https://github.com/markup-carve/carve-js) | Reference implementation (TypeScript). Its compiled output is vendored into `carve` to render the docs and validate the corpus. |
+| [`carve-js`](https://github.com/markup-carve/carve-js) | Reference implementation (TypeScript). `carve` pins an exact commit of it to render the docs and to run the tests the Core corpus cannot express. |
 | [`carve-php`](https://github.com/markup-carve/carve-php) | PHP implementation. Conforms to the same corpus. |
 | [`carve-rs`](https://github.com/markup-carve/carve-rs) | Rust implementation. Conforms to the same corpus. |
 
-### Output renderers
+## Output renderers
 
-All three implementations (`carve-js`, `carve-php`, `carve-rs`) are **multi-target
-renderers**: besides the corpus-validated **HTML**, each emits **Markdown**,
-**plain text**, and **ANSI**. Only HTML has a cross-impl corpus contract; the
-non-HTML renderers have no spec corpus, so they are kept **byte-identical to
-`carve-php`** (the reference for non-HTML output) via golden fixtures — a battery
-of carve inputs rendered by carve-php, asserted byte-for-byte by `carve-js` and
-`carve-rs` test suites. When changing a non-HTML renderer, update that golden
-battery and keep all three in agreement.
+All three implementations (`carve-js`, `carve-php`, `carve-rs`) render more than
+HTML: besides the corpus-validated HTML, each emits Markdown, plain text, and
+ANSI. Only HTML has a cross-impl corpus contract; the non-HTML renderers have no
+spec corpus, so they are kept **byte-identical to `carve-php`** (the reference
+for non-HTML output) via golden fixtures - a battery of carve inputs rendered by
+carve-php, asserted byte-for-byte by `carve-js` and `carve-rs` test suites. When
+changing a non-HTML renderer, update that golden battery and keep all three in
+agreement.
 
 ## The lockstep
 
@@ -68,16 +68,16 @@ PART 9R / PART 10 renderer driven by `resources/carve-core.ohm`), and
 `npm run core:check` adds the refusal ratchet over the same oracle. So this repo
 can prove its own fixtures are self-consistent without waiting for an
 implementation to ship the rule, and each engine verifies ITSELF against the
-corpus through its own spec submodule — which is where an engine-versus-corpus
+corpus through its own spec submodule, which is where an engine-versus-corpus
 disagreement belongs.
 
 **The prose is normative; the oracle implements it.** `resources/grammar.ebnf`
 and the normative clauses beside it are the specification. `scripts/spec` is an
 implementation of them and can be wrong like any engine, so when the two
-disagree the prose wins and the ORACLE is what gets fixed — followed by a corpus
-document, so the answer stops depending on either. Two cases settled that way in
-one week: a comment is recognized at any column (its production carries the
-leading whitespace, so the engines were right and the oracle folded it as text,
+disagree the prose wins and the ORACLE is what gets fixed - followed by a corpus
+document, so the answer stops depending on either. Two cases have gone that way:
+a comment is recognized at any column (its production carries the leading
+whitespace, so the engines were right and the oracle folded it as text,
 carve#618), and `[^]: %` is a link reference definition whose label is `^` (an
 empty `footnote_label` is not one, `{character - ']'}+` being one-or-more, so
 the oracle's own label pattern excluded a character the production admits,
@@ -92,15 +92,15 @@ expressed by Core-only fixtures. `npm run engine:report` prints how the pinned
 build compares to the whole corpus; it is a report for pin bumps, deliberately
 NOT a blocking gate.
 
-The compiled `dist/` used to be vendored at `docs/.vitepress/carve-lib/`. It is
-not any more: a few hundred rebuilt artifacts per refresh were unreviewable, the
-carve-js commit they came from was recorded only in changelog prose, and a
-re-vendor from a stale checkout silently reverted merged impl behavior.
+Do not vendor the compiled `dist/` into `docs/.vitepress/carve-lib/`. A few
+hundred rebuilt artifacts per refresh are unreviewable, the carve-js commit they
+came from is recorded only in changelog prose, and a re-vendor from a stale
+checkout silently reverts merged impl behavior.
 
 Each implementation carries a git submodule pointing back at `carve`
 (`spec` in carve-js, `tests/spec` in carve-php). Keeping those current is
 automated by the `Bump spec corpus` workflow (`.github/workflows/bump-spec.yml`)
-in each impl repo — weekly + manual dispatch, idempotent on a single
+in each impl repo - weekly + manual dispatch, idempotent on a single
 `automation/bump-spec` branch.
 
 ### Order for a cross-cutting behavior change
@@ -112,7 +112,7 @@ in each impl repo — weekly + manual dispatch, idempotent on a single
    and `npm test`. Commit the examples, the regenerated corpus and the
    executable-spec change together. Bump the pin
    (`npm run bump-carve-pin`, *merged* carve-js main only) when the reference
-   build should follow — required if the change touches the Tier-2 corpus, the
+   build should follow - required if the change touches the Tier-2 corpus, the
    PART 11 round-trip fixtures or the prose examples, since those still run
    through the pinned build.
 
@@ -145,26 +145,26 @@ the behavior is pinned in `resources/examples/*.md`:
 
 | Input | Resolution |
 |-------|------------|
-| `[x]{title="a\"b"}` — escaped quote in a quoted value | A backslash escapes ASCII punctuation in a quoted value (grammar `quoted_value` + `escaped_char`); value is `a"b`. carve-js gained escape support to match carve-php. *(64-attribute-edge-cases)* |
-| `# H {???}` — heading attr block with no valid attribute | Grammar `attribute_list` needs ≥ 1 attribute, so the block is heading text. carve-js stopped dropping it. *(64-attribute-edge-cases)* |
-| `text\n[^f]: note` — footnote defined but never referenced | No endnotes section is emitted. carve-php stopped leaking an empty `<ol>`. *(43-footnotes)* |
+| `[x]{title="a\"b"}` - escaped quote in a quoted value | A backslash escapes ASCII punctuation in a quoted value (grammar `quoted_value` + `escaped_char`); value is `a"b`. carve-js gained escape support to match carve-php. *(64-attribute-edge-cases)* |
+| `# H {???}` - heading attr block with no valid attribute | Grammar `attribute_list` needs ≥ 1 attribute, so the block is heading text. carve-js stopped dropping it. *(64-attribute-edge-cases)* |
+| `text\n[^f]: note` - footnote defined but never referenced | No endnotes section is emitted. carve-php stopped leaking an empty `<ol>`. *(43-footnotes)* |
 | Mention URL template | Canonical placeholder `{name}` for mentions and tags, value URL-encoded. carve-js accepts `{name}` (with `{user}` as a legacy alias); carve-php encodes the value. Config-only, so not corpus-testable. |
-| `[x]{}` — bracket + empty attribute block | A valid attribute block forms a span even when empty; both emit `<span>x</span>` (carve-js now materializes the empty span, matching carve-php/djot). *(66-inline-span)* |
-| `[x]{ }` / `[x]{???}` / `[x]{=y=}` — bracket + whitespace/invalid attr block | A whitespace-only block is a valid empty block → `<span>x</span>` (all impls); an invalid block is not an attribute block → the `]` and `{...}` stay literal, inner content still inline-parsed (`[*x*]{???}` → `[<strong>x</strong>]{???}`). carve-php stopped leaking the block (markup-carve/carve-php#43). Normative in grammar §14 and pinned across all three impls *(66-inline-span)*. The boundary of "yields an attribute" still diverges at the margins (carve-php-only: booleans, colon keys, comment-only blocks), so those are deliberately not pinned. |
-| `> quoted`<br>`continued` — lazy blockquote continuation | A non-`>` line that is not blank and not an invisible interrupter (reference/footnote/abbreviation definition or comment) or a caption continues the quote (CommonMark-style). carve-php already did this; carve-js gained it (markup-carve/carve-js#63). Grammar blockquote section made explicit. Matches Djot upstream. *(77-blockquote-lazy-continuation)* |
-| `` ```c++ `` — fenced language tag with punctuation | `language_info` widened to allow `+ # .` so `c++`/`c#`/`f#`/`asp.net` are code blocks; the token stays single, so a multiword/quoted info (`` ```js title="x" ``) is still a non-fence. carve-js widened `RE_FENCE` (markup-carve/carve-js#64); carve-php already accepted these. *(78-fenced-code-language-with-punctuation)* |
-| `# Title`<br>`outside` — single-line headings | A heading ENDS AT THE NEWLINE: nothing folds in, so this is a heading plus a paragraph and the id is `Title`. Diverges from Djot, which folds a plain line or a same-count `#` line into the heading — silently, taking the id with it. All three impls folded until markup-carve/carve#451; `carve lint --from-djot` reports the shift (carve-js `djot-heading-continuation`). *(82-single-line-headings)* |
-| `text`<br>`` ``` ``<br>`code` — backtick run with no equal-length closer | The opener is a maximal backtick run; it closes only on a run of the same length, else it opens an inline verbatim span that runs to end of block (block trailing whitespace stripped). Such an unclosed run is opaque, so an emphasis/link after it is verbatim content. carve-php and Djot upstream already did this; carve-js stopped leaving the run as literal text and stopped shrinking the opener (markup-carve/carve-js#73). Grammar `code_span` made explicit. *(12-inline-code, 80-blockquote-lazy-continuation-stops-at-a-fenced-block)* |
-| `- a`<br>`  - b`<br>` c` — under-indented continuation after a sublist (dedent-landing-after-sublist) | Canonical = CommonMark lazy continuation: an under-indented non-blank line that does not start a new block folds into the **deepest** open paragraph, leading whitespace stripped, regardless of indent (0/1/2/3 spaces); a blank line before it makes it a fresh top-level paragraph (also stripped). carve-php adopted the lazy-fold (markup-carve/carve-php#82); carve-js stripped a paragraph first line's leading whitespace (markup-carve/carve-js#96). Resolves markup-carve/carve#65. *(81-list-lazy-continuation)* |
-| `-{.c} text` / `1.{#x} text` — list-item attributes | An attribute block **abutting** the marker attributes the `<li>`; a space before `{` makes it ordinary content. Shipped in all three impls (carve-php native; carve-js #135-era work; carve-rs #30). *(87-list-item-attributes)* |
+| `[x]{}` - bracket + empty attribute block | A valid attribute block forms a span even when empty; both emit `<span>x</span>` (carve-js now materializes the empty span, matching carve-php/djot). *(66-inline-span)* |
+| `[x]{ }` / `[x]{???}` / `[x]{=y=}` - bracket + whitespace/invalid attr block | A whitespace-only block is a valid empty block → `<span>x</span>` (all impls); an invalid block is not an attribute block → the `]` and `{...}` stay literal, inner content still inline-parsed (`[*x*]{???}` → `[<strong>x</strong>]{???}`). carve-php stopped leaking the block (markup-carve/carve-php#43). Normative in grammar §14 and pinned across all three impls *(66-inline-span)*. The boundary of "yields an attribute" still diverges at the margins (carve-php-only: booleans, colon keys, comment-only blocks), so those are deliberately not pinned. |
+| `> quoted`<br>`continued` - lazy blockquote continuation | A non-`>` line that is not blank and not an invisible interrupter (reference/footnote/abbreviation definition or comment) or a caption continues the quote (CommonMark-style). carve-php already did this; carve-js gained it (markup-carve/carve-js#63). Grammar blockquote section made explicit. Matches Djot upstream. *(77-blockquote-lazy-continuation)* |
+| `` ```c++ `` - fenced language tag with punctuation | `language_info` widened to allow `+ # .` so `c++`/`c#`/`f#`/`asp.net` are code blocks; the token stays single, so a multiword/quoted info (`` ```js title="x" ``) is still a non-fence. carve-js widened `RE_FENCE` (markup-carve/carve-js#64); carve-php already accepted these. *(78-fenced-code-language-with-punctuation)* |
+| `# Title`<br>`outside` - single-line headings | A heading ENDS AT THE NEWLINE: nothing folds in, so this is a heading plus a paragraph and the id is `Title`. Diverges from Djot, which folds a plain line or a same-count `#` line into the heading - silently, taking the id with it. All three impls folded until markup-carve/carve#451; `carve lint --from-djot` reports the shift (carve-js `djot-heading-continuation`). *(82-single-line-headings)* |
+| `text`<br>`` ``` ``<br>`code` - backtick run with no equal-length closer | The opener is a maximal backtick run; it closes only on a run of the same length, else it opens an inline verbatim span that runs to end of block (block trailing whitespace stripped). Such an unclosed run is opaque, so an emphasis/link after it is verbatim content. carve-php and Djot upstream already did this; carve-js stopped leaving the run as literal text and stopped shrinking the opener (markup-carve/carve-js#73). Grammar `code_span` made explicit. *(12-inline-code, 80-blockquote-lazy-continuation-stops-at-a-fenced-block)* |
+| `- a`<br>`  - b`<br>` c` - under-indented continuation after a sublist (dedent-landing-after-sublist) | Canonical = CommonMark lazy continuation: an under-indented non-blank line that does not start a new block folds into the **deepest** open paragraph, leading whitespace stripped, regardless of indent (0/1/2/3 spaces); a blank line before it makes it a fresh top-level paragraph (also stripped). carve-php adopted the lazy-fold (markup-carve/carve-php#82); carve-js stripped a paragraph first line's leading whitespace (markup-carve/carve-js#96). Resolves markup-carve/carve#65. *(81-list-lazy-continuation)* |
+| `-{.c} text` / `1.{#x} text` - list-item attributes | An attribute block **abutting** the marker attributes the `<li>`; a space before `{` makes it ordinary content. Shipped in all three impls (carve-php native; carve-js #135-era work; carve-rs #30). *(87-list-item-attributes)* |
 | `{.glossary}` line before a definition list | A preceding block-attribute line floats onto the `<dl>` (§15) like every other block. carve-js stopped dropping it. *(45-definition-lists)* |
-| `![a](x){.img}` + caption — figure/image attributes | A **trailing** attribute stays on `<img>` even inside a `<figure>`; a **preceding** block-attribute line targets the `<figure>`. carve-php fixed its trailing-attr relocation and preceding-line drop. *(08-image-with-caption-2/3)* |
-| `` $`x`{.c} `` — trailing attribute on math | Applied, merging into the `math inline`/`math display` class; `{=format}` stays code-span-only. carve-php stopped dropping math attrs. *(42-math)* |
-| `::: note {.x}` — attribute-bearing colon-fence opener | STRICT (djot): the opener carries NO inline attributes — any trailing `{…}` (typed or bare opener) makes the line an ordinary paragraph (carve-js #149; carve-php and carve-rs followed). This REVERSED the earlier draft canonical (apply-to-element). *(44-generic-divs-2, 88-line-blocks-5, 13-admonitions)* |
-| `## H {.x}` — trailing attribute on a heading line | STRICT (djot): a heading line carries NO trailing `{…}` block — it is ordinary inline content, id from the full literal text; attributes come from a preceding block-attribute line, explicit id hoists to the `<section>` (carve-js #153, spec #123, carve-php #130, carve-rs #38). *(02-headings, 17-attributes, 19-heading-ids)* |
-| `@john.doe` — interior dot in a mention name | A dot followed by another name character continues the name; a trailing dot is sentence punctuation. Grammar `mention_name`/`tag_name` = `name_word, {'.', name_word}` (spec #127); tags already conformed everywhere, mentions fixed in carve-php #132 + carve-rs #40. *(89-mention-and-tag-name-boundaries)* |
-| `@john's` — smart quote directly after an inline span | The apostrophe is a RIGHT single quote (flanking substitution, §8); carve-rs now takes a leading quote's flanking context from the preceding inline sibling (carve-rs #40). *(89-mention-and-tag-name-boundaries)* |
-| `- - A`<br>`  - B` — sub-list opened on a parent item's marker line | An ordinary persistent nested list: following same-indent markers MERGE into one list, and a post-blank indented block is ABSORBED into the open nested item. Matches reference djot.js (`@djot/djot`) and CommonMark. This is a bug fix correcting a narrower reading carve inherited from djot-php (the nested list did not persist), NOT a divergence. Shipped in all three impls (carve-js #214, carve-php #196, carve-rs #104). *(103-marker-line-nested-lists)* |
+| `![a](x){.img}` + caption - figure/image attributes | A **trailing** attribute stays on `<img>` even inside a `<figure>`; a **preceding** block-attribute line targets the `<figure>`. carve-php fixed its trailing-attr relocation and preceding-line drop. *(08-image-with-caption-2/3)* |
+| `` $`x`{.c} `` - trailing attribute on math | Applied, merging into the `math inline`/`math display` class; `{=format}` stays code-span-only. carve-php stopped dropping math attrs. *(42-math)* |
+| `::: note {.x}` - attribute-bearing colon-fence opener | STRICT (djot): the opener carries NO inline attributes - any trailing `{…}` (typed or bare opener) makes the line an ordinary paragraph (carve-js #149; carve-php and carve-rs followed). This REVERSED the earlier draft canonical (apply-to-element). *(44-generic-divs-2, 88-line-blocks-5, 13-admonitions)* |
+| `## H {.x}` - trailing attribute on a heading line | STRICT (djot): a heading line carries NO trailing `{…}` block - it is ordinary inline content, id from the full literal text; attributes come from a preceding block-attribute line, explicit id hoists to the `<section>` (carve-js #153, spec #123, carve-php #130, carve-rs #38). *(02-headings, 17-attributes, 19-heading-ids)* |
+| `@john.doe` - interior dot in a mention name | A dot followed by another name character continues the name; a trailing dot is sentence punctuation. Grammar `mention_name`/`tag_name` = `name_word, {'.', name_word}` (spec #127); tags already conformed everywhere, mentions fixed in carve-php #132 + carve-rs #40. *(89-mention-and-tag-name-boundaries)* |
+| `@john's` - smart quote directly after an inline span | The apostrophe is a RIGHT single quote (flanking substitution, §8); carve-rs now takes a leading quote's flanking context from the preceding inline sibling (carve-rs #40). *(89-mention-and-tag-name-boundaries)* |
+| `- - A`<br>`  - B` - sub-list opened on a parent item's marker line | An ordinary persistent nested list: following same-indent markers MERGE into one list, and a post-blank indented block is ABSORBED into the open nested item. Matches reference djot.js (`@djot/djot`) and CommonMark. This is a bug fix correcting a narrower reading carve inherited from djot-php (the nested list did not persist), NOT a divergence. Shipped in all three impls (carve-js #214, carve-php #196, carve-rs #104). *(103-marker-line-nested-lists)* |
 
 ### Intentional divergences (kept on purpose)
 
@@ -178,7 +178,7 @@ pin; the corpus has no xfail). A row moves to *Resolved* once all impls agree.
 
 | Input | Canonical, and who still diverges |
 |-------|-----------------------------------|
-| `- item`<br>`  %%%`<br>`  [r]: /url`<br>`  %%%` plus a `[r][]` below it - a definition inside a comment fence that is NOT at column 0 | The label is not registered and the reference stays literal, at every column a fence can sit at: PART 9 §24 S1 places a line by the column it reaches, S2 makes it verbatim under a fenced body, and §28 scopes neither to column 0. carve-js, carve-rs and the executable spec already do this - carve-rs since markup-carve/carve-rs#1052 landed, which is why it no longer appears here. **carve-php** is the only engine still diverging: it fails `335`, `336`, `337`, `338`, `339` and `340` (markup-carve/carve-php#1349). Filed as carve#1309. |
+| `- item`<br>`  %%%`<br>`  [r]: /url`<br>`  %%%` plus a `[r][]` below it - a definition inside a comment fence that is NOT at column 0 | The label is not registered and the reference stays literal, at every column a fence can sit at: PART 9 §24 S1 places a line by the column it reaches, S2 makes it verbatim under a fenced body, and §28 scopes neither to column 0. carve-js, carve-rs and the executable spec already do this (carve-rs since markup-carve/carve-rs#1052). **carve-php** is the only engine still diverging: it fails `335`, `336`, `337`, `338`, `339` and `340` (markup-carve/carve-php#1349). Filed as carve#1309. |
 
 The quoted spelling of the same shape (`> %%%` over a definition) is NOT in that
 row and is deliberately unpinned: all three engines register there and only the
@@ -202,14 +202,11 @@ contribution points: an inline matcher, a block matcher, the `afterParse` and
 | carve-rs | ✅ | ✅ | ✅ |
 | carve-js | ✅ (markup-carve/carve-js#112) | ✅ | ✅ |
 
-Resolved: carve-js originally shipped only transforms + renderers (matchers
-were deferred), so the *portable* half of the contract (matchers + transforms)
-was only half-portable. carve-js#112 added `matchInline` / `matchBlock` with a
-`MatcherContext` that resolves the document's link/abbreviation/footnote
-definitions, matching carve-php and carve-rs. All three impls now realize the
-full four-point contract.
+All three impls realize the full four-point contract. carve-js `matchInline` /
+`matchBlock` take a `MatcherContext` that resolves the document's
+link/abbreviation/footnote definitions, as carve-php and carve-rs do.
 
-When a new divergence is found, verify it on both impls, decide the canonical,
+When a new divergence is found, verify it on every impl, decide the canonical,
 and either pin it as a `resources/examples/*.md` pair (and move it to *Resolved*) or
 record it as *Intentional* with the reason, or under *Open (tracked)* if it is
 an implementation bug still being worked through.

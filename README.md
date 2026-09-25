@@ -129,7 +129,7 @@ Carve is not Markdown. Some familiar constructs have different meanings:
 | `/text/` | plain text | italic |
 | `_text_` | italic | underline |
 | `~text~` | plain text in CommonMark | strikethrough |
-| `|= Head |` | plain table text | header cell |
+| `\|= Head \|` | plain table text | header cell |
 
 Converters from Markdown, HTML, Djot, and BBCode are available, but a `.crv`
 file should not be passed to a Markdown parser. See [Migration from
