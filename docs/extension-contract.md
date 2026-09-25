@@ -1121,6 +1121,21 @@ is escaped the way every label is:
 <nav class="toc" aria-label="Table of contents">
 ```
 
+**A quoted title names the nav instead.** `::: toc "Contents"` renders the title
+as the nav's first child and points the accessible name at it, in place of the
+`tocNav` default (PART 9 §12, `CARVE-P9-072`):
+
+```html
+<nav class="toc" aria-labelledby="adm-1">
+  <p class="admonition-title" id="adm-1">Contents</p>
+  <ul>
+```
+
+An opener `[label]` that no group extension consumes follows it as
+`<p class="div-label">`. With the extension unregistered, the marker degrades to
+`<div class="toc">`: both tokens render inside that div, and the div takes no
+naming attribute, since role `generic` prohibits one.
+
 **Both extensions read the same key.** `TocPlacement` and `TableOfContents`
 render the same nav, and §8b.3 makes that byte-identical fragment the cross-impl
 contract - so a name chosen per-extension would be the one change that breaks
@@ -1234,6 +1249,21 @@ the opt-in.
 - A marker in a document with no footnotes, or a `::: footnotes` nested inside a
   footnote definition, degrades to an ordinary `<div class="footnotes">` and
   never relocates.
+- A quoted title and an opener `[label]` render as the placed section's first
+  children, before its `<hr>`, and the title becomes the section's accessible
+  name in place of the `endnotes` default (PART 9 §12, `CARVE-P9-072`):
+
+  ```html
+  <section role="doc-endnotes" aria-labelledby="adm-1">
+    <p class="admonition-title" id="adm-1">Notes</p>
+    <p class="div-label">End</p>
+    <hr>
+  ```
+
+  A marker that degrades to `<div class="footnotes">` carries them inside that
+  div instead, with no naming attribute and no minted id (a plain `<div>` is
+  role `generic`, where both are prohibited). An untitled, unlabeled marker
+  renders exactly as before.
 
 ### 8b.3 Degradation & conformance
 
