@@ -1,48 +1,42 @@
 {
   "requiredOutputs": ["html", "markdown", "plain", "ansi", "carve", "ast"],
-  "optionalImporters": ["html", "markdown", "djot"],
+  "optionalImporters": ["html", "markdown", "djot", "bbcode"],
   "bindings": {
     "carve-go": {
-      "commit": "cb26ca6",
+      "commit": "05739259",
       "outputs": ["html", "markdown", "plain", "ansi", "carve", "ast"],
-      "importers": {},
+      "importers": {"html": "FromHTML", "markdown": "FromMarkdown"},
       "outOfScopeImporters": {
-        "html": "the WASI binding does not currently expose migration commands",
-        "markdown": "the WASI binding does not currently expose migration commands",
-        "djot": "the WASI binding does not currently expose migration commands"
+        "djot": "the Go binding does not expose Djot import",
+        "bbcode": "the Go binding does not expose BBCode import"
       }
     },
     "carve-py": {
-      "commit": "e352220",
-      "implementation": "markup-carve/carve-py#59",
+      "commit": "666de963",
+      "implementation": "markup-carve/carve-py#62",
       "outputs": ["html", "markdown", "plain", "ansi", "carve", "ast"],
-      "importers": {},
+      "importers": {"html": "from_html", "markdown": "from_markdown"},
       "outOfScopeImporters": {
-        "html": "importers are not part of the current Python API",
-        "markdown": "importers are not part of the current Python API",
-        "djot": "importers are not part of the current Python API"
+        "djot": "the Python API does not expose Djot import",
+        "bbcode": "the Python API does not expose BBCode import"
       }
     },
     "carve-rb": {
-      "commit": "6bfe761",
-      "implementation": "markup-carve/carve-rb#88",
+      "commit": "bf0c76c7",
+      "implementation": "markup-carve/carve-rb#92",
       "outputs": ["html", "markdown", "plain", "ansi", "carve", "ast"],
-      "importers": {},
+      "importers": {"html": "from_html", "markdown": "from_markdown"},
       "outOfScopeImporters": {
-        "html": "importers are not part of the current Ruby API",
-        "markdown": "importers are not part of the current Ruby API",
-        "djot": "importers are not part of the current Ruby API"
+        "djot": "the Ruby API does not expose Djot import",
+        "bbcode": "the Ruby API does not expose BBCode import"
       }
     },
     "carve-wasm": {
-      "commit": "01588bc",
+      "commit": "4c6ff3eb",
       "implementation": "markup-carve/carve-wasm#54",
       "outputs": ["html", "markdown", "plain", "ansi", "carve", "ast"],
-      "importers": {"html": "htmlToCarve"},
-      "outOfScopeImporters": {
-        "markdown": "only HTML import is currently part of the WASM API",
-        "djot": "only HTML import is currently part of the WASM API"
-      }
+      "importers": {"html": "htmlToCarve", "markdown": "fromMarkdown", "djot": "migrateDjot", "bbcode": "migrateBbcode"},
+      "outOfScopeImporters": {}
     }
   }
 }
