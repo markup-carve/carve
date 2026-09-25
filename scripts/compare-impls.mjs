@@ -1127,7 +1127,7 @@ async function runConvertMode() {
         comparedCases++
         if (new Set(rendered.map(([, out]) => out)).size > 1) {
           crossConvertDiffs++
-          console.log(`DIFF [convert:${kase.format}] ${kase.slug}: ${rendered.map(([name]) => name).join(', ')}`)
+          console.log(`DIFF [convert:${kase.format}] ${kase.slug}: ${agreementPartition(rendered)}`)
         }
       }
     }
@@ -1332,6 +1332,29 @@ const stats = Object.fromEntries(
     { ok: 0, mismatch: 0, error: 0, skipped: 0, ms: 0, runnable: 0, mismatched: [] },
   ]),
 )
+/*
+ * WHICH ENGINES DISAGREED, not which ones ran.
+ *
+ * The DIFF line used to name every engine that produced output, so a three-way
+ * comparison printed `rust, js, php` whether one engine was the outlier or all
+ * three wrote something different. carve#1544 fixed that reading for the ERROR
+ * line and left it standing here. It cost a whole diagnosis: carve#2281 read
+ * twelve `rust, js, php` lines as "no engine is the odd one out and none can be
+ * used as the reference" and said so in the ticket. Two of the three agree on
+ * all twelve.
+ *
+ * Groups in first-run order, engines within a group in `active` order, so the
+ * line is stable across runs and a log diff means the partition moved.
+ */
+function agreementPartition(outputs) {
+  const groups = new Map()
+  for (const [name, out] of outputs) {
+    if (!groups.has(out)) groups.set(out, [])
+    groups.get(out).push(name)
+  }
+  return [...groups.values()].map((names) => names.join('+')).join(' | ')
+}
+
 let crossImplDiffs = 0
 const targetStats = Object.fromEntries(
   activeTargets.map((t) => [t, { compared: 0, diffs: 0, errors: 0 }]),
@@ -1350,7 +1373,6 @@ for (const pair of pairs) {
       fixtureCounts[target] = (fixtureCounts[target] ?? 0) + 1
     }
     const outputs = []
-    const ran = []
 
     for (const impl of active) {
       const command = commandFor(impl, pair, target)
@@ -1392,7 +1414,6 @@ for (const pair of pairs) {
           `ERROR [${target}] ${pair.slug} (${impl.name}) after ${Math.round(result.elapsedMs)}ms: ${reason}`,
         )
         outputs.push([impl.name, `ERROR:${result.stderr || result.error || result.status}`])
-        ran.push(impl.name)
         continue
       }
       // Scored only where the case has an expected-output fixture: every
@@ -1409,7 +1430,6 @@ for (const pair of pairs) {
         }
       }
       outputs.push([impl.name, result.stdout])
-      ran.push(impl.name)
     }
 
     if (outputs.length < 2) continue
@@ -1430,7 +1450,9 @@ for (const pair of pairs) {
       // divergence print its DIFF line while the headline said zero, which is
       // the number a reader takes away and the one the docs snapshot pins.
       crossImplDiffs++
-      console.log(`DIFF [${target}] ${pair.slug} (${pair.feature}): ${ran.join(', ')}`)
+      console.log(
+        `DIFF [${target}] ${pair.slug} (${pair.feature}): ${agreementPartition(outputs)}`,
+      )
     }
   }
 }

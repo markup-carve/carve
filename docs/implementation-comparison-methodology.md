@@ -657,8 +657,17 @@ across the three engines is the invariant that matters there, and committing
 four more expected files per corpus case would not add to it. The `Target
 agreement` block in the output reports per-target `compared` / `diffs` /
 `errors` counts, and each disagreement prints a `DIFF [target] slug` line naming
-the engines that ran. `cross_impl_diffs` is the total across every target
-compared, not the HTML count.
+**which engines disagreed**, grouped by the output they wrote:
+
+```text
+DIFF [markdown] 05-lists-19 (core): rust+php | js
+```
+
+Two engines joined by `+` wrote the same bytes; groups separated by `|` did not.
+A line reading `rust+js+php` means all three wrote something different, and is
+the only shape from which no engine can be used as a reference.
+`cross_impl_diffs` is the total across every target compared, not the HTML
+count.
 
 Comparison is trailing-newline-insensitive, matching the corpus runner and the
 profile parity battery: renderers legitimately differ on a final `\n`, so a
