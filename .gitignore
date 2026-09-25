@@ -15,7 +15,7 @@ docs/superpowers/
 
 # Local scratch screenshots (browser-mcp / docs proofs)
 screenshots/
-
+# Generated at docs build from the matching resources/ file (scripts/publish-schema.mjs)
 # Generated at docs build from resources/ast-schema.json (scripts/publish-schema.mjs)
 docs/public/ast-schema.json
 docs/public/ast-envelope-schema.json
@@ -23,5 +23,13 @@ docs/public/node-roles.json
 docs/public/ast-node-identity-schema.json
 docs/public/ast-annotation-range-schema.json
 docs/public/ast-provenance-schema.json
+docs/public/ast-source-layout-schema.json
+docs/public/html-import-schema.json
+docs/public/importer-fidelity-schema.json
+docs/public/migration-report-schema.json
+docs/public/render-loss-report.schema.json
+docs/public/conversion-diagnostics.schema.json
+docs/public/source-patch.schema.json
+docs/public/importer-fidelity-manifest.json
 docs/examples/
 docs/.vitepress/generated-examples.json
