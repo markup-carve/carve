@@ -1218,8 +1218,9 @@ element's own tag substituted (carve#2267).
 
 ## A preserved attribute row says it one way
 
-An `attribute-preserved` message is `Preserved <subject> on <tag>
-<place><reason>`. `<tag>` is the element the attribute is written on. `<place>`
+An `attribute-preserved` message is
+`Preserved <subject> on <tag> <place><reason>`.
+`<tag>` is the element the attribute is written on. `<place>`
 is `in the raw HTML this element is kept as` where that element is the one kept
 whole, and `inside the raw HTML <kept> is kept as` where an ancestor is, with
 its tag. `<reason>` is empty, or `: ` and why the attribute was refused.
