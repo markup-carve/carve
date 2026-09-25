@@ -1,5 +1,5 @@
 ---
-description: "The original syntax write-up from the design research. Historical: the normative grammar is resources/grammar.ebnf."
+description: "Early syntax notes. Historical: the normative grammar is resources/grammar.ebnf."
 ---
 
 # Original Syntax Write-up

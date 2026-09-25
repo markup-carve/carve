@@ -190,9 +190,9 @@ used `+` as a bullet (most don't).
 | Subscript | `~text~` | `{,text,}` (comma pulls down; braced only) |
 | Superscript | `^text^` | `{^text^}` (braced only) |
 
-**Why.** Carve targets non-technical authors too. Syntax that resembles its
-output is learnable in seconds and memorable after weeks away - the "ten-second
-rule." It is a source-compatibility break with Djot, but a small, teachable one.
+**Why.** The slashes in `/italic/` lean, while the comma and caret in the braced
+forms suggest down and up. These choices break source compatibility with Djot,
+so migration must rewrite emphasis, subscript, and superscript marks.
 
 ::: warning One delimiter flips meaning
 `~text~` is **subscript** in Djot but **strikethrough** in Carve (the tilde looks

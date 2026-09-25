@@ -24,7 +24,7 @@ npm run docs:build   # production build into docs/.vitepress/dist
 
 - `index.md`, `get-started.md`, `migrate-from-markdown.md`, `comparison.md`, … - the pages.
 - `grammar.md`, `extensions.md`, `examples.md` - the normative grammar, the extensions contract, and the example corpus source.
-- `case-study/` - the original design research, kept as a historical record.
+- `case-study/` - early design notes, kept as a historical record.
 - `.vitepress/` - site config and theme; the live playground renders through the pinned `@markup-carve/carve` dependency.
 
 ## Writing standards

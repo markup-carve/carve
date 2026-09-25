@@ -75,8 +75,8 @@ That is survivable for a mature parser. It is much less friendly for:
 
 ### 3. Markdown's installed base makes deep cleanup difficult
 
-Once trillions of existing documents exist, any real simplification collides
-with compatibility. "Fix Markdown" usually means one of two things:
+Markdown's large installed base makes syntax changes a compatibility problem.
+"Fix Markdown" usually means one of two things:
 
 - keep compatibility, which preserves most of the old complexity
 - break compatibility, which means you are effectively making a new language
