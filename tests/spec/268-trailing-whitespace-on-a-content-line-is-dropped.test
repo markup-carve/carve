@@ -66,12 +66,14 @@ b​
 c﻿
 d 
 e
+f　
 .
 <p>a&nbsp;
 b​
 c﻿
 d 
-e</p>
+e
+f　</p>
 ```
 
 ```

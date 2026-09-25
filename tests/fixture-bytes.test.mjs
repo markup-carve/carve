@@ -223,14 +223,14 @@ const INVENTORY = [
   { base: '268-trailing-whitespace-on-a-content-line-is-dropped-4', crv: ['trailing-WS'], html: [] },
   { base: '268-trailing-whitespace-on-a-content-line-is-dropped-5', crv: ['trailing-WS'], html: [] },
   { base: '268-trailing-whitespace-on-a-content-line-is-dropped-6', crv: ['trailing-WS'], html: [] },
-  // The nine-character class document, and the one that carries the most. Each
+  // The document covering the named content characters. Each
   // line ends in a DIFFERENT character that is not `whitespace`, so each one
   // survives - and the NBSP is spelled `&nbsp;` in the expected HTML while the
-  // other four are raw on both sides.
+  // others are raw on both sides.
   {
     base: '268-trailing-whitespace-on-a-content-line-is-dropped-7',
-    crv: ['NBSP', 'ZWSP', 'BOM', 'EN-QUAD', 'FF'],
-    html: ['ZWSP', 'BOM', 'EN-QUAD', 'FF'],
+    crv: ['NBSP', 'ZWSP', 'BOM', 'EN-QUAD', 'FF', 'IDEO-SP'],
+    html: ['ZWSP', 'BOM', 'EN-QUAD', 'FF', 'IDEO-SP'],
   },
   // The shape the ticket was raised on: <SP> U+FEFF <SP>. The BOM is content
   // and survives; the trailing space is the thing that must not.
@@ -352,6 +352,11 @@ const INVENTORY = [
     base: '498-a-comment-line-s-text-is-content-and-a-block-body-is-payload-4',
     crv: ['trailing-WS'],
     html: [],
+  },
+  {
+    base: '498-a-comment-line-s-text-is-content-and-a-block-body-is-payload-5',
+    crv: ['VT'],
+    html: ['VT'],
   },
 ]
 
