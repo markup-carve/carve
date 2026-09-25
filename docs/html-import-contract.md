@@ -1216,6 +1216,42 @@ URL scheme in `url(...)` or a construct the CSS sanitizer refuses such as
 `Preserved style with a construct the CSS sanitizer refuses on <form>`, the
 element's own tag substituted (carve#2267).
 
+## A preserved attribute row says it one way
+
+An `attribute-preserved` message is
+`Preserved <subject> on <tag> <place><reason>`.
+`<tag>` is the element the attribute is written on. `<place>`
+is `in the raw HTML this element is kept as` where that element is the one kept
+whole, and `inside the raw HTML <kept> is kept as` where an ancestor is, with
+its tag. `<reason>` is empty, or `: ` and why the attribute was refused.
+`<subject>` is the attribute's own name, with the kind of attribute it is before
+the name and the word `attribute` between the two, or with what makes it refused
+after the name; a subject that is the word `attribute` and a name, with no kind
+in front of it, is neither form (carve#2279). The strings the clause above pins
+are this template's head, so a row that carries `<place>` after them spells that
+clause's message. The same subject spells an `attribute-dropped` row, which has
+no `<place>`: `Dropped <subject> on <tag><reason>`.
+
+```
+Preserved event-handler attribute onclick on <form> in the raw HTML this element is kept as
+```
+
+## Which attributes owe a preserved row
+
+A kept element owes one `attribute-preserved` row per attribute the importer
+would have refused had it rewritten the element, plus any whose value the
+renderer blanks for a denied scheme. Whether the rewriting path would have
+refused it is the whole test, so an attribute that path consumes as an
+instruction rather than writing back, or whose key one of the writer's own
+markers owns, is refused inside kept bytes, where neither the instruction nor the
+marker runs. An attribute that path keeps and the renderer only hardens - a
+URL-list attribute under [CARVE-P9-055] - is not refused, and owes a row only
+where a token in its value carries a denied scheme (carve#2279).
+
+```
+Preserved round-trip marker attribute data-carve-src on <form> in the raw HTML this element is kept as
+```
+
 ## Result and diagnostics
 
 Import APIs return both the document and an ordered diagnostic list. Every

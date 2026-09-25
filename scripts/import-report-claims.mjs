@@ -37,6 +37,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { phpDir, rustBinary } from './lib/engine-locations.mjs'
+import { auditPreservedSubjects, parsePreservedMessage } from './lib/import-report-subjects.mjs'
 import { isRuledStyleRow } from './lib/ruled-style-message.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -48,9 +49,9 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const jsDir = resolve(process.env.CARVE_JS_DIR ?? resolve(root, '../carve-js'))
 
 /*
- * Twenty tags reach the raw-keep path. These three are the ones that carry an
- * axis no other case does; a fourth block or inline tag would re-measure a path
- * already covered.
+ * Twenty tags reach the raw-keep path. These are the ones that carry an axis no
+ * other case does; a further block or inline tag would re-measure a path already
+ * covered.
  *
  * `form` is the only case with two descendants, so it is the only one where
  * document order among them is observable, and the only one carrying both
@@ -59,7 +60,15 @@ const jsDir = resolve(process.env.CARVE_JS_DIR ?? resolve(root, '../carve-js'))
  * descendant. `output` is the INLINE arm, a separate walk in all three engines.
  * `xmp` is RAWTEXT: its content is character data, so there is no descendant
  * element to report, and the `javascript:` URL in those bytes stays inert
- * because re-parsing returns to RAWTEXT.
+ * because re-parsing returns to RAWTEXT. The last three carry one subject each
+ * that the engines answer differently, which no case reached before (carve#2279).
+ *
+ * `subjects` is the ledger: `<tag>.<name>` for every attribute the case owes a
+ * row for. A subject nothing exercises pairs against nothing, which is how a
+ * missing row used to read as agreement. `pending` names the ticket for a
+ * subject the engines have not converged on; its rows are held out of the
+ * row-for-row comparison below, and the entry fails once every engine reports it
+ * in the pinned shape.
  */
 const CASES = [
   {
@@ -67,14 +76,39 @@ const CASES = [
     html: '<form onclick="go()" action="javascript:alert(1)" style="background:url(javascript:alert(4))">'
       + '<a href="javascript:alert(2)" style="color:blue">link</a>'
       + '<button formaction="javascript:alert(3)">go</button></form>\n',
+    subjects: [
+      { key: 'form.onclick' },
+      { key: 'form.action' },
+      { key: 'form.style' },
+      { key: 'a.href' },
+      { key: 'a.style' },
+      { key: 'button.formaction' },
+    ],
   },
   {
     name: 'output (inline arm)',
     html: '<p><output onclick="go()"><a href="javascript:alert(2)">link</a></output></p>\n',
+    subjects: [{ key: 'output.onclick' }, { key: 'a.href' }],
   },
   {
     name: 'xmp (RAWTEXT, no descendant element)',
     html: '<xmp onclick="go()"><a href="javascript:alert(2)">link</a></xmp>\n',
+    subjects: [{ key: 'xmp.onclick' }],
+  },
+  {
+    name: 'form carrying a round-trip marker',
+    html: '<form onclick="go()" data-carve-src="x">kept</form>\n',
+    subjects: [{ key: 'form.onclick' }, { key: 'form.data-carve-src', pending: 'carve#2279' }],
+  },
+  {
+    name: 'form around a benign list-valued URL attribute',
+    html: '<form onclick="go()"><img src="a.png" srcset="b.png 2x" alt="a"></form>\n',
+    subjects: [{ key: 'form.onclick' }, { key: 'img.srcset', pending: 'carve#2279' }],
+  },
+  {
+    name: 'form around a semantic span carrying its own key',
+    html: '<form onclick="go()"><cite cite="https://example.com/x">t</cite></form>\n',
+    subjects: [{ key: 'form.onclick' }, { key: 'cite.cite', pending: 'carve#2279' }],
   },
 ]
 
@@ -205,6 +239,7 @@ const failures = []
 
 for (const testCase of CASES) {
   const rows = new Map()
+  const reported = new Map()
   const styleShape = new Map()
   for (const engine of engines) {
     let payload
@@ -221,7 +256,7 @@ for (const testCase of CASES) {
       continue
     }
     const all = payload.diagnostics ?? []
-    rows.set(engine.name, all.map(row))
+    reported.set(engine.name, all)
     styleShape.set(engine.name, {
       any: all.filter(isStyleRow).length,
       ruled: all.filter(isRuledStyleRow).length,
@@ -229,7 +264,22 @@ for (const testCase of CASES) {
     })
   }
 
-  if (rows.size < engines.length) continue
+  if (reported.size < engines.length) continue
+
+  // Ahead of the row-for-row comparison, because a MISSING row is what that
+  // comparison cannot see on its own (carve#2279).
+  const subjects = auditPreservedSubjects(testCase.name, testCase.subjects ?? [], reported)
+  failures.push(...subjects.failures)
+  for (const note of subjects.notes) console.log(note)
+  // A pending subject's rows are held out: one engine has nothing to pair them
+  // against, so their position cannot be compared either.
+  const comparable = (d) => {
+    if (d.code !== 'attribute-preserved') return true
+    const parsed = parsePreservedMessage(d.message)
+
+    return !(parsed && subjects.excused.has(`${parsed.tag}.${parsed.name}`))
+  }
+  for (const [name, all] of reported) rows.set(name, all.filter(comparable).map(row))
 
   // A vacuous agreement is the failure this gate is most likely to decay into:
   // if the tag stopped being raw-kept, every engine would report nothing and
@@ -326,7 +376,9 @@ if (failures.length > 0) {
   )
   process.exit(1)
 }
+const owed = CASES.flatMap((testCase) => testCase.subjects ?? [])
 console.log(
   `\n${CASES.length} raw-keep cases compared row for row across ${engines.length} engines, `
+    + `over ${owed.length} declared subject(s) of which ${owed.filter((s) => s.pending).length} pending, `
     + `with ${DECLARED.length} declared divergence(s) and ${CLAUSE_PENDING.length} pending clause(s).`,
 )
