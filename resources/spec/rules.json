@@ -641,6 +641,12 @@
       "scope": "parsing"
     },
     {
+      "id": "CARVE-P9-074",
+      "part": "9",
+      "title": "A MARKDOWN LABEL THAT IS BOTH A CHECKBOX AND A DEFINED REFERENCE IS THE CHECKBOX",
+      "scope": "imports-security-extensions"
+    },
+    {
       "id": "CARVE-P9-021",
       "part": "9",
       "title": "EMPTY OR INVALID ATTRIBUTE BLOCK",
