@@ -91,6 +91,37 @@ test('the reader can see the difference the clause turns on', () => {
   )
 })
 
+/*
+ * The clause rests on three facts about the target, so they are measured rather
+ * than assumed: two shapes CAN be written tight and one cannot. A CommonMark
+ * reader that stopped answering this way would make the clause wrong, not the
+ * engines.
+ */
+const loose = (source) => cmarkGfmToHtml(source).includes('<p>a</p>')
+
+test('a quote under a tight item needs no separator', () => {
+  assert.equal(loose('- a\n  > q\n'), false, 'the block-quote shape cannot be written tight at all')
+  assert.equal(loose('- a\n\n  > q\n'), true, 'the separator does not loosen the item, so it costs nothing')
+})
+
+test("a flat list's looseness lives in the blank line", () => {
+  assert.equal(loose('- a\n\n- b\n'), true, 'the blank line no longer loosens a flat list')
+  assert.equal(loose('- a\n- b\n'), false, 'dropping it is not the loss the clause forbids')
+})
+
+test('an ordered list that does not start at 1 cannot interrupt', () => {
+  assert.match(
+    cmarkGfmToHtml('- a\n  3. b\n'),
+    /a\n3\. b/,
+    'the marker is read as a list, so the separator this clause keeps is not needed',
+  )
+  assert.match(
+    cmarkGfmToHtml('- a\n\n  3. b\n'),
+    /<ol start="3">/,
+    'the separator does not produce the list, so it is not what makes tightness unexpressible here',
+  )
+})
+
 test('the Markdown-target lag is declared with the engine tickets that own it', () => {
   const page = read('docs/implementation-comparison-methodology.md')
   for (const ticket of ['carve-rs#1900', 'carve-php#2380', 'carve-js#2050']) {
