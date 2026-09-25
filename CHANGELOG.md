@@ -47,6 +47,11 @@ Releases before 0.1.6 are archived in
 
 ### Fixes
 
+- The binding contract names each binding's real HTML and Markdown importers and
+  lists BBCode among the optional ones, in place of out-of-scope reasons that
+  described APIs the bindings had outgrown, and the converter ledger declares no
+  BBCode drift now that all three engines write an empty quote as `>` (#2310,
+  #2311).
 Most of these move the shipped oracle rather than a rule: the executable
 reference and the Ohm grammar disagreed with normative text that already
 existed.
