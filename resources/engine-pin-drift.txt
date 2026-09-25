@@ -24,6 +24,3 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-496-a-title-or-label-fills-the-container-body-slot  pin 9f81a0a7 writes the blank empty-body line beside a title on an aside; fixed by markup-carve/carve-js#2038, delete on the next pin bump
-496-a-title-or-label-fills-the-container-body-slot-2  same blank line beside a label on an aside; the bare div already reproduces. markup-carve/carve-js#2038
-496-a-title-or-label-fills-the-container-body-slot-3  same blank line where the title's only sibling is a comment. markup-carve/carve-js#2038

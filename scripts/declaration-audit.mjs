@@ -234,6 +234,9 @@ const MANIFEST = [
   // -- carve-js --------------------------------------------------------------
   { repo: 'carve-js', path: 'test/corpus.test.ts', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'test/corpus.test.ts' },
   { repo: 'carve-js', path: 'test/canonical-ahead-of-pin.ts', name: 'CANONICAL_AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'test/corpus-canonical-form.test.ts and test/corpus-render-fixtures.test.ts' },
+  // The `.md` half of the same window, declared where it is read because only
+  // one suite reads a Markdown sidecar (markup-carve/carve-js#2056).
+  { repo: 'carve-js', path: 'test/corpus-render-fixtures.test.ts', name: 'MARKDOWN_AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', staleness: 'now matches: delete its AHEAD_OF_PIN entry', owner: 'test/corpus-render-fixtures.test.ts' },
   { repo: 'carve-js', path: 'test/ast-vocabulary.test.ts', name: 'PENDING_SPEC_DECISION', kind: 'js', policy: 'owed', guard: 'two-way', staleness: 'is pending only on types that still exist and still need a decision', owner: 'test/ast-vocabulary.test.ts' },
   { repo: 'carve-js', path: 'test/optional-corpus.test.ts', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'test/optional-corpus.test.ts' },
   { repo: 'carve-js', path: 'test/optional-corpus.test.ts', name: 'DECLARED_UNIMPLEMENTED', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'test/optional-corpus.test.ts' },
@@ -295,7 +298,9 @@ const MANIFEST = [
   { repo: 'carve-rs', path: 'tests/corpus.rs', name: 'KNOWN_GAPS', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/corpus.rs' },
   { repo: 'carve-rs', path: 'tests/corpus.rs', name: 'AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/corpus.rs' },
   { repo: 'carve-rs', path: 'tests/corpus_canonical_form.rs', name: 'AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/corpus_canonical_form.rs' },
-  { repo: 'carve-rs', path: 'tests/corpus_render_fixtures.rs', name: 'FMT_AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', staleness: 'the pin has caught up; delete its FMT_AHEAD_OF_PIN entry', owner: 'tests/corpus_render_fixtures.rs' },
+  // Named FMT_AHEAD_OF_PIN until carve-rs widened it past the `fmt` target; the
+  // rows carry a target now, so the constant lost the prefix with them.
+  { repo: 'carve-rs', path: 'tests/corpus_render_fixtures.rs', name: 'AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', staleness: 'the pin has caught up; delete its AHEAD_OF_PIN entry', owner: 'tests/corpus_render_fixtures.rs' },
   { repo: 'carve-rs', path: 'tests/optional_corpus.rs', name: 'DECLARED_UNIMPLEMENTED', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/optional_corpus.rs' },
   { repo: 'carve-rs', path: 'tests/optional_corpus.rs', name: 'AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/optional_corpus.rs' },
   { repo: 'carve-rs', path: 'tests/html_import.rs', name: 'AHEAD_OF_PIN',      kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'mirrors spec PIN_LAG' },
