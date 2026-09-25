@@ -11393,13 +11393,9 @@ EOF = (* end of file *) ;
       list existed either way; putting it in the schema makes it one list that
       every consumer reads instead of one each consumer writes.
 
-      THE REFUSAL IS STAGED. `admonition.kind` does NOT yet refuse the
-      directive kinds: the schema names the type before any engine publishes
-      it, and a corpus document still carries `admonition` with kind
-      `footnotes`. `not` is added to `admonition.kind` in the commit that moves
-      the pin to a build emitting `directive`. Until then the split is a rule
-      the schema states and does not check, which is a debt this clause names
-      rather than hides.
+      `admonition.kind` REFUSES the six kinds, so the split is checked and not
+      only stated: one thing has one spelling
+      ([carve#2231](https://github.com/markup-carve/carve/issues/2231)).
 
       FOLDING THEM INTO `div` WAS REFUSED. One syntax producing one type
       parameterised by `kind` reads well and costs a real capability: a
