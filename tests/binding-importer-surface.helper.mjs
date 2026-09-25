@@ -32,6 +32,14 @@ const NOT_THE_SURFACE = /(^|\/)(tests?|spec|scripts)\/|_test\.(go|rb)$|(^|\/)tes
 export const isBindingSource = (path) =>
   SOURCE_EXTENSION.test(path) && !NOT_THE_SURFACE.test(path)
 
+/*
+ * These are not equally sharp. `djot` and `bb_code` occur only where something
+ * handles that format; `html` and `markdown` occur in every binding anyway, via
+ * `ToHTML` and `to_markdown`, so an entry calling either out of scope would trip
+ * on a render target. Nothing declares those two out of scope today, and the
+ * first entry that needs to will also need a way to name a mention that is not
+ * an importer. A false alarm is possible here; false silence is not.
+ */
 const FORMAT_KEYWORD = {
   html: /html/i,
   markdown: /markdown/i,
@@ -88,7 +96,8 @@ export function surfaceFindings({ binding, formats, sources, probe }) {
           `${format} is declared out of scope ("${binding.outOfScopeImporters[format]}") ` +
             `but the shipped surface names it at ${places.slice(0, 4).join(', ')}` +
             `${places.length > 4 ? ` and ${places.length - 4} more place(s)` : ''}. ` +
-            'Move it to `importers` under its exported name, or say here why the mention is not an importer.',
+            'Move it to `importers` under its exported name, or, if those places are not an importer, ' +
+            'say so on the ticket and give this file a way to record that.',
         )
       }
       continue
