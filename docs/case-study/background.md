@@ -8,7 +8,21 @@ description: Formats considered during Carve's early design and the syntax choic
 
 These formats informed Carve's early syntax choices.
 
-### 1.1 Notes by Format
+### 1.1 The Major Players
+
+| Format | Focus in these notes |
+|---|---|
+| Markdown | Familiar prose notation and parser variants |
+| reStructuredText | Explicit directives and links |
+| AsciiDoc | Attributes, includes, and admonitions |
+| Org-mode | Outlining and task states |
+| Textile | Link and table notation |
+| Creole | Wiki links and table headers |
+| Gemtext | Links on separate lines |
+| Djot | Parsing model and attributes |
+| Typst | Commands and grouped content |
+
+### 1.2 Notes by Format
 
 #### Markdown
 
@@ -163,7 +177,7 @@ Hello, #name!
 - **Weaknesses**: More programming syntax than Carve's plain markup needs
 - **Lesson**: `#` commands and `[]` groups keep their roles visible.
 
-### 1.2 Other Notable Ideas
+### 1.3 Other Notable Ideas
 
 #### CriticMarkup (Editorial Annotations)
 
