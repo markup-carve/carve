@@ -31,10 +31,10 @@ from assigning different field names to the same information.
 
 ## Editing APIs
 
-carve-js and carve-rs can create and apply JSON-Pointer AST patches, including
-reversible patches with document fingerprints that reject stale input. Use
-these for undoable structural edits and review workflows; validate untrusted
-patch JSON through the provided decoders rather than mutating arbitrary values.
+All three engines create and apply AST patches addressed by JSON Pointers.
+Reversible forms carry inverse operations and document fingerprints for undo
+and stale-edit checks. Check the patch API your engine exposes, and validate
+untrusted operation names, values, and pointer paths before applying them.
 
 carve-rs also exposes `parse_snapshot` and `reparse` for editor integrations.
 The current snapshot API validates text changes and returns updated source,
@@ -1611,19 +1611,6 @@ states the whole axis. The name differs for the same reason: a `tight` field
 would be absent on almost every definition list, and an absent boolean read as
 false says *loose* - the opposite of the default, in the one place a consumer is
 most likely to write `if (node.tight)`.
-
-::: info Engine support
-carve-rs emits this field on its `main` as of markup-carve/carve-rs#1304 and
-markup-carve/carve-rs#1314. carve-js and carve-php render `{loose}` correctly and
-do not publish the field yet (markup-carve/carve-js#1410,
-markup-carve/carve-php#1660), so a three-way AST comparison still parts them:
-measured on [run 32678870595](https://github.com/markup-carve/carve/actions/runs/32678870595),
-`carve-js=(absent) carve-rs=true carve-php=(absent)`.
-
-The PINNED build is a separate window and is further behind: it still renders the
-key literally as `<dl loose="">`, which is what the corpus documents declared in
-`resources/engine-pin-drift.txt` are declared for.
-:::
 
 ## Composite figures
 
