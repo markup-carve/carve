@@ -1691,11 +1691,9 @@ HTML. Anything reading the tree saw two different documents - a ProseMirror
 bridge on one engine received three paragraphs of citation-shaped prose and
 round-tripped them as prose ([carve#1276](https://github.com/markup-carve/carve/issues/1276)).
 
-**No engine emits it yet**, at the time of writing; the clause landed first and
-the engines follow. `tests/citation-definition-is-a-node.test.mjs` pins the wire
-shape against the schema and carries a tripwire that fails on the pinned build
-the day it does, so this paragraph cannot go stale the way the rows above have
-twice.
+`tests/citation-definition-is-a-node.test.mjs` checks both the wire shape and
+the pinned reference build. It asserts that the reference build emits a
+schema-valid `citation_definition` node.
 
 ## A citation item carries its own mode
 

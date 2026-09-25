@@ -1,5 +1,5 @@
 ---
-description: Supporting tables and reference material for the original Carve design research.
+description: Supporting tables and reference material from Carve's early design notes.
 ---
 
 # Appendices
@@ -146,5 +146,3 @@ Carve draws inspiration from:
 - **Gemtext** - Radical simplicity principles
 - **Typst** - Modern syntax thinking
 - **CommonMark** - Specification rigor
-
-And countless Markdown users whose struggles informed our design.

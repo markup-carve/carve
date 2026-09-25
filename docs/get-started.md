@@ -1,6 +1,6 @@
 ---
 title: Get Started
-description: Try Carve in 30 seconds, then render it in your own project.
+description: Try Carve in the playground, then render it in your own project.
 ---
 
 # Get Started
@@ -77,7 +77,7 @@ Editor and framework integrations are listed in the [Ecosystem](/ecosystem).
 - [Formal Grammar](/grammar): the rules that define valid block and inline syntax.
 - [Migration from Markdown](/migrate-from-markdown): incompatible syntax and conversion.
 
-## Features available by default and optional features
+## Core and optional features
 
 Headings, lists, tables, links, code, math, footnotes, callouts, and attributes
 are available without configuration.

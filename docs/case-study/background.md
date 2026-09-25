@@ -1,34 +1,34 @@
 ---
-description: The markup landscape Carve was designed against, and what each existing language got wrong.
+description: Formats considered during Carve's early design and the syntax choices they informed.
 ---
 
 # Background
 
-## Part 1: The Landscape of Lightweight Markup
+## Part 1: Lightweight Markup Formats
 
-Before designing something new, we must understand what exists and why.
+These formats informed Carve's early syntax choices.
 
 ### 1.1 The Major Players
 
-| Format          | Year | Philosophy                                    |
-|-----------------|------|-----------------------------------------------|
-| Markdown        | 2004 | "Write like email, get HTML"                  |
-| reStructuredText| 2002 | "Explicit is better than implicit"            |
-| AsciiDoc        | 2002 | "DocBook power, plain-text simplicity"        |
-| Org-mode        | 2003 | "Your life in plain text"                     |
-| Textile         | 2002 | "Web writing made easy"                       |
-| Creole          | 2007 | "Universal wiki markup"                       |
-| Gemtext         | 2019 | "Radical simplicity"                          |
-| Djot            | 2022 | "Markdown done right"                         |
-| Typst           | 2023 | "LaTeX replacement for the modern era"        |
+| Format | Focus in these notes |
+|---|---|
+| Markdown | Familiar prose notation and parser variants |
+| reStructuredText | Explicit directives and links |
+| AsciiDoc | Attributes, includes, and admonitions |
+| Org-mode | Outlining and task states |
+| Textile | Link and table notation |
+| Creole | Wiki links and table headers |
+| Gemtext | Links on separate lines |
+| Djot | Parsing model and attributes |
+| Typst | Commands and grouped content |
 
-### 1.2 What Each Teaches Us
+### 1.2 Notes by Format
 
 #### Markdown
 
 - **Strengths**: Ubiquitous, feels natural for basic text
-- **Weaknesses**: Ambiguous, fragmented (CommonMark, GFM, etc.)
-- **Lesson**: Simplicity wins adoption, but ambiguity creates chaos.
+- **Weaknesses**: Ambiguous, fragmented across CommonMark, GFM, and other variants
+- **Lesson**: Familiar notation helps, but output needs specified parsing rules.
 
 #### reStructuredText
 
@@ -41,9 +41,9 @@ This is *emphasis* and **strong emphasis**.
 `Link text <https://example.com>`_
 ```
 
-- **Strengths**: Explicit directives, extensible, great for documentation
-- **Weaknesses**: Verbose, underscore suffix for links is bizarre
-- **Lesson**: Explicitness is good, but syntax should feel natural.
+- **Strengths**: Explicit directives and extensibility
+- **Weaknesses**: Directives take space; links use a suffix underscore
+- **Lesson**: Keep structure explicit without making common links cumbersome.
 
 #### AsciiDoc
 
@@ -65,10 +65,9 @@ def hello():
 ----
 ```
 
-- **Strengths**: Document attributes, admonitions, includes, powerful tables
-- **Weaknesses**: Learning curve, multiple syntaxes for same thing
-- **Lesson**: Metadata and document structure matter.
-  Built-in admonitions are valuable.
+- **Strengths**: Document attributes, includes, admonitions, and tables
+- **Weaknesses**: Many forms to learn for related tasks
+- **Lesson**: Metadata and document structure deserve direct syntax.
 
 #### Org-mode
 
@@ -92,11 +91,9 @@ def hello():
 #+END_SRC
 ```
 
-- **Strengths**: Incredibly powerful, outlining, TODO states, time tracking
-- **Weaknesses**: Emacs-centric, `#+` syntax is ugly, steep learning curve
-- **Lesson**: Plain text can be a complete productivity system.
-  Checkboxes and TODO states are useful.
-  The `/italic/` convention works!
+- **Strengths**: Outlining, TODO states, and time tracking in plain text
+- **Weaknesses**: Editor conventions and `#+` directives take time to learn
+- **Lesson**: Slash-delimited italics work without importing the whole workflow.
 
 #### Textile
 
@@ -111,10 +108,10 @@ This is *strong* and _emphasis_ and -deleted- and +inserted+.
 | Cell     | Cell     |
 ```
 
-- **Strengths**: Intuitive emphasis, simple links, readable
-- **Weaknesses**: Largely abandoned, some ambiguous cases
-- **Lesson**: `"text":url` for links is more readable.
-  The `|_.` for headers is clever.
+- **Strengths**: Compact emphasis and link notation
+- **Weaknesses**: Some markers depend on context
+- **Lesson**: Carve kept `[text](url)` rather than Textile's colon link form and
+  chose `|=` rather than `|_.` for table headers.
 
 #### Creole
 
@@ -129,13 +126,13 @@ This is **bold** and //italic//.
 | Cell    | Cell    |
 ```
 
-- **Strengths**: Designed for wiki interoperability, clear delimiters
-- **Weaknesses**: Never achieved widespread adoption
-- **Lesson**: `//italic//` is visually perfect. `|=` for table headers is elegant.
+- **Strengths**: Clear wiki link and table markers
+- **Weaknesses**: Wiki links use different notation from Markdown links
+- **Lesson**: `|=` gives a table header a visible marker.
 
 #### Gemtext (Gemini Protocol)
 
-```
+````
 # Heading
 ## Subheading
 
@@ -151,13 +148,19 @@ Regular text is just text.
 
 ```preformatted block
 code here
-```​
 ```
+````
 
-- **Strengths**: Radically simple, one link per line, unambiguous
-- **Weaknesses**: No inline formatting whatsoever, too minimal for rich documents
-- **Lesson**: Forcing links onto their own lines eliminates ALL link syntax ambiguity.
-  Sometimes constraints are features.
+- **Strengths**: Small block vocabulary; one link per line
+- **Weaknesses**: No inline formatting
+- **Lesson**: A link on its own line needs no inline delimiter, but that limits documents.
+
+#### Djot
+
+- **Strengths**: Defined parsing rules and attributes
+- **Weaknesses**: Some delimiter choices differ from Carve's readability goals
+- **Lesson**: Carve kept the parsing model while changing selected syntax. See
+  the [Djot comparison](../divergence-from-djot) for the exact differences.
 
 #### Typst
 
@@ -178,10 +181,9 @@ Hello, #name!
 )
 ```
 
-- **Strengths**: Programmable, clean syntax, fast, modern
-- **Weaknesses**: More like a programming language than markup
-- **Lesson**: Programmability is powerful. The `#` prefix for commands is clean.
-  Content in `[]` brackets is intuitive.
+- **Strengths**: Programmable documents and explicit commands
+- **Weaknesses**: More programming syntax than Carve's plain markup needs
+- **Lesson**: `#` commands and `[]` groups keep their roles visible.
 
 ### 1.3 Other Notable Ideas
 
@@ -194,7 +196,7 @@ Hello, #name!
 {==highlight==}{>>comment<<}
 ```
 
-- **Lesson**: Track changes in plain text is valuable for collaboration.
+- **Lesson**: Insertions and deletions can be recorded in plain text.
 
 #### Fountain (Screenwriting)
 
@@ -206,8 +208,7 @@ JOHN
 I have something to tell you.
 ```
 
-- **Lesson**: Context can be inferred from position and conventions.
-  Minimal markup for domain-specific formats.
+- **Lesson**: Position and convention can mark screenplay structure with little punctuation.
 
 #### YAML Frontmatter (Metadata)
 
@@ -220,15 +221,15 @@ tags: [tutorial, beginner]
 ---
 ```
 
-- **Lesson**: Structured metadata at the start of documents is universally useful.
+- **Lesson**: Frontmatter gives document metadata a predictable place.
 
 ---
 
-## Part 2: Human Factors Research
+## Part 2: Readability Assumptions
 
-### 2.1 How Non-Technical Users Mark Up Text
+### 2.1 Paper and Keyboard Analogies
 
-Observing how people annotate paper documents reveals natural instincts:
+These paper-to-keyboard analogies were design prompts, not results of a user study:
 
 | Intent          | Paper Action           | Keyboard Approximation |
 |-----------------|------------------------|------------------------|
@@ -240,21 +241,19 @@ Observing how people annotate paper documents reveals natural instincts:
 | Reference       | Number in circle       | `[1]` or `(1)`         |
 | Quote           | Quote marks            | `"text"` or `> text`   |
 
-### 2.2 What People Get Wrong in Markdown
+### 2.2 Potential Markdown Stumbling Points
 
-From teaching Markdown to non-programmers:
+The design notes identified these points to simplify:
 
-1. **Link syntax order** - "Is it `[]()` or `[]()`?" (yes, they ask this)
-2. **Nested lists** - Not understanding the indent requirements
+1. **Link syntax order** - Writers may reverse `[]` for the label and `()` for the destination.
+2. **Nested lists** - The required indentation can be hard to predict.
 3. **Code blocks** - Backtick key location varies by keyboard
 4. **Line breaks** - Two spaces at end of line is invisible
-5. **Emphasis** - "Do I use one or two asterisks?"
-6. **Escaping** - Not knowing why their `*` became italic
+5. **Emphasis** - One and two asterisks have different meanings.
+6. **Escaping** - An unescaped `*` can start emphasis unexpectedly.
 
-### 2.3 The "Ten-Second Rule"
+### 2.3 Readability Goals
 
-A good syntax should be:
-
-- **Learnable in 10 seconds** for basic use
-- **Memorable after 10 days** without use
-- **Unambiguous within 10 characters** of context
+The goals were to make common constructs easy to recognize in source, easy to
+recall after time away, and distinguishable from ordinary prose without reading
+the whole document.

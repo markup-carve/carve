@@ -19,13 +19,9 @@ description: How the reference parser was built, and what the first implementati
 
 ### 9.2 Reference Implementations
 
-JavaScript/TypeScript, Rust, and PHP implementations now exist (carve-js,
-carve-rs, carve-php), tested against the shared corpus. 
-
-Still wanted:
-
-1. Python (data science, docs communities)
-2. Go (modern backend systems)
+JavaScript/TypeScript, Rust, and PHP implementations exist (carve-js, carve-rs,
+carve-php) and use the shared conformance corpus. See the [Ecosystem](../ecosystem)
+for current bindings and integrations.
 
 ### 9.3 Editor Support Essentials
 
@@ -43,19 +39,19 @@ Still wanted:
 
 1. **Visual Mnemonics**: `/slant/` for italic, `*heavy*` for bold
 2. **Simpler Tables**: `|=` headers, no separator rows needed
-3. **Social Mentions**: `@user` and `#tag` work as expected
+3. **Optional Mentions**: configured templates can resolve `@user` and `#tag`
 4. **Extension System**: `:type[content]{attrs}` for custom elements
-5. **Unambiguous Rules**: One syntax, one meaning, always
+5. **Distinct Markers**: Prefer different notation for different constructs
 6. **Djot Foundation**: Inherits rigorous parsing and attributes
 
-### 12.2 Success Metrics
+### 12.2 Design Goals
 
-Carve succeeds if:
+The goals were:
 - Non-technical users can write without consulting docs
 - Technical users can access full power when needed
 - Documents remain readable as plain text
 - Parsing is deterministic and fast
-- Migration from Markdown is trivial
+- Migration from Markdown has a documented path
 
 ### 12.3 Next Steps (as written at the time)
 
@@ -66,19 +62,18 @@ Carve succeeds if:
 5. Editor integration (VS Code, Obsidian, etc.)
 6. Documentation and tutorials
 
-All six have since shipped: the [formal grammar](../grammar) is normative, three
-engines pass a shared [conformance corpus](https://github.com/markup-carve/carve/tree/main/tests/corpus),
-and Carve has editor support across seven editors plus a language server. See
-the [Ecosystem](../ecosystem) for the current state.
+The [formal grammar](../grammar), implementations, and documentation are
+available. The implementations use a shared
+[conformance corpus](https://github.com/markup-carve/carve/tree/main/tests/corpus).
+See the [Ecosystem](../ecosystem) for current editor support and bindings. These
+notes present no results from the proposed user testing.
 
 ---
 
-*This case study is a historical record of Carve's original design research.
-The normative definition of the language is the [formal grammar](../grammar) and
-the conformance corpus; real-world testing with diverse users continues to
-inform syntax decisions.*
+*This case study is a historical record of early design notes. The normative
+definition of the language is the [formal grammar](../grammar) and the
+conformance corpus.*
 
 *Feedback and contributions welcome at <https://github.com/markup-carve>.*
 
 ---
-
