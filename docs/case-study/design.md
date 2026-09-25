@@ -36,10 +36,10 @@ _Both the affirmative case (what we chose) and the negative case (why we didn't 
 Markdown's installed base makes syntax changes expensive. A change can alter
 existing documents, and implementations may adopt it at different times.
 
-### 11.2 Why Djot Isn't Enough
+### 11.2 Relationship to Djot
 
 Djot gives Carve a parsing model and attributes. Carve changes some surface
-choices, including emphasis and subscript delimiters, to meet different
+choices, including emphasis, subscript, and superscript delimiters, to meet different
 readability goals. The [formal grammar](../grammar) defines the current language.
 
 ---

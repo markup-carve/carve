@@ -110,7 +110,8 @@ This is *strong* and _emphasis_ and -deleted- and +inserted+.
 
 - **Strengths**: Compact emphasis and link notation
 - **Weaknesses**: Some markers depend on context
-- **Lesson**: Carve kept `[text](url)` rather than Textile's colon link form.
+- **Lesson**: Carve kept `[text](url)` rather than Textile's colon link form and
+  chose `|=` rather than `|_.` for table headers.
 
 #### Creole
 
@@ -153,6 +154,13 @@ code here
 - **Strengths**: Small block vocabulary; one link per line
 - **Weaknesses**: No inline formatting
 - **Lesson**: A link on its own line needs no inline delimiter, but that limits documents.
+
+#### Djot
+
+- **Strengths**: Defined parsing rules and attributes
+- **Weaknesses**: Some delimiter choices differ from Carve's readability goals
+- **Lesson**: Carve kept the parsing model while changing selected syntax. See
+  the [Djot comparison](../divergence-from-djot) for the exact differences.
 
 #### Typst
 
