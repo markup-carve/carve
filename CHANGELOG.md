@@ -47,6 +47,10 @@ Releases before 0.1.6 are archived in
 
 ### Fixes
 
+- PART 2's no-trailing-whitespace rule names a comment in both of its lists: a
+  `%%` line's text is a content line, where exactly one space or tab after the
+  marker is the separator, and a `%%%` block's body is payload that keeps its
+  bytes (#2314).
 - The binding contract names each binding's real HTML and Markdown importers and
   lists BBCode among the optional ones, in place of out-of-scope reasons that
   described APIs the bindings had outgrown, and the converter ledger declares no
@@ -167,7 +171,7 @@ existed.
 
 ### Corpus
 
-- The conformance corpus grows from 1740 to 1865 documents, sections 473 to 497,
+- The conformance corpus grows from 1740 to 1869 documents, sections 473 to 498,
   and every ruling and reference fix above is pinned there.
 - Empty and whitespace-only BBCode quotes survive as canonical `>` blocks, and a
   converter case can opt into a byte-exact `expected.crv` check where rendering
