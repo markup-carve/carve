@@ -1,0 +1,38 @@
+A comment line's text is content and a block body is payload
+
+```
+::: note
+%% keep  
+text
+:::
+.
+<aside class="admonition note" aria-label="Note">
+  <p>text</p>
+</aside>
+```
+
+```
+%%  x
+
+text
+.
+<p>text</p>
+```
+
+```
+%% x
+
+text
+.
+<p>text</p>
+```
+
+```
+%%%
+body  
+%%%
+
+text
+.
+<p>text</p>
+```
