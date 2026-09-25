@@ -380,6 +380,12 @@
       use the same two-space depth step; plain text differs only by omitting
       presentation styling, not by erasing hierarchy.
 
+      THE TIGHT/LOOSE LICENCE IS THIS TARGET'S, and its ground is this target's
+      reach: plain text has no way to spell the distinction, so there is nothing
+      to preserve. A target that CAN spell it does not have the licence, and
+      this clause's silence about the others never granted one -- the MARKDOWN
+      target keeps tightness under §10l.
+
   10i. A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES --
       NORMATIVE [CARVE-P11-036]. The writer normalizes a run of blank lines between two blocks
       to ONE. A run that is PART 9 §11 N1a's hard list boundary is the
@@ -451,6 +457,28 @@
       the same. The defects this comparison has found were found because it was
       exact, and an open-ended equivalence would hide the next one. An entry is
       written here or it does not exist.
+
+  10l. THE MARKDOWN TARGET KEEPS A LIST'S TIGHTNESS -- NORMATIVE [CARVE-P11-047].
+      The emitted Markdown reads back with the tightness PART 9 §17 L1 gives the
+      source, wherever CommonMark can express it. §10h's licence to discard
+      tight/loose is plain text's and does not reach this target.
+
+      A BLANK LINE IS WRITTEN WHERE THE NEXT BLOCK NEEDS ONE AND NOWHERE ELSE.
+      In a TIGHT item, a following block whose opener INTERRUPTS A PARAGRAPH --
+      a nested bullet list, a block quote -- is written directly under the
+      paragraph, because the blank line is what would make the item loose:
+
+        - parent
+          - child
+
+      AN OPENER THAT CANNOT INTERRUPT keeps its blank line -- an ordered list
+      that does not start at 1, in `- a` over `  3. b` -- and the item's
+      tightness goes with it. That is the one case where CommonMark cannot
+      express it, so the rule is asked per case and never answered by never
+      writing a separator.
+
+      A LOOSE LIST KEEPS ITS BLANK LINES, a flat one included: `- a`, blank,
+      `- b` is emitted with the blank line, not as `- a` then `- b`.
 
   11. THE MARKDOWN TARGET'S CROSS-REFERENCES -- NORMATIVE [CARVE-P11-038]. A resolved
       cross-reference is emitted as a Markdown link to the target heading's id,

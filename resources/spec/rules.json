@@ -1271,6 +1271,12 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-047",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET KEEPS A LIST'S TIGHTNESS",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P11-036",
       "part": "11",
       "title": "A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES",
