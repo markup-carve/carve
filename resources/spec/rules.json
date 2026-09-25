@@ -683,6 +683,12 @@
       "scope": "resolution-rendering"
     },
     {
+      "id": "CARVE-P9-073",
+      "part": "9",
+      "title": "A PLACEMENT MARKER PLACES ONLY AT DOCUMENT TOP LEVEL",
+      "scope": "resolution-rendering"
+    },
+    {
       "id": "CARVE-P9-029",
       "part": "9",
       "title": "L1a THE ITEM'S FIRST BLOCK DOES NOT MATTER",

@@ -125,6 +125,10 @@ export function renderDoc(doc) {
   // ONE promotion phase, before anything is serialized: it settles every
   // block-image question in the tree and binds the image captions (carve#1784).
   promoteBlockImages(doc, ctx)
+  // PART 9 §16 CARVE-P9-073: only a top-level marker places, and `doc.blocks`
+  // IS the document's own list - a marker reachable any other way sits inside a
+  // container and renders §12's floor instead.
+  for (const b of doc.blocks) if (b.t === 'footnotes-placement') b.places = true
   const out = []
   const sections = []
   const indent = () => '  '.repeat(sections.length)
@@ -621,6 +625,7 @@ function renderBlock(b, depth, ctx) {
       return `${pad}<h${b.level}${attrStr}${idAttr}>${html}</h${b.level}>`
     }
     case 'footnotes-placement':
+      if (!b.places) return `${pad}<div class="footnotes">\n\n${pad}</div>`
       return '\uE000fnplacement\uE001'
     default:
       throw new Refuse(`unknown block ${b.t}`)

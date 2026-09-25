@@ -26,6 +26,13 @@ const visibleText = (html) =>
 // This is an inspected snapshot, not an endorsement of those three losses;
 // the ratchet keeps them visible for a dedicated writer/parser correction.
 
+// Corpus 497's row adds +1 to each population count and 0 to both round trips,
+// as measured with the pinned carve-js. The degraded marker itself survives the
+// HTML import as `> ::: footnotes`; what misses that round trip is the footnote
+// label, which comes back as `[^1]` rather than the authored `[^a]`. Markdown
+// has no spelling for either the marker or the empty div, so its round trip
+// loses the quote's whole body.
+
 // Corpus 489's nine rows add +9 to each population count, +2 to the HTML round
 // trip and 0 to the Markdown one, as measured with the pinned carve-js.
 
