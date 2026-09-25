@@ -101,6 +101,13 @@ boundary. When that is not true, the producer MUST emit `fidelity-unverified`
 as `dropped` with `fallback` confidence. `diagnostics-truncated` has the same
 fail-closed classification.
 
+`fidelity-unverified` does not suppress losses the importer can identify. An
+importer MUST also report each known construct-level loss. For example, GFM
+reads a checkbox on `1. [x] done`, but Carve spells task markers only on bullet
+items. The ordered item keeps `[x]` as text and reports
+`structure-unspellable` as `dropped` with `exact` confidence alongside
+`fidelity-unverified`.
+
 The producer's `fidelity` is final: bindings MUST NOT reclassify it, and
 fidelity MUST NOT be inferred from human-readable message text. Report and
 diagnostic objects are intentionally open; consumers MUST ignore members they
