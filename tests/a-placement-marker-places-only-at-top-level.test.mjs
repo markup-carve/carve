@@ -18,6 +18,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { carveToHtml, citations } from '@markup-carve/carve'
 import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
@@ -26,7 +27,7 @@ const grammar = readFileSync(resolve(root, 'resources/grammar.ebnf'), 'utf8')
 const oracleHtml = (source) => renderDoc(parse(source)).trim()
 
 function clause() {
-  const start = grammar.indexOf('A PLACEMENT MARKER PLACES ONLY AT DOCUMENT TOP LEVEL')
+  const start = grammar.indexOf('DOCUMENT-WIDE PLACEMENT MARKERS REQUIRE DOCUMENT TOP LEVEL')
   assert.notEqual(start, -1, 'CARVE-P9-073 is gone from the grammar')
   const rest = grammar.slice(start)
   const end = rest.indexOf('- BACKLINK PLACEMENT WHEN THE BODY DOES NOT END IN A PARAGRAPH')
@@ -38,6 +39,12 @@ test('the clause carries its id and refuses the nested placement', () => {
   const body = clause()
   assert.match(body, /\[CARVE-P9-073\]/)
   assert.match(body, /does not place/)
+  for (const kind of ['footnotes', 'bibliography', 'references']) {
+    assert.match(body, new RegExp('`::: ' + kind + '`'))
+  }
+  for (const kind of ['toc', 'glossary', 'index']) {
+    assert.match(body, new RegExp('does not restrict[^.]*`::: ' + kind + '`'))
+  }
 })
 
 test('the clause names every container, not only the block quote', () => {
@@ -67,7 +74,11 @@ test('the clause names the floor and where the section goes instead', () => {
 test('the clause names the diagnostic a refused marker reports', () => {
   const body = clause()
   assert.match(body, /lint\s+diagnostics/)
-  assert.match(body, /`footnotes-placement-in-container`/)
+  assert.match(body, /`\{kind\}-placement-in-container`/)
+  const validation = readFileSync(resolve(root, 'docs/validation.md'), 'utf8')
+  for (const kind of ['footnotes', 'bibliography', 'references']) {
+    assert.match(validation, new RegExp('\\| `' + kind + '-placement-in-container` \\|'))
+  }
 })
 
 test('a marker inside a container renders the floor and the section at the end', () => {
@@ -111,4 +122,14 @@ test('a top-level marker still places and an unmarked document is unchanged', ()
   assert.doesNotMatch(unmarked, /<div class="footnotes">/)
   assert.match(unmarked, /<section role="doc-endnotes"/)
   assert.ok(unmarked.trimEnd().endsWith('</section>'))
+})
+
+test('a nested references marker leaves a later top-level marker available', () => {
+  const source = 'See [@x].\n\n> ::: references\n> :::\n\n::: references\n:::\n\n## After\n\n[@x]: Source\n'
+  const html = carveToHtml(source, { extensions: [citations()] })
+  const floor = html.indexOf('<blockquote>\n  <div class="references">')
+  const list = html.indexOf('<ol class="references">')
+  const heading = html.indexOf('<section id="After">')
+  assert.ok(floor >= 0 && list > floor && heading > list)
+  assert.equal(html.match(/<ol class="references">/g)?.length, 1)
 })

@@ -683,7 +683,8 @@ the same data it would from Pandoc.
   per-document state so a reused extension instance does not leak across runs.
 - **beforeRender**: numbers cited+defined keys in first-citation order and
   places the references list - into an explicit `::: references` div/admonition
-  if present, else appended at document end.
+  if present at document top level, else appended at document end. A marker
+  inside a container renders as an ordinary div (`CARVE-P9-073`).
 - **Renderers**: an inline renderer for `citation-group` (numbered `[1]` or
   author-date `(Author Year)`) and a block renderer that emits the references
   list (`<ol class="references">` numbered, sorted `<ul class="references">`
@@ -828,6 +829,9 @@ extension (§4) explicitly deferred (§4.6): §4 resolves `@key` against in-docu
 pool. Off by default; enable per processor. Depends on Citations (§4) being
 enabled - it reuses the same `citation-group` nodes, numbering, and
 `::: references` placeholder, so it is a data-source layer, not new syntax.
+This extension does not introduce a separate `::: bibliography` marker. If a
+processor supplies one for a distinct document-wide region, `CARVE-P9-073`
+governs its placement.
 
 ### 6.1 Data source
 
