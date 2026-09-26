@@ -594,6 +594,24 @@
         Nowhere else. `f(x)`, `(see above)` and `[a] (b)` stay bare, and so
         does `[a](b c)`, whose tail is not a complete link destination.
 
+        TWO PLACES ARE EXEMPT FROM BOTH HALVES.
+
+        An INLINE EXTENSION's content (`:name[...]`) is not bracketed
+        content. Its reader ends at the first `]` without pairing brackets,
+        so a `[` inside it pairs with nothing and its escape would be idle.
+        Corpus `45-inline-extensions-6` is the case, written as authored:
+
+          :foo[a [b] c]
+
+        not `:foo[a \[b] c]`.
+
+        A run holding an EMPTY CODE SPAN, directly or inside emphasis, is left
+        to the search whole: neither half selects any bracket or `(` in it.
+        The empty span is written as a bare backtick run, which ends the
+        bracket scan's view of what follows it, so a pairing read from the
+        tree no longer matches the written bytes. A nested construct that
+        writes its own brackets is a run of its own and keeps both halves.
+
       CANDIDATE -- escaped only when W4 selects the conservative form:
         `* _ ~ / = ,`        emphasis and the braced pair delimiters
         `[ ]  { } <`      links, images, spans, attributes, autolinks
