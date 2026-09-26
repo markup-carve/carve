@@ -12,7 +12,13 @@ Releases before 0.1.6 are archived in
 
 ### Added
 
+- Check default lint coverage, constructed table cells, clean CLI refusals, and formatter edge cases across JavaScript, Rust, and PHP in daily conformance.
+
 - HTML import recognizes explicit code-language hints on code blocks and Sphinx, GitHub and MediaWiki wrappers, with validated tokens and deterministic fallback (markup-carve/carve#2387).
+
+### Fixed
+
+- State that raw blocks and abbreviation definitions contribute nothing to flattened table cells (markup-carve/carve#2390).
 
 ## [0.1.7] - 2026-09-25
 

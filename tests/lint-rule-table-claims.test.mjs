@@ -57,31 +57,7 @@ const page = readFileSync(resolve(root, 'docs/validation.md'), 'utf8')
  * opt-in options provokes its trigger either way.
  */
 const TRIGGERS = {
-  'bidi-control-in-source': 'a‮b\n',
-  'duplicate-heading-id': '# A\n\n# A\n',
-  'broken-crossref': 'see </#nope>\n',
-  'unresolved-reference-link': 'see [text][nope]\n',
-  'unresolved-footnote': 'see[^nope]\n',
-  'duplicate-footnote-definition': 'x[^a]\n\n[^a]: one\n\n[^a]: two\n',
-  'unused-footnote-definition': 'text\n\n[^a]: never used\n',
-  'heading-trailing-attribute': '# Title {#id}\n',
-  'fence-opener-fallback': '``` php extra bad info\ncode\n```\n',
-  'raw-block-syntax': '```raw html\nx\n```\n',
-  'blockquote-marker-without-space': '>quoted\n',
-  'block-marker-as-text': '  ::: note\n',
-  'fence-delimiter-indentation': '  ```\n  x\n  ```\n',
-  'list-item-body-detached': '1. item\n\n  # heading\n',
-  'list-item-block-overindented': '-{.x1} item\n\n       # heading\n',
-  'empty-include-path': '{{ #section }}\n',
-  'carve-version-unsupported': '---\ncarve-version: 99.0\n---\n\nx\n',
-  'unclosed-container-fence': '::: note\nbody\n',
-  'colon-fence-length-mismatch': ':::: note\nbody\n:::\n',
-  'figure-group-nested': ':::: figure\n::: figure\n![a](a.png)\n^ (a) A\n:::\n::::\n^ Figure #: G\n',
-  'figure-group-opener-metadata': '::: figure "Title"\n![a](a.png)\n^ (a) A\n:::\n',
-  'figure-group-panel-number': '::: figure\n![a](a.png)\n^ Figure #: panel\n:::\n^ Figure #: G\n',
-  'figure-group-empty': '::: figure\njust a paragraph\n:::\n^ Figure #: G\n',
-  'figure-group-single-panel': '::: figure\n![a](a.png)\n^ (a) A\n:::\n^ Figure #: G\n',
-  'fence-title-syntax': '::: note Some Title\nbody\n:::\n',
+  ...JSON.parse(readFileSync(resolve(root, 'resources/lint-default-triggers.json'), 'utf8')),
   'platform-mention-token': {
     source: 'Use @minutely for that cron alias.\n',
     options: { platforms: ['github'] },
@@ -90,34 +66,10 @@ const TRIGGERS = {
     source: 'See #123 for the discussion.\n',
     options: { platforms: ['github'] },
   },
-  'footnote-labels-differ-only-in-whitespace': 'see [^a b] and [^a  b]\n\n[^a b]: one\n\n[^a  b]: two\n',
-  // A reference AND a definition, because the rule fires on a marker that
-  // cannot place the section, and a document with no note has no section to
-  // place.
-  'footnotes-placement-in-container': 'Intro[^a].\n\n> ::: footnotes\n> :::\n\n[^a]: only note\n',
-  // Gated on the citations extension, not on a platform: without it a
-  // `::: references` marker is an ordinary directive and there is no
-  // document-wide list for the contained marker to fail to place.
   'references-placement-in-container': {
     source: 'Intro [@a].\n\n> ::: references\n> :::\n\n[@a]: Author. Title. 2020.\n',
     options: { extensions: [citations()] },
   },
-  // A COMPLETE row, because the rule is gated on the parser's row predicate: a
-  // leading `|` with no closing one is a paragraph, and there is no cell for
-  // the block to be misplaced in.
-  'table-cell-attribute-before-marker': '|{#x}< content |\n',
-  'table-alignment-run-padding': '|>text |\n',
-  'table-column-arity': '{aligns="left"}\n| a | b |\n',
-  'table-column-overlap': '{aligns="left"}\n|=> H |\n',
-  'table-width-total': '{widths="60,50"}\n| a | b |\n',
-  // `kbd`, not `cite`: PART 9 §10 moved `samp`, `var`, `cite` and `dfn` into the
-  // SemanticSpan extension, so in a core lint they are ordinary attributes and
-  // provoke nothing. `kbd` is one of the three names core still reserves, which
-  // is the case the page's row names first.
-  'semantic-attribute-value-ignored': '[x]{kbd="https://example.org/dune"}\n',
-  'semantic-attribute-outside-span': '`c`{kbd}\n',
-  'braced-comment-in-a-template-source': '{% if user %}\n',
-  'quote-fence-ends-the-quote-above': '> a\n::: >\nb\n:::\n',
 }
 
 /*
