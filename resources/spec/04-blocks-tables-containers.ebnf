@@ -577,9 +577,8 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    every binding MUST expose the checked result and strict form. A CLI MUST keep
    rendered stdout pure, summarize losses on stderr, fail with
    `--strict-losses`, offer a machine-readable JSON report, and permit the
-   explicit exceptions `--allow-loss raw-format-dropped`,
-   `--allow-loss ruby-flattened`, and
-   `--allow-loss table-section-attributes-dropped`. Import-loss reports
+   explicit exceptions `--allow-loss raw-format-dropped` and
+   `--allow-loss ruby-flattened`. Import-loss reports
    are separate: they describe source-to-AST migration, while this report
    describes AST-to-target rendering. *)
 

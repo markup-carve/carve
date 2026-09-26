@@ -2136,9 +2136,8 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    every binding MUST expose the checked result and strict form. A CLI MUST keep
    rendered stdout pure, summarize losses on stderr, fail with
    `--strict-losses`, offer a machine-readable JSON report, and permit the
-   explicit exceptions `--allow-loss raw-format-dropped`,
-   `--allow-loss ruby-flattened`, and
-   `--allow-loss table-section-attributes-dropped`. Import-loss reports
+   explicit exceptions `--allow-loss raw-format-dropped` and
+   `--allow-loss ruby-flattened`. Import-loss reports
    are separate: they describe source-to-AST migration, while this report
    describes AST-to-target rendering. *)
 
@@ -8271,12 +8270,12 @@ EOF = (* end of file *) ;
         { "code": "field-unspellable", "node": "math", "field": "label",
           "message": "Carve source spells no equation label" }
 
-      The render-loss report describes losses on the selected rendering target.
-      Its closed code enum includes `raw-format-dropped`, `ruby-flattened`, and
-      `table-section-attributes-dropped`. Conversion diagnostics describe what
-      the output model cannot represent and carry a structured `field` for a
-      field-level loss. Render-loss messages can name a field path but do not
-      carry that structured key.
+      THE FIELD IS WHY THIS IS NOT THAT REPORT. `CARVE-P2-024`'s `code` enum is
+      CLOSED at `raw-format-dropped` and `ruby-flattened`, and both name a whole
+      node one selected renderer dropped or flattened. It answers what THIS
+      RENDER dropped; this channel answers what the OUTPUT MODEL CANNOT SAY, on
+      every target at once, and it is the only one of the two that can name a
+      field.
 
       THE RENDER-LOSS FLAGS DO NOT REACH IT. `--strict-losses` and `--allow-loss`
       gate the `CARVE-P2-024` report, and neither grows a name for a code here. A
@@ -10818,11 +10817,16 @@ EOF = (* end of file *) ;
       Attribute-free tables retain the existing single-body fallback for spans
       that cross a section boundary. Without `rowGroups`,
       HTML retains its implicit partition. Plain and ANSI keep the flat rows.
-      Carve source cannot spell section attributes. Writers that discard them
-      MUST report each nonempty attributes field as a conversion loss, with its
-      field path. Checked Markdown, plain and ANSI renderers report
-      `table-section-attributes-dropped`, naming the field path in the message.
-      Empty attributes objects need no loss diagnostic. A structured
+      Carve source cannot spell section attributes, and neither can Markdown,
+      plain or ANSI. A writer for one of those targets reports one
+      `field-unspellable` entry per discarded nonempty attributes field on the
+      PART 11 §1d channel, with `node` `table` and `field` the path within the
+      node: `rowGroups.headAttrs`, `rowGroups.footAttrs` or
+      `rowGroups.bodies[N].attrs`. An empty attributes object holds nothing to
+      lose and is reported nowhere. It is NOT a render loss. `CARVE-P2-024`'s
+      code enum stays closed at `raw-format-dropped` and `ruby-flattened`
+      (CARVE-P11-046), and a dropped field is the one thing that report cannot
+      name. A structured
       exporter MAY map the full partition to its target's equivalent. A
       canonical Carve source writer retains `header-rows` / `footer-rows` when
       they are present in table attributes; it MUST NOT invent a spelling for
