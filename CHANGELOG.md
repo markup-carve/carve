@@ -10,34 +10,6 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
-### Breaking
-
-- The AST spells a generated space as a `non_breaking_space` node, so U+E000 is
-  literal content in every string field. A tree stored under the old marker emits
-  that character raw into HTML, with no error and no version signal, because the
-  AST contract stays `1.0`. Reparsing the source is the only remedy - a stored
-  tree cannot tell a generated space from an authored character (carve#2337,
-  carve#1242).
-- AST validation rejects an empty `admonition.kind`; a named container requires
-  a type word (carve#2346).
-
-### Changed
-
-- Annotation ranges project offsets by codepoint in a fixed traversal order,
-  independent of JSON key order, and a source position reads coordinates from the
-  input named by `pos.file` (carve#2337).
-- Authored blocks in a placed `::: footnotes` marker render before the endnotes
-  section; fallback markers keep those blocks in their div. Directive title and
-  label placement and generated body order are specified together (carve#2333,
-  carve#2346).
-
-### Added
-
-- Nested placement markers in TOC bodies retain container scope. Directive
-  classes lead on core divs and trail on extension wrappers (carve#2329,
-  carve#2338).
-- The table AST adds optional `rowGroups.headAttrs` and `rowGroups.footAttrs`, with HTML section rendering and conversion-loss requirements. (markup-carve/carve#2339)
-
 ## [0.1.7] - 2026-09-25
 
 ### Breaking
@@ -72,6 +44,20 @@ Releases before 0.1.6 are archived in
   checkbox (carve#2273, carve#2291).
 - A directive kind whose element cannot hold a paragraph keeps its title and
   label tokens outside that element (carve#2264, carve#2276).
+- The AST spells a generated space as a `non_breaking_space` node, so U+E000 is
+  literal content in every string field. A tree stored under the old marker emits
+  that character raw into HTML, with no error and no version signal, because the
+  AST contract stays `1.0`. Reparsing the source is the only remedy: a stored
+  tree cannot tell a generated space from an authored character (carve#2337,
+  carve#1242).
+- `directive.children` is required, so an empty body is `children: []` and a
+  stored directive that omits the field no longer validates (carve#2335).
+- AST validation rejects an empty `admonition.kind`; a named container requires a
+  type word (carve#2346).
+- The render-loss `code` enum is closed at two codes, and a dropped table section
+  attribute is reported as `field-unspellable` on the PART 11 §1d
+  conversion-diagnostics channel instead, so a consumer matching
+  `table-section-attributes-dropped` breaks (carve#2344).
 
 ### Fixes
 
@@ -147,6 +133,26 @@ existed.
 - The closer-lookahead sentence under `CARVE-P0-014` states its answer plainly,
   and the wording of two clauses is clearer with the meaning unchanged
   (carve#2142, carve#2150).
+- An unattached continuation payload is placed by its own column inside whichever
+  container survives, and a `+` at a column no container's marker column names is
+  ordinary text rather than a marker (carve#2334).
+- Where the author wrote no class, the structural-class position splits two ways:
+  a mandatory base class leads, and a class derived from the block's own marker or
+  directive name trails every authored attribute (carve#2336).
+- An unsupported HTML element gives way to its children, so importing `<x>C</x>`
+  gives the same document that importing `C` alone gives, plus one
+  `element-unwrapped` row per wrapper, and a block child stays a block
+  (carve#2342).
+- Text beside an expanded tab keeps its exact source span, and only a synthesized
+  column or text merged without an exact source slice omits its position
+  (carve#2356).
+- A lone `[` or `]` among the text brackets of bracketed inline content is
+  escaped unconditionally in the minimal form, so the PART 11 §2b search no
+  longer has to look for it (carve#2358).
+- The include security obligations have clause homes: the two containment
+  refusals in §19 I10 and the two server-side host rules in §25 I1, with the
+  warning cap and live-preview invalidation stated as host guidance
+  (carve#2351).
 
 ### Improvements
 
@@ -196,6 +202,19 @@ existed.
   beside the five Pandoc readings where the two models differ in kind
   (carve#2194, carve#2196, carve#2198, carve#2211).
 - A boolean attribute's AST semantics are stated (carve#2206).
+- An annotation range projects its offsets by codepoint in a fixed traversal
+  order, independent of JSON key order, and a source position reads coordinates
+  from the input named by `pos.file` (carve#2337).
+- A table's row groups may carry `headAttrs` and `footAttrs`, filtered and
+  bounded like any other attributes, and an explicitly empty set survives
+  interchange (carve#2340).
+- Authored blocks in a placed `::: footnotes` marker render before the endnotes
+  section, a fallback marker keeps them inside its div, and directive title and
+  label placement and generated body order are stated together (carve#2346).
+- A nested placement marker in a TOC body stays container content and renders its
+  div fallback before the navigation, and a directive kind's class leads authored
+  attributes on a core div and trails them on an extension-owned element
+  (carve#2348).
 
 ### Corpus
 
@@ -209,6 +228,10 @@ existed.
 - The Markdown importer rulings from markup-carve/carve-js#1922 through
   markup-carve/carve-js#1948 are pinned, and the converter corpus reads Markdown
   meaning through cmark-gfm 0.29.0.gfm.13 (carve#2186, carve#2187, carve#2188).
+- A literal vertical tab after a `%%` marker and an ideographic space after text
+  both survive (carve#2332).
+- Which column makes a `+` a continuation marker is pinned at columns 0 through
+  3, at the top level and inside an item holding a quote (carve#2343).
 
 ## [0.1.6] - 2026-09-18
 
