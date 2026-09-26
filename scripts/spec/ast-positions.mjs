@@ -870,9 +870,10 @@ export function checkPositions(doc, source, findings) {
       // longer than the text it produces and can never equal its own slice. That
       // is the format working, not a wrong span, and asserting on it would
       // produce a false positive nobody would act on.
-      // The pinned engine still uses U+E000 for generated spaces. Keep
-      // that legacy exception only when the source contains no literal U+E000.
-      // The corrected parser emits separate nodes and needs no text-value exception.
+      // A value holding U+E000 that its own source does not is an engine's
+      // internal spelling of a generated space, not a wrong span, so the
+      // comparison is skipped. Where the source holds the character itself the
+      // value is authored content and the comparison applies.
       // AND ONLY WHERE AN ESCAPE COULD ACTUALLY EXPLAIN THE DIFFERENCE
       // (carve#1566). The reason above is that resolving an escape leaves the
       // slice LONGER than the value it produced, so any backslash used to

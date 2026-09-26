@@ -9830,7 +9830,6 @@ EOF = (* end of file *) ;
       text, code, literal-inline or raw content. A parser MUST NOT confuse an
       authored private-use character with generated whitespace. Temporary
       parser or writer markers MUST be collision-free and MUST NOT be published.
-      Preserved whitespace inside a verbatim line-block value is U+00A0.
 
    3a. THE SERIALIZED TREE IS PRE-RESOLVE -- NORMATIVE [CARVE-P12-005]. It records what the
       AUTHOR WROTE, not what the document resolves to. Reference resolution,

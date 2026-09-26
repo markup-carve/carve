@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { Ajv2020 } from 'ajv/dist/2020.js'
 
 const schema = JSON.parse(readFileSync(new URL('../resources/ast-schema.json', import.meta.url), 'utf8'))
@@ -53,4 +53,50 @@ test('updated engines pass the shared annotation projection fixture', {
       else assert.throws(read)
     }
   }
+})
+
+/*
+ * The two controls. Every test above reads the schema or a hand-built tree, so
+ * without these the file passes by restating its own model: nothing checks that
+ * an authored private-use character survives to the output, and nothing looks at
+ * a document the probes did not think of.
+ */
+
+/** Passthrough control: raw content is handed to its target byte for byte. */
+test('a raw block passes an authored private-use character through untouched', () => {
+  const html = engine.carveToHtml('```=html\n<i>a\ue000b</i>\n```\n')
+  assert.ok(html.includes('\ue000'), `raw passthrough rewrote the character: ${JSON.stringify(html)}`)
+})
+
+/** Every string value in a serialized tree that holds U+E000. */
+function valuesHoldingE000(node, found = []) {
+  if (Array.isArray(node)) {
+    for (const child of node) valuesHoldingE000(child, found)
+    return found
+  }
+  if (!node || typeof node !== 'object') return found
+  for (const [key, value] of Object.entries(node)) {
+    if (typeof value === 'string') {
+      if (value.includes('\ue000')) found.push(`${node.type}.${key}`)
+    } else {
+      valuesHoldingE000(value, found)
+    }
+  }
+  return found
+}
+
+/** Coverage control: the probes pin only the sources someone thought of. */
+test('no corpus document publishes U+E000 its own source does not contain', {
+  skip: legacyEngine ? 'the package pin still spells generated spaces as U+E000 in a value' : false,
+}, () => {
+  const dir = new URL('./corpus/', import.meta.url)
+  const names = readdirSync(dir).filter(name => name.endsWith('.crv')).sort()
+  assert.ok(names.length >= 10, `found ${names.length} corpus documents`)
+  const invented = []
+  for (const name of names) {
+    const source = readFileSync(new URL(name, dir), 'utf8')
+    if (source.includes('\ue000')) continue
+    for (const field of valuesHoldingE000(engine.carveToAstJson(source))) invented.push(`${field} (${name})`)
+  }
+  assert.deepEqual(invented, [], 'a published value holds U+E000 that no source character explains')
 })

@@ -10,8 +10,20 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
-- The AST replaces the U+E000 whitespace marker with `non_breaking_space` nodes. Literal private-use Unicode is preserved.
-- Annotation ranges use a fixed codepoint projection, independent of JSON key order. Source positions use the input named by `pos.file`.
+### Breaking
+
+- The AST spells a generated space as a `non_breaking_space` node, so U+E000 is
+  literal content in every string field. A tree stored under the old marker emits
+  that character raw into HTML, with no error and no version signal, because the
+  AST contract stays `1.0`. Reparsing the source is the only remedy - a stored
+  tree cannot tell a generated space from an authored character (carve#2337,
+  carve#1242).
+
+### Changed
+
+- Annotation ranges project offsets by codepoint in a fixed traversal order,
+  independent of JSON key order, and a source position reads coordinates from the
+  input named by `pos.file` (carve#2337).
 
 ## [0.1.7] - 2026-09-25
 

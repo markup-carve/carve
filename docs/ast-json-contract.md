@@ -513,10 +513,6 @@ array entries of the same shape - so it is checked by the shape comparison in
 
 ## Nonbreaking spaces and literal Unicode
 
-The whitespace correction is part of the 0.1 patch release line. The spec and
-engine changes must ship together. The pinned package still uses the old marker
-while the coordinated changes are under review.
-
 The AST represents each escaped space (`\ `) and each preserved
 line-block column as `{ "type": "non_breaking_space" }`. Renderers write
 `&nbsp;` in HTML, U+00A0 in Markdown, and an ordinary space in plain text or ANSI.
@@ -525,13 +521,22 @@ for preserved line-block layout.
 
 Every string field contains literal Unicode. U+E000 and other private-use
 characters retain their authored meaning in text, code, attributes and raw
-content. Preserved whitespace inside a line-block verbatim value uses U+00A0,
-since that value cannot hold inline nodes.
+content.
 
-Previously stored trees using U+E000 cannot distinguish generated spaces from
-authored private-use characters. Applications retaining those trees should
-reparse their source when available; replacing the marker blindly loses the
-authored distinction.
+A tree stored under the earlier reading of this contract carries U+E000 where a
+space was generated, and nothing maps it now: the character reaches HTML raw,
+with no error and no version signal, because the contract version is unchanged.
+Reparsing the source is the only remedy - replacing the character in a stored
+tree cannot tell a generated space from one the author typed.
+
+Emitting the character rather than mapping it has visible consequences, and both
+were measured before this change: a consumer in this org passed it into Pandoc
+JSON and back into Carve source in place of the `\ ` it came from
+([carve#721][i721]), and `carve-sile` handed it to SILE, which drew the font's
+`.notdef` glyph as a box in the PDF with no warning ([carve#1242][i1242]).
+
+[i721]: https://github.com/markup-carve/carve/issues/721
+[i1242]: https://github.com/markup-carve/carve/issues/1242
 
 ## Producing it
 
