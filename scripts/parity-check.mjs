@@ -95,7 +95,7 @@ try {
     }
   }
 
-  for (const source of ['`z` ``\n`\n', 'before ``\n`\n', 'before ```\n``\n', '{~before ``\n`~}\n']) {
+  for (const source of ['`z` ``\n`\n', 'before ``\n`\n', 'before ```\n``\n', '{~before ``\n`~}\n', 'x {~``\n`~}\n', '``\n`\n']) {
     const written = new Map()
     const original = new Set()
     for (const engine of Object.keys(engines)) {
@@ -110,7 +110,7 @@ try {
     }
     if (original.size !== 1 || new Set(written.values()).size !== 1) failures.push('cross-engine: code-span source or canonical output differs')
   }
-  console.log('code-span formatter: four cases, all writer/reader pairs, idempotence and canonical agreement')
+  console.log('code-span formatter: six cases, all writer/reader pairs, idempotence and canonical agreement')
 } catch (error) {
   console.error(`parity could not complete: ${error.message}`)
   process.exit(2)
