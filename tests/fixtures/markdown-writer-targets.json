@@ -731,5 +731,11 @@
     "rule": "CARVE-P11-038",
     "carve": "{#t}\n# Top: \"quoted\" -- Ünïcode_x\n\n{#h}\n## Rise and divergence\n\n## Rise and divergence\n\nSee </#h>, [again](#Rise-and-divergence) and [top](#t).\n",
     "markdown": "# Top: “quoted” – Ünïcode_x\n\n## Rise and divergence\n\n## Rise and divergence\n\nSee [Rise and divergence](#rise-and-divergence), [again](#rise-and-divergence-1) and [top](#top-quoted--ünïcode_x).\n"
+  },
+  {
+    "name": "span-placeholder-in-a-header-row",
+    "rule": "CARVE-P11-056",
+    "carve": "|= A | < |\n| b | c |\n",
+    "markdown": "| A |  |\n| --- | --- |\n| b | c |\n"
   }
 ]

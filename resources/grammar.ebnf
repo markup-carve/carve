@@ -9919,6 +9919,12 @@ EOF = (* end of file *) ;
       already takes from its first aligned row. A table with a header row
       keeps §10d, which writes that row as the header.
 
+      A ROW IS A HEADER ROW WHEN EVERY CELL IT OWNS IS A HEADER CELL. A span
+      placeholder (a cell carrying `span`) is not a cell of its own: it
+      belongs to the cell whose `colspan` or `rowspan` covers it, so
+      `|= A | < |` is a header row even though its placeholder carries
+      `header: false`.
+
         | a | b |          ->  |  |  |
         | c |                  | --- | --- |
                                | a | b |
