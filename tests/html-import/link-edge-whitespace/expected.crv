@@ -5,3 +5,9 @@ a [*bold*](/b) b [![i](i.png)](/i) c
 [start](/s) [key]{#k} x
 
 kept [ nb ](/n) and [ ](/w) end
+
+a [*x*](/s) b
+
+a [{+x+}](/s) b
+
+a [{-x-}](/s) b

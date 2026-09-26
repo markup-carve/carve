@@ -1,3 +1,4 @@
 # HTML import fixtures the pinned reference engine does not reproduce.
 # Format: <fixture><two spaces><reason>. Remove entries when the pin catches up.
 # html-import:check rejects both undeclared mismatches and stale entries.
+link-edge-whitespace  markup-carve/carve#2376: the pinned JavaScript importer keeps spaces inside formatting nested in a link; the ruled pass moves them outside.

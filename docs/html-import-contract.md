@@ -1108,8 +1108,14 @@ The rule, after HTML whitespace collapse:
 - The whitespace stays OUTSIDE rather than disappearing, so the words on either
   side do not merge: `x<a> y</a>` is `x [y](...)`.
 - It applies innermost first, so it passes out through a nested link or span.
-  It stops at every other inline: `<a><b> x </b></a>` keeps its spaces inside
-  the strong, where they are that element's content.
+  Formatting nested inside that link or span participates in the same pass
+  (markup-carve/carve#2376): `<p>a <a href="/s"><b> x </b></a> b</p>`
+  imports as `a [*x*](/s) b`. The strong's spaces first move into the link,
+  then outside it. This covers strong, emphasis, underline, strike, highlight,
+  insertion, deletion, superscript, and subscript. Code, math, and images stop
+  the pass and keep their content. Formatting outside a link or span retains
+  an edge space only when it separates content from a neighbor
+  (markup-carve/carve-php#2079).
 - Content that is whitespace only stays as it is (`[ ](/w)`). Moving it out
   would leave an empty label, a different shape from the one the HTML has.
 - An image at the edge of a link stays inside it; only the whitespace around
@@ -1118,7 +1124,7 @@ The rule, after HTML whitespace collapse:
 No diagnostic. No character is lost and the document means what the HTML
 meant, the same as the whitespace HTML discards at a block's edge.
 
-`link-edge-whitespace` pins each row above except the nested strong.
+`link-edge-whitespace` pins each row above, including the nested strong.
 
 ## MathML imports the TeX it carries, or the text it shows
 
