@@ -658,9 +658,10 @@ function renderBlock(b, depth, ctx) {
         .join('\n')
       if (!places || ctx.footnoteProbe) {
         const contents = [heading, body].filter(Boolean).join('\n')
+        const attrs = renderTextBlockAttrs([[['class', 'footnotes']], ...(b.battrs ?? [])], 'div')
         return contents === ''
-          ? `${pad}<div class="footnotes">\n\n${pad}</div>`
-          : `${pad}<div class="footnotes">\n${contents}\n${pad}</div>`
+          ? `${pad}<div${attrs}>\n\n${pad}</div>`
+          : `${pad}<div${attrs}>\n${contents}\n${pad}</div>`
       }
       const id = ctx.footnotesMarkerCount++
       ctx.footnotesMarkerDepths[id] = depth

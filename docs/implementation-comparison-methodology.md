@@ -216,7 +216,8 @@ and
 and
 `435-the-continuation-marker-s-column-gate-reaches-every-container-18`
 and
-`435-the-continuation-marker-s-column-gate-reaches-every-container-19`,
+`435-the-continuation-marker-s-column-gate-reaches-every-container-19`
+and
 `501-a-core-directive-kind-class-leads-authored-attributes`.
 
 The listed categories remain outside the scoped measurement. The following

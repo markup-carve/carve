@@ -167,7 +167,6 @@ test('a nested references marker leaves a later top-level marker available', () 
   assert.equal(html.match(/<ol class="references">/g)?.length, 1)
 })
 
-
 test("a placed title follows the authored body inside the endnotes section", () => {
   const source = `::: footnotes "Notes"
 First body.
@@ -297,3 +296,23 @@ Text[^a] more.
 </section>`
   assert.equal(carveToHtml(source, { extensions: [tocPlacement()] }).trim(), expected)
 })
+
+test('a references body precedes its placed citation list inside the wrapper', () => {
+  const source = '::: references\nAuthored.\n:::\n\n# H\n\nSee [@x].\n\n[@x]: Source\n'
+  const html = carveToHtml(source, { extensions: [citations()] })
+  assert.ok(html.startsWith('<div class="references">\n  <p>Authored.</p>\n  <ol class="references">'))
+  assert.ok(html.indexOf('</ol>') < html.indexOf('<section id="H">'))
+})
+
+for (const kind of ['references', 'bibliography']) {
+  test(`a ${kind} marker in a TOC body retains its container scope`, () => {
+    const tail = '# H\n\nSee [@x].\n\n[@x]: Source\n'
+    const source = `::::: toc "Contents"\n::: ${kind}\nAuthored.\n:::\n:::::\n\n${tail}`
+    const html = carveToHtml(source, { extensions: [citations(), tocPlacement()] })
+    assert.ok(html.startsWith(`<div class="${kind}">\n  <p>Authored.</p>\n</div>\n<nav`))
+    const heading = html.indexOf('<section id="H">')
+    const list = html.indexOf('<ol class="references">')
+    assert.ok(heading >= 0 && list > heading)
+    assert.equal(html.slice(heading), carveToHtml(tail, { extensions: [citations()] }))
+  })
+}
