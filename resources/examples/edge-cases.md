@@ -12769,8 +12769,8 @@ A table caption, which kept its run until carve#926 measured it:
 The dropped run is `' '` or a tab, the same two-character terminal
 `blank_line = {whitespace}` takes. Every other character is CONTENT and
 survives, however invisible it looks in an editor. This one document carries a
-no-break space, a zero-width space, a byte order mark, an en quad and a form
-feed, each at the end of its own line:
+no-break space, a zero-width space, a byte order mark, an en quad, a form feed
+and an ideographic space, each at the end of its own line:
 
 ::: compare
 
@@ -12780,6 +12780,7 @@ b​
 c﻿
 d 
 e
+f　
 ```
 
 ```html
@@ -12787,7 +12788,8 @@ e
 b​
 c﻿
 d 
-e</p>
+e
+f　</p>
 ```
 
 :::
@@ -38475,6 +38477,24 @@ text
 
 ```html
 <p>text</p>
+```
+
+:::
+
+A vertical tab after `%%` and after ordinary text is content at the end of
+both lines. The comment stays hidden, and the text reaches HTML. The `.fmt`
+sidecar checks that the writer keeps both bytes.
+
+::: compare
+
+```carve
+%%
+
+text
+```
+
+```html
+<p>text</p>
 ```
 
 :::
