@@ -9913,8 +9913,8 @@ EOF = (* end of file *) ;
   10n. A TABLE WITHOUT A HEADER ROW GETS AN EMPTY ONE --
       NORMATIVE [CARVE-P11-056]. GFM reads a pipe table only below a header row and its
       delimiter row, so rows written without them are a paragraph of pipes.
-      A table whose first row is not a header row is written with an EMPTY
-      header row first: one empty cell for each cell of the widest row, and a
+      A table with no header row anywhere is written with an EMPTY header row
+      first (a table with one keeps §10d, which writes it as the header): one empty cell for each cell of the widest row, and a
       delimiter row of the same width, whose alignment is the one the
       headerless table already takes from its first aligned row.
 
