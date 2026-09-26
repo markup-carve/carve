@@ -167,6 +167,16 @@ if (isOptional) {
 }
 
 // Command suffix per target. An empty suffix is the default (HTML) render.
+// The CLI spelling of an HTML-import fixture's `options.json` (keyed by the
+// JavaScript option names, docs/html-import-contract.md "Conformance fixtures").
+const IMPORT_FLAGS = { listTableForBlockCells: '--list-table' }
+function importFlags(options) {
+  return Object.entries(options).flatMap(([key, value]) => {
+    if (!(key in IMPORT_FLAGS)) throw new Error(`no CLI flag for import option ${key}`)
+    return value === true ? [IMPORT_FLAGS[key]] : []
+  })
+}
+
 const CLI_FLAGS = {
   html: [],
   markdown: ['--markdown'],
@@ -328,9 +338,9 @@ const impls = [
     // Foreign source -> Carve, for the converter corpus. Formats per the
     // declared table in lib/converter-formats.mjs; a format missing here MUST
     // be declared there, and the runner checks both directions.
-    convertCommand: (format) =>
+    convertCommand: (format, options = {}) =>
       ['markdown', 'djot', 'html', 'bbcode'].includes(format)
-        ? [...rustBaseCommand, 'migrate', '--from', format]
+        ? [...rustBaseCommand, 'migrate', '--from', format, ...importFlags(options)]
         : null,
     // Exit 0 = the importer exists after all (a DECLARED gap has gone stale).
     probeImporter(format) {
@@ -408,10 +418,10 @@ const impls = [
     // Foreign source -> Carve, through the API like the render commands. The
     // HTML importer returns a document plus a diagnostic report; the corpus
     // pairs on the document (tests/corpus-convert/README.md).
-    convertCommand: (format) => {
+    convertCommand: (format, options = {}) => {
       const entries = {
         markdown: 'process.stdout.write(markdownToCarve(source));',
-        html: 'process.stdout.write(htmlToCarve(source).value);',
+        html: `process.stdout.write(htmlToCarve(source, ${JSON.stringify(options)}).value);`,
         bbcode: 'process.stdout.write(bbcodeToCarve(source));',
         djot: 'process.stdout.write(djotToCarve(source));',
       }
@@ -553,7 +563,7 @@ const impls = [
     defaultCommand: (target = 'html') => ['php', 'bin/carve', ...CLI_FLAGS[target]],
     // Foreign source -> Carve. `bin/carve migrate` drives all four importers;
     // HTML runs in its default `safe` mode, matching the corpus expectations.
-    convertCommand: (format) => ['php', 'bin/carve', 'migrate', '--from', format],
+    convertCommand: (format, options = {}) => ['php', 'bin/carve', 'migrate', '--from', format, ...importFlags(options)],
     probeImporter(format) {
       return this.convertCommand(format)
     },
@@ -952,9 +962,11 @@ async function runConvertMode() {
   for (const slug of readdirSync(htmlImportDir).sort()) {
     const dir = join(htmlImportDir, slug)
     if (!statSync(dir).isDirectory()) continue
+    const optionsPath = join(dir, 'options.json')
     cases.push({
       slug: `html-import--${slug}`,
       format: 'html',
+      options: existsSync(optionsPath) ? JSON.parse(readFileSync(optionsPath, 'utf8')) : {},
       file: join(dir, 'input.html'),
       expected: carveToHtml(readFileSync(join(dir, 'expected.crv'), 'utf8')).trim(),
       canonical: null,
@@ -1080,7 +1092,7 @@ async function runConvertMode() {
     for (const kase of cases) {
       const rendered = []
       for (const impl of active) {
-        const command = impl.convertCommand(kase.format)
+        const command = impl.convertCommand(kase.format, kase.options)
         if (!command) {
           convertStats[impl.name].skipped++
           unscored.set(`${impl.name}/${kase.slug}`, `it has no ${kase.format} importer (lib/converter-formats.mjs)`)

@@ -206,8 +206,9 @@ test('the pinned build records no source-layout field on any import either', asy
   assert.ok(fixtures.length > 0)
   for (const { name } of fixtures) {
     const html = await readFile(new URL(`${name}/input.html`, root), 'utf8')
+    const options = await readFile(new URL(`${name}/options.json`, root), 'utf8').then(JSON.parse, () => ({}))
     assert.deepEqual(
-      sourceLayoutKeys(toAstJson(htmlToAst(html).value)),
+      sourceLayoutKeys(toAstJson(htmlToAst(html, options).value)),
       [],
       `the pinned build's htmlToAst records a source-layout field for ` +
         `tests/html-import/${name}. An import reads HTML and has no source to read one ` +

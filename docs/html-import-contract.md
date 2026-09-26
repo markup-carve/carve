@@ -992,7 +992,9 @@ the import builds for the same table with the option off: the same rows, the
 same span resolution, and a continuation placeholder in each position the pipe
 form puts one. A row whose cells are all empty stays, as a row of empty items:
 the pipe form drops it because Carve reads such a row as text, and a list table
-has no such reading. Each row is an outer item and each position an inner item, left
+has no such reading. A row with no cells at all is dropped with a
+`structure-unspellable` row at `warning`, because a list-table row is the list
+of its cells and an empty one is not a row ListTable reads. Each row is an outer item and each position an inner item, left
 to right. A rowspan placeholder is the item `^`, a colspan placeholder the item
 `<`.
 
@@ -1039,7 +1041,9 @@ not report `rowspan` or `colspan` as dropped, since the placeholders spell
 them. It reports the row attributes above, what a cell's blocks lose exactly as
 the same blocks report anywhere else, and whatever the option-off import
 reports about the table as a whole: a second caption, a `<colgroup>`, the row
-grouping and section attributes, and a rowspan clipped at the header rows.
+grouping and section attributes, and a rowspan clipped at the header rows. Both
+exits report the row grouping, because the list table has no slot for it on
+either one.
 
 ```html
 <table>
@@ -2114,9 +2118,18 @@ objects are minimum matches: implementations may add optional location fields.
 
 `expected.report.json` IS THE REPORT, NOT A CONFIGURATION (carve#1886). Its
 `mode` and `adapter` are fields the import RETURNS, asserted like any other, and
-a fixture cannot ask to be imported some other way: every runner imports with
-default options, so a fixture declaring `"mode": "roundtrip"` would be run in
-`safe` and fail on the very field it set. That is why all of them read `safe`.
+a fixture cannot ask to be imported some other way through it: a fixture
+declaring `"mode": "roundtrip"` would be run in `safe` and fail on the very
+field it set. That is why all of them read `safe`.
+
+ONE OPTION IS SET PER FIXTURE, and it is not a mode. A fixture may add
+`options.json`, an object keyed by the JavaScript option names, and every
+runner imports that fixture with those options: the Rust and PHP runners map
+the names onto their own, and the converter runner passes the CLI flag. The
+only key it accepts is `listTableForBlockCells` (`--list-table`), because the
+list-table form is a different document rather than a different policy over the
+same one, and a fixture is the only way to pin it across engines. Mode and
+adapter stay out, for the reasons below.
 
 A SHAPE THAT ONLY ANOTHER MODE REACHES GOES ELSEWHERE, and it is already
 covered: the vocabulary gate sweeps the whole corpus in `safe`, `semantic` and
@@ -2162,6 +2175,7 @@ The shared set is deliberately small and each directory has one subject:
 | `endnotes-section-not-last` | an endnotes section with a paragraph after it, which keeps its position through `::: footnotes` |
 | `whitespace-only-block` | a `<p>` holding one no-break space, kept as itself, beside the ASCII-space and tab spellings that carry nothing and are dropped with a row |
 | `table-degraded` | a `<thead>` between two `<tbody>` runs, which the row-grouping field cannot describe: the head is a prefix of the rows and the foot a suffix |
+| `list-table-for-block-cells` | a table with a list, a code block and two paragraphs in its cells, imported with `options.json` setting `listTableForBlockCells`: spans as `^` and `<`, a `<th>` outside the header rows as `{header}`, a cell class on its item, a hard break kept, a lone `^` escaped, and the row's `id` reported |
 | `task-state-is-consumed` | a `data-task-state` read as the item's state beside a ticked box that needs none, and a value outside the enumeration that stays the author's attribute |
 | `same-kind-strong-nesting` | a strong directly inside a strong where both levels need braces, whose inner level is unwrapped with a row (PART 11 §1c) |
 | `same-kind-superscript-nesting` | the same nesting on a braced-only kind, where the unwrap loses the second raise and the row says so |
