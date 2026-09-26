@@ -38,6 +38,9 @@ Releases before 0.1.6 are archived in
   carve#2303, carve#2305).
 - The Markdown target keeps a list's tightness wherever CommonMark can express
   it, which changes the bytes emitted for loose lists (carve#2281, carve#2294).
+- An importer drops a `<ul>` or `<ol>` carrying no `<li>` instead of keeping its
+  attributes, reporting one `element-dropped` row at `warning`, so the attribute
+  line with no block under it is gone (carve#2367, carve#2375).
 - An importer moves a link's or span's edge whitespace outside the construct as
   one space, a `<math>` carrying no TeX imports as its text when its tokens are
   linear, and a formula beside a fallback image imports once, so imported Carve
