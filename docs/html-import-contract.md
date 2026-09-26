@@ -736,9 +736,10 @@ The rule, after HTML whitespace collapse:
   class the collapse folds, so U+00A0 and every other content space stays
   inside.
 - The moved whitespace is ONE space, and it merges with whitespace already on
-  that side: `a <a> x</a>` is `a [x](...)`, not `a  [x](...)`. At a block's
-  edge it is dropped like any other edge whitespace, so `<p><a> x</a></p>` is
-  `[x](...)`.
+  that side: `a <a> x</a>` is `a [x](...)`, not `a  [x](...)`. The neighbor is
+  read through nested inlines, so `<b>x </b><a> y</a>` is `{*x *}[y](...)`
+  with no second space. At a block's edge the moved space is dropped like any
+  other edge whitespace, so `<p><a> x</a></p>` is `[x](...)`.
 - The whitespace stays OUTSIDE rather than disappearing, so the words on either
   side do not merge: `x<a> y</a>` is `x [y](...)`.
 - It applies innermost first, so it passes out through a nested link or span.
@@ -767,8 +768,9 @@ A `<math>` element imports through the first of these that applies
    declare what `alttext` holds.
 3. The `alt` of the formula's FALLBACK IMAGE, with `encoding-assumed` at
    `info`, and only where the page HID the MathML: the `<math>`, or the
-   `<span>` holding nothing but it, carries a `style` whose `display` is
-   `none`. The fallback image is an `<img>` that is the next element sibling of
+   `<span>` holding nothing but it, carries a `style` whose effective
+   `display` is `none` (the last `display` declaration, an `!important` one
+   before any that is not). The fallback image is an `<img>` that is the next element sibling of
    the `<math>`, or of a `<span>` holding nothing but it, with only whitespace
    text or comments between. Adjacency alone is not evidence: a portrait beside
    a visible formula is a portrait, and reading its `alt` as TeX would replace
