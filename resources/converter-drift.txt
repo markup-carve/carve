@@ -164,14 +164,10 @@
 # presentation-only MathML imports as its text or through its fallback image.
 # Each line goes when that engine's main reproduces the fixture.
 rust/html-import--link-edge-whitespace  carve#2361
-js/html-import--link-edge-whitespace  carve#2361
 php/html-import--link-edge-whitespace  carve#2361
 rust/html-import--security  carve#2361
-js/html-import--security  carve#2361
 php/html-import--security  carve#2361
 rust/html-import--mathml-without-tex  carve#2361
-js/html-import--mathml-without-tex  carve#2361
 php/html-import--mathml-without-tex  carve#2361
 rust/html-import--mathml-fallback-image  carve#2361
-js/html-import--mathml-fallback-image  carve#2361
 php/html-import--mathml-fallback-image  carve#2361

@@ -176,12 +176,7 @@ test('every expected.crv is a fixed point of the canonical writer', async () => 
  * that disagrees and is not listed is red; a listed fixture that now agrees is
  * red too, so the line goes out with the pin bump that fixed it.
  */
-const PIN_LAG = new Map([
-  ['link-edge-whitespace', 'carve#2361: the pinned build writes edge whitespace inside the label'],
-  ['security', 'carve#2361: the pinned build writes the span edge space inside the span'],
-  ['mathml-without-tex', 'carve#2361: the pinned build drops presentation-only MathML'],
-  ['mathml-fallback-image', 'carve#2361: the pinned build writes the formula and its fallback image'],
-])
+const PIN_LAG = new Map([])
 
 /*
  * A DIAGNOSTIC is a pattern: the page calls diagnostic objects MINIMUM matches,
