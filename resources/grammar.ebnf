@@ -3560,8 +3560,10 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    tab does in this language, in one place, so that no construct has to decide
    it again:
 
-     1. A line's LEADING INDENTATION RUN is measured in VISUAL COLUMNS rather
-        than in characters. A space advances the column by one.
+     1. A line's LEADING INDENTATION RUN is measured in COLUMNS. A space
+        advances the column by one, and so does any other single character: a
+        column is counted in UNICODE CODEPOINTS, the unit PART 12 §4 counts a
+        position in, and never in bytes, UTF-16 code units or display cells.
      2. A TAB IN THAT RUN advances the column to the next MULTIPLE OF 4
         (CommonMark tab stops), so a leading tab indents to column 4.
      3. FROM THE FIRST NON-WHITESPACE CHARACTER of a line onward, a tab is
