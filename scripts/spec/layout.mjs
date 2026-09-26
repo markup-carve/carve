@@ -3602,8 +3602,8 @@ function foldedDefinitionEnd(lines, start, end, seen) {
  * (carve#1814). `CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0` (SS17 L3, carve#1436) says the
  * marker attaches a block that BEGINS AT COLUMN 0 and nothing else; a line at
  * any other column is not attached at all and falls through to the ordinary
- * column rules, which give it to whichever container its own column names,
- * exactly as if the `+` line had been a comment. That gate was spelled TWICE -
+ * column rules, which place it by its own column inside whichever container
+ * survives. That gate was spelled TWICE -
  * once in the list item's `attachFlushLeft`, once in the item collector's
  * nested-attachment guard - and the other three attach sites had no equivalent,
  * so a `<dd>` pulled a column-1 or column-2 line in, a footnote body pulled a

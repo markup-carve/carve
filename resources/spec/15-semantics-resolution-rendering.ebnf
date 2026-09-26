@@ -206,12 +206,13 @@
          following block OUT of its container -- it adds it IN.
 
          CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0 -- NORMATIVE [CARVE-P9-031].
-         "flush-left" above is the reach, not a description of
-         the usual case: the marker
-         attaches a block that begins at column 0 and NOTHING else. A line at
-         any other column is not attached at all - it falls through to the
-         ordinary column rules, which give it to whichever container its own
-         column names, exactly as if the `+` line had been a comment.
+         "flush-left" above is the reach, not a description of the usual case:
+         the marker attaches a block that begins at column 0 and NOTHING else.
+         A line at any other column is not attached at all - it falls through
+         to the ordinary column rules, which place it by its own column inside
+         whichever container survives. A `+` at a column no container's marker
+         column names was never this marker: like the lone `+` outside any
+         container above, it is ordinary text and reaches the output.
 
          The single-level spelling is unaffected in practice, which is why this
          went unnoticed: under `- +` a line at column 2 is the item's OWN

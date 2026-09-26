@@ -25613,6 +25613,59 @@ c</li>
 
 :::
 
+The same reading one column out. The marker sits at the outer item's marker
+column, so only a column-0 block could attach; the payload at column 2 is placed
+by its own column, which leaves it in the sub-list item whose paragraph is still
+open. The output is byte-identical to the same document without the marker line
+(markup-carve/carve#2322).
+
+::: compare
+
+```carve
+- x
+  - L
++
+  p
+```
+
+```html
+<ul>
+  <li>x
+    <ul>
+      <li>L
+p</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+A `+` at a column no container's marker column names is not this marker at all.
+The marker columns here are 0 and 2, so the `+` written at column 1 is ordinary
+text and reaches the output, as a lone `+` does outside any container.
+
+::: compare
+
+```carve
+- x
+  - L
+ +
+```
+
+```html
+<ul>
+  <li>x
+    <ul>
+      <li>L
++</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
 ## A hyphen run opening a word after whitespace is a flag
 
 PART 9 §8 does not convert a hyphen run that is PRECEDED by whitespace (or the
@@ -30188,13 +30241,15 @@ promotes, and the item holds a figure.
 markup-carve/carve#1436) says a `+`
 attaches a block that begins at document column 0 and nothing else: a line at
 any other column is not attached at all, and falls through to the ordinary
-column rules exactly as if the `+` line had been a comment. Only the LIST ITEM
+column rules, which place it by its own column inside whichever container
+survives. Only the LIST ITEM
 asked that question - the gate was spelled in the item's attach path and in the
 item collector's nested guard, and the footnote body, the description and the
 block quote had no equivalent - so those three reached out for a line the clause
 leaves where the author put it (markup-carve/carve#1814). Each row below is the
-same document twice, once with the marker and once with the comment the clause
-names as its control.
+same document twice, once with the marker and once with a comment line, which
+those rules cannot see either - so the pair isolates which container the line
+reached.
 
 A column below the body's minimum is not the note's. The comment spelling ends
 the body and the paragraph lands at document level, above the endnotes section.
@@ -30500,9 +30555,10 @@ more</li>
 ## An empty description body claims no line below column 0
 
 `CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0` (§17 L3,
-markup-carve/carve#1436) gives the
-marker its own control: a line the `+` does not reach falls through to the
-ordinary column rules "exactly as if the `+` line had been a comment". In the
+markup-carve/carve#1436) says a line
+the `+` does not reach falls through to the ordinary column rules, which a
+comment line cannot reach either - so the comment spelling is this section's
+control. In the
 accepted wider-separator FIRST-BLOCK form `:  +` no paragraph is open, so the
 `+` genuinely is a marker
 and the clause reads its payload's column - and a payload at column 1 or 2 is
