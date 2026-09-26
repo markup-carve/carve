@@ -146,10 +146,15 @@ existed.
 - Text beside an expanded tab keeps its exact source span, and only a synthesized
   column or text merged without an exact source slice omits its position
   (carve#2356).
+- The Markdown target keeps a link whose fragment names no heading, and writes a
+  hard break inside a pipe-table cell as `<br>`, since the backslash-and-newline
+  spelling ends the GFM row and drops the rest of the table (carve#2362,
+  carve#2363).
 - A lone `[` or `]` among the text brackets of bracketed inline content is
   escaped unconditionally in the minimal form, and so is a `(` after a bare `]`
   where the bytes that follow would read as an inline link destination, so the
-  PART 11 §2b search no longer has to look for either (carve#2358, carve#2359).
+  PART 11 §2b search no longer has to look for either (carve#2358, carve#2359,
+  carve#2366).
 - The include security obligations have clause homes: the two containment
   refusals in §19 I10 and the two server-side host rules in §25 I1, with the
   warning cap and live-preview invalidation stated as host guidance
