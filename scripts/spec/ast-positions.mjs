@@ -86,7 +86,7 @@ export function checkContainment(doc, findings) {
       node.pos &&
       Number.isInteger(node.pos.startOffset) &&
       Number.isInteger(node.pos.endOffset)
-    if (placed && parent) {
+    if (placed && parent && node.pos.file === parent.pos.file) {
       compared += 1
       const outside =
         node.pos.startOffset < parent.pos.startOffset || node.pos.endOffset > parent.pos.endOffset
@@ -870,12 +870,9 @@ export function checkPositions(doc, source, findings) {
       // longer than the text it produces and can never equal its own slice. That
       // is the format working, not a wrong span, and asserting on it would
       // produce a false positive nobody would act on.
-      // A value carrying the U+E000 INDENT SENTINEL is skipped for the same
-      // reason. A line block rewrites each leading space to that private-use
-      // character, so the node's value differs from its slice in exactly those
-      // positions while spanning the same codepoints. The span is not wrong -
-      // it covers precisely the source the node came from - and the engine's
-      // internal spelling of an indent is not something this check can compare.
+      // The pinned 1.x engine still uses U+E000 for generated spaces. Keep
+      // that legacy exception only when the source contains no literal U+E000.
+      // Contract 2.0 emits separate nodes and needs no text-value exception.
       // AND ONLY WHERE AN ESCAPE COULD ACTUALLY EXPLAIN THE DIFFERENCE
       // (carve#1566). The reason above is that resolving an escape leaves the
       // slice LONGER than the value it produced, so any backslash used to
@@ -897,7 +894,7 @@ export function checkPositions(doc, source, findings) {
       if (
         node.type === 'text' &&
         typeof node.value === 'string' &&
-        !node.value.includes('\ue000')
+        (!node.value.includes('\ue000') || source.includes('\ue000'))
       ) {
         const sliceChars = codepoints.slice(pos.startOffset, pos.endOffset)
         const slice = sliceChars.join('')

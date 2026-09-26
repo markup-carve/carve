@@ -50,8 +50,10 @@ instead of copied onto every node that came from it, and a root input has no
 
 `startByte` and `endByte` count bytes of the input they name, start-inclusive and
 end-exclusive. They are deliberately not called offsets: `pos` on the node counts
-codepoints and is measured in the assembled document, so the two answer different
-questions and are never interchangeable.
+codepoints. With `pos.file`, those coordinates address the named input file;
+without it, they address the top-level input. There is no implicit assembled
+coordinate space. Converting to bytes requires the text of that same input.
+Parent/child containment checks compare only positions from the same input.
 
 ## Authored or generated
 

@@ -816,7 +816,9 @@
       "title": "citation_group (inline)",
       "not": {
         "type": "object",
-        "required": ["mode"],
+        "required": [
+          "mode"
+        ],
         "properties": {
           "mode": {},
           "items": {
@@ -824,8 +826,12 @@
             "contains": {
               "not": {
                 "type": "object",
-                "required": ["mode"],
-                "properties": {"mode": {}}
+                "required": [
+                  "mode"
+                ],
+                "properties": {
+                  "mode": {}
+                }
               }
             }
           }
@@ -876,7 +882,7 @@
         },
         "value": {
           "type": "string",
-          "description": "May contain U+E000, the NO-BREAK SPACE SENTINEL. This content is verbatim, so the sentinel here is a U+E000 the author typed rather than one the parser resolved from an escaped space; on the wire the two are the same character and carry the same rule. A consumer MUST map U+E000 to its target's no-break space, or to an ordinary space where the target has none, and MUST NOT emit it. See `text.value` for the full sentinel rule."
+          "description": "Literal Unicode content. U+E000 and all other private-use characters are preserved unchanged. Generated nonbreaking spaces use non_breaking_space nodes; no character is an AST sentinel."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
@@ -900,7 +906,7 @@
         },
         "content": {
           "type": "string",
-          "description": "May contain U+E000, the NO-BREAK SPACE SENTINEL. This content is verbatim, so the sentinel here is a U+E000 the author typed rather than one the parser resolved from an escaped space; on the wire the two are the same character and carry the same rule. A consumer MUST map U+E000 to its target's no-break space, or to an ordinary space where the target has none, and MUST NOT emit it. See `text.value` for the full sentinel rule."
+          "description": "Literal Unicode content. U+E000 and all other private-use characters are preserved unchanged. Generated nonbreaking spaces use non_breaking_space nodes; no character is an AST sentinel."
         },
         "lang": {
           "type": "string"
@@ -1610,6 +1616,7 @@
             "literal_inline",
             "math",
             "mention",
+            "non_breaking_space",
             "raw_inline",
             "ruby",
             "small_caps",
@@ -2183,6 +2190,18 @@
           "then": {
             "$ref": "#/$defs/underline"
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "non_breaking_space"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/non_breaking_space"
+          }
         }
       ]
     },
@@ -2531,7 +2550,7 @@
         },
         "content": {
           "type": "string",
-          "description": "May contain U+E000, the NO-BREAK SPACE SENTINEL. This content is verbatim, so the sentinel here is a U+E000 the author typed rather than one the parser resolved from an escaped space; on the wire the two are the same character and carry the same rule. A consumer MUST map U+E000 to its target's no-break space, or to an ordinary space where the target has none, and MUST NOT emit it. See `text.value` for the full sentinel rule."
+          "description": "Literal Unicode content. U+E000 and all other private-use characters are preserved unchanged. Generated nonbreaking spaces use non_breaking_space nodes; no character is an AST sentinel."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
@@ -2718,7 +2737,7 @@
         },
         "content": {
           "type": "string",
-          "description": "Byte-for-byte passthrough to the named target. U+E000 here is NOT the no-break space sentinel that `text.value`, `code.value`, `code_block.content` and `literal_inline.content` carry: raw content is handed to its target unexamined, so a U+E000 in it is a byte the author put there and a consumer MUST leave it alone. Mapping it would corrupt the payload this node exists to carry."
+          "description": "Verbatim passthrough to the named target, including private-use Unicode characters."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
@@ -3392,7 +3411,7 @@
         },
         "value": {
           "type": "string",
-          "description": "May contain U+E000, the NO-BREAK SPACE SENTINEL. Three things put it here: an escaped space (`\\ `), the preserved indentation of a line block (PART 9 section 23), and a U+E000 the author typed. A line block's indentation is a RUN of the sentinel, one per preserved space, so a four-space indent is four U+E000 resolving to four no-break spaces - the source a consumer that has only seen `\\ ` will miss. The sentinel is distinct from a literal U+00A0 in the source, which is published as itself. A consumer MUST map U+E000 to its target's no-break space, or to an ordinary space where the target has none, and MUST NOT emit it. The same sentinel may appear on `code.value`, `code_block.content` and `literal_inline.content`; `raw_block.content` is byte-for-byte passthrough and is deliberately excluded."
+          "description": "Literal Unicode content. U+E000 and all other private-use characters are preserved unchanged. Generated nonbreaking spaces use non_breaking_space nodes; no character is an AST sentinel."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
@@ -3447,6 +3466,26 @@
           "items": {
             "$ref": "#/$defs/inlineNode"
           }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "non_breaking_space": {
+      "type": "object",
+      "title": "non_breaking_space (inline)",
+      "description": "One generated nonbreaking space, from an escaped space or preserved line-block whitespace. Literal Unicode characters remain in text and verbatim fields.",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "non_breaking_space"
         },
         "attrs": {
           "$ref": "#/$defs/attrs"

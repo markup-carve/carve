@@ -10,6 +10,9 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
+- AST contract 2.0 replaces the U+E000 whitespace marker with `non_breaking_space` nodes. Literal private-use Unicode is preserved; readers refuse 1.x envelopes.
+- Annotation ranges use a fixed codepoint projection, independent of JSON key order. Source positions use the input named by `pos.file`.
+
 ## [0.1.7] - 2026-09-25
 
 ### Breaking

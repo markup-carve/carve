@@ -77,8 +77,8 @@
         link       `href`, `children`, and `ref` when the author wrote a
                    reference link
         image      `src`, `alt`, `title`
-        code       `value`. May carry the U+E000 SENTINEL, below
-        text       `value`. May carry the U+E000 SENTINEL, below
+        code       `value`, literal Unicode content
+        text       `value`, literal Unicode content
         heading    `level`, `children`
         list       `ordered`, `tight`, `start`, `items`, and the AUTHOR-CHOICE
                    fields `bulletChar`, `delim` and `bareMarker` (PART 11 §6)
@@ -101,32 +101,34 @@
       internal field the reference does not have. A consumer reading `href`
       must not have to know which engine produced the document.
 
-      THE U+E000 SENTINEL -- NORMATIVE [CARVE-P12-004], AND IT IS ON FOUR FIELDS. U+E000
-      STANDS FOR a no-break space. It is not the same node content as a
-      literal U+00A0 the author typed, which is published as itself, and the
-      renderers already treat the two differently. A consumer MUST map U+E000
-      to its target's no-break space, or to an ordinary space where the target
-      has none, and MUST NOT emit it.
+      GENERATED NONBREAKING SPACES ARE NODES -- NORMATIVE [CARVE-P12-004].
+      A `non_breaking_space` inline node represents one escaped space (`\ `)
+      or one preserved column of line-block whitespace (PART 9 section 23).
+      It carries `type`, optional `attrs` and optional `pos`, with no value
+      field. Four preserved columns are four nodes. Positions follow section 4:
+      an escaped space owns its backslash and space; synthesized columns omit
+      positions when expansion prevents an exact source range.
 
-      The fields that may carry it are:
+      HTML emits `&nbsp;`, Markdown emits U+00A0, and plain/ANSI emit U+0020.
+      Carve source writes `\ ` where that spelling survives parsing; line-block
+      layout may write its preserved spaces directly. Attributes follow the
+      ordinary inline-node rules. The profile policy `to_text`
+      replaces this node with a text node containing U+00A0; it is separate
+      from the plain-text renderer.
 
-        text.value              the escaped space `\ `, the preserved
-                                indentation of a line block (PART 9 §23), and
-                                an authored U+E000
-        code.value              an authored U+E000
-        code_block.content      an authored U+E000
-        literal_inline.content  an authored U+E000
+      ALL STRING CONTENT IS LITERAL UNICODE. U+E000 has no special meaning in
+      text, code, literal-inline or raw content. A parser MUST NOT confuse an
+      authored private-use character with generated whitespace. Temporary
+      parser or writer markers MUST be collision-free and MUST NOT be published.
+      Preserved whitespace inside a verbatim line-block value is U+00A0.
 
-      A LINE BLOCK'S INDENTATION IS A RUN OF THE SENTINEL, one per preserved
-      space, so a four-space indent is four U+E000 in the leading `text.value`
-      and resolves to four no-break spaces. That second source is the one a
-      reader who has only seen `\ ` will miss, and it is the common one: an
-      escaped space is rare, indented verse is not.
-
-      `raw_block.content` IS DELIBERATELY NOT ON THE LIST. Raw content is
-      passed to its target byte for byte, so a U+E000 in it is a byte the
-      author put there and a consumer MUST leave it alone. Mapping it would
-      corrupt the payload the raw block exists to carry unexamined.
+      THIS IS AST CONTRACT 2.0. Contract 1.x used U+E000 as an in-band marker;
+      its text values cannot distinguish a literal character from generated
+      whitespace. A 2.0 reader MUST refuse a 1.x envelope with a version error
+      unless the caller explicitly requests legacy migration. Such migration
+      interprets old text markers as non_breaking_space and reports the
+      unrecoverable ambiguity. Bare trees have the receiver's current contract. Only an envelope can
+      identify and refuse a legacy tree; callers must version stored bare trees.
 
    3a. THE SERIALIZED TREE IS PRE-RESOLVE -- NORMATIVE [CARVE-P12-005]. It records what the
       AUTHOR WROTE, not what the document resolves to. Reference resolution,
@@ -315,10 +317,11 @@
 
       A SPAN CONTAINS ITS CHILDREN'S SPANS -- NORMATIVE [CARVE-P12-011]. A node's span
       covers every placed node inside it: a child's `startOffset` is not
-      before its parent's, and its `endOffset` is not past it. A node that
+      before its parent's, and its `endOffset` is not past it, when both
+      positions name the same input file. A node that
       omits `pos` (the reassembled-node clause below) is skipped rather than
       breaking the chain -- the comparison is against the nearest ANCESTOR
-      that has one.
+      that has one for the same input file.
 
       A node whose content is not a contiguous slice of its own source MUST
       omit `pos` rather than publish a PARTIAL span. A `+` continuation cell

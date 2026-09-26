@@ -32,7 +32,7 @@ spelling.
 
 **Inline:** `text`, `emphasis`, `strong`, `underline`, `strike`,
 `inline_extension`, `mention`, `code`, `link`, `autolink`, `image`,
-`soft_break`, `hard_break`, `raw_inline`, `escaped_text`, `footnote_ref`,
+`non_breaking_space`, `soft_break`, `hard_break`, `raw_inline`, `escaped_text`, `footnote_ref`,
 `inline_footnote`, `heading_ref`, `citation_group`, `citation`, `caption_number`,
 `span`, `superscript`, `subscript`, `highlight`, `insert`, `delete`,
 `substitution`, `critic_comment`, `symbol`, `math`, `abbreviation`, `small_caps`,

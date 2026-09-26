@@ -1351,7 +1351,7 @@
     {
       "id": "CARVE-P12-004",
       "part": "12",
-      "title": "THE U+E000 SENTINEL",
+      "title": "GENERATED NONBREAKING SPACES ARE NODES",
       "scope": "ast-interchange"
     },
     {
