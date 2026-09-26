@@ -46,7 +46,11 @@ jobs:
 
           SHA="$(git ls-remote https://github.com/markup-carve/carve-js.git refs/heads/main | cut -f1)"
           short="${SHA:0:8}"
-          current="$(node -p "require('./package.json').dependencies['@markup-carve/carve'].split('#')[1]")"
+          # Via the script, which reads the pin wherever it sits. Reading it
+          # inline here is what broke the first run: the pin is a
+          # devDependency, the inline read asked `dependencies`, and the job
+          # died on an undefined before it bumped anything.
+          current="$(node scripts/set-engine-pin.mjs --current)"
           if [ "$current" = "$SHA" ]; then
             echo "pin already at carve-js $short"
             exit 0
