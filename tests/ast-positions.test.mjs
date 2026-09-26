@@ -1981,3 +1981,12 @@ test('tab expansion leaves contiguous text positioned and synthesized content un
   assert.equal(columns.length, 12)
   for (const node of columns) assert.equal(node.pos, undefined)
 })
+
+
+test('tab span mapping preserves an attribute named pos', () => {
+  const source = '::: |\n\t[word]{pos="x"}\n:::\n'
+  const span = toAstJson(parse(source)).children[0].children[0].children.at(-1)
+  assert.equal(span.type, 'span')
+  assert.deepEqual(span.attrs.keyValues, { pos: 'x' })
+  assert.equal(source.slice(span.pos.startOffset, span.pos.endOffset), '[word]{pos="x"}')
+})
