@@ -187,12 +187,6 @@
       "description": "A RESOLVED CROSSREF carries the target heading's SOURCE RUN, so source mode recovers it. The label is the heading's inline NODES cloned (PART 9R R4), not its rendered glyphs: an engine that flattens the heading to a string at id-tracking time has already lost the run before any renderer sees it, and no renderer change reaches it (carve#915)."
     },
     {
-      "slug": "37-crossref-label-typography-source-markdown",
-      "feature": "markdown-typography-source",
-      "target": "markdown",
-      "description": "The same clause on the Markdown target. The heading's own run and the crossref's label move together, which is the point: they are the same nodes."
-    },
-    {
       "slug": "38-crossref-label-typography-source-ansi",
       "feature": "ansi-typography-source",
       "target": "ansi",
