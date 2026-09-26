@@ -30552,6 +30552,137 @@ more</li>
 
 :::
 
+The gate reads the MARKER's own column as well as the attached block's. A `+`
+is a continuation marker at its container's marker column and nowhere else, so
+in an item holding a quote there are exactly two columns where it is one: the
+list's and the quote's. One column between them names no container, and the
+line is ordinary text that the quote's open paragraph folds in - the answer a
+word in the same slot gets.
+
+::: compare
+
+```carve
+- x
+  > q
+ +
+```
+
+```html
+<ul>
+  <li>x
+    <blockquote><p>q
++</p></blockquote>
+  </li>
+</ul>
+```
+
+:::
+
+The text control at that column, which is what says the marker is being read as
+text rather than attached by some other route.
+
+::: compare
+
+```carve
+- x
+  > q
+ ZZZ
+```
+
+```html
+<ul>
+  <li>x
+    <blockquote><p>q
+ZZZ</p></blockquote>
+  </li>
+</ul>
+```
+
+:::
+
+The quote's own marker column, one column right. Here the `+` IS a marker: it
+is consumed, and with no flush-left block below it attaches nothing.
+
+::: compare
+
+```carve
+- x
+  > q
+  +
+```
+
+```html
+<ul>
+  <li>x
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+:::
+
+The list's marker column answers the same way, which is what makes the column
+between them the only one in question.
+
+::: compare
+
+```carve
+- x
+  > q
++
+```
+
+```html
+<ul>
+  <li>x
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+:::
+
+Past the quote's marker the `+` is quoted content, and text again.
+
+::: compare
+
+```carve
+- x
+  > q
+   +
+```
+
+```html
+<ul>
+  <li>x
+    <blockquote><p>q
++</p></blockquote>
+  </li>
+</ul>
+```
+
+:::
+
+The same two columns without the item around them. A top-level quote's marker
+sits at column 0, so the marker there attaches the list below it, and one
+column right it is text in the quoted paragraph.
+
+::: compare
+
+```carve
+> q
+ +
+- m
+```
+
+```html
+<blockquote><p>q
++
+- m</p></blockquote>
+```
+
+:::
+
 ## An empty description body claims no line below column 0
 
 `CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0` (§17 L3,

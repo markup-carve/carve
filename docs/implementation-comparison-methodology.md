@@ -189,7 +189,19 @@ and
 and
 `384-a-continuation-marker-attaches-only-a-flush-left-block-7`
 and
-`384-a-continuation-marker-attaches-only-a-flush-left-block-8`.
+`384-a-continuation-marker-attaches-only-a-flush-left-block-8`
+and
+`435-the-continuation-marker-s-column-gate-reaches-every-container-14`
+and
+`435-the-continuation-marker-s-column-gate-reaches-every-container-15`
+and
+`435-the-continuation-marker-s-column-gate-reaches-every-container-16`
+and
+`435-the-continuation-marker-s-column-gate-reaches-every-container-17`
+and
+`435-the-continuation-marker-s-column-gate-reaches-every-container-18`
+and
+`435-the-continuation-marker-s-column-gate-reaches-every-container-19`.
 
 Entries through 491 landed on a host with no engine checkouts, so the run above
 could not be retaken and its numbers describe the corpus WITHOUT them. Section
