@@ -353,6 +353,7 @@ const PERMITTED_PHRASE = {
   text: 'coalesced `text` run',
   table_cell: 'table cell',
   code: 'verbatim run continued on a `+` line',
+  non_breaking_space: 'line-block column a tab expanded',
 }
 
 test('every engine the position ledger names has a row, and every reconciled engine its own', () => {

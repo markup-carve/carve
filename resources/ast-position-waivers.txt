@@ -203,7 +203,7 @@ carve-php  249-trailing-whitespace-after-a-block-marker-4.crv     text  2  permi
 carve-php  256-table-cell-padding-must-be-a-space-15.crv          text  2  permitted
 carve-php  256-table-cell-padding-must-be-a-space-16.crv          text  2  permitted
 carve-php  256-table-cell-padding-must-be-a-space-17.crv          text  2  permitted
-carve-php  41-line-blocks-9.crv                                   text  3  permitted
+carve-php  41-line-blocks-9.crv                                   text  1  permitted
 carve-php  63-table-multi-line-cell-continuation.crv              text  1  permitted
 carve-php  64-table-rowspan-with-multi-line-content.crv           text  1  permitted
 
@@ -282,6 +282,44 @@ carve-rs   333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv  
 carve-php  333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe.crv    code  1  permitted
 carve-php  333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-4.crv  code  1  permitted
 carve-php  333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv  code  1  permitted
+
+# ---- PERMITTED: a line-block column a tab expanded --------------------------
+#
+# NEW TYPE, and this one is answered by its own clause rather than inferred from
+# §4. CARVE-P12-004 says a `non_breaking_space` is one escaped space or one
+# preserved line-block column, and then names the two cases apart: "an escaped
+# space owns its backslash and space; synthesized columns omit positions when
+# expansion prevents an exact source range." A tab is the expansion. One tab
+# becomes as many columns as the tab stop needs, so no column is a codepoint of
+# the source and no offset pair selects one.
+#
+# THE OTHER HALF OF THAT CLAUSE IS THE CONTROL, and it is live rather than
+# argued. The corpus carries 41 `non_breaking_space` nodes over 13 documents, and
+# 23 of them are PLACED - escaped spaces in `29-non-breaking-space` and the
+# ordinary space runs of ten other line blocks. So the category declared here is
+# the tab and not the node type: an engine that stopped placing an escaped space
+# would fail UNWAIVED, which is what a type-wide line would have hidden.
+#
+# Every column counted below is a tab's. The three sources hold no space run and
+# no `\ ` at all - `a<TAB>b` twice, then `tab<TAB>gap` / `wide<TAB><TAB>gap` /
+# `<TAB>lead` - and each count is the expansion the rendered fixture spells as
+# `&nbsp;`: 3, 3, and 8 + 4. The single column on `tab<TAB>gap` is a plain space
+# inside the text value rather than a node, which is why 41-line-blocks-9 reads
+# 12 and not 13.
+#
+# All three engines omit all eighteen, in the same three documents and at the
+# same counts, which is the per-engine symmetry the OWED section below calls the
+# tell: the cause is the construct.
+
+carve-js   400-a-container-starts-at-its-opening-markup-even-where-its-first-child-is-unplaced.crv  non_breaking_space   3  permitted
+carve-js   402-a-container-ends-at-the-markup-that-closes-it-even-where-its-last-child-is-unplaced.crv  non_breaking_space   3  permitted
+carve-js   41-line-blocks-9.crv                                   non_breaking_space  12  permitted
+carve-rs   400-a-container-starts-at-its-opening-markup-even-where-its-first-child-is-unplaced.crv  non_breaking_space   3  permitted
+carve-rs   402-a-container-ends-at-the-markup-that-closes-it-even-where-its-last-child-is-unplaced.crv  non_breaking_space   3  permitted
+carve-rs   41-line-blocks-9.crv                                   non_breaking_space  12  permitted
+carve-php  400-a-container-starts-at-its-opening-markup-even-where-its-first-child-is-unplaced.crv  non_breaking_space   3  permitted
+carve-php  402-a-container-ends-at-the-markup-that-closes-it-even-where-its-last-child-is-unplaced.crv  non_breaking_space   3  permitted
+carve-php  41-line-blocks-9.crv                                   non_breaking_space  12  permitted
 
 # ---- OWED --------------------------------------------------------------------
 #
@@ -376,8 +414,6 @@ carve-php  356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv            
 carve-php  356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv                text        1  permitted
 carve-php  356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                table_cell  1  permitted
 carve-php  356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                text        1  permitted
-carve-php  400-a-container-starts-at-its-opening-markup-even-where-its-first-child-is-unplaced.crv  text        1  permitted
-carve-php  402-a-container-ends-at-the-markup-that-closes-it-even-where-its-last-child-is-unplaced.crv  text        1  permitted
 carve-rs   349-a-container-whose-table-ends-on-a-continuation-row-3.crv             table_cell  1  permitted
 carve-rs   349-a-container-whose-table-ends-on-a-continuation-row-3.crv             text        1  permitted
 carve-rs   349-a-container-whose-table-ends-on-a-continuation-row-5.crv             table_cell  1  permitted
