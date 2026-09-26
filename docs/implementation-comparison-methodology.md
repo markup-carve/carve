@@ -16,9 +16,9 @@ implementation exposes.
 
 ## Snapshot (2026-09-26)
 
-This run covers 1544 core documents. The corpus at spec commit `7fd084ce`
-contains 1875; the 75 categories in the historical ledger below account for
-331 excluded documents. Cases 499 and 500, including 500's second document,
+This run covers 1544 core documents. The corpus at spec commit `ffda8032`
+contains 1881; the 75 categories in the historical ledger below account for
+337 excluded documents. Cases 499 and 500, including 500's second document,
 are included. The table reports document passes; the raw output also counts
 1686 scored target fixtures per engine. Timings reflect this machine's load,
 not parser throughput.
@@ -50,16 +50,16 @@ not parser throughput.
 
 JS and PHP used clean `main` checkouts. Rust used the index-title-order PR
 branch at `a9f6e2406`. To reproduce the scoped run, copy `scripts/`,
-`resources/`, `package.json`, and `tests/corpus/` from `7fd084ce` to a
+`resources/`, `package.json`, and `tests/corpus/` from `ffda8032` to a
 temporary root with its dependencies. Remove each ledger category's `.crv`
 files and same-stem sidecars: a category matches its exact slug or that slug
-followed by `-<digits>`. Assert that 75 categories remove 331 documents and
+followed by `-<digits>`. Assert that 75 categories remove 337 documents and
 leave 1544. Run `npm run compare:impls` in that copy with `CARVE_JS_DIR`,
 `CARVE_PHP_DIR`, `CARVE_RS_DIR`, and `CARGO_TARGET_DIR` pointing to the measured
 checkouts and Rust build. The `compare-impls.mjs` entry point, its `scripts/lib`
-dependencies, and all retained corpus files were byte-identical to `7fd084ce`.
-The temporary copy predates the rebase onto `3adc4c9a`; its changed
-`scripts/spec` oracle paths were not used because this run did not enable
+dependencies, and all retained corpus files were byte-identical to `ffda8032`.
+The temporary copy predates the later upstream merges; its changed
+`scripts/spec` oracle paths were unused because this run did not enable
 `--roundtrip`.
 
 The `Corpus added since this run` ledger is named for the 2026-08-29 baseline.
