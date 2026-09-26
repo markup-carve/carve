@@ -38,6 +38,11 @@ Releases before 0.1.6 are archived in
   carve#2303, carve#2305).
 - The Markdown target keeps a list's tightness wherever CommonMark can express
   it, which changes the bytes emitted for loose lists (carve#2281, carve#2294).
+- An importer moves a link's or span's edge whitespace outside the construct as
+  one space, a `<math>` carrying no TeX imports as its text when its tokens are
+  linear, and a formula beside a fallback image imports once, so imported Carve
+  differs byte for byte from what earlier versions wrote (carve#2361,
+  carve#2365).
 - An importer reads a denied-scheme destination as its content instead of
   dropping the link (carve#2254, carve#2255).
 - A Markdown task label that is also a reference definition reads as the
