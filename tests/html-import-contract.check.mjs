@@ -2,6 +2,8 @@ import assert from 'node:assert/strict'
 import { readdir, readFile } from 'node:fs/promises'
 import { test } from 'node:test'
 import Ajv2020 from 'ajv/dist/2020.js'
+import { fileURLToPath } from 'node:url'
+import { parseDriftLedger } from '../scripts/lib/drift-ledger.mjs'
 import './binding-contract.check-helper.mjs'
 import './html-import-construct-coverage.check-helper.mjs'
 import './import-roundtrip-ratchets.check-helper.mjs'
@@ -176,7 +178,7 @@ test('every expected.crv is a fixed point of the canonical writer', async () => 
  * that disagrees and is not listed is red; a listed fixture that now agrees is
  * red too, so the line goes out with the pin bump that fixed it.
  */
-const PIN_LAG = new Map([['code-language-hints', 'carve#2387: the pinned engine predates code-language hint recognition']])
+const pinLag = parseDriftLedger(fileURLToPath(new URL('../resources/html-import-pin-drift.txt', import.meta.url)))
 
 /*
  * A DIAGNOSTIC is a pattern: the page calls diagnostic objects MINIMUM matches,
@@ -318,10 +320,10 @@ test('the pinned build imports every fixture the way the fixture says', async ()
       astDiff(expectedAst, toAstJson(ast.value)),
     ].filter(Boolean)
 
-    if (PIN_LAG.has(name)) {
+    if (pinLag.has(name)) {
       assert.ok(
         failures.length > 0,
-        `tests/html-import/${name} is declared as pin lag ("${PIN_LAG.get(name)}") but the ` +
+        `tests/html-import/${name} is declared as pin lag ("${pinLag.get(name)}") but the ` +
           `pinned build now reproduces it. Delete the entry, in the commit that moved the pin.`,
       )
       reproduced.push(name)
@@ -330,7 +332,7 @@ test('the pinned build imports every fixture the way the fixture says', async ()
     assert.deepEqual(failures, [], `tests/html-import/${name}: ${failures.join('; ')}`)
   }
   assert.deepEqual(
-    [...PIN_LAG.keys()].sort(),
+    [...pinLag.keys()].sort(),
     reproduced.sort(),
     'a declared pin lag names a fixture that does not exist',
   )
