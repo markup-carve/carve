@@ -879,6 +879,12 @@
            `book/`: from `chapters/ch1.crv`, `../shared/glossary.crv` is ALLOWED
            and `../../../etc/passwd` is DENIED. See PART 9 §25 (File inclusion)
            and docs/security.md.
+           A containment refusal MUST NOT reveal whether the target exists.
+           For a missing path, canonicalize the longest existing prefix and
+           normalize the remaining path before checking containment. Present
+           and absent targets outside the root MUST both be refused as
+           containment denials, without reading or checking the existence of
+           the target itself first.
 
         I11 DEPENDENCY REPORTING. A processor that expands includes MUST report,
            alongside the expanded document and any Warnings, the SET OF INCLUDE

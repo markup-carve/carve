@@ -15,8 +15,7 @@
 # obligation cannot land without someone naming its home in the same diff.
 #
 # UNSTATED is a DECLARED GAP, not an exemption: the obligation is on the page
-# and in no clause. That is exactly what carve#1995 was, and writing this ledger
-# found six more of the same shape; five now cite clauses. WEAKER means the
+# and in no clause. WEAKER means the
 # clause exists and states something weaker than the page does - I4 makes
 # source-position remapping a SHOULD while the page writes MUST. Every run
 # prints both.
@@ -57,14 +56,11 @@ docs/includes.md :: PART 9 §19 I6 :: MUST enforce a FINITE include-depth limit 
 docs/includes.md :: PART 9 §19 I6 :: FINITE bound on RESOLVER INVOCATIONS :: Implementations MUST therefore enforce a finite bound on resolver
 docs/includes.md :: PART 9 §19 I6 :: MUST NOT be passed to the resolver :: A directive past the bound is left literal with
 docs/includes.md :: PART 9 §19 I6 :: MUST be refused BEFORE invoking their resolver :: Every remaining directive MUST degrade to literal without being
-docs/includes.md :: UNSTATED :: - :: A processor MAY cap the number of include Warnings
-docs/includes.md :: UNSTATED :: - :: A processor MAY cap the number of include Warnings
 docs/includes.md :: PART 9 §19 I7 :: MUST enforce canonical path containment :: - The host resolver MUST enforce path containment. Resolve
 docs/includes.md :: PART 9 §19 I10 :: MUST canonicalize the candidate path :: - Containment is canonical, not lexical. A processor MUST
-docs/includes.md :: UNSTATED :: - :: - A refusal MUST NOT reveal whether the target
-docs/includes.md :: UNSTATED :: - :: Both targets MUST be refused as containment denials.
-docs/includes.md :: UNSTATED :: - :: - Inclusion MUST remain disabled on these paths.
-docs/includes.md :: UNSTATED :: - :: - If such a host ever offers inclusion, it
-docs/includes.md :: UNSTATED :: - :: - If such a host ever offers inclusion, it
-docs/includes.md :: UNSTATED :: - :: Dependency tracking and invalidation. A preview MUST re-render when
+docs/includes.md :: PART 9 §19 I10 :: MUST NOT reveal whether the target exists :: - A refusal MUST NOT reveal whether the target
+docs/includes.md :: PART 9 §19 I10 :: MUST both be refused as containment denials :: Both targets MUST be refused as containment denials.
+docs/includes.md :: PART 9 §25 I1 :: Inclusion MUST remain disabled on server-side rendering paths :: - Inclusion MUST remain disabled on these paths.
+docs/includes.md :: PART 9 §25 I1 :: MUST require an explicit, administrator-only opt-in :: - If such a host ever offers inclusion, it
+docs/includes.md :: PART 9 §25 I1 :: opt-in MUST NOT be inherited by front-end rendering paths :: - If such a host ever offers inclusion, it
 docs/includes.md :: PART 9 §19 I11 :: MUST report, alongside the expanded document :: Hosts do not have to infer the dependency set
