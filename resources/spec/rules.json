@@ -1229,6 +1229,12 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-048",
+      "part": "11",
+      "title": "A HARD BREAK IN A TABLE CELL IS `<br>`",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P11-027",
       "part": "11",
       "title": "A LIST ITEM'S CONTINUATION LINES ARE ALIGNED",
@@ -1304,6 +1310,12 @@
       "id": "CARVE-P11-038",
       "part": "11",
       "title": "THE MARKDOWN TARGET'S CROSS-REFERENCES",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-049",
+      "part": "11",
+      "title": "THE MARKDOWN TARGET KEEPS A FRAGMENT LINK",
       "scope": "canonical-writing"
     },
     {

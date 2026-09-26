@@ -9420,6 +9420,26 @@ EOF = (* end of file *) ;
       a hard break the way the Carve grammar does (`hard_break`, PART 3), and
       §7's no-whitespace-only-line rule already covers the writer's side.
 
+  9a. A HARD BREAK IN A TABLE CELL IS `<br>` -- NORMATIVE [CARVE-P11-048]. Inside
+      a pipe-table cell the Markdown target emits a `hard_break` as the inline
+      HTML `<br>`, not as §9's backslash and newline. A GFM table row is one
+      line, so §9's newline ends the row: the rest of the cell and every later
+      cell fall out of the table into a paragraph below it.
+
+        cell children   text "one", hard_break, text "two"
+        Markdown row    | one<br>two | x |
+
+      `<br>` is the spelling GFM readers render as a line break inside a cell,
+      and it is the same inline-HTML fallback §8c uses for a node that has no
+      Markdown spelling. §9 holds everywhere a Markdown line can end.
+
+      NO CARVE SOURCE SPELLS THIS TREE. A table row is one line, so a hard
+      break has no Carve spelling inside a cell. The tree reaches the writer
+      from an AST payload (PART 12) or an editor. The HTML importer still
+      writes a `<br>` in a cell as a space and reports the loss
+      (`structure-unspellable`, fixture `table-cell-hard-break`); this clause
+      does not change that half.
+
   10. A LIST ITEM'S CONTINUATION LINES ARE ALIGNED -- NORMATIVE [CARVE-P11-027]. Every
       continuation line of a list item is indented to the WIDTH OF THE MARKER,
       including one whose text would otherwise read as a list marker. Such a
@@ -9803,6 +9823,39 @@ EOF = (* end of file *) ;
       THE SCAN INCLUDES FOOTNOTE DEFINITION BODIES. They render as block
       content, so a reference inside one is a reference; missing them leaves a
       heading without the id that the link this target also emits depends on.
+
+  11a. THE MARKDOWN TARGET KEEPS A FRAGMENT LINK -- NORMATIVE [CARVE-P11-049].
+      A `link` whose destination is a fragment (`#id`) is emitted as a Markdown
+      link whether or not `id` names a heading. The author wrote the
+      destination, so it is content: writing the label alone drops it, and a
+      reader of the Markdown loses a link the HTML target keeps.
+
+        {#h}
+        ## Head                   ->  ## Head {#h}
+
+        See [head](#h), [three](#chap03) and [gone](#nowhere).
+                                  ->  See [head](#h), [three](#chap03) and [gone](#nowhere).
+
+      THE `{#id}` HALF OF §11 IS UNCHANGED. A heading gains the suffix only when
+      a link or cross-reference in the output targets it, so no heading carries
+      an anchor nothing points at (carve#352). A fragment that names no heading
+      adds no suffix and no anchor anywhere: the target spells an id on a
+      heading and nowhere else, so `#chap03` above points at an id the
+      Markdown does not carry. The link is kept anyway, because a page that
+      embeds the Markdown can carry the id, and dropping the destination
+      cannot be undone.
+
+      THE DESTINATION IS WRITTEN LIKE ANY OTHER. A fragment that names a
+      heading is the heading's id; any other fragment is the authored
+      destination under the ordinary destination encoding, `#` alone
+      included.
+
+      THE LABEL IS WRITTEN LIKE ANY OTHER LINK LABEL. `[[1]](#n1)` is emitted
+      as `[\[1\]](#n1)`, with both text brackets escaped inside the label.
+
+      A CROSS-REFERENCE IS OUTSIDE THIS CLAUSE. §11 still writes a resolved
+      cross-reference to a target that is not a heading as its display text;
+      this clause changes only the `link` node.
 
    ============================================================================ *)
 (* ============================================================================
