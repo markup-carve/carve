@@ -18,7 +18,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { carveToHtml, citations } from '@markup-carve/carve'
+import { carveToHtml, citations, tocPlacement } from '@markup-carve/carve'
 import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
@@ -165,4 +165,135 @@ test('a nested references marker leaves a later top-level marker available', () 
   const heading = html.indexOf('<section id="After">')
   assert.ok(floor >= 0 && list > floor && heading > list)
   assert.equal(html.match(/<ol class="references">/g)?.length, 1)
+})
+
+
+test("a placed title follows the authored body inside the endnotes section", () => {
+  const source = `::: footnotes "Notes"
+First body.
+
+Second body.
+:::
+
+Text[^a].
+
+[^a]: Note.`
+  const expected = `<p>First body.</p>
+<p>Second body.</p>
+<section role="doc-endnotes" aria-labelledby="adm-1">
+  <p class="admonition-title" id="adm-1">Notes</p>
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>Note.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+<p>Text<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>`
+  assert.equal(carveToHtml(source).trim(), expected)
+})
+
+test("a marker with no notes keeps its body in the fallback div", () => {
+  const source = `::: footnotes
+Only body.
+:::`
+  const expected = `<div class="footnotes">
+  <p>Only body.</p>
+</div>`
+  assert.equal(carveToHtml(source).trim(), expected)
+})
+
+test("a second marker keeps its body in the fallback div", () => {
+  const source = `::: footnotes
+First body.
+:::
+
+::: footnotes
+Second body.
+:::
+
+Text[^a].
+
+[^a]: Note.`
+  const expected = `<p>First body.</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>Note.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+<div class="footnotes">
+  <p>Second body.</p>
+</div>
+<p>Text<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>`
+  assert.equal(carveToHtml(source).trim(), expected)
+})
+
+test("a nested marker keeps its attributes and body in the fallback div", () => {
+  const source = `> {#x k=v}
+> ::: footnotes
+> Body.
+> :::
+
+Text[^a].
+
+[^a]: Note.`
+  const expected = `<blockquote>
+  <div class="footnotes" id="x" k="v">
+    <p>Body.</p>
+  </div>
+</blockquote>
+<p>Text<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>Note.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>`
+  assert.equal(carveToHtml(source).trim(), expected)
+  assert.equal(oracleHtml(source).trim(), expected)
+})
+
+test("a nested TOC marker leaves a later top-level footnotes marker available", () => {
+  const source = `::::: toc "Outer"
+::: footnotes
+:::
+:::::
+
+::: footnotes
+Placed body.
+:::
+
+# H
+
+Text[^a] more.
+
+[^a]: The note.`
+  const expected = `<div class="footnotes">
+
+</div>
+<nav class="toc" aria-labelledby="adm-1">
+<p class="admonition-title" id="adm-1">Outer</p>
+<ul>
+<li><a href="#H">H</a></li>
+</ul>
+</nav>
+<p>Placed body.</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>The note.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+<section id="H">
+  <h1>H</h1>
+  <p>Text<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> more.</p>
+</section>`
+  assert.equal(carveToHtml(source, { extensions: [tocPlacement()] }).trim(), expected)
 })

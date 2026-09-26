@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { carveToHtml, mathBlock, codeGroup, wikilinks, headingPermalinks, externalLinks, colorSwatch, headingNumbers, headingLevelShift, tableOfContents, glossary, index } from '@markup-carve/carve'
+import { carveToHtml, mathBlock, codeGroup, wikilinks, headingPermalinks, externalLinks, colorSwatch, headingNumbers, headingLevelShift, tableOfContents, tocPlacement, glossary, index } from '@markup-carve/carve'
 import { scanExampleSource } from '../scripts/lib/example-sections.mjs'
 import { deadLedgerKeys, tier3Verdict } from '../scripts/lib/tier3-ledger.mjs'
 import { miscount } from '../scripts/spec/participants.mjs'
@@ -20,6 +20,7 @@ const factories = new Map([
   ['ColorSwatch', colorSwatch], ['HeadingNumbers', headingNumbers],
   ['HeadingLevelShift', headingLevelShift], ['TableOfContents', tableOfContents],
   ['Glossary', glossary], ['Index', index],
+  ['TocPlacement', tocPlacement], ['IndexFallback', index], ['IndexAttributes', index],
 ])
 
 /*

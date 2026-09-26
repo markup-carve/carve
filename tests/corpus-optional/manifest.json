@@ -268,6 +268,11 @@
       "slug": "52-an-extension-wrapper-class-follows-every-authored-attribute",
       "feature": "spoiler",
       "description": "An extension wrapper's class trails BOTH authored attributes, not only the id: two of them separate \"after all authored attributes\" from \"after the id\", which one cannot (PART 10 §1)."
+    },
+    {
+      "slug": "53-core-and-extension-directive-classes",
+      "feature": "spoiler",
+      "description": "The core div kind class leads two authored attributes; the extension wrapper class trails them (CARVE-P10-011)."
     }
   ]
 }

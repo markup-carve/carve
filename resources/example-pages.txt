@@ -695,6 +695,7 @@ index: examples/edge-cases/index.md
   the-inline-attribute-interior-is-space-only-the-attribute-line-is-not
   a-quoted-attribute-value-stops-at-the-newline
   a-structural-attribute-leads-the-author-s-own
+  a-core-directive-kind-class-leads-authored-attributes
   a-boolean-and-a-key-value-of-the-same-name-are-one-attribute
   a-semantic-name-renames-the-span-and-the-leftovers-ride-the-element
   a-language-attribute-is-exact-sugar-for-lang

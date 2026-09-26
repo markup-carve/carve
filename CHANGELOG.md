@@ -33,6 +33,9 @@ Releases before 0.1.6 are archived in
 
 ### Added
 
+- Placement-marker bodies precede their regions; nested markers in TOC
+  bodies retain container scope. Directive classes lead on core divs and
+  trail on extension wrappers (carve#2329, carve#2338).
 - The table AST adds optional `rowGroups.headAttrs` and `rowGroups.footAttrs`, with HTML section rendering and conversion-loss requirements. (markup-carve/carve#2339)
 
 ## [0.1.7] - 2026-09-25
