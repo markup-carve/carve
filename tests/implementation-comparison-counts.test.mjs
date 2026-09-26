@@ -105,6 +105,11 @@ const laggedOptionalPairs = laggedOptional.reduce((n, c) => n + optionalFixtures
 // declaration this is exactly the live count, i.e. the original rule.
 const effectiveCore = () => countPairs('tests/corpus') - laggedPairs
 
+const coreRows = () => {
+  const core = page.split('## Optional Tier-2 Profile')[0]
+  return [...core.matchAll(/^\| (Rust|JS|PHP) \| [^|]+ \| `(\d+) \/ (\d+)` \| `(\d+) \/ (\d+)` \|/gm)]
+}
+
 test('the page quotes a run for both corpora', () => {
   assert.deepEqual(
     quoted.map((q) => q.corpus).sort(),
@@ -183,8 +188,10 @@ test('the comparison cards and table quote the real core corpus size', () => {
   // optional corpus, so the scan stops at its heading.
   const core = page.split('## Optional Tier-2 Profile')[0]
   const cards = [...core.matchAll(/<strong>(\d+)\s*\/\s*(\d+)<\/strong>/g)]
-  const tableCells = [...core.matchAll(/\|\s*`(\d+)\s*\/\s*(\d+)`\s*\|/g)]
-  const quoted = [...cards, ...tableCells]
+  const quoted = [
+    ...cards.map((m) => [m[1], m[2]]),
+    ...coreRows().map((m) => [m[2], m[3]]),
+  ]
   assert.ok(quoted.length >= 6, `expected the card grid and table to quote N / N; found ${quoted.length}`)
   // The DENOMINATOR is the claim about this repository - how many documents the
   // run covered. The numerator is how many an engine passed, and it is NOT
@@ -196,7 +203,7 @@ test('the comparison cards and table quote the real core corpus size', () => {
   // "expected at least 6" count. So the page could not report a divergence
   // without breaking its own gate, and the gate passed while the page claimed
   // an all-green cross-engine state that was no longer true.
-  for (const [, passed, total] of quoted) {
+  for (const [passed, total] of quoted) {
     assert.equal(
       Number(total),
       live,
@@ -213,7 +220,7 @@ test('the cards and the table agree about what each engine passed', () => {
   // them were mid-fix and only one half was updated afterwards.
   const core = page.split('## Optional Tier-2 Profile')[0]
   const cards = [...core.matchAll(/<strong>(\d+)\s*\/\s*(\d+)<\/strong>/g)].map((m) => m[1])
-  const rows = [...core.matchAll(/\|\s*`(\d+)\s*\/\s*(\d+)`\s*\|/g)].map((m) => m[1])
+  const rows = coreRows().map((m) => m[2])
   assert.equal(
     cards.length,
     rows.length,
@@ -224,6 +231,20 @@ test('the cards and the table agree about what each engine passed', () => {
     rows,
     'the comparison cards and the table quote different pass counts for the same run',
   )
+})
+
+test('the core table scores the fixtures present in the corpus', () => {
+  const stems = new Set(corpusFiles.map((f) => f.slice(0, -'.crv'.length)))
+  const sidecars = readdirSync(resolve(root, 'tests/corpus'))
+  const scored = corpusFiles.length + sidecars.filter((f) => {
+    const match = f.match(/^(.*)\.(md|txt|fmt|ansi)$/)
+    return match && stems.has(match[1])
+  }).length
+  const rows = coreRows()
+  assert.equal(rows.length, 3)
+  for (const row of rows) {
+    assert.equal(Number(row[5]), scored, `${row[1]} quotes ${row[5]} scored fixtures; corpus has ${scored}`)
+  }
 })
 
 test('a quoted run never compares more documents than it ran', () => {
