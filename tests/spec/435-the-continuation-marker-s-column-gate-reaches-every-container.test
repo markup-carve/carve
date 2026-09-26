@@ -188,3 +188,76 @@ more
 more</li>
 </ul>
 ```
+
+```
+- x
+  > q
+ +
+.
+<ul>
+  <li>x
+    <blockquote><p>q
++</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- x
+  > q
+ ZZZ
+.
+<ul>
+  <li>x
+    <blockquote><p>q
+ZZZ</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- x
+  > q
+  +
+.
+<ul>
+  <li>x
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- x
+  > q
++
+.
+<ul>
+  <li>x
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- x
+  > q
+   +
+.
+<ul>
+  <li>x
+    <blockquote><p>q
++</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+> q
+ +
+- m
+.
+<blockquote><p>q
++
+- m</p></blockquote>
+```
