@@ -689,6 +689,7 @@ index: examples/edge-cases/index.md
   indented-attribute-line-stays-literal
   attribute-braces-on-a-list-item-marker-line
   a-floating-attribute-stops-at-the-item-boundary
+  an-attribute-line-under-an-attributed-sub-item-stays-in-that-item
   a-marker-attribute-may-hold-a-quoted-brace
   an-attribute-name-admits-no-colon
   an-inline-attribute-block-does-not-span-lines-but-an-attribute-line-does

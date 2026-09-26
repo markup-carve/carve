@@ -275,6 +275,18 @@
         the same open-paragraph rule on both sides; attributes and task
         checkboxes do not manufacture wider list markers.
 
+        A SIBLING MARKER IS ONE OF THE WAYS THE ITEM CLOSES. Under
+
+            - a
+              -{#p} b
+                {#x}
+              - c
+
+        `{#x}` reaches the sub-item's content column and so belongs to that
+        item, and `- c` closes the item with the attribute still pending. A4
+        drops it. Opening a second sublist for it is as unavailable as the
+        document paragraph above; the sublist stays one list.
+
         The question is asked of a QUOTE recursively. `- > q` / `tail` folds
         because the quote ends on an open paragraph; `- > # H` / `tail` does
         not, because it ends on a heading. Non-emptiness is not the test - a

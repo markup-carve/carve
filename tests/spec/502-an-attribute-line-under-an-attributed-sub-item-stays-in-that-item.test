@@ -1,0 +1,49 @@
+An attribute line under an attributed sub-item stays in that item
+
+```
+- a
+  -{#p} b
+    {#x}
+  - c
+.
+<ul>
+  <li>a
+    <ul>
+      <li id="p">b</li>
+      <li>c</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - b
+    {#x}
+  - c
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+      <li>c</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  1.{#p} b
+     {#x}
+  2. c
+.
+<ul>
+  <li>a
+    <ol>
+      <li id="p">b</li>
+      <li>c</li>
+    </ol>
+  </li>
+</ul>
+```
