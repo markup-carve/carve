@@ -1836,6 +1836,8 @@ The shared set is deliberately small and each directory has one subject:
 | `mathml-without-tex` | presentation-only MathML imported as its text where the tokens are linear, and a fraction dropped where they are not |
 | `mathml-fallback-image` | a formula beside its fallback image imported once, including through the image's `alt` when the `<math>` carries no TeX |
 | `empty-list` | a `<ul>` and an `<ol>` with no item, attributed inside a container, bare, and nested in an item, each dropped with one row |
+| `lone-bracket-in-bracketed-content` | an unpaired `[` or `]` inside a span or link text, escaped in the minimal form as in `[\[]{.b}`, beside balanced pairs that stay bare (PART 11 §5) |
+| `paren-after-a-closed-bracket` | a `(` right after a paired bare `]` that would open a closing destination, escaped as `[a]\(b)` at top level, in a span, across code and emphasis, and around nested parentheses, beside `f(x)`, `[a] (b)`, `[a](b c)` and `[a]()` that stay bare (PART 11 §5) |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one
