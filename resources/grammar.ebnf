@@ -9903,7 +9903,8 @@ EOF = (* end of file *) ;
       code block on a paragraph's first line, and two trailing spaces before a
       line ending make a hard break. The HTML target renders it as nothing, so
       dropping it is faithful. U+00A0 and every other non-ASCII space is
-      content and is kept.
+      content and is kept. A line that this leaves empty is not written: an
+      empty line would end the paragraph.
 
         paragraph "a", then paragraph "      x"    ->  a
 
@@ -9928,7 +9929,7 @@ EOF = (* end of file *) ;
 
   10o. ADJACENT LISTS OF ONE KIND ALTERNATE THEIR MARKER --
       NORMATIVE [CARVE-P11-057]. Two lists of the same kind that the writer emits one
-      after the other in the same container, with nothing written between
+      after the other in the same PREFIXED container, with nothing written between
       them, are one list to a Markdown reader. The second is written with the
       other marker of its kind: a bullet list alternates `-` and `*`, an
       ordered list alternates `.` and `)`, starting from the usual marker, so
@@ -9941,7 +9942,12 @@ EOF = (* end of file *) ;
 
       "Nothing written between" is decided on the output: a block that writes
       nothing on this target (a comment, an empty wrapper) does not separate
-      two lists.
+      two lists, and neither does a wrapper this target writes without a
+      prefix (a div, a section, a line block, an admonition or directive
+      without a title line, a definition description). A prefixed container
+      (a block quote, a list item, a footnote body) starts a fresh run, and a
+      line the target does write between them (a title, a label, a term) ends
+      one.
 
   10p. A DEFINITION LIST IS WRITTEN AS ITS TERMS AND BLOCKS --
       NORMATIVE [CARVE-P11-058]. GFM has no definition list, and a `: ` marker is
@@ -9976,7 +9982,10 @@ EOF = (* end of file *) ;
       G1 TEXT: the heading's text content under PART 2 HEADING IDENTIFIERS'
          contribution rule, each character as this target writes it (a smart
          punctuation glyph as the glyph, its source under source typography),
-         NFC-normalized, with leading and trailing whitespace removed;
+         NFC-normalized, with leading and trailing whitespace removed. PART 2
+         counts an image's alt text and GitHub does not, so a heading holding
+         an image can get a slug GitHub does not assign; PART 2's rule is kept
+         so that every engine derives the text one way;
       G2 lowercased (Unicode default case mapping);
       G3 with every character removed that is not a letter, a mark, a number,
          connector punctuation (`_`), U+0020 SPACE or `-`;
