@@ -577,16 +577,22 @@
         A `(` THAT WOULD OPEN A DESTINATION is unconditional as well. That is
         a `(` written directly after a bare `]` that the bracket scan pairs
         with an earlier `[`, where the written text from the `(` reads as an
-        inline link destination that closes: `(target)` or
-        `(target "title")`. Bare, the bracket pair and the parentheses
-        re-parse as a link, so this `(` is always load bearing. The escape
-        goes on the `(` and not on a bracket, which leaves the brackets as
-        written:
+        inline link destination that closes, such as `(target)`.
+
+        For this parenthesis rule, run that scan across the complete inline
+        content sequence, including top-level prose and emphasis content.
+        Keep the same exclusions for escaped brackets, verbatim content and
+        nested bracketed constructs. This extends only where a `(` is
+        selected: lone brackets outside bracketed content still stay bare.
+
+        Bare, the bracket pair and the parentheses re-parse as a link, so
+        this `(` is always load bearing. The escape goes on the `(` and not
+        on a bracket, which leaves the brackets as written:
 
           [a]\(b) and [[a]\(u)]{.c}
 
         Nowhere else. `f(x)`, `(see above)` and `[a] (b)` stay bare, and so
-        does `[a](b c)`, whose parentheses hold no destination.
+        does `[a](b c)`, whose tail is not a complete link destination.
 
       CANDIDATE -- escaped only when W4 selects the conservative form:
         `* _ ~ / = ,`        emphasis and the braced pair delimiters
