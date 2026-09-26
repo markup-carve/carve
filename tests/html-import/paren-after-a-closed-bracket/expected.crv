@@ -1,0 +1,9 @@
+[a]\(b) and f(x) and (see above) and [a] (b) and [a](b c)
+
+[[a]\(u)]{.c}
+
+[`a`]\(b)
+
+[/a]\(b)/
+
+[a]\(b(xy)d) and [a]()
