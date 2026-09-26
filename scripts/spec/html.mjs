@@ -134,6 +134,7 @@ function renderDocPass(doc, footnoteProbe) {
     captionIds: new Map(), // lower-cased id -> "Label N" (R4)
     footnotesMarkerCount: 0,
     footnotesMarkerDepths: [],
+    footnotesMarkerAttrs: [],
     hasResolvedNotes,
     footnoteProbe,
     placedFootnotesSeen: false,
@@ -656,14 +657,16 @@ function renderBlock(b, depth, ctx) {
         .map((child) => renderBlock(child, places ? depth : depth + 1, ctx))
         .filter((part) => part !== null && part !== '')
         .join('\n')
+      const attrs = renderTextBlockAttrs([[['class', 'footnotes']], ...(b.battrs ?? [])], 'div')
       if (!places || ctx.footnoteProbe) {
         const contents = [heading, body].filter(Boolean).join('\n')
         return contents === ''
-          ? `${pad}<div class="footnotes">\n\n${pad}</div>`
-          : `${pad}<div class="footnotes">\n${contents}\n${pad}</div>`
+          ? `${pad}<div${attrs}>\n\n${pad}</div>`
+          : `${pad}<div${attrs}>\n${contents}\n${pad}</div>`
       }
       const id = ctx.footnotesMarkerCount++
       ctx.footnotesMarkerDepths[id] = depth
+      ctx.footnotesMarkerAttrs[id] = attrs
       return `\uE000fnplacementstart:${id}\uE001${heading}\uE000fnplacementheadingend:${id}\uE001${body}\uE000fnplacementend:${id}\uE001`
     }
     default:
@@ -1339,11 +1342,11 @@ function footnotesHeading(b, depth, titleId) {
   return parts.join('\n')
 }
 
-function footnotesMarkerFloor(heading, body, depth) {
+function footnotesMarkerFloor(heading, body, depth, attrs) {
   const pad = '  '.repeat(depth)
   const contents = [heading, body].filter(Boolean).join('\n')
   const inner = contents === '' ? '' : contents.split('\n').map((line) => `  ${line}`).join('\n')
-  return `${pad}<div class="footnotes">\n${inner}\n${pad}</div>`
+  return `${pad}<div${attrs}>\n${inner}\n${pad}</div>`
 }
 
 function resolveFootnotes(html, ctx) {
@@ -1420,7 +1423,7 @@ function resolveFootnotes(html, ctx) {
   ctx.resolvedFootnoteCount = order.length
   if (order.length === 0) {
     return html.replace(FOOTNOTES_PLACEMENT_FRAMES, (_, id, heading, body) =>
-      footnotesMarkerFloor(heading, body, ctx.footnotesMarkerDepths[Number(id)]))
+      footnotesMarkerFloor(heading, body, ctx.footnotesMarkerDepths[Number(id)], ctx.footnotesMarkerAttrs[Number(id)]))
   }
 
   // BODIES ARE RENDERED HERE, after the pass over the document text, and a
@@ -1509,7 +1512,7 @@ function resolveFootnotes(html, ctx) {
   if (placement) {
     let placed = false
     return html.replace(FOOTNOTES_PLACEMENT_FRAMES, (_, id, heading, body) => {
-      if (placed) return footnotesMarkerFloor(heading, body, ctx.footnotesMarkerDepths[Number(id)])
+      if (placed) return footnotesMarkerFloor(heading, body, ctx.footnotesMarkerDepths[Number(id)], ctx.footnotesMarkerAttrs[Number(id)])
       placed = true
       const depth = ctx.footnotesMarkerDepths[Number(id)]
       const placedHeading = heading === '' ? '' : heading.split('\n')

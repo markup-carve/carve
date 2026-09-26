@@ -1,0 +1,12 @@
+A core directive-kind class leads authored attributes
+
+```
+{#d k=v}
+::: foo
+a
+:::
+.
+<div class="foo" id="d" k="v">
+  <p>a</p>
+</div>
+```

@@ -84,6 +84,14 @@
         processor with lint diagnostics reports `{kind}-placement-in-container`
         for the kind it supports. This rule does not restrict `::: toc`,
         `::: glossary`, or `::: index` inside a container.
+      - A MARKER IN A TOC BODY RETAINS ITS CONTAINER SCOPE -- NORMATIVE
+        [CARVE-P9-076]. With the `toc` placement extension enabled, a
+        document-wide placement marker inside its body remains subject to
+        CARVE-P9-073. Render its div fallback before the generated `<nav>`,
+        where the extension emits its authored body. Moving that body ahead
+        of the nav does not promote the nested marker to document top level.
+        Its region goes where it would without that marker, including the
+        default position when there is no other eligible placement marker.
       - BACKLINK PLACEMENT WHEN THE BODY DOES NOT END IN A PARAGRAPH. "The
         note's last paragraph" above presumes there is one. When the note
         body's LAST BLOCK is not a paragraph (a code block, a block quote, a

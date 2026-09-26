@@ -28,13 +28,21 @@
         > a. alpha
       WHERE THE AUTHOR WROTE NO CLASS there is no slot to keep, and the
       position splits TWO WAYS. A MANDATORY BASE CLASS LEADS: math's
-      `math inline|display`, an admonition's, `task-list`. A class derived
-      from the block's own MARKER or DIRECTIVE NAME TRAILS every authored
-      attribute instead: `line-block`, a diagram fence's, and an extension
-      wrapper's `toc`, `glossary`, `index`, `tabs`, `code-group`. Trailing
-      is the only position that keeps the authored order and still leaves
-      the engine-minted attributes last, which they are either way.
-      This matches reference djot on every shape tried --
+      `math inline|display`, an admonition's, `task-list`, and a core div's
+      directive-kind class. A marker-derived class such as `line-block` or a
+      diagram fence's class trails every authored attribute. An extension
+      wrapper's `toc`, `glossary`, `index`, `tabs`, or `code-group` class also
+      trails every authored attribute.
+
+      DIRECTIVE CLASSES FOLLOW ELEMENT OWNERSHIP -- NORMATIVE [CARVE-P10-011].
+      With no authored class slot, a directive-kind class leads on a core
+      `<div>` and trails on an element rendered by an extension. If the
+      extension abstains, core div rendering applies. The index extension
+      abstains when there are no terms, so an empty index renders
+      `<div class="index" id="ix" k="v">`, while a populated index
+      renders `<ul id="ix" k="v" class="index">`.
+
+      The structural attribute examples match reference djot --
       `<ol type="a" class="attr">`, `<ol start="5" class="attr">`,
       `<a href="…" class="c" id="i" k="v">`, `<img alt="a" src="…"
       class="c">`, `<ul class="task-list c">` -- and it is the same

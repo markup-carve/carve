@@ -1713,6 +1713,18 @@
       "part": "12",
       "title": "PROVENANCE IS A SEPARATE OPT-IN SIDECAR",
       "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P9-076",
+      "part": "9",
+      "title": "A MARKER IN A TOC BODY RETAINS ITS CONTAINER SCOPE",
+      "scope": "resolution-rendering"
+    },
+    {
+      "id": "CARVE-P10-011",
+      "part": "10",
+      "title": "DIRECTIVE CLASSES FOLLOW ELEMENT OWNERSHIP",
+      "scope": "resolution-rendering"
     }
   ],
   "retired": [

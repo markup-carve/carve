@@ -216,7 +216,9 @@ and
 and
 `435-the-continuation-marker-s-column-gate-reaches-every-container-18`
 and
-`435-the-continuation-marker-s-column-gate-reaches-every-container-19`.
+`435-the-continuation-marker-s-column-gate-reaches-every-container-19`
+and
+`501-a-core-directive-kind-class-leads-authored-attributes`.
 
 The listed categories remain outside the scoped measurement. The following
 case-by-case notes record why the original run did not absorb them; some
@@ -899,7 +901,8 @@ round trip failed for `[a][r]` in all three engines; that is
 the target now has no differences to explain.
 
 Optional corpus added since this run: `51-references-placement-inside-a-quote`,
-`52-an-extension-wrapper-class-follows-every-authored-attribute`.
+`52-an-extension-wrapper-class-follows-every-authored-attribute`,
+`53-core-and-extension-directive-classes`.
 
 Optional raw output:
 

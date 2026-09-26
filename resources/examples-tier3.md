@@ -217,3 +217,94 @@ Carve:index[markup] is small.
 ```
 
 :::
+
+## TocPlacement
+
+The nested footnotes marker renders its div before the navigation. Its notes
+stay at the default document end (CARVE-P9-076).
+
+:::::: compare no-render
+
+```carve
+::::: toc "Outer"
+::: footnotes
+:::
+:::::
+
+# H
+
+Text[^a] more.
+
+[^a]: The note.
+```
+
+```html
+<div class="footnotes">
+
+</div>
+<nav class="toc" aria-labelledby="adm-1">
+<p class="admonition-title" id="adm-1">Outer</p>
+<ul>
+<li><a href="#H">H</a></li>
+</ul>
+</nav>
+<section id="H">
+  <h1>H</h1>
+  <p>Text<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> more.</p>
+</section>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>The note.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+::::::
+
+## IndexFallback
+
+With no index terms, the extension abstains. Core rendering puts the kind
+class before both authored attributes (CARVE-P10-011).
+
+:::::: compare no-render
+
+```carve
+{#empty k=v}
+::: index
+:::
+```
+
+```html
+<div class="index" id="empty" k="v">
+
+</div>
+```
+
+::::::
+
+## IndexAttributes
+
+The extension owns the populated index and appends its wrapper class after
+both authored attributes (CARVE-P10-011).
+
+:::::: compare no-render
+
+```carve
+Carve:index[markup] is small.
+
+{#terms k=v}
+::: index
+:::
+```
+
+```html
+<p>Carve<span id="idx-markup-1" class="index-term"></span> is small.</p>
+<ul id="terms" k="v" class="index">
+  <li>markup <a href="#idx-markup-1" class="index-backref" aria-label="Back to markup">↩</a></li>
+</ul>
+```
+
+::::::
