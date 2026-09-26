@@ -1223,6 +1223,36 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-050",
+      "part": "11",
+      "title": "A CONTEXTUAL ESCAPE READS THE EMITTED LINE ACROSS NODES",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-051",
+      "part": "11",
+      "title": "AN AMPERSAND THAT WOULD READ AS A CHARACTER REFERENCE IS ESCAPED",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-052",
+      "part": "11",
+      "title": "A `!` BEFORE A LINK IS ESCAPED",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-053",
+      "part": "11",
+      "title": "A PARAGRAPH LINE MUST NOT BECOME A THEMATIC BREAK OR A SETEXT UNDERLINE",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-054",
+      "part": "11",
+      "title": "A PIPE IN A TABLE CELL IS ESCAPED",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P11-026",
       "part": "11",
       "title": "THE MARKDOWN TARGET'S HARD BREAK",
@@ -1295,6 +1325,30 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-055",
+      "part": "11",
+      "title": "A PARAGRAPH LINE CARRIES NO EDGE WHITESPACE",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-056",
+      "part": "11",
+      "title": "A TABLE WITHOUT A HEADER ROW GETS AN EMPTY ONE",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-057",
+      "part": "11",
+      "title": "ADJACENT LISTS OF ONE KIND ALTERNATE THEIR MARKER",
+      "scope": "canonical-writing"
+    },
+    {
+      "id": "CARVE-P11-058",
+      "part": "11",
+      "title": "A DEFINITION LIST IS WRITTEN AS ITS TERMS AND BLOCKS",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P11-036",
       "part": "11",
       "title": "A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES",
@@ -1309,7 +1363,7 @@
     {
       "id": "CARVE-P11-038",
       "part": "11",
-      "title": "THE MARKDOWN TARGET'S CROSS-REFERENCES",
+      "title": "THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG",
       "scope": "canonical-writing"
     },
     {
