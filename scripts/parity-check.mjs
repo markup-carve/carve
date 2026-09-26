@@ -56,6 +56,9 @@ try {
   const cases = [
     { name: 'thematic break between paragraphs', blocks: [paragraph('one'), { type: 'thematic_break' }, paragraph('two')], inlines: [text('one two')] },
     { name: 'code payload', blocks: [{ type: 'code_block', content: 'first\nsecond\n', lang: 'js' }], inlines: [text('first second')] },
+    { name: 'code spacing', blocks: [{ type: 'code_block', content: 'a  b\n\nc' }], inlines: [text('a  b  c')] },
+    { name: 'titled admonition', blocks: [{ type: 'admonition', kind: 'note', title: [text('Title')], children: [paragraph('body')] }], inlines: [text('Title body')] },
+    { name: 'figure order', blocks: [{ type: 'figure', target: paragraph('body'), caption: [text('caption')] }], inlines: [text('body caption')] },
     { name: 'nested heading and quote', blocks: [{ type: 'block_quote', children: [{ type: 'heading', level: 2, children: [text('Heading')] }, paragraph('body')] }], inlines: [text('Heading body')] },
     { name: 'inline styling', blocks: [{ type: 'paragraph', children: [{ type: 'strong', children: [text('bold')] }] }], inlines: [{ type: 'strong', children: [text('bold')] }] },
     { name: 'omitted raw payload', blocks: [{ type: 'raw_block', format: 'html', content: '<b>raw</b>\n' }], inlines: [] },
@@ -79,7 +82,20 @@ try {
   }
   console.log(`constructed block cells: ${cases.length} cases on Markdown, plain and ANSI; Carve refusal in all three engines`)
 
-  for (const source of ['`z` ``\n`\n', 'before ``\n`\n', 'before ```\n``\n']) {
+  const code = { type: 'code', value: '\n`' }
+  for (const children of [
+    [text('before '), code, text(' after')],
+    [{ type: 'link', href: 'u', children: [text('before '), code] }],
+  ]) {
+    const ast = JSON.stringify({ type: 'document', srcByteLength: 0, children: [{ type: 'paragraph', children }] })
+    for (const engine of Object.keys(engines)) {
+      if (!cleanRefusal(invoke(engine, ['--from-json', '--carve'], ast), 'code')) {
+        failures.push(`${engine}: an unspellable leading-newline code span must refuse cleanly`)
+      }
+    }
+  }
+
+  for (const source of ['`z` ``\n`\n', 'before ``\n`\n', 'before ```\n``\n', '{~before ``\n`~}\n']) {
     const written = new Map()
     const original = new Set()
     for (const engine of Object.keys(engines)) {
@@ -94,7 +110,7 @@ try {
     }
     if (original.size !== 1 || new Set(written.values()).size !== 1) failures.push('cross-engine: code-span source or canonical output differs')
   }
-  console.log('code-span formatter: three cases, all writer/reader pairs, idempotence and canonical agreement')
+  console.log('code-span formatter: four cases, all writer/reader pairs, idempotence and canonical agreement')
 } catch (error) {
   console.error(`parity could not complete: ${error.message}`)
   process.exit(2)

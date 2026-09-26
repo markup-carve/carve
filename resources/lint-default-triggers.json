@@ -1,5 +1,5 @@
 {
-  "bidi-control-in-source": "a‮b\n",
+  "bidi-control-in-source": "a\u202eb\n",
   "duplicate-heading-id": "# A\n\n# A\n",
   "broken-crossref": "see </#nope>\n",
   "unresolved-reference-link": "see [text][nope]\n",

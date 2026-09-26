@@ -6,9 +6,9 @@ export function lintDriftProblems(missing, declared) {
   ]
 }
 
-export function cleanRefusal(result) {
+export function cleanRefusal(result, node = 'table_row') {
   return Number.isInteger(result.status) && result.status > 0
-    && result.stdout === '' && /cannot spell table_row/.test(result.stderr)
+    && result.stdout === '' && result.stderr.includes(`cannot spell ${node}`)
     && !/Fatal error|Stack trace|panicked at/.test(result.stderr)
 }
 
