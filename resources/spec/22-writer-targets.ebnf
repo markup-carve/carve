@@ -593,9 +593,10 @@
       NORMATIVE [CARVE-P11-056]. GFM reads a pipe table only below a header row and its
       delimiter row, so rows written without them are a paragraph of pipes.
       A table with no header row anywhere is written with an EMPTY header row
-      first (a table with one keeps §10d, which writes it as the header): one empty cell for each cell of the widest row, and a
-      delimiter row of the same width, whose alignment is the one the
-      headerless table already takes from its first aligned row.
+      first: one empty cell for each cell of the widest row, and a delimiter
+      row of the same width, whose alignment is the one the headerless table
+      already takes from its first aligned row. A table with a header row
+      keeps §10d, which writes that row as the header.
 
         | a | b |          ->  |  |  |
         | c |                  | --- | --- |
