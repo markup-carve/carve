@@ -110,6 +110,7 @@
         },
         "kind": {
           "type": "string",
+          "minLength": 1,
           "not": {
             "enum": [
               "bibliography",

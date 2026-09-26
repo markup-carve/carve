@@ -51,13 +51,29 @@
         is attribute-escaped.
         THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME -- NORMATIVE [CARVE-P9-027]. The rule
         above names the LINKS and left the REGION they sit in anonymous. The
-        section takes `aria-label`, the string is the `endnotes` label (SS16a),
-        and it is escaped the same way:
+        section takes `aria-label` when it has no authored title. The string is
+        the `endnotes` label (SS16a), escaped the same way:
             <section role="doc-endnotes" aria-label="Footnotes">
+        A placed `::: footnotes` with a quoted title instead takes
+        `aria-labelledby` at that title's id under §12 [CARVE-P9-072].
         The default is "Footnotes" rather than "Endnotes" because that is the
         word the rest of this grammar uses for the construct. A host that
         renders them at the end and calls them endnotes sets the label; that is
         what the map is for.
+      - A TOP-LEVEL `::: footnotes` THAT PLACES THE ENDNOTES SECTION -- NORMATIVE
+        [CARVE-P9-075]. When at least one note is referenced, the first
+        top-level `::: footnotes` places the one endnotes section at its
+        position. Render each block authored in that directive's `children`
+        in source order immediately BEFORE the section, as sibling blocks in
+        the surrounding document or heading section. The authored blocks are
+        not children of the generated endnotes section. The opener's quoted
+        title and `[label]`, when present, instead become the section's first
+        children under PART 9 §12 [CARVE-P9-072], before its `<hr>` and `<ol>`.
+        Later `::: footnotes` markers, and a marker in a document with no
+        referenced notes, render the ordinary `<div class="footnotes">` floor
+        of §12 with their own title, label, and authored children. A nested
+        marker follows [CARVE-P9-073] below, even when it appears before the
+        first top-level marker.
       - DOCUMENT-WIDE PLACEMENT MARKERS REQUIRE DOCUMENT TOP LEVEL -- NORMATIVE
         [CARVE-P9-073]. A `::: footnotes`, `::: bibliography`, or
         `::: references` marker inside a block-level container -- a block

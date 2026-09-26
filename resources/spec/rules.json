@@ -625,7 +625,7 @@
     {
       "id": "CARVE-P9-072",
       "part": "9",
-      "title": "A DIRECTIVE'S TITLE AND LABEL RENDER INSIDE THE REGION IT PLACES",
+      "title": "A DIRECTIVE'S TITLE AND LABEL ACCOMPANY THE REGION IT PLACES",
       "scope": "resolution-rendering"
     },
     {
@@ -686,6 +686,12 @@
       "id": "CARVE-P9-027",
       "part": "9",
       "title": "THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME",
+      "scope": "resolution-rendering"
+    },
+    {
+      "id": "CARVE-P9-075",
+      "part": "9",
+      "title": "A TOP-LEVEL `::: footnotes` THAT PLACES THE ENDNOTES SECTION",
       "scope": "resolution-rendering"
     },
     {

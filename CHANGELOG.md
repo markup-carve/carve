@@ -18,12 +18,18 @@ Releases before 0.1.6 are archived in
   AST contract stays `1.0`. Reparsing the source is the only remedy - a stored
   tree cannot tell a generated space from an authored character (carve#2337,
   carve#1242).
+- AST validation rejects an empty `admonition.kind`; a named container requires
+  a type word (carve#2346).
 
 ### Changed
 
 - Annotation ranges project offsets by codepoint in a fixed traversal order,
   independent of JSON key order, and a source position reads coordinates from the
   input named by `pos.file` (carve#2337).
+- Authored blocks in a placed `::: footnotes` marker render before the endnotes
+  section; fallback markers keep those blocks in their div. Directive title and
+  label placement and generated body order are specified together (carve#2333,
+  carve#2346).
 
 ### Added
 

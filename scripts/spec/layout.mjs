@@ -2793,8 +2793,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               push(node)
             } else if (opener.type === 'footnotes') {
               // placement directive: relocates the endnotes section
-              if (body.some((l) => !isBlank(l))) throw new Refuse('non-empty ::: footnotes body')
-              push({ t: 'footnotes-placement' })
+              push({
+                t: 'footnotes-placement',
+                title: opener.title,
+                label: opener.label,
+                children: parseBlocks(body, state, false),
+              })
             } else if (opener.type === 'toc') {
               throw new Refuse('::: toc directive')
             } else if (

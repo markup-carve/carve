@@ -33,6 +33,11 @@ const visibleText = (html) =>
 // has no spelling for either the marker or the empty div, so its round trip
 // loses the quote's whole body.
 
+// Cases 499 and 500 add three documents. All three import, remain canonical,
+// and preserve visible text. Only 500's no-note fallback round-trips through
+// HTML; the placed marker and later duplicate do not. None round-trips through
+// Markdown, whose output has no footnotes placement marker.
+
 // Corpus 489's nine rows add +9 to each population count, +2 to the HTML round
 // trip and 0 to the Markdown one, as measured with the pinned carve-js.
 

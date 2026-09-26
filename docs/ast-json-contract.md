@@ -1100,10 +1100,12 @@ that a pass-through is the answer that cannot be right
 
 ## A named container is a callout, a directive or a div
 
-`:::` produces one of three types. An anonymous or attribute-only container is a
-`div`. A named one whose kind names **generated content** - `bibliography`,
-`footnotes`, `glossary`, `index`, `references`, `toc` - is a `directive`. Every
-other named container is an `admonition`.
+An ordinary `:::` container produces one of three types after reserved openers
+are recognized. Bare `::: figure` produces `figure_group`; `::: |`, `::: \`,
+and `::: >` produce their own block types. An anonymous or attribute-only
+ordinary container is a `div`. A named one whose kind names **generated
+content** - `bibliography`, `footnotes`, `glossary`, `index`, `references`,
+`toc` - is a `directive`. Every other named container is an `admonition`.
 
 `admonition` covered all three, so a table of contents was an admonition and a
 consumer dispatching on `type` to decide whether to draw a callout had to carry a
@@ -1120,6 +1122,7 @@ The schema rejects generated-content kinds on `admonition.kind`. The pinned
 reference engine publishes those containers as `directive`, so the split is
 checked in both directions
 ([carve#2195](https://github.com/markup-carve/carve/issues/2195)).
+An admonition kind must be nonempty because the opener requires a type word.
 
 **A directive always publishes `children`.** An empty directive carries
 `children: []`, like an empty admonition. Consumers can read the same field on
@@ -1130,8 +1133,7 @@ both kinds without treating omission as another spelling of an empty body
 named container, so `::: toc "Contents"` spells one. `directive.title` is
 optional and holds the quoted text as authored inline content, exactly as
 `admonition.title` does. The dispatch does not move - the kind alone still
-decides the type - and what a target renders for a titled directive is
-`admonition`'s existing rule
+decides the type. PART 9 §12 governs where its title and label render
 ([carve#2247](https://github.com/markup-carve/carve/issues/2247)).
 
 ## A line block may publish its lines

@@ -14,26 +14,26 @@ same `.crv` / `.html` pairs and reports default conformance, optional Tier-2
 adapter coverage, rough CLI timing, and the extension hook surface each
 implementation exposes.
 
-## Snapshot (2026-08-29)
+## Snapshot (2026-09-26)
 
-> Run with all three implementations built from their own `main`. Regenerate any
-> time with `npm run compare:impls`. Timings are from one machine and mean
-> nothing across rows; the counts are the point, and
-> `tests/implementation-comparison-counts.test.mjs` fails when they stop
-> matching the corpus - which is how this page came to quote 302 pairs against a
-> corpus of 529, and again at 531, 532, 533, 535, 536, 539, 542, 544, 547, 548, 550, 552, 553, 554, 557, 562, 564, 567, 571, 580 and 653.
+This run covers 1544 core documents. The corpus at spec commit `ffda8032`
+contains 1881; the 75 categories in the historical ledger below account for
+337 excluded documents. Cases 499 and 500, including 500's second document,
+are included. The table reports document passes; the raw output also counts
+1686 scored target fixtures per engine. Timings reflect this machine's load,
+not parser throughput.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>1541 / 1541</strong>
+    <strong>1544 / 1544</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>1541 / 1541</strong>
+    <strong>1544 / 1544</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>1541 / 1541</strong>
+    <strong>1544 / 1544</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -44,11 +44,26 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `da45f9d2` | `1541 / 1541` | `0` | `0` | `3.71` |
-| JS | `f0abfc66` | `1541 / 1541` | `0` | `0` | `107.12` |
-| PHP | `3a39d658` | `1541 / 1541` | `0` | `0` | `75.37` |
+| Rust | `a9f6e2406` | `1544 / 1544` | `0` | `0` | `6.09` |
+| JS | `1606df34f` | `1544 / 1544` | `0` | `0` | `197.28` |
+| PHP | `16fb4f02` | `1544 / 1544` | `0` | `0` | `119.53` |
 
-Spec commit: `3eae6be`.
+JS and PHP used clean `main` checkouts. Rust used the index-title-order PR
+branch at `a9f6e2406`. To reproduce the scoped run, copy `scripts/`,
+`resources/`, `package.json`, and `tests/corpus/` from `ffda8032` to a
+temporary root with its dependencies. Remove each ledger category's `.crv`
+files and same-stem sidecars: a category matches its exact slug or that slug
+followed by `-<digits>`. Assert that 75 categories remove 337 documents and
+leave 1544. Run `npm run compare:impls` in that copy with `CARVE_JS_DIR`,
+`CARVE_PHP_DIR`, `CARVE_RS_DIR`, and `CARGO_TARGET_DIR` pointing to the measured
+checkouts and Rust build. The `compare-impls.mjs` entry point, its `scripts/lib`
+dependencies, and all retained corpus files were byte-identical to `ffda8032`.
+The temporary copy predates the later upstream merges; its changed
+`scripts/spec` oracle paths were unused because this run did not enable
+`--roundtrip`.
+
+The `Corpus added since this run` ledger is named for the 2026-08-29 baseline.
+It now defines the excluded categories for this scoped snapshot.
 
 Corpus added since this run: `441-a-definition-between-two-open-content-columns-reaches-the-outer-one`,
 `442-a-marker-folds-only-strictly-between-the-item-s-base-and-content-column`,
@@ -203,10 +218,10 @@ and
 and
 `435-the-continuation-marker-s-column-gate-reaches-every-container-19`.
 
-Entries through 491 landed on a host with no engine checkouts, so the run above
-could not be retaken and its numbers describe the corpus WITHOUT them. Section
-492 through 497 also postdate the snapshot, so they are excluded from the dated
-count.
+The listed categories remain outside the scoped measurement. The following
+case-by-case notes record why the original run did not absorb them; some
+engine statuses in those notes have since changed.
+
 Editing the denominators by hand would publish a three-engine measurement
 nobody took, and one that is knowably wrong besides: carve-rs and carve-php
 both read a definition between two open content columns as lazy text today
@@ -386,32 +401,29 @@ derived, and the line has to be DELETED by whoever next runs
 <details>
 <summary>What this run measures, and what it cannot</summary>
 
-The pass counts are FIXTURE cases, not documents: html has an expected-output
-file per document and the other four targets have one wherever a case added it,
-which is 1540 + 26 + 13 + 83 + 13. On the targets without a fixture the three
-engines are compared against each other instead, and `cross_impl_diffs=0` is
-that comparison.
+The runner's `pass=` counts are scored target fixtures: 1544 HTML files, 32
+Markdown files, 13 plain-text files, 84 Carve files, and 13 ANSI files, for
+1686 per engine. The cards and table count documents. On targets without a
+fixture the engines are compared with each other, as reported by
+`cross_impl_diffs=0`.
 
 **A tree-only difference is invisible here.** A paragraph whose whole content is
 one image renders as a bare `<img>` with no `<p>` wrapper, so `paragraph > image`
 and a top-level `image` emit the same bytes and pass this page either way. The
-reader that can tell them apart is `npm run ast:check`, and on the same three
-builds its three-way SHAPE comparison is unanimous across 1543 documents, with
-values and all 31932 spans identical. That is what closes the window this page
+reader that can tell them apart is `npm run ast:check`. A separate earlier
+three-way SHAPE check was unanimous across 1543 documents, with values and all
+31932 spans identical. That is what closed the window this page
 used to declare for category `411` (markup-carve/carve-rs#1341,
 markup-carve/carve-php#1681, both since merged).
 
-**`ast:check` did not reach every satellite.** carve-rb has no checkout on the
-machine that took this run, and the tool says so rather than passing it: "NOT
-MEASURED: 1 of 3 satellites". The three engines this page is about were all
-measured.
+**That earlier `ast:check` did not reach every satellite.** carve-rb had no
+checkout on its host; the tool reported "NOT MEASURED: 1 of 3 satellites".
+The three engines on this page were measured.
 
-**The engines are ahead of the pin, and that is a separate window.** This run is
-of each engine's own `main`; the build `package.json` pins is a different thing
-and drifts behind it by design. What the pinned build does not yet reproduce is
-declared per document in `resources/engine-pin-drift.txt`, which currently names
-one - the `439` row whose ports have landed on all three mains but not yet in
-the pin.
+**The pinned build is a separate measurement.** This run uses the three heads
+listed above, while `package.json` selects a published build. Its known
+differences are declared in `resources/engine-pin-drift.txt`, which is empty at
+this commit.
 
 **Timings are one machine and mean nothing across rows.** Read `pass=` and
 `mismatch=`. For a timing claim use a benchmark run on an idle machine and say
@@ -595,7 +607,7 @@ It renders exactly what is SCORED: every document on the default target, plus
 any target that document carries an expected-output file for. That second part
 is not optional - a case may add a `.md`, `.txt` or `.fmt` beside its `.html`,
 and those files count toward `pass=N/M`, which is why the snapshot above reads
-`pass=1675/1675` under `corpus_pairs=1541`. What it drops is the rest of the
+`pass=1686/1686` under `corpus_pairs=1544`. What it drops is the rest of the
 five-target sweep, where every document is rendered on every target to check
 the engines against each other. That is four extra renders per document against
 fifteen extra in total, and no count in the gate depends on it.
@@ -850,21 +862,21 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=1541 shard=0/1 targets=html,markdown,plain,carve,ansi
-rust: pass=1675/1675 mismatch=0 error=0 skipped=0 runs=7700 avg_ms=3.71
+profile=default/no-opt-in corpus=core corpus_pairs=1544 shard=0/1 targets=html,markdown,plain,carve,ansi
+rust: pass=1686/1686 mismatch=0 error=0 skipped=0 runs=7720 avg_ms=6.09
   mismatching documents: 0
-js: pass=1675/1675 mismatch=0 error=0 skipped=0 runs=7700 avg_ms=107.12
+js: pass=1686/1686 mismatch=0 error=0 skipped=0 runs=7720 avg_ms=197.28
   mismatching documents: 0
-php: pass=1675/1675 mismatch=0 error=0 skipped=0 runs=7700 avg_ms=75.37
+php: pass=1686/1686 mismatch=0 error=0 skipped=0 runs=7720 avg_ms=119.53
   mismatching documents: 0
 cross_impl_diffs=0
 
 Target agreement (implementations compared against each other)
-html: compared=1540 diffs=0 errors=0 fixtures=yes
-markdown: compared=1540 diffs=0 errors=0 fixtures=26
-plain: compared=1540 diffs=0 errors=0 fixtures=13
-carve: compared=1540 diffs=0 errors=0 fixtures=83
-ansi: compared=1540 diffs=0 errors=0 fixtures=13
+html: compared=1544 diffs=0 errors=0 fixtures=yes
+markdown: compared=1544 diffs=0 errors=0 fixtures=32
+plain: compared=1544 diffs=0 errors=0 fixtures=13
+carve: compared=1544 diffs=0 errors=0 fixtures=84
+ansi: compared=1544 diffs=0 errors=0 fixtures=13
 target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.
 
 Extension capability matrix
@@ -879,7 +891,7 @@ and zero errors. No document differs anywhere, on any target, and no engine
 stands alone - the previous snapshot had carve-rs one document behind on
 `228-a-line-at-a-footnote-definition-s-own-column-...`, and that is closed.
 
-**The `carve` target carries expected-output files for 83 cases** and asserts
+**The `carve` target carries expected-output files for 84 cases** and asserts
 engine agreement on the rest. The class of `carve`-target differences that used
 to recur here was the writer inlining a resolved reference, so PART 11 §1's
 round trip failed for `[a][r]` in all three engines; that is

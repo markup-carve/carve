@@ -124,6 +124,39 @@ test('a top-level marker still places and an unmarked document is unchanged', ()
   assert.ok(unmarked.trimEnd().endsWith('</section>'))
 })
 
+test('a placed footnotes title and label name the section after authored blocks', () => {
+  const source = 'a[^1]\n\n::: footnotes "Notes" [End]\nAuthored.\n:::\n\n[^1]: body\n'
+  const html = oracleHtml(source)
+  const body = html.indexOf('<p>Authored.</p>')
+  const section = html.indexOf('<section role="doc-endnotes" aria-labelledby="adm-1">')
+  const title = html.indexOf('<p class="admonition-title" id="adm-1">Notes</p>')
+  const label = html.indexOf('<p class="div-label">End</p>')
+  const rule = html.indexOf('  <hr>')
+  assert.ok(body >= 0 && section > body && title > section && label > title && rule > label)
+  assert.equal(html, carveToHtml(source).trim())
+})
+
+test('an unplaced footnotes title keeps its div floor and consumes no adm id', () => {
+  const source = '::: footnotes "Notes" [End]\nAuthored.\n:::\n\n::: note "Next"\nBody.\n:::\n'
+  const html = oracleHtml(source)
+  assert.match(html, /<div class="footnotes">\n  <p class="admonition-title">Notes<\/p>\n  <p class="div-label">End<\/p>\n  <p>Authored\.<\/p>\n<\/div>/)
+  assert.match(html, /<aside class="admonition note" aria-labelledby="adm-1">/)
+  assert.equal(html, carveToHtml(source).trim())
+})
+
+test('a placed title takes its adm id before titles inside its body', () => {
+  const source = 'a[^1]\n\n::: footnotes "Notes" [End]\n::: note "Inside"\nBody.\n:::\n:::\n\n[^1]: body\n'
+  const html = oracleHtml(source)
+  assert.match(html, /<section role="doc-endnotes" aria-labelledby="adm-1">\n  <p class="admonition-title" id="adm-1">Notes<\/p>/)
+  assert.match(html, /<aside class="admonition note" aria-labelledby="adm-2">/)
+  assert.equal(html, carveToHtml(source).trim())
+})
+
+test('a titled marker inside a heading section keeps endnotes indentation', () => {
+  const source = '# Heading\n\na[^1].\n\n::: footnotes "Notes" [End]\nAuthored.\n:::\n\n[^1]: body\n'
+  assert.equal(oracleHtml(source), carveToHtml(source).trim())
+})
+
 test('a nested references marker leaves a later top-level marker available', () => {
   const source = 'See [@x].\n\n> ::: references\n> :::\n\n::: references\n:::\n\n## After\n\n[@x]: Source\n'
   const html = carveToHtml(source, { extensions: [citations()] })

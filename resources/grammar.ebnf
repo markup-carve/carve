@@ -4845,13 +4845,14 @@ EOF = (* end of file *) ;
         the name undefined, and the author's is the more specific statement.
         The title `<p>` is still emitted, unchanged, without an id.
 
-      A DIRECTIVE'S TITLE AND LABEL RENDER INSIDE THE REGION IT PLACES -- NORMATIVE
+      A DIRECTIVE'S TITLE AND LABEL ACCOMPANY THE REGION IT PLACES -- NORMATIVE
       [CARVE-P9-072]. A `directive` (PART 12 §35) places generated content: a
       `<section role="doc-endnotes">` for `footnotes`, a `<nav class="toc">` for
       `toc`, whatever element the Tier-3 extension for another kind emits. The
-      opener's quoted title and its `[label]` render as the FIRST CHILDREN of
-      THAT element, title before label, in the two slots an admonition already
-      uses:
+      opener's quoted title and its `[label]` render in that order. When the
+      placed element admits paragraphs, they are its FIRST CHILDREN, in the
+      two slots an admonition already uses. Where it does not admit paragraphs,
+      they precede the generated element as specified below:
 
             <section role="doc-endnotes" aria-labelledby="adm-1">
               <p class="admonition-title" id="adm-1">Notes</p>
@@ -4860,12 +4861,13 @@ EOF = (* end of file *) ;
               <ol>...</ol>
             </section>
 
-      NOTHING HERE IS A NEW SHAPE. The title is a CHILD, never a sibling and
-      never a class (pinned rule a above); it is emitted only where the author
-      wrote one (rule b); a titled region takes `aria-labelledby` at the
-      title's minted id, an untitled one keeps the name the `labels` map
-      supplies (§16a's `endnotes`, the TOC extension's `tocNav`), and an
-      author's own `aria-label` or `aria-labelledby` still wins and mints no id,
+      NOTHING HERE IS A NEW SHAPE. The title is a child where the placed
+      element admits paragraphs, never a class (pinned rule a above); it is
+      emitted only where the author wrote one (rule b); a titled region takes
+      `aria-labelledby` at the title's minted id, an untitled one keeps the
+      name the `labels` map supplies (§16a's `endnotes`, the TOC extension's
+      `tocNav`), and an author's own `aria-label` or `aria-labelledby` still
+      wins and mints no id,
       matched the same case-insensitive way, WHERE THE MARKER'S ATTRIBUTES REACH
       THE PLACED ELEMENT (they reach the `<nav>`; the endnotes section takes none
       of them, so nothing can override its name there), while any OTHER `aria-*`
@@ -4876,10 +4878,11 @@ EOF = (* end of file *) ;
       the two tokens follow PART 11 §10e T1, which already covers every named
       container.
 
-      A SIBLING TITLE WAS REFUSED. Emitting the `<p>` before the placed element
-      puts the visible name outside the region it names and leaves the region
-      announcing the map default: "Notes" on the page, "Footnotes" in the
-      landmark list. One region cannot carry two names, and the landmark clause
+      A SIBLING TITLE WAS REFUSED FOR A NAMEABLE REGION. Emitting the `<p>`
+      before the endnotes section or TOC nav puts the visible name outside the
+      region it names and leaves the region announcing the map default: "Notes"
+      on the page, "Footnotes" in the landmark list. One region cannot carry
+      two names, and the landmark clause
       above settles which one it is -- the author's title, wherever the author
       wrote one.
 
@@ -4890,9 +4893,10 @@ EOF = (* end of file *) ;
       that has nothing to do with it.
 
       THE ID COMES FROM THE ADMONITION SEQUENCE, NOT A SECOND ONE. `adm-{n}`
-      above counts Tier-1 titled blocks; a titled directive takes THE NEXT n IN
-      THAT SAME SEQUENCE, in document order, through the same slug registry. One
-      counter for one prefix: two would mint `adm-1` twice in a document holding
+      above counts Tier-1 titled blocks; a titled directive whose placed element
+      carries a name takes THE NEXT n IN THAT SAME SEQUENCE, in document order,
+      through the same slug registry. One counter for one prefix: two would
+      mint `adm-1` twice in a document holding
       a titled admonition and a titled directive, and the registry would then
       have to rename an id the other element's `aria-labelledby` points at.
 
@@ -4916,11 +4920,12 @@ EOF = (* end of file *) ;
       `glossary` places one `<dl>` per definition list written inside it and an
       `index` places a `<ul>`; HTML admits no `<p>` inside either, and wrapping
       them to make room would change what an UNTITLED document renders. Those
-      kinds emit the title and then the label IMMEDIATELY BEFORE the generated
-      content and mint no id, which is where a `directive` that cannot name
-      itself leaves them. `footnotes`, `toc` and every degraded `<div>` take the
-      children form above, because their element holds flow content and carries
-      a name.
+      kinds emit the title and then the label BEFORE their content and mint no
+      id, which is where a `directive` that cannot name itself leaves them.
+      For `index`, authored body blocks follow those tokens and precede the
+      generated `<ul>`. `footnotes`, `toc` and every degraded `<div>` take the
+      children form above because their element holds flow content. The placed
+      endnotes section and TOC nav can carry a name; a degraded div cannot.
 
    13. HEADING SECTION WRAPPING -- NORMATIVE [CARVE-P9-019] (governs `atx_heading` in
       PART 2 and the renderer; matches djot, see `jgm/djot` official
@@ -5259,13 +5264,29 @@ EOF = (* end of file *) ;
         is attribute-escaped.
         THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME -- NORMATIVE [CARVE-P9-027]. The rule
         above names the LINKS and left the REGION they sit in anonymous. The
-        section takes `aria-label`, the string is the `endnotes` label (SS16a),
-        and it is escaped the same way:
+        section takes `aria-label` when it has no authored title. The string is
+        the `endnotes` label (SS16a), escaped the same way:
             <section role="doc-endnotes" aria-label="Footnotes">
+        A placed `::: footnotes` with a quoted title instead takes
+        `aria-labelledby` at that title's id under §12 [CARVE-P9-072].
         The default is "Footnotes" rather than "Endnotes" because that is the
         word the rest of this grammar uses for the construct. A host that
         renders them at the end and calls them endnotes sets the label; that is
         what the map is for.
+      - A TOP-LEVEL `::: footnotes` THAT PLACES THE ENDNOTES SECTION -- NORMATIVE
+        [CARVE-P9-075]. When at least one note is referenced, the first
+        top-level `::: footnotes` places the one endnotes section at its
+        position. Render each block authored in that directive's `children`
+        in source order immediately BEFORE the section, as sibling blocks in
+        the surrounding document or heading section. The authored blocks are
+        not children of the generated endnotes section. The opener's quoted
+        title and `[label]`, when present, instead become the section's first
+        children under PART 9 §12 [CARVE-P9-072], before its `<hr>` and `<ol>`.
+        Later `::: footnotes` markers, and a marker in a document with no
+        referenced notes, render the ordinary `<div class="footnotes">` floor
+        of §12 with their own title, label, and authored children. A nested
+        marker follows [CARVE-P9-073] below, even when it appears before the
+        first top-level marker.
       - DOCUMENT-WIDE PLACEMENT MARKERS REQUIRE DOCUMENT TOP LEVEL -- NORMATIVE
         [CARVE-P9-073]. A `::: footnotes`, `::: bibliography`, or
         `::: references` marker inside a block-level container -- a block
@@ -11570,8 +11591,11 @@ EOF = (* end of file *) ;
       ([carve#2199](https://github.com/markup-carve/carve/issues/2199)).
 
    35. A NAMED CONTAINER IS A CALLOUT, A DIRECTIVE OR A DIV -- NORMATIVE
-      [CARVE-P12-057]. `:::` produces one of three types. An ANONYMOUS or
-      attribute-only container is a `div`. A named one whose kind names
+      [CARVE-P12-057]. An ordinary `:::` container produces one of three
+      types after the reserved openers have been recognized. Bare `::: figure`
+      produces `figure_group`; `::: |`, `::: \`, and `::: >` produce their
+      own block types (PART 2). An ANONYMOUS or attribute-only ordinary
+      container is a `div`. A named one whose kind names
       GENERATED CONTENT - `bibliography`, `footnotes`, `glossary`, `index`,
       `references`, `toc` - is a `directive`. Every other named container is
       an `admonition`.
@@ -11600,8 +11624,9 @@ EOF = (* end of file *) ;
 
       A DIRECTIVE ALWAYS PUBLISHES `children`, with `children: []` when no
       blocks were written between the markers. Its content is usually generated
-      from the document; authored blocks are carried and the renderer decides
-      what they mean. This is the same empty-container shape as `admonition`
+      from the document; authored blocks are carried. PART 9 §16 governs the
+      body of a core `footnotes` directive. Tier-3 extension contracts govern
+      their own bodies. This is the same empty-container shape as `admonition`
       ([carve#2195](https://github.com/markup-carve/carve/issues/2195),
       [carve#2333](https://github.com/markup-carve/carve/issues/2333)).
 
@@ -11610,7 +11635,7 @@ EOF = (* end of file *) ;
       optional and holds that text as authored inline content, exactly as
       `admonition.title` does. The DISPATCH DOES NOT MOVE - the kind alone
       decides the type, an untitled directive is unchanged, and a titled one
-      renders by `admonition`'s existing rule
+      renders its title and label under PART 9 §12
       ([carve#2247](https://github.com/markup-carve/carve/issues/2247)).
 
    36. A LINE BLOCK MAY PUBLISH ITS LINES -- NORMATIVE [CARVE-P12-058]. A

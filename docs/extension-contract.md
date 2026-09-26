@@ -682,9 +682,11 @@ the same data it would from Pandoc.
 - **afterParse**: collects and removes `[@key]:` definition lines; resets
   per-document state so a reused extension instance does not leak across runs.
 - **beforeRender**: numbers cited+defined keys in first-citation order and
-  places the references list - into an explicit `::: references` div/admonition
+  places the references list - into an explicit `::: references` directive
   if present at document top level, else appended at document end. A marker
-  inside a container renders as an ordinary div (`CARVE-P9-073`).
+  inside a container renders as an ordinary div (`CARVE-P9-073`). When the
+  top-level marker places a list, its authored blocks render first, followed
+  by the generated list inside the same `<div class="references">`.
 - **Renderers**: an inline renderer for `citation-group` (numbered `[1]` or
   author-date `(Author Year)`) and a block renderer that emits the references
   list (`<ol class="references">` numbered, sorted `<ul class="references">`
@@ -865,7 +867,7 @@ governs its placement.
 
 ### 6.3 Rendering
 
-- The list renders into an explicit `::: references` div if present, else is
+- The list renders into an explicit `::: references` directive if present, else is
   appended at document end - identical placement to §4.
 - **Numeric is the mandated default**: `<ol class="references">`, in-text
   citations rendered `[1]`. When author-date mode (§4) is enabled, its sorted
@@ -913,7 +915,7 @@ Matches the §4 verbatim rule - no content is ever dropped:
   (no orphan entry with a dangling back-ref). A key cited elsewhere in a
   fully-resolved group is unaffected.
 - A `::: references` placeholder with no resolvable data (extension off, no
-  bibliography option supplied, or every key unresolved) stays a plain
+  bibliography option supplied, or every key unresolved) renders as a plain
   `<div class="references">` containing whatever it literally held.
 - An unreadable or malformed CSL-JSON source resolves to an empty pool; keys
   then fall back to in-document defs, and otherwise degrade per the verbatim
@@ -1027,6 +1029,10 @@ either alone.
   agree). Each item is `{display}` followed by one back-link per occurrence
   `1 … n`. The `{display}` text is the first occurrence's literal term text
   (HTML-escaped).
+- When the index is generated, a quoted title and `[label]` render first,
+  followed by blocks authored inside `::: index` in source order, then the
+  `<ul class="index">`. These are siblings without a directive wrapper. The
+  title mints no id because the `<ul>` cannot carry its paragraph (PART 9 §12).
 - **Each back-link carries an accessible name** (carve#1469). A bare `↩` is
   announced as "leftwards arrow with hook", or skipped - the sentence PART 9 §16
   exists to prevent, on the identical element one document over. §16's rule is
@@ -1112,6 +1118,9 @@ preceding attribute line, never inline on the opener):
   the TOC faithfully reflects each engine's parse.)
 - The nested `<ul>` HTML is byte-identical to the standalone TOC extension
   (one tag per line).
+- When the TOC is generated, blocks authored inside `::: toc` render in source
+  order as siblings before the `<nav class="toc">`. There is no directive
+  wrapper around them.
 
 **The nav carries an accessible name** (carve#1509). `<nav>` is a navigation
 landmark unconditionally - unlike `<section>`, which maps to `generic` until it
@@ -1252,16 +1261,23 @@ the opt-in.
 
 - All footnotes are flushed at the marker, including those referenced *after*
   it in the document.
-- Only the **first** `::: footnotes` places; a second one degrades to an empty
-  `<div class="footnotes"></div>` placeholder (no duplicate section).
+- Only the **first top-level** `::: footnotes` places. A later one renders as an
+  ordinary `<div class="footnotes">` containing any blocks written inside it;
+  an empty later marker renders `<div class="footnotes"></div>`.
+- When the first top-level marker places the section, blocks written inside its
+  body render in source order immediately before the section, as sibling blocks
+  in the surrounding document or heading section. The quoted title and
+  `[label]` instead render inside the section as described below
+  (`CARVE-P9-075`).
 - A document with **no** `::: footnotes` marker is **byte-identical** to the
   default end-of-document rendering.
 - A marker in a document with no footnotes degrades to an ordinary
   `<div class="footnotes">` and never relocates.
 - So does a marker inside a block-level container - a block quote, a list item,
   a div or directive body, a table cell, a definition description, a footnote
-  definition - and the section is then appended where an unmarked document puts
-  it (PART 9 §16, `CARVE-P9-073`). `carve lint` reports that one as
+  definition. A later top-level marker can still place the section; without
+  one, the section is appended at document end (PART 9 §16,
+  `CARVE-P9-073`). `carve lint` reports the nested marker as
   `footnotes-placement-in-container`.
 - A quoted title and an opener `[label]` render as the placed section's first
   children, before its `<hr>`, and the title becomes the section's accessible
@@ -1286,7 +1302,7 @@ Both degrade gracefully (a labeled `<div>` floor).
 
 - **`::: footnotes`** is core and its full output is byte-identical across
   implementations, so it is **corpus-pinned** in the main corpus
-  (`120-footnotes-placement`).
+  (`122-footnotes-placement`).
 - **`::: toc`** is a Tier-3 extension, so it is **not** corpus-pinned; each
   implementation pins the window selection, id resolution, and degradation in
   its own suite.
