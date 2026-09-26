@@ -15,7 +15,7 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 
 | Rule | Part | Clause |
 |---|---:|---|
-| [`CARVE-P2-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/04-blocks-tables-containers.ebnf#L545) | 2 | RENDER-LOSS REPORTING |
+| [`CARVE-P2-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/04-blocks-tables-containers.ebnf#L548) | 2 | RENDER-LOSS REPORTING |
 | [`CARVE-P9-070`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L585) | 9 | SOCIAL LINK RESOLUTION |
 | [`CARVE-P9-071`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L352) | 9 | THE CLIPBOARD TYPE |
 | [`CARVE-P9-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L467) | 9 | TABLE MARKER-PADDING DIAGNOSTICS SHARE ONE ID |
