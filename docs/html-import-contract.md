@@ -780,8 +780,11 @@ A `<math>` element imports through the first of these that applies
    element holds nothing but `mrow`, `mstyle`, `mpadded` and `mspace` around
    the tokens `mi`, `mn`, `mo` and `mtext`, and a `<semantics>` is read through
    its first child only. The text is each token's text in order, with the
-   token's own whitespace collapsed and trimmed; `mspace` and whitespace
-   between elements contribute nothing, and `mathvariant` is not applied.
+   token's own whitespace collapsed and trimmed. Whitespace between elements
+   contributes nothing, and neither does an `mspace`, except that one space
+   stands where an `mspace` separates a letter or digit from the next one, so
+   `<mn>1</mn><mspace/><mn>2</mn>` reads `1 2` and not `12`. `mathvariant` is
+   not applied.
 5. Nothing: the element is dropped with `element-dropped` at `warning`. In
    `roundtrip` the element is kept as raw HTML instead of tiers 4 and 5.
 
@@ -816,7 +819,8 @@ equals the fallback image's trimmed `alt`, the image is dropped with
 different image and is kept.
 
 `mathml-without-tex` pins tier 4 inline, in its own paragraph, as a display
-element read through `<semantics>`, and the fraction that tier 4 refuses.
+element read through `<semantics>`, an `mspace` between two numbers, and the
+fraction that tier 4 refuses.
 `mathml-fallback-image` pins the Wikimedia shape with an annotation, tier 3
 through a hidden `<span>` wrapper, a following image whose `alt` is not the
 formula, and an image beside a visible formula, which stays.
