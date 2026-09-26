@@ -1,0 +1,1 @@
+{"mode":"safe","adapter":"generic","diagnostics":[{"code":"attribute-dropped","message":"Dropped one id on <figure>: the figure and its target both set id, and their two attribute lines merge into a single value","severity":"info","path":"/figure[2]","fidelity":"dropped","confidence":"exact"}]}
