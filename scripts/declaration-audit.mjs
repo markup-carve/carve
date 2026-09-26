@@ -278,11 +278,10 @@ const MANIFEST = [
   // for the reader; the engine test is the gate.
   { repo: 'carve-php', path: 'tests/TestCase/Converter/ConverterCorpusTest.php', name: 'DECLARED_DRIFT', kind: 'php', policy: 'manual', guard: 'two-way', staleness: 'testEveryDeclaredDriftStillDiverges', owner: 'tests/TestCase/Converter/ConverterCorpusTest.php' },
   // Empty cross-engine skip-list for the include/transclusion conformance
-  // vectors (markup-carve/carve-php#373). ONE-WAY: testVector only SKIPS a
-  // listed vector, nothing asserts a listed vector still differs, so a row
-  // would go stale silently. Harmless while empty - the audit fails an unwired
-  // list only once it holds a row; give it a reverse guard before adding one.
-  { repo: 'carve-php', path: 'tests/TestCase/Transform/IncludeConformanceTest.php', name: 'KNOWN_DIFFERENCES', kind: 'php', policy: 'owed', guard: 'one-way', owner: 'tests/TestCase/Transform/IncludeConformanceTest.php' },
+  // vectors (markup-carve/carve-php#373). Two-way since carve-php#2491: the
+  // staleness half re-runs each declared vector and fails when every golden
+  // agrees again.
+  { repo: 'carve-php', path: 'tests/TestCase/Transform/IncludeConformanceTest.php', name: 'KNOWN_DIFFERENCES', kind: 'php', policy: 'owed', guard: 'two-way', staleness: 'testEveryKnownDifferenceStillDiffers', owner: 'tests/TestCase/Transform/IncludeConformanceTest.php' },
   // The include-security adapter carve-php#1954 added. KNOWN_KEYS is a
   // capability list in KNOWN_KEYWORDS' direction, not an exemption: a corpus
   // member it does not name FAILS the adapter, which is what keeps a newly
@@ -315,9 +314,9 @@ const MANIFEST = [
   { repo: 'carve-rs', path: 'tests/include_security_conformance.rs', name: 'KNOWN_KINDS', kind: 'rust', policy: 'permitted', guard: 'two-way', owner: 'adapter capability list, not an exemption' },
   { repo: 'carve-rs', path: 'tests/include_security_conformance.rs', name: 'KNOWN_REQUIREMENTS', kind: 'rust', policy: 'permitted', guard: 'two-way', owner: 'adapter capability list, not an exemption' },
   { repo: 'carve-rs', path: 'tests/include_security_conformance.rs', name: 'KNOWN_DENIALS', kind: 'rust', policy: 'permitted', guard: 'two-way', owner: 'adapter capability list, not an exemption' },
-  // The carve-rs twin of carve-php's include KNOWN_DIFFERENCES: an empty
-  // one-way skip-list for the include/transclusion conformance vectors.
-  { repo: 'carve-rs', path: 'tests/include_conformance.rs', name: 'KNOWN_DIFFERENCES', kind: 'rust', policy: 'owed', guard: 'one-way', owner: 'tests/include_conformance.rs' },
+  // The carve-rs twin of carve-php's include KNOWN_DIFFERENCES. Two-way since
+  // carve-rs#2010, which also asserts a row naming no vector.
+  { repo: 'carve-rs', path: 'tests/include_conformance.rs', name: 'KNOWN_DIFFERENCES', kind: 'rust', policy: 'owed', guard: 'two-way', staleness: 'the difference is gone; delete its KNOWN_DIFFERENCES entry', owner: 'tests/include_conformance.rs' },
 ]
 
 /**
