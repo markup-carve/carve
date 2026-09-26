@@ -706,8 +706,11 @@
       ([carve#2199](https://github.com/markup-carve/carve/issues/2199)).
 
    35. A NAMED CONTAINER IS A CALLOUT, A DIRECTIVE OR A DIV -- NORMATIVE
-      [CARVE-P12-057]. `:::` produces one of three types. An ANONYMOUS or
-      attribute-only container is a `div`. A named one whose kind names
+      [CARVE-P12-057]. An ordinary `:::` container produces one of three
+      types after the reserved openers have been recognized. Bare `::: figure`
+      produces `figure_group`; `::: |`, `::: \`, and `::: >` produce their
+      own block types (PART 2). An ANONYMOUS or attribute-only ordinary
+      container is a `div`. A named one whose kind names
       GENERATED CONTENT - `bibliography`, `footnotes`, `glossary`, `index`,
       `references`, `toc` - is a `directive`. Every other named container is
       an `admonition`.
@@ -736,8 +739,9 @@
 
       A DIRECTIVE ALWAYS PUBLISHES `children`, with `children: []` when no
       blocks were written between the markers. Its content is usually generated
-      from the document; authored blocks are carried and the renderer decides
-      what they mean. This is the same empty-container shape as `admonition`
+      from the document; authored blocks are carried. PART 9 §16 governs the
+      body of a core `footnotes` directive. Tier-3 extension contracts govern
+      their own bodies. This is the same empty-container shape as `admonition`
       ([carve#2195](https://github.com/markup-carve/carve/issues/2195),
       [carve#2333](https://github.com/markup-carve/carve/issues/2333)).
 
@@ -746,7 +750,7 @@
       optional and holds that text as authored inline content, exactly as
       `admonition.title` does. The DISPATCH DOES NOT MOVE - the kind alone
       decides the type, an untitled directive is unchanged, and a titled one
-      renders by `admonition`'s existing rule
+      renders its title and label under PART 9 §12
       ([carve#2247](https://github.com/markup-carve/carve/issues/2247)).
 
    36. A LINE BLOCK MAY PUBLISH ITS LINES -- NORMATIVE [CARVE-P12-058]. A

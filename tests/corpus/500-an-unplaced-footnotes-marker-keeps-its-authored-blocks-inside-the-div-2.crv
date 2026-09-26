@@ -1,0 +1,11 @@
+X[^a].
+
+::: footnotes
+First marker.
+:::
+
+::: footnotes
+Second marker.
+:::
+
+[^a]: note

@@ -1,0 +1,25 @@
+A footnotes marker renders its authored blocks before the placed section
+
+```
+Intro[^a].
+
+::: footnotes
+Notes below:
+:::
+
+After.
+
+[^a]: one note
+.
+<p>Intro<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<p>Notes below:</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>one note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+<p>After.</p>
+```

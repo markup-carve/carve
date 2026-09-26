@@ -1292,6 +1292,25 @@ test('generated-content kinds are directives, not admonitions', () => {
   assert.equal(validate(doc({ type: 'admonition', kind: 'note', children: [] })), true)
 })
 
+test('the reference parser publishes all six generated-content kinds with authored children', () => {
+  for (const kind of schema.$defs.directive.properties.kind.enum) {
+    for (const body of ['', 'Body\n']) {
+      const source = `::: ${kind}\n${body}:::\n`
+      const document = serialize(source)
+      assert.equal(validate(document), true, `${kind}: ${firstErrors()}`)
+      assert.equal(document.children.length, 1, `${kind}: one block`)
+      const directive = document.children[0]
+      assert.equal(directive.type, 'directive', kind)
+      assert.equal(directive.kind, kind)
+      assert.deepEqual(
+        directive.children.map((child) => child.type),
+        body ? ['paragraph'] : [],
+        `${kind}: authored blocks`,
+      )
+    }
+  }
+})
+
 test('directive.title is the shape admonition.title already is', () => {
   // §35 says the field follows `admonition`, so the two subschemas are one
   // convention rather than two. A divergence here is what "matching

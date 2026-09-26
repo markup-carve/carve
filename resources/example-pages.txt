@@ -585,6 +585,8 @@ index: examples/edge-cases/index.md
   footnote-definition-inside-a-container-is-collected
   footnotes-placement
   a-footnotes-placement-marker-inside-a-container-does-not-place
+  a-footnotes-marker-renders-its-authored-blocks-before-the-placed-section
+  an-unplaced-footnotes-marker-keeps-its-authored-blocks-inside-the-div
   footnote-definition-requires-an-inline-body
   footnote-definition-separator-must-be-a-space
   unresolved-footnote-reference-with-a-trailing-attribute-stays-literal

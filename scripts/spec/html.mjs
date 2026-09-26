@@ -105,6 +105,17 @@ function renderTextBlockAttrs(lists, tag) {
 }
 
 export function renderDoc(doc) {
+  return renderDocPass(doc, false)
+}
+
+function renderDocPass(doc, footnoteProbe) {
+  // A placed title takes an adm id before its authored children. Check whether
+  // a note actually resolves first, so a fallback div consumes no id. Only
+  // documents with a titled top-level marker need this extra pass.
+  const hasResolvedNotes = !footnoteProbe && doc.blocks.some((b) =>
+    b.t === 'footnotes-placement' && b.title !== null)
+    ? renderDocPass(doc, true).hasResolvedNotes
+    : null
   const ctx = {
     slug: makeSlugger(),
     admCount: 0,
@@ -121,6 +132,12 @@ export function renderDoc(doc) {
     inBlockquote: false,
     captionSeq: new Map(), // caption label word -> counter (R5)
     captionIds: new Map(), // lower-cased id -> "Label N" (R4)
+    footnotesMarkerCount: 0,
+    footnotesMarkerDepths: [],
+    hasResolvedNotes,
+    footnoteProbe,
+    placedFootnotesSeen: false,
+    placedFootnotesTitleId: null,
   }
   // ONE promotion phase, before anything is serialized: it settles every
   // block-image question in the tree and binds the image captions (carve#1784).
@@ -187,7 +204,7 @@ export function renderDoc(doc) {
   html = resolveFootnotes(html, ctx)
   html = resolveCrossrefs(html, ctx)
   html = applyAbbreviations(html, ctx)
-  return html
+  return footnoteProbe ? { hasResolvedNotes: ctx.resolvedFootnoteCount > 0 } : html
 }
 
 /**
@@ -624,9 +641,31 @@ function renderBlock(b, depth, ctx) {
       const idAttr = authored === null ? ` id="${escapeAttr(id)}"` : ''
       return `${pad}<h${b.level}${attrStr}${idAttr}>${html}</h${b.level}>`
     }
-    case 'footnotes-placement':
-      if (!b.places) return `${pad}<div class="footnotes">\n\n${pad}</div>`
-      return '\uE000fnplacement\uE001'
+    case 'footnotes-placement': {
+      const firstPlaced = b.places && !ctx.placedFootnotesSeen
+      if (firstPlaced) ctx.placedFootnotesSeen = true
+      // The probe renders every marker as its div floor. Its title is still
+      // visible to the footnote scan, including an inline note in that title.
+      const places = firstPlaced && (ctx.footnoteProbe || ctx.hasResolvedNotes !== false)
+      const titleId = places && !ctx.footnoteProbe && b.title !== null
+        ? ctx.slug(`adm-${++ctx.admCount}`)
+        : null
+      if (places && !ctx.footnoteProbe) ctx.placedFootnotesTitleId = titleId
+      const heading = footnotesHeading(b, places ? depth : depth + 1, titleId)
+      const body = (b.children ?? [])
+        .map((child) => renderBlock(child, places ? depth : depth + 1, ctx))
+        .filter((part) => part !== null && part !== '')
+        .join('\n')
+      if (!places || ctx.footnoteProbe) {
+        const contents = [heading, body].filter(Boolean).join('\n')
+        return contents === ''
+          ? `${pad}<div class="footnotes">\n\n${pad}</div>`
+          : `${pad}<div class="footnotes">\n${contents}\n${pad}</div>`
+      }
+      const id = ctx.footnotesMarkerCount++
+      ctx.footnotesMarkerDepths[id] = depth
+      return `\uE000fnplacementstart:${id}\uE001${heading}\uE000fnplacementheadingend:${id}\uE001${body}\uE000fnplacementend:${id}\uE001`
+    }
     default:
       throw new Refuse(`unknown block ${b.t}`)
   }
@@ -1287,8 +1326,28 @@ function slugText(source) {
 }
 
 // --- PART 9R R2: footnotes ---------------------------------------------------
+const FOOTNOTES_PLACEMENT_FRAMES = /\uE000fnplacementstart:(\d+)\uE001([\s\S]*?)\uE000fnplacementheadingend:\1\uE001([\s\S]*?)\uE000fnplacementend:\1\uE001/g
+
+function footnotesHeading(b, depth, titleId) {
+  const pad = '  '.repeat(depth)
+  const parts = []
+  if (b.title !== null) {
+    const id = titleId === null ? '' : ` id="${escapeAttr(titleId)}"`
+    parts.push(`${pad}<p class="admonition-title"${id}>${renderInline(b.title)}</p>`)
+  }
+  if (b.label !== null) parts.push(`${pad}<p class="div-label">${renderInline(b.label)}</p>`)
+  return parts.join('\n')
+}
+
+function footnotesMarkerFloor(heading, body, depth) {
+  const pad = '  '.repeat(depth)
+  const contents = [heading, body].filter(Boolean).join('\n')
+  const inner = contents === '' ? '' : contents.split('\n').map((line) => `  ${line}`).join('\n')
+  return `${pad}<div class="footnotes">\n${inner}\n${pad}</div>`
+}
+
 function resolveFootnotes(html, ctx) {
-  const placement = html.includes('\uE000fnplacement\uE001')
+  const placement = html.includes('\uE000fnplacementstart:')
   const order = [] // labels by first reference
   const counts = new Map()
   const inlineNotes = [] // rendered content per anonymous note, by number
@@ -1358,7 +1417,11 @@ function resolveFootnotes(html, ctx) {
       return `<a id="${refId}" href="#fn${n}" role="doc-noteref"${attrs}><sup>${n}</sup></a>`
     })
   html = substitute(html)
-  if (order.length === 0) return html.replace(/\uE000fnplacement\uE001\n?/g, '')
+  ctx.resolvedFootnoteCount = order.length
+  if (order.length === 0) {
+    return html.replace(FOOTNOTES_PLACEMENT_FRAMES, (_, id, heading, body) =>
+      footnotesMarkerFloor(heading, body, ctx.footnotesMarkerDepths[Number(id)]))
+  }
 
   // BODIES ARE RENDERED HERE, after the pass over the document text, and a
   // body can introduce both reference frames and further notes. So each body
@@ -1433,9 +1496,28 @@ function resolveFootnotes(html, ctx) {
   // reason its backlinks do - `role="doc-endnotes"` says what the region IS and
   // nothing said what it is CALLED, so a landmark list held an anonymous entry.
   const sectionName = escapeAttr(LABELS.endnotes)
-  const section = `<section role="doc-endnotes" aria-label="${sectionName}">\n  <hr>\n  <ol>\n${notes.join('\n')}\n  </ol>\n</section>`
-  if (placement) return html.replace('\uE000fnplacement\uE001', section).replace(/\uE000fnplacement\uE001\n?/g, '')
-  return html + '\n' + section
+  const section = (heading = '') => {
+    const titleId = ctx.placedFootnotesTitleId
+    const name = titleId === null
+      ? ` aria-label="${sectionName}"`
+      : ` aria-labelledby="${escapeAttr(titleId)}"`
+    const firstChildren = heading === ''
+      ? ''
+      : `${heading.split('\n').map((line) => `  ${line}`).join('\n')}\n`
+    return `<section role="doc-endnotes"${name}>\n${firstChildren}  <hr>\n  <ol>\n${notes.join('\n')}\n  </ol>\n</section>`
+  }
+  if (placement) {
+    let placed = false
+    return html.replace(FOOTNOTES_PLACEMENT_FRAMES, (_, id, heading, body) => {
+      if (placed) return footnotesMarkerFloor(heading, body, ctx.footnotesMarkerDepths[Number(id)])
+      placed = true
+      const depth = ctx.footnotesMarkerDepths[Number(id)]
+      const placedHeading = heading === '' ? '' : heading.split('\n')
+        .map((line) => line.slice(depth * 2)).join('\n')
+      return `${body === '' ? '' : `${body}\n`}${section(placedHeading)}`
+    })
+  }
+  return html + '\n' + section()
 }
 
 // --- PART 9R R4: crossrefs ---------------------------------------------------
