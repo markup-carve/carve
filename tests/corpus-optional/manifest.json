@@ -263,6 +263,11 @@
       "slug": "51-references-placement-inside-a-quote",
       "feature": "citations-numbered",
       "description": "A references marker inside a block quote renders its floor there and leaves the document reference list at the end (CARVE-P9-073)."
+    },
+    {
+      "slug": "52-an-extension-wrapper-class-follows-every-authored-attribute",
+      "feature": "spoiler",
+      "description": "An extension wrapper's class trails BOTH authored attributes, not only the id: two of them separate \"after all authored attributes\" from \"after the id\", which one cannot (PART 10 §1)."
     }
   ]
 }

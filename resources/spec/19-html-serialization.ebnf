@@ -26,9 +26,14 @@
       attributes, and the authored order then follows unchanged:
         > {k=v .attr}  -> <ol type="a" k="v" class="attr">
         > a. alpha
-      A structural CLASS instead merges into the class slot at its FRONT,
-      which is the mandatory-base-class rule above said from the other
-      side (`task-list`, math's `math inline|display`).
+      WHERE THE AUTHOR WROTE NO CLASS there is no slot to keep, and the
+      position splits TWO WAYS. A MANDATORY BASE CLASS LEADS: math's
+      `math inline|display`, an admonition's, `task-list`. A class derived
+      from the block's own MARKER or DIRECTIVE NAME TRAILS every authored
+      attribute instead: `line-block`, a diagram fence's, and an extension
+      wrapper's `toc`, `glossary`, `index`, `tabs`, `code-group`. Trailing
+      is the only position that keeps the authored order and still leaves
+      the engine-minted attributes last, which they are either way.
       This matches reference djot on every shape tried --
       `<ol type="a" class="attr">`, `<ol start="5" class="attr">`,
       `<a href="…" class="c" id="i" k="v">`, `<img alt="a" src="…"
