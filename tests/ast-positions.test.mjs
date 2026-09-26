@@ -1787,7 +1787,9 @@ test('the corpus pair for it starts on the line the author wrote', () => {
 
   const wire = toAstJson(parse(source))
   const paragraph = wire.children[0].children[0]
-  const [text, hardBreak] = paragraph.children
+  // A line block spells the tab as `non_breaking_space` nodes between the two.
+  const text = paragraph.children[0]
+  const hardBreak = paragraph.children.find((child) => child.type === 'hard_break')
 
   // The reassembled text keeps NO position, and that half was ruled explicitly:
   // an absent span is honest where a fabricated one is not.
