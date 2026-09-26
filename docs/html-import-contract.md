@@ -711,6 +711,34 @@ throws away content the language can spell.
 `whitespace-only-block` pins all three rows, plus the two non-ASCII spaces the
 class reaches.
 
+## An empty list is dropped
+
+A `<ul>` or `<ol>` with no `<li>` child imports as nothing, with one
+`element-dropped` row at `warning` located at the list (markup-carve/carve#2367):
+
+```html
+<div class="m"><ul class="vector-menu-content-list"></ul></div><p>after</p>
+```
+
+```
+::: m
+
+:::
+
+after
+```
+
+A list has no spelling without an item. Keeping the list's attributes would
+write an attribute line with no block under it, which `carve fmt` removes, so
+the import would not be a fixed point of the writer. The row covers the
+attributes the list carried, the same way the row for a whitespace-only
+paragraph does. Other children of the list are handled as they are for any
+list: text, elements and comments move ahead of where the list stood, with
+their own rows.
+
+`empty-list` pins an attributed empty list inside a container, a bare empty
+list, and an empty list nested in an item.
+
 ## A link's edge whitespace stands outside it
 
 A link or a span whose content begins or ends with whitespace imports with that
@@ -1807,6 +1835,7 @@ The shared set is deliberately small and each directory has one subject:
 | `link-edge-whitespace` | edge whitespace of a link and a span moved outside, merged at a join and dropped at a block edge, beside a no-break space, a whitespace-only label and an edge image that stay |
 | `mathml-without-tex` | presentation-only MathML imported as its text where the tokens are linear, and a fraction dropped where they are not |
 | `mathml-fallback-image` | a formula beside its fallback image imported once, including through the image's `alt` when the `<math>` carries no TeX |
+| `empty-list` | a `<ul>` and an `<ol>` with no item, attributed inside a container, bare, and nested in an item, each dropped with one row |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one
