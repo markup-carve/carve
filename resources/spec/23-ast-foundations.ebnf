@@ -107,7 +107,12 @@
       It carries `type`, optional `attrs` and optional `pos`, with no value
       field. Four preserved columns are four nodes. Positions follow section 4:
       an escaped space owns its backslash and space; synthesized columns omit
-      positions when expansion prevents an exact source range.
+      positions when expansion prevents an exact source range. This omission
+      applies to the synthesized columns, not to the whole line or stanza.
+      Unchanged text beside an expanded tab MUST carry its exact source span.
+      A merged text value containing a synthesized space omits `pos` when no
+      contiguous source slice represents it: `tab<TAB>gap` becomes `tab gap`,
+      whereas the separate `a` and `b` in `a<TAB>b` each retain their spans.
 
       HTML emits `&nbsp;`, Markdown emits U+00A0, and plain/ANSI emit U+0020.
       Carve source writes `\ ` where that spelling survives parsing; line-block
@@ -497,9 +502,10 @@
       stops, so its last placed child is the right boundary; this one asks where
       the CONSTRUCT begins, and a construct begins at its own markup, which
       exists whether or not any child was placed. Read symmetrically, a line
-      block stanza whose first line holds a tab -- reassembled around expanded
-      tabs, so it carries no position -- would start its paragraph on the line
-      BELOW that one, contradicting the containment clause above.
+      block stanza whose first child is the merged text `tab gap` from
+      `tab<TAB>gap` would start its paragraph on the line BELOW that one.
+      That text has no exact source slice; contiguous text beside a wider tab
+      expansion remains positioned under CARVE-P12-004.
 
       A CONTAINER ENDS AT THE MARKUP THAT CLOSES IT EVEN WHERE ITS LAST CHILD
       IS UNPLACED -- NORMATIVE [CARVE-P12-020]. A container whose last child omits `pos` ends
@@ -517,11 +523,11 @@
       A closerless container whose last child is unplaced therefore ends where
       its content ends, which is line geometry the block layer knows even where
       the text on that line cannot be sliced out of the source. A line block
-      stanza whose LAST line holds a tab is the shape:
+      stanza whose LAST child merges text around a one-column tab is the shape:
 
           ::: |
           %%
-          a<TAB>b
+          tab<TAB>gap
           :::
 
       A SPAN DOES NOT BEGIN AT A LINE TERMINATOR -- NORMATIVE [CARVE-P12-021]. Except on a

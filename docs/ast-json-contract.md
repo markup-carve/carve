@@ -368,6 +368,11 @@ paragraph above rejects when a container does have children. Where the emptied
 container ran over several lines, the markup it spans is the markup that opened
 it, on the first of them.
 
+Tab expansion does not remove positions from a whole line or stanza.
+Unchanged text on either side retains its exact source span. Synthesized
+columns omit positions, as does a merged text value such as `tab gap` from
+`tab<TAB>gap`, whose space has no matching source character.
+
 **A container starts at its opening markup even where its first child is
 unplaced**, rather than at the first child that does carry one: the end rule
 asks where a container's content stops and the start rule asks where the
@@ -389,11 +394,11 @@ ends where its content ends. In
 ```
 ::: |
 %%
-a	b
+tab	gap
 :::
 ```
 
-the stanza's `paragraph` ends at offset 12, where the tab-bearing line ends, and
+the stanza's `paragraph` ends at offset 16, where the tab-bearing line ends, and
 not at 9 where the break above it ends: 9 is one past the terminator the break
 owns, so that span would end immediately after a line terminator and drop the
 stanza's own last line out of the paragraph holding it. Ruled at
