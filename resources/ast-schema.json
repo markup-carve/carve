@@ -1133,7 +1133,8 @@
       "description": "A generated-content directive: a named `:::` container whose kind asks the renderer to PLACE something the document already contains, rather than to present the blocks written inside it. Split from `admonition` because a table of contents is not a callout, and a consumer deciding whether to draw one had to carry a list of kinds that are not callouts (carve#2195).",
       "required": [
         "type",
-        "kind"
+        "kind",
+        "children"
       ],
       "properties": {
         "type": {
@@ -1162,7 +1163,7 @@
           "items": {
             "$ref": "#/$defs/blockNode"
           },
-          "description": "Blocks written inside the opener. Usually empty: a directive's content is generated, not authored."
+          "description": "Blocks written inside the opener. Always published, using [] when empty; a directive's content is usually generated rather than authored."
         },
         "label": {
           "type": "string",

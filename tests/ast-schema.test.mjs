@@ -1267,12 +1267,13 @@ test('a directive carries the title its opener spells', () => {
   const doc = (node) => ({ type: 'document', srcByteLength: 1, children: [node] })
 
   assert.equal(validate(doc({ type: 'directive', kind: 'toc', title, children: [] })), true, firstErrors())
-  // Optional: an untitled directive is unchanged.
-  assert.equal(validate(doc({ type: 'directive', kind: 'toc' })), true, firstErrors())
+  // The title is optional; children is present even when the body is empty.
+  assert.equal(validate(doc({ type: 'directive', kind: 'toc', children: [] })), true, firstErrors())
+  assert.equal(validate(doc({ type: 'directive', kind: 'toc' })), false)
   // Inline content, not a string and not blocks.
-  assert.equal(validate(doc({ type: 'directive', kind: 'toc', title: 'Contents' })), false)
+  assert.equal(validate(doc({ type: 'directive', kind: 'toc', title: 'Contents', children: [] })), false)
   assert.equal(
-    validate(doc({ type: 'directive', kind: 'toc', title: [{ type: 'paragraph', children: [], pos }] })),
+    validate(doc({ type: 'directive', kind: 'toc', title: [{ type: 'paragraph', children: [], pos }], children: [] })),
     false,
   )
 })
@@ -1280,7 +1281,8 @@ test('a directive carries the title its opener spells', () => {
 test('generated-content kinds are directives, not admonitions', () => {
   const doc = (node) => ({ type: 'document', srcByteLength: 0, children: [node] })
   for (const kind of schema.$defs.directive.properties.kind.enum) {
-    assert.equal(validate(doc({ type: 'directive', kind })), true, `${kind} must be a directive`)
+    assert.equal(validate(doc({ type: 'directive', kind, children: [] })), true, `${kind} must be a directive`)
+    assert.equal(validate(doc({ type: 'directive', kind })), false, `${kind} must publish children`)
     assert.equal(
       validate(doc({ type: 'admonition', kind, children: [] })),
       false,
