@@ -10802,8 +10802,26 @@ EOF = (* end of file *) ;
       extension authors a leading head, header-led body groups, a foot and
       leading row-header columns; empty group boundaries remain interchange-only.
 
-      HTML maps a source-spelled head and foot to their native row-group
-      elements. Plain and ANSI keep rendering the flat rows. A structured
+      Optional `headAttrs` and `footAttrs` carry attributes on the table head
+      and foot. Each body group's optional `attrs` carries its attributes.
+      These fields use the ordinary `attrs` object and survive AST round trips,
+      including empty objects. They do not change the row counts.
+
+      HTML renders an explicit partition as one `thead`, one `tbody` per body
+      group, and one `tfoot`, in that order. A zero-row head or foot is omitted
+      only when its attributes field is absent. Each body record renders a
+      `tbody`, including an empty body. Section attributes use the same escaping
+      and safe-mode filtering as other element attributes. When section
+      attributes are present, row spans stop at section boundaries. A rowspan
+      continuation at the start of a section becomes an empty cell there.
+      Attribute-free tables retain the existing single-body fallback for spans
+      that cross a section boundary. Without `rowGroups`,
+      HTML retains its implicit partition. Plain and ANSI keep the flat rows.
+      Carve source cannot spell section attributes. Writers that discard them
+      MUST report each nonempty attributes field as a conversion loss, with its
+      field path. Checked Markdown, plain and ANSI renderers report
+      `table-section-attributes-dropped`, naming the field path in the message.
+      Empty attributes objects need no loss diagnostic. A structured
       exporter MAY map the full partition to its target's equivalent. A
       canonical Carve source writer retains `header-rows` / `footer-rows` when
       they are present in table attributes; it MUST NOT invent a spelling for

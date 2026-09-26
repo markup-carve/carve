@@ -1531,3 +1531,12 @@ test('PART 12 §41 settles the five points carve#2233 left open', () => {
       'requires each to be settled with the schema and said in the clause.',
   )
 })
+
+test('table head and foot attributes use the ordinary closed attributes schema', () => {
+  const groups = { headRows: 0, bodies: [], footRows: 0, headAttrs: {}, footAttrs: { id: 'total', classes: ['sum'], keyValues: { 'data-total': '1' } } }
+  const doc = { type: 'document', srcByteLength: 0, children: [{ type: 'table', rows: [], rowGroups: groups }] }
+  assert.equal(validate(doc), true, firstErrors())
+  for (const invalid of [null, [], { unknown: 'x' }, { classes: 4 }, { keyValues: { x: 1 } }]) {
+    assert.equal(validate({ ...doc, children: [{ ...doc.children[0], rowGroups: { ...groups, headAttrs: invalid } }] }), false)
+  }
+})
