@@ -739,6 +739,77 @@ their own rows.
 `empty-list` pins an attributed empty list inside a container, a bare empty
 list, and an empty list nested in an item.
 
+## Adjacent definition lists become one
+
+Carve source has no boundary between two definition lists: a blank line
+between two entries separates nothing, and the hard list boundary of PART 9
+§11 N1a is a rule about item markers. So a `<dl>` with no attributes of its own
+that directly follows another definition list JOINS it, in both exits
+(markup-carve/carve#2369):
+
+```html
+<dl><dt>a</dt><dd>x</dd></dl><dl><dt>b</dt><dd>y</dd></dl>
+```
+
+```
+:: a
+: x
+:: b
+: y
+```
+
+The joined list takes the entries of both in order, and is loose if either was.
+Each merged `<dl>` takes one `element-unwrapped` row at `info`, located at that
+`<dl>`: its entries survive and its grouping does not.
+
+A `<dl>` that carries attributes is not merged. Its attribute line stands
+between the two lists and keeps them apart, so it is written as its own list.
+Anything else that spells a block between the two, a paragraph or a comment,
+keeps them apart the same way.
+
+## A figure and its target share one attribute line
+
+An attribute line above a captioned block belongs to the figure the caption
+makes (PART 9 §4b), and the parser merges two stacked attribute lines into one
+(§15). Only an image has an attribute slot of its own under a caption line, in
+the braces after its destination. A quote, a code block, a display-math
+paragraph or a table has none, so its attributes and the figure's share the one
+line (markup-carve/carve#2370):
+
+```html
+<figure id="l" class="listing"><pre class="playground"><code class="language-rust">x</code></pre><figcaption>Cap</figcaption></figure>
+```
+
+````
+{#l .listing .playground}
+```rust
+x
+```
+^ Cap
+````
+
+The importer merges them the way the parser would, in both exits: the figure's
+attributes first, then the target's, classes in that order, and the target's
+value winning an `id` or a key both set. The value that loses is declared with
+the `attribute-dropped` row markup-carve/carve#1721 ruled, one per name. Writing
+the two as separate lines is not a second spelling of the same thing: the
+writer merges them, so that source is not a fixed point of `carve fmt`.
+
+## A comment holding a line break has no spelling in a table cell
+
+A pipe-table row is one line ([CARVE-P2-019]), so a comment whose
+text holds a line break cannot be written inside a cell. It is a third payload
+with no inline spelling, beside the two in "An HTML comment imports as a Carve
+comment", and it takes the same answer: the comment is dropped with one
+`element-dropped` row at `warning`, located at the comment
+(markup-carve/carve#2372). Folding the line break into a space would change
+the comment's text, which that section forbids.
+
+A comment inside a cell is written inline even where it stands among the
+cell's blocks, because the cell flattens them into its one line; a line comment
+there would swallow the rest of the row. A comment outside any cell keeps its
+line breaks.
+
 ## A link's edge whitespace stands outside it
 
 A link or a span whose content begins or ends with whitespace imports with that
@@ -1836,6 +1907,9 @@ The shared set is deliberately small and each directory has one subject:
 | `mathml-without-tex` | presentation-only MathML imported as its text where the tokens are linear, and a fraction dropped where they are not |
 | `mathml-fallback-image` | a formula beside its fallback image imported once, including through the image's `alt` when the `<math>` carries no TeX |
 | `empty-list` | a `<ul>` and an `<ol>` with no item, attributed inside a container, bare, and nested in an item, each dropped with one row |
+| `adjacent-definition-lists` | two attribute-less `<dl>` elements joined into one list with a row, beside a paragraph and an attributed `<dl>` that each keep a list apart |
+| `figure-target-attributes` | a figure around a code block and around a quote, each sharing one attribute line with its target, and an image whose own braces keep its attributes apart |
+| `table-cell-multi-line-comment` | a comment holding a line break dropped from a cell with a row, a one-line comment among a cell's blocks written inline, and a multi-line comment outside any cell kept |
 | `lone-bracket-in-bracketed-content` | an unpaired `[` or `]` inside a span or link text, escaped in the minimal form as in `[\[]{.b}`, beside balanced pairs that stay bare (PART 11 §5) |
 | `paren-after-a-closed-bracket` | a `(` right after a paired bare `]` that would open a closing destination, escaped as `[a]\(b)` at top level, in a span, across code and emphasis, and around nested parentheses, beside `f(x)`, `[a] (b)`, `[a](b c)` and `[a]()` that stay bare (PART 11 §5) |
 
