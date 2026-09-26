@@ -19,7 +19,7 @@ Releases before 0.1.6 are archived in
   tree cannot tell a generated space from an authored character (carve#2337,
   carve#1242).
 - AST validation rejects an empty `admonition.kind`; a named container requires
-  a type word.
+  a type word (carve#2346).
 
 ### Changed
 
@@ -28,7 +28,8 @@ Releases before 0.1.6 are archived in
   input named by `pos.file` (carve#2337).
 - Authored blocks in a placed `::: footnotes` marker render before the endnotes
   section; fallback markers keep those blocks in their div. Directive title and
-  label placement and generated body order are specified together (carve#2333).
+  label placement and generated body order are specified together (carve#2333,
+  carve#2346).
 
 ### Added
 
