@@ -38,7 +38,7 @@ addressing [node identity](./ast-node-identity.md) uses. `offset` counts codepoi
 through its length. PART 12 §40 defines that projection independently of JSON
 member order. It counts the first string among `value`, `content`, `text`, and
 `alt`, then child projections in the specified field order. Breaks contribute a
-newline and `non_breaking_space` contributes U+00A0. Attributes, URLs and opaque
+newline and `non_breaking_space` contributes U+00A0. Attributes, URLs and opaque extension
 payloads contribute nothing; no separators are invented between blocks.
 
 For a paragraph containing `A😀`, an image with alt text `cat`, a hard break,

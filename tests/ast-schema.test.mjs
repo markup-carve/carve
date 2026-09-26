@@ -779,6 +779,7 @@ test('every node type the reference emits is declared in the schema', () => {
  * fields.
  */
 const NOT_PRODUCIBLE = {
+  non_breaking_space: 'Pending coordinated engine support in carve#2337; the pinned engine still publishes the old whitespace marker.',
   citation: 'citations (Tier-2) - an item inside citation_group, off in a default-profile run',
   citation_group: 'citations (Tier-2) - off in a default-profile run, exercised by tests/corpus-optional',
   citation_definition:

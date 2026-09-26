@@ -69,9 +69,9 @@ const BREAK_TYPES = new Set(['soft_break', 'hard_break'])
  */
 export function checkContainment(doc, findings) {
   let compared = 0
-  const walk = (node, path, parent, parentPath) => {
+  const walk = (node, path, ancestors) => {
     if (Array.isArray(node)) {
-      node.forEach((child, i) => walk(child, `${path}[${i}]`, parent, parentPath))
+      node.forEach((child, i) => walk(child, `${path}[${i}]`, ancestors))
       return
     }
     if (!node || typeof node !== 'object') return
@@ -86,7 +86,8 @@ export function checkContainment(doc, findings) {
       node.pos &&
       Number.isInteger(node.pos.startOffset) &&
       Number.isInteger(node.pos.endOffset)
-    if (placed && parent && node.pos.file === parent.pos.file) {
+    const [parent, parentPath] = ancestors.get(node.pos?.file ?? '') ?? []
+    if (placed && parent) {
       compared += 1
       const outside =
         node.pos.startOffset < parent.pos.startOffset || node.pos.endOffset > parent.pos.endOffset
@@ -98,14 +99,13 @@ export function checkContainment(doc, findings) {
         )
       }
     }
-    const nextParent = placed ? node : parent
-    const nextPath = placed ? path : parentPath
+    const next = placed ? new Map(ancestors).set(node.pos.file ?? '', [node, path]) : ancestors
     for (const [key, value] of Object.entries(node)) {
       if (key === 'pos') continue
-      walk(value, `${path}.${key}`, nextParent, nextPath)
+      walk(value, `${path}.${key}`, next)
     }
   }
-  walk(doc, '$', null, '$')
+  walk(doc, '$', new Map())
 
   return compared
 }
