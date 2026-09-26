@@ -310,12 +310,12 @@
         { "code": "field-unspellable", "node": "math", "field": "label",
           "message": "Carve source spells no equation label" }
 
-      THE FIELD IS WHY THIS IS NOT THAT REPORT. `CARVE-P2-024`'s `code` enum is
-      CLOSED at `raw-format-dropped` and `ruby-flattened`, and both name a whole
-      node one selected renderer dropped or flattened. It answers what THIS
-      RENDER dropped; this channel answers what the OUTPUT MODEL CANNOT SAY, on
-      every target at once, and it is the only one of the two that can name a
-      field.
+      The render-loss report describes losses on the selected rendering target.
+      Its closed code enum includes `raw-format-dropped`, `ruby-flattened`, and
+      `table-section-attributes-dropped`. Conversion diagnostics describe what
+      the output model cannot represent and carry a structured `field` for a
+      field-level loss. Render-loss messages can name a field path but do not
+      carry that structured key.
 
       THE RENDER-LOSS FLAGS DO NOT REACH IT. `--strict-losses` and `--allow-loss`
       gate the `CARVE-P2-024` report, and neither grows a name for a code here. A
