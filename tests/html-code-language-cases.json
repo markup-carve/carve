@@ -1,0 +1,449 @@
+[
+  {
+    "name": "code language",
+    "html": "<pre><code class=\"language-js\">x</code></pre>",
+    "languages": [
+      "js"
+    ]
+  },
+  {
+    "name": "bare pre",
+    "html": "<pre class=\"language-rust\">x</pre>",
+    "languages": [
+      "rust"
+    ]
+  },
+  {
+    "name": "pre fallback",
+    "html": "<pre class=\"language-js\"><code>x</code></pre>",
+    "languages": [
+      "js"
+    ]
+  },
+  {
+    "name": "nearest wins",
+    "html": "<pre class=\"language-js\"><code data-lang=\"python\">x</code></pre>",
+    "languages": [
+      "python"
+    ]
+  },
+  {
+    "name": "same element priority",
+    "html": "<pre data-lang=\"ruby\" class=\"lang-python language-js brush:css\">x</pre>",
+    "languages": [
+      "js"
+    ]
+  },
+  {
+    "name": "pre class=\"lang-c++\"",
+    "html": "<pre class=\"lang-c++\">x</pre>",
+    "languages": [
+      "c++"
+    ]
+  },
+  {
+    "name": "pre data-lang=\" \ttext/html\r\n\"",
+    "html": "<pre data-lang=\" \ttext/html\r\n\">x</pre>",
+    "languages": [
+      "text/html"
+    ]
+  },
+  {
+    "name": "code class=\"lang-c++\"",
+    "html": "<pre><code class=\"lang-c++\">x</code></pre>",
+    "languages": [
+      "c++"
+    ]
+  },
+  {
+    "name": "code data-lang=\" \ttext/html\r\n\"",
+    "html": "<pre><code data-lang=\" \ttext/html\r\n\">x</code></pre>",
+    "languages": [
+      "text/html"
+    ]
+  },
+  {
+    "name": "brush: html notranslate",
+    "html": "<pre class=\"brush: html notranslate\">x</pre>",
+    "languages": [
+      "html"
+    ]
+  },
+  {
+    "name": "brush:html;",
+    "html": "<pre class=\"brush:html;\">x</pre>",
+    "languages": [
+      "html"
+    ]
+  },
+  {
+    "name": "brush: html; gutter: false;",
+    "html": "<pre class=\"brush: html; gutter: false;\">x</pre>",
+    "languages": [
+      "html"
+    ]
+  },
+  {
+    "name": "brush:bad:token; brush:html",
+    "html": "<pre class=\"brush:bad:token; brush:html\">x</pre>",
+    "languages": [
+      "html"
+    ]
+  },
+  {
+    "name": "brush: brush:html",
+    "html": "<pre class=\"brush: brush:html\">x</pre>",
+    "languages": [
+      "html"
+    ]
+  },
+  {
+    "name": "brush:;brush:html",
+    "html": "<pre class=\"brush:;brush:html\">x</pre>",
+    "languages": [
+      "html"
+    ]
+  },
+  {
+    "name": "brush on code ignored",
+    "html": "<pre><code class=\"brush:html\">x</code></pre>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "brush quoted rejected",
+    "html": "<pre class=\"brush:&quot;html&quot;\">x</pre>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "brush boundary",
+    "html": "<pre class=\"notbrush:html\">x</pre>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "invalid =html",
+    "html": "<pre><code class=\"language-=html\">x</code></pre>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "invalid python:3",
+    "html": "<pre><code class=\"language-python:3\">x</code></pre>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "invalid js`bad",
+    "html": "<pre><code class=\"language-js`bad\">x</code></pre>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "entity decoded class separator",
+    "html": "<pre><code class=\"language-x&#10;y\">x</code></pre>",
+    "languages": [
+      "x"
+    ]
+  },
+  {
+    "name": "invalid x&quot;y",
+    "html": "<pre><code class=\"language-x&quot;y\">x</code></pre>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "invalid ",
+    "html": "<pre><code class=\"language-\">x</code></pre>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "invalid then valid",
+    "html": "<pre><code class=\"language-=html language-c#\">x</code></pre>",
+    "languages": [
+      "c#"
+    ]
+  },
+  {
+    "name": "invalid code fallback",
+    "html": "<pre data-lang=\"f#\"><code class=\"language-python:3\">x</code></pre>",
+    "languages": [
+      "f#"
+    ]
+  },
+  {
+    "name": "first same convention",
+    "html": "<pre class=\"language-python language-js\">x</pre>",
+    "languages": [
+      "python"
+    ]
+  },
+  {
+    "name": "case preserved",
+    "html": "<pre><code class=\"language-MyDSL\">x</code></pre>",
+    "languages": [
+      "MyDSL"
+    ]
+  },
+  {
+    "name": "prefix case sensitive",
+    "html": "<pre class=\"Language-python\" lang=\"en\">x</pre>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "ascii separators",
+    "html": "<pre><code class=\"x\tlang-c#\fother\">x</code></pre>",
+    "languages": [
+      "c#"
+    ]
+  },
+  {
+    "name": "nbsp not a separator",
+    "html": "<pre><code class=\"x language-js\">x</code></pre>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "nbsp suffix rejected",
+    "html": "<pre><code class=\"language-js x\">x</code></pre>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "vertical tab not a separator",
+    "html": "<pre><code class=\"x\u000blanguage-js\">x</code></pre>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "github",
+    "html": "<div class=\"highlight highlight-source-python\"><pre>x</pre></div>",
+    "languages": [
+      "python"
+    ]
+  },
+  {
+    "name": "mediawiki",
+    "html": "<div class=\"mw-highlight mw-highlight-lang-latex\"><pre>x</pre></div>",
+    "languages": [
+      "latex"
+    ]
+  },
+  {
+    "name": "sphinx",
+    "html": "<div class=\"highlight-python3 notranslate\"><div class=\"highlight\"><pre>x</pre></div></div>",
+    "languages": [
+      "python3"
+    ]
+  },
+  {
+    "name": "sphinx whitespace comments",
+    "html": "<div class=\"highlight-python3\"> \n<!--c--><div class=\"highlight\">\t<pre>x</pre>\n</div> </div>",
+    "languages": [
+      "python3"
+    ]
+  },
+  {
+    "name": "unrelated ancestor",
+    "html": "<div class=\"highlight highlight-source-js\"><section><pre>x</pre></section></div>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "direct sphinx excluded",
+    "html": "<div class=\"highlight-python\"><pre>x</pre></div>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "missing github companion",
+    "html": "<div class=\"highlight-source-python\"><pre>x</pre></div>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "extra sibling text",
+    "html": "<div class=\"highlight highlight-source-python\">explanation<pre>x</pre></div>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "extra sibling button",
+    "html": "<div class=\"highlight highlight-source-python\"><pre>x</pre><button>Copy</button></div>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "two pres",
+    "html": "<div class=\"highlight highlight-source-python\"><pre>x</pre><pre>y</pre></div>",
+    "languages": [
+      null,
+      null
+    ]
+  },
+  {
+    "name": "sphinx outer text",
+    "html": "<div class=\"highlight-python\">text<div class=\"highlight\"><pre>x</pre></div></div>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "sphinx wrong inner",
+    "html": "<div class=\"highlight-python\"><div class=\"other\"><pre>x</pre></div></div>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "sphinx prefix collision",
+    "html": "<div class=\"highlight-source-python\"><div class=\"highlight\"><pre>x</pre></div></div>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "invalid github prefix collision",
+    "html": "<div class=\"highlight-source-=html\"><div class=\"highlight\"><pre>x</pre></div></div>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "specific highlight-python highlight-source-js",
+    "html": "<div class=\"highlight highlight-python highlight-source-js\"><pre>x</pre></div>",
+    "languages": [
+      "js"
+    ]
+  },
+  {
+    "name": "specific highlight-source-js highlight-python",
+    "html": "<div class=\"highlight highlight-source-js highlight-python\"><pre>x</pre></div>",
+    "languages": [
+      "js"
+    ]
+  },
+  {
+    "name": "wrapper convention priority",
+    "html": "<div class=\"mw-highlight mw-highlight-lang-ruby highlight highlight-source-js\"><pre>x</pre></div>",
+    "languages": [
+      "js"
+    ]
+  },
+  {
+    "name": "explicit none",
+    "html": "<div class=\"highlight highlight-source-js\"><pre><code class=\"language-none\">x</code></pre></div>",
+    "languages": [
+      "none"
+    ]
+  },
+  {
+    "name": "explicit plain",
+    "html": "<div class=\"highlight highlight-source-js\"><pre><code class=\"language-plain\">x</code></pre></div>",
+    "languages": [
+      "plain"
+    ]
+  },
+  {
+    "name": "explicit text",
+    "html": "<div class=\"highlight highlight-source-js\"><pre><code class=\"language-text\">x</code></pre></div>",
+    "languages": [
+      "text"
+    ]
+  },
+  {
+    "name": "explicit plaintext",
+    "html": "<div class=\"highlight highlight-source-js\"><pre><code class=\"language-plaintext\">x</code></pre></div>",
+    "languages": [
+      "plaintext"
+    ]
+  },
+  {
+    "name": "wrapper ids",
+    "html": "<div id=\"outer\" class=\"highlight highlight-source-js\" dir=\"ltr\"><pre id=\"inner\" data-extra=\"v\">x</pre></div>",
+    "languages": [
+      "js"
+    ]
+  },
+  {
+    "name": "inline excluded",
+    "html": "<p><code class=\"language-js\">x</code></p>",
+    "languages": []
+  },
+  {
+    "name": "highlighted text",
+    "html": "<pre data-lang=\"js\"><code>  <span class=\"kw\">x</span>&lt;y\n\n</code></pre>",
+    "languages": [
+      "js"
+    ]
+  },
+  {
+    "name": "empty data fallback",
+    "html": "<pre data-lang=\"\t\" class=\"lang- brush:css\">x</pre>",
+    "languages": [
+      "css"
+    ]
+  },
+  {
+    "name": "unknown name",
+    "html": "<pre data-lang=\"custom-123\">x</pre>",
+    "languages": [
+      "custom-123"
+    ]
+  },
+  {
+    "name": "embedded data whitespace rejected",
+    "html": "<pre data-lang=\"x&#10;y\">x</pre>",
+    "languages": [
+      null
+    ]
+  },
+  {
+    "name": "brush pre fallback",
+    "html": "<pre class=\"brush:python\"><code>x</code></pre>",
+    "languages": [
+      "python"
+    ]
+  },
+  {
+    "name": "pre none stops wrapper",
+    "html": "<div class=\"highlight highlight-source-python\"><pre class=\"lang-none\">x</pre></div>",
+    "languages": [
+      "none"
+    ]
+  },
+  {
+    "name": "invalid github to mediawiki",
+    "html": "<div class=\"highlight highlight-source-=html mw-highlight mw-highlight-lang-rust\"><pre>x</pre></div>",
+    "languages": [
+      "rust"
+    ]
+  },
+  {
+    "name": "agreeing hints",
+    "html": "<div class=\"highlight highlight-source-js\"><pre class=\"language-js\" data-lang=\"js\"><code class=\"language-js lang-js\" data-lang=\"js\">x</code></pre></div>",
+    "languages": [
+      "js"
+    ]
+  }
+]
