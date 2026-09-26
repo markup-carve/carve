@@ -9827,14 +9827,6 @@ EOF = (* end of file *) ;
       parser or writer markers MUST be collision-free and MUST NOT be published.
       Preserved whitespace inside a verbatim line-block value is U+00A0.
 
-      THIS IS AST CONTRACT 2.0. Contract 1.x used U+E000 as an in-band marker;
-      its text values cannot distinguish a literal character from generated
-      whitespace. A 2.0 reader MUST refuse a 1.x envelope with a version error
-      unless the caller explicitly requests legacy migration. Such migration
-      interprets old text markers as non_breaking_space and reports the
-      unrecoverable ambiguity. Bare trees have the receiver's current contract. Only an envelope can
-      identify and refuse a legacy tree; callers must version stored bare trees.
-
    3a. THE SERIALIZED TREE IS PRE-RESOLVE -- NORMATIVE [CARVE-P12-005]. It records what the
       AUTHOR WROTE, not what the document resolves to. Reference resolution,
       like rendering, happens after; a producer MUST NOT fold its results into
@@ -11520,12 +11512,12 @@ EOF = (* end of file *) ;
       `major.minor` and it does not track the Carve version: the language is
       versioned for authors and this is versioned for readers of a tree. A
       MAJOR bump removes, renames or reinterprets a field or a meaning; a MINOR
-      bump adds a field or a node type. The current contract is 2.0; section 3 defines the 1.x migration boundary. A leading zero is
+      bump adds a field or a node type. The current contract is 1.0. A leading zero is
       refused so the 0.x reading of a major never applies here.
 
       WHAT A READER DOES:
 
-      (a) A DIFFERENT MAJOR IS REFUSED, with a typed error naming the version it
+      (a) A HIGHER MAJOR IS REFUSED, with a typed error naming the version it
           got and the version it implements. Not a schema failure: the payload
           may be perfectly well-formed under a contract this build predates.
       (b) A HIGHER MINOR IS ACCEPTED only where every extension the payload

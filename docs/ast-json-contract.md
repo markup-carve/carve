@@ -513,12 +513,11 @@ array entries of the same shape - so it is checked by the shape comparison in
 
 ## Nonbreaking spaces and literal Unicode
 
-The 2.0 contract is ahead of the pinned engine package while the coordinated
-JavaScript, Rust and PHP changes are reviewed. The engine-version probe in
-`tests/nbsp-sentinel-fields.test.mjs` distinguishes 1.x output from 2.0 output;
-the shared annotation fixture runs once the engine pin implements 2.0.
+The whitespace correction is part of the 0.1 patch release line. The spec and
+engine changes must ship together. The pinned package still uses the old marker
+while the coordinated changes are under review.
 
-AST contract 2.0 represents each escaped space (`\ `) and each preserved
+The AST represents each escaped space (`\ `) and each preserved
 line-block column as `{ "type": "non_breaking_space" }`. Renderers write
 `&nbsp;` in HTML, U+00A0 in Markdown, and an ordinary space in plain text or ANSI.
 A Carve source writer uses `\ ` where it can be reparsed, and ordinary spaces
@@ -529,11 +528,10 @@ characters retain their authored meaning in text, code, attributes and raw
 content. Preserved whitespace inside a line-block verbatim value uses U+00A0,
 since that value cannot hold inline nodes.
 
-Contract 1.x used U+E000 for generated spaces and could not distinguish those
-from authored U+E000. A 2.0 reader refuses a 1.x envelope unless the caller
-explicitly requests a legacy migration. Such a migration must report the
-ambiguity; it cannot recover the original distinction. Bare trees are read
-under the receiver's current contract.
+Previously stored trees using U+E000 cannot distinguish generated spaces from
+authored private-use characters. Applications retaining those trees should
+reparse their source when available; replacing the marker blindly loses the
+authored distinction.
 
 ## Producing it
 
@@ -1053,7 +1051,7 @@ At a storage or process boundary, wrap it:
 
 ```json
 {
-  "astVersion": "2.0",
+  "astVersion": "1.0",
   "vocabulary": "https://markup-carve.org/ast/core",
   "extensions": [{ "id": "https://markup-carve.org/ext/citations", "version": "1" }],
   "document": { "type": "document", "children": [], "srcByteLength": 0 }
@@ -1068,12 +1066,12 @@ amend.
 **`astVersion` is the contract's version, not the language's.** It is
 `major.minor` and does not track the Carve version: the language is versioned for
 authors, this is versioned for readers of a tree. A major bump removes, renames
-or reinterprets something; a minor bump adds. The current contract is `2.0`, and a leading
+or reinterprets something; a minor bump adds. The current contract is `1.0`, and a leading
 zero is refused so the `0.x`-reads-as-major convention never applies here.
 
 What a reader does:
 
-- **a different major is refused**, with a typed error naming the version it got and
+- **a higher major is refused**, with a typed error naming the version it got and
   the version it implements - not a schema failure, since the payload may be
   well-formed under a contract this build predates;
 - **a higher minor is accepted** only where every extension the payload marks

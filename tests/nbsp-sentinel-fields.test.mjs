@@ -28,7 +28,7 @@ test('text and verbatim fields document literal Unicode', () => {
 })
 
 const engine = await import('@markup-carve/carve')
-const legacyEngine = engine.AST_CONTRACT_VERSION === undefined || engine.AST_CONTRACT_VERSION.startsWith('1.')
+const legacyEngine = !engine.carveToAstJson('a\\ b\n').children[0].children.some(node => node.type === 'non_breaking_space')
 
 test('the pinned engine identifies its whitespace contract', () => {
   const ast = engine.carveToAstJson('a\\ b\n')
@@ -38,14 +38,13 @@ test('the pinned engine identifies its whitespace contract', () => {
     assert.equal(ast.children[0].children[0].value, 'a\ue000b')
   } else {
     assert.deepEqual(types, ['text', 'non_breaking_space', 'text'])
-    assert.equal(engine.AST_CONTRACT_VERSION, '2.0')
   }
 })
 
-test('contract 2.0 engines pass the shared annotation projection fixture', {
-  skip: legacyEngine ? 'Pending the coordinated engine PRs: the package pin implements AST contract 1.x.' : false,
+test('updated engines pass the shared annotation projection fixture', {
+  skip: legacyEngine ? 'Pending the coordinated engine PRs: the package pin still emits whitespace markers.' : false,
 }, () => {
-  const fixture = JSON.parse(readFileSync(new URL('./fixtures/annotation-projection-v2.json', import.meta.url), 'utf8'))
+  const fixture = JSON.parse(readFileSync(new URL('./fixtures/annotation-projection.json', import.meta.url), 'utf8'))
   assert.equal([...fixture.projection].length, 11)
   for (const [key, accepted] of [['valid', true], ['invalid', false]]) {
     for (const range of fixture[key]) {
