@@ -1122,6 +1122,7 @@ The schema rejects generated-content kinds on `admonition.kind`. The pinned
 reference engine publishes those containers as `directive`, so the split is
 checked in both directions
 ([carve#2195](https://github.com/markup-carve/carve/issues/2195)).
+An admonition kind must be nonempty because the opener requires a type word.
 
 **A directive always publishes `children`.** An empty directive carries
 `children: []`, like an empty admonition. Consumers can read the same field on

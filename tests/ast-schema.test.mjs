@@ -1292,6 +1292,16 @@ test('generated-content kinds are directives, not admonitions', () => {
   assert.equal(validate(doc({ type: 'admonition', kind: 'note', children: [] })), true)
 })
 
+test('an admonition kind must name a type word', () => {
+  const document = (kind) => ({
+    type: 'document',
+    srcByteLength: 0,
+    children: [{ type: 'admonition', kind, children: [] }],
+  })
+  assert.equal(validate(document('')), false)
+  assert.equal(validate(document('note')), true)
+})
+
 test('the reference parser publishes all six generated-content kinds with authored children', () => {
   for (const kind of schema.$defs.directive.properties.kind.enum) {
     for (const body of ['', 'Body\n']) {
