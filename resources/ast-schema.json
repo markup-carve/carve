@@ -3209,6 +3209,12 @@
               "minimum": 0,
               "description": "Rows at the start of `rows` forming the table head. Stated rather than derived, because a body's own intermediate header rows are header rows too and the leading run alone cannot say where one ends and the other begins."
             },
+            "headAttrs": {
+              "$ref": "#/$defs/attrs"
+            },
+            "footAttrs": {
+              "$ref": "#/$defs/attrs"
+            },
             "bodies": {
               "type": "array",
               "description": "The body groups, in order, each consuming the next `headRows + bodyRows` rows. An empty array is a table whose rows are all head and foot.",

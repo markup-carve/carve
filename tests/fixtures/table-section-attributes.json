@@ -1,0 +1,60 @@
+[
+  {
+    "name": "empty-attributed-sections",
+    "ast": {
+      "type": "document",
+      "srcByteLength": 0,
+      "children": [
+        {
+          "type": "table",
+          "rows": [],
+          "rowGroups": {
+            "headRows": 0,
+            "footRows": 0,
+            "headAttrs": {
+              "id": "head"
+            },
+            "footAttrs": {
+              "keyValues": {
+                "data-total": "1"
+              }
+            },
+            "bodies": [
+              {
+                "headRows": 0,
+                "bodyRows": 0,
+                "attrs": {
+                  "classes": [
+                    "body"
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "html": "<table>\n  <thead id=\"head\">\n  </thead>\n  <tbody class=\"body\">\n  </tbody>\n  <tfoot data-total=\"1\">\n  </tfoot>\n</table>"
+  },
+  {
+    "name": "empty-attribute-objects",
+    "ast": {
+      "type": "document",
+      "srcByteLength": 0,
+      "children": [
+        {
+          "type": "table",
+          "rows": [],
+          "rowGroups": {
+            "headRows": 0,
+            "footRows": 0,
+            "headAttrs": {},
+            "footAttrs": {},
+            "bodies": []
+          }
+        }
+      ]
+    },
+    "html": "<table>\n  <thead>\n  </thead>\n  <tfoot>\n  </tfoot>\n</table>"
+  }
+]

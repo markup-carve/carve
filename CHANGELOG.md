@@ -25,6 +25,10 @@ Releases before 0.1.6 are archived in
   independent of JSON key order, and a source position reads coordinates from the
   input named by `pos.file` (carve#2337).
 
+### Added
+
+- The table AST adds optional `rowGroups.headAttrs` and `rowGroups.footAttrs`, with HTML section rendering and conversion-loss requirements. (markup-carve/carve#2339)
+
 ## [0.1.7] - 2026-09-25
 
 ### Breaking
