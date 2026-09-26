@@ -147,8 +147,9 @@ existed.
   column or text merged without an exact source slice omits its position
   (carve#2356).
 - A lone `[` or `]` among the text brackets of bracketed inline content is
-  escaped unconditionally in the minimal form, so the PART 11 §2b search no
-  longer has to look for it (carve#2358).
+  escaped unconditionally in the minimal form, and so is a `(` after a bare `]`
+  where the bytes that follow would read as an inline link destination, so the
+  PART 11 §2b search no longer has to look for either (carve#2358, carve#2359).
 - The include security obligations have clause homes: the two containment
   refusals in §19 I10 and the two server-side host rules in §25 I1, with the
   warning cap and live-preview invalidation stated as host guidance
