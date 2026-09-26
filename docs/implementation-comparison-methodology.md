@@ -185,7 +185,11 @@ and
 and
 `497-a-footnotes-placement-marker-inside-a-container-does-not-place`
 and
-`498-a-comment-line-s-text-is-content-and-a-block-body-is-payload`.
+`498-a-comment-line-s-text-is-content-and-a-block-body-is-payload`
+and
+`384-a-continuation-marker-attaches-only-a-flush-left-block-7`
+and
+`384-a-continuation-marker-attaches-only-a-flush-left-block-8`.
 
 Entries through 491 landed on a host with no engine checkouts, so the run above
 could not be retaken and its numbers describe the corpus WITHOUT them. Section

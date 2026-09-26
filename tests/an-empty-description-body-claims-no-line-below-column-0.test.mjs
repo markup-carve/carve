@@ -1,10 +1,11 @@
 /*
  * AN EMPTY BODY CLAIMS NOTHING BELOW COLUMN 0 -- §17 L3, carve#1821.
  *
- * `CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0` (carve#1436) names its own control: a line
- * the marker does not reach "falls through to the ordinary column rules, which
- * give it to whichever container its own column names, exactly as if the `+`
- * line had been a comment". So the rule is a RELATION between two documents,
+ * `CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0` (carve#1436) says a line the
+ * marker does not reach "falls through to the ordinary column rules". A comment
+ * line is invisible to those rules, so the comment spelling is a control for
+ * which CONTAINER the line lands in (carve#2322). So the rule is a RELATION
+ * between two documents,
  * and a pair of independent goldens cannot state it - only a change that
  * repairs one spelling and drifts the other shows up against the relation.
  * This file pins the relation for the FIRST-BLOCK form.

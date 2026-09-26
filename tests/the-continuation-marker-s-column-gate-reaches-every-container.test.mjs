@@ -1,13 +1,15 @@
 /*
  * THE COLUMN GATE IS ONE OPERATION IN EVERY CONTAINER -- §17 L3, carve#1814.
  *
- * `CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0` (carve#1436) names its own control: a line
- * the marker does not reach "falls through to the ordinary column rules, which
- * give it to whichever container its own column names, exactly as if the `+`
- * line had been a comment". So the rule is a RELATION between two documents,
- * and the corpus can only pin the two outputs. This file pins the relation: for
- * every container, the marker spelling and the comment spelling of the same
- * document must render the same thing.
+ * `CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0` (carve#1436) says a line the
+ * marker does not reach "falls through to the ordinary column rules". A comment
+ * line is invisible to those rules, so the comment spelling of the same document
+ * is a control for which CONTAINER the line lands in - not for its block
+ * structure, which is why the rows below normalize whitespace (carve#2322). So
+ * the rule is a RELATION between two documents, and the corpus can only pin the
+ * two outputs. This file pins the relation: for every container, the marker
+ * spelling and the comment spelling of the same document must render the same
+ * thing.
  *
  * That is what the corpus could not have caught. The gate was spelled in the
  * list item's attach path and in the item collector's nested guard, and the
