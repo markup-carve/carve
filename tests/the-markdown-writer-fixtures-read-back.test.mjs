@@ -14,7 +14,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { carveToHtml, fromAstJson, renderHtml } from '@markup-carve/carve'
+import { carveToHtml, fromAstJson, listTable, renderHtml } from '@markup-carve/carve'
 import { cmarkGfmToHtml } from '../scripts/lib/markdown-oracle.mjs'
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -32,7 +32,10 @@ const clauseText = (id) => {
 
 const hrefs = (html) => [...html.matchAll(/<a href="([^"]*)"/g)].map((m) => m[1])
 const rows = (html) => (html.match(/<tr>/g) ?? []).length
-const ownHtml = (c) => (c.carve !== undefined ? carveToHtml(c.carve) : renderHtml(fromAstJson(c.ast)))
+// With ListTable on, so a `::: list-table` is compared as the table it states
+// rather than as the nested list it degrades to (CARVE-P11-059).
+const ownHtml = (c) =>
+  c.carve !== undefined ? carveToHtml(c.carve, { extensions: [listTable()] }) : renderHtml(fromAstJson(c.ast))
 
 // Elements a GFM reader can build. A `dl` is not one (PART 11 §10p), and a
 // `section` wrapper is the HTML target's own.

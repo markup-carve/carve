@@ -1349,6 +1349,12 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-059",
+      "part": "11",
+      "title": "A LIST TABLE IS WRITTEN AS A PIPE TABLE",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P11-036",
       "part": "11",
       "title": "A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES",
