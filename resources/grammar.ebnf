@@ -8468,7 +8468,8 @@ EOF = (* end of file *) ;
 
       W1 Render the document twice: the MINIMAL form, escaping only the
          UNCONDITIONAL set (§5), and the CONSERVATIVE form, additionally
-         escaping every CANDIDATE-set character (§5).
+         escaping every CANDIDATE-set character (§5). A LONE BRACKET (§5) is
+         in the unconditional set, so the search never has to find one.
       W2 If the two are byte-identical, emit either.
       W3 Otherwise parse BOTH and compare the resulting documents, ignoring
          source positions and key order.
@@ -8544,6 +8545,40 @@ EOF = (* end of file *) ;
         SO THE LEADING CASE IS UNMOVED. An image over `\^ not a caption` keeps
         the backslash; bare, the same two lines are a `figure` with a
         `figcaption`. That is §2 requiring the escape, not §5 excusing it.
+
+        A LONE BRACKET is unconditional as well. Take the inline content a
+        construct writes between its own `[` and `]`: a span's content, a
+        link's text, an inline note's content. Pair the `[` and `]`
+        characters of that content's TEXT in document order, a `]` pairing
+        with the nearest unpaired `[` before it. Three kinds of character take
+        no part: one already escaped, one inside verbatim content (a code
+        span, raw inline, math), and one inside a NESTED construct that writes
+        its own brackets, since that construct applies this rule to its own
+        content and comes out balanced. Emphasis writes no brackets, so the
+        text inside it does take part. A `[` or `]` left unpaired is LONE and
+        is escaped in BOTH forms. A paired bracket stays in the candidate set
+        below.
+
+        This is §2's answer, not an exception to it: a lone bracket is always
+        load bearing. A lone `]` closes the enclosing construct early. A lone
+        `[` takes the construct's own `]` as its partner and leaves the
+        construct's opener unmatched. What the membership changes is the
+        SEARCH: a page with one such bracket per link, such as a wiki's
+        `[edit]` markers, otherwise drives §2b's halving to single units and
+        spends its whole budget there.
+
+        A span whose content is one `[`, beside a link and a span holding one
+        `]`:
+
+          [\[]{.b}[edit](/x)[\]]{.b}
+
+        Written bare, `[[]{.b}` reads back as a literal `[` and an empty span.
+        A balanced pair stays bare:
+
+          [[x]]{.b} and [see [1] here](/y)
+
+        Text outside every bracketed construct is not covered, because there a
+        bracket closes nothing: `a [ b` stays bare.
 
       CANDIDATE -- escaped only when W4 selects the conservative form:
         `* _ ~ / = ,`        emphasis and the braced pair delimiters
