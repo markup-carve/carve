@@ -1,0 +1,43 @@
+{.language-js}
+```js
+x()
+```
+
+{.lang-python}
+```python
+print(0)
+```
+
+{data-lang=yaml}
+```yaml
+key: value
+```
+
+{#github .highlight-source-python}
+::: highlight
+{#sample}
+```python
+print(1)
+```
+:::
+
+{.mw-highlight-lang-latex dir=ltr}
+::: mw-highlight
+```latex
+x^2
+```
+:::
+
+{.notranslate}
+::: highlight-python3
+:::: highlight
+```python3
+print(2)
+```
+::::
+:::
+
+{data-lang=js}
+```python
+print(3)
+```

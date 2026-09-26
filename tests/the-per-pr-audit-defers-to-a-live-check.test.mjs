@@ -122,6 +122,7 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
       ['resources/engine-fmt-drift.txt', 'owed', 'declared'],
       ['tests/ast-values.test.mjs', 'owed', 'manual'],
       ['resources/engine-pin-drift.txt', 'owed', 'declared'],
+      ['resources/html-import-pin-drift.txt', 'owed', 'declared'],
       ['tests/corpus-convert.test.mjs', 'owed', 'manual'],
     ].sort(),
     'a spec ledger other than the engine-lag ones now reads differently per-PR',

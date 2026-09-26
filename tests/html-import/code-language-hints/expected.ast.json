@@ -1,0 +1,106 @@
+{
+  "type": "document",
+  "children": [
+    {
+      "type": "code_block",
+      "content": "x()",
+      "lang": "js",
+      "attrs": {
+        "classes": [
+          "language-js"
+        ]
+      }
+    },
+    {
+      "type": "code_block",
+      "content": "print(0)",
+      "lang": "python",
+      "attrs": {
+        "classes": [
+          "lang-python"
+        ]
+      }
+    },
+    {
+      "type": "code_block",
+      "content": "key: value",
+      "lang": "yaml",
+      "attrs": {
+        "keyValues": {
+          "data-lang": "yaml"
+        }
+      }
+    },
+    {
+      "type": "admonition",
+      "kind": "highlight",
+      "children": [
+        {
+          "type": "code_block",
+          "content": "print(1)",
+          "lang": "python",
+          "attrs": {
+            "id": "sample"
+          }
+        }
+      ],
+      "attrs": {
+        "id": "github",
+        "classes": [
+          "highlight-source-python"
+        ]
+      }
+    },
+    {
+      "type": "admonition",
+      "kind": "mw-highlight",
+      "children": [
+        {
+          "type": "code_block",
+          "content": "x^2",
+          "lang": "latex"
+        }
+      ],
+      "attrs": {
+        "keyValues": {
+          "dir": "ltr"
+        },
+        "classes": [
+          "mw-highlight-lang-latex"
+        ]
+      }
+    },
+    {
+      "type": "admonition",
+      "kind": "highlight-python3",
+      "children": [
+        {
+          "type": "admonition",
+          "kind": "highlight",
+          "children": [
+            {
+              "type": "code_block",
+              "content": "print(2)",
+              "lang": "python3"
+            }
+          ]
+        }
+      ],
+      "attrs": {
+        "classes": [
+          "notranslate"
+        ]
+      }
+    },
+    {
+      "type": "code_block",
+      "content": "print(3)",
+      "lang": "python",
+      "attrs": {
+        "keyValues": {
+          "data-lang": "js"
+        }
+      }
+    }
+  ]
+}

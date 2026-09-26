@@ -79,6 +79,76 @@ saying something else has failed at the one job a migration boundary is for.
 fixtures, and carries a declared ledger for the fixtures that do not meet it
 yet.
 
+## Code-block language hints
+
+HTML import recognizes explicit code-language hints in `safe`, `semantic` and
+`roundtrip` modes whenever HTML maps to a code block. Recognition supplies
+`code_block.lang` without removing wrappers or consuming additional attributes.
+Existing raw-preservation paths, security checks and attribute diagnostics still
+apply. Wrapper IDs and classes remain on their existing carriers.
+
+Match these spellings case-sensitively on the parsed DOM. Split HTML class values on ASCII whitespace, not a host language's broader Unicode whitespace class.
+
+| Convention | Eligible location | Producer or convention |
+| --- | --- | --- |
+| `language-X` | Direct `code` child or `pre` | CommonMark-style HTML, Prism, highlight.js |
+| `lang-X` | Direct `code` child or `pre` | Google Prettify |
+| `data-lang="X"` | Direct `code` child or `pre` | Hugo / Chroma |
+| `brush: X` or `brush:X` | `pre` class attribute | SyntaxHighlighter-style metadata, including MDN |
+| `highlight-source-X` | Eligible wrapping `div`, also carrying `highlight` | GitHub |
+| `mw-highlight-lang-X` | Eligible wrapping `div`, also carrying `mw-highlight` | MediaWiki SyntaxHighlight |
+| `highlight-X` | Eligible Sphinx wrapping `div` described below | Sphinx's wrapper around Pygments output |
+
+The producer column documents provenance; it does not require hostname checks, a generator meta tag, network access, or a registry of installed highlighters. Generic Pygments `class="highlight"` alone carries no language.
+
+### Wrapper eligibility
+
+Support these shapes:
+
+- GitHub: `div.highlight.highlight-source-X > pre`.
+- MediaWiki: `div.mw-highlight.mw-highlight-lang-X > pre`.
+- Sphinx: `div.highlight-X > div.highlight > pre`. Additional classes such as `notranslate` are allowed. The inner `div` must contain the exact class token `highlight`.
+
+At each wrapper level, the child shown above must be the only element child. Other child nodes may be comments or text containing only ASCII whitespace. Substantive text, another element, or another code block makes that wrapper ineligible. Attributes do not prevent language lookup and remain subject to the existing import policy.
+
+Sphinx needs both wrapper levels. All 34 Python examples in the saved corpus use that nesting. A direct-parent-only rule would miss them.
+
+Do not search farther ancestors or cross other elements. Wrappers containing copy buttons, captions or line-number tables are outside this rule. Preserve their ordinary import behavior; do not guess which children are disposable. [Pygments can emit separate line-number and code cells](https://pygments.org/docs/formatters/#HtmlFormatter), so treating every descendant `<pre>` as the code target is unsafe.
+
+### Candidate parsing and precedence
+
+Use the direct `<code>` child already selected by the code-block importer as the code-level source. This rule does not change how malformed `<pre>` content or multiple `<code>` children are selected or flattened.
+
+1. Inspect the selected `code`, then `pre`, then its eligible wrapper. Choose the first location with a valid candidate.
+2. On `code` and `pre`, try `language-X`, `lang-X`, `data-lang`, then `brush:` where permitted. Within one class convention, use the first valid occurrence in class-attribute order. Within `brush:`, use the first valid declaration in source order.
+3. On a wrapper, try `highlight-source-X`, then `mw-highlight-lang-X`, then the Sphinx `highlight-X` form, subject to each shape's eligibility. Never reinterpret a token beginning `highlight-source-` as Sphinx's `highlight-X`, even when its GitHub suffix is invalid.
+4. Skip empty or invalid candidates and continue in that order. If none is valid, leave the code block without a language.
+
+Location takes priority over convention. Thus `<pre class="language-js"><code data-lang="python">...</code></pre>` imports with `lang: "python"`. A `<code>` without a valid hint falls back to `<pre>`.
+
+Trim leading and trailing ASCII whitespace from `data-lang` before validation. Class-prefix suffixes must occupy the complete class token. Preserve the selected value's case and spelling; do not map aliases such as `py`, `python3`, `shell` or `console` to another name. Unknown but valid language tokens are allowed.
+
+For `brush:`, scan the original class value before any class normalization. A declaration starts at the beginning of the value or after ASCII whitespace or `;`, followed by the exact text `brush:`, optional ASCII whitespace, and a nonempty value ending at ASCII whitespace, `;`, or the end of the attribute. Validate that entire value. This accepts `brush: html notranslate`, `brush:html;` and `brush: html; gutter: false;`. Quoted values are outside this rule. Other option text contributes no language candidate and is not deleted by recognition.
+
+Treat `none`, `plain`, `text` and `plaintext` as explicit valid values that stop fallback. This prevents a nearer explicit value from being replaced by a wrapper hint. Full [Prism ancestor inheritance](https://prismjs.com/) is outside this rule.
+
+### Validation, preservation and reports
+
+Validate every candidate, including existing `language-X`, against Carve's complete `language_info` production: one or more ASCII letters, digits, `-`, `_`, `+`, `#`, `.`, or `/`. A full-string check is required. Accept `c++`, `c#`, `f#`, `asp.net` and `text/html`; reject `=html`, `python:3`, embedded whitespace, backticks and quotes. Never repair an invalid candidate into a different language.
+
+Extraction does not mutate the DOM or remove winning, duplicate, conflicting or invalid hints from their source attributes. The existing attribute mapper remains responsible for their representation and any losses. A successfully selected language needs no new diagnostic. Skipping a candidate or choosing among conflicting candidates does not suppress ordinary attribute-loss, security or structural diagnostics.
+
+Wrapper lookup must obey existing DOM depth and node limits. It inspects at most the two wrapper levels named above. Code text extraction, HTML entity decoding, whitespace and trailing-newline handling are unchanged.
+
+HTML's natural-language `lang` attribute, arbitrary unprefixed classes, source-text guessing, and extension activation are outside this rule. A language hint supplies metadata to a code block; it must never change that node into raw HTML, math or another construct.
+
+The shared `tests/html-code-language-cases.json` matrix specifies language
+selection, including rejected candidates, for all three engines. The
+`code-language-hints` fixture pins source, AST and diagnostics for representable
+cases. Brush cases also run through each engine's writer and parser to verify
+code content and language; the separate class-normalization defect is not
+recorded as a correct full-AST round trip.
+
 ## Semantic elements
 
 Seven inline elements import as the compact semantic span, which is the exact
