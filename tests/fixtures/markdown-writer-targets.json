@@ -1,0 +1,106 @@
+[
+  {
+    "name": "fragment-link-is-kept",
+    "rule": "CARVE-P11-049",
+    "carve": "See [CHAPTER III.](#chap03) and [head](#h).\n\n{#h}\n## Head\n\n[]{#chap03}Three\n\n1.{#n1} Note\n\nx{^[[1]](#n1)^} and [gone](#nowhere)\n",
+    "markdown": "See [CHAPTER III.](#chap03) and [head](#h).\n\n## Head {#h}\n\nThree\n\n1. Note\n\nx<sup>[\\[1\\]](#n1)</sup> and [gone](#nowhere)\n"
+  },
+  {
+    "name": "fragment-link-destination-is-encoded",
+    "rule": "CARVE-P11-049",
+    "carve": "[y](#a(b)) and [w](#)\n",
+    "markdown": "[y](#a%28b%29) and [w](#)\n"
+  },
+  {
+    "name": "table-cell-hard-break",
+    "rule": "CARVE-P11-048",
+    "ast": {
+      "type": "document",
+      "srcByteLength": 0,
+      "children": [
+        {
+          "type": "table",
+          "rows": [
+            {
+              "type": "table_row",
+              "cells": [
+                {
+                  "type": "table_cell",
+                  "header": true,
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "a"
+                    },
+                    {
+                      "type": "hard_break"
+                    },
+                    {
+                      "type": "text",
+                      "value": "c"
+                    }
+                  ]
+                },
+                {
+                  "type": "table_cell",
+                  "header": true,
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "b"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "table_row",
+              "cells": [
+                {
+                  "type": "table_cell",
+                  "header": false,
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "one"
+                    },
+                    {
+                      "type": "hard_break"
+                    },
+                    {
+                      "type": "text",
+                      "value": "two"
+                    }
+                  ]
+                },
+                {
+                  "type": "table_cell",
+                  "header": false,
+                  "children": [
+                    {
+                      "type": "strong",
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "x"
+                        },
+                        {
+                          "type": "hard_break"
+                        },
+                        {
+                          "type": "text",
+                          "value": "y"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "markdown": "| a<br>c | b |\n| --- | --- |\n| one<br>two | **x<br>y** |\n"
+  }
+]
