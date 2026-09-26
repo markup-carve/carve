@@ -30,7 +30,10 @@ continuation_row = '+', table_cell, {'|', table_cell}, '|', newline ;
       literal pipe rather than an orphaned backslash -- `\|` is the only way to
       write a literal pipe in a cell, in every position of the row. This does
       not widen what a row is: `| a | b`, with content dangling after the last
-      pipe, is prose exactly as before. *)
+      pipe, is prose exactly as before. An attribute value is one of those
+      positions: a writer spells a value holding `|` quoted, as
+      `{k="a\|b"}`, and the quoted value reads the escape back as the pipe
+      (markup-carve/carve#2383). *)
 
 (* Row-level attributes: a `{…}` attribute block GLUED to the row's closing `|`
    (no intervening space) sets the row's `<tr>` attributes -- the row-level twin

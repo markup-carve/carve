@@ -865,7 +865,7 @@ the `attribute-dropped` row markup-carve/carve#1721 ruled, one per name. Writing
 the two as separate lines is not a second spelling of the same thing: the
 writer merges them, so that source is not a fixed point of `carve fmt`.
 
-## A comment holding a line break has no spelling in a table cell
+## A comment holding a line break has no spelling in a table cell or a heading
 
 A pipe-table row is one line ([CARVE-P2-019]), so a comment whose
 text holds a line break cannot be written inside a cell. It is a third payload
@@ -879,6 +879,87 @@ A comment inside a cell is written inline even where it stands among the
 cell's blocks, because the cell flattens them into its one line; a line comment
 there would swallow the rest of the row. A comment outside any cell keeps its
 line breaks.
+
+A heading is one line too, so a comment holding a line break inside a heading
+takes the same answer: it is dropped with one `element-dropped` row at
+`warning`, located at the comment (markup-carve/carve#2396).
+
+```html
+<h2>a <!-- x
+y --> b</h2>
+```
+
+```
+## a  b
+```
+
+## An attribute value holding a pipe is quoted
+
+A table row's cells are cut from the line before inline parsing, and `\|` is
+the only pipe the cut leaves in place ([CARVE-P2-019]). So the writer spells an
+attribute value holding `|` quoted, with each pipe escaped, and the quoted
+value reads the escape back as the pipe (markup-carve/carve#2383):
+
+```html
+<table><tr><td id="c" data-x="a|b">t</td><td><span data-y="p|q">u</span></td></tr></table>
+```
+
+```
+|{#c data-x="a\|b"} t | [u]{data-y="p\|q"} |
+```
+
+The rule holds wherever the value sits, inside a row or not, so one spelling
+serves every position and `carve fmt` writes the same one.
+
+## An attribute value holding a line break is dropped
+
+A quoted attribute value stops at the line break ([CARVE-P4-006]), so a value
+holding one has no Carve spelling. Writing it across two lines leaves an
+attribute block that does not reparse, and the blocks after it read
+differently. The attribute is dropped with one `attribute-dropped` row at
+`warning`, and the element keeps its other attributes
+(markup-carve/carve#2385):
+
+```html
+<div class="h" data-copy="a
+b"><pre><code>x</code></pre></div>
+```
+
+````
+::: h
+```
+x
+```
+:::
+````
+
+## A description before the first term is written as blocks
+
+A definition line with no term before it re-reads as a paragraph, so a `<dd>`
+before a `<dl>`'s first `<dt>` has no Carve spelling. Its content is written as
+ordinary blocks ahead of the list, in both exits, with one `element-unwrapped`
+row at `warning`, located at the `<dd>` (markup-carve/carve#2384). A `<dl>` left
+with no entry writes no list, and each attribute it carried takes an
+`attribute-dropped` row at `warning`:
+
+```html
+<dl class="k"><dd><div id="p" class="noprint"><i>x</i></div></dd></dl><dl><dd>a</dd><dt>t</dt><dd>d</dd></dl>
+```
+
+```
+{#p}
+::: noprint
+/x/
+:::
+
+a
+
+:: t
+: d
+```
+
+The blocks between the two lists keep them apart, so the second list is not
+merged into anything.
 
 ## A table whose cells hold blocks can be written as a list table
 
