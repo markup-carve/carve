@@ -1,0 +1,26 @@
+{.steps header-rows=1}
+::: list-table "Setup /steps/"
+- - Step
+  - What
+  - Note
+- - 1
+
+  - Install the tool.
+
+    ```
+    npm install carve
+    ```
+
+  -{.hint} Once per machine
+- - ^
+  - - Check the version
+    - Read the help
+  -{header} Optional
+- - 2
+  - Run it\
+    on a file
+  - <
+- - 3
+  - \^
+  - +
+:::

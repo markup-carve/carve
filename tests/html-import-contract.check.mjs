@@ -18,6 +18,7 @@ test('every HTML import fixture publishes all four contract files', async () => 
   assert.ok(fixtures.length > 0)
   for (const fixture of fixtures.filter((entry) => entry.isDirectory())) {
     const names = new Set(await readdir(new URL(`${fixture.name}/`, root)))
+    names.delete('options.json')
     assert.deepEqual([...names].sort(), ['expected.ast.json', 'expected.crv', 'expected.report.json', 'input.html'])
     for (const json of ['expected.ast.json', 'expected.report.json']) {
       JSON.parse(await readFile(new URL(`${fixture.name}/${json}`, root), 'utf8'))
@@ -294,6 +295,26 @@ function fidelityDiagnosticsMatch(expected, actual) {
     : `migration report does not reproduce the fixture's fidelity classifications`
 }
 
+/*
+ * The import options a fixture names in `options.json`, by their JavaScript
+ * names. Only the options docs/html-import-contract.md lists for fixtures are
+ * accepted, so a fixture cannot reach a mode or an adapter this way.
+ */
+const FIXTURE_OPTIONS = new Set(['listTableForBlockCells'])
+async function fixtureOptions(name) {
+  let text
+  try {
+    text = await readFile(new URL(`${name}/options.json`, root), 'utf8')
+  } catch {
+    return {}
+  }
+  const options = JSON.parse(text)
+  for (const key of Object.keys(options)) {
+    assert.ok(FIXTURE_OPTIONS.has(key), `tests/html-import/${name}/options.json names ${key}, which no fixture may set`)
+  }
+  return options
+}
+
 test('the pinned build imports every fixture the way the fixture says', async () => {
   const { htmlToCarve, htmlToAst, migrateHtml, toAstJson } = await import('@markup-carve/carve')
   const fixtures = (await readdir(root, { withFileTypes: true })).filter((e) => e.isDirectory())
@@ -306,9 +327,10 @@ test('the pinned build imports every fixture the way the fixture says', async ()
     const expectedReport = JSON.parse(await read('expected.report.json'))
     const expectedAst = JSON.parse(await read('expected.ast.json'))
 
-    const source = htmlToCarve(html)
-    const fidelity = migrateHtml(html)
-    const ast = htmlToAst(html)
+    const options = await fixtureOptions(name)
+    const source = htmlToCarve(html, options)
+    const fidelity = migrateHtml(html, options)
+    const ast = htmlToAst(html, options)
     const failures = [
       source.value === expectedCrv ? null : `expected.crv: got ${JSON.stringify(source.value)}`,
       diagnosticsMatch(expectedReport, source.report),

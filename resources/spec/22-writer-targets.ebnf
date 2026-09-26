@@ -670,14 +670,16 @@
          reported as CARVE-P12-049 flattens and reports a block cell, with a
          hard break written as `<br>` (§9a). A cell with no blocks is empty.
 
-      A block that follows a row's inner list belongs to that row's last cell,
-      as §5 renders it. A cell is a header cell when its row is inside
+      Every list in a row gives cells, in order, and any other block in the
+      row belongs to the cell before it, as §5 renders them. A cell is a header cell when its row is inside
       `header-rows` or carries `{header-row}`, when its position is inside
       `header-cols`, or when its item carries `{header}`, each read as §5.1
       reads it. Its alignment is the item's `align` value, else the
       `aligns` entry for its position. The opener's title is the table's
-      caption (§10e). `valigns`, `widths`, `footer-rows` and every other
-      attribute are not written, as a pipe table's attributes are not.
+      caption (§10e), and an unconsumed `[label]` keeps the bold line the
+      admonition writing gives it, above the table. `valigns`, `widths`,
+      `footer-rows` and every other attribute are not written, as a pipe
+      table's attributes are not.
 
         {header-rows=1}              ->  | A | B |
         ::: list-table "Cap"             | --- | --- |
