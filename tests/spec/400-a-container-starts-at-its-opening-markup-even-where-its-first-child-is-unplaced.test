@@ -2,12 +2,12 @@ A container starts at its opening markup even where its first child is unplaced
 
 ```
 ::: |
-a	b
+tab	gap
 %%
 :::
 .
 <div class="line-block">
-  <p>a&nbsp;&nbsp;&nbsp;b<br>
+  <p>tab gap<br>
 </p>
 </div>
 ```

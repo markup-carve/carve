@@ -162,9 +162,9 @@
 # ---- PERMITTED: a merged `text` run whose pieces are not adjacent ------------
 #
 # The §4 reassembly clause. The two halves of a table cell continued on a `+`
-# line (237, 249-4, 256-15/16/17, 63, 64), and line-block content rebuilt around
-# the indentation sentinel (41-line-blocks-9). All three engines omit; the
-# clause names the category, not the engine.
+# line (237, 249-4, 256-15/16/17, 63, 64), and the merged `tab gap` text
+# whose space replaces a tab (41-line-blocks-9, 400, 402). All three engines
+# omit; the clause names the category, not the engine.
 #
 # `03-links-12` STOOD HERE and came off on 2026-08-08, one line per engine. It
 # was an autolink UNWRAPPED inside a link label: the label collapsed to a single
@@ -180,12 +180,18 @@
 # fail on them. What is falsifiable is the declaration itself - see the three
 # directions above, each exercised in tests/ast-waivers.test.mjs.
 
+carve-js   400-a-container-starts-at-its-opening-markup-even-where-its-first-child-is-unplaced.crv  text        1  permitted
+carve-js   402-a-container-ends-at-the-markup-that-closes-it-even-where-its-last-child-is-unplaced.crv  text        1  permitted
+carve-rs   400-a-container-starts-at-its-opening-markup-even-where-its-first-child-is-unplaced.crv  text        1  permitted
+carve-rs   402-a-container-ends-at-the-markup-that-closes-it-even-where-its-last-child-is-unplaced.crv  text        1  permitted
+carve-php  400-a-container-starts-at-its-opening-markup-even-where-its-first-child-is-unplaced.crv  text        1  permitted
+carve-php  402-a-container-ends-at-the-markup-that-closes-it-even-where-its-last-child-is-unplaced.crv  text        1  permitted
 carve-js   237-a-continuation-row-carries-no-trailing-text.crv    text  2  permitted
 carve-js   249-trailing-whitespace-after-a-block-marker-4.crv     text  2  permitted
 carve-js   256-table-cell-padding-must-be-a-space-15.crv          text  2  permitted
 carve-js   256-table-cell-padding-must-be-a-space-16.crv          text  2  permitted
 carve-js   256-table-cell-padding-must-be-a-space-17.crv          text  2  permitted
-carve-js   41-line-blocks-9.crv                                   text  3  permitted
+carve-js   41-line-blocks-9.crv                                   text  1  permitted
 carve-js   63-table-multi-line-cell-continuation.crv              text  1  permitted
 carve-js   64-table-rowspan-with-multi-line-content.crv           text  1  permitted
 
@@ -194,7 +200,7 @@ carve-rs   249-trailing-whitespace-after-a-block-marker-4.crv     text  2  permi
 carve-rs   256-table-cell-padding-must-be-a-space-15.crv          text  2  permitted
 carve-rs   256-table-cell-padding-must-be-a-space-16.crv          text  2  permitted
 carve-rs   256-table-cell-padding-must-be-a-space-17.crv          text  2  permitted
-carve-rs   41-line-blocks-9.crv                                   text  3  permitted
+carve-rs   41-line-blocks-9.crv                                   text  1  permitted
 carve-rs   63-table-multi-line-cell-continuation.crv              text  1  permitted
 carve-rs   64-table-rowspan-with-multi-line-content.crv           text  1  permitted
 
@@ -293,32 +299,13 @@ carve-php  333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv  
 # becomes as many columns as the tab stop needs, so no column is a codepoint of
 # the source and no offset pair selects one.
 #
-# THE OTHER HALF OF THAT CLAUSE IS THE CONTROL, and it is live rather than
-# argued. The corpus carries 41 `non_breaking_space` nodes over 13 documents, and
-# 23 of them are PLACED - escaped spaces in `29-non-breaking-space` and the
-# ordinary space runs of ten other line blocks. So the category declared here is
-# the tab and not the node type: an engine that stopped placing an escaped space
-# would fail UNWAIVED, which is what a type-wide line would have hidden.
-#
-# Every column counted below is a tab's. The three sources hold no space run and
-# no `\ ` at all - `a<TAB>b` twice, then `tab<TAB>gap` / `wide<TAB><TAB>gap` /
-# `<TAB>lead` - and each count is the expansion the rendered fixture spells as
-# `&nbsp;`: 3, 3, and 8 + 4. The single column on `tab<TAB>gap` is a plain space
-# inside the text value rather than a node, which is why 41-line-blocks-9 reads
-# 12 and not 13.
-#
-# All three engines omit all eighteen, in the same three documents and at the
-# same counts, which is the per-engine symmetry the OWED section below calls the
-# tell: the cause is the construct.
+# Escaped spaces and preserved authored spaces remain positioned. The twelve
+# omitted columns in `41-line-blocks-9` come from `wide<TAB><TAB>gap` and
+# `<TAB>lead`. Its `tab<TAB>gap` line instead produces one merged text value
+# with no exact source slice, covered by the text declaration above.
 
-carve-js   400-a-container-starts-at-its-opening-markup-even-where-its-first-child-is-unplaced.crv  non_breaking_space   3  permitted
-carve-js   402-a-container-ends-at-the-markup-that-closes-it-even-where-its-last-child-is-unplaced.crv  non_breaking_space   3  permitted
 carve-js   41-line-blocks-9.crv                                   non_breaking_space  12  permitted
-carve-rs   400-a-container-starts-at-its-opening-markup-even-where-its-first-child-is-unplaced.crv  non_breaking_space   3  permitted
-carve-rs   402-a-container-ends-at-the-markup-that-closes-it-even-where-its-last-child-is-unplaced.crv  non_breaking_space   3  permitted
 carve-rs   41-line-blocks-9.crv                                   non_breaking_space  12  permitted
-carve-php  400-a-container-starts-at-its-opening-markup-even-where-its-first-child-is-unplaced.crv  non_breaking_space   3  permitted
-carve-php  402-a-container-ends-at-the-markup-that-closes-it-even-where-its-last-child-is-unplaced.crv  non_breaking_space   3  permitted
 carve-php  41-line-blocks-9.crv                                   non_breaking_space  12  permitted
 
 # ---- OWED --------------------------------------------------------------------
@@ -392,8 +379,6 @@ carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv            
 carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv                text        1  permitted
 carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                table_cell  1  permitted
 carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                text        1  permitted
-carve-js   400-a-container-starts-at-its-opening-markup-even-where-its-first-child-is-unplaced.crv  text        1  permitted
-carve-js   402-a-container-ends-at-the-markup-that-closes-it-even-where-its-last-child-is-unplaced.crv  text        1  permitted
 carve-php  349-a-container-whose-table-ends-on-a-continuation-row-3.crv             table_cell  1  permitted
 carve-php  349-a-container-whose-table-ends-on-a-continuation-row-3.crv             text        1  permitted
 carve-php  349-a-container-whose-table-ends-on-a-continuation-row-5.crv             table_cell  1  permitted
@@ -434,5 +419,3 @@ carve-rs   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv            
 carve-rs   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv                text        1  permitted
 carve-rs   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                table_cell  1  permitted
 carve-rs   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                text        1  permitted
-carve-rs   400-a-container-starts-at-its-opening-markup-even-where-its-first-child-is-unplaced.crv  text        1  permitted
-carve-rs   402-a-container-ends-at-the-markup-that-closes-it-even-where-its-last-child-is-unplaced.crv  text        1  permitted

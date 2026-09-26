@@ -26564,47 +26564,24 @@ tail
 
 ## A container starts at its opening markup even where its first child is unplaced
 
-PART 12 §4 begins a span at the markup that opens the construct, and the
-container-extent rules beside it end one at its last placed child - or, where it
-has none, at its own markup. The arrangement none of them named is the symmetric
-one: a container that HAS children whose FIRST child carries no position.
-
-A line block stanza holding a tab is that case. The verse text is rebuilt with
-expanded tabs, and a tab's display width is not a source length, so all three
-engines decline to place it - an absent position is honest and a fabricated one
-is not. The `hard_break` beside it is placed anyway, because a line ending is
-line geometry rather than something measured from that text, and so is the
-`comment` the block layer leaves where it empties a `%%` line (PART 9 §23).
-
-The start and end rules are not symmetric, because they answer different
-questions. The end rule asks where a container's content stops, so its last
-placed child is the right boundary. The start rule asks where the construct
-begins, and a construct begins at its own markup, which exists whether or not
-any child was placed. Read symmetrically, the paragraph below started at the
-`%%` line - dropping its own first line from its extent, and leaving the break
-that ends that line OUTSIDE the paragraph holding it, which §4 containment
-refuses. Ruled at markup-carve/carve-rs#1247.
-
-NO DOCUMENT PUT A TAB IN A STANZA THAT ALSO HOLDS A COMMENT LINE, which is why
-the span panel saw neither that illegal tree nor the second divergence on the
-same document - carve-js published no position for the `comment` at all, while
-the other two placed it (markup-carve/carve-js#1323). The HTML below was never
-in dispute; the pair is here because the SPANS the same document publishes are
-what moved, and because a shape the corpus does not hold is a shape three
-engines can disagree about indefinitely.
+The first child is `tab gap`, produced from `tab<TAB>gap`. The tab occupies
+one display column and becomes a plain space inside the merged text value.
+No contiguous source slice holds that value, so the text omits `pos`.
+The paragraph still starts at the beginning of its first line, before the
+placed break and comment (CARVE-P12-019).
 
 :::: compare
 
 ```carve
 ::: |
-a	b
+tab	gap
 %%
 :::
 ```
 
 ```html
 <div class="line-block">
-  <p>a&nbsp;&nbsp;&nbsp;b<br>
+  <p>tab gap<br>
 </p>
 </div>
 ```
@@ -26712,54 +26689,24 @@ para
 
 ## A container ends at the markup that closes it even where its last child is unplaced
 
-The MIRROR of "A container starts at its opening markup even where its first
-child is unplaced" two sections up, and the last arrangement the extent rules
-did not name: a container that HAS children whose LAST child carries no
-position.
-PART 12 §4 ends a closerless container at its last placed child (carve#1522),
-and read literally that pulls the end BACK over source the container's own
-unplaced child covers.
-
-Swap the two lines of that document's stanza and this case appears. The verse text is
-still reassembled around expanded tabs, so no engine places it - but now it is
-the paragraph's LAST child, and the last child that does carry a position is the
-`hard_break` ending the `%%` line above it. carve-rs ended the paragraph there,
-at offset 9, where carve-js and carve-php end it at 12, where the tab-bearing
-line ends.
-
-Ending at 9 is not a matter of taste. Offset 9 is one past the line terminator
-the break owns, so the span ends immediately after a terminator, which §4
-excludes by name - and the stanza's own last line falls outside the paragraph
-that holds it, exactly as its FIRST line did before
-markup-carve/carve-rs#1247 was fixed. Ruled at markup-carve/carve#1551: a
-container ends at the markup that CLOSES it, whether or not its last child is
-placed, and "ends at its last placed child" is the case for a container whose
-closer is IMPLICIT rather than the general rule.
-
-NOTHING REPORTED IT, for the same reason a third time. `checkStopsAtChildren`
-in the spec's scripts/spec/ast-positions.mjs SKIPPED every container holding an
-unplaced child, so the check enforcing carve#1522's ruling declined the one
-arrangement that ruling did not reach, and two engines disagreed on this
-document with nothing red. An unplaced child only moves the bound when it is the
-LAST child; the skip declined the whole family to protect one arrangement of it.
-
-The HTML below was never in dispute - the three engines and the canonical writer
-all agree on it. The pair is here because the SPAN this document publishes is
-what moved.
+The last child is `tab gap`, produced from `tab<TAB>gap`. It omits `pos`
+because its space was synthesized from a tab. The paragraph ends at offset
+16, where that source line ends, rather than offset 9, where the preceding
+break ends (CARVE-P12-020).
 
 :::: compare
 
 ```carve
 ::: |
 %%
-a	b
+tab	gap
 :::
 ```
 
 ```html
 <div class="line-block">
   <p><br>
-a&nbsp;&nbsp;&nbsp;b</p>
+tab gap</p>
 </div>
 ```
 

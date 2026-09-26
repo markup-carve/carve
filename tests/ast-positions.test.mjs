@@ -1722,14 +1722,9 @@ test('STOPS AT ITS CHILDREN, over every corpus document', () => {
  * placed child at all, and neither reaches a container that HAS children whose
  * FIRST one omits `pos`.
  *
- * A line block stanza holding a TAB is that shape: the verse text is rebuilt
- * with expanded tabs, whose display width is not a source length, so every
- * engine declines to place it - while the break ending that line and the
- * `comment` an emptied `%%` line leaves behind are both line geometry and are
- * placed. Starting the paragraph at the first PLACED child then dropped the
- * stanza's own first line out of its extent and left the break OUTSIDE the
- * paragraph holding it, which is a containment violation rather than a matter
- * of taste - and `checkContainment` is what names it.
+ * A one-column tab in `tab<TAB>gap` becomes a space inside a merged text
+ * value. That value has no exact source slice, while the break and comment
+ * still have positions. The paragraph starts before all three children.
  *
  * NOTHING SAW IT, which is the reason the corpus pair went in with the clause:
  * no corpus document put a tab in a stanza that also holds a comment line, so
@@ -1787,7 +1782,7 @@ test('the corpus pair for it starts on the line the author wrote', () => {
 
   const wire = toAstJson(parse(source))
   const paragraph = wire.children[0].children[0]
-  // A line block spells the tab as `non_breaking_space` nodes between the two.
+  // The one-column tab becomes a space inside a single text node.
   const text = paragraph.children[0]
   const hardBreak = paragraph.children.find((child) => child.type === 'hard_break')
 
@@ -1799,7 +1794,7 @@ test('the corpus pair for it starts on the line the author wrote', () => {
   // And the paragraph still starts on the line holding it, not below.
   assert.equal(paragraph.pos.startOffset, 6)
   assert.equal(hardBreak.type, 'hard_break')
-  assert.equal(hardBreak.pos.startOffset, 9)
+  assert.equal(hardBreak.pos.startOffset, 13)
   assert.ok(
     hardBreak.pos.startOffset >= paragraph.pos.startOffset &&
       hardBreak.pos.endOffset <= paragraph.pos.endOffset,
@@ -1820,12 +1815,9 @@ test('the corpus pair for it starts on the line the author wrote', () => {
  * that ruling excused itself on precisely its undefined case, and carve-rs and
  * the other two engines disagreed on a document with nothing red.
  *
- * The document is corpus 402: `::: |`, a `%%` line, then a tab-bearing verse
- * line. The verse text is reassembled around expanded tabs so no engine places
- * it, and it is the paragraph's LAST child; the last child that does carry a
- * position is the `hard_break` ending the `%%` line above it. carve-rs ended
- * the paragraph at 9, where that break ends, and carve-js and carve-php at 12,
- * where the tab-bearing line ends.
+ * Corpus 402 now ends with `tab<TAB>gap`. Its merged text value has no
+ * source slice, so the paragraph must extend past the placed break at offset
+ * 9 to the end of the text at offset 16.
  *
  * Ending at 9 puts the paragraph's end one past the terminator the break owns
  * and drops the stanza's own last line out of the paragraph holding it - which
@@ -1960,9 +1952,9 @@ test('the corpus pair for it ends where the author closed the stanza', () => {
   assert.equal(last.type, 'text')
   assert.equal(last.pos, undefined)
 
-  // 12 is the end of the tab-bearing line; 9 is one past the terminator the
+  // 16 is the end of the tab-bearing line; 9 is one past the terminator the
   // break above it owns.
-  assert.equal(paragraph.pos.endOffset, 12)
+  assert.equal(paragraph.pos.endOffset, 16)
   const placed = children.filter((child) => child.pos)
   assert.equal(Math.max(...placed.map((child) => child.pos.endOffset)), 9)
 
@@ -1972,4 +1964,20 @@ test('the corpus pair for it ends where the author closed the stanza', () => {
   const examined = checkStopsAtChildren(wire, [...source], findings)
   assert.deepEqual(findings, [])
   assert.ok(examined > 0, 'the container with an unplaced last child was skipped again')
+})
+
+test('tab expansion leaves contiguous text positioned and synthesized content unpositioned', () => {
+  const source = '::: |\ntab\tgap\nwide\t\tgap\n\tlead\n:::\n'
+  const wire = toAstJson(parse(source))
+  const children = wire.children[0].children[0].children
+  const text = children.filter((node) => node.type === 'text')
+  assert.deepEqual(text.map((node) => node.value), ['tab gap', 'wide', 'gap', 'lead'])
+  assert.equal(text[0].pos, undefined)
+  for (const node of text.slice(1)) {
+    assert.ok(node.pos, node.value)
+    assert.equal([...source].slice(node.pos.startOffset, node.pos.endOffset).join(''), node.value)
+  }
+  const columns = children.filter((node) => node.type === 'non_breaking_space')
+  assert.equal(columns.length, 12)
+  for (const node of columns) assert.equal(node.pos, undefined)
 })

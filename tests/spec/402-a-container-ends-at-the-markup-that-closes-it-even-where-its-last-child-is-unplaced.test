@@ -3,11 +3,11 @@ A container ends at the markup that closes it even where its last child is unpla
 ```
 ::: |
 %%
-a	b
+tab	gap
 :::
 .
 <div class="line-block">
   <p><br>
-a&nbsp;&nbsp;&nbsp;b</p>
+tab gap</p>
 </div>
 ```
