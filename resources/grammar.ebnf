@@ -9428,6 +9428,80 @@ EOF = (* end of file *) ;
         Carve       {~ ~}
         Markdown    <del> </del>
 
+   8d. A CONTEXTUAL ESCAPE READS THE EMITTED LINE ACROSS NODES --
+      NORMATIVE [CARVE-P11-050]. Every test above and below that decides an escape by a
+      NEIGHBORING character (M1b, M1c, M1e, M1f, M2b, §8e to §8h) reads the
+      character the writer emits at that position, whichever node emits it:
+      the rest of the same text node, the text of a following span, emphasis
+      or link label, or the writer's own markup. A node boundary is not a line
+      boundary, and a test that stops at the end of the text node passes
+      content through as markup.
+
+        [<]{.p}[h1]{.nt}[>]{.p}Heading     ->  \<h1>Heading
+        [-]{.p}[ x]{.x}                    ->  \- x
+
+      THE HAZARD IS RAW HTML FIRST. Syntax-highlighted code puts every token
+      in its own span, so `<`, the tag name and `>` arrive as three nodes, and
+      a `<` tested against its own node alone is emitted bare: the Markdown
+      carries a live tag the document only showed as text. That is the class
+      PART 9 §25 rules out on the other targets.
+
+      A `>` AT A LINE'S CONTENT POSITION is a block quote marker under M1
+      whatever follows it, so it is escaped whether the rest of its line comes
+      from its own node or another.
+
+   8e. AN AMPERSAND THAT WOULD READ AS A CHARACTER REFERENCE IS ESCAPED --
+      NORMATIVE [CARVE-P11-051]. Carve has no character references: `&amp;`
+      in a text node is five characters. A Markdown reader decodes it, so a
+      `&` in text is written `\&` when the characters the line carries after
+      it complete a reference as CommonMark reads one: `#`, one to seven
+      ASCII digits and `;`; `#x` or `#X`, one to six hex digits and `;`; or an
+      ASCII letter, any run of ASCII letters and digits, and `;`. The named
+      form is tested on its shape, not against a list of names, because the
+      readers do not agree on the list. Any other `&` is emitted bare.
+
+        a &amp; c &#65; & b &c     ->  a \&amp; c \&#65; & b &c
+
+   8f. A `!` BEFORE A LINK IS ESCAPED -- NORMATIVE [CARVE-P11-052]. A `!` in
+      text is written `\!` when the next character the line carries is a `[`
+      the writer emits as markup: the opener of a link, an image or a
+      footnote reference. Otherwise `![` reads as an image and the link becomes
+      an `<img>`.
+
+        text "a !", then a link to /u    ->  a \![x](/u)
+
+   8g. A PARAGRAPH LINE MUST NOT BECOME A THEMATIC BREAK OR A SETEXT
+      UNDERLINE -- NORMATIVE [CARVE-P11-053]. When a line of paragraph text,
+      after its container prefix and up to three spaces, consists only of
+
+      T1 three or more `-`, `_` or `*` of one kind, with any spaces or tabs
+         between them, or
+      T2 on a line that is not the paragraph's first, one or more `=` or one
+         or more `-`, with any trailing spaces or tabs, or
+      T3 on the paragraph's first line, a list marker with nothing after it
+         but spaces or tabs: `-`, `+`, or one to nine ASCII digits and `.` or
+         `)`,
+
+      the line is escaped: for T1 and T2 its first character, for T3 the
+      character M1c escapes (`\-`, `\+`, `1\.`), unless an escape another rule
+      gives already stands on it. T1 is a thematic break, T2 turns the
+      paragraph above into a heading and T3 is an empty list item, and M1c
+      reaches none of them: it asks for a marker followed by a space or tab.
+
+        text "---"                 ->  \---
+        text "x", soft break, "==="    ->  x
+                                           \===
+
+   8h. A PIPE IN A TABLE CELL IS ESCAPED -- NORMATIVE [CARVE-P11-054]. Inside
+      a pipe-table cell every `|` the writer emits as content is written
+      `\|`: in text, in a code span's content, and in a link destination or
+      title. GFM splits the row on every unescaped `|` before it reads any
+      inline, a code span included, and reads `\|` back as `|` in all of
+      those places. A `|` already written escaped is not escaped twice.
+
+        cell text "a|b"            ->  | a\|b |
+        cell code "a|b"            ->  | `a\|b` |
+
    9. THE MARKDOWN TARGET'S HARD BREAK -- NORMATIVE [CARVE-P11-026]. A `hard_break` is emitted
       as a BACKSLASH before the newline, never as two trailing spaces.
 
@@ -9821,32 +9895,118 @@ EOF = (* end of file *) ;
       A LOOSE LIST KEEPS ITS BLANK LINES, a flat one included: `- a`, blank,
       `- b` is emitted with the blank line, not as `- a` then `- b`.
 
-  11. THE MARKDOWN TARGET'S CROSS-REFERENCES -- NORMATIVE [CARVE-P11-038]. A resolved
-      cross-reference is emitted as a Markdown link to the target heading's id,
-      and the target heading gains an explicit `{#id}` suffix. Both halves are
-      required, and neither is emitted without the other:
+  10m. A PARAGRAPH LINE CARRIES NO EDGE WHITESPACE --
+      NORMATIVE [CARVE-P11-055]. The Markdown target writes no space or tab at the start
+      or the end of a paragraph line, after its container prefix and before a
+      trailing hard-break backslash. A reader strips that whitespace anyway,
+      except where it changes the block: four columns of it open an indented
+      code block on a paragraph's first line, and two trailing spaces before a
+      line ending make a hard break. The HTML target renders it as nothing, so
+      dropping it is faithful. U+00A0 and every other non-ASCII space is
+      content and is kept.
 
-        # H                       ->  # H {#H}
-        See </#h>.                ->  See [H](#H).
+        paragraph "a", then paragraph "      x"    ->  a
 
-      A heading NOTHING references gains no suffix. Markdown has no portable
-      heading-id syntax, so an id every processor must be told about is noise
-      unless something links to it.
+                                                       x
 
-      THE ID IS THE ONE THE DOCUMENT ASSIGNED, not a fresh slug of the heading
-      text. The two differ whenever the core disambiguated a repeat (`Setup`
-      and `Setup-2`), and a renderer that re-derives the slug does not merely
-      mislabel the heading: it fails to recognize the reference as pointing at
-      a known heading at all, so it drops the `{#id}` AND degrades the link to
-      bare text -- one cause presenting as two unrelated symptoms.
+  10n. A TABLE WITHOUT A HEADER ROW GETS AN EMPTY ONE --
+      NORMATIVE [CARVE-P11-056]. GFM reads a pipe table only below a header row and its
+      delimiter row, so rows written without them are a paragraph of pipes.
+      A table whose first row is not a header row is written with an EMPTY
+      header row first: one empty cell for each cell of the widest row, and a
+      delimiter row of the same width, whose alignment is the one the
+      headerless table already takes from its first aligned row.
 
-      A CROSS-REFERENCE CONTRIBUTES NOTHING TO A HEADING'S SLUG. By the time
-      this target runs, resolution has replaced `</#a>` with a link carrying
-      the target heading's text, so counting it slugs `# A </#a>` as `A-A`.
+        | a | b |          ->  |  |  |
+        | c |                  | --- | --- |
+                               | a | b |
+                               | c |
+
+      THE HEADER IS AS WIDE AS THE WIDEST ROW because GFM drops every body
+      cell past the header's width. Each body row still keeps its own cell
+      count (§10b).
+
+  10o. ADJACENT LISTS OF ONE KIND ALTERNATE THEIR MARKER --
+      NORMATIVE [CARVE-P11-057]. Two lists of the same kind that the writer emits one
+      after the other in the same container, with nothing written between
+      them, are one list to a Markdown reader. The second is written with the
+      other marker of its kind: a bullet list alternates `-` and `*`, an
+      ordered list alternates `.` and `)`, starting from the usual marker, so
+      a run of adjacent lists alternates all the way down. A blank line is not
+      a separator a reader keeps, and it would make both lists loose.
+
+        list [a], list [b]         ->  - a
+
+                                       * b
+
+      "Nothing written between" is decided on the output: a block that writes
+      nothing on this target (a comment, an empty wrapper) does not separate
+      two lists.
+
+  10p. A DEFINITION LIST IS WRITTEN AS ITS TERMS AND BLOCKS --
+      NORMATIVE [CARVE-P11-058]. GFM has no definition list, and a `: ` marker is
+      literal there: it joins the line it opens to the term's paragraph, and a
+      description's second block falls out of the entry. The Markdown target
+      writes each entry's terms, each as a paragraph of strong text, followed
+      by each description's blocks as ordinary blocks, with no marker. An
+      empty description writes nothing.
+
+        :: Term                    ->  **Term**
+        : first
+                                       first
+          - a
+          - b                          - a
+                                       - b
+
+  11. THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG --
+      NORMATIVE [CARVE-P11-038]. GFM has no heading-id syntax: a reader derives every
+      heading's id from its text, and `## H {#h}` shows the suffix as text.
+      So this target writes no `{#id}` suffix. A link or a resolved
+      cross-reference whose fragment names a heading is written with that
+      heading's GFM SLUG as its fragment:
+
+        {#h}
+        ## Rise and divergence     ->  ## Rise and divergence
+
+        See </#h>.                 ->  See [Rise and divergence](#rise-and-divergence).
+
+      THE SLUG is the one GitHub assigns (github-slugger) and `pandoc -f gfm`
+      reads:
+
+      G1 TEXT: the heading's text content under PART 2 HEADING IDENTIFIERS'
+         contribution rule, each character as this target writes it (a smart
+         punctuation glyph as the glyph, its source under source typography),
+         NFC-normalized, with leading and trailing whitespace removed;
+      G2 lowercased (Unicode default case mapping);
+      G3 with every character removed that is not a letter, a mark, a number,
+         connector punctuation (`_`), U+0020 SPACE or `-`;
+      G4 with each SPACE replaced by `-`;
+      G5 DEDUPLICATED over every heading the target writes, linked or not, in
+         the order it writes them. Each base keeps a count starting at 0. A
+         base not yet taken is the slug. Otherwise the count is raised by one
+         and `-` plus the count appended, repeating while the result is
+         taken; the result is then taken too.
+
+      THE REFERENCE IS STILL RECOGNIZED BY THE ID THE DOCUMENT ASSIGNED. A
+      fragment names a heading when it equals that heading's id, explicit or
+      derived under PART 2; only the WRITTEN destination is the slug. A
+      heading the target does not write as a heading (one flattened into a
+      table cell) is not a target, and a fragment naming no heading is §11a's.
+
+      NO ANCHOR CAN DANGLE, which is carve#352's rule kept by other means. The
+      target writes no anchor at all, and the reader derives each slug from
+      text the target wrote, so every link to a heading resolves in a GFM
+      reader. A heading whose text removes to nothing has the empty slug, and
+      a link to it is written `#`, or `#-1` and so on for a repeat.
+
+      A CROSS-REFERENCE CONTRIBUTES NOTHING TO THE TEXT, as PART 2 says: by the
+      time this target runs, resolution has replaced `</#a>` with a link
+      carrying the target heading's text, and counting it would slug
+      `# A </#a>` as `a-a`.
 
       THE SCAN INCLUDES FOOTNOTE DEFINITION BODIES. They render as block
-      content, so a reference inside one is a reference; missing them leaves a
-      heading without the id that the link this target also emits depends on.
+      content, so a heading or a reference inside one is a heading or a
+      reference.
 
   11a. THE MARKDOWN TARGET KEEPS A FRAGMENT LINK -- NORMATIVE [CARVE-P11-049].
       A `link` whose destination is a fragment (`#id`) is emitted as a Markdown
@@ -9855,24 +10015,20 @@ EOF = (* end of file *) ;
       reader of the Markdown loses a link the HTML target keeps.
 
         {#h}
-        ## Head                   ->  ## Head {#h}
+        ## Head                   ->  ## Head
 
         See [head](#h), [three](#chap03) and [gone](#nowhere).
-                                  ->  See [head](#h), [three](#chap03) and [gone](#nowhere).
+                                  ->  See [head](#head), [three](#chap03) and [gone](#nowhere).
 
-      THE `{#id}` HALF OF §11 IS UNCHANGED. A heading gains the suffix only when
-      a link or cross-reference in the output targets it, so no heading carries
-      an anchor nothing points at (carve#352). A fragment that names no heading
-      adds no suffix and no anchor anywhere: the target spells an id on a
-      heading and nowhere else, so `#chap03` above points at an id the
-      Markdown does not carry. The link is kept anyway, because a page that
-      embeds the Markdown can carry the id, and dropping the destination
-      cannot be undone.
+      A FRAGMENT THAT NAMES NO HEADING ADDS NO ANCHOR ANYWHERE: the target
+      writes no ids, so `#chap03` above points at an id the Markdown does not
+      carry. The link is kept anyway, because a page that embeds the Markdown
+      can carry the id, and dropping the destination cannot be undone.
 
       THE DESTINATION IS WRITTEN LIKE ANY OTHER. A fragment that names a
-      heading is the heading's id; any other fragment is the authored
-      destination under the ordinary destination encoding, `#` alone
-      included.
+      heading is the heading's GFM slug (§11); any other fragment is the
+      authored destination under the ordinary destination encoding, `#`
+      alone included.
 
       THE LABEL IS WRITTEN LIKE ANY OTHER LINK LABEL. `[[1]](#n1)` is emitted
       as `[\[1\]](#n1)`, with both text brackets escaped inside the label.
