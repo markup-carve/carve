@@ -675,7 +675,7 @@
       `major.minor` and it does not track the Carve version: the language is
       versioned for authors and this is versioned for readers of a tree. A
       MAJOR bump removes, renames or reinterprets a field or a meaning; a MINOR
-      bump adds a field or a node type. It starts at 1.0, and a leading zero is
+      bump adds a field or a node type. The current contract is 1.0. A leading zero is
       refused so the 0.x reading of a major never applies here.
 
       WHAT A READER DOES:
@@ -776,8 +776,8 @@
       keeps that boundary, and no line crosses one, so a consumer reading one
       entry is reading one stanza's lines.
 
-      PRESERVED INDENTATION IS UNAFFECTED. A leading run of U+E000 is per line
-      either way, and §4's sentinel rule governs it unchanged.
+      PRESERVED INDENTATION IS UNAFFECTED. A leading run of non_breaking_space nodes is per line
+      either way, and §4's exact-source-range rule governs it.
 
       ABSENT, THE LINES ARE WHAT SPLITTING `children` ON `hard_break` YIELDS,
       which over-counts a trailing break and under-counts a boundary inside a
@@ -891,7 +891,33 @@
       MAY carry `data`, the holder's payload, which core never reads. An
       anchor is a `path`, an RFC 6901 pointer into the accompanying canonical
       AST as in §38, and an `offset` in codepoints per §4 from the start of
-      that node's own text.
+      that node's annotation text, defined below. An offset is a boundary from
+      zero through the annotation text's codepoint length, inclusive. Readers
+      MUST reject an out-of-range offset or a path that is not a node.
+
+      ANNOTATION TEXT IS A DETERMINISTIC PROJECTION, not rendered output or a
+      source slice. A node contributes its first string field in this order:
+      `value`, `content`, `text`, `alt`; absent means the empty string. A
+      soft_break or hard_break contributes one U+000A instead, and a
+      non_breaking_space contributes one U+00A0. No other scalar field,
+      attribute, resolved label, URL or opaque extension payload contributes.
+
+      Append child-node projections in the following field order, independent
+      of JSON object member order:
+
+        target, title, children, items, rows, cells, blocks, inline, content,
+        prefix, locator, suffix, old, new, pairs, base, annotation, caption,
+        shortCaption, fallback
+
+      Only node-bearing positions named by node-roles.json are traversed.
+      Arrays retain their order; ruby pair records additionally traverse base then annotation.
+      A scalar content field is counted once, never traversed again. No implicit
+      separator is inserted between child nodes or blocks. Each node's interval
+      starts before its own contribution and ends after its descendants; global
+      offsets in the root projection determine whether start follows end.
+      Thus a paragraph containing text, an image, a break and math counts the
+      text, the image's alt, one newline, and the math source, in that order.
+      Emoji count by Unicode codepoints, not UTF-16 units or grapheme clusters.
 
         {"version":1,"ranges":[{"id":"c-12","kind":"comment",
         "start":{"path":"/children/3","offset":4},
@@ -943,7 +969,12 @@
 
       A BYTE RANGE IS NOT AN OFFSET. The two bytes count the input they name,
       start-inclusive and end-exclusive as in §13; §4's codepoint rule governs
-      `pos`, which is measured in the assembled document and not in that input.
+      `pos`. When pos.file is present, every pos coordinate is measured in
+      that named input file; otherwise it is measured in the top-level input.
+      There is no implicit assembled-document coordinate space. Byte ranges
+      and pos can address the same input but use different units. Containment
+      comparisons apply only to positions naming the same input. A producer
+      converting pos to bytes MUST use that input's text, never the parent's.
 
       THIS IS WHERE A FILESYSTEM PATH MAY APPEAR. `pos.file` stays the inline
       minimum per §13, and a `uri` a caller did not ask for is one it never

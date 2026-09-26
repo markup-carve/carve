@@ -34,8 +34,17 @@ and PART 12 §40 governs it. The
 ## An anchor is a pointer and an offset
 
 `path` is an RFC 6901 pointer into the accompanying canonical AST, the same
-addressing [node identity](./ast-node-identity.md) uses. `offset` counts
-codepoints from the start of the addressed node's own text, per PART 12 §4.
+addressing [node identity](./ast-node-identity.md) uses. `offset` counts codepoints in the addressed node's annotation text, from zero
+through its length. PART 12 §40 defines that projection independently of JSON
+member order. It counts the first string among `value`, `content`, `text`, and
+`alt`, then child projections in the specified field order. Breaks contribute a
+newline and `non_breaking_space` contributes U+00A0. Attributes, URLs and opaque extension
+payloads contribute nothing; no separators are invented between blocks.
+
+For a paragraph containing `A😀`, an image with alt text `cat`, a hard break,
+and math `x^2`, the projection is `A😀cat\nx^2`, with nine codepoints. Its end
+offset is 9, regardless of the emoji's two UTF-16 code units. Readers reject
+larger offsets and paths that do not address nodes.
 
 `start` and `end` may address different nodes, which is how a range crosses a
 boundary the tree does not let it nest inside. Two ranges may cross each other
@@ -73,3 +82,5 @@ Default parsing, AST JSON, CLI JSON and rendering do not change. Two documents
 differing only in sidecar content are the same document under PART 12 §6. An AST
 decoder does not accept a sidecar as an AST, and a range reader rejects a version
 it does not implement.
+
+Raw-node and comment strings contribute their literal `content`. Smart punctuation contributes its source `value`, not its rendered glyph. The projection defines AST offsets, rather than rendered-text offsets.

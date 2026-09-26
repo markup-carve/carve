@@ -1,0 +1,99 @@
+{
+  "document": {
+    "type": "document",
+    "srcByteLength": 0,
+    "children": [
+      {
+        "type": "figure",
+        "caption": [
+          {
+            "type": "text",
+            "value": "cap"
+          }
+        ],
+        "target": {
+          "type": "image",
+          "src": "x",
+          "alt": "A😀"
+        },
+        "shortCaption": [
+          {
+            "type": "text",
+            "value": "s"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "children": [
+          {
+            "type": "non_breaking_space"
+          },
+          {
+            "type": "hard_break"
+          },
+          {
+            "type": "math",
+            "content": "x^2",
+            "display": false
+          }
+        ]
+      }
+    ]
+  },
+  "projection": "A😀caps \nx^2",
+  "valid": [
+    {
+      "start": {
+        "path": "",
+        "offset": 0
+      },
+      "end": {
+        "path": "",
+        "offset": 11
+      }
+    },
+    {
+      "start": {
+        "path": "/children/0/target",
+        "offset": 2
+      },
+      "end": {
+        "path": "/children/0/caption/0",
+        "offset": 0
+      }
+    }
+  ],
+  "invalid": [
+    {
+      "start": {
+        "path": "",
+        "offset": 0
+      },
+      "end": {
+        "path": "",
+        "offset": 12
+      }
+    },
+    {
+      "start": {
+        "path": "/children/0/caption/0",
+        "offset": 1
+      },
+      "end": {
+        "path": "/children/0/target",
+        "offset": 1
+      }
+    },
+    {
+      "start": {
+        "path": "/children/1/children/0",
+        "offset": 0
+      },
+      "end": {
+        "path": "/children/1/children/0",
+        "offset": 2
+      }
+    }
+  ]
+}

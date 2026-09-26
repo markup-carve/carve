@@ -15,7 +15,7 @@
       "required": ["path", "offset"],
       "properties": {
         "path": { "type": "string", "pattern": "^(?:|(?:/(?:[^~/]|~[01])*)+)$", "description": "PART 12 §40: RFC 6901 pointer into the accompanying canonical AST, as in §38. The binding for THIS tree only." },
-        "offset": { "type": "integer", "minimum": 0, "description": "PART 12 §40: codepoints per §4, counted from the start of the addressed node's own text." }
+        "offset": { "type": "integer", "minimum": 0, "description": "PART 12 §40: codepoints per §4, counted in the node's deterministic annotation-text projection defined by section 40, from zero through its length. Not source offsets or UTF-16 units." }
       },
       "additionalProperties": false
     },

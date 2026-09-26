@@ -511,62 +511,29 @@ The schema cannot express this - JSON Schema has no way to forbid two adjacent
 array entries of the same shape - so it is checked by the shape comparison in
 `scripts/ast-conformance.mjs`.
 
-## U+E000 is a no-break space, on four fields
+## Nonbreaking spaces and literal Unicode
 
-U+E000 **stands for a no-break space**. It is not the same node content as a
-literal U+00A0 the author typed, which is published as itself.
+The AST represents each escaped space (`\ `) and each preserved
+line-block column as `{ "type": "non_breaking_space" }`. Renderers write
+`&nbsp;` in HTML, U+00A0 in Markdown, and an ordinary space in plain text or ANSI.
+A Carve source writer uses `\ ` where it can be reparsed, and ordinary spaces
+for preserved line-block layout.
 
-> A consumer **MUST** map U+E000 to its target's no-break space, or to an
-> ordinary space where the target has none, and **MUST NOT** emit it.
+Every string field contains literal Unicode. U+E000 and other private-use
+characters retain their authored meaning in text, code, attributes and raw
+content.
 
-Four fields may carry it, and every one of them resolves to a no-break space in
-the HTML renderer:
+A tree stored under the earlier reading of this contract carries U+E000 where a
+space was generated, and nothing maps it now: the character reaches HTML raw,
+with no error and no version signal, because the contract version is unchanged.
+Reparsing the source is the only remedy - replacing the character in a stored
+tree cannot tell a generated space from one the author typed.
 
-| field | how the sentinel gets there |
-| --- | --- |
-| `text.value` | an escaped space (`\ `), a line block's preserved indentation, an authored U+E000 |
-| `code.value` | an authored U+E000 |
-| `code_block.content` | an authored U+E000 |
-| `literal_inline.content` | an authored U+E000 |
-
-The three verbatim fields carry it only because the author typed the character,
-but on the wire that is indistinguishable from a parser-resolved one, so the
-rule is the same everywhere it appears.
-
-**A line block's indentation is a run of the sentinel**, one per preserved
-space. This is the source that gets missed, and it is the common one - an
-escaped space is rare, indented verse is not.
-
-```
-::: |
-a
-    b
-:::
-```
-
-The second line's four spaces are four U+E000 in the leading `text.value`, and
-render as four no-break spaces:
-
-```html
-<div class="line-block">
-  <p>a<br>
-&nbsp;&nbsp;&nbsp;&nbsp;b</p>
-</div>
-```
-
-`raw_block.content` is **deliberately not on the list**. Raw content is handed
-to its target byte for byte, so a U+E000 in it is a byte the author put there
-and a consumer must leave it alone; mapping it would corrupt the payload the
-node exists to carry unexamined.
-
-The cost of documenting one field out of four is measured: consumers in this
-org passed the sentinel straight through into Pandoc JSON, and back into Carve
-source in place of the `\ ` it came from ([carve#721][i721]). `carve-sile`
-handed it to SILE, which drew the font's `.notdef` glyph - a visible box in the
-PDF, no warning ([carve#1242][i1242]).
-
-Private-use codepoints **above** U+E000 are writer-internal staging and never
-reach a published value.
+Emitting the character rather than mapping it has visible consequences, and both
+were measured before this change: a consumer in this org passed it into Pandoc
+JSON and back into Carve source in place of the `\ ` it came from
+([carve#721][i721]), and `carve-sile` handed it to SILE, which drew the font's
+`.notdef` glyph as a box in the PDF with no warning ([carve#1242][i1242]).
 
 [i721]: https://github.com/markup-carve/carve/issues/721
 [i1242]: https://github.com/markup-carve/carve/issues/1242
@@ -1104,7 +1071,7 @@ amend.
 **`astVersion` is the contract's version, not the language's.** It is
 `major.minor` and does not track the Carve version: the language is versioned for
 authors, this is versioned for readers of a tree. A major bump removes, renames
-or reinterprets something; a minor bump adds. It starts at `1.0`, and a leading
+or reinterprets something; a minor bump adds. The current contract is `1.0`, and a leading
 zero is refused so the `0.x`-reads-as-major convention never applies here.
 
 What a reader does:
@@ -1200,7 +1167,7 @@ inside line two.
 
 `lines` does not span stanzas: a blank line ends one, `children` keeps that
 boundary, and a consumer reading one entry is reading one stanza's lines.
-Preserved indentation is unaffected - a leading run of U+E000 is per line either
+Preserved indentation is unaffected - a leading run of `non_breaking_space` nodes is per line either
 way. Absent, the lines are what splitting `children` on `hard_break` yields,
 which over-counts a trailing break and under-counts a boundary inside a run;
 where both are present, `lines` is the finer statement
