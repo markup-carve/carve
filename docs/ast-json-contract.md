@@ -903,9 +903,9 @@ values are strings and hold no nodes.
 
 ## A children array holds only a content block
 
-Nine fields hold a list of block nodes, and all nine are called `children`:
-`document`, `admonition`, `block_quote`, `definition_description`, `div`,
-`figure_group`, `footnote`, `line_block` and `list_item`. What they admit are
+Eleven `children` fields hold lists of block nodes: on `document`,
+`admonition`, `block_quote`, `definition_description`, `directive`, `div`,
+`figure_group`, `footnote`, `line_block`, `list_item` and `section`. What they admit are
 the content blocks. `table_row`, `table_cell`, `list_item`, `definition_term`
 and `definition_description` are reached from the container that owns them -
 `table.rows`, `table_row.cells`, `list.items`, `definition_list.items` - and
@@ -1153,6 +1153,11 @@ The schema rejects generated-content kinds on `admonition.kind`. The pinned
 reference engine publishes those containers as `directive`, so the split is
 checked in both directions
 ([carve#2195](https://github.com/markup-carve/carve/issues/2195)).
+
+**A directive always publishes `children`.** An empty directive carries
+`children: []`, like an empty admonition. Consumers can read the same field on
+both kinds without treating omission as another spelling of an empty body
+([carve#2333](https://github.com/markup-carve/carve/issues/2333)).
 
 **A directive may carry a `title`.** The opener admits a quoted title on every
 named container, so `::: toc "Contents"` spells one. `directive.title` is

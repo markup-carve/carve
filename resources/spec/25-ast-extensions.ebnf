@@ -311,10 +311,10 @@
       `blockImage` on the tree it built instead.
 
    24. A CHILDREN ARRAY HOLDS ONLY A CONTENT BLOCK -- NORMATIVE [CARVE-P12-046].
-      Nine fields in `resources/ast-schema.json` hold a list of block nodes,
-      and all nine are spelled `children`: on `document`, `admonition`,
-      `block_quote`, `definition_description`, `div`, `figure_group`,
-      `footnote`, `line_block` and `list_item`. The types they admit are the
+      Eleven `children` fields in `resources/ast-schema.json` hold a list of
+      block nodes: on `document`, `admonition`, `block_quote`,
+      `definition_description`, `directive`, `div`, `figure_group`, `footnote`,
+      `line_block`, `list_item` and `section`. The types they admit are the
       CONTENT blocks. A CONTAINER-INTERNAL type is not among them.
 
       `table_row`, `table_cell`, `list_item`, `definition_term` and
@@ -734,10 +734,12 @@
       handle it - the same reading the block extension clause takes for a payload it
       cannot parse.
 
-      A DIRECTIVE'S `children` ARE USUALLY EMPTY. Its content is generated
-      from the document, not authored between the markers; blocks written there
-      are carried and the renderer decides what they mean
-      ([carve#2195](https://github.com/markup-carve/carve/issues/2195)).
+      A DIRECTIVE ALWAYS PUBLISHES `children`, with `children: []` when no
+      blocks were written between the markers. Its content is usually generated
+      from the document; authored blocks are carried and the renderer decides
+      what they mean. This is the same empty-container shape as `admonition`
+      ([carve#2195](https://github.com/markup-carve/carve/issues/2195),
+      [carve#2333](https://github.com/markup-carve/carve/issues/2333)).
 
       A DIRECTIVE MAY CARRY A `title`. The opener admits a quoted title on
       every named container, so `::: toc "Contents"` spells one: the field is
