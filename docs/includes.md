@@ -511,7 +511,7 @@ Hosts use this set for **invalidation** (file watching) and for **diagnostics**.
 It is a **cross-implementation contract**: an editor can rely on it regardless
 of which engine backs it. Without it, preview invalidation cannot be implemented
 correctly - see
-[Requirements for live preview](#requirements-for-live-preview).
+[Live preview guidance](#live-preview-guidance).
 
 ## Cross-file collisions
 
@@ -639,10 +639,10 @@ Inclusion is bounded to keep expansion linear and terminating:
   keeps resolving after exhaustion performs unbounded I/O for a bounded
   expansion, which is the amplification the budget exists to prevent.
 - **Diagnostics.** Warnings are themselves per-directive, so a document of
-  refused directives produces a warning per directive. A processor MAY cap the
-  number of include Warnings it retains per render; when it does, it MUST retain
-  at least one Warning per distinct condition and MUST report the total number
-  suppressed, so a capped report is never mistaken for a clean one.
+  refused directives produces a warning per directive. A processor can cap the
+  number of include Warnings it retains per render. A useful capped report
+  retains at least one Warning per distinct condition and reports the total
+  number suppressed, so it is not mistaken for a clean one.
 
 ## Errors
 
@@ -689,8 +689,8 @@ Inclusion is a §25 / security-model concern. The full treatment is on the
   `..` present at all.
 - **A refusal MUST NOT reveal whether the target exists.** Containment is
   decided on the **canonical candidate**, which is constructible for a missing
-  path too - canonicalize the longest existing prefix, then re-append the
-  remainder lexically - so a resolver can always answer from the spelling plus
+  path too - canonicalize the longest existing prefix, normalize the remaining
+  path, then append it - so a resolver can always answer from the spelling plus
   the root. A processor that reads first and decides containment afterwards
   reports a miss for an absent out-of-root target and a containment denial for a
   present one, which makes the refusal class an **existence oracle** for paths
@@ -770,11 +770,11 @@ class.
   **administrator-only**, explicitly-rooted opt-in, and that opt-in MUST NOT be
   inherited by front-end rendering paths.
 
-### Requirements for live preview
+### Live preview guidance
 
-These are **host obligations** for an editor preview that expands includes.
+This is **host guidance** for an editor preview that expands includes.
 
-1. **Dependency tracking and invalidation.** A preview MUST re-render when an
+1. **Dependency tracking and invalidation.** A preview should re-render when an
    **included** file changes, not only when the open document changes. A preview
    that watches only the open file will silently show stale output, which is the
    most common inclusion bug in practice. Hosts do not have to infer the
@@ -785,7 +785,7 @@ These are **host obligations** for an editor preview that expands includes.
    invalidate the preview too.
 2. **Diagnostics.** The Warnings the spec already requires - unresolved target,
    cycle, containment denial, depth exceeded, size exceeded (see
-   [Errors](#errors) and [Limits](#limits)) - SHOULD be surfaced as editor
+   [Errors](#errors) and [Limits](#limits)) - should be surfaced as editor
    diagnostics. Leaving them as silent literal text hides a real error behind
    something that looks like plain prose.
 3. **Navigation.** Hosts MAY offer go-to-definition on an include path. Because

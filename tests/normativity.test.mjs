@@ -658,11 +658,9 @@ test('every obligation on a declared normative page names a clause that exists',
 
 test('the obligations ledger declares its gaps out loud', () => {
   const { unstated, weaker } = audit()
-  // Writing the ledger found five more of the carve#1995 shape plus one clause
-  // that states something weaker than the page does. Closing any of them moves
-  // these numbers, which is the point of pinning them. The eight UNSTATED rows
-  // were hidden from the audit until carve#2327 fixed its fence pairing.
-  assert.equal(unstated.length, 8)
+  // Security obligations now have clauses; the warning cap and preview
+  // invalidation are host guidance. Source positions remain weaker in I4.
+  assert.equal(unstated.length, 0)
   assert.equal(weaker.length, 1)
   assert.equal(weaker[0].clause, 'WEAKER PART 9 §19 I4')
 })
@@ -676,28 +674,41 @@ test('every obligation the includes page states names the clause that now carrie
   assert.equal(clauseFor('- The resolver is opt-in and MUST be off for untrusted input'), 'PART 9 §19 I3')
   assert.equal(clauseFor('Two spellings that name the same document'), 'PART 9 §19 I11')
   assert.equal(clauseFor('- A configured root MUST be absolute'), 'PART 9 §19 I10')
+  assert.equal(clauseFor('- A refusal MUST NOT reveal whether the target'), 'PART 9 §19 I10')
+  assert.equal(clauseFor('Both targets MUST be refused as containment denials'), 'PART 9 §19 I10')
+  assert.equal(clauseFor('- Inclusion MUST remain disabled on these paths'), 'PART 9 §25 I1')
+  assert.equal(ledger.filter((row) => row.text.startsWith('- If such a host ever offers inclusion, it')).length, 2)
+  assert.ok(ledger.filter((row) => row.text.startsWith('- If such a host ever offers inclusion, it')).every((row) => row.clause === 'PART 9 §25 I1'))
 })
 
 test('a clause that loses the sentence its row anchors on is reported', () => {
   // Deleting the anchored sentence must fail, not just a missing clause id.
   const { ledger } = audit()
-  const section = specPart9Sections().get('19')
-  const clauses = clausesOf(section.text)
+  const sections = specPart9Sections()
   const flat = (s) => s.replace(/\s+/g, ' ').trim().toLowerCase()
-  // Selected by obligation text, not by clause: I10 alone is cited by four rows.
+  // Selected by obligation text, not by clause: I10 has several distinct rows.
   const cases = [
-    ['I3', '- The resolver is opt-in and MUST be off for untrusted input'],
-    ['I10', '- A configured root MUST be absolute'],
-    ['I11', 'Two spellings that name the same document'],
-    ['I12', 'I12: the writer preserves a directive verbatim'],
-    ['I15', 'I15: a processor targeting Carve source MUST NOT expand'],
+    ['19', 'I3', '- The resolver is opt-in and MUST be off for untrusted input'],
+    ['19', 'I10', '- A configured root MUST be absolute'],
+    ['19', 'I11', 'Two spellings that name the same document'],
+    ['19', 'I12', 'I12: the writer preserves a directive verbatim'],
+    ['19', 'I15', 'I15: a processor targeting Carve source MUST NOT expand'],
+    ['19', 'I10', '- A refusal MUST NOT reveal whether the target'],
+    ['19', 'I10', 'Both targets MUST be refused as containment denials'],
+    ['25', 'I1', '- Inclusion MUST remain disabled on these paths'],
   ]
-  for (const [id, opening] of cases) {
+  for (const [section, id, opening] of cases) {
     const row = ledger.find((r) => r.text.startsWith(opening))
-    assert.equal(row?.clause, `PART 9 §19 ${id}`)
-    assert.ok(clauses.has(id), `PART 9 §19 ${id} exists`)
-    assert.ok(flat(clauses.get(id)).includes(flat(row.anchor)), `§19 ${id} carries "${row.anchor}"`)
+    const clauses = clausesOf(sections.get(section).text)
+    assert.equal(row?.clause, `PART 9 §${section} ${id}`)
+    assert.ok(clauses.has(id), `PART 9 §${section} ${id} exists`)
+    assert.ok(flat(clauses.get(id)).includes(flat(row.anchor)), `§${section} ${id} carries "${row.anchor}"`)
     assert.equal(flat(clauses.get(id)).replace(flat(row.anchor), '').includes(flat(row.anchor)), false)
+  }
+  for (const row of ledger.filter((r) => r.clause === 'PART 9 §25 I1')) {
+    const clauses = clausesOf(sections.get('25').text)
+    assert.ok(flat(clauses.get('I1')).includes(flat(row.anchor)), `§25 I1 carries "${row.anchor}"`)
+    assert.ok(!flat(clauses.get('I2')).includes(flat(row.anchor)), `§25 I2 does not carry "${row.anchor}"`)
   }
 })
 
