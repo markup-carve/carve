@@ -235,10 +235,16 @@ test('the cards and the table agree about what each engine passed', () => {
 
 test('the core table scores the fixtures present in the corpus', () => {
   const stems = new Set(corpusFiles.map((f) => f.slice(0, -'.crv'.length)))
+  // The declared lag reaches this column too. It is the same run the card grid
+  // and the table denominators speak for, and a category the run predates
+  // contributes its sidecars to no engine's score either - so counting the live
+  // directory here left the one number the ledger could not excuse, and a
+  // corpus addition on a host that cannot retake the run had nowhere to go.
+  const lagged = new Set(laggedCategories.flatMap((c) => fixturesOf(c)).map((f) => f.slice(0, -'.crv'.length)))
   const sidecars = readdirSync(resolve(root, 'tests/corpus'))
-  const scored = corpusFiles.length + sidecars.filter((f) => {
+  const scored = corpusFiles.length - lagged.size + sidecars.filter((f) => {
     const match = f.match(/^(.*)\.(md|txt|fmt|ansi)$/)
-    return match && stems.has(match[1])
+    return match && stems.has(match[1]) && !lagged.has(match[1])
   }).length
   const rows = coreRows()
   assert.equal(rows.length, 3)

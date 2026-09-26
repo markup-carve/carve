@@ -16,10 +16,16 @@ implementation exposes.
 
 ## Snapshot (2026-09-26)
 
-The current core corpus has 1,882 documents. This run included every one of them
-at spec commit `add5471c`. The previous snapshot measured 1,544 documents and
-left 338 current documents in a declared-lag list. All 338 are included here;
-there are no core exclusions.
+The core corpus held 1,882 documents when this run was taken, and the run
+included every one of them at spec commit `add5471c`. The previous snapshot
+measured 1,544 documents and
+left 338 current documents in a declared-lag list. All 338 are included here.
+
+Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item-stays-in-that-item`.
+That section landed on a host whose three engine checkouts were each on an
+unmerged branch, so the run above could not be retaken against clean ones and
+its numbers describe the corpus without it.
+
 The former case-by-case notes remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/a22f6a23f7913e44cb3461f3f608605660619032/docs/implementation-comparison-methodology.md).
 
