@@ -27,7 +27,7 @@
         "type": "object",
         "required": ["code", "target", "nodeType", "message"],
         "properties": {
-          "code": { "enum": ["raw-format-dropped", "ruby-flattened", "table-section-attributes-dropped"] },
+          "code": { "enum": ["raw-format-dropped", "ruby-flattened"] },
           "format": { "type": "string" },
           "target": { "enum": ["html", "markdown", "plain", "ansi", "carve"] },
           "nodeType": { "enum": ["inline", "block"] },
@@ -35,13 +35,6 @@
           "pos": { "$ref": "#/$defs/pos" }
         },
         "oneOf": [
-          {
-            "properties": {
-              "code": { "const": "table-section-attributes-dropped" },
-              "nodeType": { "const": "block" },
-              "format": false
-            }
-          },
           {
             "properties": {
               "code": { "const": "raw-format-dropped" },
