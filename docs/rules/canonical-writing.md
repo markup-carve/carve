@@ -25,7 +25,7 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P11-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L350) | 11 | ESCAPE MINIMALITY STILL APPLIES INSIDE AN ESCALATED UNIT |
 | [`CARVE-P11-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L371) | 11 | THE WRITER DOES NOT SUBSTITUTE ONE CONSTRUCT FOR ANOTHER |
 | [`CARVE-P11-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L394) | 11 | THE SCOPE OF AN ESCALATION IS THE SMALLEST UNIT THAT FAILS |
-| [`CARVE-P11-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L522) | 11 | SEARCH COST BELONGS TO THE STRATEGY, NOT THE OUTPUT |
+| [`CARVE-P11-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L523) | 11 | SEARCH COST BELONGS TO THE STRATEGY, NOT THE OUTPUT |
 | [`CARVE-P11-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L59) | 11 | A FRONTMATTER OPENER IS WRITTEN `---yaml` |
 | [`CARVE-P11-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L80) | 11 | AN EMPTY-STRING ATTRIBUTE IS WRITTEN AS A BOOLEAN |
 | [`CARVE-P11-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L116) | 11 | A CODE FENCE OPENER IS WRITTEN GLUED TO ITS INFO STRING |
