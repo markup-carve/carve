@@ -880,6 +880,117 @@ cell's blocks, because the cell flattens them into its one line; a line comment
 there would swallow the rest of the row. A comment outside any cell keeps its
 line breaks.
 
+## A table whose cells hold blocks can be written as a list table
+
+A pipe-table cell is one line of inline content, so a cell holding two
+paragraphs, a list or a code block is flattened to its text. ListTable
+(extension contract §5) is the construct for that case: its cells are list
+items and hold full block content. The `listTableForBlockCells` option writes
+such a table as a `::: list-table` instead (markup-carve/carve#2391).
+
+THE OPTION IS OFF BY DEFAULT, and has to be. Pipe tables are core and always
+on, while ListTable is Tier-2 and off until a processor enables it, so a
+consumer that has not enabled it renders a `<div class="list-table">` around a
+nested list, which is worse than the flattened table. The caller knows which
+processor reads the output; the importer does not. The option is spelled
+`listTableForBlockCells` in the JavaScript options and the PHP constructor,
+`list_table_for_block_cells` on the Rust `HtmlImportOptions`, and
+`--list-table` on `carve migrate --from html`. It is accepted in every mode and
+under every adapter.
+
+ONLY A TABLE THAT NEEDS IT SWITCHES. A `<table>` is written as a list table
+when at least one of its cells is BLOCK-BEARING: the cell has a descendant
+`ul`, `ol`, `pre`, `blockquote`, `table` or `dl`, or more than one `p`
+descendant. Only the cells of the table's own rows count; a table nested in a
+cell decides for itself by the same test. Every other table keeps the pipe
+form, so turning the option on does not rewrite a table whose cells are all
+inline.
+
+THE GRID IS THE PIPE FORM'S. The list table has the rows and cell positions
+the import builds for the same table with the option off: the same rows, the
+same span resolution, and a continuation placeholder in each position the pipe
+form puts one. A row whose cells are all empty stays, as a row of empty items:
+the pipe form drops it because Carve reads such a row as text, and a list table
+has no such reading. Each row is an outer item and each position an inner item, left
+to right. A rowspan placeholder is the item `^`, a colspan placeholder the item
+`<`.
+
+A CELL IS A LIST ITEM. Its content imports under the ordinary block rules, as
+the content of an `<li>` does, so its paragraphs, lists, code blocks, nested
+tables and hard breaks keep their own spelling. A cell with no content is an
+empty item. A cell whose whole content is a lone `^` or `<` is written escaped
+(`\^`, `\<`), because the bare item is a span marker (§5.1) and the cell would
+turn into a span. The outer list is tight; a row's inner list is tight unless
+one of its cells holds more than one block, and both are written in the
+canonical form, so the output is a `carve fmt` fixed point.
+
+HEADERS ARE COUNTED OVER THE GRID, a placeholder counting as the cell it
+continues.
+
+- `header-rows=N`, where N is the number of leading rows whose cells are all
+  header cells: the rows the pipe form writes as its header.
+- `header-cols=M`, where M is the fewest leading header cells of any row below
+  those.
+- `{header}` on the item of any other header cell, which neither count covers.
+
+Each count is written only when it is not zero, so no `<th>` becomes a data
+cell.
+
+ATTRIBUTES GO WHERE LISTTABLE HAS A SLOT FOR THEM.
+
+- The table's own attributes stay on the attribute line, followed by
+  `header-rows` and `header-cols`.
+- The table's caption is the opener's quoted title, with the inline content the
+  pipe form's caption line would hold.
+- A cell's attributes, the ones the pipe form keeps on the cell, go on its item,
+  followed by `{header}` where it applies and then by the cell's own
+  alignment as `align=` and `valign=` where it has one. A cell keeps its own
+  alignment even where the pipe form leaves it to the column.
+- A row's attributes have no slot: an outer item carries no attributes a
+  ListTable renderer reads. They are dropped with an `attribute-dropped` row at
+  `info`, located at the `<tr>`.
+
+THE REPORT SAYS WHAT THE LIST TABLE LOSES. A switched table does not report the
+pipe form's flattening (the `element-unwrapped` row for a block in a cell, the
+`structure-unspellable` row for a `<br>` in a cell, the `element-dropped` row
+for a comment holding a line break), since nothing is flattened, and it does
+not report `rowspan` or `colspan` as dropped, since the placeholders spell
+them. It reports the row attributes above, what a cell's blocks lose exactly as
+the same blocks report anywhere else, and whatever the option-off import
+reports about the table as a whole: a second caption, a `<colgroup>`, the row
+grouping and section attributes, and a rowspan clipped at the header rows.
+
+```html
+<table>
+<caption>Steps</caption>
+<tr><th>Step</th><th>Detail</th></tr>
+<tr><th>1</th><td><p>Install.</p><pre><code>npm i</code></pre></td></tr>
+<tr><td colspan="2">^</td></tr>
+</table>
+```
+
+````
+{header-rows=1}
+::: list-table "Steps"
+- - Step
+  - Detail
+- -{header} 1
+
+  - Install.
+
+    ```
+    npm i
+    ```
+- - \^
+  - <
+:::
+````
+
+The second row's first cell is a `<th>` below the header rows, and the third
+row starts with a data cell, so no column is a header column and that `<th>`
+carries `{header}`. The `^` in the third row is the cell's text, so it is
+escaped, and the `<` after it is the placeholder of the `colspan`.
+
 ## A link's edge whitespace stands outside it
 
 A link or a span whose content begins or ends with whitespace imports with that
@@ -1889,7 +2000,10 @@ JavaScript exposes `htmlToAst(html, options)` and `htmlToCarve(html, options)`.
 Rust exposes `html_to_ast` and `html_to_carve`. PHP exposes
 `convertWithReport`; its existing `convert` method remains a source-only
 convenience API. CLIs expose `carve migrate --from html`, with `--mode`,
-`--report`, and `--check-loss`.
+`--report`, `--check-loss` and `--list-table`.
+
+Every exit takes the list-table option described under
+["A table whose cells hold blocks can be written as a list table"](#a-table-whose-cells-hold-blocks-can-be-written-as-a-list-table).
 
 Adapters may normalize editor-specific markup before the core policy. The
 portable adapter names are `generic`, `tiptap`, `prosemirror`, `ckeditor`,

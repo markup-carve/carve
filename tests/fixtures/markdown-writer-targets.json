@@ -737,5 +737,11 @@
     "rule": "CARVE-P11-056",
     "carve": "|= A | < |\n| b | c |\n",
     "markdown": "| A |  |\n| --- | --- |\n| b | c |\n"
+  },
+  {
+    "name": "list-table-is-a-pipe-table",
+    "rule": "CARVE-P11-059",
+    "carve": "{header-rows=1}\n::: list-table \"Cap\"\n- - A\n  - B\n- - one\n\n    two\n\n  - x\\\n    z\n- - ^\n  - y\n:::\n",
+    "markdown": "| A | B |\n| --- | --- |\n| one two | x<br>z |\n|  | y |\n\nCap\n"
   }
 ]

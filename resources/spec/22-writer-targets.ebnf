@@ -650,6 +650,58 @@
           - b                          - a
                                        - b
 
+  10q. A LIST TABLE IS WRITTEN AS A PIPE TABLE -- NORMATIVE [CARVE-P11-059].
+      The Markdown target writes an `admonition` of kind `list-table` (the
+      ListTable block, extension contract §5) as the pipe table it is
+      equivalent to, and writes that table by the pipe-table rules of this
+      part. GFM has a table and no way to read one out of a nested list, so the
+      list lost the table shape the document states.
+
+      THE EQUIVALENT TABLE has one row per outer item and one cell per inner
+      item, left to right, each in its own position:
+
+      L1 a cell whose content is one paragraph holds that paragraph's inline
+         content;
+      L2 a cell that is a span marker under §5.1 (a lone unescaped `^` or `<`,
+         no attributes on the item, the paragraph or the text) is the rowspan
+         or colspan placeholder of that position, written as the pipe-table
+         writer writes a placeholder;
+      L3 any other cell holds its blocks as `table_cell.blocks`, flattened and
+         reported as CARVE-P12-049 flattens and reports a block cell, with a
+         hard break written as `<br>` (§9a). A cell with no blocks is empty.
+
+      A block that follows a row's inner list belongs to that row's last cell,
+      as §5 renders it. A cell is a header cell when its row is inside
+      `header-rows` or carries `{header-row}`, when its position is inside
+      `header-cols`, or when its item carries `{header}`, each read as §5.1
+      reads it. Its alignment is the item's `align` value, else the
+      `aligns` entry for its position. The opener's title is the table's
+      caption (§10e). `valigns`, `widths`, `footer-rows` and every other
+      attribute are not written, as a pipe table's attributes are not.
+
+        {header-rows=1}              ->  | A | B |
+        ::: list-table "Cap"             | --- | --- |
+        - - A                            | one two | x |
+          - B                            |  | y |
+        - - one
+                                         Cap
+            two
+
+          - x
+        - - ^
+          - y
+        :::
+
+      ONLY A GRID IS A TABLE. The clause applies when the body is exactly one
+      list and each of its items begins with a list. Any other body keeps the
+      writing it had before this clause: the title as a bold line, then the
+      blocks.
+
+      NO EXTENSION SET DECIDES IT. The target writes the table whether or not a
+      processor enabled ListTable for HTML: this target takes no extension set,
+      `list-table` is a standard kind name, and a GFM reader has the table
+      natively where the nested list is the one thing it reads wrongly.
+
   11. THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG --
       NORMATIVE [CARVE-P11-038]. GFM has no heading-id syntax: a reader derives every
       heading's id from its text, and `## H {#h}` shows the suffix as text.
