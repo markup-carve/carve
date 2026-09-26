@@ -8468,8 +8468,9 @@ EOF = (* end of file *) ;
 
       W1 Render the document twice: the MINIMAL form, escaping only the
          UNCONDITIONAL set (§5), and the CONSERVATIVE form, additionally
-         escaping every CANDIDATE-set character (§5). A LONE BRACKET (§5) is
-         in the unconditional set, so the search never has to find one.
+         escaping every CANDIDATE-set character (§5). A LONE BRACKET and a
+         `(` THAT WOULD OPEN A DESTINATION (§5) are in the unconditional set,
+         so the search never has to find them.
       W2 If the two are byte-identical, emit either.
       W3 Otherwise parse BOTH and compare the resulting documents, ignoring
          source positions and key order.
@@ -8579,6 +8580,20 @@ EOF = (* end of file *) ;
 
         Text outside every bracketed construct is not covered, because there a
         bracket closes nothing: `a [ b` stays bare.
+
+        A `(` THAT WOULD OPEN A DESTINATION is unconditional as well. That is
+        a `(` written directly after a bare `]` that the bracket scan pairs
+        with an earlier `[`, where the written text from the `(` reads as an
+        inline link destination that closes: `(target)` or
+        `(target "title")`. Bare, the bracket pair and the parentheses
+        re-parse as a link, so this `(` is always load bearing. The escape
+        goes on the `(` and not on a bracket, which leaves the brackets as
+        written:
+
+          [a]\(b) and [[a]\(u)]{.c}
+
+        Nowhere else. `f(x)`, `(see above)` and `[a] (b)` stay bare, and so
+        does `[a](b c)`, whose parentheses hold no destination.
 
       CANDIDATE -- escaped only when W4 selects the conservative form:
         `* _ ~ / = ,`        emphasis and the braced pair delimiters
