@@ -11641,7 +11641,8 @@ EOF = (* end of file *) ;
       flattens under PART 11 §1b: each block's inline content in document order,
       separated by one space where both sides contribute a token. A list
       contributes its items' inline content in item order and no markers; a code
-      block contributes its payload with each newline becoming one space. ANSI
+      block or a raw block contributes its payload with each newline becoming
+      one space, a raw block's as escaped text rather than live markup. ANSI
       styles the flattened inlines as usual and adds no block decoration.
 
         table_cell{ blocks: [ p "one", p "two" ] }  ->  | one two |
