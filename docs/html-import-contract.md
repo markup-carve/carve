@@ -267,6 +267,38 @@ renderer writes such a destination for it to recover.
 
 `denied-scheme-destination` pins the anchor, the image and the split scheme.
 
+## An unsupported element gives way to its children
+
+Importing `<x>C</x>` for an element `x` the importer does not support produces
+the same document as importing `C` in that position (carve#2341). Block
+children stay blocks and inline children stay inline, however deep the
+unsupported elements nest and whether or not the tag has a hyphen. Loose text
+beside a block becomes a paragraph of its own, as it would without the wrapper.
+
+```html
+<react-app><h1>Title</h1><p>Body</p><ul><li>one</li></ul></react-app>
+```
+
+```
+# Title
+
+Body
+
+- one
+```
+
+This matters on real pages: custom elements such as `<react-app>` and
+`<turbo-frame>` wrap whole documents, and rebuilding their children as inline
+content collapsed every heading, list and code block into one line.
+
+Each unsupported element takes one `element-unwrapped` row at `info`, with
+`degraded` fidelity, located at the element itself. Its children are imported
+as they would be anywhere and add no rows of their own.
+
+`unsupported-element-keeps-its-blocks` pins a wrapper around blocks, loose text
+beside a block, a tag without a hyphen, two nested wrappers, a wrapper inside a
+list item and an inline wrapper inside a paragraph.
+
 ## The escaping reaches the imported source
 
 Four of the shapes the import meaning sweep found are not import policy at all.
@@ -1637,6 +1669,7 @@ The shared set is deliberately small and each directory has one subject:
 | `table-caption-index` | the same table caption written across lines, where it is the SECOND child and no exemption applies to it |
 | `container-nesting` | containers two and three deep, whose fences widen INWARD because that is the form `carve fmt` writes |
 | `attribute-less-div` | a bare `<div>` unwrapped to its content beside an id-bearing one that keeps its fence, which is where that boundary sits |
+| `unsupported-element-keeps-its-blocks` | unsupported elements around blocks, beside loose text, nested two deep, inside a list item and inside a paragraph, each replaced by its children with one row |
 | `container-label-keeps-the-fence` | a `<div>` kept by its grouping label alone, an id-bearing one whose label comes back on the opener, and one whose label the lift refuses so it unwraps after all |
 | `diagnostic-order` | two losses in one table, whose rows follow the document and not the order the importer builds them in |
 | `destination-less-link` | an anchor and an image with no destination the source can carry, which come back as their content rather than as `[t]()` |
