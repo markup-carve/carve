@@ -1,0 +1,110 @@
+name: Bump engine pin
+
+# The reverse direction of `bump-downstream.yml`. That workflow pushes this
+# repo's corpus OUT to the engines; nothing pulled the reference engine back
+# IN, so `@markup-carve/carve` in package.json went stale on every carve-js
+# merge and the RELEASE-mode declaration audit read the tree as not clear to
+# tag. Per-PR mode reports the same staleness without gating it, so the red
+# never surfaced on a pull request and the pin was bumped by hand, days late,
+# whenever somebody ran the release verdict (carve#2345).
+#
+# Runs daily and on dispatch: resolve carve-js main, rewrite the pin, rebuild
+# the corpus, and open or update ONE automation/bump-engine-pin PR. The PR is
+# a DRAFT when the bumped engine moves something here - a golden, an import
+# axis, a suite expectation - because then the bump needs a decision rather
+# than a merge. Its own CI re-validates either way.
+#
+# Uses the BUMP_TOKEN PAT the downstream bump already needs, so the PR is not
+# subject to "Allow Actions to create PRs" and it does trigger CI.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '41 4 * * *'
+
+concurrency:
+  group: bump-engine-pin
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.BUMP_TOKEN }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+
+      - name: Bump the pin to carve-js main
+        env:
+          GH_TOKEN: ${{ secrets.BUMP_TOKEN }}
+          BRANCH: automation/bump-engine-pin
+        run: |
+          set -euo pipefail
+
+          SHA="$(git ls-remote https://github.com/markup-carve/carve-js.git refs/heads/main | cut -f1)"
+          short="${SHA:0:8}"
+          current="$(node -p "require('./package.json').dependencies['@markup-carve/carve'].split('#')[1]")"
+          if [ "$current" = "$SHA" ]; then
+            echo "pin already at carve-js $short"
+            exit 0
+          fi
+          echo "bumping ${current:0:8} -> $short"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+
+          node scripts/set-engine-pin.mjs "$SHA"
+          npm install
+
+          # What the new engine MOVES is the whole question this PR asks, so
+          # rebuild the corpus from the examples and let the diff answer it.
+          npm run corpus:build
+          moved=""
+          if ! git diff --quiet -- tests/corpus tests/spec; then
+            moved="$(git diff --name-only -- tests/corpus tests/spec | wc -l) generated file(s) changed"
+          fi
+
+          # The gates that read the engine. Green means the bump is mechanical;
+          # red means somebody has to decide, which is what the draft says.
+          log="$(mktemp)"
+          draft=""
+          note="Nothing here moves with it: the suite, the corpus build and the import axes all hold."
+          if ! { npm test && npm run html-import:check && npm run core:check; } > "$log" 2>&1; then
+            draft="--draft"
+            note="The bumped engine MOVES something here, so this is a DRAFT: read the failures, decide what the spec says, then mark it ready."
+          fi
+          tail -40 "$log" >> "$GITHUB_STEP_SUMMARY" || true
+          if [ -n "$moved" ]; then
+            note="$note Regenerated: $moved."
+          fi
+
+          git add -A
+          git commit -q -m "chore: bump the engine pin to carve-js $short"
+          git push --force-with-lease origin "$BRANCH"
+
+          body="Automated bump of the vendored engine to carve-js main ($short), which the release-mode declaration audit requires to be current.
+
+          $note
+
+          Opened by .github/workflows/bump-engine-pin.yml."
+
+          existing="$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')"
+          if [ -z "$existing" ]; then
+            gh pr create --base main --head "$BRANCH" $draft \
+              --title "chore: bump the engine pin to carve-js $short" \
+              --body "$body" --label chore --label area:tooling
+          else
+            if [ -n "$draft" ]; then
+              gh pr ready "$existing" --undo 2>/dev/null || true
+            else
+              gh pr ready "$existing" 2>/dev/null || true
+            fi
+            # REST, not `gh pr edit --body`: GraphQL fails in this org on the
+            # Projects-classic deprecation notice, the same reason
+            # bump-downstream.yml patches bodies this way.
+            gh api "repos/${GITHUB_REPOSITORY}/pulls/$existing" -X PATCH -f body="$body" >/dev/null
+          fi
