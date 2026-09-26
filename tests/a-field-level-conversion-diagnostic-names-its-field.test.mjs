@@ -1,4 +1,20 @@
-/* Conversion diagnostics carry a structured field; render losses do not. */
+/*
+ * PART 11 section 1d's channel can name a LOST FIELD, and the render-loss
+ * report of `CARVE-P2-024` still cannot.
+ *
+ * That difference is the whole reason the two reports are separate (carve#2245).
+ * `table_cell.blocks`, `math.label` and `math.number` are fields dropped off a
+ * node the writer still spells, while `raw-format-dropped` and
+ * `ruby-flattened` each name a whole node one renderer dropped. Four clauses
+ * told a writer to "report the loss" with no code to report it under, so an
+ * engine's only options were to invent a code the published render-loss schema
+ * refuses, or to drop the shape silently.
+ *
+ * Both halves are checked here, because either alone goes green while the other
+ * rots: a schema that models `field` proves nothing if the clauses still say
+ * "reports the loss", and clause prose naming a code proves nothing if the wire
+ * shape accepts an entry that names no field at all.
+ */
 
 import test from 'node:test'
 import assert from 'node:assert/strict'
@@ -49,17 +65,18 @@ test('the channel is closed against an invented code and an invented key', () =>
   assert.equal(validate({ diagnostics: [], truncated: false }), false)
 })
 
-test('the render-loss code enum stays closed at the declared render-time codes', () => {
-  // Conversion diagnostic codes remain outside the render-loss vocabulary.
+test('the render-loss code enum stays closed at the two render-time codes', () => {
+  /* Section 2245 ruled the enum does not grow, so the channel's codes must be
+   * absent from it and it must hold nothing else either. */
   assert.deepEqual(
     renderLoss.properties.losses.items.properties.code.enum,
-    ['raw-format-dropped', 'ruby-flattened', 'table-section-attributes-dropped'],
+    ['raw-format-dropped', 'ruby-flattened'],
   )
 })
 
-test('--allow-loss names the render-loss codes and neither channel code', () => {
+test('--allow-loss names the two render-loss codes and neither channel code', () => {
   const offered = [...grammar.matchAll(/`--allow-loss ([a-z-]+)`/g)].map((match) => match[1])
-  assert.deepEqual([...new Set(offered)].sort(), ['raw-format-dropped', 'ruby-flattened', 'table-section-attributes-dropped'])
+  assert.deepEqual([...new Set(offered)].sort(), ['raw-format-dropped', 'ruby-flattened'])
 })
 
 /*
@@ -75,6 +92,7 @@ const clauseText = (id) => {
 }
 
 const REPORTS = {
+  'CARVE-P12-034': ['field-unspellable', '`rowGroups.headAttrs`', '`rowGroups.footAttrs`'],
   'CARVE-P12-049': ['field-unspellable', '`table_cell.blocks`'],
   'CARVE-P12-050': ['structure-unspellable', '`small_caps`'],
   'CARVE-P12-051': ['field-unspellable', '`math.label`', '`math.number`'],

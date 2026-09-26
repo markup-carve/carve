@@ -502,11 +502,16 @@
       Attribute-free tables retain the existing single-body fallback for spans
       that cross a section boundary. Without `rowGroups`,
       HTML retains its implicit partition. Plain and ANSI keep the flat rows.
-      Carve source cannot spell section attributes. Writers that discard them
-      MUST report each nonempty attributes field as a conversion loss, with its
-      field path. Checked Markdown, plain and ANSI renderers report
-      `table-section-attributes-dropped`, naming the field path in the message.
-      Empty attributes objects need no loss diagnostic. A structured
+      Carve source cannot spell section attributes, and neither can Markdown,
+      plain or ANSI. A writer for one of those targets reports one
+      `field-unspellable` entry per discarded nonempty attributes field on the
+      PART 11 §1d channel, with `node` `table` and `field` the path within the
+      node: `rowGroups.headAttrs`, `rowGroups.footAttrs` or
+      `rowGroups.bodies[N].attrs`. An empty attributes object holds nothing to
+      lose and is reported nowhere. It is NOT a render loss. `CARVE-P2-024`'s
+      code enum stays closed at `raw-format-dropped` and `ruby-flattened`
+      (CARVE-P11-046), and a dropped field is the one thing that report cannot
+      name. A structured
       exporter MAY map the full partition to its target's equivalent. A
       canonical Carve source writer retains `header-rows` / `footer-rows` when
       they are present in table attributes; it MUST NOT invent a spelling for
