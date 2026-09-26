@@ -766,9 +766,13 @@ A `<math>` element imports through the first of these that applies
 2. The `alttext` attribute, with `encoding-assumed` at `info`: MathML does not
    declare what `alttext` holds.
 3. The `alt` of the formula's FALLBACK IMAGE, with `encoding-assumed` at
-   `info`. The fallback image is an `<img>` that is the next element sibling of
+   `info`, and only where the page HID the MathML: the `<math>`, or the
+   `<span>` holding nothing but it, carries a `style` whose `display` is
+   `none`. The fallback image is an `<img>` that is the next element sibling of
    the `<math>`, or of a `<span>` holding nothing but it, with only whitespace
-   text or comments between.
+   text or comments between. Adjacency alone is not evidence: a portrait beside
+   a visible formula is a portrait, and reading its `alt` as TeX would replace
+   the formula and drop the picture.
 4. The formula's TEXT, as plain text rather than a `math` node, with
    `element-unwrapped` at `warning`. Only when the presentation is LINEAR: the
    element holds nothing but `mrow`, `mstyle`, `mpadded` and `mspace` around
@@ -812,7 +816,8 @@ different image and is kept.
 `mathml-without-tex` pins tier 4 inline, in its own paragraph, as a display
 element read through `<semantics>`, and the fraction that tier 4 refuses.
 `mathml-fallback-image` pins the Wikimedia shape with an annotation, tier 3
-through a `<span>` wrapper, and a following image that is not the fallback.
+through a hidden `<span>` wrapper, a following image whose `alt` is not the
+formula, and an image beside a visible formula, which stays.
 
 ## A declared loss is a ceiling, not a licence
 
