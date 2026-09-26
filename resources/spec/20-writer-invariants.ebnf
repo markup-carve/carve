@@ -347,6 +347,21 @@
       escapes on this occurrence let the construct form? Yes -> escape the run.
       No -> emit it bare.
 
+      ADJACENT TEXT IS ONE RUN. A tree can hold one stretch of text as
+      several adjacent text nodes: an importer builds it that way, an
+      ingested tree arrives that way, and a flattened ruby writes its
+      parentheses as text of their own. They are written as one run, so the
+      split decides nothing: an opener that crosses a node boundary is one
+      occurrence, escaped at its opener exactly as it is when the text is a
+      single node. The nodes `x (r` and `) y` are written
+
+        x \(r) y
+
+      as the single node `x (r) y` is, and `x -` beside `- y` is written
+      `x \-\- y`, never the half-escaped `x -\- y`. A flattened ruby whose
+      base is a lone `[` inside a span is `[\[\(r)]{.c}`; an escape on its
+      closing parenthesis would be idle.
+
       ESCAPE MINIMALITY STILL APPLIES INSIDE AN ESCALATED UNIT -- NORMATIVE [CARVE-P11-007].
       One occurrence needing the conservative form does not put
       the OTHER
