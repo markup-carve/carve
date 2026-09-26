@@ -316,3 +316,12 @@ for (const kind of ['references', 'bibliography']) {
     assert.equal(html.slice(heading), carveToHtml(tail, { extensions: [citations()] }))
   })
 }
+
+test('an unplaced top-level marker retains its authored attributes', () => {
+  for (const title of ['', ' "Notes"']) {
+    const source = `{#x k=v}\n::: footnotes${title}\nBody.\n:::\n`
+    const html = carveToHtml(source).trim()
+    assert.ok(html.startsWith('<div class="footnotes" id="x" k="v">'))
+    assert.equal(oracleHtml(source).trim(), html)
+  }
+})
