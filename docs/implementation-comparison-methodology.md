@@ -874,7 +874,8 @@ round trip failed for `[a][r]` in all three engines; that is
 [carve#642](https://github.com/markup-carve/carve/issues/642), since closed, and
 the target now has no differences to explain.
 
-Optional corpus added since this run: `51-references-placement-inside-a-quote`.
+Optional corpus added since this run: `51-references-placement-inside-a-quote`,
+`52-an-extension-wrapper-class-follows-every-authored-attribute`.
 
 Optional raw output:
 
