@@ -711,6 +711,109 @@ throws away content the language can spell.
 `whitespace-only-block` pins all three rows, plus the two non-ASCII spaces the
 class reaches.
 
+## A link's edge whitespace stands outside it
+
+A link or a span whose content begins or ends with whitespace imports with that
+whitespace moved outside the construct (markup-carve/carve#2361):
+
+```html
+<p>Source: <a href="https://jma.go.jp/"> Japan Meteorological Agency </a>.</p>
+```
+
+```
+Source: [Japan Meteorological Agency](https://jma.go.jp/) .
+```
+
+The words are the label and the spaces are layout. A browser underlines them,
+and that underline is the only thing the move changes. Writing them into the
+label gives `[ Japan Meteorological Agency ]`, which no author writes and no
+other converter produces.
+
+The rule, after HTML whitespace collapse:
+
+- Leading whitespace of a `link` or `span` node leaves the node and stands
+  before it; trailing whitespace stands after it. Whitespace is the same ASCII
+  class the collapse folds, so U+00A0 and every other content space stays
+  inside.
+- The moved whitespace is ONE space, and it merges with whitespace already on
+  that side: `a <a> x</a>` is `a [x](...)`, not `a  [x](...)`. At a block's
+  edge it is dropped like any other edge whitespace, so `<p><a> x</a></p>` is
+  `[x](...)`.
+- The whitespace stays OUTSIDE rather than disappearing, so the words on either
+  side do not merge: `x<a> y</a>` is `x [y](...)`.
+- It applies innermost first, so it passes out through a nested link or span.
+  It stops at every other inline: `<a><b> x </b></a>` keeps its spaces inside
+  the strong, where they are that element's content.
+- Content that is whitespace only stays as it is (`[ ](/w)`). Moving it out
+  would leave an empty label, a different shape from the one the HTML has.
+- An image at the edge of a link stays inside it; only the whitespace around
+  it moves. An image's `alt` is not content and is not trimmed.
+
+No diagnostic. No character is lost and the document means what the HTML
+meant, the same as the whitespace HTML discards at a block's edge.
+
+`link-edge-whitespace` pins each row above except the nested strong.
+
+## MathML imports the TeX it carries, or the text it shows
+
+A `<math>` element imports through the first of these that applies
+(markup-carve/carve#2361, extending the D6 ruling on markup-carve/carve#1210):
+
+1. An `<annotation>` that is a direct child of the element's own `<semantics>`
+   and whose `encoding` is `application/x-tex`, `text/x-tex` or `LaTeX`
+   (case-insensitive, the whole value). Its text is the `math` node's content,
+   byte for byte.
+2. The `alttext` attribute, with `encoding-assumed` at `info`: MathML does not
+   declare what `alttext` holds.
+3. The `alt` of the formula's FALLBACK IMAGE, with `encoding-assumed` at
+   `info`. The fallback image is an `<img>` that is the next element sibling of
+   the `<math>`, or of a `<span>` holding nothing but it, with only whitespace
+   text or comments between.
+4. The formula's TEXT, as plain text rather than a `math` node, with
+   `element-unwrapped` at `warning`. Only when the presentation is LINEAR: the
+   element holds nothing but `mrow`, `mstyle`, `mpadded` and `mspace` around
+   the tokens `mi`, `mn`, `mo` and `mtext`, and a `<semantics>` is read through
+   its first child only. The text is each token's text in order, with the
+   token's own whitespace collapsed and trimmed; `mspace` and whitespace
+   between elements contribute nothing, and `mathvariant` is not applied.
+5. Nothing: the element is dropped with `element-dropped` at `warning`. In
+   `roundtrip` the element is kept as raw HTML instead of tiers 4 and 5.
+
+A trimmed empty value at any tier falls through to the next.
+
+```html
+<p>A <math><mi>a</mi><mo>+</mo><mi>a</mi><mo>=</mo><mn>2</mn><mi>a</mi></math> B</p>
+```
+
+```
+A a+a=2a B
+```
+
+**TIER 4 IS TEXT BECAUSE IT IS NOT TeX.** A `math` node claims TeX content, and
+`a+a=2a` only happens to be valid TeX; `∀x∈X` is not the TeX anyone would
+write. The characters are what the formula shows, so they arrive as what they
+are.
+
+**TIER 4 STOPS AT LAYOUT, which is what D6 ruled.** Flattening a fraction or a
+script is not a degraded formula but a different value:
+`<mfrac><mn>1</mn><mn>2</mn></mfrac>` reads `12`, and a plausible wrong value
+survives review where a warning naming a dropped element does not. A linear
+token run cannot change value that way, because reading it in order is what
+the renderer does. Any element outside the list, including `mfrac`, `msup`,
+`msub`, `msqrt`, `mtable` and `mphantom`, keeps the drop.
+
+**A FORMULA IMPORTS ONCE.** Wikimedia pages spell a formula as a hidden
+`<math>` beside a fallback `<img>` whose `alt` is the TeX. Reading both writes
+the formula twice. So when the formula imports as a `math` node whose content
+equals the fallback image's trimmed `alt`, the image is dropped with
+`element-dropped` at `info`. An image whose `alt` says something else is a
+different image and is kept.
+
+`mathml-without-tex` pins tier 4 inline, in its own paragraph, as a display
+element read through `<semantics>`, and the fraction that tier 4 refuses.
+`mathml-fallback-image` pins the Wikimedia shape with an annotation, tier 3
+through a `<span>` wrapper, and a following image that is not the fallback.
+
 ## A declared loss is a ceiling, not a licence
 
 A diagnostic states what the import gave up. It does not license giving up more
@@ -1690,6 +1793,9 @@ The shared set is deliberately small and each directory has one subject:
 | `same-kind-indirect-nesting` | an emphasis inside a strong inside an emphasis, kept because the braced strong between them starts its own scope (PART 9 §9 E3, #2091) |
 | `table-cell-hard-break` | a `<br>` in a cell written as one space between words, as nothing at the cell's end, and as a space at the edge of a span inside the cell, one row per break (PART 11 §1b) |
 | `adjacent-code-spans` | two `<code>` elements with nothing between them, separated by an empty delimited comment so the backtick runs do not merge (PART 11 §10k N3) |
+| `link-edge-whitespace` | edge whitespace of a link and a span moved outside, merged at a join and dropped at a block edge, beside a no-break space, a whitespace-only label and an edge image that stay |
+| `mathml-without-tex` | presentation-only MathML imported as its text where the tokens are linear, and a fraction dropped where they are not |
+| `mathml-fallback-image` | a formula beside its fallback image imported once, including through the image's `alt` when the `<math>` carries no TeX |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one
