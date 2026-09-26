@@ -1,17 +1,17 @@
 {
   "engine": "@markup-carve/carve",
-  "engineCommit": "8e427ade3b0981513b4bcc0404d50f8b6c4e0b26",
-  "corpusDocuments": 1878,
+  "engineCommit": "5eff31295dfcee3bcc7931978f8c95a5eb1f7cad",
+  "corpusDocuments": 1881,
   "htmlImportPopulation": {
-    "completed": 1877,
-    "canonicalFixedPoints": 1876,
-    "renderedTextPreserved": 1860,
+    "completed": 1880,
+    "canonicalFixedPoints": 1879,
+    "renderedTextPreserved": 1863,
     "expectedRejections": [
       "182-openers-past-the-nesting-cap-are-one-paragraph.crv"
     ]
   },
   "renderImportRoundTrips": {
-    "html": 745,
+    "html": 746,
     "markdown": 446
   },
   "renderImportRoundTripsNote": "html 748 -> 741 and markdown 439 -> 379 when the pin moved past the Markdown importer rulings carve-js#1922 through #1936 (carve#2213). 60 documents lost, 0 gained, every one a list: the writer puts a blank line before a tight item's sublist, which CommonMark reads as loose, and the importer used to read it back as tight so the two defects cancelled. Fixing the reading half exposed the writing half. Tracked at markup-carve/carve-js#1966. Pin 9f81a0a7 includes carve-js#1968, which fixed the tight-sublist writing half: markdown 379 -> 401, html unchanged at 741. Pin 6b06a461 includes carve-js#2063, which completes CARVE-P11-047 for the openers the clause did not spell out - a heading, a fence and a table: markdown 401 -> 433, html unchanged at 743, and no other count moved. Corpus 498 adds four documents (carve#2314) and every count above rose by four, except the two round-trip counts, which did not move at all: each of the four documents is a comment, a comment renders nothing on any target, so neither the HTML nor the Markdown an importer reads back can carry it and `carveToCarve(imported) === canonical` cannot hold. Corpus 498's fifth document adds one completed import, fixed point and preserved-text result. Its comment is absent from HTML and Markdown, so neither source round-trip count changes. Pin 8e427ade includes carve-js#2088, which writes list source the Markdown reader reads back as the document: markdown 433 -> 439, html unchanged at 743, no other count moved, and all six gains are lists. The gain is isolated to that merge: the set measured at carve-js a2a362e6 (its parent) is the 433 of the old pin, document for document. Corpus 384 gains two documents (carve#2322) and every count above rose by two, except `renderImportRoundTrips.html`, which did not move: both documents canonicalize to a line at the sub-list item's content column, the HTML renders that soft break as a newline inside the `<li>`, and the importer returns it as a space, so `carveToCarve(imported)` reads `- L p` and `- L +` against a canonical two lines. The Markdown axis does close on both, which is the 439 -> 441 above. Corpus 435 gains six documents (markup-carve/carve-php#2470) and every count above rose by six, except the two round-trip counts. `renderImportRoundTrips.html` rose by two: `-16` and `-17` write the marker at a container's marker column, so it is consumed and the quote holds one plain paragraph that returns intact, while `-14`, `-15`, `-18` and `-19` fold a second line into the quoted paragraph and the HTML renders that soft break as a newline the importer returns as a space - the same reason the two 384 documents above do not close. `renderImportRoundTrips.markdown` rose by five: only `-19` stays open, because its folded line is `- m` and the Markdown writer escapes it to `\\- m`, which reads back as the escape the author did not write."
