@@ -68,6 +68,21 @@ const CASES = {
     blocks: [paragraph('one'), { type: 'abbreviation_def', abbr: 'NPM', expansion: 'Node Package Manager' }, paragraph('two')],
     inlines: [text('one two')],
   },
+  // The three shapes carve#2401 reported as reading three ways. Each is a
+  // payload or an inline the flatten must leave alone: the newline is the only
+  // character it touches.
+  'code indented continuation line': {
+    blocks: [{ type: 'code_block', content: 'a\n  b\n' }],
+    inlines: [text('a   b')],
+  },
+  'code trailing backslash pair': {
+    blocks: [{ type: 'code_block', content: 'a\\\\\nb\n' }],
+    inlines: [text('a\\\\ b')],
+  },
+  'image in a block cell': {
+    blocks: [{ type: 'paragraph', children: [{ type: 'image', src: 'u.png', alt: 'alt' }] }],
+    inlines: [{ type: 'image', src: 'u.png', alt: 'alt' }],
+  },
 }
 
 /*
@@ -110,6 +125,9 @@ test('every case and target is accounted for, so a dropped row cannot pass', () 
     'abbreviation',
     'abbreviation',
     'code',
+    'code',
+    'code',
+    'image',
     'raw',
   ])
   for (const { blocks } of Object.values(CASES)) assert.ok(blocks.length >= 1)

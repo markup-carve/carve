@@ -57,6 +57,11 @@ try {
     { name: 'thematic break between paragraphs', blocks: [paragraph('one'), { type: 'thematic_break' }, paragraph('two')], inlines: [text('one two')] },
     { name: 'code payload', blocks: [{ type: 'code_block', content: 'first\nsecond\n', lang: 'js' }], inlines: [text('first second')] },
     { name: 'code spacing', blocks: [{ type: 'code_block', content: 'a  b\n\nc' }], inlines: [text('a  b  c')] },
+    // The three shapes carve#2401 reported as reading three ways. All three
+    // engines agree now; nothing held them, which is what let them drift.
+    { name: 'code indented continuation line', blocks: [{ type: 'code_block', content: 'a\n  b\n' }], inlines: [text('a   b')] },
+    { name: 'code trailing backslash pair', blocks: [{ type: 'code_block', content: 'a\\\\\nb\n' }], inlines: [text('a\\\\ b')] },
+    { name: 'image in a block cell', blocks: [{ type: 'paragraph', children: [{ type: 'image', src: 'u.png', alt: 'alt' }] }], inlines: [{ type: 'image', src: 'u.png', alt: 'alt' }] },
     { name: 'titled admonition', blocks: [{ type: 'admonition', kind: 'note', title: [text('Title')], children: [paragraph('body')] }], inlines: [text('Title body')] },
     { name: 'figure order', blocks: [{ type: 'figure', target: paragraph('body'), caption: [text('caption')] }], inlines: [text('body caption')] },
     { name: 'nested heading and quote', blocks: [{ type: 'block_quote', children: [{ type: 'heading', level: 2, children: [text('Heading')] }, paragraph('body')] }], inlines: [text('Heading body')] },
