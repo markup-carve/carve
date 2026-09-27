@@ -301,12 +301,14 @@ export const FOOTNOTE_FRAMES = new RegExp(
 // still passes `hardenAttr`, which every key/value does and which blanks a
 // class the URL sink check refuses; a blanked or empty value contributes no
 // class but still claims the slot.
-const classValue = (a) => {
+// A carrier that builds its own class attribute tests the slot with these two,
+// or it writes the second attribute the clause exists to remove.
+export const classValue = (a) => {
   if (a[0] === 'class') return a[1]
   const hardened = hardenAttr('class', a[0] === 'kv' ? a[2] : '')
   return hardened ? hardened.value : ''
 }
-const isClass = (a) => a[0] === 'class' || (a[0] !== 'id' && a[1] === 'class')
+export const isClass = (a) => a[0] === 'class' || (a[0] !== 'id' && a[1] === 'class')
 
 export function renderAttrs(list) {
   // serialization: SOURCE order; all classes merge (deduplicated, corpus

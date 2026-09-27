@@ -17,6 +17,11 @@ const flat = readFileSync(resolve(root, 'resources/grammar.ebnf'), 'utf8').repla
 
 const openerOf = (source) => renderDoc(parse(source)).trim().split('\n')[0]
 const container = (attrs) => openerOf(`{${attrs}}\n:::\ny\n:::\n`)
+// A typed container carries a wrapper class of its own, so it builds the slot
+// itself instead of handing the whole list to the merge. Tier-1 gives an
+// `<aside>`, any other type word a `<div>`; one branch serves both.
+const admonition = (attrs) => openerOf(`{${attrs}}\n::: note\ny\n:::\n`)
+const typed = (attrs) => openerOf(`{${attrs}}\n::: sidebar\ny\n:::\n`)
 
 test('the clause says the two spellings are one attribute in one slot', () => {
   assert.match(flat, /A `class` KEY-VALUE IS A SPELLING OF THE CLASS SLOT/)
@@ -74,13 +79,50 @@ test('an id named class stays an id', () => {
   assert.equal(container('.class'), '<div class="class">')
 })
 
+/* The wrapper class is the same slot, so every spelling merges into it. The
+ * key-value and boolean forms used to reach the second pass with the slot
+ * already claimed, which wrote a second `class` attribute (carve#2457). */
+test('a typed container folds every spelling into its wrapper class', () => {
+  assert.equal(admonition('.b'), '<aside class="admonition note b" aria-label="Note">')
+  assert.equal(admonition('class=b'), '<aside class="admonition note b" aria-label="Note">')
+  assert.equal(typed('.b'), '<div class="sidebar b">')
+  assert.equal(typed('class=b'), '<div class="sidebar b">')
+})
+
+/* The wrapper class leads and the author's follow in source order, whichever
+ * spelling each one used. */
+test('the wrapper class leads and the spellings interleave in source order', () => {
+  assert.equal(admonition('class=b .c'), '<aside class="admonition note b c" aria-label="Note">')
+  assert.equal(admonition('.c class=b'), '<aside class="admonition note c b" aria-label="Note">')
+  assert.equal(typed('#i class=b k=v .c'), '<div class="sidebar b c" id="i" k="v">')
+  assert.equal(typed('class=a class=b'), '<div class="sidebar a b">')
+  assert.equal(typed('class=a .a'), '<div class="sidebar a">')
+})
+
+/* An empty or refused value claims the slot and contributes no token, so it
+ * leaves the wrapper class alone rather than appending a blank. */
+test('an empty or refused value adds no token to the wrapper class', () => {
+  assert.equal(admonition('class'), '<aside class="admonition note" aria-label="Note">')
+  assert.equal(admonition('class .b'), '<aside class="admonition note b" aria-label="Note">')
+  assert.equal(typed('class="javascript:alert(1)"'), '<div class="sidebar">')
+  assert.equal(typed('class="javascript:alert(1)" .b'), '<div class="sidebar b">')
+})
+
+/* Control: an id named `class` is not a class on a typed container either. */
+test('an id named class stays an id on a typed container', () => {
+  assert.equal(typed('#class .b'), '<div class="sidebar b" id="class">')
+})
+
 test('no shape renders the class attribute twice', () => {
-  for (const attrs of [
+  const shapes = [
     'class', 'class class=a', 'class=a class', 'class .b', '#class', '#class .b',
     '.class', 'class=a .b', '.b class=a', 'class=a class=b', 'class=a .a',
-  ]) {
-    const opener = container(attrs)
-    assert.equal((opener.match(/class=/g) ?? []).length <= 1, true, `${attrs} -> ${opener}`)
+  ]
+  for (const draw of [container, admonition, typed]) {
+    for (const attrs of shapes) {
+      const opener = draw(attrs)
+      assert.equal((opener.match(/class=/g) ?? []).length <= 1, true, `${attrs} -> ${opener}`)
+    }
   }
 })
 
