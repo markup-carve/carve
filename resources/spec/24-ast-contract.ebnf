@@ -471,6 +471,18 @@
       already derives -- the leading run of header rows as the head, everything
       after it as one body, no foot, no row-head columns.
 
+      A ROW-HEAD COUNT THE CELLS ALREADY STATE IS NOT A PARTITION. A body's
+      `rowHeadColumns` counts leading columns that are header cells in every
+      row of the body, which those cells' own `header` flags say, and every
+      renderer reads the cells. So a producer publishes no `rowGroups` for a
+      table whose one departure from the implicit partition is that count on
+      its single body: the field would state nothing the rows do not, and a
+      writer that cannot spell it loses nothing and reports nothing
+      ([carve#2402](https://github.com/markup-carve/carve/issues/2402)).
+
+        <tr><th>A</th><th>B</th></tr>
+        <tr><th>1</th><td>x</td></tr>    ->  no `rowGroups`
+
       A pipe table's preceding block-attribute line MAY carry
       `header-rows=N` and/or `footer-rows=N`. An empty boolean value means one;
       otherwise N MUST be a non-negative decimal integer, and the two counts
