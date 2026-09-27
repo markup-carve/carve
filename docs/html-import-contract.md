@@ -2197,6 +2197,20 @@ The shared set is deliberately small and each directory has one subject:
 | `table-cell-multi-line-comment` | a comment holding a line break dropped from a cell with a row, a one-line comment among a cell's blocks written inline, and a multi-line comment outside any cell kept |
 | `lone-bracket-in-bracketed-content` | an unpaired `[` or `]` inside a span or link text, escaped in the minimal form as in `[\[]{.b}`, beside balanced pairs that stay bare (PART 11 §5) |
 | `paren-after-a-closed-bracket` | a `(` right after a paired bare `]` that would open a closing destination, escaped as `[a]\(b)` at top level, in a span, across code and emphasis, and around nested parentheses, beside `f(x)`, `[a] (b)`, `[a](b c)` and `[a]()` that stay bare (PART 11 §5) |
+| `auto-text-link` | a link to a heading whose text repeats the heading, written as `[Target](#Target)` and not recovered as the cross-reference `</#Target>` |
+| `editorial-comment` | a `critic-comment` span, kept as a classed span and not recovered as the editorial comment `{#note#}` |
+| `forced-strike` | an `<s>` inside a word, written in the braced form `a{~b~}c` |
+| `forced-strong` | the same intraword case for `<strong>`, written as `a{*b*}c` |
+| `forced-underline` | the same intraword case for `<u>`, written as `a{_b_}c` |
+| `inline-extension` | a span whose class names an extension, kept as a classed span and not recovered as an inline extension |
+| `local-hard-break-block` | a `hardbreaks` div, written as a `::: hardbreaks` container with an explicit backslash break rather than as the local hard-break block |
+| `math-block-and-mathml` | a display-math `div` and a block and an inline `<math>` read through `alttext`, all written in the core math form, with an `encoding-assumed` row for each `alttext` |
+| `substitution` | a `<del>` followed by an `<ins>`, written as `{-old-}{+new+}` and not merged into the substitution `{~old~>new~}` |
+| `code-language-hints` | one code block per recognized language-hint convention, plus a conflicting pair where the `code` child's class wins, the hinting attribute kept on the block as well |
+| `attribute-value-pipe` | a pipe in an attribute value on a cell and on a span inside a cell, backslash-escaped so the row does not split |
+| `attribute-value-line-break` | an attribute value holding a line break, dropped with a row because a Carve attribute value cannot hold one |
+| `definition-description-without-term` | a `<dd>` with no `<dt>` before it, emitted as blocks ahead of the list with a row, including a list holding no entry whose class is dropped |
+| `heading-multi-line-comment` | an HTML comment holding a line break inside a heading, dropped with a row because a heading is one line |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one

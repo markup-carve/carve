@@ -26,6 +26,25 @@ test('every HTML import fixture publishes all four contract files', async () => 
   }
 })
 
+test('the contract fixture table has one row per fixture directory', async () => {
+  const doc = await readFile(new URL('../docs/html-import-contract.md', import.meta.url), 'utf8')
+  const lines = doc.split('\n')
+  const start = lines.indexOf('| fixture | subject |')
+  assert.ok(start >= 0, 'fixture table header not found in docs/html-import-contract.md')
+  const rows = []
+  for (const line of lines.slice(start + 2)) {
+    if (!line.startsWith('|')) break
+    const name = /^\| `([^`]+)` \|/.exec(line)
+    assert.ok(name, `fixture table row does not open with a backticked directory: ${line}`)
+    rows.push(name[1])
+  }
+  const dirs = (await readdir(root, { withFileTypes: true })).filter((e) => e.isDirectory()).map((e) => e.name)
+  const listed = new Set(rows)
+  assert.deepEqual(rows.filter((name, i) => rows.indexOf(name) !== i), [], 'fixture rows listed twice')
+  assert.deepEqual(dirs.filter((name) => !listed.has(name)).sort(), [], 'fixture directories with no row in the contract table')
+  assert.deepEqual(rows.filter((name) => !dirs.includes(name)).sort(), [], 'contract table rows naming no fixture directory')
+})
+
 /*
  * Codes the two oracles below cannot reach, and why (carve#1835).
  *
