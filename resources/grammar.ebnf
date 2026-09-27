@@ -1413,8 +1413,33 @@ definition_entry = definition_term+, [blank_line], definition_body,
 definition_term = "::", space, inline_content, newline, {term_continuation_line} ;
 term_continuation_line = inline_content, newline ;
 (* A term folds a following plain line as a soft break; a blank line, a new
-   `::`/`: ` marker, or a block opener ends it. A term holds inline content
-   only -- no block body. Unlike a heading, a term KEEPS its fold. *)
+   `::`/`: ` marker, or a block opener at the container's content column ends
+   it. A term holds inline content only -- no block body. Unlike a heading, a
+   term KEEPS its fold.
+
+   A TERM HAS NO CONTENT COLUMN -- NORMATIVE [CARVE-P2-028]. Its blocks belong
+   in a `: ` description, so strict column 0 measures a line under an open
+   term against the CONTAINER that holds the definition list: column 0 at the
+   top level, the column after a quote marker, a list item's content column, a
+   description's column. The rule is the same at every depth.
+
+     - AT that column, a block opener ends the term and opens its block.
+     - PAST that column, the line is term text and folds into the term,
+       whatever it would open at the column: a heading, quote, thematic
+       break, code or colon fence, table row, second `:: ` term or block
+       attribute line.
+
+   A list marker is not term text: §24 C4 lets it open at any column, so it
+   ends the term. A link or footnote definition keeps the reading §10 I5 and
+   §24 C3 give it. A comment line under a nested term is not settled here.
+
+       :: a
+       : b
+         :: c
+           # H
+
+   renders `c` and `# H` as one term. At the description's column, `  # H`
+   opens a heading in the `dd` after the nested list. *)
 definition_body = (':', definition_separator, first_block_content)
                 | (':', definition_separator, inline_content, newline,
                    { definition_continuation
@@ -6494,7 +6519,9 @@ EOF = (* end of file *) ;
          look-ahead the top level uses, and only the `:: ` TERM line opens the
          block). None of these is special-cased: a def-list or table interrupts
          at column 0 and nests at content_column exactly as a quote or heading
-         does. The content_column is
+         does. A definition TERM opens no content column of its own, so an
+         opener past content_column under an open term is term text, as it is
+         at the top level (PART 2 [CARVE-P2-028]). The content_column is
          the item body's CANONICAL COLUMN 0 and its minimum containment column.
          This one rule holds whether or not a blank line precedes the child;
          the blank only decides tight vs loose (§17), and there is no relaxed

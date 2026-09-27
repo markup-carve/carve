@@ -215,6 +215,12 @@
       "scope": "parsing"
     },
     {
+      "id": "CARVE-P2-028",
+      "part": "2",
+      "title": "A TERM HAS NO CONTENT COLUMN",
+      "scope": "parsing"
+    },
+    {
       "id": "CARVE-P2-010",
       "part": "2",
       "title": "A LEADING CONTENT TAB FOLLOWS NORMAL INDENTATION",

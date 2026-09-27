@@ -2430,18 +2430,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           i++
           while (i < n) {
             const cur = lines[i] ?? ''
-            // The `/^ {3,}\S/` here is NOT a fourth spelling of
-            // `definition_continuation`, and carve#893 deliberately left it in
-            // characters. It bounds `term_continuation_line`, a different
-            // production, and it is already divergent from every engine in the
-            // OTHER direction: measured on carve-js 3d95e94, carve-php 876e312
-            // and carve-rs 83ab9c1, `:: t` followed by `   more` folds into the
-            // <dt> in all three while this oracle breaks the term. A tab-
-            // indented `more` folds in all four. So converting this to column
-            // arithmetic would break the one case the four readers agree on and
-            // widen the one they do not. It wants its own measurement.
-            if (isEntry(unlazy(cur)) || isBlank(cur) || CONT_MARKER.test(cur) || /^ {3,}\S/.test(cur)) break
+            // A term has no content column, so no indentation ends it: a line
+            // past the column folds whatever it would open (carve#2411).
+            if (isEntry(unlazy(cur)) || isBlank(cur) || CONT_MARKER.test(cur)) break
             if (!foldablePlain(cur)) break
+            if (isTableRow(cur) || colonFenceInterrupts(cur, [dt]) || (cur[0] === '{' && tryAttrLine(lines, i))) break
             // A line folded into an item BELOW its content column arrives here
             // LAZY-prefixed (the item-fold pass at C3). Strip that framing marker
             // AND its dedented residual indent before it joins the term text.

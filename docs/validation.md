@@ -139,6 +139,7 @@ the command-line and editor behavior stay aligned.
 | `bibliography-placement-in-container` | a `::: bibliography` marker inside a block-level container when a processor feature supplies a document-wide region under that marker. The marker renders the `<div class="bibliography">` floor and the region keeps its default position (`CARVE-P9-073`) |
 | `references-placement-in-container` | a `::: references` marker inside a block-level container when a citation extension supplies a document-wide reference list. The marker renders the `<div class="references">` floor and the list keeps its default position (`CARVE-P9-073`) |
 | `quote-fence-ends-the-quote-above` | a `::: >` opener at the column of the quote directly above it. It is a block opener, so it ends that quote and starts a sibling one, and the two render as adjacent blockquotes rather than the nesting the indentation suggests. Nothing is malformed and lint otherwise exits 0, which is why this container kind needs a rule of its own: write `> ::: >` to nest it, or leave a blank line to make two quotes deliberate |
+| `definition-term-block-folded` | a block opener indented under a `:: ` term, past the column of the container that holds the list. A term has no content column (`CARVE-P2-028`), so the line folds into the term as text rather than opening its block. Reported once per term, on the first such line; lines inside a code, math, raw or literal span are content and are not reported. Dedent the line to the container's content column to open the block, or move it into the term's `: ` description |
 
 ### Declaring a target version
 
@@ -344,7 +345,7 @@ implement part of it, and `carve lint` is not the same command everywhere:
 | implementation | `carve lint` | covers |
 |---|---|---|
 | carve-js | yes | every rule above, plus the Djot/Markdown migration checks |
-| carve-php | yes | both semantic span attribute rules, both platform autolink rules, `bidi-control-in-source`, and Markdown-habit checks of its own (`markdown-strong-asterisks`, `markdown-strong-underscores`, `markdown-strikethrough`); none of the other rules above |
+| carve-php | yes | both semantic span attribute rules, both platform autolink rules, `definition-term-block-folded`, `bidi-control-in-source`, and Markdown-habit checks of its own (`markdown-strong-asterisks`, `markdown-strong-underscores`, `markdown-strikethrough`); none of the other rules above |
 | carve-rs | yes | library lint rules through `lint_carve` / `lint_carve_with_options`, also exposed by the `carve lint` command |
 
 `semantic-attribute-value-ignored` and `semantic-attribute-outside-span` are the
