@@ -1,6 +1,7 @@
 /*
- * Pin the unquoted_value character set widened by carve#2440,
- * including excluded characters and the pinned engine's differences.
+ * Pin the unquoted_value character set widened by carve#2440. Every row now
+ * holds for the oracle and the pinned engine alike; `engine` records a
+ * divergence where one reappears.
  */
 
 import { test } from 'node:test'
@@ -25,18 +26,8 @@ const cases = [
   { value: "a'b", excluded: true, oracle: '<p><strong>x</strong>{k=a’b}</p>' },
   { value: 'a\tb', excluded: true, oracle: '<p><strong>x</strong>{k=a\tb}</p>' },
   { value: 'a\nb', excluded: true, oracle: '<p><strong>x</strong>{k=a\nb}</p>' },
-  // The pinned engine has not narrowed yet. Each row is two-directional:
-  // it catches the oracle widening or the engine narrowing.
-  {
-    value: 'a|b', excluded: true,
-    oracle: '<p><strong>x</strong>{k=a|b}</p>',
-    engine: '<p><strong k="a|b">x</strong></p>',
-  },
-  {
-    value: 'a\\b', excluded: true,
-    oracle: '<p><strong>x</strong>{k=a\\b}</p>',
-    engine: '<p><strong k="a\\b">x</strong></p>',
-  },
+  { value: 'a|b', excluded: true, oracle: '<p><strong>x</strong>{k=a|b}</p>' },
+  { value: 'a\\b', excluded: true, oracle: '<p><strong>x</strong>{k=a\\b}</p>' },
 ]
 
 for (const { value, oracle, engine = oracle } of cases) {
