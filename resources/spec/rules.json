@@ -485,6 +485,12 @@
       "scope": "parsing"
     },
     {
+      "id": "CARVE-P4-007",
+      "part": "4",
+      "title": "A `class` KEY-VALUE IS A SPELLING OF THE CLASS SLOT",
+      "scope": "parsing"
+    },
+    {
       "id": "CARVE-P7-001",
       "part": "7",
       "title": "A TAB IS SYNTAX ONLY IN THE LEADING RUN",

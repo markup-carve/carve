@@ -264,3 +264,12 @@ carve-php caps a block-attribute block at one line break where the other two
 engines and the executable checker accept any number. The clause states the
 grammar; the divergence is recorded here and pinned by carve#888 rather than
 inside the active algorithm.
+
+## Unquoted attribute values
+
+`unquoted_value` once admitted letters, digits, `-`, `_`, `.` and `:`, and the
+comment beside it said any other character had to be quoted. Every engine read
+much further, and `carve fmt` stripped the quotes off values the production
+rejected, which PART 11 does not permit a writer to emit. The production now
+names the characters that would end or restructure the block; what the three
+engines accepted at the time is recorded in carve#2440.

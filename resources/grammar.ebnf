@@ -3417,6 +3417,15 @@ language_subtag    = ( letter | digit ), { letter | digit } ;
 
 id_attribute = '#', explicit_identifier ;
 class_attribute = '.', explicit_identifier ;
+(* A `class` KEY-VALUE IS A SPELLING OF THE CLASS SLOT -- NORMATIVE [CARVE-P4-007].
+   `class=VALUE` and `.VALUE` are the same attribute, so a parser APPENDS the
+   value to the AST's `attrs.classes` in source order and writes nothing to
+   `attrs.keyValues`: `{class=foo}` and `{.foo}` parse to one tree. The two
+   spellings are not interchangeable in source, because `class_attribute` reads
+   the `explicit_identifier` the fence word does while `attribute_value` reaches
+   past it -- `-col` and `w-1/2` are classes only the key-value form can spell
+   (carve#2435). One concept, one slot, the way PART 4 above already makes the
+   three spellings of `lang` meet in one. *)
 key_value_attribute = identifier, '=', attribute_value ;
 (* A bare identifier is a VALUE-LESS BOOLEAN attribute in source. It has the same
    empty-string AST value as `name=""` and renders `name=""` (a carve
@@ -3460,11 +3469,13 @@ boolean_attribute = identifier - ('_', {character}) ;
    something else. *)
 
 attribute_value = unquoted_value | quoted_value ;
-unquoted_value = (letter | digit | '-' | '_' | '.' | ':')+ ;
-(* `.` and `:` are admitted so common unquoted values -- version strings
-   (`v1.2`), paths/data values (`a.b`), and namespaced/pseudo tokens
-   (`xml:lang`, `sm:hover`) -- need no quoting. A value containing any OTHER
-   non-identifier character must be quoted. *)
+unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - ' ' - '\t' - newline )+ ;
+(* THE EXCLUSIONS ARE WHAT WOULD END OR RESTRUCTURE THE BLOCK, and quoting is
+   required for exactly those: `}` closes the block, a space or a tab is the
+   separator before the next attribute, a quote opens a quoted value, a bare `|`
+   would end a table cell, and `\` introduces an escape. Everything else needs
+   no quoting, so a version string (`v1.2`), a namespaced token (`xml:lang`) and
+   an imported utility class (`w-1/2`) are all bare values. *)
 (* A backslash escapes ASCII punctuation inside a quoted value (same
    `escaped_char` rule as inline text), so a value can contain a literal
    quote: `"a\"b"` -> the value `a"b`. *)
