@@ -899,6 +899,37 @@ spelling and keep their attributes: `<hr id="h">` is `{#h}` above `---`.
 `empty-paragraph` pins an attributed empty paragraph, one holding only an empty
 `<span>`, and an attributed `<hr>`.
 
+## An empty heading is dropped
+
+A heading with no content imports as nothing, with one `element-dropped` row at
+`warning` located at the heading (markup-carve/carve#2419):
+
+```html
+<h1></h1><p>a</p><h2 id="k"> </h2><p>b</p>
+```
+
+```
+a
+
+b
+```
+
+Carve spells no empty heading: `inline_content` is one-or-more, so a bare `#`
+re-parses as a paragraph holding `#`. Writing the marker anyway is what broke
+`parse(htmlToCarve(h)) == htmlToAst(h)` here, with the AST exit returning a
+heading and the source exit a paragraph. Dropping the node is what the empty
+list and the whitespace-only paragraph already do, and it leaves both exits with
+no node.
+
+`<h1> </h1>` is the same drop under `CARVE-P11-017`, which builds no node where
+every character a block holds is layout.
+
+The row is owed whether or not the heading carried attributes, because the drop
+loses the level as well: a heading is the one empty block whose kind is part of
+what it said. A bare empty `<p>` has nothing of the sort and takes no row.
+
+`empty-heading` pins a bare empty heading and an attributed whitespace-only one.
+
 ## Adjacent definition lists become one
 
 Carve source has no boundary between two definition lists: a blank line
@@ -1630,6 +1661,25 @@ The rule is not confined to a caption. Every inline-only slot an importer can
 reach takes the same separator, and the test is the same one: re-reading the
 emitted slot must draw no token - no word, no delimiter run - from both sides
 of the join.
+
+A CODE SPAN IS NOT ONE OF THOSE SLOTS. Its value is verbatim text rather than
+inline content, so blocks flattened into a `<code>` join with NO separator: a
+space there would be a byte the author never wrote, and this page permits no
+additions. The boundary is reported instead, as `structure-unspellable` located
+at the `<code>` whose slot could not hold it (markup-carve/carve#2441):
+
+```html
+<code><div>foo</div><div>bar</div></code>
+```
+
+```
+`foobar`
+```
+
+The two `element-unwrapped` rows say what was unwrapped and not what the
+unwrapping joined, so the boundary needs a row of its own. The empty delimited
+comment that holds the two spans of `adjacent-code-spans` apart is no help
+inside one, because it would put comment syntax into a code span's source.
 
 A character that was TEXT and turns into a live delimiter once its neighbor
 arrives beside it is a different question, already answered by the writer's
@@ -2375,6 +2425,8 @@ The shared set is deliberately small and each directory has one subject:
 | `heading-multi-line-comment` | an HTML comment holding a line break inside a heading, dropped with a row because a heading is one line |
 | `summary-holding-blocks` | a `<summary>` holding blocks flattened into the container title, with a row per unwrapped element and per dropped attribute |
 | `container-class-a-fence-word-spells` | a digit-leading class, which `explicit_identifier` admits, consumed as the fence word |
+| `empty-heading` | a bare empty heading and an attributed whitespace-only one, each dropped with one row |
+| `code-span-holding-blocks` | two blocks flattened into a `<code>`, joined with no separator and the lost boundary reported |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one
