@@ -5744,6 +5744,8 @@ EOF = (* end of file *) ;
          `loose` records only what a definition list's own derivation misses.
 
 
+   ============================================================================ *)
+(* ============================================================================
    18. MATH -- NORMATIVE [CARVE-P9-036] (governs `math` in PART 3; djot form). Inline
       `$` + verbatim backtick span; display `$$` + verbatim backtick
       span. A `$` NOT immediately followed by a backtick run is literal
