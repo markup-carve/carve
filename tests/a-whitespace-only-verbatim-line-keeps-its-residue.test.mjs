@@ -34,6 +34,19 @@ const CONTAINERS = [
   ['list item', '- item\n\n  ```\n  a\n  __\n  b\n  ```\n', 2],
   ['footnote body', 'x[^1]\n\n[^1]: note\n\n    ```\n    a\n    __\n    b\n    ```\n', 4],
   ['definition description', ':: t\n:  d\n\n   ```\n   a\n   __\n   b\n   ```\n', 3],
+  ['nested item', '- - item\n\n    ```\n    a\n    __\n    b\n    ```\n', 4],
+  ['item inside a quote', '> - item\n>\n>   ```\n>   a\n>   __\n>   b\n>   ```\n', 2],
+  ['tilde fence in an item', '- item\n\n  ~~~\n  a\n  __\n  b\n  ~~~\n', 2],
+]
+
+/* A fence indented PAST the content column rebases its payload to its own
+ * opener, so the residue is measured from there and not from the container. The
+ * cases above all spell the fence AT the content column, where the two columns
+ * coincide. */
+const OVER_INDENTED = [
+  ['list item, fence at 4, line of 4', '- item\n\n    ```\n    a\n__\n    b\n    ```\n', 4, 'a\n\nb\n'],
+  ['list item, fence at 4, line of 6', '- item\n\n    ```\n    a\n__\n    b\n    ```\n', 6, 'a\n  \nb\n'],
+  ['nested item, fence at 6, line of 6', '- - item\n\n      ```\n      a\n__\n      b\n      ```\n', 6, 'a\n\nb\n'],
 ]
 
 const spell = (template, width) => template.replace('__', ' '.repeat(width))
@@ -62,6 +75,12 @@ test('a line no wider than the content column is an empty code line', () => {
 
 /* A tab reaches its stop before the strip measures it, so the residue is
  * counted in columns rather than in characters. */
+test('an over-indented fence measures the residue from its own opener', () => {
+  for (const [name, template, width, expected] of OVER_INDENTED) {
+    assert.equal(codeOf(spell(template, width)), expected, name)
+  }
+})
+
 test('a tab is measured as the columns it reaches', () => {
   assert.equal(codeOf('- item\n\n  ```\n  a\n\t\n  b\n  ```\n'), 'a\n  \nb\n')
 })
