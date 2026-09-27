@@ -105,6 +105,33 @@ test('the report schema and fixture vocabulary agree', async () => {
 })
 
 /*
+ * The one field a fixture may not state (carve#2454).
+ *
+ * A diagnostic's sentence is the engine's own, so PART 11 §1d does not compare
+ * it. The comparison below compares every field a fixture DOES state, which is
+ * what keeps `path` and `severity` from going quiet again - and that rule would
+ * quietly re-introduce a message comparison the moment a fixture carried one.
+ * So the exception lives here, on the fixtures, rather than as a name the
+ * matcher skips.
+ */
+test('no fixture states a diagnostic message', async () => {
+  const offenders = []
+  for (const fixture of await readdir(root, { withFileTypes: true })) {
+    if (!fixture.isDirectory()) continue
+    const report = JSON.parse(await readFile(new URL(`${fixture.name}/expected.report.json`, root), 'utf8'))
+    for (const [i, row] of (report.diagnostics ?? []).entries()) {
+      if ('message' in row) offenders.push(`${fixture.name} row #${i}`)
+    }
+  }
+  assert.deepEqual(
+    offenders.sort(),
+    [],
+    `fixture row(s) state a diagnostic message: ${offenders.join(', ')}. The sentence is the ` +
+      "engine's and is not compared (PART 11 §1d, carve#2454) - delete the field.",
+  )
+})
+
+/*
  * THE OTHER DIRECTION, which is the one that was missing (carve#1835).
  *
  * `structure-split` sat in the enum after the shape that produced it was
@@ -275,44 +302,73 @@ const astDiff = (expected, actual) => {
  * between two `<tbody>` runs is one degradation, and an importer may say so in
  * one row or in one row per distinct loss. Both are the same code at the same
  * place. What a fixture pins is which losses are reported and in what order, so
- * an engine may SPLIT a row and may not invent a code, drop one, or reorder.
+ * an engine may SPLIT a row and may not invent a code, drop one, or reorder. A
+ * split stays a match under the field rule below, because its copies report the
+ * same code at the same place.
  */
 function withoutDiagnostics(report) {
   const { diagnostics: _ignored, ...rest } = report
   return rest
 }
 
-function diagnosticsMatch(expected, actual) {
-  const wanted = (expected.diagnostics ?? []).map((d) => d.code)
-  const got = (actual.diagnostics ?? []).map((d) => d.code)
-  const allowed = new Set(wanted)
+/*
+ * A fixture row is a PATTERN: every field it states is compared, and a field it
+ * omits is the engine's to choose. Which is the minimum match the page promises
+ * - an implementation may add optional location fields - but the set is
+ * deliberately not a list of names, because the two comparisons here named
+ * `code` only, so `path` and `severity` went uncompared although all 87 fixture
+ * rows state a severity and 78 state a path. A fixture whose row moved to
+ * another element stayed green here and reached three engines before one
+ * objected (carve#2472). Under this rule a field a fixture starts stating is
+ * compared from that moment rather than silently ignored.
+ *
+ * `message` is the exception, and the only one: the sentence is the engine's and
+ * is not compared (PART 11 §1d, carve#2454). It is skipped here AND refused on
+ * the fixtures above, so the ruling holds however a row is authored.
+ */
+const UNCOMPARED = new Set(['message'])
+const sameValue = (a, b) => JSON.stringify(a) === JSON.stringify(b)
+const misfitFields = (pattern, row) =>
+  Object.keys(pattern).filter((field) => !UNCOMPARED.has(field) && !sameValue(pattern[field], row[field]))
+const showRow = (row) => JSON.stringify(Object.fromEntries(Object.entries(row).filter(([key]) => key !== 'message')))
 
-  const unexpected = got.filter((code) => !allowed.has(code))
+function diagnosticSubsequence(expected, actual, label) {
+  const wanted = expected.diagnostics ?? []
+  const got = actual.diagnostics ?? []
+
+  for (const [i, pattern] of wanted.entries()) {
+    if (got.some((row) => misfitFields(pattern, row).length === 0)) continue
+    const nearest = got.find((row) => row.code === pattern.code)
+    const why = nearest
+      ? `the nearest row with that code is ${showRow(nearest)}, differing on ${misfitFields(pattern, nearest).join(', ')}`
+      : 'no row carries that code at all'
+    return `${label}: fixture row #${i} ${showRow(pattern)} matches no row of the report - ${why}`
+  }
+
+  /*
+   * An ADDED row is judged on its code alone, and deliberately not on the whole
+   * pattern. The page's rule is that "every row the report adds must carry a
+   * code the fixture already names", because how many rows one loss takes is
+   * engine-defined. Pattern-matching this too would refuse a second row at
+   * another place - which the contract permits and which tightening it here
+   * would decide by test rather than by ruling. Every fixture passes either way
+   * at the current pin; the narrower rule is the documented one.
+   */
+  const named = new Set(wanted.map(({ code }) => code))
+  const unexpected = got.filter(({ code }) => !named.has(code))
   if (unexpected.length) {
-    return `expected.report.json: report adds code(s) the fixture does not name: ${unexpected.join(', ')}`
+    return `${label}: report adds code(s) the fixture does not name: ${unexpected.map(({ code }) => code).join(', ')}`
   }
+
   let at = 0
-  for (const code of got) if (code === wanted[at]) at++
+  for (const row of got) if (at < wanted.length && misfitFields(wanted[at], row).length === 0) at++
   return at === wanted.length
     ? null
-    : `expected.report.json: fixture rows [${wanted.join(', ')}] are not a subsequence of [${got.join(', ')}]`
+    : `${label}: fixture row #${at} ${showRow(wanted[at])} is not reached in order by the report's rows [${got.map(showRow).join(' | ')}]`
 }
 
-function fidelityDiagnosticsMatch(expected, actual) {
-  const fields = ({ code, fidelity, confidence }) => ({ code, fidelity, confidence })
-  const wanted = (expected.diagnostics ?? []).map(fields)
-  const got = (actual.diagnostics ?? []).map(fields)
-  const allowed = new Set(wanted.map(({ code }) => code))
-  const unexpected = got.filter(({ code }) => !allowed.has(code))
-  if (unexpected.length) return `migration report adds code(s) the fixture does not name: ${unexpected.map(({ code }) => code).join(', ')}`
-  let at = 0
-  for (const row of got) {
-    if (at < wanted.length && JSON.stringify(row) === JSON.stringify(wanted[at])) at++
-  }
-  return at === wanted.length
-    ? null
-    : `migration report does not reproduce the fixture's fidelity classifications`
-}
+const diagnosticsMatch = (expected, actual) => diagnosticSubsequence(expected, actual, 'expected.report.json')
+const fidelityDiagnosticsMatch = (expected, actual) => diagnosticSubsequence(expected, actual, 'migration report')
 
 /*
  * The import options a fixture names in `options.json`, by their JavaScript
