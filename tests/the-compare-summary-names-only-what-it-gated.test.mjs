@@ -28,7 +28,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { chmodSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { chmodSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -113,6 +113,10 @@ test('the roundtrip run does not claim the fixture condition it zeroed', () => {
     const report = join(dir, 'report.json')
     const run = compare(dir, ['--roundtrip', `--report=${report}`])
     const out = `${run.stdout}${run.stderr}`
+    const revisions = JSON.parse(readFileSync(report, 'utf8')).revisions
+    assert.match(revisions.corpus.head, /^[a-f0-9]{40,64}$/)
+    assert.deepEqual(Object.keys(revisions.engines).sort(), ['js', 'php', 'rust'])
+    assert.equal(revisions.engines.js.spec.head, null)
 
     // THE REGRESSION.
     assert.doesNotMatch(
