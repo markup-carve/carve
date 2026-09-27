@@ -131,3 +131,15 @@ test('header-row-narrower-than-body: the reader keeps every body cell', () => {
   // Control: the unpadded header is what drops the third cell.
   assert.deepEqual(cellsPerRow(cmarkGfmToHtml('| a | b |\n| --- | --- |\n| 1 | 2 | 3 |\n')), [2, 2])
 })
+
+test('bare-url-text: only the authored link is a link', () => {
+  const c = byName('bare-url-text')
+  assert.deepEqual(hrefs(cmarkGfmToHtml(c.markdown)), ['https://x.io'])
+  // Control: without the escapes the reader links every form the clause names.
+  const bare = c.markdown.replaceAll('\\:', ':').replaceAll('\\.', '.')
+  assert.equal(hrefs(cmarkGfmToHtml(bare)).length, 8)
+})
+
+test('CARVE-P11-060 states the email autolink as uncovered', () => {
+  assert.match(clauseText('CARVE-P11-060'), /THE EMAIL AUTOLINK IS NOT COVERED/)
+})

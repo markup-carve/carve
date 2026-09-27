@@ -844,5 +844,11 @@
     "rule": "CARVE-P11-056",
     "carve": "|= a |= b |\n| 1 | 2 | 3 |\n",
     "markdown": "| a | b |  |\n| --- | --- | --- |\n| 1 | 2 | 3 |\n"
+  },
+  {
+    "name": "bare-url-text",
+    "rule": "CARVE-P11-060",
+    "carve": "See https://x.io and www.y.org (www.z.org), HTTP://A.B, ftp://c.d/e.\n\nNot ahttps://x.io, 1www.y.org or `https://x.io`, and [https://x.io](https://x.io).\n\nSplit: [http]{.a}[s://x.io]{.b} and [ww]{.a}[w.y.org]{.b}.\n",
+    "markdown": "See https\\://x.io and www\\.y.org (www\\.z.org), HTTP\\://A.B, ftp\\://c.d/e.\n\nNot ahttps://x.io, 1www.y.org or `https://x.io`, and [https://x.io](https://x.io).\n\nSplit: https\\://x.io and www\\.y.org.\n"
   }
 ]
