@@ -33,7 +33,7 @@ test('the checked-in grammar is assembled from its normative modules', () => {
     cwd: repo,
     encoding: 'utf8',
   })
-  assert.match(output, /grammar aggregate matches 26 normative source modules/)
+  assert.match(output, /grammar aggregate matches 27 normative source modules/)
 
   const modules = readdirSync(resolve(repo, 'resources/spec')).filter((file) => file.endsWith('.ebnf'))
   for (const module of modules) {

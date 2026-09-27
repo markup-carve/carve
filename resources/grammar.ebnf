@@ -11911,6 +11911,8 @@ EOF = (* end of file *) ;
       `math.number`, on the PART 11 §1d channel. An exporter MAY map the pair
       to its target's equation label and numbering model.
 
+   ============================================================================ *)
+(* ============================================================================
    30. SECTIONING IS INTERCHANGE-ONLY -- NORMATIVE [CARVE-P12-052]. A `section`
       carries `children`, the blocks it encloses, and MAY carry `level`, the
       heading level the source format stated for it.
