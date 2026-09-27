@@ -1,14 +1,8 @@
 # Default lint triggers not yet reported by each engine.
 # The parity gate rejects new missing rules and declarations that now pass.
-# Measured at carve-rs de449dc26 and carve-php bfbdb3a6.
+# Measured at carve-rs 2db4d936e and carve-php f06ff47e.
 
 rust/bidi-control-in-source  The default CLI emits no warning for this shared trigger.
-rust/duplicate-heading-id  The default CLI emits no warning for this shared trigger.
-rust/broken-crossref  The default CLI emits no warning for this shared trigger.
-rust/unresolved-reference-link  The default CLI emits no warning for this shared trigger.
-rust/unresolved-footnote  The default CLI emits no warning for this shared trigger.
-rust/duplicate-footnote-definition  The default CLI emits no warning for this shared trigger.
-rust/unused-footnote-definition  The default CLI emits no warning for this shared trigger.
 rust/heading-trailing-attribute  The default CLI emits no warning for this shared trigger.
 rust/fence-opener-fallback  The default CLI emits no warning for this shared trigger.
 rust/raw-block-syntax  The default CLI emits no warning for this shared trigger.
@@ -24,15 +18,8 @@ rust/colon-fence-length-mismatch  The default CLI emits no warning for this shar
 rust/figure-group-empty  The default CLI emits no warning for this shared trigger.
 rust/figure-group-single-panel  The default CLI emits no warning for this shared trigger.
 rust/fence-title-syntax  The default CLI emits no warning for this shared trigger.
-rust/footnote-labels-differ-only-in-whitespace  The default CLI emits no warning for this shared trigger.
 rust/footnotes-placement-in-container  The default CLI emits no warning for this shared trigger.
 rust/table-cell-attribute-before-marker  The default CLI emits no warning for this shared trigger.
-php/duplicate-heading-id  The default CLI emits no warning for this shared trigger.
-php/broken-crossref  The default CLI emits no warning for this shared trigger.
-php/unresolved-reference-link  The default CLI emits no warning for this shared trigger.
-php/unresolved-footnote  The default CLI emits no warning for this shared trigger.
-php/duplicate-footnote-definition  The default CLI emits no warning for this shared trigger.
-php/unused-footnote-definition  The default CLI emits no warning for this shared trigger.
 php/heading-trailing-attribute  The default CLI emits no warning for this shared trigger.
 php/fence-opener-fallback  The default CLI emits no warning for this shared trigger.
 php/raw-block-syntax  The default CLI emits no warning for this shared trigger.
@@ -46,5 +33,4 @@ php/carve-version-unsupported  The default CLI emits no warning for this shared 
 php/unclosed-container-fence  The default CLI emits no warning for this shared trigger.
 php/colon-fence-length-mismatch  The default CLI emits no warning for this shared trigger.
 php/fence-title-syntax  The default CLI emits no warning for this shared trigger.
-php/footnote-labels-differ-only-in-whitespace  The default CLI emits no warning for this shared trigger.
 php/footnotes-placement-in-container  The default CLI emits no warning for this shared trigger.
