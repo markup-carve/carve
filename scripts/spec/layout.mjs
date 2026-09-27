@@ -1582,21 +1582,33 @@ function bodyClosesAFenceAt(bodyLines, last) {
 // line inside one, so a container may not collapse a blank run that lands there.
 // `scan` carries the cursor and the open fence between calls, so each body line
 // is read once however many times the branch below asks.
-function bodyHasOpenCodeFence(lines, scan, end, measurement) {
+function bodyHasOpenCodeFence(lines, scan, end, measurement, hasFutureCommentCloser) {
   let { opaque } = scan
+  const columns = scan.columns ??= [0]
   for (let k = scan.index; k < end; k++) {
-    const line = measurement(k)?.rest ?? stripIndent(lines[k])
+    const measured = measurement(k) ?? indentCols(lines[k])
+    const line = measured.rest
     if (opaque) {
       const close = opaque.kind === 'code' ? PURE_FENCE.exec(line) : COMMENT_FENCE_BODY.exec(line)
       if (close && close[1][0] === opaque.run[0] &&
           (opaque.kind === 'code' ? close[1].length >= opaque.run.length : close[1].length === opaque.run.length)) opaque = null
       continue
     }
+    if (line !== '' && !lines[k].startsWith(LAZY)) {
+      while (columns.length > 1 && columns.at(-1) > measured.col) columns.pop()
+      let marker = matchMarkerAt(measured)
+      while (marker) {
+        const column = marker.indent + marker.markerWidth
+        columns.push(column)
+        const next = indentCols(marker.text)
+        marker = matchMarkerAt({ col: column + next.col, rest: next.rest })
+      }
+    }
     const code = FENCE.exec(line)
     if (code && parseFenceInfo(code[2]) !== null) opaque = { kind: 'code', run: code[1] }
     else {
       const comment = COMMENT_FENCE_BODY.exec(line)
-      if (comment && commentFenceCloserAhead(lines, k, comment[1])) opaque = { kind: 'comment', run: comment[1] }
+      if (comment && (commentFenceCloserAhead(lines, k, comment[1]) || hasFutureCommentCloser(comment[1], columns.at(-1)))) opaque = { kind: 'comment', run: comment[1] }
     }
   }
   scan.index = end
@@ -3859,6 +3871,23 @@ function collectItems(lines, i, list, state, ind, meas) {
     let contentCol = head.indent + head.markerWidth
     const itemLines = []
     const residueFence = { index: 0, opaque: null }
+    const commentClosersByColumn = new Map()
+    const hasFutureCommentCloser = (run, column) => {
+      let cached = commentClosersByColumn.get(column)
+      if (!cached || cached.end < i) {
+        const closers = new Map()
+        let k = i
+        for (; k < n; k++) {
+          const measured = ind(k)
+          if (measured.rest !== '' && measured.col < (authoredBlockBase ?? contentCol) + column) break
+          const match = COMMENT_FENCE.exec(lines[k])
+          if (match) closers.set(match[1].length, k)
+        }
+        cached = { end: k, closers }
+        commentClosersByColumn.set(column, cached)
+      }
+      return (cached.closers.get(run.length) ?? -1) > i
+    }
     const fenceOpensAt = new Set()
     // Measurements for the body lines, carried to the item's own parse so it
     // does not re-walk indentation this collector has already walked
@@ -4132,7 +4161,9 @@ function collectItems(lines, i, list, state, ind, meas) {
       // none - which is the whole of carve#1814. It is `attachesFlushLeft` now,
       // asked once and shared, and an empty range is the refusal.
       if (i >= n || !attachesFlushLeft(ind(i))) return false
-      pushLine('', BLANK_MEAS)
+      if (insideFence() || !bodyHasOpenCodeFence(itemLines, residueFence, itemLines.length, (k) => itemMeas[k], hasFutureCommentCloser)) {
+        pushLine('', BLANK_MEAS)
+      }
       // ONE block, with the SAME extent rule every other container uses: a
       // fence runs through its closer, so a boundary line written inside one is
       // fence content (SS17 L3, carve#982). This loop used to be the blind
@@ -4164,6 +4195,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     // continuation line therefore leaves no paragraph available for a later
     // below-column lazy continuation.
     let wrappedAttrEnd = -1
+    let fenceBlankRun = 0
     if (head.text.startsWith('{')) {
       const window = [
         head.text,
@@ -4183,6 +4215,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       // `+` at the item's MARKER column attaches ONE following flush-left
       // block to this item (SS17 L3/L4)
       const lm = ind(i)
+      if (lm.rest !== '') fenceBlankRun = 0
       if (CONT_MARKER.test(line) && lm.col === baseIndent) {
         i++
         attachFlushLeft()
@@ -4201,6 +4234,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         // A blank line INSIDE any open fence is fence content: keep it in the
         // item body and stay tight (no looseness decision).
         if (insideFence()) {
+          fenceBlankRun++
           const dd = dedentMeasured(lm, line, authoredBlockBase ?? contentCol)
           pushLine(dd.text, dd.meas)
           // AND IT ENDS THE OPEN PARAGRAPH, whatever container is holding the
@@ -4257,7 +4291,14 @@ function collectItems(lines, i, list, state, ind, meas) {
             const next = i + 1 < n ? ind(i + 1) : null
             if (next && next.rest !== '') {
               const km = matchMarkerAt(next)
-              if (km && km.indent === baseIndent && sameAxes(list, km)) list.tight = false
+              if (km && km.indent === baseIndent && sameAxes(list, km)) {
+                if (fenceBlankRun >= 3) {
+                  hardListBoundary = true
+                  i++
+                  break
+                }
+                list.tight = false
+              }
             }
           }
           i++
@@ -4266,6 +4307,15 @@ function collectItems(lines, i, list, state, ind, meas) {
         // decide with the NEXT content line
         let j = i + 1
         while (j < n && ind(j).rest === '') j++
+        const descendantFence = bodyHasOpenCodeFence(itemLines, residueFence, itemLines.length, (k) => itemMeas[k], hasFutureCommentCloser)
+        if (descendantFence) {
+          // A descendant's unfinished fence owns the run even when the next
+          // line returns to this item or leaves it altogether.
+          for (let k = i; k < j; k++) {
+            const dd = dedentMeasured(ind(k), lines[k], authoredBlockBase ?? contentCol)
+            pushLine(dd.text, dd.meas)
+          }
+        }
         if (j >= n) { i = j; break }
         const jm = ind(j)
         const { col } = jm
@@ -4317,15 +4367,7 @@ function collectItems(lines, i, list, state, ind, meas) {
             // not loosen this (ancestor) item (carve#322). Attach, stay tight;
             // the recursive parse of itemLines decides the sub-list's looseness.
             //
-            // A run that lands inside a fence the SUB-LIST opened keeps its
-            // lines: this branch collapses the run to one blank, and the fence
-            // state here cannot see an opener the inner body indented.
-            if (bodyHasOpenCodeFence(itemLines, residueFence, itemLines.length, (k) => itemMeas[k])) {
-              for (let k = i; k < j; k++) {
-                const dd = dedentMeasured(ind(k), lines[k], authoredBlockBase ?? contentCol)
-                pushLine(dd.text, dd.meas)
-              }
-            } else pushLine('', BLANK_MEAS)
+            if (!descendantFence) pushLine('', BLANK_MEAS)
             closePara()
             i = j
             continue
@@ -4357,7 +4399,7 @@ function collectItems(lines, i, list, state, ind, meas) {
            */
           if (defBodyIndent !== null && indentCols(dedented).col > defBodyIndent) {
             const defBody = defBodyIndent
-            pushLine('', BLANK_MEAS)
+            if (!descendantFence) pushLine('', BLANK_MEAS)
             closePara()
             defBodyIndent = defBody
             i = j
@@ -4365,7 +4407,7 @@ function collectItems(lines, i, list, state, ind, meas) {
           }
           if (opensSubBlock(dedented)) {
             // sub-BLOCK after a blank: attaches, stays tight (SS17 L2)
-            pushLine('', BLANK_MEAS)
+            if (!descendantFence) pushLine('', BLANK_MEAS)
             closePara()
             i = j
             continue
@@ -4386,7 +4428,7 @@ function collectItems(lines, i, list, state, ind, meas) {
             // + `  %% c` rendered `<li><p>a</p></li>` - an item wrapped because
             // of a line that produces no output at all. carve-rs renders every
             // one of these tight; carve-js does for two of the three.
-            pushLine('', BLANK_MEAS)
+            if (!descendantFence) pushLine('', BLANK_MEAS)
             closePara()
             blankBeforeInvisible = true
             // §17 L1b: the invisible line is not a separator either, so the
@@ -4401,7 +4443,7 @@ function collectItems(lines, i, list, state, ind, meas) {
             continue
           }
           // a second PARAGRAPH inside the item -> loose (SS17 L1)
-          pushLine('', BLANK_MEAS)
+          if (!descendantFence) pushLine('', BLANK_MEAS)
           list.tight = false
           startPara()
           i = j
@@ -4427,7 +4469,7 @@ function collectItems(lines, i, list, state, ind, meas) {
           // the top level split. Attaching still keeps THIS item tight - that
           // is L2 and is unchanged; what the run decides is whether the marker
           // below it joins the sub-list, which is the nested parse's question.
-          for (let k = i; k < j; k++) pushLine('', BLANK_MEAS)
+          if (!descendantFence) for (let k = i; k < j; k++) pushLine('', BLANK_MEAS)
           closePara()
           i = j
           continue
