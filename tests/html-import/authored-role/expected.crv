@@ -1,0 +1,10 @@
+{role=search}
+::: b
+x
+:::
+
+[x]{role=img aria-label=c}
+
+{.m role=menu}
+-{role=none} a
+-{role=none} b

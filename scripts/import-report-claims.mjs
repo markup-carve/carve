@@ -103,7 +103,7 @@ const CASES = [
   {
     name: 'form around a benign list-valued URL attribute',
     html: '<form onclick="go()"><img src="a.png" srcset="b.png 2x" alt="a"></form>\n',
-    subjects: [{ key: 'form.onclick' }, { key: 'img.srcset', pending: 'carve#2279' }],
+    subjects: [{ key: 'form.onclick' }],
   },
   {
     name: 'form around a semantic span carrying its own key',

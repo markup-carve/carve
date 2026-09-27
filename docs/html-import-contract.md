@@ -369,6 +369,40 @@ as they would be anywhere and add no rows of their own.
 beside a block, a tag without a hyphen, two nested wrappers, a wrapper inside a
 list item and an inline wrapper inside a paragraph.
 
+## A section wrapper gives its id back to its heading
+
+The renderer wraps every heading in a `<section>` and moves the heading's id
+onto it (PART 9 §13, CARVE-P9-019). A `<section>` whose first element child is
+a heading is read as that wrapper, and its `id` is the heading's:
+
+```html
+<section id="S1" class="ltx_section"><h2 class="t">Intro</h2><p>x</p></section>
+<section id="Intro-2"><h2>Intro 2</h2><p>y</p></section>
+```
+
+```
+{#S1 .t}
+## Intro
+
+x
+
+## Intro 2
+
+y
+```
+
+- An id equal to the one the renderer derives for the heading is derived and
+  does not come back, as the rule below says for every derived attribute.
+- Any other id is written on the heading, unless the heading carries an id of
+  its own. That one wins, and the section's is reported `attribute-dropped`.
+- The renderer writes nothing else on the wrapper, so every other attribute of
+  the section is reported `attribute-dropped` and never moved onto the heading.
+
+The section still takes its `element-unwrapped` row. Dropping the id instead
+loses an id the author wrote on the heading, and moving a class onto the
+heading puts it on an element that never had it. `section-wrapper-id` pins an
+authored id, a derived one, a heading with its own id, and a section class.
+
 ## The escaping reaches the imported source
 
 Four of the shapes the import meaning sweep found are not import policy at all.
@@ -663,6 +697,35 @@ only one position can be represented, the other is reported.
 **A comment inside an element preserved as raw HTML needs no row.** It is inside
 the preserved bytes and reaches the output with them.
 
+**An element that imports to nothing does not make a comment inline.** A run of
+loose siblings becomes a paragraph only when something in it survives as inline
+content. A dropped element, such as an empty unknown element or a `<noscript>`,
+contributes nothing, and a comment whose only other siblings in the run are
+such elements and whitespace sits among blocks:
+
+```html
+<section><h2>T</h2><!--/lit-part-->
+<x-el></x-el>
+<p>y</p></section>
+```
+
+```
+## T
+
+%%%
+/lit-part
+%%%
+
+y
+```
+
+Reading it as an inline comment would build a paragraph holding only that
+comment, which renders as an empty `<p>` the HTML never had. The import is the
+one the same HTML gives without the dropped element
+(markup-carve/carve-rs#2029). `comment-beside-dropped-element` pins it for an
+empty unknown element and a `<noscript>`, beside an unknown element with text,
+which keeps the comment inline.
+
 ## The last newline of a code block is its terminator, not a line
 
 A code block's content is bytes the author wrote, so gaining or losing a line
@@ -808,6 +871,33 @@ their own rows.
 
 `empty-list` pins an attributed empty list inside a container, a bare empty
 list, and an empty list nested in an item.
+
+## An empty paragraph is dropped
+
+A `<p>` whose content imports to nothing, because it is empty or holds only
+elements that are dropped, has no spelling: Carve has no empty paragraph. It
+imports as nothing. When it carried an attribute, one `element-dropped` row at
+`warning`, located at the paragraph and covering those attributes, says so
+(markup-carve/carve-php#2526):
+
+```html
+<p>a</p><p class="mw-empty-elt" id="x"></p><p>b</p>
+```
+
+```
+a
+
+b
+```
+
+Writing the attributes on a line of their own does not keep them: an attribute
+line attaches to the next block, so `{#x .mw-empty-elt}` above `b` moves the id
+and the class onto a paragraph that never had them. A bare empty `<p>` loses
+nothing and is dropped without a row. Other blocks with no content do have a
+spelling and keep their attributes: `<hr id="h">` is `{#h}` above `---`.
+
+`empty-paragraph` pins an attributed empty paragraph, one holding only an empty
+`<span>`, and an attributed `<hr>`.
 
 ## Adjacent definition lists become one
 
@@ -2192,6 +2282,11 @@ The shared set is deliberately small and each directory has one subject:
 | `mathml-without-tex` | presentation-only MathML imported as its text where the tokens are linear, and a fraction dropped where they are not |
 | `mathml-fallback-image` | a formula beside its fallback image imported once, including through the image's `alt` when the `<math>` carries no TeX |
 | `empty-list` | a `<ul>` and an `<ol>` with no item, attributed inside a container, bare, and nested in an item, each dropped with one row |
+| `section-wrapper-id` | a `<section>` around a heading whose authored id comes back on the heading, a derived id that does not, a heading id that wins over the section's, and a section class that is dropped with a row |
+| `empty-paragraph` | an attributed empty `<p>` and one holding only an empty `<span>`, each dropped with one row, beside an attributed `<hr>` that keeps its attribute |
+| `comment-beside-dropped-element` | a comment beside an empty unknown element and beside a `<noscript>`, written as a block comment because a dropped element leaves no inline run, and beside an unknown element with text, which keeps it inline |
+| `authored-role` | an authored `role` on a container, a span and a list item, kept because the renderer derives none of them |
+| `url-list-attribute` | a `srcset` on an image, kept because a URL-list attribute is hardened by the renderer rather than refused |
 | `adjacent-definition-lists` | two attribute-less `<dl>` elements joined into one list with a row, beside a paragraph and an attributed `<dl>` that each keep a list apart |
 | `figure-target-attributes` | a figure around a code block and around a quote, each sharing one attribute line with its target, and an image whose own braces keep its attributes apart |
 | `table-cell-multi-line-comment` | a comment holding a line break dropped from a cell with a row, a one-line comment among a cell's blocks written inline, and a multi-line comment outside any cell kept |
