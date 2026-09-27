@@ -4039,7 +4039,16 @@ function collectItems(lines, i, list, state, ind, meas) {
             fence.opaque = null
           }
         } else {
-          const c = COMMENT_FENCE_BODY.exec(line)
+          // INDENTATION IS NOT PART OF THE COMMENT DELIMITER. `comment_block_open`
+          // and `comment_block_close` each carry a `[whitespace]` slot, so the
+          // length match compares `%` runs and an indented closer closes an
+          // indented opener. COMMENT_FENCE_BODY here refused one, while the pass
+          // that decides the span EXISTS (`commentFenceCloserAhead`) accepted it,
+          // so a closer past the block's base cleared nothing: the span latched to
+          // the end of the item, the blank below it read as fence content, and the
+          // item came out TIGHT where the flush spelling of the same document is
+          // LOOSE (carve#2471).
+          const c = COMMENT_FENCE.exec(line)
           if (c && c[1].length === fence.opaque.run.length) fence.opaque = null
         }
         return
