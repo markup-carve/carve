@@ -1,1 +1,1 @@
-{"mode":"safe","adapter":"generic","diagnostics":[{"code":"attribute-dropped","message":"Dropped data-copy on <div>: its value spans a line break, which a Carve attribute value cannot","severity":"warning","path":"/div[1]","fidelity":"dropped","confidence":"exact"}]}
+{"mode":"safe","adapter":"generic","diagnostics":[{"code":"attribute-dropped","severity":"warning","path":"/div[1]","fidelity":"dropped","confidence":"exact"}]}

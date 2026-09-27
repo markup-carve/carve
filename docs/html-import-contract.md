@@ -2129,16 +2129,21 @@ implementation MUST produce, in order: the fixture's sequence must appear in the
 report as a subsequence, and every row the report adds must carry a code the
 fixture already names.
 
-AND A ROW SUBJECT TO THAT STATES NO `message`. The wording follows the
-granularity - "dropped the row grouping" and "merged 2 `<tbody>` groups into one"
-describe the same loss at different sizes - so a fixture that pinned the message
-would pin the granularity through the back door. Such a row states its `code`,
-and its `severity` and `path` where those agree; the prose is the engine's. Every
-other row states its message as before, and the check on those is unchanged:
-an unpinned message is how a reworded or emptied one used to pass unnoticed. An implementation may split one of those rows into
-several; it may not invent a code the fixture does not list, drop one it does,
-or reorder them. That is what makes a fixture portable rather than a recording
-of whichever engine its author generated it from.
+AND NO ROW STATES A `message`. PART 11 §1d says once, for every diagnostic
+channel, that the sentence is the engine's and is not compared
+(markup-carve/carve#2454). Here the wording also follows the granularity -
+"dropped the row grouping" and "merged 2 `<tbody>` groups into one" describe the
+same loss at different sizes - so a fixture that pinned it would pin the
+granularity through the back door. A row states its `code`, and its `severity`,
+`path`, `fidelity` and `confidence` where it states those. An implementation may
+split a row into several; it may not invent a code the fixture does not list,
+drop one it does, or reorder them. That is what makes a fixture portable rather
+than a recording of whichever engine its author generated it from.
+
+A clause below that does pin a message - the `attribute-preserved` template, the
+ordered task item's one sentence - is still binding. What changed is who reads
+it: an engine's own tests and the cross-engine report gate, never a shared
+fixture.
 
 WHY THIS IS A REQUIREMENT RATHER THAN A QUALITY OF IMPLEMENTATION. The shared
 fixture runners compare diagnostics POSITIONALLY. With no defined order, a

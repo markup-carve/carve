@@ -8394,6 +8394,12 @@ EOF = (* end of file *) ;
         { "code": "field-unspellable", "node": "math", "field": "label",
           "message": "Carve source spells no equation label" }
 
+      THE MESSAGE IS PRESENTATION, AND IT IS NOT COMPARED. An entry's contract is
+      its other fields; the sentence is the engine's, so two engines describing
+      one loss in different words both conform. No clause here states what a
+      message names, and a conformance fixture states none
+      (markup-carve/carve#2454).
+
       THE FIELD IS WHY THIS IS NOT THAT REPORT. `CARVE-P2-024`'s `code` enum is
       CLOSED at `raw-format-dropped` and `ruby-flattened`, and both name a whole
       node one selected renderer dropped or flattened. It answers what THIS
