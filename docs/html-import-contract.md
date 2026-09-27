@@ -1499,10 +1499,11 @@ An importer that instead reads the width off the body it has already written
 can only widen outward, so it inverts every depth at once
 (markup-carve/carve-php#1583). `container-nesting` pins two and three levels.
 
-The class the fence word consumes must be one a fence opener can spell,
-`[a-zA-Z_][\w-]*` per PART 9's `admonition_open`. A class outside that shape -
-`2col` - would be written after the colons and read back as a paragraph, so
-that element keeps the generic `div` node where the class survives as a class.
+The class the fence word consumes must be one a fence opener can spell, which
+PART 9's `admonition_open` resolves through `admonition_type` to
+`explicit_identifier`. A class outside that shape would be written after the
+colons and read back as a paragraph, so that element keeps the generic `div`
+node where the class survives as a class.
 
 **A `<div>` that carries nothing only a container can hold is UNWRAPPED to its
 content, and no `:::` fence is written** (markup-carve/carve#1578,
