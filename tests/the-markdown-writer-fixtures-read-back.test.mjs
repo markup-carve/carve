@@ -140,6 +140,16 @@ test('bare-url-text: only the authored link is a link', () => {
   assert.equal(hrefs(cmarkGfmToHtml(bare)).length, 8)
 })
 
-test('CARVE-P11-060 states the email autolink as uncovered', () => {
-  assert.match(clauseText('CARVE-P11-060'), /THE EMAIL AUTOLINK IS NOT COVERED/)
+test('bare-email-text: only the authored link is a link', () => {
+  const c = byName('bare-email-text')
+  assert.match(clauseText('CARVE-P11-060'), /the `@` of an address GFM's email extension would match/)
+  assert.deepEqual(hrefs(cmarkGfmToHtml(c.markdown)), ['/k'])
+  // Control: the comment is what holds each address apart. Without it the
+  // reader links the plain form and both prefixed ones.
+  assert.deepEqual(hrefs(cmarkGfmToHtml(c.markdown.replaceAll('<!---->', ''))), [
+    'mailto:a@b.co',
+    'mailto:c@d.co',
+    'xmpp:e@f.co',
+    '/k',
+  ])
 })

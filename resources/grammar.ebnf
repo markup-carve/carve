@@ -9577,9 +9577,9 @@ EOF = (* end of file *) ;
         cell code "a|b"            ->  | `a\|b` |
 
    8i. TEXT THAT GFM WOULD AUTOLINK IS ESCAPED -- NORMATIVE [CARVE-P11-060].
-      GFM's autolink extension turns a bare URL in text into a link the
-      document never had. The target escapes the one character that starts
-      each form, and nothing else:
+      GFM's autolink extension turns a bare URL or email address in text into a
+      link the document never had. The target holds each form apart at one
+      character, and touches nothing else. A URL form takes an escape there:
 
       U1 the `:` of `http://`, `https://` or `ftp://`, the scheme matched
          without regard to ASCII case, is written `\:` unless the character
@@ -9610,9 +9610,21 @@ EOF = (* end of file *) ;
         text "See https://x.io and www.y.org"
                                    ->  See https\://x.io and www\.y.org
 
-      THE EMAIL AUTOLINK IS NOT COVERED. cmark-gfm links `a@b.co` whether the
-      `@` or the `.` carries a backslash, so no escape holds it in the reader
-      GitHub runs
+      THE EMAIL FORM TAKES AN EMPTY COMMENT RATHER THAN AN ESCAPE. Both readers
+      link `a@b.co` whether the `@` or the `.` carries a backslash, so no
+      escape holds the address:
+
+      E1 the `@` of an address GFM's email extension would match is written
+         `<!---->@`. A `mailto:` or `xmpp:` prefix matches through that same
+         extension and takes the same spelling.
+
+        text "Mail a@b.co and mailto:c@d.co"
+                                   ->  Mail a<!---->@b.co and mailto:c<!---->@d.co
+
+      E1 reads on the emitted line and in text only, as U1 and U2 do. The
+      comment REACHES THE OUTPUT, which no other spelling in this section does,
+      and a reader that strips comments before matching addresses re-links.
+      Neither reader this target answers to strips it
       ([carve#2413](https://github.com/markup-carve/carve/issues/2413)).
 
    9. THE MARKDOWN TARGET'S HARD BREAK -- NORMATIVE [CARVE-P11-026]. A `hard_break` is emitted

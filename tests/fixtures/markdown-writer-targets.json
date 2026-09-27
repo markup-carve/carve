@@ -850,5 +850,11 @@
     "rule": "CARVE-P11-060",
     "carve": "See https://x.io and www.y.org (www.z.org), HTTP://A.B, ftp://c.d/e.\n\nNot ahttps://x.io, 1www.y.org or `https://x.io`, and [https://x.io](https://x.io).\n\nSplit: [http]{.a}[s://x.io]{.b} and [ww]{.a}[w.y.org]{.b}.\n",
     "markdown": "See https\\://x.io and www\\.y.org (www\\.z.org), HTTP\\://A.B, ftp\\://c.d/e.\n\nNot ahttps://x.io, 1www.y.org or `https://x.io`, and [https://x.io](https://x.io).\n\nSplit: https\\://x.io and www\\.y.org.\n"
+  },
+  {
+    "name": "bare-email-text",
+    "rule": "CARVE-P11-060",
+    "carve": "Mail a@b.co, mailto:c@d.co and xmpp:e@f.co.\n\nNot a@b, `g@h.co`, or [i@j.co](/k).\n",
+    "markdown": "Mail a<!---->@b.co, mailto:c<!---->@d.co and xmpp:e<!---->@f.co.\n\nNot a@b, `g@h.co`, or [i@j.co](/k).\n"
   }
 ]
