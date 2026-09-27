@@ -22,10 +22,11 @@ measured 1,544 documents and
 left 338 current documents in a declared-lag list. All 338 are included here.
 
 Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item-stays-in-that-item`,
-`503-a-block-opener-indented-under-a-definition-term-is-term-text-at-every-depth`.
+`503-a-block-opener-indented-under-a-definition-term-is-term-text-at-every-depth`,
+`504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
-second landed after the run. Its numbers describe the corpus without either.
+other two landed after the run, so its numbers describe the corpus without them.
 
 The former case-by-case notes remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/a22f6a23f7913e44cb3461f3f608605660619032/docs/implementation-comparison-methodology.md).

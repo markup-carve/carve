@@ -1245,6 +1245,18 @@ function isBlank(line) {
 // Without the `\S`, `:: ` was a paragraph and `::··` a definition list -
 // stripping one trailing space changed the structure (carve#512).
 const DEFLIST_TERM = /^:: (?=[ \t]*[^ \t\n\r])/
+// A line a term folds at its own column: not blank, not an opener, not a
+// definition, list marker, fence, caption, entry or comment.
+// Stands for a comment folded into a term; html.mjs splits the term on it.
+export const TERM_COMMENT = '\uE0FE'
+
+function foldablePlainLine(cur) {
+  return !isBlank(cur) && !startsVisibleBlock(cur) && !isLinkDef(cur) &&
+    !FOOTNOTE_DEF.test(cur) && !BULLET.test(cur) && !isOrderedMarkerLine(cur) &&
+    !FENCE.test(cur) && !CAPTION.test(cur) && !COMMENT_LINE.test(cur) &&
+    !/^::? /.test(cur)
+}
+
 function startsVisibleBlock(line) {
   return HEADING.test(line) || HR.test(line) || QUOTE.test(line) || DEFLIST_TERM.test(line)
 }
@@ -1737,6 +1749,20 @@ export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = fal
       }
       index = last
       flushedNote = true
+      continue
+    }
+    // A comment fence's body is opaque: nothing in it opens a block or a term.
+    const comment = COMMENT_FENCE_BODY.exec(measured.rest)
+    if (comment && commentFenceCloserAhead(lines, index, comment[1])) {
+      let close = index + 1
+      while (close < lines.length) {
+        const c = COMMENT_FENCE_BODY.exec(indentCols(lines[close]).rest)
+        if (c && c[1].length === comment[1].length) break
+        close++
+      }
+      const last = Math.min(close, lines.length - 1)
+      for (let k = index; k <= last; k++) out.push(lines[k])
+      index = last
       continue
     }
     const establishesBase = measured.col > 0 && opensAuthoredBase(measured.rest)
@@ -2459,6 +2485,26 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // A term has no content column, so no indentation ends it: a line
             // past the column folds whatever it would open (carve#2411).
             if (isEntry(unlazy(cur)) || isBlank(cur) || CONT_MARKER.test(cur)) break
+            // A comment at the container's column ends the term. Past it the
+            // comment stays a comment, fence body included, and the term goes
+            // on (carve#2411). Inline content never reaches across it, so it
+            // splits the term into runs rendered on their own.
+            if (/^%%/.test(cur)) break
+            if (/^[ \t]+%%/.test(cur)) {
+              const fence = COMMENT_FENCE.exec(cur)
+              if (fence && commentFenceCloserAhead(lines, i, fence[1])) {
+                i++
+                while (i < n) {
+                  const close = COMMENT_FENCE.exec(lines[i] ?? '')
+                  i++
+                  if (close && close[1].length === fence[1].length) break
+                }
+              } else {
+                i++
+              }
+              dt += '\n' + TERM_COMMENT
+              continue
+            }
             if (!foldablePlain(cur)) break
             if (isTableRow(cur) || colonFenceInterrupts(cur, [dt]) || (cur[0] === '{' && tryAttrLine(lines, i))) break
             // A line folded into an item BELOW its content column arrives here
@@ -3569,9 +3615,15 @@ function firstBlockEnd(lines, start, limit, state) {
 function foldedDefinitionEnd(lines, start, end, seen) {
   const claimed = new Set()
   let opaque = null
+  // A definition past an open term's column is that term's text (carve#2411),
+  // so it cannot end the block.
+  let termCol = null
   for (let k = start; k < end; k++) {
     const line = lines[k]
-    if (line === undefined || isBlank(line)) continue
+    if (line === undefined || isBlank(line)) {
+      if (!opaque) termCol = null
+      continue
+    }
     const { col, rest } = indentCols(line)
     if (opaque) {
       if (opaque.kind === 'code') {
@@ -3583,6 +3635,16 @@ function foldedDefinitionEnd(lines, start, end, seen) {
       }
       continue
     }
+    if (termCol !== null) {
+      if (col > termCol && !BULLET.test(rest) && !isOrderedMarkerLine(rest)) {
+        // A folded comment fence keeps its body, blank lines included.
+        const folded = COMMENT_FENCE_BODY.exec(rest)
+        if (folded && commentFenceCloserAhead(lines, k, folded[1])) opaque = { kind: 'comment', run: folded[1] }
+        continue
+      }
+      if (!foldablePlainLine(rest)) termCol = null
+    }
+    if (DEFLIST_TERM.test(rest)) termCol = col
     const code = FENCE.exec(rest)
     if (code && parseFenceInfo(code[2]) !== null) {
       opaque = { kind: 'code', run: code[1] }
@@ -3965,6 +4027,9 @@ function collectItems(lines, i, list, state, ind, meas) {
     // `contentCol`; this is only the source collector's local zero.
     let authoredBlockBase = null
     let authoredBlockLimit = null
+    // A term on the marker line folds the lines past the content column that
+    // follow it (carve#2411), so none of them opens an authored base.
+    let leadTerm = DEFLIST_TERM.test(head.text.replace(/^[ \t]+/, ''))
     const insideFence = () => fence.opaque !== null || fence.colon.length !== 0
     const trackFence = (line, opens, index) => {
       if (fence.opaque) {
@@ -4123,6 +4188,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         continue
       }
       if (lm.rest === '') {
+        if (!insideFence()) leadTerm = false
         // A blank line INSIDE any open fence is fence content: keep it in the
         // item body and stay tight (no looseness decision).
         if (insideFence()) {
@@ -4380,7 +4446,9 @@ function collectItems(lines, i, list, state, ind, meas) {
           authoredBlockLimit = null
         }
         const insideAuthoredBlock = authoredBlockLimit !== null && i < authoredBlockLimit
-        const openerBase = !insideAuthoredBlock && !descendantOwned && !insideFence() && opensAuthoredBase(lm.rest)
+        const foldsIntoLeadTerm = leadTerm && col > contentCol && !nm
+        if (leadTerm && !foldsIntoLeadTerm && !insideFence() && !foldablePlainLine(lm.rest)) leadTerm = false
+        const openerBase = !insideAuthoredBlock && !foldsIntoLeadTerm && !descendantOwned && !insideFence() && opensAuthoredBase(lm.rest)
           ? col
           : null
         // A LINE THAT OPENS ITS OWN BASE IS MEASURED AT ITS OWN COLUMN. The

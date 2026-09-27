@@ -669,6 +669,7 @@ index: examples/edge-cases/index.md
   an-empty-unterminated-container-ends-at-a-flush-left-line
   an-abbreviation-definition-outside-document-level-is-not-an-invisible-line
   a-block-opener-indented-under-a-definition-term-is-term-text-at-every-depth
+  a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth
 [edge-attributes] Attributes
 > Attribute lines and inline blocks, names and values, classes, booleans and the semantic/language sugar.
 out: examples/edge-cases/attributes.md
