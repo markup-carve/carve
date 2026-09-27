@@ -78,7 +78,7 @@ jobs:
           submodules: recursive
       - name: Build carve-rs
         working-directory: carve-rs
-        run: cargo build --release
+        run: cargo build --release --bin carve --example social_resolvers
       - uses: actions/checkout@v4
         with:
           repository: markup-carve/carve-php
@@ -140,7 +140,7 @@ jobs:
 
       - name: Build carve-rs
         working-directory: carve-rs
-        run: cargo build --release
+        run: cargo build --release --bin carve --example social_resolvers
 
       - name: Check out carve-php
         uses: actions/checkout@v4
@@ -354,7 +354,7 @@ jobs:
       # this needs all three engine mains built. A dispatch runs it too, so a
       # finding can be re-measured immediately.
       - name: Curated combinatorial seam families
-        if: github.event.schedule == '0 4 * * 0' || inputs.depth == 'full'
+        if: ${{ !cancelled() && (github.event.schedule == '0 4 * * 0' || inputs.depth == 'full') }}
         env:
           CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
@@ -366,7 +366,7 @@ jobs:
       # remains a hard failure; exit 1 stays visible without making the whole
       # weekly conformance verdict permanently red while adjudication proceeds.
       - name: Differential fuzz sweep
-        if: github.event.schedule == '0 4 * * 0' || inputs.depth == 'full'
+        if: ${{ !cancelled() && (github.event.schedule == '0 4 * * 0' || inputs.depth == 'full') }}
         env:
           CARVE_JS_DIR: ${{ github.workspace }}/carve-js
           CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
@@ -389,6 +389,29 @@ jobs:
           fi
           if [ "$status" -eq 1 ]; then
             echo '::warning::The differential fuzzer found tracked or new questions; inspect the job summary and carve#1425.'
+          fi
+
+      - name: Formatter semantic fuzz sweep
+        if: ${{ !cancelled() && (github.event.schedule == '0 4 * * 0' || inputs.depth == 'full') }}
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+        run: |
+          set +e
+          npm run fuzz:impls -- --target=carve --seed=4242 --count=100 --max-findings=8 2>&1 | tee /tmp/fuzz-carve.txt
+          status=${PIPESTATUS[0]}
+          set -e
+          {
+            echo '## Formatter semantic fuzz sweep'
+            echo
+            echo '```text'
+            tail -n 60 /tmp/fuzz-carve.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$status" -ne 0 ]; then
+            echo '::error::The formatter fuzz sweep failed; inspect the job summary for findings or execution errors.'
+            exit "$status"
           fi
 
       # The same generated sweep the per-PR job runs, ten times larger.

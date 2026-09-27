@@ -105,16 +105,14 @@ const engines = [
  * reading the adapters back to themselves:
  *
  * carve-rs is driven through its CLI. Registry-backed extensions and render
- * options are now reachable there. Host resolver callbacks are not representable
- * as command-line values, so that pair remains explicit below.
+ * options are reachable there. The social_resolvers library example supplies
+ * host callbacks for the resolver fixture.
  *
  * The list fails in both directions. A pair that is unreachable and not listed
  * is a silent skip; a pair that is listed and has BECOME reachable is a stale
  * excuse, and the case it covers would go on being reported as unmeasured.
  */
-const DECLARED_UNREACHABLE = {
-  'rust:social-link-resolvers': 'no CLI path for host resolver callbacks',
-}
+const DECLARED_UNREACHABLE = {}
 const reachable = new Map(engines.map(([e, next]) => [e, reachableBy(e, next)]))
 const unreachableDeclared = new Set(tableKeys('UNREACHABLE_REASONS'))
 

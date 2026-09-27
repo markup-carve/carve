@@ -142,7 +142,7 @@ engine lacks it.
 | `smart-quotes-locale-de` | pass | pass | pass |
 | `smart-typography-default` | pass | pass | pass |
 | `smart-typography-off` | pass | pass | pass |
-| `social-link-resolvers` | skipped | pass | pass |
+| `social-link-resolvers` | pass | pass | pass |
 | `social-link-templates` | pass | pass | pass |
 | `source-line-after-generated-id` | pass | pass | pass |
 | `spoiler` | pass | pass | pass |
@@ -150,22 +150,20 @@ engine lacks it.
 | `tabs` | pass | pass | pass |
 | `tabs-aria` | pass | pass | pass |
 
-carve-rs reaches every row except host resolver callbacks through its binary.
-The callbacks remain library-only because command-line values cannot carry host
-functions.
+carve-rs uses its CLI for render options and its `social_resolvers` library
+example for host callbacks. Build both with
+`cargo build --release --bin carve --example social_resolvers`.
 
 | Implementation | Optional pass | Skipped | Mismatches | Errors |
 |----------------|---------------|---------|------------|--------|
-| Rust | `52 / 52` | `1` | `0` | `0` |
+| Rust | `53 / 53` | `0` | `0` | `0` |
 | JS | `53 / 53` | `0` | `0` | `0` |
 | PHP | `53 / 53` | `0` | `0` | `0` |
 
 Optional cross-implementation diffs: `0`
 
-All 53 cases reached at least two engines. Rust skips only
-`social-link-resolvers`: its library accepts host callbacks, but the CLI used
-by this runner cannot carry them. Every other optional case reached all three
-engines. A skip is visible in the count and does not count as a pass.
+All 53 optional cases reached all three engines in the resolver-adapter recheck.
+A skip is visible in the count and does not count as a pass.
 
 ## CLI timing
 
