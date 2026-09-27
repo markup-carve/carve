@@ -2305,6 +2305,10 @@ The shared set is deliberately small and each directory has one subject:
 | `attribute-value-pipe` | a pipe in an attribute value on a cell and on a span inside a cell, backslash-escaped so the row does not split |
 | `attribute-value-line-break` | an attribute value holding a line break, dropped with a row because a Carve attribute value cannot hold one |
 | `definition-description-without-term` | a `<dd>` with no `<dt>` before it, emitted as blocks ahead of the list with a row, including a list holding no entry whose class is dropped |
+| `cell-text-align-columns` | cell CSS maps to column markers without unmapped-style rows |
+| `cell-text-align-overrides` | explicit body alignment overrides the header default |
+| `cell-text-align-declarations` | the last supported declaration wins; unsupported values and priority suffixes remain unmapped |
+| `cell-text-align-unmapped` | supported alignment maps while unrelated CSS and unsupported values report loss |
 | `heading-multi-line-comment` | an HTML comment holding a line break inside a heading, dropped with a row because a heading is one line |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
@@ -2314,8 +2318,27 @@ formatter over it would disagree.
 
 ## CSS policy
 
-CSS is not parsed generally. Implementations may map only explicit declarations
-with stable Carve semantics, initially `text-align`, `font-weight`,
+On `th` and `td`, importers MUST map an explicit `text-align: left`,
+`text-align: right`, or `text-align: center` to the native cell alignment in
+`safe`, `semantic`, and `roundtrip` modes. Property names and values are
+case-insensitive; surrounding whitespace is ignored. The last supported
+declaration wins. Only those exact values are mapped; priority suffixes such
+as `!important` remain unmapped. A mapped declaration MUST NOT produce
+`style-unmapped`.
+
+A cell in the leading header rows supplies the column default through `|=<`, `|=>`, or `|=~`.
+A body cell repeating that default needs no marker; a different explicit
+alignment stays on that cell through `|<`, `|>`, or `|~`. A headerless table
+keeps each cell's explicit alignment. Mapping does not require every cell in
+a column to agree. Unsupported values, such as `justify`, and unrelated
+unmapped declarations still produce `style-unmapped`.
+
+This requirement covers horizontal alignment on table cells only. It does
+not change CSS mapping on other elements or the treatment of
+`vertical-align` in `safe` mode (carve#2422).
+
+Beyond that required mapping, CSS is not parsed generally. Implementations
+may map only explicit declarations with stable Carve semantics, initially `text-align`, `font-weight`,
 `font-style`, and `text-decoration`. All other declarations produce
 `style-unmapped` in `semantic` and `roundtrip` modes, except inside bytes kept
 whole under `raw-preserved`, where ["a refused declaration in `style` is a
