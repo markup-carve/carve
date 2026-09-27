@@ -10,10 +10,6 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
-### Added
-
-- HTML import recognizes explicit code-language hints on code blocks and Sphinx, GitHub and MediaWiki wrappers, with validated tokens and deterministic fallback (markup-carve/carve#2387).
-
 ## [0.1.7] - 2026-09-25
 
 ### Breaking
@@ -70,6 +66,33 @@ Releases before 0.1.6 are archived in
   attribute is reported as `field-unspellable` on the PART 11 §1d
   conversion-diagnostics channel instead, so a consumer matching
   `table-section-attributes-dropped` breaks (carve#2344).
+
+- The Markdown target's output is written to read correctly in a GFM reader, and
+  a writer-parity batch settles block-cell images, the row-head count, a
+  whitespace code line, a narrow header and GFM autolinks, so the emitted bytes
+  change (carve#2371, carve#2374, carve#2381, carve#2402, carve#2403,
+  carve#2408, carve#2409, carve#2418).
+- A soft break in a pipe-table cell is written as one space, a list table is a
+  pipe table on the Markdown target, and a bare email address is held apart with
+  an empty comment (carve#2391, carve#2392, carve#2398, carve#2413, carve#2421,
+  carve#2443, carve#2456).
+- A column is counted in codepoints, which moves every position an engine reports
+  on a line holding astral or combining characters (carve#2400).
+- An unquoted attribute value cannot hold the characters that would restructure
+  the block, and a class written as a key-value attribute folds into the class
+  slot, including a class the fence word cannot spell (carve#2442, carve#2447).
+- No pad follows an opener that a line break follows, and a summary flattens into
+  the title (carve#2434).
+- Adjacent definition lists join on import, a figure shares its target's
+  attribute line, a multi-line comment has no cell spelling, and an empty heading
+  is dropped (carve#2369, carve#2370, carve#2372, carve#2386, carve#2419,
+  carve#2441, carve#2455).
+- Import answers for a pipe or a line break in an attribute value, a term-less
+  description and a comment in a heading change what an importer writes
+  (carve#2383, carve#2384, carve#2385, carve#2396, carve#2399).
+- A definition term has no content column at any depth, and a comment or a
+  definition under a term folds at every depth (carve#2411, carve#2426,
+  carve#2458).
 
 ### Fixes
 
@@ -172,6 +195,21 @@ existed.
   warning cap and live-preview invalidation stated as host guidance
   (carve#2351).
 
+- Extension content and empty-code runs are exempt from the bracket rules
+  (carve#2378).
+- A cell's blocks contribute no header, label, raw block or definition, and a
+  code block's terminating newline contributes nothing in a cell (carve#2394,
+  carve#2433).
+- Adjacent text nodes are written as one run (carve#2395).
+- The nested-formatting edge whitespace under a link or a span is ruled, as is
+  the edge space around a link (carve#2376, carve#2404, carve#2427, carve#2432).
+- Table-cell text alignment is required in every HTML import mode (carve#2422,
+  carve#2429).
+- An attribute line under an attributed sub-item stays in that item (carve#2380,
+  carve#2406).
+- A verbatim line's residue past its fence opener is pinned in both containers
+  (carve#2420, carve#2464).
+
 ### Improvements
 
 - A stored tree may be wrapped in a versioned envelope, with `astVersion`
@@ -234,6 +272,15 @@ existed.
   attributes on a core div and trails them on an extension-owned element
   (carve#2348).
 
+- HTML import recognizes an explicit code-language hint on a code block and on a
+  Sphinx, GitHub or MediaWiki wrapper, with validated tokens and a deterministic
+  fallback (carve#2387, carve#2393).
+- Every lint rule's default trigger is published as a shared resource, so an
+  engine no longer carries its own (carve#2397).
+- The resolution-and-rendering and AST-extensions spec modules are split, at
+  section 18 and at the 29/30 section boundary, so neither runs past the line cap
+  (carve#2416, carve#2430, carve#2431).
+
 ### Corpus
 
 - The conformance corpus grows from 1740 to 1869 documents, sections 473 to 498,
@@ -250,6 +297,10 @@ existed.
   both survive (carve#2332).
 - Which column makes a `+` a continuation marker is pinned at columns 0 through
   3, at the top level and inside an item holding a quote (carve#2343).
+
+- The four Markdown goldens are re-cut, the list-table import is pinned with a
+  shared fixture, and four HTML import rulings are pinned, each with the carve-js
+  pin moved to match (carve#2388, carve#2405, carve#2424, carve#2446).
 
 ## [0.1.6] - 2026-09-18
 
