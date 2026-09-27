@@ -1,0 +1,93 @@
+A verbatim line keeps what sits past its fence opener, not past its container
+
+````
+- item
+
+    ```
+    a
+      
+    b
+    ```
+.
+<ul>
+  <li>item
+    <pre><code>a
+  
+b
+</code></pre>
+  </li>
+</ul>
+````
+
+````
+- item
+
+    ```
+    a
+    
+    b
+    ```
+.
+<ul>
+  <li>item
+    <pre><code>a
+
+b
+</code></pre>
+  </li>
+</ul>
+````
+
+````
+x[^1]
+
+[^1]: note
+
+      ```
+      a
+        
+      b
+      ```
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <pre><code>a
+  
+b
+</code></pre>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+````
+
+````
+x[^1]
+
+[^1]: note
+
+      ```
+      a
+      
+      b
+      ```
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <pre><code>a
+
+b
+</code></pre>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+````

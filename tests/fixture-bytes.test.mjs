@@ -358,6 +358,33 @@ const INVENTORY = [
     crv: ['VT'],
     html: ['VT'],
   },
+  // carve#2420's row. The whitespace-only line is the input, and in the two
+  // documents whose fence sits PAST the container's content column the residue
+  // is the expected output too - the silent-decay shape: strip the run from
+  // both sides and the pair matches while pinning nothing. The two guards keep
+  // it in the `.crv` only, where an empty code line is the whole claim; losing
+  // the run there turns each guard into a document with no whitespace line at
+  // all.
+  {
+    base: '505-a-verbatim-line-keeps-what-sits-past-its-fence-opener-not-past-its-container',
+    crv: ['trailing-WS'],
+    html: ['trailing-WS'],
+  },
+  {
+    base: '505-a-verbatim-line-keeps-what-sits-past-its-fence-opener-not-past-its-container-2',
+    crv: ['trailing-WS'],
+    html: [],
+  },
+  {
+    base: '505-a-verbatim-line-keeps-what-sits-past-its-fence-opener-not-past-its-container-3',
+    crv: ['trailing-WS'],
+    html: ['trailing-WS'],
+  },
+  {
+    base: '505-a-verbatim-line-keeps-what-sits-past-its-fence-opener-not-past-its-container-4',
+    crv: ['trailing-WS'],
+    html: [],
+  },
 ]
 
 function scan(text) {
