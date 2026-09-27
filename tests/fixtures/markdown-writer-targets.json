@@ -856,5 +856,96 @@
     "rule": "CARVE-P11-060",
     "carve": "Mail a@b.co, mailto:c@d.co and xmpp:e@f.co.\n\nNot a@b, `g@h.co`, or [i@j.co](/k).\n",
     "markdown": "Mail a<!---->@b.co, mailto:c<!---->@d.co and xmpp:e<!---->@f.co.\n\nNot a@b, `g@h.co`, or [i@j.co](/k).\n"
+  },
+  {
+    "name": "table-cell-soft-break",
+    "rule": "CARVE-P11-061",
+    "ast": {
+      "type": "document",
+      "srcByteLength": 0,
+      "children": [
+        {
+          "type": "table",
+          "rows": [
+            {
+              "type": "table_row",
+              "cells": [
+                {
+                  "type": "table_cell",
+                  "header": true,
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A"
+                    }
+                  ]
+                },
+                {
+                  "type": "table_cell",
+                  "header": true,
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "B"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "table_row",
+              "cells": [
+                {
+                  "type": "table_cell",
+                  "header": false,
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "one"
+                    },
+                    {
+                      "type": "soft_break"
+                    },
+                    {
+                      "type": "text",
+                      "value": "two"
+                    }
+                  ]
+                },
+                {
+                  "type": "table_cell",
+                  "header": false,
+                  "children": [
+                    {
+                      "type": "strong",
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "x"
+                        },
+                        {
+                          "type": "soft_break"
+                        },
+                        {
+                          "type": "text",
+                          "value": "y"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "markdown": "| A | B |\n| --- | --- |\n| one two | **x y** |\n"
+  },
+  {
+    "name": "list-table-cell-soft-break",
+    "rule": "CARVE-P11-061",
+    "carve": "{header-rows=1}\n::: list-table\n- - A\n  - B\n- - one\n    two\n  - x\n:::\n",
+    "markdown": "| A | B |\n| --- | --- |\n| one two | x |\n"
   }
 ]
