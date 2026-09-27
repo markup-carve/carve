@@ -15,6 +15,7 @@ import { parseShard, selectShard } from './lib/shard.mjs'
 import { parseConverterLedger, unusedConverterDeclaration } from './lib/drift-ledger.mjs'
 import { phpDir, rustBinary, rustDir } from './lib/engine-locations.mjs'
 import { comparisonGateHasFailures } from './lib/comparison-gate.mjs'
+import { comparisonRevisions, printComparisonRevisions } from './lib/comparison-revisions.mjs'
 import { miscount, shortfall } from './spec/participants.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
@@ -992,6 +993,8 @@ async function runConvertMode() {
     else console.log(`SKIP ${impl.name}: ${status.reason}`)
   }
 
+  printComparisonRevisions(comparisonRevisions(root, active))
+
   // The render step is ONE engine by design, so unlike the render comparison
   // this mode has a hard dependency: without carve-js nothing can be scored,
   // not even single-engine fixture checks.
@@ -1303,6 +1306,9 @@ for (const impl of impls) {
   if (status.ok) active.push(impl)
   else console.log(`SKIP ${impl.name}: ${status.reason}`)
 }
+
+const revisions = comparisonRevisions(root, active)
+printComparisonRevisions(revisions)
 
 if (active.length === 0) {
   console.error('No implementations are runnable.')
@@ -1785,6 +1791,7 @@ if (reportPath) {
     `${JSON.stringify(
       {
         schema: 1,
+        revisions,
         mode: {
           roundtrip,
           countsOnly,

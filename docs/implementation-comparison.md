@@ -85,3 +85,5 @@ publish and how to interpret them.
 The [technical comparison and methodology](./implementation-comparison-methodology)
 contains the current snapshot, test commands, target rules, round-trip and
 generated-document checks, pin drift, and corpus bookkeeping.
+
+Comparison output includes the corpus checkout commit, each engine checkout commit, and each engine's recorded and checked-out spec commits. The render comparison’s JSON `--report` includes this data under `revisions`; convert mode prints it to the console. Tracked local changes include a submodule moved off its pin; untracked files are excluded. Missing Git metadata is reported as unknown. These identify the checkouts, not the build provenance of existing binaries. Reproduce a discrepancy against a common spec commit before attributing it to an engine.
