@@ -1,0 +1,157 @@
+A block opener indented under a definition term is term text at every depth
+
+```
+:: c
+  # H
+.
+<dl>
+  <dt>c
+  # H</dt>
+</dl>
+```
+
+```
+:: c
+  ::: note
+  body
+  :::
+.
+<dl>
+  <dt>c
+  ::: note
+  body
+  :::</dt>
+</dl>
+```
+
+```
+> :: c
+>   # H
+.
+<blockquote>
+  <dl>
+    <dt>c
+  # H</dt>
+  </dl>
+</blockquote>
+```
+
+```
+- item
+
+  :: c
+    # H
+.
+<ul>
+  <li>item
+    <dl>
+      <dt>c
+  # H</dt>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+:: a
+: b
+  :: c
+    # H
+.
+<dl>
+  <dt>a</dt>
+  <dd>
+    <p>b</p>
+    <dl>
+      <dt>c
+  # H</dt>
+    </dl>
+  </dd>
+</dl>
+```
+
+```
+:: a
+: b
+  :: c
+    ::: note
+    body
+    :::
+.
+<dl>
+  <dt>a</dt>
+  <dd>
+    <p>b</p>
+    <dl>
+      <dt>c
+  ::: note
+  body
+  :::</dt>
+    </dl>
+  </dd>
+</dl>
+```
+
+```
+:: c
+# H
+.
+<dl>
+  <dt>c</dt>
+</dl>
+<section id="H">
+  <h1>H</h1>
+</section>
+```
+
+```
+:: a
+: b
+  :: c
+  # H
+.
+<dl>
+  <dt>a</dt>
+  <dd>
+    <p>b</p>
+    <dl>
+      <dt>c</dt>
+    </dl>
+    <h1 id="H">H</h1>
+  </dd>
+</dl>
+```
+
+```
+:: a
+: b
+  :: c
+    - x
+.
+<dl>
+  <dt>a</dt>
+  <dd>
+    <p>b</p>
+    <dl>
+      <dt>c</dt>
+    </dl>
+    <ul>
+      <li>x</li>
+    </ul>
+  </dd>
+</dl>
+```
+
+```
+:: c
+::: note
+body
+:::
+.
+<dl>
+  <dt>c</dt>
+</dl>
+<aside class="admonition note" aria-label="Note">
+  <p>body</p>
+</aside>
+```

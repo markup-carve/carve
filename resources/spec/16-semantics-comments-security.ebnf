@@ -319,7 +319,9 @@
          look-ahead the top level uses, and only the `:: ` TERM line opens the
          block). None of these is special-cased: a def-list or table interrupts
          at column 0 and nests at content_column exactly as a quote or heading
-         does. The content_column is
+         does. A definition TERM opens no content column of its own, so an
+         opener past content_column under an open term is term text, as it is
+         at the top level (PART 2 [CARVE-P2-028]). The content_column is
          the item body's CANONICAL COLUMN 0 and its minimum containment column.
          This one rule holds whether or not a blank line precedes the child;
          the blank only decides tight vs loose (§17), and there is no relaxed
