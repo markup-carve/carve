@@ -1,0 +1,1 @@
+{"mode":"safe","adapter":"generic","diagnostics":[{"code":"style-unmapped","severity":"info","path":"/table[1]/tr[1]/td[1]"},{"code":"style-unmapped","severity":"info","path":"/table[1]/tr[1]/td[2]"}]}

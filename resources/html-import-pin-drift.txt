@@ -1,3 +1,7 @@
 # HTML import fixtures the pinned reference engine does not reproduce.
 # Format: <fixture><two spaces><reason>. Remove entries when the pin catches up.
 # html-import:check rejects both undeclared mismatches and stale entries.
+cell-text-align-columns  carve#2422: safe-mode cell text-align mapping awaits the engine pin.
+cell-text-align-overrides  carve#2422: safe-mode cell text-align mapping awaits the engine pin.
+cell-text-align-unmapped  carve#2422: safe-mode cell text-align mapping awaits the engine pin.
+cell-text-align-declarations  carve#2422: safe-mode cell text-align mapping awaits the engine pin.
