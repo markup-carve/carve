@@ -1612,6 +1612,25 @@ arrives beside it is a different question, already answered by the writer's
 escaping rule: `<p>a *b</p><p>c* d</p>` flattens to `a \*b c\* d`, with the
 asterisks escaped because the writer reads its own output.
 
+A `<details>` element's `<summary>` is one of those slots: it becomes the
+container's title, so a `<summary>` holding blocks flattens into one line.
+
+```html
+<details><summary><div class="t">Baseline</div><div class="s">Wide</div></summary><p>b</p></details>
+```
+
+```
+::: details "Baseline Wide"
+b
+:::
+```
+
+Each element the flatten unwraps reports `element-unwrapped`, and an attribute
+left with no carrier reports `attribute-dropped`. The blocks do not move into
+the body instead: summary content is what a reader sees while the disclosure is
+closed, so moving it changes what the document means
+(markup-carve/carve#2428).
+
 ## Lists keep the source's tightness
 
 A bare-text `<li>` imports as a TIGHT list item; `<li><p>...</p></li>` stays
@@ -2330,6 +2349,7 @@ The shared set is deliberately small and each directory has one subject:
 | `cell-text-align-declarations` | the last supported declaration wins; unsupported values and priority suffixes remain unmapped |
 | `cell-text-align-unmapped` | supported alignment maps while unrelated CSS and unsupported values report loss |
 | `heading-multi-line-comment` | an HTML comment holding a line break inside a heading, dropped with a row because a heading is one line |
+| `summary-holding-blocks` | a `<summary>` holding blocks flattened into the container title, with a row per unwrapped element and per dropped attribute |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one
