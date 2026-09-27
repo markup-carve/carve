@@ -1522,9 +1522,11 @@ y
 :::
 ```
 
-That source parses to a `keyValues` attribute where the import's tree today says
-`classes`, so the two exits disagree and which of them is wrong is open
-(markup-carve/carve#2438). A fixture waits on that call.
+Both exits publish the same slot: `class` as a key-value is a spelling of the
+class slot ([CARVE-P4-007]), so that source parses to `classes` too, which is
+what the import's tree already says. A parser still reading it as a `keyValues`
+entry disagrees with the tree beside it (markup-carve/carve#2438), so the fixture
+lands with the engine pin that folds it.
 
 **A `<div>` that carries nothing only a container can hold is UNWRAPPED to its
 content, and no `:::` fence is written** (markup-carve/carve#1578,

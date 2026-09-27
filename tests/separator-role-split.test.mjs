@@ -438,15 +438,15 @@ const SITES = [
   {
     role: 'padding',
     site: 'unquoted_value, the boundary after a bare value',
-    // The production carries no whitespace terminal at all, which IS the
-    // assertion: a tab ends the value and then has to satisfy the separator,
-    // which is now `space+`. Spelled as the character set so a later widening
-    // of the value - the other way this position could be lost - fails here.
-    required: /unquoted_value = \(letter \| digit \| '-' \| '_' \| '\.' \| ':'\)\+ ;/,
+    // carve#2440 widened the value to everything the block can hold, so the
+    // space and the tab are now named EXCLUSIONS rather than absent terminals.
+    // Both are pinned here: a widening that dropped either would swallow the
+    // separator, which is the way this position gets lost.
+    required: /unquoted_value = \( character - '\}' - '\|' - '"' - "'" - '\\' - ' ' - '\\t' - newline \)\+ ;/,
     forbidden: /unquoted_value = [^;]*whitespace/,
     // The ohm file spells the same boundary as a negative set, and it is the
     // half that actually executes. Both files, one position.
-    requiredOhm: /bareVal\s+= \(~\(" " \| "\\t" \| "\}" \| newline\) any\)\+/,
+    requiredOhm: /bareVal\s+= \(~\(" " \| "\\t" \| "\}" \| "\|" \| "\\"" \| "'" \| "\\\\" \| newline\) any\)\+/,
     forbiddenOhm: /bareVal\s+= \(~\(" " \| "\}"/,
     why: 'the value has been read; what follows it is the separator before the next attribute',
     fixtures: [
