@@ -33,7 +33,7 @@ const LABELS = {
   admonitionExample: 'Example',
   admonitionQuote: 'Quote',
 }
-import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, captionPlaceholder, deTypography, makeSlugger, checkUrl, escapeAttr, escapeHtml, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, FOOTNOTE_FRAMES } from './render.mjs'
+import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, captionPlaceholder, deTypography, makeSlugger, checkUrl, escapeAttr, escapeHtml, isClass, classValue, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, FOOTNOTE_FRAMES } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -403,12 +403,17 @@ function renderBlock(b, depth, ctx) {
         for (const list of b.battrs ?? []) {
           const keep = []
           for (const a of list) {
-            if (a[0] === 'class') extra.push(a[1])
-            else keep.push(a)
+            // CARVE-P4-007: `class=V` and a bare `class` are the class slot too.
+            // Left for the second pass they reached it with the slot already
+            // claimed, and it wrote a second `class` attribute (carve#2457).
+            if (isClass(a)) {
+              const value = classValue(a)
+              if (value !== '' && !extra.includes(value)) extra.push(value)
+            } else keep.push(a)
           }
           if (keep.length) rest.push(keep)
         }
-        attrStr = ` class="${[...baseCls, ...extra].join(' ')}"` +
+        attrStr = ` class="${escapeAttr([...baseCls, ...extra].join(' '))}"` +
           (tag === 'div' ? renderTextBlockAttrs(rest, tag) : renderBlockAttrs(rest))
       }
       // PART 9 SS12 AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME
