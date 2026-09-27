@@ -1744,7 +1744,7 @@ export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = fal
 
     const base = establishesBase ? measured.col : 0
     const candidate = lines.slice(index).map((source) => {
-      if (isBlank(source)) return source
+      if (isBlank(source)) return dedent(source, base)
       const sourceMeasured = indentCols(source)
       return sourceMeasured.col < base
         ? source
@@ -2203,7 +2203,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // run that parse can never see, and §11 N1a's three-blank boundary is
           // measured inside the body like anywhere else.
           const end = footnoteBlankRunEnd(lines, i, n)
-          for (let k = i; k < end; k++) bodyLines.push('')
+          for (let k = i; k < end; k++) bodyLines.push(dedent(lines[k], FOOTNOTE_BODY_COLUMN))
           i = end
         } else if (CONT_MARKER.test(lines[i] ?? '')) {
           // A `+` pull-left block joins the note (SS17 L4): the following
@@ -2503,7 +2503,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (isBlank(cur)) {
               // a blank before an indented line is an internal paragraph break;
               // otherwise the blank ends this definition body.
-              if (isDefinitionContinuationLine(lines[i + 1], bodyColumn)) { bodyLines.push(''); i++; continue }
+              if (isDefinitionContinuationLine(lines[i + 1], bodyColumn)) { bodyLines.push(dedent(cur, bodyColumn)); i++; continue }
               break
             }
             if (CONT_MARKER.test(cur)) {
@@ -4099,7 +4099,8 @@ function collectItems(lines, i, list, state, ind, meas) {
         // A blank line INSIDE any open fence is fence content: keep it in the
         // item body and stay tight (no looseness decision).
         if (insideFence()) {
-          pushLine('', BLANK_MEAS)
+          const dd = dedentMeasured(lm, line, authoredBlockBase ?? contentCol)
+          pushLine(dd.text, dd.meas)
           // AND IT ENDS THE OPEN PARAGRAPH, whatever container is holding the
           // blank. This branch used to leave `openPara` set across it, so a
           // following line BELOW the content column found a paragraph to fold
