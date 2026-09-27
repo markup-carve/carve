@@ -1216,6 +1216,23 @@ meant, the same as the whitespace HTML discards at a block's edge.
 
 `link-edge-whitespace` pins each row above, including the nested strong.
 
+Formatting around a link follows the same separator rule
+(markup-carve/carve#2427). Padding at a block edge is dropped. An inner edge
+space that duplicates a space outside the formatting is merged with that
+outside space. When the inner space is the only separator, it stays inside.
+
+| HTML | Carve |
+| --- | --- |
+| `<p><strong> <a href="/x">mk</a> </strong></p>` | `*[mk](/x)*` |
+| `<p>a <strong> <a href="/x">mk</a> </strong> b</p>` | `a *[mk](/x)* b` |
+| `<p>a<strong> <a href="/x">mk</a> </strong>b</p>` | `a{* [mk](/x) *}b` |
+
+Each edge is checked separately, including through nested formatting.
+Whitespace-only formatting, code content, and nonbreaking spaces stay intact.
+`formatting-around-link` pins these rows, both asymmetric cases, nested
+formatting, code content, whitespace-only formatting, nonbreaking spaces, and
+direct and nested hard breaks.
+
 ## MathML imports the TeX it carries, or the text it shows
 
 A `<math>` element imports through the first of these that applies
@@ -2279,6 +2296,7 @@ The shared set is deliberately small and each directory has one subject:
 | `table-cell-hard-break` | a `<br>` in a cell written as one space between words, as nothing at the cell's end, and as a space at the edge of a span inside the cell, one row per break (PART 11 §1b) |
 | `adjacent-code-spans` | two `<code>` elements with nothing between them, separated by an empty delimited comment so the backtick runs do not merge (PART 11 §10k N3) |
 | `link-edge-whitespace` | edge whitespace of a link and a span moved outside, merged at a join and dropped at a block edge, beside a no-break space, a whitespace-only label and an edge image that stay |
+| `formatting-around-link` | formatting around a link drops block-edge and redundant padding while keeping the only separator, including asymmetric and nested cases |
 | `mathml-without-tex` | presentation-only MathML imported as its text where the tokens are linear, and a fraction dropped where they are not |
 | `mathml-fallback-image` | a formula beside its fallback image imported once, including through the image's `alt` when the `<math>` carries no TeX |
 | `empty-list` | a `<ul>` and an `<ol>` with no item, attributed inside a container, bare, and nested in an item, each dropped with one row |
