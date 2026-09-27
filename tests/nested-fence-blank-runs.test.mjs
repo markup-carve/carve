@@ -59,3 +59,9 @@ test('a lazy paragraph line keeps the descendant comment scope', () => {
   const source = '- p\n  - head\nlazy\n\n    %%%\n    ```\n    body\n\n\n  out\n\n  %%%\n'
   assert.ok(renderDoc(parse(source)).includes('body\n\n\n</code></pre>'))
 })
+
+test('the descendant marker scan measures extra spaces and tabs', () => {
+  for (const source of ['- a\n  - [ ]  x\n\n  more\n', '- a\n  - \tx\n\n  more\n', '- a\n  - [x]  done\n\n- b\n']) {
+    assert.doesNotThrow(() => renderDoc(parse(source)))
+  }
+})

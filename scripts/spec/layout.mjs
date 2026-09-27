@@ -1600,7 +1600,8 @@ function bodyHasOpenCodeFence(lines, scan, end, measurement, hasFutureCommentClo
       while (marker) {
         const column = marker.indent + marker.markerWidth
         columns.push(column)
-        marker = matchMarkerAt({ col: column, rest: marker.text })
+        const next = indentCols(marker.text)
+        marker = matchMarkerAt({ col: column + next.col, rest: next.rest })
       }
     }
     const code = FENCE.exec(line)
