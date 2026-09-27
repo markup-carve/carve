@@ -1,6 +1,6 @@
 # Default lint triggers not yet reported by each engine.
 # The parity gate rejects new missing rules and declarations that now pass.
-# Measured at carve-rs 2db4d936e and carve-php f06ff47e.
+# Measured at carve-rs 89dc2a31d and carve-php f06ff47e.
 
 rust/bidi-control-in-source  The default CLI emits no warning for this shared trigger.
 rust/heading-trailing-attribute  The default CLI emits no warning for this shared trigger.
