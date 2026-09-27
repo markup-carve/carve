@@ -22,6 +22,13 @@ const container = (attrs) => openerOf(`{${attrs}}\n:::\ny\n:::\n`)
 // `<aside>`, any other type word a `<div>`; one branch serves both.
 const admonition = (attrs) => openerOf(`{${attrs}}\n::: note\ny\n:::\n`)
 const typed = (attrs) => openerOf(`{${attrs}}\n::: sidebar\ny\n:::\n`)
+// Two inline carriers build the slot themselves for the same reason: a math
+// span prepends `math inline|display` and the `ext-NAME` fallback prepends
+// `ext-<name>`. Both are wrapped in a paragraph, so take the span opener.
+const spanOpenerOf = (source) => openerOf(source).match(/<span[^>]*>/)[0]
+const mathSpan = (attrs) => spanOpenerOf('$`x`{' + attrs + '}\n')
+const displayMath = (attrs) => spanOpenerOf('$$`x`{' + attrs + '}\n')
+const extSpan = (attrs) => spanOpenerOf(`:widget[x]{${attrs}}\n`)
 
 test('the clause says the two spellings are one attribute in one slot', () => {
   assert.match(flat, /A `class` KEY-VALUE IS A SPELLING OF THE CLASS SLOT/)
@@ -113,12 +120,55 @@ test('an id named class stays an id on a typed container', () => {
   assert.equal(typed('#class .b'), '<div class="sidebar b" id="class">')
 })
 
+/* A math span carried the same defect and wrote `class` twice. Its loop tested
+ * the shorthand tuple, so the key-value and boolean spellings reached the
+ * generic branch with the slot already emitted (carve#2460). */
+test('a math span folds every spelling into its base class', () => {
+  assert.equal(mathSpan('.b'), '<span class="math inline b" role="math">')
+  assert.equal(mathSpan('class=b'), '<span class="math inline b" role="math">')
+  assert.equal(mathSpan('class=a class=b'), '<span class="math inline a b" role="math">')
+  assert.equal(mathSpan('class=a .a'), '<span class="math inline a" role="math">')
+  assert.equal(mathSpan('class'), '<span class="math inline" role="math">')
+  assert.equal(mathSpan('class="javascript:alert(1)"'), '<span class="math inline" role="math">')
+  assert.equal(displayMath('class=b'), '<span class="math display b" role="math">')
+})
+
+/* PART 10 §1: the base class sits INSIDE the slot, and the slot keeps the
+ * first-appearance position, so an id written before any class stays first. */
+test('a math span keeps the slot at the first class whichever spelling opens it', () => {
+  assert.equal(mathSpan('#i class=b'), '<span id="i" class="math inline b" role="math">')
+  assert.equal(mathSpan('#i class=b k=v .c'), '<span id="i" class="math inline b c" k="v" role="math">')
+  assert.equal(mathSpan('.b class=a'), '<span class="math inline b a" role="math">')
+})
+
+/* The `ext-NAME` fallback found the author's first class with the tuple tag, so
+ * the key-value spelling put the whole slot ahead of an earlier id, undoing
+ * carve#1164 for that spelling. */
+test('an ext-NAME span keeps the slot at the first class whichever spelling opens it', () => {
+  assert.equal(extSpan('#i .b'), '<span id="i" class="ext-widget b">')
+  assert.equal(extSpan('#i class=b'), '<span id="i" class="ext-widget b">')
+  assert.equal(extSpan('#i class'), '<span id="i" class="ext-widget">')
+  assert.equal(extSpan('#i class=b k=v .c'), '<span id="i" class="ext-widget b c" k="v">')
+  assert.equal(extSpan('class=a .b'), '<span class="ext-widget a b">')
+})
+
+/* Controls: an id named `class` is not a class on either inline carrier, and a
+ * class named `class` is one. Both hold with and without the fix. */
+test('an id named class stays an id on the inline base-class carriers', () => {
+  assert.equal(mathSpan('#class .b'), '<span id="class" class="math inline b" role="math">')
+  assert.equal(extSpan('#class .b'), '<span id="class" class="ext-widget b">')
+  assert.equal(mathSpan('.class'), '<span class="math inline class" role="math">')
+  assert.equal(extSpan('.class'), '<span class="ext-widget class">')
+})
+
 test('no shape renders the class attribute twice', () => {
   const shapes = [
     'class', 'class class=a', 'class=a class', 'class .b', '#class', '#class .b',
     '.class', 'class=a .b', '.b class=a', 'class=a class=b', 'class=a .a',
   ]
-  for (const draw of [container, admonition, typed]) {
+  // Every carrier that builds a class attribute of its own, so the next one
+  // someone adds is caught here rather than by a reader (carve#2457, carve#2460).
+  for (const draw of [container, admonition, typed, mathSpan, displayMath, extSpan]) {
     for (const attrs of shapes) {
       const opener = draw(attrs)
       assert.equal((opener.match(/class=/g) ?? []).length <= 1, true, `${attrs} -> ${opener}`)
