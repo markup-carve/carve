@@ -1501,9 +1501,30 @@ can only widen outward, so it inverts every depth at once
 
 The class the fence word consumes must be one a fence opener can spell, which
 PART 9's `admonition_open` resolves through `admonition_type` to
-`explicit_identifier`. A class outside that shape would be written after the
-colons and read back as a paragraph, so that element keeps the generic `div`
-node where the class survives as a class.
+`explicit_identifier`. A digit-leading class is inside that shape, so
+`<div class="2col">` comes back as `::: 2col`.
+
+A class OUTSIDE it keeps the generic `div` node, and its class is written as a
+KEY-VALUE attribute rather than with the `.` shorthand. PART 4's
+`class_attribute` reads the same `explicit_identifier` the fence word does, so
+the shorthand is no fallback; `attribute_value` reaches further, and the value
+is quoted only where `unquoted_value` cannot hold it. Nothing is lost, so
+nothing is reported.
+
+```html
+<div class="-col"><p>y</p></div>
+```
+
+```
+{class=-col}
+:::
+y
+:::
+```
+
+That source parses to a `keyValues` attribute where the import's tree today says
+`classes`, so the two exits disagree and which of them is wrong is open
+(markup-carve/carve#2438). A fixture waits on that call.
 
 **A `<div>` that carries nothing only a container can hold is UNWRAPPED to its
 content, and no `:::` fence is written** (markup-carve/carve#1578,
@@ -2351,6 +2372,7 @@ The shared set is deliberately small and each directory has one subject:
 | `cell-text-align-unmapped` | supported alignment maps while unrelated CSS and unsupported values report loss |
 | `heading-multi-line-comment` | an HTML comment holding a line break inside a heading, dropped with a row because a heading is one line |
 | `summary-holding-blocks` | a `<summary>` holding blocks flattened into the container title, with a row per unwrapped element and per dropped attribute |
+| `container-class-a-fence-word-spells` | a digit-leading class, which `explicit_identifier` admits, consumed as the fence word |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one
