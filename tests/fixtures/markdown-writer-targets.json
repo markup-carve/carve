@@ -838,5 +838,11 @@
       ]
     },
     "markdown": "| code | image |\n| --- | --- |\n| a   b\\\\\\\\ p | ![alt](x.png) cap ![why](y.png \"t\") |\n"
+  },
+  {
+    "name": "header-row-narrower-than-body",
+    "rule": "CARVE-P11-056",
+    "carve": "|= a |= b |\n| 1 | 2 | 3 |\n",
+    "markdown": "| a | b |  |\n| --- | --- | --- |\n| 1 | 2 | 3 |\n"
   }
 ]

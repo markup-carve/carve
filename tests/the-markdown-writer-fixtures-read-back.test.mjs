@@ -117,9 +117,17 @@ test('control: the structure comparison sees a merged list and a lost table', ()
 })
 
 const byName = (name) => cases.find((c) => c.name === name)
+const cellsPerRow = (html) => [...html.matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map((m) => (m[1].match(/<t[hd][\s>]/g) ?? []).length)
 
 test('block-cell-payload-and-images: the payload stays text and both images stay images', () => {
   const html = cmarkGfmToHtml(byName('block-cell-payload-and-images').markdown)
   assert.match(html, /<td>a {3}b\\\\ p<\/td>/, 'the leading spaces or the backslashes changed')
   assert.equal((html.match(/<img /g) ?? []).length, 2)
+})
+
+test('header-row-narrower-than-body: the reader keeps every body cell', () => {
+  const golden = byName('header-row-narrower-than-body').markdown
+  assert.deepEqual(cellsPerRow(cmarkGfmToHtml(golden)), [3, 3])
+  // Control: the unpadded header is what drops the third cell.
+  assert.deepEqual(cellsPerRow(cmarkGfmToHtml('| a | b |\n| --- | --- |\n| 1 | 2 | 3 |\n')), [2, 2])
 })

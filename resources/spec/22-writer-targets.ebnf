@@ -613,6 +613,17 @@
       cell past the header's width. Each body row still keeps its own cell
       count (§10b).
 
+      A HEADER ROW NARROWER THAN THE TABLE IS PADDED for the same reason. When
+      the row §10d writes as the header has fewer cells than the widest row,
+      it gains one empty cell per missing column, and so does the delimiter
+      row, whose added cells take the column's effective alignment under §10d
+      and are `---` where no header row sets one
+      ([carve#2408](https://github.com/markup-carve/carve/issues/2408)).
+
+        |= a |= b |          ->  | a | b |  |
+        | 1 | 2 | 3 |            | --- | --- | --- |
+                                 | 1 | 2 | 3 |
+
   10o. ADJACENT LISTS OF ONE KIND ALTERNATE THEIR MARKER --
       NORMATIVE [CARVE-P11-057]. Two lists of the same kind that the writer emits one
       after the other in the same PREFIXED container, with nothing written between
