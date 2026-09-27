@@ -295,6 +295,19 @@ export const FOOTNOTE_FRAMES = new RegExp(
   'g',
 )
 
+// CARVE-P4-007: `class=V` is a spelling of the class slot, so it merges with
+// `.V` instead of emitting a second `class` attribute. A bare `class` is
+// `class=""` under PART 4's boolean rule, so it takes the slot too. The value
+// still passes `hardenAttr`, which every key/value does and which blanks a
+// class the URL sink check refuses; a blanked or empty value contributes no
+// class but still claims the slot.
+const classValue = (a) => {
+  if (a[0] === 'class') return a[1]
+  const hardened = hardenAttr('class', a[0] === 'kv' ? a[2] : '')
+  return hardened ? hardened.value : ''
+}
+const isClass = (a) => a[0] === 'class' || (a[0] !== 'id' && a[1] === 'class')
+
 export function renderAttrs(list) {
   // serialization: SOURCE order; all classes merge (deduplicated, corpus
   // 121) into one class attribute at the position of the FIRST class;
@@ -304,12 +317,13 @@ export function renderAttrs(list) {
   let classAt = -1
   const seen = new Map() // name -> index in parts
   for (const a of list) {
-    if (a[0] === 'class') {
+    if (isClass(a)) {
       if (classAt === -1) {
         classAt = parts.length
         parts.push(null) // placeholder
       }
-      if (!classes.includes(a[1])) classes.push(a[1])
+      const value = classValue(a)
+      if (value !== '' && !classes.includes(value)) classes.push(value)
     } else if (a[0] === 'id') {
       if (seen.has('#id')) parts[seen.get('#id')] = ` id="${escapeAttr(a[1])}"`
       else {
@@ -1476,12 +1490,13 @@ export function renderBlockAttrs(lists) {
   const seen = new Map()
   for (const list of lists) {
     for (const a of list) {
-      if (a[0] === 'class') {
+      if (isClass(a)) {
         if (classAt === -1) {
           classAt = parts.length
           parts.push(null)
         }
-        if (!classes.includes(a[1])) classes.push(a[1])
+        const value = classValue(a)
+        if (value !== '' && !classes.includes(value)) classes.push(value)
       } else if (a[0] === 'id') {
         if (seen.has('#id')) parts[seen.get('#id')] = ` id="${escapeAttr(a[1])}"`
         else {
