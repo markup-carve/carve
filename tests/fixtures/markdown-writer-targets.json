@@ -743,5 +743,100 @@
     "rule": "CARVE-P11-059",
     "carve": "{header-rows=1}\n::: list-table \"Cap\"\n- - A\n  - B\n- - one\n\n    two\n\n  - x\\\n    z\n- - ^\n  - y\n:::\n",
     "markdown": "| A | B |\n| --- | --- |\n| one two | x<br>z |\n|  | y |\n\nCap\n"
+  },
+  {
+    "name": "block-cell-payload-and-images",
+    "rule": "CARVE-P12-049",
+    "dissolves": [
+      "pre"
+    ],
+    "ast": {
+      "type": "document",
+      "srcByteLength": 0,
+      "children": [
+        {
+          "type": "table",
+          "rows": [
+            {
+              "type": "table_row",
+              "cells": [
+                {
+                  "type": "table_cell",
+                  "header": true,
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "code"
+                    }
+                  ]
+                },
+                {
+                  "type": "table_cell",
+                  "header": true,
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "image"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "table_row",
+              "cells": [
+                {
+                  "type": "table_cell",
+                  "header": false,
+                  "blocks": [
+                    {
+                      "type": "code_block",
+                      "lang": "sh",
+                      "content": "a\n  b\\\\"
+                    },
+                    {
+                      "type": "paragraph",
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "p"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "table_cell",
+                  "header": false,
+                  "blocks": [
+                    {
+                      "type": "figure",
+                      "target": {
+                        "type": "image",
+                        "src": "x.png",
+                        "alt": "alt"
+                      },
+                      "caption": [
+                        {
+                          "type": "text",
+                          "value": "cap"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "image",
+                      "src": "y.png",
+                      "alt": "why",
+                      "title": "t"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "markdown": "| code | image |\n| --- | --- |\n| a   b\\\\\\\\ p | ![alt](x.png) cap ![why](y.png \"t\") |\n"
   }
 ]
