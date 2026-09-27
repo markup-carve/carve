@@ -691,7 +691,9 @@ const sem = g.createSemantics().addOperation('h', {
     // class position, so inserting the base beside the author's first class
     // puts it exactly there; with no class of their own it leads.
     const list = attrsOf(attrs)
-    const firstClass = list.findIndex((a) => a[0] === 'class')
+    // CARVE-P4-007: `class=V` and a bare `class` are the same slot, so the base
+    // class lands beside them too; the tuple test saw only `.V` (carve#2460).
+    const firstClass = list.findIndex(isClass)
     const merged = firstClass === -1
       ? [['class', `ext-${n}`], ...list]
       : [...list.slice(0, firstClass), ['class', `ext-${n}`], ...list.slice(firstClass)]
@@ -1403,30 +1405,19 @@ function bracketDepthExceeds(text, limit) {
 function mathSpan(kind, code, attrs) {
   const wrap = kind === 'inline' ? ['\\(', '\\)'] : ['\\[', '\\]']
   const list = attrsOf(attrs)
-  const classes = ['math', kind, ...list.filter((a) => a[0] === 'class').map((a) => a[1])]
-  // PART 10 SS1: the base class is prepended INSIDE the class slot, and the slot
-  // stays at the FIRST-APPEARANCE position of a class in the author's order.
-  // Writing `class` unconditionally first moves it ahead of an id the author
-  // wrote before any class. carve#1168 fixed exactly this in the `ext-NAME`
-  // fallback; the math span carries a base class the same way and was missed,
-  // because no corpus case put an id before a class on it (carve#1164).
-  let rest = ''
-  let emittedClasses = false
-  const classAttr = () => ` class="${classes.join(' ')}"`
-  for (const a of list) {
-    if (a[0] === 'class') {
-      if (!emittedClasses) {
-        rest += classAttr()
-        emittedClasses = true
-      }
-    } else if (a[0] === 'id') rest += ` id="${escapeAttr(a[1])}"`
-    else if (a[0] === 'kv') {
-      const h = hardenAttr(a[1], a[2])
-      if (h) rest += ` ${a[1]}="${escapeAttr(h.value)}"`
-    } else if (a[0] === 'bool') {
-      if (hardenAttr(a[1], '')) rest += ` ${a[1]}=""`
-    }
-  }
+  // PART 10 SS1: the base classes are prepended INSIDE the class slot, which
+  // stays at the FIRST-APPEARANCE position of a class in the author's order
+  // (carve#1164). Same insertion as the `ext-NAME` fallback, so the generic
+  // merge supplies the slot test, deduplication, hardening and escaping; the
+  // hand-rolled loop here tested `a[0] === 'class'` and so wrote a second
+  // `class` attribute for the `class=V` and bare-`class` spellings of the same
+  // slot, which CARVE-P4-007 forbids (carve#2460).
+  const firstClass = list.findIndex(isClass)
+  const base = [['class', 'math'], ['class', kind]]
+  const merged = firstClass === -1
+    ? [...base, ...list]
+    : [...list.slice(0, firstClass), ...base, ...list.slice(firstClass)]
+  const rest = renderAttrs(merged)
   const inner = codeInner(code)
   // codeU (unclosed run) carries its content in a different child slot
   const body = escapeHtml(
@@ -1434,8 +1425,6 @@ function mathSpan(kind, code, attrs) {
       ? inner.child(2).sourceString.replace(/[ \t\n]+$/, '')
       : codeText(inner.child(1))
   )
-  // No authored class at all: nothing to place the base class after, so it leads.
-  if (!emittedClasses) rest = classAttr() + rest
   // PART 9 SS18 A MATH SPAN CARRIES ROLE MATH (carve#1468). The span carries
   // `role="math"`. The delimiters exist for a
   // typesetter to find, and until one runs - or if none ever does - a reader
