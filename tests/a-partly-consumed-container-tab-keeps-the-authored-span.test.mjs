@@ -13,9 +13,11 @@
  * recorded the generated columns' omission as permitted, so a gap node carrying
  * no trustworthy position is the ruling, not a defect.
  *
- * THE FOURTH IS STILL OPEN. It is measured at the bottom and named as a defect,
- * not pinned as intent: the fix needs a pin bump this file does not own, and the
- * assertion goes red when it lands so the note leaves with it.
+ * THE FOURTH IS NOW FIXED, by carve-js#2179: the gap standing for a column the
+ * strip generated publishes no position, so the paragraph copies its next placed
+ * child instead of the newline that ends the line above. Every position the
+ * reproducer publishes addresses its own offset, which is what the bottom test
+ * asserts.
  */
 
 import test from 'node:test'
@@ -84,9 +86,12 @@ test('no node publishes an empty span', () => {
 
 test('the generated columns are gap nodes, which carve#2349 permits', () => {
   // Stated so the file cannot be read as claiming the gaps SHOULD be placed.
-  // Two columns of the tab survive the strip and two literal spaces follow it.
+  // Two columns of the tab survive the strip and two literal spaces follow it,
+  // so there are four gap nodes. Only three carry a position: `x` holds 16..17
+  // and three columns precede it on the line, so the fourth placement does not
+  // exist inside the line and carve#2349 permits its omission.
   const gaps = placed(SOURCE).filter(({ type }) => type === 'non_breaking_space')
-  assert.equal(gaps.length, 4)
+  assert.equal(gaps.length, 3)
 })
 
 test('the three CONTROL shapes address their own offsets', () => {
@@ -104,12 +109,10 @@ test('the three CONTROL shapes address their own offsets', () => {
   }
 })
 
-test('the remaining defect is MEASURED here and tracked on the ticket', () => {
-  // Not a declared window: `scripts/declaration-audit.mjs` tracks those by name
-  // and clearing this one needs a pin bump this file does not own. The shape is
-  // asserted so a change to it is visible, and named so nobody reads it as
-  // intended behavior: the paragraph and its first gap claim startLine 4 with
-  // startOffset 12, the newline that ENDS line 3, and startColumn 0 where every
-  // other node is 1-based. Filed against carve-js under carve#2353.
-  assert.deepEqual(inconsistent(SOURCE).map(({ type }) => type), ['paragraph', 'non_breaking_space'])
+test('the reproducer addresses its own offsets too', () => {
+  // The paragraph and its first gap used to claim startLine 4 with startOffset
+  // 12, the newline that ENDS line 3, and startColumn 0 where every other node
+  // is 1-based. Under carve-js#2179 the paragraph reads line 4, column 1,
+  // offset 13.
+  assert.deepEqual(inconsistent(SOURCE).map(({ type }) => type), [])
 })
