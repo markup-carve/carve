@@ -1566,6 +1566,31 @@ function bodyClosesAFenceAt(bodyLines, last) {
   return closedAt === last
 }
 
+// Is a VERBATIM payload open at `end`? CARVE-P11-016 keeps a whitespace-only
+// line inside one, so a container cannot push it as a blank. `scan` carries the
+// cursor and the open fence between calls, so each body line is read once.
+function bodyHasOpenCodeFence(lines, scan, end = lines.length, measurement = () => null) {
+  let { opaque } = scan
+  for (let k = scan.index; k < end; k++) {
+    const line = measurement(k)?.rest ?? stripIndent(lines[k])
+    if (opaque) {
+      const close = opaque.kind === 'code' ? PURE_FENCE.exec(line) : COMMENT_FENCE_BODY.exec(line)
+      if (close && close[1][0] === opaque.run[0] &&
+          (opaque.kind === 'code' ? close[1].length >= opaque.run.length : close[1].length === opaque.run.length)) opaque = null
+      continue
+    }
+    const code = FENCE.exec(line)
+    if (code && parseFenceInfo(code[2]) !== null) opaque = { kind: 'code', run: code[1] }
+    else {
+      const comment = COMMENT_FENCE_BODY.exec(line)
+      if (comment && commentFenceCloserAhead(lines, k, comment[1])) opaque = { kind: 'comment', run: comment[1] }
+    }
+  }
+  scan.index = end
+  scan.opaque = opaque
+  return opaque !== null && opaque.kind === 'code'
+}
+
 // The body index of a code fence a description body OPENED and has not closed,
 // or -1. A FENCED BODY IS NOT A PARAGRAPH (CARVE-P0-013), so a line below the
 // body's column cannot fold into it and ends the body. Whether the fence opened
@@ -1743,8 +1768,9 @@ export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = fal
     flushedNote = false
 
     const base = establishesBase ? measured.col : 0
-    const candidate = lines.slice(index).map((source) => {
-      if (isBlank(source)) return source
+    const residueFence = { index, opaque: null }
+    const candidate = lines.slice(index).map((source, offset) => {
+      if (isBlank(source)) return bodyHasOpenCodeFence(lines, residueFence, index + offset) ? dedent(source, base) : source
       const sourceMeasured = indentCols(source)
       return sourceMeasured.col < base
         ? source
@@ -2165,6 +2191,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     if ((m = FOOTNOTE_DEF.exec(line))) {
       const label = m[1]
       const bodyLines = [m[2]]
+      const residueFence = { index: 0, opaque: null }
       i++
       // `pullPending` is set by a `+` marker: the NEXT flush-left line begins a
       // pulled-in block (SS17 L4). It is a distinct signal from an empty body
@@ -2203,7 +2230,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // run that parse can never see, and §11 N1a's three-blank boundary is
           // measured inside the body like anywhere else.
           const end = footnoteBlankRunEnd(lines, i, n)
-          for (let k = i; k < end; k++) bodyLines.push('')
+          const keepContent = bodyHasOpenCodeFence(bodyLines, residueFence)
+          for (let k = i; k < end; k++) bodyLines.push(keepContent ? dedent(lines[k], FOOTNOTE_BODY_COLUMN) : '')
           i = end
         } else if (CONT_MARKER.test(lines[i] ?? '')) {
           // A `+` pull-left block joins the note (SS17 L4): the following
@@ -2465,6 +2493,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // rest -- matching the real output the corpus pins for all engines.
           // (`:  \+` stays a literal `+`, never a marker.)
           const bodyLines = []
+          const residueFence = { index: 0, opaque: null }
           // The fold question is asked of the body AS IT WILL BE READ (§10 I5,
           // carve#1911): a block opener past the body's column is rebased to
           // the body's own column 0 before the body is parsed, so asking the
@@ -2503,7 +2532,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (isBlank(cur)) {
               // a blank before an indented line is an internal paragraph break;
               // otherwise the blank ends this definition body.
-              if (isDefinitionContinuationLine(lines[i + 1], bodyColumn)) { bodyLines.push(''); i++; continue }
+              if (isDefinitionContinuationLine(lines[i + 1], bodyColumn)) {
+                bodyLines.push(bodyHasOpenCodeFence(bodyLines, residueFence) ? dedent(cur, bodyColumn) : '')
+                i++
+                continue
+              }
               break
             }
             if (CONT_MARKER.test(cur)) {
@@ -3770,6 +3803,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     }
     let contentCol = head.indent + head.markerWidth
     const itemLines = []
+    const residueFence = { index: 0, opaque: null }
     const fenceOpensAt = new Set()
     // Measurements for the body lines, carried to the item's own parse so it
     // does not re-walk indentation this collector has already walked
@@ -4099,7 +4133,10 @@ function collectItems(lines, i, list, state, ind, meas) {
         // A blank line INSIDE any open fence is fence content: keep it in the
         // item body and stay tight (no looseness decision).
         if (insideFence()) {
-          pushLine('', BLANK_MEAS)
+          if (fence.opaque !== null && fence.opaque.kind === 'code') {
+            const dd = dedentMeasured(lm, line, authoredBlockBase ?? contentCol)
+            pushLine(dd.text, dd.meas ?? indentCols(dd.text))
+          } else pushLine('', BLANK_MEAS)
           // AND IT ENDS THE OPEN PARAGRAPH, whatever container is holding the
           // blank. This branch used to leave `openPara` set across it, so a
           // following line BELOW the content column found a paragraph to fold
@@ -4213,7 +4250,12 @@ function collectItems(lines, i, list, state, ind, meas) {
             // the SUB-LIST, not this item -- a blank inside the sub-list must
             // not loosen this (ancestor) item (carve#322). Attach, stay tight;
             // the recursive parse of itemLines decides the sub-list's looseness.
-            pushLine('', BLANK_MEAS)
+            if (bodyHasOpenCodeFence(itemLines, residueFence, itemLines.length, (k) => itemMeas[k])) {
+              for (let k = i; k < j; k++) {
+                const dd = dedentMeasured(ind(k), lines[k], authoredBlockBase ?? contentCol)
+                pushLine(dd.text, dd.meas ?? indentCols(dd.text))
+              }
+            } else pushLine('', BLANK_MEAS)
             closePara()
             i = j
             continue

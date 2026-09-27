@@ -34,6 +34,13 @@ import { parse, layoutWork, resetLayoutWork } from '../scripts/spec/layout.mjs'
 // A ladder of `d` items, each one indented past the last. `flat` documents are
 // the control: the same line count and the same widths with nothing nested.
 const shapes = {
+  'fenced body with whitespace-only lines': (d) => {
+    const pad = ' '.repeat(2 * d)
+    return Array.from({ length: d }, (_, i) => ' '.repeat(2 * i) + '- item').join('\n') +
+      '\n\n' + pad + '```\n' +
+      Array.from({ length: 40 }, () => pad + 'a\n' + pad + '  \n').join('') +
+      pad + '```\n'
+  },
   // The plain case: two-column bullets, spaces.
   'bullet ladder': (d) => Array.from({ length: d }, (_, i) => ' '.repeat(2 * i) + '- x').join('\n') + '\n',
   // A different marker, so the guard is not pinned to one content column.
