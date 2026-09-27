@@ -1373,6 +1373,12 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-061",
+      "part": "11",
+      "title": "A SOFT BREAK IN A TABLE CELL IS ONE SPACE",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P11-036",
       "part": "11",
       "title": "A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES",

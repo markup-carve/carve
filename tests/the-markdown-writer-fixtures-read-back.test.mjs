@@ -153,3 +153,22 @@ test('bare-email-text: only the authored link is a link', () => {
     '/k',
   ])
 })
+
+test('table-cell-soft-break: the reader keeps one body row and joins each cell with a space', () => {
+  const html = cmarkGfmToHtml(byName('table-cell-soft-break').markdown)
+  assert.equal(rows(html), 2)
+  assert.match(html, /<td>one two<\/td>/)
+  assert.match(html, /<td><strong>x y<\/strong><\/td>/)
+  assert.doesNotMatch(html, /<br/)
+})
+
+test('control: the raw newline spelling splits the row under the same reader', () => {
+  const golden = byName('table-cell-soft-break').markdown
+  const html = cmarkGfmToHtml(golden.replace('one two', 'one\ntwo').replace('x y', 'x\ny'))
+  assert.ok(rows(html) !== 2, 'the reader did not tell the spellings apart')
+})
+
+test('list-table-cell-soft-break: the cell an item becomes joins with a space too', () => {
+  assert.match(cmarkGfmToHtml(byName('list-table-cell-soft-break').markdown), /<td>one two<\/td>/)
+  assert.match(clauseText('CARVE-P11-061'), /EVERY CELL, not the list-table path alone/)
+})

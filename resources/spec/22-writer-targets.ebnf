@@ -268,6 +268,25 @@
       (`structure-unspellable`, fixture `table-cell-hard-break`); this clause
       does not change that half.
 
+  9b. A SOFT BREAK IN A TABLE CELL IS ONE SPACE -- NORMATIVE [CARVE-P11-061]. Inside
+      a pipe-table cell the Markdown target emits a `soft_break` as a single
+      SPACE. §9a's reason is unchanged: a GFM table row is one line, so the
+      newline §9 would write ends the row, and the rest of the cell and every
+      later cell fall out of the table.
+
+        cell children   text "one", soft_break, text "two"
+        Markdown row    | one two | x |
+
+      EVERY CELL, not the list-table path alone. A `::: list-table` item becomes
+      a cell of the same table, and §10q's worked example already writes this
+      document as `| one two | x |`. A plain pipe-table cell takes the tree from
+      an AST payload (PART 12) or an importer, since a row is one line and no
+      Carve source spells a break inside one.
+
+      NOT `<br>`, which §9a writes for a hard break. A soft break is the break
+      that does not render as a break, so `<br>` would show a line break the
+      document never had, which is the substitution §2a forbids.
+
   10. A LIST ITEM'S CONTINUATION LINES ARE ALIGNED -- NORMATIVE [CARVE-P11-027]. Every
       continuation line of a list item is indented to the WIDTH OF THE MARKER,
       including one whose text would otherwise read as a list marker. Such a
