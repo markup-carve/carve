@@ -93,8 +93,12 @@ const CASES = {
  * before a tag, so the pin bump that clears them takes the entries out with it.
  */
 test('the clause says it, so no engine has to infer it from "payload"', () => {
-  assert.match(grammar, /neither its header nor its label, which are not payload/)
-  assert.match(grammar, /A raw block and\s+an abbreviation definition contribute NOTHING/)
+  // Matched against collapsed whitespace, so rewrapping the clause cannot move
+  // a phrase out of reach of the assertion.
+  const clause = grammar.replace(/\s+/g, ' ')
+  assert.ok(clause.includes('neither its header nor its label, which are not payload'))
+  assert.ok(clause.includes('a newline between two lines becoming one space and a trailing newline nothing'))
+  assert.ok(clause.includes('A raw block and an abbreviation definition contribute NOTHING'))
 })
 
 test('a block cell writes the line its inline equivalent writes', () => {
@@ -133,17 +137,10 @@ test('every case and target is accounted for, so a dropped row cannot pass', () 
   for (const { blocks } of Object.values(CASES)) assert.ok(blocks.length >= 1)
 })
 
-test("a payload's terminating newline contributes a trailing space, which reads as an artifact", () => {
-  // Reported alongside carve#2389 rather than pinned as intended behavior. The
-  // clause says "each newline becoming one space", and a code block's content
-  // conventionally ENDS with a newline - it terminates the last line rather than
-  // separating two - so a literal reading puts a trailing space on the
-  // contribution of every ordinary code block. `scripts/parity-check.mjs`
-  // already assumes the other reading: its `code payload` case pairs
-  // "first\nsecond\n" with the inline text "first second", no trailing space.
-  //
-  // The Carve target is where it is visible, the code-span delimiters holding
-  // the space that cell padding hides on the other three.
+test("a payload's terminating newline reaches the Carve target, which §27 does not bind", () => {
+  // §27 rules Markdown, plain and ANSI, and since carve#2389 it reads a
+  // trailing newline as contributing nothing. The Carve target still writes the
+  // space, where the code-span delimiters make it visible.
   const payload = (content) => renderCarve(fromAstJson(JSON.parse(JSON.stringify(cell({ blocks: [{ type: 'code_block', content }] })))))
   assert.equal(payload('x = 1\n'), '| `x = 1 ` |\n')
   assert.equal(payload('x = 1'), '| `x = 1` |\n')
