@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import { spawnSync } from 'node:child_process'
-import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { basename, join, resolve } from 'node:path'
+import { basename, dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
   COMPARISON_TARGETS,
@@ -211,6 +211,7 @@ const JS_ENTRY = {
  * the release build the workflow just produced instead of recompiling in debug.
  */
 const rustCarveBinary = rustBinary()
+let resolverAdapterReported = false
 
 const rustBaseCommand = rustCarveBinary
   ? [rustCarveBinary]
@@ -354,6 +355,17 @@ const impls = [
       if (feature === 'smart-typography-default') return this.defaultCommand(target)
       const flags = CLI_FLAGS[target]
       if (!flags) return null
+      if (feature === 'social-link-resolvers') {
+        const adapter = rustCarveBinary && join(dirname(rustCarveBinary), 'examples', 'social_resolvers')
+        if (!adapter || !existsSync(adapter)) {
+          throw new Error('Build the Rust CLI and resolver adapter together: cargo build --release --bin carve --example social_resolvers')
+        }
+        if (!resolverAdapterReported) {
+          console.log(`Rust resolver adapter: ${adapter} (built ${statSync(adapter).mtime.toISOString()}); CLI: ${rustCarveBinary} (built ${statSync(rustCarveBinary).mtime.toISOString()})`)
+          resolverAdapterReported = true
+        }
+        return [adapter, target]
+      }
       if (feature === 'social-link-templates') {
         return [
           ...rustBaseCommand,

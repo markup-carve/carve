@@ -65,6 +65,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { phpDir, rustBinary } from './lib/engine-locations.mjs'
+import { formatterRoundTripFailures } from './lib/formatter-roundtrip.mjs'
 import { shortfall } from './spec/participants.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -205,10 +206,11 @@ if (typeof lib[JS_ENTRY[target]] !== 'function') {
 const tmp = mkdtempSync(join(tmpdir(), 'carve-fuzz-'))
 const file = join(tmp, 'case.crv')
 
-const cli = (bin) => {
+const cli = (bin, renderTarget) => {
   try {
-    return execFileSync(bin, [`--${target}`, file], {
+    return execFileSync(bin, [`--${renderTarget}`, file], {
       encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
       maxBuffer: 1 << 26,
       timeout: 10000,
     }).trim()
@@ -217,15 +219,15 @@ const cli = (bin) => {
   }
 }
 
-function render(source) {
+function render(source, renderTarget = target) {
   writeFileSync(file, source)
   let js
   try {
-    js = lib[JS_ENTRY[target]](source).trim()
+    js = lib[JS_ENTRY[renderTarget]](source).trim()
   } catch (error) {
     js = `ERROR: ${String(error.message).slice(0, 90)}`
   }
-  return { js, rs: cli(rustCarveBinary), php: cli(phpBinary) }
+  return { js, rs: cli(rustCarveBinary, renderTarget), php: cli(phpBinary, renderTarget) }
 }
 
 /*
@@ -245,8 +247,9 @@ function render(source) {
 const threw = (out) => typeof out === 'string' && out.startsWith('ERROR:')
 const crashes = { js: 0, rs: 0, php: 0, unanimous: 0, renders: 0, cases: [] }
 
-const diverges = (source) => {
-  const { js, rs, php } = render(source)
+const assess = (source) => {
+  const output = render(source)
+  const { js, rs, php } = output
   crashes.renders += 1
   if (threw(js)) crashes.js += 1
   if (threw(rs)) crashes.rs += 1
@@ -256,18 +259,23 @@ const diverges = (source) => {
     if (crashes.cases.length < 5) crashes.cases.push(source)
   }
 
-  return js !== rs || js !== php
+  const semantic = target === 'carve'
+    ? formatterRoundTripFailures(source, output, text => render(text, 'html'), threw)
+    : []
+  const kind = [js, rs, php].some(threw) ? 'crash'
+    : semantic.length ? 'semantic' : js !== rs || js !== php ? 'canonical' : null
+  return { ...output, semantic, kind }
 }
 
 /** Line-level shrink, then character-level, while the divergence survives. */
-function shrink(source) {
+function shrink(source, kind) {
   let current = source
   for (let changed = true; changed; ) {
     changed = false
     const lines = current.split('\n').filter((l, i, a) => !(i === a.length - 1 && l === ''))
     for (let i = 0; i < lines.length; i++) {
       const candidate = lines.filter((_, j) => j !== i).join('\n') + '\n'
-      if (candidate.trim() && diverges(candidate)) {
+      if (candidate.trim() && assess(candidate).kind === kind) {
         current = candidate
         changed = true
         break
@@ -276,7 +284,7 @@ function shrink(source) {
     if (changed) continue
     for (let i = 0; i < current.length; i++) {
       const candidate = current.slice(0, i) + current.slice(i + 1)
-      if (candidate.trim() && diverges(candidate)) {
+      if (candidate.trim() && assess(candidate).kind === kind) {
         current = candidate
         changed = true
         break
@@ -295,13 +303,14 @@ try {
   for (let i = 0; i < count && findings.length < maxFindings; i++) {
     const source = generate()
     generated++
-    if (!diverges(source)) continue
+    const result = assess(source)
+    if (!result.kind) continue
     diverged++
-    const minimal = shrink(source)
+    const minimal = shrink(source, result.kind)
     const key = minimal.trim()
     if (seen.has(key)) continue
     seen.add(key)
-    findings.push({ minimal, ...render(minimal) })
+    findings.push({ minimal, ...assess(minimal) })
   }
 } finally {
   rmSync(tmp, { recursive: true, force: true })
@@ -310,11 +319,14 @@ try {
 const squash = (html) => html.replace(/\s+/g, ' ').trim()
 
 for (const f of findings) {
-  console.log('=== minimal reproducer')
+  console.log(`=== minimal reproducer (${f.kind})`)
   console.log(f.minimal.replace(/\n$/, '').split('\n').map((l) => `    ${l}`).join('\n'))
   console.log(`  js : ${squash(f.js).slice(0, 160)}`)
   if (f.rs !== f.js) console.log(`  rs : ${squash(f.rs).slice(0, 160)}`)
   if (f.php !== f.js) console.log(`  php: ${squash(f.php).slice(0, 160)}`)
+  for (const failure of f.semantic) {
+    console.log(`  semantic ${failure.writer} -> ${failure.reader}: ${JSON.stringify(failure.before)} -> ${JSON.stringify(failure.after)}`)
+  }
   console.log('')
 }
 
