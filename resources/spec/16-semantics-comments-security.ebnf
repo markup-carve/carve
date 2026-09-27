@@ -25,6 +25,10 @@
       - SPELLING. `{%` opens, the FIRST `%}` closes. One character per meaning,
         like the rest of the braced family ({^x^}, {,x,}, {+x+}, {-x-}), and the
         same spelling Djot uses, so a Djot document's comments keep working.
+      - NO PAD AGAINST A LEADING LINE BREAK. A canonical writer separates `{%`
+        from the comment's text with one space, except where the text begins
+        with a line break: the break separates them already, and the space
+        would leave the opener's line ending in whitespace.
       - NO NESTING. A `{%` inside the content is ordinary comment text; the run
         ends at the first `%}`.
       - UNTERMINATED STAYS LITERAL. `a {% oops` renders the braces (matching
