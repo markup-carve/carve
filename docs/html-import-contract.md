@@ -1229,6 +1229,8 @@ outside space. When the inner space is the only separator, it stays inside.
 
 Each edge is checked separately, including through nested formatting.
 Whitespace-only formatting, code content, and nonbreaking spaces stay intact.
+A directly adjacent hard break counts as a separator; a break inside preceding
+formatting does not.
 `formatting-around-link` pins these rows, both asymmetric cases, nested
 formatting, code content, whitespace-only formatting, nonbreaking spaces, and
 direct and nested hard breaks.
