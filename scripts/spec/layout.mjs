@@ -1566,6 +1566,32 @@ function bodyClosesAFenceAt(bodyLines, last) {
   return closedAt === last
 }
 
+// Is a VERBATIM payload open at `end`? CARVE-P11-016 keeps a whitespace-only
+// line inside one, so a container may not collapse a blank run that lands there.
+// `scan` carries the cursor and the open fence between calls, so each body line
+// is read once however many times the branch below asks.
+function bodyHasOpenCodeFence(lines, scan, end, measurement) {
+  let { opaque } = scan
+  for (let k = scan.index; k < end; k++) {
+    const line = measurement(k)?.rest ?? stripIndent(lines[k])
+    if (opaque) {
+      const close = opaque.kind === 'code' ? PURE_FENCE.exec(line) : COMMENT_FENCE_BODY.exec(line)
+      if (close && close[1][0] === opaque.run[0] &&
+          (opaque.kind === 'code' ? close[1].length >= opaque.run.length : close[1].length === opaque.run.length)) opaque = null
+      continue
+    }
+    const code = FENCE.exec(line)
+    if (code && parseFenceInfo(code[2]) !== null) opaque = { kind: 'code', run: code[1] }
+    else {
+      const comment = COMMENT_FENCE_BODY.exec(line)
+      if (comment && commentFenceCloserAhead(lines, k, comment[1])) opaque = { kind: 'comment', run: comment[1] }
+    }
+  }
+  scan.index = end
+  scan.opaque = opaque
+  return opaque !== null && opaque.kind === 'code'
+}
+
 // The body index of a code fence a description body OPENED and has not closed,
 // or -1. A FENCED BODY IS NOT A PARAGRAPH (CARVE-P0-013), so a line below the
 // body's column cannot fold into it and ends the body. Whether the fence opened
@@ -3770,6 +3796,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     }
     let contentCol = head.indent + head.markerWidth
     const itemLines = []
+    const residueFence = { index: 0, opaque: null }
     const fenceOpensAt = new Set()
     // Measurements for the body lines, carried to the item's own parse so it
     // does not re-walk indentation this collector has already walked
@@ -4214,7 +4241,16 @@ function collectItems(lines, i, list, state, ind, meas) {
             // the SUB-LIST, not this item -- a blank inside the sub-list must
             // not loosen this (ancestor) item (carve#322). Attach, stay tight;
             // the recursive parse of itemLines decides the sub-list's looseness.
-            pushLine('', BLANK_MEAS)
+            //
+            // A run that lands inside a fence the SUB-LIST opened keeps its
+            // lines: this branch collapses the run to one blank, and the fence
+            // state here cannot see an opener the inner body indented.
+            if (bodyHasOpenCodeFence(itemLines, residueFence, itemLines.length, (k) => itemMeas[k])) {
+              for (let k = i; k < j; k++) {
+                const dd = dedentMeasured(ind(k), lines[k], authoredBlockBase ?? contentCol)
+                pushLine(dd.text, dd.meas)
+              }
+            } else pushLine('', BLANK_MEAS)
             closePara()
             i = j
             continue
