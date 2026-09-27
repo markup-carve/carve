@@ -1,0 +1,448 @@
+A comment or a definition under a definition term folds at every depth
+
+```
+:: c
+  %% note
+  more
+.
+<dl>
+  <dt>c
+
+  more</dt>
+</dl>
+```
+
+```
+> :: c
+>   %% note
+>   more
+.
+<blockquote>
+  <dl>
+    <dt>c
+
+  more</dt>
+  </dl>
+</blockquote>
+```
+
+```
+- item
+
+  :: c
+    %% note
+    more
+.
+<ul>
+  <li>item
+    <dl>
+      <dt>c
+
+  more</dt>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+:: a
+: b
+  :: c
+    %% note
+    more
+.
+<dl>
+  <dt>a</dt>
+  <dd>
+    <p>b</p>
+    <dl>
+      <dt>c
+
+  more</dt>
+    </dl>
+  </dd>
+</dl>
+```
+
+```
+:: c
+  %%%
+  hidden
+  %%%
+  more
+.
+<dl>
+  <dt>c
+
+  more</dt>
+</dl>
+```
+
+```
+> :: c
+>   %%%
+>   hidden
+>   %%%
+>   more
+.
+<blockquote>
+  <dl>
+    <dt>c
+
+  more</dt>
+  </dl>
+</blockquote>
+```
+
+```
+- item
+
+  :: c
+    %%%
+    hidden
+    %%%
+    more
+.
+<ul>
+  <li>item
+    <dl>
+      <dt>c
+
+  more</dt>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+:: a
+: b
+  :: c
+    %%%
+    hidden
+    %%%
+    more
+.
+<dl>
+  <dt>a</dt>
+  <dd>
+    <p>b</p>
+    <dl>
+      <dt>c
+
+  more</dt>
+    </dl>
+  </dd>
+</dl>
+```
+
+```
+[t][r]
+
+:: c
+  [r]: /u
+.
+<p>[t][r]</p>
+<dl>
+  <dt>c
+  [r]: /u</dt>
+</dl>
+```
+
+```
+[t][r]
+
+> :: c
+>   [r]: /u
+.
+<p>[t][r]</p>
+<blockquote>
+  <dl>
+    <dt>c
+  [r]: /u</dt>
+  </dl>
+</blockquote>
+```
+
+```
+[t][r]
+
+- item
+
+  :: c
+    [r]: /u
+.
+<p>[t][r]</p>
+<ul>
+  <li>item
+    <dl>
+      <dt>c
+  [r]: /u</dt>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+[t][r]
+
+:: a
+: b
+  :: c
+    [r]: /u
+.
+<p>[t][r]</p>
+<dl>
+  <dt>a</dt>
+  <dd>
+    <p>b</p>
+    <dl>
+      <dt>c
+  [r]: /u</dt>
+    </dl>
+  </dd>
+</dl>
+```
+
+```
+x[^n]
+
+:: c
+  [^n]: y
+.
+<p>x[^n]</p>
+<dl>
+  <dt>c
+  [^n]: y</dt>
+</dl>
+```
+
+```
+x[^n]
+
+> :: c
+>   [^n]: y
+.
+<p>x[^n]</p>
+<blockquote>
+  <dl>
+    <dt>c
+  [^n]: y</dt>
+  </dl>
+</blockquote>
+```
+
+```
+x[^n]
+
+- item
+
+  :: c
+    [^n]: y
+.
+<p>x[^n]</p>
+<ul>
+  <li>item
+    <dl>
+      <dt>c
+  [^n]: y</dt>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+x[^n]
+
+:: a
+: b
+  :: c
+    [^n]: y
+.
+<p>x[^n]</p>
+<dl>
+  <dt>a</dt>
+  <dd>
+    <p>b</p>
+    <dl>
+      <dt>c
+  [^n]: y</dt>
+    </dl>
+  </dd>
+</dl>
+```
+
+```
+:: c
+%% note
+more
+.
+<dl>
+  <dt>c</dt>
+</dl>
+<p>more</p>
+```
+
+```
+:: a
+: b
+  :: c
+  %% note
+  more
+.
+<dl>
+  <dt>a</dt>
+  <dd>
+    <p>b</p>
+    <dl>
+      <dt>c</dt>
+    </dl>
+    <p>more</p>
+  </dd>
+</dl>
+```
+
+```
+[t][r]
+
+:: a
+: b
+  :: c
+  [r]: /u
+.
+<p><a href="/u">t</a></p>
+<dl>
+  <dt>a</dt>
+  <dd>
+    <p>b</p>
+    <dl>
+      <dt>c</dt>
+    </dl>
+  </dd>
+</dl>
+```
+
+```
+x[^n]
+
+- item
+
+  :: c
+  [^n]: y
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<ul>
+  <li>item
+    <dl>
+      <dt>c</dt>
+    </dl>
+  </li>
+</ul>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>y<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+[t][r]
+
+:: a
+: b
+  %%%
+  :: fake
+    %%%
+    [r]: /u
+.
+<p><a href="/u">t</a></p>
+<dl>
+  <dt>a</dt>
+  <dd>b</dd>
+</dl>
+```
+
+```
+[t][r]
+
+:: a
+: b
+  :: c
+    %%%
+
+    hidden
+    %%%
+    [r]: /u
+.
+<p>[t][r]</p>
+<dl>
+  <dt>a</dt>
+  <dd>
+    <p>b</p>
+    <dl>
+      <dt>c
+
+  [r]: /u</dt>
+    </dl>
+  </dd>
+</dl>
+```
+
+```
+- :: c
+    # H
+.
+<ul>
+  <li>
+    <dl>
+      <dt>c
+  # H</dt>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+x[^n]
+
+- :: c
+    %% note
+    [^n]: y
+.
+<p>x[^n]</p>
+<ul>
+  <li>
+    <dl>
+      <dt>c
+
+  [^n]: y</dt>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+[t][r]
+
+:: a
+: b
+  :: c
+    > text
+    [r]: /u
+.
+<p>[t][r]</p>
+<dl>
+  <dt>a</dt>
+  <dd>
+    <p>b</p>
+    <dl>
+      <dt>c
+  &gt; text
+  [r]: /u</dt>
+    </dl>
+  </dd>
+</dl>
+```

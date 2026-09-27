@@ -1421,7 +1421,9 @@ term_continuation_line = inline_content, newline ;
    in a `: ` description, so strict column 0 measures a line under an open
    term against the CONTAINER that holds the definition list: column 0 at the
    top level, the column after a quote marker, a list item's content column, a
-   description's column. The rule is the same at every depth.
+   description's column. The rule is the same at every depth, and for a term
+   written on a list item's marker line (`- :: term`) the column is that
+   item's content column.
 
      - AT that column, a block opener ends the term and opens its block.
      - PAST that column, the line is term text and folds into the term,
@@ -1430,8 +1432,21 @@ term_continuation_line = inline_content, newline ;
        attribute line.
 
    A list marker is not term text: §24 C4 lets it open at any column, so it
-   ends the term. A link or footnote definition keeps the reading §10 I5 and
-   §24 C3 give it. A comment line under a nested term is not settled here.
+   ends the term.
+
+   The invisible lines follow the same two bands (PART 9 §24 C3, AN INVISIBLE
+   LINE FOLDS LIKE ANY OTHER):
+
+     - A link or footnote definition past the column is term text. It
+       registers nothing, so a reference to its label stays unresolved. At
+       the column it ends the term and registers.
+     - A comment past the column, a `%%` line or a `%%%` fence with its body
+       and closer, stays a comment: it renders nothing, and the term goes on
+       after it. The term's inline content never reaches across it, as a
+       paragraph's does not. At the column a comment ends the term.
+
+   A `>` past the column is term text too; only quote markers the term's own
+   line carries are container prefixes.
 
        :: a
        : b
@@ -6537,8 +6552,9 @@ EOF = (* end of file *) ;
          block). None of these is special-cased: a def-list or table interrupts
          at column 0 and nests at content_column exactly as a quote or heading
          does. A definition TERM opens no content column of its own, so an
-         opener past content_column under an open term is term text, as it is
-         at the top level (PART 2 [CARVE-P2-028]). The content_column is
+         opener or definition past content_column under an open term is term
+         text, and a comment there leaves the term open, as at the top level
+         (PART 2 [CARVE-P2-028]). The content_column is
          the item body's CANONICAL COLUMN 0 and its minimum containment column.
          This one rule holds whether or not a blank line precedes the child;
          the blank only decides tight vs loose (§17), and there is no relaxed

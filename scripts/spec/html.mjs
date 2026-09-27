@@ -11,7 +11,7 @@
  * disagreement before (carve#646).
  */
 
-import { Refuse, TIER1, bracketRunEnd } from './layout.mjs'
+import { Refuse, TIER1, TERM_COMMENT, bracketRunEnd } from './layout.mjs'
 import { labelKey } from './label-key.mjs'
 
 /*
@@ -596,7 +596,12 @@ function renderBlock(b, depth, ctx) {
       // one container over. carve-js emits `<dl class="foo">`.
       const dlAttrs = b.battrs ? renderBlockAttrs(b.battrs) : ''
       const rows = b.items.map((it) => {
-        if (it.dt !== undefined) return `${pad}  <dt>${renderInline(it.dt)}</dt>`
+        if (it.dt !== undefined) {
+          const runs = it.dt.split('\n' + TERM_COMMENT)
+          // A run after a comment starts with the soft break that followed it.
+          const html = runs.map((run, k) => (k === 0 || run === '' ? renderInline(run) : '\n' + renderInline(run.slice(1)))).join('\n')
+          return `${pad}  <dt>${html}</dt>`
+        }
         const blocks = it.ddBlocks
         if (blocks.length === 0) return `${pad}  <dd></dd>`
         // a single paragraph stays tight (inline <dd>); anything more is a loose
