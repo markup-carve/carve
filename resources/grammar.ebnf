@@ -8904,6 +8904,15 @@ EOF = (* end of file *) ;
       are both reproduced, and the resulting line is whitespace-only by
       necessity.
 
+      THE PARSER KEEPS THAT CONTENT. A verbatim line inside a container is what
+      is left after the container strips its prefix (PART 9 §24 C5), and a line
+      of spaces is no exception: the residue past the content column is the
+      line's content, not a blank line's padding. Inside a list item whose
+      content column is 2, a code-block line of four spaces is a code line of
+      two spaces, as it is inside a block quote after `> `. A line no wider
+      than the content column is an empty code line
+      ([carve#2403](https://github.com/markup-carve/carve/issues/2403)).
+
       The case this decides is a blank line INSIDE a list item, where the item's
       continuation is indented. Indenting the blank line to the content column
       would keep the block structure visible in the source; the empty line wins
@@ -9462,7 +9471,7 @@ EOF = (* end of file *) ;
 
    8d. A CONTEXTUAL ESCAPE READS THE EMITTED LINE ACROSS NODES --
       NORMATIVE [CARVE-P11-050]. Every test above and below that decides an escape by a
-      NEIGHBORING character (M1b, M1c, M1e, M1f, M2b, §8e to §8h) reads the
+      NEIGHBORING character (M1b, M1c, M1e, M1f, M2b, §8e to §8i) reads the
       character the writer emits at that position, whichever node emits it:
       the rest of the same text node, the text of a following span, emphasis
       or link label, or the writer's own markup. A node boundary is not a line
@@ -9533,6 +9542,45 @@ EOF = (* end of file *) ;
 
         cell text "a|b"            ->  | a\|b |
         cell code "a|b"            ->  | `a\|b` |
+
+   8i. TEXT THAT GFM WOULD AUTOLINK IS ESCAPED -- NORMATIVE [CARVE-P11-060].
+      GFM's autolink extension turns a bare URL in text into a link the
+      document never had. The target escapes the one character that starts
+      each form, and nothing else:
+
+      U1 the `:` of `http://`, `https://` or `ftp://`, the scheme matched
+         without regard to ASCII case, is written `\:` unless the character
+         before the scheme is an ASCII letter;
+      U2 the `.` of `www.` is written `\.` unless the character before the
+         `w` is an ASCII letter or digit.
+
+      The two readers the target answers to disagree at the edges: cmark-gfm
+      links a scheme after a digit and pandoc does not, and pandoc links
+      `www.` after any punctuation or a no-break space where cmark-gfm needs
+      whitespace, `*`, `_`, `~` or `(`. U1 and U2 escape wherever either one
+      links.
+
+      READ ON THE EMITTED LINE, as §8d reads every contextual escape. The
+      escaped `:` or `.` is a text character; the scheme or `www` before it,
+      the `//` after it and the character before the form are whatever the
+      writer emits there, from any node, its own markup included, and a line
+      start counts as no character. A URL split across spans, as a highlighter
+      splits one, is one form:
+
+        [http]{.a}[s://x.io]{.b}   ->  https\://x.io
+
+      TEXT ONLY, AND NOT INSIDE A LINK. A code span, a link destination and an
+      autolink's own spelling are not text. A `:` or `.` in a link's text or an
+      image's description is text, but GFM builds no link inside a link, so it
+      is not escaped.
+
+        text "See https://x.io and www.y.org"
+                                   ->  See https\://x.io and www\.y.org
+
+      THE EMAIL AUTOLINK IS NOT COVERED. cmark-gfm links `a@b.co` whether the
+      `@` or the `.` carries a backslash, so no escape holds it in the reader
+      GitHub runs
+      ([carve#2413](https://github.com/markup-carve/carve/issues/2413)).
 
    9. THE MARKDOWN TARGET'S HARD BREAK -- NORMATIVE [CARVE-P11-026]. A `hard_break` is emitted
       as a BACKSLASH before the newline, never as two trailing spaces.
@@ -9965,6 +10013,17 @@ EOF = (* end of file *) ;
       THE HEADER IS AS WIDE AS THE WIDEST ROW because GFM drops every body
       cell past the header's width. Each body row still keeps its own cell
       count (§10b).
+
+      A HEADER ROW NARROWER THAN THE TABLE IS PADDED for the same reason. When
+      the row §10d writes as the header has fewer cells than the widest row,
+      it gains one empty cell per missing column, and so does the delimiter
+      row, whose added cells take the column's effective alignment under §10d
+      and are `---` where no header row sets one
+      ([carve#2408](https://github.com/markup-carve/carve/issues/2408)).
+
+        |= a |= b |          ->  | a | b |  |
+        | 1 | 2 | 3 |            | --- | --- | --- |
+                                 | 1 | 2 | 3 |
 
   10o. ADJACENT LISTS OF ONE KIND ALTERNATE THEIR MARKER --
       NORMATIVE [CARVE-P11-057]. Two lists of the same kind that the writer emits one
@@ -11224,6 +11283,18 @@ EOF = (* end of file *) ;
       already derives -- the leading run of header rows as the head, everything
       after it as one body, no foot, no row-head columns.
 
+      A ROW-HEAD COUNT THE CELLS ALREADY STATE IS NOT A PARTITION. A body's
+      `rowHeadColumns` counts leading columns that are header cells in every
+      row of the body, which those cells' own `header` flags say, and every
+      renderer reads the cells. So a producer publishes no `rowGroups` for a
+      table whose one departure from the implicit partition is that count on
+      its single body: the field would state nothing the rows do not, and a
+      writer that cannot spell it loses nothing and reports nothing
+      ([carve#2402](https://github.com/markup-carve/carve/issues/2402)).
+
+        <tr><th>A</th><th>B</th></tr>
+        <tr><th>1</th><td>x</td></tr>    ->  no `rowGroups`
+
       A pipe table's preceding block-attribute line MAY carry
       `header-rows=N` and/or `footer-rows=N`. An empty boolean value means one;
       otherwise N MUST be a non-negative decimal integer, and the two counts
@@ -11727,10 +11798,12 @@ EOF = (* end of file *) ;
       flattens under PART 11 §1b: each block's inline content in document order,
       separated by one space where both sides contribute a token. A list
       contributes its items' inline content in item order and no markers; a code
-      block contributes its payload with each newline becoming one space, and
-      neither its header nor its label, which are not payload. A raw block and
-      an abbreviation definition contribute NOTHING. ANSI styles the flattened
-      inlines as usual and adds no block decoration.
+      block contributes its payload as text, each newline becoming one space and
+      every other character kept (a backslash is never a hard break), and
+      neither its header nor its label, which are not payload. A block image,
+      alone or as a figure's target, contributes itself as an inline image.
+      A raw block and an abbreviation definition contribute NOTHING. ANSI styles
+      the flattened inlines as usual and adds no block decoration.
 
         table_cell{ blocks: [ p "one", p "two" ] }  ->  | one two |
 

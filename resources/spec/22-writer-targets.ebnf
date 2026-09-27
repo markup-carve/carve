@@ -109,7 +109,7 @@
 
    8d. A CONTEXTUAL ESCAPE READS THE EMITTED LINE ACROSS NODES --
       NORMATIVE [CARVE-P11-050]. Every test above and below that decides an escape by a
-      NEIGHBORING character (M1b, M1c, M1e, M1f, M2b, §8e to §8h) reads the
+      NEIGHBORING character (M1b, M1c, M1e, M1f, M2b, §8e to §8i) reads the
       character the writer emits at that position, whichever node emits it:
       the rest of the same text node, the text of a following span, emphasis
       or link label, or the writer's own markup. A node boundary is not a line
@@ -180,6 +180,45 @@
 
         cell text "a|b"            ->  | a\|b |
         cell code "a|b"            ->  | `a\|b` |
+
+   8i. TEXT THAT GFM WOULD AUTOLINK IS ESCAPED -- NORMATIVE [CARVE-P11-060].
+      GFM's autolink extension turns a bare URL in text into a link the
+      document never had. The target escapes the one character that starts
+      each form, and nothing else:
+
+      U1 the `:` of `http://`, `https://` or `ftp://`, the scheme matched
+         without regard to ASCII case, is written `\:` unless the character
+         before the scheme is an ASCII letter;
+      U2 the `.` of `www.` is written `\.` unless the character before the
+         `w` is an ASCII letter or digit.
+
+      The two readers the target answers to disagree at the edges: cmark-gfm
+      links a scheme after a digit and pandoc does not, and pandoc links
+      `www.` after any punctuation or a no-break space where cmark-gfm needs
+      whitespace, `*`, `_`, `~` or `(`. U1 and U2 escape wherever either one
+      links.
+
+      READ ON THE EMITTED LINE, as §8d reads every contextual escape. The
+      escaped `:` or `.` is a text character; the scheme or `www` before it,
+      the `//` after it and the character before the form are whatever the
+      writer emits there, from any node, its own markup included, and a line
+      start counts as no character. A URL split across spans, as a highlighter
+      splits one, is one form:
+
+        [http]{.a}[s://x.io]{.b}   ->  https\://x.io
+
+      TEXT ONLY, AND NOT INSIDE A LINK. A code span, a link destination and an
+      autolink's own spelling are not text. A `:` or `.` in a link's text or an
+      image's description is text, but GFM builds no link inside a link, so it
+      is not escaped.
+
+        text "See https://x.io and www.y.org"
+                                   ->  See https\://x.io and www\.y.org
+
+      THE EMAIL AUTOLINK IS NOT COVERED. cmark-gfm links `a@b.co` whether the
+      `@` or the `.` carries a backslash, so no escape holds it in the reader
+      GitHub runs
+      ([carve#2413](https://github.com/markup-carve/carve/issues/2413)).
 
    9. THE MARKDOWN TARGET'S HARD BREAK -- NORMATIVE [CARVE-P11-026]. A `hard_break` is emitted
       as a BACKSLASH before the newline, never as two trailing spaces.
@@ -612,6 +651,17 @@
       THE HEADER IS AS WIDE AS THE WIDEST ROW because GFM drops every body
       cell past the header's width. Each body row still keeps its own cell
       count (§10b).
+
+      A HEADER ROW NARROWER THAN THE TABLE IS PADDED for the same reason. When
+      the row §10d writes as the header has fewer cells than the widest row,
+      it gains one empty cell per missing column, and so does the delimiter
+      row, whose added cells take the column's effective alignment under §10d
+      and are `---` where no header row sets one
+      ([carve#2408](https://github.com/markup-carve/carve/issues/2408)).
+
+        |= a |= b |          ->  | a | b |  |
+        | 1 | 2 | 3 |            | --- | --- | --- |
+                                 | 1 | 2 | 3 |
 
   10o. ADJACENT LISTS OF ONE KIND ALTERNATE THEIR MARKER --
       NORMATIVE [CARVE-P11-057]. Two lists of the same kind that the writer emits one

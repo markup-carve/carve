@@ -9,7 +9,7 @@ description: "The core serialized tree shape, source positions, and cross-implem
 
 The core serialized tree shape, source positions, and cross-implementation AST guarantees.
 
-This view contains 54 of 295 active rules. Every rule remains mandatory where applicable.
+This view contains 54 of 296 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -46,7 +46,7 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L199) | 12 | A LINK REFERENCE DEFINITION IS A NODE |
 | [`CARVE-P12-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L228) | 12 | A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST |
 | [`CARVE-P12-031`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L258) | 12 | A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST |
-| [`CARVE-P12-035`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L520) | 12 | A COMPOSITE FIGURE IS ITS OWN NODE TYPE |
+| [`CARVE-P12-035`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L532) | 12 | A COMPOSITE FIGURE IS ITS OWN NODE TYPE |
 | [`CARVE-P12-041`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L206) | 12 | U+0000 IS REPLACED ON INGEST |
 | [`CARVE-P12-042`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L239) | 12 | AN INGESTED VALUE THE SCHEMA CALLS ABSENT IS NORMALIZED AWAY |
 | [`CARVE-P12-043`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L262) | 12 | A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH |
@@ -55,17 +55,17 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-047`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L342) | 12 | A REFERENCE NODE CARRIES ITS TARGET |
 | [`CARVE-P12-048`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L371) | 12 | A SPANNING CELL PUBLISHES ITS RESOLVED EXTENT |
 | [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L406) | 12 | A TABLE CELL MAY CARRY BLOCK CONTENT INSTEAD OF INLINE |
-| [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L459) | 12 | SMALL CAPS SURVIVE INTERCHANGE |
-| [`CARVE-P12-051`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L482) | 12 | A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER |
-| [`CARVE-P12-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L512) | 12 | SECTIONING IS INTERCHANGE-ONLY |
-| [`CARVE-P12-053`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L555) | 12 | A CITATION ITEM CARRIES ITS OWN MODE |
-| [`CARVE-P12-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L580) | 12 | RUBY ANNOTATIONS SURVIVE INTERCHANGE |
-| [`CARVE-P12-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L621) | 12 | A BLOCK EXTENSION DECLARES A CORE FALLBACK |
-| [`CARVE-P12-056`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L657) | 12 | A STORED TREE IS WRAPPED IN A VERSIONED ENVELOPE |
-| [`CARVE-P12-057`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L710) | 12 | A NAMED CONTAINER IS A CALLOUT, A DIRECTIVE OR A DIV |
-| [`CARVE-P12-058`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L758) | 12 | A LINE BLOCK MAY PUBLISH ITS LINES |
-| [`CARVE-P12-059`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L794) | 12 | A CITATION IS ONLY EVER AN ITEM OF A GROUP |
-| [`CARVE-P12-060`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L822) | 12 | NODE IDENTITY IS A SEPARATE OPT-IN SIDECAR |
-| [`CARVE-P12-061`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L862) | 12 | A COUNT WITH NO MARKERS IS INGESTED AS THE SPAN |
-| [`CARVE-P12-062`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L888) | 12 | AN ANNOTATION RANGE IS A SEPARATE OPT-IN SIDECAR |
-| [`CARVE-P12-063`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L952) | 12 | PROVENANCE IS A SEPARATE OPT-IN SIDECAR |
+| [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L461) | 12 | SMALL CAPS SURVIVE INTERCHANGE |
+| [`CARVE-P12-051`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L484) | 12 | A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER |
+| [`CARVE-P12-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L514) | 12 | SECTIONING IS INTERCHANGE-ONLY |
+| [`CARVE-P12-053`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L557) | 12 | A CITATION ITEM CARRIES ITS OWN MODE |
+| [`CARVE-P12-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L582) | 12 | RUBY ANNOTATIONS SURVIVE INTERCHANGE |
+| [`CARVE-P12-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L623) | 12 | A BLOCK EXTENSION DECLARES A CORE FALLBACK |
+| [`CARVE-P12-056`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L659) | 12 | A STORED TREE IS WRAPPED IN A VERSIONED ENVELOPE |
+| [`CARVE-P12-057`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L712) | 12 | A NAMED CONTAINER IS A CALLOUT, A DIRECTIVE OR A DIV |
+| [`CARVE-P12-058`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L760) | 12 | A LINE BLOCK MAY PUBLISH ITS LINES |
+| [`CARVE-P12-059`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L796) | 12 | A CITATION IS ONLY EVER AN ITEM OF A GROUP |
+| [`CARVE-P12-060`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L824) | 12 | NODE IDENTITY IS A SEPARATE OPT-IN SIDECAR |
+| [`CARVE-P12-061`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L864) | 12 | A COUNT WITH NO MARKERS IS INGESTED AS THE SPAN |
+| [`CARVE-P12-062`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L890) | 12 | AN ANNOTATION RANGE IS A SEPARATE OPT-IN SIDECAR |
+| [`CARVE-P12-063`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L954) | 12 | PROVENANCE IS A SEPARATE OPT-IN SIDECAR |

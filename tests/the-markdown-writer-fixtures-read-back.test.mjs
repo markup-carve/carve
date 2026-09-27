@@ -51,9 +51,17 @@ test('every fixture names a clause that exists', () => {
   }
 })
 
+// A case names the elements its clause dissolves on this target (a code
+// block flattened into a cell), which the comparison then leaves out.
+const compared = (html, c) => {
+  const counts = structure(html)
+  for (const tag of c.dissolves ?? []) delete counts[tag]
+  return counts
+}
+
 for (const c of cases) {
   test(`${c.name}: a GFM reader builds the structure the HTML target builds`, () => {
-    assert.deepEqual(structure(cmarkGfmToHtml(c.markdown)), structure(ownHtml(c)))
+    assert.deepEqual(compared(cmarkGfmToHtml(c.markdown), c), compared(ownHtml(c), c))
   })
 }
 
@@ -106,4 +114,32 @@ test('control: the structure comparison sees a merged list and a lost table', ()
   // defects these clauses fix.
   assert.notDeepEqual(structure(cmarkGfmToHtml('- a\n\n- b\n')), structure(cmarkGfmToHtml('- a\n\n* b\n')))
   assert.notDeepEqual(structure(cmarkGfmToHtml('| a | b |\n')), structure(cmarkGfmToHtml('|  |  |\n| --- | --- |\n| a | b |\n')))
+})
+
+const byName = (name) => cases.find((c) => c.name === name)
+const cellsPerRow = (html) => [...html.matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map((m) => (m[1].match(/<t[hd][\s>]/g) ?? []).length)
+
+test('block-cell-payload-and-images: the payload stays text and both images stay images', () => {
+  const html = cmarkGfmToHtml(byName('block-cell-payload-and-images').markdown)
+  assert.match(html, /<td>a {3}b\\\\ p<\/td>/, 'the leading spaces or the backslashes changed')
+  assert.equal((html.match(/<img /g) ?? []).length, 2)
+})
+
+test('header-row-narrower-than-body: the reader keeps every body cell', () => {
+  const golden = byName('header-row-narrower-than-body').markdown
+  assert.deepEqual(cellsPerRow(cmarkGfmToHtml(golden)), [3, 3])
+  // Control: the unpadded header is what drops the third cell.
+  assert.deepEqual(cellsPerRow(cmarkGfmToHtml('| a | b |\n| --- | --- |\n| 1 | 2 | 3 |\n')), [2, 2])
+})
+
+test('bare-url-text: only the authored link is a link', () => {
+  const c = byName('bare-url-text')
+  assert.deepEqual(hrefs(cmarkGfmToHtml(c.markdown)), ['https://x.io'])
+  // Control: without the escapes the reader links every form the clause names.
+  const bare = c.markdown.replaceAll('\\:', ':').replaceAll('\\.', '.')
+  assert.equal(hrefs(cmarkGfmToHtml(bare)).length, 8)
+})
+
+test('CARVE-P11-060 states the email autolink as uncovered', () => {
+  assert.match(clauseText('CARVE-P11-060'), /THE EMAIL AUTOLINK IS NOT COVERED/)
 })

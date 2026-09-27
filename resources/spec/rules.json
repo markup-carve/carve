@@ -1355,6 +1355,12 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-060",
+      "part": "11",
+      "title": "TEXT THAT GFM WOULD AUTOLINK IS ESCAPED",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P11-036",
       "part": "11",
       "title": "A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES",
