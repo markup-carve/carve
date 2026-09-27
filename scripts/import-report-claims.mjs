@@ -104,7 +104,7 @@ const CASES = [
   {
     name: 'form carrying a round-trip marker',
     html: '<form onclick="go()" data-carve-src="x">kept</form>\n',
-    subjects: [{ key: 'form.onclick' }, { key: 'form.data-carve-src', pending: 'carve#2279' }],
+    subjects: [{ key: 'form.onclick' }, { key: 'form.data-carve-src' }],
   },
   {
     name: 'form around a benign list-valued URL attribute',
@@ -114,7 +114,12 @@ const CASES = [
   {
     name: 'form around a semantic span carrying its own key',
     html: '<form onclick="go()"><cite cite="https://example.com/x">t</cite></form>\n',
-    subjects: [{ key: 'form.onclick' }, { key: 'cite.cite', pending: 'carve#2279' }],
+    subjects: [{ key: 'form.onclick' }, { key: 'cite.cite' }],
+  },
+  {
+    name: 'form retaining denied values on marker keys',
+    html: '<form data-carve-src="javascript:x()"><cite cite="javascript:y()">t</cite></form>\n',
+    subjects: [{ key: 'form.data-carve-src' }, { key: 'cite.cite' }],
   },
 ]
 
