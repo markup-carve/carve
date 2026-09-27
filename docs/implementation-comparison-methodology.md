@@ -23,10 +23,13 @@ left 338 current documents in a declared-lag list. All 338 are included here.
 
 Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item-stays-in-that-item`,
 `503-a-block-opener-indented-under-a-definition-term-is-term-text-at-every-depth`,
-`504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth`.
+`504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth`,
+`505-a-verbatim-line-keeps-what-sits-past-its-fence-opener-not-past-its-container`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
-other two landed after the run, so its numbers describe the corpus without them.
+other three landed after the run, so its numbers describe the corpus without
+them. 505's four documents were measured against carve-js `c5df77f6`, carve-rs
+`3cb8a685` and carve-php `77a83856`, which agree with the oracle on all four.
 
 The former case-by-case notes remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/a22f6a23f7913e44cb3461f3f608605660619032/docs/implementation-comparison-methodology.md).
