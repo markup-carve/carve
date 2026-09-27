@@ -16,16 +16,22 @@
  * nothing was dropped (carve#2261), and the third answer was a wording
  * difference nobody had compared.
  *
- * WHAT IS COMPARED: code, severity, fidelity, confidence, path and the message
- * string, in DOCUMENT ORDER. Severity alone would have missed carve-js's
- * silence; codes alone would have missed carve-rs's false rows; order matters
- * because the contract fixes it - the element's own rows, its `raw-preserved`
- * row, then each descendant's rows in document order.
+ * WHAT IS COMPARED: code, severity, fidelity, confidence and path, in DOCUMENT
+ * ORDER. Severity alone would have missed carve-js's silence; codes alone would
+ * have missed carve-rs's false rows; order matters because the contract fixes it
+ * - the element's own rows, its `raw-preserved` row, then each descendant's rows
+ * in document order.
+ *
+ * NOT THE MESSAGE. carve#2454 ruled that the sentence is the engine's and is not
+ * compared, and PART 11 §1d states it. The template `attribute-preserved` rows
+ * follow is a clause of its own, and `auditPreservedSubjects` below still reads
+ * each row against it - a clause that pins a message is read by the gate that
+ * owns it, not by a row-for-row comparison of prose.
  *
  * WHAT IS NOT: no row is held back. The `style` rows were left out while
- * carve#2267 was unsettled; it is ruled, so their code, class, message and
- * position are compared like every other row's, and the clause the engines have
- * not reached yet is declared in CLAUSE_PENDING below.
+ * carve#2267 was unsettled; it is ruled, so their code, class and position are
+ * compared like every other row's, and the clause the engines have not reached
+ * yet is declared in CLAUSE_PENDING below.
  *
  * Needs the sibling engines, so it runs in the conformance workflow rather than
  * in `npm test`, and exits 2 without them: a checker that reports success having
@@ -167,7 +173,7 @@ const isStyleRow = (d) =>
   d.code === 'style-unmapped'
   || (d.code === 'attribute-preserved' && /\b(?:attribute style|Preserved style)\b/.test(d.message))
 
-const row = (d) => [d.code, d.severity, d.fidelity, d.confidence, d.path ?? '', d.message].join('|')
+const row = (d) => [d.code, d.severity, d.fidelity, d.confidence, d.path ?? ''].join('|')
 
 /*
  * Drops ONE occurrence of each named row. A declaration excuses one row, not

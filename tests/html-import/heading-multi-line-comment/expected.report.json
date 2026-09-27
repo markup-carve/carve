@@ -1,1 +1,1 @@
-{"mode":"safe","adapter":"generic","diagnostics":[{"code":"element-dropped","message":"Dropped an HTML comment in a heading: its text holds a line break, and a heading is one line","severity":"warning","path":"/h2[1]/comment()[2]","fidelity":"dropped","confidence":"exact"}]}
+{"mode":"safe","adapter":"generic","diagnostics":[{"code":"element-dropped","severity":"warning","path":"/h2[1]/comment()[2]","fidelity":"dropped","confidence":"exact"}]}

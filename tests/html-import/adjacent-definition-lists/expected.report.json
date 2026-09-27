@@ -1,1 +1,1 @@
-{"mode":"safe","adapter":"generic","diagnostics":[{"code":"element-unwrapped","message":"Merged <dl> into the definition list before it: Carve source has no boundary between two adjacent definition lists","severity":"info","path":"/dl[2]","fidelity":"degraded","confidence":"exact"}]}
+{"mode":"safe","adapter":"generic","diagnostics":[{"code":"element-unwrapped","severity":"info","path":"/dl[2]","fidelity":"degraded","confidence":"exact"}]}
