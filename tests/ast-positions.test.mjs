@@ -1457,8 +1457,13 @@ test('fenced quotes from the pinned parser use the same source-spelling exceptio
     const quotes = [...walkNodes(doc)].filter(([node]) => node.type === 'block_quote')
     assert.equal(quotes.length, 1, source)
     const [quote] = quotes[0]
-    // Check the quote separately so a parent's independent span cannot hide it.
-    assert.deepEqual(stopFindings(quote, source), [], source)
+    assert.ok(Number.isInteger(quote.pos?.startOffset), source)
+    assert.ok(Number.isInteger(quote.pos?.endOffset), source)
+    // The paragraph is checked; the fenced quote is excluded even if the
+    // pinned engine ends its span at the paragraph instead of the closer.
+    const findings = []
+    assert.equal(checkStopsAtChildren(quote, [...source], findings), 1, source)
+    assert.deepEqual(findings, [], source)
   }
 })
 
