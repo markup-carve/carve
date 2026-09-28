@@ -51,7 +51,8 @@ try {
   }
   const habitRules = {
     js: ['markdown-strong-double-star', 'markdown-strikethrough-double-tilde'],
-    php: ['markdown-strong-asterisks', 'markdown-strikethrough'],
+    php: ['markdown-strong-double-star', 'markdown-strikethrough-double-tilde'],
+    rust: ['markdown-strong-double-star', 'markdown-strikethrough-double-tilde'],
   }
   for (const prefix of probes) {
     const file = join(temporary, 'habits.crv')
