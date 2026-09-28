@@ -14,3 +14,4 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
+41-line-blocks-10  The pinned writer adds a leading no-break space to a hyphen-only line block (carve#2491).

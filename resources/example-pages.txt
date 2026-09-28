@@ -147,6 +147,7 @@ out: examples/core.md
   41-line-blocks-4
   41-line-blocks-5
   41-line-blocks-7
+  41-line-blocks-10
   42-admonitions
   42-admonitions-2
   42-admonitions-3
@@ -785,6 +786,7 @@ index: examples/edge-cases/index.md
   16-reference-link-9
   26-comments-7
   26-comments-8
+  comment-columns-and-surviving-list-items
   41-line-blocks-9
   empty-containers-share-one-html-body-shape
   a-title-or-label-fills-the-container-body-slot

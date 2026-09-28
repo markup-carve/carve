@@ -122,3 +122,12 @@ wide&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gap<br>
 &nbsp;&nbsp;&nbsp;&nbsp;lead</p>
 </div>
 ```
+
+```
+::: |
+---
+.
+<div class="line-block">
+  <p>—</p>
+</div>
+```
