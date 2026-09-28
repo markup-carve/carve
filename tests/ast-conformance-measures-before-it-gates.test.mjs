@@ -41,7 +41,7 @@ const script = resolve(here, '../scripts/ast-conformance.mjs')
 const source = readFileSync(script, 'utf8')
 
 /** The two ends of the window, each a string that appears exactly once. */
-const GATE = "A binding has no vote of its own"
+const GATE = "every one of these is a gap in the BINDING"
 const LAST_ENGINE_REPORT = "    'carve-php',\n"
 
 function windowBetween() {
