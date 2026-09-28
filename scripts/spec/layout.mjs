@@ -4630,6 +4630,11 @@ function collectItems(lines, i, list, state, ind, meas) {
       // A fence can open on the MARKER LINE (`- ``` `), where its opener is the
       // marker-line content, not a collected continuation line -- seed from it.
       trackFence(head.text, true, i)
+      // A comment span spelled there is the item's FIRST block (CARVE-P0-007,
+      // which lists `- %% c` / `tail` as ending the item), so it retains no
+      // ownership for a below-column follower - the marker-line `%%` spelling
+      // already answers that way and the two spellings stay together.
+      if (fence.opaque?.kind === 'comment') fence.opaque.markerLine = true
     }
     i++
     // FIRST-BLOCK form (SS17 L4): a bare `+` as the sole marker-line content
@@ -5120,6 +5125,12 @@ function collectItems(lines, i, list, state, ind, meas) {
         // lookahead found past a below-column line is not among them. Hand it
         // the answer given here so the line is read one way (carve#1399).
         if (opens) fenceOpensAt.add(itemLines.length - 1)
+        // Did this line ARRIVE inside an open comment span? Its payload is
+        // opaque (PART 0) and its closer travels with its opener
+        // (CARVE-P9-053), so neither may touch the paragraph or the
+        // after-comment state below - read before the tracker consumes the
+        // closer.
+        const inCommentSpan = fence.opaque !== null && fence.opaque.kind === 'comment'
         trackFence(dedented, opens, i)
         // Read with the paragraph state this line ARRIVED with, exactly as
         // `bodyFenceOpens` above is; the chain below then answers for the line.
@@ -5146,7 +5157,11 @@ function collectItems(lines, i, list, state, ind, meas) {
         // does need the span (carve#985), and matches it with
         // COMMENT_FENCE_BODY rather than `findCloser`, whose alphabet is
         // backticks and tildes.
-        if (COMMENT_LINE.test(dedented)) afterComment = true
+        if (inCommentSpan) {
+          // The span's own lines say nothing here: the opener already set both
+          // states, and a payload line that reopened a paragraph made the
+          // CLOSER's column decide who owns the following line.
+        } else if (COMMENT_LINE.test(dedented)) afterComment = true
         else if (dmeas.rest !== '') afterComment = false
         // record the first sub-list's content column (carve#322)
         if (subCol < 0 && nm && nm.indent >= contentCol) {
@@ -5156,7 +5171,8 @@ function collectItems(lines, i, list, state, ind, meas) {
         // does the deepest structure now hold an OPEN paragraph that lazy
         // text may fold into? markers open a sub-item paragraph; quotes an
         // open quoted paragraph; fences/breaks close everything (SS10 I2/I6)
-        if (i <= wrappedAttrEnd) closePara()
+        if (inCommentSpan) { /* opaque: the opener already closed the paragraph */ }
+        else if (i <= wrappedAttrEnd) closePara()
         else if (COMMENT_LINE.test(dedented)) closePara()
         else if (HR.test(dedented)) closePara()
         // A CODE FENCE CLOSES THE PARAGRAPH ONLY IF IT INTERRUPTED IT -- §10 I4,
@@ -5458,12 +5474,26 @@ function collectItems(lines, i, list, state, ind, meas) {
         // every blank below it as fence content and the item comes out TIGHT.
         // Only the closing half is asked: an OPENER at this column opens no span
         // here, and the branch above owns that question.
+        const spanBefore = fence.opaque?.kind === 'comment' || nestedOpaque?.kind === 'comment'
+        const spanFromMarkerLine = fence.opaque?.markerLine === true
         if (fence.opaque) trackFence(lm.rest, false, i)
         // The DESCENDANT span's closer arrives here too, below this column, so
         // the tracker above never sees it.
         if (nestedOpaque && nestedOpaque.kind === 'comment') {
           const end = COMMENT_FENCE.exec(lm.rest)
           if (end && end[1].length === nestedOpaque.run.length) nestedOpaque = null
+        }
+        // A CLOSER LEAVES THE SPAN'S OWN PARAGRAPH STATE, NOT THIS COLUMN'S.
+        // The body and closer travel with the opener (CARVE-P9-053) and the run
+        // closes the span at any column (CARVE-P0-013), so the span ends here
+        // exactly as it would at the opener's own column: no paragraph open,
+        // the frame still available. Without this the closer's COLUMN decided
+        // who owned the next line, because a payload line had reopened the
+        // paragraph the opener closed. A bare `%%` LINE below the column closes
+        // no span and keeps its retention rule (corpus 214).
+        if (spanBefore && !(fence.opaque?.kind === 'comment' || nestedOpaque?.kind === 'comment')) {
+          closePara()
+          if (!spanFromMarkerLine) afterComment = true
         }
         i++
         continue

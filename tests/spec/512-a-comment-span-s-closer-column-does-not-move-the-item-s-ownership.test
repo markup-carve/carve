@@ -1,0 +1,181 @@
+A comment span's closer column does not move the item's ownership
+
+```
+- item
+  %%%
+  [r]: /url
+%%%
+
+[use][r]
+.
+<ul>
+  <li>item</li>
+</ul>
+<p>[use][r]</p>
+```
+
+```
+- item
+  %%%
+  [r]: /url
+  %%%
+
+[use][r]
+.
+<ul>
+  <li>item</li>
+</ul>
+<p>[use][r]</p>
+```
+
+```
+- item
+  %%%
+  [r]: /url
+
+[use][r]
+.
+<ul>
+  <li>item</li>
+</ul>
+<p><a href="/url">use</a></p>
+```
+
+```
+- item
+  %%%
+  hidden
+%%%
+tail
+.
+<ul>
+  <li>item</li>
+</ul>
+<p>tail</p>
+```
+
+```
+- item
+  %%%
+  hidden
+  %%%
+tail
+.
+<ul>
+  <li>item</li>
+</ul>
+<p>tail</p>
+```
+
+```
+- a
+  - item
+    %%%
+    hidden
+%%%
+tail
+.
+<ul>
+  <li>a
+    <ul>
+      <li>item</li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+- a
+  - item
+    %%%
+    hidden
+    %%%
+tail
+.
+<ul>
+  <li>a
+    <ul>
+      <li>item</li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+1. item
+   %%%
+   hidden
+ %%%
+tail
+.
+<ol>
+  <li>item</li>
+</ol>
+<p>tail</p>
+```
+
+```
+- a
+  - item
+    %%%
+    hidden
+%%%
+  tail
+.
+<ul>
+  <li>a
+    <ul>
+      <li>item</li>
+    </ul>
+    tail
+  </li>
+</ul>
+```
+
+```
+- %%%
+  hidden
+  %%%
+ tail
+.
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+```
+
+```
+- %%%
+  hidden
+%%%
+ tail
+.
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+```
+
+```
+- %%%
+  hidden
+%%%
+tail
+.
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+```
+
+```
+- %% c
+ tail
+.
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+```
