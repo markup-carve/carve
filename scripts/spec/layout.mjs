@@ -1261,6 +1261,68 @@ function startsVisibleBlock(line) {
   return HEADING.test(line) || HR.test(line) || QUOTE.test(line) || DEFLIST_TERM.test(line)
 }
 
+// Descendants share a source line's suffix offsets. Distinct source lines and
+// reconstructed lines have separate maps, even when their lengths match.
+function prefixMemo(state, lines, index) {
+  const arrays = state.prefixMemos ??= new WeakMap()
+  let entries = arrays.get(lines)
+  if (!entries) arrays.set(lines, entries = new Map())
+  let memo = entries.get(index)
+  if (!memo) entries.set(index, memo = { paragraph: new Map(), continuation: new Map(), quote: new Map() })
+  return memo
+}
+
+function carryPrefixMemo(state, source, index, target, targetIndex) {
+  const memo = prefixMemo(state, source, index)
+  let entries = state.prefixMemos.get(target)
+  if (!entries) state.prefixMemos.set(target, entries = new Map())
+  entries.set(targetIndex, memo)
+}
+
+function markerCarriesContinuation(text, memo) {
+  const path = []
+  let result = false, steps = 0
+  for (; path.length < MAX_NESTING_DEPTH;) {
+    const known = memo.get(text.length)
+    if (known) {
+      if (path.length + known.steps > MAX_NESTING_DEPTH) return false
+      result = known.value
+      steps = known.steps
+      break
+    }
+    path.push(text.length)
+    if (text === '+') { result = true; break }
+    const marker = text[0] !== ' ' && text[0] !== '\t'
+      ? matchMarkerAt({ col: 0, rest: text }) : null
+    if (!marker) break
+    text = marker.text.trim()
+    if (path.length === MAX_NESTING_DEPTH) return false
+  }
+  for (let k = path.length - 1; k >= 0; k--) {
+    memo.set(path[k], { value: result, steps: ++steps })
+  }
+  return result
+}
+
+function quotePrefixSummary(text, memo) {
+  const path = []
+  let summary
+  for (;;) {
+    summary = memo.get(text.length)
+    if (summary) break
+    const quote = QUOTE.exec(text)
+    if (!quote) { summary = { depth: 0, tail: text }; break }
+    if (path.length >= MAX_NESTING_DEPTH) return null
+    path.push(text.length)
+    text = quote[1] ?? ''
+  }
+  for (let k = path.length - 1; k >= 0; k--) {
+    summary = { depth: summary.depth + 1, tail: summary.tail }
+    memo.set(path[k], summary)
+  }
+  return summary
+}
+
 /*
  * DOES THIS LINE LEAVE A PARAGRAPH OPEN? -- PART 1 S4, NO OPEN PARAGRAPH, NO
  * LAZY LINE.
@@ -1299,50 +1361,6 @@ function startsVisibleBlock(line) {
  * MAX_NESTING_DEPTH an opener DEGRADES to literal paragraph text, so a peel
  * that reaches the cap is looking at prose and says so.
  */
-function markerCarriesContinuation(text, memo) {
-  const path = []
-  let result = false, steps = 0
-  for (; path.length < MAX_NESTING_DEPTH;) {
-    const known = memo.get(text)
-    if (known) {
-      if (path.length + known.steps > MAX_NESTING_DEPTH) return false
-      result = known.value
-      steps = known.steps
-      break
-    }
-    path.push(text)
-    if (text === '+') { result = true; break }
-    const marker = text[0] !== ' ' && text[0] !== '\t'
-      ? matchMarkerAt({ col: 0, rest: text }) : null
-    if (!marker) break
-    text = marker.text.trim()
-    if (path.length === MAX_NESTING_DEPTH) return false
-  }
-  for (let k = path.length - 1; k >= 0; k--) {
-    memo.set(path[k], { value: result, steps: ++steps })
-  }
-  return result
-}
-
-function quotePrefixSummary(text, memo) {
-  const path = []
-  let summary
-  for (;;) {
-    summary = memo.get(text)
-    if (summary) break
-    const quote = QUOTE.exec(text)
-    if (!quote) { summary = { depth: 0, tail: text }; break }
-    if (path.length >= MAX_NESTING_DEPTH) return null
-    path.push(text)
-    text = quote[1] ?? ''
-  }
-  for (let k = path.length - 1; k >= 0; k--) {
-    summary = { depth: summary.depth + 1, tail: summary.tail }
-    memo.set(path[k], summary)
-  }
-  return summary
-}
-
 function opensParagraph(text, atBlockPosition = false, tableOpen = false, memo = null) {
   let budget = MAX_NESTING_DEPTH
   // Only marker-line classification has no incoming table history. Keep its
@@ -1379,11 +1397,14 @@ function opensParagraph(text, atBlockPosition = false, tableOpen = false, memo =
   let openTable = tableOpen
   let inQuote = false
   for (;;) {
-    const known = !inQuote && cache?.get(text)
+    // Marker peeling trims the tail; quote peeling preserves it. Keep
+    // those two source endpoints separate when their suffix lengths match.
+    const key = text.length * 4 + Number(inQuote) * 2 + Number(/\s$/.test(text))
+    const known = cache?.get(key)
     if (known && known.steps <= budget) return finish(known.value, known.steps)
     if (text.trim() === '') return finish(false)
     if (budget <= 0) return true
-    if (cache && !inQuote) path.push(text)
+    if (cache) path.push(key)
     // A quote is asked the SAME question about what it carries. An empty quote
     // opens nothing, and neither does `> # H` - the answer is the quote's own
     // last block, not merely whether the quote had any content. This used to
@@ -1392,7 +1413,7 @@ function opensParagraph(text, atBlockPosition = false, tableOpen = false, memo =
     // at a block position exactly when the quote itself is, so the flag rides
     // along unchanged.
     if (budget-- <= 0) return true
-    if (QUOTE.test(text)) { text = QUOTE.exec(text)[1] ?? ''; openTable = false; inQuote = true; path.length = 0; continue }
+    if (QUOTE.test(text)) { text = QUOTE.exec(text)[1] ?? ''; openTable = false; inQuote = true; continue }
     if (HEADING.test(text) || HR.test(text)) return finish(false)
     if (inQuote && atBlockPosition && ((FENCE.test(text) && parseFenceInfo(FENCE.exec(text)[2]) !== null) ||
         isColonBlockOpener(text))) return finish(false)
@@ -2067,9 +2088,7 @@ export function parse(src, { authoredBodyBases = true } = {}) {
     footnoteDefs: new Map(),
     abbrDefs: new Map(),
     authoredBodyBases,
-    markerParagraphMemo: new Map(),
-    markerContinuationMemo: new Map(),
-    quotePrefixMemo: new Map(),
+    prefixMemos: new WeakMap(),
   }
   // frontmatter (PART 1): consumed; renders nothing. The closer-lookahead
   // guard: with no closing --- the line is an ordinary thematic break.
@@ -2134,9 +2153,7 @@ export function parse(src, { authoredBodyBases = true } = {}) {
   // PART 9 SS4c no-nesting demotion); it is false again here, so drop it too.
   delete state.inFigureGroup
   delete state.authoredBodyBases
-  delete state.markerParagraphMemo
-  delete state.markerContinuationMemo
-  delete state.quotePrefixMemo
+  delete state.prefixMemos
   delete state.attachmentBoundaries
   return { blocks, ...state }
 }
@@ -3252,7 +3269,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const inner = []
       let openFence = null // run string of a fence opened inside the quote
       let openComment = null // exact-width comment fence opened inside the quote
-      let prevBlank = true // fences open only at BLOCK START (I4 otherwise)
       let qOpenPara = false // does the quote currently end in an open paragraph?
       let qPara = [] // its lines, for SS12's absorption test below
       /*
@@ -3288,17 +3304,21 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
        * what is above it, never to itself, which is the same order the outer
        * loop uses for its own rows.
        */
-      const nestedQuoteOpensParagraph = (line, atStart) => {
+      const nestedQuoteOpensParagraph = (line, atStart, idx) => {
         if (atStart && qNestedTable.length === 0) {
-          const summary = quotePrefixSummary(line, state.quotePrefixMemo ??= new Map())
+          const summary = quotePrefixSummary(line, prefixMemo(state, lines, idx).quote)
           if (summary) {
             const { depth, tail } = summary
-            if (state.blockDepth + depth >= MAX_NESTING_DEPTH) return true
+            if (state.blockDepth + depth >= MAX_NESTING_DEPTH) {
+              const remaining = MAX_NESTING_DEPTH - state.blockDepth
+              if (depth > remaining) return true
+              return tail.trim() !== ''
+            }
             qNestedTable.length = depth
             if (depth > 0) qNestedTable[depth - 1] = tableRunStep(false, tail)
             return !DEFLIST_TERM.test(tail) &&
               !(FENCE.test(tail) && parseFenceInfo(FENCE.exec(tail)[2]) !== null) &&
-              !isColonBlockOpener(tail) && opensParagraph(tail, true)
+              !isColonBlockOpener(tail) && opensParagraph(tail, true, false, prefixMemo(state, lines, idx).paragraph)
           }
         }
         let text = line
@@ -3327,7 +3347,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (state.blockDepth + depth >= MAX_NESTING_DEPTH) return text.trim() !== ''
             return !DEFLIST_TERM.test(text) &&
               !(atStart && ((FENCE.test(text) && parseFenceInfo(FENCE.exec(text)[2]) !== null) || isColonBlockOpener(text))) &&
-              opensParagraph(text, true, before)
+              opensParagraph(text, atStart, before, prefixMemo(state, lines, idx).paragraph)
           }
         }
         qNestedTable.length = depth
@@ -3373,10 +3393,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           }
         }
         const f = FENCE.exec(l)
-        const isOpener = !!(f && prevBlank && parseFenceInfo(f[2]))
+        const isOpener = !!(f && !qOpenPara && parseFenceInfo(f[2]))
         if (isOpener) openFence = f[1]
-        const wasBlank = prevBlank
-        prevBlank = isBlank(l)
         // PART 1 S4 makes the fold conditional on an OPEN PARAGRAPH, so every
         // block that leaves none clears this. A definition TERM is bounded like
         // a heading (it holds inline content, not a paragraph), and a
@@ -3429,9 +3447,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // Every depth ends when a line stops supplying its marker, so a line
         // that is not a nested quote at all clears the whole ladder.
         if (!QUOTE.test(l)) qNestedTable.length = 0
-        const nestedQuoteEnds = QUOTE.test(l) && !nestedQuoteOpensParagraph(l, wasBlank)
+        const nestedQuoteEnds = QUOTE.test(l) && !nestedQuoteOpensParagraph(l, !qOpenPara, idx)
         const nestedItemEnds = !qOpenPara && !!matchMarkerAt(indentCols(l)) &&
-          !opensParagraph(l, true, false, state.markerParagraphMemo)
+          !opensParagraph(l, true, false, prefixMemo(state, lines, idx).paragraph)
         if (!absorbedColon &&
             (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
@@ -3457,6 +3475,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         layoutWork.quoteStrips += 1
         const qm = QUOTE.exec(lines[i])
         if (qm) {
+          carryPrefixMemo(state, lines, i, inner, inner.length)
           inner.push(qm[1] ?? '')
           // The final line has no follower whose ownership needs this state.
           if (i + 1 < n) trackFence(qm[1] ?? '', i)
@@ -4166,13 +4185,14 @@ function collectItems(lines, i, list, state, ind, meas) {
       itemMeas.push(m)
       tableOpen = tableRunStep(tableOpen, text)
     }
+    carryPrefixMemo(state, lines, i, itemLines, 0)
     pushLine(head.text)
     // Whether the marker line opens nested items whose innermost item is the
     // FIRST-BLOCK `+` form. An enclosing collector must carry a following
     // flush-left block down to that item even though the empty `+` leaves no
     // paragraph open at the enclosing levels.
     let carriesBareContinuation = i + 1 < n &&
-      markerCarriesContinuation(head.text.trim(), state.markerContinuationMemo ??= new Map())
+      markerCarriesContinuation(head.text.trim(), prefixMemo(state, itemLines, 0).continuation)
     let nestedAttachmentEnd = -1
     const item = { }
     if (head.attrs && head.attrs.replace(/[{} ]/g, '') !== '') item.attrs = head.attrs
@@ -4285,7 +4305,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       // A wrapped attribute block is classified from its complete physical-line
       // span in the body loop below. Its opener is intentionally not guessed
       // from this one-line seed.
-      if (i + 1 < lines.length && !opensParagraph(head.text.trim(), true, false, state.markerParagraphMemo)) closePara()
+      if (i + 1 < lines.length && !opensParagraph(head.text.trim(), true, false, prefixMemo(state, itemLines, 0).paragraph)) closePara()
     }
     // Content column of the FIRST sub-list opened in this item (-1 = none). A
     // blank followed by content at or past this column belongs to the sub-list,
@@ -5034,7 +5054,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         // the marker-line seed carve#1280 fixed, and it survived because that
         // fix reached only the marker line.
         else if (matchMarkerAt(dmeas)) {
-          if (opensParagraph(dmeas.rest, true, false, state.markerParagraphMemo)) startPara()
+          if (opensParagraph(dmeas.rest, true, false, prefixMemo(state, lines, i).paragraph)) startPara()
           else closePara()
         }
         // A quote opens a paragraph only if it CARRIES one. A bare `>` is an

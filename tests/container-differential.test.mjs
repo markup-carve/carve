@@ -26,12 +26,13 @@ function regexCalls(source) {
   try { parse(source) } finally { RegExp.prototype.exec = exec }
   return calls
 }
-for (const marker of ['> ', '- ', '1. ']) for (const follower of ['', 'tail\n']) test(`${marker}: classification with ${JSON.stringify(follower)} grows with depth`, () => {
+for (const marker of ['> ', '- ', '1. ', '> - ', '- > ', '1. > ']) for (const follower of ['', 'tail\n']) test(`${marker}: classification with ${JSON.stringify(follower)} grows with depth`, () => {
   const source = depth => marker.repeat(depth) + 'end\n' + follower
-  const small = regexCalls(source(64)), large = regexCalls(source(128))
+  const depth = marker.includes('>') && marker.trim() !== '>' ? 32 : 64
+  const small = regexCalls(source(depth)), large = regexCalls(source(depth * 2))
   assert.ok(small > 64, 'the counter must observe parser work')
   assert.ok(large / small < 2.25, `${small} -> ${large} regex calls`)
-  assert.equal(regexCalls(source(128)), large)
+  assert.equal(regexCalls(source(depth * 2)), large)
 })
 
 test('a list term retains its separate continuation rule', () => {

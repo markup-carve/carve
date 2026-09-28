@@ -206,6 +206,9 @@
            LIST-ITEM PRECEDENCE. PART 9 §24 C3 and CARVE-P9-051/053 qualify
            the table below. After a blank, a line below the item's content
            column belongs outside that item, including the band above its base.
+           A heading, table or thematic break on the marker line also leaves
+           no ordinary continuation claim. A following line below the content
+           column closes that item, including this band (CARVE-P0-007).
            After a line comment consumed below the content column, a noninterrupting
            follower remains in the item even below that column. A comment at
            or above the content column does not grant that retention (C3).

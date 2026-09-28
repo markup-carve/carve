@@ -348,5 +348,100 @@
     "name": "quote-code-plus-attached-paragraph",
     "source": "> ```\n+\ntail\n",
     "html": "<blockquote>\n  <pre><code>\n</code></pre>\n  <p>tail</p>\n</blockquote>"
+  },
+  {
+    "name": "nested-quote-fence-after-heading",
+    "source": "> # H\n> > ```\ntail\n",
+    "html": "<blockquote>\n  <h1 id=\"H\">H</h1>\n  <blockquote>\n    <pre><code>\n</code></pre>\n  </blockquote>\n</blockquote>\n<p>tail</p>"
+  },
+  {
+    "name": "nested-quote-colon-after-heading",
+    "source": "> # H\n> > ::: x\ntail\n",
+    "html": "<blockquote>\n  <h1 id=\"H\">H</h1>\n  <blockquote>\n    <div class=\"x\">\n\n    </div>\n  </blockquote>\n</blockquote>\n<p>tail</p>"
+  },
+  {
+    "name": "nested-quote-colon-in-paragraph",
+    "source": "> > a\n> > ::: x\nlazy\n",
+    "html": "<blockquote>\n  <blockquote>\n    <p>a</p>\n    <div class=\"x\">\n\n    </div>\n  </blockquote>\n</blockquote>\n<p>lazy</p>"
+  },
+  {
+    "name": "quote-colon-attachment",
+    "source": "> ::: box\n+\ntail\n",
+    "html": "<blockquote>\n  <div class=\"box\">\n    <p>tail</p>\n  </div>\n</blockquote>"
+  },
+  {
+    "name": "quote-comment-attachment",
+    "source": "> %%%\n+\n%%%\n",
+    "html": "<blockquote>\n\n</blockquote>"
+  },
+  {
+    "name": "list-attached-code-opener",
+    "source": "- ```\n+\n```\n",
+    "html": "<ul>\n  <li>\n    <pre><code>\n</code></pre>\n    <pre><code>\n</code></pre>\n  </li>\n</ul>"
+  },
+  {
+    "name": "quote-list-code-attachment",
+    "source": "> - ```\n+\ntail\n",
+    "html": "<blockquote>\n  <ul>\n    <li>\n      <pre><code>\n</code></pre>\n    </li>\n  </ul>\n  <p>tail</p>\n</blockquote>"
+  },
+  {
+    "name": "description-heading-list",
+    "source": ":: t\n: # H\n- z\n",
+    "html": "<dl>\n  <dt>t</dt>\n  <dd>\n    <h1 id=\"H\">H</h1>\n  </dd>\n</dl>\n<ul>\n  <li>z</li>\n</ul>"
+  },
+  {
+    "name": "description-table-list",
+    "source": ":: t\n: | a |\n- z\n",
+    "html": "<dl>\n  <dt>t</dt>\n  <dd>\n    <table>\n      <tbody>\n        <tr><td>a</td></tr>\n      </tbody>\n    </table>\n  </dd>\n</dl>\n<ul>\n  <li>z</li>\n</ul>"
+  },
+  {
+    "name": "colon-quote-follower",
+    "source": "- ::: box\n> tail\n",
+    "html": "<ul>\n  <li>\n    <div class=\"box\">\n\n    </div>\n  </li>\n</ul>\n<blockquote><p>tail</p></blockquote>"
+  },
+  {
+    "name": "nested-colon-quote-follower",
+    "source": "- - ::: box\n> tail\n",
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <div class=\"box\">\n\n        </div>\n      </li>\n    </ul>\n  </li>\n</ul>\n<blockquote><p>tail</p></blockquote>"
+  },
+  {
+    "name": "quote-attachment-heading-ids",
+    "source": "> # H\n> ```\n+\n# H\n",
+    "html": "<blockquote>\n  <h1 id=\"H\">H</h1>\n  <pre><code>\n</code></pre>\n  <h1 id=\"H-2\">H</h1>\n</blockquote>"
+  },
+  {
+    "name": "quote-attachment-link-scope",
+    "source": "> [r]: /url\n> ```\n+\n[r]\n",
+    "html": "<blockquote>\n  <pre><code>\n</code></pre>\n  <p>[r]</p>\n</blockquote>"
+  },
+  {
+    "name": "equal-length-source-lines",
+    "source": "- - # H\ntail\n\n- - abc\ntail\n",
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <h1 id=\"H\">H</h1>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>\n<ul>\n  <li>\n    <ul>\n      <li>abc\ntail</li>\n    </ul>\n  </li>\n</ul>"
+  },
+  {
+    "name": "equal-length-quoted-source-lines",
+    "source": "> - # H\ntail\n\n> - abc\ntail\n",
+    "html": "<blockquote>\n  <ul>\n    <li>\n      <h1 id=\"H\">H</h1>\n    </li>\n  </ul>\n</blockquote>\n<p>tail</p>\n<blockquote>\n  <ul>\n    <li>abc\ntail</li>\n  </ul>\n</blockquote>"
+  },
+  {
+    "name": "trimmed-marker-suffix",
+    "source": "- - # H   \ntail\n\n- - abc   \ntail\n",
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <h1 id=\"H\">H</h1>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>\n<ul>\n  <li>\n    <ul>\n      <li>abc\ntail</li>\n    </ul>\n  </li>\n</ul>"
+  },
+  {
+    "name": "list-raw-attachment",
+    "source": "- ```=html\n  <b>x</b>\n+\ntail\n",
+    "html": "<ul>\n  <li>\n    <b>x</b>\n    tail\n  </li>\n</ul>"
+  },
+  {
+    "name": "quote-raw-attachment",
+    "source": "> ```=html\n> <b>x</b>\n+\ntail\n",
+    "html": "<blockquote>\n  <b>x</b>\n  <p>tail</p>\n</blockquote>"
+  },
+  {
+    "name": "mixed-prefix-trailing-space",
+    "source": "> - > - # H   \ntail\n\n> - > - abc   \ntail\n",
+    "html": "<blockquote>\n  <ul>\n    <li>\n      <blockquote>\n        <ul>\n          <li>\n            <h1 id=\"H\">H</h1>\n          </li>\n        </ul>\n      </blockquote>\n    </li>\n  </ul>\n</blockquote>\n<p>tail</p>\n<blockquote>\n  <ul>\n    <li>\n      <blockquote>\n        <ul>\n          <li>abc\ntail</li>\n        </ul>\n      </blockquote>\n    </li>\n  </ul>\n</blockquote>"
   }
 ]
