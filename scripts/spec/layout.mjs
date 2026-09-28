@@ -17,7 +17,7 @@
  * disagreement before (carve#646).
  */
 
-import { parseAttrList, parseBlockAttrList, parseAttrBlock, matchDestination, isImageSource } from './render.mjs'
+import { parseAttrList, parseBlockAttrList, parseAttrBlock, matchDestination, isImageSource, headingText } from './render.mjs'
 import { labelKey } from './label-key.mjs'
 import layoutTransitions from '../../resources/spec/layout-transitions.json' with { type: 'json' }
 
@@ -2579,12 +2579,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     // --- headings ---
     if ((m = HEADING.exec(line))) {
       const level = m[1].length
-      const strip = (s) => s.replace(/(^|[ \t])%%(?!%).*$/, '').replace(/[ \t]+$/, '')
       i++
       // SINGLE-LINE HEADINGS (PART 2): a heading ends at the newline. Nothing
       // folds into it, so whatever follows simply begins its own block - which
       // is why this is a plain read rather than a loop with a boundary test.
-      push({ t: 'heading', level, text: strip(m[2]) })
+      push({ t: 'heading', level, text: headingText(m[2]) })
       continue
     }
 

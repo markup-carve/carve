@@ -1441,6 +1441,30 @@ function mathSpan(kind, code, attrs) {
   return `<span${rest}${roleStr}>${wrap[0]}${body}${wrap[1]}</span>`
 }
 
+const headingSem = g.createSemantics().addOperation('headingText', {
+  headingInlines(_initial, parts) {
+    return parts.children.map((part) => part.headingText()).join('')
+  },
+  headingInline(part) { return part.headingText() },
+  headingSpComment(_space, _marker, _body) { return '' },
+  inline(_content) { return this.sourceString },
+})
+
+export function headingText(text) {
+  if (!text.includes('%%')) return text.replace(/[ \t]+$/, '')
+  // Match before the renderer's limit checks: discarded comments can contain
+  // arbitrary brackets and backticks. Deep live input must still refuse safely.
+  let match
+  try {
+    match = g.match(text, 'headingInlines')
+  } catch (error) {
+    if (error instanceof RangeError) throw new Refuse('heading inline exceeds parser stack capacity')
+    throw error
+  }
+  if (match.failed()) throw new Refuse(`heading inline: ${match.shortMessage}`)
+  return headingSem(match).headingText().replace(/[ \t]+$/, '')
+}
+
 // parse a standalone `{...}` attribute block (table row/cell attrs);
 // returns the serialized attribute string or null when invalid
 export function parseAttrBlock(text) {

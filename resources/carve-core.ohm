@@ -115,7 +115,7 @@ CarveCore {
   //
   // The caveat this comment used to carry - THIS RULE IS NOT EXECUTED - was
   // true and is not any more. scripts/spec/render.mjs still matches only
-  // `inlines`, `attrs` and `blockAttrs`, so nothing in the RENDER pipeline
+  // `inlines`, `headingInlines`, `attrs` and `blockAttrs`, so the render path never
   // reaches `doc`, `block`, `codeBlock` or `langInfo`; but carve#916 added
   // tests/ohm-block-layer.test.mjs, which drives every block production as an
   // ohm start rule from a fixture table. Replacing this rule's body with a
@@ -154,6 +154,13 @@ CarveCore {
   // ==========================================================================
   // INLINE (Core)
   // ==========================================================================
+  // Headings retain their host's initial/tab-separated comment forms. Read
+  // complete inline constructs first so their literal payload stays opaque.
+  headingInlines = headingInitialComment? headingInline*
+  headingInline = headingSpComment | inline
+  headingInitialComment = "%%" ~"%" (~newline any)*
+  headingSpComment = (" " | "\t") "%%" ~"%" (~newline any)*
+
   // ORDER IS TUNED FOR SPEED (byte-exactness preserved). The three most common
   // tokens -- `word`, `spComment`, `inlineSpace` -- are hoisted to the FRONT:
   // NO other alternative begins with an alphanumeric or a space, so hoisting

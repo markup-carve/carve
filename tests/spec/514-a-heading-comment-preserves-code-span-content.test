@@ -1,0 +1,66 @@
+A heading comment preserves code-span content
+
+```
+# a `x %% b` c
+.
+<section id="a-x-b-c">
+  <h1>a <code>x %% b</code> c</h1>
+</section>
+```
+
+```
+# a ``x ` %% b`` c
+.
+<section id="a-x-b-c">
+  <h1>a <code>x ` %% b</code> c</h1>
+</section>
+```
+
+```
+{#raw-heading}
+# a `x %% b`{=html} c
+.
+<section id="raw-heading">
+  <h1>a x %% b c</h1>
+</section>
+```
+
+```
+# a `x %% b` c %% hidden
+.
+<section id="a-x-b-c">
+  <h1>a <code>x %% b</code> c</h1>
+</section>
+```
+
+```
+> # a `x %% b` c
+.
+<blockquote>
+  <h1 id="a-x-b-c">a <code>x %% b</code> c</h1>
+</blockquote>
+```
+
+```
+# a !`x %% b` c
+.
+<section id="a-x-b-c">
+  <h1>a x %% b c</h1>
+</section>
+```
+
+```
+# %% hidden
+.
+<section id="s">
+  <h1></h1>
+</section>
+```
+
+```
+# a	%% hidden
+.
+<section id="a">
+  <h1>a</h1>
+</section>
+```
