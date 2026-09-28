@@ -2,10 +2,10 @@
   "version": 1,
   "measured": {
     "date": "2026-09-29",
-    "spec": "b940924c4e82",
-    "js": "e8508fb535a2",
-    "php": "1074a7952b0d",
-    "rust": "e8d7b33db6a3"
+    "spec": "3aa041b3d57d",
+    "js": "4c89ca26b88d",
+    "php": "2742f8175432",
+    "rust": "840e38cfe852"
   },
   "differences": [
     {
@@ -399,32 +399,6 @@
       }
     },
     {
-      "key": "commonmark/markdown/41",
-      "reason": "Entity and numeric character references: rendered HTML differs between js/rust and php.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "382259f4bd538273fda197e2f311ff7d5fe030410bfd3c3fe78667f7d6a9934e",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "[a]\\(url \\\"tit\\\")\n",
-            "html": "<p>[a](url \"tit\")</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "[a](url \"tit\")\n",
-            "html": "<p><a href=\"url\" title=\"tit\">a</a></p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "[a]\\(url \\\"tit\\\")\n",
-            "html": "<p>[a](url \"tit\")</p>"
-          }
-        }
-      }
-    },
-    {
       "key": "commonmark/markdown/473",
       "reason": "Emphasis and strong emphasis: rendered HTML differs between js/php and rust.",
       "issue": "https://github.com/markup-carve/carve/issues/2522",
@@ -550,84 +524,6 @@
             "status": 0,
             "source": "[a]\\(<b)c\n[a]\\(<b)c>\n[a](`<b>`{=html}c\\)\n",
             "html": "<p>[a](&lt;b)c\n[a](&lt;b)c&gt;\n[a](<b>c)</p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "commonmark/markdown/505",
-      "reason": "Links: rendered HTML differs between js/php and rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "9ae65b8395c8edd4b19b2846f6ee2945a5139d666c34e95f6dbd8ecd53e2619f",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "[link](/url \"title\")\n[link](/url 'title')\n[link](/url (title))\n",
-            "html": "<p><a href=\"/url\" title=\"title\">link</a>\n<a href=\"/url\" title=\"title\">link</a>\n[link](/url (title))</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "[link](/url \"title\")\n[link](/url 'title')\n[link](/url (title))\n",
-            "html": "<p><a href=\"/url\" title=\"title\">link</a>\n<a href=\"/url\" title=\"title\">link</a>\n[link](/url (title))</p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "[link](/url \"title\")\n[link](/url \"title\")\n[link](/url \"title\")\n",
-            "html": "<p><a href=\"/url\" title=\"title\">link</a>\n<a href=\"/url\" title=\"title\">link</a>\n<a href=\"/url\" title=\"title\">link</a></p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "commonmark/markdown/508",
-      "reason": "Links: rendered HTML differs between js/rust and php.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "30761f2f19071a5a99937a40e99b20c0b5fe072604cf8734b32ce5e3b9f1b4bd",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "[link]\\(/url \\\"title \\\"and\\\" title\\\")\n",
-            "html": "<p>[link](/url \"title \"and\" title\")</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "[link](/url \"title \"and\" title\")\n",
-            "html": "<p>[link](/url “title “and” title”)</p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "[link](/url \\\"title \\\"and\\\" title\\\")\n",
-            "html": "<p>[link](/url \"title \"and\" title\")</p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "commonmark/markdown/510",
-      "reason": "Links: rendered HTML differs between js/php and rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "63251a257ec1214163b7b3b09be397d6bf958ee5cf204ca671c1504fdb1d56e0",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "[link](   /uri\n  \\\"title\\\"  )\n",
-            "html": "<p>[link](   /uri\n\"title\"  )</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "[link](   /uri\n  \\\"title\\\"  )\n",
-            "html": "<p>[link](   /uri\n\"title\"  )</p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "[link](/uri \"title\")\n",
-            "html": "<p><a href=\"/uri\" title=\"title\">link</a></p>"
           }
         }
       }
@@ -893,32 +789,6 @@
       }
     },
     {
-      "key": "commonmark/markdown/540",
-      "reason": "Links: rendered HTML differs between js and php/rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "f43f84268cac8072d6641f186ab818f679e110dfe9fc0ee6f4e83c6f4dfe1dc4",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "[ẞ]\n\n[SS]: /url\n",
-            "html": "<p>[ẞ]</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "[ẞ][SS]\n\n[SS]: /url\n",
-            "html": "<p><a href=\"/url\">ẞ</a></p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "[ẞ](/url)\n",
-            "html": "<p><a href=\"/url\">ẞ</a></p>"
-          }
-        }
-      }
-    },
-    {
       "key": "commonmark/markdown/541",
       "reason": "Links: rendered HTML differs between js/php and rust.",
       "issue": "https://github.com/markup-carve/carve/issues/2522",
@@ -1018,32 +888,6 @@
             "status": 0,
             "source": "*[foo\\*](/url)\n",
             "html": "<p>*<a href=\"/url\">foo*</a></p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "commonmark/markdown/568",
-      "reason": "Links: rendered HTML differs between js/rust and php.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "585884c55283b5c39f816b7bd5a31d35bac3059bd50fb82061b27e2aa5cef9a3",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "[foo][]\\(not a link)\n\n[foo]: /url1\n",
-            "html": "<p><a href=\"/url1\">foo</a>(not a link)</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "[foo](not a link)\n\n[foo]: /url1\n",
-            "html": "<p>[foo](not a link)</p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "[foo](/url1)(not a link)\n",
-            "html": "<p><a href=\"/url1\">foo</a>(not a link)</p>"
           }
         }
       }
@@ -1179,58 +1023,6 @@
       }
     },
     {
-      "key": "commonmark/markdown/603",
-      "reason": "Autolinks: rendered HTML differs between js and php/rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "8e512d59f2a18bcfb797af881d8273158a704c81525e8384d8899ea38b16648f",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "<https://example.com/\\[\\>\n",
-            "html": "<p>&lt;https://example.com/[&gt;</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "[https://example.com/\\\\\\[\\\\](https://example.com/%5C%5B%5C)\n",
-            "html": "<p><a href=\"https://example.com/%5C%5B%5C\">https://example.com/\\[\\</a></p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "[https://example.com/\\\\\\[\\\\](https://example.com/%5C%5B%5C)\n",
-            "html": "<p><a href=\"https://example.com/%5C%5B%5C\">https://example.com/\\[\\</a></p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "commonmark/markdown/606",
-      "reason": "Autolinks: rendered HTML differs between js/php and rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "fcb9403cb8f98d7910bfe4f54242028ecc42bab1ec91ec0131d287bcf4b83755",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "<foo\\+@bar.example.com>\n",
-            "html": "<p>&lt;foo+<span class=\"mention\"><strong>@bar.example.com</strong></span>&gt;</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "<foo\\+@bar.example.com>\n",
-            "html": "<p>&lt;foo+<span class=\"mention\"><strong>@bar.example.com</strong></span>&gt;</p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "<foo+\\@bar.example.com>\n",
-            "html": "<p>&lt;foo+@bar.example.com&gt;</p>"
-          }
-        }
-      }
-    },
-    {
       "key": "commonmark/markdown/61",
       "reason": "Thematic breaks: rendered HTML differs between js/php and rust.",
       "issue": "https://github.com/markup-carve/carve/issues/2522",
@@ -1252,110 +1044,6 @@
             "status": 0,
             "source": "- Foo\n- ---\n",
             "html": "<ul>\n  <li>Foo</li>\n  <li>\n    <hr>\n  </li>\n</ul>"
-          }
-        }
-      }
-    },
-    {
-      "key": "commonmark/markdown/644",
-      "reason": "Hard line breaks: rendered HTML differs between js/php and rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "f68053f4f3bbf79c097947bd8801a35030a69f528b1bade1f67d01ae276aac66",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "foo\\\n",
-            "html": "<p>foo<br>\n</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "foo\\\n",
-            "html": "<p>foo<br>\n</p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "foo\\\\\n",
-            "html": "<p>foo\\</p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "commonmark/markdown/646",
-      "reason": "Hard line breaks: rendered HTML differs between js/php and rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "56767f201b10b27aa39c489e7c36698e50643ef91595d39b87fd58cb02193073",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "### foo\\\n",
-            "html": "<section id=\"foo\">\n  <h3>foo<br>\n</h3>\n</section>"
-          },
-          "php": {
-            "status": 0,
-            "source": "### foo\\\n",
-            "html": "<section id=\"foo\">\n  <h3>foo<br>\n</h3>\n</section>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "### foo\\\\\n",
-            "html": "<section id=\"foo\">\n  <h3>foo\\</h3>\n</section>"
-          }
-        }
-      }
-    },
-    {
-      "key": "commonmark/markdown/79",
-      "reason": "ATX headings: rendered HTML differs between js/php and rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "a4669525c26905fc3133c707e8f9ba5ddc1db579e915e53fd2d5a3e2e9cc3329",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "## \n#\n\n###\n",
-            "html": "<p>##\n#</p>\n<p>###</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "## \n#\n\n###\n",
-            "html": "<p>##\n#</p>\n<p>###</p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "##\n\n#\n\n###\n",
-            "html": "<p>##</p>\n<p>#</p>\n<p>###</p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "commonmark/markdown/90",
-      "reason": "Setext headings: rendered HTML differs between js and php and rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "c9ebd879de9c93524fd0f4e00ac4fba530c5067101d09beea2d49ddc5354f70c",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "## Foo\\\n",
-            "html": "<section id=\"Foo\">\n  <h2>Foo<br>\n</h2>\n</section>"
-          },
-          "php": {
-            "status": 0,
-            "source": "## Foo\n",
-            "html": "<section id=\"Foo\">\n  <h2>Foo</h2>\n</section>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "## Foo\\\\\n",
-            "html": "<section id=\"Foo\">\n  <h2>Foo\\</h2>\n</section>"
           }
         }
       }
@@ -1408,32 +1096,6 @@
             "status": 0,
             "source": "\\{\\#id .class}\n\nA paragraph\n",
             "html": "<p>{#id .class}</p>\n<p>A paragraph</p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "djot/attributes.test:135",
-      "reason": "attributes.test: rendered HTML differs between js/php and rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "4ac6699e935a7f0d2232db41a9affb36e073f27b03ac79c4979a375a8c736755",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "{#id .cla*ss*\n",
-            "html": "<p>{<span class=\"tag\"><strong>#id</strong></span> .cla*ss*</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "{#id .cla*ss*\n",
-            "html": "<p>{<span class=\"tag\"><strong>#id</strong></span> .cla*ss*</p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "\\{\\#id .cla*ss*\n",
-            "html": "<p>{#id .cla*ss*</p>"
           }
         }
       }
@@ -1772,84 +1434,6 @@
             "status": 0,
             "source": "***a***\n",
             "html": "<p>***a***</p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "djot/spans.test:21",
-      "reason": "spans.test: rendered HTML differs between js/php and rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "7c8ab5909a7ecd088c0d81c54b30fc57a06f9b7ae67519548a4237dba36d47bd",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "[not a span]{#a<b}\n",
-            "html": "<p>[not a span]{<span class=\"tag\"><strong>#a</strong></span>&lt;b}</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "[not a span]{#a<b}\n",
-            "html": "<p>[not a span]{<span class=\"tag\"><strong>#a</strong></span>&lt;b}</p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "[not a span]\\{\\#a<b}\n",
-            "html": "<p>[not a span]{#a&lt;b}</p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "djot/spans.test:27",
-      "reason": "spans.test: rendered HTML differs between js/php and rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "00bd54ffb65076b0e29d6a7c3e939dcc5ad3d1e54d6c9ebff344bdbd2a5af753",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "[*not* a span]{#a<b}\n",
-            "html": "<p>[<strong>not</strong> a span]{<span class=\"tag\"><strong>#a</strong></span>&lt;b}</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "[*not* a span]{#a<b}\n",
-            "html": "<p>[<strong>not</strong> a span]{<span class=\"tag\"><strong>#a</strong></span>&lt;b}</p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "[*not* a span]\\{\\#a<b}\n",
-            "html": "<p>[<strong>not</strong> a span]{#a&lt;b}</p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "djot/spans.test:33",
-      "reason": "spans.test: rendered HTML differs between js/php and rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "1122347f672af054220ae7e558fb347f56b721e19d46eefa43e2170e2462323c",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "[not a span]{#a\n",
-            "html": "<p>[not a span]{<span class=\"tag\"><strong>#a</strong></span></p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "[not a span]{#a\n",
-            "html": "<p>[not a span]{<span class=\"tag\"><strong>#a</strong></span></p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "[not a span]\\{\\#a\n",
-            "html": "<p>[not a span]{#a</p>"
           }
         }
       }
