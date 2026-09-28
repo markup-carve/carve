@@ -276,6 +276,15 @@
         ends the quote. Only `- > q` / `tail` and `- a` /
         `tail` fold, because those two are the ones with a paragraph open.
 
+        This also applies when a nested item's marker carries a terminated
+        comment span. In `- a` / `  - %%%` / `    hidden` / `%%%` / `tail`,
+        the comment is the inner item's first block and leaves no paragraph
+        open. `tail` is a document paragraph at every closer column. An
+        ancestor collecting that marker line MUST NOT give the closer the
+        retention of a fresh comment written below its own content column.
+        This does not extend the inner item's body to an ordinary payload line
+        below its content column: that line still ends the item under S1/S4.
+
         A definition still gets collected from where it was written (SS17 L6);
         ending the item disposes of the FOLLOWING line, not of the definition.
 
