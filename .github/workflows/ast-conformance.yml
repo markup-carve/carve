@@ -102,7 +102,7 @@ jobs:
 
   conformance:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
     steps:
       - name: Check out carve
         uses: actions/checkout@v4
@@ -342,6 +342,29 @@ jobs:
           CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
         run: npm run import:report
+
+      - name: Public importer suites and shared targets
+        if: always()
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+        run: npm run import:compare -- --report import-comparison-report.json
+
+      - name: Corpus AST JSON, every producer and reader
+        if: always()
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+        run: npm run ast:ingest -- --report ingest-comparison-report.json
+
+      - name: Upload importer and AST ingest comparisons
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: import-comparisons
+          path: '*-comparison-report.json'
 
       - name: Lint, constructed cells and formatter edge cases
         if: always()

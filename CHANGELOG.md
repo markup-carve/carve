@@ -22,6 +22,8 @@ Releases before 0.1.6 are archived in
 
 ### Improvements
 
+- Compare public importer suites through one Carve reader and ingest corpus AST
+  JSON across every engine pair, with exact drift declarations (carve#2493).
 - Cover raised-colon paragraph folding at list column boundaries (carve#2494).
 - Pin unpadded hyphen-only line-block formatting (carve#2496).
 - Reuse container-prefix state and stop unused scans in the executable spec
