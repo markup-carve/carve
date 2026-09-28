@@ -31,6 +31,7 @@ export function diagnostics(result, files) {
     const match = /^(.*):(\d+):(\d+) ([a-z][a-z0-9-]*)(?:\s.*)?$/.exec(line)
     // Diagnostic messages can contain source newlines. Only stdout following
     // a diagnostic header is message text; stderr always indicates failure.
+    if (!match && (/^.*\.crv:\d+:\d+\b/.test(line) || /^(?:PHP )?(?:Warning|Deprecated|Notice|Fatal error|Parse error):/.test(line))) throw new Error(`malformed lint output: ${line}`)
     if (!match && count > 0) continue
     if (!match || !Object.hasOwn(byFile, match[1])) throw new Error(`unexpected lint output: ${line}`)
     const [, file, row, column, rule] = match
@@ -39,7 +40,7 @@ export function diagnostics(result, files) {
     count++
   }
   if ((result.status === 1) !== (count > 0)) throw new Error('lint status and diagnostics disagree')
-  for (const values of Object.values(byFile)) values.sort((a, b) => a[0].localeCompare(b[0], 'en') || a[1] - b[1] || a[2] - b[2])
+  for (const values of Object.values(byFile)) values.sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0) || a[1] - b[1] || a[2] - b[2])
   return byFile
 }
 

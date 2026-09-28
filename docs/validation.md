@@ -120,7 +120,7 @@ the command-line and editor behavior stay aligned.
 | `footnote-labels-differ-only-in-whitespace` | two footnote definitions whose labels normalize to the same ASCII-whitespace key; the first definition wins, the later definition is ignored, and the diagnostic identifies the collision |
 | `table-cell-attribute-before-marker` | a table cell whose `{...}` block is written directly before a `<`, `>` or `~`, which is the order PART 9 §5 T10 retired; the block still attaches to the cell, but the marker is now literal content and the cell is not aligned. Reported and not rewritten: the retired order and the current one render different documents, so only the author can say which was meant |
 | `table-marker-run-padding` | a table cell's marker run with no terminating space - the kind marker `=`, the alignment run, the attribute block, or any glued combination of them, as in `|=a `, `|>text ` or `|=<{.x}value `. PART 9 §5 T11 makes the whole run one thing with one terminator, so without the space there is no run and every character of it is content: `|=a |` is a data cell whose text is `=a`, not a header cell holding `a`. `fmt --migrate` inserts the required space. Specified replacement for `table-alignment-run-padding`; the measured engines still emit the older id |
-| `table-alignment-run-padding` | Currently emitted by all three measured engines. `table-marker-run-padding` specifies the broader replacement; keep accepting this id until the engines implement that replacement |
+| `table-alignment-run-padding` | An alignment run at the start of a table cell lacks its terminating space, for example `|>text |`. Currently emitted by all three measured engines. `table-marker-run-padding` specifies the broader replacement; keep accepting this id until the engines implement that replacement |
 | `table-column-arity` | an `aligns`, `valigns`, or `widths` list shorter than the widest row; the unset tail is valid but often accidental. More entries than columns is a parse error rather than a lint |
 | `table-column-overlap` | a field supplied both by an in-table column marker and by a table attribute list; the in-table spelling wins |
 | `table-width-total` | table column widths whose specified percentages total more than 100; individual widths remain usable, but the allocation overcommits the table |
@@ -360,10 +360,11 @@ compare the rule id and source location.
 
 #### Checking lint parity
 
-`npm run parity:check` includes `npm run lint:parity`, which recursively checks
+`npm run parity:check` runs the same corpus gate as `npm run lint:parity`. It checks
 every `.crv` file under `tests/corpus*` with default CLI options. Each document's
 complete sorted list of `(rule, line, column)` diagnostics must agree across
-JavaScript, PHP, and Rust, including repeated diagnostics. Optional corpus files
+JavaScript, PHP, and Rust, including repeated diagnostics. Differing documents
+and a fixed sample are also linted individually to check batch isolation. Optional corpus files
 are checked as core input; this sweep does not enable their rendering extensions.
 
 Known differences are recorded in `resources/lint-corpus-drift.json`, with the

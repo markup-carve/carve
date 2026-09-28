@@ -8,11 +8,12 @@ import { phpDir, rustBinary } from './lib/engine-locations.mjs'
 import { corpusFiles, diagnostics, differences, reconcile, lintEngines } from './lib/lint-corpus.mjs'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
-const commands = {
+let commands
+function engineCommands() { return {
   js: [process.execPath, resolve(process.env.CARVE_JS_DIR ?? resolve(root, '../carve-js'), 'dist/cli.js')],
   php: ['php', resolve(phpDir(), 'bin/carve')],
   rust: [rustBinary()],
-}
+} }
 const args = process.argv.slice(2)
 if (args.length && (args.length !== 2 || args[0] !== '--report')) throw new Error('usage: lint-corpus-check.mjs [--report file.json]')
 function lint(engine, files) {
@@ -24,6 +25,7 @@ function lint(engine, files) {
 }
 const temporary = mkdtempSync(join(tmpdir(), 'carve-lint-columns-'))
 try {
+  commands = engineCommands()
   const files = corpusFiles(root)
   const results = {}
   for (const engine of lintEngines) {
@@ -33,7 +35,12 @@ try {
   }
   const actual = differences(results, files)
   const failures = reconcile(actual, JSON.parse(readFileSync(resolve(root, 'resources/lint-corpus-drift.json'), 'utf8')))
-  const probes = ['a', 'é', '😀', 'e\u0301']
+  const controls = [...new Set([...Object.keys(actual), ...[0, 0.33, 0.66, 1].map(fraction => files[Math.floor(fraction * (files.length - 1))])])]
+  for (const file of controls) for (const engine of lintEngines) {
+    if (JSON.stringify(lint(engine, [file])[file]) !== JSON.stringify(results[engine][file])) failures.push(`${engine}: batched lint differs from single-file lint: ${file}`)
+  }
+  console.log(`lint batch isolation: ${controls.length} single-file controls per engine`)
+  const probes = ['a', '\u00E9', '\u{1F600}', 'e\u0301']
   for (const prefix of probes) {
     const file = join(temporary, 'column.crv')
     writeFileSync(file, `first line\n${prefix}\u202Eb\n`)

@@ -15,35 +15,15 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "fence-delimiter-indentation",
-            1,
-            2
-          ],
-          [
-            "fence-delimiter-indentation",
-            3,
-            2
-          ]
+          ["fence-delimiter-indentation", 1, 2],
+          ["fence-delimiter-indentation", 3, 2]
         ],
         "php": [
-          [
-            "fence-delimiter-indentation",
-            1,
-            2
-          ]
+          ["fence-delimiter-indentation", 1, 2]
         ],
         "rust": [
-          [
-            "fence-delimiter-indentation",
-            1,
-            2
-          ],
-          [
-            "fence-delimiter-indentation",
-            3,
-            2
-          ]
+          ["fence-delimiter-indentation", 1, 2],
+          ["fence-delimiter-indentation", 3, 2]
         ]
       }
     },
@@ -53,11 +33,7 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "djot-plus-bullet",
-            3,
-            1
-          ]
+          ["djot-plus-bullet", 3, 1]
         ],
         "php": [],
         "rust": []
@@ -65,3044 +41,620 @@
     },
     {
       "file": "tests/corpus/182-openers-past-the-nesting-cap-are-one-paragraph.crv",
-      "reason": "JS reports openers beyond the nesting cap; PHP and Rust are silent.",
+      "reason": "JS adds unclosed-container-fence on lines 201-203 beyond the nesting cap. All engines report the earlier openers.",
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "block-marker-as-text",
-            201,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            1,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            2,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            3,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            4,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            5,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            6,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            7,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            8,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            9,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            10,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            11,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            12,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            13,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            14,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            15,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            16,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            17,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            18,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            19,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            20,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            21,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            22,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            23,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            24,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            25,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            26,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            27,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            28,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            29,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            30,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            31,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            32,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            33,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            34,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            35,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            36,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            37,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            38,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            39,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            40,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            41,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            42,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            43,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            44,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            45,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            46,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            47,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            48,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            49,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            50,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            51,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            52,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            53,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            54,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            55,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            56,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            57,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            58,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            59,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            60,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            61,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            62,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            63,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            64,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            65,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            66,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            67,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            68,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            69,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            70,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            71,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            72,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            73,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            74,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            75,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            76,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            77,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            78,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            79,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            80,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            81,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            82,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            83,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            84,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            85,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            86,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            87,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            88,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            89,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            90,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            91,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            92,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            93,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            94,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            95,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            96,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            97,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            98,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            99,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            100,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            101,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            102,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            103,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            104,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            105,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            106,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            107,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            108,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            109,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            110,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            111,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            112,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            113,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            114,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            115,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            116,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            117,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            118,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            119,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            120,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            121,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            122,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            123,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            124,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            125,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            126,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            127,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            128,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            129,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            130,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            131,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            132,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            133,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            134,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            135,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            136,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            137,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            138,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            139,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            140,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            141,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            142,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            143,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            144,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            145,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            146,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            147,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            148,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            149,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            150,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            151,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            152,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            153,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            154,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            155,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            156,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            157,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            158,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            159,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            160,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            161,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            162,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            163,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            164,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            165,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            166,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            167,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            168,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            169,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            170,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            171,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            172,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            173,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            174,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            175,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            176,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            177,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            178,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            179,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            180,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            181,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            182,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            183,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            184,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            185,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            186,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            187,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            188,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            189,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            190,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            191,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            192,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            193,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            194,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            195,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            196,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            197,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            198,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            199,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            200,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            201,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            202,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            203,
-            1
-          ]
+          ["block-marker-as-text", 201, 1],
+          ["unclosed-container-fence", 1, 1],
+          ["unclosed-container-fence", 2, 1],
+          ["unclosed-container-fence", 3, 1],
+          ["unclosed-container-fence", 4, 1],
+          ["unclosed-container-fence", 5, 1],
+          ["unclosed-container-fence", 6, 1],
+          ["unclosed-container-fence", 7, 1],
+          ["unclosed-container-fence", 8, 1],
+          ["unclosed-container-fence", 9, 1],
+          ["unclosed-container-fence", 10, 1],
+          ["unclosed-container-fence", 11, 1],
+          ["unclosed-container-fence", 12, 1],
+          ["unclosed-container-fence", 13, 1],
+          ["unclosed-container-fence", 14, 1],
+          ["unclosed-container-fence", 15, 1],
+          ["unclosed-container-fence", 16, 1],
+          ["unclosed-container-fence", 17, 1],
+          ["unclosed-container-fence", 18, 1],
+          ["unclosed-container-fence", 19, 1],
+          ["unclosed-container-fence", 20, 1],
+          ["unclosed-container-fence", 21, 1],
+          ["unclosed-container-fence", 22, 1],
+          ["unclosed-container-fence", 23, 1],
+          ["unclosed-container-fence", 24, 1],
+          ["unclosed-container-fence", 25, 1],
+          ["unclosed-container-fence", 26, 1],
+          ["unclosed-container-fence", 27, 1],
+          ["unclosed-container-fence", 28, 1],
+          ["unclosed-container-fence", 29, 1],
+          ["unclosed-container-fence", 30, 1],
+          ["unclosed-container-fence", 31, 1],
+          ["unclosed-container-fence", 32, 1],
+          ["unclosed-container-fence", 33, 1],
+          ["unclosed-container-fence", 34, 1],
+          ["unclosed-container-fence", 35, 1],
+          ["unclosed-container-fence", 36, 1],
+          ["unclosed-container-fence", 37, 1],
+          ["unclosed-container-fence", 38, 1],
+          ["unclosed-container-fence", 39, 1],
+          ["unclosed-container-fence", 40, 1],
+          ["unclosed-container-fence", 41, 1],
+          ["unclosed-container-fence", 42, 1],
+          ["unclosed-container-fence", 43, 1],
+          ["unclosed-container-fence", 44, 1],
+          ["unclosed-container-fence", 45, 1],
+          ["unclosed-container-fence", 46, 1],
+          ["unclosed-container-fence", 47, 1],
+          ["unclosed-container-fence", 48, 1],
+          ["unclosed-container-fence", 49, 1],
+          ["unclosed-container-fence", 50, 1],
+          ["unclosed-container-fence", 51, 1],
+          ["unclosed-container-fence", 52, 1],
+          ["unclosed-container-fence", 53, 1],
+          ["unclosed-container-fence", 54, 1],
+          ["unclosed-container-fence", 55, 1],
+          ["unclosed-container-fence", 56, 1],
+          ["unclosed-container-fence", 57, 1],
+          ["unclosed-container-fence", 58, 1],
+          ["unclosed-container-fence", 59, 1],
+          ["unclosed-container-fence", 60, 1],
+          ["unclosed-container-fence", 61, 1],
+          ["unclosed-container-fence", 62, 1],
+          ["unclosed-container-fence", 63, 1],
+          ["unclosed-container-fence", 64, 1],
+          ["unclosed-container-fence", 65, 1],
+          ["unclosed-container-fence", 66, 1],
+          ["unclosed-container-fence", 67, 1],
+          ["unclosed-container-fence", 68, 1],
+          ["unclosed-container-fence", 69, 1],
+          ["unclosed-container-fence", 70, 1],
+          ["unclosed-container-fence", 71, 1],
+          ["unclosed-container-fence", 72, 1],
+          ["unclosed-container-fence", 73, 1],
+          ["unclosed-container-fence", 74, 1],
+          ["unclosed-container-fence", 75, 1],
+          ["unclosed-container-fence", 76, 1],
+          ["unclosed-container-fence", 77, 1],
+          ["unclosed-container-fence", 78, 1],
+          ["unclosed-container-fence", 79, 1],
+          ["unclosed-container-fence", 80, 1],
+          ["unclosed-container-fence", 81, 1],
+          ["unclosed-container-fence", 82, 1],
+          ["unclosed-container-fence", 83, 1],
+          ["unclosed-container-fence", 84, 1],
+          ["unclosed-container-fence", 85, 1],
+          ["unclosed-container-fence", 86, 1],
+          ["unclosed-container-fence", 87, 1],
+          ["unclosed-container-fence", 88, 1],
+          ["unclosed-container-fence", 89, 1],
+          ["unclosed-container-fence", 90, 1],
+          ["unclosed-container-fence", 91, 1],
+          ["unclosed-container-fence", 92, 1],
+          ["unclosed-container-fence", 93, 1],
+          ["unclosed-container-fence", 94, 1],
+          ["unclosed-container-fence", 95, 1],
+          ["unclosed-container-fence", 96, 1],
+          ["unclosed-container-fence", 97, 1],
+          ["unclosed-container-fence", 98, 1],
+          ["unclosed-container-fence", 99, 1],
+          ["unclosed-container-fence", 100, 1],
+          ["unclosed-container-fence", 101, 1],
+          ["unclosed-container-fence", 102, 1],
+          ["unclosed-container-fence", 103, 1],
+          ["unclosed-container-fence", 104, 1],
+          ["unclosed-container-fence", 105, 1],
+          ["unclosed-container-fence", 106, 1],
+          ["unclosed-container-fence", 107, 1],
+          ["unclosed-container-fence", 108, 1],
+          ["unclosed-container-fence", 109, 1],
+          ["unclosed-container-fence", 110, 1],
+          ["unclosed-container-fence", 111, 1],
+          ["unclosed-container-fence", 112, 1],
+          ["unclosed-container-fence", 113, 1],
+          ["unclosed-container-fence", 114, 1],
+          ["unclosed-container-fence", 115, 1],
+          ["unclosed-container-fence", 116, 1],
+          ["unclosed-container-fence", 117, 1],
+          ["unclosed-container-fence", 118, 1],
+          ["unclosed-container-fence", 119, 1],
+          ["unclosed-container-fence", 120, 1],
+          ["unclosed-container-fence", 121, 1],
+          ["unclosed-container-fence", 122, 1],
+          ["unclosed-container-fence", 123, 1],
+          ["unclosed-container-fence", 124, 1],
+          ["unclosed-container-fence", 125, 1],
+          ["unclosed-container-fence", 126, 1],
+          ["unclosed-container-fence", 127, 1],
+          ["unclosed-container-fence", 128, 1],
+          ["unclosed-container-fence", 129, 1],
+          ["unclosed-container-fence", 130, 1],
+          ["unclosed-container-fence", 131, 1],
+          ["unclosed-container-fence", 132, 1],
+          ["unclosed-container-fence", 133, 1],
+          ["unclosed-container-fence", 134, 1],
+          ["unclosed-container-fence", 135, 1],
+          ["unclosed-container-fence", 136, 1],
+          ["unclosed-container-fence", 137, 1],
+          ["unclosed-container-fence", 138, 1],
+          ["unclosed-container-fence", 139, 1],
+          ["unclosed-container-fence", 140, 1],
+          ["unclosed-container-fence", 141, 1],
+          ["unclosed-container-fence", 142, 1],
+          ["unclosed-container-fence", 143, 1],
+          ["unclosed-container-fence", 144, 1],
+          ["unclosed-container-fence", 145, 1],
+          ["unclosed-container-fence", 146, 1],
+          ["unclosed-container-fence", 147, 1],
+          ["unclosed-container-fence", 148, 1],
+          ["unclosed-container-fence", 149, 1],
+          ["unclosed-container-fence", 150, 1],
+          ["unclosed-container-fence", 151, 1],
+          ["unclosed-container-fence", 152, 1],
+          ["unclosed-container-fence", 153, 1],
+          ["unclosed-container-fence", 154, 1],
+          ["unclosed-container-fence", 155, 1],
+          ["unclosed-container-fence", 156, 1],
+          ["unclosed-container-fence", 157, 1],
+          ["unclosed-container-fence", 158, 1],
+          ["unclosed-container-fence", 159, 1],
+          ["unclosed-container-fence", 160, 1],
+          ["unclosed-container-fence", 161, 1],
+          ["unclosed-container-fence", 162, 1],
+          ["unclosed-container-fence", 163, 1],
+          ["unclosed-container-fence", 164, 1],
+          ["unclosed-container-fence", 165, 1],
+          ["unclosed-container-fence", 166, 1],
+          ["unclosed-container-fence", 167, 1],
+          ["unclosed-container-fence", 168, 1],
+          ["unclosed-container-fence", 169, 1],
+          ["unclosed-container-fence", 170, 1],
+          ["unclosed-container-fence", 171, 1],
+          ["unclosed-container-fence", 172, 1],
+          ["unclosed-container-fence", 173, 1],
+          ["unclosed-container-fence", 174, 1],
+          ["unclosed-container-fence", 175, 1],
+          ["unclosed-container-fence", 176, 1],
+          ["unclosed-container-fence", 177, 1],
+          ["unclosed-container-fence", 178, 1],
+          ["unclosed-container-fence", 179, 1],
+          ["unclosed-container-fence", 180, 1],
+          ["unclosed-container-fence", 181, 1],
+          ["unclosed-container-fence", 182, 1],
+          ["unclosed-container-fence", 183, 1],
+          ["unclosed-container-fence", 184, 1],
+          ["unclosed-container-fence", 185, 1],
+          ["unclosed-container-fence", 186, 1],
+          ["unclosed-container-fence", 187, 1],
+          ["unclosed-container-fence", 188, 1],
+          ["unclosed-container-fence", 189, 1],
+          ["unclosed-container-fence", 190, 1],
+          ["unclosed-container-fence", 191, 1],
+          ["unclosed-container-fence", 192, 1],
+          ["unclosed-container-fence", 193, 1],
+          ["unclosed-container-fence", 194, 1],
+          ["unclosed-container-fence", 195, 1],
+          ["unclosed-container-fence", 196, 1],
+          ["unclosed-container-fence", 197, 1],
+          ["unclosed-container-fence", 198, 1],
+          ["unclosed-container-fence", 199, 1],
+          ["unclosed-container-fence", 200, 1],
+          ["unclosed-container-fence", 201, 1],
+          ["unclosed-container-fence", 202, 1],
+          ["unclosed-container-fence", 203, 1]
         ],
         "php": [
-          [
-            "block-marker-as-text",
-            201,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            1,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            2,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            3,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            4,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            5,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            6,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            7,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            8,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            9,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            10,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            11,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            12,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            13,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            14,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            15,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            16,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            17,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            18,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            19,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            20,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            21,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            22,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            23,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            24,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            25,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            26,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            27,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            28,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            29,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            30,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            31,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            32,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            33,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            34,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            35,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            36,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            37,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            38,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            39,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            40,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            41,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            42,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            43,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            44,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            45,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            46,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            47,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            48,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            49,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            50,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            51,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            52,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            53,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            54,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            55,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            56,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            57,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            58,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            59,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            60,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            61,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            62,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            63,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            64,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            65,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            66,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            67,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            68,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            69,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            70,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            71,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            72,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            73,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            74,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            75,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            76,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            77,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            78,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            79,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            80,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            81,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            82,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            83,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            84,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            85,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            86,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            87,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            88,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            89,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            90,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            91,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            92,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            93,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            94,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            95,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            96,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            97,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            98,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            99,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            100,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            101,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            102,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            103,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            104,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            105,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            106,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            107,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            108,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            109,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            110,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            111,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            112,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            113,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            114,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            115,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            116,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            117,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            118,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            119,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            120,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            121,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            122,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            123,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            124,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            125,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            126,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            127,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            128,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            129,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            130,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            131,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            132,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            133,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            134,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            135,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            136,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            137,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            138,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            139,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            140,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            141,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            142,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            143,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            144,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            145,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            146,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            147,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            148,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            149,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            150,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            151,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            152,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            153,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            154,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            155,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            156,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            157,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            158,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            159,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            160,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            161,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            162,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            163,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            164,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            165,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            166,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            167,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            168,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            169,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            170,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            171,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            172,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            173,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            174,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            175,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            176,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            177,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            178,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            179,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            180,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            181,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            182,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            183,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            184,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            185,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            186,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            187,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            188,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            189,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            190,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            191,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            192,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            193,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            194,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            195,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            196,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            197,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            198,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            199,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            200,
-            1
-          ]
+          ["block-marker-as-text", 201, 1],
+          ["unclosed-container-fence", 1, 1],
+          ["unclosed-container-fence", 2, 1],
+          ["unclosed-container-fence", 3, 1],
+          ["unclosed-container-fence", 4, 1],
+          ["unclosed-container-fence", 5, 1],
+          ["unclosed-container-fence", 6, 1],
+          ["unclosed-container-fence", 7, 1],
+          ["unclosed-container-fence", 8, 1],
+          ["unclosed-container-fence", 9, 1],
+          ["unclosed-container-fence", 10, 1],
+          ["unclosed-container-fence", 11, 1],
+          ["unclosed-container-fence", 12, 1],
+          ["unclosed-container-fence", 13, 1],
+          ["unclosed-container-fence", 14, 1],
+          ["unclosed-container-fence", 15, 1],
+          ["unclosed-container-fence", 16, 1],
+          ["unclosed-container-fence", 17, 1],
+          ["unclosed-container-fence", 18, 1],
+          ["unclosed-container-fence", 19, 1],
+          ["unclosed-container-fence", 20, 1],
+          ["unclosed-container-fence", 21, 1],
+          ["unclosed-container-fence", 22, 1],
+          ["unclosed-container-fence", 23, 1],
+          ["unclosed-container-fence", 24, 1],
+          ["unclosed-container-fence", 25, 1],
+          ["unclosed-container-fence", 26, 1],
+          ["unclosed-container-fence", 27, 1],
+          ["unclosed-container-fence", 28, 1],
+          ["unclosed-container-fence", 29, 1],
+          ["unclosed-container-fence", 30, 1],
+          ["unclosed-container-fence", 31, 1],
+          ["unclosed-container-fence", 32, 1],
+          ["unclosed-container-fence", 33, 1],
+          ["unclosed-container-fence", 34, 1],
+          ["unclosed-container-fence", 35, 1],
+          ["unclosed-container-fence", 36, 1],
+          ["unclosed-container-fence", 37, 1],
+          ["unclosed-container-fence", 38, 1],
+          ["unclosed-container-fence", 39, 1],
+          ["unclosed-container-fence", 40, 1],
+          ["unclosed-container-fence", 41, 1],
+          ["unclosed-container-fence", 42, 1],
+          ["unclosed-container-fence", 43, 1],
+          ["unclosed-container-fence", 44, 1],
+          ["unclosed-container-fence", 45, 1],
+          ["unclosed-container-fence", 46, 1],
+          ["unclosed-container-fence", 47, 1],
+          ["unclosed-container-fence", 48, 1],
+          ["unclosed-container-fence", 49, 1],
+          ["unclosed-container-fence", 50, 1],
+          ["unclosed-container-fence", 51, 1],
+          ["unclosed-container-fence", 52, 1],
+          ["unclosed-container-fence", 53, 1],
+          ["unclosed-container-fence", 54, 1],
+          ["unclosed-container-fence", 55, 1],
+          ["unclosed-container-fence", 56, 1],
+          ["unclosed-container-fence", 57, 1],
+          ["unclosed-container-fence", 58, 1],
+          ["unclosed-container-fence", 59, 1],
+          ["unclosed-container-fence", 60, 1],
+          ["unclosed-container-fence", 61, 1],
+          ["unclosed-container-fence", 62, 1],
+          ["unclosed-container-fence", 63, 1],
+          ["unclosed-container-fence", 64, 1],
+          ["unclosed-container-fence", 65, 1],
+          ["unclosed-container-fence", 66, 1],
+          ["unclosed-container-fence", 67, 1],
+          ["unclosed-container-fence", 68, 1],
+          ["unclosed-container-fence", 69, 1],
+          ["unclosed-container-fence", 70, 1],
+          ["unclosed-container-fence", 71, 1],
+          ["unclosed-container-fence", 72, 1],
+          ["unclosed-container-fence", 73, 1],
+          ["unclosed-container-fence", 74, 1],
+          ["unclosed-container-fence", 75, 1],
+          ["unclosed-container-fence", 76, 1],
+          ["unclosed-container-fence", 77, 1],
+          ["unclosed-container-fence", 78, 1],
+          ["unclosed-container-fence", 79, 1],
+          ["unclosed-container-fence", 80, 1],
+          ["unclosed-container-fence", 81, 1],
+          ["unclosed-container-fence", 82, 1],
+          ["unclosed-container-fence", 83, 1],
+          ["unclosed-container-fence", 84, 1],
+          ["unclosed-container-fence", 85, 1],
+          ["unclosed-container-fence", 86, 1],
+          ["unclosed-container-fence", 87, 1],
+          ["unclosed-container-fence", 88, 1],
+          ["unclosed-container-fence", 89, 1],
+          ["unclosed-container-fence", 90, 1],
+          ["unclosed-container-fence", 91, 1],
+          ["unclosed-container-fence", 92, 1],
+          ["unclosed-container-fence", 93, 1],
+          ["unclosed-container-fence", 94, 1],
+          ["unclosed-container-fence", 95, 1],
+          ["unclosed-container-fence", 96, 1],
+          ["unclosed-container-fence", 97, 1],
+          ["unclosed-container-fence", 98, 1],
+          ["unclosed-container-fence", 99, 1],
+          ["unclosed-container-fence", 100, 1],
+          ["unclosed-container-fence", 101, 1],
+          ["unclosed-container-fence", 102, 1],
+          ["unclosed-container-fence", 103, 1],
+          ["unclosed-container-fence", 104, 1],
+          ["unclosed-container-fence", 105, 1],
+          ["unclosed-container-fence", 106, 1],
+          ["unclosed-container-fence", 107, 1],
+          ["unclosed-container-fence", 108, 1],
+          ["unclosed-container-fence", 109, 1],
+          ["unclosed-container-fence", 110, 1],
+          ["unclosed-container-fence", 111, 1],
+          ["unclosed-container-fence", 112, 1],
+          ["unclosed-container-fence", 113, 1],
+          ["unclosed-container-fence", 114, 1],
+          ["unclosed-container-fence", 115, 1],
+          ["unclosed-container-fence", 116, 1],
+          ["unclosed-container-fence", 117, 1],
+          ["unclosed-container-fence", 118, 1],
+          ["unclosed-container-fence", 119, 1],
+          ["unclosed-container-fence", 120, 1],
+          ["unclosed-container-fence", 121, 1],
+          ["unclosed-container-fence", 122, 1],
+          ["unclosed-container-fence", 123, 1],
+          ["unclosed-container-fence", 124, 1],
+          ["unclosed-container-fence", 125, 1],
+          ["unclosed-container-fence", 126, 1],
+          ["unclosed-container-fence", 127, 1],
+          ["unclosed-container-fence", 128, 1],
+          ["unclosed-container-fence", 129, 1],
+          ["unclosed-container-fence", 130, 1],
+          ["unclosed-container-fence", 131, 1],
+          ["unclosed-container-fence", 132, 1],
+          ["unclosed-container-fence", 133, 1],
+          ["unclosed-container-fence", 134, 1],
+          ["unclosed-container-fence", 135, 1],
+          ["unclosed-container-fence", 136, 1],
+          ["unclosed-container-fence", 137, 1],
+          ["unclosed-container-fence", 138, 1],
+          ["unclosed-container-fence", 139, 1],
+          ["unclosed-container-fence", 140, 1],
+          ["unclosed-container-fence", 141, 1],
+          ["unclosed-container-fence", 142, 1],
+          ["unclosed-container-fence", 143, 1],
+          ["unclosed-container-fence", 144, 1],
+          ["unclosed-container-fence", 145, 1],
+          ["unclosed-container-fence", 146, 1],
+          ["unclosed-container-fence", 147, 1],
+          ["unclosed-container-fence", 148, 1],
+          ["unclosed-container-fence", 149, 1],
+          ["unclosed-container-fence", 150, 1],
+          ["unclosed-container-fence", 151, 1],
+          ["unclosed-container-fence", 152, 1],
+          ["unclosed-container-fence", 153, 1],
+          ["unclosed-container-fence", 154, 1],
+          ["unclosed-container-fence", 155, 1],
+          ["unclosed-container-fence", 156, 1],
+          ["unclosed-container-fence", 157, 1],
+          ["unclosed-container-fence", 158, 1],
+          ["unclosed-container-fence", 159, 1],
+          ["unclosed-container-fence", 160, 1],
+          ["unclosed-container-fence", 161, 1],
+          ["unclosed-container-fence", 162, 1],
+          ["unclosed-container-fence", 163, 1],
+          ["unclosed-container-fence", 164, 1],
+          ["unclosed-container-fence", 165, 1],
+          ["unclosed-container-fence", 166, 1],
+          ["unclosed-container-fence", 167, 1],
+          ["unclosed-container-fence", 168, 1],
+          ["unclosed-container-fence", 169, 1],
+          ["unclosed-container-fence", 170, 1],
+          ["unclosed-container-fence", 171, 1],
+          ["unclosed-container-fence", 172, 1],
+          ["unclosed-container-fence", 173, 1],
+          ["unclosed-container-fence", 174, 1],
+          ["unclosed-container-fence", 175, 1],
+          ["unclosed-container-fence", 176, 1],
+          ["unclosed-container-fence", 177, 1],
+          ["unclosed-container-fence", 178, 1],
+          ["unclosed-container-fence", 179, 1],
+          ["unclosed-container-fence", 180, 1],
+          ["unclosed-container-fence", 181, 1],
+          ["unclosed-container-fence", 182, 1],
+          ["unclosed-container-fence", 183, 1],
+          ["unclosed-container-fence", 184, 1],
+          ["unclosed-container-fence", 185, 1],
+          ["unclosed-container-fence", 186, 1],
+          ["unclosed-container-fence", 187, 1],
+          ["unclosed-container-fence", 188, 1],
+          ["unclosed-container-fence", 189, 1],
+          ["unclosed-container-fence", 190, 1],
+          ["unclosed-container-fence", 191, 1],
+          ["unclosed-container-fence", 192, 1],
+          ["unclosed-container-fence", 193, 1],
+          ["unclosed-container-fence", 194, 1],
+          ["unclosed-container-fence", 195, 1],
+          ["unclosed-container-fence", 196, 1],
+          ["unclosed-container-fence", 197, 1],
+          ["unclosed-container-fence", 198, 1],
+          ["unclosed-container-fence", 199, 1],
+          ["unclosed-container-fence", 200, 1]
         ],
         "rust": [
-          [
-            "block-marker-as-text",
-            201,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            1,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            2,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            3,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            4,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            5,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            6,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            7,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            8,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            9,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            10,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            11,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            12,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            13,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            14,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            15,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            16,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            17,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            18,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            19,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            20,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            21,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            22,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            23,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            24,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            25,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            26,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            27,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            28,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            29,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            30,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            31,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            32,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            33,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            34,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            35,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            36,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            37,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            38,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            39,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            40,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            41,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            42,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            43,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            44,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            45,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            46,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            47,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            48,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            49,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            50,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            51,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            52,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            53,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            54,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            55,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            56,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            57,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            58,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            59,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            60,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            61,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            62,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            63,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            64,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            65,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            66,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            67,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            68,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            69,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            70,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            71,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            72,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            73,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            74,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            75,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            76,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            77,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            78,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            79,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            80,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            81,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            82,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            83,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            84,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            85,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            86,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            87,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            88,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            89,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            90,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            91,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            92,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            93,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            94,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            95,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            96,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            97,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            98,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            99,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            100,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            101,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            102,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            103,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            104,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            105,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            106,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            107,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            108,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            109,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            110,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            111,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            112,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            113,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            114,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            115,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            116,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            117,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            118,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            119,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            120,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            121,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            122,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            123,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            124,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            125,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            126,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            127,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            128,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            129,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            130,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            131,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            132,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            133,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            134,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            135,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            136,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            137,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            138,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            139,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            140,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            141,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            142,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            143,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            144,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            145,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            146,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            147,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            148,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            149,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            150,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            151,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            152,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            153,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            154,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            155,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            156,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            157,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            158,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            159,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            160,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            161,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            162,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            163,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            164,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            165,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            166,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            167,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            168,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            169,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            170,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            171,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            172,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            173,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            174,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            175,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            176,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            177,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            178,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            179,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            180,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            181,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            182,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            183,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            184,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            185,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            186,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            187,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            188,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            189,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            190,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            191,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            192,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            193,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            194,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            195,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            196,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            197,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            198,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            199,
-            1
-          ],
-          [
-            "unclosed-container-fence",
-            200,
-            1
-          ]
+          ["block-marker-as-text", 201, 1],
+          ["unclosed-container-fence", 1, 1],
+          ["unclosed-container-fence", 2, 1],
+          ["unclosed-container-fence", 3, 1],
+          ["unclosed-container-fence", 4, 1],
+          ["unclosed-container-fence", 5, 1],
+          ["unclosed-container-fence", 6, 1],
+          ["unclosed-container-fence", 7, 1],
+          ["unclosed-container-fence", 8, 1],
+          ["unclosed-container-fence", 9, 1],
+          ["unclosed-container-fence", 10, 1],
+          ["unclosed-container-fence", 11, 1],
+          ["unclosed-container-fence", 12, 1],
+          ["unclosed-container-fence", 13, 1],
+          ["unclosed-container-fence", 14, 1],
+          ["unclosed-container-fence", 15, 1],
+          ["unclosed-container-fence", 16, 1],
+          ["unclosed-container-fence", 17, 1],
+          ["unclosed-container-fence", 18, 1],
+          ["unclosed-container-fence", 19, 1],
+          ["unclosed-container-fence", 20, 1],
+          ["unclosed-container-fence", 21, 1],
+          ["unclosed-container-fence", 22, 1],
+          ["unclosed-container-fence", 23, 1],
+          ["unclosed-container-fence", 24, 1],
+          ["unclosed-container-fence", 25, 1],
+          ["unclosed-container-fence", 26, 1],
+          ["unclosed-container-fence", 27, 1],
+          ["unclosed-container-fence", 28, 1],
+          ["unclosed-container-fence", 29, 1],
+          ["unclosed-container-fence", 30, 1],
+          ["unclosed-container-fence", 31, 1],
+          ["unclosed-container-fence", 32, 1],
+          ["unclosed-container-fence", 33, 1],
+          ["unclosed-container-fence", 34, 1],
+          ["unclosed-container-fence", 35, 1],
+          ["unclosed-container-fence", 36, 1],
+          ["unclosed-container-fence", 37, 1],
+          ["unclosed-container-fence", 38, 1],
+          ["unclosed-container-fence", 39, 1],
+          ["unclosed-container-fence", 40, 1],
+          ["unclosed-container-fence", 41, 1],
+          ["unclosed-container-fence", 42, 1],
+          ["unclosed-container-fence", 43, 1],
+          ["unclosed-container-fence", 44, 1],
+          ["unclosed-container-fence", 45, 1],
+          ["unclosed-container-fence", 46, 1],
+          ["unclosed-container-fence", 47, 1],
+          ["unclosed-container-fence", 48, 1],
+          ["unclosed-container-fence", 49, 1],
+          ["unclosed-container-fence", 50, 1],
+          ["unclosed-container-fence", 51, 1],
+          ["unclosed-container-fence", 52, 1],
+          ["unclosed-container-fence", 53, 1],
+          ["unclosed-container-fence", 54, 1],
+          ["unclosed-container-fence", 55, 1],
+          ["unclosed-container-fence", 56, 1],
+          ["unclosed-container-fence", 57, 1],
+          ["unclosed-container-fence", 58, 1],
+          ["unclosed-container-fence", 59, 1],
+          ["unclosed-container-fence", 60, 1],
+          ["unclosed-container-fence", 61, 1],
+          ["unclosed-container-fence", 62, 1],
+          ["unclosed-container-fence", 63, 1],
+          ["unclosed-container-fence", 64, 1],
+          ["unclosed-container-fence", 65, 1],
+          ["unclosed-container-fence", 66, 1],
+          ["unclosed-container-fence", 67, 1],
+          ["unclosed-container-fence", 68, 1],
+          ["unclosed-container-fence", 69, 1],
+          ["unclosed-container-fence", 70, 1],
+          ["unclosed-container-fence", 71, 1],
+          ["unclosed-container-fence", 72, 1],
+          ["unclosed-container-fence", 73, 1],
+          ["unclosed-container-fence", 74, 1],
+          ["unclosed-container-fence", 75, 1],
+          ["unclosed-container-fence", 76, 1],
+          ["unclosed-container-fence", 77, 1],
+          ["unclosed-container-fence", 78, 1],
+          ["unclosed-container-fence", 79, 1],
+          ["unclosed-container-fence", 80, 1],
+          ["unclosed-container-fence", 81, 1],
+          ["unclosed-container-fence", 82, 1],
+          ["unclosed-container-fence", 83, 1],
+          ["unclosed-container-fence", 84, 1],
+          ["unclosed-container-fence", 85, 1],
+          ["unclosed-container-fence", 86, 1],
+          ["unclosed-container-fence", 87, 1],
+          ["unclosed-container-fence", 88, 1],
+          ["unclosed-container-fence", 89, 1],
+          ["unclosed-container-fence", 90, 1],
+          ["unclosed-container-fence", 91, 1],
+          ["unclosed-container-fence", 92, 1],
+          ["unclosed-container-fence", 93, 1],
+          ["unclosed-container-fence", 94, 1],
+          ["unclosed-container-fence", 95, 1],
+          ["unclosed-container-fence", 96, 1],
+          ["unclosed-container-fence", 97, 1],
+          ["unclosed-container-fence", 98, 1],
+          ["unclosed-container-fence", 99, 1],
+          ["unclosed-container-fence", 100, 1],
+          ["unclosed-container-fence", 101, 1],
+          ["unclosed-container-fence", 102, 1],
+          ["unclosed-container-fence", 103, 1],
+          ["unclosed-container-fence", 104, 1],
+          ["unclosed-container-fence", 105, 1],
+          ["unclosed-container-fence", 106, 1],
+          ["unclosed-container-fence", 107, 1],
+          ["unclosed-container-fence", 108, 1],
+          ["unclosed-container-fence", 109, 1],
+          ["unclosed-container-fence", 110, 1],
+          ["unclosed-container-fence", 111, 1],
+          ["unclosed-container-fence", 112, 1],
+          ["unclosed-container-fence", 113, 1],
+          ["unclosed-container-fence", 114, 1],
+          ["unclosed-container-fence", 115, 1],
+          ["unclosed-container-fence", 116, 1],
+          ["unclosed-container-fence", 117, 1],
+          ["unclosed-container-fence", 118, 1],
+          ["unclosed-container-fence", 119, 1],
+          ["unclosed-container-fence", 120, 1],
+          ["unclosed-container-fence", 121, 1],
+          ["unclosed-container-fence", 122, 1],
+          ["unclosed-container-fence", 123, 1],
+          ["unclosed-container-fence", 124, 1],
+          ["unclosed-container-fence", 125, 1],
+          ["unclosed-container-fence", 126, 1],
+          ["unclosed-container-fence", 127, 1],
+          ["unclosed-container-fence", 128, 1],
+          ["unclosed-container-fence", 129, 1],
+          ["unclosed-container-fence", 130, 1],
+          ["unclosed-container-fence", 131, 1],
+          ["unclosed-container-fence", 132, 1],
+          ["unclosed-container-fence", 133, 1],
+          ["unclosed-container-fence", 134, 1],
+          ["unclosed-container-fence", 135, 1],
+          ["unclosed-container-fence", 136, 1],
+          ["unclosed-container-fence", 137, 1],
+          ["unclosed-container-fence", 138, 1],
+          ["unclosed-container-fence", 139, 1],
+          ["unclosed-container-fence", 140, 1],
+          ["unclosed-container-fence", 141, 1],
+          ["unclosed-container-fence", 142, 1],
+          ["unclosed-container-fence", 143, 1],
+          ["unclosed-container-fence", 144, 1],
+          ["unclosed-container-fence", 145, 1],
+          ["unclosed-container-fence", 146, 1],
+          ["unclosed-container-fence", 147, 1],
+          ["unclosed-container-fence", 148, 1],
+          ["unclosed-container-fence", 149, 1],
+          ["unclosed-container-fence", 150, 1],
+          ["unclosed-container-fence", 151, 1],
+          ["unclosed-container-fence", 152, 1],
+          ["unclosed-container-fence", 153, 1],
+          ["unclosed-container-fence", 154, 1],
+          ["unclosed-container-fence", 155, 1],
+          ["unclosed-container-fence", 156, 1],
+          ["unclosed-container-fence", 157, 1],
+          ["unclosed-container-fence", 158, 1],
+          ["unclosed-container-fence", 159, 1],
+          ["unclosed-container-fence", 160, 1],
+          ["unclosed-container-fence", 161, 1],
+          ["unclosed-container-fence", 162, 1],
+          ["unclosed-container-fence", 163, 1],
+          ["unclosed-container-fence", 164, 1],
+          ["unclosed-container-fence", 165, 1],
+          ["unclosed-container-fence", 166, 1],
+          ["unclosed-container-fence", 167, 1],
+          ["unclosed-container-fence", 168, 1],
+          ["unclosed-container-fence", 169, 1],
+          ["unclosed-container-fence", 170, 1],
+          ["unclosed-container-fence", 171, 1],
+          ["unclosed-container-fence", 172, 1],
+          ["unclosed-container-fence", 173, 1],
+          ["unclosed-container-fence", 174, 1],
+          ["unclosed-container-fence", 175, 1],
+          ["unclosed-container-fence", 176, 1],
+          ["unclosed-container-fence", 177, 1],
+          ["unclosed-container-fence", 178, 1],
+          ["unclosed-container-fence", 179, 1],
+          ["unclosed-container-fence", 180, 1],
+          ["unclosed-container-fence", 181, 1],
+          ["unclosed-container-fence", 182, 1],
+          ["unclosed-container-fence", 183, 1],
+          ["unclosed-container-fence", 184, 1],
+          ["unclosed-container-fence", 185, 1],
+          ["unclosed-container-fence", 186, 1],
+          ["unclosed-container-fence", 187, 1],
+          ["unclosed-container-fence", 188, 1],
+          ["unclosed-container-fence", 189, 1],
+          ["unclosed-container-fence", 190, 1],
+          ["unclosed-container-fence", 191, 1],
+          ["unclosed-container-fence", 192, 1],
+          ["unclosed-container-fence", 193, 1],
+          ["unclosed-container-fence", 194, 1],
+          ["unclosed-container-fence", 195, 1],
+          ["unclosed-container-fence", 196, 1],
+          ["unclosed-container-fence", 197, 1],
+          ["unclosed-container-fence", 198, 1],
+          ["unclosed-container-fence", 199, 1],
+          ["unclosed-container-fence", 200, 1]
         ]
       }
     },
@@ -3112,19 +664,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            3,
-            3
-          ]
+          ["unattached-block-attribute", 3, 3]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            3,
-            3
-          ]
+          ["unattached-block-attribute", 3, 3]
         ]
       }
     },
@@ -3134,11 +678,7 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "djot-plus-bullet",
-            2,
-            1
-          ]
+          ["djot-plus-bullet", 2, 1]
         ],
         "php": [],
         "rust": []
@@ -3150,25 +690,13 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "block-marker-as-text",
-            1,
-            1
-          ]
+          ["block-marker-as-text", 1, 1]
         ],
         "php": [
-          [
-            "fence-title-syntax",
-            1,
-            1
-          ]
+          ["fence-title-syntax", 1, 1]
         ],
         "rust": [
-          [
-            "fence-title-syntax",
-            1,
-            1
-          ]
+          ["fence-title-syntax", 1, 1]
         ]
       }
     },
@@ -3178,19 +706,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            3,
-            7
-          ]
+          ["unattached-block-attribute", 3, 7]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            3,
-            7
-          ]
+          ["unattached-block-attribute", 3, 7]
         ]
       }
     },
@@ -3200,19 +720,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ]
       }
     },
@@ -3222,19 +734,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            3,
-            3
-          ]
+          ["unattached-block-attribute", 3, 3]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            3,
-            3
-          ]
+          ["unattached-block-attribute", 3, 3]
         ]
       }
     },
@@ -3244,11 +748,7 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "djot-plus-bullet",
-            2,
-            3
-          ]
+          ["djot-plus-bullet", 2, 3]
         ],
         "php": [],
         "rust": []
@@ -3260,11 +760,7 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "djot-plus-bullet",
-            3,
-            4
-          ]
+          ["djot-plus-bullet", 3, 4]
         ],
         "php": [],
         "rust": []
@@ -3276,19 +772,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            1,
-            3
-          ]
+          ["unattached-block-attribute", 1, 3]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            1,
-            3
-          ]
+          ["unattached-block-attribute", 1, 3]
         ]
       }
     },
@@ -3298,19 +786,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ]
       }
     },
@@ -3320,19 +800,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ]
       }
     },
@@ -3342,19 +814,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ]
       }
     },
@@ -3364,19 +828,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            3,
-            4
-          ]
+          ["unattached-block-attribute", 3, 4]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            3,
-            4
-          ]
+          ["unattached-block-attribute", 3, 4]
         ]
       }
     },
@@ -3386,19 +842,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            3,
-            4
-          ]
+          ["unattached-block-attribute", 3, 4]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            3,
-            4
-          ]
+          ["unattached-block-attribute", 3, 4]
         ]
       }
     },
@@ -3408,19 +856,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ]
       }
     },
@@ -3430,11 +870,7 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "djot-plus-bullet",
-            2,
-            3
-          ]
+          ["djot-plus-bullet", 2, 3]
         ],
         "php": [],
         "rust": []
@@ -3446,11 +882,7 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "djot-plus-bullet",
-            3,
-            1
-          ]
+          ["djot-plus-bullet", 3, 1]
         ],
         "php": [],
         "rust": []
@@ -3462,11 +894,7 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "djot-plus-bullet",
-            3,
-            1
-          ]
+          ["djot-plus-bullet", 3, 1]
         ],
         "php": [],
         "rust": []
@@ -3478,19 +906,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ]
       }
     },
@@ -3500,11 +920,7 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "djot-plus-bullet",
-            2,
-            3
-          ]
+          ["djot-plus-bullet", 2, 3]
         ],
         "php": [],
         "rust": []
@@ -3518,26 +934,18 @@
         "js": [],
         "php": [],
         "rust": [
-          [
-            "table-alignment-run-padding",
-            4,
-            10
-          ]
+          ["table-alignment-run-padding", 4, 10]
         ]
       }
     },
     {
       "file": "tests/corpus/388-an-empty-brace-pair-is-not-a-construct-2.crv",
-      "reason": "PHP uses its own Markdown-habit ids and reports a strike in the empty-brace case; Rust has no Markdown-habit checks.",
+      "reason": "Only PHP reports Markdown strikethrough in the empty-brace case.",
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [],
         "php": [
-          [
-            "markdown-strikethrough",
-            1,
-            19
-          ]
+          ["markdown-strikethrough", 1, 19]
         ],
         "rust": []
       }
@@ -3548,19 +956,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            2,
-            1
-          ]
+          ["unattached-block-attribute", 2, 1]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            2,
-            1
-          ]
+          ["unattached-block-attribute", 2, 1]
         ]
       }
     },
@@ -3570,19 +970,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            3,
-            3
-          ]
+          ["unattached-block-attribute", 3, 3]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            3,
-            3
-          ]
+          ["unattached-block-attribute", 3, 3]
         ]
       }
     },
@@ -3592,19 +984,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            3,
-            4
-          ]
+          ["unattached-block-attribute", 3, 4]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            3,
-            4
-          ]
+          ["unattached-block-attribute", 3, 4]
         ]
       }
     },
@@ -3614,16 +998,8 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "djot-superscript-caret",
-            1,
-            27
-          ],
-          [
-            "djot-superscript-caret",
-            1,
-            44
-          ]
+          ["djot-superscript-caret", 1, 27],
+          ["djot-superscript-caret", 1, 44]
         ],
         "php": [],
         "rust": []
@@ -3635,35 +1011,15 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "list-item-body-detached",
-            2,
-            2
-          ],
-          [
-            "unattached-block-attribute",
-            1,
-            7
-          ]
+          ["list-item-body-detached", 2, 2],
+          ["unattached-block-attribute", 1, 7]
         ],
         "php": [
-          [
-            "list-item-body-detached",
-            2,
-            2
-          ]
+          ["list-item-body-detached", 2, 2]
         ],
         "rust": [
-          [
-            "list-item-body-detached",
-            2,
-            2
-          ],
-          [
-            "unattached-block-attribute",
-            1,
-            7
-          ]
+          ["list-item-body-detached", 2, 2],
+          ["unattached-block-attribute", 1, 7]
         ]
       }
     },
@@ -3673,35 +1029,15 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "list-item-body-detached",
-            2,
-            3
-          ],
-          [
-            "unattached-block-attribute",
-            1,
-            8
-          ]
+          ["list-item-body-detached", 2, 3],
+          ["unattached-block-attribute", 1, 8]
         ],
         "php": [
-          [
-            "list-item-body-detached",
-            2,
-            3
-          ]
+          ["list-item-body-detached", 2, 3]
         ],
         "rust": [
-          [
-            "list-item-body-detached",
-            2,
-            3
-          ],
-          [
-            "unattached-block-attribute",
-            1,
-            8
-          ]
+          ["list-item-body-detached", 2, 3],
+          ["unattached-block-attribute", 1, 8]
         ]
       }
     },
@@ -3711,35 +1047,15 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "list-item-body-detached",
-            2,
-            2
-          ],
-          [
-            "unattached-block-attribute",
-            1,
-            11
-          ]
+          ["list-item-body-detached", 2, 2],
+          ["unattached-block-attribute", 1, 11]
         ],
         "php": [
-          [
-            "list-item-body-detached",
-            2,
-            2
-          ]
+          ["list-item-body-detached", 2, 2]
         ],
         "rust": [
-          [
-            "list-item-body-detached",
-            2,
-            2
-          ],
-          [
-            "unattached-block-attribute",
-            1,
-            11
-          ]
+          ["list-item-body-detached", 2, 2],
+          ["unattached-block-attribute", 1, 11]
         ]
       }
     },
@@ -3749,11 +1065,7 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "list-item-block-overindented",
-            5,
-            4
-          ]
+          ["list-item-block-overindented", 5, 4]
         ],
         "php": [],
         "rust": []
@@ -3765,30 +1077,14 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "list-item-block-overindented",
-            3,
-            4
-          ],
-          [
-            "list-item-block-overindented",
-            6,
-            7
-          ]
+          ["list-item-block-overindented", 3, 4],
+          ["list-item-block-overindented", 6, 7]
         ],
         "php": [
-          [
-            "list-item-block-overindented",
-            3,
-            4
-          ]
+          ["list-item-block-overindented", 3, 4]
         ],
         "rust": [
-          [
-            "list-item-block-overindented",
-            3,
-            4
-          ]
+          ["list-item-block-overindented", 3, 4]
         ]
       }
     },
@@ -3798,11 +1094,7 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "list-item-block-overindented",
-            5,
-            4
-          ]
+          ["list-item-block-overindented", 5, 4]
         ],
         "php": [],
         "rust": []
@@ -3814,19 +1106,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ]
       }
     },
@@ -3836,51 +1120,27 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            1,
-            3
-          ]
+          ["unattached-block-attribute", 1, 3]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            1,
-            3
-          ]
+          ["unattached-block-attribute", 1, 3]
         ]
       }
     },
     {
       "file": "tests/corpus/428-a-wrapped-attribute-line-leaves-no-paragraph-open.crv",
-      "reason": "PHP lacks the unattached-attribute diagnostic; JS and Rust report it, with a further wrapped-attribute location difference on corpus 428.",
+      "reason": "PHP lacks the unattached-attribute diagnostic. Rust additionally emits the 1:1 diagnostic twice; JS reports only 1:3.",
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            1,
-            3
-          ]
+          ["unattached-block-attribute", 1, 3]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            1,
-            1
-          ],
-          [
-            "unattached-block-attribute",
-            1,
-            1
-          ],
-          [
-            "unattached-block-attribute",
-            1,
-            3
-          ]
+          ["unattached-block-attribute", 1, 1],
+          ["unattached-block-attribute", 1, 1],
+          ["unattached-block-attribute", 1, 3]
         ]
       }
     },
@@ -3890,19 +1150,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ]
       }
     },
@@ -3912,19 +1164,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ]
       }
     },
@@ -3934,19 +1178,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ]
       }
     },
@@ -3956,29 +1192,13 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ],
-          [
-            "unattached-block-attribute",
-            4,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3],
+          ["unattached-block-attribute", 4, 3]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ],
-          [
-            "unattached-block-attribute",
-            4,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3],
+          ["unattached-block-attribute", 4, 3]
         ]
       }
     },
@@ -3988,19 +1208,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            2,
-            3
-          ]
+          ["unattached-block-attribute", 2, 3]
         ]
       }
     },
@@ -4010,11 +1222,7 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "list-item-block-overindented",
-            5,
-            7
-          ]
+          ["list-item-block-overindented", 5, 7]
         ],
         "php": [],
         "rust": []
@@ -4026,19 +1234,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            3,
-            5
-          ]
+          ["unattached-block-attribute", 3, 5]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            3,
-            5
-          ]
+          ["unattached-block-attribute", 3, 5]
         ]
       }
     },
@@ -4048,19 +1248,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            3,
-            4
-          ]
+          ["unattached-block-attribute", 3, 4]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            3,
-            4
-          ]
+          ["unattached-block-attribute", 3, 4]
         ]
       }
     },
@@ -4070,11 +1262,7 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "list-item-block-overindented",
-            4,
-            4
-          ]
+          ["list-item-block-overindented", 4, 4]
         ],
         "php": [],
         "rust": []
@@ -4086,19 +1274,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            2,
-            5
-          ]
+          ["unattached-block-attribute", 2, 5]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            2,
-            5
-          ]
+          ["unattached-block-attribute", 2, 5]
         ]
       }
     },
@@ -4108,19 +1288,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            2,
-            5
-          ]
+          ["unattached-block-attribute", 2, 5]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            2,
-            5
-          ]
+          ["unattached-block-attribute", 2, 5]
         ]
       }
     },
@@ -4130,35 +1302,15 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "fence-delimiter-indentation",
-            3,
-            3
-          ],
-          [
-            "fence-delimiter-indentation",
-            6,
-            4
-          ]
+          ["fence-delimiter-indentation", 3, 3],
+          ["fence-delimiter-indentation", 6, 4]
         ],
         "php": [
-          [
-            "fence-delimiter-indentation",
-            3,
-            3
-          ]
+          ["fence-delimiter-indentation", 3, 3]
         ],
         "rust": [
-          [
-            "fence-delimiter-indentation",
-            3,
-            3
-          ],
-          [
-            "fence-delimiter-indentation",
-            6,
-            4
-          ]
+          ["fence-delimiter-indentation", 3, 3],
+          ["fence-delimiter-indentation", 6, 4]
         ]
       }
     },
@@ -4168,35 +1320,15 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "list-item-block-overindented",
-            3,
-            5
-          ],
-          [
-            "unattached-block-attribute",
-            3,
-            5
-          ]
+          ["list-item-block-overindented", 3, 5],
+          ["unattached-block-attribute", 3, 5]
         ],
         "php": [
-          [
-            "list-item-block-overindented",
-            3,
-            5
-          ]
+          ["list-item-block-overindented", 3, 5]
         ],
         "rust": [
-          [
-            "list-item-block-overindented",
-            3,
-            5
-          ],
-          [
-            "unattached-block-attribute",
-            3,
-            5
-          ]
+          ["list-item-block-overindented", 3, 5],
+          ["unattached-block-attribute", 3, 5]
         ]
       }
     },
@@ -4206,35 +1338,15 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "list-item-block-overindented",
-            3,
-            6
-          ],
-          [
-            "unattached-block-attribute",
-            3,
-            6
-          ]
+          ["list-item-block-overindented", 3, 6],
+          ["unattached-block-attribute", 3, 6]
         ],
         "php": [
-          [
-            "list-item-block-overindented",
-            3,
-            6
-          ]
+          ["list-item-block-overindented", 3, 6]
         ],
         "rust": [
-          [
-            "list-item-block-overindented",
-            3,
-            6
-          ],
-          [
-            "unattached-block-attribute",
-            3,
-            6
-          ]
+          ["list-item-block-overindented", 3, 6],
+          ["unattached-block-attribute", 3, 6]
         ]
       }
     },
@@ -4244,35 +1356,15 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "list-item-block-overindented",
-            3,
-            5
-          ],
-          [
-            "unattached-block-attribute",
-            3,
-            5
-          ]
+          ["list-item-block-overindented", 3, 5],
+          ["unattached-block-attribute", 3, 5]
         ],
         "php": [
-          [
-            "list-item-block-overindented",
-            3,
-            5
-          ]
+          ["list-item-block-overindented", 3, 5]
         ],
         "rust": [
-          [
-            "list-item-block-overindented",
-            3,
-            5
-          ],
-          [
-            "unattached-block-attribute",
-            3,
-            5
-          ]
+          ["list-item-block-overindented", 3, 5],
+          ["unattached-block-attribute", 3, 5]
         ]
       }
     },
@@ -4282,11 +1374,7 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "fence-delimiter-indentation",
-            6,
-            5
-          ]
+          ["fence-delimiter-indentation", 6, 5]
         ],
         "php": [],
         "rust": []
@@ -4298,11 +1386,7 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "fence-delimiter-indentation",
-            7,
-            7
-          ]
+          ["fence-delimiter-indentation", 7, 7]
         ],
         "php": [],
         "rust": []
@@ -4314,11 +1398,7 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "list-item-body-detached",
-            6,
-            2
-          ]
+          ["list-item-body-detached", 6, 2]
         ],
         "php": [],
         "rust": []
@@ -4330,11 +1410,7 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "list-item-body-detached",
-            6,
-            2
-          ]
+          ["list-item-body-detached", 6, 2]
         ],
         "php": [],
         "rust": []
@@ -4342,59 +1418,31 @@
     },
     {
       "file": "tests/corpus/76-doubled-emphasis-delimiters.crv",
-      "reason": "Only JS provides this Djot migration check. PHP uses its own Markdown-habit ids and reports a strike in the empty-brace case; Rust has no Markdown-habit checks. JS and PHP use different Markdown-habit ids; Rust has no Markdown-habit checks.",
+      "reason": "JS and PHP use different Markdown-habit ids; Rust has no Markdown-habit checks. Only JS reports Djot superscript spelling.",
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "djot-superscript-caret",
-            1,
-            14
-          ],
-          [
-            "markdown-strikethrough-double-tilde",
-            1,
-            7
-          ],
-          [
-            "markdown-strong-double-star",
-            1,
-            1
-          ]
+          ["djot-superscript-caret", 1, 14],
+          ["markdown-strikethrough-double-tilde", 1, 7],
+          ["markdown-strong-double-star", 1, 1]
         ],
         "php": [
-          [
-            "markdown-strikethrough",
-            1,
-            7
-          ],
-          [
-            "markdown-strong-asterisks",
-            1,
-            1
-          ]
+          ["markdown-strikethrough", 1, 7],
+          ["markdown-strong-asterisks", 1, 1]
         ],
         "rust": []
       }
     },
     {
       "file": "tests/corpus/79-two-char-delimiter-runs.crv",
-      "reason": "PHP uses its own Markdown-habit ids and reports a strike in the empty-brace case; Rust has no Markdown-habit checks. JS and PHP use different Markdown-habit ids; Rust has no Markdown-habit checks.",
+      "reason": "JS and PHP use different Markdown strike ids; Rust has no Markdown-habit checks.",
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "markdown-strikethrough-double-tilde",
-            1,
-            7
-          ]
+          ["markdown-strikethrough-double-tilde", 1, 7]
         ],
         "php": [
-          [
-            "markdown-strikethrough",
-            1,
-            7
-          ]
+          ["markdown-strikethrough", 1, 7]
         ],
         "rust": []
       }
@@ -4405,35 +1453,15 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "list-item-block-overindented",
-            3,
-            4
-          ],
-          [
-            "unattached-block-attribute",
-            3,
-            4
-          ]
+          ["list-item-block-overindented", 3, 4],
+          ["unattached-block-attribute", 3, 4]
         ],
         "php": [
-          [
-            "list-item-block-overindented",
-            3,
-            4
-          ]
+          ["list-item-block-overindented", 3, 4]
         ],
         "rust": [
-          [
-            "list-item-block-overindented",
-            3,
-            4
-          ],
-          [
-            "unattached-block-attribute",
-            3,
-            4
-          ]
+          ["list-item-block-overindented", 3, 4],
+          ["unattached-block-attribute", 3, 4]
         ]
       }
     },
@@ -4443,19 +1471,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            3,
-            3
-          ]
+          ["unattached-block-attribute", 3, 3]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            3,
-            3
-          ]
+          ["unattached-block-attribute", 3, 3]
         ]
       }
     },
@@ -4465,16 +1485,8 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "djot-plus-bullet",
-            1,
-            1
-          ],
-          [
-            "djot-plus-bullet",
-            2,
-            1
-          ]
+          ["djot-plus-bullet", 1, 1],
+          ["djot-plus-bullet", 2, 1]
         ],
         "php": [],
         "rust": []
@@ -4486,19 +1498,11 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "unattached-block-attribute",
-            2,
-            1
-          ]
+          ["unattached-block-attribute", 2, 1]
         ],
         "php": [],
         "rust": [
-          [
-            "unattached-block-attribute",
-            2,
-            1
-          ]
+          ["unattached-block-attribute", 2, 1]
         ]
       }
     },
@@ -4508,11 +1512,7 @@
       "issue": "https://github.com/markup-carve/carve/issues/2520",
       "diagnostics": {
         "js": [
-          [
-            "djot-superscript-caret",
-            2,
-            3
-          ]
+          ["djot-superscript-caret", 2, 3]
         ],
         "php": [],
         "rust": []

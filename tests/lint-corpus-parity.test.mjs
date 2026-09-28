@@ -43,3 +43,9 @@ test('a ledger requires unique documents, a reason, an owner and all participant
     assert.throws(() => reconcile({}, invalid))
   }
 })
+
+test('malformed headers and PHP warnings after a valid diagnostic are errors', () => {
+  for (const tail of [`${file}:2:3 BAD_RULE message`, `${file}:2:3: broken-crossref message`, 'Warning: failed to read input', 'PHP Deprecated: incompatible call']) {
+    assert.throws(() => diagnostics(run(`${file}:2:3 broken-crossref message\n${tail}\n`), [file]), /malformed/)
+  }
+})
