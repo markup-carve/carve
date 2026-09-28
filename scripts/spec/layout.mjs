@@ -3240,11 +3240,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // A level's container ends where a line stops supplying its marker, so
         // the index covers one RUN of lines that reach `markers` and is rebuilt
         // when a query lands past it: a pure fence in a LATER quote at the same
-        // depth is not this one's closer. Queries arrive in line order, so the
-        // rebuild happens once per run and the cursor only moves forward.
+        // depth is not this one's closer.
+        //
+        // PER FENCE CHARACTER, each row carrying the WIDEST run still ahead of
+        // it. Searching the rows instead made a body of `x`-tagged backtick
+        // openers over a run of `~~~` lines quadratic: every opener walked every
+        // row and matched none of them (raised by codex review).
         let st = qPureFences[markers]
         if (!st || idx >= st.end) {
-          const list = []
+          const chars = new Map()
           let j = idx
           for (; j < n; j++) {
             let text = lines[j]
@@ -3252,18 +3256,31 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             while (k < markers && QUOTE.test(text)) { text = QUOTE.exec(text)[1] ?? ''; k++ }
             if (k < markers) break
             const c = PURE_FENCE.exec(text)
-            if (c) list.push({ j, run: c[1] })
+            if (!c) continue
+            const rows = chars.get(c[1][0]) ?? { at: [], cursor: 0 }
+            rows.at.push({ j, width: c[1].length })
+            chars.set(c[1][0], rows)
+          }
+          for (const rows of chars.values()) {
+            let widest = 0
+            for (let k = rows.at.length - 1; k >= 0; k--) {
+              widest = Math.max(widest, rows.at[k].width)
+              rows.at[k].widest = widest
+            }
           }
           layoutWork.fenceCloserLookahead += j - idx
-          st = qPureFences[markers] = { list, end: j, cursor: 0 }
+          st = qPureFences[markers] = { chars, end: j }
         }
-        while (st.cursor < st.list.length && st.list[st.cursor].j <= idx) st.cursor++
-        for (let k = st.cursor; k < st.list.length; k++) {
+        const rows = st.chars.get(run[0])
+        if (!rows) return false
+        // Queries arrive in line order, so the cursor only moves forward and its
+        // total travel is the row count however many openers ask.
+        while (rows.cursor < rows.at.length && rows.at[rows.cursor].j <= idx) {
+          rows.cursor++
           layoutWork.fenceCloserLookahead += 1
-          const e = st.list[k]
-          if (e.run[0] === run[0] && e.run.length >= run.length) return true
         }
-        return false
+        layoutWork.fenceCloserLookahead += 1
+        return rows.cursor < rows.at.length && rows.at[rows.cursor].widest >= run.length
       }
       /*
        * DOES THE NESTED QUOTE ON THIS LINE LEAVE A PARAGRAPH OPEN?
@@ -3310,7 +3327,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const before = qNestedTable[depth] ?? false
           qNestedTable[depth] = tableRunStep(before, text)
           const f = FENCE.exec(text)
-          if (f && parseFenceInfo(f[2]) !== null &&
+          // SS25 FIRST: past the cap an opener DEGRADES to literal paragraph
+          // text, so a fence recognized here would open a block the block reader
+          // does not. The cap is the POST-STRIP one the branch below asks, moved
+          // ahead of the fence rather than after it (raised by codex review).
+          if (state.blockDepth + depth + 1 < MAX_NESTING_DEPTH &&
+              f && parseFenceInfo(f[2]) !== null &&
               (!qNestedPara[depth] || closerFollows(idx, depth + 2, f[1]))) {
             qNestedFence[depth] = f[1]
             qNestedTable[depth] = false
