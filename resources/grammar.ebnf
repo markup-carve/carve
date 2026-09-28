@@ -196,8 +196,33 @@
            that line, and the line establishes its base in the container whose
            content column it does reach.
 
-           OWNER SELECTION FOR THE NEXT VISIBLE LINE. Determine this before
-           interruption or lazy folding:
+           OWNER SELECTION FOR THE NEXT VISIBLE LINE. Apply prefix matching
+           first. A quote requires its marker or an eligible stored continuation
+           claim; indentation alone never supplies a quote prefix. For an
+           indentation container, determine ownership before applying paragraph
+           interruption or lazy folding. Opener classification is consulted
+           during ownership selection to decide claim eligibility.
+
+           LIST-ITEM PRECEDENCE. PART 9 §24 C3 and CARVE-P9-051/053 qualify
+           the table below. After a blank, a line below the item's content
+           column belongs outside that item, including the band above its base.
+           After a line comment consumed below the content column, a noninterrupting
+           follower remains in the item even below that column. A comment at
+           or above the content column does not grant that retention (C3).
+           Sibling markers are recognized before ordinary-line retention.
+           This is retained item ownership, not a stored ordinary-line continuation
+           claim. The retention describes the most recent boundary, not the
+           next visible line across arbitrary invisible boundaries. A comment
+           at or above the content column clears earlier below-column retention.
+           A below-column comment is consumed by the item only while an ordinary
+           continuation claim or existing below-column retention admits it.
+           Without either, the missing prefix closes the item before that comment
+           is classified in the enclosing context. A following blank also clears
+           retention. An interrupting
+           opener below the content column is classified outside the item.
+           A matched comment fence at the enclosing context's opener column
+           ends the item as specified by C3 and corpus 214; an unmatched fence
+           is a line comment and follows the line-comment rule.
 
              column band                         selected owner
              past base_column but below          this surviving frame; the
@@ -209,7 +234,7 @@
                                                  block base of §24 C3 when the
                                                  residue is a recognized opener
 
-           The one qualification is a continuation claim already established
+           A further qualification is a continuation claim already established
            by the PRECEDING ordinary line: an unblank-separated, noninterrupting
            line that misses a container prefix is assigned to the owner of that
            ordinary line. This is stored ownership, not a search for any open
@@ -233,15 +258,16 @@
            visible classification and rendering. This is lexical erasure from
            layout, NEVER erasure from the AST or source map.
 
-           Both comment forms apply the `line_comment` / `fenced_comment` row
-           above: every enclosing container frame remains open and the current
-           paragraph closes. A following blank repeats the blank transition;
+           For a comment owned inside a surviving container, both forms apply
+           the `line_comment` / `fenced_comment` row above: the container remains
+           open and the current paragraph closes. This transition does not put
+           an enclosing-context comment fence inside an item it already ended.
+           A following blank repeats the blank transition;
            it does not close the container merely because a comment preceded
-           it. The next VISIBLE line is owned solely by its prefixes and column:
-           past a body's `base_column` that surviving body owns it, at or below
-           the base an ancestor owns it, and at or past `content_column` the
-           body owns it normally. The comment creates no lazy-continuation
-           claim and cannot keep or close a container by parser fallthrough.
+           it. The next VISIBLE line follows prefix matching, the owner table and
+           the list-item qualifications above. A comment creates no stored
+           ordinary-line continuation claim. The retained list ownership in
+           CARVE-P9-053 is a separate rule, not parser fallthrough.
 
            A matched `%%%` token carries its opener, body and exact-width
            closer as one source extent across authored indentation. Its body is
@@ -249,8 +275,8 @@
            comment; later lines are classified normally. Comment delimiters
            inside code, raw content or another opaque payload are literal
            bytes. Nested containers, quotes, definition bodies and footnote
-           bodies use this same phase ordering and transition without a
-           construct-specific ownership exception.
+           bodies use this same lexical phase ordering. Container survival
+           remains subject to the prefix and construct-specific ownership rules.
    STEP (per line L, executed exactly once -- no backtracking, Design
          Principle 1: the contribution a line makes to block structure never
          depends on a future line, the only lookahead being the DECLARED
@@ -6580,28 +6606,28 @@ EOF = (* end of file *) ;
              Which context that is depends on what closed the paragraph, and
              the two cases already settled here differ:
 
-               - after a COMMENT, the item is still open -- the comment
-                 exception below is explicit that a comment "does not close the
-                 ITEM either" while it does end the paragraph. So the line stays
-                 in the item: a MARKER is at the item body's own column 0, where
-                 C4 Rule B opens a list, and any other line begins the item's
-                 SECOND paragraph.
+               - after a line COMMENT consumed below the content column, the
+                 item remains available for a noninterrupting ordinary follower.
+                 A sibling marker is recognized before this retention rule;
+                 it opens the next item rather than becoming a child of this
+                 one. At the content column, a marker opens a sublist as usual.
                - after a BLANK LINE, the item is already ended by the clause
                  above, so the branch is never reached at all.
 
-            Two things are NOT settled by this sentence, and both are recorded
-            rather than decided:
-
-               - the paragraph closed by a construct that leaves the ITEM's fate
-                 open, a closed CODE fence being the case in point: that turns
-                 on whether the item survives the fence, which no clause here
-                 states.
-               - the comment's own COLUMN. The comment exception is written
-                 without reference to a column, but the two spellings answer
-                 differently: at the content column the marker opens a sublist,
-                 while BELOW it the following line reaches the item only through
-                 the lazy fold. Corpus 189 and 192 pin the below-column answer,
-                 so aligning the two means moving a pin, not tidying a clause.
+            A closed code fence still needs its own extent and prefix decision;
+            this paragraph does not decide which context survives that fence.
+            For line comments, the column distinction is preserved: a comment
+            consumed below the item's content column can retain a following
+            ordinary line, but one at or above that column does not retain a
+            later line which misses the item prefix. Corpus 506 records both
+            spellings and consecutive-comment controls. Retention concerns
+            the most recent boundary: a comment at the content column clears
+            retention from an earlier below-column comment. A subsequent
+            below-column comment has neither a prefix nor an ordinary-line claim
+            or retained ownership to admit it, so the item ends before that
+            comment. Repeated below-column comments retain ownership only while
+            an ordinary-line claim or previous below-column retention admits
+            them. Comments outside the item cannot reopen it.
 
              AN INVISIBLE LINE FOLDS LIKE ANY OTHER -- NORMATIVE [CARVE-P9-052]. "Every other
              line" includes the ones that are not block-SHAPED. This is the
@@ -6645,11 +6671,14 @@ EOF = (* end of file *) ;
             opener (corpus 186). Folding it would make the comment
             VISIBLE, which is the one outcome a comment may never have, and an
             indented comment at the top level is already invisible for the same
-            reason. It does not close the ITEM either: a following line still
-            belongs to the item rather than parsing at document level.
-            It does end the open PARAGRAPH, though, so that line
-            begins the item's SECOND paragraph rather than continuing the
-            first -- a difference visible only in a LOOSE list.
+            reason. Visibility at every column does not imply ownership at
+            every column. A line comment consumed below the content column
+            retains the item for a noninterrupting ordinary follower, subject
+            to the column and sibling-marker qualifications above. A comment
+            at or above the content column closes the paragraph without giving
+            a subsequent below-column line permission to remain in the item.
+            A retained ordinary follower starts a new paragraph; paragraph
+            continuation and item ownership remain separate decisions.
 
             AND THE OWNERSHIP HALF REACHES A DEGRADED FENCE.
             "The `%%%` fence form, whose body and closer travel with its

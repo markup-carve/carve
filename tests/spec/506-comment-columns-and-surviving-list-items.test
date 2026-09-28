@@ -1,0 +1,72 @@
+Comment columns and surviving list items
+
+```
+- intro
+%% c
+tail
+.
+<ul>
+  <li>intro
+    tail
+  </li>
+</ul>
+```
+
+```
+- intro
+  %% c
+tail
+.
+<ul>
+  <li>intro</li>
+</ul>
+<p>tail</p>
+```
+
+```
+- intro
+%%%
+c
+%%%
+  tail
+.
+<ul>
+  <li>intro</li>
+</ul>
+<p>tail</p>
+```
+
+```
+- intro
+%% c
+- next
+.
+<ul>
+  <li>intro</li>
+  <li>next</li>
+</ul>
+```
+
+```
+- intro
+%% a
+  %% b
+tail
+.
+<ul>
+  <li>intro</li>
+</ul>
+<p>tail</p>
+```
+
+```
+- intro
+  %% a
+%% b
+tail
+.
+<ul>
+  <li>intro</li>
+</ul>
+<p>tail</p>
+```
