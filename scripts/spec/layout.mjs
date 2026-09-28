@@ -1632,7 +1632,21 @@ function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt) 
       continue
     }
     const prefix = bodyLines.slice(0, k)
-    const atStart = prefix.every((l) => l.trim() === '') || !bodyLeavesParagraphOpen(prefix)
+    // §10 I4 IS ASKED AT THE FENCE LINE, AND A BLANK ABOVE IT CLOSES THE
+    // PARAGRAPH (carve#2486). `bodyLeavesParagraphOpen` skips a trailing blank
+    // run by design - it answers for a body whose LAST BLOCK is what a lazy line
+    // folds into - so asking it over the prefix reported an open paragraph the
+    // blank had already ended, the fence was held to needing a closer, and a
+    // body-internal fence with none opened nothing.
+    //
+    // The item collector reads `openPara`, which the blank clears, so the two
+    // containers answered one clause differently and the `dd`'s reach past a
+    // column-zero run survived where the item's ended - the asymmetry
+    // CARVE-P0-014 refuses ("the reach of a container is not extended by what
+    // its innermost block happens to be"). CARVE-P0-014 names the blank as the
+    // control: "a blank closes the paragraph so S4's otherwise governs".
+    const atStart = prefix.length === 0 || prefix[prefix.length - 1].trim() === '' ||
+      !bodyLeavesParagraphOpen(prefix)
     if (atStart || descriptionCloserAhead(f[1], lines, from, bodyColumn, endsBodyAt)) return k
   }
   return -1
@@ -2777,6 +2791,25 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // test, asked of the authored line the same way. It is framed LAZY,
             // as the item frames it, so the body's own parse cannot read it
             // back as a closer.
+            /*
+             * A COLON FENCE LINE ENDS THE BODY, IT DOES NOT FOLD (carve#2486).
+             * The line is read as the body would read it, dedented to the body's
+             * column 0 (carve#1772's rule for this collector), and at that
+             * column a valid `:::` opener or closer is a BLOCK: §10 I4's colon
+             * half makes an opener an interrupter, and a closer belongs to a
+             * container this body does not hold. Either way S4's lazy branch is
+             * not reached, so the reach question falls to its otherwise and the
+             * body ends - CARVE-P0-014's "the reach of a container is not
+             * extended by what its innermost block happens to be".
+             *
+             * `foldablePlain` here tests neither, so a `:::` below the column
+             * folded and the `dd` kept a column-zero run its list-item twin ends
+             * at. The ITEM collector spells the same refusal `!COLON_FENCE.test`,
+             * which also catches `:::note` - an INVALID opener, so ordinary prose
+             * that both readers fold in this host. The predicate is the validating
+             * one for that reason, not the shape test.
+             */
+            if (isColonBlockOpener(dedented) || COLON_CLOSER.test(dedented)) break
             const lazyFence = !foldablePlain(dedented) && FENCE.test(dedented) &&
               !(FENCE.test(cur) && hasCloser(lines, i))
             if ((foldablePlain(dedented) || lazyFence) && bodyLeavesParagraphOpen(asRead(bodyLines))) {
@@ -4819,7 +4852,28 @@ function collectItems(lines, i, list, state, ind, meas) {
           continue
         }
       }
-      if (fence.opaque && fence.opaque.opens !== false) break
+      // A COMMENT'S OWN DELIMITER IS NOT S2'S FENCED BODY (carve#2484). S2 wants
+      // the innermost MATCHED container to be a verbatim BODY, and a comment has
+      // no body block at all: PART 0 classifies it before visible block
+      // ownership, so a comment-shaped line is a TOKEN this collector keeps at
+      // every column - the `%%` branch below already says so and carve#629
+      // already extended it from `%%` to `%%%`.
+      //
+      // Breaking here reached that branch for no comment line at all once a span
+      // was open, so the item ended ON its closer: the item's own parse then saw
+      // an opener with no closer among its lines, which is one `%%` line
+      // comment, and PUBLISHED the payload while dropping both delimiters.
+      // carve#2484's two controls, the closer at the opener's base and the same
+      // pair at document level, already hide it, so the closer's column was the
+      // only parameter.
+      //
+      // Only the DELIMITER is exempt. A span's payload line below the column
+      // still ends the item, because that line is not comment-shaped and S2's
+      // question was never asked about it: `- head` / `    %%%` / `X` / `%%%`
+      // ends the item at `X` in every reader.
+      const commentTokenBelow = fence.opaque !== null && fence.opaque.kind === 'comment' &&
+        !nm && lm.rest.startsWith('%%')
+      if (!commentTokenBelow && fence.opaque && fence.opaque.opens !== false) break
       if (nm && nm.indent <= baseIndent) {
         // §17 L1, first clause: the item WAS followed by a blank line before
         // this sibling marker - an invisible attachment in between does not
@@ -4880,6 +4934,13 @@ function collectItems(lines, i, list, state, ind, meas) {
         // The lexical token leaves the frame available. The collector records
         // that ownership fact without turning the invisible line into lazy
         // paragraph text.
+        //
+        // A CLOSER KEPT HERE STILL CLOSES THE SPAN (carve#2484). The looseness
+        // tracker is incremental, so a span left open past its own closer reads
+        // every blank below it as fence content and the item comes out TIGHT.
+        // Only the closing half is asked: an OPENER at this column opens no span
+        // here, and the branch above owns that question.
+        if (fence.opaque) trackFence(lm.rest, false, i)
         i++
         continue
       }
