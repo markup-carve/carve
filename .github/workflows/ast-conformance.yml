@@ -325,6 +325,14 @@ jobs:
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
         run: npm run parity:check
 
+      - name: Verify literal migration evidence across engines
+        if: always()
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+        run: npm run migration:evidence
+
       # A `tests/corpus/<slug>.fmt` file is PART 11's canonical form for one
       # document - the exact source every conforming writer must produce for it.
       # tests/corpus-fmt-roundtrip.test.mjs reads those fixtures through the
