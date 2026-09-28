@@ -2,159 +2,280 @@
   "version": 1,
   "measured": {
     "date": "2026-09-28",
-    "spec": "29ddfe43a",
-    "js": "d0e62074f",
-    "php": "1c44d7631",
-    "rust": "82ef88d42"
+    "spec": "2dae52e61",
+    "js": "58c747bf0",
+    "php": "ab0648469",
+    "rust": "cd1bb9cce"
   },
   "differences": [
     {
-      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-10.crv/js->php",
-      "issue": "https://github.com/markup-carve/carve/issues/2530",
-      "reason": "PHP keeps tail inside the list item; JavaScript and Rust place it after the list, as corpus 512 requires.",
-      "fingerprint": "fbc5a940fb43640895608e5a97f920e5941085cab10f17676adee4602c30cb09",
-      "observation": {
-        "expected": "<ul>\n  <li>tail</li>\n</ul>",
-        "status": 0,
-        "actual": "<ul>\n  <li></li>\n</ul>\n<p>tail</p>"
-      }
-    },
-    {
-      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-10.crv/php->js",
-      "issue": "https://github.com/markup-carve/carve/issues/2530",
-      "reason": "PHP keeps tail inside the list item; JavaScript and Rust place it after the list, as corpus 512 requires.",
-      "fingerprint": "a28c966d7c2afb6451ac77e088f98fd4fa715d8e52e88fec77d9ebc2c039f245",
-      "observation": {
-        "expected": "<ul>\n  <li></li>\n</ul>\n<p>tail</p>",
-        "status": 0,
-        "actual": "<ul>\n  <li>tail</li>\n</ul>"
-      }
-    },
-    {
-      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-10.crv/php->rust",
-      "issue": "https://github.com/markup-carve/carve/issues/2530",
-      "reason": "PHP keeps tail inside the list item; JavaScript and Rust place it after the list, as corpus 512 requires.",
-      "fingerprint": "a28c966d7c2afb6451ac77e088f98fd4fa715d8e52e88fec77d9ebc2c039f245",
-      "observation": {
-        "expected": "<ul>\n  <li></li>\n</ul>\n<p>tail</p>",
-        "status": 0,
-        "actual": "<ul>\n  <li>tail</li>\n</ul>"
-      }
-    },
-    {
-      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-10.crv/rust->php",
-      "issue": "https://github.com/markup-carve/carve/issues/2530",
-      "reason": "PHP keeps tail inside the list item; JavaScript and Rust place it after the list, as corpus 512 requires.",
-      "fingerprint": "fbc5a940fb43640895608e5a97f920e5941085cab10f17676adee4602c30cb09",
-      "observation": {
-        "expected": "<ul>\n  <li>tail</li>\n</ul>",
-        "status": 0,
-        "actual": "<ul>\n  <li></li>\n</ul>\n<p>tail</p>"
-      }
-    },
-    {
-      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-11.crv/js->php",
-      "issue": "https://github.com/markup-carve/carve/issues/2530",
-      "reason": "JavaScript exposes the comment payload; PHP and Rust keep tail inside the item. Corpus 512 requires a hidden payload and tail after the list.",
-      "fingerprint": "0c332afd0626e507d79047a7c9084a347d3cb1c345e1c282f46027b2080cefb7",
-      "observation": {
-        "expected": "<ul>\n  <li>tail</li>\n</ul>",
-        "status": 0,
-        "actual": "<ul>\n  <li>hidden</li>\n</ul>\n<p>tail</p>"
-      }
-    },
-    {
       "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-11.crv/js->rust",
       "issue": "https://github.com/markup-carve/carve/issues/2530",
-      "reason": "JavaScript exposes the comment payload; PHP and Rust keep tail inside the item. Corpus 512 requires a hidden payload and tail after the list.",
-      "fingerprint": "0c332afd0626e507d79047a7c9084a347d3cb1c345e1c282f46027b2080cefb7",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "fbc5a940fb43640895608e5a97f920e5941085cab10f17676adee4602c30cb09",
       "observation": {
         "expected": "<ul>\n  <li>tail</li>\n</ul>",
         "status": 0,
-        "actual": "<ul>\n  <li>hidden</li>\n</ul>\n<p>tail</p>"
+        "actual": "<ul>\n  <li></li>\n</ul>\n<p>tail</p>"
       }
     },
     {
-      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-11.crv/php->js",
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-11.crv/php->rust",
       "issue": "https://github.com/markup-carve/carve/issues/2530",
-      "reason": "JavaScript exposes the comment payload; PHP and Rust keep tail inside the item. Corpus 512 requires a hidden payload and tail after the list.",
-      "fingerprint": "9a7ce41e2debc15583cd12392125240aebe403a6e6b0a352a9cf7e3bd4543ccf",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "fbc5a940fb43640895608e5a97f920e5941085cab10f17676adee4602c30cb09",
       "observation": {
-        "expected": "<ul>\n  <li>hidden</li>\n</ul>\n<p>tail</p>",
+        "expected": "<ul>\n  <li>tail</li>\n</ul>",
         "status": 0,
-        "actual": "<ul>\n  <li>tail</li>\n</ul>"
+        "actual": "<ul>\n  <li></li>\n</ul>\n<p>tail</p>"
       }
     },
     {
       "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-11.crv/rust->js",
       "issue": "https://github.com/markup-carve/carve/issues/2530",
-      "reason": "JavaScript exposes the comment payload; PHP and Rust keep tail inside the item. Corpus 512 requires a hidden payload and tail after the list.",
-      "fingerprint": "9a7ce41e2debc15583cd12392125240aebe403a6e6b0a352a9cf7e3bd4543ccf",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "a28c966d7c2afb6451ac77e088f98fd4fa715d8e52e88fec77d9ebc2c039f245",
       "observation": {
-        "expected": "<ul>\n  <li>hidden</li>\n</ul>\n<p>tail</p>",
+        "expected": "<ul>\n  <li></li>\n</ul>\n<p>tail</p>",
         "status": 0,
         "actual": "<ul>\n  <li>tail</li>\n</ul>"
       }
     },
     {
-      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-12.crv/js->php",
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-11.crv/rust->php",
       "issue": "https://github.com/markup-carve/carve/issues/2530",
-      "reason": "JavaScript exposes the comment payload; PHP and Rust keep tail inside the item. Corpus 512 requires a hidden payload and tail after the list.",
-      "fingerprint": "0c332afd0626e507d79047a7c9084a347d3cb1c345e1c282f46027b2080cefb7",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "a28c966d7c2afb6451ac77e088f98fd4fa715d8e52e88fec77d9ebc2c039f245",
       "observation": {
-        "expected": "<ul>\n  <li>tail</li>\n</ul>",
+        "expected": "<ul>\n  <li></li>\n</ul>\n<p>tail</p>",
         "status": 0,
-        "actual": "<ul>\n  <li>hidden</li>\n</ul>\n<p>tail</p>"
+        "actual": "<ul>\n  <li>tail</li>\n</ul>"
       }
     },
     {
       "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-12.crv/js->rust",
       "issue": "https://github.com/markup-carve/carve/issues/2530",
-      "reason": "JavaScript exposes the comment payload; PHP and Rust keep tail inside the item. Corpus 512 requires a hidden payload and tail after the list.",
-      "fingerprint": "0c332afd0626e507d79047a7c9084a347d3cb1c345e1c282f46027b2080cefb7",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "fbc5a940fb43640895608e5a97f920e5941085cab10f17676adee4602c30cb09",
       "observation": {
         "expected": "<ul>\n  <li>tail</li>\n</ul>",
         "status": 0,
-        "actual": "<ul>\n  <li>hidden</li>\n</ul>\n<p>tail</p>"
+        "actual": "<ul>\n  <li></li>\n</ul>\n<p>tail</p>"
       }
     },
     {
-      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-12.crv/php->js",
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-12.crv/php->rust",
       "issue": "https://github.com/markup-carve/carve/issues/2530",
-      "reason": "JavaScript exposes the comment payload; PHP and Rust keep tail inside the item. Corpus 512 requires a hidden payload and tail after the list.",
-      "fingerprint": "9a7ce41e2debc15583cd12392125240aebe403a6e6b0a352a9cf7e3bd4543ccf",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "fbc5a940fb43640895608e5a97f920e5941085cab10f17676adee4602c30cb09",
       "observation": {
-        "expected": "<ul>\n  <li>hidden</li>\n</ul>\n<p>tail</p>",
+        "expected": "<ul>\n  <li>tail</li>\n</ul>",
         "status": 0,
-        "actual": "<ul>\n  <li>tail</li>\n</ul>"
+        "actual": "<ul>\n  <li></li>\n</ul>\n<p>tail</p>"
       }
     },
     {
       "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-12.crv/rust->js",
       "issue": "https://github.com/markup-carve/carve/issues/2530",
-      "reason": "JavaScript exposes the comment payload; PHP and Rust keep tail inside the item. Corpus 512 requires a hidden payload and tail after the list.",
-      "fingerprint": "9a7ce41e2debc15583cd12392125240aebe403a6e6b0a352a9cf7e3bd4543ccf",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "a28c966d7c2afb6451ac77e088f98fd4fa715d8e52e88fec77d9ebc2c039f245",
       "observation": {
-        "expected": "<ul>\n  <li>hidden</li>\n</ul>\n<p>tail</p>",
+        "expected": "<ul>\n  <li></li>\n</ul>\n<p>tail</p>",
         "status": 0,
         "actual": "<ul>\n  <li>tail</li>\n</ul>"
       }
     },
     {
-      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership.crv/js->php",
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-12.crv/rust->php",
       "issue": "https://github.com/markup-carve/carve/issues/2530",
-      "reason": "PHP and Rust register a reference definition inside the comment span; JavaScript keeps the later reference literal, as corpus 512 requires.",
-      "fingerprint": "ba8fb541007966cc2ff7fbb78456b8959ad98a223e2d4201dcc325d6647c6b38",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "a28c966d7c2afb6451ac77e088f98fd4fa715d8e52e88fec77d9ebc2c039f245",
       "observation": {
-        "expected": "<ul>\n  <li>item</li>\n</ul>\n<p><a href=\"/url\">use</a></p>",
+        "expected": "<ul>\n  <li></li>\n</ul>\n<p>tail</p>",
         "status": 0,
-        "actual": "<ul>\n  <li>item</li>\n</ul>\n<p>[use][r]</p>"
+        "actual": "<ul>\n  <li>tail</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-4.crv/js->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "3f52a65ac8fea69658b0d474699e090ec942bb5aba395007ebadbea0300edd7d",
+      "observation": {
+        "expected": "<ul>\n  <li>item\n    tail\n  </li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>item</li>\n</ul>\n<p>tail</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-4.crv/php->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "3f52a65ac8fea69658b0d474699e090ec942bb5aba395007ebadbea0300edd7d",
+      "observation": {
+        "expected": "<ul>\n  <li>item\n    tail\n  </li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>item</li>\n</ul>\n<p>tail</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-4.crv/rust->js",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "97473eeab7280b6c4204dc4ccd0338b95e0f9c7ab167574e9ed60cf14308b471",
+      "observation": {
+        "expected": "<ul>\n  <li>item</li>\n</ul>\n<p>tail</p>",
+        "status": 0,
+        "actual": "<ul>\n  <li>item\n    tail\n  </li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-4.crv/rust->php",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "97473eeab7280b6c4204dc4ccd0338b95e0f9c7ab167574e9ed60cf14308b471",
+      "observation": {
+        "expected": "<ul>\n  <li>item</li>\n</ul>\n<p>tail</p>",
+        "status": 0,
+        "actual": "<ul>\n  <li>item\n    tail\n  </li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-6.crv/js->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "9e476c9627d03d334628629172ca0c3bf607f47ab28ec883102f14047572b3c0",
+      "observation": {
+        "expected": "<ul>\n  <li>a\n    <ul>\n      <li>item\n        tail\n      </li>\n    </ul>\n  </li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>a\n    <ul>\n      <li>item</li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-6.crv/php->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "9e476c9627d03d334628629172ca0c3bf607f47ab28ec883102f14047572b3c0",
+      "observation": {
+        "expected": "<ul>\n  <li>a\n    <ul>\n      <li>item\n        tail\n      </li>\n    </ul>\n  </li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>a\n    <ul>\n      <li>item</li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-6.crv/rust->js",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "064256cce2bfa95bd99e1277e223a741ee9512c56ece7728dfda2717278eb945",
+      "observation": {
+        "expected": "<ul>\n  <li>a\n    <ul>\n      <li>item</li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>",
+        "status": 0,
+        "actual": "<ul>\n  <li>a\n    <ul>\n      <li>item\n        tail\n      </li>\n    </ul>\n  </li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-6.crv/rust->php",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "064256cce2bfa95bd99e1277e223a741ee9512c56ece7728dfda2717278eb945",
+      "observation": {
+        "expected": "<ul>\n  <li>a\n    <ul>\n      <li>item</li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>",
+        "status": 0,
+        "actual": "<ul>\n  <li>a\n    <ul>\n      <li>item\n        tail\n      </li>\n    </ul>\n  </li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-8.crv/js->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "451e28005e393737e9962be6cfdf04348fa3c988e104c71bef7bf752a7471204",
+      "observation": {
+        "expected": "<ol>\n  <li>item\n    tail\n  </li>\n</ol>",
+        "status": 0,
+        "actual": "<ol>\n  <li>item</li>\n</ol>\n<p>tail</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-8.crv/php->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "451e28005e393737e9962be6cfdf04348fa3c988e104c71bef7bf752a7471204",
+      "observation": {
+        "expected": "<ol>\n  <li>item\n    tail\n  </li>\n</ol>",
+        "status": 0,
+        "actual": "<ol>\n  <li>item</li>\n</ol>\n<p>tail</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-8.crv/rust->js",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "cc87e0c19598c41eb3404a340138fc702a08472d08dc03fc3050a1e78d1c1fc3",
+      "observation": {
+        "expected": "<ol>\n  <li>item</li>\n</ol>\n<p>tail</p>",
+        "status": 0,
+        "actual": "<ol>\n  <li>item\n    tail\n  </li>\n</ol>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-8.crv/rust->php",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "cc87e0c19598c41eb3404a340138fc702a08472d08dc03fc3050a1e78d1c1fc3",
+      "observation": {
+        "expected": "<ol>\n  <li>item</li>\n</ol>\n<p>tail</p>",
+        "status": 0,
+        "actual": "<ol>\n  <li>item\n    tail\n  </li>\n</ol>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-9.crv/js->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "187318cacc42fa2eb6a786a2e217d1c1f4b924593ca5fcd5e7e66a6c565e0209",
+      "observation": {
+        "expected": "<ul>\n  <li>a\n    <ul>\n      <li>item\n        tail\n      </li>\n    </ul>\n  </li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>a\n    <ul>\n      <li>item</li>\n    </ul>\n    tail\n  </li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-9.crv/php->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "187318cacc42fa2eb6a786a2e217d1c1f4b924593ca5fcd5e7e66a6c565e0209",
+      "observation": {
+        "expected": "<ul>\n  <li>a\n    <ul>\n      <li>item\n        tail\n      </li>\n    </ul>\n  </li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>a\n    <ul>\n      <li>item</li>\n    </ul>\n    tail\n  </li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-9.crv/rust->js",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "b1763a495760be7524b42bcfee8c09407793eca0a82365cf9f81f841b6944997",
+      "observation": {
+        "expected": "<ul>\n  <li>a\n    <ul>\n      <li>item</li>\n    </ul>\n    tail\n  </li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>a\n    <ul>\n      <li>item\n        tail\n      </li>\n    </ul>\n  </li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-9.crv/rust->php",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "carve-rs reads the comment span's ownership from its closer's column, not from its opener's, so tail leaves the item where carve-js and carve-php keep it. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "b1763a495760be7524b42bcfee8c09407793eca0a82365cf9f81f841b6944997",
+      "observation": {
+        "expected": "<ul>\n  <li>a\n    <ul>\n      <li>item</li>\n    </ul>\n    tail\n  </li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>a\n    <ul>\n      <li>item\n        tail\n      </li>\n    </ul>\n  </li>\n</ul>"
       }
     },
     {
       "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership.crv/js->rust",
       "issue": "https://github.com/markup-carve/carve/issues/2530",
-      "reason": "PHP and Rust register a reference definition inside the comment span; JavaScript keeps the later reference literal, as corpus 512 requires.",
+      "reason": "carve-rs registers a reference definition inside the comment span, so the later reference resolves; corpus 512 keeps it literal, as carve-js and carve-php do. carve-rs pins spec 66d4ed19f, before #2527.",
       "fingerprint": "ba8fb541007966cc2ff7fbb78456b8959ad98a223e2d4201dcc325d6647c6b38",
       "observation": {
         "expected": "<ul>\n  <li>item</li>\n</ul>\n<p><a href=\"/url\">use</a></p>",
@@ -163,9 +284,20 @@
       }
     },
     {
-      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership.crv/php->js",
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership.crv/php->rust",
       "issue": "https://github.com/markup-carve/carve/issues/2530",
-      "reason": "PHP and Rust register a reference definition inside the comment span; JavaScript keeps the later reference literal, as corpus 512 requires.",
+      "reason": "carve-rs registers a reference definition inside the comment span, so the later reference resolves; corpus 512 keeps it literal, as carve-js and carve-php do. carve-rs pins spec 66d4ed19f, before #2527.",
+      "fingerprint": "ba8fb541007966cc2ff7fbb78456b8959ad98a223e2d4201dcc325d6647c6b38",
+      "observation": {
+        "expected": "<ul>\n  <li>item</li>\n</ul>\n<p><a href=\"/url\">use</a></p>",
+        "status": 0,
+        "actual": "<ul>\n  <li>item</li>\n</ul>\n<p>[use][r]</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership.crv/rust->js",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "carve-rs registers a reference definition inside the comment span, so the later reference resolves; corpus 512 keeps it literal, as carve-js and carve-php do. carve-rs pins spec 66d4ed19f, before #2527.",
       "fingerprint": "0c4db660c2513a3c5d0848b9e83657947be8e159f4abbed01706f56f18743fe1",
       "observation": {
         "expected": "<ul>\n  <li>item</li>\n</ul>\n<p>[use][r]</p>",
@@ -174,9 +306,9 @@
       }
     },
     {
-      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership.crv/rust->js",
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership.crv/rust->php",
       "issue": "https://github.com/markup-carve/carve/issues/2530",
-      "reason": "PHP and Rust register a reference definition inside the comment span; JavaScript keeps the later reference literal, as corpus 512 requires.",
+      "reason": "carve-rs registers a reference definition inside the comment span, so the later reference resolves; corpus 512 keeps it literal, as carve-js and carve-php do. carve-rs pins spec 66d4ed19f, before #2527.",
       "fingerprint": "0c4db660c2513a3c5d0848b9e83657947be8e159f4abbed01706f56f18743fe1",
       "observation": {
         "expected": "<ul>\n  <li>item</li>\n</ul>\n<p>[use][r]</p>",
