@@ -26,6 +26,7 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth`,
 `505-a-verbatim-line-keeps-what-sits-past-its-fence-opener-not-past-its-container`,
 `506-comment-columns-and-surviving-list-items`,
+`507-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the

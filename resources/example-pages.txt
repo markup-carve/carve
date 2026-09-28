@@ -791,6 +791,7 @@ index: examples/edge-cases/index.md
   empty-containers-share-one-html-body-shape
   a-title-or-label-fills-the-container-body-slot
   a-verbatim-line-keeps-what-sits-past-its-fence-opener-not-past-its-container
+  a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph
 
 [edge-security] Security and limits
 > Trojan-Source stripping, scheme probes, attribute hardening and the nesting cap.
