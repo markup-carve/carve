@@ -1,0 +1,58 @@
+name: Layout proofs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'proofs/**'
+      - 'scripts/layout-proof-check.mjs'
+      - 'scripts/spec/**'
+      - 'resources/**'
+      - 'tests/corpus/**'
+      - 'tests/layout-proof-evidence.test.mjs'
+      - 'package*.json'
+      - '.github/workflows/layout-proofs.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'proofs/**'
+      - 'scripts/layout-proof-check.mjs'
+      - 'scripts/spec/**'
+      - 'resources/**'
+      - 'tests/corpus/**'
+      - 'tests/layout-proof-evidence.test.mjs'
+      - 'package*.json'
+      - '.github/workflows/layout-proofs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: layout-proofs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: '4.14.2'
+      - name: Install proof compiler and standard library
+        run: opam install --yes rocq-prover rocq-core.9.2.0 rocq-stdlib.9.1.0
+      - name: Use HTTPS for Git dependencies
+        run: |
+          git config --global --add url."https://github.com/".insteadOf ssh://git@github.com/
+          git config --global --add url."https://github.com/".insteadOf git@github.com:
+      - run: npm ci --no-audit --no-fund
+      - name: Check model proofs and recorded evidence
+        run: opam exec -- npm run proof:layout
+      - name: Check evidence failure handling
+        run: node --test tests/layout-proof-evidence.test.mjs
