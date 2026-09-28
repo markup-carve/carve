@@ -2,15 +2,15 @@
   "schema": 1,
   "comparison": "Exact HTML after trimming outer whitespace; internal whitespace is preserved.",
   "spec": {
-    "head": "54613302a03ba1848840fc37cc66e81f10e4a270",
-    "diffSha256": "aa44e2eacdd48770093bc8b3bc4ce3094426bf9433b16f018a71d3e904c47c99"
+    "head": "ad55182f13a3e1f3c7b5bef3822770b43a49ec5e",
+    "diffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   },
   "js": {
-    "head": "eb98c57fb724daf6ace62bf651a82c16a003a913",
-    "diffSha256": "de5324d84ba07e89dc7c0a2f518f1b642f7f713603b90ffd394b51632005b8f6"
+    "head": "cf10661fa0a4edc37890ea075c9fd5c6d1de0b47",
+    "diffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   },
-  "jsBuildSha256": "cc0d72b65dc61614b64e35a5b084d04cc869354d7306627f0b4ca287de6eaa31",
-  "rustBinarySha256": "f458a1b2401b789bac869ddc1707ff30133f161fadb3a43aad632d9b4745a11c",
+  "jsBuildSha256": "c8069f0525d9ebd64b48c9395c36d471287c378fd4d9e9d1e6e0c09275b0488a",
+  "rustBinarySha256": "5e229ed59afcba468bcc1b31a7949c3d6f7b98f0f992eb1dbe81bab3450129f8",
   "corpusSha256": "b0e16a3394614bafde4cf646f4b8d268402d6880a103a451be5b89e24495b323",
   "total": 976,
   "refused": 0,
