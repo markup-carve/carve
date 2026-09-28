@@ -5036,9 +5036,9 @@ function collectItems(lines, i, list, state, ind, meas) {
           commentFenceOpensSpan(lines, i) && !bodyHoldsOpenCommentSpan(itemLines)) {
         break
       }
-      // C3's below-column exception requires an open paragraph. Keep tokens
-      // inside an existing comment span, but do not revive a closed item (#2504).
-      if (!nm && lm.rest.startsWith('%%') && !openPara &&
+      // A column-zero comment cannot revive a closed item (#2504).
+      // Keep delimiters inside an existing comment span with that span.
+      if (!nm && lm.col === 0 && lm.rest.startsWith('%%') && !openPara &&
           !bodyHoldsOpenCommentSpan(itemLines)) break
       if (!nm && lm.rest.startsWith('%%') && itemLines.length > 0) {
         // KEEP ONE COLUMN of the original indentation. Stripping it entirely

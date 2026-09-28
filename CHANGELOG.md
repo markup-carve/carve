@@ -10,11 +10,6 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
-### Fixed
-
-- The oracle no longer lets a below-column comment revive a list item after
-  its paragraph has closed. Corpus cases pin line and fenced comments (#2504).
-
 ## [0.1.7] - 2026-09-25
 
 ### Breaking
