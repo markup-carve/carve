@@ -2297,6 +2297,7 @@ export function parse(src, { authoredBodyBases = true } = {}) {
   // PART 9 SS4c no-nesting demotion); it is false again here, so drop it too.
   delete state.inFigureGroup
   delete state.authoredBodyBases
+  delete state.markerCommentClosers
   delete state.prefixMemos
   delete state.attachmentBoundaries
   return { blocks, ...state }
@@ -4794,7 +4795,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         const marker = matchMarkerAt(measured)
         if (!marker) {
           const run = COMMENT_FENCE_BODY.exec(measured.rest)
-          summary = run ? { run: run[1], col: measured.col, markers: 0 } : null
+          summary = run ? { run: run[1], col: 0, markers: 0 } : null
           memo.set(text.length, summary)
           break
         }
@@ -4805,7 +4806,20 @@ function collectItems(lines, i, list, state, ind, meas) {
         if (summary) summary = { ...summary, col: summary.col + path[k].width, markers: summary.markers + 1 }
         memo.set(path[k].length, summary)
       }
-      return summary?.markers && commentFenceCloserAhead(lines, idx, summary.run)
+      if (!summary?.markers) return null
+      // All marker openers in this source array share the same delimiter index.
+      // Unmatched siblings must not each scan the remaining document.
+      const arrays = state.markerCommentClosers ??= new WeakMap()
+      let closers = arrays.get(lines)
+      if (!closers) {
+        closers = new Map()
+        for (let k = 0; k < lines.length; k++) {
+          const end = COMMENT_FENCE.exec(lines[k])
+          if (end) closers.set(end[1].length, k)
+        }
+        arrays.set(lines, closers)
+      }
+      return (closers.get(summary.run.length) ?? -1) > idx
         ? { kind: 'comment', run: summary.run, markerLine: true, col: col + summary.col }
         : null
     }

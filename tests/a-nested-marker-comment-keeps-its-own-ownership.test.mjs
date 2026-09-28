@@ -9,7 +9,8 @@ for (const [name, head, column] of [
   ['bullet', '- a\n  - %%%', 4],
   ['ordered', '1. a\n   1. %%%', 6],
   ['task', '- a\n  - [x] %%%', 4],
-  ['task with extra space', '- a\n  - [x]  %%%', 5],
+  ['task with extra space', '- a\n  - [x]  %%%', 4],
+  ['task with tab', '- a\n  - [x] \t%%%', 4],
   ['three levels', '- a\n  - b\n    - %%%', 6],
   ['stacked markers', '- - %%%', 4],
 ]) {
@@ -65,4 +66,19 @@ test('stacked marker comment classification grows linearly with depth', () => {
   const large = count(128)
   assert.ok(small > 64)
   assert.ok(large / small < 2.25, `${small} -> ${large} regex calls`)
+})
+
+test('unmatched sibling openers add no second suffix scan', () => {
+  const count = 256
+  const source = '- a\n' + '  - %%%\n'.repeat(count)
+  const exec = RegExp.prototype.exec
+  let delimiters = 0
+  RegExp.prototype.exec = function (value) {
+    if (this.source === '^[ \\t]*(%{3,})(.*)$') delimiters++
+    return Reflect.apply(exec, this, [value])
+  }
+  try { parse(source) } finally { RegExp.prototype.exec = exec }
+  // The existing inner-item lookaheads visit each remaining sibling once.
+  // Tracking their ancestor may add linear work, but not another such pass.
+  assert.ok(delimiters <= count * (count + 1) / 2 + 5 * count, `${delimiters} delimiter checks`)
 })
