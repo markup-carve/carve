@@ -31,7 +31,11 @@ function output(engine, args, source) {
 
 try {
   const triggers = JSON.parse(readFileSync(resolve(root, 'resources/lint-default-triggers.json'), 'utf8'))
-  if (Object.keys(triggers).length < 36) throw new Error('default lint trigger population is incomplete')
+  // THE FLOOR CARRIES MORE NOW THAT NOTHING IS DECLARED. With an empty
+  // `lint-parity-drift.txt` the reconciliation below has nothing to say, so a
+  // trigger quietly leaving this file would shrink the question instead of
+  // failing it. 37 is the population measured 2026-09-28.
+  if (Object.keys(triggers).length < 37) throw new Error('default lint trigger population is incomplete')
   const declared = parseDriftLedger(resolve(root, 'resources/lint-parity-drift.txt'))
   const missing = new Set()
   for (const engine of Object.keys(engines)) {
