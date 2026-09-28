@@ -293,9 +293,12 @@ test('a row with a count but no reference is malformed, not declared', () => {
 // and no engine has a row to answer for - which is why the reference on each
 // row names the ruling rather than an engine issue.
 //
-// Measured over 1924 corpus documents at carve-js 49530976b, carve-rs 1617e234b
-// and carve-php 0ec8dc4a, each a worktree of that engine's main taken for this
-// run, and reported the same way by AST conformance run 36357215735.
+// Measured over 1924 corpus documents at carve-js 1f5a72246, carve-rs 8a52398dd
+// and carve-php 9bf8f10f, each a worktree of that engine's main taken for this
+// run, and reported the same way by AST conformance run 36358642466. Re-measured
+// after five carve-rs merges - one of them a container-span change - and the two
+// readings did not move: column 5 in carve-js and carve-rs, column 3 in
+// carve-php.
 const LAST_MEASURED = new Map([
   ['list (extent)', 1],
   ['list_item (extent)', 1],
