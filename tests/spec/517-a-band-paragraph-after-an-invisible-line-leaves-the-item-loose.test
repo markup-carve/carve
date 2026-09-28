@@ -1,0 +1,72 @@
+A band paragraph after an invisible line leaves the item loose
+
+```
+- t
+
+  %% c
+ z
+.
+<ul>
+  <li><p>t</p>
+    <p>z</p>
+  </li>
+</ul>
+```
+
+```
+10. t
+
+    %% c
+   z
+.
+<ol start="10">
+  <li><p>t</p>
+    <p>z</p>
+  </li>
+</ol>
+```
+
+```
+10. t
+
+    %% c
+    z
+.
+<ol start="10">
+  <li><p>t</p>
+    <p>z</p>
+  </li>
+</ol>
+```
+
+```
+- t
+
+  %%%
+  c
+  %%%
+ z
+.
+<ul>
+  <li><p>t</p>
+    <p>z</p>
+  </li>
+</ul>
+```
+
+```
+- t
+
+  %% c
+ - b
+- s
+.
+<ul>
+  <li>t
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+  <li>s</li>
+</ul>
+```

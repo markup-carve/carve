@@ -42272,3 +42272,120 @@ start of its text and after a tab.
 `````
 
 :::
+
+## A band paragraph after an invisible line leaves the item loose
+
+PART 9 §17 L1b reads tightness over the item's blocks and the blank lines
+between them and names no column, so the authored column of a second paragraph
+cannot decide it. A follower in the band between the marker column and the
+content column answers L1b exactly as one at the content column does, and
+`186-an-invisible-line-does-not-cancel-a-blank-line-separation` pins that answer
+LOOSE.
+
+The first pair is the narrowest band. The second widens it to three columns
+under a four-wide marker and the third is its content-column twin, which agrees.
+The fourth writes the invisible line as a `%%%` span. The last pair is §17 L2's
+half of the rule: a sub-list in the band ATTACHES, so it consumes the separation
+and the item stays tight, which is what the same tree written at the content
+column already answered (carve#2548).
+
+::: compare
+
+````carve
+- t
+
+  %% c
+ z
+````
+
+````html
+<ul>
+  <li><p>t</p>
+    <p>z</p>
+  </li>
+</ul>
+````
+
+:::
+
+::: compare
+
+````carve
+10. t
+
+    %% c
+   z
+````
+
+````html
+<ol start="10">
+  <li><p>t</p>
+    <p>z</p>
+  </li>
+</ol>
+````
+
+:::
+
+::: compare
+
+````carve
+10. t
+
+    %% c
+    z
+````
+
+````html
+<ol start="10">
+  <li><p>t</p>
+    <p>z</p>
+  </li>
+</ol>
+````
+
+:::
+
+::: compare
+
+````carve
+- t
+
+  %%%
+  c
+  %%%
+ z
+````
+
+````html
+<ul>
+  <li><p>t</p>
+    <p>z</p>
+  </li>
+</ul>
+````
+
+:::
+
+::: compare
+
+````carve
+- t
+
+  %% c
+ - b
+- s
+````
+
+````html
+<ul>
+  <li>t
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+  <li>s</li>
+</ul>
+````
+
+:::
