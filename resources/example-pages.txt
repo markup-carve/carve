@@ -147,6 +147,7 @@ out: examples/core.md
   41-line-blocks-4
   41-line-blocks-5
   41-line-blocks-7
+  41-line-blocks-10
   42-admonitions
   42-admonitions-2
   42-admonitions-3
