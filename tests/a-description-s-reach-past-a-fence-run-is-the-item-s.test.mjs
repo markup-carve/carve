@@ -31,10 +31,9 @@
  * is written AT the body's own column - which is a carve-rs defect against the
  * same clause and not a reading this file bends to.
  *
- * NOT DECIDED HERE: the ticket's second row, an INNER item's fence with the run
- * at column 0, which differs in more than the container's reach and has no
- * clause. The guard at the bottom pins the oracle's current answer so this change
- * cannot move it by accident.
+ * The ticket's second row, an INNER item's fence with the run at column 0, was
+ * not decided here and was pinned at the bottom so this change could not move it.
+ * carve#2490 has since ruled it, and that row now reads the owner table.
  */
 
 import { test } from 'node:test'
@@ -171,14 +170,22 @@ test('GUARD: an unterminated comment fence in a dd opens no span', () => {
   assert.ok(out.includes('<p>a</p>'), out)
 })
 
-test('GUARD: the unarbitrated inner-item row does not move', () => {
-  // carve#2486 deliberately did not claim this one: the oracle keeps the run
-  // inside the fence body, carve-js closes the fence at `a` and leaves an empty
-  // verbatim span in the outer item, and CARVE-P0-013's worked example matches
-  // neither exactly. Pinned as it stands so the fix above cannot decide it.
+test('GUARD: a colon container host is not the nested-item host', () => {
+  // CARVE-P0-014 answers this one the other way: a colon body CAN hold an open
+  // paragraph, so an indented fence folds into it and the run below the base
+  // folds with it. The nested-item change may not reach it.
+  const out = html('- a\n  ::: note\n    ```\n    p\nx\n')
+  assert.ok(out.includes('p\nx</code>'), out)
+})
+
+test('the inner-item row now takes the owner table', () => {
+  // carve#2486 left this one unclaimed and pinned the oracle's payload reading
+  // so its own fix could not decide it. carve#2490 rules it: the owner table
+  // carries no depth term, the run's column selects the document, and every
+  // container between the fence's host and that owner closes.
   assert.equal(
     html('- outer\n  - head\n\n    ```\n    a\n```\n'),
-    '<ul>\n  <li>outer\n    <ul>\n      <li>head\n        <pre><code>a\n```\n' +
-      '</code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>',
+    '<ul>\n  <li>outer\n    <ul>\n      <li>head\n        <pre><code>a\n' +
+      '</code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<pre><code>\n</code></pre>',
   )
 })

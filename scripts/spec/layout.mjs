@@ -4029,6 +4029,11 @@ function collectItems(lines, i, list, state, ind, meas) {
       return (cached.closers.get(run.length) ?? -1) > i
     }
     const fenceOpensAt = new Set()
+    // The same for a fence a DESCENDANT opened, in its own set: the two
+    // consumers of `fenceOpensAt` ask whether the line interrupts THIS body's
+    // paragraph, which an indented line does not, so putting a descendant's
+    // index there would answer a different question (carve#2490).
+    const nestedFenceOpensAt = new Set()
     // Measurements for the body lines, carried to the item's own parse so it
     // does not re-walk indentation this collector has already walked
     // (carve#752). `null` means "not derivable here" - a line this collector
@@ -4117,6 +4122,9 @@ function collectItems(lines, i, list, state, ind, meas) {
       const m = FENCE.exec(dedented)
       if (!m || parseFenceInfo(m[2]) === null) return false // INVALID-FENCE FALLBACK
       if (!openPara) return true // at block start it runs to the end of the container
+      // An ANCESTOR collector already answered §10 I4 for this source line, over
+      // lines its own break then removed from this body. One line, one answer.
+      if (state.nestedFenceOpensAt?.get(lines)?.has(idx)) return true
       const body = [dedented]
       let pendingBlanks = 0
       for (let j = idx + 1; j < lines.length; j++) {
@@ -4256,6 +4264,80 @@ function collectItems(lines, i, list, state, ind, meas) {
       }
       const colon = COLON_FENCE.exec(line)
       if (colon && parseColonOpener(colon[2]) !== null) fence.colon.push(colon[1].length)
+    }
+    // A verbatim body a DESCENDANT container opened. `fence` tracks the item's
+    // OWN column, because that is where its closer has to be written, so an
+    // indented fence reached no branch here at all and its payload read as
+    // paragraph text: a below-base run then took S4's LAZY branch and stayed
+    // fence content at depth two and deeper (carve#2490). The owner table
+    // carries no depth term, so this records the same fact one or more levels
+    // in. `%%%` is excluded by the family 1 ruling and FENCE spells only the
+    // backtick and tilde kinds, the `=html` raw form among them.
+    let nestedOpaque = null
+    // §10 I4 for such a fence: at block start it runs to the end of its
+    // container, after a paragraph only when a closer follows at its own
+    // column. A run indented past that column is payload (CARVE-P2-006).
+    const nestedFenceOpens = (idx, run, sourceCol) => {
+      if (!openPara) return true
+      // The same inherited answer `bodyFenceOpens` reads. An INTERMEDIATE
+      // collector sees the fence indented too, and its own lookahead runs over
+      // lines an ancestor's break has already truncated, so at three levels the
+      // classification was lost where two levels kept it.
+      if (state.nestedFenceOpensAt?.get(lines)?.has(idx)) return true
+      for (let j = idx + 1; j < lines.length; j++) {
+        const raw = lines[j] ?? ''
+        if (isBlank(raw)) continue
+        const lm2 = indentCols(raw)
+        const nm2 = matchMarkerAt(lm2)
+        // The DESCENDANT's boundary, not this collector's: a marker below the
+        // fence's own column is a sibling or an ancestor of the item holding it,
+        // and ends that item. Stopping at `baseIndent` here took a closer out of
+        // the next sibling's body.
+        if (nm2 && nm2.indent < sourceCol) break
+        if (lm2.col < sourceCol) continue
+        const c = PURE_FENCE.exec(dedentMeasured(lm2, raw, sourceCol).text)
+        if (c && c[1][0] === run[0] && c[1].length >= run.length) return true
+      }
+      return false
+    }
+    // A descendant COMMENT span is carried for one reason: `%%%` is excluded
+    // from the family 1 ruling by name, so it ends nothing here, but a
+    // fence-shaped line in its PAYLOAD is not an opener. Reading one as an
+    // opener published an empty code block and pushed the item's trailing line
+    // out of the list. `bodyHoldsOpenCommentSpan` answers the same question and
+    // is the wrong instrument HERE: it rescans the collected body, and asking it
+    // per fence line made a ladder of fenced bodies quadratic
+    // (tests/nested-container-rescan.test.mjs). This is `trackFence`'s own
+    // construction in the descendant's coordinates instead, O(1) per line.
+    const nestedVerbatim = () => nestedOpaque !== null && nestedOpaque.kind === 'code'
+    const trackNestedFence = (open, dmeas, sourceCol, idx, descendantOwned) => {
+      if (open) {
+        if (open.kind === 'comment') {
+          // Indentation is part of neither delimiter (§28, carve#2471), so the
+          // closer matches on run length at any column.
+          const end = COMMENT_FENCE.exec(dmeas.rest)
+          return end && end[1].length === open.run.length ? null : open
+        }
+        // A line BELOW the fence's own column supplies none of its body's
+        // indentation, so the body has ended whatever follows it - the rule
+        // this whole branch rests on, applied to the body itself. Without it
+        // the state outlived its container and `- a` / `  - b` / blank /
+        // `    ``` ` / `    p` / `  x` / `y` closed the outer item's paragraph
+        // and put `y` outside the list.
+        if (dmeas.col < open.col) return null
+        const c = dmeas.col === open.col ? PURE_FENCE.exec(dmeas.rest) : null
+        return c && c[1][0] === open.run[0] && c[1].length >= open.run.length ? null : open
+      }
+      if (dmeas.col === 0 || fence.opaque || !descendantOwned) return null
+      const comment = COMMENT_FENCE_BODY.exec(dmeas.rest)
+      if (comment) {
+        return commentFenceCloserAhead(lines, idx, comment[1])
+          ? { kind: 'comment', run: comment[1] }
+          : null
+      }
+      const f = FENCE.exec(dmeas.rest)
+      if (!f || parseFenceInfo(f[2]) === null) return null
+      return nestedFenceOpens(idx, f[1], sourceCol) ? { kind: 'code', run: f[1], col: dmeas.col } : null
     }
     // A comment closes the leaf paragraph but leaves the item frame available.
     // This flag records that explicit transition for the next ownership step.
@@ -4748,6 +4830,21 @@ function collectItems(lines, i, list, state, ind, meas) {
         // the answer given here so the line is read one way (carve#1399).
         if (opens) fenceOpensAt.add(itemLines.length - 1)
         trackFence(dedented, opens, i)
+        // Read with the paragraph state this line ARRIVED with, exactly as
+        // `bodyFenceOpens` above is; the chain below then answers for the line.
+        const wasNested = nestedOpaque
+        // Only a descendant LIST ITEM's fence, which is the host carve#2490
+        // rules. An indented fence inside a colon container is that container's
+        // question, and CARVE-P0-014 answers it the other way: a colon body CAN
+        // hold an open paragraph, so the fence folds into it and the run below
+        // the base folds with it. `descendantOwned` is the collector's existing
+        // spelling of "a known descendant item owns this column".
+        nestedOpaque = trackNestedFence(nestedOpaque, dmeas, lm.col, i, descendantOwned)
+        // A descendant's fence whose closer this collector is about to BREAK
+        // away: hand the answer down so the nested parse reads the line the same
+        // way (carve#1399, one level further in). Without it the item held an
+        // inline code span where its depth-1 twin holds a code block.
+        if (nestedOpaque !== null && wasNested === null) nestedFenceOpensAt.add(itemLines.length - 1)
         // A COMMENT IS INVISIBLE, SO IT LEAVES NO PARAGRAPH OPEN. §24 C3 says a
         // comment "does end the open PARAGRAPH" (carve#677), of BOTH spellings
         // - the `%%` line and the `%%%` fence, "whose body and closer travel
@@ -4915,6 +5012,12 @@ function collectItems(lines, i, list, state, ind, meas) {
           defBodyIndent = defBody
         }
         else if (dmeas.rest !== '') openParaWith(dedented)
+        // A FENCED BODY IS NOT A PARAGRAPH whichever container opened it
+        // (CARVE-P0-013, CARVE-P0-014). The branches above classify the line in
+        // THIS item's coordinates, where a descendant's fence and its payload
+        // are ordinary text, so they record a paragraph the deepest structure
+        // does not hold.
+        if (nestedVerbatim()) closePara()
         i++
         continue
       }
@@ -4980,7 +5083,11 @@ function collectItems(lines, i, list, state, ind, meas) {
       // ends the item at `X` in every reader.
       const commentTokenBelow = fence.opaque !== null && fence.opaque.kind === 'comment' &&
         !nm && lm.rest.startsWith('%%')
-      if (!commentTokenBelow && fence.opaque && fence.opaque.opens !== false) break
+      // ONE SPELLING, AT ANY DEPTH. The owner table selects the nearest
+      // surviving ancestor the run's column reaches, and carries no depth term,
+      // so a descendant's open body ends this container too and the run is
+      // classified where the column puts it (carve#2490).
+      if (!commentTokenBelow && (nestedVerbatim() || (fence.opaque && fence.opaque.opens !== false))) break
       if (nm && nm.indent <= baseIndent) {
         // §17 L1, first clause: the item WAS followed by a blank line before
         // this sibling marker - an invisible attachment in between does not
@@ -5061,6 +5168,12 @@ function collectItems(lines, i, list, state, ind, meas) {
         // Only the closing half is asked: an OPENER at this column opens no span
         // here, and the branch above owns that question.
         if (fence.opaque) trackFence(lm.rest, false, i)
+        // The DESCENDANT span's closer arrives here too, below this column, so
+        // the tracker above never sees it.
+        if (nestedOpaque && nestedOpaque.kind === 'comment') {
+          const end = COMMENT_FENCE.exec(lm.rest)
+          if (end && end[1].length === nestedOpaque.run.length) nestedOpaque = null
+        }
         i++
         continue
       }
@@ -5107,6 +5220,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       break
     }
     if (fenceOpensAt.size) (state.fenceOpensAt ??= new WeakMap()).set(itemLines, fenceOpensAt)
+    if (nestedFenceOpensAt.size) (state.nestedFenceOpensAt ??= new WeakMap()).set(itemLines, nestedFenceOpensAt)
     item.blocks = parseBlocks(itemLines, state, false, true, itemMeas)
     list.items.push(item)
     // Returning rather than breaking leaves `i` on the marker line, so the

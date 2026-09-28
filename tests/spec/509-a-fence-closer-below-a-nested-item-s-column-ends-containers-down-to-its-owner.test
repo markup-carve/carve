@@ -1,0 +1,288 @@
+A fence closer below a nested item's column ends containers down to its owner
+
+````
+- a
+  - b
+
+    ```
+    p
+```
+
+    tail
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <pre><code>p
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+<pre><code>
+    tail
+</code></pre>
+````
+
+````
+- a
+  - b
+
+    ```
+    p
+ ```
+
+    tail
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <pre><code>p
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p><code></code></p>
+<p>tail</p>
+````
+
+````
+- a
+  - b
+
+    ```
+    p
+  ```
+
+    tail
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <pre><code>p
+</code></pre>
+      </li>
+    </ul>
+    <pre><code>
+  tail
+</code></pre>
+  </li>
+</ul>
+````
+
+````
+- a
+  - b
+    ```
+    p
+```
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+<code>
+p
+</code></li>
+    </ul>
+  </li>
+</ul>
+````
+
+````
+- a
+  - b
+    ```
+    p
+ ```
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+<code>
+p
+</code></li>
+    </ul>
+  </li>
+</ul>
+````
+
+````
+- a
+  - b
+    - c
+
+      ```
+      p
+```
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <ul>
+          <li>c
+            <pre><code>p
+</code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<pre><code>
+</code></pre>
+````
+
+````
+- a
+  - b
+    - c
+
+      ```
+      p
+  ```
+
+      tail
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <ul>
+          <li>c
+            <pre><code>p
+</code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <pre><code>
+    tail
+</code></pre>
+  </li>
+</ul>
+````
+
+```
+- a
+  - b
+
+    ~~~
+    p
+ ~~~
+
+    tail
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <pre><code>p
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>~~~</p>
+<p>tail</p>
+```
+
+````
+- a
+  - b
+
+    ```=html
+    <b>p</b>
+```
+
+    tail
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <b>p</b>
+      </li>
+    </ul>
+  </li>
+</ul>
+<pre><code>
+    tail
+</code></pre>
+````
+
+````
+- a
+  - b
+    ```
+    p
+x
+    ```
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <pre><code>p
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>x
+<code></code></p>
+````
+
+````
+- a
+  - b
+    - c
+      ```
+      p
+x
+      ```
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <ul>
+          <li>c
+            <pre><code>p
+</code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>x
+<code></code></p>
+````
+
+````
+- a
+  - b
+    ```
+    p
+  - c
+    ```
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+<code>
+p</code></li>
+      <li>c
+<code></code></li>
+    </ul>
+  </li>
+</ul>
+````

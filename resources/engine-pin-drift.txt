@@ -38,3 +38,11 @@
 508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-2  carve#2488: the pin publishes a comment span's payload when its closer sits below the host's column.
 508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-3  carve#2488: the pin publishes a comment span's payload when its closer sits below the host's column.
 508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  carve#2488: the pin publishes a comment span's payload when its closer sits below the host's column.
+509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner  carve#2490: the pin pops one container level and ignores the run's column.
+509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-10  carve#2490: the pin pops one container level and ignores the run's column.
+509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-11  carve#2490: the pin pops one container level and ignores the run's column.
+509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-2  carve#2490: the pin pops one container level and ignores the run's column.
+509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-6  carve#2490: the pin pops one container level and ignores the run's column.
+509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-7  carve#2490: the pin pops one container level and ignores the run's column.
+509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-8  carve#2490: the pin pops one container level and ignores the run's column.
+509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-9  carve#2490: the pin pops one container level and ignores the run's column.
