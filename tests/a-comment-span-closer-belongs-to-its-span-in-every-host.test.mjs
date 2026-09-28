@@ -232,6 +232,29 @@ test('GUARD: a `%%%` inside a code fence is that fence’s content, not an opene
   assert.ok(html('- head\n\n    ```\n    %%%\n    a\n    ```\n\n  tail\n').includes('%%%'))
 })
 
+test('GUARD: a fence opened on a marker LINE is opaque to the predicate too', () => {
+  // The same phantom span, one spelling over. `- ``` ` opens a code block whose
+  // payload holds a `%%%`, so a predicate that tested the line as written saw no
+  // fence, read the payload as an opener, and then claimed the real delimiter
+  // below as that phantom's closer - publishing the span it had broken. This
+  // reproducer hides `HIDDEN` on both sides of the fix.
+  const fence = '```'
+  const out = html(`:: t\n:  - ${fence}\n     %%%\n     ${fence}\n%%%\n   HIDDEN\n%%%\n\n   tail\n`)
+  assert.ok(!out.includes('HIDDEN'), out)
+  assert.ok(html(`- o\n  - ${fence}\n    %%%\n    ${fence}\n%%%\n  HIDDEN\n%%%\n`).includes('%%%'))
+})
+
+test('GUARD: the same marker line MID-PARAGRAPH is text, and the opener below it is real', () => {
+  // §10 I2's other half. With no blank above it the marker-shaped line folds into
+  // the open paragraph, so it opens no code block and the `%%%` under it is a
+  // genuine opener - reading the fold as an opaque body instead hid that opener
+  // and left the payload published.
+  const fence = '```'
+  const out = html(`:: t\n:  head\n   - ${fence}\n   %%%\n   HIDDEN\n%%%\n`)
+  assert.ok(!out.includes('HIDDEN'), out)
+  assert.ok(out.includes(`- <code></code>`), `the marker line stopped folding as text:\n${out}`)
+})
+
 test('GUARD: a run of a different width is fence content, not the closer', () => {
   // §28 closes on an EXACT-width run. A `%%%%` line inside a `%%%` span is
   // payload wherever it is written, so the span runs on and nothing below it is

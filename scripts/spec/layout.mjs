@@ -1684,6 +1684,11 @@ const keptCommentDelimiter = (line) => {
 
 function bodyOpenCommentRun(bodyLines) {
   let opaque = null
+  // §10 I2: a list marker never interrupts, so it opens a container only where a
+  // block may begin. Both directions of getting this wrong publish a payload -
+  // an invented opaque body hides a real opener, and a missed one invents a span
+  // - so the flag is carried rather than assumed.
+  let atBlockStart = true
   for (const raw of bodyLines) {
     // Indentation is part of neither delimiter (§28, carve#2471), so the body's
     // lines are read at their own content. A collector hands them down at
@@ -1695,18 +1700,46 @@ function bodyOpenCommentRun(bodyLines) {
       if (c && c[1][0] === opaque.run[0] &&
           (opaque.kind === 'code' ? c[1].length >= opaque.run.length : c[1].length === opaque.run.length)) {
         opaque = null
+        atBlockStart = true
       }
       continue
     }
-    const code = FENCE.exec(line)
+    if (line === '') {
+      atBlockStart = true
+      continue
+    }
+    // AN OPENER MAY BE WRITTEN ON A CONTAINER'S MARKER LINE, so at a block start
+    // the markers are walked off before the shape test: `- ``` ` opens a code
+    // block whose payload is opaque, and reading a `%%%` inside that payload as a
+    // comment opener left a span open that no author wrote, which then claimed a
+    // real delimiter below as its closer and published the span it broke.
+    //
+    // Mid-paragraph the same line is TEXT, and stripping there invented the
+    // opaque body instead, which hid a real opener one line down.
+    //
+    // A CLOSER is read from the line as written either way. §28 and §10 I4 put
+    // the delimiter at the start of the line's content, and a marker line starts
+    // a fresh item rather than closing the block already open.
+    const opener = atBlockStart ? markerFreeContent(line) : line
+    atBlockStart = false
+    const code = FENCE.exec(opener)
     if (code && parseFenceInfo(code[2]) !== null) {
       opaque = { kind: 'code', run: code[1] }
       continue
     }
-    const comment = COMMENT_FENCE.exec(line)
+    const comment = COMMENT_FENCE.exec(opener)
     if (comment) opaque = { kind: 'comment', run: comment[1] }
   }
   return opaque !== null && opaque.kind === 'comment' ? opaque.run : null
+}
+
+/** A line's content with every leading list marker walked off. */
+function markerFreeContent(line) {
+  let measured = { col: 0, rest: line, tabs: false }
+  for (let marker = matchMarkerAt(measured); marker; marker = matchMarkerAt(measured)) {
+    measured = indentCols(marker.text)
+  }
+  return measured.rest
 }
 
 function descriptionCloserAhead(run, lines, from, bodyColumn, endsBodyAt) {
