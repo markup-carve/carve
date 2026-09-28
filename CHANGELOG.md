@@ -10,6 +10,27 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
+### Fixed
+
+- Correct container ownership after block comments, raised colon fences, and
+  fence closers below an item's base column. Comment spans pair their own
+  delimiters in every host (carve#2494, carve#2503, carve#2507, carve#2509).
+- End lazy continuation after closed or newly opened quoted fences and after
+  nested blocks that leave no paragraph. Align list, description, and `+`
+  attachment boundaries across the executable spec, JavaScript, and Rust
+  (carve#2510, carve#2514, carve#2515).
+- Avoid repeated container-prefix classification at EOF and along lazy-follower
+  paths, including mixed quote/list prefixes (carve#2510, carve#2515).
+- Keep unpadded hyphen-only line-block content stable through formatting
+  (carve#2496).
+- Preserve frontmatter when writing the Markdown target (carve#2502).
+
+### Documentation
+
+- Clarify that lint diagnostic message text is engine-specific and is excluded
+  from parity comparison (carve#2470).
+- State the contextual-escape boundary in the Carve-target rules (carve#2511).
+
 ## [0.1.7] - 2026-09-25
 
 ### Breaking
