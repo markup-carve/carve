@@ -1,0 +1,289 @@
+A list marker in a raised colon container folds into its open paragraph
+
+```
+- head
+
+      :::
+      a
+- second
+.
+<ul>
+  <li>head
+    <div>
+      <p>a</p>
+    </div>
+  </li>
+  <li>second</li>
+</ul>
+```
+
+```
+- head
+
+      ::: note
+      a
+- second
+.
+<ul>
+  <li>head
+    <aside class="admonition note" aria-label="Note">
+      <p>a</p>
+    </aside>
+  </li>
+  <li>second</li>
+</ul>
+```
+
+```
+- head
+
+      :::
+      a
+ - second
+.
+<ul>
+  <li>head
+    <div>
+      <p>a
+- second</p>
+    </div>
+  </li>
+</ul>
+```
+
+```
+- head
+
+      ::: note
+      a
+ - second
+.
+<ul>
+  <li>head
+    <aside class="admonition note" aria-label="Note">
+      <p>a
+- second</p>
+    </aside>
+  </li>
+</ul>
+```
+
+```
+- head
+
+      :::
+      a
+  - second
+.
+<ul>
+  <li>head
+    <div>
+      <p>a
+- second</p>
+    </div>
+  </li>
+</ul>
+```
+
+```
+- head
+
+      ::: note
+      a
+  - second
+.
+<ul>
+  <li>head
+    <aside class="admonition note" aria-label="Note">
+      <p>a
+- second</p>
+    </aside>
+  </li>
+</ul>
+```
+
+```
+- head
+
+      :::
+      a
+    - second
+.
+<ul>
+  <li>head
+    <div>
+      <p>a
+- second</p>
+    </div>
+  </li>
+</ul>
+```
+
+```
+- head
+
+      ::: note
+      a
+    - second
+.
+<ul>
+  <li>head
+    <aside class="admonition note" aria-label="Note">
+      <p>a
+- second</p>
+    </aside>
+  </li>
+</ul>
+```
+
+```
+- head
+
+      :::
+      a
+      - second
+.
+<ul>
+  <li>head
+    <div>
+      <p>a
+- second</p>
+    </div>
+  </li>
+</ul>
+```
+
+```
+- head
+
+      ::: note
+      a
+      - second
+.
+<ul>
+  <li>head
+    <aside class="admonition note" aria-label="Note">
+      <p>a
+- second</p>
+    </aside>
+  </li>
+</ul>
+```
+
+```
+- head
+
+      :::
+      a
+        - second
+.
+<ul>
+  <li>head
+    <div>
+      <p>a
+- second</p>
+    </div>
+  </li>
+</ul>
+```
+
+```
+- head
+
+      ::: note
+      a
+        - second
+.
+<ul>
+  <li>head
+    <aside class="admonition note" aria-label="Note">
+      <p>a
+- second</p>
+    </aside>
+  </li>
+</ul>
+```
+
+```
+- head
+
+      :::
+      a
+      :::
+  - second
+.
+<ul>
+  <li>head
+    <div>
+      <p>a</p>
+    </div>
+    <ul>
+      <li>second</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- head
+
+      :::
+  - second
+.
+<ul>
+  <li>head
+    <div>
+      <ul>
+        <li>second</li>
+      </ul>
+    </div>
+  </li>
+</ul>
+```
+
+````
+- head
+
+      :::
+      ```
+      :::
+      ```
+      a
+  - second
+      :::
+  - third
+.
+<ul>
+  <li>head
+    <div>
+      <pre><code>:::
+</code></pre>
+      <p>a
+- second</p>
+    </div>
+    <ul>
+      <li>third</li>
+    </ul>
+  </li>
+</ul>
+````
+
+```
+- head
+
+      :::
+      a
+
+ - second
+.
+<ul>
+  <li>head
+    <div>
+      <p>a</p>
+    </div>
+  </li>
+</ul>
+<ul>
+  <li>second</li>
+</ul>
+```

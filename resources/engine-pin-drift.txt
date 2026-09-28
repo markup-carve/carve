@@ -24,3 +24,13 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+506-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph-10  carve#2474: the pin splits raised colon bodies at list markers before paragraph folding.
+506-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph-11  carve#2474: the pin splits raised colon bodies at list markers before paragraph folding.
+506-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph-12  carve#2474: the pin splits raised colon bodies at list markers before paragraph folding.
+506-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph-14  carve#2474: the pin splits raised colon bodies at list markers before paragraph folding.
+506-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph-15  carve#2474: the pin splits raised colon bodies at list markers before paragraph folding.
+506-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph-5  carve#2474: the pin splits raised colon bodies at list markers before paragraph folding.
+506-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph-6  carve#2474: the pin splits raised colon bodies at list markers before paragraph folding.
+506-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph-7  carve#2474: the pin splits raised colon bodies at list markers before paragraph folding.
+506-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph-8  carve#2474: the pin splits raised colon bodies at list markers before paragraph folding.
+506-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph-9  carve#2474: the pin splits raised colon bodies at list markers before paragraph folding.
