@@ -3336,21 +3336,29 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           for (; j < n; j++) {
             let text = lines[j]
             let k = 0
-            while (k < markers && QUOTE.test(text)) { text = QUOTE.exec(text)[1] ?? ''; k++ }
+            while (k < markers && QUOTE.test(text)) {
+              layoutWork.quoteStrips += 1
+              text = QUOTE.exec(text)[1] ?? ''
+              k++
+            }
             if (k < markers) break
             const c = PURE_FENCE.exec(text)
             if (c) list.push({ j, run: c[1] })
           }
           layoutWork.fenceCloserLookahead += j - idx
+          let backtick = 0, tilde = 0
+          for (let k = list.length - 1; k >= 0; k--) {
+            const e = list[k]
+            if (e.run[0] === '`') backtick = Math.max(backtick, e.run.length)
+            else tilde = Math.max(tilde, e.run.length)
+            e.maxRun = { '`': backtick, '~': tilde }
+            layoutWork.fenceCloserLookahead += 1
+          }
           st = qPureFences[markers] = { list, end: j, cursor: 0 }
         }
         while (st.cursor < st.list.length && st.list[st.cursor].j <= idx) st.cursor++
-        for (let k = st.cursor; k < st.list.length; k++) {
-          layoutWork.fenceCloserLookahead += 1
-          const e = st.list[k]
-          if (e.run[0] === run[0] && e.run.length >= run.length) return true
-        }
-        return false
+        layoutWork.fenceCloserLookahead += 1
+        return (st.list[st.cursor]?.maxRun[run[0]] ?? 0) >= run.length
       }
       /*
        * DOES THE NESTED QUOTE ON THIS LINE LEAVE A PARAGRAPH OPEN?
@@ -3392,7 +3400,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             qNestedTable.length = depth
             if (depth > 0) qNestedTable[depth - 1] = tableRunStep(false, tail)
             return settle(!DEFLIST_TERM.test(tail) &&
-              !(FENCE.test(tail) && parseFenceInfo(FENCE.exec(tail)[2]) !== null) &&
               !isColonBlockOpener(tail) && opensParagraph(tail, true, false, prefixMemo(state, lines, idx).paragraph), depth)
           }
         }
