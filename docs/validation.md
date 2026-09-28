@@ -119,8 +119,8 @@ the command-line and editor behavior stay aligned.
 | `fence-title-syntax` | text after a fence type word that is neither a quoted `"title"` nor a `[label]`, which makes the whole opener line plain text |
 | `footnote-labels-differ-only-in-whitespace` | two footnote definitions whose labels normalize to the same ASCII-whitespace key; the first definition wins, the later definition is ignored, and the diagnostic identifies the collision |
 | `table-cell-attribute-before-marker` | a table cell whose `{...}` block is written directly before a `<`, `>` or `~`, which is the order PART 9 §5 T10 retired; the block still attaches to the cell, but the marker is now literal content and the cell is not aligned. Reported and not rewritten: the retired order and the current one render different documents, so only the author can say which was meant |
-| `table-marker-run-padding` | a table cell's marker run with no terminating space - the kind marker `=`, the alignment run, the attribute block, or any glued combination of them, as in `|=a `, `|>text ` or `|=<{.x}value `. PART 9 §5 T11 makes the whole run one thing with one terminator, so without the space there is no run and every character of it is content: `|=a |` is a data cell whose text is `=a`, not a header cell holding `a`. `fmt --migrate` inserts the required space. Supersedes `table-alignment-run-padding`, which named only the middle part of the same run |
-| `table-alignment-run-padding` | SUPERSEDED by `table-marker-run-padding`, which covers the whole marker run rather than the alignment part alone. Still emitted by the pinned build, so the row stays until the pin moves past it; the row goes in the commit that moves it |
+| `table-marker-run-padding` | a table cell's marker run with no terminating space - the kind marker `=`, the alignment run, the attribute block, or any glued combination of them, as in `|=a `, `|>text ` or `|=<{.x}value `. PART 9 §5 T11 makes the whole run one thing with one terminator, so without the space there is no run and every character of it is content: `|=a |` is a data cell whose text is `=a`, not a header cell holding `a`. `fmt --migrate` inserts the required space. Specified replacement for `table-alignment-run-padding`; the measured engines still emit the older id |
+| `table-alignment-run-padding` | An alignment run at the start of a table cell lacks its terminating space, for example `|>text |`. Currently emitted by all three measured engines. `table-marker-run-padding` specifies the broader replacement; keep accepting this id until the engines implement that replacement |
 | `table-column-arity` | an `aligns`, `valigns`, or `widths` list shorter than the widest row; the unset tail is valid but often accidental. More entries than columns is a parse error rather than a lint |
 | `table-column-overlap` | a field supplied both by an in-table column marker and by a table attribute list; the in-table spelling wins |
 | `table-width-total` | table column widths whose specified percentages total more than 100; individual widths remain usable, but the allocation overcommits the table |
@@ -339,19 +339,46 @@ published page: the **caption of a captioned listing**, and the body of a
 
 ### Which implementations provide these rules
 
-carve-js implements every rule in the table above. The other two engines
-implement part of it, and `carve lint` is not the same command everywhere:
+All three engines provide `carve lint`. The 37 default triggers in
+[`resources/lint-default-triggers.json`](https://github.com/markup-carve/carve/blob/main/resources/lint-default-triggers.json)
+pass in the builds measured on 2026-09-28: carve-js `af631448c`,
+carve-php `415dfe281`, and carve-rs `8e81eff44`. Passing a trigger establishes that a rule
+can fire; it does not establish agreement on every document or source location.
 
-| implementation | `carve lint` | covers |
-|---|---|---|
-| carve-js | yes | every rule above, plus the Djot/Markdown migration checks |
-| carve-php | yes | both semantic span attribute rules, both platform autolink rules, `definition-term-block-folded`, `bidi-control-in-source`, and Markdown-habit checks of its own (`markdown-strong-asterisks`, `markdown-strong-underscores`, `markdown-strikethrough`); none of the other rules above |
-| carve-rs | yes | library lint rules through `lint_carve` / `lint_carve_with_options`, also exposed by the `carve lint` command |
+| implementation | measured coverage |
+|---|---|
+| carve-js | 37 default triggers; `unattached-block-attribute`; Djot and Markdown migration checks; opt-in platform checks |
+| carve-php | 37 default triggers; Markdown-habit checks; opt-in platform checks |
+| carve-rs | 37 default triggers; `unattached-block-attribute`; no Markdown-habit or platform checks |
 
-`semantic-attribute-value-ignored` and `semantic-attribute-outside-span` are the
-first two rules all three engines carry. They share their ids, triggers, block
-quote exception, and message semantics. A consumer should still key on the rule
-id rather than human-facing message text.
+`bibliography-placement-in-container` and `table-marker-run-padding` are
+specified but absent from these builds. PHP does not yet emit
+`unattached-block-attribute`. The
+engines still emit `table-alignment-run-padding`. The Djot migration checks
+are available only in carve-js. Diagnostic message wording is engine-specific;
+compare the rule id and source location.
+
+#### Checking lint parity
+
+`npm run parity:check` runs the same corpus gate as `npm run lint:parity`. It checks
+every `.crv` file under `tests/corpus*` with default CLI options. Each document's
+complete sorted list of `(rule, line, column)` diagnostics must agree across
+JavaScript, PHP, and Rust, including repeated diagnostics. Differing documents
+and a fixed sample are also linted individually to check batch isolation. Optional corpus files
+are checked as core input; this sweep does not enable their rendering extensions.
+
+Known differences are recorded in `resources/lint-corpus-drift.json`, with the
+exact diagnostic lists, a reason, and an owning issue. A new difference, a changed
+list, or a declaration whose difference has disappeared fails the gate. Review
+changed output before editing a declaration. Agreement alone does not establish
+that a diagnostic is correct.
+
+The gate also checks codepoint columns after ASCII, accented, supplementary-plane,
+and combining characters. Missing engines, command failures, and stderr output
+fail the run. Set `CARVE_JS_DIR`, `CARVE_PHP_DIR`, and `CARVE_RS_DIR` to built engine
+checkouts; `CARGO_TARGET_DIR` is supported. To save the observed differences, run
+`npm run lint:parity -- --report /tmp/lint-parity.json`. Writing a report does not
+update declarations or suppress failure.
 
 The two platform autolink rules are in carve-js and carve-php, and not in
 carve-rs. They are specified here rather than left to one engine because the ids

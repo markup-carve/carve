@@ -202,6 +202,8 @@ const MANIFEST = [
   // carve-rb bumps - and declared inside a pull request, because no pull
   // request in any repo can close it (carve#2175, markup-carve/carve-rb#143).
 
+  { repo: 'spec', path: 'resources/lint-corpus-drift.json', name: 'differences', kind: 'json', policy: 'manual', guard: 'two-way', owner: 'npm run lint:parity' },
+
   // -- the spec repo's declaration CONSTANTS, which the ledgers do not cover -
   // Codes the fixture and corpus oracles cannot reach (carve#1835). PRINTED
   // rather than judged, because no rule separates the two kinds it holds: one
@@ -676,7 +678,7 @@ function liveRows(entry, src) {
       node = node[key]
     }
     if (!Array.isArray(node)) return new Error(`${entry.name} is not an array`)
-    return node.map(row => typeof row === 'object' && row !== null && typeof row.key === 'string' ? row.key : String(row))
+    return node.map(row => typeof row === 'object' && row !== null ? (row.key ?? row.file ?? JSON.stringify(row)) : String(row))
   }
   const clean = blankComments(src, LANG_OF[entry.kind])
   if (entry.kind === 'js-string') {
