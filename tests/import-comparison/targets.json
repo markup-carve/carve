@@ -1,0 +1,30 @@
+[
+  {
+    "id": "target/markdown-nested-emphasis",
+    "format": "markdown",
+    "source": "*(*foo*)*\n",
+    "expectedHtml": "<p><em>(foo)</em></p>",
+    "expectedCarve": "/(foo)/\n"
+  },
+  {
+    "id": "target/html-nested-emphasis",
+    "format": "html",
+    "source": "<p><em>(<em>foo</em>)</em></p>\n",
+    "expectedHtml": "<p><em>(foo)</em></p>",
+    "expectedCarve": "/(foo)/\n"
+  },
+  {
+    "id": "target/djot-inline-attribute",
+    "format": "djot",
+    "source": "a *b{#id key=\"*\"}*\n",
+    "expectedHtml": "<p>a <strong><span id=\"id\" key=\"*\">b</span></strong></p>",
+    "expectedCarve": "a {*[b]{#id key=\"*\"}*}\n"
+  },
+  {
+    "id": "target/html-inline-attribute",
+    "format": "html",
+    "source": "<p>a <strong><span id=\"id\" key=\"*\">b</span></strong></p>\n",
+    "expectedHtml": "<p>a <strong><span id=\"id\" key=\"*\">b</span></strong></p>",
+    "expectedCarve": "a {*[b]{#id key=\"*\"}*}\n"
+  }
+]

@@ -628,3 +628,59 @@ The tool has two profiles:
 Tier-3 app-extension max profiles still need language-specific adapter fixtures.
 That means a small runner per implementation that enables the same test
 extension in each language, then feeds those through the same comparison loop.
+
+## Public importer and AST ingest comparisons
+
+`npm run import:compare` runs all 652 CommonMark 0.31.2 examples through the
+Markdown importer, their expected HTML through the HTML importer, and 277
+Djot test inputs through the Djot importer. The vendored inputs and licenses
+are in `tests/import-comparison/`. Every imported Carve document is rendered by
+the same carve-js CLI reader. The report separates identical source, different
+spellings with identical HTML, different HTML, and failed imports. HTML
+comparison removes only one final newline; content whitespace stays significant.
+This measures importer agreement, not conformance to CommonMark or Djot HTML.
+Migration-report diagnostics are outside this check; `import:report` compares
+the existing HTML roundtrip report fixtures.
+Four additional fixtures enforce the [shared import targets](./migrate-from-markdown#shared-importer-targets),
+including a case where all engines produce the same incorrect source.
+
+`npm run ast:ingest` recursively reads every `.crv` under `tests/corpus*`.
+Each engine's `--json` output is read by each engine's `--from-json` HTML exit,
+including all three self-pairs. All files use default CLI options, including
+optional-corpus documents; extension-enabled ASTs are outside this sweep. The expected HTML is each reader's direct
+render of the original source. This keeps a reader's default extensions and
+HTML formatting consistent on both sides of the comparison. A refusal or changed HTML identifies the file,
+producer and reader. The comparison covers AST ingestion and rendering; it
+does not compare serialized AST bytes or attribute the defect to one side.
+
+Both commands require all three built engines. They honor `CARVE_JS_DIR`,
+`CARVE_PHP_DIR`, `CARVE_RS_DIR` and `CARGO_TARGET_DIR`. JavaScript calls the CLI's
+injectable `run` entry after a subprocess smoke check, avoiding repeated module
+startup while exercising the same options and JSON reader. PHP and Rust run as
+subprocesses. The scheduled AST workflow runs both checks and uploads their
+JSON reports. To save the evidence locally:
+
+```sh
+npm run import:compare -- --report /tmp/import-comparison.json
+npm run ast:ingest -- --report /tmp/ingest-comparison.json
+```
+
+`resources/import-comparison-drift.json` and
+`resources/ingest-comparison-drift.json` declare the measured gaps by case or
+producer/reader pair. Each declaration carries an owning issue, a reason, a
+readable observation and a SHA-256 fingerprint. Import fingerprints exclude
+successful source spellings and retain rendered HTML. Ingest fingerprints cover
+both expected and actual HTML. The full observation also appears in the report's
+`differences` object. The gate rejects new, changed and resolved differences, including a
+changed diagnostic on a failed import. Spelling-only differences are counted
+without requiring declarations. Process signals, timeouts, missing engines, unhandled crashes,
+producer failures and invalid producer JSON abort the comparison with exit 2; they cannot be accepted
+as importer drift. A completed comparison with undeclared drift exits 1. Errors caught by an
+importer or JSON reader and returned through its normal CLI status are recorded
+as failures. A declaration of such a failure does not make it a deliberate or
+acceptable refusal.
+
+Review the full report before changing a declaration. Resolve the engine defect
+or explain the changed observation in its owning issue; do not refresh the ledger
+from counts alone. Reports include checkout revisions and spec pins. These
+identify source checkouts, not the build provenance of existing binaries.

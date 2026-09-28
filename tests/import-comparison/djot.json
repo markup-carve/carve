@@ -1,0 +1,1941 @@
+[
+  {
+    "id": "attributes.test:4",
+    "options": "",
+    "source": "foo привет{.ru}\n",
+    "filters": "",
+    "expected": "<p>foo <span class=\"ru\">привет</span></p>\n"
+  },
+  {
+    "id": "attributes.test:10",
+    "options": "",
+    "source": "(some text){.attr}\n",
+    "filters": "",
+    "expected": "<p>(some <span class=\"attr\">text)</span></p>\n"
+  },
+  {
+    "id": "attributes.test:16",
+    "options": "",
+    "source": "[some text]{.attr}\n",
+    "filters": "",
+    "expected": "<p><span class=\"attr\">some text</span></p>\n"
+  },
+  {
+    "id": "attributes.test:25",
+    "options": "",
+    "source": "a *b{#id key=\"*\"}*\n",
+    "filters": "",
+    "expected": "<p>a <strong><span id=\"id\" key=\"*\">b</span></strong></p>\n"
+  },
+  {
+    "id": "attributes.test:31",
+    "options": "",
+    "source": "a *b{#id key=\"*\"}o\n",
+    "filters": "",
+    "expected": "<p>a <span id=\"id\" key=\"*\">*b</span>o</p>\n"
+  },
+  {
+    "id": "attributes.test:39",
+    "options": "",
+    "source": "hi{key=\"{#hi\"}\n",
+    "filters": "",
+    "expected": "<p><span key=\"{#hi\">hi</span></p>\n"
+  },
+  {
+    "id": "attributes.test:47",
+    "options": "",
+    "source": "hi{key=\"\\\\\\\\\\*\"}\n\n{key=\"\\\\\\\\\\*\"}\nfoo\n",
+    "filters": "",
+    "expected": "<p><span key=\"\\\\*\">hi</span></p>\n<p key=\"\\\\*\">foo</p>\n"
+  },
+  {
+    "id": "attributes.test:60",
+    "options": "",
+    "source": "hi\\{key=\"abc{#hi}\"\n",
+    "filters": "",
+    "expected": "<p>hi{key=“<span id=\"hi\">abc</span>”</p>\n"
+  },
+  {
+    "id": "attributes.test:66",
+    "options": "",
+    "source": "hi{key=\"\\\"#hi\"}\n",
+    "filters": "",
+    "expected": "<p><span key=\"&quot;#hi\">hi</span></p>\n"
+  },
+  {
+    "id": "attributes.test:72",
+    "options": "",
+    "source": "hi{key=\"hi\\\"#hi\"}\n",
+    "filters": "",
+    "expected": "<p><span key=\"hi&quot;#hi\">hi</span></p>\n"
+  },
+  {
+    "id": "attributes.test:80",
+    "options": "",
+    "source": "hi{#id .class\nkey=\"value\"}\n",
+    "filters": "",
+    "expected": "<p><span id=\"id\" class=\"class\" key=\"value\">hi</span></p>\n"
+  },
+  {
+    "id": "attributes.test:89",
+    "options": "",
+    "source": "{#id} at beginning\n",
+    "filters": "",
+    "expected": "<p> at beginning</p>\n"
+  },
+  {
+    "id": "attributes.test:95",
+    "options": "",
+    "source": "After {#id} space\n{.class}\n",
+    "filters": "",
+    "expected": "<p>After  space\n</p>\n"
+  },
+  {
+    "id": "attributes.test:105",
+    "options": "",
+    "source": "{#id .class}\nA paragraph\n",
+    "filters": "",
+    "expected": "<p id=\"id\" class=\"class\">A paragraph</p>\n"
+  },
+  {
+    "id": "attributes.test:114",
+    "options": "",
+    "source": "{#id .class}\n\nA paragraph\n",
+    "filters": "",
+    "expected": "<p>A paragraph</p>\n"
+  },
+  {
+    "id": "attributes.test:124",
+    "options": "",
+    "source": "{#id .class\n  style=\"color:red\"}\nA paragraph\n",
+    "filters": "",
+    "expected": "<p id=\"id\" class=\"class\" style=\"color:red\">A paragraph</p>\n"
+  },
+  {
+    "id": "attributes.test:135",
+    "options": "",
+    "source": "{#id .cla*ss*\n",
+    "filters": "",
+    "expected": "<p>{#id .cla<strong>ss</strong></p>\n"
+  },
+  {
+    "id": "attributes.test:145",
+    "options": "",
+    "source": "{#id}\n{key=val}\n{.foo .bar}\n{key=val2}\n{.baz}\n{#id2}\nOkay\n",
+    "filters": "",
+    "expected": "<p id=\"id2\" key=\"val2\" class=\"foo bar baz\">Okay</p>\n"
+  },
+  {
+    "id": "attributes.test:159",
+    "options": "",
+    "source": "{#id}\n> Block quote\n",
+    "filters": "",
+    "expected": "<blockquote id=\"id\">\n<p>Block quote</p>\n</blockquote>\n"
+  },
+  {
+    "id": "attributes.test:168",
+    "options": "",
+    "source": "{#id}\n# Heading\n",
+    "filters": "",
+    "expected": "<section id=\"id\">\n<h1>Heading</h1>\n</section>\n"
+  },
+  {
+    "id": "attributes.test:177",
+    "options": "",
+    "source": "{.blue}\n- - - - -\n",
+    "filters": "",
+    "expected": "<hr class=\"blue\">\n"
+  },
+  {
+    "id": "attributes.test:184",
+    "options": "",
+    "source": "{highlight=3}\n``` ruby\nx = 3\n```\n",
+    "filters": "",
+    "expected": "<pre highlight=\"3\"><code class=\"language-ruby\">x = 3\n</code></pre>\n"
+  },
+  {
+    "id": "attributes.test:194",
+    "options": "",
+    "source": "{.special}\n1. one\n2. two\n",
+    "filters": "",
+    "expected": "<ol class=\"special\">\n<li>\none\n</li>\n<li>\ntwo\n</li>\n</ol>\n"
+  },
+  {
+    "id": "attributes.test:209",
+    "options": "",
+    "source": "> {.foo}\n> > {.bar}\n> > nested\n",
+    "filters": "",
+    "expected": "<blockquote>\n<blockquote class=\"foo\">\n<p class=\"bar\">nested</p>\n</blockquote>\n</blockquote>\n"
+  },
+  {
+    "id": "attributes.test:227",
+    "options": "",
+    "source": "foo{#ident % this is a comment % .class}\n",
+    "filters": "",
+    "expected": "<p><span id=\"ident\" class=\"class\">foo</span></p>\n"
+  },
+  {
+    "id": "attributes.test:233",
+    "options": "",
+    "source": "foo{#ident % this is a comment}\n",
+    "filters": "",
+    "expected": "<p><span id=\"ident\">foo</span></p>\n"
+  },
+  {
+    "id": "attributes.test:242",
+    "options": "",
+    "source": "{% This is  a comment before a\n  block-level item. %}\nParagraph.\n",
+    "filters": "",
+    "expected": "<p>Paragraph.</p>\n"
+  },
+  {
+    "id": "attributes.test:253",
+    "options": "",
+    "source": "Foo bar {% This is a comment, spanning\nmultiple lines %} baz.\n",
+    "filters": "",
+    "expected": "<p>Foo bar  baz.</p>\n"
+  },
+  {
+    "id": "attributes.test:262",
+    "options": "",
+    "source": "hi{}\n",
+    "filters": "",
+    "expected": "<p>hi</p>\n"
+  },
+  {
+    "id": "attributes.test:270",
+    "options": "",
+    "source": "{}\nhi\n",
+    "filters": "",
+    "expected": "<p>hi</p>\n"
+  },
+  {
+    "id": "attributes.test:279",
+    "options": "",
+    "source": "text{a=x\n\nhello\n",
+    "filters": "",
+    "expected": "<p>text{a=x</p>\n<p>hello</p>\n"
+  },
+  {
+    "id": "attributes.test:288",
+    "options": "",
+    "source": "{a=x\nhello\n",
+    "filters": "",
+    "expected": "<p>{a=x\nhello</p>\n"
+  },
+  {
+    "id": "attributes.test:296",
+    "options": "",
+    "source": "text{a=x\n# non-heading\n",
+    "filters": "",
+    "expected": "<p>text{a=x\n# non-heading</p>\n"
+  },
+  {
+    "id": "attributes.test:304",
+    "options": "",
+    "source": "{a=x\n# non-heading\n",
+    "filters": "",
+    "expected": "<p>{a=x\n# non-heading</p>\n"
+  },
+  {
+    "id": "attributes.test:312",
+    "options": "",
+    "source": "{a=\" inline text\n",
+    "filters": "",
+    "expected": "<p>{a=“ inline text</p>\n"
+  },
+  {
+    "id": "attributes.test:319",
+    "options": "a",
+    "source": "{\n attr=\"long\n value\n spanning\n multiple\n lines\"\n }\n> a\n",
+    "filters": "",
+    "expected": "doc\n  block_quote attr=\"long value spanning multiple lines\"\n    para\n      str text=\"a\"\n"
+  },
+  {
+    "id": "attributes.test:335",
+    "options": "a",
+    "source": "> {key=\"bar\n>    a\\$bim\"}\n> ou\n",
+    "filters": "",
+    "expected": "doc\n  block_quote\n    para key=\"bar a$bim\"\n      str text=\"ou\"\n"
+  },
+  {
+    "id": "block_quote.test:1",
+    "options": "",
+    "source": "> Basic\n> block _quote_.\n",
+    "filters": "",
+    "expected": "<blockquote>\n<p>Basic\nblock <em>quote</em>.</p>\n</blockquote>\n"
+  },
+  {
+    "id": "block_quote.test:11",
+    "options": "",
+    "source": "> Lazy\nblock _quote_.\n",
+    "filters": "",
+    "expected": "<blockquote>\n<p>Lazy\nblock <em>quote</em>.</p>\n</blockquote>\n"
+  },
+  {
+    "id": "block_quote.test:21",
+    "options": "",
+    "source": "> block\n>\n> quote\n",
+    "filters": "",
+    "expected": "<blockquote>\n<p>block</p>\n<p>quote</p>\n</blockquote>\n"
+  },
+  {
+    "id": "block_quote.test:32",
+    "options": "",
+    "source": "> block\n\n> quote\n",
+    "filters": "",
+    "expected": "<blockquote>\n<p>block</p>\n</blockquote>\n<blockquote>\n<p>quote</p>\n</blockquote>\n"
+  },
+  {
+    "id": "block_quote.test:45",
+    "options": "",
+    "source": "> > > nested\n",
+    "filters": "",
+    "expected": "<blockquote>\n<blockquote>\n<blockquote>\n<p>nested</p>\n</blockquote>\n</blockquote>\n</blockquote>\n"
+  },
+  {
+    "id": "block_quote.test:57",
+    "options": "",
+    "source": "> > > nested\nlazy\n",
+    "filters": "",
+    "expected": "<blockquote>\n<blockquote>\n<blockquote>\n<p>nested\nlazy</p>\n</blockquote>\n</blockquote>\n</blockquote>\n"
+  },
+  {
+    "id": "block_quote.test:71",
+    "options": "",
+    "source": "> > > nested\n> lazy\n",
+    "filters": "",
+    "expected": "<blockquote>\n<blockquote>\n<blockquote>\n<p>nested\nlazy</p>\n</blockquote>\n</blockquote>\n</blockquote>\n"
+  },
+  {
+    "id": "block_quote.test:85",
+    "options": "",
+    "source": "> nested\n>\n> > more\n",
+    "filters": "",
+    "expected": "<blockquote>\n<p>nested</p>\n<blockquote>\n<p>more</p>\n</blockquote>\n</blockquote>\n"
+  },
+  {
+    "id": "block_quote.test:98",
+    "options": "",
+    "source": ">not blockquote\n",
+    "filters": "",
+    "expected": "<p>&gt;not blockquote</p>\n"
+  },
+  {
+    "id": "block_quote.test:104",
+    "options": "",
+    "source": ">> not blockquote\n",
+    "filters": "",
+    "expected": "<p>&gt;&gt; not blockquote</p>\n"
+  },
+  {
+    "id": "block_quote.test:110",
+    "options": "",
+    "source": ">\n",
+    "filters": "",
+    "expected": "<blockquote>\n</blockquote>\n"
+  },
+  {
+    "id": "block_quote.test:117",
+    "options": "",
+    "source": "> # Heading\n",
+    "filters": "",
+    "expected": "<blockquote>\n<h1 id=\"Heading\">Heading</h1>\n</blockquote>\n"
+  },
+  {
+    "id": "block_quote.test:125",
+    "options": "",
+    "source": "> hi\n>there\n",
+    "filters": "",
+    "expected": "<blockquote>\n<p>hi\n&gt;there</p>\n</blockquote>\n"
+  },
+  {
+    "id": "block_quote.test:135",
+    "options": "",
+    "source": "aaa\n> bbb\n",
+    "filters": "",
+    "expected": "<p>aaa\n&gt; bbb</p>\n"
+  },
+  {
+    "id": "block_quote.test:143",
+    "options": "",
+    "source": "aaa\n\n> bbb\n",
+    "filters": "",
+    "expected": "<p>aaa</p>\n<blockquote>\n<p>bbb</p>\n</blockquote>\n"
+  },
+  {
+    "id": "code_blocks.test:1",
+    "options": "",
+    "source": "~~~\ncode\n  block\n~~~\n",
+    "filters": "",
+    "expected": "<pre><code>code\n  block\n</code></pre>\n"
+  },
+  {
+    "id": "code_blocks.test:12",
+    "options": "",
+    "source": "``` python\nx = y + 3\n```\n",
+    "filters": "",
+    "expected": "<pre><code class=\"language-python\">x = y + 3\n</code></pre>\n"
+  },
+  {
+    "id": "code_blocks.test:21",
+    "options": "",
+    "source": "  ``` python\n  if true:\n    x = 3\n  ```\n",
+    "filters": "",
+    "expected": "<pre><code class=\"language-python\">if true:\n  x = 3\n</code></pre>\n"
+  },
+  {
+    "id": "code_blocks.test:32",
+    "options": "",
+    "source": "``` not a code block ```\n",
+    "filters": "",
+    "expected": "<p><code> not a code block </code></p>\n"
+  },
+  {
+    "id": "code_blocks.test:38",
+    "options": "",
+    "source": "``` not a code block\n",
+    "filters": "",
+    "expected": "<p><code> not a code block</code></p>\n"
+  },
+  {
+    "id": "code_blocks.test:44",
+    "options": "",
+    "source": "```\nhi\n```\n```\ntwo\n```\n",
+    "filters": "",
+    "expected": "<pre><code>hi\n</code></pre>\n<pre><code>two\n</code></pre>\n"
+  },
+  {
+    "id": "code_blocks.test:60",
+    "options": "",
+    "source": "```\n```\n",
+    "filters": "",
+    "expected": "<pre><code></code></pre>\n"
+  },
+  {
+    "id": "definition_lists.test:6",
+    "options": "",
+    "source": ": apple\n\n  red fruit\n: banana\n\n  yellow fruit\n",
+    "filters": "",
+    "expected": "<dl>\n<dt>apple</dt>\n<dd>\n<p>red fruit</p>\n</dd>\n<dt>banana</dt>\n<dd>\n<p>yellow fruit</p>\n</dd>\n</dl>\n"
+  },
+  {
+    "id": "definition_lists.test:28",
+    "options": "",
+    "source": ": apple\n\n  red fruit\n\n: banana\n\n  yellow fruit\n",
+    "filters": "",
+    "expected": "<dl>\n<dt>apple</dt>\n<dd>\n<p>red fruit</p>\n</dd>\n<dt>banana</dt>\n<dd>\n<p>yellow fruit</p>\n</dd>\n</dl>\n"
+  },
+  {
+    "id": "definition_lists.test:49",
+    "options": "",
+    "source": ": apple\n fruit\n\n  Paragraph one\n\n  Paragraph two\n\n  - sub\n  - list\n\n: orange\n",
+    "filters": "",
+    "expected": "<dl>\n<dt>apple\nfruit</dt>\n<dd>\n<p>Paragraph one</p>\n<p>Paragraph two</p>\n<ul>\n<li>\nsub\n</li>\n<li>\nlist\n</li>\n</ul>\n</dd>\n<dt>orange</dt>\n<dd>\n</dd>\n</dl>\n"
+  },
+  {
+    "id": "definition_lists.test:83",
+    "options": "",
+    "source": ": ```\n  ok\n  ```\n",
+    "filters": "",
+    "expected": "<dl>\n<dt></dt>\n<dd>\n<pre><code>ok\n</code></pre>\n</dd>\n</dl>\n"
+  },
+  {
+    "id": "emphasis.test:1",
+    "options": "",
+    "source": "*foo bar*\n",
+    "filters": "",
+    "expected": "<p><strong>foo bar</strong></p>\n"
+  },
+  {
+    "id": "emphasis.test:7",
+    "options": "",
+    "source": "a* foo bar*\n",
+    "filters": "",
+    "expected": "<p>a* foo bar*</p>\n"
+  },
+  {
+    "id": "emphasis.test:13",
+    "options": "",
+    "source": "*foo bar *\n",
+    "filters": "",
+    "expected": "<p>*foo bar *</p>\n"
+  },
+  {
+    "id": "emphasis.test:21",
+    "options": "",
+    "source": "* a *\n",
+    "filters": "",
+    "expected": "<p><strong> a </strong></p>\n"
+  },
+  {
+    "id": "emphasis.test:29",
+    "options": "",
+    "source": "foo*bar*baz\n",
+    "filters": "",
+    "expected": "<p>foo<strong>bar</strong>baz</p>\n"
+  },
+  {
+    "id": "emphasis.test:35",
+    "options": "",
+    "source": "_foo bar_\n",
+    "filters": "",
+    "expected": "<p><em>foo bar</em></p>\n"
+  },
+  {
+    "id": "emphasis.test:41",
+    "options": "",
+    "source": "_ foo bar_\n",
+    "filters": "",
+    "expected": "<p>_ foo bar_</p>\n"
+  },
+  {
+    "id": "emphasis.test:47",
+    "options": "",
+    "source": "_foo bar _\n",
+    "filters": "",
+    "expected": "<p>_foo bar _</p>\n"
+  },
+  {
+    "id": "emphasis.test:55",
+    "options": "",
+    "source": "_ a _\n",
+    "filters": "",
+    "expected": "<p><em> a </em></p>\n"
+  },
+  {
+    "id": "emphasis.test:63",
+    "options": "",
+    "source": "foo_bar_baz\n",
+    "filters": "",
+    "expected": "<p>foo<em>bar</em>baz</p>\n"
+  },
+  {
+    "id": "emphasis.test:69",
+    "options": "",
+    "source": "aa_\"bb\"_cc\n",
+    "filters": "",
+    "expected": "<p>aa<em>“bb”</em>cc</p>\n"
+  },
+  {
+    "id": "emphasis.test:75",
+    "options": "",
+    "source": "*foo_\n",
+    "filters": "",
+    "expected": "<p>*foo_</p>\n"
+  },
+  {
+    "id": "emphasis.test:81",
+    "options": "",
+    "source": "_foo*\n",
+    "filters": "",
+    "expected": "<p>_foo*</p>\n"
+  },
+  {
+    "id": "emphasis.test:89",
+    "options": "",
+    "source": "_foo bar\n_\n",
+    "filters": "",
+    "expected": "<p>_foo bar\n_</p>\n"
+  },
+  {
+    "id": "emphasis.test:99",
+    "options": "",
+    "source": "_\ta_\n",
+    "filters": "",
+    "expected": "<p>_\ta_</p>\n"
+  },
+  {
+    "id": "emphasis.test:107",
+    "options": "",
+    "source": "_(_foo_)_\n",
+    "filters": "",
+    "expected": "<p><em>(</em>foo<em>)</em></p>\n"
+  },
+  {
+    "id": "emphasis.test:116",
+    "options": "",
+    "source": "_({_foo_})_\n",
+    "filters": "",
+    "expected": "<p><em>(<em>foo</em>)</em></p>\n"
+  },
+  {
+    "id": "emphasis.test:126",
+    "options": "",
+    "source": "{_ x_ _} _x_}\n",
+    "filters": "",
+    "expected": "<p><em> x_ </em> _x_}</p>\n"
+  },
+  {
+    "id": "emphasis.test:133",
+    "options": "",
+    "source": "_(*foo*)_\n",
+    "filters": "",
+    "expected": "<p><em>(<strong>foo</strong>)</em></p>\n"
+  },
+  {
+    "id": "emphasis.test:141",
+    "options": "",
+    "source": "_foo *bar_ baz*\n",
+    "filters": "",
+    "expected": "<p><em>foo *bar</em> baz*</p>\n"
+  },
+  {
+    "id": "emphasis.test:149",
+    "options": "",
+    "source": "_foo\nbar_\n",
+    "filters": "",
+    "expected": "<p><em>foo\nbar</em></p>\n"
+  },
+  {
+    "id": "emphasis.test:159",
+    "options": "",
+    "source": "*foo [link](url) `*`*\n",
+    "filters": "",
+    "expected": "<p><strong>foo <a href=\"url\">link</a> <code>*</code></strong></p>\n"
+  },
+  {
+    "id": "emphasis.test:167",
+    "options": "",
+    "source": "___\n",
+    "filters": "",
+    "expected": "<p>___</p>\n"
+  },
+  {
+    "id": "emphasis.test:175",
+    "options": "",
+    "source": "_\\__\n",
+    "filters": "",
+    "expected": "<p><em>_</em></p>\n"
+  },
+  {
+    "id": "emphasis.test:183",
+    "options": "",
+    "source": "__\n",
+    "filters": "",
+    "expected": "<p>__</p>\n"
+  },
+  {
+    "id": "emphasis.test:189",
+    "options": "",
+    "source": "_}b_\n",
+    "filters": "",
+    "expected": "<p>_}b_</p>\n"
+  },
+  {
+    "id": "emphasis.test:195",
+    "options": "",
+    "source": "_\\}b_\n",
+    "filters": "",
+    "expected": "<p><em>}b</em></p>\n"
+  },
+  {
+    "id": "emphasis.test:201",
+    "options": "",
+    "source": "_ab\\_c_\n",
+    "filters": "",
+    "expected": "<p><em>ab_c</em></p>\n"
+  },
+  {
+    "id": "emphasis.test:207",
+    "options": "",
+    "source": "*****a*****\n",
+    "filters": "",
+    "expected": "<p><strong><strong><strong><strong><strong>a</strong></strong></strong></strong></strong></p>\n"
+  },
+  {
+    "id": "emphasis.test:213",
+    "options": "",
+    "source": "_[bar_](url)\n",
+    "filters": "",
+    "expected": "<p><em>[bar</em>](url)</p>\n"
+  },
+  {
+    "id": "emphasis.test:219",
+    "options": "",
+    "source": "\\_[bar_](url)\n",
+    "filters": "",
+    "expected": "<p>_<a href=\"url\">bar_</a></p>\n"
+  },
+  {
+    "id": "emphasis.test:228",
+    "options": "",
+    "source": "*not strong *strong*\n",
+    "filters": "",
+    "expected": "<p>*not strong <strong>strong</strong></p>\n"
+  },
+  {
+    "id": "emphasis.test:236",
+    "options": "",
+    "source": "__emphasis inside_ emphasis_\n",
+    "filters": "",
+    "expected": "<p><em><em>emphasis inside</em> emphasis</em></p>\n"
+  },
+  {
+    "id": "emphasis.test:244",
+    "options": "",
+    "source": "_`a_`b\n",
+    "filters": "",
+    "expected": "<p>_<code>a_</code>b</p>\n"
+  },
+  {
+    "id": "emphasis.test:252",
+    "options": "",
+    "source": "_<http://example.com/a_b>\n",
+    "filters": "",
+    "expected": "<p>_<a href=\"http://example.com/a_b\">http://example.com/a_b</a></p>\n"
+  },
+  {
+    "id": "escapes.test:3",
+    "options": "",
+    "source": "\\`\\*\\_\\[\\#\n",
+    "filters": "",
+    "expected": "<p>`*_[#</p>\n"
+  },
+  {
+    "id": "escapes.test:11",
+    "options": "",
+    "source": "\\a\\«\n",
+    "filters": "",
+    "expected": "<p>\\a\\«</p>\n"
+  },
+  {
+    "id": "escapes.test:19",
+    "options": "",
+    "source": "ab\\\nc\n",
+    "filters": "",
+    "expected": "<p>ab<br>\nc</p>\n"
+  },
+  {
+    "id": "escapes.test:29",
+    "options": "",
+    "source": "ab\\\t  \nc\n",
+    "filters": "",
+    "expected": "<p>ab<br>\nc</p>\n"
+  },
+  {
+    "id": "escapes.test:39",
+    "options": "",
+    "source": "ab \t \\  \t\nc\n",
+    "filters": "",
+    "expected": "<p>ab<br>\nc</p>\n"
+  },
+  {
+    "id": "escapes.test:49",
+    "options": "",
+    "source": "a\\ b\n",
+    "filters": "",
+    "expected": "<p>a&nbsp;b</p>\n"
+  },
+  {
+    "id": "fenced_divs.test:16",
+    "options": "",
+    "source": ":::::::::: foo\nHi\n\n> A block quote.\n:::::::::::\n",
+    "filters": "",
+    "expected": "<div class=\"foo\">\n<p>Hi</p>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>\n</div>\n"
+  },
+  {
+    "id": "fenced_divs.test:31",
+    "options": "",
+    "source": "{#bar .foo}\n:::\nHi\n\n> A block quote.\n:::::::::::::\n",
+    "filters": "",
+    "expected": "<div id=\"bar\" class=\"foo\">\n<p>Hi</p>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>\n</div>\n"
+  },
+  {
+    "id": "fenced_divs.test:49",
+    "options": "",
+    "source": "{#bar .foo}\n::::\nHi\n\n::: baz\n> A block quote.\n:::\n::::\n",
+    "filters": "",
+    "expected": "<div id=\"bar\" class=\"foo\">\n<p>Hi</p>\n<div class=\"baz\">\n<blockquote>\n<p>A block quote.</p>\n</blockquote>\n</div>\n</div>\n"
+  },
+  {
+    "id": "fenced_divs.test:72",
+    "options": "",
+    "source": "Paragraph text\n::::\nHi\n::::\n",
+    "filters": "",
+    "expected": "<p>Paragraph text\n::::\nHi\n::::</p>\n"
+  },
+  {
+    "id": "fenced_divs.test:86",
+    "options": "",
+    "source": "::::\nHi\n::::\n",
+    "filters": "",
+    "expected": "<div>\n<p>Hi</p>\n</div>\n"
+  },
+  {
+    "id": "fenced_divs.test:98",
+    "options": "",
+    "source": "::::::::: foo\nHi\n::::\n",
+    "filters": "",
+    "expected": "<div class=\"foo\">\n<p>Hi\n::::</p>\n</div>\n"
+  },
+  {
+    "id": "fenced_divs.test:112",
+    "options": "",
+    "source": "> :::: foo\n> Hi\n",
+    "filters": "",
+    "expected": "<blockquote>\n<div class=\"foo\">\n<p>Hi</p>\n</div>\n</blockquote>\n"
+  },
+  {
+    "id": "fenced_divs.test:123",
+    "options": "",
+    "source": "::: outer\n```\n:::\n```\n:::\n",
+    "filters": "",
+    "expected": "<div class=\"outer\">\n<pre><code>:::\n</code></pre>\n</div>\n"
+  },
+  {
+    "id": "filters.test:3",
+    "options": "",
+    "source": "*Hello* world `code`\n",
+    "filters": "return {\n  str = function(e)\n    e.text = e.text:upper()\n  end\n}",
+    "expected": "<p><strong>HELLO</strong> WORLD <code>code</code></p>\n"
+  },
+  {
+    "id": "filters.test:17",
+    "options": "",
+    "source": "_Hello *world*_ outside\n",
+    "filters": "local capitalize = 0\nreturn {\n   emph = {\n     enter = function(e)\n       capitalize = capitalize + 1\n     end,\n     exit = function(e)\n       capitalize = capitalize - 1\n     end,\n   },\n   str = function(e)\n     if capitalize > 0 then\n       e.text = e.text:upper()\n      end\n   end\n}",
+    "expected": "<p><em>HELLO <strong>WORLD</strong></em> outside</p>\n"
+  },
+  {
+    "id": "filters.test:42",
+    "options": "a",
+    "source": "Hello[^1].\n\n[^1]: This is a note.\n",
+    "filters": "return {\n  str = function(e)\n    e.text = e.text:upper()\n  end,\n  footnote = {\n    enter = function(e)\n      return true  -- prevent traversing into children\n    end\n  }\n}",
+    "expected": "doc\n  para\n    str text=\"HELLO\"\n    footnote_reference text=\"1\"\n    str text=\".\"\nfootnotes\n  [\"1\"] =\n    footnote\n      para\n        str text=\"This is a note.\"\n"
+  },
+  {
+    "id": "footnotes.test:1",
+    "options": "",
+    "source": "test[^a] and another[^foo_bar].\n\n[^a]: This is a note.\n\n  Second paragraph.\n\n[^foo_bar]:\n  ```\n  code\n  ```\n\nanother ref to the first note[^a].\n",
+    "filters": "",
+    "expected": "<p>test<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> and another<a id=\"fnref2\" href=\"#fn2\" role=\"doc-noteref\"><sup>2</sup></a>.</p>\n<p>another ref to the first note<a href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>.</p>\n<section role=\"doc-endnotes\">\n<hr>\n<ol>\n<li id=\"fn1\">\n<p>This is a note.</p>\n<p>Second paragraph.<a href=\"#fnref1\" role=\"doc-backlink\">↩︎</a></p>\n</li>\n<li id=\"fn2\">\n<pre><code>code\n</code></pre>\n<p><a href=\"#fnref2\" role=\"doc-backlink\">↩︎</a></p>\n</li>\n</ol>\n</section>\n"
+  },
+  {
+    "id": "footnotes.test:33",
+    "options": "",
+    "source": "test[^nonexistent]\n\n[^unused]: note\n\n  more\n",
+    "filters": "",
+    "expected": "<p>test<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\">\n<hr>\n<ol>\n<li id=\"fn1\">\n<p><a href=\"#fnref1\" role=\"doc-backlink\">↩︎</a></p>\n</li>\n</ol>\n</section>\n"
+  },
+  {
+    "id": "footnotes.test:51",
+    "options": "",
+    "source": "[^a]\n[^b]\n\n[^b]:\n",
+    "filters": "",
+    "expected": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>\n<a id=\"fnref2\" href=\"#fn2\" role=\"doc-noteref\"><sup>2</sup></a></p>\n<section role=\"doc-endnotes\">\n<hr>\n<ol>\n<li id=\"fn1\">\n<p><a href=\"#fnref1\" role=\"doc-backlink\">↩︎</a></p>\n</li>\n<li id=\"fn2\">\n<p><a href=\"#fnref2\" role=\"doc-backlink\">↩︎</a></p>\n</li>\n</ol>\n</section>\n"
+  },
+  {
+    "id": "footnotes.test:74",
+    "options": "",
+    "source": "text[^footnote].\n\n[^footnote]: very long footnote[^another-footnote]\n[^another-footnote]: bla bla[^another-footnote]\n",
+    "filters": "",
+    "expected": "<p>text<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>.</p>\n<section role=\"doc-endnotes\">\n<hr>\n<ol>\n<li id=\"fn1\">\n<p>very long footnote<a id=\"fnref2\" href=\"#fn2\" role=\"doc-noteref\"><sup>2</sup></a><a href=\"#fnref1\" role=\"doc-backlink\">↩︎</a></p>\n</li>\n<li id=\"fn2\">\n<p>bla bla<a href=\"#fn2\" role=\"doc-noteref\"><sup>2</sup></a><a href=\"#fnref2\" role=\"doc-backlink\">↩︎</a></p>\n</li>\n</ol>\n</section>\n"
+  },
+  {
+    "id": "headings.test:1",
+    "options": "",
+    "source": "## Heading\n",
+    "filters": "",
+    "expected": "<section id=\"Heading\">\n<h2>Heading</h2>\n</section>\n"
+  },
+  {
+    "id": "headings.test:9",
+    "options": "",
+    "source": "# Heading\n\n# another\n",
+    "filters": "",
+    "expected": "<section id=\"Heading\">\n<h1>Heading</h1>\n</section>\n<section id=\"another\">\n<h1>another</h1>\n</section>\n"
+  },
+  {
+    "id": "headings.test:22",
+    "options": "",
+    "source": "# Heading\n# continued\n",
+    "filters": "",
+    "expected": "<section id=\"Heading-continued\">\n<h1>Heading\ncontinued</h1>\n</section>\n"
+  },
+  {
+    "id": "headings.test:32",
+    "options": "",
+    "source": "##\nheading\n\npara\n",
+    "filters": "",
+    "expected": "<section id=\"heading\">\n<h2>heading</h2>\n<p>para</p>\n</section>\n"
+  },
+  {
+    "id": "headings.test:44",
+    "options": "",
+    "source": "##\n",
+    "filters": "",
+    "expected": "<section id=\"s-1\">\n<h2></h2>\n</section>\n"
+  },
+  {
+    "id": "headings.test:52",
+    "options": "",
+    "source": "## Heading\n### Next level\n",
+    "filters": "",
+    "expected": "<section id=\"Heading\">\n<h2>Heading</h2>\n<section id=\"Next-level\">\n<h3>Next level</h3>\n</section>\n</section>\n"
+  },
+  {
+    "id": "headings.test:64",
+    "options": "",
+    "source": "# Heading\nlazy\n",
+    "filters": "",
+    "expected": "<section id=\"Heading-lazy\">\n<h1>Heading\nlazy</h1>\n</section>\n"
+  },
+  {
+    "id": "headings.test:74",
+    "options": "",
+    "source": "# Heading\nlazy\n# more\nlazy\n\ntext\n",
+    "filters": "",
+    "expected": "<section id=\"Heading-lazy-more-lazy\">\n<h1>Heading\nlazy\nmore\nlazy</h1>\n<p>text</p>\n</section>\n"
+  },
+  {
+    "id": "headings.test:91",
+    "options": "",
+    "source": "##Notheading\n",
+    "filters": "",
+    "expected": "<p>##Notheading</p>\n"
+  },
+  {
+    "id": "headings.test:97",
+    "options": "",
+    "source": "   ##    Heading\n",
+    "filters": "",
+    "expected": "<section id=\"Heading\">\n<h2>Heading</h2>\n</section>\n"
+  },
+  {
+    "id": "headings.test:105",
+    "options": "",
+    "source": "## heading ##\n",
+    "filters": "",
+    "expected": "<section id=\"heading\">\n<h2>heading ##</h2>\n</section>\n"
+  },
+  {
+    "id": "headings.test:113",
+    "options": "",
+    "source": "# # heading\n",
+    "filters": "",
+    "expected": "<section id=\"heading\">\n<h1># heading</h1>\n</section>\n"
+  },
+  {
+    "id": "headings.test:123",
+    "options": "",
+    "source": "{#Foo-bar}\nParagraph\n\n# Foo bar\n\n## Foo  bar\n\n{#baz}\n# Foo bar\n",
+    "filters": "",
+    "expected": "<p id=\"Foo-bar\">Paragraph</p>\n<section id=\"Foo-bar-1\">\n<h1>Foo bar</h1>\n<section id=\"Foo-bar-2\">\n<h2>Foo  bar</h2>\n</section>\n</section>\n<section id=\"baz\">\n<h1>Foo bar</h1>\n</section>\n"
+  },
+  {
+    "id": "headings.test:148",
+    "options": "",
+    "source": "# Introduction[^1]\n\n[^1]: A note.\n",
+    "filters": "",
+    "expected": "<section id=\"Introduction\">\n<h1>Introduction<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></h1>\n</section>\n<section role=\"doc-endnotes\">\n<hr>\n<ol>\n<li id=\"fn1\">\n<p>A note.<a href=\"#fnref1\" role=\"doc-backlink\">↩︎</a></p>\n</li>\n</ol>\n</section>\n"
+  },
+  {
+    "id": "headings.test:168",
+    "options": "",
+    "source": "See [Introduction][].\n\n# Introduction\n",
+    "filters": "",
+    "expected": "<p>See <a href=\"#Introduction\">Introduction</a>.</p>\n<section id=\"Introduction\">\n<h1>Introduction</h1>\n</section>\n"
+  },
+  {
+    "id": "headings.test:179",
+    "options": "",
+    "source": "See [Introduction][].\n\n{#foo}\n# Introduction\n",
+    "filters": "",
+    "expected": "<p>See <a href=\"#foo\">Introduction</a>.</p>\n<section id=\"foo\">\n<h1>Introduction</h1>\n</section>\n"
+  },
+  {
+    "id": "headings.test:191",
+    "options": "",
+    "source": "See [Introduction][].\n\n# Introduction\n\n[Introduction]: #bar\n",
+    "filters": "",
+    "expected": "<p>See <a href=\"#bar\">Introduction</a>.</p>\n<section id=\"Introduction\">\n<h1>Introduction</h1>\n</section>\n"
+  },
+  {
+    "id": "insert_delete_mark.test:1",
+    "options": "",
+    "source": "This is {-deleted\n_text_-}. The braces are -required-.\nAnd they must be in the -}right order{-.\n",
+    "filters": "",
+    "expected": "<p>This is <del>deleted\n<em>text</em></del>. The braces are -required-.\nAnd they must be in the -}right order{-.</p>\n"
+  },
+  {
+    "id": "insert_delete_mark.test:11",
+    "options": "",
+    "source": "{+ Inserted text +}\n",
+    "filters": "",
+    "expected": "<p><ins> Inserted text </ins></p>\n"
+  },
+  {
+    "id": "insert_delete_mark.test:19",
+    "options": "",
+    "source": "{--hello--}\n",
+    "filters": "",
+    "expected": "<p><del>-hello-</del></p>\n"
+  },
+  {
+    "id": "insert_delete_mark.test:25",
+    "options": "",
+    "source": "This is {=marked *text*=}.\n",
+    "filters": "",
+    "expected": "<p>This is <mark>marked <strong>text</strong></mark>.</p>\n"
+  },
+  {
+    "id": "links_and_images.test:1",
+    "options": "",
+    "source": "[basic _link_][a_b_]\n\n[a_b_]: url\n",
+    "filters": "",
+    "expected": "<p><a href=\"url\">basic <em>link</em></a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:9",
+    "options": "",
+    "source": "![basic _image_][a_b_]\n\n[a_b_]: url\n",
+    "filters": "",
+    "expected": "<p><img alt=\"basic image\" src=\"url\"></p>\n"
+  },
+  {
+    "id": "links_and_images.test:17",
+    "options": "",
+    "source": "[link][]\n\n[link]: url\n",
+    "filters": "",
+    "expected": "<p><a href=\"url\">link</a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:25",
+    "options": "",
+    "source": "[link][]\n\n[link]:\n url\n",
+    "filters": "",
+    "expected": "<p><a href=\"url\">link</a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:36",
+    "options": "",
+    "source": "[link][]\n\n[link]:\n url\n  andurl\n",
+    "filters": "",
+    "expected": "<p><a href=\"urlandurl\">link</a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:46",
+    "options": "",
+    "source": "[link](url\nandurl)\n",
+    "filters": "",
+    "expected": "<p><a href=\"urlandurl\">link</a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:55",
+    "options": "",
+    "source": "[link](http://example.com?n=123\n    456)\n",
+    "filters": "",
+    "expected": "<p><a href=\"http://example.com?n=123456\">link</a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:62",
+    "options": "",
+    "source": "[link][]\n\n[link]:\n[link2]: url\n",
+    "filters": "",
+    "expected": "<p><a href=\"\">link</a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:71",
+    "options": "",
+    "source": "[link][]\n[link][link2]\n\n[link2]:\n  url2\n[link]:\n url\n",
+    "filters": "",
+    "expected": "<p><a href=\"url\">link</a>\n<a href=\"url2\">link</a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:84",
+    "options": "",
+    "source": "[link][a and\nb]\n\n[a and b]: url\n",
+    "filters": "",
+    "expected": "<p><a href=\"url\">link</a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:95",
+    "options": "",
+    "source": "[link][a and\nb]\n",
+    "filters": "",
+    "expected": "<p><a>link</a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:104",
+    "options": "",
+    "source": "[link][a and\nb]\n\n[a and\nb]: url\n",
+    "filters": "",
+    "expected": "<p><a>link</a></p>\n<p>[a and\nb]: url</p>\n"
+  },
+  {
+    "id": "links_and_images.test:118",
+    "options": "",
+    "source": "[Link][]\n\n[link]: /url\n",
+    "filters": "",
+    "expected": "<p><a>Link</a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:129",
+    "options": "",
+    "source": "{title=foo}\n[ref]: /url\n\n[ref][]\n",
+    "filters": "",
+    "expected": "<p><a href=\"/url\" title=\"foo\">ref</a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:140",
+    "options": "",
+    "source": "{title=foo}\n[ref]: /url\n\n[ref][]{title=bar}\n",
+    "filters": "",
+    "expected": "<p><a href=\"/url\" title=\"bar\">ref</a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:149",
+    "options": "",
+    "source": "[link _and_ link][]\n\n[link and link]: url\n",
+    "filters": "",
+    "expected": "<p><a href=\"url\">link <em>and</em> link</a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:157",
+    "options": "",
+    "source": "![basic _image_](url)\n",
+    "filters": "",
+    "expected": "<p><img alt=\"basic image\" src=\"url\"></p>\n"
+  },
+  {
+    "id": "links_and_images.test:163",
+    "options": "",
+    "source": "[![image](img.jpg)](url)\n",
+    "filters": "",
+    "expected": "<p><a href=\"url\"><img alt=\"image\" src=\"img.jpg\"></a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:171",
+    "options": "",
+    "source": "![alt](img.jpg){.photo}\n",
+    "filters": "",
+    "expected": "<p><img alt=\"alt\" src=\"img.jpg\" class=\"photo\"></p>\n"
+  },
+  {
+    "id": "links_and_images.test:177",
+    "options": "",
+    "source": "[unclosed](hello *a\nb*\n",
+    "filters": "",
+    "expected": "<p>[unclosed](hello <strong>a\nb</strong></p>\n"
+  },
+  {
+    "id": "links_and_images.test:187",
+    "options": "",
+    "source": "[closed](hello *a\nb*)\n",
+    "filters": "",
+    "expected": "<p><a href=\"hello *ab*\">closed</a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:196",
+    "options": "",
+    "source": "*[closed](hello*)\n",
+    "filters": "",
+    "expected": "<p>*<a href=\"hello*\">closed</a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:203",
+    "options": "",
+    "source": "*[closed](hello\\*)\n",
+    "filters": "",
+    "expected": "<p>*<a href=\"hello*\">closed</a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:210",
+    "options": "",
+    "source": "_[link](http://example.com?foo_bar=1), more text_\n",
+    "filters": "",
+    "expected": "<p><em><a href=\"http://example.com?foo_bar=1\">link</a>, more text</em></p>\n"
+  },
+  {
+    "id": "links_and_images.test:216",
+    "options": "",
+    "source": "_hello [link](a_b) world_\n",
+    "filters": "",
+    "expected": "<p><em>hello <a href=\"a_b\">link</a> world</em></p>\n"
+  },
+  {
+    "id": "links_and_images.test:223",
+    "options": "",
+    "source": "[[foo](bar)](baz)\n",
+    "filters": "",
+    "expected": "<p><a href=\"baz\"><a href=\"bar\">foo</a></a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:230",
+    "options": "",
+    "source": "![[link](url)](img)\n",
+    "filters": "",
+    "expected": "<p><img alt=\"link\" src=\"img\"></p>\n"
+  },
+  {
+    "id": "links_and_images.test:237",
+    "options": "",
+    "source": "[![image](img)](url)\n",
+    "filters": "",
+    "expected": "<p><a href=\"url\"><img alt=\"image\" src=\"img\"></a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:244",
+    "options": "",
+    "source": "<http://example.com/foo>\n<me@example.com>\n",
+    "filters": "",
+    "expected": "<p><a href=\"http://example.com/foo\">http://example.com/foo</a>\n<a href=\"mailto:me@example.com\">me@example.com</a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:256",
+    "options": "",
+    "source": "[x_y](x_y)\n",
+    "filters": "",
+    "expected": "<p><a href=\"x_y\">x_y</a></p>\n"
+  },
+  {
+    "id": "links_and_images.test:262",
+    "options": "",
+    "source": "[x_y](x_\n",
+    "filters": "",
+    "expected": "<p>[x_y](x_</p>\n"
+  },
+  {
+    "id": "links_and_images.test:268",
+    "options": "",
+    "source": "[x_y]{.bar_}\n",
+    "filters": "",
+    "expected": "<p><span class=\"bar_\">x_y</span></p>\n"
+  },
+  {
+    "id": "lists.test:1",
+    "options": "",
+    "source": "- one\n- two\n",
+    "filters": "",
+    "expected": "<ul>\n<li>\none\n</li>\n<li>\ntwo\n</li>\n</ul>\n"
+  },
+  {
+    "id": "lists.test:15",
+    "options": "",
+    "source": "- one\n - two\n  - three\n",
+    "filters": "",
+    "expected": "<ul>\n<li>\none\n- two\n- three\n</li>\n</ul>\n"
+  },
+  {
+    "id": "lists.test:29",
+    "options": "",
+    "source": "- one\n\n - two\n\n  - three\n",
+    "filters": "",
+    "expected": "<ul>\n<li>\none\n<ul>\n<li>\ntwo\n<ul>\n<li>\nthree\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n"
+  },
+  {
+    "id": "lists.test:53",
+    "options": "",
+    "source": "- one\n  and\n\n  another paragraph\n\n  - a list\n\n- two\n",
+    "filters": "",
+    "expected": "<ul>\n<li>\n<p>one\nand</p>\n<p>another paragraph</p>\n<ul>\n<li>\na list\n</li>\n</ul>\n</li>\n<li>\n<p>two</p>\n</li>\n</ul>\n"
+  },
+  {
+    "id": "lists.test:83",
+    "options": "",
+    "source": "- a\n- b\n- c\n\n  more\n\n- d\n",
+    "filters": "",
+    "expected": "<ul>\n<li>\n<p>a</p>\n</li>\n<li>\n<p>b</p>\n</li>\n<li>\n<p>c</p>\n<p>more</p>\n</li>\n<li>\n<p>d</p>\n</li>\n</ul>\n"
+  },
+  {
+    "id": "lists.test:109",
+    "options": "",
+    "source": "- one\nlazy\n- two\n",
+    "filters": "",
+    "expected": "<ul>\n<li>\none\nlazy\n</li>\n<li>\ntwo\n</li>\n</ul>\n"
+  },
+  {
+    "id": "lists.test:125",
+    "options": "",
+    "source": "- a\n- b\n+ c\n",
+    "filters": "",
+    "expected": "<ul>\n<li>\na\n</li>\n<li>\nb\n</li>\n</ul>\n<ul>\n<li>\nc\n</li>\n</ul>\n"
+  },
+  {
+    "id": "lists.test:145",
+    "options": "",
+    "source": "- a\n\n- b\n",
+    "filters": "",
+    "expected": "<ul>\n<li>\n<p>a</p>\n</li>\n<li>\n<p>b</p>\n</li>\n</ul>\n"
+  },
+  {
+    "id": "lists.test:160",
+    "options": "",
+    "source": "- a\n  - b\n\n  - c\n- d\n",
+    "filters": "",
+    "expected": "<ul>\n<li>\na\n- b\n<ul>\n<li>\nc\n</li>\n</ul>\n</li>\n<li>\nd\n</li>\n</ul>\n"
+  },
+  {
+    "id": "lists.test:183",
+    "options": "",
+    "source": "- a\n  - b\n\n  - c\n\n- d\n",
+    "filters": "",
+    "expected": "<ul>\n<li>\na\n- b\n<ul>\n<li>\nc\n</li>\n</ul>\n</li>\n<li>\nd\n</li>\n</ul>\n"
+  },
+  {
+    "id": "lists.test:207",
+    "options": "",
+    "source": "- a\n\n  b\n- c\n",
+    "filters": "",
+    "expected": "<ul>\n<li>\n<p>a</p>\n<p>b</p>\n</li>\n<li>\n<p>c</p>\n</li>\n</ul>\n"
+  },
+  {
+    "id": "lists.test:224",
+    "options": "",
+    "source": "- a\n\n  - b\n  - c\n- d\n",
+    "filters": "",
+    "expected": "<ul>\n<li>\na\n<ul>\n<li>\nb\n</li>\n<li>\nc\n</li>\n</ul>\n</li>\n<li>\nd\n</li>\n</ul>\n"
+  },
+  {
+    "id": "lists.test:249",
+    "options": "",
+    "source": "- a\n\n  - b\n  - c\n\n- d\n",
+    "filters": "",
+    "expected": "<ul>\n<li>\na\n<ul>\n<li>\nb\n</li>\n<li>\nc\n</li>\n</ul>\n</li>\n<li>\nd\n</li>\n</ul>\n"
+  },
+  {
+    "id": "lists.test:275",
+    "options": "",
+    "source": "- a\n\n  * b\ncd\n",
+    "filters": "",
+    "expected": "<ul>\n<li>\na\n<ul>\n<li>\nb\ncd\n</li>\n</ul>\n</li>\n</ul>\n"
+  },
+  {
+    "id": "lists.test:294",
+    "options": "",
+    "source": "- - - a\n",
+    "filters": "",
+    "expected": "<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\na\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n"
+  },
+  {
+    "id": "lists.test:312",
+    "options": "",
+    "source": "1. one\n1. two\n",
+    "filters": "",
+    "expected": "<ol>\n<li>\none\n</li>\n<li>\ntwo\n</li>\n</ol>\n"
+  },
+  {
+    "id": "lists.test:326",
+    "options": "",
+    "source": "1. one\n\n 1. two\n",
+    "filters": "",
+    "expected": "<ol>\n<li>\none\n<ol>\n<li>\ntwo\n</li>\n</ol>\n</li>\n</ol>\n"
+  },
+  {
+    "id": "lists.test:343",
+    "options": "",
+    "source": "4. one\n5. two\n",
+    "filters": "",
+    "expected": "<ol start=\"4\">\n<li>\none\n</li>\n<li>\ntwo\n</li>\n</ol>\n"
+  },
+  {
+    "id": "lists.test:357",
+    "options": "",
+    "source": "1) one\n2) two\n",
+    "filters": "",
+    "expected": "<ol>\n<li>\none\n</li>\n<li>\ntwo\n</li>\n</ol>\n"
+  },
+  {
+    "id": "lists.test:371",
+    "options": "",
+    "source": "(1) one\n(2) two\n",
+    "filters": "",
+    "expected": "<ol>\n<li>\none\n</li>\n<li>\ntwo\n</li>\n</ol>\n"
+  },
+  {
+    "id": "lists.test:385",
+    "options": "",
+    "source": "(a) one\n(b) two\n",
+    "filters": "",
+    "expected": "<ol type=\"a\">\n<li>\none\n</li>\n<li>\ntwo\n</li>\n</ol>\n"
+  },
+  {
+    "id": "lists.test:399",
+    "options": "",
+    "source": "(D) one\n(E) two\n",
+    "filters": "",
+    "expected": "<ol start=\"4\" type=\"A\">\n<li>\none\n</li>\n<li>\ntwo\n</li>\n</ol>\n"
+  },
+  {
+    "id": "lists.test:413",
+    "options": "",
+    "source": "a. one\nb. two\n",
+    "filters": "",
+    "expected": "<ol type=\"a\">\n<li>\none\n</li>\n<li>\ntwo\n</li>\n</ol>\n"
+  },
+  {
+    "id": "lists.test:427",
+    "options": "",
+    "source": "i. one\nii. two\n",
+    "filters": "",
+    "expected": "<ol type=\"i\">\n<li>\none\n</li>\n<li>\ntwo\n</li>\n</ol>\n"
+  },
+  {
+    "id": "lists.test:441",
+    "options": "",
+    "source": "xli) one\nxlii) two\n",
+    "filters": "",
+    "expected": "<ol start=\"41\" type=\"i\">\n<li>\none\n</li>\n<li>\ntwo\n</li>\n</ol>\n"
+  },
+  {
+    "id": "lists.test:455",
+    "options": "",
+    "source": "(IV) one\n(V) two\n",
+    "filters": "",
+    "expected": "<ol start=\"4\" type=\"I\">\n<li>\none\n</li>\n<li>\ntwo\n</li>\n</ol>\n"
+  },
+  {
+    "id": "lists.test:469",
+    "options": "",
+    "source": "i. a\nii. b\n",
+    "filters": "",
+    "expected": "<ol type=\"i\">\n<li>\na\n</li>\n<li>\nb\n</li>\n</ol>\n"
+  },
+  {
+    "id": "lists.test:483",
+    "options": "",
+    "source": "i. a\nj. b\n",
+    "filters": "",
+    "expected": "<ol start=\"9\" type=\"a\">\n<li>\na\n</li>\n<li>\nb\n</li>\n</ol>\n"
+  },
+  {
+    "id": "lists.test:499",
+    "options": "",
+    "source": "i. a\ni. b\n",
+    "filters": "",
+    "expected": "<ol type=\"i\">\n<li>\na\n</li>\n<li>\nb\n</li>\n</ol>\n"
+  },
+  {
+    "id": "lists.test:513",
+    "options": "",
+    "source": "I. a\nII. b\nE. d\n",
+    "filters": "",
+    "expected": "<ol type=\"I\">\n<li>\na\n</li>\n<li>\nb\n</li>\n</ol>\n<ol start=\"5\" type=\"A\">\n<li>\nd\n</li>\n</ol>\n"
+  },
+  {
+    "id": "lists.test:533",
+    "options": "",
+    "source": "The civil war ended in\n1865. And this should not start a list.\n",
+    "filters": "",
+    "expected": "<p>The civil war ended in\n1865. And this should not start a list.</p>\n"
+  },
+  {
+    "id": "math.test:4",
+    "options": "",
+    "source": "$`e=mc^2`\n",
+    "filters": "",
+    "expected": "<p><span class=\"math inline\">\\(e=mc^2\\)</span></p>\n"
+  },
+  {
+    "id": "math.test:10",
+    "options": "",
+    "source": "My equation: $`e=mc^2`\n",
+    "filters": "",
+    "expected": "<p>My equation: <span class=\"math inline\">\\(e=mc^2\\)</span></p>\n"
+  },
+  {
+    "id": "math.test:16",
+    "options": "",
+    "source": "$$`e=mc^2`\n",
+    "filters": "",
+    "expected": "<p><span class=\"math display\">\\[e=mc^2\\]</span></p>\n"
+  },
+  {
+    "id": "math.test:22",
+    "options": "",
+    "source": "My equation: $$`e=mc^2`\n",
+    "filters": "",
+    "expected": "<p>My equation: <span class=\"math display\">\\[e=mc^2\\]</span></p>\n"
+  },
+  {
+    "id": "math.test:30",
+    "options": "",
+    "source": "$`e=\nmc^2`\n",
+    "filters": "",
+    "expected": "<p><span class=\"math inline\">\\(e=\nmc^2\\)</span></p>\n"
+  },
+  {
+    "id": "math.test:40",
+    "options": "",
+    "source": "$`e=\\text{the number $\\pi$}`\n",
+    "filters": "",
+    "expected": "<p><span class=\"math inline\">\\(e=\\text{the number $\\pi$}\\)</span></p>\n"
+  },
+  {
+    "id": "math.test:48",
+    "options": "",
+    "source": "\\$`e=mc^2`\n",
+    "filters": "",
+    "expected": "<p>$<code>e=mc^2</code></p>\n"
+  },
+  {
+    "id": "math.test:56",
+    "options": "",
+    "source": "\\\\$`e=mc^2`\n",
+    "filters": "",
+    "expected": "<p>\\<span class=\"math inline\">\\(e=mc^2\\)</span></p>\n"
+  },
+  {
+    "id": "para.test:1",
+    "options": "",
+    "source": "hi  \nthere  \n",
+    "filters": "",
+    "expected": "<p>hi  \nthere</p>\n"
+  },
+  {
+    "id": "raw.test:3",
+    "options": "",
+    "source": "`<a>`{=html}\n",
+    "filters": "",
+    "expected": "<p><a></p>\n"
+  },
+  {
+    "id": "raw.test:11",
+    "options": "",
+    "source": "``` =html\n<table>\n```\n",
+    "filters": "",
+    "expected": "<table>\n"
+  },
+  {
+    "id": "raw.test:21",
+    "options": "",
+    "source": "`<b>foo</b>`{=html #id}\n```\n",
+    "filters": "",
+    "expected": "<p><code>&lt;b&gt;foo&lt;/b&gt;</code>{=html #id}\n<code></code></p>\n"
+  },
+  {
+    "id": "raw.test:31",
+    "options": "",
+    "source": "{.foo}\n``` =html\n<table>\n```\n",
+    "filters": "",
+    "expected": "<table>\n"
+  },
+  {
+    "id": "regression.test:3",
+    "options": "",
+    "source": "{1--}\n\n{1-}\n",
+    "filters": "",
+    "expected": "<p>{1--}</p>\n<p>{1-}</p>\n"
+  },
+  {
+    "id": "regression.test:14",
+    "options": "",
+    "source": "\n|`|\n",
+    "filters": "",
+    "expected": "<p>|<code>|</code></p>\n"
+  },
+  {
+    "id": "regression.test:21",
+    "options": "",
+    "source": "\n|`|x\n",
+    "filters": "",
+    "expected": "<p>|<code>|x</code></p>\n"
+  },
+  {
+    "id": "regression.test:30",
+    "options": "",
+    "source": "\\$$`a`\n",
+    "filters": "",
+    "expected": "<p>$<span class=\"math inline\">\\(a\\)</span></p>\n"
+  },
+  {
+    "id": "regression.test:36",
+    "options": "",
+    "source": "{\n .`\n",
+    "filters": "",
+    "expected": "<p>{\n.<code></code></p>\n"
+  },
+  {
+    "id": "regression.test:46",
+    "options": "a",
+    "source": "| 1 | 2 |\n\n ^ cap1\n\n ^ cap2\n",
+    "filters": "",
+    "expected": "doc\n  table\n    caption\n      str text=\"cap2\"\n    row head=false\n      cell head=false align=\"default\"\n        str text=\"1\"\n      cell head=false align=\"default\"\n        str text=\"2\"\n"
+  },
+  {
+    "id": "smart.test:5",
+    "options": "",
+    "source": "\"Hello,\" said the spider.\n\"'Shelob' is my name.\"\n",
+    "filters": "",
+    "expected": "<p>“Hello,” said the spider.\n“‘Shelob’ is my name.”</p>\n"
+  },
+  {
+    "id": "smart.test:13",
+    "options": "",
+    "source": "'A', 'B', and 'C' are letters.\n",
+    "filters": "",
+    "expected": "<p>‘A’, ‘B’, and ‘C’ are letters.</p>\n"
+  },
+  {
+    "id": "smart.test:19",
+    "options": "",
+    "source": "'Oak,' 'elm,' and 'beech' are names of trees.\nSo is 'pine.'\n",
+    "filters": "",
+    "expected": "<p>‘Oak,’ ‘elm,’ and ‘beech’ are names of trees.\nSo is ‘pine.’</p>\n"
+  },
+  {
+    "id": "smart.test:27",
+    "options": "",
+    "source": "'He said, \"I want to go.\"'\n",
+    "filters": "",
+    "expected": "<p>‘He said, “I want to go.”’</p>\n"
+  },
+  {
+    "id": "smart.test:37",
+    "options": "",
+    "source": "Were you alive in the '70s?\n",
+    "filters": "",
+    "expected": "<p>Were you alive in the ’70s?</p>\n"
+  },
+  {
+    "id": "smart.test:43",
+    "options": "",
+    "source": "Here is some quoted '`code`' and a \"[quoted link](url)\".\n",
+    "filters": "",
+    "expected": "<p>Here is some quoted ‘<code>code</code>’ and a “<a href=\"url\">quoted link</a>”.</p>\n"
+  },
+  {
+    "id": "smart.test:53",
+    "options": "",
+    "source": "'tis the season to be 'jolly'\n",
+    "filters": "",
+    "expected": "<p>’tis the season to be ‘jolly’</p>\n"
+  },
+  {
+    "id": "smart.test:61",
+    "options": "",
+    "source": "'We'll use Jane's boat and John's truck,' Jenna said.\n",
+    "filters": "",
+    "expected": "<p>‘We’ll use Jane’s boat and John’s truck,’ Jenna said.</p>\n"
+  },
+  {
+    "id": "smart.test:70",
+    "options": "",
+    "source": "\"A paragraph with no closing quote.\n\n\"Second paragraph by same speaker, in fiction.\"\n",
+    "filters": "",
+    "expected": "<p>“A paragraph with no closing quote.</p>\n<p>“Second paragraph by same speaker, in fiction.”</p>\n"
+  },
+  {
+    "id": "smart.test:82",
+    "options": "",
+    "source": "[a]'s b'\n",
+    "filters": "",
+    "expected": "<p>[a]’s b’</p>\n"
+  },
+  {
+    "id": "smart.test:91",
+    "options": "",
+    "source": "\\\"This is not smart.\\\"\nThis isn\\'t either.\n5\\'8\\\"\n",
+    "filters": "",
+    "expected": "<p>\"This is not smart.\"\nThis isn't either.\n5'8\"</p>\n"
+  },
+  {
+    "id": "smart.test:103",
+    "options": "",
+    "source": "''hi''\n",
+    "filters": "",
+    "expected": "<p>‘‘hi’’</p>\n"
+  },
+  {
+    "id": "smart.test:112",
+    "options": "",
+    "source": "{''}hi{''}\n",
+    "filters": "",
+    "expected": "<p>‘’hi‘’</p>\n"
+  },
+  {
+    "id": "smart.test:120",
+    "options": "",
+    "source": "Some dashes:  em---em\nen--en\nem --- em\nen -- en\n2--3\n",
+    "filters": "",
+    "expected": "<p>Some dashes:  em—em\nen–en\nem — em\nen – en\n2–3</p>\n"
+  },
+  {
+    "id": "smart.test:145",
+    "options": "",
+    "source": "one-\ntwo--\nthree---\nfour----\nfive-----\nsix------\nseven-------\neight--------\nnine---------\nthirteen-------------.\n",
+    "filters": "",
+    "expected": "<p>one-\ntwo–\nthree—\nfour––\nfive—–\nsix——\nseven—––\neight––––\nnine———\nthirteen———––.</p>\n"
+  },
+  {
+    "id": "smart.test:171",
+    "options": "",
+    "source": "Escaped hyphens: \\-- \\-\\-\\-.\n",
+    "filters": "",
+    "expected": "<p>Escaped hyphens: -- ---.</p>\n"
+  },
+  {
+    "id": "smart.test:179",
+    "options": "",
+    "source": "Ellipses...and...and....\n",
+    "filters": "",
+    "expected": "<p>Ellipses…and…and….</p>\n"
+  },
+  {
+    "id": "smart.test:188",
+    "options": "",
+    "source": "No ellipses\\.\\.\\.\n",
+    "filters": "",
+    "expected": "<p>No ellipses...</p>\n"
+  },
+  {
+    "id": "sourcepos.test:1",
+    "options": "ap",
+    "source": " - a\n - b\n",
+    "filters": "",
+    "expected": "doc\n  bullet_list (1:2:1-3:0:9) tight=true style=\"-\"\n    list_item (1:2:1-2:0:4)\n      para (1:4:3-2:0:4)\n        str (1:4:3-1:4:3) text=\"a\"\n    list_item (2:2:6-3:0:9)\n      para (2:4:8-3:0:9)\n        str (2:4:8-2:4:8) text=\"b\"\n"
+  },
+  {
+    "id": "spans.test:1",
+    "options": "",
+    "source": "This is a [test of\n*color*]{.blue}.\n",
+    "filters": "",
+    "expected": "<p>This is a <span class=\"blue\">test of\n<strong>color</strong></span>.</p>\n"
+  },
+  {
+    "id": "spans.test:9",
+    "options": "",
+    "source": "not a [span] {#id}.\n",
+    "filters": "",
+    "expected": "<p>not a [span] .</p>\n"
+  },
+  {
+    "id": "spans.test:15",
+    "options": "",
+    "source": "[nested [span]{.blue}]{#ident}\n",
+    "filters": "",
+    "expected": "<p><span id=\"ident\">nested <span class=\"blue\">span</span></span></p>\n"
+  },
+  {
+    "id": "spans.test:21",
+    "options": "",
+    "source": "[not a span]{#a<b}\n",
+    "filters": "",
+    "expected": "<p>[not a span]{#a&lt;b}</p>\n"
+  },
+  {
+    "id": "spans.test:27",
+    "options": "",
+    "source": "[*not* a span]{#a<b}\n",
+    "filters": "",
+    "expected": "<p>[<strong>not</strong> a span]{#a&lt;b}</p>\n"
+  },
+  {
+    "id": "spans.test:33",
+    "options": "",
+    "source": "[not a span]{#a\n",
+    "filters": "",
+    "expected": "<p>[not a span]{#a</p>\n"
+  },
+  {
+    "id": "super_subscript.test:1",
+    "options": "",
+    "source": "H~2~O\n",
+    "filters": "",
+    "expected": "<p>H<sub>2</sub>O</p>\n"
+  },
+  {
+    "id": "super_subscript.test:7",
+    "options": "",
+    "source": "mc^2^\n",
+    "filters": "",
+    "expected": "<p>mc<sup>2</sup></p>\n"
+  },
+  {
+    "id": "super_subscript.test:13",
+    "options": "",
+    "source": "test^of superscript ~with subscript~^\n",
+    "filters": "",
+    "expected": "<p>test<sup>of superscript <sub>with subscript</sub></sup></p>\n"
+  },
+  {
+    "id": "super_subscript.test:19",
+    "options": "",
+    "source": "H{~2 ~}O\n",
+    "filters": "",
+    "expected": "<p>H<sub>2 </sub>O</p>\n"
+  },
+  {
+    "id": "symb.test:1",
+    "options": "a",
+    "source": ":+1: :scream:\n",
+    "filters": "",
+    "expected": "doc\n  para\n    symb alias=\"+1\"\n    str text=\" \"\n    symb alias=\"scream\"\n"
+  },
+  {
+    "id": "symb.test:11",
+    "options": "a",
+    "source": ":ice:scream:\n",
+    "filters": "",
+    "expected": "doc\n  para\n    symb alias=\"ice\"\n    str text=\"scream:\"\n"
+  },
+  {
+    "id": "tables.test:3",
+    "options": "",
+    "source": "| a |\n",
+    "filters": "",
+    "expected": "<table>\n<tr>\n<td>a</td>\n</tr>\n</table>\n"
+  },
+  {
+    "id": "tables.test:13",
+    "options": "",
+    "source": "|a|   *b*|\n|*c| d* |\n",
+    "filters": "",
+    "expected": "<table>\n<tr>\n<td>a</td>\n<td><strong>b</strong></td>\n</tr>\n<tr>\n<td>*c</td>\n<td>d*</td>\n</tr>\n</table>\n"
+  },
+  {
+    "id": "tables.test:29",
+    "options": "",
+    "source": "| `a |`\n",
+    "filters": "",
+    "expected": "<p>| <code>a |</code></p>\n"
+  },
+  {
+    "id": "tables.test:35",
+    "options": "",
+    "source": "| a | b |\n\n^ With a _caption_\nand another line.\n",
+    "filters": "",
+    "expected": "<table>\n<caption>With a <em>caption</em>\nand another line.</caption>\n<tr>\n<td>a</td>\n<td>b</td>\n</tr>\n</table>\n"
+  },
+  {
+    "id": "tables.test:54",
+    "options": "",
+    "source": "|a|b|\n|:-|---:|\n|c|d|\n|cc|dd|\n|-:|:-:|\n|e|f|\n|g|h|\n",
+    "filters": "",
+    "expected": "<table>\n<tr>\n<th style=\"text-align: left;\">a</th>\n<th style=\"text-align: right;\">b</th>\n</tr>\n<tr>\n<td style=\"text-align: left;\">c</td>\n<td style=\"text-align: right;\">d</td>\n</tr>\n<tr>\n<th style=\"text-align: right;\">cc</th>\n<th style=\"text-align: center;\">dd</th>\n</tr>\n<tr>\n<td style=\"text-align: right;\">e</td>\n<td style=\"text-align: center;\">f</td>\n</tr>\n<tr>\n<td style=\"text-align: right;\">g</td>\n<td style=\"text-align: center;\">h</td>\n</tr>\n</table>\n"
+  },
+  {
+    "id": "tables.test:87",
+    "options": "",
+    "source": "|--|--|\n",
+    "filters": "",
+    "expected": "<table>\n</table>\n"
+  },
+  {
+    "id": "tables.test:94",
+    "options": "",
+    "source": "|---|---|\n| a | b |\n",
+    "filters": "",
+    "expected": "<table>\n<tr>\n<td>a</td>\n<td>b</td>\n</tr>\n</table>\n"
+  },
+  {
+    "id": "tables.test:106",
+    "options": "",
+    "source": "| |\n",
+    "filters": "",
+    "expected": "<table>\n<tr>\n<td></td>\n</tr>\n</table>\n"
+  },
+  {
+    "id": "tables.test:116",
+    "options": "",
+    "source": "| just two \\| `|` | cells in this table |\n",
+    "filters": "",
+    "expected": "<table>\n<tr>\n<td>just two | <code>|</code></td>\n<td>cells in this table</td>\n</tr>\n</table>\n"
+  },
+  {
+    "id": "task_lists.test:1",
+    "options": "",
+    "source": "- [ ] an unchecked task list item\n- [x] checked item\n",
+    "filters": "",
+    "expected": "<ul class=\"task-list\">\n<li>\n<input disabled=\"\" type=\"checkbox\"/>\nan unchecked task list item\n</li>\n<li>\n<input disabled=\"\" type=\"checkbox\" checked=\"\"/>\nchecked item\n</li>\n</ul>\n"
+  },
+  {
+    "id": "task_lists.test:17",
+    "options": "",
+    "source": "* [ ] an unchecked task list item\n\n  with two paragraphs\n\n* [x] checked item\n",
+    "filters": "",
+    "expected": "<ul class=\"task-list\">\n<li>\n<input disabled=\"\" type=\"checkbox\"/>\n<p>an unchecked task list item</p>\n<p>with two paragraphs</p>\n</li>\n<li>\n<input disabled=\"\" type=\"checkbox\" checked=\"\"/>\n<p>checked item</p>\n</li>\n</ul>\n"
+  },
+  {
+    "id": "task_lists.test:38",
+    "options": "",
+    "source": "- [ ] foo\n+ [ ] bar\n* [ ] baz\n",
+    "filters": "",
+    "expected": "<ul class=\"task-list\">\n<li>\n<input disabled=\"\" type=\"checkbox\"/>\nfoo\n</li>\n</ul>\n<ul class=\"task-list\">\n<li>\n<input disabled=\"\" type=\"checkbox\"/>\nbar\n</li>\n</ul>\n<ul class=\"task-list\">\n<li>\n<input disabled=\"\" type=\"checkbox\"/>\nbaz\n</li>\n</ul>\n"
+  },
+  {
+    "id": "thematic_breaks.test:1",
+    "options": "",
+    "source": "hello\n\n- - -\n\nthere\n",
+    "filters": "",
+    "expected": "<p>hello</p>\n<hr>\n<p>there</p>\n"
+  },
+  {
+    "id": "thematic_breaks.test:13",
+    "options": "",
+    "source": "hello\n\n   **   **\n\nthere\n",
+    "filters": "",
+    "expected": "<p>hello</p>\n<hr>\n<p>there</p>\n"
+  },
+  {
+    "id": "thematic_breaks.test:25",
+    "options": "",
+    "source": "hello\n\n   *-*-*-*\n\nthere\n",
+    "filters": "",
+    "expected": "<p>hello</p>\n<hr>\n<p>there</p>\n"
+  },
+  {
+    "id": "thematic_breaks.test:37",
+    "options": "",
+    "source": "hello\n   *-*-*-*\nthere\n",
+    "filters": "",
+    "expected": "<p>hello\n<strong>-</strong>-<strong>-</strong>\nthere</p>\n"
+  },
+  {
+    "id": "verbatim.test:1",
+    "options": "",
+    "source": "Some `code`\n",
+    "filters": "",
+    "expected": "<p>Some <code>code</code></p>\n"
+  },
+  {
+    "id": "verbatim.test:7",
+    "options": "",
+    "source": "Some `code\nwith a line break`\n",
+    "filters": "",
+    "expected": "<p>Some <code>code\nwith a line break</code></p>\n"
+  },
+  {
+    "id": "verbatim.test:15",
+    "options": "",
+    "source": "Special characters: `*hi*`\n",
+    "filters": "",
+    "expected": "<p>Special characters: <code>*hi*</code></p>\n"
+  },
+  {
+    "id": "verbatim.test:21",
+    "options": "",
+    "source": "*foo`*`\n",
+    "filters": "",
+    "expected": "<p>*foo<code>*</code></p>\n"
+  },
+  {
+    "id": "verbatim.test:27",
+    "options": "",
+    "source": "`````a`a``a```a````a``````a`````\n",
+    "filters": "",
+    "expected": "<p><code>a`a``a```a````a``````a</code></p>\n"
+  },
+  {
+    "id": "verbatim.test:33",
+    "options": "",
+    "source": "` ``a`` `\n",
+    "filters": "",
+    "expected": "<p><code>``a``</code></p>\n"
+  },
+  {
+    "id": "verbatim.test:42",
+    "options": "",
+    "source": "`` `foo` ``\n",
+    "filters": "",
+    "expected": "<p><code>`foo`</code></p>\n"
+  },
+  {
+    "id": "verbatim.test:50",
+    "options": "",
+    "source": "` a\nc\n",
+    "filters": "",
+    "expected": "<p><code> a\nc</code></p>\n"
+  }
+]

@@ -185,6 +185,8 @@ const MANIFEST = [
   // wants is a split-aware PR policy: permitted always passes, owed passes
   // when it names an engine issue. That shape does not exist yet.
   { repo: 'spec', path: 'resources/ast-position-waivers.txt', kind: 'txt', policy: 'split', guard: 'two-way', owner: 'tests/ast-waivers.test.mjs' },
+  { repo: 'spec', path: 'resources/import-comparison-drift.json', name: 'differences', kind: 'json', policy: 'manual', guard: 'two-way', owner: 'npm run import:compare' },
+  { repo: 'spec', path: 'resources/ingest-comparison-drift.json', name: 'differences', kind: 'json', policy: 'manual', guard: 'two-way', owner: 'npm run ast:ingest' },
   // A counts ratchet rather than a ledger, but it carries a per-document
   // allowlist inside it. Two-directional by construction - the whole object is
   // compared with deepEqual - so a row here cannot rot silently.
@@ -674,7 +676,7 @@ function liveRows(entry, src) {
       node = node[key]
     }
     if (!Array.isArray(node)) return new Error(`${entry.name} is not an array`)
-    return node.map(String)
+    return node.map(row => typeof row === 'object' && row !== null && typeof row.key === 'string' ? row.key : String(row))
   }
   const clean = blankComments(src, LANG_OF[entry.kind])
   if (entry.kind === 'js-string') {

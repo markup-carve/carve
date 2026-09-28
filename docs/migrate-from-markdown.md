@@ -373,6 +373,30 @@ Nothing else changes when it is off - ids, dedup, `</#id>` cross-references, `[H
 
 Two related shapes are worth knowing while you audit selectors. A heading **inside** a blockquote, div, admonition, or list item is never wrapped - it emits `<h* id="…">` in place, which is also exactly what every heading looks like with `sections: false`. And on a wrapped heading only the id hoists: `{#install .featured}` gives `<section id="install"><h2 class="featured">`, so a class you attached to a heading still selects the heading.
 
+## Shared importer targets
+
+Importers preserve the source format's meaning within Carve's spelling limits.
+The writer ceiling in PART 11 §1c also applies to Markdown and Djot imports:
+an unspellable inner wrapper is unwrapped, its content stays in order, and an
+importer with a diagnostic channel reports `structure-unspellable`.
+
+For example, CommonMark `*(*foo*)*` contains nested emphasis. Its shared Carve
+fallback is `/(foo)/`, which renders as `<em>(foo)</em>`. Turning the outer
+emphasis into strong, or dropping the emphasis around `foo`, changes more than
+the unspellable nesting and does not meet this target. The equivalent HTML input
+uses the same fallback.
+
+Djot inline attributes belong to the element they annotate. Importers must parse
+that association before writing Carve. For `a *b{#id key="*"}*`, the target is a
+strong span containing a span with id `id`, attribute `key="*"`, and text `b`.
+One Carve spelling is `a {*[b]{#id key="*"}*}`. The `*` inside the attribute value
+must not close the strong span. Copying the Djot braces as text, or escaping them
+and dropping the attributes, does not preserve this representable structure.
+
+These are shared targets, not a claim that each importer already meets them.
+The [import comparison gate](./implementation-comparison-methodology#public-importer-and-ast-ingest-comparisons)
+records current gaps and rejects changed or undeclared differences.
+
 ## Migration checklist
 
 When moving a document from Markdown to Carve:
