@@ -105,3 +105,19 @@ test('the closer lookahead is built per depth, not per opener', () => {
     assert.ok(large <= 1, `${large.toFixed(3)} lookahead lines per byte at depth ${d}, ceiling 1`)
   }
 })
+
+test('unmatched quoted openers do not rescan incompatible closer candidates', () => {
+  for (const depth of [1, 2, 4]) for (const closer of ['~~~', '```']) {
+    const measure = count => {
+      const prefix = '> '.repeat(depth)
+      const source = prefix + 'a\n' + (prefix + '````` x\n').repeat(count) +
+        (prefix + closer + '\n').repeat(count) + 'tail\n'
+      resetLayoutWork()
+      parse(source)
+      return layoutWork.fenceCloserLookahead
+    }
+    const small = measure(40), large = measure(160)
+    assert.ok(small > 40)
+    assert.ok(large / small < 4.3, `${depth}, ${closer}: ${small} -> ${large}`)
+  }
+})

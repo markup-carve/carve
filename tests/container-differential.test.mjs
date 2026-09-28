@@ -26,12 +26,13 @@ function regexCalls(source) {
   try { parse(source) } finally { RegExp.prototype.exec = exec }
   return calls
 }
-for (const marker of ['> ', '- ', '1. ']) test(`${marker}: EOF classification work grows with depth`, () => {
-  const source = depth => marker.repeat(depth) + 'end\n'
-  const small = regexCalls(source(64)), large = regexCalls(source(128))
+for (const marker of ['> ', '- ', '1. ', '> - ', '- > ', '1. > ']) for (const follower of ['', 'tail\n']) test(`${marker}: classification with ${JSON.stringify(follower)} grows with depth`, () => {
+  const source = depth => marker.repeat(depth) + 'end\n' + follower
+  const depth = marker.includes('>') && marker.trim() !== '>' ? 32 : 64
+  const small = regexCalls(source(depth)), large = regexCalls(source(depth * 2))
   assert.ok(small > 64, 'the counter must observe parser work')
   assert.ok(large / small < 2.25, `${small} -> ${large} regex calls`)
-  assert.equal(regexCalls(source(128)), large)
+  assert.equal(regexCalls(source(depth * 2)), large)
 })
 
 test('a list term retains its separate continuation rule', () => {
@@ -67,4 +68,9 @@ test('a heading past the nesting cap is paragraph text and keeps its lazy follow
     children = children[0].children
   }
   assert.deepEqual(children, [{ t: 'para', lines: ['# H', 'tail'] }])
+})
+
+const boundaries = JSON.parse(readFileSync(new URL('./fixtures/container-boundaries.json', import.meta.url)))
+for (const fixture of boundaries) test(`container boundary: ${fixture.name}`, () => {
+  assert.equal(renderDoc(parse(fixture.source)).trim(), fixture.html)
 })

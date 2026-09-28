@@ -42,9 +42,9 @@ test('a comment closer outside the item cannot hide its unfinished code fence', 
   }
 })
 
-test('an attached block keeps the separator inside the item own fence', () => {
+test('an attached block starts after the item own unfinished fence', () => {
   const html = renderDoc(parse('- p\n\n  ```\n  code\n+\nflush\n'))
-  assert.ok(html.includes('code\n\nflush\n'), html)
+  assert.ok(html.includes('code\n</code></pre>\n    flush'), html)
 })
 
 test('an overindented comment can close at its owning item column', () => {

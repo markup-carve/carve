@@ -273,6 +273,12 @@
          set above hold in EVERY container in L4, not only in the two that had
          them spelled out.
 
+         At the host's marker column, the marker is outside the content column
+         of a preceding code or raw fence. That fence ends before the attached
+         block begins. Separators inserted for attachment are not fence payload.
+         With no following block, the marker adds no content or blank line.
+         A `+` inside the fence's own content column remains literal payload.
+
       L4 CONTAINERS THAT TAKE THE MARKER:
          - LIST ITEM (pinned by corpus list-continuation-marker): `+` at
            the item's marker column attaches the block to the item (for
