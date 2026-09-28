@@ -34,6 +34,7 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership`,
 `513-a-comment-span-opened-below-every-content-column-is-located-there`,
 `514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim`,
+`515-a-nested-marker-comment-keeps-its-own-ownership`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
@@ -72,6 +73,12 @@ each built from its own default branch: both reproduce all eight. carve-rs
 [carve#2490](https://github.com/markup-carve/carve/issues/2490) ruling leaves
 where they were and diverges on the other six, which
 `resources/engine-pin-drift.txt` declares.
+
+515's five were measured against the pinned carve-js. It reproduces the line
+comment and the two spans whose closers sit at their openers' columns. The two
+below-column closers retain the outer item, declared in
+`resources/engine-pin-drift.txt` under
+[carve#2526](https://github.com/markup-carve/carve/issues/2526).
 
 The former case-by-case notes remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/a22f6a23f7913e44cb3461f3f608605660619032/docs/implementation-comparison-methodology.md).

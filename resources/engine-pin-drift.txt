@@ -61,3 +61,6 @@
 514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim-6  carve#2538: the pinned carve-js recognizes a container-held quoted fence at no level, so it keeps the unmarked line inside the quote.
 514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim-8  carve#2538: the pinned carve-js recognizes a container-held quoted fence at no nesting level, so one quote deeper it keeps the unmarked line in the outer quote.
 514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim-9  carve#2538: the pinned carve-js asks the first item paragraph about a SIBLING item marker-line fence, so the fence needs a closer there and the unmarked line stays its payload.
+
+515-a-nested-marker-comment-keeps-its-own-ownership  carve#2526: the nested marker comment closer retains the outer item below its column.
+515-a-nested-marker-comment-keeps-its-own-ownership-4  carve#2526: the ordered nested marker comment closer retains the outer item below its column.

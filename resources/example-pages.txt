@@ -799,6 +799,7 @@ index: examples/edge-cases/index.md
   a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner
   a-comment-span-s-closer-column-does-not-move-the-item-s-ownership
   a-comment-span-opened-below-every-content-column-is-located-there
+  a-nested-marker-comment-keeps-its-own-ownership
 
 [edge-security] Security and limits
 > Trojan-Source stripping, scheme probes, attribute hardening and the nesting cap.
