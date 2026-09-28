@@ -29,7 +29,7 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `507-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
-other four landed after the run, so its numbers describe the corpus without
+remaining cases landed after the run, so its numbers describe the corpus without
 them. 505's four documents were measured against carve-js `c5df77f6`, carve-rs
 `3cb8a685` and carve-php `77a83856`, which agree with the oracle on all four.
 
