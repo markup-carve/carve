@@ -4488,6 +4488,11 @@ function collectItems(lines, i, list, state, ind, meas) {
     // `contentCol`; this is only the source collector's local zero.
     let authoredBlockBase = null
     let authoredBlockLimit = null
+    // At the item's own column this base strips exactly what the item would.
+    // Its end matters only when another opener could establish a different
+    // scope. Defer the extent parse until then; a comment before a nested list
+    // otherwise reparses the remaining ladder at every level (carve#2542).
+    let pendingAuthoredBlock = null
     // A term on the marker line folds the lines past the content column that
     // follow it (carve#2411), so none of them opens an authored base.
     let leadTerm = DEFLIST_TERM.test(head.text.replace(/^[ \t]+/, ''))
@@ -5016,15 +5021,23 @@ function collectItems(lines, i, list, state, ind, meas) {
         if (defBodyIndent !== null && col === contentCol + 1 && opensSubBlock(lm.rest)) {
           authoredBlockBase = null
           authoredBlockLimit = null
+          pendingAuthoredBlock = null
+        }
+        const foldsIntoLeadTerm = leadTerm && col > contentCol && !nm
+        const mayOpenAuthoredBlock = !foldsIntoLeadTerm && !descendantOwned &&
+          !insideFence() && opensAuthoredBase(lm.rest)
+        if (pendingAuthoredBlock !== null && mayOpenAuthoredBlock) {
+          authoredBlockLimit = authoredBlockEnd(lines, pendingAuthoredBlock, contentCol, state)
+          pendingAuthoredBlock = null
         }
         if (authoredBlockLimit !== null && i >= authoredBlockLimit && !insideFence()) {
           authoredBlockBase = null
           authoredBlockLimit = null
         }
-        const insideAuthoredBlock = authoredBlockLimit !== null && i < authoredBlockLimit
-        const foldsIntoLeadTerm = leadTerm && col > contentCol && !nm
+        const insideAuthoredBlock = pendingAuthoredBlock !== null ||
+          (authoredBlockLimit !== null && i < authoredBlockLimit)
         if (leadTerm && !foldsIntoLeadTerm && !insideFence() && !foldablePlainLine(lm.rest)) leadTerm = false
-        const openerBase = !insideAuthoredBlock && !foldsIntoLeadTerm && !descendantOwned && !insideFence() && opensAuthoredBase(lm.rest)
+        const openerBase = !insideAuthoredBlock && mayOpenAuthoredBlock
           ? col
           : null
         // A LINE THAT OPENS ITS OWN BASE IS MEASURED AT ITS OWN COLUMN. The
@@ -5125,7 +5138,8 @@ function collectItems(lines, i, list, state, ind, meas) {
         // above knows whether an interior blank is fence content.
         if (openerBase !== null) {
           authoredBlockBase = openerBase
-          authoredBlockLimit = authoredBlockEnd(lines, i, openerBase, state)
+          if (openerBase === contentCol) pendingAuthoredBlock = i
+          else authoredBlockLimit = authoredBlockEnd(lines, i, openerBase, state)
         }
         const opens = bodyFenceOpens(i, dedented, localBase)
         // The item's own parse asks I4 over the item's lines, and a closer the
