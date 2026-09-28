@@ -2,10 +2,10 @@
   "version": 1,
   "measured": {
     "date": "2026-09-28",
-    "spec": "3f97ff58e605",
-    "js": "1ffbef20fab1",
-    "php": "fa40bd2932ef",
-    "rust": "82ef88d42bd5"
+    "spec": "8995df56ff6b",
+    "js": "9cc851362e03",
+    "php": "07518cc6487b",
+    "rust": "924247e886cf"
   },
   "differences": [
     {
