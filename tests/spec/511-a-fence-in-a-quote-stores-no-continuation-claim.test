@@ -1,0 +1,107 @@
+A fence in a quote stores no continuation claim
+
+````
+> a
+> ```
+> c
+> ```
+y
+.
+<blockquote>
+  <p>a</p>
+  <pre><code>c
+</code></pre>
+</blockquote>
+<p>y</p>
+````
+
+````
+> > a
+> > ```
+> > c
+> > ```
+y
+.
+<blockquote>
+  <blockquote>
+    <p>a</p>
+    <pre><code>c
+</code></pre>
+  </blockquote>
+</blockquote>
+<p>y</p>
+````
+
+````
+> > ```
+> > c
+> > ```
+y
+.
+<blockquote>
+  <blockquote>
+    <pre><code>c
+</code></pre>
+  </blockquote>
+</blockquote>
+<p>y</p>
+````
+
+````
+> > ```
+c
+.
+<blockquote>
+  <blockquote>
+    <pre><code>
+</code></pre>
+  </blockquote>
+</blockquote>
+<p>c</p>
+````
+
+````
+> > ```
+> > x
+y
+.
+<blockquote>
+  <blockquote>
+    <pre><code>x
+</code></pre>
+  </blockquote>
+</blockquote>
+<p>y</p>
+````
+
+````
+> # H
+> ```
+> c
+> ```
+y
+.
+<blockquote>
+  <h1 id="H">H</h1>
+  <pre><code>c
+</code></pre>
+</blockquote>
+<p>y</p>
+````
+
+````
+> > ```
+> > c
+> > ```
+> > b
+y
+.
+<blockquote>
+  <blockquote>
+    <pre><code>c
+</code></pre>
+    <p>b
+y</p>
+  </blockquote>
+</blockquote>
+````
