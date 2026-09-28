@@ -81,29 +81,58 @@ test('the closer lookahead is built per depth, not per opener', () => {
   //
   // A body of fenced bodies under a quoted paragraph. Every opener sits under
   // an open paragraph, so every one of them asks the lookahead.
-  const ladder = (d, pairs) => {
-    const p = '> '.repeat(d)
-    const body = [p + 'a']
-    for (let k = 0; k < pairs; k++) body.push(p + F, p + 'c', p + F)
-    return body.join('\n') + '\ny\n'
+  const shapes = {
+    // Closed pairs: every opener finds its closer on the next row.
+    'closed fenced bodies': (d, n) => {
+      const p = '> '.repeat(d)
+      const body = [p + 'a']
+      for (let k = 0; k < n; k++) body.push(p + F, p + 'c', p + F)
+      return body.join('\n') + '\ny\n'
+    },
+    // Openers that match NOTHING, over a run of pure closers of the OTHER fence
+    // character. Every query fails, which the closed shape never exercises, and
+    // a search over the index rather than a per-character lookup reads 61.66
+    // lookahead lines per byte here at n=800 against 15.50 at n=200 (raised by
+    // codex review).
+    'openers no closer can match': (d, n) => {
+      const p = '> '.repeat(d)
+      return [p + 'a', ...Array.from({ length: n }, () => p + F + 'x'),
+        ...Array.from({ length: n }, () => p + '~~~')].join('\n') + '\ny\n'
+    },
   }
   const perByte = (src) => {
     resetLayoutWork()
     parse(src)
     return layoutWork.fenceCloserLookahead / src.length
   }
-  for (const d of [1, 2]) {
-    const small = perByte(ladder(d, 50))
-    const large = perByte(ladder(d, 400))
-    assert.ok(small > 0, `the lookahead counter is not counting at depth ${d}`)
-    assert.ok(
-      large / small <= 1.3,
-      `lookahead work per byte climbed ${(large / small).toFixed(2)}x from 50 to 400 ` +
-      `fenced bodies at depth ${d} (${small.toFixed(3)} -> ${large.toFixed(3)}): ` +
-      `the index is being rebuilt per opener`,
-    )
-    assert.ok(large <= 1, `${large.toFixed(3)} lookahead lines per byte at depth ${d}, ceiling 1`)
+  for (const [name, gen] of Object.entries(shapes)) {
+    for (const d of [1, 2]) {
+      const small = perByte(gen(d, 50))
+      const large = perByte(gen(d, 400))
+      assert.ok(small > 0, `${name}: the lookahead counter is not counting at depth ${d}`)
+      assert.ok(
+        large / small <= 1.3,
+        `${name}: lookahead work per byte climbed ${(large / small).toFixed(2)}x from 50 to 400 ` +
+        `at depth ${d} (${small.toFixed(3)} -> ${large.toFixed(3)}): the index is being ` +
+        `rebuilt per opener, or searched rather than read`,
+      )
+      assert.ok(large <= 1, `${name}: ${large.toFixed(3)} lookahead lines per byte at depth ${d}, ceiling 1`)
+    }
   }
+})
+
+test('a nested fence past the nesting cap is literal paragraph text', () => {
+  // SS25 degrades an opener past MAX_NESTING_DEPTH, so the tracker may not treat
+  // one as an open payload where the block reader reads prose. The pair is the
+  // control: one marker less and the fence opens, so the unmarked line leaves.
+  const src = (d) => '> '.repeat(d) + F + '\ny\n'
+  const leaf = (d) => {
+    let blocks = parse(src(d)).blocks
+    while (blocks[0]?.t === 'quote') blocks = blocks[0].children ?? blocks[0].blocks
+    return { top: parse(src(d)).blocks.map((b) => b.t), leaf: shape(blocks) }
+  }
+  assert.deepEqual(leaf(200), { top: ['quote'], leaf: `p(${F}|y)` })
+  assert.deepEqual(leaf(199), { top: ['quote', 'para'], leaf: 'code' })
 })
 
 test('unmatched quoted openers do not rescan incompatible closer candidates', () => {
