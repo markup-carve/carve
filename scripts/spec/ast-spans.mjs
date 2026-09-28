@@ -190,6 +190,13 @@ export function countPlaced(signature) {
  * unreachable whenever nothing diverged, which is precisely the state a stale
  * line has to be deleted in (carve#534).
  *
+ * A ROW CARRIES A REFERENCE, and the format is what made that enforceable.
+ * While a row was `<type> (presence|extent)  <count>` the declaration audit had
+ * nothing to read on it, so every row counted as owed work and no pull request
+ * could record a window at all (carve#2179, carve#2175). The third column is
+ * the same column `resources/ast-value-divergence.txt` has carried since
+ * 2026-08-17: who diverges and where it is tracked.
+ *
  * `measured` maps `key` to the documents exhibiting it.
  */
 export function reconcileSpans(measured, declaredText) {
@@ -200,9 +207,12 @@ export function reconcileSpans(measured, declaredText) {
     lineNo += 1
     const line = raw.trim()
     if (line === '' || line.startsWith('#')) continue
-    const m = /^(\S+)\s+\((presence|extent)\)\s+(\d+)$/.exec(line)
+    const m = /^(\S+)\s+\((presence|extent)\)\s+(\d+)\s{2,}(\S.*)$/.exec(line)
     if (!m) {
-      problems.push(`MALFORMED  line ${lineNo}: expected "<type> (presence|extent)  <count>", got "${line}"`)
+      problems.push(
+        `MALFORMED  line ${lineNo}: expected "<type> (presence|extent)  <count>  ` +
+          `<who diverges and where it is tracked>", got "${line}"`,
+      )
       continue
     }
     declared.set(`${m[1]} (${m[2]})`, Number(m[3]))

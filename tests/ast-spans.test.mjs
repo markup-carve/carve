@@ -190,14 +190,17 @@ test('NEW: a row that disagrees and is not declared', () => {
 test('COUNT: a declared row whose document count moved', () => {
   const problems = reconcileSpans(
     new Map([['list (extent)', new Set(['a.crv'])]]),
-    'list (extent)  4\n',
+    'list (extent)  4  carve-php against the other two, markup-carve/carve-php#1457\n',
   )
   assert.equal(problems.length, 1)
   assert.match(problems[0], /^COUNT\s+list \(extent\) declares 4 document\(s\), measured 1$/)
 })
 
 test('AGREED: a declared row that no longer disagrees', () => {
-  const problems = reconcileSpans(new Map(), 'block_quote (extent)  16\n')
+  const problems = reconcileSpans(
+    new Map(),
+    'block_quote (extent)  16  carve-rs against the other two, markup-carve/carve-rs#1358\n',
+  )
   assert.equal(problems.length, 1)
   assert.match(problems[0], /^AGREED\s+block_quote \(extent\) no longer disagrees/)
 })
@@ -206,6 +209,16 @@ test('a malformed declaration line is an error, never a silent skip', () => {
   const problems = reconcileSpans(new Map(), 'list  127\n')
   assert.equal(problems.length, 1)
   assert.match(problems[0], /^MALFORMED\s+line 1/)
+})
+
+test('a row with a count but no reference is malformed, not declared', () => {
+  // The shape the row format used to be. It parsed, so the ledger could hold a
+  // row that named nobody, and the declaration audit had nothing to read on it
+  // (carve#2179).
+  const problems = reconcileSpans(new Map([['list (extent)', new Set(['a.crv'])]]), 'list (extent)  1\n')
+  assert.equal(problems.length, 2)
+  assert.match(problems[0], /^MALFORMED\s+line 1/)
+  assert.match(problems[1], /^NEW\s+list \(extent\)/)
 })
 
 /*
@@ -268,7 +281,25 @@ test('a malformed declaration line is an error, never a silent skip', () => {
 // this map pins is only that the shipped ledger matches the last run, and the
 // last run measured nothing - see resources/ast-span-divergence.txt for the six
 // undeclared rows that were closed in the engines before they ever reached it.
-const LAST_MEASURED = new Map()
+//
+// TWO ROWS AGAIN, 2026-09-28, and both are the same document and the same
+// column. `503-a-block-opener-indented-under-a-definition-term-is-term-text-at-
+// every-depth-9` arrived with carve#2426 the day before; its fourth line is a
+// bullet indented under a nested definition term, and carve-php opens the
+// `list` and its `list_item` at column 3, its parent description's content
+// column, where carve-js and carve-rs open them at the `-`. The two columns
+// differ only inside the line's leading indentation and both types are
+// containers, so INDENT_LATITUDE makes both readings conformant (carve#1928)
+// and no engine has a row to answer for - which is why the reference on each
+// row names the ruling rather than an engine issue.
+//
+// Measured over 1924 corpus documents at carve-js 49530976b, carve-rs 1617e234b
+// and carve-php 0ec8dc4a, each a worktree of that engine's main taken for this
+// run, and reported the same way by AST conformance run 36357215735.
+const LAST_MEASURED = new Map([
+  ['list (extent)', 1],
+  ['list_item (extent)', 1],
+])
 
 const asMeasured = (counts) =>
   new Map(
@@ -287,6 +318,23 @@ test('the shipped span declaration is exactly what ast:check last measured', () 
   // edited on either side is COUNT. An empty ledger against an empty
   // `LAST_MEASURED` still reconciles to nothing, so there is no floor.
   assert.deepEqual(reconcileSpans(asMeasured(LAST_MEASURED), shippedSpanDeclaration()), [])
+})
+
+test('every declared row names a fully qualified reference', () => {
+  // The third column is the file's own format, and while the row format had no
+  // third column the declaration audit read nothing on a row and counted every
+  // one as owed work (carve#2179). A bare `#1928` in this repo resolves to
+  // carve#1928 by accident of which repo the text sits in, so the qualification
+  // is the part that matters.
+  const rows = shippedSpanDeclaration()
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line !== '' && !line.startsWith('#'))
+
+  assert.equal(rows.length, LAST_MEASURED.size, 'the ledger and the measurement disagree on row count')
+  for (const row of rows) {
+    assert.match(row, /[\w.-]+\/[\w.-]+#\d+/, `declared row names no fully qualified reference: ${row}`)
+  }
 })
 
 test('and a disagreement the shipped file does not declare is caught', () => {

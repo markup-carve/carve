@@ -7,7 +7,7 @@
 #
 # Format, one row per diverging node type:
 #
-#   <type> (presence|extent)  <document-count>
+#   <type> (presence|extent)  <document-count>  <who diverges and where it is tracked>
 #
 # The declaration is exact in three directions, and `reconcileSpans`
 # (scripts/spec/ast-spans.mjs) reports each one:
@@ -23,9 +23,10 @@
 # still fails when the fact changes.
 #
 # A ROW KEY IS A TYPE, NOT A DEFECT. One key can carry faults owned by different
-# issues in different engines, and no number here says so - so give every row a
-# `markup-carve/...#NNNN` reference in a trailing comment. That reference is what
-# makes a short row safe to read; without it a row is a rumor.
+# issues in different engines, and no number here says so - so the third column
+# names who diverges and where it is tracked, fully qualified as
+# `owner/repo#NNNN`. That reference is what makes a short row safe to read;
+# without it a row is a rumor, and `reconcileSpans` refuses a row that omits it.
 #
 # A row does not say WHICH engine is wrong: this panel has the trees and not the
 # source. `npm run ast:check` prints the reasoning, and PART 12 §4 names the side
@@ -36,3 +37,16 @@
 # file states what is declared NOW; the run that established it, the engine
 # commits it was taken at, and what moved since are the PR's job, where they are
 # immutable and nobody has to scroll past them to reach the rows.
+#
+# THE ROWS BELOW, and why no engine owes either of them. Both are the same
+# document, 503-...-at-every-depth-9, whose fourth line is a bullet indented
+# under a nested definition term. carve-js and carve-rs open the `list` at the
+# `-` marker; carve-php opens it at column 3, its parent description's content
+# column, and the two columns differ only inside the line's leading
+# indentation. `list` and `list_item` are both containers and both in
+# `INDENT_LATITUDE`, so markup-carve/carve#1928 makes both readings conformant
+# and neither engine has a row to answer for. The document arrived with
+# markup-carve/carve#2426.
+
+list (extent)  1  carve-php opens at the parent content column, carve-js and carve-rs at the marker; both conformant under markup-carve/carve#1928
+list_item (extent)  1  carve-php opens at the parent content column, carve-js and carve-rs at the marker; both conformant under markup-carve/carve#1928
