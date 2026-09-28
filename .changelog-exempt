@@ -30,3 +30,4 @@
 2532: 0.1.7 - declares the ingest differences the engines show on the carve#2525 fixtures, whose ruling the section already writes up. The ledger records what the pinned engines do; the parser gaps themselves stay tracked in carve#2530.
 2536: 0.1.7 - removes import-parity declarations resolved by the quote and emphasis fixes. This measurement ledger changes no clause, corpus row, or oracle answer; remaining gaps stay tracked in carve#2522.
 2541: 0.1.7 - removes resolved lint-parity exceptions, adds Rust habit column probes, and updates measured engine coverage. No clause, corpus fixture, or oracle answer changes.
+2546: 0.1.7 - removes 96 resolved import-parity declarations and refreshes the remaining observations. No clause, corpus row, or oracle answer changes; remaining gaps stay tracked in carve#2522.
