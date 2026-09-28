@@ -3312,6 +3312,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
        */
       const qNestedFence = []
       const qNestedPara = []
+      const qNestedParaLines = []
       /*
        * Does a pure closer for `run` follow, `markers` quote markers in?
        *
@@ -3384,6 +3385,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
        * loop uses for its own rows.
        */
       const nestedQuoteOpensParagraph = (line, atStart, idx) => {
+        const levelLines = []
         let text = line
         let depth = 0
         // A run this line does not reach has ENDED, so its state is not a run
@@ -3399,12 +3401,17 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qNestedTable.length = reached
           qNestedFence.length = reached
           qNestedPara.length = reached
-          for (let d = 0; d < reached; d++) qNestedPara[d] = ans
+          qNestedParaLines.length = reached
+          for (let d = 0; d < reached; d++) {
+            if (!ans || !qNestedPara[d]) qNestedParaLines[d] = []
+            if (ans && levelLines[d] !== undefined) qNestedParaLines[d].push(levelLines[d])
+            qNestedPara[d] = ans
+          }
           return ans
         }
         if (atStart && qNestedTable.length === 0) {
           const summary = quotePrefixSummary(line, prefixMemo(state, lines, idx).quote)
-          if (summary && !(FENCE.test(summary.tail) && parseFenceInfo(FENCE.exec(summary.tail)[2]) !== null)) {
+          if (summary && !summary.tail.startsWith(':') && !(FENCE.test(summary.tail) && parseFenceInfo(FENCE.exec(summary.tail)[2]) !== null)) {
             const { depth, tail } = summary
             if (state.blockDepth + depth >= MAX_NESTING_DEPTH) {
               const remaining = MAX_NESTING_DEPTH - state.blockDepth
@@ -3423,6 +3430,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // an arbitrarily deep suffix for every enclosing quote.
           if (state.blockDepth + depth >= MAX_NESTING_DEPTH) return settle(text.trim() !== '', depth)
           text = QUOTE.exec(text)[1] ?? ''
+          levelLines[depth] = text
           // S2: an open payload makes this level's line verbatim, so a marker
           // on it is literal and A FENCED BODY IS NOT A PARAGRAPH.
           const open = qNestedFence[depth]
@@ -3450,9 +3458,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // A term has inline content, but no paragraph for a lazy fold.
             // Match the direct quote classifier below.
             if (state.blockDepth + depth >= MAX_NESTING_DEPTH) return settle(text.trim() !== '', depth)
-            return settle(!DEFLIST_TERM.test(text) &&
-              !(atStart && isColonBlockOpener(text)) &&
-              opensParagraph(text, atStart, before, prefixMemo(state, lines, idx).paragraph), depth)
+            // A bare colon run closes the claim unless this level's own
+            // paragraph absorbs it under CARVE-P9-016.
+            const absorbedColon = qNestedPara[depth - 1] && COLON_CLOSER.test(text) &&
+              !colonFenceInterrupts(text, qNestedParaLines[depth - 1] ?? [])
+            return settle(absorbedColon || (!COLON_CLOSER.test(text) &&
+              !DEFLIST_TERM.test(text) && !(atStart && isColonBlockOpener(text)) &&
+              opensParagraph(text, atStart, before, prefixMemo(state, lines, idx).paragraph)), depth)
           }
         }
         return settle(opensParagraph(text), depth)
@@ -3466,6 +3478,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         qNestedTable.length = 0
         qNestedFence.length = 0
         qNestedPara.length = 0
+        qNestedParaLines.length = 0
       }
       const trackFence = (l, idx) => {
         // The quote body is literal beyond the same limit used by parseBlocks.
