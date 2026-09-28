@@ -30,10 +30,21 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { parse, layoutWork, resetLayoutWork } from '../scripts/spec/layout.mjs'
+import { renderDoc } from '../scripts/spec/html.mjs'
 
 // A ladder of `d` items, each one indented past the last. `flat` documents are
 // the control: the same line count and the same widths with nothing nested.
+const commentLadder = (d, width = 2, marker = '- a', tabbed = false) =>
+  Array.from({ length: d }, (_, i) => {
+    const pad = tabbed ? '\t'.repeat(i) : ' '.repeat(width * i)
+    const body = tabbed ? '\t'.repeat(i + 1) : ' '.repeat(width * (i + 1))
+    return `${pad}${marker}\n${body}%%%\n${body}p\n${body}%%%\n`
+  }).join('')
+
 const shapes = {
+  'comment span ladder': (d) => commentLadder(d),
+  'ordered comment span ladder': (d) => commentLadder(d, 3, '1. a'),
+  'tabbed comment span ladder': (d) => commentLadder(d, 4, '-   a', true),
   // A FENCED BODY, whose interior whitespace-only lines the deepest item keeps
   // (CARVE-P11-016). Every shape below is prose, so the first reading of
   // carve#2420 made the scan quadratic here and each of them stayed green.
@@ -167,6 +178,28 @@ for (const [name, gen] of Object.entries(shapes)) {
     )
   })
 }
+
+test('comment span extents do not reparse the remaining ladder per level', () => {
+  const counts = [50, 100, 200].map((depth) => count(commentLadder(depth)))
+  const costs = counts.map((c) => (c.work + c.lineVisits) / c.bytes)
+  // Include visits: avoiding indentation scans while still reparsing every
+  // descendant would leave the same extra traversal (carve#2542).
+  for (let i = 0; i < costs.length; i++) {
+    assert.ok(costs[i] <= 4, `${costs[i].toFixed(2)} work per byte, ceiling 4`)
+    if (i > 0) assert.ok(costs[i] / costs[i - 1] <= 1.3, 'work per byte climbs with depth')
+  }
+  assert.deepEqual(count(commentLadder(50)), counts[0])
+})
+
+test('a deferred extent preserves the next opener’s authored base', () => {
+  const prefix = '- a\n  %%%\n  p\n  %%%\n'
+  assert.equal(renderDoc(parse(prefix + '   > q\n')),
+    '<ul>\n  <li>a\n    &gt; q\n  </li>\n</ul>')
+  assert.equal(renderDoc(parse(prefix + '  # h\n   > q\n')),
+    '<ul>\n  <li>a\n    <h1 id="h">h</h1>\n    <blockquote><p>q</p></blockquote>\n  </li>\n</ul>')
+  assert.equal(renderDoc(parse(prefix + '  [^f]: b\n   > q\n')),
+    '<ul>\n  <li>a\n    <blockquote><p>q</p></blockquote>\n  </li>\n</ul>')
+})
 
 test('a quote strips its marker once per line per level', () => {
   // The `>` prefix is fixed-width, so what can go wrong with it is the NUMBER
