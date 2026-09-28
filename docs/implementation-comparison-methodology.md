@@ -21,13 +21,14 @@ included every one of them at spec commit `add5471c`. The previous snapshot
 measured 1,544 documents and
 left 338 current documents in a declared-lag list. All 338 are included here.
 
-Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item-stays-in-that-item`,, `506-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph`.
+Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item-stays-in-that-item`,
 `503-a-block-opener-indented-under-a-definition-term-is-term-text-at-every-depth`,
 `504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth`,
-`505-a-verbatim-line-keeps-what-sits-past-its-fence-opener-not-past-its-container`.
+`505-a-verbatim-line-keeps-what-sits-past-its-fence-opener-not-past-its-container`,
+`506-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
-other three landed after the run, so its numbers describe the corpus without
+other four landed after the run, so its numbers describe the corpus without
 them. 505's four documents were measured against carve-js `c5df77f6`, carve-rs
 `3cb8a685` and carve-php `77a83856`, which agree with the oracle on all four.
 
