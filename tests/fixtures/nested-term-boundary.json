@@ -1,0 +1,32 @@
+[
+  {
+    "name": "container-246",
+    "source": "> > :: term\n: body\ntail\n",
+    "html": "<blockquote>\n  <blockquote>\n    <dl>\n      <dt>term</dt>\n    </dl>\n  </blockquote>\n</blockquote>\n<p>: body\ntail</p>"
+  },
+  {
+    "name": "container-247",
+    "source": "> > :: term\n: body\n\ntail\n",
+    "html": "<blockquote>\n  <blockquote>\n    <dl>\n      <dt>term</dt>\n    </dl>\n  </blockquote>\n</blockquote>\n<p>: body</p>\n<p>tail</p>"
+  },
+  {
+    "name": "container-248",
+    "source": "> > :: term\n: body\n  tail\n",
+    "html": "<blockquote>\n  <blockquote>\n    <dl>\n      <dt>term</dt>\n    </dl>\n  </blockquote>\n</blockquote>\n<p>: body\ntail</p>"
+  },
+  {
+    "name": "container-249",
+    "source": "> > :: term\n: body\n> tail\n",
+    "html": "<blockquote>\n  <blockquote>\n    <dl>\n      <dt>term</dt>\n    </dl>\n  </blockquote>\n</blockquote>\n<p>: body</p>\n<blockquote><p>tail</p></blockquote>"
+  },
+  {
+    "name": "container-250",
+    "source": "> > :: term\n: body\n- tail\n",
+    "html": "<blockquote>\n  <blockquote>\n    <dl>\n      <dt>term</dt>\n    </dl>\n  </blockquote>\n</blockquote>\n<p>: body\n- tail</p>"
+  },
+  {
+    "name": "container-251",
+    "source": "> > :: term\n: body\n+\n\ntail\n",
+    "html": "<blockquote>\n  <blockquote>\n    <dl>\n      <dt>term</dt>\n    </dl>\n  </blockquote>\n</blockquote>\n<p>: body\n+</p>\n<p>tail</p>"
+  }
+]

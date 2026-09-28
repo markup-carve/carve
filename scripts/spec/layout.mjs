@@ -2090,7 +2090,8 @@ function flattenPastCap(lines) {
     if (trimmed.join('').trim() !== '') blocks.push({ t: 'para', lines: trimmed })
     run = []
   }
-  for (const line of lines) {
+  for (const raw of lines) {
+    const line = stripLazy(raw)
     if (line.trim() === '') { flush(); continue }
     run.push(line)
   }
@@ -3221,6 +3222,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         let text = line
         let depth = 0
         while (QUOTE.test(text)) {
+          // At the parser's depth limit the remaining line is literal text.
+          // Inspecting markers below it both misclassifies that text and walks
+          // an arbitrarily deep suffix for every enclosing quote.
+          if (state.blockDepth + depth >= MAX_NESTING_DEPTH) {
+            qNestedTable.length = depth
+            return text.trim() !== ''
+          }
           text = QUOTE.exec(text)[1] ?? ''
           const before = qNestedTable[depth] ?? false
           qNestedTable[depth] = tableRunStep(before, text)
@@ -3232,7 +3240,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // the stale run read it as a continuation row and ended the quote.
           if (!QUOTE.test(text)) {
             qNestedTable.length = depth
-            return opensParagraph(text, false, before)
+            // A term has inline content, but no paragraph for a lazy fold.
+            // Match the direct quote classifier below.
+            if (state.blockDepth + depth >= MAX_NESTING_DEPTH) return text.trim() !== ''
+            return !DEFLIST_TERM.test(text) && opensParagraph(text, false, before)
           }
         }
         qNestedTable.length = depth
@@ -3240,6 +3251,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         return opensParagraph(text)
       }
       const trackFence = (l, idx) => {
+        // The quote body is literal beyond the same limit used by parseBlocks.
+        // Its apparent headings, fences, and tables cannot end a paragraph.
+        if (state.blockDepth >= MAX_NESTING_DEPTH) {
+          qOpenPara = !isBlank(l)
+          qTableOpen = false
+          qNestedTable.length = 0
+          qPara = qOpenPara ? [l] : []
+          return
+        }
         if (openComment !== null) {
           const c = COMMENT_FENCE_BODY.exec(l)
           if (c && c[1].length === openComment) openComment = null
@@ -3351,7 +3371,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const qm = QUOTE.exec(lines[i])
         if (qm) {
           inner.push(qm[1] ?? '')
-          trackFence(qm[1] ?? '', i)
+          // The final line has no follower whose ownership needs this state.
+          if (i + 1 < n) trackFence(qm[1] ?? '', i)
           i++
           continue
         }
@@ -4058,7 +4079,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     // paragraph open at the enclosing levels.
     let carried = head.text.trim()
     let carriesBareContinuation = false
-    for (let depth = 0; depth < MAX_NESTING_DEPTH; depth++) {
+    for (let depth = 0; i + 1 < n && depth < MAX_NESTING_DEPTH; depth++) {
       if (carried === '+') { carriesBareContinuation = true; break }
       const nested = carried[0] !== ' ' && carried[0] !== '\t'
         ? matchMarkerAt({ col: 0, rest: carried })
@@ -4178,7 +4199,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       // A wrapped attribute block is classified from its complete physical-line
       // span in the body loop below. Its opener is intentionally not guessed
       // from this one-line seed.
-      if (!opensParagraph(head.text.trim(), true)) closePara()
+      if (i + 1 < lines.length && !opensParagraph(head.text.trim(), true)) closePara()
     }
     // Content column of the FIRST sub-list opened in this item (-1 = none). A
     // blank followed by content at or past this column belongs to the sub-list,

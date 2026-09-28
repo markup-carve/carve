@@ -29,6 +29,7 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `507-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph`,
 `508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter`,
 `509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner`,
+`510-a-nested-quoted-term-leaves-no-paragraph-for-a-lazy-line`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the

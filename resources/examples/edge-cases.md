@@ -40903,3 +40903,29 @@ p</code></li>
 `````
 
 :::
+
+## A nested quoted term leaves no paragraph for a lazy line
+
+PART 0 S4 asks whether the innermost quoted block holds an open paragraph.
+A definition term holds inline content, so the unmarked line starts outside
+both quotes.
+
+::: compare
+
+```carve
+> > :: term
+tail
+```
+
+```html
+<blockquote>
+  <blockquote>
+    <dl>
+      <dt>term</dt>
+    </dl>
+  </blockquote>
+</blockquote>
+<p>tail</p>
+```
+
+:::
