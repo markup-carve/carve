@@ -120,8 +120,9 @@ jobs:
           # NOT here: markup-carve/intellij-carve, which also carries the spec
           # submodule. Its corpus snapshots run through Gradle with an IDE SDK
           # download, which does not fit this workflow's node/rust/php shape.
-          # The matrix-coverage job below names it as a known exception rather
-          # than letting it fall out of sight.
+          # markup-carve/carve-proofs is out for the same reason, needing Rocq.
+          # The matrix-coverage job below names them as known exceptions rather
+          # than letting them fall out of sight.
     steps:
       # Toolchain to run the impl's corpus conformance (mirrors each repo's
       # own CI), so the bump can decide draft-vs-ready.
@@ -591,6 +592,7 @@ jobs:
           # submodule is reported too, so this list cannot rot either.
           declare -A EXCEPT=(
             ["markup-carve/intellij-carve"]="Gradle + IDE SDK build does not fit this workflow toolchains"
+            ["markup-carve/carve-proofs"]="Rocq proof build does not fit this workflow toolchains"
           )
 
           # The matrix, read from this file rather than restated.
