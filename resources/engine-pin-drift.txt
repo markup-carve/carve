@@ -47,3 +47,7 @@
 509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-8  carve#2490: the pin pops one container level and ignores the run's column.
 509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-9  carve#2490: the pin pops one container level and ignores the run's column.
 511-a-fence-in-a-quote-stores-no-continuation-claim-2  carve#2513: the pin keeps the unmarked line in the outer quote when a closed fence ends a nested one.
+512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-4  carve#2525: the pin lets a comment span's closer column decide who owns the following line.
+512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-6  carve#2525: the pin lets a comment span's closer column decide who owns the following line.
+512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-8  carve#2525: the pin lets a comment span's closer column decide who owns the following line.
+512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-9  carve#2525: the pin lets a comment span's closer column decide who owns the following line.
