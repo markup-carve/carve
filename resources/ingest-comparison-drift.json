@@ -2,10 +2,187 @@
   "version": 1,
   "measured": {
     "date": "2026-09-28",
-    "spec": "66d4ed19f",
-    "js": "d833cfded",
+    "spec": "29ddfe43a",
+    "js": "d0e62074f",
     "php": "1c44d7631",
     "rust": "82ef88d42"
   },
-  "differences": []
+  "differences": [
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-10.crv/js->php",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "PHP keeps tail inside the list item; JavaScript and Rust place it after the list, as corpus 512 requires.",
+      "fingerprint": "fbc5a940fb43640895608e5a97f920e5941085cab10f17676adee4602c30cb09",
+      "observation": {
+        "expected": "<ul>\n  <li>tail</li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li></li>\n</ul>\n<p>tail</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-10.crv/php->js",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "PHP keeps tail inside the list item; JavaScript and Rust place it after the list, as corpus 512 requires.",
+      "fingerprint": "a28c966d7c2afb6451ac77e088f98fd4fa715d8e52e88fec77d9ebc2c039f245",
+      "observation": {
+        "expected": "<ul>\n  <li></li>\n</ul>\n<p>tail</p>",
+        "status": 0,
+        "actual": "<ul>\n  <li>tail</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-10.crv/php->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "PHP keeps tail inside the list item; JavaScript and Rust place it after the list, as corpus 512 requires.",
+      "fingerprint": "a28c966d7c2afb6451ac77e088f98fd4fa715d8e52e88fec77d9ebc2c039f245",
+      "observation": {
+        "expected": "<ul>\n  <li></li>\n</ul>\n<p>tail</p>",
+        "status": 0,
+        "actual": "<ul>\n  <li>tail</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-10.crv/rust->php",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "PHP keeps tail inside the list item; JavaScript and Rust place it after the list, as corpus 512 requires.",
+      "fingerprint": "fbc5a940fb43640895608e5a97f920e5941085cab10f17676adee4602c30cb09",
+      "observation": {
+        "expected": "<ul>\n  <li>tail</li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li></li>\n</ul>\n<p>tail</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-11.crv/js->php",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "JavaScript exposes the comment payload; PHP and Rust keep tail inside the item. Corpus 512 requires a hidden payload and tail after the list.",
+      "fingerprint": "0c332afd0626e507d79047a7c9084a347d3cb1c345e1c282f46027b2080cefb7",
+      "observation": {
+        "expected": "<ul>\n  <li>tail</li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>hidden</li>\n</ul>\n<p>tail</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-11.crv/js->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "JavaScript exposes the comment payload; PHP and Rust keep tail inside the item. Corpus 512 requires a hidden payload and tail after the list.",
+      "fingerprint": "0c332afd0626e507d79047a7c9084a347d3cb1c345e1c282f46027b2080cefb7",
+      "observation": {
+        "expected": "<ul>\n  <li>tail</li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>hidden</li>\n</ul>\n<p>tail</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-11.crv/php->js",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "JavaScript exposes the comment payload; PHP and Rust keep tail inside the item. Corpus 512 requires a hidden payload and tail after the list.",
+      "fingerprint": "9a7ce41e2debc15583cd12392125240aebe403a6e6b0a352a9cf7e3bd4543ccf",
+      "observation": {
+        "expected": "<ul>\n  <li>hidden</li>\n</ul>\n<p>tail</p>",
+        "status": 0,
+        "actual": "<ul>\n  <li>tail</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-11.crv/rust->js",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "JavaScript exposes the comment payload; PHP and Rust keep tail inside the item. Corpus 512 requires a hidden payload and tail after the list.",
+      "fingerprint": "9a7ce41e2debc15583cd12392125240aebe403a6e6b0a352a9cf7e3bd4543ccf",
+      "observation": {
+        "expected": "<ul>\n  <li>hidden</li>\n</ul>\n<p>tail</p>",
+        "status": 0,
+        "actual": "<ul>\n  <li>tail</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-12.crv/js->php",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "JavaScript exposes the comment payload; PHP and Rust keep tail inside the item. Corpus 512 requires a hidden payload and tail after the list.",
+      "fingerprint": "0c332afd0626e507d79047a7c9084a347d3cb1c345e1c282f46027b2080cefb7",
+      "observation": {
+        "expected": "<ul>\n  <li>tail</li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>hidden</li>\n</ul>\n<p>tail</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-12.crv/js->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "JavaScript exposes the comment payload; PHP and Rust keep tail inside the item. Corpus 512 requires a hidden payload and tail after the list.",
+      "fingerprint": "0c332afd0626e507d79047a7c9084a347d3cb1c345e1c282f46027b2080cefb7",
+      "observation": {
+        "expected": "<ul>\n  <li>tail</li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>hidden</li>\n</ul>\n<p>tail</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-12.crv/php->js",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "JavaScript exposes the comment payload; PHP and Rust keep tail inside the item. Corpus 512 requires a hidden payload and tail after the list.",
+      "fingerprint": "9a7ce41e2debc15583cd12392125240aebe403a6e6b0a352a9cf7e3bd4543ccf",
+      "observation": {
+        "expected": "<ul>\n  <li>hidden</li>\n</ul>\n<p>tail</p>",
+        "status": 0,
+        "actual": "<ul>\n  <li>tail</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-12.crv/rust->js",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "JavaScript exposes the comment payload; PHP and Rust keep tail inside the item. Corpus 512 requires a hidden payload and tail after the list.",
+      "fingerprint": "9a7ce41e2debc15583cd12392125240aebe403a6e6b0a352a9cf7e3bd4543ccf",
+      "observation": {
+        "expected": "<ul>\n  <li>hidden</li>\n</ul>\n<p>tail</p>",
+        "status": 0,
+        "actual": "<ul>\n  <li>tail</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership.crv/js->php",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "PHP and Rust register a reference definition inside the comment span; JavaScript keeps the later reference literal, as corpus 512 requires.",
+      "fingerprint": "ba8fb541007966cc2ff7fbb78456b8959ad98a223e2d4201dcc325d6647c6b38",
+      "observation": {
+        "expected": "<ul>\n  <li>item</li>\n</ul>\n<p><a href=\"/url\">use</a></p>",
+        "status": 0,
+        "actual": "<ul>\n  <li>item</li>\n</ul>\n<p>[use][r]</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership.crv/js->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "PHP and Rust register a reference definition inside the comment span; JavaScript keeps the later reference literal, as corpus 512 requires.",
+      "fingerprint": "ba8fb541007966cc2ff7fbb78456b8959ad98a223e2d4201dcc325d6647c6b38",
+      "observation": {
+        "expected": "<ul>\n  <li>item</li>\n</ul>\n<p><a href=\"/url\">use</a></p>",
+        "status": 0,
+        "actual": "<ul>\n  <li>item</li>\n</ul>\n<p>[use][r]</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership.crv/php->js",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "PHP and Rust register a reference definition inside the comment span; JavaScript keeps the later reference literal, as corpus 512 requires.",
+      "fingerprint": "0c4db660c2513a3c5d0848b9e83657947be8e159f4abbed01706f56f18743fe1",
+      "observation": {
+        "expected": "<ul>\n  <li>item</li>\n</ul>\n<p>[use][r]</p>",
+        "status": 0,
+        "actual": "<ul>\n  <li>item</li>\n</ul>\n<p><a href=\"/url\">use</a></p>"
+      }
+    },
+    {
+      "key": "tests/corpus/512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership.crv/rust->js",
+      "issue": "https://github.com/markup-carve/carve/issues/2530",
+      "reason": "PHP and Rust register a reference definition inside the comment span; JavaScript keeps the later reference literal, as corpus 512 requires.",
+      "fingerprint": "0c4db660c2513a3c5d0848b9e83657947be8e159f4abbed01706f56f18743fe1",
+      "observation": {
+        "expected": "<ul>\n  <li>item</li>\n</ul>\n<p>[use][r]</p>",
+        "status": 0,
+        "actual": "<ul>\n  <li>item</li>\n</ul>\n<p><a href=\"/url\">use</a></p>"
+      }
+    }
+  ]
 }
