@@ -53,3 +53,11 @@
 512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-9  carve#2525: the pin lets a comment span's closer column decide who owns the following line.
 512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-11  carve#2525: the pin keeps a marker-line comment span's below-column follower in the item.
 512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-12  carve#2525: the pin keeps a marker-line comment span's below-column follower in the item.
+514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim  carve#2538: the pinned carve-js recognizes a container-held quoted fence at no level, so it keeps the unmarked line inside the quote.
+514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim-2  carve#2538: the pinned carve-js recognizes a container-held quoted fence at no level, so it keeps the unmarked line inside the quote.
+514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim-3  carve#2538: the pinned carve-js recognizes a container-held quoted fence at no level, so it keeps the unmarked line inside the quote.
+514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim-4  carve#2538: the pinned carve-js recognizes a container-held quoted fence at no level, so it keeps the unmarked line inside the quote.
+514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim-5  carve#2538: the pinned carve-js recognizes a container-held quoted fence at no level, so it keeps the unmarked line inside the quote.
+514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim-6  carve#2538: the pinned carve-js recognizes a container-held quoted fence at no level, so it keeps the unmarked line inside the quote.
+514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim-8  carve#2538: the pinned carve-js recognizes a container-held quoted fence at no nesting level, so one quote deeper it keeps the unmarked line in the outer quote.
+514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim-9  carve#2538: the pinned carve-js asks the first item paragraph about a SIBLING item marker-line fence, so the fence needs a closer there and the unmarked line stays its payload.

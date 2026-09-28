@@ -1705,6 +1705,143 @@ function bodyHasOpenCodeFence(lines, scan, end, measurement, hasFutureCommentClo
   return opaque !== null && opaque.kind === 'code'
 }
 
+/*
+ * ONE QUOTE LEVEL'S OWN CONTAINER LADDER (carve#2538).
+ *
+ * CARVE-P0-013 names no depth and no host, so the question "does this level's
+ * last block leave an open paragraph" has to be asked at the column a container
+ * inside the level puts its blocks at, not only at the level's column 0. A list
+ * item, a footnote body and a description body all move that column, and FENCE
+ * is anchored at column 0, so their fences read as prose without this.
+ *
+ * `columns` is the same ladder the item collector's residue scan walks
+ * (`bodyHasOpenCodeFence`), advanced ONE LINE at a time: a scan over the
+ * collected body is the rescan carve#2509 ruled out.
+ */
+function hostLadder() {
+  return { columns: [0], markerCols: [], kinds: [], fence: null, pending: null }
+}
+
+/*
+ * Peel one line's container markers, returning the innermost text with its
+ * absolute column and whether the line OPENED a container.
+ *
+ * A marker only opens one when a paragraph is not in the way: PART 9 SS17 says a
+ * list marker does not interrupt a paragraph, so `a` over `- ``` ` is paragraph
+ * text and pushes nothing - while `- a` over `- ``` ` opens the list's second
+ * item and `- a` over `  - ``` ` opens a sublist, both of them a BLOCK START
+ * that SS10 I4 opens a fence at unconditionally.
+ */
+function hostAdvance(h, line, paraOpen) {
+  const meas = indentCols(line)
+  if (meas.rest === '') return { meas, inner: meas, blockStart: false }
+  // ONLY A LIST ITEM'S PARAGRAPH GIVES WAY. `- d` / `  - x` opens a sublist, so
+  // the marker interrupts; the same marker at a DESCRIPTION or FOOTNOTE body's
+  // column under its open paragraph is ordinary text, and both bodies take the
+  // list only after a blank. Reading the licence off the ladder's DEPTH instead
+  // of its innermost KIND moved a quoted line out of a `dd` that keeps it
+  // (raised by codex review).
+  const siblingItem = h.markerCols.some((col, k) => col === meas.col && h.kinds[k] === 'item')
+  while (h.columns.length > 1 && h.columns.at(-1) > meas.col) {
+    h.columns.pop()
+    h.markerCols.pop()
+    h.kinds.pop()
+  }
+  const insideItem = h.kinds.at(-1) === 'item'
+  let inner = meas
+  let blockStart = false
+  for (;;) {
+    const marker = matchMarkerAt(inner)
+    if (marker) {
+      if (paraOpen && !insideItem && !siblingItem) break
+      h.markerCols.push(marker.indent)
+      h.columns.push(marker.indent + marker.markerWidth)
+      h.kinds.push('item')
+      blockStart = true
+      const next = indentCols(marker.text)
+      inner = { col: h.columns.at(-1) + next.col, rest: next.rest }
+      continue
+    }
+    // A footnote body's column is its marker's plus 2 (PART 9 SS16), and the
+    // definition itself interrupts a paragraph, so its first block is a start.
+    if (FOOTNOTE_DEF.test(inner.rest)) {
+      h.markerCols.push(inner.col)
+      h.columns.push(inner.col + 2)
+      h.kinds.push('note')
+      blockStart = true
+      break
+    }
+    // A DESCRIPTION BODY IS NOT A HOST HERE. Its column is its own separator
+    // run, but whether a `: ` line opens one at all depends on whether the
+    // term's list is still open, and a term's list ends at a blank followed by
+    // anything, at a block opener and at an indented list written before any
+    // description - while it survives text that folds into the term and content
+    // inside a description already open. That is paragraph-and-term state this
+    // tracker does not carry, and three separate readings came out wrong while
+    // it was guessed at, so the host stays out (carve#2538).
+    break
+  }
+  return { meas, inner, blockStart }
+}
+
+/*
+ * Is this level verbatim on this line because a container in it holds a fence
+ * open? Answers before the ladder moves, because the payload's own markers open
+ * nothing.
+ *
+ * Two things end the payload. A CLOSER, and its column is the HOST's content
+ * column rather than the opener's own: measured in an item of content column 2,
+ * a fence opened at column 5 closes on a pure run at 2 and not at 3, and one
+ * opened at 2 does not close at 4. And the host ITSELF ending, which a non-blank
+ * line below that column does. A blank is interior to the payload and ends
+ * neither.
+ */
+function hostFenceStep(h, line) {
+  if (!h.fence) return false
+  const meas = indentCols(line)
+  if (meas.rest !== '' && meas.col < h.fence.host) {
+    h.fence = null
+    return false
+  }
+  const c = PURE_FENCE.exec(meas.rest)
+  if (c && c[1][0] === h.fence.run[0] && c[1].length >= h.fence.run.length &&
+      meas.col === h.fence.host) h.fence = null
+  return true
+}
+
+// Does a fence open at this level on this line, given where the ladder stands?
+//
+// AT THE CONTENT COLUMN (SS24 C3), and at that column EXACTLY - the same column
+// its closer is written at. The host's block reader also opens an OVER-INDENTED
+// fence, but it pairs fence runs across the whole body while doing so: in an item
+// of content column 2, a prose line carrying a run at column 5 makes a later run
+// at column 3 that run's partner rather than an opener, so the fence the column
+// alone predicts is not there. Pairing over a region is the rescan carve#2509
+// ruled out, so the over-indented spelling stays outside this and keeps the
+// answer it had (carve#2538).
+function hostFenceOpener(h, inner) {
+  const f = FENCE.exec(inner.rest)
+  const opener = f && parseFenceInfo(f[2]) !== null ? f : null
+  const run = f ? f[1] : (PURE_FENCE.exec(inner.rest)?.[1] ?? null)
+  if (h.pending !== null && h.pending.host > h.columns.at(-1)) h.pending = null
+  // A RUN THAT OPENED NOTHING IS STILL A RUN, and the host's own reader pairs it
+  // with the next one. That is why a column alone does not predict the fence: in
+  // an item of content column 2 a prose run at column 5 makes the run at 2 or 3
+  // below it its PARTNER, and the block there is a closed code block whose
+  // paragraph the line after it continues. Paired here one line at a time, since
+  // pairing over the collected body is the rescan carve#2509 ruled out.
+  if (h.pending !== null && run !== null && run[0] === h.pending.run[0] &&
+      run.length >= h.pending.run.length) {
+    h.pending = null
+    return null
+  }
+  if (run !== null && (opener === null || inner.col !== h.columns.at(-1))) {
+    h.pending = { run, host: h.columns.at(-1) }
+    return null
+  }
+  return opener
+}
+
 // The body index of a code fence a description body OPENED and has not closed,
 // or -1. A FENCED BODY IS NOT A PARAGRAPH (CARVE-P0-013), so a line below the
 // body's column cannot fold into it and ends the body. Whether the fence opened
@@ -3273,7 +3410,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     // --- block quote ---
     if (QUOTE.test(line)) {
       const inner = []
-      let openFence = null // run string of a fence opened inside the quote
+      // The quote's own container ladder and the fence a container in it holds
+      // open (carve#2538). `qHost.fence` replaces the run string this used to
+      // carry, because the column it was written at is what answers.
+      const qHost = hostLadder()
       let openComment = null // exact-width comment fence opened inside the quote
       let qOpenPara = false // does the quote currently end in an open paragraph?
       let qPara = [] // its lines, for SS12's absorption test below
@@ -3309,7 +3449,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
        * below kept a continuation claim PART 1 owner selection gives it none
        * (carve#2513).
        */
-      const qNestedFence = []
+      // One ladder per depth, for the same reason the table run is per depth: a
+      // fence a list item inside a NESTED quote holds open is written at that
+      // item's content column, and CARVE-P0-013 names no depth (carve#2538).
+      const qNestedHost = []
       const qNestedPara = []
       const qNestedParaLines = []
       const qNestedColon = []
@@ -3324,7 +3467,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
        * carve#2509 ruled out.
        */
       const qPureFences = []
-      const closerFollows = (idx, markers, run) => {
+      const closerFollows = (idx, markers, run, column) => {
         // A level's container ends where a line stops supplying its marker, so
         // the index covers one RUN of lines that reach `markers` and is rebuilt
         // when a query lands past it: a pure fence in a LATER quote at the same
@@ -3347,11 +3490,17 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               k++
             }
             if (k < markers) break
-            const c = PURE_FENCE.exec(text)
+            const measured = indentCols(text)
+            const c = PURE_FENCE.exec(measured.rest)
             if (!c) continue
-            const rows = chars.get(c[1][0]) ?? { at: [], cursor: 0 }
+            // PER COLUMN AS WELL AS PER CHARACTER, and the column is the
+            // HOST's content column rather than the opener's own: a fence opened
+            // past that column still closes there and nowhere else (carve#2538).
+            // One bucket per column keeps the answer a single read.
+            const key = `${c[1][0]}${measured.col}`
+            const rows = chars.get(key) ?? { at: [], cursor: 0 }
             rows.at.push({ j, width: c[1].length })
-            chars.set(c[1][0], rows)
+            chars.set(key, rows)
           }
           for (const rows of chars.values()) {
             let widest = 0
@@ -3364,7 +3513,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           layoutWork.fenceCloserLookahead += j - idx
           st = qPureFences[markers] = { chars, end: j }
         }
-        const rows = st.chars.get(run[0])
+        const rows = st.chars.get(`${run[0]}${column}`)
         if (!rows) return false
         // Queries arrive in line order, so the cursor only moves forward and its
         // total travel is the row count however many openers ask.
@@ -3405,7 +3554,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           }
           qNestedColon.length = reached
           qNestedTable.length = reached
-          qNestedFence.length = reached
+          qNestedHost.length = reached
           qNestedPara.length = reached
           qNestedParaLines.length = reached
           for (let d = 0; d < reached; d++) {
@@ -3426,7 +3575,24 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             }
             levelLines[depth - 1] = tail
             qNestedTable.length = depth
-            if (depth > 0) qNestedTable[depth - 1] = tableRunStep(false, tail)
+            qNestedHost.length = depth
+            if (depth > 0) {
+              qNestedTable[depth - 1] = tableRunStep(false, tail)
+              // The innermost level is the only one holding anything but a
+              // quote, so it is the only ladder this path advances - and it asks
+              // the fence question too. The guard above sends a COLUMN-0 fence to
+              // the loop below; one a container on this line holds open never
+              // reaches it, so `> > - ``` ` answered differently from `> - ``` `
+              // (its own depth-invariance row).
+              const host = qNestedHost[depth - 1] ??= hostLadder()
+              const { inner } = hostAdvance(host, tail, false)
+              const opener = hostFenceOpener(host, inner)
+              if (opener && state.blockDepth + depth < MAX_NESTING_DEPTH) {
+                host.fence = { run: opener[1], column: inner.col, host: host.columns.at(-1) }
+                qNestedTable[depth - 1] = false
+                return settle(false, depth)
+              }
+            }
             return settle(!DEFLIST_TERM.test(tail) &&
               !isColonBlockOpener(tail) && opensParagraph(tail, true, false, prefixMemo(state, lines, idx).paragraph), depth)
           }
@@ -3440,26 +3606,24 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           levelLines[depth] = text
           // S2: an open payload makes this level's line verbatim, so a marker
           // on it is literal and A FENCED BODY IS NOT A PARAGRAPH.
-          const open = qNestedFence[depth]
-          if (open) {
-            const c = PURE_FENCE.exec(text)
-            if (c && c[1][0] === open[0] && c[1].length >= open.length) qNestedFence[depth] = null
-            return settle(false, depth + 1)
-          }
+          const host = qNestedHost[depth] ??= hostLadder()
+          if (hostFenceStep(host, text)) return settle(false, depth + 1)
           const before = qNestedTable[depth] ?? false
           qNestedTable[depth] = tableRunStep(before, text)
-          const f = FENCE.exec(text)
+          const { inner, blockStart } = hostAdvance(host, text, qNestedPara[depth] ?? false)
+          const f = hostFenceOpener(host, inner)
           // SS25 FIRST: past the cap an opener DEGRADES to literal paragraph
           // text, so a fence recognized here would open a block the block reader
           // does not. The cap is the POST-STRIP one the branch below asks, moved
           // ahead of the fence rather than after it (raised by codex review).
-          if (state.blockDepth + depth + 1 < MAX_NESTING_DEPTH &&
-              f && parseFenceInfo(f[2]) !== null &&
-              (!qNestedPara[depth] || closerFollows(idx, depth + 2, f[1]))) {
-            qNestedFence[depth] = f[1]
+          if (state.blockDepth + depth + 1 < MAX_NESTING_DEPTH && f &&
+              (blockStart || !qNestedPara[depth] ||
+               closerFollows(idx, depth + 2, f[1], host.columns.at(-1)))) {
+            host.fence = { run: f[1], column: inner.col, host: host.columns.at(-1) }
             qNestedTable[depth] = false
             return settle(false, depth + 1)
           }
+          if (f) host.pending = { run: f[1], host: host.columns.at(-1) }
           depth++
           if (!QUOTE.test(text)) {
             // A term has inline content, but no paragraph for a lazy fold.
@@ -3490,7 +3654,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // as the old one's fence payload.
       const clearNested = () => {
         qNestedTable.length = 0
-        qNestedFence.length = 0
+        qNestedHost.length = 0
         qNestedPara.length = 0
         qNestedParaLines.length = 0
         qNestedColon.length = 0
@@ -3514,9 +3678,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qPara = []
           return
         }
-        if (openFence) {
-          const c = PURE_FENCE.exec(l)
-          if (c && c[1][0] === openFence[0] && c[1].length >= openFence.length) openFence = null
+        // A HOST THAT ENDED ENDS ITS FENCE, and the line is then classified
+        // normally: `> - a` / `>` / `>   ``` ` / `>   x` / `> after` leaves the
+        // item at `after`, so the quote's own paragraph opens there and stores
+        // the claim again (carve#2538). Only a closer used to clear this, so the
+        // ordinary line read as payload.
+        if (hostFenceStep(qHost, l)) {
           qOpenPara = false
           qTableOpen = false
           clearNested()
@@ -3535,16 +3702,23 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             }
           }
         }
-        const f = FENCE.exec(l)
+        const { meas, inner: inner0, blockStart } = hostAdvance(qHost, l, qOpenPara)
+        const f = hostFenceOpener(qHost, inner0)
         // SS10 I4's own two questions, asked of the quote's own paragraph state.
         // This read whether the PREVIOUS line was blank, which admits neither a
         // fence under a heading, a break, a table or a closed fence - all block
         // starts - nor one under a paragraph with a closer below it. So a fence
         // that opened for the block reader stayed prose for this tracker, and
         // the unmarked line below it folded (carve#2513).
-        const isOpener = !!(f && parseFenceInfo(f[2]) !== null &&
-          (!qOpenPara || closerFollows(idx, 1, f[1])))
-        if (isOpener) openFence = f[1]
+        // A CONTAINER THIS LINE OPENED PUTS THE FENCE AT ITS BLOCK START, so I4
+        // asks for no closer there: `> - a` / `> - ``` ` opens the second item's
+        // fence, where the quote's own paragraph state is the FIRST item's and
+        // says nothing about it (carve#2538).
+        const isOpener = !!(f && (blockStart || !qOpenPara ||
+          closerFollows(idx, 1, f[1], qHost.columns.at(-1))))
+        if (isOpener) qHost.fence = { run: f[1], column: inner0.col, host: qHost.columns.at(-1) }
+        // An opener §10 I4 refused is one of those unpaired runs.
+        else if (f) qHost.pending = { run: f[1], host: qHost.columns.at(-1) }
         // PART 1 S4 makes the fold conditional on an OPEN PARAGRAPH, so every
         // block that leaves none clears this. A definition TERM is bounded like
         // a heading (it holds inline content, not a paragraph), and a
@@ -3604,7 +3778,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           } else clearNested()
         }
         const nestedQuoteEnds = QUOTE.test(l) && !nestedQuoteOpensParagraph(l, !qOpenPara, idx)
-        const nestedItemEnds = !qOpenPara && !!matchMarkerAt(indentCols(l)) &&
+        const nestedItemEnds = !qOpenPara && !!matchMarkerAt(meas) &&
           !opensParagraph(l, true, false, prefixMemo(state, lines, idx).paragraph)
         if (!absorbedColon &&
             (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener ||
@@ -3658,19 +3832,19 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (attached.next > i) {
             // blank separators force the attached lines to parse as their own
             // block instead of lazily folding into the open paragraph
-            if (openFence) {
+            if (qHost.fence) {
               const bounds = state.attachmentBoundaries ??= new WeakMap()
               const indices = bounds.get(inner) ?? []
               indices.push(inner.length)
               bounds.set(inner, indices)
-              openFence = null
+              qHost.fence = null
             }
             inner.push('', ...attached.rawMarker, '')
             i = attached.next
           }
           continue
         }
-        if (openFence || openComment !== null) break
+        if (qHost.fence || openComment !== null) break
         // A COMMENT IS COLUMN-EXEMPT (§10 I5's first exception, §24 C3). The
         // other four invisible kinds are ordinary text below a column and fold;
         // a comment stays invisible at ANY column, and folding one would make it

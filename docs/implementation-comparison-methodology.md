@@ -33,7 +33,8 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `511-a-fence-in-a-quote-stores-no-continuation-claim`,
 `512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership`,
 `513-a-comment-span-opened-below-every-content-column-is-located-there`,
-`514-a-heading-comment-preserves-code-span-content`,
+`514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim`,
+`515-a-heading-comment-preserves-code-span-content`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
@@ -59,6 +60,11 @@ reads the closer's column on the other four, which
 `resources/engine-pin-drift.txt` declares. The other two engines are unmeasured
 here.
 
+514's twelve were measured against the pinned carve-js only, for the same reason:
+it reproduces the four controls and keeps the unmarked line inside the quote on
+the other eight, which `resources/engine-pin-drift.txt` declares per document.
+carve-rs and carve-php are unmeasured here; no engine carries the rule yet.
+
 513's eight were measured against carve-js `58c747bf0` and carve-php `ab0648469`,
 each built from its own default branch: both reproduce all eight. carve-rs
 `cd1bb9cce` reads the closer's column on five of them, the gap
@@ -68,7 +74,7 @@ each built from its own default branch: both reproduce all eight. carve-rs
 where they were and diverges on the other six, which
 `resources/engine-pin-drift.txt` declares.
 
-514's eight heading documents match the pinned carve-js `c5df77f6`. They were
+515's eight heading documents match the pinned carve-js `c5df77f6`. They were
 added after the three-engine snapshot; Rust and PHP were not measured for this
 change.
 
