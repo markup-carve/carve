@@ -134,3 +134,19 @@ test('a nested fence past the nesting cap is literal paragraph text', () => {
   assert.deepEqual(leaf(200), { top: ['quote'], leaf: `p(${F}|y)` })
   assert.deepEqual(leaf(199), { top: ['quote', 'para'], leaf: 'code' })
 })
+
+test('unmatched quoted openers do not rescan incompatible closer candidates', () => {
+  for (const depth of [1, 2, 4]) for (const closer of ['~~~', '```']) {
+    const measure = count => {
+      const prefix = '> '.repeat(depth)
+      const source = prefix + 'a\n' + (prefix + '````` x\n').repeat(count) +
+        (prefix + closer + '\n').repeat(count) + 'tail\n'
+      resetLayoutWork()
+      parse(source)
+      return layoutWork.fenceCloserLookahead
+    }
+    const small = measure(40), large = measure(160)
+    assert.ok(small > 40)
+    assert.ok(large / small < 4.3, `${depth}, ${closer}: ${small} -> ${large}`)
+  }
+})

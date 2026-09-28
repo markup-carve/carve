@@ -1,0 +1,19 @@
+{
+  "scope": "Additional review probes outside the original 976-case matrix; unresolved.",
+  "cases": [
+    {
+      "name": "colon-div-attachment",
+      "source": "- ::: box\n+\ntail\n",
+      "spec": "<ul>\n  <li>\n    <div class=\"box\">\n      <p>tail</p>\n    </div>\n  </li>\n</ul>",
+      "js": "<ul>\n  <li>\n    <div class=\"box\">\n      <p>tail</p>\n    </div>\n  </li>\n</ul>",
+      "rs": "<ul>\n  <li>\n    <div class=\"box\">\n\n    </div>\n    tail\n  </li>\n</ul>"
+    },
+    {
+      "name": "raw-fence-authored-blank",
+      "source": "- ```=html\n  <b>x</b>\n+\n\ntail\n",
+      "spec": "<ul>\n  <li>\n    <b>x</b>\n\n  </li>\n</ul>\n<p>tail</p>",
+      "js": "<ul>\n  <li>\n    <b>x</b>\n\n  </li>\n</ul>\n<p>tail</p>",
+      "rs": "<ul>\n  <li>\n    <b>x</b>\n  </li>\n</ul>\n<p>tail</p>"
+    }
+  ]
+}
