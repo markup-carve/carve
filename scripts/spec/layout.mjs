@@ -3312,6 +3312,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
        */
       const qNestedFence = []
       const qNestedPara = []
+      const qNestedParaLines = []
+      const qNestedColon = []
       /*
        * Does a pure closer for `run` follow, `markers` quote markers in?
        *
@@ -3384,6 +3386,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
        * loop uses for its own rows.
        */
       const nestedQuoteOpensParagraph = (line, atStart, idx) => {
+        const levelLines = []
         let text = line
         let depth = 0
         // A run this line does not reach has ENDED, so its state is not a run
@@ -3396,21 +3399,33 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // the answer is stored at each of them: a fence written at one level is
         // at block start when the level below it left no paragraph open.
         const settle = (ans, reached) => {
+          if (ans && reached > 0 && reached < qNestedPara.length && qNestedPara[reached - 1]) {
+            const lazyLine = levelLines[reached - 1]
+            for (let d = reached; d < qNestedPara.length; d++) levelLines[d] = lazyLine
+            reached = qNestedPara.length
+          }
+          qNestedColon.length = reached
           qNestedTable.length = reached
           qNestedFence.length = reached
           qNestedPara.length = reached
-          for (let d = 0; d < reached; d++) qNestedPara[d] = ans
+          qNestedParaLines.length = reached
+          for (let d = 0; d < reached; d++) {
+            if (!ans || !qNestedPara[d]) qNestedParaLines[d] = []
+            if (ans && levelLines[d] !== undefined) qNestedParaLines[d].push(levelLines[d])
+            qNestedPara[d] = ans
+          }
           return ans
         }
         if (atStart && qNestedTable.length === 0) {
           const summary = quotePrefixSummary(line, prefixMemo(state, lines, idx).quote)
-          if (summary && !(FENCE.test(summary.tail) && parseFenceInfo(FENCE.exec(summary.tail)[2]) !== null)) {
+          if (summary && !isColonBlockOpener(summary.tail) && !(FENCE.test(summary.tail) && parseFenceInfo(FENCE.exec(summary.tail)[2]) !== null)) {
             const { depth, tail } = summary
             if (state.blockDepth + depth >= MAX_NESTING_DEPTH) {
               const remaining = MAX_NESTING_DEPTH - state.blockDepth
               if (depth > remaining) return true
               return tail.trim() !== ''
             }
+            levelLines[depth - 1] = tail
             qNestedTable.length = depth
             if (depth > 0) qNestedTable[depth - 1] = tableRunStep(false, tail)
             return settle(!DEFLIST_TERM.test(tail) &&
@@ -3423,6 +3438,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // an arbitrarily deep suffix for every enclosing quote.
           if (state.blockDepth + depth >= MAX_NESTING_DEPTH) return settle(text.trim() !== '', depth)
           text = QUOTE.exec(text)[1] ?? ''
+          levelLines[depth] = text
           // S2: an open payload makes this level's line verbatim, so a marker
           // on it is literal and A FENCED BODY IS NOT A PARAGRAPH.
           const open = qNestedFence[depth]
@@ -3450,9 +3466,20 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // A term has inline content, but no paragraph for a lazy fold.
             // Match the direct quote classifier below.
             if (state.blockDepth + depth >= MAX_NESTING_DEPTH) return settle(text.trim() !== '', depth)
-            return settle(!DEFLIST_TERM.test(text) &&
-              !(atStart && isColonBlockOpener(text)) &&
-              opensParagraph(text, atStart, before, prefixMemo(state, lines, idx).paragraph), depth)
+            // A bare colon run closes the claim unless this level's own
+            // paragraph absorbs it under CARVE-P9-016.
+            const colon = COLON_FENCE.exec(text)
+            const stack = qNestedColon[depth - 1] ??= []
+            const closesColon = COLON_CLOSER.test(text) && stack.at(-1) === colon?.[1].length
+            if (closesColon) stack.pop()
+            const absorbedColon = !closesColon && qNestedPara[depth - 1] && COLON_CLOSER.test(text) &&
+              !colonFenceInterrupts(text, qNestedParaLines[depth - 1] ?? [])
+            if (colon && !closesColon && !absorbedColon && parseColonOpener(colon[2]) !== null) {
+              stack.push(colon[1].length)
+            }
+            return settle(absorbedColon || (!COLON_CLOSER.test(text) &&
+              !DEFLIST_TERM.test(text) && !(atStart && isColonBlockOpener(text)) &&
+              opensParagraph(text, atStart, before, prefixMemo(state, lines, idx).paragraph)), depth)
           }
         }
         return settle(opensParagraph(text), depth)
@@ -3466,6 +3493,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         qNestedTable.length = 0
         qNestedFence.length = 0
         qNestedPara.length = 0
+        qNestedParaLines.length = 0
+        qNestedColon.length = 0
       }
       const trackFence = (l, idx) => {
         // The quote body is literal beyond the same limit used by parseBlocks.
@@ -3568,7 +3597,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
          */
         // Every depth ends when a line stops supplying its marker, so a line
         // that is not a nested quote at all clears the whole ladder.
-        if (!QUOTE.test(l)) clearNested()
+        if (!QUOTE.test(l)) {
+          const continuesNested = qOpenPara && !isOpener && !COLON_CLOSER.test(l) &&
+            opensParagraph(l, false, qTableOpen)
+          if (continuesNested) {
+            for (const para of qNestedParaLines) para?.push(l)
+          } else clearNested()
+        }
         const nestedQuoteEnds = QUOTE.test(l) && !nestedQuoteOpensParagraph(l, !qOpenPara, idx)
         const nestedItemEnds = !qOpenPara && !!matchMarkerAt(indentCols(l)) &&
           !opensParagraph(l, true, false, prefixMemo(state, lines, idx).paragraph)
