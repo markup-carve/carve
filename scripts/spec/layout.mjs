@@ -1652,6 +1652,63 @@ function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt) 
   return -1
 }
 
+/*
+ * DOES THE BODY HOLD AN OPEN COMMENT SPAN? -- §28, carve#2488.
+ *
+ * A body's collector ends at a comment written below its content column, which
+ * is right for an OPENER and for the `%%` line form (carve#1930) and wrong
+ * INSIDE a span the body already holds: §28 pairs the delimiters, indentation is
+ * part of neither (carve#2471), and everything between them is payload. Ending
+ * there split the span, and the body's own parse then read an opener with no
+ * closer - one `%%` line comment - and PUBLISHED the payload while dropping both
+ * delimiters.
+ *
+ * The caller still asks the SHAPE. Only a comment-shaped line is exempt, which
+ * is carve#2487's half of the same rule: a payload line below the column is not
+ * comment-shaped, so §24 C3 still hands it to the enclosing parse.
+ *
+ * ONE COLUMN of the authored indentation is kept when the caller pushes the
+ * line, as the item collector keeps it, so the body's parse cannot read a
+ * delimiter written below the column back as an authored column-0 one.
+ *
+ * A code fence's payload is opaque, so a `%%%` written inside one is content.
+ */
+function bodyHoldsOpenCommentSpan(bodyLines) {
+  return bodyOpenCommentRun(bodyLines) !== null
+}
+
+const keptCommentDelimiter = (line) => {
+  const { col, rest } = indentCols(line)
+  return col > 0 ? ' ' + rest : rest
+}
+
+function bodyOpenCommentRun(bodyLines) {
+  let opaque = null
+  for (const raw of bodyLines) {
+    // Indentation is part of neither delimiter (§28, carve#2471), so the body's
+    // lines are read at their own content. A collector hands them down at
+    // whatever column its dedent left them at, and the answer may not turn on
+    // that: it is the same question asked of the same span either way.
+    const line = indentCols(stripLazy(raw)).rest
+    if (opaque) {
+      const c = opaque.kind === 'code' ? PURE_FENCE.exec(line) : COMMENT_FENCE.exec(line)
+      if (c && c[1][0] === opaque.run[0] &&
+          (opaque.kind === 'code' ? c[1].length >= opaque.run.length : c[1].length === opaque.run.length)) {
+        opaque = null
+      }
+      continue
+    }
+    const code = FENCE.exec(line)
+    if (code && parseFenceInfo(code[2]) !== null) {
+      opaque = { kind: 'code', run: code[1] }
+      continue
+    }
+    const comment = COMMENT_FENCE.exec(line)
+    if (comment) opaque = { kind: 'comment', run: comment[1] }
+  }
+  return opaque !== null && opaque.kind === 'comment' ? opaque.run : null
+}
+
 function descriptionCloserAhead(run, lines, from, bodyColumn, endsBodyAt) {
   for (let j = from; j < lines.length && !endsBodyAt(j); j++) {
     const m = indentCols(lines[j])
@@ -2314,6 +2371,16 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           for (let k = i; k < end; k++) bodyLines.push(lines[k])
           pullPending = false
           i = end
+        } else if (COMMENT_LINE.test(lines[i] ?? '') && bodyHoldsOpenCommentSpan(bodyLines)) {
+          // carve#2488, the same arm the `dd` carries. This body ends at a
+          // comment below column 2, and a comment INSIDE a span the body already
+          // holds is not one - see `bodyHoldsOpenCommentSpan`. carve#2488 reads
+          // this host as already hiding the payload: it does at a delimiter
+          // REACHING column 2, and it did not at column 0 or 1, which is the
+          // band this covers.
+          bodyLines.push(keptCommentDelimiter(lines[i]))
+          pullPending = false
+          i++
         } else break
         // NO LAZY CONTINUATION. A branch here used to fold any flush-left
         // non-blank line into the note body, citing SS16 - but SS16 grants no
@@ -2754,6 +2821,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
              * first-block `+` branch above consumes it first, which is why
              * there is no emptiness guard on this line to go stale.
              */
+            // carve#2488: a comment inside a span this body already holds is not
+            // "a comment below the column" - see `bodyHoldsOpenCommentSpan`.
+            if (COMMENT_LINE.test(dedented) && bodyHoldsOpenCommentSpan(asRead(bodyLines))) {
+              bodyLines.push(keptCommentDelimiter(cur))
+              i++
+              continue
+            }
             if (classifyLayoutComment(lines, i) !== null) break
             /*
              * AN INVISIBLE LINE FOLDS LIKE ANY OTHER -- NORMATIVE, and §10 I5's
@@ -4916,8 +4990,17 @@ function collectItems(lines, i, list, state, ind, meas) {
       // agrees. Breaking rather than declining to claim the line matters:
       // falling through would fold the fence as text and make a comment
       // VISIBLE, the one outcome it may never have.
+      // A LINE OPENS NO SPAN WHILE ONE IS OPEN (carve#2488). This break is about
+      // an OPENER, and `commentFenceOpensSpan` answers for the line ALONE: with a
+      // span open in the item's own lines the same line is inside it, and ending
+      // the item there splits the span - the `dd` and the note body refuse it
+      // with the same predicate, one rule in three hosts.
+      //
+      // Asked of `itemLines` rather than of `fence.opaque`, because the tracker
+      // reads each line at the item's dedent and its opener test refuses an
+      // indented run, so a span a DESCENDANT holds is invisible to it.
       if (!nm && COMMENT_FENCE_BODY.test(lm.rest) && lm.col === 0 && itemLines.length > 0 &&
-          commentFenceOpensSpan(lines, i)) {
+          commentFenceOpensSpan(lines, i) && !bodyHoldsOpenCommentSpan(itemLines)) {
         break
       }
       if (!nm && lm.rest.startsWith('%%') && itemLines.length > 0) {

@@ -149,12 +149,20 @@ test('GUARD: a plain line below the column still folds into the dd', () => {
   assert.ok(keptTail(out), out)
 })
 
-test('GUARD: a comment fence in the same geometry is unmoved', () => {
+test('GUARD: a comment fence in the same geometry is decided by the comment rule', () => {
   // A comment has no body block, so CARVE-P0-013's premise never holds for it and
-  // this change may not reach it. All three engines already agree on this row.
+  // the fence change here may not reach it. This row USED TO pin the reading
+  // "`a` is published and both `%%%` lines are not", which is what all four
+  // readers gave - and carve#2488 ruled it a leak rather than a reading: §28 pairs
+  // the delimiters at any columns, so the `dd` keeps the closer and answers as it
+  // answers the same span closed at the opener's base.
+  //
+  // Pinned against that control rather than against a transcribed string, so this
+  // guard keeps testing that the fence change decides nothing here whichever way
+  // the comment rule later moves.
   assert.equal(
     html(':: t\n:  head\n\n     %%%\n     a\n%%%\n\n   tail\n'),
-    '<dl>\n  <dt>t</dt>\n  <dd>\n    <p>head</p>\n    <p>a</p>\n  </dd>\n</dl>\n<p>tail</p>',
+    html(':: t\n:  head\n\n     %%%\n     a\n     %%%\n\n   tail\n'),
   )
 })
 

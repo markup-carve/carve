@@ -27,12 +27,18 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `505-a-verbatim-line-keeps-what-sits-past-its-fence-opener-not-past-its-container`,
 `506-comment-columns-and-surviving-list-items`,
 `507-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph`,
+`508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
 remaining cases landed after the run, so its numbers describe the corpus without
 them. 505's four documents were measured against carve-js `c5df77f6`, carve-rs
 `3cb8a685` and carve-php `77a83856`, which agree with the oracle on all four.
+508's six were measured against carve-js `c5df77f6`, carve-php `9fc5fae` and
+carve-rs `3a8403d`: all three agree on the two control documents and disagree
+with the oracle on the four the ruling moved, which
+[carve#2488](https://github.com/markup-carve/carve/issues/2488) tracks per
+engine.
 
 The former case-by-case notes remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/a22f6a23f7913e44cb3461f3f608605660619032/docs/implementation-comparison-methodology.md).
