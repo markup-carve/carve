@@ -6,7 +6,7 @@ import { resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { phpDir, rustDir, rustBinary } from './lib/engine-locations.mjs'
 import { comparisonRevisions, printComparisonRevisions } from './lib/comparison-revisions.mjs'
-import { engines, classifyImports, processFailure, missesTarget, htmlBytes, ingestCorpus, reconcileDifferences } from './lib/import-comparison.mjs'
+import { engines, classifyImports, compareIngestDocument, processFailure, missesTarget, htmlBytes, ingestCorpus, reconcileDifferences } from './lib/import-comparison.mjs'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
 const args = process.argv.slice(2)
@@ -140,23 +140,8 @@ try {
     counts.pairs = files.length * engines.length ** 2
     await each(files, async file => {
       const source = readFileSync(resolve(root, file), 'utf8')
-      const direct = {}
-      for (const reader of engines) direct[reader] = htmlBytes(await output(reader, [], source))
-      for (const producer of engines) {
-        const ast = await output(producer, ['--json'], source)
-        JSON.parse(ast)
-        for (const reader of engines) {
-          const expected = direct[reader]
-          const result = await invoke(reader, ['--from-json'], ast)
-          const actual = htmlBytes(result.stdout)
-          if (result.status !== 0 || actual !== expected) {
-            differences[`${file}/${producer}->${reader}`] = {
-              expected, status: result.status, actual,
-              ...(result.status ? { stderr: result.stderr } : {}),
-            }
-          }
-        }
-      }
+      const found = await compareIngestDocument(source, output, invoke)
+      for (const [pair, observation] of Object.entries(found)) differences[`${file}/${pair}`] = observation
     })
   }
   const sorted = Object.fromEntries(Object.entries(differences).sort(([a], [b]) => a.localeCompare(b, 'en')))

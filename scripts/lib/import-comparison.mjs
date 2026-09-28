@@ -73,3 +73,25 @@ export function reconcileDifferences(actual, ledger) {
   for (const key of declared.keys()) if (!Object.hasOwn(actual, key)) failures.push(`STALE comparison declaration: ${key}`)
   return failures
 }
+
+export async function compareIngestDocument(source, output, invoke) {
+  const direct = {}
+  const differences = {}
+  for (const reader of engines) direct[reader] = htmlBytes(await output(reader, [], source))
+  for (const producer of engines) {
+    const ast = await output(producer, ['--json'], source)
+    JSON.parse(ast)
+    for (const reader of engines) {
+      const expected = direct[reader]
+      const result = await invoke(reader, ['--from-json'], ast)
+      const actual = htmlBytes(result.stdout)
+      if (result.status !== 0 || actual !== expected) {
+        differences[`${producer}->${reader}`] = {
+          expected, status: result.status, actual,
+          ...(result.status ? { stderr: result.stderr } : {}),
+        }
+      }
+    }
+  }
+  return differences
+}

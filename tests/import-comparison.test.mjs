@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { classifyImports, processFailure, missesTarget, fingerprint, htmlBytes, ingestCorpus, reconcileDifferences } from '../scripts/lib/import-comparison.mjs'
+import { classifyImports, compareIngestDocument, processFailure, missesTarget, fingerprint, htmlBytes, ingestCorpus, reconcileDifferences } from '../scripts/lib/import-comparison.mjs'
 
 const read = name => JSON.parse(readFileSync(new URL(`./import-comparison/${name}.json`, import.meta.url), 'utf8'))
 const answers = () => Object.fromEntries(['js', 'php', 'rust'].map(engine => [engine, { status: 0, source: '/x/\n', html: '<p><em>x</em></p>' }]))
@@ -139,4 +139,32 @@ test('meaning fingerprints ignore spelling but retain failure diagnostics', () =
   const failed = fingerprint(value)
   value.answers.php.stderr = 'another refusal'
   assert.notEqual(fingerprint(value), failed)
+})
+
+test('AST ingestion uses each reader baseline and checks every pair, including self-pairs', async () => {
+  const reads = []
+  const output = async (engine, args, source) => args.includes('--json')
+    ? JSON.stringify({ producer: engine, text: source }) : `${engine}:${source}`
+  const invoke = async (reader, args, ast) => {
+    assert.deepEqual(args, ['--from-json'])
+    const { producer, text } = JSON.parse(ast)
+    reads.push(`${producer}->${reader}`)
+    return { status: 0, stdout: `${reader}:${text}`, stderr: '' }
+  }
+  assert.deepEqual(await compareIngestDocument('body', output, invoke), {})
+  assert.deepEqual(reads.sort(), ['js->js', 'js->php', 'js->rust', 'php->js', 'php->php', 'php->rust', 'rust->js', 'rust->php', 'rust->rust'])
+  const corrupt = async (reader, args, ast) => {
+    const result = await invoke(reader, args, ast)
+    if (reader === 'php' && JSON.parse(ast).producer === 'js') result.stdout = 'php:lost body'
+    return result
+  }
+  assert.deepEqual(await compareIngestDocument('body', output, corrupt), {
+    'js->php': { expected: 'php:body', status: 0, actual: 'php:lost body' },
+  })
+  const refuse = async (reader, args, ast) => reader === 'rust' && JSON.parse(ast).producer === 'php'
+    ? { status: 2, stdout: '', stderr: 'unknown field' } : invoke(reader, args, ast)
+  assert.deepEqual(await compareIngestDocument('body', output, refuse), {
+    'php->rust': { expected: 'rust:body', status: 2, actual: '', stderr: 'unknown field' },
+  })
+  await assert.rejects(compareIngestDocument('body', async () => 'invalid json', invoke), SyntaxError)
 })
