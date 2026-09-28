@@ -31,6 +31,7 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner`,
 `510-a-nested-quoted-term-leaves-no-paragraph-for-a-lazy-line`,
 `511-a-fence-in-a-quote-stores-no-continuation-claim`,
+`512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
@@ -48,6 +49,13 @@ carve-rs `main` and carve-php `415dfe28`: carve-js and carve-rs reproduce all
 four, carve-php keeps the unmarked line in the outer quote on the three nested
 spellings, which
 [carve-php#2664](https://github.com/markup-carve/carve-php/issues/2664) tracks.
+
+512's nine were measured against the pinned carve-js `c5df77f6` only, because this
+host carries no carve-rs or carve-php checkout: it reproduces the three
+definition documents and the two whose closer sits at the opener's column, and
+reads the closer's column on the other four, which
+`resources/engine-pin-drift.txt` declares. The other two engines are unmeasured
+here.
 509's twelve were measured against carve-js `c5df77f6`: it agrees on the four the
 [carve#2490](https://github.com/markup-carve/carve/issues/2490) ruling leaves
 where they were and diverges on the other six, which
