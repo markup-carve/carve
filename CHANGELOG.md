@@ -15,6 +15,9 @@ Releases before 0.1.6 are archived in
 - Correct executable-spec container ownership after block comments and fence
   closers below an item's base column (carve#2507, carve#2509).
 - Pair comment spans with their own delimiters in every host (carve#2503).
+- Read a comment span's ownership from its opener's column, so a `%%%` closer
+  written below an item's content column no longer holds the line after it
+  inside the item (carve#2525).
 - End executable-spec lazy continuation after quoted fences and nested blocks
   that leave no paragraph. Correct list, description, and `+` attachment
   boundaries (carve#2510, carve#2514, carve#2515).
@@ -26,6 +29,8 @@ Releases before 0.1.6 are archived in
   JSON across every engine pair, with exact drift declarations (carve#2493).
 - Cover raised-colon paragraph folding at list column boundaries (carve#2494).
 - Pin unpadded hyphen-only line-block formatting (carve#2496).
+- Pin the nested colon-div spellings of a quoted fence storing no continuation
+  claim (carve#2524).
 - Reuse container-prefix state and stop unused scans in the executable spec
   (carve#2510, carve#2515).
 - Clarify that diagnostic message text is engine-specific and excluded from
