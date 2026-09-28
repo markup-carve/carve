@@ -26,6 +26,10 @@ const visibleText = (html) =>
 // This is an inspected snapshot, not an endorsement of those three losses;
 // the ratchet keeps them visible for a dedicated writer/parser correction.
 
+// Corpus 506 rows 7 and 8 add two completed, fixed-point, text-preserving
+// imports. Neither round trip retains the source comments, so the HTML and
+// Markdown round-trip counts stay unchanged (#2504).
+
 // Corpus 497's row adds +1 to each population count and 0 to both round trips,
 // as measured with the pinned carve-js. The degraded marker itself survives the
 // HTML import as `> ::: footnotes`; what misses that round trip is the footnote

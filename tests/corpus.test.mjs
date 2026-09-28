@@ -36,6 +36,11 @@ import { REFUSED_ALLOW } from '../scripts/spec/refused-allow.mjs'
 
 const oracleHtml = (source) => renderDoc(parse(source)).trim()
 
+test('a nonzero below-column comment retains its existing item ownership', () => {
+  assert.equal(oracleHtml('- intro\n  %% a\n %% b\n  tail\n'),
+    '<ul>\n  <li>intro\n    tail\n  </li>\n</ul>')
+})
+
 test('over-column list block groups match their exact-column spelling', () => {
   for (const [name, exact, over] of [
     ['heading', '  # h', '     # h'],

@@ -39937,6 +39937,44 @@ tail
 
 :::
 
+::: compare
+
+```carve
+- intro
+  %% a
+%% b
+  tail
+```
+
+```html
+<ul>
+  <li>intro</li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
+::: compare
+
+```carve
+- intro
+  %% a
+%%%
+b
+%%%
+  tail
+```
+
+```html
+<ul>
+  <li>intro</li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
 ## A list marker in a raised colon container folds into its open paragraph
 
 PART 0 S4 applies while the colon container holds an open paragraph

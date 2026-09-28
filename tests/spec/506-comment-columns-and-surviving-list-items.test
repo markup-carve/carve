@@ -70,3 +70,29 @@ tail
 </ul>
 <p>tail</p>
 ```
+
+```
+- intro
+  %% a
+%% b
+  tail
+.
+<ul>
+  <li>intro</li>
+</ul>
+<p>tail</p>
+```
+
+```
+- intro
+  %% a
+%%%
+b
+%%%
+  tail
+.
+<ul>
+  <li>intro</li>
+</ul>
+<p>tail</p>
+```

@@ -5036,6 +5036,10 @@ function collectItems(lines, i, list, state, ind, meas) {
           commentFenceOpensSpan(lines, i) && !bodyHoldsOpenCommentSpan(itemLines)) {
         break
       }
+      // A column-zero comment cannot revive a closed item (#2504).
+      // Keep delimiters inside an existing comment span with that span.
+      if (!nm && lm.col === 0 && lm.rest.startsWith('%%') && !openPara &&
+          !bodyHoldsOpenCommentSpan(itemLines)) break
       if (!nm && lm.rest.startsWith('%%') && itemLines.length > 0) {
         // KEEP ONE COLUMN of the original indentation. Stripping it entirely
         // told the item's own parse that a line indented in the source had
