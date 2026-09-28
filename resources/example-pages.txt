@@ -741,6 +741,7 @@ index: examples/edge-cases/index.md
   a-heading-reference-folds-unicode-normalization-but-not-compatibility
   a-collapsed-reference-reaches-a-heading-by-the-heading-s-rendered-text
   heading-index-plain-text-covers-visible-leaves-and-rejects-an-empty-key
+  a-heading-comment-preserves-code-span-content
   which-inline-content-a-heading-id-is-derived-from
   02-headings-5
   02-headings-6

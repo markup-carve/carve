@@ -35,6 +35,7 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `513-a-comment-span-opened-below-every-content-column-is-located-there`,
 `514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim`,
 `515-a-nested-marker-comment-keeps-its-own-ownership`,
+`516-a-heading-comment-preserves-code-span-content`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
@@ -79,6 +80,10 @@ comment and the two spans whose closers sit at their openers' columns. The two
 below-column closers retain the outer item, declared in
 `resources/engine-pin-drift.txt` under
 [carve#2526](https://github.com/markup-carve/carve/issues/2526).
+
+516's eight heading documents match the pinned carve-js `c5df77f6`. They were
+added after the three-engine snapshot; Rust and PHP were not measured for this
+change.
 
 The former case-by-case notes remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/a22f6a23f7913e44cb3461f3f608605660619032/docs/implementation-comparison-methodology.md).

@@ -18,12 +18,12 @@
 import * as ohm from 'ohm-js'
 
 /*
- * The start rules the oracle actually matches against: `attrs`, `blockAttrs`
- * and `inlines` from scripts/spec/render.mjs, plus `doc` for the block layer,
- * which the render path never enters (it uses the layout automaton instead) and
- * which would otherwise leave every block production unmeasured.
+ * The start rules the oracle actually matches against: `attrs`, `blockAttrs`,
+ * `headingInlines` and `inlines` from scripts/spec/render.mjs, plus `doc` for
+ * the block layer. The render path uses the layout automaton instead; without
+ * `doc`, every block production would be unmeasured.
  */
-export const START_RULES = ['doc', 'inlines', 'attrs', 'blockAttrs']
+export const START_RULES = ['doc', 'inlines', 'headingInlines', 'attrs', 'blockAttrs']
 
 /**
  * Rules reachable from the start rules.
