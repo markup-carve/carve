@@ -39825,7 +39825,7 @@ b
 
 ## A list marker in a raised colon container folds into its open paragraph
 
-PART 9 §24 S4 applies while the colon container holds an open paragraph
+PART 0 S4 applies while the colon container holds an open paragraph
 ([carve#2474](https://github.com/markup-carve/carve/issues/2474)). The host’s
 content column is 2 and the container’s authored base is 6. A marker at column
 1, 2, 4, 6, or 8 folds into that paragraph. Column 0 opens a sibling item.
