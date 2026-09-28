@@ -695,6 +695,18 @@
         its delimiters carry a whitespace slot of their own, so its run closes
         the span at any column and ends no container.
 
+        AND NO HOST TERM. Which container holds the fence open is not a
+        parameter either. A QUOTE is reached by its marker, so an item, a
+        description body or a footnote body written inside one changes where the
+        fence is spelled and nothing about the answer: the run below still
+        reaches the document at column 0, at every depth (carve#2538).
+
+            > - a
+            >
+            >   ```
+            >   x
+            flush
+
         FENCE KIND DOES NOT DETERMINE CONTAINER REACH -- NORMATIVE [CARVE-P0-014].
         VERBATIMNESS is not the property doing the work. The reach of a
         container is not extended by what its innermost block happens to be,
