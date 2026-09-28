@@ -30,7 +30,15 @@ Doubling depth from 64 to 128 now roughly doubles these counts. The regression t
 
 This fixes the measured end-of-input path. A following lazy line still requires state: the spec's bullet case remains 45,155 calls, and JavaScript's falls from 110,991 to 59,743 but remains superlinear. Carrying state between enclosing containers is still needed for that case. JavaScript quote scanning at EOF was already improved before this work.
 
+A separate stress test exposed scanning below the parser's depth limit. The quote classifier now stops at that limit, where remaining markers are literal paragraph text. Its regex count is 135,383 for both 400 and 12,000 quote markers in a description body with a lazy follower. Tests also distinguish a heading at depth 199 from literal heading text at depth 200.
+
 Every before/after serialized parse tree agrees across the 18 profiling inputs per parser. The spec also preserves all 1,955 existing corpus trees, with no refusals. Raw profiles include elapsed times, but concurrent work on this machine makes counts the stronger comparison.
+
+## Validation
+
+The spec suite passes 4,515 tests (2 skipped); the focused regression file passes 17. JavaScript passes 27,493 tests (76 skipped), plus type checking and lint. Claude reviewed both parser diffs. The depth-limit correction intentionally changes ownership when apparent block syntax is already beyond the limit, and removes the internal lazy-line frame before rendering literal text. Restoring the old spec fails 13 of 16 focused cases (the separate 12,000-marker stress guard was excluded); restoring the old JavaScript fails both new list-scaling guards.
+
+The JavaScript branch was rebased onto `98aac6de9`, then rebuilt and checked with 1,951 focused tests. The spec branch was rebased onto `40d5922a` before the final suite and differential run. The corpus-parity and timing artifacts record the earlier isolated comparison against the baseline below.
 
 ## Reproduction
 

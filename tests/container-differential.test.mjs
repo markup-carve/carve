@@ -45,3 +45,26 @@ for (const depth of [1, 2, 3, 8]) test(`a term at quote depth ${depth} cannot ow
   assert.equal(actual, carveToHtml(source).trim())
   assert.match(actual, /<\/blockquote>\s*<p>tail<\/p>$/)
 })
+
+test('the quote classifier stops at the parser nesting limit', () => {
+  const source = depth => ':: t\n:  ' + '> '.repeat(depth) + 'x\ntail\n'
+  const small = regexCalls(source(400)), large = regexCalls(source(12000))
+  assert.ok(small > 1000, 'the classifier counter must observe work')
+  assert.ok(large <= small * 1.1, `${small} -> ${large}: markers below the cap were inspected`)
+})
+
+test('a heading past the nesting cap is paragraph text and keeps its lazy follower', () => {
+  const below = parse('> '.repeat(199) + '# H\ntail\n')
+  const capped = parse('> '.repeat(200) + '# H\ntail\n')
+  assert.equal(below.blocks.length, 2)
+  assert.match(renderDoc(below), /<h1/)
+  assert.equal(capped.blocks.length, 1)
+  assert.doesNotMatch(renderDoc(capped), /<h1/)
+  let children = capped.blocks
+  for (let level = 0; level < 200; level++) {
+    assert.equal(children.length, 1, `follower escaped at level ${level}`)
+    assert.equal(children[0].t, 'quote')
+    children = children[0].children
+  }
+  assert.deepEqual(children, [{ t: 'para', lines: ['# H', 'tail'] }])
+})

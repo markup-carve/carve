@@ -1,0 +1,20 @@
+{
+  "source": "':: t\\n:  ' + '> '.repeat(depth) + 'x\\ntail\\n'",
+  "parserDepthLimit": 200,
+  "measure": "RegExp.prototype.exec invocations during one spec parse",
+  "rows": [
+    {
+      "depth": 200,
+      "regexCalls": 135394
+    },
+    {
+      "depth": 400,
+      "regexCalls": 135383
+    },
+    {
+      "depth": 12000,
+      "regexCalls": 135383
+    }
+  ],
+  "regression": "tests/container-differential.test.mjs: the quote classifier stops at the parser nesting limit"
+}

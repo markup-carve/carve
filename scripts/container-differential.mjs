@@ -6,6 +6,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { createHash } from 'node:crypto'
 import { parse } from './spec/layout.mjs'
 import { renderDoc } from './spec/html.mjs'
+import { miscount } from './spec/participants.mjs'
 import { containerDifferentialCases } from './lib/container-differential-cases.mjs'
 
 // Explicit artifacts prevent a dirty sibling build from silently joining a run.
@@ -26,7 +27,14 @@ const artifactTreeSha = (dir) => sha(readdirSync(dir, { recursive: true, withFil
     return [path.slice(dir.length), sha(readFileSync(path))]
   }).sort(([a], [b]) => a.localeCompare(b)).map(row => JSON.stringify(row)).join('\n'))
 const { carveToHtml } = await import(pathToFileURL(resolve(jsPath)).href)
+const environment = {
+  spec: provenance(root), js: provenance(resolve(dirname(jsPath), '..')),
+  jsBuildSha256: artifactTreeSha(resolve(dirname(jsPath))),
+  rustBinarySha256: sha(readFileSync(rustPath)),
+}
 const cases = containerDifferentialCases()
+const missing = miscount({ label: 'container differential', actual: cases.length, expected: 976 })
+if (missing) throw new Error(missing)
 const rows = []
 for (const c of cases) {
   let spec
@@ -45,9 +53,7 @@ for (const c of cases) {
 const report = {
   schema: 1,
   comparison: 'Exact HTML after trimming outer whitespace; internal whitespace is preserved.',
-  spec: provenance(root), js: provenance(resolve(dirname(jsPath), '..')),
-  jsBuildSha256: artifactTreeSha(resolve(dirname(jsPath))),
-  rustBinarySha256: sha(readFileSync(rustPath)),
+  ...environment,
   corpusSha256: sha(JSON.stringify(cases)),
   total: rows.length, refused: rows.filter(r => r.refusal).length,
   agreed: rows.filter(r => r.equal).length,

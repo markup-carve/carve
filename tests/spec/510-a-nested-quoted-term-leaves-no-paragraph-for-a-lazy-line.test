@@ -1,0 +1,15 @@
+A nested quoted term leaves no paragraph for a lazy line
+
+```
+> > :: term
+tail
+.
+<blockquote>
+  <blockquote>
+    <dl>
+      <dt>term</dt>
+    </dl>
+  </blockquote>
+</blockquote>
+<p>tail</p>
+```

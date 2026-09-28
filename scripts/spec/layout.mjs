@@ -2090,7 +2090,8 @@ function flattenPastCap(lines) {
     if (trimmed.join('').trim() !== '') blocks.push({ t: 'para', lines: trimmed })
     run = []
   }
-  for (const line of lines) {
+  for (const raw of lines) {
+    const line = stripLazy(raw)
     if (line.trim() === '') { flush(); continue }
     run.push(line)
   }
@@ -3221,6 +3222,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         let text = line
         let depth = 0
         while (QUOTE.test(text)) {
+          // At the parser's depth limit the remaining line is literal text.
+          // Inspecting markers below it both misclassifies that text and walks
+          // an arbitrarily deep suffix for every enclosing quote.
+          if (state.blockDepth + depth >= MAX_NESTING_DEPTH) {
+            qNestedTable.length = depth
+            return text.trim() !== ''
+          }
           text = QUOTE.exec(text)[1] ?? ''
           const before = qNestedTable[depth] ?? false
           qNestedTable[depth] = tableRunStep(before, text)
@@ -3234,6 +3242,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             qNestedTable.length = depth
             // A term has inline content, but no paragraph for a lazy fold.
             // Match the direct quote classifier below.
+            if (state.blockDepth + depth >= MAX_NESTING_DEPTH) return text.trim() !== ''
             return !DEFLIST_TERM.test(text) && opensParagraph(text, false, before)
           }
         }
@@ -3242,6 +3251,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         return opensParagraph(text)
       }
       const trackFence = (l, idx) => {
+        // The quote body is literal beyond the same limit used by parseBlocks.
+        // Its apparent headings, fences, and tables cannot end a paragraph.
+        if (state.blockDepth >= MAX_NESTING_DEPTH) {
+          qOpenPara = !isBlank(l)
+          qTableOpen = false
+          qNestedTable.length = 0
+          qPara = qOpenPara ? [l] : []
+          return
+        }
         if (openComment !== null) {
           const c = COMMENT_FENCE_BODY.exec(l)
           if (c && c[1].length === openComment) openComment = null
