@@ -786,6 +786,7 @@ index: examples/edge-cases/index.md
   16-reference-link-9
   26-comments-7
   26-comments-8
+  comment-columns-and-surviving-list-items
   41-line-blocks-9
   empty-containers-share-one-html-body-shape
   a-title-or-label-fills-the-container-body-slot
