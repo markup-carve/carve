@@ -1,36 +1,8 @@
 # Default lint triggers not yet reported by each engine.
 # The parity gate rejects new missing rules and declarations that now pass.
-# Measured at carve-rs 39291253f and carve-php 2542c0e0.
-
-rust/bidi-control-in-source  The default CLI emits no warning for this shared trigger.
-rust/heading-trailing-attribute  The default CLI emits no warning for this shared trigger.
-rust/fence-opener-fallback  The default CLI emits no warning for this shared trigger.
-rust/raw-block-syntax  The default CLI emits no warning for this shared trigger.
-rust/blockquote-marker-without-space  The default CLI emits no warning for this shared trigger.
-rust/block-marker-as-text  The default CLI emits no warning for this shared trigger.
-rust/fence-delimiter-indentation  The default CLI emits no warning for this shared trigger.
-rust/list-item-body-detached  The default CLI emits no warning for this shared trigger.
-rust/list-item-block-overindented  The default CLI emits no warning for this shared trigger.
-rust/empty-include-path  The default CLI emits no warning for this shared trigger.
-rust/carve-version-unsupported  The default CLI emits no warning for this shared trigger.
-rust/unclosed-container-fence  The default CLI emits no warning for this shared trigger.
-rust/colon-fence-length-mismatch  The default CLI emits no warning for this shared trigger.
-rust/figure-group-empty  The default CLI emits no warning for this shared trigger.
-rust/figure-group-single-panel  The default CLI emits no warning for this shared trigger.
-rust/fence-title-syntax  The default CLI emits no warning for this shared trigger.
-rust/footnotes-placement-in-container  The default CLI emits no warning for this shared trigger.
-rust/table-cell-attribute-before-marker  The default CLI emits no warning for this shared trigger.
-php/heading-trailing-attribute  The default CLI emits no warning for this shared trigger.
-php/fence-opener-fallback  The default CLI emits no warning for this shared trigger.
-php/raw-block-syntax  The default CLI emits no warning for this shared trigger.
-php/blockquote-marker-without-space  The default CLI emits no warning for this shared trigger.
-php/block-marker-as-text  The default CLI emits no warning for this shared trigger.
-php/fence-delimiter-indentation  The default CLI emits no warning for this shared trigger.
-php/list-item-body-detached  The default CLI emits no warning for this shared trigger.
-php/list-item-block-overindented  The default CLI emits no warning for this shared trigger.
-php/empty-include-path  The default CLI emits no warning for this shared trigger.
-php/carve-version-unsupported  The default CLI emits no warning for this shared trigger.
-php/unclosed-container-fence  The default CLI emits no warning for this shared trigger.
-php/colon-fence-length-mismatch  The default CLI emits no warning for this shared trigger.
-php/fence-title-syntax  The default CLI emits no warning for this shared trigger.
-php/footnotes-placement-in-container  The default CLI emits no warning for this shared trigger.
+# Measured at carve-js 1f5a72246, carve-rs 8a52398dd and carve-php 9bf8f10f:
+# every engine emits all 37 shared triggers, so this file is EMPTY.
+#
+# An empty file is a real state and not a missing one. It says the last
+# measurement found no engine short of a default trigger; it does not say the
+# trigger population is complete, which `parity:check` asserts separately.

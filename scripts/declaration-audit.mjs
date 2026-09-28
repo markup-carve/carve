@@ -130,10 +130,20 @@ const REPOS = {
  */
 const MANIFEST = [
   // -- the spec repo's own ledgers ------------------------------------------
-  // NOT RELAXED, and the reason still holds here: a span row is
-  // `<type> (presence|extent) <count>`, with the issue mapping in header prose,
-  // so a `declared` policy over it would have nothing to check (carve#2179).
-  { repo: 'spec', path: 'resources/ast-span-divergence.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'npm run ast:check' },
+  // RELAXED on 2026-09-28, once the objection that held it back stopped being
+  // true. carve#2179 refused a `declared` policy here because a span row was
+  // `<type> (presence|extent) <count>` with the issue mapping in header prose,
+  // so the policy would have had nothing to read. A span row now carries the
+  // same third column the value ledger has carried since 2026-08-17 - who
+  // diverges and where it is tracked - `reconcileSpans` refuses a row that
+  // omits it, and tests/ast-spans.test.mjs asserts every shipped row names a
+  // fully qualified `owner/repo#N`.
+  //
+  // Without this, the first span divergence PART 12 §4 permits on BOTH sides
+  // could not be recorded in a pull request at all: carve#1928's indent
+  // latitude means neither engine owes the row, so there is no engine fix to
+  // wait for and the daily AST conformance run stayed red on it (carve#2175).
+  { repo: 'spec', path: 'resources/ast-span-divergence.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run ast:check' },
   // RELAXED, because the reason that covered both AST ledgers was only ever
   // true of the span one. A VALUE row is `<type.field>  <count>  <who diverges
   // and where it is tracked>`, and `tests/ast-values.test.mjs` has asserted
@@ -182,6 +192,15 @@ const MANIFEST = [
 
   { repo: 'spec', path: 'resources/html-import-pin-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run html-import:check' },
 
+  // THE THIRD ENGINE-LAG ENTRY, and the only one about a PUBLISHED pin rather
+  // than a committed one: carve-rb links `carve-lang` from crates.io, so
+  // between a carve-rs merge and its release the binding cannot agree with the
+  // carve-rs main this job builds, and there is no version for the pin to move
+  // to. Owed before a tag - the window closes when carve-rs publishes and
+  // carve-rb bumps - and declared inside a pull request, because no pull
+  // request in any repo can close it (carve#2175, markup-carve/carve-rb#143).
+  { repo: 'spec', path: 'resources/binding-parity-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run ast:check' },
+
   // -- the spec repo's declaration CONSTANTS, which the ledgers do not cover -
   // Codes the fixture and corpus oracles cannot reach (carve#1835). PRINTED
   // rather than judged, because no rule separates the two kinds it holds: one
@@ -211,7 +230,12 @@ const MANIFEST = [
   // will, so they are printed for a reader instead of judged.
   { repo: 'spec', path: 'tests/corpus-convert.test.mjs', name: 'PINNED_UNIMPLEMENTED', kind: 'js', policy: 'manual', guard: 'two-way', owner: 'the pinned build exports no djotToCarve' },
   { repo: 'spec', path: 'tests/optional-feature-adapters.test.mjs', name: 'DECLARED_UNREACHABLE', kind: 'js', policy: 'manual', guard: 'two-way', owner: 'per-engine CLI reachability' },
-  { repo: 'spec', path: 'tests/ast-spans.test.mjs', name: 'LAST_MEASURED', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/ast-spans.test.mjs' },
+  // The measurement twin of `resources/ast-span-divergence.txt`, reading the
+  // same way its sibling below does and for the same reason: it moves in the
+  // same commit as the ledger, and its rows are `['<type> (kind)', <count>]`
+  // with no reference to check - the reference is on the ledger row this
+  // mirrors. Left `owed` before a tag, where the window itself is owed.
+  { repo: 'spec', path: 'tests/ast-spans.test.mjs', name: 'LAST_MEASURED', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', owner: 'tests/ast-spans.test.mjs' },
   // The measurement twin of `resources/ast-value-divergence.txt`, and it moves
   // in the same commit, so it reads as that ledger does inside a pull request.
   // `manual` rather than `declared` for the reason PINNED_DRIFT carries it: the

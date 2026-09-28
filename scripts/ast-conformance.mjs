@@ -40,6 +40,8 @@ import {
 import { refusableRootShapes, rootShapeVerdict } from './spec/root-shape-probe.mjs'
 import { miscount, shortfall } from './spec/participants.mjs'
 import { rustBinary } from './lib/engine-locations.mjs'
+import { bindingParityProblems } from './lib/binding-parity.mjs'
+import { parseDriftLedger } from './lib/drift-ledger.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
@@ -1217,7 +1219,7 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
  * Read off the two checkouts rather than asserted, so the note is evidence and
  * not a guess that rots the next time either side moves.
  */
-function bindingPinNote() {
+function bindingPinVersions() {
   const read = (path) => {
     try {
       return readFileSync(path, 'utf8')
@@ -1225,10 +1227,16 @@ function bindingPinNote() {
       return null
     }
   }
-  const pinned = /^\s*carve_rs\s*=.*?version\s*=\s*"=?([^"]+)"/m.exec(
-    read(resolve(rbDir, 'ext/carve/Cargo.toml')) ?? '',
-  )?.[1]
-  const built = /^\s*version\s*=\s*"([^"]+)"/m.exec(read(resolve(rsDir, 'Cargo.toml')) ?? '')?.[1]
+  return {
+    pinned: /^\s*carve_rs\s*=.*?version\s*=\s*"=?([^"]+)"/m.exec(
+      read(resolve(rbDir, 'ext/carve/Cargo.toml')) ?? '',
+    )?.[1] ?? null,
+    built: /^\s*version\s*=\s*"([^"]+)"/m.exec(read(resolve(rsDir, 'Cargo.toml')) ?? '')?.[1] ?? null,
+  }
+}
+
+function bindingPinNote() {
+  const { pinned, built } = bindingPinVersions()
   if (!pinned || !built) return []
   if (pinned === built) {
     return [`The pin and the built engine both say ${pinned}, so this is a gap in the binding, not a stale pin.`]
@@ -1268,12 +1276,33 @@ if (rbShapes.size > 0 && rsShapes) {
     // anyway sent a reader looking for a version that does not exist
     // (markup-carve/carve-rb#142, carve#2175).
     for (const line of bindingPinNote()) console.error(line)
+    // THE WINDOW, DECLARED PER DOCUMENT. Without this the gate had one verdict
+    // for two different facts: a gap in the binding, which nobody can excuse,
+    // and the unreleased window between a carve-rs merge and its crates.io
+    // release, which nobody can close from here. The second is what kept AST
+    // conformance red with no fix available in any repo (carve#2175), so it is
+    // declared and the first stays gated.
+    const { problems, notes } = bindingParityProblems(
+      drifted,
+      parseDriftLedger(resolve(root, 'resources/binding-parity-drift.txt')),
+      [...rbShapes.keys()].filter((name) => rsShapes.has(name)),
+      bindingPinVersions(),
+    )
+    for (const note of notes) console.log(`  ${note}`)
+    for (const problem of problems) console.error(`  ${problem}`)
     console.error('')
     // DEFERRED, not exited on. carve-php, the three-way panel and every closing
     // roll-up are all below this line; exiting here deleted them from the run.
-    if (process.env.CARVE_REQUIRE_ALL_ENGINES === '1') {
+    if (problems.length > 0 && process.env.CARVE_REQUIRE_ALL_ENGINES === '1') {
       deferredGateFailures.push(
-        `BINDING PARITY: carve-rb's tree differs from carve-rs on ${drifted.length} of ${compared} document(s).`,
+        `BINDING PARITY: ${problems.length} of carve-rb's ${drifted.length} differing ` +
+          `document(s) (of ${compared}) are not declared in resources/binding-parity-drift.txt.`,
+      )
+    }
+    if (problems.length === 0) {
+      console.log(
+        `  All ${drifted.length} are declared as the carve-lang ` +
+          `${bindingPinVersions().pinned} pin window; a document outside that ledger fails the run.\n`,
       )
     }
   }
