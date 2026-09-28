@@ -368,6 +368,22 @@
       base is a lone `[` inside a span is `[\[\(r)]{.c}`; an escape on its
       closing parenthesis would be idle.
 
+      A CONTEXTUAL ESCAPE READS THAT RUN THE SAME WAY. Some occurrences are
+      decided by the character the writer emits AFTER them rather than by the
+      opener alone: a `!` before a `[` the writer emits as a link, image or
+      footnote opener, and a `!` or `$` before a code-span backtick run
+      (PART 9 §27). The neighbour is whatever reaches that position, from
+      whichever node, exactly as above. PART 11 §8d states the reading in full
+      for the Markdown target; it is the same reading here and is not restated.
+
+        text `a !`, then a link to /u    ->  a \![x](/u)
+
+      SAID HERE BECAUSE IT IS DERIVABLE, not because it is new. §2's test
+      already decides these, and a writer that modelled ONE such pair and
+      emitted `!` bare everywhere else passed everything it was asked
+      (markup-carve/carve-php#2634): the gap read as a shape nobody had thought
+      about rather than as a rule this section was missing.
+
       ESCAPE MINIMALITY STILL APPLIES INSIDE AN ESCALATED UNIT -- NORMATIVE [CARVE-P11-007].
       One occurrence needing the conservative form does not put
       the OTHER
