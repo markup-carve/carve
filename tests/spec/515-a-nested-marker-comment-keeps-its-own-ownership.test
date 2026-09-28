@@ -1,0 +1,84 @@
+A nested marker comment keeps its own ownership
+
+```
+- a
+  - %%%
+    hidden
+%%%
+tail
+.
+<ul>
+  <li>a
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+- a
+  - %%%
+    hidden
+    %%%
+tail
+.
+<ul>
+  <li>a
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+- a
+  - %% hidden
+tail
+.
+<ul>
+  <li>a
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+1. a
+   1. %%%
+      hidden
+%%%
+tail
+.
+<ol>
+  <li>a
+    <ol>
+      <li></li>
+    </ol>
+  </li>
+</ol>
+<p>tail</p>
+```
+
+```
+1. a
+   1. %%%
+      hidden
+      %%%
+tail
+.
+<ol>
+  <li>a
+    <ol>
+      <li></li>
+    </ol>
+  </li>
+</ol>
+<p>tail</p>
+```

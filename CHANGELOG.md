@@ -12,6 +12,8 @@ Releases before 0.1.6 are archived in
 
 ### Fixes
 
+- Keep nested marker-line comment ownership independent of the closer's column
+  in the executable specification (carve#2526).
 - Correct executable-spec container ownership after block comments and fence
   closers below an item's base column (carve#2507, carve#2509).
 - Pair comment spans with their own delimiters in every host (carve#2503).

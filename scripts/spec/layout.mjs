@@ -2297,6 +2297,7 @@ export function parse(src, { authoredBodyBases = true } = {}) {
   // PART 9 SS4c no-nesting demotion); it is false again here, so drop it too.
   delete state.inFigureGroup
   delete state.authoredBodyBases
+  delete state.markerCommentClosers
   delete state.prefixMemos
   delete state.attachmentBoundaries
   return { blocks, ...state }
@@ -4779,13 +4780,59 @@ function collectItems(lines, i, list, state, ind, meas) {
     // (tests/nested-container-rescan.test.mjs). This is `trackFence`'s own
     // construction in the descendant's coordinates instead, O(1) per line.
     const nestedVerbatim = () => nestedOpaque !== null && nestedOpaque.kind === 'code'
+    // Cache marker suffixes across recursive reads of the same physical line.
+    // Otherwise a stacked marker line is walked again at every item depth.
+    const markerComment = (text, idx, col = 0) => {
+      const memo = prefixMemo(state, lines, idx).markerComment ??=
+        new Map()
+      const path = []
+      let summary
+      for (;;) {
+        if (memo.has(text.length)) { summary = memo.get(text.length); break }
+        const measured = text[0] === ' ' || text[0] === '\t'
+          ? indentCols(text) : { col: 0, rest: text }
+        const marker = matchMarkerAt(measured)
+        if (!marker) {
+          const run = COMMENT_FENCE_BODY.exec(measured.rest)
+          summary = run ? { run: run[1], col: 0, markers: 0 } : null
+          memo.set(text.length, summary)
+          break
+        }
+        path.push({ length: text.length, width: marker.indent + marker.markerWidth })
+        text = marker.text
+      }
+      for (let k = path.length - 1; k >= 0; k--) {
+        if (summary) summary = { ...summary, col: summary.col + path[k].width, markers: summary.markers + 1 }
+        memo.set(path[k].length, summary)
+      }
+      if (!summary?.markers) return null
+      // All marker openers in this source array share the same delimiter index.
+      // Unmatched siblings must not each scan the remaining document.
+      const arrays = state.markerCommentClosers ??= new WeakMap()
+      let closers = arrays.get(lines)
+      if (!closers) {
+        closers = new Map()
+        for (let k = 0; k < lines.length; k++) {
+          const end = COMMENT_FENCE.exec(lines[k])
+          if (end) closers.set(end[1].length, k)
+        }
+        arrays.set(lines, closers)
+      }
+      return (closers.get(summary.run.length) ?? -1) > idx
+        ? { kind: 'comment', run: summary.run, markerLine: true, col: col + summary.col }
+        : null
+    }
+    const commentHoldsLine = (span, measured) => span?.kind === 'comment' &&
+      (!span.markerLine || measured.col >= span.col || measured.rest.startsWith('%%'))
     const trackNestedFence = (open, dmeas, sourceCol, idx, descendantOwned) => {
       if (open) {
         if (open.kind === 'comment') {
           // Indentation is part of neither delimiter (§28, carve#2471), so the
           // closer matches on run length at any column.
           const end = COMMENT_FENCE.exec(dmeas.rest)
-          return end && end[1].length === open.run.length ? null : open
+          if (end && end[1].length === open.run.length) return null
+          if (!commentHoldsLine(open, dmeas)) return null
+          return open
         }
         // A line BELOW the fence's own column supplies none of its body's
         // indentation, so the body has ended whatever follows it - the rule
@@ -4797,7 +4844,10 @@ function collectItems(lines, i, list, state, ind, meas) {
         const c = dmeas.col === open.col ? PURE_FENCE.exec(dmeas.rest) : null
         return c && c[1][0] === open.run[0] && c[1].length >= open.run.length ? null : open
       }
-      if (dmeas.col === 0 || fence.opaque || !descendantOwned) return null
+      if (fence.opaque) return null
+      const markerSpan = markerComment(dmeas.rest, idx, dmeas.col)
+      if (markerSpan) return markerSpan
+      if (dmeas.col === 0 || !descendantOwned) return null
       const comment = COMMENT_FENCE_BODY.exec(dmeas.rest)
       if (comment) {
         return commentFenceCloserAhead(lines, idx, comment[1])
@@ -4820,6 +4870,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       // ownership for a below-column follower - the marker-line `%%` spelling
       // already answers that way and the two spellings stay together.
       if (fence.opaque?.kind === 'comment') fence.opaque.markerLine = true
+      else nestedOpaque = markerComment(head.text.trimStart(), i)
     }
     i++
     // FIRST-BLOCK form (SS17 L4): a bare `+` as the sole marker-line content
@@ -5330,8 +5381,9 @@ function collectItems(lines, i, list, state, ind, meas) {
         const belowEnd = belowSpan !== null ? COMMENT_FENCE.exec(dedented) : null
         const belowCloser = belowEnd !== null && belowEnd[1].length === belowSpan.run.length
         if (belowCloser) belowSpan = null
-        const inCommentSpan = fence.opaque !== null && fence.opaque.kind === 'comment'
-        if (!belowCloser) trackFence(dedented, opens, i)
+        const inNestedComment = commentHoldsLine(nestedOpaque, dmeas)
+        const inCommentSpan = fence.opaque?.kind === 'comment' || inNestedComment
+        if (!belowCloser && !inNestedComment) trackFence(dedented, opens, i)
         // Read with the paragraph state this line ARRIVED with, exactly as
         // `bodyFenceOpens` above is; the chain below then answers for the line.
         const wasNested = nestedOpaque
@@ -5655,12 +5707,12 @@ function collectItems(lines, i, list, state, ind, meas) {
       // reads each line at the item's dedent and its opener test refuses an
       // indented run, so a span a DESCENDANT holds is invisible to it.
       if (!nm && COMMENT_FENCE_BODY.test(lm.rest) && lm.col === 0 && itemLines.length > 0 &&
-          commentFenceOpensSpan(lines, i) && !bodyHoldsOpenCommentSpan(itemLines)) {
+          commentFenceOpensSpan(lines, i) && nestedOpaque?.kind !== 'comment' && !bodyHoldsOpenCommentSpan(itemLines)) {
         break
       }
       // A column-zero comment cannot revive a closed item (#2504).
       // Keep delimiters inside an existing comment span with that span.
-      if (!nm && lm.col === 0 && lm.rest.startsWith('%%') && !openPara &&
+      if (!nm && lm.col === 0 && lm.rest.startsWith('%%') && !openPara && nestedOpaque?.kind !== 'comment' &&
           !bodyHoldsOpenCommentSpan(itemLines)) break
       if (!nm && lm.rest.startsWith('%%') && itemLines.length > 0) {
         // KEEP ONE COLUMN of the original indentation. Stripping it entirely
@@ -5683,7 +5735,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         // Only the closing half is asked: an OPENER at this column opens no span
         // here, and the branch above owns that question.
         const spanBefore = fence.opaque?.kind === 'comment' || nestedOpaque?.kind === 'comment'
-        const spanFromMarkerLine = fence.opaque?.markerLine === true
+        const spanFromMarkerLine = fence.opaque?.markerLine === true || nestedOpaque?.markerLine === true
         if (fence.opaque) trackFence(lm.rest, false, i)
         // The DESCENDANT span's closer arrives here too, below this column, so
         // the tracker above never sees it.
