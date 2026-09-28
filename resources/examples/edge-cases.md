@@ -41094,3 +41094,101 @@ y</p>
 ````
 
 :::
+
+A COLON fence closes the same way, and each quote level is asked on its own: a
+closer written one level down ends that level's div and leaves the outer quote
+with nothing to hand the unmarked line.
+
+::: compare
+
+````carve
+> > :::
+> > :::
+y
+````
+
+````html
+<blockquote>
+  <blockquote>
+    <div>
+
+    </div>
+  </blockquote>
+</blockquote>
+<p>y</p>
+````
+
+:::
+
+::: compare
+
+````carve
+> > ::: d
+> > p
+> > :::
+y
+````
+
+````html
+<blockquote>
+  <blockquote>
+    <div class="d">
+      <p>p</p>
+    </div>
+  </blockquote>
+</blockquote>
+<p>y</p>
+````
+
+:::
+
+::: compare
+
+````carve
+> > > ::: d
+> > > p
+> > > :::
+y
+````
+
+````html
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <div class="d">
+        <p>p</p>
+      </div>
+    </blockquote>
+  </blockquote>
+</blockquote>
+<p>y</p>
+````
+
+:::
+
+The control again: an ordinary quoted line after the closed div stores the claim,
+and the unmarked line folds into its paragraph.
+
+::: compare
+
+````carve
+> > ::: d
+> > p
+> > :::
+> > b
+y
+````
+
+````html
+<blockquote>
+  <blockquote>
+    <div class="d">
+      <p>p</p>
+    </div>
+    <p>b
+y</p>
+  </blockquote>
+</blockquote>
+````
+
+:::

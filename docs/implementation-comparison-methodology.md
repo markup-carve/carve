@@ -42,6 +42,12 @@ carve-rs `3a8403d`: all three agree on the two control documents and disagree
 with the oracle on the four the ruling moved, which
 [carve#2488](https://github.com/markup-carve/carve/issues/2488) tracks per
 engine.
+
+511's four colon-fence documents were measured against carve-js `cc9bed84`,
+carve-rs `main` and carve-php `415dfe28`: carve-js and carve-rs reproduce all
+four, carve-php keeps the unmarked line in the outer quote on the three nested
+spellings, which
+[carve-php#2664](https://github.com/markup-carve/carve-php/issues/2664) tracks.
 509's twelve were measured against carve-js `c5df77f6`: it agrees on the four the
 [carve#2490](https://github.com/markup-carve/carve/issues/2490) ruling leaves
 where they were and diverges on the other six, which

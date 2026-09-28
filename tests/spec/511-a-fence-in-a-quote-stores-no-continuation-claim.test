@@ -105,3 +105,70 @@ y</p>
   </blockquote>
 </blockquote>
 ````
+
+```
+> > :::
+> > :::
+y
+.
+<blockquote>
+  <blockquote>
+    <div>
+
+    </div>
+  </blockquote>
+</blockquote>
+<p>y</p>
+```
+
+```
+> > ::: d
+> > p
+> > :::
+y
+.
+<blockquote>
+  <blockquote>
+    <div class="d">
+      <p>p</p>
+    </div>
+  </blockquote>
+</blockquote>
+<p>y</p>
+```
+
+```
+> > > ::: d
+> > > p
+> > > :::
+y
+.
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <div class="d">
+        <p>p</p>
+      </div>
+    </blockquote>
+  </blockquote>
+</blockquote>
+<p>y</p>
+```
+
+```
+> > ::: d
+> > p
+> > :::
+> > b
+y
+.
+<blockquote>
+  <blockquote>
+    <div class="d">
+      <p>p</p>
+    </div>
+    <p>b
+y</p>
+  </blockquote>
+</blockquote>
+```
