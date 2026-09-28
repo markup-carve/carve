@@ -28,3 +28,4 @@
 2528: 0.1.7 - prunes the import-parity declarations the P1 engine fixes resolved. The ledger records what the pinned engines do, not what the language says, and what remains stays tracked in carve#2522.
 2529: 0.1.7 - prunes the AST ingest exceptions markup-carve/carve-php#2664 resolved, and restamps the revisions the run measured. Same ledger class as the resources inventories this gate already excludes by path.
 2532: 0.1.7 - declares the ingest differences the engines show on the carve#2525 fixtures, whose ruling the section already writes up. The ledger records what the pinned engines do; the parser gaps themselves stay tracked in carve#2530.
+2536: 0.1.7 - removes import-parity declarations resolved by the quote and emphasis fixes. This measurement ledger changes no clause, corpus row, or oracle answer; remaining gaps stay tracked in carve#2522.
