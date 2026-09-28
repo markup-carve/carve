@@ -4211,3 +4211,22 @@ wide&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gap<br>
 ```
 
 ::::
+
+A hyphen-only line is inline content inside a line block. The canonical writer
+keeps the run without padding or escaping: padding adds a visible no-break
+space, and escaping a hyphen changes the smart punctuation.
+
+:::: compare
+
+```carve
+::: |
+---
+```
+
+```html
+<div class="line-block">
+  <p>—</p>
+</div>
+```
+
+::::
