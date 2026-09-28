@@ -100,9 +100,18 @@ CI green:
    is its whole input. These three drive all three engine CHECKOUTS:
 
    ```sh
-   npm run ast:check   # resources/ast-value-divergence.txt, ast-span-divergence.txt
+   npm run ast:check   # resources/ast-value-divergence.txt, ast-span-divergence.txt,
+                       # resources/binding-parity-drift.txt
    npm run fmt:check   # resources/engine-fmt-drift.txt
    ```
+
+   `binding-parity-drift.txt` is the one that needs a fourth checkout,
+   `../carve-rb`, and the one whose window nothing here can close: it declares
+   the documents carve-rb does not reproduce because its `ext/carve/Cargo.toml`
+   pins a PUBLISHED `carve-lang` while `ast:check` builds carve-rs from `main`.
+   Closing it is a carve-rs release followed by a carve-rb bump, in that order.
+   Every row names the pin it was measured against, so the file goes red on its
+   own once that bump lands, and the right edit then is to delete it.
 
    So their precondition is not the pin - it is that `../carve-js`, `../carve-rs`
    and `../carve-php` are at their `main` AND rebuilt. Pulling without rebuilding
