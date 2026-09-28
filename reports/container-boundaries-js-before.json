@@ -1,0 +1,167 @@
+{
+  "node": "v22.22.2",
+  "rows": [
+    {
+      "marker": "> ",
+      "follower": "",
+      "depth": 32,
+      "bytes": 68,
+      "regexCalls": 808,
+      "medianMs": 0.8566081578947367,
+      "astSha256": "d9a7832898f951f12bf3a9e80c5c2e82290a03921946f8197e845fbf7fa96394"
+    },
+    {
+      "marker": "> ",
+      "follower": "",
+      "depth": 64,
+      "bytes": 132,
+      "regexCalls": 1544,
+      "medianMs": 0.5227198793103455,
+      "astSha256": "67cc67bee966fdc03f9075ad68878c7370ecf7bbcc912c35826d901e24207e23"
+    },
+    {
+      "marker": "> ",
+      "follower": "",
+      "depth": 128,
+      "bytes": 260,
+      "regexCalls": 3016,
+      "medianMs": 1.9447858888888858,
+      "astSha256": "f2db70709ae23cb671ee7428c0f83cc5dc86f3061c7aa10ddff8219ce82254d6"
+    },
+    {
+      "marker": "> ",
+      "follower": "tail\n",
+      "depth": 32,
+      "bytes": 73,
+      "regexCalls": 2180,
+      "medianMs": 1.080062566666667,
+      "astSha256": "7d0c7b91ab2b0f6d61d6ee66f90b7e578cde1ecc2928a00eca4efe1df3dbfbfd"
+    },
+    {
+      "marker": "> ",
+      "follower": "tail\n",
+      "depth": 64,
+      "bytes": 137,
+      "regexCalls": 4196,
+      "medianMs": 1.200521800000006,
+      "astSha256": "ccd8e6b8f7b75d586e9b8d130bf6edc38217b776551e35659ee3b9e5e21fdc91"
+    },
+    {
+      "marker": "> ",
+      "follower": "tail\n",
+      "depth": 128,
+      "bytes": 265,
+      "regexCalls": 8228,
+      "medianMs": 3.7714520000000107,
+      "astSha256": "52d24966b6af91bb70a209a9974ed0675dd9795373bfe845ce633bdffacb633d"
+    },
+    {
+      "marker": "- ",
+      "follower": "",
+      "depth": 32,
+      "bytes": 68,
+      "regexCalls": 1871,
+      "medianMs": 2.0880555999999957,
+      "astSha256": "e7b106de0bf49a7115c1f0d675f4df316aee0120b662825fd1ea8a4f575e5d85"
+    },
+    {
+      "marker": "- ",
+      "follower": "",
+      "depth": 64,
+      "bytes": 132,
+      "regexCalls": 3663,
+      "medianMs": 2.788422166666654,
+      "astSha256": "c97925be2619f38e08bd5e4c5b4cf33911bea83185dd7b78c7b23e70e5f40366"
+    },
+    {
+      "marker": "- ",
+      "follower": "",
+      "depth": 128,
+      "bytes": 260,
+      "regexCalls": 7247,
+      "medianMs": 2.7495568181818517,
+      "astSha256": "8e450950a3a9734bdfebee9b60918a698958d6b3812480ef1ad2a5b7094ce60b"
+    },
+    {
+      "marker": "- ",
+      "follower": "tail\n",
+      "depth": 32,
+      "bytes": 73,
+      "regexCalls": 7375,
+      "medianMs": 3.5852935555555328,
+      "astSha256": "9ac385fc2329ab77e27c4e2ba19bcc3b77258c227aa4bf078fb490bfb475a6a6"
+    },
+    {
+      "marker": "- ",
+      "follower": "tail\n",
+      "depth": 64,
+      "bytes": 137,
+      "regexCalls": 19711,
+      "medianMs": 8.570290500000056,
+      "astSha256": "77297ab61ee6bd205992e3ab2b81781bcc01510fb8e321916c6e154bb6b649fb"
+    },
+    {
+      "marker": "- ",
+      "follower": "tail\n",
+      "depth": 128,
+      "bytes": 265,
+      "regexCalls": 59743,
+      "medianMs": 6.258176833333361,
+      "astSha256": "67940122f478dbd76e4698265747dd71bf2dbf2c0eaee8221458b150604bb69a"
+    },
+    {
+      "marker": "1. ",
+      "follower": "",
+      "depth": 32,
+      "bytes": 100,
+      "regexCalls": 1935,
+      "medianMs": 0.9133997941176484,
+      "astSha256": "3dde4d70e03579ede36c994605442583cc766f0aa39b9212975cc283e19f11cb"
+    },
+    {
+      "marker": "1. ",
+      "follower": "",
+      "depth": 64,
+      "bytes": 196,
+      "regexCalls": 3791,
+      "medianMs": 2.57826933333331,
+      "astSha256": "4d65bd14eeacc8e30fa1bb8d38609400a4ae9ffe9928210e9371cf67a928a949"
+    },
+    {
+      "marker": "1. ",
+      "follower": "",
+      "depth": 128,
+      "bytes": 388,
+      "regexCalls": 7503,
+      "medianMs": 2.8444587272727158,
+      "astSha256": "73b45e7a29e1f9dd4a75ea6a18dd5d0ca6ffbbac2ada9afb34a584080c1f4853"
+    },
+    {
+      "marker": "1. ",
+      "follower": "tail\n",
+      "depth": 32,
+      "bytes": 105,
+      "regexCalls": 7039,
+      "medianMs": 2.621153846153867,
+      "astSha256": "856790a8a7bcd43021a63469572afa7329945b842fd159af9b150b781e6bc964"
+    },
+    {
+      "marker": "1. ",
+      "follower": "tail\n",
+      "depth": 64,
+      "bytes": 201,
+      "regexCalls": 18015,
+      "medianMs": 6.26042028571432,
+      "astSha256": "c28132cd7b5e0915b8514ddb6bc2d54adc0687d531341fa5c97c6c55b453adb5"
+    },
+    {
+      "marker": "1. ",
+      "follower": "tail\n",
+      "depth": 128,
+      "bytes": 393,
+      "regexCalls": 52255,
+      "medianMs": 6.6601584,
+      "astSha256": "7ed9d5c46426a49ea9236e4598362e2991fc8912ce3af94ec7c2d0724d865546"
+    }
+  ]
+}

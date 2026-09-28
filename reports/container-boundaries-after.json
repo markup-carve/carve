@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "comparison": "Exact HTML after trimming outer whitespace; internal whitespace is preserved.",
+  "spec": {
+    "head": "54613302a03ba1848840fc37cc66e81f10e4a270",
+    "diffSha256": "aa44e2eacdd48770093bc8b3bc4ce3094426bf9433b16f018a71d3e904c47c99"
+  },
+  "js": {
+    "head": "eb98c57fb724daf6ace62bf651a82c16a003a913",
+    "diffSha256": "de5324d84ba07e89dc7c0a2f518f1b642f7f713603b90ffd394b51632005b8f6"
+  },
+  "jsBuildSha256": "cc0d72b65dc61614b64e35a5b084d04cc869354d7306627f0b4ca287de6eaa31",
+  "rustBinarySha256": "f458a1b2401b789bac869ddc1707ff30133f161fadb3a43aad632d9b4745a11c",
+  "corpusSha256": "b0e16a3394614bafde4cf646f4b8d268402d6880a103a451be5b89e24495b323",
+  "total": 976,
+  "refused": 0,
+  "agreed": 975,
+  "differences": [
+    {
+      "name": "container-117",
+      "source": "> %% comment\n> tail\n",
+      "spec": "<blockquote><p>tail</p></blockquote>",
+      "js": "<blockquote><p>tail</p></blockquote>",
+      "rs": "<blockquote>\n  <p>tail</p>\n</blockquote>",
+      "equal": false
+    }
+  ],
+  "refusals": []
+}

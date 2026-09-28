@@ -1,5 +1,7 @@
 # Carve follow-up to the Djot differential checks
 
+The [boundary follow-up](container-boundaries.md) resolves the remaining structural cases and the measured lazy-follower scanning path. The results below record the earlier run.
+
 The 976-case sweep compared the executable spec, JavaScript, and Rust using Carve syntax. It found 31 exact HTML differences. Six came from one confirmed spec bug: a definition term inside nested quotes left the outer quote accepting a lazy continuation even though no paragraph was open. The fix reduces the differences to 25.
 
 All 16 footnote-indentation cases and all 288 reference/incomplete-inline cases agreed. Carve's unindented footnote continuation ends the note; Djot's lazy-footnote rule must not become a Carve fixture unchanged.
