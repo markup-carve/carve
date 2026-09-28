@@ -48,6 +48,7 @@ The table describes the JavaScript, PHP, and Rust implementations.
 | Cross-references / table of contents | anchor links | internal PDF links; anchors preserved in Markdown | destination retained |
 | Multiple table header rows | all rows keep header semantics | Markdown: first header row stays the header; later header rows stay as body rows | header semantics weaken; cell content survives |
 | Composite figure (`::: figure`) | one `<figure>` containing the panel figures and group caption | Markdown: panels in order, panel captions in italics, group caption last in bold; plain/terminal: group caption first, followed by each panel | required by Parts 9 and 11 of the specification |
+| Frontmatter | omitted from the body | Markdown: emitted first, as `---` carrying the format token wherever it is not `yaml`, content verbatim; plain/terminal: omitted | Markdown is the one target that spells it |
 
 The composite figure's contract is the floor applied with no exceptions: every
 panel, every panel caption, any stray content between the panels, and the group

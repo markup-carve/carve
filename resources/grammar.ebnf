@@ -10242,6 +10242,38 @@ EOF = (* end of file *) ;
       `list-table` is a standard kind name, and a GFM reader has the table
       natively where the nested list is the one thing it reads wrongly.
 
+  10r. THE MARKDOWN TARGET KEEPS FRONTMATTER -- NORMATIVE [CARVE-P11-062]. A
+      `frontmatter` node is emitted FIRST, as its own block: a `---` opener
+      carrying the format token wherever the format is not `yaml`, the content
+      VERBATIM, and a bare `---` closer. HTML, plain text and the terminal omit
+      it.
+
+        ---toml            ->  markdown  ---toml
+        t = 1                            t = 1
+        ---                              ---
+        (blank)                          (blank)
+        x                                x
+
+      THE SPLIT IS §10a'S TEST, not a new one. HTML may drop an unused
+      definition "because HTML has nowhere to put a definition nobody used";
+      Markdown has exactly somewhere to put frontmatter, so on this target the
+      drop is content loss. Plain text and the terminal are on HTML's side of
+      that test here rather than Markdown's: neither reads a delimited metadata
+      block, so emitting one leaves raw YAML in prose, which is not
+      preservation.
+
+      THE FORMAT TOKEN IS CARVE'S, NOT THE ECOSYSTEM'S. A `toml` body is not
+      rewritten to `+++`, and no per-format delimiter table is implied. A
+      reader that does not know the fence declines to parse it; one handed a
+      TOML body under a bare `---` reads it as YAML and is wrong about the
+      values. Declining beats being wrong, and the emitted block re-imports as
+      the same node.
+
+      THE CONTENT IS NOT VALIDATED. PART 12 §7 keeps `content` raw because a
+      malformed block is still a document's frontmatter; this target emits what
+      that node carries without parsing it, so nothing here can fail on a body
+      the format's own loader would reject.
+
   11. THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG --
       NORMATIVE [CARVE-P11-038]. GFM has no heading-id syntax: a reader derives every
       heading's id from its text, and `## H {#h}` shows the suffix as text.

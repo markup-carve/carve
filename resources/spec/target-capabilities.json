@@ -26,6 +26,14 @@
       "ansi": "flatten_preserving_content",
       "carve": "preserve"
     },
+    "frontmatter": {
+      "rule": "CARVE-P11-062",
+      "html": "omit",
+      "markdown": "preserve",
+      "plain": "omit",
+      "ansi": "omit",
+      "carve": "preserve"
+    },
     "resolved_cross_reference": {
       "rule": "CARVE-P11-038",
       "html": "link",
