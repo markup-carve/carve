@@ -30,6 +30,9 @@ function output(engine, args, source) {
 }
 
 try {
+  const corpusLint = spawnSync(process.execPath, [resolve(root, 'scripts/lint-corpus-check.mjs')], { stdio: 'inherit' })
+  if (corpusLint.error || corpusLint.signal || corpusLint.status === 2) throw new Error('corpus lint could not complete')
+  if (corpusLint.status !== 0) failures.push('corpus lint parity failed')
   const triggers = JSON.parse(readFileSync(resolve(root, 'resources/lint-default-triggers.json'), 'utf8'))
   // THE FLOOR CARRIES MORE NOW THAT NOTHING IS DECLARED. With an empty
   // `lint-parity-drift.txt` the reconciliation below has nothing to say, so a
