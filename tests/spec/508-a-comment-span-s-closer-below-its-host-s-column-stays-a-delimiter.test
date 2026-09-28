@@ -1,0 +1,107 @@
+A comment span's closer below its host's column stays a delimiter
+
+```
+:: t
+:  head
+
+     %%%
+     a
+%%%
+.
+<dl>
+  <dt>t</dt>
+  <dd>head</dd>
+</dl>
+```
+
+```
+:: t
+:  head
+
+     %%%
+     a
+%%%
+
+   tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>head</p>
+    <p>tail</p>
+  </dd>
+</dl>
+```
+
+```
+see[^f]
+
+[^f]: head
+
+  %%%
+  a
+%%%
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>head<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+- head
+
+    %%%
+    a
+%%%
+    %%%
+    b
+    %%%
+
+  tail
+.
+<ul>
+  <li><p>head</p>
+    <p>tail</p>
+  </li>
+</ul>
+```
+
+```
+:: t
+:  head
+
+     %%%
+a
+%%%
+
+   tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>head</dd>
+</dl>
+<p>a</p>
+<p>tail</p>
+```
+
+```
+:: t
+:  head
+
+     %%%
+     a
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>head</p>
+    <p>a</p>
+  </dd>
+</dl>
+```

@@ -34,3 +34,7 @@
 507-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph-7  carve#2474: the pin splits a raised colon body at a host-column list marker.
 507-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph-8  carve#2474: the pin splits a raised colon body at a host-column list marker.
 507-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph-9  carve#2474: the pin splits a raised colon body at a host-column list marker.
+508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter  carve#2488: the pin publishes a comment span's payload when its closer sits below the host's column.
+508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-2  carve#2488: the pin publishes a comment span's payload when its closer sits below the host's column.
+508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-3  carve#2488: the pin publishes a comment span's payload when its closer sits below the host's column.
+508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4  carve#2488: the pin publishes a comment span's payload when its closer sits below the host's column.
