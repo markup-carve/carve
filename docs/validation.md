@@ -341,22 +341,23 @@ published page: the **caption of a captioned listing**, and the body of a
 
 All three engines provide `carve lint`. The 37 default triggers in
 [`resources/lint-default-triggers.json`](https://github.com/markup-carve/carve/blob/main/resources/lint-default-triggers.json)
-pass in the builds measured on 2026-09-28: carve-js `af631448c`,
-carve-php `415dfe281`, and carve-rs `8e81eff44`. Passing a trigger establishes that a rule
-can fire; it does not establish agreement on every document or source location.
+pass in the builds recorded in
+[`resources/lint-corpus-drift.json`](https://github.com/markup-carve/carve/blob/main/resources/lint-corpus-drift.json).
+Those builds also agree on all 2,085 corpus documents. Passing a trigger establishes
+that a rule can fire; corpus agreement does not establish correctness for every
+possible input.
 
 | implementation | measured coverage |
 |---|---|
 | carve-js | 37 default triggers; `unattached-block-attribute`; Djot and Markdown migration checks; opt-in platform checks |
-| carve-php | 37 default triggers; Markdown-habit checks; opt-in platform checks |
-| carve-rs | 37 default triggers; `unattached-block-attribute`; no Markdown-habit or platform checks |
+| carve-php | 37 default triggers; `unattached-block-attribute`; Markdown strong/strike and Djot plus/caret checks; opt-in platform checks |
+| carve-rs | 37 default triggers; `unattached-block-attribute`; Markdown strong/strike and Djot plus/caret checks; no platform checks |
 
 `bibliography-placement-in-container` and `table-marker-run-padding` are
-specified but absent from these builds. PHP does not yet emit
-`unattached-block-attribute`. The
-engines still emit `table-alignment-run-padding`. The Djot migration checks
-are available only in carve-js. Diagnostic message wording is engine-specific;
-compare the rule id and source location.
+specified but absent from these builds. The engines still emit
+`table-alignment-run-padding`. The broader Djot migration checks remain specific
+to carve-js. Diagnostic message wording is engine-specific; compare the rule id
+and source location.
 
 #### Checking lint parity
 
@@ -373,8 +374,8 @@ list, or a declaration whose difference has disappeared fails the gate. Review
 changed output before editing a declaration. Agreement alone does not establish
 that a diagnostic is correct.
 
-The gate also checks codepoint columns after ASCII, accented, supplementary-plane,
-and combining characters. Missing engines, command failures, and stderr output
+The gate also checks bidi and Markdown-habit codepoint columns after ASCII,
+accented, supplementary-plane, and combining characters in all three engines. Missing engines, command failures, and stderr output
 fail the run. Set `CARVE_JS_DIR`, `CARVE_PHP_DIR`, and `CARVE_RS_DIR` to built engine
 checkouts; `CARGO_TARGET_DIR` is supported. To save the observed differences, run
 `npm run lint:parity -- --report /tmp/lint-parity.json`. Writing a report does not
@@ -408,9 +409,8 @@ This does NOT require every engine to implement every rule. Coverage differs and
 that is fine; the table above says so. What it forbids is two engines detecting
 the same thing under different names.
 
-Some older carve-php Markdown-habit checks still use different ids from the
-migration checks for the same delimiter families. Treat those engine-specific
-ids as non-portable until they are unified.
+The Markdown strong and strike checks use `markdown-strong-double-star` and
+`markdown-strikethrough-double-tilde` in all three measured engines.
 
 ### Accessibility checks
 
