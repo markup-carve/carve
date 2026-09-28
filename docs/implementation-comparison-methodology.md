@@ -32,6 +32,7 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `510-a-nested-quoted-term-leaves-no-paragraph-for-a-lazy-line`,
 `511-a-fence-in-a-quote-stores-no-continuation-claim`,
 `512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership`,
+`513-a-comment-span-opened-below-every-content-column-is-located-there`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
@@ -56,6 +57,11 @@ definition documents and the two whose closer sits at the opener's column, and
 reads the closer's column on the other four, which
 `resources/engine-pin-drift.txt` declares. The other two engines are unmeasured
 here.
+
+513's eight were measured against carve-js `58c747bf0` and carve-php `ab0648469`,
+each built from its own default branch: both reproduce all eight. carve-rs
+`cd1bb9cce` reads the closer's column on five of them, the gap
+[carve#2530](https://github.com/markup-carve/carve/issues/2530) records.
 509's twelve were measured against carve-js `c5df77f6`: it agrees on the four the
 [carve#2490](https://github.com/markup-carve/carve/issues/2490) ruling leaves
 where they were and diverges on the other six, which

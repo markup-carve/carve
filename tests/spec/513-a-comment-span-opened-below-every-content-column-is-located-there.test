@@ -1,0 +1,118 @@
+A comment span opened below every content column is located there
+
+```
+- item
+ %%%
+ hidden
+%%%
+tail
+.
+<ul>
+  <li>item
+    tail
+  </li>
+</ul>
+```
+
+```
+- item
+ %%%
+ hidden
+  %%%
+tail
+.
+<ul>
+  <li>item
+    tail
+  </li>
+</ul>
+```
+
+```
+- item
+ %%%
+ hidden
+   %%%
+tail
+.
+<ul>
+  <li>item
+    tail
+  </li>
+</ul>
+```
+
+```
+1. item
+  %%%
+  hidden
+   %%%
+tail
+.
+<ol>
+  <li>item
+    tail
+  </li>
+</ol>
+```
+
+```
+- a
+  - item
+ %%%
+ hidden
+    %%%
+tail
+.
+<ul>
+  <li>a
+    <ul>
+      <li>item
+        tail
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- item
+ %%%%%
+ hidden
+  %%%%%
+tail
+.
+<ul>
+  <li>item
+    tail
+  </li>
+</ul>
+```
+
+```
+- item
+ %% c
+tail
+.
+<ul>
+  <li>item
+    tail
+  </li>
+</ul>
+```
+
+````
+- item
+ %%%
+ hidden
+  %%%
+  ```
+tail
+.
+<ul>
+  <li>item
+    <pre><code>tail
+</code></pre>
+  </li>
+</ul>
+````

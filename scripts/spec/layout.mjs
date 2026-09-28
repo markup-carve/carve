@@ -4558,6 +4558,13 @@ function collectItems(lines, i, list, state, ind, meas) {
     // in. `%%%` is excluded by the family 1 ruling and FENCE spells only the
     // backtick and tilde kinds, the `=html` raw form among them.
     let nestedOpaque = null
+    // A comment span whose OPENER is written below every content column. The
+    // tracker above reads lines at the item's own column, so it never saw that
+    // opener and recorded no span: the closer then arrived as a fresh comment
+    // and answered with the column it was written at instead of the column the
+    // span sits at (carve#2526). One run is remembered and the first
+    // matching-width run at any column clears it, which is O(1) per line.
+    let belowSpan = null
     // §10 I4 for such a fence: at block start it runs to the end of its
     // container, after a paragraph only when a closer follows at its own
     // column. A run indented past that column is payload (CARVE-P2-006).
@@ -5130,8 +5137,14 @@ function collectItems(lines, i, list, state, ind, meas) {
         // (CARVE-P9-053), so neither may touch the paragraph or the
         // after-comment state below - read before the tracker consumes the
         // closer.
+        // A CLOSER FOR THE SPAN THAT SITS BELOW THIS COLUMN. It is the same
+        // line the tracker would read as an opener, so consume it first or the
+        // span would be reopened here and its own closer lost.
+        const belowEnd = belowSpan !== null ? COMMENT_FENCE.exec(dedented) : null
+        const belowCloser = belowEnd !== null && belowEnd[1].length === belowSpan.run.length
+        if (belowCloser) belowSpan = null
         const inCommentSpan = fence.opaque !== null && fence.opaque.kind === 'comment'
-        trackFence(dedented, opens, i)
+        if (!belowCloser) trackFence(dedented, opens, i)
         // Read with the paragraph state this line ARRIVED with, exactly as
         // `bodyFenceOpens` above is; the chain below then answers for the line.
         const wasNested = nestedOpaque
@@ -5157,7 +5170,11 @@ function collectItems(lines, i, list, state, ind, meas) {
         // does need the span (carve#985), and matches it with
         // COMMENT_FENCE_BODY rather than `findCloser`, whose alphabet is
         // backticks and tildes.
-        if (inCommentSpan) {
+        if (belowCloser) {
+          // The span is located below every content column, so its closer
+          // leaves THAT column's retention: the frame stays available.
+          afterComment = true
+        } else if (inCommentSpan) {
           // The span's own lines say nothing here: the opener already set both
           // states, and a payload line that reopened a paragraph made the
           // CLOSER's column decide who owns the following line.
@@ -5171,7 +5188,11 @@ function collectItems(lines, i, list, state, ind, meas) {
         // does the deepest structure now hold an OPEN paragraph that lazy
         // text may fold into? markers open a sub-item paragraph; quotes an
         // open quoted paragraph; fences/breaks close everything (SS10 I2/I6)
-        if (inCommentSpan) { /* opaque: the opener already closed the paragraph */ }
+        // A closer for the span below this column leaves the paragraph exactly as
+        // the span found it: closing it here would be this column answering for a
+        // span written at another one, which is the whole of carve#2526.
+        if (belowCloser) { /* the span's own state, untouched */ }
+        else if (inCommentSpan) { /* opaque: the opener already closed the paragraph */ }
         else if (i <= wrappedAttrEnd) closePara()
         else if (COMMENT_LINE.test(dedented)) closePara()
         else if (HR.test(dedented)) closePara()
@@ -5494,6 +5515,18 @@ function collectItems(lines, i, list, state, ind, meas) {
         if (spanBefore && !(fence.opaque?.kind === 'comment' || nestedOpaque?.kind === 'comment')) {
           closePara()
           if (!spanFromMarkerLine) afterComment = true
+        }
+        // An opener written HERE locates the span below every content column,
+        // so its closer answers with this column's retention wherever it is
+        // written (carve#2526). No §28 lookahead: a run with no matching closer
+        // ahead is one `%%` line and the state it leaves can never be read,
+        // because reading it takes a run of the same width. Asking anyway would
+        // walk the rest of the document once per opener, which is the rescan
+        // carve#2509 and carve#2527 each measured going quadratic here.
+        if (!spanBefore) {
+          const run = COMMENT_FENCE_BODY.exec(lm.rest)
+          if (run && belowSpan !== null && run[1].length === belowSpan.run.length) belowSpan = null
+          else if (run && belowSpan === null) belowSpan = { run: run[1] }
         }
         i++
         continue
