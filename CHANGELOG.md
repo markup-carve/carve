@@ -23,8 +23,8 @@ Releases before 0.1.6 are archived in
 - End executable-spec lazy continuation after quoted fences and nested blocks
   that leave no paragraph. Correct list, description, and `+` attachment
   boundaries (carve#2510, carve#2514, carve#2515).
-- End it after a quoted fence a list item, description body or footnote body
-  holds open, at every nesting depth (carve#2538).
+- End it after a quoted fence a list item or footnote body holds open, at every
+  nesting depth (carve#2538, carve#2551).
 - Preserve frontmatter when writing the Markdown target (carve#2502).
 
 ### Improvements

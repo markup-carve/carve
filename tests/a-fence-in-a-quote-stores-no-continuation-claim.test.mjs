@@ -270,17 +270,13 @@ test('a container this line opened puts the fence at its block start', () => {
 })
 
 test('the content column is asked exactly, and an over-indented run is not it', () => {
-  // A closer is written at the HOST's content column, so the opener is read there
-  // too. An opener at column 5 in an item of content column 2 closes on a pure
-  // run at 2 - which the tracker must not read as a fresh opener, or the line
-  // below it leaves a quote that keeps it (raised by codex review).
-  assert.equal(host(`> - a\n>     ${F}\n>\n>   ${F}\n>   a\nflush\n`),
-    'quote[list[item[p(a), code, p(a|flush)]]]')
-  // AND THE OVER-INDENTED OPENER IS OUTSIDE THIS. The host's own reader pairs
-  // fence runs across the whole body: the column-5 prose run above makes the
-  // column-3 run its partner rather than an opener, so a column alone does not
-  // predict the fence, and pairing over a region is the rescan carve#2509 ruled
-  // out. These keep the answer they had.
+  // A closer is written at the HOST's content column, so an opener is read there
+  // too and NOWHERE ELSE. Whether the host's own reader takes an over-indented one
+  // depends on the runs already in its body - in an item of content column 2 a run
+  // at column 3 opens under a blank and does not under a refused run at column 5 -
+  // and reading the body is the rescan carve#2509 ruled out. So those keep the
+  // answer they had, which is the host swallowing the line rather than the
+  // document taking it.
   assert.equal(host(`> - a\n>     ${F}\n>\n>    ${F}\n>   a\nflush\n`),
     `quote[list[item[p(a|${F}), p(${F}|a|flush)]]]`)
   assert.equal(host(`> - a\n>   ${F}\n>   x\n>     ${F}\n>   a\nflush\n`),
@@ -289,6 +285,14 @@ test('the content column is asked exactly, and an over-indented run is not it', 
   // where the host swallows the line rather than the document taking it.
   assert.equal(host(`> - a\n>\n>     ${F}\n>     x\nflush\n`),
     'quote[list[item[p(a), code]]]')
+  // A LINE WITH AN INVALID INFO STRING IS NOT A FENCE LINE AT ALL: it is prose
+  // holding an inline verbatim run, so it leaves no closer to come and the opener
+  // below it is real (raised by codex review).
+  const BAD = F + 'bad' + '`'
+  assert.equal(host(`> - a\n>   ${BAD}\n>\n>   ${F}\n>   x\nflush\n`),
+    `quote[list[item[p(a|${BAD}), code]]], p(flush)`)
+  assert.equal(host(`> ${BAD}\n> # H\n> ${F}\n> x\nflush\n`),
+    `quote[p(${BAD}), heading, code], p(flush)`)
 })
 
 test('a host that ends ends its fence, and the line is classified again', () => {
@@ -349,4 +353,34 @@ test('only a list item\'s paragraph gives way to a marker', () => {
   // keeps the clause above two-sided.
   assert.equal(host(`> - d\n>   - ${F}\n>     x\nflush\n`),
     'quote[list[item[p(d), list[item[code]]]]], p(flush)')
+})
+
+test('an over-indented run inside a container leaves a closer, not an opener', () => {
+  // §24 C3 reads "at or past", so the host's own reader takes the column-5 run
+  // and the run at the host's column below it is that fence's CLOSER. Untracked,
+  // that closer read as a fresh opener and the line under it left a quote that
+  // keeps it (raised by codex review).
+  assert.equal(host(`> - a\n>     ${F}\n>\n>   ${F}\n>   a\nflush\n`),
+    'quote[list[item[p(a), code, p(a|flush)]]]')
+  // AND TWO OVER-INDENTED RUNS PAIR WITH EACH OTHER, so the second closes the
+  // expectation rather than replacing it. Overwriting left a closer nothing waited
+  // for, and it suppressed the real opener below (raised by codex review).
+  assert.equal(host(`> - a\n>     ${T}\n>     ${T}\n>\n>   ${T}\n>   x\nflush\n`),
+    'quote[list[item[p(a), code, code]]], p(flush)')
+  // AT THE LEVEL'S OWN COLUMN THERE IS NOTHING TO REMEMBER: column 0 is strict,
+  // so a run further in opened nothing and the run at 0 below it is a real
+  // opener. Holding a closer for it suppressed that opener.
+  assert.equal(host(`>   ${T}\n> # H\n> ${T}\n> x\nflush\n`),
+    `quote[p(${T}), heading, code], p(flush)`)
+})
+
+test('the nesting cap counts the host containers too', () => {
+  // Past MAX_NESTING_DEPTH an opener degrades to literal paragraph text, so a
+  // fence recognized here would open a block the block reader does not. The cap
+  // counted quote depth only, and a list item inside the quote is one more
+  // container (raised by codex review). The pair is the control: one marker less
+  // and the fence really opens.
+  const blocks = (d) => parse('> '.repeat(d) + '- ' + T + '\nflush\n').blocks.length
+  assert.equal(blocks(199), 1)
+  assert.equal(blocks(198), 2)
 })

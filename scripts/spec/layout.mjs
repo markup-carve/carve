@@ -1719,7 +1719,7 @@ function bodyHasOpenCodeFence(lines, scan, end, measurement, hasFutureCommentClo
  * collected body is the rescan carve#2509 ruled out.
  */
 function hostLadder() {
-  return { columns: [0], markerCols: [], kinds: [], fence: null, pending: null }
+  return { columns: [0], markerCols: [], kinds: [], fence: null, unclaimed: null }
 }
 
 /*
@@ -1812,31 +1812,38 @@ function hostFenceStep(h, line) {
 // Does a fence open at this level on this line, given where the ladder stands?
 //
 // AT THE CONTENT COLUMN (SS24 C3), and at that column EXACTLY - the same column
-// its closer is written at. The host's block reader also opens an OVER-INDENTED
-// fence, but it pairs fence runs across the whole body while doing so: in an item
-// of content column 2, a prose line carrying a run at column 5 makes a later run
-// at column 3 that run's partner rather than an opener, so the fence the column
-// alone predicts is not there. Pairing over a region is the rescan carve#2509
-// ruled out, so the over-indented spelling stays outside this and keeps the
-// answer it had (carve#2538).
+// its closer is written at. The host's own reader also opens an OVER-INDENTED
+// fence, but whether that one opens depends on the runs already in the body, which
+// is a property of the whole body and reading the body is the rescan carve#2509
+// ruled out. So an over-indented run is not taken as an opener here and keeps the
+// answer it had; what IS remembered is that it leaves a closer to come.
 function hostFenceOpener(h, inner) {
+  const column = h.columns.at(-1)
+  if (h.unclaimed !== null && h.unclaimed.host > column) h.unclaimed = null
   const f = FENCE.exec(inner.rest)
   const opener = f && parseFenceInfo(f[2]) !== null ? f : null
-  const run = f ? f[1] : (PURE_FENCE.exec(inner.rest)?.[1] ?? null)
-  if (h.pending !== null && h.pending.host > h.columns.at(-1)) h.pending = null
-  // A RUN THAT OPENED NOTHING IS STILL A RUN, and the host's own reader pairs it
-  // with the next one. That is why a column alone does not predict the fence: in
-  // an item of content column 2 a prose run at column 5 makes the run at 2 or 3
-  // below it its PARTNER, and the block there is a closed code block whose
-  // paragraph the line after it continues. Paired here one line at a time, since
-  // pairing over the collected body is the rescan carve#2509 ruled out.
-  if (h.pending !== null && run !== null && run[0] === h.pending.run[0] &&
-      run.length >= h.pending.run.length) {
-    h.pending = null
+  if (inner.col !== column) {
+    // AN OVER-INDENTED RUN INSIDE A CONTAINER DID OPEN SOMETHING. The host's
+    // reader takes it (SS24 C3 reads "at or past"), and the run at the host's own
+    // column below it is that fence's CLOSER. Untracked, that closer read as a
+    // fresh opener and the line under it left a quote that keeps it. At the
+    // level's own column there is nothing to remember: column 0 is strict, so a
+    // run further in opened nothing at all (raised by codex review).
+    // TWO OVER-INDENTED RUNS PAIR WITH EACH OTHER, so the second CLOSES the
+    // expectation rather than replacing it. Overwriting left a closer nothing was
+    // waiting for, and it then suppressed the real opener at the content column
+    // below (raised by codex review).
+    if (opener !== null && column > 0) {
+      h.unclaimed = h.unclaimed !== null && opener[1][0] === h.unclaimed.run[0] &&
+        opener[1].length >= h.unclaimed.run.length
+        ? null
+        : { run: opener[1], host: column }
+    }
     return null
   }
-  if (run !== null && (opener === null || inner.col !== h.columns.at(-1))) {
-    h.pending = { run, host: h.columns.at(-1) }
+  if (h.unclaimed !== null && opener !== null && opener[1][0] === h.unclaimed.run[0] &&
+      opener[1].length >= h.unclaimed.run.length) {
+    h.unclaimed = null
     return null
   }
   return opener
@@ -3588,7 +3595,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               const host = qNestedHost[depth - 1] ??= hostLadder()
               const { inner } = hostAdvance(host, tail, false)
               const opener = hostFenceOpener(host, inner)
-              if (opener && state.blockDepth + depth < MAX_NESTING_DEPTH) {
+              if (opener && state.blockDepth + depth + (host.columns.length - 1) < MAX_NESTING_DEPTH) {
                 host.fence = { run: opener[1], column: inner.col, host: host.columns.at(-1) }
                 qNestedTable[depth - 1] = false
                 return settle(false, depth)
@@ -3617,14 +3624,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // text, so a fence recognized here would open a block the block reader
           // does not. The cap is the POST-STRIP one the branch below asks, moved
           // ahead of the fence rather than after it (raised by codex review).
-          if (state.blockDepth + depth + 1 < MAX_NESTING_DEPTH && f &&
+          if (state.blockDepth + depth + 1 + (host.columns.length - 1) < MAX_NESTING_DEPTH && f &&
               (blockStart || !qNestedPara[depth] ||
                closerFollows(idx, depth + 2, f[1], host.columns.at(-1)))) {
             host.fence = { run: f[1], column: inner.col, host: host.columns.at(-1) }
             qNestedTable[depth] = false
             return settle(false, depth + 1)
           }
-          if (f) host.pending = { run: f[1], host: host.columns.at(-1) }
           depth++
           if (!QUOTE.test(text)) {
             // A term has inline content, but no paragraph for a lazy fold.
@@ -3715,11 +3721,14 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // asks for no closer there: `> - a` / `> - ``` ` opens the second item's
         // fence, where the quote's own paragraph state is the FIRST item's and
         // says nothing about it (carve#2538).
-        const isOpener = !!(f && (blockStart || !qOpenPara ||
-          closerFollows(idx, 1, f[1], qHost.columns.at(-1))))
+        // SS25 counts the HOST's containers too: at the cap the block reader
+        // degrades the opener to literal text, so a fence recognized here would
+        // open a block it does not (raised by codex review).
+        const isOpener = !!(f &&
+          state.blockDepth + (qHost.columns.length - 1) < MAX_NESTING_DEPTH &&
+          (blockStart || !qOpenPara ||
+           closerFollows(idx, 1, f[1], qHost.columns.at(-1))))
         if (isOpener) qHost.fence = { run: f[1], column: inner0.col, host: qHost.columns.at(-1) }
-        // An opener §10 I4 refused is one of those unpaired runs.
-        else if (f) qHost.pending = { run: f[1], host: qHost.columns.at(-1) }
         // PART 1 S4 makes the fold conditional on an OPEN PARAGRAPH, so every
         // block that leaves none clears this. A definition TERM is bounded like
         // a heading (it holds inline content, not a paragraph), and a
