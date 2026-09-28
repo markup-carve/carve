@@ -1426,10 +1426,105 @@ test('the parse tree cannot answer for a definition list, so the corpus pass rea
   assert.equal(wire.pos.endOffset, wire.items.at(-1).pos.endOffset)
 })
 
+test('fenced quotes own their closer at every supported fence width and indent', () => {
+  for (const opener of ['::: >', ':::: >', '  ::: >', '\t::: >', ':::   > \t']) {
+    for (const newline of ['\n', '\r', '\r\n']) {
+      const prefix = '😀' + newline
+      const source = prefix + opener + newline + 'hello' + newline + ':'.repeat(opener.match(/:+/)[0].length) + newline
+      const start = [...prefix].length
+      const childStart = [...prefix + opener + newline].length
+      const childEnd = childStart + 5
+      const quote = {
+        type: 'block_quote',
+        pos: pos(start, [...source].length - newline.length),
+        children: [{ type: 'paragraph', pos: pos(childStart, childEnd), children: [] }],
+      }
+      const findings = []
+      assert.equal(checkStopsAtChildren(quote, [...source], findings), 0, opener)
+      assert.deepEqual(findings, [], opener)
+    }
+  }
+})
+
+test('fenced quotes from the pinned parser use the same source-spelling exception', () => {
+  for (const source of [
+    '::: >\nhello\n:::\n',
+    '- ::: >\n  hello\n  :::\n',
+    '[^n]: ::: >\n  hello\n  :::\n\nsee[^n]\n',
+    '::: >\nhello\n:::\n^ caption\n',
+  ]) {
+    const doc = toAstJson(parse(source))
+    const quotes = [...walkNodes(doc)].filter(([node]) => node.type === 'block_quote')
+    assert.equal(quotes.length, 1, source)
+    const [quote] = quotes[0]
+    // Check the quote separately so a parent's independent span cannot hide it.
+    assert.deepEqual(stopFindings(quote, source), [], source)
+  }
+})
+
+test('an empty fenced quote can span its opener and closer', () => {
+  const source = '::: >\n:::\n'
+  const quote = { type: 'block_quote', pos: pos(0, source.length - 1), children: [] }
+  const findings = []
+  assert.equal(checkStopsAtChildren(quote, [...source], findings), 0)
+  assert.deepEqual(findings, [])
+})
+
+test('a prefixed quote still stops at its last child regardless of its fenced flag', () => {
+  const source = '> hello\n\n'
+  for (const fenced of [undefined, true, false]) {
+    const quote = {
+      type: 'block_quote', fenced, pos: pos(0, source.length),
+      children: [{ type: 'paragraph', pos: pos(2, 7), children: [] }],
+    }
+    const findings = []
+    assert.equal(checkStopsAtChildren(quote, [...source], findings), 1)
+    assert.equal(findings.length, 1)
+    assert.match(findings[0], /span reaches past its last child on "block_quote"/)
+    quote.pos = pos(0, 7)
+    assert.deepEqual(stopFindings(quote, source), [])
+  }
+})
+
+test('excluding a fenced quote still checks its descendants and its footnote parent', () => {
+  const source = '[^n]: ::: >\n  hello\n  :::\n'
+  const childStart = source.indexOf('hello')
+  const childEnd = childStart + 5
+  const quoteEnd = source.length - 1
+  const paragraph = {
+    type: 'paragraph', pos: pos(childStart, childEnd + 1),
+    children: [{ type: 'text', pos: pos(childStart, childEnd), value: 'hello' }],
+  }
+  const quote = { type: 'block_quote', pos: pos(6, quoteEnd), children: [paragraph] }
+  const note = { type: 'footnote', pos: pos(0, quoteEnd), children: [quote] }
+  const findings = []
+  assert.equal(checkStopsAtChildren(note, [...source], findings), 2)
+  assert.equal(findings.length, 1)
+  assert.match(findings[0], /span reaches past its last child on "paragraph"/)
+  paragraph.pos = pos(childStart, childEnd)
+  assert.deepEqual(stopFindings(note, source), [])
+})
+
+test('a figure target can be a fenced quote without giving the figure a closer', () => {
+  const source = '::: >\nhello\n:::\n^ caption\n'
+  const quote = {
+    type: 'block_quote', pos: pos(0, 15),
+    children: [{ type: 'paragraph', pos: pos(6, 11), children: [] }],
+  }
+  const captionEnd = source.length - 1
+  const figure = {
+    type: 'figure', pos: pos(0, captionEnd), target: quote,
+    caption: [{ type: 'text', pos: pos(18, captionEnd), value: 'caption' }],
+  }
+  assert.deepEqual(stopFindings(figure, source), [])
+  figure.pos = pos(0, source.length)
+  const findings = stopFindings(figure, source)
+  assert.equal(findings.length, 1)
+  assert.match(findings[0], /span reaches past its last child on "figure"/)
+})
+
 test('a container with a closer is not reached by this rule', () => {
-  // A div ends at `:::`, not at its last child, and section 4 says so. The rule
-  // is a type set for the same reason OPENING_MARKUP is one: only the type says
-  // whether a node has a closer.
+  // A div owns its closer, so the last-child rule does not apply to it.
   const source = '::: n\na\n:::\n'
   const doc = {
     type: 'document',

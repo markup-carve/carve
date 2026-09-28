@@ -153,11 +153,10 @@ export function checkContainment(doc, findings) {
  * carve#1522 settles is the CLOSERLESS case, where the container had no reason
  * to reach that far in the first place.
  *
- * A TYPE SET, for the reason `OPENING_MARKUP` is one: only the type says
- * whether a node has a closer, and §4 ends a container "at their closer, or at
- * their last child when they have no closer". Everything absent here has
- * something after its last child that it does own, and each is absent for a
- * stated reason rather than an oversight:
+ * The type set selects candidates. Source spelling excludes fenced block
+ * quotes: `::: >` owns a closer, while the `>` spelling has none (carve#2534).
+ * CARVE-P12-014 ends a container after its explicit closer, otherwise after
+ * its last placed child. Types absent here can own source after that child:
  *
  *   `div`, `admonition`, `line_block`, `figure_group` and `code_block` end at a
  *   fence closer, `table_row` at its trailing pipe, and every inline container
@@ -295,7 +294,7 @@ export const ENDS_AT_LAST_CHILD = new Set([
  */
 export const EMPTY_CONTAINER_MARKUP = new Map(
   Object.entries({
-    block_quote: /^[ \t]*(?:>|:{3,} +>)[ \t]*$/,
+    block_quote: /^[ \t]*>[ \t]*$/,
     list: /^[ \t]*(?:[-+*]|[0-9]+[.)]|[A-Za-z]+[.)]|\.)[ \t]*$/,
     list_item: /^[ \t]*(?:[-+*]|[0-9]+[.)]|[A-Za-z]+[.)]|\.)[ \t]*$/,
   }),
@@ -307,6 +306,18 @@ export function checkStopsAtChildren(doc, codepoints, findings) {
     if (!ENDS_AT_LAST_CHILD.has(node.type)) continue
     const pos = node.pos
     if (!pos || !Number.isInteger(pos.startOffset) || !Number.isInteger(pos.endOffset)) continue
+    // Fenced quotes are excluded here like divs; this pass does not validate
+    // fence extents. Read the source, since the type covers both spellings
+    // and the node's flags may be wrong.
+    if (node.type === 'block_quote') {
+      let openerEnd = pos.startOffset
+      while (openerEnd < pos.endOffset && openerEnd < codepoints.length &&
+          codepoints[openerEnd] !== '\n' && codepoints[openerEnd] !== '\r') {
+        openerEnd++
+      }
+      const opener = codepoints.slice(pos.startOffset, openerEnd).join('')
+      if (/^[ \t]*:{3,} +>[ \t]*$/.test(opener)) continue
+    }
     // A STRUCTURAL CHILD IS NOT ALWAYS AN ARRAY ENTRY. A `figure` carries its
     // `target` as a SINGLE node, so a rule that only walked array-valued
     // properties saw a target-only figure as empty, skipped it for want of an

@@ -485,7 +485,9 @@ function reportSpanDisagreements(present) {
     console.log('    endOffset differs, startOffset unanimous - a span "ends immediately after the')
     console.log('      last source codepoint the construct owns", and a container with no closer ends')
     console.log('      at its last child, so the WIDE engine moves (checkStopsAtChildren, over the')
-    console.log('      types in ENDS_AT_LAST_CHILD). Read the "e.g." line to see which end moved.')
+    console.log('      types in ENDS_AT_LAST_CHILD, excluding fenced quote spellings). A fenced')
+    console.log('      quote owns its explicit closer; its wider span may be correct (carve#2534).')
+    console.log('      Read the source spelling and the "e.g." line before naming a side.')
   }
 
   const problems = reconcileSpans(
@@ -517,7 +519,9 @@ function reportSpanDisagreements(present) {
       '  END. A span "ends immediately after the last source codepoint the construct owns",',
       '  and a container with no closer "ends at its last child", so on those rows the WIDE',
       '  engine is the one that moves. checkStopsAtChildren, over the types in',
-      '  ENDS_AT_LAST_CHILD, is the source-side rule, and what it finds is declared in',
+      '  ENDS_AT_LAST_CHILD with fenced quote spellings excluded, is the source-side',
+      '  rule. A fenced quote owns its explicit closer, so read the source spelling',
+      '  before blaming the wider span (carve#2534). Findings are declared in',
       '  resources/ast-extent-findings.txt.',
       'A row whose engines agree on startOffset and differ on endOffset is the SECOND case.',
       'Reading it as the first blames the narrow engine, which is the exact inverse',
