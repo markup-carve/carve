@@ -193,8 +193,34 @@ jobs:
           bundle install
           bundle exec rake compile
 
+      # The engine carve-rb actually RUNS, which is the published crate it pins
+      # and not carve-rs `main`. Built in its own step so the comparison below
+      # does not pay for it inside the conformance run, and cached on the pin:
+      # the key changes exactly when `ext/carve/Cargo.toml` moves, which is the
+      # only thing that invalidates it (carve#2483).
+      - name: Read carve-rb's carve-lang pin
+        id: rb-pin
+        run: |
+          PIN=$(sed -n 's/.*package = "carve-lang", version = "=\{0,1\}\([^"]*\)".*/\1/p' \
+            carve-rb/ext/carve/Cargo.toml | head -1)
+          test -n "$PIN" || { echo "could not read the carve-lang pin"; exit 1; }
+          echo "version=$PIN" >> "$GITHUB_OUTPUT"
+
+      - name: Cache the pinned carve-lang build
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/carve-lang-pin
+          key: carve-lang-pin-${{ runner.os }}-${{ steps.rb-pin.outputs.version }}
+
+      - name: Build carve-lang at carve-rb's pin
+        run: |
+          test -x "${{ runner.temp }}/carve-lang-pin/bin/carve" \
+            || cargo install carve-lang --version '${{ steps.rb-pin.outputs.version }}' \
+                 --locked --bin carve --root "${{ runner.temp }}/carve-lang-pin"
+
       - name: PART 12 conformance
         env:
+          CARVE_RS_PINNED_BIN: ${{ runner.temp }}/carve-lang-pin/bin/carve
           CARVE_JS_DIR: ${{ github.workspace }}/carve-js
           CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
           CARVE_RB_DIR: ${{ github.workspace }}/carve-rb

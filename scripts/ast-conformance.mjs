@@ -40,8 +40,7 @@ import {
 import { refusableRootShapes, rootShapeVerdict } from './spec/root-shape-probe.mjs'
 import { miscount, shortfall } from './spec/participants.mjs'
 import { rustBinary } from './lib/engine-locations.mjs'
-import { bindingParityProblems } from './lib/binding-parity.mjs'
-import { parseDriftLedger } from './lib/drift-ledger.mjs'
+import { pinnedCrateVersion, pinnedEngineBinary } from './lib/pinned-engine.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
@@ -134,8 +133,9 @@ const staleBuilds = []
  * beginning "PROVENANCE BEFORE THE GATE" near the end - is that a gate placed
  * above a measurement silently deletes that measurement from every run the gate
  * fires on. The binding-parity gate was doing exactly that: it sits between
- * carve-rb and carve-php, so a stale carve-rb pin, which its own comment calls
- * the usual case, ended the process before carve-php was measured at all,
+ * carve-rb and carve-php, so a carve-rb difference - then the usual case,
+ * because the comparison ran against carve-rs `main` rather than against the
+ * version carve-rb pins - ended the process before carve-php was measured,
  * before the three-way panel ran, and before the NOT MEASURED and STALE BUILDS
  * roll-ups printed.
  *
@@ -1201,113 +1201,103 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
  * file already says why - it serializes carve-rs's tree, which is why counting
  * it in the panel would give that engine two votes. A binding over carve-rs
  * cannot be ahead of carve-rs. Every difference between the two trees is the
- * binding's: a stale pin, or a gap in the binding. There is no window in which
- * it is the one that is right.
+ * binding's, and there is no window in which it is the one that is right.
  *
- * So this compares carve-rb against carve-rs SPECIFICALLY - not against the
- * reference, and not by folding it into the panel. The peer-engine rationale is
- * untouched; this only asserts in code what the file already asserts in prose.
+ * THE COMPARISON IS AGAINST THE VERSION carve-rb PINS, not against carve-rs
+ * `main`. The binding links a PUBLISHED `carve-lang` by org policy, so it
+ * cannot see anything newer than its pin, and comparing it to `main` reported
+ * every tree-moving carve-rs commit as a carve-rb divergence. That is what
+ * made this gate need a declared window and a ledger of rows about nothing -
+ * a snapshot that reddened again the next time `main` moved, with nothing in
+ * any repo able to close it (carve#2175, carve#2482, carve#2483). Measured at
+ * carve-rb `bf0c76c7` pinning `=0.1.6`: 61 of 1924 documents differ against
+ * `main` and 0 against the tag it pins, so the pin explained the whole set.
+ *
+ * Against the pinned build every difference is a gap in the BINDING, which is
+ * the thing this comparison exists to find and the only thing anyone can act
+ * on. No ledger, nothing to go stale between release cuts, and no expiry rule
+ * needed to stop a declaration becoming permanent.
  *
  * What the other two checks could not see (carve#868): the daily run reported a
  * 44-commit-stale pin and exited 0, and carve-rb's own corpus test compares
  * HTML byte-for-byte - which cannot see an AST-only change, because a link
  * reference definition renders nothing.
  */
-/**
- * What the binding pins, and what this run built it against.
- *
- * Read off the two checkouts rather than asserted, so the note is evidence and
- * not a guess that rots the next time either side moves.
- */
-function bindingPinVersions() {
-  const read = (path) => {
+const rbPin = pinnedCrateVersion(resolve(rbDir, 'ext/carve/Cargo.toml'))
+
+/** The pinned engine's shape for each document carve-rb was measured on. */
+function pinnedEngineShapes(binary) {
+  const shapes = new Map()
+  const failures = []
+  for (const [index, { name, source }] of satelliteSamples.entries()) {
+    progress('pin', index, satelliteSamples.length, name)
     try {
-      return readFileSync(path, 'utf8')
-    } catch {
-      return null
+      const doc = JSON.parse(
+        execFileSync(binary, ['--json'], {
+          input: source,
+          encoding: 'utf8',
+          stdio: ['pipe', 'pipe', 'pipe'],
+          maxBuffer: MAX_SUBPROCESS_OUTPUT,
+        }),
+      )
+      shapes.set(name, shapePaths(shapeOf(doc)).join('\n'))
+    } catch (error) {
+      failures.push(`${name}: ${String(error.message).split('\n')[0]}`)
     }
   }
-  return {
-    pinned: /^\s*carve_rs\s*=.*?version\s*=\s*"=?([^"]+)"/m.exec(
-      read(resolve(rbDir, 'ext/carve/Cargo.toml')) ?? '',
-    )?.[1] ?? null,
-    built: /^\s*version\s*=\s*"([^"]+)"/m.exec(read(resolve(rsDir, 'Cargo.toml')) ?? '')?.[1] ?? null,
-  }
+  return { shapes, failures }
 }
 
-function bindingPinNote() {
-  const { pinned, built } = bindingPinVersions()
-  if (!pinned || !built) return []
-  if (pinned === built) {
-    return [`The pin and the built engine both say ${pinned}, so this is a gap in the binding, not a stale pin.`]
-  }
-  return [
-    `ext/carve/Cargo.toml pins carve-lang ${pinned}; this run built carve-rs main, which says ${built}.`,
-    'That pin names a PUBLISHED crate, so it can only move to a version crates.io serves.',
-    `Check that before reading the rows as a gap in the binding: if ${built} is not published,`,
-    'there is no bump to take and this gate is measuring the unreleased window',
-    '(markup-carve/carve-rb#142; markup-carve/carve-rb#143 resolves the same question live).',
-  ]
-}
-
-const rsShapes = enginePaths.get('carve-rs')
-if (rbShapes.size > 0 && rsShapes) {
-  const drifted = []
-  for (const [name, shape] of rbShapes) {
-    const rs = rsShapes.get(name)
-    if (rs !== undefined && rs !== shape) drifted.push(name)
-  }
-  const compared = [...rbShapes.keys()].filter((name) => rsShapes.has(name)).length
-  if (drifted.length === 0) {
-    console.log(`BINDING PARITY: carve-rb's tree matches carve-rs on all ${compared} shared document(s).\n`)
+if (rbShapes.size > 0) {
+  const pinned = pinnedEngineBinary(rbPin)
+  if (!pinned.path) {
+    // NOT silently skipped under CARVE_REQUIRE_ALL_ENGINES. A gate that
+    // reports success having measured nothing is the failure this file spends
+    // its length avoiding.
+    console.error(`BINDING PARITY: not measured - ${pinned.why}.`)
+    console.error('Provide a carve binary at the pin through CARVE_RS_PINNED_BIN, or allow `cargo install`.\n')
+    if (process.env.CARVE_REQUIRE_ALL_ENGINES === '1') {
+      deferredGateFailures.push(`BINDING PARITY: could not obtain carve-lang ${rbPin ?? 'unknown'} - ${pinned.why}.`)
+    }
   } else {
-    console.error(
-      `BINDING PARITY: carve-rb's tree differs from carve-rs on ${drifted.length} of ${compared} document(s):`,
-    )
-    for (const name of drifted.slice(0, 10)) console.error(`  ${name}`)
-    if (drifted.length > 10) console.error(`  … and ${drifted.length - 10} more`)
-    console.error("A binding has no vote of its own - every one of these is carve-rb's, not carve-rs's.")
-    console.error('Usually a stale `ext/carve/Cargo.toml` pin; rebuild the extension after bumping it.')
-    // WHICH KIND of stale, because the two have different fixes and only one of
-    // them is a fix anybody here can make. The pin names a crates.io RELEASE by
-    // org policy, and this job builds carve-rs from MAIN, so between a merge and
-    // a release the two are SUPPOSED to differ and there is nowhere for the pin
-    // to move. "Bump it" is unactionable advice in that state, and printing it
-    // anyway sent a reader looking for a version that does not exist
-    // (markup-carve/carve-rb#142, carve#2175).
-    for (const line of bindingPinNote()) console.error(line)
-    // THE WINDOW, DECLARED PER DOCUMENT. Without this the gate had one verdict
-    // for two different facts: a gap in the binding, which nobody can excuse,
-    // and the unreleased window between a carve-rs merge and its crates.io
-    // release, which nobody can close from here. The second is what kept AST
-    // conformance red with no fix available in any repo (carve#2175), so it is
-    // declared and the first stays gated.
-    const { problems, notes } = bindingParityProblems(
-      drifted,
-      parseDriftLedger(resolve(root, 'resources/binding-parity-drift.txt')),
-      [...rbShapes.keys()].filter((name) => rsShapes.has(name)),
-      bindingPinVersions(),
-    )
-    for (const note of notes) console.log(`  ${note}`)
-    for (const problem of problems) console.error(`  ${problem}`)
-    console.error('')
-    // DEFERRED, not exited on. carve-php, the three-way panel and every closing
-    // roll-up are all below this line; exiting here deleted them from the run.
-    if (problems.length > 0 && process.env.CARVE_REQUIRE_ALL_ENGINES === '1') {
-      deferredGateFailures.push(
-        `BINDING PARITY: ${problems.length} of carve-rb's ${drifted.length} differing ` +
-          `document(s) (of ${compared}) are not declared in resources/binding-parity-drift.txt.`,
-      )
+    if (pinned.built) console.log(`BINDING PARITY: built carve-lang ${rbPin} from crates.io for the comparison.`)
+    // An OVERRIDE is a build this run did not choose, so the verdict says so
+    // rather than naming the pin it was only asked to stand in for.
+    const against = pinned.source === 'override'
+      ? `the binary CARVE_RS_PINNED_BIN names (asked for carve-lang ${rbPin})`
+      : `carve-lang ${rbPin}, the version it pins`
+    const { shapes: pinShapes, failures } = pinnedEngineShapes(pinned.path)
+    const drifted = []
+    for (const [name, shape] of rbShapes) {
+      const engine = pinShapes.get(name)
+      if (engine !== undefined && engine !== shape) drifted.push(name)
     }
-    if (problems.length === 0) {
+    const compared = [...rbShapes.keys()].filter((name) => pinShapes.has(name)).length
+    for (const failure of failures) console.error(`  carve-lang ${rbPin} could not serialize ${failure}`)
+    if (drifted.length === 0) {
       console.log(
-        `  All ${drifted.length} are declared as the carve-lang ` +
-          `${bindingPinVersions().pinned} pin window; a document outside that ledger fails the run.\n`,
+        `BINDING PARITY: carve-rb's tree matches ${against} on all ${compared} shared document(s).\n`,
       )
+    } else {
+      console.error(
+        `BINDING PARITY: carve-rb's tree differs from ${against} ` +
+          `on ${drifted.length} of ${compared} document(s):`,
+      )
+      for (const name of drifted.slice(0, 10)) console.error(`  ${name}`)
+      if (drifted.length > 10) console.error(`  … and ${drifted.length - 10} more`)
+      console.error('Both sides are the same engine version, so every one of these is a gap in the BINDING.')
+      console.error('Rebuild the extension first (`bundle exec rake compile`); a stale `.so` reports an older engine.\n')
+      // DEFERRED, not exited on. carve-php, the three-way panel and every
+      // closing roll-up are all below this line; exiting here deleted them
+      // from the run.
+      if (process.env.CARVE_REQUIRE_ALL_ENGINES === '1') {
+        deferredGateFailures.push(
+          `BINDING PARITY: carve-rb does not reproduce carve-lang ${rbPin} on ` +
+            `${drifted.length} of ${compared} document(s).`,
+        )
+      }
     }
   }
-} else if (rbShapes.size > 0) {
-  console.log('BINDING PARITY: not checked - carve-rs was not measured in this run.\n')
 }
 
 // ---- carve-php: serializes through bin/carve --json -------------------------

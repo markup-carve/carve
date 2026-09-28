@@ -122,7 +122,6 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
       ['resources/ast-extent-findings.txt', 'owed', 'declared'],
       ['resources/ast-span-divergence.txt', 'owed', 'declared'],
       ['resources/ast-value-divergence.txt', 'owed', 'declared'],
-      ['resources/binding-parity-drift.txt', 'owed', 'declared'],
       ['resources/converter-drift.txt', 'owed', 'declared'],
       ['resources/engine-fmt-drift.txt', 'owed', 'declared'],
       ['tests/ast-spans.test.mjs', 'owed', 'manual'],

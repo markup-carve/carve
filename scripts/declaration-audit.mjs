@@ -199,7 +199,6 @@ const MANIFEST = [
   // to. Owed before a tag - the window closes when carve-rs publishes and
   // carve-rb bumps - and declared inside a pull request, because no pull
   // request in any repo can close it (carve#2175, markup-carve/carve-rb#143).
-  { repo: 'spec', path: 'resources/binding-parity-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run ast:check' },
 
   // -- the spec repo's declaration CONSTANTS, which the ledgers do not cover -
   // Codes the fixture and corpus oracles cannot reach (carve#1835). PRINTED
