@@ -1,41 +1,9 @@
 /*
- * The `roundtrip` import report says the same thing in every engine.
- *
- * Nothing compared it (carve#2268). Every fixture in tests/html-import/ imports
- * in `safe`, and the fixture contract forbids a fixture declaring its mode -
- * `expected.report.json` IS the report, not a configuration (carve#1886) - so
- * `roundtrip`-only rows had no home. `compare:convert` sweeps the same fixtures
- * across engines but pairs on the RENDERED document, and a report row renders
- * nothing, so it had nothing to pair on either. The existing vocabulary gate
- * sweeps all three modes and checks only which CODES appear.
- *
- * Three engines then described the same raw-kept-element refusals three
- * different ways for an unknown length of time, and it surfaced because someone
- * read one payload: carve-js was silent about a descendant's attributes
- * (carve-js#2021), carve-rs reported two of them as `attribute-dropped` when
- * nothing was dropped (carve#2261), and the third answer was a wording
- * difference nobody had compared.
- *
- * WHAT IS COMPARED: code, severity, fidelity, confidence and path, in DOCUMENT
- * ORDER. Severity alone would have missed carve-js's silence; codes alone would
- * have missed carve-rs's false rows; order matters because the contract fixes it
- * - the element's own rows, its `raw-preserved` row, then each descendant's rows
- * in document order.
- *
- * NOT THE MESSAGE. carve#2454 ruled that the sentence is the engine's and is not
- * compared, and PART 11 §1d states it. The template `attribute-preserved` rows
- * follow is a clause of its own, and `auditPreservedSubjects` below still reads
- * each row against it - a clause that pins a message is read by the gate that
- * owns it, not by a row-for-row comparison of prose.
- *
- * WHAT IS NOT: no row is held back. The `style` rows were left out while
- * carve#2267 was unsettled; it is ruled, so their code, class and position are
- * compared like every other row's, and the clause the engines have not reached
- * yet is declared in CLAUSE_PENDING below.
- *
- * Needs the sibling engines, so it runs in the conformance workflow rather than
- * in `npm test`, and exits 2 without them: a checker that reports success having
- * run nothing is the failure it exists to prevent.
+ * Compare HTML import reports across all three engines.
+ * Rows compare code, severity, fidelity, confidence and path in document order.
+ * Raw-HTML cases also require every declared attribute subject and validate
+ * the normative preserved-row template. Other messages remain engine-owned.
+ * Mapped cases pin the expected rows, so shared omissions fail the gate.
  */
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
@@ -122,6 +90,45 @@ const CASES = [
     subjects: [{ key: 'form.data-carve-src' }, { key: 'cite.cite' }],
   },
 ]
+
+for (const mode of ['safe', 'semantic', 'roundtrip']) {
+  for (const tag of ['abbr', 'kbd', 'time', 'samp', 'var', 'cite', 'dfn']) {
+    for (const value of ['', 'value', 'javascript:x()']) {
+      CASES.push({
+        name: `${mode} semantic key ${tag}=${JSON.stringify(value)}`,
+        html: `<${tag} ${tag}="${value}">text</${tag}>`,
+        mode,
+        expectedRows: [`attribute-dropped|warning|dropped|exact|/${tag}[1]`],
+      })
+    }
+  }
+}
+for (const mode of ['safe', 'semantic']) {
+  for (const name of ['data-carve-src', 'data-djot-src']) {
+    CASES.push({
+      name: `${mode} ignored nested ${name}`,
+      html: `<form><p ${name}="stored">text</p></form>`,
+      mode,
+      expectedRows: ['element-unwrapped|info|degraded|exact|/form[1]', 'attribute-dropped|info|dropped|exact|/form[1]/p[1]'],
+    })
+  }
+}
+for (const attrs of ['align="right" style="text-align:left"', 'style="text-align:left" align="right"']) {
+  CASES.push({
+    name: `raw CSS precedence ${attrs}`,
+    html: `<form><table><tr><td ${attrs}>text</td></tr></table></form>`,
+    subjects: [{ key: 'td.align' }, { key: 'td.style' }],
+  })
+  for (const mode of ['safe', 'semantic', 'roundtrip']) {
+    CASES.push({
+      name: `${mode} CSS precedence ${attrs}`,
+      html: `<p ${attrs}>text</p>`,
+      mode,
+      expectedRows: [mode === 'safe' ? 'style-unmapped|info|degraded|exact|/p[1]' : 'attribute-dropped|info|dropped|exact|/p[1]'],
+      expectedValue: `{align=${mode === 'safe' ? 'right' : 'left'}}\ntext\n`,
+    })
+  }
+}
 
 /*
  * Engines known to diverge, each with its ticket.
@@ -233,40 +240,50 @@ if (engines.length < 3) {
 const lib = await import(join(jsDir, 'dist/index.js'))
 const tmp = mkdtempSync(join(tmpdir(), 'carve-import-report-'))
 
-function report(engine, html) {
-  if (engine.name === 'js') return lib.htmlToCarve(html, { mode: 'roundtrip' }).report
+function report(engine, html, mode) {
+  if (engine.name === 'js') {
+    const result = lib.htmlToCarve(html, { mode })
+    return { ...result.report, importedValue: result.value }
+  }
   const input = join(tmp, 'case.html')
   const out = join(tmp, 'report.json')
   writeFileSync(input, html)
-  execFileSync(engine.bin, [...engine.args, 'migrate', '--from', 'html', '--mode', 'roundtrip', '--report', out, input], {
+  const importedValue = execFileSync(engine.bin, [...engine.args, 'migrate', '--from', 'html', '--mode', mode, '--report', out, input], {
     encoding: 'utf8',
     maxBuffer: 1 << 26,
   })
 
-  return JSON.parse(readFileSync(out, 'utf8'))
+  return { ...JSON.parse(readFileSync(out, 'utf8')), importedValue }
 }
 
 const failures = []
 
 for (const testCase of CASES) {
+  const mode = testCase.mode ?? 'roundtrip'
   const rows = new Map()
   const reported = new Map()
   const styleShape = new Map()
   for (const engine of engines) {
     let payload
     try {
-      payload = report(engine, testCase.html)
+      payload = report(engine, testCase.html, mode)
     } catch (error) {
       failures.push(`${testCase.name}: ${engine.name} did not import: ${error.message.split('\n')[0]}`)
       continue
     }
     // A CLI that ignored --mode would report `attribute-dropped` and fail below
     // anyway; naming it here says which of the two happened.
-    if (payload.mode !== 'roundtrip') {
-      failures.push(`${testCase.name}: ${engine.name} reported mode "${payload.mode}", not roundtrip.`)
+    if (payload.mode !== mode) {
+      failures.push(`${testCase.name}: ${engine.name} reported mode "${payload.mode}", not ${mode}.`)
       continue
     }
+    if (testCase.expectedValue !== undefined && payload.importedValue !== testCase.expectedValue) {
+      failures.push(`${testCase.name}: ${engine.name} imported ${JSON.stringify(payload.importedValue)}, expected ${JSON.stringify(testCase.expectedValue)}`)
+    }
     const all = payload.diagnostics ?? []
+    if (testCase.expectedRows && JSON.stringify(all.map(row)) !== JSON.stringify(testCase.expectedRows)) {
+      failures.push(`${testCase.name}: ${engine.name} expected ${JSON.stringify(testCase.expectedRows)}, got ${JSON.stringify(all.map(row))}`)
+    }
     reported.set(engine.name, all)
     styleShape.set(engine.name, {
       any: all.filter(isStyleRow).length,
@@ -296,6 +313,7 @@ for (const testCase of CASES) {
   // if the tag stopped being raw-kept, every engine would report nothing and
   // "they agree" would be true and worthless.
   for (const [name, list] of rows) {
+    if (testCase.expectedRows) continue
     if (!list.some((r) => r.startsWith('raw-preserved|'))) {
       failures.push(`${testCase.name}: ${name} reported no raw-preserved row, so this case no longer reaches the raw-keep path.`)
     } else if (list.length < 2) {
@@ -382,14 +400,14 @@ if (failures.length > 0) {
   console.log('')
   for (const line of failures) console.log(line)
   console.error(
-    `\n${failures.length} finding(s): the roundtrip import report does not read the same in every engine. `
+    `\n${failures.length} finding(s): the HTML import report does not read the same in every engine. `
       + 'Correct the engine, or declare the divergence with its ticket.',
   )
   process.exit(1)
 }
 const owed = CASES.flatMap((testCase) => testCase.subjects ?? [])
 console.log(
-  `\n${CASES.length} raw-keep cases compared row for row across ${engines.length} engines, `
+  `\n${CASES.length} import cases compared row for row across ${engines.length} engines, `
     + `over ${owed.length} declared subject(s) of which ${owed.filter((s) => s.pending).length} pending, `
     + `with ${DECLARED.length} declared divergence(s) and ${CLAUSE_PENDING.length} pending clause(s).`,
 )
