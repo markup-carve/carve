@@ -1,0 +1,220 @@
+{
+  "schema": 1,
+  "comparison": "Exact HTML after trimming outer whitespace; internal whitespace is preserved.",
+  "spec": {
+    "head": "8323c14a79fbac5606f85cea7716d8a6ea954200",
+    "diffSha256": "7482d3a401b8a68f6dc0d2b358d2894c70bb5cb1dbd648e06ca504bb7d0320f2"
+  },
+  "js": {
+    "head": "74d38384ed756a3d7dfe3653d52929746d6da924",
+    "diffSha256": "ce8ba7caa0b7d42b12abbe5f7f8f4bb54243acaf4e4a3861df70c46e8f300afe"
+  },
+  "rustBinarySha256": "55607f7b31cc5b108ba42364473006f4ecc5f7e9db01dc9f60f6718715f1ccc1",
+  "corpusSha256": "b0e16a3394614bafde4cf646f4b8d268402d6880a103a451be5b89e24495b323",
+  "total": 976,
+  "refused": 0,
+  "agreed": 951,
+  "differences": [
+    {
+      "name": "container-82",
+      "source": ":: term\n: body\n- tail\n",
+      "spec": "<dl>\n  <dt>term</dt>\n  <dd>body</dd>\n</dl>\n<ul>\n  <li>tail</li>\n</ul>",
+      "js": "<dl>\n  <dt>term</dt>\n  <dd>body\n- tail</dd>\n</dl>",
+      "rs": "<dl>\n  <dt>term</dt>\n  <dd>body</dd>\n</dl>\n<ul>\n  <li>tail</li>\n</ul>",
+      "equal": false
+    },
+    {
+      "name": "container-117",
+      "source": "> %% comment\n> tail\n",
+      "spec": "<blockquote><p>tail</p></blockquote>",
+      "js": "<blockquote><p>tail</p></blockquote>",
+      "rs": "<blockquote>\n  <p>tail</p>\n</blockquote>",
+      "equal": false
+    },
+    {
+      "name": "container-125",
+      "source": "> ```\n+\n\ntail\n",
+      "spec": "<blockquote>\n  <pre><code>\n</code></pre>\n</blockquote>\n<p>+</p>\n<p>tail</p>",
+      "js": "<blockquote>\n  <pre><code>\n</code></pre>\n</blockquote>\n<p>tail</p>",
+      "rs": "<blockquote>\n  <pre><code>\n</code></pre>\n</blockquote>\n<p>tail</p>",
+      "equal": false
+    },
+    {
+      "name": "container-204",
+      "source": "> > ```\ntail\n",
+      "spec": "<blockquote>\n  <blockquote>\n    <pre><code>\n</code></pre>\n  </blockquote>\n  <p>tail</p>\n</blockquote>",
+      "js": "<blockquote>\n  <blockquote>\n    <pre><code>\n</code></pre>\n  </blockquote>\n</blockquote>\n<p>tail</p>",
+      "rs": "<blockquote>\n  <blockquote>\n    <pre><code>\n</code></pre>\n  </blockquote>\n  <p>tail</p>\n</blockquote>",
+      "equal": false
+    },
+    {
+      "name": "container-206",
+      "source": "> > ```\n  tail\n",
+      "spec": "<blockquote>\n  <blockquote>\n    <pre><code>\n</code></pre>\n  </blockquote>\n  <p>tail</p>\n</blockquote>",
+      "js": "<blockquote>\n  <blockquote>\n    <pre><code>\n</code></pre>\n  </blockquote>\n</blockquote>\n<p>tail</p>",
+      "rs": "<blockquote>\n  <blockquote>\n    <pre><code>\n</code></pre>\n  </blockquote>\n  <p>tail</p>\n</blockquote>",
+      "equal": false
+    },
+    {
+      "name": "container-208",
+      "source": "> > ```\n- tail\n",
+      "spec": "<blockquote>\n  <blockquote>\n    <pre><code>\n</code></pre>\n  </blockquote>\n  <p>- tail</p>\n</blockquote>",
+      "js": "<blockquote>\n  <blockquote>\n    <pre><code>\n</code></pre>\n  </blockquote>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>",
+      "rs": "<blockquote>\n  <blockquote>\n    <pre><code>\n</code></pre>\n  </blockquote>\n  <p>- tail</p>\n</blockquote>",
+      "equal": false
+    },
+    {
+      "name": "container-293",
+      "source": "- ```\n+\n\ntail\n",
+      "spec": "<ul>\n  <li>\n    <pre><code>\n\n\n</code></pre>\n  </li>\n</ul>\n<p>tail</p>",
+      "js": "<ul>\n  <li>\n    <pre><code>\n\n</code></pre>\n  </li>\n</ul>\n<p>tail</p>",
+      "rs": "<ul>\n  <li>\n    <pre><code>\n</code></pre>\n  </li>\n</ul>\n<p>tail</p>",
+      "equal": false
+    },
+    {
+      "name": "container-299",
+      "source": "- ::: box\n+\n\ntail\n",
+      "spec": "<ul>\n  <li>\n    <div class=\"box\">\n\n    </div>\n  </li>\n</ul>\n<p>tail</p>",
+      "js": "<ul>\n  <li>\n    <div class=\"box\">\n\n    </div>\n  </li>\n</ul>\n<p>tail</p>",
+      "rs": "<ul>\n  <li>::: box</li>\n</ul>\n<p>tail</p>",
+      "equal": false
+    },
+    {
+      "name": "container-375",
+      "source": "- - ```\n> tail\n",
+      "spec": "<ul>\n  <li>\n    <ul>\n      <li>\n        <pre><code>\n</code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<blockquote><p>tail</p></blockquote>",
+      "js": "<ul>\n  <li>\n    <ul>\n      <li>\n        <pre><code>\n</code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<blockquote><p>tail</p></blockquote>",
+      "rs": "<ul>\n  <li>\n    <ul>\n      <li>\n        <pre><code>&gt; tail\n</code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>",
+      "equal": false
+    },
+    {
+      "name": "container-377",
+      "source": "- - ```\n+\n\ntail\n",
+      "spec": "<ul>\n  <li>\n    <ul>\n      <li>\n        <pre><code>\n\n</code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>",
+      "js": "<ul>\n  <li>\n    <ul>\n      <li>\n        <pre><code>\n\n</code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>",
+      "rs": "<ul>\n  <li>\n    <ul>\n      <li>\n        <pre><code>+\n\n</code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>",
+      "equal": false
+    },
+    {
+      "name": "container-383",
+      "source": "- - ::: box\n+\n\ntail\n",
+      "spec": "<ul>\n  <li>\n    <ul>\n      <li>\n        <div class=\"box\">\n\n        </div>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>",
+      "js": "<ul>\n  <li>\n    <ul>\n      <li>\n        <div class=\"box\">\n\n        </div>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>",
+      "rs": "<ul>\n  <li>\n    <ul>\n      <li>::: box\n+</li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>",
+      "equal": false
+    },
+    {
+      "name": "container-456",
+      "source": "- > ```\ntail\n",
+      "spec": "<ul>\n  <li>\n    <blockquote>\n      <pre><code>\n</code></pre>\n    </blockquote>\n    tail\n  </li>\n</ul>",
+      "js": "<ul>\n  <li>\n    <blockquote>\n      <pre><code>\n</code></pre>\n    </blockquote>\n    tail\n  </li>\n</ul>",
+      "rs": "<ul>\n  <li>\n    <blockquote>\n      <pre><code>\n</code></pre>\n    </blockquote>\n  </li>\n</ul>\n<p>tail</p>",
+      "equal": false
+    },
+    {
+      "name": "container-462",
+      "source": "- > ::: box\ntail\n",
+      "spec": "<ul>\n  <li>\n    <blockquote>\n      <div class=\"box\">\n\n      </div>\n    </blockquote>\n    tail\n  </li>\n</ul>",
+      "js": "<ul>\n  <li>\n    <blockquote>\n      <div class=\"box\">\n\n      </div>\n    </blockquote>\n    tail\n  </li>\n</ul>",
+      "rs": "<ul>\n  <li>\n    <blockquote>\n      <div class=\"box\">\n\n      </div>\n    </blockquote>\n  </li>\n</ul>\n<p>tail</p>",
+      "equal": false
+    },
+    {
+      "name": "container-514",
+      "source": "> - # H\n- tail\n",
+      "spec": "<blockquote>\n  <ul>\n    <li>\n      <h1 id=\"H\">H</h1>\n    </li>\n  </ul>\n  <p>- tail</p>\n</blockquote>",
+      "js": "<blockquote>\n  <ul>\n    <li>\n      <h1 id=\"H\">H</h1>\n    </li>\n    <li>tail</li>\n  </ul>\n</blockquote>",
+      "rs": "<blockquote>\n  <ul>\n    <li>\n      <h1 id=\"H\">H</h1>\n    </li>\n  </ul>\n  <p>- tail</p>\n</blockquote>",
+      "equal": false
+    },
+    {
+      "name": "container-520",
+      "source": "> - | a |\n- tail\n",
+      "spec": "<blockquote>\n  <ul>\n    <li>\n      <table>\n        <tbody>\n          <tr><td>a</td></tr>\n        </tbody>\n      </table>\n    </li>\n  </ul>\n  <p>- tail</p>\n</blockquote>",
+      "js": "<blockquote>\n  <ul>\n    <li>\n      <table>\n        <tbody>\n          <tr><td>a</td></tr>\n        </tbody>\n      </table>\n    </li>\n    <li>tail</li>\n  </ul>\n</blockquote>",
+      "rs": "<blockquote>\n  <ul>\n    <li>\n      <table>\n        <tbody>\n          <tr><td>a</td></tr>\n        </tbody>\n      </table>\n    </li>\n  </ul>\n  <p>- tail</p>\n</blockquote>",
+      "equal": false
+    },
+    {
+      "name": "container-532",
+      "source": "> - ---\n- tail\n",
+      "spec": "<blockquote>\n  <ul>\n    <li>\n      <hr>\n    </li>\n  </ul>\n  <p>- tail</p>\n</blockquote>",
+      "js": "<blockquote>\n  <ul>\n    <li>\n      <hr>\n    </li>\n    <li>tail</li>\n  </ul>\n</blockquote>",
+      "rs": "<blockquote>\n  <ul>\n    <li>\n      <hr>\n    </li>\n  </ul>\n  <p>- tail</p>\n</blockquote>",
+      "equal": false
+    },
+    {
+      "name": "container-538",
+      "source": "> - %% comment\n- tail\n",
+      "spec": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n  <p>- tail</p>\n</blockquote>",
+      "js": "<blockquote>\n  <ul>\n    <li></li>\n    <li>tail</li>\n  </ul>\n</blockquote>",
+      "rs": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n  <p>- tail</p>\n</blockquote>",
+      "equal": false
+    },
+    {
+      "name": "container-556",
+      "source": "> - {.x}\n- tail\n",
+      "spec": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n  <p>- tail</p>\n</blockquote>",
+      "js": "<blockquote>\n  <ul>\n    <li></li>\n    <li>tail</li>\n  </ul>\n</blockquote>",
+      "rs": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n  <p>- tail</p>\n</blockquote>",
+      "equal": false
+    },
+    {
+      "name": "container-562",
+      "source": "> - [r]: /url\n- tail\n",
+      "spec": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n  <p>- tail</p>\n</blockquote>",
+      "js": "<blockquote>\n  <ul>\n    <li></li>\n    <li>tail</li>\n  </ul>\n</blockquote>",
+      "rs": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n  <p>- tail</p>\n</blockquote>",
+      "equal": false
+    },
+    {
+      "name": "container-568",
+      "source": "> - [^n]: note\n- tail\n",
+      "spec": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n  <p>- tail</p>\n</blockquote>",
+      "js": "<blockquote>\n  <ul>\n    <li></li>\n    <li>tail</li>\n  </ul>\n</blockquote>",
+      "rs": "<blockquote>\n  <ul>\n    <li></li>\n  </ul>\n  <p>- tail</p>\n</blockquote>",
+      "equal": false
+    },
+    {
+      "name": "container-596",
+      "source": "1. # H\n  tail\n",
+      "spec": "<ol>\n  <li>\n    <h1 id=\"H\">H</h1>\n  </li>\n</ol>\n<p>tail</p>",
+      "js": "<ol>\n  <li>\n    <h1 id=\"H\">H</h1>\n  </li>\n</ol>\n<p>tail</p>",
+      "rs": "<ol>\n  <li>\n    <h1 id=\"H\">H</h1>\n    tail\n  </li>\n</ol>",
+      "equal": false
+    },
+    {
+      "name": "container-602",
+      "source": "1. | a |\n  tail\n",
+      "spec": "<ol>\n  <li>\n    <table>\n      <tbody>\n        <tr><td>a</td></tr>\n      </tbody>\n    </table>\n  </li>\n</ol>\n<p>tail</p>",
+      "js": "<ol>\n  <li>\n    <table>\n      <tbody>\n        <tr><td>a</td></tr>\n      </tbody>\n    </table>\n  </li>\n</ol>\n<p>tail</p>",
+      "rs": "<ol>\n  <li>\n    <table>\n      <tbody>\n        <tr><td>a</td></tr>\n      </tbody>\n    </table>\n    tail\n  </li>\n</ol>",
+      "equal": false
+    },
+    {
+      "name": "container-614",
+      "source": "1. ---\n  tail\n",
+      "spec": "<ol>\n  <li>\n    <hr>\n  </li>\n</ol>\n<p>tail</p>",
+      "js": "<ol>\n  <li>\n    <hr>\n  </li>\n</ol>\n<p>tail</p>",
+      "rs": "<ol>\n  <li>\n    <hr>\n    tail\n  </li>\n</ol>",
+      "equal": false
+    },
+    {
+      "name": "container-629",
+      "source": "1. ```\n+\n\ntail\n",
+      "spec": "<ol>\n  <li>\n    <pre><code>\n\n\n</code></pre>\n  </li>\n</ol>\n<p>tail</p>",
+      "js": "<ol>\n  <li>\n    <pre><code>\n\n</code></pre>\n  </li>\n</ol>\n<p>tail</p>",
+      "rs": "<ol>\n  <li>\n    <pre><code>\n</code></pre>\n  </li>\n</ol>\n<p>tail</p>",
+      "equal": false
+    },
+    {
+      "name": "container-635",
+      "source": "1. ::: box\n+\n\ntail\n",
+      "spec": "<ol>\n  <li>\n    <div class=\"box\">\n\n    </div>\n  </li>\n</ol>\n<p>tail</p>",
+      "js": "<ol>\n  <li>\n    <div class=\"box\">\n\n    </div>\n  </li>\n</ol>\n<p>tail</p>",
+      "rs": "<ol>\n  <li>::: box</li>\n</ol>\n<p>tail</p>",
+      "equal": false
+    }
+  ],
+  "refusals": []
+}
