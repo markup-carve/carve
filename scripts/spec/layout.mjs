@@ -4630,6 +4630,11 @@ function collectItems(lines, i, list, state, ind, meas) {
       // A fence can open on the MARKER LINE (`- ``` `), where its opener is the
       // marker-line content, not a collected continuation line -- seed from it.
       trackFence(head.text, true, i)
+      // A comment span spelled there is the item's FIRST block (CARVE-P0-007,
+      // which lists `- %% c` / `tail` as ending the item), so it retains no
+      // ownership for a below-column follower - the marker-line `%%` spelling
+      // already answers that way and the two spellings stay together.
+      if (fence.opaque?.kind === 'comment') fence.opaque.markerLine = true
     }
     i++
     // FIRST-BLOCK form (SS17 L4): a bare `+` as the sole marker-line content
@@ -5470,6 +5475,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         // Only the closing half is asked: an OPENER at this column opens no span
         // here, and the branch above owns that question.
         const spanBefore = fence.opaque?.kind === 'comment' || nestedOpaque?.kind === 'comment'
+        const spanFromMarkerLine = fence.opaque?.markerLine === true
         if (fence.opaque) trackFence(lm.rest, false, i)
         // The DESCENDANT span's closer arrives here too, below this column, so
         // the tracker above never sees it.
@@ -5487,7 +5493,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         // no span and keeps its retention rule (corpus 214).
         if (spanBefore && !(fence.opaque?.kind === 'comment' || nestedOpaque?.kind === 'comment')) {
           closePara()
-          afterComment = true
+          if (!spanFromMarkerLine) afterComment = true
         }
         i++
         continue

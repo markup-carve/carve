@@ -133,3 +133,49 @@ tail
   </li>
 </ul>
 ```
+
+```
+- %%%
+  hidden
+  %%%
+ tail
+.
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+```
+
+```
+- %%%
+  hidden
+%%%
+ tail
+.
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+```
+
+```
+- %%%
+  hidden
+%%%
+tail
+.
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+```
+
+```
+- %% c
+ tail
+.
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+```

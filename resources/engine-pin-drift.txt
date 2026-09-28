@@ -51,3 +51,5 @@
 512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-6  carve#2525: the pin lets a comment span's closer column decide who owns the following line.
 512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-8  carve#2525: the pin lets a comment span's closer column decide who owns the following line.
 512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-9  carve#2525: the pin lets a comment span's closer column decide who owns the following line.
+512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-11  carve#2525: the pin keeps a marker-line comment span's below-column follower in the item.
+512-a-comment-span-s-closer-column-does-not-move-the-item-s-ownership-12  carve#2525: the pin keeps a marker-line comment span's below-column follower in the item.

@@ -41219,6 +41219,11 @@ The last case is the owner table doing its own work. A follower at the outer
 item's content column belongs to that item, which is a question about the
 follower's column and never about the closer's.
 
+A span spelled on the MARKER LINE is the last four. `CARVE-P0-007` makes the
+marker line's content the item's first block and lists `- %% c` / `tail` as ending
+the item, so a `%%%` span written there retains nothing for a below-column
+follower either, at every closer column. The `%%` control closes the group.
+
 ::: compare
 
 `````carve
@@ -41403,6 +41408,76 @@ tail
     tail
   </li>
 </ul>
+`````
+
+:::
+
+::: compare
+
+`````carve
+- %%%
+  hidden
+  %%%
+ tail
+`````
+
+`````html
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+`````
+
+:::
+
+::: compare
+
+`````carve
+- %%%
+  hidden
+%%%
+ tail
+`````
+
+`````html
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+`````
+
+:::
+
+::: compare
+
+`````carve
+- %%%
+  hidden
+%%%
+tail
+`````
+
+`````html
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+`````
+
+:::
+
+::: compare
+
+`````carve
+- %% c
+ tail
+`````
+
+`````html
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
 `````
 
 :::
