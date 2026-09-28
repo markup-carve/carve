@@ -70,7 +70,13 @@ const MAX_NESTING_DEPTH = 200
 /// for; carve-rs was doing 77 times that on a deep quote (carve-rs#731), from a
 /// loop that unwound the whole remaining prefix to answer a question about the
 /// innermost line. A counter here is what would have caught it.
-export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0 }
+/// `fenceCloserLookahead` is the one question about a quote's body that no
+/// incremental tracker can answer from the line in front of it: SS10 I4 opens a
+/// fence under a paragraph only when a closer FOLLOWS. Asking it with a forward
+/// scan per opener is quadratic on a body of fenced bodies, which is carve#2509,
+/// so the answer comes from an index built once per depth and this counts the
+/// lines that index reads.
+export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0, fenceCloserLookahead: 0 }
 
 export function resetLayoutWork() {
   layoutWork.scan = 0
@@ -78,6 +84,7 @@ export function resetLayoutWork() {
   layoutWork.views = 0
   layoutWork.quoteStrips = 0
   layoutWork.lineVisits = 0
+  layoutWork.fenceCloserLookahead = 0
 }
 
 /**
@@ -3182,7 +3189,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const inner = []
       let openFence = null // run string of a fence opened inside the quote
       let openComment = null // exact-width comment fence opened inside the quote
-      let prevBlank = true // fences open only at BLOCK START (I4 otherwise)
       let qOpenPara = false // does the quote currently end in an open paragraph?
       let qPara = [] // its lines, for SS12's absorption test below
       /*
@@ -3210,6 +3216,56 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
        */
       const qNestedTable = []
       /*
+       * The verbatim payload a nested level has open, and whether that level
+       * ends in an open paragraph, both per depth. `opensParagraph` reads one
+       * line, so a fence run one level down is invisible to it: a fence opener
+       * with no closer after it read as paragraph text, and the unmarked line
+       * below kept a continuation claim PART 1 owner selection gives it none
+       * (carve#2513).
+       */
+      const qNestedFence = []
+      const qNestedPara = []
+      /*
+       * Does a pure closer for `run` follow, `markers` quote markers in?
+       *
+       * PART 9 SS10 I4 opens a fence at block start unconditionally and under a
+       * paragraph only when a closer follows, and the tracker below asked
+       * neither question - it read whether the PREVIOUS line was blank, which
+       * is a third thing. The index is built once per depth by one pass over
+       * the marked run, because a forward scan per opener is the rescan
+       * carve#2509 ruled out.
+       */
+      const qPureFences = []
+      const closerFollows = (idx, markers, run) => {
+        // A level's container ends where a line stops supplying its marker, so
+        // the index covers one RUN of lines that reach `markers` and is rebuilt
+        // when a query lands past it: a pure fence in a LATER quote at the same
+        // depth is not this one's closer. Queries arrive in line order, so the
+        // rebuild happens once per run and the cursor only moves forward.
+        let st = qPureFences[markers]
+        if (!st || idx >= st.end) {
+          const list = []
+          let j = idx
+          for (; j < n; j++) {
+            let text = lines[j]
+            let k = 0
+            while (k < markers && QUOTE.test(text)) { text = QUOTE.exec(text)[1] ?? ''; k++ }
+            if (k < markers) break
+            const c = PURE_FENCE.exec(text)
+            if (c) list.push({ j, run: c[1] })
+          }
+          layoutWork.fenceCloserLookahead += j - idx
+          st = qPureFences[markers] = { list, end: j, cursor: 0 }
+        }
+        while (st.cursor < st.list.length && st.list[st.cursor].j <= idx) st.cursor++
+        for (let k = st.cursor; k < st.list.length; k++) {
+          layoutWork.fenceCloserLookahead += 1
+          const e = st.list[k]
+          if (e.run[0] === run[0] && e.run.length >= run.length) return true
+        }
+        return false
+      }
+      /*
        * DOES THE NESTED QUOTE ON THIS LINE LEAVE A PARAGRAPH OPEN?
        *
        * Peels one marker per level, advancing that level's table run as it
@@ -3218,37 +3274,67 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
        * what is above it, never to itself, which is the same order the outer
        * loop uses for its own rows.
        */
-      const nestedQuoteOpensParagraph = (line) => {
+      const nestedQuoteOpensParagraph = (line, idx) => {
         let text = line
         let depth = 0
+        // A run this line does not reach has ENDED, so its state is not a run
+        // any more. Keeping it let a later quote at the same depth inherit a
+        // table that closed before it: `> > | a |` / `> # H` / `> > + b |`
+        // opens a NEW inner quote whose first line is prose, and the stale run
+        // read it as a continuation row and ended the quote.
+        //
+        // Every level on the path ends on what the innermost one ends on, so
+        // the answer is stored at each of them: a fence written at one level is
+        // at block start when the level below it left no paragraph open.
+        const settle = (ans, reached) => {
+          qNestedTable.length = reached
+          qNestedFence.length = reached
+          qNestedPara.length = reached
+          for (let d = 0; d < reached; d++) qNestedPara[d] = ans
+          return ans
+        }
         while (QUOTE.test(text)) {
           // At the parser's depth limit the remaining line is literal text.
           // Inspecting markers below it both misclassifies that text and walks
           // an arbitrarily deep suffix for every enclosing quote.
-          if (state.blockDepth + depth >= MAX_NESTING_DEPTH) {
-            qNestedTable.length = depth
-            return text.trim() !== ''
-          }
+          if (state.blockDepth + depth >= MAX_NESTING_DEPTH) return settle(text.trim() !== '', depth)
           text = QUOTE.exec(text)[1] ?? ''
+          // S2: an open payload makes this level's line verbatim, so a marker
+          // on it is literal and A FENCED BODY IS NOT A PARAGRAPH.
+          const open = qNestedFence[depth]
+          if (open) {
+            const c = PURE_FENCE.exec(text)
+            if (c && c[1][0] === open[0] && c[1].length >= open.length) qNestedFence[depth] = null
+            return settle(false, depth + 1)
+          }
           const before = qNestedTable[depth] ?? false
           qNestedTable[depth] = tableRunStep(before, text)
+          const f = FENCE.exec(text)
+          if (f && parseFenceInfo(f[2]) !== null &&
+              (!qNestedPara[depth] || closerFollows(idx, depth + 2, f[1]))) {
+            qNestedFence[depth] = f[1]
+            qNestedTable[depth] = false
+            return settle(false, depth + 1)
+          }
           depth++
-          // A run this line does not reach has ENDED, so its state is not a
-          // run any more. Keeping it let a later quote at the same depth
-          // inherit a table that closed before it: `> > | a |` / `> # H` /
-          // `> > + b |` opens a NEW inner quote whose first line is prose, and
-          // the stale run read it as a continuation row and ended the quote.
           if (!QUOTE.test(text)) {
-            qNestedTable.length = depth
             // A term has inline content, but no paragraph for a lazy fold.
             // Match the direct quote classifier below.
-            if (state.blockDepth + depth >= MAX_NESTING_DEPTH) return text.trim() !== ''
-            return !DEFLIST_TERM.test(text) && opensParagraph(text, false, before)
+            if (state.blockDepth + depth >= MAX_NESTING_DEPTH) return settle(text.trim() !== '', depth)
+            return settle(!DEFLIST_TERM.test(text) && opensParagraph(text, false, before), depth)
           }
         }
-        qNestedTable.length = depth
-
-        return opensParagraph(text)
+        return settle(opensParagraph(text), depth)
+      }
+      // Every nested level ends where a line stops reaching it, and a VERBATIM
+      // line reaches none however it is spelled: a `> >` inside the outer
+      // level's fenced body is literal bytes. Without this the ladder's state
+      // outlived its quote and the first line of the NEXT nested quote was read
+      // as the old one's fence payload.
+      const clearNested = () => {
+        qNestedTable.length = 0
+        qNestedFence.length = 0
+        qNestedPara.length = 0
       }
       const trackFence = (l, idx) => {
         // The quote body is literal beyond the same limit used by parseBlocks.
@@ -3256,7 +3342,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         if (state.blockDepth >= MAX_NESTING_DEPTH) {
           qOpenPara = !isBlank(l)
           qTableOpen = false
-          qNestedTable.length = 0
+          clearNested()
           qPara = qOpenPara ? [l] : []
           return
         }
@@ -3265,6 +3351,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (c && c[1].length === openComment) openComment = null
           qOpenPara = false
           qTableOpen = false
+          clearNested()
           qPara = []
           return
         }
@@ -3273,6 +3360,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (c && c[1][0] === openFence[0] && c[1].length >= openFence.length) openFence = null
           qOpenPara = false
           qTableOpen = false
+          clearNested()
           qPara = []
           return
         }
@@ -3289,9 +3377,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           }
         }
         const f = FENCE.exec(l)
-        const isOpener = !!(f && prevBlank && parseFenceInfo(f[2]))
+        // SS10 I4's own two questions, asked of the quote's own paragraph state.
+        // This read whether the PREVIOUS line was blank, which admits neither a
+        // fence under a heading, a break, a table or a closed fence - all block
+        // starts - nor one under a paragraph with a closer below it. So a fence
+        // that opened for the block reader stayed prose for this tracker, and
+        // the unmarked line below it folded (carve#2513).
+        const isOpener = !!(f && parseFenceInfo(f[2]) !== null &&
+          (!qOpenPara || closerFollows(idx, 1, f[1])))
         if (isOpener) openFence = f[1]
-        prevBlank = isBlank(l)
         // PART 1 S4 makes the fold conditional on an OPEN PARAGRAPH, so every
         // block that leaves none clears this. A definition TERM is bounded like
         // a heading (it holds inline content, not a paragraph), and a
@@ -3343,8 +3437,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
          */
         // Every depth ends when a line stops supplying its marker, so a line
         // that is not a nested quote at all clears the whole ladder.
-        if (!QUOTE.test(l)) qNestedTable.length = 0
-        const nestedQuoteEnds = QUOTE.test(l) && !nestedQuoteOpensParagraph(l)
+        if (!QUOTE.test(l)) clearNested()
+        const nestedQuoteEnds = QUOTE.test(l) && !nestedQuoteOpensParagraph(l, idx)
         if (!absorbedColon &&
             (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
