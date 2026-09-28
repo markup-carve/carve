@@ -29,6 +29,7 @@
     "parity:check": "node scripts/parity-check.mjs",
     "claims:check": "node scripts/engine-claims.mjs",
     "degradation:check": "node scripts/degradation-claims.mjs",
+    "migration:evidence": "node scripts/migration-evidence-claims.mjs",
     "import:report": "node scripts/import-report-claims.mjs",
     "fmt:check": "node scripts/fmt-fixture-claims.mjs",
     "fuzz:impls": "node scripts/fuzz-impls.mjs",

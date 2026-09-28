@@ -101,6 +101,18 @@ boundary. When that is not true, the producer MUST emit `fidelity-unverified`
 as `dropped` with `fallback` confidence. `diagnostics-truncated` has the same
 fail-closed classification.
 
+The core Markdown, Djot, and BBCode importers recognize a narrow verified
+subset: empty input (including input containing only line endings) or Unicode letters and numbers separated by single ASCII
+spaces, with optional trailing line endings. After CR and CRLF normalization
+and removal of trailing LF characters, output must equal input and no known
+loss may be present. This produces `literal-text-verified` with `preserved`
+fidelity, `exact` confidence, and `info` severity. Other input remains
+`fidelity-unverified`; this evidence does not cover general markup migration.
+`scripts/migration-evidence-claims.mjs` checks the subset and loss-gate exits
+across all three engines without exemptions. The CLI accepts
+`migrate --from markdown|djot|bbcode --report - --check-loss`; converted source
+goes to stdout and the JSON report goes to stderr.
+
 `fidelity-unverified` does not suppress losses the importer can identify. An
 importer MUST also report each known construct-level loss. For example, GFM
 reads a checkbox on `1. [x] done`, but Carve spells task markers only on bullet
