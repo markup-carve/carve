@@ -60,8 +60,11 @@ CarveCore {
   doc        = block*
   // start rule used by the executable-spec pipeline (scripts/spec/*): the
   // layout automaton owns block structure; this parses ONE line of inline
-  // content. newline is not matchable here.
-  inlines    = inline*
+  // content. newline is not matchable here. A `%%` at the START of the run is
+  // a comment marker (PART 9 §21) with no separator to carry it, which only a
+  // leaf host can spell: a paragraph's run start is a line start and the block
+  // layer claimed it already.
+  inlines    = initialComment? inline*
   // (lexical, lowercase: Ohm syntactic rules skip whitespace -- fatal for
   // an indentation-sensitive language)
 
@@ -154,18 +157,20 @@ CarveCore {
   // ==========================================================================
   // INLINE (Core)
   // ==========================================================================
-  // Headings retain their host's initial/tab-separated comment forms. Read
-  // complete inline constructs first so their literal payload stays opaque.
-  headingInlines = headingInitialComment? headingInline*
-  headingInline = headingSpComment | inline
-  headingInitialComment = "%%" ~"%" (~newline any)*
-  headingSpComment = (" " | "\t") "%%" ~"%" (~newline any)*
+  // A heading reads the SAME comment forms every other host does; it differs
+  // only in emitting text rather than HTML. Read complete inline constructs
+  // first so their literal payload stays opaque, which is why the comment is
+  // its own alternative here instead of being reached through `inline`.
+  headingInlines = initialComment? headingInline*
+  headingInline = spComment | inline
 
   // ORDER IS TUNED FOR SPEED (byte-exactness preserved). The three most common
   // tokens -- `word`, `spComment`, `inlineSpace` -- are hoisted to the FRONT:
-  // NO other alternative begins with an alphanumeric or a space, so hoisting
-  // them cannot change which alternative wins, and it lets an alnum/space char
-  // match in one attempt. `litDelim` stays after `arrow` and `span` (they claim
+  // NO other alternative begins with an alphanumeric, a space or a tab, so
+  // hoisting them cannot change which alternative wins, and it lets an
+  // alnum/space char match in one attempt. A tab reaches `spComment` (§21's
+  // separator is a run of either) and otherwise falls through to `other`.
+  // `litDelim` stays after `arrow` and `span` (they claim
   // `<==`/`==>` and `/*` first; `=>` left that set in carve#1442, and a bare
   // `=` before `>` does not pair as a highlight - measured). This keeps the
   // tokenizer's per-character work
@@ -712,18 +717,29 @@ CarveCore {
   wordChar   = alnumCh
   delim      = "/" | "*" | "_" | "~" | "^" | "=" | ","
 
-  // a whitespace-preceded %% consumes the rest of the LINE (SS21); the
-  // space itself is consumed too
-  spComment  = " " "%%" (~newline any)*
+  // a whitespace-preceded %% consumes the rest of the LINE (SS21). A TAB
+  // separates as a space does, and the whole separating run is consumed, not
+  // one character of it: the run is what marks the comment off, so leaving
+  // part of it publishes whitespace the author wrote as a separator.
+  spComment  = sepRun "%%" (~newline any)*
   // Bounded twins for the two constructs whose content is parsed inline
   // rather than cut first (PART 9 SS21a): a forced span's own closer, and
   // the combined token's `*/`, are boundaries the run does not cross either.
-  fSpComment<d> = " " "%%" (~newline ~(d "}") any)*
-  biSpComment = " " "%%" (~newline ~"*/" any)*
+  fSpComment<d> = sepRun "%%" (~newline ~(d "}") any)*
+  biSpComment = sepRun "%%" (~newline ~"*/" any)*
+  sepRun     = (" " | "\t")+
+  // The run-start form: nothing precedes it, so it carries no separator.
+  initialComment = "%%" (~newline any)*
   // {% ... %} consumes through the FIRST closer, including soft line breaks.
   // It has no leading-space requirement or consumption (SS21a).
   bracedComment = "{%" (~"%}" any)* "%}"
-  inlineSpace = " "
+  // The SAME run, so a whitespace run with no `%%` after it is consumed in ONE
+  // token: `spComment` scans the run and fails, then `inlineSpace` applies the
+  // memoized `sepRun` at that position and steps past the whole run. Spelling
+  // this `" "` while spComment takes a run makes the scan QUADRATIC - the run
+  // is re-scanned from one character further in at every retry - so the two
+  // rules have to share `sepRun`.
+  inlineSpace = sepRun
 
   // A bare delimiter that opened nothing is literal text. The attribute block
   // rides on the delimiter because only a closer can carry one (PART 9 SS9);

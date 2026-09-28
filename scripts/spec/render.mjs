@@ -412,7 +412,7 @@ function unclosedCode(content) {
 }
 
 const sem = g.createSemantics().addOperation('h', {
-  inlines(items) {
+  inlines(_initial, items) {
     // The bare single-char emphasis delimiters are NOT resolved by the PEG.
     // Build a flat token stream (leaf HTML fragments + bare-delimiter
     // candidates) and run the PART 9 SS9 delimiter-stack pass over it.
@@ -701,6 +701,14 @@ const sem = g.createSemantics().addOperation('h', {
   },
   spComment(_sp, _pp, _rest) {
     return ''
+  },
+  initialComment(_pp, _rest) {
+    return ''
+  },
+  // `inlineSpace` is a RUN now (see the grammar note), so it emits its own
+  // source rather than the one space the rule used to be.
+  inlineSpace(run) {
+    return run.sourceString
   },
   // Bounded twins (PART 9 SS21a): same emission, a narrower run.
   fSpComment(_sp, _pp, _rest) {
@@ -1446,7 +1454,8 @@ const headingSem = g.createSemantics().addOperation('headingText', {
     return parts.children.map((part) => part.headingText()).join('')
   },
   headingInline(part) { return part.headingText() },
-  headingSpComment(_space, _marker, _body) { return '' },
+  initialComment(_marker, _body) { return '' },
+  spComment(_space, _marker, _body) { return '' },
   inline(_content) { return this.sourceString },
 })
 
@@ -1740,7 +1749,7 @@ export function captionPlaceholder(text) {
 }
 
 const capSem = g.createSemantics().addOperation('capIdx', {
-  inlines(items) {
+  inlines(_initial, items) {
     const build = () =>
       items.children.map((c) => {
         const alt = c.child(0)

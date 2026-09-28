@@ -64,3 +64,5 @@
 
 515-a-nested-marker-comment-keeps-its-own-ownership  carve#2526: the nested marker comment closer retains the outer item below its column.
 515-a-nested-marker-comment-keeps-its-own-ownership-4  carve#2526: the ordered nested marker comment closer retains the outer item below its column.
+518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-9  carve#2552: the pin reads PART 9 §21's separator in every host but a div label, where it keeps the comment.
+518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-10  carve#2552: the pin reads PART 9 §21's separator in every host but a div label, where it keeps the comment.

@@ -37,6 +37,7 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `515-a-nested-marker-comment-keeps-its-own-ownership`,
 `516-a-heading-comment-preserves-code-span-content`,
 `517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose`,
+`518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
@@ -94,6 +95,15 @@ engine held the reading a day before the pin was measured. carve-php
 `2742f8175` reads the three band paragraphs tight and splits the attached
 sub-list document into three lists, which is an ownership question this ruling
 does not reach. carve-rs is unmeasured here.
+
+518's thirteen were measured against the pinned carve-js `c5df77f6`, which
+reproduces eleven of them: the tab separator, the whole separating run and the
+run start all read the way PART 9 §21 states them in a paragraph, a definition
+term, a table cell, a figure caption and a link label. It keeps the comment in a
+div label, and those two rows are declared in `resources/engine-pin-drift.txt`
+under [carve#2552](https://github.com/markup-carve/carve/issues/2552). Rust and
+PHP were not measured: this host's checkouts of both sit on branches another
+task holds, so neither could be built from its default branch.
 
 The former case-by-case notes remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/a22f6a23f7913e44cb3461f3f608605660619032/docs/implementation-comparison-methodology.md).
