@@ -10,6 +10,26 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
+### Fixes
+
+- Correct executable-spec container ownership after block comments and fence
+  closers below an item's base column (carve#2507, carve#2509).
+- Pair comment spans with their own delimiters in every host (carve#2503).
+- End executable-spec lazy continuation after quoted fences and nested blocks
+  that leave no paragraph. Correct list, description, and `+` attachment
+  boundaries (carve#2510, carve#2514, carve#2515).
+- Preserve frontmatter when writing the Markdown target (carve#2502).
+
+### Improvements
+
+- Cover raised-colon paragraph folding at list column boundaries (carve#2494).
+- Pin unpadded hyphen-only line-block formatting (carve#2496).
+- Reuse container-prefix state and stop unused scans in the executable spec
+  (carve#2510, carve#2515).
+- Clarify that diagnostic message text is engine-specific and excluded from
+  parity comparison (carve#2470).
+- State the contextual-escape boundary in the Carve-target rules (carve#2511).
+
 ## [0.1.7] - 2026-09-25
 
 ### Breaking
