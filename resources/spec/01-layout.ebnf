@@ -672,6 +672,26 @@
         and `x` re-parses at document level -- where the trailing delimiter run
         is ordinary inline text.
 
+        AND THE OWNER TABLE CARRIES NO DEPTH TERM. The example above is one
+        container deep; the rule is not. Where no container in the open stack
+        holds an open paragraph, CARVE-P0-004 selects the nearest surviving
+        ancestor whose content column the run reaches, every container between
+        the fence's host and that owner closes, and the run is classified in the
+        owner at its own column (carve#2490). At content column 4 a run at
+        column 0 or 1 reaches the document, one at column 2 the outer item:
+
+            - a
+              - b
+
+                ```
+                p
+            ```
+
+        Both items and both lists close, the inner item keeps the fence's body,
+        and the run opens a code block at document level. `%%%` is outside this:
+        its delimiters carry a whitespace slot of their own, so its run closes
+        the span at any column and ends no container.
+
         FENCE KIND DOES NOT DETERMINE CONTAINER REACH -- NORMATIVE [CARVE-P0-014].
         VERBATIMNESS is not the property doing the work. The reach of a
         container is not extended by what its innermost block happens to be,

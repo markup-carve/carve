@@ -28,6 +28,7 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `506-comment-columns-and-surviving-list-items`,
 `507-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph`,
 `508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter`,
+`509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
@@ -39,6 +40,10 @@ carve-rs `3a8403d`: all three agree on the two control documents and disagree
 with the oracle on the four the ruling moved, which
 [carve#2488](https://github.com/markup-carve/carve/issues/2488) tracks per
 engine.
+509's twelve were measured against carve-js `c5df77f6`: it agrees on the four the
+[carve#2490](https://github.com/markup-carve/carve/issues/2490) ruling leaves
+where they were and diverges on the other six, which
+`resources/engine-pin-drift.txt` declares.
 
 The former case-by-case notes remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/a22f6a23f7913e44cb3461f3f608605660619032/docs/implementation-comparison-methodology.md).
