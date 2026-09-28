@@ -33,3 +33,19 @@ test('a deeper invalid opener cannot absorb a shallower colon fence', () => {
   const source = '> > > :::note\n> > :::\ny\n'
   assert.deepEqual(parse(source).blocks.at(-1), { t: 'para', lines: ['y'] })
 })
+
+for (const lazy of ['> body', '> > body', 'body']) test(`lazy ${JSON.stringify(lazy)} preserves nested absorption`, () => {
+  const source = '> > > :::note\n' + lazy + '\n> > > :::\ny\n'
+  assert.equal(parse(source).blocks.length, 1)
+  assert.match(renderDoc(parse(source)), /:::note\nbody\n:::\ny<\/p>/)
+})
+
+test('a real div closer wins over malformed text in its body', () => {
+  const source = '> > ::: d\n> > :::note\n> > :::\ny\n'
+  assert.deepEqual(parse(source).blocks.at(-1), { t: 'para', lines: ['y'] })
+})
+
+for (const first of ['# H', '::: d']) test(`a bare run after ${JSON.stringify(first)} leaves no claim`, () => {
+  const source = '> > ' + first + '\n> > :::: \ny\n'
+  assert.deepEqual(parse(source).blocks.at(-1), { t: 'para', lines: ['y'] })
+})
