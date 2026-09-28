@@ -52,6 +52,35 @@ try {
   failures.push(...lintDriftProblems(missing, declared))
   console.log(`declared missing lint rules: ${declared.size}`)
 
+  const lintRegressions = [
+    ['+ ```raw html\nx\n```\n', 'raw-block-syntax', false],
+    ['a. ```raw html\n   x\n```\n', 'raw-block-syntax', true],
+    ['civil. ```raw html\n       x\n```\n', 'raw-block-syntax', true],
+    ['Note. ```raw html\nx\n```\n', 'raw-block-syntax', false],
+    ['---\ncarve-version: 0.1\n---\n\nx\n\n%% carve-version: 99.0; generated-by: test\n', 'carve-version-unsupported', false],
+    ['::: note\n::: tip\nx\n:::\n', 'unclosed-container-fence', true],
+    ['::: note\nx\n\n    :::\n', 'unclosed-container-fence', true],
+    ['a. ::: note\n   x\n', 'unclosed-container-fence', true],
+    [':::: note\n:::\ninner\n:::\n::::\n', 'colon-fence-length-mismatch', false],
+    ['| a `|{#x}<` b |\n', 'table-cell-attribute-before-marker', false],
+    ['| a \\|{#x}< b |\n', 'table-cell-attribute-before-marker', false],
+    ['| {#x}< b |\n', 'table-cell-attribute-before-marker', false],
+    ['> | a | {#x}< b |\n', 'table-cell-attribute-before-marker', false],
+    ['> |{#x}< b |\n', 'table-cell-attribute-before-marker', true],
+    ['> ```raw html\n> x\n> ```\n', 'raw-block-syntax', true],
+    ['> # T {#id}\n', 'heading-trailing-attribute', true],
+    ['`{{ #x }}`\n', 'empty-include-path', false],
+    ['---\ncarve-version: 0.1\n---\n\nx\n', 'carve-version-unsupported', false],
+    ['x\n\n%% carve-version: 99.0; generated-by: test\n', 'carve-version-unsupported', true],
+  ]
+  for (const engine of Object.keys(engines)) {
+    for (const [source, rule, expected] of lintRegressions) {
+      const emitted = lintRules(invoke(engine, ['lint'], source))
+      if (emitted.has(rule) !== expected) failures.push(`${engine}: ${rule} expected=${expected} for ${JSON.stringify(source)}`)
+    }
+  }
+  console.log(`lint regressions: ${lintRegressions.length} cases per engine`)
+
   const text = value => ({ type: 'text', value })
   const paragraph = value => ({ type: 'paragraph', children: [text(value)] })
   const table = cell => JSON.stringify({ type: 'document', srcByteLength: 0, children: [{ type: 'table', rows: [
@@ -91,6 +120,30 @@ try {
   }
   console.log(`constructed block cells: ${cases.length} cases on Markdown, plain and ANSI; Carve refusal in all three engines`)
 
+  for (const value of ['a\n> b', 'a\n>\nb', 'a\n[x]: y']) {
+    const children = [{ type: 'code', value }]
+    const hosts = [
+      { type: 'definition_list', items: [{ type: 'definition_term', children }] },
+      { type: 'footnote', label: 'n', children: [{ type: 'paragraph', children }] },
+    ]
+    for (const host of hosts) for (const engine of Object.keys(engines)) {
+      if (host.type === 'footnote' && value.includes('[x]')) continue
+      const ast = JSON.stringify({ type: 'document', srcByteLength: 0, children: [host] })
+      if (!cleanRefusal(invoke(engine, ['--from-json', '--carve'], ast), 'code')) {
+        failures.push(`${engine}: unspellable code ${JSON.stringify(value)} in ${host.type} must refuse cleanly`)
+      }
+    }
+  }
+
+  for (const value of ['a \nb', ' \n ', ' \r ']) {
+    const ast = JSON.stringify({ type: 'document', srcByteLength: 0, children: [{ type: 'paragraph', children: [{ type: 'code', value }] }] })
+    for (const engine of Object.keys(engines)) {
+      if (!cleanRefusal(invoke(engine, ['--from-json', '--carve'], ast), 'code')) {
+        failures.push(`${engine}: code with stripped whitespace ${JSON.stringify(value)} must refuse cleanly`)
+      }
+    }
+  }
+
   const code = { type: 'code', value: '\n`' }
   for (const children of [
     [text('before '), code, text(' after')],
@@ -104,7 +157,8 @@ try {
     }
   }
 
-  for (const source of ['`z` ``\n`\n', 'before ``\n`\n', 'before ```\n``\n', '{~before ``\n`~}\n', 'x {~``\n`~}\n', '``\n`\n']) {
+  const formatterCases = ['# A\n# A-2\n# A\n', '# A\n# A\n# A-2\n# A-2\n', "- - p `a\n > b` q\n", "- 1. p `a\n > b` q\n", "- p\n\n  - q `a\n > b` r\n", "r[^n]\n\n[^n]: p `a\n  [x]: y` q\n", "r[^n]\n\n[^n]: - p `a\n   > b` q\n", "> - - p `a\n>  > b` q\n", '- p `a\n > b` q\n', '- p `a\n >\nb` q\n', '`\n``\n', '`\n``x\n', '1. [d]: u\n', '- A\n{x}\n*[A]: }\n', '`\n\t> x\n', '~``` x\n[d]: u ```\n', '~s~@t\n', '`z` ``\n`\n', 'before ``\n`\n', 'before ```\n``\n', '{~before ``\n`~}\n', 'x {~``\n`~}\n', '``\n`\n']
+  for (const source of formatterCases) {
     const written = new Map()
     const original = new Set()
     for (const engine of Object.keys(engines)) {
@@ -112,14 +166,15 @@ try {
       original.add(html)
       const formatted = output(engine, ['--carve'], source)
       written.set(engine, formatted)
-      if (output(engine, ['--carve'], formatted) !== formatted) failures.push(`${engine}: code-span formatter is not idempotent`)
+      if (output(engine, ['--carve'], formatted) !== formatted) failures.push(`${engine}: formatter is not idempotent for ${JSON.stringify(source)}`)
       for (const reader of Object.keys(engines)) {
-        if (output(reader, [], formatted) !== html) failures.push(`${engine} -> ${reader}: code-span formatting changes HTML`)
+        if (output(reader, [], formatted) !== html) failures.push(`${engine} -> ${reader}: formatting changes HTML for ${JSON.stringify(source)}`)
       }
     }
-    if (original.size !== 1 || new Set(written.values()).size !== 1) failures.push('cross-engine: code-span source or canonical output differs')
+    if (original.size !== 1) failures.push(`cross-engine: source HTML differs for ${JSON.stringify(source)}`)
+    if (new Set(written.values()).size !== 1) failures.push(`cross-engine: canonical output differs for ${JSON.stringify(source)}`)
   }
-  console.log('code-span formatter: six cases, all writer/reader pairs, idempotence and canonical agreement')
+  console.log(`formatter: ${formatterCases.length} cases, all writer/reader pairs, idempotence and canonical agreement`)
 } catch (error) {
   console.error(`parity could not complete: ${error.message}`)
   process.exit(2)
