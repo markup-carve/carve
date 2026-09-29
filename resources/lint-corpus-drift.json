@@ -2,11 +2,60 @@
   "version": 1,
   "measured": {
     "date": "2026-09-29",
-    "spec": "578d564d",
-    "js": "bd04c52f623fab52f55a1e8159b1763541912a00",
-    "php": "fb90f9a5294e97a407a3fcad88df82b8e696f8a5",
-    "rust": "f17a8c8a54c0433ae29e309d69aa3e1af359f1bf",
+    "spec": "df334ba5",
+    "js": "12d5a5ff236b248bc059018ab9ce617a1026a60e",
+    "php": "c037dd854cd8a76bbb6a537bf3eeefd5cab1dcee",
+    "rust": "2745754ccd8790625eb29cc31643501590a8fa2d",
     "documents": 2227
   },
-  "differences": []
+  "differences": [
+    {
+      "file": "tests/corpus/531-an-opener-under-a-quote-in-a-nested-host-opens-at-one-column-only-8.crv",
+      "reason": "An overindented run of table rows: carve-js reports the first row, carve-php and carve-rs report every row. Whether list-item-block-overindented fires once per overindented block or once per overindented block-shaped line is not written down, so no engine is wrong against a clause yet. The same split shows on a quote whose continuation lines are indented, and all three agree wherever each line is its own block.",
+      "issue": "https://github.com/markup-carve/carve/issues/2643",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            3,
+            4
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            3,
+            4
+          ],
+          [
+            "list-item-block-overindented",
+            4,
+            4
+          ],
+          [
+            "list-item-block-overindented",
+            5,
+            4
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            3,
+            4
+          ],
+          [
+            "list-item-block-overindented",
+            4,
+            4
+          ],
+          [
+            "list-item-block-overindented",
+            5,
+            4
+          ]
+        ]
+      }
+    }
+  ]
 }

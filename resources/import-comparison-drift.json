@@ -2,10 +2,10 @@
   "version": 1,
   "measured": {
     "date": "2026-09-29",
-    "spec": "89157529b36c",
-    "js": "991f8e017601",
-    "php": "0175e15e3c1a",
-    "rust": "9118bb8aed59"
+    "spec": "df334ba5cdfd",
+    "js": "12d5a5ff236b",
+    "php": "df70493594de",
+    "rust": "2745754ccd87"
   },
   "differences": [
     {
@@ -321,36 +321,10 @@
       }
     },
     {
-      "key": "commonmark/markdown/40",
-      "reason": "Entity and numeric character references: rendered HTML differs between js and php/rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "c41e43173e32e6ae57796578f9fcc2f824219bc8606adf9afd16afb11dec1127",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "\\ foo\n",
-            "html": "<p>&nbsp;foo</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "\tfoo\n",
-            "html": "<p>foo</p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "foo\n",
-            "html": "<p>foo</p>"
-          }
-        }
-      }
-    },
-    {
       "key": "commonmark/markdown/473",
-      "reason": "Emphasis and strong emphasis: carve-js and carve-php rewrite the unmatched Markdown emphasis marker as a Carve marker, so the literal character in the output changes; carve-rs keeps the character the source wrote.",
+      "reason": "Emphasis and strong emphasis: carve-js rewrites the unmatched Markdown emphasis marker as a Carve marker, so the literal character in the output changes; carve-php and carve-rs keep the character the source wrote.",
       "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "904b64f3c3d9e9070a6d02451d71f93f03b87fe695bed58eaeae1bed074f941b",
+      "fingerprint": "e4d34d3d9dda93bab02473e6c08ec9bda849bb7e1e26dd11a81b23e9503d55d0",
       "observation": {
         "kind": "meaning",
         "answers": {
@@ -361,8 +335,8 @@
           },
           "php": {
             "status": 0,
-            "source": "/[bar/](/url)\n",
-            "html": "<p>/<a href=\"/url\">bar/</a></p>"
+            "source": "*[bar*](/url)\n",
+            "html": "<p>*<a href=\"/url\">bar*</a></p>"
           },
           "rust": {
             "status": 0,
@@ -374,9 +348,9 @@
     },
     {
       "key": "commonmark/markdown/474",
-      "reason": "Emphasis and strong emphasis: carve-js and carve-php rewrite the unmatched Markdown emphasis marker as a Carve marker, so the literal character in the output changes; carve-rs keeps the character the source wrote.",
+      "reason": "Emphasis and strong emphasis: carve-js rewrites the unmatched Markdown emphasis marker as a Carve marker, so the literal character in the output changes; carve-php and carve-rs keep the character the source wrote.",
       "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "f6707a6063a61425ccd9c430a58248bd74d044c89606c4fbbef7789d3facf2bf",
+      "fingerprint": "5581e65f71fc1a9f71e9d19a6d8feef57234822cfbc88444264dd246a554100b",
       "observation": {
         "kind": "meaning",
         "answers": {
@@ -387,8 +361,8 @@
           },
           "php": {
             "status": 0,
-            "source": "/foo [bar/](/url)\n",
-            "html": "<p>/foo <a href=\"/url\">bar/</a></p>"
+            "source": "_foo [bar_](/url)\n",
+            "html": "<p>_foo <a href=\"/url\">bar_</a></p>"
           },
           "rust": {
             "status": 0,
@@ -478,9 +452,9 @@
     },
     {
       "key": "commonmark/markdown/521",
-      "reason": "Emphasis and strong emphasis: carve-js and carve-php rewrite the unmatched Markdown emphasis marker as a Carve marker, so the literal character in the output changes; carve-rs keeps the character the source wrote.",
+      "reason": "Emphasis and strong emphasis: carve-js rewrites the unmatched Markdown emphasis marker as a Carve marker, so the literal character in the output changes; carve-php and carve-rs keep the character the source wrote.",
       "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "9651e2a9c23b91428c24fc7c566d2c95803823daca87d3332644eaca731ba677",
+      "fingerprint": "a0181e6610783275df682288c95bfafc5ee366529df384989e4c9c34967c41cb",
       "observation": {
         "kind": "meaning",
         "answers": {
@@ -491,8 +465,8 @@
           },
           "php": {
             "status": 0,
-            "source": "/[foo/](/uri)\n",
-            "html": "<p>/<a href=\"/uri\">foo/</a></p>"
+            "source": "*[foo*](/uri)\n",
+            "html": "<p>*<a href=\"/uri\">foo*</a></p>"
           },
           "rust": {
             "status": 0,
@@ -504,9 +478,9 @@
     },
     {
       "key": "commonmark/markdown/523",
-      "reason": "Emphasis and strong emphasis: carve-js and carve-php write the unmatched marker as a Carve marker whose pair the following bracket run then breaks, losing the emphasis CommonMark keeps; carve-rs escapes the bracket instead.",
+      "reason": "Emphasis and strong emphasis: carve-js writes the unmatched marker as a Carve marker whose pair the following bracket run then breaks, losing the emphasis CommonMark keeps; carve-php and carve-rs escape a bracket instead.",
       "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "2a82f4fbea71b55d1ee697a0263d5861e93d8fe4d6de4d3943dcdf0616e310c5",
+      "fingerprint": "1ca6e33c901a4894e592c690db355d6904065df74ffbc0b612ff29071e807021",
       "observation": {
         "kind": "meaning",
         "answers": {
@@ -517,12 +491,12 @@
           },
           "php": {
             "status": 0,
-            "source": "/foo [bar/ baz]\n",
-            "html": "<p>/foo [bar/ baz]</p>"
+            "source": "/foo [bar/ baz\\]\n",
+            "html": "<p><em>foo [bar</em> baz]</p>"
           },
           "rust": {
             "status": 0,
-            "source": "/foo [bar/ baz\\]\n",
+            "source": "/foo \\[bar/ baz]\n",
             "html": "<p><em>foo [bar</em> baz]</p>"
           }
         }
@@ -608,9 +582,9 @@
     },
     {
       "key": "commonmark/markdown/534",
-      "reason": "Emphasis and strong emphasis: carve-js and carve-php rewrite the unmatched Markdown emphasis marker as a Carve marker, so the literal character in the output changes; carve-rs keeps the character the source wrote.",
+      "reason": "Emphasis and strong emphasis: carve-js rewrites the unmatched Markdown emphasis marker as a Carve marker, so the literal character in the output changes; carve-php and carve-rs keep the character the source wrote.",
       "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "9651e2a9c23b91428c24fc7c566d2c95803823daca87d3332644eaca731ba677",
+      "fingerprint": "a0181e6610783275df682288c95bfafc5ee366529df384989e4c9c34967c41cb",
       "observation": {
         "kind": "meaning",
         "answers": {
@@ -621,8 +595,8 @@
           },
           "php": {
             "status": 0,
-            "source": "/[foo/][ref]\n\n[ref]: /uri\n",
-            "html": "<p>/<a href=\"/uri\">foo/</a></p>"
+            "source": "*[foo*][ref]\n\n[ref]: /uri\n",
+            "html": "<p>*<a href=\"/uri\">foo*</a></p>"
           },
           "rust": {
             "status": 0,
@@ -634,9 +608,9 @@
     },
     {
       "key": "commonmark/markdown/535",
-      "reason": "Links: rendered HTML differs between js/php and rust.",
+      "reason": "Links: carve-js rewrites the unmatched Markdown emphasis marker beside the link as a Carve marker, so the literal character in the output changes; carve-php and carve-rs keep the character the source wrote.",
       "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "cb34daf0c15baa649fede7bf8f3bba5718d64f3a0056bda7e08a6fe636dea258",
+      "fingerprint": "6cbb86e61ffb7bb6837c0aea5bd9ff59bf506f0dca062791a840261452e9a2b1",
       "observation": {
         "kind": "meaning",
         "answers": {
@@ -647,8 +621,8 @@
           },
           "php": {
             "status": 0,
-            "source": "[foo /bar][ref]/\n\n[ref]: /uri\n",
-            "html": "<p><a href=\"/uri\">foo /bar</a>/</p>"
+            "source": "[foo *bar][ref]*\n\n[ref]: /uri\n",
+            "html": "<p><a href=\"/uri\">foo *bar</a>*</p>"
           },
           "rust": {
             "status": 0,
@@ -764,9 +738,9 @@
     },
     {
       "key": "commonmark/markdown/564",
-      "reason": "Emphasis and strong emphasis: carve-js and carve-php rewrite the unmatched Markdown emphasis marker as a Carve marker, so the literal character in the output changes; carve-rs keeps the character the source wrote.",
+      "reason": "Emphasis and strong emphasis: carve-js rewrites the unmatched Markdown emphasis marker as a Carve marker, so the literal character in the output changes; carve-php and carve-rs keep the character the source wrote.",
       "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "50d5699cde8f79226bd4376bc74f1ca6c84c7b7f59a4b8482db21557cceccc10",
+      "fingerprint": "68cad65bacc24150fc882623000a340eeebb47b816a70ee2b3661cbef9e0f1ec",
       "observation": {
         "kind": "meaning",
         "answers": {
@@ -777,8 +751,8 @@
           },
           "php": {
             "status": 0,
-            "source": "/[foo/][foo*]\n\n[foo*]: /url\n",
-            "html": "<p>/<a href=\"/url\">foo/</a></p>"
+            "source": "*[foo*][foo*]\n\n[foo*]: /url\n",
+            "html": "<p>*<a href=\"/url\">foo*</a></p>"
           },
           "rust": {
             "status": 0,
