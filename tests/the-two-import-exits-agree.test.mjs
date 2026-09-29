@@ -5,9 +5,13 @@
  *
  *     parse(htmlToCarve(h)) == htmlToAst(h)
  *
- * modulo escaping (PART 11 §1) and source positions, with one carve-out - a
- * `structure-unspellable` row, which is the diagnostic that exists for a tree
- * Carve source cannot spell.
+ * modulo escaping (PART 11 §1) and source positions, with two carve-outs. A
+ * `structure-unspellable` row is the diagnostic that exists for a tree Carve
+ * source cannot spell, and the fixture carrying one is skipped whole. The second
+ * is a field: CARVE-P12-064 puts a closing fence's break on the WRITER, so a
+ * nonempty `code_block.content` may end one break shorter in the tree than in
+ * the source beside it. See `writerInsertedFenceBreak` below for why that one
+ * cannot be keyed on a diagnostic.
  *
  * WHY IT IS A TEST HERE RATHER THAN A PROPERTY AN ENGINE CHECKS. Every runner
  * this repository has reads a fixture's `expected.ast.json` against an engine
@@ -219,6 +223,40 @@ test('the pinned build records no source-layout field on any import either', asy
   }
 })
 
+/*
+ * THE WRITER'S CLOSING-FENCE BREAK IS NOT A DISAGREEMENT (CARVE-P12-064).
+ *
+ * The clause puts that break on the WRITER, not on the importer. An import
+ * retains the code element's text "including whether its final break is
+ * present", a reader must not append one it did not read, and per
+ * docs/ast-json-contract.md "a canonical Carve fence requires a break before its
+ * closer. Writing a nonempty unterminated payload therefore adds a break and
+ * reports `field-unspellable` for `code_block.content`." So a tree holding "x"
+ * beside a source spelling a closed fence is what the clause REQUIRES of the two
+ * exits, and markup-carve/carve-js#2396 pins that direction against the oracle.
+ *
+ * IT CANNOT BE KEYED ON A DIAGNOSTIC the way `structure-unspellable` is, because
+ * the same page says "an API exposing only HTML-import diagnostics adds no
+ * diagnostic for this later writing step". `expected.report.json` records the
+ * IMPORT report, so the row is not in it: measured on all seven fixtures this
+ * reaches, none carries the code and three carry no diagnostic at all. A
+ * fixture-level skip on `field-unspellable` would never fire.
+ *
+ * So the exemption is the narrowest thing that states the clause: ONE trailing
+ * break on `code_block.content`, in that direction only, and only where the
+ * tree's content is nonempty, because empty content stays an empty fence with no
+ * loss. A tree carrying a break its source does not, an empty payload against a
+ * break, a different payload, or any other field still reports.
+ */
+const writerInsertedFenceBreak = (parent, recordedParent, key, parsed, recorded) =>
+  key === 'content' &&
+  parent?.type === 'code_block' &&
+  recordedParent?.type === 'code_block' &&
+  typeof parsed === 'string' &&
+  typeof recorded === 'string' &&
+  recorded !== '' &&
+  parsed === `${recorded}\n`
+
 const disagreement = (parsed, recorded, path = '') => {
   if (Array.isArray(parsed) || Array.isArray(recorded)) {
     if (!Array.isArray(parsed) || !Array.isArray(recorded)) return `${path}: array against non-array`
@@ -235,6 +273,7 @@ const disagreement = (parsed, recorded, path = '') => {
     const keys = [...new Set([...Object.keys(parsed), ...Object.keys(recorded)])]
     for (const key of keys) {
       if (SOURCE_LAYOUT_FIELDS.has(key)) continue
+      if (writerInsertedFenceBreak(parsed, recorded, key, parsed[key], recorded[key])) continue
       if (!(key in parsed)) return `${path}.${key}: the source says nothing, the tree says it`
       if (!(key in recorded)) return `${path}.${key}: the source says it, the tree says nothing`
       const miss = disagreement(parsed[key], recorded[key], `${path}.${key}`)

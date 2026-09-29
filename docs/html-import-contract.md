@@ -45,13 +45,29 @@ parse(htmlToCarve(h)) == htmlToAst(h)
 modulo escaping - PART 11 §1's EQUALITY IS MODULO ESCAPING - and modulo source
 positions, which imported nodes do not carry at all.
 
-ONE CARVE-OUT, and it is one this page already names. `structure-unspellable`
+TWO CARVE-OUTS, and neither is this page's own.
+
+THE FIRST is a diagnostic this page already names. `structure-unspellable`
 exists for a tree Carve source cannot spell, and it is reported on the exit that
 writes source. Where a row carries it the two exits differ by exactly the
-structure that row names, and this invariant is not the rule that applies. The
-carve-out is not this page's own: PART 11 §1c states the writer-side ceiling it
-sits inside, over what a shape SPELLS rather than over a node type, and names
-this code as what a producer with a diagnostic channel owes for one.
+structure that row names, and this invariant is not the rule that applies. PART
+11 §1c states the writer-side ceiling it sits inside, over what a shape SPELLS
+rather than over a node type, and names this code as what a producer with a
+diagnostic channel owes for one.
+
+THE SECOND is a field rather than a shape, and it is not keyed on a diagnostic
+at all. CARVE-P12-064 makes a code payload's content its literal text and puts a
+closing fence's break on the WRITER: an import retains whether the final break
+is present, a reader must not append one it did not read, and a canonical writer
+adds the break its closer requires when nonempty content has none, reporting
+`field-unspellable` for `code_block.content`. So a nonempty `code_block.content`
+may end one break shorter in the tree than in the source written from it, and
+that difference is the clause holding rather than a defect. The row is absent
+from an import report by the same clause, which says an API exposing only
+HTML-import diagnostics adds no diagnostic for that later writing step, so
+nothing in a recorded import names it and the carve-out is stated over the field
+instead. Empty content needs no break and takes no carve-out.
+
 Everywhere else a difference is a defect. Which of the two exits is the wrong
 one is a separate question, and the invariant deliberately does not answer it.
 
