@@ -264,6 +264,14 @@ function renderLineBlockLine(line) {
   return out
 }
 
+// The one block kind renderBlock answers `null` for, which every host filters
+// out of its body: a raw block the target does not match (PART 9 SS20). Asking
+// this BEFORE rendering is what lets a host read its own shape from what its
+// children will render rather than from how many it holds; a comment, a
+// reference definition and a footnote definition never reach here, because the
+// layout pass takes them out of the tree.
+const rendersNoElement = (b) => b.t === 'raw' && b.format !== 'html'
+
 function renderBlock(b, depth, ctx) {
   const pad = '  '.repeat(depth)
   const ba = b.battrs ? renderBlockAttrs(b.battrs) : ''
@@ -356,11 +364,22 @@ function renderBlock(b, depth, ctx) {
       // than reading the clause (carve#1677). The §1c answer is read off
       // `blockImage`, which the promotion phase set before anything was
       // serialized - the same field the `para` arm above reads (carve#1784).
+      //
+      // AND IT COUNTS THE CHILDREN THAT RENDER, not the children the node holds
+      // (carve#2570). `children.length` is an AST count, so a quote holding a
+      // visible paragraph and a dropped raw block counted two and took the long
+      // spelling for a body that renders as one element - the long spelling then
+      // spent no line on the dropped block either, leaving the paragraph alone
+      // on its own indented line. PART 10 SS4 gives a line to each block ELEMENT,
+      // and a dropped block is not one. `CARVE-P0-014` refuses the mirror of
+      // this move for container reach, which is not extended by what the
+      // innermost block happens to be; a rendered shape is read the same way.
+      const visible = b.children.filter((c) => !rendersNoElement(c))
       const compact =
-        b.children.length === 1 &&
-        b.children[0].t === 'para' &&
-        b.children[0].caption === undefined &&
-        b.children[0].blockImage !== true
+        visible.length === 1 &&
+        visible[0].t === 'para' &&
+        visible[0].caption === undefined &&
+        visible[0].blockImage !== true
       // Depth-first and synchronous, so a saved/restored flag is a stack. The
       // children are rendered ONCE, under `inBlockquote`, which is what keeps a
       // quoted heading out of the implicit-reference index.
@@ -369,7 +388,7 @@ function renderBlock(b, depth, ctx) {
       const inner = (() => {
         try {
           return compact
-            ? renderBlock(b.children[0], 0, ctx)
+            ? renderBlock(visible[0], 0, ctx)
             : b.children.map((c) => renderBlock(c, quotePad.length / 2 + 1, ctx)).filter((x) => x !== null).join('\n')
         } finally {
           ctx.inBlockquote = wasInBlockquote
