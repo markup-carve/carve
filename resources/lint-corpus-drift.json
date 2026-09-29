@@ -2,11 +2,11 @@
   "version": 1,
   "measured": {
     "date": "2026-09-29",
-    "spec": "e778d33af",
-    "js": "31dcaaaf9",
-    "php": "650e65499",
-    "rust": "e73e26003",
-    "documents": 2168
+    "spec": "578d564d",
+    "js": "bd04c52f623fab52f55a1e8159b1763541912a00",
+    "php": "fb90f9a5294e97a407a3fcad88df82b8e696f8a5",
+    "rust": "f17a8c8a54c0433ae29e309d69aa3e1af359f1bf",
+    "documents": 2227
   },
   "differences": []
 }
