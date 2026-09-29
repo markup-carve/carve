@@ -72,3 +72,4 @@
 519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-3  carve#2554: the pinned build retains the unmarked line inside a quote after a shifted code or raw fence.
 
 522-an-emphasis-marker-does-not-pair-across-a-link-bracket  carve#2565: the pin pairs an emphasis marker across the link bracket, where PART 8 resolves the link first.
+524-an-empty-code-payload-renders-no-characters  carve#2560: the pin emits a newline for a code fence with no payload lines, where `code_content` preserves zero characters. Its one-blank partner (-2) reproduces.
