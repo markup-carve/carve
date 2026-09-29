@@ -80,3 +80,8 @@
 529-a-container-label-publishes-its-inline-run-5  carve#2572: the pinned carve-js writes the characters the author typed in a container label, where the slot holds an inline run. Fixed in carve-js db48137e (#2356), which is past the pin.
 529-a-container-label-publishes-its-inline-run-6  carve#2572: the pinned carve-js writes the characters the author typed in a container label, where the slot holds an inline run. Fixed in carve-js db48137e (#2356), which is past the pin.
 529-a-container-label-publishes-its-inline-run-8  carve#2573: the pinned carve-js closes the fence label at the `]` inside a code span, so the fence loses its payload to an inline code span. Fixed in carve-js db48137e (#2356), which is past the pin.
+
+530-a-fence-after-a-footnote-quote-has-its-own-base-2  carve#2598: the pinned build skips rebasing a fence after a blank-separated quote in a footnote body.
+530-a-fence-after-a-footnote-quote-has-its-own-base-3  carve#2598: the pinned build skips rebasing a fence after a blank-separated quote in a footnote body.
+530-a-fence-after-a-footnote-quote-has-its-own-base-5  carve#2598: the pinned build skips rebasing a fence after a blank-separated quote in a footnote body.
+530-a-fence-after-a-footnote-quote-has-its-own-base-6  carve#2598: the pinned build skips rebasing a fence after a blank-separated quote in a footnote body.

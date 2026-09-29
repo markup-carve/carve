@@ -596,6 +596,7 @@ index: examples/edge-cases/index.md
 out: examples/edge-cases/footnotes.md
 index: examples/edge-cases/index.md
   footnote-with-multiple-blocks
+  a-fence-after-a-footnote-quote-has-its-own-base
   cross-references-resolve-inside-footnote-bodies
   footnote-definition-inside-a-container-is-collected
   footnotes-placement
