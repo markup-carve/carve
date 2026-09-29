@@ -380,7 +380,6 @@ test('the nesting cap counts the host containers too', () => {
   assert.equal(blocks(198), 2)
 })
 
-
 test('shifted code and raw fences release unmarked lines at every quote depth', () => {
   for (const depth of [1, 2, 3]) {
     const q = '> '.repeat(depth)
@@ -412,6 +411,32 @@ test('intermediate and deeper fence runs stay opaque to quote ownership', () => 
       const source = `> - a\n>\n>     ${opener}\n>     x\n> ${' '.repeat(col)}${opener.slice(0, 3)}\n>   after\nflush\n`
       assert.equal(parse(source).blocks.at(-1).t, 'para', source)
       assert.equal(renderDoc(parse(source)).split('\n').at(-1), '<p>flush</p>', source)
+    }
+  }
+})
+
+
+test('a refused run at the content column keeps a shifted pair in the paragraph', () => {
+  for (const depth of [1, 2, 3]) {
+    const q = '> '.repeat(depth)
+    for (const lead of ['- a', '- a\n- a']) {
+      const body = `${lead}\n  ${T}\n   ${F}\n   y\n   ${F}\n`
+      const source = body.trimEnd().split('\n').map(line => q + line).join('\n') + '\nflush\n'
+      assert.notEqual(parse(source).blocks.at(-1).t, 'para', source)
+      assert.match(renderDoc(parse(source)), /flush<\/li>/, source)
+    }
+  }
+})
+
+test('a shifted opener under a paragraph can close at the host column', () => {
+  for (const depth of [1, 2, 3]) {
+    const q = '> '.repeat(depth)
+    for (const opener of [F, T, F + '=html', T + '=html']) {
+      for (const column of [3, 4, 6]) {
+        const pad = ' '.repeat(column)
+        const source = `${q}- a\n${q}${pad}${opener}\n${q}${pad}x\n${q}  ${opener.slice(0, 3)}\nflush\n`
+        assert.equal(renderDoc(parse(source)).split('\n').at(-1), '<p>flush</p>', source)
+      }
     }
   }
 })
