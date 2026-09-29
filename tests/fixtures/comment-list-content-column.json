@@ -110,5 +110,37 @@
   {
     "source": "> - intro\n>   %%%\n>   hidden\n>   %%%\n>  - tail\n",
     "html": "<blockquote>\n  <ul>\n    <li>intro\n      - tail\n    </li>\n  </ul>\n</blockquote>"
+  },
+  {
+    "source": "- intro\n%% c\n - tail\n\n  para\n",
+    "html": "<ul>\n  <li><p>intro</p>\n    <p>- tail</p>\n    <p>para</p>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- - intro\n%% c\n - tail\n\n    para\n",
+    "html": "<ul>\n  <li>\n    <ul>\n      <li><p>intro</p>\n        <p>- tail</p>\n        <p>para</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- intro\n%% c\n 1. tail\n\n  para\n",
+    "html": "<ul>\n  <li><p>intro</p>\n    <p>1. tail</p>\n    <p>para</p>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- - intro\n%% c\n 1. tail\n\n    para\n",
+    "html": "<ul>\n  <li>\n    <ul>\n      <li><p>intro</p>\n        <p>1. tail</p>\n        <p>para</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- intro\n%% c\n -{.y} tail\n\n  para\n",
+    "html": "<ul>\n  <li><p>intro</p>\n    <p>-{.y} tail</p>\n    <p>para</p>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- - intro\n%% c\n -{.y} tail\n\n    para\n",
+    "html": "<ul>\n  <li>\n    <ul>\n      <li><p>intro</p>\n        <p>-{.y} tail</p>\n        <p>para</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- intro\n%% c\n - [x] tail\n\n  para\n",
+    "html": "<ul>\n  <li><p>intro</p>\n    <p>- [x] tail</p>\n    <p>para</p>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- - intro\n%% c\n - [x] tail\n\n    para\n",
+    "html": "<ul>\n  <li>\n    <ul>\n      <li><p>intro</p>\n        <p>- [x] tail</p>\n        <p>para</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
   }
 ]
