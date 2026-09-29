@@ -41,10 +41,3 @@
 # fields no corpus document reaches.
 
 # THE ROWS BELOW.
-#
-# `admonition.label` is a carve-rs defect and closes with the engine fix. A `%%`
-# opening a div label's inline run is consumed with its whole separating run
-# (CARVE-P9-041); carve-rs's own HTML for both documents drops it, so only the
-# serializer reads the label before the comment is removed.
-
-admonition.label  2  carve-rs keeps the trailing comment its renderer drops; markup-carve/carve-rs#2163
