@@ -162,7 +162,20 @@ link_text = inline_content ;
    that enforces this -- a cross-reference is the usual case, since `</#id>`
    need not be resolved during parsing -- must apply the rule at that later
    point too, in every such target and not only in the one whose output makes
-   the nesting visible as markup. *)
+   the nesting visible as markup.
+
+   THE HOST IS A LINK, NOT A BRACKET RUN. What the constraint binds is a
+   LINK's text. A span's label is spelled by the same bracket run
+   (`inline_span`, below), and a span is not a link, so a link written in a
+   label nests into nothing and KEEPS its destination: `[[t](/v)]{.c}` is a
+   class on a linked word. Every link spelling is that same case: an inline
+   link, a reference link, an autolink, a link under emphasis. An empty
+   attribute block is a span too, and an image is not a link and survives in
+   either host.
+
+   A reader that enforces this from the bracket rule rather than from the
+   construct the tail selects unwraps the span case with the link one, which
+   drops the destination outright and is what carve#2578 measured here. *)
 link_destination = {destination_escape | balanced_parens | destination_char}+ ;
 balanced_parens = '(', {destination_escape | balanced_parens | destination_char}, ')' ;
 destination_escape = '\', ('(' | ')' | '\') ;
