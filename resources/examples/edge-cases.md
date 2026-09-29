@@ -41688,12 +41688,10 @@ unmarked line below kept a claim. The owner it kept then depended on depth - the
 fence's payload one deep, a paragraph inside the quote two deep, the document
 with no container in between. It is the document at every depth.
 
-The column asked is the host's content column EXACTLY, which is also the column a
-closer is written at. An OVER-INDENTED opener is outside these documents: the
-host's own reader pairs fence runs across the whole body while recognizing one, so
-a prose run at column 5 in an item of content column 2 makes the run below it that
-run's partner rather than an opener, and a column alone stops predicting the
-block.
+These documents place the opener at the host's content column. The same ownership
+rule applies to shifted openers, covered in *A shifted fence in a quoted item
+stores no continuation claim*. A fence-shaped run that remains paragraph text
+still permits lazy continuation.
 
 ::: compare
 
@@ -42590,5 +42588,111 @@ a%%b and 50%% stay
 ```html
 <p><a href="/u"></a></p>
 ```
+
+:::
+
+## A shifted fence in a quoted item stores no continuation claim
+
+`CARVE-P0-014` gives an unmarked column-0 line to the document when a code or
+raw fence is open, even when the opener sits past the quoted item's content
+column. Quote depth and opener indentation do not preserve a continuation claim.
+A run that remains paragraph text still permits lazy continuation.
+
+::: compare
+
+`````carve
+> - a
+>
+>     ```
+>     x
+flush
+`````
+
+`````html
+<blockquote>
+  <ul>
+    <li>a
+      <pre><code>x
+</code></pre>
+    </li>
+  </ul>
+</blockquote>
+<p>flush</p>
+`````
+
+:::
+
+::: compare
+
+`````carve
+> - a
+>
+>     ~~~
+>     x
+z
+>     b
+>     ~~~
+`````
+
+`````html
+<blockquote>
+  <ul>
+    <li>a
+      <pre><code>x
+</code></pre>
+    </li>
+  </ul>
+</blockquote>
+<p>z</p>
+<blockquote><p>b
+~~~</p></blockquote>
+`````
+
+:::
+
+::: compare
+
+`````carve
+> > - a
+> >
+> >     ```=html
+> >     x
+flush
+`````
+
+`````html
+<blockquote>
+  <blockquote>
+    <ul>
+      <li>a
+        x
+      </li>
+    </ul>
+  </blockquote>
+</blockquote>
+<p>flush</p>
+`````
+
+:::
+
+::: compare
+
+`````carve
+> - a
+>     ```
+>     x
+flush
+`````
+
+`````html
+<blockquote>
+  <ul>
+    <li>a
+<code>
+x
+flush</code></li>
+  </ul>
+</blockquote>
+`````
 
 :::

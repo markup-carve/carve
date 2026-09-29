@@ -18,6 +18,7 @@
  */
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { renderDoc } from '../scripts/spec/html.mjs'
 import { parse, layoutWork, resetLayoutWork } from '../scripts/spec/layout.mjs'
 
 const F = '`'.repeat(3)
@@ -227,6 +228,9 @@ test('a container-held closer index is read, not searched', () => {
     'item-held openers over matching closers': (n) => '> - a\n' +
       Array.from({ length: n }, () => `>   ${F}${F} x`).join('\n') + '\n' +
       Array.from({ length: n }, () => `>   ${F}${F}`).join('\n') + '\ntail\n',
+    'shifted item-held openers over tilde closers': (n) => '> - a\n' +
+      Array.from({ length: n }, () => `>     ${F}${F} x`).join('\n') + '\n' +
+      Array.from({ length: n }, () => `>     ${T}`).join('\n') + '\ntail\n',
     // And one quote deeper, where the index is keyed by marker count as well.
     'nested item-held openers over tilde closers': (n) => '> > - a\n' +
       Array.from({ length: n }, () => `> >   ${F}${F} x`).join('\n') + '\n' +
@@ -269,22 +273,13 @@ test('a container this line opened puts the fence at its block start', () => {
     `quote[p(a|- ${F}|x|flush)]`)
 })
 
-test('the content column is asked exactly, and an over-indented run is not it', () => {
-  // A closer is written at the HOST's content column, so an opener is read there
-  // too and NOWHERE ELSE. Whether the host's own reader takes an over-indented one
-  // depends on the runs already in its body - in an item of content column 2 a run
-  // at column 3 opens under a blank and does not under a refused run at column 5 -
-  // and reading the body is the rescan carve#2509 ruled out. So those keep the
-  // answer they had, which is the host swallowing the line rather than the
-  // document taking it.
+test('refused fence runs stay paragraph text at shifted columns', () => {
   assert.equal(host(`> - a\n>     ${F}\n>\n>    ${F}\n>   a\nflush\n`),
     `quote[list[item[p(a|${F}), p(${F}|a|flush)]]]`)
   assert.equal(host(`> - a\n>   ${F}\n>   x\n>     ${F}\n>   a\nflush\n`),
     `quote[list[item[p(a|${F}|x|${F}|a|flush)]]]`)
-  // And an over-indented opener with no run above it keeps the answer it had,
-  // where the host swallows the line rather than the document taking it.
   assert.equal(host(`> - a\n>\n>     ${F}\n>     x\nflush\n`),
-    'quote[list[item[p(a), code]]]')
+    'quote[list[item[p(a), code]]], p(flush)')
   // A LINE WITH AN INVALID INFO STRING IS NOT A FENCE LINE AT ALL: it is prose
   // holding an inline verbatim run, so it leaves no closer to come and the opener
   // below it is real (raised by codex review).
@@ -383,4 +378,65 @@ test('the nesting cap counts the host containers too', () => {
   const blocks = (d) => parse('> '.repeat(d) + '- ' + T + '\nflush\n').blocks.length
   assert.equal(blocks(199), 1)
   assert.equal(blocks(198), 2)
+})
+
+test('shifted code and raw fences release unmarked lines at every quote depth', () => {
+  for (const depth of [1, 2, 3]) {
+    const q = '> '.repeat(depth)
+    const pad = '  '.repeat(depth)
+    for (const opener of [F, T, F + '=html', T + '=html']) {
+      for (const column of [2, 3, 4, 6]) {
+        const spaces = ' '.repeat(column)
+        const prefix = `${q}- a\n${q}\n${q}${spaces}${opener}\n${q}${spaces}x\n`
+        const payload = opener.endsWith('=html') ? 'x\n' : '<pre><code>x\n</code></pre>\n'
+        let expected = ''
+        for (let i = 0; i < depth; i++) expected += '  '.repeat(i) + '<blockquote>\n'
+        expected += `${pad}<ul>\n${pad}  <li>a\n${pad}    ${payload}${pad}  </li>\n${pad}</ul>\n`
+        for (let i = depth - 1; i >= 0; i--) expected += '  '.repeat(i) + '</blockquote>\n'
+        expected += '<p>flush</p>'
+        for (const closer of ['', `${q}${spaces}${opener.slice(0, 3)}\n`]) {
+          const source = prefix + closer + 'flush\n'
+          assert.equal(renderDoc(parse(source)), expected, source)
+          const tail = `${q}${spaces}b\n${q}${spaces}${opener.slice(0, 3)}\n`
+          assert.equal(renderDoc(parse(source + tail)), expected + '\n' + renderDoc(parse(tail)), source + tail)
+        }
+      }
+    }
+  }
+})
+
+test('intermediate and deeper fence runs stay opaque to quote ownership', () => {
+  for (const opener of [F, T, F + '=html', T + '=html']) {
+    for (const col of [3, 5]) {
+      const source = `> - a\n>\n>     ${opener}\n>     x\n> ${' '.repeat(col)}${opener.slice(0, 3)}\n>   after\nflush\n`
+      assert.equal(parse(source).blocks.at(-1).t, 'para', source)
+      assert.equal(renderDoc(parse(source)).split('\n').at(-1), '<p>flush</p>', source)
+    }
+  }
+})
+
+
+test('a refused run at the content column keeps a shifted pair in the paragraph', () => {
+  for (const depth of [1, 2, 3]) {
+    const q = '> '.repeat(depth)
+    for (const lead of ['- a', '- a\n- a']) {
+      const body = `${lead}\n  ${T}\n   ${F}\n   y\n   ${F}\n`
+      const source = body.trimEnd().split('\n').map(line => q + line).join('\n') + '\nflush\n'
+      assert.notEqual(parse(source).blocks.at(-1).t, 'para', source)
+      assert.match(renderDoc(parse(source)), /flush<\/li>/, source)
+    }
+  }
+})
+
+test('a shifted opener under a paragraph can close at the host column', () => {
+  for (const depth of [1, 2, 3]) {
+    const q = '> '.repeat(depth)
+    for (const opener of [F, T, F + '=html', T + '=html']) {
+      for (const column of [3, 4, 6]) {
+        const pad = ' '.repeat(column)
+        const source = `${q}- a\n${q}${pad}${opener}\n${q}${pad}x\n${q}  ${opener.slice(0, 3)}\nflush\n`
+        assert.equal(renderDoc(parse(source)).split('\n').at(-1), '<p>flush</p>', source)
+      }
+    }
+  }
 })
