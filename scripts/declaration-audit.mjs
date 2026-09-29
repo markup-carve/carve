@@ -14,6 +14,14 @@
  * review. The spec lists come from this worktree; engine lists default to
  * each checkout's `origin/main`.
  *
+ * THE ONE ESCAPE HATCH is .ast-span-exempt, in the shape .fleet-pin-exempt
+ * uses: an AST span row that is conformant on every side has no engine to wait
+ * for, so `owed` would hold it forever. A line there declares one such row with
+ * the clause or ruling that makes it conformant, keyed on the document count so
+ * it expires when the reading moves, and every applied line prints on a passing
+ * run. It covers the span ledger and its measurement twin together. Nothing
+ * else is exemptible: a row an engine owes stays owed.
+ *
  * `release` mode requires owed lists to be empty and the carve-js pin to be
  * current. `per-pr` mode accepts well-formed rows in ledgers marked
  * `prPolicy: 'declared'`, reports stale pins, and skips missing engine
@@ -143,7 +151,13 @@ const MANIFEST = [
   // could not be recorded in a pull request at all: carve#1928's indent
   // latitude means neither engine owes the row, so there is no engine fix to
   // wait for and the daily AST conformance run stayed red on it (carve#2175).
-  { repo: 'spec', path: 'resources/ast-span-divergence.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run ast:check' },
+  //
+  // `exempt: 'ast-span'` lets a row that is conformant on every side leave the
+  // owed count, named in .ast-span-exempt with what makes it conformant. Two of
+  // the rows here are one document read two ways inside a line's leading
+  // indentation, which carve#1928 permits, so no engine will ever close them and
+  // an owed-must-be-empty gate could not be satisfied at all.
+  { repo: 'spec', path: 'resources/ast-span-divergence.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', exempt: 'ast-span', owner: 'npm run ast:check' },
   // RELAXED, because the reason that covered both AST ledgers was only ever
   // true of the span one. A VALUE row is `<type.field>  <count>  <who diverges
   // and where it is tracked>`, and `tests/ast-values.test.mjs` has asserted
@@ -245,7 +259,10 @@ const MANIFEST = [
   // same commit as the ledger, and its rows are `['<type> (kind)', <count>]`
   // with no reference to check - the reference is on the ledger row this
   // mirrors. Left `owed` before a tag, where the window itself is owed.
-  { repo: 'spec', path: 'tests/ast-spans.test.mjs', name: 'LAST_MEASURED', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', owner: 'tests/ast-spans.test.mjs' },
+  // It reads the same keys as the ledger it mirrors, so it takes the same
+  // exemptions: declaring a row in one place and not the other would leave
+  // release mode blocked on the twin for a fact both sides record.
+  { repo: 'spec', path: 'tests/ast-spans.test.mjs', name: 'LAST_MEASURED', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', exempt: 'ast-span', owner: 'tests/ast-spans.test.mjs' },
   // The measurement twin of `resources/ast-value-divergence.txt`, and it moves
   // in the same commit, so it reads as that ledger does inside a pull request.
   // `manual` rather than `declared` for the reason PINNED_DRIFT carries it: the
@@ -650,6 +667,76 @@ function undeclaredLedgerRows(rows) {
   return faults
 }
 
+/* ------------------------------------------------- the one escape hatch --- */
+
+// Overridable so a test can hand the audit a file of its own rather than
+// writing to the repository's, which a concurrent run would see. Read per call,
+// not once at import: a test that imports these helpers sets the variable after
+// the module is evaluated, and a constant here would read the repository's own
+// file in every case while looking overridable.
+const spanExemptFile = () => process.env.AST_SPAN_EXEMPT_FILE ?? join(repoRoot, '.ast-span-exempt')
+const spanExemptName = () => process.env.AST_SPAN_EXEMPT_FILE ?? '.ast-span-exempt'
+
+/** A fully qualified issue or a clause id. `#1928` alone names whichever repo the text sits in. */
+const SPAN_EXEMPT_REFERENCE = /[\w.-]+\/[\w.-]+#\d+|\bCARVE-P\d+-\d+\b/
+
+/**
+ * `<type> (presence|extent)` and its document count, from a span ledger row or
+ * from the LAST_MEASURED row that mirrors it.
+ *
+ * One reader for both spellings on purpose: the ledger writes
+ * `list (extent)  1  <reason>` and the twin writes `['list (extent)', 1]`, and a
+ * second parser is a second place for the two to drift apart.
+ */
+function spanRowKey(row) {
+  const m = /^\[?\s*['"]?([a-z_]+ \((?:presence|extent)\))['"]?\s*,?\s+(\d+)\b/.exec(String(row).trim())
+  return m ? { key: m[1], count: Number(m[2]) } : null
+}
+
+/**
+ * Declarations that a span row is conformant on every side.
+ *
+ * The reason is required and must name a clause or a ruling, because the
+ * membership rule of a relaxation list has to be enforced rather than described:
+ * a documented-but-unchecked rule is the carve#755 shape, and a lane refused to
+ * extend a list for exactly that on 2026-09-28. A malformed line, an empty
+ * reason, a reason naming neither, and a key listed twice are all errors.
+ *
+ * @returns {{rows: Array<object>, errors: Array<string>}}
+ */
+function spanExemptions() {
+  const file = spanExemptFile()
+  const name = spanExemptName()
+  if (!existsSync(file)) return { rows: [], errors: [] }
+  const rows = []
+  const errors = []
+  const seen = new Set()
+  for (const [i, raw] of readFileSync(file, 'utf8').split('\n').entries()) {
+    const line = raw.trim()
+    if (!line || line.startsWith('#')) continue
+    const match = line.match(/^([a-z_]+ \((?:presence|extent)\))@(\d+)\s*:\s*(\S.*)$/)
+    if (!match) {
+      errors.push(`${name}:${i + 1}: expected \`<type> (presence|extent)@<count>: <reason>\`, got \`${line}\``)
+      continue
+    }
+    const [, key, count, reason] = match
+    if (!SPAN_EXEMPT_REFERENCE.test(reason)) {
+      errors.push(
+        `${name}:${i + 1}: '${key}' names no clause and no fully qualified owner/repo#N, ` +
+          'so what makes both readings conformant cannot be looked up',
+      )
+      continue
+    }
+    if (seen.has(key)) {
+      errors.push(`${name}:${i + 1}: '${key}' is listed twice, so one of the two reasons is silently discarded`)
+      continue
+    }
+    seen.add(key)
+    rows.push({ key, count: Number(count), reason, line: i + 1, matched: [] })
+  }
+  return { rows, errors }
+}
+
 /**
  * A single-string lag constant. The VALUE is the declaration, so a non-empty
  * string is one row and a deleted constant is zero.
@@ -775,7 +862,7 @@ function perPrPolicy(entry) {
   return entry.policy
 }
 
-export const __internals = { blankComments, perPrPolicy, collapseBetweenLiterals, declarationIndex, bracketedBlock, topLevelEntries, liveRows, classifyPinDistance, gitPinStatus, isDeclarationName, undeclaredLedgerRows, MANIFEST }
+export const __internals = { blankComments, perPrPolicy, collapseBetweenLiterals, declarationIndex, bracketedBlock, topLevelEntries, liveRows, classifyPinDistance, gitPinStatus, isDeclarationName, undeclaredLedgerRows, spanRowKey, spanExemptions, MANIFEST }
 
 if (process.env.CARVE_DECL_AUDIT_LIB === '1') {
   // Imported for its helpers by the self-test; do not run the audit.
@@ -800,6 +887,11 @@ const verifiedGuards = []
 const claimedGuards = []
 const manualRows = []
 const rowsFor = new Map()
+const { rows: spanExempt, errors: spanExemptErrors } = spanExemptions()
+const spanExemptFor = new Map(spanExempt.map((row) => [row.key, row]))
+// What the exemptible ledgers actually declare, for judging a stale line.
+const liveSpanCounts = new Map()
+let spanScopeRead = 0
 
 const width = { repo: 9, path: 60, name: 32, rows: 20 }
 const pad = (s, n) => String(s).padEnd(n).slice(0, n)
@@ -881,26 +973,48 @@ for (const entry of MANIFEST) {
   //
   const policy = strict ? entry.policy : perPrPolicy(entry)
 
-  let owed = rows.length
+  // Rows .ast-span-exempt declares conformant on every side. Judged below: a
+  // line that matched nothing here is stale and fails. The exemption is about
+  // who OWES the row, not about whether the row is readable: a ledger row that
+  // names nobody is still MALFORMED to `reconcileSpans`, and
+  // tests/ast-spans.test.mjs reads every shipped row for its reference.
+  const exemptRows = []
+  if (entry.exempt === 'ast-span') {
+    spanScopeRead += 1
+    for (const row of rows) {
+      const parsed = spanRowKey(row)
+      if (!parsed) continue
+      liveSpanCounts.set(parsed.key, parsed.count)
+      const declaration = spanExemptFor.get(parsed.key)
+      if (declaration && declaration.count === parsed.count) {
+        declaration.matched.push(entry)
+        exemptRows.push(row)
+      }
+    }
+  }
+  const judgedRows = rows.filter((row) => !exemptRows.includes(row))
+
+  let owed = judgedRows.length
   let permitted = 0
-  let detail = rows
+  let detail = judgedRows
   if (policy === 'split') {
-    permitted = rows.filter((r) => r.trim().split(/\s+/).at(-1) === 'permitted').length
-    owed = rows.length - permitted
+    permitted = judgedRows.filter((r) => r.trim().split(/\s+/).at(-1) === 'permitted').length
+    owed = judgedRows.length - permitted
   } else if (policy === 'permitted') {
-    permitted = rows.length
+    permitted = judgedRows.length
     owed = 0
   } else if (policy === 'manual') {
     owed = 0
   } else if (policy === 'declared') {
-    detail = undeclaredLedgerRows(rows)
+    detail = undeclaredLedgerRows(judgedRows)
     owed = detail.length
-    permitted = rows.length - owed
+    permitted = judgedRows.length - owed
   }
 
-  const verdict = policy === 'split' || policy === 'declared'
-    ? `${rows.length} (${permitted} ${policy === 'declared' ? 'declared' : 'permitted'})`
-    : String(rows.length)
+  const counted = policy === 'split' || policy === 'declared'
+    ? `${judgedRows.length} (${permitted} ${policy === 'declared' ? 'declared' : 'permitted'})`
+    : String(judgedRows.length)
+  const verdict = exemptRows.length > 0 ? `${counted} +${exemptRows.length} exempt` : counted
   const bad = owed > 0
   const flag = bad ? (policy === 'declared' ? '   <== UNDECLARED' : '   <== OWED') : ''
   console.log(`${label} ${pad(verdict, width.rows)} ${pad(policy, 10)} ${entry.guard}${flag}`)
@@ -908,12 +1022,15 @@ for (const entry of MANIFEST) {
     failed += 1
     for (const row of detail.slice(0, 25)) console.log(`${' '.repeat(12)}| ${row}`)
     console.log(`${' '.repeat(12)}` + `owner: ${entry.owner}`)
-  } else if (policy === 'declared' && rows.length > 0) {
+    if (entry.exempt === 'ast-span') {
+      console.log(`${' '.repeat(12)}a row conformant on EVERY side belongs in ${spanExemptName()}, with the clause that makes it so`)
+    }
+  } else if (policy === 'declared' && judgedRows.length > 0) {
     // Say out loud that the other direction is still gated, and by what,
     // because a declared window otherwise reads as "the audit stopped caring".
-    console.log(`${' '.repeat(12)}declared window of ${rows.length} row(s); undeclared drift is gated by ${entry.owner}`)
+    console.log(`${' '.repeat(12)}declared window of ${judgedRows.length} row(s); undeclared drift is gated by ${entry.owner}`)
   }
-  if (policy === 'manual' && rows.length > 0) manualRows.push({ entry, rows })
+  if (policy === 'manual' && judgedRows.length > 0) manualRows.push({ entry, rows: judgedRows })
   if (entry.guard !== 'two-way') unwired.push({ entry, count: rows.length })
   // THE CLAIM, CHECKED. `guard` describes the file; `staleness` is the string
   // that proves it is still there. A named anchor that has gone is a guard that
@@ -925,6 +1042,47 @@ for (const entry of MANIFEST) {
       failed += 1
     }
   } else claimedGuards.push(entry)
+}
+
+/* ------ the escape hatch, judged in both directions ----------------------- */
+
+// A declaration that no longer describes a live row is the failure mode this
+// whole audit exists to find, so a stale line FAILS rather than being ignored:
+// it either names a divergence that is gone or a count that moved, and both are
+// findings. Keying on the count is what makes the second one visible.
+for (const error of spanExemptErrors) {
+  console.log(`  [FAIL] ${error}`)
+  failed += 1
+}
+
+const appliedSpanExempt = []
+for (const row of spanExempt) {
+  if (spanScopeRead === 0) {
+    console.log(`  [FAIL] ${spanExemptName()}:${row.line}: no span ledger could be read, so the declaration cannot be judged`)
+    failed += 1
+    continue
+  }
+  if (row.matched.length === 0) {
+    const live = liveSpanCounts.get(row.key)
+    console.log(
+      live === undefined
+        ? `  [FAIL] ${spanExemptName()}:${row.line}: no span ledger declares '${row.key}' any more - ` +
+            'the divergence this line calls conformant is gone, delete it'
+        : `  [FAIL] ${spanExemptName()}:${row.line}: '${row.key}' is declared across ${live} document(s), ` +
+            `not ${row.count} - the reading moved, so re-measure it or delete this line`,
+    )
+    failed += 1
+    continue
+  }
+  appliedSpanExempt.push(row)
+}
+
+if (appliedSpanExempt.length > 0) {
+  console.log()
+  console.log('EXEMPT - span rows declared conformant on every side, so no engine owes them:')
+  for (const row of appliedSpanExempt) {
+    console.log(`  ${row.key} across ${row.count} document(s): ${row.reason}`)
+  }
 }
 
 /* ------ the sweep that keeps the manifest itself from going stale --------- */
