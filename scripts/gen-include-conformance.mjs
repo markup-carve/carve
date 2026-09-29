@@ -8,10 +8,13 @@
 //
 // Re-runnable: run it again after a deliberate carve-js behavior change to
 // regenerate every golden. FAILS LOUDLY if a vector throws, if a
-// forbiddenSubstrings guard leaks, or if a checkFmtExpandEquivalence property
-// does not hold -- a broken vector is never silently baked into a golden.
+// forbiddenSubstrings guard leaks, if a checkFmtExpandEquivalence property does
+// not hold, or if a committed golden has no authored input -- neither a broken
+// vector nor a lost one is ever silently baked into the corpus.
 //
 //   node scripts/gen-include-conformance.mjs
+//   node scripts/gen-include-conformance.mjs --prune   # also drop goldens whose
+//                                                      # input was deleted
 //
 // Requires a built carve-js (see scripts/include-conformance-lib.mjs loadCarve).
 
@@ -25,6 +28,8 @@ import { loadCarve, runVector } from './include-conformance-lib.mjs'
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const OUT_DIR = path.resolve(HERE, '..', 'tests', 'include-conformance', 'vectors')
 const MANIFEST = path.resolve(HERE, '..', 'tests', 'include-conformance', 'manifest.json')
+
+const PRUNE = process.argv.includes('--prune')
 
 /** Fields carried verbatim from the authored input into the committed vector. */
 const INPUT_FIELDS = [
@@ -94,10 +99,28 @@ async function main() {
     seen.add(v.name)
   }
 
-  // Drop stale golden files no longer backed by an authored vector.
+  // A committed golden with no authored input is either a vector somebody added
+  // as JSON or one whose input was just deleted. Those want opposite outcomes and
+  // the generator cannot tell them apart, so it refuses and names them rather
+  // than deleting committed cases on a routine re-run (carve#2630). --prune is
+  // the deliberate second answer.
   const wanted = new Set([...seen].map((n) => `${n}.json`))
-  for (const file of readdirSync(OUT_DIR)) {
-    if (file.endsWith('.json') && !wanted.has(file)) rmSync(path.join(OUT_DIR, file))
+  const orphans = readdirSync(OUT_DIR)
+    .filter((file) => file.endsWith('.json') && !wanted.has(file))
+    .sort()
+  if (orphans.length > 0) {
+    if (!PRUNE) {
+      throw new Error(
+        `${orphans.length} committed vector(s) have no authored input in ` +
+          `scripts/include-conformance-vectors.mjs:\n` +
+          orphans.map((file) => `  ${file}`).join('\n') +
+          `\nRegenerating would DELETE them and drop their manifest rows. Author an ` +
+          `input for each, or re-run with --prune to remove them deliberately.`,
+      )
+    }
+    for (const file of orphans) rmSync(path.join(OUT_DIR, file))
+    console.log(`Pruned ${orphans.length} golden(s) with no authored input:`)
+    for (const file of orphans) console.log(`  ${file}`)
   }
 
   const coverage = new Map()
