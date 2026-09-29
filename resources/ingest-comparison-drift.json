@@ -2,21 +2,67 @@
   "version": 1,
   "measured": {
     "date": "2026-09-29",
-    "spec": "c87eaedf8dd60c6021cdcb0b4ba3770f07f5103f",
+    "spec": "4e3a37d8dd8a63c0eb2e0aa1d6a4a9e19e52e77a",
     "js": "e24e38e99ad46ce959d44237f8b338f1d05e92d8",
     "php": "9b938e8a3512dd31ac5d75ae843aad957dc2f388",
     "rust": "f985ea4d6f65a868f8a2a9e3e8cc7e4f11738a62",
     "engineMain": {
-      "js": "db48137e8cb919bccc5349e072acd044fcea13e0",
-      "php": "4dffa3c528f66f9a0081639404cf51e539ef0ba8",
-      "rust": "b6bbe6853987fae76f1ab661f6837235dd51b7be"
+      "js": "69823a66d",
+      "php": "0618c3fe5",
+      "rust": "dd5ff56ee"
     },
     "coverage": {
       "full": {
         "documents": 2196,
         "pairs": 19764
       }
-    }
+    },
+    "run": "36552218597"
   },
-  "differences": []
+  "differences": [
+    {
+      "key": "tests/corpus/529-a-container-label-publishes-its-inline-run-8.crv/js->php",
+      "reason": "carve-js reads a fence whose info string holds a balanced bracket run as text and the run as an inline code span, so the block does not open; carve-php and carve-rs open it with the language the token names, as the corpus golden does.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2368",
+      "fingerprint": "6c92ea22b18769ab833a803f3cd1c4c890dff5cd5cbba21e42f49cc6ed1a3566",
+      "observation": {
+        "expected": "<p><code> js [a `]` b]\nc\n</code></p>",
+        "status": 0,
+        "actual": "<pre><code class=\"language-js\">c\n</code></pre>"
+      }
+    },
+    {
+      "key": "tests/corpus/529-a-container-label-publishes-its-inline-run-8.crv/js->rust",
+      "reason": "carve-js reads a fence whose info string holds a balanced bracket run as text and the run as an inline code span, so the block does not open; carve-php and carve-rs open it with the language the token names, as the corpus golden does.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2368",
+      "fingerprint": "6c92ea22b18769ab833a803f3cd1c4c890dff5cd5cbba21e42f49cc6ed1a3566",
+      "observation": {
+        "expected": "<p><code> js [a `]` b]\nc\n</code></p>",
+        "status": 0,
+        "actual": "<pre><code class=\"language-js\">c\n</code></pre>"
+      }
+    },
+    {
+      "key": "tests/corpus/529-a-container-label-publishes-its-inline-run-8.crv/php->js",
+      "reason": "carve-js reads a fence whose info string holds a balanced bracket run as text and the run as an inline code span, so the block does not open; carve-php and carve-rs open it with the language the token names, as the corpus golden does.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2368",
+      "fingerprint": "72a819c5350dc229a1f8c254593cc5182d39fb126935d92947b09f092d0babda",
+      "observation": {
+        "expected": "<pre><code class=\"language-js\">c\n</code></pre>",
+        "status": 0,
+        "actual": "<p><code> js [a `]` b]\nc\n</code></p>"
+      }
+    },
+    {
+      "key": "tests/corpus/529-a-container-label-publishes-its-inline-run-8.crv/rust->js",
+      "reason": "carve-js reads a fence whose info string holds a balanced bracket run as text and the run as an inline code span, so the block does not open; carve-php and carve-rs open it with the language the token names, as the corpus golden does.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2368",
+      "fingerprint": "72a819c5350dc229a1f8c254593cc5182d39fb126935d92947b09f092d0babda",
+      "observation": {
+        "expected": "<pre><code class=\"language-js\">c\n</code></pre>",
+        "status": 0,
+        "actual": "<p><code> js [a `]` b]\nc\n</code></p>"
+      }
+    }
+  ]
 }
