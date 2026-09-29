@@ -202,12 +202,13 @@ test('a declared row leaves the owed count and prints, and an undeclared one sta
   assert.match(nothing.out, /\| list_item \(extent\) {2}1 {2}carve-php opens/)
   assert.doesNotMatch(nothing.out, /EXEMPT - span rows/)
 
-  // And the rows an engine owes are reported in both runs. Declaring the two
-  // conformant rows must not pass the ledger as a whole.
-  for (const { out } of [declared, nothing]) {
-    assert.match(out, /\| block_quote \(extent\) {2}6 {2}carve-js ends a fenced quote/, out)
-    assert.match(out, /resources\/ast-span-divergence\.txt.*<== OWED/)
-  }
+  // And the marker moves with the declarations rather than with the file's
+  // existence, which is what keeps the hatch from being a blanket skip. This
+  // pair used to read the shipped fenced-quote rows in both runs;
+  // markup-carve/carve-js#2364 and markup-carve/carve-rs#2201 closed those, so
+  // the same property is asserted over the rows that remain.
+  assert.doesNotMatch(declared.out, /resources\/ast-span-divergence\.txt.*<== OWED/, declared.out)
+  assert.match(nothing.out, /resources\/ast-span-divergence\.txt.*<== OWED/, nothing.out)
 })
 
 test('a declaration whose count has moved fails instead of covering the next reading', () => {
