@@ -38,7 +38,18 @@
 # commits it was taken at, and what moved since are the PR's job, where they are
 # immutable and nobody has to scroll past them to reach the rows.
 #
-# THE ROWS BELOW, and why no engine owes either of them. Both are the same
+# THE FIRST TWO ROWS are one construct written the fenced way. CARVE-P12-014
+# ends a container after its explicit closer where it has one, and carve#2534
+# settled that a `::: >` quote has one, which makes the SHORT reading the one
+# that moves. carve-js ends the quote at its last child on five documents;
+# `417-...-3` is one of them and its enclosing `footnote` follows its own quote
+# child, which is why the two rows move together and close together.
+# `416-...-4` writes the quote with a `^` caption and splits the other way -
+# carve-rs reads it as short as carve-js and only carve-php reaches the closer -
+# which carve#2534 recorded as an open hazard on the figure spelling without
+# ruling it. Hence two owners for one row.
+#
+# THE LAST TWO ROWS, and why no engine owes either of them. Both are the same
 # document, 503-...-at-every-depth-9, whose fourth line is a bullet indented
 # under a nested definition term. carve-js and carve-rs open the `list` at the
 # `-` marker; carve-php opens it at column 3, its parent description's content
@@ -48,5 +59,7 @@
 # and neither engine has a row to answer for. The document arrived with
 # markup-carve/carve#2426.
 
+block_quote (extent)  6  carve-js ends a fenced quote at its last child instead of after its closer on five documents (markup-carve/carve-js#2345); on the captioned spelling carve-rs reads it short too and only carve-php reaches the closer (markup-carve/carve-rs#2165)
+footnote (extent)  1  the footnote follows its own fenced-quote child, so carve-js ends it where its short quote span ends; markup-carve/carve-js#2345
 list (extent)  1  carve-php opens at the parent content column, carve-js and carve-rs at the marker; both conformant under markup-carve/carve#1928
 list_item (extent)  1  carve-php opens at the parent content column, carve-js and carve-rs at the marker; both conformant under markup-carve/carve#1928

@@ -127,8 +127,18 @@ const shippedDeclaration = () =>
  * panel is trying to reach. The three directions stay live regardless: a row
  * added to the file without a measurement is FIXED, a row deleted from it is
  * NEW, and a count edited on either side is COUNT.
+ *
+ * TWO ROWS since 2026-09-29, from a run over 2076 documents at carve 5b70a768c,
+ * carve-js 8ddae61fd, carve-rs b4c4f5a08 and carve-php 07561c2fc, each built
+ * from a worktree of its own main. Re-measured on the affected families after
+ * all three engines moved, at carve-js 31dcaaaf9, carve-rs e73e26003 and
+ * carve-php 650e65499: both rows and both counts unchanged. The ledger's header
+ * says which of the two is an engine defect and which is an open spec question.
  */
-const LAST_MEASURED = new Map([])
+const LAST_MEASURED = new Map([
+  ['admonition.label', 2],
+  ['comment.content', 1],
+])
 
 /** A measurement of `count` distinct documents - the reconciler counts them. */
 const documents = (count) =>
