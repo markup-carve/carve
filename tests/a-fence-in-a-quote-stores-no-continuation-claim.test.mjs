@@ -440,3 +440,34 @@ test('a shifted opener under a paragraph can close at the host column', () => {
     }
   }
 })
+
+test('a lazy sublist line retains its host column for the next fence', () => {
+  for (const depth of [1, 2, 3]) {
+    const q = '> '.repeat(depth)
+    for (const lead of ['', `  ${F}\n  ${F}\n`]) {
+      const body = `- a\n${lead}  - c\n  b\n    ${T}\n  ${T}\n`
+      const source = body.trimEnd().split('\n').map(line => q + line).join('\n') + '\nflush\n'
+      assert.notEqual(parse(source).blocks.at(-1).t, 'para', source)
+      assert.match(renderDoc(parse(source)), /flush<\/li>/, source)
+    }
+  }
+})
+
+
+test('lazy host tracking preserves the surrounding host controls', () => {
+  const cases = [
+    [`- a\n  - c\nb\n    ${F}\n    y\n    ${F}\n`, false],
+    // The blank-separated case already releases the line before this correction.
+    [`- a\n  - c\n  b\n\n    ${T}\n    y\n    ${T}\n`, true],
+    [`- a\n  - c\n::: \n    ${T}\n  ${T}\n`, false],
+    [`[^n]: a\n  - c\n  b\n    ${T}\n  ${T}\n`, true],
+  ]
+  for (const depth of [1, 2, 3]) {
+    const q = '> '.repeat(depth)
+    for (const [body, released] of cases) {
+      const source = body.trimEnd().split('\n').map(line => (q + line).trimEnd()).join('\n') + '\nflush\n'
+      const last = parse(source).blocks.at(-1)
+      assert.equal(last.t === 'para' && last.lines.join('') === 'flush', released, source)
+    }
+  }
+})
