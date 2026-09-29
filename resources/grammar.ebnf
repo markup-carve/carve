@@ -6857,12 +6857,11 @@ EOF = (* end of file *) ;
          interrupting an open paragraph (§10 I2).
       C5 DEDENT. Re-parsing nested content strips the container's
          structural indent BY COLUMNS. A tab straddling the dedent boundary
-         is consumed WHOLE on non-marker lines (Carve has no
-         indent-sensitive block below list nesting, so the residual columns
-         never matter); on a LIST-MARKER line the straddling tab's
-         unconsumed columns are re-inserted as spaces, so sibling markers
-         aligned with mixed tab/space indentation keep the same visual
-         column and stay siblings.
+         is consumed WHOLE on non-marker lines, except for a `%%%` comment
+         payload line (§28). On a LIST-MARKER line or comment payload line,
+         the straddling tab's unconsumed columns are re-inserted as spaces.
+         This keeps mixed tab/space list markers aligned and preserves the
+         comment payload's indentation beyond the host column.
 
    25. SECURITY REQUIREMENTS -- NORMATIVE [CARVE-P9-054] (HTML output target). These rules
       bind any implementation that emits HTML for UNTRUSTED input, so an
@@ -7276,6 +7275,15 @@ EOF = (* end of file *) ;
         surfaces diagnostics SHOULD report an unterminated comment fence;
         emitting one is OPTIONAL, since not every implementation has a
         warning channel.
+      - PAYLOAD INDENTATION: after the enclosing container prefixes are removed,
+        every body line MUST retain its remaining leading whitespace. The
+        opener's indentation establishes no additional payload base. A body
+        line below the host's content column loses only its available prefix
+        whitespace; its text is never removed. A tab crossing the host column
+        retains its remaining columns as spaces (PART 9 §24 C5). At document
+        level there is no container prefix to remove. This also applies to a
+        comment folded into a definition term, whose marker establishes no
+        body column. The closer's column does not change the payload value.
       - TAIL DISPOSITION (serialization, PART 10): the OPENER's tail is kept as
         the comment body's FIRST LINE, so `carve fmt` round-trips the words
         rather than deleting them; the CLOSER's tail is DISCARDED, as a code

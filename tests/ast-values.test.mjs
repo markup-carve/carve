@@ -22,7 +22,7 @@ import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { compareValues, reconcileDeclared, valueSignature } from '../scripts/spec/ast-values.mjs'
+import { checkCommentContent, compareValues, reconcileDeclared, valueSignature } from '../scripts/spec/ast-values.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -236,4 +236,21 @@ test('a value disagreement is attributed to the engine that stands alone', () =>
   assert.equal(found[0].key, 'table_cell.align')
   assert.equal(found[0].engines['carve-php'], '"left"')
   assert.equal(found[0].engines['carve-js'], '"right"')
+})
+
+test('comment payload fixtures reject agreement on a dedented value', () => {
+  const doc = { type: 'document', children: [{ type: 'comment', content: 'a' }] }
+  assert.equal(checkCommentContent(doc, ['  a']).length, 1)
+  doc.children[0].content = '  a'
+  assert.deepEqual(checkCommentContent(doc, ['  a']), [])
+  assert.equal(checkCommentContent({ type: 'document', children: [] }, ['  a']).length, 1)
+  assert.deepEqual(checkCommentContent(doc, undefined), [])
+})
+
+test('every comment payload fixture names an existing corpus document', () => {
+  const fixtures = JSON.parse(readFileSync(resolve(root, 'resources/ast-comment-content-fixtures.json'), 'utf8'))
+  for (const [name, expected] of Object.entries(fixtures)) {
+    assert.ok(readFileSync(resolve(root, 'tests/corpus', name), 'utf8').includes('%%%'))
+    assert.ok(expected.length > 0 && expected.every((value) => typeof value === 'string'))
+  }
 })

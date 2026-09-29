@@ -220,3 +220,15 @@ export function reconcileDeclared(measured, declaredText) {
 
   return problems
 }
+
+/** Check corpus values fixed by CARVE-P9-060, independently of engine agreement. */
+export function checkCommentContent(doc, expected) {
+  if (expected === undefined) return []
+  const actual = valueSignature(doc)
+    .filter((node) => node.type === 'comment')
+    .map((node) => node.fields.find((field) => field.startsWith('content=')))
+  const wanted = expected.map((content) => `content=${JSON.stringify(content)}`)
+  return JSON.stringify(actual) === JSON.stringify(wanted)
+    ? []
+    : [`comment.content: expected ${JSON.stringify(wanted)}, received ${JSON.stringify(actual)}`]
+}

@@ -18,7 +18,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Ajv2020 } from 'ajv/dist/2020.js'
 import { classifyShapeDisagreement, shapeOf, shapePaths } from './spec/ast-shape.mjs'
-import { compareValues, reconcileDeclared, valueSignature } from './spec/ast-values.mjs'
+import { checkCommentContent, compareValues, reconcileDeclared, valueSignature } from './spec/ast-values.mjs'
 import { compareSpans, countPlaced, reconcileSpans, spanSignature } from './spec/ast-spans.mjs'
 import {
   describeDocuments,
@@ -44,6 +44,7 @@ import { pinnedCrateVersion, pinnedEngineBinary } from './lib/pinned-engine.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
+const commentContentFixtures = JSON.parse(readFileSync(resolve(root, 'resources/ast-comment-content-fixtures.json'), 'utf8'))
 
 // tests/ast-schema.test.mjs checks the schema against the reference engine.
 const schema = JSON.parse(readFileSync(resolve(root, 'resources/ast-schema.json'), 'utf8'))
@@ -796,6 +797,7 @@ function checkDocument(name, doc, raw, findings) {
   // filename to keep and no finding could be opened (carve#534 lists clusters
   // nobody could reproduce for exactly this reason).
   const own = []
+  own.push(...checkCommentContent(doc, commentContentFixtures[name]))
   checkShape(doc, own)
   checkAdjacentTextRuns(doc, own)
   checkFrontmatterSurvives(doc, source, own)
