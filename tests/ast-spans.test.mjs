@@ -299,7 +299,18 @@ test('a row with a count but no reference is malformed, not declared', () => {
 // after five carve-rs merges - one of them a container-span change - and the two
 // readings did not move: column 5 in carve-js and carve-rs, column 3 in
 // carve-php.
+//
+// The fenced-quote pair arrived 2026-09-29, from a run over 2076 documents at
+// carve 5b70a768c, carve-js 8ddae61fd, carve-rs b4c4f5a08 and carve-php
+// 07561c2fc, and re-measured on the affected families after all three engines
+// moved, at carve-js 31dcaaaf9, carve-rs e73e26003 and carve-php 650e65499,
+// with both counts unchanged. CARVE-P12-014 ends a container after its
+// explicit closer, and carve#2534 settled that `::: >` has one, so the SHORT
+// reading is the one that moves: carve-js on five documents and, on the
+// captioned spelling, carve-rs with it.
 const LAST_MEASURED = new Map([
+  ['block_quote (extent)', 6],
+  ['footnote (extent)', 1],
   ['list (extent)', 1],
   ['list_item (extent)', 1],
 ])

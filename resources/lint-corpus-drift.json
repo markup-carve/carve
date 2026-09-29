@@ -1,12 +1,23 @@
 {
   "version": 1,
   "measured": {
-    "date": "2026-09-28",
-    "spec": "b1a592379",
-    "js": "c9b965058",
-    "php": "1b9d4bb67",
-    "rust": "67dba4b0f",
-    "documents": 2085
+    "date": "2026-09-29",
+    "spec": "e778d33af",
+    "js": "31dcaaaf9",
+    "php": "650e65499",
+    "rust": "e73e26003",
+    "documents": 2168
   },
-  "differences": []
+  "differences": [
+    {
+      "file": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-3.crv",
+      "reason": "carve-js emits no list-item-block-overindented for the over-indented raw fence on line 3. The glued info string keeps the opener out of the eligible set, so the opener is suppressed and, with no closing fence in this document, nothing is reported. carve-php and carve-rs both name the opener.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2341",
+      "diagnostics": {
+        "js": [],
+        "php": [["list-item-block-overindented", 3, 9]],
+        "rust": [["list-item-block-overindented", 3, 9]]
+      }
+    }
+  ]
 }

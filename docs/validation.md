@@ -343,9 +343,10 @@ All three engines provide `carve lint`. The 37 default triggers in
 [`resources/lint-default-triggers.json`](https://github.com/markup-carve/carve/blob/main/resources/lint-default-triggers.json)
 pass in the builds recorded in
 [`resources/lint-corpus-drift.json`](https://github.com/markup-carve/carve/blob/main/resources/lint-corpus-drift.json).
-Those builds also agree on all 2,085 corpus documents. Passing a trigger establishes
-that a rule can fire; corpus agreement does not establish correctness for every
-possible input.
+Those builds agree on 2,167 of the 2,168 corpus documents; the one declared
+difference is listed in the same file. Passing a trigger establishes that a rule
+can fire; corpus agreement does not establish correctness for every possible
+input.
 
 | implementation | measured coverage |
 |---|---|

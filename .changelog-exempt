@@ -33,3 +33,4 @@
 2546: 0.1.7 - removes 96 resolved import-parity declarations and refreshes the remaining observations. No clause, corpus row, or oracle answer changes; remaining gaps stay tracked in carve#2522.
 2555: 0.1.7 - removes 16 resolved import-parity declarations and updates measured engine revisions. No clause, corpus row, or oracle answer changes; remaining gaps stay tracked in carve#2522.
 2559: 0.1.7 - removes 29 resolved AST ingest declarations, records 18 new corpus 517 differences, and updates measured revisions. No clause, corpus row, or oracle answer changes.
+2585: 0.1.7 - declares the four lint-parity and AST divergence rows the release gate found undeclared, and restamps the revisions the run measured. Measurement ledgers only: no clause, corpus row, oracle answer or golden moved, and each row leaves when the engine issue it names closes.
