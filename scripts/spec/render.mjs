@@ -866,14 +866,18 @@ sem.addOperation('applyTail(text, source)', {
   },
 })
 
+// `titleQuoted`/`titleSquoted` rather than the `quoted`/`squoted` an attribute
+// value reads: a title crosses a soft wrap and an attribute value does not
+// (carve#2566). The two rules take the same action, and having two names for
+// them is what keeps the newline on one side of the fork.
 sem.addOperation('titleText', {
   destTitle(_sp, q) {
     return q.titleText()
   },
-  quoted(_o, chars, _c) {
+  titleQuoted(_o, chars, _c) {
     return chars.children.map((c) => c.sourceString.replace(/^\\/, '')).join('')
   },
-  squoted(_o, chars, _c) {
+  titleSquoted(_o, chars, _c) {
     return chars.children.map((c) => c.sourceString.replace(/^\\/, '')).join('')
   },
 })

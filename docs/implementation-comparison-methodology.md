@@ -41,6 +41,8 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim`,
 `520-a-dropped-raw-block-takes-no-line-in-the-container-that-holds-it`,
 `521-a-zero-line-and-a-one-blank-raw-payload-are-not-the-same-block`,
+`522-an-emphasis-marker-does-not-pair-across-a-link-bracket`,
+`523-a-link-title-crosses-a-soft-wrap-and-an-attribute-value-does-not`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
@@ -132,6 +134,18 @@ while the oracle encoded both as `""` until this change. carve-php `2742f817`
 and carve-rs `840e38cf` collapse the two in HTML the way the oracle did, which
 [carve#2557](https://github.com/markup-carve/carve/issues/2557) measured rather
 than this host; neither engine was built here.
+522's three documents and 523's six were added after this snapshot and were
+measured against all four builds: the pinned carve-js `c5df77f6`, carve-js
+`fb0e08e8`, carve-php `b6845d49` and carve-rs `0bf06bc3`, the three engines'
+default branches at the time. On 522 every build pairs the emphasis marker
+across the link bracket and writes `<p><em>[a</em>](/u)</p>`, where PART 8
+resolves the link first; the two controls reproduce everywhere. The pinned row
+is declared in `resources/engine-pin-drift.txt` under
+[#2565](https://github.com/markup-carve/carve/issues/2565), which also carries
+the per-engine obligation. On 523 all four builds reproduce all six documents,
+including the image title and the two controls: the defect
+[#2566](https://github.com/markup-carve/carve/issues/2566) reports was in this
+repo's own grammar, not in an engine.
 
 The former case-by-case notes remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/a22f6a23f7913e44cb3461f3f608605660619032/docs/implementation-comparison-methodology.md).

@@ -1,0 +1,19 @@
+An emphasis marker does not pair across a link bracket
+
+```
+/[a/](/u)
+.
+<p>/<a href="/u">a/</a></p>
+```
+
+```
+/a/
+.
+<p><em>a</em></p>
+```
+
+```
+/[a](/u)/
+.
+<p><em><a href="/u">a</a></em></p>
+```

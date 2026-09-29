@@ -166,7 +166,14 @@ const SITES = [
     // to agree here the way they now agree on the terminal. Kept as a TEXT
     // check for the reason the file header gives, and because the `+` is one
     // character: reinstating it is the smallest possible silent revert.
-    requiredOhm: /destTitle\s+= titleSp \(quoted \| squoted\)/,
+    //
+    // The quoted run is `titleQuoted`/`titleSquoted` rather than the
+    // `quoted`/`squoted` an attribute value reads. One pair of helpers used to
+    // serve both slots, and the attribute rule's `~newline` decided the title
+    // with it (carve#2566). The fork itself is pinned in
+    // tests/a-link-title-crosses-a-soft-wrap.test.mjs; what this line holds is
+    // the padding slot in front of it.
+    requiredOhm: /destTitle\s+= titleSp \(titleQuoted \| titleSquoted\)/,
     forbiddenOhm: /destTitle\s+= titleSp\+/,
     why: 'a link is a link once its destination is read; the title sits inline after it',
     // ONE PAIR PER SITE THE PRODUCTION IS USED AT. `link_title` is one

@@ -2578,6 +2578,23 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
    exactly one character, at both sites. So `[t](/u<SP><SP>"T")` is
    not a titled link, the quoted run is left unconsumed, and the bracket run
    stays literal text. *)
+(* THE TITLE RUN SUBTRACTS ITS CLOSING QUOTE AND NOTHING ELSE, so a newline is
+   inside it and a title CROSSES A SOFT WRAP: `[a](/u "t` + newline + `u")` is a
+   titled link whose title holds the line break. `quoted_value` (PART 4) is the
+   other answer and subtracts `newline` under CARVE-P4-006, so a wrapped
+   ATTRIBUTE value ends its block instead. Two productions, two answers, and
+   neither is the other's default - resources/carve-core.ohm spelled both
+   through one pair of helpers and the attribute rule's exclusion reached this
+   slot, which made a wrapped title decline in the executable spec while all
+   three engines read it (carve#2566). A BLANK line is not this rule's
+   business: it ends the paragraph, and the title with it.
+   `image_title = link_title`, so an image title wraps on the same terms. The
+   REFERENCE-DEFINITION slot does not. What bounds it is the prose above
+   `reference_definition`, which puts both of its roles on one line (PART 7),
+   rather than that production's closing `newline`: a wrapped title would
+   satisfy the terminal with the line break after it. So
+   `[r]: /u "t` + newline + `u"` is a paragraph and not a definition, in the
+   executable spec and in all three engines. *)
 link_title = space, ('"', {('\', '"') | (character - '"')}, '"')
            | space, ("'", {('\', "'") | (character - "'")}, "'") ;
 
