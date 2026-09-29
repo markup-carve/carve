@@ -1,0 +1,57 @@
+A link inside a span's label keeps its destination
+
+```
+[[t](/v)]{.c}
+.
+<p><span class="c"><a href="/v">t</a></span></p>
+```
+
+```
+[[t][r]]{.c}
+
+[r]: /v
+.
+<p><span class="c"><a href="/v">t</a></span></p>
+```
+
+```
+[<https://e.com>]{.c}
+.
+<p><span class="c"><a href="https://e.com">https://e.com</a></span></p>
+```
+
+```
+[/[t](/v)/]{.c}
+.
+<p><span class="c"><em><a href="/v">t</a></em></span></p>
+```
+
+```
+[![a](/i)]{.c}
+.
+<p><span class="c"><img src="/i" alt="a"></span></p>
+```
+
+```
+[[t](/v)]{}
+.
+<p><span><a href="/v">t</a></span></p>
+```
+
+```
+[[t](/v)](/u)
+.
+<p><a href="/u">t</a></p>
+```
+
+```
+[[[t](/v)]{.d}](/u)
+.
+<p><a href="/u"><span class="d">t</span></a></p>
+```
+
+```
+[![a](/i)](/u)
+.
+<p><a href="/u"><img src="/i" alt="a"></a></p>
+```

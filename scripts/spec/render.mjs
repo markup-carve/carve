@@ -238,6 +238,40 @@ export function refFrame(payload) {
 }
 
 /*
+ * Links never nest (PART 3): rendered LINK TEXT carries no inner link, at any
+ * depth, so an inner link keeps only its own text content.
+ *
+ * The caller is what makes this correct. The clause binds a link's text, and
+ * the bracket run that spells link text also spells a SPAN's label - a span is
+ * not a link, so a link inside its label has nothing to nest into and keeps its
+ * destination. Applying this from the bracket rule itself unwrapped the span
+ * case too, which no engine does (carve#2578).
+ */
+export function flattenInnerLinks(text) {
+  // An inner crossref flattens to its resolved TEXT; it reaches here as a
+  // sentinel because PART 9R resolves it in a later pass.
+  let out = text
+    .replace(/<a [^>]*>([\s\S]*?)<\/a>/g, '$1')
+    .replaceAll('\uE000xref:', '\uE000xreftext:')
+  // A REFERENCE link is still a frame here, not an `<a>`, so the unwrap above
+  // cannot see it: it has to be flattened by reading the payload's own text.
+  // Without this the inner reference resolved after the outer one and nested an
+  // `<a>` inside an `<a>`, which no engine emits (markup-carve/carve#1195). An
+  // image reference is not a link, so it stays - `<a><img></a>` is what the
+  // engines render for that one.
+  out = out.replace(REF_FRAME, (m, json) => {
+    let parsed
+    try {
+      parsed = JSON.parse(json)
+    } catch {
+      return m
+    }
+    return parsed.img ? m : parsed.text
+  })
+  return out
+}
+
+/*
  * The PART 9R note frame: `U+E000 note: <json> U+E001`.
  *
  * An inline note used to carry a RAW frame - the rendered content, then U+0002,
@@ -529,25 +563,9 @@ const sem = g.createSemantics().addOperation('h', {
       // bare bracketed run: literal (PART 9 SS14), content still parsed
       return `[${inner}]`
     }
-    // links never nest (PART 3): an inner link/autolink is replaced by its
-    // own text content; an inner crossref flattens to its resolved TEXT
-    inner = inner.replace(/<a [^>]*>([\s\S]*?)<\/a>/g, '$1')
-    inner = inner.replaceAll('\uE000xref:', '\uE000xreftext:')
-    // A REFERENCE link is still a frame at this point, not an `<a>`, so the
-    // unwrap above cannot see it: it has to be flattened by reading the
-    // payload's own text. Without this the inner reference resolved after the
-    // outer one and nested an `<a>` inside an `<a>`, which no engine emits
-    // (markup-carve/carve#1195). An image reference is not a link, so it
-    // stays - `<a><img></a>` is what the engines render for that one.
-    inner = inner.replace(REF_FRAME, (m, json) => {
-      let parsed
-      try {
-        parsed = JSON.parse(json)
-      } catch {
-        return m
-      }
-      return parsed.img ? m : parsed.text
-    })
+    // The never-nest flattening belongs to the tails that PRODUCE a link, not
+    // to this rule: the same bracket run is also a span's label, and a span is
+    // not a link (PART 3, carve#2578).
     return tail.child(0).applyTail(inner, raw)
   },
   image(_b, _o, alt, _c, _p, dest, title, _cp, attrs) {
@@ -823,7 +841,7 @@ const sem = g.createSemantics().addOperation('h', {
 // tails need the already-rendered link text
 sem.addOperation('applyTail(text, source)', {
   linkTail(_o, dest, title, _c, attrs) {
-    const { text } = this.args
+    const text = flattenInnerLinks(this.args.text)
     // A footnote in link text is a §16 LIMITATION, not an unrenderable
     // document: the clause states the outcome ("nests an <a> in an <a>") and
     // advises against writing it. The noteref sentinel travels inside the link
@@ -835,7 +853,8 @@ sem.addOperation('applyTail(text, source)', {
     return `<a href="${escapeAttr(checkUrl(destValue(dest)))}"${t}${a}>${text}</a>`
   },
   refTail(_o, label, _c, attrs) {
-    const { text, source } = this.args
+    const { source } = this.args
+    const text = flattenInnerLinks(this.args.text)
     // A footnote in reference link text is the SAME §16 limitation linkTail
     // renders: it nests an `<a>` in an `<a>`, which is what every engine
     // emits for it. It used to be refused here because the frame hid the
