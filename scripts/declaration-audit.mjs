@@ -352,6 +352,7 @@ const MANIFEST = [
   // The carve-rs twin of carve-php's include KNOWN_DIFFERENCES. Two-way since
   // carve-rs#2010, which also asserts a row naming no vector.
   { repo: 'carve-rs', path: 'tests/include_conformance.rs', name: 'KNOWN_DIFFERENCES', kind: 'rust', policy: 'owed', guard: 'two-way', staleness: 'the difference is gone; delete its KNOWN_DIFFERENCES entry', owner: 'tests/include_conformance.rs' },
+  { repo: 'carve-rs', path: 'tests/include_conformance.rs', name: 'HTML_AHEAD_OF_PIN', kind: 'rust', policy: 'owed', guard: 'two-way', staleness: 'remove its retired HTML_AHEAD_OF_PIN entry', owner: 'tests/include_conformance.rs' },
 ]
 
 /**
