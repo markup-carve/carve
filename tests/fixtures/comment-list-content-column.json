@@ -116,31 +116,31 @@
     "html": "<ul>\n  <li><p>intro</p>\n    <p>- tail</p>\n    <p>para</p>\n  </li>\n</ul>"
   },
   {
-    "source": "- - intro\n%% c\n - tail\n\n    para\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li><p>intro</p>\n        <p>- tail</p>\n        <p>para</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
+    "source": "- intro\n%% c\n - tail\n\n  para\n- next\n",
+    "html": "<ul>\n  <li><p>intro</p>\n    <p>- tail</p>\n    <p>para</p>\n  </li>\n  <li><p>next</p></li>\n</ul>"
   },
   {
     "source": "- intro\n%% c\n 1. tail\n\n  para\n",
     "html": "<ul>\n  <li><p>intro</p>\n    <p>1. tail</p>\n    <p>para</p>\n  </li>\n</ul>"
   },
   {
-    "source": "- - intro\n%% c\n 1. tail\n\n    para\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li><p>intro</p>\n        <p>1. tail</p>\n        <p>para</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
+    "source": "- intro\n%% c\n 1. tail\n\n  para\n- next\n",
+    "html": "<ul>\n  <li><p>intro</p>\n    <p>1. tail</p>\n    <p>para</p>\n  </li>\n  <li><p>next</p></li>\n</ul>"
   },
   {
     "source": "- intro\n%% c\n -{.y} tail\n\n  para\n",
     "html": "<ul>\n  <li><p>intro</p>\n    <p>-{.y} tail</p>\n    <p>para</p>\n  </li>\n</ul>"
   },
   {
-    "source": "- - intro\n%% c\n -{.y} tail\n\n    para\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li><p>intro</p>\n        <p>-{.y} tail</p>\n        <p>para</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
+    "source": "- intro\n%% c\n -{.y} tail\n\n  para\n- next\n",
+    "html": "<ul>\n  <li><p>intro</p>\n    <p>-{.y} tail</p>\n    <p>para</p>\n  </li>\n  <li><p>next</p></li>\n</ul>"
   },
   {
     "source": "- intro\n%% c\n - [x] tail\n\n  para\n",
     "html": "<ul>\n  <li><p>intro</p>\n    <p>- [x] tail</p>\n    <p>para</p>\n  </li>\n</ul>"
   },
   {
-    "source": "- - intro\n%% c\n - [x] tail\n\n    para\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li><p>intro</p>\n        <p>- [x] tail</p>\n        <p>para</p>\n      </li>\n    </ul>\n  </li>\n</ul>"
+    "source": "- intro\n%% c\n - [x] tail\n\n  para\n- next\n",
+    "html": "<ul>\n  <li><p>intro</p>\n    <p>- [x] tail</p>\n    <p>para</p>\n  </li>\n  <li><p>next</p></li>\n</ul>"
   }
 ]
