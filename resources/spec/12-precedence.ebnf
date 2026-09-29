@@ -49,6 +49,9 @@
    Disambiguation rule:
    - Prefer literal text over markup: a delimiter that has no valid match
      (per the word-boundary conditions, PART 9 §1) is literal.
+   - A forced span or an editorial insertion, deletion or substitution
+     opened inside a bracket run cannot match a closer past that run's closing
+     `]`. The unmatched opener and closer remain literal: `[{+a]+}` is text.
    - An opener matches the NEAREST following valid closer of the same type.
      Delimiters of the same type between them are literal content (same-type
      spans do not nest, PART 9 §3); e.g. /usr/local/ -> <em>usr/local</em>.

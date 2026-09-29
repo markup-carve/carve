@@ -44552,3 +44552,127 @@ body
 ```
 
 ::::
+
+## A braced span cannot close beyond its bracket run
+
+A forced span or an editorial insertion, deletion or substitution opened inside a bracket run cannot pair with a closer outside that run (PART 8 parsing precedence). Both delimiters remain literal.
+
+::: compare
+
+```carve
+[{^a]^}
+```
+
+```html
+<p>[{^a]^}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{,a],}
+```
+
+```html
+<p>[{,a],}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{*a]*}
+```
+
+```html
+<p>[{*a]*}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{/a]/}
+```
+
+```html
+<p>[{/a]/}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{+a]+}
+```
+
+```html
+<p>[{+a]+}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{-a]-}
+```
+
+```html
+<p>[{-a]-}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{~a]~}
+```
+
+```html
+<p>[{~a]~}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{_a]_}
+```
+
+```html
+<p>[{_a]_}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{=a]=}
+```
+
+```html
+<p>[{=a]=}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{~a ~> b]~}
+```
+
+```html
+<p>[{~a ~&gt; b]~}</p>
+```
+
+:::
