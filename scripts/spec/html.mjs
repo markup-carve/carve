@@ -1531,10 +1531,24 @@ function resolveFootnotes(html, ctx) {
       // block-attribute run leaves the body empty, which is what PART 11 SS7b's
       // sentinel is written for.
       //
-      // A body holding ONE block that RENDERS to nothing -- a comment -- keeps
-      // the blank line, because that is what all three engines emit for it.
-      // The two look identical here (`rendered` is '' either way) and are told
-      // apart by the block count, not by the string.
+      // A body holding ONE block that RENDERS to nothing -- a comment, or a raw
+      // block the target does not match -- keeps the blank line. The two look
+      // identical here (`rendered` is '' either way) and are told apart by the
+      // block count, not by the string.
+      //
+      // WHY THAT IS NOT SETTLED, and what this comment used to claim. It said the
+      // blank line is what all three engines emit for a comment. Measured at
+      // `0b2e5fd7` against carve-js `c5df77f6`, that is false: carve-js emits no
+      // blank line, for the comment body and for the dropped-raw body alike, and
+      // carve-php omits it too. This renderer is the outlier on both spellings,
+      // and the claim of agreement is what made the question look decided - a
+      // reading of this file taken for a measurement of the engines (carve#2570).
+      //
+      // Two readings remain and no clause picks between them: a body whose every
+      // block renders nothing is an empty body and takes the compact spelling, or
+      // it keeps a slot line for content that renders nothing. The shape is
+      // whitespace-only and nothing pins it, so carve#2570 parks it. DO NOT move
+      // this line on the strength of engine agreement in either direction.
       rendered += `${noBlocks ? '' : '\n'}      <p>${backlink}</p>`
     }
     return `    <li id="fn${n}">\n${rendered}\n    </li>`
