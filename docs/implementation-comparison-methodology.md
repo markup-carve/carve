@@ -194,15 +194,15 @@ several checkouts share and reports no version, so nothing establishes which
 commit built it. The earlier withdrawn ruling on this shape rested on a reading
 of that kind, so it is left out rather than quoted.
 
-531's thirteen documents were measured against the pinned carve-js `c5df77f6`
-here, which reproduces all thirteen, so `resources/engine-pin-drift.txt` gains
-no line. carve-php is unmeasured here. carve-rs is not measured here either, and
-it is the reader the row exists for:
-[carve-rs#2183](https://github.com/markup-carve/carve-rs/issues/2183) carries the
-engine evidence, taken at carve-rs `d8e95bdef`, that it opens a block where the
-other three fold, on every column of the band but the host's own content column.
-That ticket is the one to read for the per-engine state; nothing here re-measures
-it.
+531's thirteen documents were measured against the pinned carve-js `c5df77f6`,
+carve-js `db5a3e9c`, carve-rs `04222a4f` and carve-php `d20294bc`, the last three
+from clean clones installed and built here. All four reproduce all thirteen, so
+`resources/engine-pin-drift.txt` gains no line.
+[carve-rs#2183](https://github.com/markup-carve/carve-rs/issues/2183) recorded
+this band as a carve-rs divergence, measured at `d8e95bdef`; carve-rs#2185 landed
+the fold and that reading no longer holds at carve-rs `main`. The row is the
+first fixture that can tell the two answers apart, which is what it is for now
+that the engines agree.
 
 The former case-by-case notes remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/a22f6a23f7913e44cb3461f3f608605660619032/docs/implementation-comparison-methodology.md).
