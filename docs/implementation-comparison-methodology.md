@@ -117,7 +117,12 @@ hosts wrote the text `null` where the dropped block stood, the colon div left a
 blank line, and the footnote body left one and moved the backlink into a
 paragraph of its own. The eighth, the `=html` control, already agreed. Measured
 over a generated sweep of 19 hosts and 6 payloads, 33 shapes moved and all 33 now
-match the pin. Rust and PHP were not measured here.
+match the pin. carve-rs `a40be82b6` reproduces all eight as well, each from a
+worktree built off its default branch. carve-php `b6845d49f` reproduces seven and
+differs on the footnote body: it gives the backlink a paragraph of its own, which
+is PART 9 section 16 read over the AST's last block rather than the rendered one,
+tracked at
+[carve-php#2711](https://github.com/markup-carve/carve-php/issues/2711).
 
 The former case-by-case notes remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/a22f6a23f7913e44cb3461f3f608605660619032/docs/implementation-comparison-methodology.md).
