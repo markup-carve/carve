@@ -18,7 +18,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Ajv2020 } from 'ajv/dist/2020.js'
 import { classifyShapeDisagreement, shapeOf, shapePaths } from './spec/ast-shape.mjs'
-import { compareValues, reconcileDeclared, valueSignature } from './spec/ast-values.mjs'
+import { checkCommentContent, compareValues, reconcileDeclared, valueSignature } from './spec/ast-values.mjs'
 import { compareSpans, countPlaced, reconcileSpans, spanSignature } from './spec/ast-spans.mjs'
 import {
   describeDocuments,
@@ -44,6 +44,7 @@ import { pinnedCrateVersion, pinnedEngineBinary } from './lib/pinned-engine.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
+const commentContentFixtures = JSON.parse(readFileSync(resolve(root, 'resources/ast-comment-content-fixtures.json'), 'utf8'))
 
 // tests/ast-schema.test.mjs checks the schema against the reference engine.
 const schema = JSON.parse(readFileSync(resolve(root, 'resources/ast-schema.json'), 'utf8'))
@@ -615,6 +616,10 @@ let panelRan = false
 const enginePaths = new Map()
 
 function recordShape(engine, name, doc) {
+  for (const finding of checkCommentContent(doc, commentContentFixtures[name])) {
+    deferredGateFailures.push(`${engine}: ${name}: ${finding}`)
+  }
+
   let perDoc = enginePaths.get(engine)
   if (!perDoc) {
     perDoc = new Map()

@@ -1,0 +1,40 @@
+{
+  "508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-2.crv": [
+    "  a"
+  ],
+  "508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-3.crv": [
+    "a"
+  ],
+  "508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-4.crv": [
+    "  a",
+    "  b"
+  ],
+  "508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter-5.crv": [
+    "%",
+    "%"
+  ],
+  "508-a-comment-span-s-closer-below-its-host-s-column-stays-a-delimiter.crv": [
+    "  a"
+  ],
+  "513-a-comment-span-opened-below-every-content-column-is-located-there-2.crv": [
+    "hidden"
+  ],
+  "513-a-comment-span-opened-below-every-content-column-is-located-there-3.crv": [
+    "hidden"
+  ],
+  "513-a-comment-span-opened-below-every-content-column-is-located-there-4.crv": [
+    "hidden"
+  ],
+  "513-a-comment-span-opened-below-every-content-column-is-located-there-5.crv": [
+    "hidden"
+  ],
+  "513-a-comment-span-opened-below-every-content-column-is-located-there-6.crv": [
+    "hidden"
+  ],
+  "513-a-comment-span-opened-below-every-content-column-is-located-there-8.crv": [
+    "hidden"
+  ],
+  "513-a-comment-span-opened-below-every-content-column-is-located-there.crv": [
+    "hidden"
+  ]
+}
