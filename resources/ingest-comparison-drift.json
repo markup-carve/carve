@@ -2,390 +2,27 @@
   "version": 1,
   "measured": {
     "date": "2026-09-29",
-    "spec": "65c9189889a3678e2093cf2937b8ccdb7a0d9cd4",
+    "spec": "c87eaedf8dd60c6021cdcb0b4ba3770f07f5103f",
     "js": "e24e38e99ad46ce959d44237f8b338f1d05e92d8",
     "php": "9b938e8a3512dd31ac5d75ae843aad957dc2f388",
     "rust": "f985ea4d6f65a868f8a2a9e3e8cc7e4f11738a62",
     "engineMain": {
-      "js": "991f8e017601dbec14ee6499330c2bb9f79bcbe6",
-      "php": "0175e15e3c1a11cb213ccb51998d529dd654660c",
-      "rust": "132aaef75ba539cacbff389f8f4c435e02f87d23"
+      "js": "db48137e8cb919bccc5349e072acd044fcea13e0",
+      "php": "4dffa3c528f66f9a0081639404cf51e539ef0ba8",
+      "rust": "b6bbe6853987fae76f1ab661f6837235dd51b7be"
     },
     "coverage": {
       "full": {
-        "documents": 2190,
-        "pairs": 19710
+        "documents": 2196,
+        "pairs": 19764
       }
     }
   },
   "differences": [
     {
-      "key": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-2.crv/js->rust",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "57cae18518c1973ff3e3725c3475ee90599270046e28d341828a4db48f336923",
-      "observation": {
-        "expected": "<ul>\n  <li>\n    <pre><code>\n</code></pre>\n  </li>\n</ul>\n<p>x\n<code></code></p>",
-        "status": 0,
-        "actual": "<ul>\n  <li>\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>x\n<code></code></p>"
-      }
-    },
-    {
-      "key": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-2.crv/php->rust",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "57cae18518c1973ff3e3725c3475ee90599270046e28d341828a4db48f336923",
-      "observation": {
-        "expected": "<ul>\n  <li>\n    <pre><code>\n</code></pre>\n  </li>\n</ul>\n<p>x\n<code></code></p>",
-        "status": 0,
-        "actual": "<ul>\n  <li>\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>x\n<code></code></p>"
-      }
-    },
-    {
-      "key": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-2.crv/rust->js",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "cda4f165c73717aef2e91cbe5b5b130ba9e8d3c2a3aba9e07a6c419b7c426334",
-      "observation": {
-        "expected": "<ul>\n  <li>\n    <pre><code>\n</code></pre>\n  </li>\n</ul>\n<p>x\n<code></code></p>",
-        "status": 0,
-        "actual": "<ul>\n  <li>\n    <pre><code>\n\n</code></pre>\n  </li>\n</ul>\n<p>x\n<code></code></p>"
-      }
-    },
-    {
-      "key": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-2.crv/rust->php",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "cda4f165c73717aef2e91cbe5b5b130ba9e8d3c2a3aba9e07a6c419b7c426334",
-      "observation": {
-        "expected": "<ul>\n  <li>\n    <pre><code>\n</code></pre>\n  </li>\n</ul>\n<p>x\n<code></code></p>",
-        "status": 0,
-        "actual": "<ul>\n  <li>\n    <pre><code>\n\n</code></pre>\n  </li>\n</ul>\n<p>x\n<code></code></p>"
-      }
-    },
-    {
-      "key": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-4.crv/js->rust",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "700c1b2d1a57cef63fba77dc5487ae3757665656894f30a103ed65cb391b189e",
-      "observation": {
-        "expected": "<blockquote>\n  <pre><code>\n</code></pre>\n</blockquote>\n<p>x\n<code></code></p>",
-        "status": 0,
-        "actual": "<blockquote>\n  <pre><code></code></pre>\n</blockquote>\n<p>x\n<code></code></p>"
-      }
-    },
-    {
-      "key": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-4.crv/php->rust",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "700c1b2d1a57cef63fba77dc5487ae3757665656894f30a103ed65cb391b189e",
-      "observation": {
-        "expected": "<blockquote>\n  <pre><code>\n</code></pre>\n</blockquote>\n<p>x\n<code></code></p>",
-        "status": 0,
-        "actual": "<blockquote>\n  <pre><code></code></pre>\n</blockquote>\n<p>x\n<code></code></p>"
-      }
-    },
-    {
-      "key": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-4.crv/rust->js",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "d9a82843047dea7daddeb927bc3bb4dd7397b4fb4a7ed1542f79b156548f49ed",
-      "observation": {
-        "expected": "<blockquote>\n  <pre><code>\n</code></pre>\n</blockquote>\n<p>x\n<code></code></p>",
-        "status": 0,
-        "actual": "<blockquote>\n  <pre><code>\n\n</code></pre>\n</blockquote>\n<p>x\n<code></code></p>"
-      }
-    },
-    {
-      "key": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-4.crv/rust->php",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "d9a82843047dea7daddeb927bc3bb4dd7397b4fb4a7ed1542f79b156548f49ed",
-      "observation": {
-        "expected": "<blockquote>\n  <pre><code>\n</code></pre>\n</blockquote>\n<p>x\n<code></code></p>",
-        "status": 0,
-        "actual": "<blockquote>\n  <pre><code>\n\n</code></pre>\n</blockquote>\n<p>x\n<code></code></p>"
-      }
-    },
-    {
-      "key": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-5.crv/js->rust",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "df3aee526bc077607a7c32f5c990984a17e69c5506f7a1a479c4d95bd7972536",
-      "observation": {
-        "expected": "<ul>\n  <li>\n    <pre><code>\n</code></pre>\n  </li>\n</ul>\n<p>x\n~~~</p>",
-        "status": 0,
-        "actual": "<ul>\n  <li>\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>x\n~~~</p>"
-      }
-    },
-    {
-      "key": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-5.crv/php->rust",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "df3aee526bc077607a7c32f5c990984a17e69c5506f7a1a479c4d95bd7972536",
-      "observation": {
-        "expected": "<ul>\n  <li>\n    <pre><code>\n</code></pre>\n  </li>\n</ul>\n<p>x\n~~~</p>",
-        "status": 0,
-        "actual": "<ul>\n  <li>\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>x\n~~~</p>"
-      }
-    },
-    {
-      "key": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-5.crv/rust->js",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "04d66374ffb975cee052188c7de4730eceebbbc14602c6aef03a7a4b5b6258b2",
-      "observation": {
-        "expected": "<ul>\n  <li>\n    <pre><code>\n</code></pre>\n  </li>\n</ul>\n<p>x\n~~~</p>",
-        "status": 0,
-        "actual": "<ul>\n  <li>\n    <pre><code>\n\n</code></pre>\n  </li>\n</ul>\n<p>x\n~~~</p>"
-      }
-    },
-    {
-      "key": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-5.crv/rust->php",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "04d66374ffb975cee052188c7de4730eceebbbc14602c6aef03a7a4b5b6258b2",
-      "observation": {
-        "expected": "<ul>\n  <li>\n    <pre><code>\n</code></pre>\n  </li>\n</ul>\n<p>x\n~~~</p>",
-        "status": 0,
-        "actual": "<ul>\n  <li>\n    <pre><code>\n\n</code></pre>\n  </li>\n</ul>\n<p>x\n~~~</p>"
-      }
-    },
-    {
-      "key": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column.crv/js->rust",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "57cae18518c1973ff3e3725c3475ee90599270046e28d341828a4db48f336923",
-      "observation": {
-        "expected": "<ul>\n  <li>\n    <pre><code>\n</code></pre>\n  </li>\n</ul>\n<p>x\n<code></code></p>",
-        "status": 0,
-        "actual": "<ul>\n  <li>\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>x\n<code></code></p>"
-      }
-    },
-    {
-      "key": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column.crv/php->rust",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "57cae18518c1973ff3e3725c3475ee90599270046e28d341828a4db48f336923",
-      "observation": {
-        "expected": "<ul>\n  <li>\n    <pre><code>\n</code></pre>\n  </li>\n</ul>\n<p>x\n<code></code></p>",
-        "status": 0,
-        "actual": "<ul>\n  <li>\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>x\n<code></code></p>"
-      }
-    },
-    {
-      "key": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column.crv/rust->js",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "cda4f165c73717aef2e91cbe5b5b130ba9e8d3c2a3aba9e07a6c419b7c426334",
-      "observation": {
-        "expected": "<ul>\n  <li>\n    <pre><code>\n</code></pre>\n  </li>\n</ul>\n<p>x\n<code></code></p>",
-        "status": 0,
-        "actual": "<ul>\n  <li>\n    <pre><code>\n\n</code></pre>\n  </li>\n</ul>\n<p>x\n<code></code></p>"
-      }
-    },
-    {
-      "key": "tests/corpus/276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column.crv/rust->php",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "cda4f165c73717aef2e91cbe5b5b130ba9e8d3c2a3aba9e07a6c419b7c426334",
-      "observation": {
-        "expected": "<ul>\n  <li>\n    <pre><code>\n</code></pre>\n  </li>\n</ul>\n<p>x\n<code></code></p>",
-        "status": 0,
-        "actual": "<ul>\n  <li>\n    <pre><code>\n\n</code></pre>\n  </li>\n</ul>\n<p>x\n<code></code></p>"
-      }
-    },
-    {
-      "key": "tests/corpus/478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column.crv/js->rust",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "af8af2d4494c4537596b299ffbf8b3e40038f8e341f03a01955a7f3a54c9a11e",
-      "observation": {
-        "expected": "<dl>\n  <dt>t</dt>\n  <dd>\n    <pre><code>\n</code></pre>\n  </dd>\n</dl>\n<p>y\n<code></code></p>",
-        "status": 0,
-        "actual": "<dl>\n  <dt>t</dt>\n  <dd>\n    <pre><code></code></pre>\n  </dd>\n</dl>\n<p>y\n<code></code></p>"
-      }
-    },
-    {
-      "key": "tests/corpus/478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column.crv/php->rust",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "af8af2d4494c4537596b299ffbf8b3e40038f8e341f03a01955a7f3a54c9a11e",
-      "observation": {
-        "expected": "<dl>\n  <dt>t</dt>\n  <dd>\n    <pre><code>\n</code></pre>\n  </dd>\n</dl>\n<p>y\n<code></code></p>",
-        "status": 0,
-        "actual": "<dl>\n  <dt>t</dt>\n  <dd>\n    <pre><code></code></pre>\n  </dd>\n</dl>\n<p>y\n<code></code></p>"
-      }
-    },
-    {
-      "key": "tests/corpus/478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column.crv/rust->js",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "e5dd926e62c66d5cf62445c8712bfd5e2cbe12783cbc844706c345d37441e293",
-      "observation": {
-        "expected": "<dl>\n  <dt>t</dt>\n  <dd>\n    <pre><code>\n</code></pre>\n  </dd>\n</dl>\n<p>y\n<code></code></p>",
-        "status": 0,
-        "actual": "<dl>\n  <dt>t</dt>\n  <dd>\n    <pre><code>\n\n</code></pre>\n  </dd>\n</dl>\n<p>y\n<code></code></p>"
-      }
-    },
-    {
-      "key": "tests/corpus/478-a-definition-body-s-open-code-fence-ends-at-a-line-below-its-column.crv/rust->php",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "e5dd926e62c66d5cf62445c8712bfd5e2cbe12783cbc844706c345d37441e293",
-      "observation": {
-        "expected": "<dl>\n  <dt>t</dt>\n  <dd>\n    <pre><code>\n</code></pre>\n  </dd>\n</dl>\n<p>y\n<code></code></p>",
-        "status": 0,
-        "actual": "<dl>\n  <dt>t</dt>\n  <dd>\n    <pre><code>\n\n</code></pre>\n  </dd>\n</dl>\n<p>y\n<code></code></p>"
-      }
-    },
-    {
-      "key": "tests/corpus/509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-6.crv/js->rust",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "c5509341d9d2ebb5b286d1263dc3e5fc3fd865f3eaeb7e403db1a87e05893832",
-      "observation": {
-        "expected": "<ul>\n  <li>a\n    <ul>\n      <li>b\n        <ul>\n          <li>c\n            <pre><code>p\n</code></pre>\n          </li>\n        </ul>\n      </li>\n    </ul>\n  </li>\n</ul>\n<pre><code>\n</code></pre>",
-        "status": 0,
-        "actual": "<ul>\n  <li>a\n    <ul>\n      <li>b\n        <ul>\n          <li>c\n            <pre><code>p\n</code></pre>\n          </li>\n        </ul>\n      </li>\n    </ul>\n  </li>\n</ul>\n<pre><code></code></pre>"
-      }
-    },
-    {
-      "key": "tests/corpus/509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-6.crv/php->rust",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "c5509341d9d2ebb5b286d1263dc3e5fc3fd865f3eaeb7e403db1a87e05893832",
-      "observation": {
-        "expected": "<ul>\n  <li>a\n    <ul>\n      <li>b\n        <ul>\n          <li>c\n            <pre><code>p\n</code></pre>\n          </li>\n        </ul>\n      </li>\n    </ul>\n  </li>\n</ul>\n<pre><code>\n</code></pre>",
-        "status": 0,
-        "actual": "<ul>\n  <li>a\n    <ul>\n      <li>b\n        <ul>\n          <li>c\n            <pre><code>p\n</code></pre>\n          </li>\n        </ul>\n      </li>\n    </ul>\n  </li>\n</ul>\n<pre><code></code></pre>"
-      }
-    },
-    {
-      "key": "tests/corpus/509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-6.crv/rust->js",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "e4fbcaba954b2ae111bdb80f893904cee4c506653905bf36f1dbb02fa30ee929",
-      "observation": {
-        "expected": "<ul>\n  <li>a\n    <ul>\n      <li>b\n        <ul>\n          <li>c\n            <pre><code>p\n</code></pre>\n          </li>\n        </ul>\n      </li>\n    </ul>\n  </li>\n</ul>\n<pre><code>\n</code></pre>",
-        "status": 0,
-        "actual": "<ul>\n  <li>a\n    <ul>\n      <li>b\n        <ul>\n          <li>c\n            <pre><code>p\n</code></pre>\n          </li>\n        </ul>\n      </li>\n    </ul>\n  </li>\n</ul>\n<pre><code>\n\n</code></pre>"
-      }
-    },
-    {
-      "key": "tests/corpus/509-a-fence-closer-below-a-nested-item-s-column-ends-containers-down-to-its-owner-6.crv/rust->php",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "e4fbcaba954b2ae111bdb80f893904cee4c506653905bf36f1dbb02fa30ee929",
-      "observation": {
-        "expected": "<ul>\n  <li>a\n    <ul>\n      <li>b\n        <ul>\n          <li>c\n            <pre><code>p\n</code></pre>\n          </li>\n        </ul>\n      </li>\n    </ul>\n  </li>\n</ul>\n<pre><code>\n</code></pre>",
-        "status": 0,
-        "actual": "<ul>\n  <li>a\n    <ul>\n      <li>b\n        <ul>\n          <li>c\n            <pre><code>p\n</code></pre>\n          </li>\n        </ul>\n      </li>\n    </ul>\n  </li>\n</ul>\n<pre><code>\n\n</code></pre>"
-      }
-    },
-    {
-      "key": "tests/corpus/511-a-fence-in-a-quote-stores-no-continuation-claim-4.crv/js->rust",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "a853c79cf966f49cb0ffc5a44754d68b3183636e4ebe26e8abad1be1136c59d4",
-      "observation": {
-        "expected": "<blockquote>\n  <blockquote>\n    <pre><code>\n</code></pre>\n  </blockquote>\n</blockquote>\n<p>c</p>",
-        "status": 0,
-        "actual": "<blockquote>\n  <blockquote>\n    <pre><code></code></pre>\n  </blockquote>\n</blockquote>\n<p>c</p>"
-      }
-    },
-    {
-      "key": "tests/corpus/511-a-fence-in-a-quote-stores-no-continuation-claim-4.crv/php->rust",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "a853c79cf966f49cb0ffc5a44754d68b3183636e4ebe26e8abad1be1136c59d4",
-      "observation": {
-        "expected": "<blockquote>\n  <blockquote>\n    <pre><code>\n</code></pre>\n  </blockquote>\n</blockquote>\n<p>c</p>",
-        "status": 0,
-        "actual": "<blockquote>\n  <blockquote>\n    <pre><code></code></pre>\n  </blockquote>\n</blockquote>\n<p>c</p>"
-      }
-    },
-    {
-      "key": "tests/corpus/511-a-fence-in-a-quote-stores-no-continuation-claim-4.crv/rust->js",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "4be46c96f2c9a81c70b0839d2f87d82ca9773adfb2c35e4062c20aeb51e93e21",
-      "observation": {
-        "expected": "<blockquote>\n  <blockquote>\n    <pre><code>\n</code></pre>\n  </blockquote>\n</blockquote>\n<p>c</p>",
-        "status": 0,
-        "actual": "<blockquote>\n  <blockquote>\n    <pre><code>\n\n</code></pre>\n  </blockquote>\n</blockquote>\n<p>c</p>"
-      }
-    },
-    {
-      "key": "tests/corpus/511-a-fence-in-a-quote-stores-no-continuation-claim-4.crv/rust->php",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "4be46c96f2c9a81c70b0839d2f87d82ca9773adfb2c35e4062c20aeb51e93e21",
-      "observation": {
-        "expected": "<blockquote>\n  <blockquote>\n    <pre><code>\n</code></pre>\n  </blockquote>\n</blockquote>\n<p>c</p>",
-        "status": 0,
-        "actual": "<blockquote>\n  <blockquote>\n    <pre><code>\n\n</code></pre>\n  </blockquote>\n</blockquote>\n<p>c</p>"
-      }
-    },
-    {
-      "key": "tests/corpus/518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-10.crv/rust->js",
-      "reason": "carve-rs keeps the trailing comment in the admonition label it writes to JSON, so every other reader renders text carve-rs's own renderer drops.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/2163",
-      "fingerprint": "e620ec3ea9edc1a1f9acf8c9fd439ddad279e2cf752eed3166f9b724743f0707",
-      "observation": {
-        "expected": "<aside class=\"admonition note\" aria-label=\"Note\">\n  <p class=\"div-label\"></p>\n  <p>body</p>\n</aside>",
-        "status": 0,
-        "actual": "<aside class=\"admonition note\" aria-label=\"Note\">\n  <p class=\"div-label\">%% hidden</p>\n  <p>body</p>\n</aside>"
-      }
-    },
-    {
-      "key": "tests/corpus/518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-10.crv/rust->php",
-      "reason": "carve-rs keeps the trailing comment in the admonition label it writes to JSON, so every other reader renders text carve-rs's own renderer drops.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/2163",
-      "fingerprint": "e620ec3ea9edc1a1f9acf8c9fd439ddad279e2cf752eed3166f9b724743f0707",
-      "observation": {
-        "expected": "<aside class=\"admonition note\" aria-label=\"Note\">\n  <p class=\"div-label\"></p>\n  <p>body</p>\n</aside>",
-        "status": 0,
-        "actual": "<aside class=\"admonition note\" aria-label=\"Note\">\n  <p class=\"div-label\">%% hidden</p>\n  <p>body</p>\n</aside>"
-      }
-    },
-    {
-      "key": "tests/corpus/518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-9.crv/rust->js",
-      "reason": "carve-rs keeps the trailing comment in the admonition label it writes to JSON, so every other reader renders text carve-rs's own renderer drops.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/2163",
-      "fingerprint": "19a53dc20d093fe8de62472b1f161f64a2cdd97cfd7a6ab7c6c7d10dc0b21135",
-      "observation": {
-        "expected": "<aside class=\"admonition note\" aria-label=\"Note\">\n  <p class=\"div-label\">a</p>\n  <p>body</p>\n</aside>",
-        "status": 0,
-        "actual": "<aside class=\"admonition note\" aria-label=\"Note\">\n  <p class=\"div-label\">a\t%% hidden</p>\n  <p>body</p>\n</aside>"
-      }
-    },
-    {
-      "key": "tests/corpus/518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-9.crv/rust->php",
-      "reason": "carve-rs keeps the trailing comment in the admonition label it writes to JSON, so every other reader renders text carve-rs's own renderer drops.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/2163",
-      "fingerprint": "19a53dc20d093fe8de62472b1f161f64a2cdd97cfd7a6ab7c6c7d10dc0b21135",
-      "observation": {
-        "expected": "<aside class=\"admonition note\" aria-label=\"Note\">\n  <p class=\"div-label\">a</p>\n  <p>body</p>\n</aside>",
-        "status": 0,
-        "actual": "<aside class=\"admonition note\" aria-label=\"Note\">\n  <p class=\"div-label\">a\t%% hidden</p>\n  <p>body</p>\n</aside>"
-      }
-    },
-    {
-      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-2.crv/js->php",
-      "reason": "carve-js reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2350",
-      "fingerprint": "64470e8d7c7a580cdd982e12ba21690536b0b7b1026bccada56130dac96d1044",
-      "observation": {
-        "expected": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\n</code></pre>\n    </li>\n  </ul>\n</blockquote>\n<p>z</p>\n<blockquote><p>b\n~~~</p></blockquote>",
-        "status": 0,
-        "actual": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\nz\nb\n</code></pre>\n    </li>\n  </ul>\n</blockquote>"
-      }
-    },
-    {
-      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-2.crv/php->js",
-      "reason": "carve-js reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2350",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-2.crv/js->rust",
+      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-js and carve-php place it at document level with the corpus golden.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2170",
       "fingerprint": "8814ea6155fa5d1ab27b352e145b1b9a03b213cbb1a015daa1dc95b21161c365",
       "observation": {
         "expected": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\nz\nb\n</code></pre>\n    </li>\n  </ul>\n</blockquote>",
@@ -395,7 +32,7 @@
     },
     {
       "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-2.crv/php->rust",
-      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
+      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-js and carve-php place it at document level with the corpus golden.",
       "issue": "https://github.com/markup-carve/carve-rs/issues/2170",
       "fingerprint": "8814ea6155fa5d1ab27b352e145b1b9a03b213cbb1a015daa1dc95b21161c365",
       "observation": {
@@ -405,8 +42,8 @@
       }
     },
     {
-      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-2.crv/rust->php",
-      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-2.crv/rust->js",
+      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-js and carve-php place it at document level with the corpus golden.",
       "issue": "https://github.com/markup-carve/carve-rs/issues/2170",
       "fingerprint": "64470e8d7c7a580cdd982e12ba21690536b0b7b1026bccada56130dac96d1044",
       "observation": {
@@ -416,20 +53,20 @@
       }
     },
     {
-      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-3.crv/js->php",
-      "reason": "carve-js reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2350",
-      "fingerprint": "7de34485998f3fee77fd7f7be23fb7447d823f19a4185e07b965d995e4911207",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-2.crv/rust->php",
+      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-js and carve-php place it at document level with the corpus golden.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2170",
+      "fingerprint": "64470e8d7c7a580cdd982e12ba21690536b0b7b1026bccada56130dac96d1044",
       "observation": {
-        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>a\n        x\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>\n<p>flush</p>",
+        "expected": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\n</code></pre>\n    </li>\n  </ul>\n</blockquote>\n<p>z</p>\n<blockquote><p>b\n~~~</p></blockquote>",
         "status": 0,
-        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>a\n        x\nflush\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>"
+        "actual": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\nz\nb\n</code></pre>\n    </li>\n  </ul>\n</blockquote>"
       }
     },
     {
-      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-3.crv/php->js",
-      "reason": "carve-js reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2350",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-3.crv/js->rust",
+      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-js and carve-php place it at document level with the corpus golden.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2170",
       "fingerprint": "0ea206f7b0680500506f2096165ee5468daf0def9451b6b65a11e7a96355b751",
       "observation": {
         "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>a\n        x\nflush\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>",
@@ -439,7 +76,7 @@
     },
     {
       "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-3.crv/php->rust",
-      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
+      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-js and carve-php place it at document level with the corpus golden.",
       "issue": "https://github.com/markup-carve/carve-rs/issues/2170",
       "fingerprint": "0ea206f7b0680500506f2096165ee5468daf0def9451b6b65a11e7a96355b751",
       "observation": {
@@ -449,8 +86,8 @@
       }
     },
     {
-      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-3.crv/rust->php",
-      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-3.crv/rust->js",
+      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-js and carve-php place it at document level with the corpus golden.",
       "issue": "https://github.com/markup-carve/carve-rs/issues/2170",
       "fingerprint": "7de34485998f3fee77fd7f7be23fb7447d823f19a4185e07b965d995e4911207",
       "observation": {
@@ -460,20 +97,20 @@
       }
     },
     {
-      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim.crv/js->php",
-      "reason": "carve-js reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2350",
-      "fingerprint": "d2d59b30b291c505b37937d4eb55dcb0e8b4ac77dcfec13d34237cd6d5c2ddfb",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-3.crv/rust->php",
+      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-js and carve-php place it at document level with the corpus golden.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2170",
+      "fingerprint": "7de34485998f3fee77fd7f7be23fb7447d823f19a4185e07b965d995e4911207",
       "observation": {
-        "expected": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\n</code></pre>\n    </li>\n  </ul>\n</blockquote>\n<p>flush</p>",
+        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>a\n        x\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>\n<p>flush</p>",
         "status": 0,
-        "actual": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\nflush\n</code></pre>\n    </li>\n  </ul>\n</blockquote>"
+        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>a\n        x\nflush\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>"
       }
     },
     {
-      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim.crv/php->js",
-      "reason": "carve-js reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2350",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim.crv/js->rust",
+      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-js and carve-php place it at document level with the corpus golden.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2170",
       "fingerprint": "46fc61ef2cb4ad3f11036e467922f4fc064ff3181ac298da057e1348ae72ee77",
       "observation": {
         "expected": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\nflush\n</code></pre>\n    </li>\n  </ul>\n</blockquote>",
@@ -483,7 +120,7 @@
     },
     {
       "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim.crv/php->rust",
-      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
+      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-js and carve-php place it at document level with the corpus golden.",
       "issue": "https://github.com/markup-carve/carve-rs/issues/2170",
       "fingerprint": "46fc61ef2cb4ad3f11036e467922f4fc064ff3181ac298da057e1348ae72ee77",
       "observation": {
@@ -493,8 +130,8 @@
       }
     },
     {
-      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim.crv/rust->php",
-      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim.crv/rust->js",
+      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-js and carve-php place it at document level with the corpus golden.",
       "issue": "https://github.com/markup-carve/carve-rs/issues/2170",
       "fingerprint": "d2d59b30b291c505b37937d4eb55dcb0e8b4ac77dcfec13d34237cd6d5c2ddfb",
       "observation": {
@@ -504,168 +141,14 @@
       }
     },
     {
-      "key": "tests/corpus/524-an-empty-code-payload-renders-no-characters-2.crv/js->rust",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "db88912b54fed3a5ec97a26fbf529e2ccd5dd88d3f8149b2418069b958be49e5",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim.crv/rust->php",
+      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-js and carve-php place it at document level with the corpus golden.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2170",
+      "fingerprint": "d2d59b30b291c505b37937d4eb55dcb0e8b4ac77dcfec13d34237cd6d5c2ddfb",
       "observation": {
-        "expected": "<pre><code>\n</code></pre>",
+        "expected": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\n</code></pre>\n    </li>\n  </ul>\n</blockquote>\n<p>flush</p>",
         "status": 0,
-        "actual": "<pre><code></code></pre>"
-      }
-    },
-    {
-      "key": "tests/corpus/524-an-empty-code-payload-renders-no-characters-2.crv/php->rust",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "db88912b54fed3a5ec97a26fbf529e2ccd5dd88d3f8149b2418069b958be49e5",
-      "observation": {
-        "expected": "<pre><code>\n</code></pre>",
-        "status": 0,
-        "actual": "<pre><code></code></pre>"
-      }
-    },
-    {
-      "key": "tests/corpus/524-an-empty-code-payload-renders-no-characters-2.crv/rust->js",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "1d4e8beca75bfbb487aa708bf86e6d62c87df4488f72ae59bb42897e4a42640d",
-      "observation": {
-        "expected": "<pre><code>\n</code></pre>",
-        "status": 0,
-        "actual": "<pre><code>\n\n</code></pre>"
-      }
-    },
-    {
-      "key": "tests/corpus/524-an-empty-code-payload-renders-no-characters-2.crv/rust->php",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "1d4e8beca75bfbb487aa708bf86e6d62c87df4488f72ae59bb42897e4a42640d",
-      "observation": {
-        "expected": "<pre><code>\n</code></pre>",
-        "status": 0,
-        "actual": "<pre><code>\n\n</code></pre>"
-      }
-    },
-    {
-      "key": "tests/corpus/524-an-empty-code-payload-renders-no-characters.crv/js->php",
-      "reason": "carve-php's --from-json writes a newline into an empty code payload its own parser renders as nothing.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2726",
-      "fingerprint": "364a8fd5f203d767e60a5e70192580f8237d7814977ce39299efd964358dc945",
-      "observation": {
-        "expected": "<pre><code></code></pre>",
-        "status": 0,
-        "actual": "<pre><code>\n</code></pre>"
-      }
-    },
-    {
-      "key": "tests/corpus/524-an-empty-code-payload-renders-no-characters.crv/php->php",
-      "reason": "carve-php's --from-json writes a newline into an empty code payload its own parser renders as nothing.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2726",
-      "fingerprint": "364a8fd5f203d767e60a5e70192580f8237d7814977ce39299efd964358dc945",
-      "observation": {
-        "expected": "<pre><code></code></pre>",
-        "status": 0,
-        "actual": "<pre><code>\n</code></pre>"
-      }
-    },
-    {
-      "key": "tests/corpus/524-an-empty-code-payload-renders-no-characters.crv/rust->php",
-      "reason": "carve-php's --from-json writes a newline into an empty code payload its own parser renders as nothing.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2726",
-      "fingerprint": "364a8fd5f203d767e60a5e70192580f8237d7814977ce39299efd964358dc945",
-      "observation": {
-        "expected": "<pre><code></code></pre>",
-        "status": 0,
-        "actual": "<pre><code>\n</code></pre>"
-      }
-    },
-    {
-      "key": "tests/corpus/69-opaque-spans-inside-a-container-6.crv/js->rust",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "e3c1100d3d3d46a93c67946b0191f287f3d2f65422e13bc08efb676ca6ac1ef0",
-      "observation": {
-        "expected": "<blockquote>\n  <pre><code>\n</code></pre>\n</blockquote>",
-        "status": 0,
-        "actual": "<blockquote>\n  <pre><code></code></pre>\n</blockquote>"
-      }
-    },
-    {
-      "key": "tests/corpus/69-opaque-spans-inside-a-container-6.crv/php->rust",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "e3c1100d3d3d46a93c67946b0191f287f3d2f65422e13bc08efb676ca6ac1ef0",
-      "observation": {
-        "expected": "<blockquote>\n  <pre><code>\n</code></pre>\n</blockquote>",
-        "status": 0,
-        "actual": "<blockquote>\n  <pre><code></code></pre>\n</blockquote>"
-      }
-    },
-    {
-      "key": "tests/corpus/69-opaque-spans-inside-a-container-6.crv/rust->js",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "02ee82ae6b441406350b096135e86f3856cb690cd14e637d89e855c42df9c89a",
-      "observation": {
-        "expected": "<blockquote>\n  <pre><code>\n</code></pre>\n</blockquote>",
-        "status": 0,
-        "actual": "<blockquote>\n  <pre><code>\n\n</code></pre>\n</blockquote>"
-      }
-    },
-    {
-      "key": "tests/corpus/69-opaque-spans-inside-a-container-6.crv/rust->php",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "02ee82ae6b441406350b096135e86f3856cb690cd14e637d89e855c42df9c89a",
-      "observation": {
-        "expected": "<blockquote>\n  <pre><code>\n</code></pre>\n</blockquote>",
-        "status": 0,
-        "actual": "<blockquote>\n  <pre><code>\n\n</code></pre>\n</blockquote>"
-      }
-    },
-    {
-      "key": "tests/corpus/85-blockquote-lazy-continuation-stops-at-a-fenced-block-3.crv/js->rust",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "f0fa7ce43eeaae9ed6c65d4910dbb61c5015f8b2e4e3136d3a49824bab9b405c",
-      "observation": {
-        "expected": "<blockquote>\n  <pre><code>\n</code></pre>\n</blockquote>\n<p>code no marker</p>\n<blockquote><p>still</p></blockquote>",
-        "status": 0,
-        "actual": "<blockquote>\n  <pre><code></code></pre>\n</blockquote>\n<p>code no marker</p>\n<blockquote><p>still</p></blockquote>"
-      }
-    },
-    {
-      "key": "tests/corpus/85-blockquote-lazy-continuation-stops-at-a-fenced-block-3.crv/php->rust",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "f0fa7ce43eeaae9ed6c65d4910dbb61c5015f8b2e4e3136d3a49824bab9b405c",
-      "observation": {
-        "expected": "<blockquote>\n  <pre><code>\n</code></pre>\n</blockquote>\n<p>code no marker</p>\n<blockquote><p>still</p></blockquote>",
-        "status": 0,
-        "actual": "<blockquote>\n  <pre><code></code></pre>\n</blockquote>\n<p>code no marker</p>\n<blockquote><p>still</p></blockquote>"
-      }
-    },
-    {
-      "key": "tests/corpus/85-blockquote-lazy-continuation-stops-at-a-fenced-block-3.crv/rust->js",
-      "reason": "carve-js writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/2352",
-      "fingerprint": "90016e5679b1ee0202ec7fe5247ceb497098f285954cccf3a8c51b831fecb948",
-      "observation": {
-        "expected": "<blockquote>\n  <pre><code>\n</code></pre>\n</blockquote>\n<p>code no marker</p>\n<blockquote><p>still</p></blockquote>",
-        "status": 0,
-        "actual": "<blockquote>\n  <pre><code>\n\n</code></pre>\n</blockquote>\n<p>code no marker</p>\n<blockquote><p>still</p></blockquote>"
-      }
-    },
-    {
-      "key": "tests/corpus/85-blockquote-lazy-continuation-stops-at-a-fenced-block-3.crv/rust->php",
-      "reason": "carve-php writes the same empty code_block.content for a payload of no lines and one of a single blank line, and adds a line when it reads a payload that already carries one; carve-rs keeps the two apart.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/2729",
-      "fingerprint": "90016e5679b1ee0202ec7fe5247ceb497098f285954cccf3a8c51b831fecb948",
-      "observation": {
-        "expected": "<blockquote>\n  <pre><code>\n</code></pre>\n</blockquote>\n<p>code no marker</p>\n<blockquote><p>still</p></blockquote>",
-        "status": 0,
-        "actual": "<blockquote>\n  <pre><code>\n\n</code></pre>\n</blockquote>\n<p>code no marker</p>\n<blockquote><p>still</p></blockquote>"
+        "actual": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\nflush\n</code></pre>\n    </li>\n  </ul>\n</blockquote>"
       }
     }
   ]
