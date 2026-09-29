@@ -39,6 +39,7 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose`,
 `518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator`,
 `519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim`,
+`520-a-dropped-raw-block-takes-no-line-in-the-container-that-holds-it`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
@@ -109,6 +110,14 @@ task holds, so neither could be built from its default branch.
 `c5df77f6` reproduces the paragraph control and retains the unmarked line inside
 the quote on the other three. `resources/engine-pin-drift.txt` records those
 measured differences under [#2554](https://github.com/markup-carve/carve/issues/2554).
+
+520's eight dropped-raw documents match the pinned carve-js `c5df77f6` byte for
+byte. Seven of them did not match the oracle before this change: five list-item
+hosts wrote the text `null` where the dropped block stood, the colon div left a
+blank line, and the footnote body left one and moved the backlink into a
+paragraph of its own. The eighth, the `=html` control, already agreed. Measured
+over a generated sweep of 19 hosts and 6 payloads, 33 shapes moved and all 33 now
+match the pin. Rust and PHP were not measured here.
 
 The former case-by-case notes remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/a22f6a23f7913e44cb3461f3f608605660619032/docs/implementation-comparison-methodology.md).

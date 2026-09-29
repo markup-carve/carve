@@ -445,7 +445,15 @@ function renderBlock(b, depth, ctx) {
         parts.push(`${pad2}  <p class="admonition-title"${idAttr}>${renderInline(b.title)}</p>`)
       }
       if (b.label !== null) parts.push(`${pad2}  <p class="div-label">${renderInline(b.label)}</p>`)
-      for (const c of b.children) parts.push(renderBlock(c, depth + 1, ctx))
+      for (const c of b.children) {
+        // A DROPPED BLOCK TAKES NO LINE (carve#2556). renderBlock answers `null`
+        // for a raw block the target does not match (SS20), and PART 10 SS4 gives
+        // a body slot only to a container that renders NOTHING - so a container
+        // holding one visible block and one dropped block is not empty and has no
+        // line to spare for the dropped one. Joining the `null` spent one anyway.
+        const child = renderBlock(c, depth + 1, ctx)
+        if (child !== null) parts.push(child)
+      }
       if (parts.length === 0) {
         // Every empty container keeps its body slot. PART 10 section 4 applies
         // the same shape to a bare div, typed div, admonition and blockquote.
@@ -581,7 +589,7 @@ function renderBlock(b, depth, ctx) {
           return `${'  '.repeat(depth + 1)}<p>${html}</p>`
         }
         return renderBlock(c, depth + 1, ctx)
-      })
+      }).filter((x) => x !== null)
       // Same rule as the line block above, same defect, same fix.
       const hbAttrs = renderBlockAttrs([...(b.battrs ?? []), [['class', 'hardbreaks']]])
       if (parts.length === 0) return `${pad2}<div${hbAttrs}>\n\n${pad2}</div>`
@@ -914,9 +922,17 @@ function renderItem(item, list, depth, ctx) {
       const bare = list.tight && pattrs === ''
       parts.push({ inlineable: true, html: bare ? html : `<p${pattrs}>${html}</p>` })
     } else {
-      parts.push({ inlineable: false, html: renderBlock(b, depth + 1, ctx) })
+      // A DROPPED BLOCK IS NOT A PART (carve#2556). Every other host filters
+      // renderBlock's `null`; this one concatenated it into the `<li>` template,
+      // so a raw block the target does not match (SS20) reached the HTML as the
+      // four characters `null` at every item depth, quoted items included.
+      const html = renderBlock(b, depth + 1, ctx)
+      if (html !== null) parts.push({ inlineable: false, html })
     }
   }
+  // Every block dropped, so the item renders nothing - the same shape as an item
+  // that held nothing to begin with.
+  if (parts.length === 0) return `${pad}<li${liAttrs}>${prefix}</li>`
 
   // <li> + first block on the same line; further blocks indented; the
   // closing </li> stays inline for a single-inline item, else on its own
@@ -1464,7 +1480,7 @@ function resolveFootnotes(html, ctx) {
     // content was a comment -- see its note there for why a block count
     // cannot answer this on its own.
     const noBlocks = body.length === 0 && !body.holdsAnInvisibleBlock
-    const out = body.map((b) => renderBlock(b, 3, ctx)).join('\n')
+    const out = body.map((b) => renderBlock(b, 3, ctx)).filter((x) => x !== null).join('\n')
     bodies.push({ rendered: substitute(resolveRefs(out, ctx)), noBlocks })
   }
 

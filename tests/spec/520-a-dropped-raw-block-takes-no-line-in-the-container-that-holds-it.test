@@ -1,0 +1,119 @@
+A dropped raw block takes no line in the container that holds it
+
+````
+- a
+
+  ```=latex
+  \x
+  ```
+.
+<ul>
+  <li>a</li>
+</ul>
+````
+
+````
+- ```=latex
+  \x
+  ```
+.
+<ul>
+  <li></li>
+</ul>
+````
+
+````
+- a
+
+  - b
+
+    ```=latex
+    \x
+    ```
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+````
+
+````
+> - a
+>
+>   ```=latex
+>   \x
+>   ```
+.
+<blockquote>
+  <ul>
+    <li>a</li>
+  </ul>
+</blockquote>
+````
+
+````
+- a
+
+  ```=latex
+  \x
+  ```
+
+  c
+.
+<ul>
+  <li><p>a</p>
+    <p>c</p>
+  </li>
+</ul>
+````
+
+````
+:::
+a
+
+```=latex
+\x
+```
+:::
+.
+<div>
+  <p>a</p>
+</div>
+````
+
+````
+x[^1]
+
+[^1]: a
+
+    ```=latex
+    \x
+    ```
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>a<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+````
+
+````
+- a
+
+  ```=html
+  <x>
+  ```
+.
+<ul>
+  <li>a
+    <x>
+  </li>
+</ul>
+````
