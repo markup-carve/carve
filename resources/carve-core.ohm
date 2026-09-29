@@ -479,8 +479,20 @@ CarveCore {
   // spaces before a title reparses. This is deliberately the opposite call
   // from the one carve#905 made for the terminal, which changed WHICH
   // character a slot admits and left HOW MANY alone.
-  destTitle  = titleSp (quoted | squoted)
+  destTitle  = titleSp (titleQuoted | titleSquoted)
   titleSp    = " "
+  // A TITLE CROSSES A SOFT WRAP AND AN ATTRIBUTE VALUE DOES NOT (carve#2566).
+  // `link_title` subtracts the closing quote alone, and `character` is any
+  // Unicode character, so a newline is inside the run. `quoted_value`
+  // subtracts `newline` and says so under CARVE-P4-006. Both slots were
+  // spelled through `quoted`/`squoted`, whose `~newline` belongs to the
+  // attribute rule, so the narrower slot decided the wider one: a wrapped
+  // title declined here and fell back to literal text, while carve-js,
+  // carve-php and carve-rs all read it.
+  titleQuoted  = "\"" titleQChar* "\""
+  titleQChar   = qEsc | (~"\"" any)
+  titleSquoted = "'" titleSqChar* "'"
+  titleSqChar  = sqEsc | (~"'" any)
   squoted    = "'" sqChar* "'"
   sqChar     = sqEsc | (~"'" ~newline any)
   sqEsc      = "\\" "'"

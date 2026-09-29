@@ -1,0 +1,52 @@
+A link title crosses a soft wrap and an attribute value does not
+
+```
+[a](/u "t
+u")
+.
+<p><a href="/u" title="t
+u">a</a></p>
+```
+
+```
+[a](/u 't
+u')
+.
+<p><a href="/u" title="t
+u">a</a></p>
+```
+
+```
+![a](/i "t
+u")
+.
+<img src="/i" alt="a" title="t
+u">
+```
+
+```
+[a](/u "t\"
+u")
+.
+<p><a href="/u" title="t&quot;
+u">a</a></p>
+```
+
+```
+[a]{k="t
+u"}
+.
+<p>[a]{k=“t
+u”}</p>
+```
+
+```
+[a][r]
+
+[r]: /u "t
+u"
+.
+<p>[a][r]</p>
+<p>[r]: /u “t
+u”</p>
+```
