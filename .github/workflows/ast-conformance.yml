@@ -47,6 +47,7 @@ concurrency:
 
 jobs:
   formatter:
+    needs: ast-revisions
     name: formatter (shard ${{ matrix.shard }})
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -66,6 +67,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: markup-carve/carve-js
+          ref: ${{ needs.ast-revisions.outputs.js }}
           path: carve-js
           submodules: recursive
       - name: Build carve-js
@@ -74,6 +76,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: markup-carve/carve-rs
+          ref: ${{ needs.ast-revisions.outputs.rs }}
           path: carve-rs
           submodules: recursive
       - name: Build carve-rs
@@ -82,6 +85,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: markup-carve/carve-php
+          ref: ${{ needs.ast-revisions.outputs.php }}
           path: carve-php
           submodules: recursive
       # 8.4, not carve-php's 8.2 floor. Its HTML importer runs the native HTML5
@@ -106,7 +110,31 @@ jobs:
         if: always()
         run: npm run compare:report -- /tmp/compare-impls.json
 
-  conformance:
+  ast-revisions:
+    runs-on: ubuntu-latest
+    outputs:
+      js: ${{ steps.heads.outputs.js }}
+      rs: ${{ steps.heads.outputs.rs }}
+      rb: ${{ steps.heads.outputs.rb }}
+      php: ${{ steps.heads.outputs.php }}
+    steps:
+      - name: Resolve engine heads once for all AST shards
+        id: heads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for engine in js rs rb php; do
+            head=$(gh api "repos/markup-carve/carve-$engine/commits/main" --jq .sha)
+            echo "$engine=$head" >> "$GITHUB_OUTPUT"
+          done
+
+  ast-shards:
+    needs: ast-revisions
+    name: AST (shard ${{ matrix.shard }})
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ['0/4', '1/4', '2/4', '3/4']
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -130,6 +158,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: markup-carve/carve-js
+          ref: ${{ needs.ast-revisions.outputs.js }}
           path: carve-js
           submodules: recursive
 
@@ -141,6 +170,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: markup-carve/carve-rs
+          ref: ${{ needs.ast-revisions.outputs.rs }}
           path: carve-rs
           submodules: recursive
 
@@ -152,6 +182,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: markup-carve/carve-php
+          ref: ${{ needs.ast-revisions.outputs.php }}
           path: carve-php
           submodules: recursive
 
@@ -169,6 +200,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: markup-carve/carve-rb
+          ref: ${{ needs.ast-revisions.outputs.rb }}
           path: carve-rb
 
       # `bundler-cache: true` restores carve-rb's gems from the actions cache
@@ -226,30 +258,129 @@ jobs:
             || cargo install carve-lang --version '${{ steps.rb-pin.outputs.version }}' \
                  --locked --bin carve --root "${{ runner.temp }}/carve-lang-pin"
 
-      - name: PART 12 conformance
+      - name: PART 12 shard measurements
         env:
           CARVE_RS_PINNED_BIN: ${{ runner.temp }}/carve-lang-pin/bin/carve
           CARVE_JS_DIR: ${{ github.workspace }}/carve-js
           CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
           CARVE_RB_DIR: ${{ github.workspace }}/carve-rb
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
-          # Every engine is checked out and built above, so a missing one is a
-          # broken job rather than a local convenience - which is what this flag
-          # is for. Setting it while knowingly not provisioning an engine would
-          # make the run permanently red, and a permanently red scheduled job
-          # gets muted, which is the failure this whole issue is about.
           CARVE_REQUIRE_ALL_ENGINES: '1'
-        # NO --satellite-limit here. The cap exists for a quick local pass;
-        # this job provisions every engine precisely so it can measure all of
-        # them over everything. It was pinned at 520 when the corpus was that
-        # size, and the corpus has grown to 542 (545 samples with the synthetic
-        # astral cases), so the last 25 were being skipped - a number that goes
-        # further out of date with every fixture added, and the newest fixtures
-        # are the ones most likely to catch drift.
-        run: npm run ast:check
+        run: npm run ast:check -- --shard=${{ matrix.shard }} --report=ast-${{ strategy.job-index }}.json
+      - name: Corpus AST ingest shard measurements
+        if: always()
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+        run: npm run ast:ingest -- --shard=${{ matrix.shard }} --report ingest-${{ strategy.job-index }}.json
+      - name: Upload AST shard measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ast-shard-${{ strategy.job-index }}
+          path: |
+            ast-*.json
+            ingest-*.json
+          if-no-files-found: error
+
+  ast-union:
+    name: AST full-corpus verdict
+    needs: ast-shards
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: ast-shard-*
+          path: shard-reports
+          merge-multiple: true
+      - name: PART 12 conformance
+        env:
+          CARVE_REQUIRE_ALL_ENGINES: '1'
+        run: npm run ast:check -- --merge-reports=shard-reports
+      - name: Corpus AST JSON, every producer and reader
+        if: always()
+        run: npm run ast:ingest -- --merge-reports=shard-reports --report ingest-comparison-report.json
+      - name: Upload combined AST ingest comparison
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ast-comparisons
+          path: ingest-comparison-report.json
+
+  conformance:
+    needs: ast-revisions
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out carve
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # Each engine is checked out and BUILT from its own main. A build is not
+      # optional here: the checker reads whatever artifact is on disk, and a
+      # stale one reports the old behavior under the current name - which is
+      # exactly how carve#475's own figures came to be wrong.
+      - name: Check out carve-js
+        uses: actions/checkout@v4
+        with:
+          repository: markup-carve/carve-js
+          ref: ${{ needs.ast-revisions.outputs.js }}
+          path: carve-js
+          submodules: recursive
+
+      - name: Build carve-js
+        working-directory: carve-js
+        run: npm ci && npm run build
+
+      - name: Check out carve-rs
+        uses: actions/checkout@v4
+        with:
+          repository: markup-carve/carve-rs
+          ref: ${{ needs.ast-revisions.outputs.rs }}
+          path: carve-rs
+          submodules: recursive
+
+      - name: Build carve-rs
+        working-directory: carve-rs
+        run: cargo build --release --bin carve --example social_resolvers
+
+      - name: Check out carve-php
+        uses: actions/checkout@v4
+        with:
+          repository: markup-carve/carve-php
+          ref: ${{ needs.ast-revisions.outputs.php }}
+          path: carve-php
+          submodules: recursive
+
+      # 8.4 for the same reason as the formatter job above: below it, carve-php's
+      # HTML importer takes the legacy libxml path.
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+
+      - name: Install carve-php
+        working-directory: carve-php
+        run: composer install --no-interaction --no-progress
 
       # Formatter and render conformance run concurrently in the sharded
-      # formatter matrix above; this job retains AST and the short auxiliary gates.
+      # formatter matrix above; AST runs in its own matrix, leaving auxiliary gates here.
 
       # The converters run the OTHER direction - foreign source to Carve - and
       # sat outside every gate: carve#1130 lists six converter fixes in one
@@ -359,15 +490,7 @@ jobs:
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
         run: npm run import:compare -- --report import-comparison-report.json
 
-      - name: Corpus AST JSON, every producer and reader
-        if: always()
-        env:
-          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
-          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
-          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
-        run: npm run ast:ingest -- --report ingest-comparison-report.json
-
-      - name: Upload importer and AST ingest comparisons
+      - name: Upload importer comparisons
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -518,6 +641,14 @@ jobs:
           diff -u tests/profile-fixtures.json /tmp/profile-fixtures.regenerated.json \
             || { echo "::error::tests/profile-fixtures.json no longer matches carve-php. Regenerate it (see the header of tests/gen-profile-fixtures.php) and re-check carve-js and carve-rs against the new file."; exit 1; }
 
+  verdict:
+    name: AST conformance verdict
+    needs: [formatter, ast-revisions, ast-shards, ast-union, conformance]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+
       # THE READER. Everything above reports into a job nobody is obliged to
       # open. This workflow runs on a SCHEDULE, so no pull request gate can see
       # it go red, `main` shows green push CI while it is failing, and for weeks
@@ -573,7 +704,6 @@ jobs:
           REPO: ${{ github.repository }}
           RUN_ID: ${{ github.run_id }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          JOB_STATUS: ${{ job.status }}
           HEAD_SHA: ${{ github.sha }}
           REF_NAME: ${{ github.ref_name }}
           EVENT_NAME: ${{ github.event_name }}
@@ -591,14 +721,7 @@ jobs:
           MARKER="<!-- ast-conformance-verdict ref=$REF_NAME -->"
           GATES_MARKER="<!-- ast-conformance-gates"
 
-          # Formatter shards run beside this job. Wait for them before reading
-          # the run so one verdict covers every independent gate.
-          for attempt in $(seq 1 80); do
-            pending="$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs" --paginate \
-              --jq '[.jobs[] | select(.name != "conformance" and .status != "completed")] | length')"
-            [ "$pending" -eq 0 ] && break
-            sleep 15
-          done
+          # All gate jobs have completed through this job's dependencies.
 
           # Which steps failed, read back from the run itself. A hand-kept list
           # of step ids would go stale the first time a step is added, and a
@@ -607,7 +730,7 @@ jobs:
           failed="$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs" --paginate \
             --jq '.jobs[].steps[] | select(.conclusion == "failure") | "- `" + .name + "`"')"
           bad_jobs="$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs" --paginate \
-            --jq '.jobs[] | select(.conclusion == "cancelled" or .conclusion == "timed_out" or .conclusion == "skipped") | "- `" + .name + "` (" + .conclusion + ")"')"
+            --jq '.jobs[] | select(.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out" or .conclusion == "skipped") | "- `" + .name + "` (" + .conclusion + ")"')"
           failed="${failed}${failed:+$'\n'}${bad_jobs}"
 
           # Discover the gate set from the run instead of keeping a second list
@@ -639,7 +762,7 @@ jobs:
             /tmp/ast-conformance-previous-gates.txt \
             > /tmp/ast-conformance-required-gates.txt
 
-          if [ -z "$failed" ] && [ "$pending" -eq 0 ]; then
+          if [ -z "$failed" ]; then
             echo "AST conformance is green on $HEAD_SHA."
             if [ -n "$issue" ]; then
               missing="$(comm -23 /tmp/ast-conformance-required-gates.txt /tmp/ast-conformance-current-gates.txt)"

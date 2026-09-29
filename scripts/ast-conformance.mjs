@@ -4,7 +4,8 @@
  * schema checks node shapes; separate checks cover source positions and whether
  * a span contains the text it represents. The reference engine is checked too.
  *
- *   node scripts/ast-conformance.mjs [--limit=N] [--satellite-limit=N]
+ *   node scripts/ast-conformance.mjs [--limit=N] [--satellite-limit=N] [--shard=INDEX/TOTAL --report=FILE]
+ *   node scripts/ast-conformance.mjs --merge-reports=DIR
  *
  * Either limit samples the corpus and must not be used for a full conformance
  * verdict. Sibling engine checkouts follow the compare-impls.mjs convention:
@@ -13,7 +14,7 @@
  */
 
 import { execFileSync as nodeExecFileSync } from 'node:child_process'
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Ajv2020 } from 'ajv/dist/2020.js'
@@ -40,6 +41,9 @@ import {
 import { refusableRootShapes, rootShapeVerdict } from './spec/root-shape-probe.mjs'
 import { miscount, shortfall } from './spec/participants.mjs'
 import { rustBinary } from './lib/engine-locations.mjs'
+import { parseShard, selectShard } from './lib/shard.mjs'
+import { populationFingerprint, readShardReports, verifyShardReports } from './lib/shard-reports.mjs'
+import { comparisonRevisions } from './lib/comparison-revisions.mjs'
 import { pinnedCrateVersion, pinnedEngineBinary } from './lib/pinned-engine.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -52,6 +56,19 @@ const commentContentFixtures = JSON.parse(readFileSync(resolve(root, 'resources/
 // tests/ast-schema.test.mjs checks the schema against the reference engine.
 const schema = JSON.parse(readFileSync(resolve(root, 'resources/ast-schema.json'), 'utf8'))
 const validateSchema = new Ajv2020({ allErrors: true, strict: true }).compile(schema)
+
+const shard = parseShard(process.argv.find(a => a.startsWith('--shard='))?.slice(8))
+const reportPath = process.argv.find(a => a.startsWith('--report='))?.slice(9)
+const mergeDirectory = process.argv.find(a => a.startsWith('--merge-reports='))?.slice(16)
+if (shard.total > 1 && !reportPath) throw new Error('--shard requires --report=FILE for full-corpus reconciliation')
+if (mergeDirectory && shard.total > 1) throw new Error('Do not shard a report union')
+const shardMeasurements = []
+const attemptedDocuments = new Map()
+function recordAttempt(engine, name) {
+  if (!attemptedDocuments.has(engine)) attemptedDocuments.set(engine, [])
+  attemptedDocuments.get(engine).push(name)
+}
+let jsProv
 
 const limitArg = process.argv.find((a) => a.startsWith('--limit='))
 const limit = limitArg ? Number(limitArg.slice('--limit='.length)) : Infinity
@@ -905,12 +922,22 @@ const corpusFiles = readdirSync(corpusDir)
   .filter((f) => f.endsWith('.crv'))
   .sort()
 const syntheticSamples = [...ASTRAL_SAMPLES, ...codePayloadSamples]
-const samples = [
+const fullSamples = [
   ...syntheticSamples,
-  ...corpusFiles
-    .slice(0, limit)
-    .map((f) => ({ name: f, source: readFileSync(resolve(corpusDir, f), 'utf8') })),
+  ...corpusFiles.slice(0, limit)
+    .map(f => ({ name: f, source: readFileSync(resolve(corpusDir, f), 'utf8') })),
 ]
+const samples = selectShard(fullSamples, shard)
+const probeNames = new Set(fullSamples.slice(0, UNKNOWN_PROPERTY_SAMPLE).map(sample => sample.name))
+const rootProbeName = fullSamples[0]?.name
+const population = fullSamples.map(sample => sample.name)
+const revisions = mergeDirectory ? undefined : comparisonRevisions(root, [
+  { name: 'js', cwd: jsDir }, { name: 'rust', cwd: rsDir },
+  { name: 'ruby', cwd: rbDir }, { name: 'php', cwd: phpDir },
+])
+if (shard.total > 1 && (Number.isFinite(limit) || Number.isFinite(satelliteLimit))) {
+  throw new Error('Shards must measure the full corpus without limits')
+}
 
 /*
  * HOW MANY DOCUMENTS THIS RUN ACTUALLY SAW, checked rather than printed.
@@ -926,7 +953,7 @@ const samples = [
  * question. With a limit it is a floor plus the sample notice already printed
  * below, because sampling is a deliberate act with a number attached.
  */
-const corpusSeen = samples.length - syntheticSamples.length
+const corpusSeen = fullSamples.length - syntheticSamples.length
 const populationProblem = Number.isFinite(limit)
   ? shortfall({
       label: 'CORPUS',
@@ -963,11 +990,50 @@ const satelliteSamples = samples.slice(0, satelliteLimit)
 // synthetic inputs this script carries, not documents the corpus ships, and
 // folding them into one count made a run over three synthetic cases read as a
 // run over three corpus documents.
+const selectedSynthetic = samples.filter(sample => syntheticSamples.some(item => item.name === sample.name)).length
 console.log(
-  `PART 12 conformance over ${corpusSeen} corpus document(s) ` +
-    `plus ${syntheticSamples.length} synthetic sample(s)\n`,
+  `PART 12 ${shard.total > 1 ? `shard ${shard.index}/${shard.total}` : 'conformance'} over ` +
+    `${samples.length - selectedSynthetic} corpus document(s) plus ${selectedSynthetic} synthetic sample(s)\n`,
 )
 
+if (mergeDirectory) {
+  const reports = verifyShardReports(readShardReports(mergeDirectory, 'ast'), population, 'ast')
+  for (const entry of reports) {
+    for (const [field, target] of [['paths', enginePaths], ['values', engineValues], ['spans', engineSpans]]) {
+      for (const [engine, documents] of entry[field]) {
+        if (!target.has(engine)) target.set(engine, new Map())
+        for (const [name, value] of documents) {
+          if (!entry.documents.includes(name)) throw new Error(`Unexpected measured document: ${name}`)
+          if (target.get(engine).has(name)) throw new Error(`Duplicate measurement: ${engine}/${name}`)
+          target.get(engine).set(name, value)
+        }
+      }
+    }
+    const measuredEngines = entry.measurements.map(measurement => measurement.engine)
+    if (new Set(measuredEngines).size !== measuredEngines.length) throw new Error('Duplicate engine report')
+    if (process.env.CARVE_REQUIRE_ALL_ENGINES === '1' &&
+        ['carve-js', 'carve-rs', 'carve-rb', 'carve-php'].some(engine => !measuredEngines.includes(engine))) {
+      throw new Error('A shard did not measure every required engine')
+    }
+    for (const measurement of entry.measurements) {
+      if (JSON.stringify(entry.attemptedDocuments?.[measurement.engine]) !== JSON.stringify(entry.documents)) {
+        throw new Error(`Incomplete engine measurement: ${measurement.engine}`)
+      }
+      const previous = shardMeasurements.find(item => item.engine === measurement.engine)
+      if (previous) previous.findings.push(...measurement.findings)
+      else shardMeasurements.push({ ...measurement, findings: [...measurement.findings] })
+    }
+    for (const [target, values] of [[notMeasured, entry.notMeasured], [staleBuilds, entry.staleBuilds], [deferredGateFailures, entry.deferredGateFailures]]) {
+      for (const value of values) if (!target.includes(value)) target.push(value)
+    }
+    referenceCoverageGaps += entry.referenceCoverageGaps
+  }
+  jsProv = reports[0].jsProv
+  for (const measurement of shardMeasurements) {
+    const label = measurement.label.replace(/, \d+ documents\)/, `, ${population.length} documents)`)
+    report(measurement.engine, label, measurement.findings)
+  }
+} else {
 // ---- reference: carve-js ---------------------------------------------------
 if (!existsSync(resolve(jsDir, 'dist/index.js'))) {
   console.error(`carve-js build not found at ${jsDir}/dist - run npm run build there first.`)
@@ -993,6 +1059,7 @@ const jsFindings = []
 let jsProbed = 0
 let jsRootShaped = false
 for (const { name, source } of samples) {
+  recordAttempt('carve-js', name)
   let doc
   try {
     // The SERIALIZED form, not the runtime tree. They differ: this engine keeps
@@ -1032,13 +1099,13 @@ for (const { name, source } of samples) {
     jsFindings.push(`${name}: ingest threw on this engine's own output - ${error.message}`)
     continue
   }
-  if (jsProbed < UNKNOWN_PROPERTY_SAMPLE) {
+  if (probeNames.has(name) && jsProbed < UNKNOWN_PROPERTY_SAMPLE) {
     jsProbed += 1
     checkUnknownPropertyIngest(name, doc, jsFindings, (payload) =>
       JSON.stringify(lib.toAstJson(lib.fromAstJson(JSON.parse(payload)))),
     )
   }
-  if (!jsRootShaped) {
+  if (!jsRootShaped && name === rootProbeName) {
     jsRootShaped = true
     checkRootShapeIngest(
       name,
@@ -1054,7 +1121,7 @@ for (const { name, source } of samples) {
     jsFindings.push(`${name}: §6 round trip through fromAstJson is not identity`)
   }
 }
-const jsProv = referenceProvenance(jsDir)
+jsProv = referenceProvenance(jsDir)
 if (jsProv.suspect) staleBuilds.push('carve-js (reference)')
 report('carve-js', `carve-js (reference) [${jsProv.text}]`, jsFindings)
 
@@ -1073,6 +1140,7 @@ if (rsBinary) {
 let rsProbed = 0
 let rsRootShaped = false
   for (const [index, { name, source }] of satelliteSamples.entries()) {
+    recordAttempt('carve-rs', name)
     progress('rust', index, satelliteSamples.length, name)
     let doc
     try {
@@ -1104,7 +1172,7 @@ let rsRootShaped = false
         maxBuffer: MAX_SUBPROCESS_OUTPUT,
       }),
     )
-    if (rsProbed < UNKNOWN_PROPERTY_SAMPLE) {
+    if (probeNames.has(name) && rsProbed < UNKNOWN_PROPERTY_SAMPLE) {
       rsProbed += 1
       checkUnknownPropertyIngest(name, doc, rsFindings, (payload) =>
         execFileSync(rsBinary, ['--from-json', '--json', '-'], {
@@ -1115,7 +1183,7 @@ let rsRootShaped = false
         }),
       )
     }
-    if (!rsRootShaped) {
+    if (!rsRootShaped && name === rootProbeName) {
       rsRootShaped = true
       const run = (args) => (payload) =>
         execFileSync(rsBinary, args, {
@@ -1153,6 +1221,7 @@ const rbShapes = new Map()
 if (existsSync(resolve(rbDir, 'lib/carve'))) {
   const rbFindings = []
   for (const [index, { name, source }] of satelliteSamples.entries()) {
+    recordAttempt('carve-rb', name)
     progress('ruby', index, satelliteSamples.length, name)
     let doc
     try {
@@ -1329,6 +1398,7 @@ if (existsSync(resolve(phpDir, 'bin/carve'))) {
 let phpProbed = 0
 let phpRootShaped = false
   for (const [index, { name, source }] of satelliteSamples.entries()) {
+    recordAttempt('carve-php', name)
     progress('php', index, satelliteSamples.length, name)
     let doc
     try {
@@ -1360,7 +1430,7 @@ let phpRootShaped = false
         maxBuffer: MAX_SUBPROCESS_OUTPUT,
       }),
     )
-    if (phpProbed < UNKNOWN_PROPERTY_SAMPLE) {
+    if (probeNames.has(name) && phpProbed < UNKNOWN_PROPERTY_SAMPLE) {
       phpProbed += 1
       checkUnknownPropertyIngest(name, doc, phpFindings, (payload) =>
         execFileSync('php', ['bin/carve', '--from-json', '--json'], {
@@ -1372,7 +1442,7 @@ let phpRootShaped = false
         }),
       )
     }
-    if (!phpRootShaped) {
+    if (!phpRootShaped && name === rootProbeName) {
       phpRootShaped = true
       const run = (args) => (payload) =>
         execFileSync('php', ['bin/carve', ...args], {
@@ -1400,6 +1470,19 @@ let phpRootShaped = false
   skip('carve-php', 'checkout found but bin/carve is missing')
 } else {
   skip('carve-php', 'checkout not found')
+}
+
+}
+if (shard.total > 1) {
+  const entries = map => [...map].map(([engine, documents]) => [engine, [...documents]])
+  writeFileSync(reportPath, JSON.stringify({
+    complete: true, mode: 'ast', shard, documents: samples.map(sample => sample.name),
+    population: populationFingerprint(population), revisions, jsProv,
+    paths: entries(enginePaths), values: entries(engineValues), spans: entries(engineSpans),
+    measurements: shardMeasurements, attemptedDocuments: Object.fromEntries(attemptedDocuments), notMeasured, staleBuilds, deferredGateFailures, referenceCoverageGaps,
+  }) + '\n')
+  console.log(`AST shard ${shard.index}/${shard.total}: ${samples.length} samples; reconciliation deferred to the full union.`)
+  process.exit(0)
 }
 
 /**
@@ -1525,6 +1608,10 @@ function checkIngestIdentity(name, doc, findings, reserialize) {
 }
 
 function report(engine, label, findings) {
+  if (shard.total > 1) {
+    shardMeasurements.push({ engine, label, findings })
+    return
+  }
   const adjacent = findings.filter((f) => f.includes('§1a')).length
   if (adjacent > 0) adjacentTextRunCounts.push({ label, count: adjacent })
 

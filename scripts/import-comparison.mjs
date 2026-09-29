@@ -4,6 +4,8 @@ import { promisify } from 'node:util'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { parseShard, selectShard } from './lib/shard.mjs'
+import { populationFingerprint, readShardReports, verifyShardReports } from './lib/shard-reports.mjs'
 import { phpDir, rustDir, rustBinary } from './lib/engine-locations.mjs'
 import { comparisonRevisions, printComparisonRevisions } from './lib/comparison-revisions.mjs'
 import { engines, classifyImports, compareIngestDocument, processFailure, missesTarget, htmlBytes, ingestCorpus, reconcileDifferences } from './lib/import-comparison.mjs'
@@ -11,8 +13,24 @@ import { engines, classifyImports, compareIngestDocument, processFailure, misses
 const root = fileURLToPath(new URL('..', import.meta.url))
 const args = process.argv.slice(2)
 const mode = args.shift()
-if (!['import', 'ingest'].includes(mode) || (args.length && (args.length !== 2 || args[0] !== '--report'))) {
-  console.error('usage: import-comparison.mjs import|ingest [--report file.json]')
+let reportPath
+let shard = parseShard()
+let mergeDirectory
+try {
+  while (args.length) {
+    const arg = args.shift()
+    if (arg === '--report' && args.length) reportPath = args.shift()
+    else if (arg.startsWith('--shard=')) shard = parseShard(arg.slice(8))
+    else if (arg.startsWith('--merge-reports=')) mergeDirectory = arg.slice(16)
+    else throw new Error(`Unknown argument: ${arg}`)
+  }
+  if (!['import', 'ingest'].includes(mode)) throw new Error('Choose import or ingest')
+  if (mode !== 'ingest' && (shard.total > 1 || mergeDirectory)) throw new Error('Only ingest supports sharding')
+  if (mergeDirectory && shard.total > 1) throw new Error('Do not shard a report union')
+  if (shard.total > 1 && !reportPath) throw new Error('Shards require --report FILE')
+} catch (error) {
+  console.error(error.message)
+  console.error('usage: import-comparison.mjs import|ingest [--report file.json] [--shard=INDEX/TOTAL] [--merge-reports=DIR]')
   process.exit(2)
 }
 const commands = {
@@ -73,12 +91,36 @@ async function each(items, work) {
 const readJson = path => JSON.parse(readFileSync(resolve(root, path), 'utf8'))
 const differences = {}
 const counts = {}
+const measuredDocuments = []
 const revisions = comparisonRevisions(root, [
   { name: 'js', cwd: resolve(commands.js[1], '../..') },
   { name: 'php', cwd: phpDir() },
   { name: 'rust', cwd: rustDir() },
 ])
 try {
+  if (mergeDirectory) {
+    const reports = verifyShardReports(readShardReports(mergeDirectory, 'ingest'), ingestCorpus(root), 'ingest')
+    const merged = Object.fromEntries(Object.entries(Object.assign({}, ...reports.map(report => report.differences)))
+      .sort(([a], [b]) => a.localeCompare(b, 'en')))
+    for (const report of reports) {
+      if (report.counts.documents !== report.documents.length || report.counts.pairs !== report.documents.length * engines.length ** 2) {
+        throw new Error('Ingest shard comparison count differs from its documents')
+      }
+      for (const key of Object.keys(report.differences)) {
+        if (!report.documents.some(document => key.startsWith(`${document}/`))) throw new Error(`Unexpected difference: ${key}`)
+      }
+    }
+    const failures = reconcileDifferences(merged, readJson('resources/ingest-comparison-drift.json'))
+    for (const failure of failures) console.error(failure)
+    console.log(`ingest union: ${reports.reduce((count, report) => count + report.documents.length, 0)} documents; ${failures.length} failures`)
+    if (reportPath) writeFileSync(reportPath, JSON.stringify({
+      complete: true, mode, revisions: reports[0].revisions,
+      counts: { documents: reports.reduce((sum, report) => sum + report.counts.documents, 0),
+        pairs: reports.reduce((sum, report) => sum + report.counts.pairs, 0) },
+      differences: merged, failures,
+    }, null, 2) + '\n')
+    process.exit(failures.length ? 1 : 0)
+  }
   printComparisonRevisions(revisions)
   // A broken installation must fail before it can become a declared import gap.
   for (const engine of engines) {
@@ -135,25 +177,32 @@ try {
       }
     })
   } else {
-    const files = ingestCorpus(root)
+    const fullCorpus = ingestCorpus(root)
+    const files = selectShard(fullCorpus, shard)
     counts.documents = files.length
     counts.pairs = files.length * engines.length ** 2
     await each(files, async file => {
       const source = readFileSync(resolve(root, file), 'utf8')
       const found = await compareIngestDocument(source, output, invoke)
+      measuredDocuments.push(file)
       for (const [pair, observation] of Object.entries(found)) differences[`${file}/${pair}`] = observation
     })
   }
   const sorted = Object.fromEntries(Object.entries(differences).sort(([a], [b]) => a.localeCompare(b, 'en')))
-  const failures = reconcileDifferences(sorted, readJson(`resources/${mode}-comparison-drift.json`))
-  const report = { complete: true, mode, revisions, counts, differences: sorted, failures }
-  if (args.length) writeFileSync(args[1], JSON.stringify(report, null, 2) + '\n')
+  const failures = shard.total > 1 ? [] : reconcileDifferences(sorted, readJson(`resources/${mode}-comparison-drift.json`))
+  const report = { complete: true, mode, revisions, counts, differences: sorted, failures,
+    ...(mode === 'ingest' ? {
+      shard, documents: measuredDocuments.sort(),
+      population: populationFingerprint(ingestCorpus(root)),
+    } : {}),
+  }
+  if (reportPath) writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n')
   console.log(JSON.stringify(counts))
   console.log(`${mode}: ${Object.keys(sorted).length} observed differences`)
   for (const failure of failures) console.error(failure)
   process.exitCode = failures.length ? 1 : 0
 } catch (error) {
-  if (args.length) writeFileSync(args[1], JSON.stringify({ complete: false, mode, revisions, error: error.message }, null, 2) + '\n')
+  if (reportPath) writeFileSync(reportPath, JSON.stringify({ complete: false, mode, revisions, error: error.message }, null, 2) + '\n')
   console.error(`${mode} comparison could not complete: ${error.message}`)
   process.exitCode = 2
 }
