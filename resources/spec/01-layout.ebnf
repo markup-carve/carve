@@ -134,6 +134,9 @@
            follower remains in the item even below that column. A comment at
            or above the content column does not grant that retention (C3).
            Sibling markers are recognized before ordinary-line retention.
+           A retained list marker below the item's content column remains
+           paragraph text. Closing the preceding paragraph does not reduce
+           the indentation required for a child list.
            This is retained item ownership, not a stored ordinary-line continuation
            claim. The retention describes the most recent boundary, not the
            next visible line across arbitrary invisible boundaries. A comment

@@ -62,11 +62,9 @@ A band paragraph after an invisible line leaves the item loose
 - s
 .
 <ul>
-  <li>t
-    <ul>
-      <li>b</li>
-    </ul>
+  <li><p>t</p>
+    <p>- b</p>
   </li>
-  <li>s</li>
+  <li><p>s</p></li>
 </ul>
 ```

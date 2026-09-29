@@ -93,3 +93,6 @@
 511-a-fence-in-a-quote-stores-no-continuation-claim-4  carve#2603: an unclosed fence with no payload lines emits no payload newline.
 69-opaque-spans-inside-a-container-6  carve#2603: an unclosed fence with no payload lines emits no payload newline.
 85-blockquote-lazy-continuation-stops-at-a-fenced-block-3  carve#2603: an unclosed fence with no payload lines emits no payload newline.
+277-a-below-column-marker-after-a-comment-where-no-paragraph-is-open  carve#2619: the pin opens a child list below the content column after a comment.
+277-a-below-column-marker-after-a-comment-where-no-paragraph-is-open-2  carve#2619: the pin opens a child list below the content column after a comment.
+517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-5  carve#2619: the pin nests a retained marker instead of leaving a second paragraph after the blank.

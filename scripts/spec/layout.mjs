@@ -5724,19 +5724,11 @@ function collectItems(lines, i, list, state, ind, meas) {
         i++
         continue
       }
-      // The comment boundary left the frame open even though it closed the
-      // paragraph. Classify a below-column nested marker in that surviving
-      // frame; this preserves the established #618/#682 ownership result.
+      // A retained item still requires its content column for a child list.
       if (nm && nm.indent < contentCol && nm.indent > baseIndent && !openPara &&
           afterComment && itemLines.length > 0) {
-        // The sub-list ATTACHES, so it consumes the separation the invisible
-        // line left pending - §17 L2, and the same accounting the content
-        // column does above. Left standing, the flag reached the sibling
-        // marker and loosened a list its content-column spelling renders
-        // tight (carve#2548).
-        blankBeforeInvisible = false
-        pendingSeparation = false
-        pushLine(lm.rest, { col: 0, rest: lm.rest, tabs: false })
+        pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
+        startPara()
         i++
         continue
       }

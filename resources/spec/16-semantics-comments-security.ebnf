@@ -372,6 +372,11 @@
                  A sibling marker is recognized before this retention rule;
                  it opens the next item rather than becoming a child of this
                  one. At the content column, a marker opens a sublist as usual.
+                 A retained marker strictly between the item's base and content
+                 columns is paragraph text, even when a comment closed the
+                 preceding paragraph. Retention never rebases that marker into
+                 a child opener. This applies to bullet, ordered, task and
+                 attributed markers after either comment form.
                - after a BLANK LINE, the item is already ended by the clause
                  above, so the branch is never reached at all.
 
