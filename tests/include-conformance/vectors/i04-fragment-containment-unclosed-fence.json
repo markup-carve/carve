@@ -11,7 +11,7 @@
     "child": "```js\nlet x = 1;"
   },
   "expected": {
-    "html": "<p>Before.</p>\n<pre><code class=\"language-js\">let x = 1;\n</code></pre>\n<p>After.</p>",
+    "html": "<p>Before.</p>\n<pre><code class=\"language-js\">let x = 1;</code></pre>\n<p>After.</p>",
     "fmt": "Before.\n\n{{ child }}\n\nAfter.\n",
     "warnings": [],
     "dependencies": [
