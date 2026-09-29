@@ -34,3 +34,13 @@
 2555: 0.1.7 - removes 16 resolved import-parity declarations and updates measured engine revisions. No clause, corpus row, or oracle answer changes; remaining gaps stay tracked in carve#2522.
 2559: 0.1.7 - removes 29 resolved AST ingest declarations, records 18 new corpus 517 differences, and updates measured revisions. No clause, corpus row, or oracle answer changes.
 2585: 0.1.7 - declares the four lint-parity and AST divergence rows the release gate found undeclared, and restamps the revisions the run measured. Measurement ledgers only: no clause, corpus row, oracle answer or golden moved, and each row leaves when the engine issue it names closes.
+
+2523: 0.1.7 - builds the cross-engine comparison harness for the public importer suites and corpus AST JSON (carve#2493). Gate machinery: no clause, corpus row or oracle answer moved.
+2539: 0.1.7 - re-measures the comment-span ingest ledger against the engines' current heads. The ledger records what the pinned engines do, not what the language says.
+2553: 0.1.7 - removes the comment-span ingest exceptions the engine fixes resolved. The ruling itself is the carve#2525 entry the section writes up; what remains stays tracked in carve#2550.
+2592: 0.1.7 - re-measures the ingest and importer comparison ledgers against the engines' current heads. The engine defects the remaining rows describe stay tracked in carve#2522.
+2596: 0.1.7 - declares the empty-payload ingest pairs the carve-rs fix exposed in the two engines behind it. Same ledger class the paths above already exclude.
+2601: 0.1.7 - drops the ingest rows the three engines converged on while the previous passes were being measured. No clause, corpus row or oracle answer moved.
+2609: 0.1.7 - drops two declarations describing divergences the engines no longer have. Part of the release gate tracked in carve#2498.
+2611: 0.1.7 - declares the ingest pairs the container-label corpus row brought, whose ruling the section cites under carve#2600. Ledger only.
+2617: 0.1.7 - removes the glued-fence lint exception the carve-js fix resolved. A parity declaration, not a rule.
