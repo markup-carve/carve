@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { classifyImports, compareIngestDocument, processFailure, missesTarget, fingerprint, htmlBytes, ingestCorpus, reconcileDifferences } from '../scripts/lib/import-comparison.mjs'
+import { classifyImports, compareIngestDocument, processFailure, missesTarget, fingerprint, htmlBytes, ingestCorpus, reconcileDifferences, validateInterpreters } from '../scripts/lib/import-comparison.mjs'
 
 const read = name => JSON.parse(readFileSync(new URL(`./import-comparison/${name}.json`, import.meta.url), 'utf8'))
 const answers = () => Object.fromEntries(['js', 'php', 'rust'].map(engine => [engine, { status: 0, source: '/x/\n', html: '<p><em>x</em></p>' }]))
@@ -41,6 +41,26 @@ test('comparison declarations reject new, changed, resolved and duplicate differ
   assert.throws(() => reconcileDifferences({}, { version: 1, differences: [row, row] }), /duplicate/)
   assert.throws(() => reconcileDifferences({}, { version: 1, differences: [{ ...row, issue: '' }] }), /issue/)
   assert.throws(() => reconcileDifferences({}, { version: 1, differences: [{ ...row, fingerprint: '*' }] }), /fingerprint/)
+})
+
+test('interpreter conditions retain debt only on the measured runtime', () => {
+  const observation = { expected: 'html5', actual: 'legacy' }
+  const row = { key: 'html', observation, fingerprint: fingerprint(observation), reason: 'Legacy HTML parser',
+    issue: 'https://github.com/markup-carve/carve/issues/2613', interpreters: { php: '8.3' } }
+  const ledger = { version: 1, differences: [row] }
+  assert.deepEqual(reconcileDifferences({ html: observation }, ledger, { php: '8.3.30' }), [])
+  for (const runtime of [{ php: '8.4.1' }, { php: '8.30.0' }, undefined]) {
+    assert.match(reconcileDifferences({ html: observation }, ledger, runtime)[0], /^INTERPRETER MISMATCH/)
+  }
+  assert.deepEqual(reconcileDifferences({ html: observation }, { version: 1, differences: [{ ...row, interpreters: { php: '8.3.6' } }] }, { php: '8.3.6-1~deb12u1' }), [])
+  for (const runtime of [undefined, {}, { js: '22.0.0', php: '' }]) assert.throws(() => validateInterpreters(runtime), /interpreter versions/)
+  assert.deepEqual(validateInterpreters({ js: '22.0.0', php: '8.5.0RC2' }), { js: '22.0.0', php: '8.5.0RC2' })
+  const failures = reconcileDifferences({}, ledger, { php: '8.4.1' })
+  assert.ok(failures.some(failure => failure.startsWith('INTERPRETER MISMATCH')))
+  assert.ok(failures.some(failure => failure.startsWith('STALE')))
+  for (const condition of [{}, [], { php: '*' }, { rust: '1' }, { php: 8.3 }]) {
+    assert.throws(() => reconcileDifferences({}, { version: 1, differences: [{ ...row, interpreters: condition }] }), /invalid interpreter/)
+  }
 })
 
 test('AST ingest discovers nested optional and converter corpora and refuses an empty population', () => {
