@@ -3606,7 +3606,13 @@ unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - ' ' - '\t' - newlin
    an imported utility class (`w-1/2`) are all bare values. *)
 (* A backslash escapes ASCII punctuation inside a quoted value (same
    `escaped_char` rule as inline text), so a value can contain a literal
-   quote: `"a\"b"` -> the value `a"b`. *)
+   quote: `"a\"b"` -> the value `a"b`.
+
+   THE SET IS THE WHOLE OF `ascii_punctuation`, not the closing quote alone:
+   `{k="a\}b"}` carries `a}b` and `{k="a\\b"}` carries `a\b`, in either quote
+   spelling. `link_title` is the slot that escapes its closing quote and nothing
+   else, and the two do not share a helper - reading this one through the title's
+   set left the backslash in the value (carve#2581). *)
 quoted_value = '"', { escaped_char | (character - '"' - '\' - newline) }, '"'
              | "'", { escaped_char | (character - "'" - '\' - newline) }, "'" ;
 (* A QUOTED VALUE STOPS AT THE NEWLINE -- NORMATIVE [CARVE-P4-006].

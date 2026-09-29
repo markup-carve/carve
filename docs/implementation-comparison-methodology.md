@@ -45,6 +45,8 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `523-a-link-title-crosses-a-soft-wrap-and-an-attribute-value-does-not`,
 `524-an-empty-code-payload-renders-no-characters`,
 `525-a-link-inside-a-span-s-label-keeps-its-destination`,
+`526-a-quoted-value-and-a-quoted-title-escape-different-sets`,
+`527-a-tab-does-not-open-the-title-slot`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
@@ -166,6 +168,16 @@ link-label controls alike, so no engine owes anything and no pinned row is
 declared. The defect
 [#2578](https://github.com/markup-carve/carve/issues/2578) reports was in this
 repo's own renderer.
+
+526's ten documents and 527's three were measured against carve-js
+`e5ff631b0`, carve-php `650e65499` and carve-rs `b4c4f5a08`, the same three
+default branches. All three reproduce all thirteen. On 526 they read the full
+`escaped_char` set in a quoted attribute value, which is what the production
+says and what the ohm grammar did not; on 527 they leave a tab-padded title
+closed, which the production and the ohm already said. The ohm's own note
+claimed the engines accepted that tab, and
+[#2581](https://github.com/markup-carve/carve/issues/2581) is where the
+measurement replaced the claim.
 
 The former case-by-case notes remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/a22f6a23f7913e44cb3461f3f608605660619032/docs/implementation-comparison-methodology.md).
