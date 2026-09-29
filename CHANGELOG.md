@@ -12,6 +12,8 @@ Releases before 0.1.6 are archived in
 
 ### Fixes
 
+- Release unmarked lines after code and raw fences indented past a quoted host's content column in the executable specification (#2554).
+
 - Keep nested marker-line comment ownership independent of the closer's column
   in the executable specification (carve#2526).
 - Correct executable-spec container ownership after block comments and fence

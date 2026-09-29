@@ -1789,12 +1789,9 @@ function hostAdvance(h, line, paraOpen) {
  * open? Answers before the ladder moves, because the payload's own markers open
  * nothing.
  *
- * Two things end the payload. A CLOSER, and its column is the HOST's content
- * column rather than the opener's own: measured in an item of content column 2,
- * a fence opened at column 5 closes on a pure run at 2 and not at 3, and one
- * opened at 2 does not close at 4. And the host ITSELF ending, which a non-blank
- * line below that column does. A blank is interior to the payload and ends
- * neither.
+ * A closer ends the payload at the host's content column or the opener's
+ * column. Intermediate and deeper runs stay payload. A nonblank line below
+ * the host's column ends the host and its fence; a blank ends neither.
  */
 function hostFenceStep(h, line) {
   if (!h.fence) return false
@@ -1805,24 +1802,20 @@ function hostFenceStep(h, line) {
   }
   const c = PURE_FENCE.exec(meas.rest)
   if (c && c[1][0] === h.fence.run[0] && c[1].length >= h.fence.run.length &&
-      meas.col === h.fence.host) h.fence = null
+      (meas.col === h.fence.host || meas.col === h.fence.column)) h.fence = null
   return true
 }
 
-// Does a fence open at this level on this line, given where the ladder stands?
-//
-// AT THE CONTENT COLUMN (SS24 C3), and at that column EXACTLY - the same column
-// its closer is written at. The host's own reader also opens an OVER-INDENTED
-// fence, but whether that one opens depends on the runs already in the body, which
-// is a property of the whole body and reading the body is the rescan carve#2509
-// ruled out. So an over-indented run is not taken as an opener here and keeps the
-// answer it had; what IS remembered is that it leaves a closer to come.
-function hostFenceOpener(h, inner) {
+// A host permits an opener at or past its content column. At the quote's own
+// column, the opener must stay at column zero. A shifted run that cannot open
+// under the current paragraph still leaves a possible closer to account for.
+function hostFenceOpener(h, inner, canOpen = () => true) {
   const column = h.columns.at(-1)
   if (h.unclaimed !== null && h.unclaimed.host > column) h.unclaimed = null
   const f = FENCE.exec(inner.rest)
   const opener = f && parseFenceInfo(f[2]) !== null ? f : null
   if (inner.col !== column) {
+    if (opener !== null && column > 0 && h.unclaimed === null && canOpen(opener)) return opener
     // AN OVER-INDENTED RUN INSIDE A CONTAINER DID OPEN SOMETHING. The host's
     // reader takes it (SS24 C3 reads "at or past"), and the run at the host's own
     // column below it is that fence's CLOSER. Untracked, that closer read as a
@@ -3501,10 +3494,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             const measured = indentCols(text)
             const c = PURE_FENCE.exec(measured.rest)
             if (!c) continue
-            // PER COLUMN AS WELL AS PER CHARACTER, and the column is the
-            // HOST's content column rather than the opener's own: a fence opened
-            // past that column still closes there and nowhere else (carve#2538).
-            // One bucket per column keeps the answer a single read.
+            // Index by column and character so each opener's lookahead is a
+            // single bucket read, including openers past the host's column.
             const key = `${c[1][0]}${measured.col}`
             const rows = chars.get(key) ?? { at: [], cursor: 0 }
             rows.at.push({ j, width: c[1].length })
@@ -3619,14 +3610,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const before = qNestedTable[depth] ?? false
           qNestedTable[depth] = tableRunStep(before, text)
           const { inner, blockStart } = hostAdvance(host, text, qNestedPara[depth] ?? false)
-          const f = hostFenceOpener(host, inner)
+          const f = hostFenceOpener(host, inner, (opener) => blockStart || !qNestedPara[depth] ||
+            closerFollows(idx, depth + 2, opener[1], inner.col))
           // SS25 FIRST: past the cap an opener DEGRADES to literal paragraph
           // text, so a fence recognized here would open a block the block reader
           // does not. The cap is the POST-STRIP one the branch below asks, moved
           // ahead of the fence rather than after it (raised by codex review).
           if (state.blockDepth + depth + 1 + (host.columns.length - 1) < MAX_NESTING_DEPTH && f &&
               (blockStart || !qNestedPara[depth] ||
-               closerFollows(idx, depth + 2, f[1], host.columns.at(-1)))) {
+               closerFollows(idx, depth + 2, f[1], inner.col))) {
             host.fence = { run: f[1], column: inner.col, host: host.columns.at(-1) }
             qNestedTable[depth] = false
             return settle(false, depth + 1)
@@ -3710,7 +3702,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           }
         }
         const { meas, inner: inner0, blockStart } = hostAdvance(qHost, l, qOpenPara)
-        const f = hostFenceOpener(qHost, inner0)
+        const f = hostFenceOpener(qHost, inner0, (opener) => blockStart || !qOpenPara ||
+          closerFollows(idx, 1, opener[1], inner0.col))
         // SS10 I4's own two questions, asked of the quote's own paragraph state.
         // This read whether the PREVIOUS line was blank, which admits neither a
         // fence under a heading, a break, a table or a closed fence - all block
@@ -3727,7 +3720,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const isOpener = !!(f &&
           state.blockDepth + (qHost.columns.length - 1) < MAX_NESTING_DEPTH &&
           (blockStart || !qOpenPara ||
-           closerFollows(idx, 1, f[1], qHost.columns.at(-1))))
+           closerFollows(idx, 1, f[1], inner0.col)))
         if (isOpener) qHost.fence = { run: f[1], column: inner0.col, host: qHost.columns.at(-1) }
         // PART 1 S4 makes the fold conditional on an OPEN PARAGRAPH, so every
         // block that leaves none clears this. A definition TERM is bounded like

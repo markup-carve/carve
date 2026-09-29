@@ -38,6 +38,7 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `516-a-heading-comment-preserves-code-span-content`,
 `517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose`,
 `518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator`,
+`519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
@@ -104,6 +105,10 @@ div label, and those two rows are declared in `resources/engine-pin-drift.txt`
 under [carve#2552](https://github.com/markup-carve/carve/issues/2552). Rust and
 PHP were not measured: this host's checkouts of both sit on branches another
 task holds, so neither could be built from its default branch.
+519's four documents were added after this snapshot. The pinned carve-js
+`c5df77f6` reproduces the paragraph control and retains the unmarked line inside
+the quote on the other three. `resources/engine-pin-drift.txt` records those
+measured differences under [#2554](https://github.com/markup-carve/carve/issues/2554).
 
 The former case-by-case notes remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/a22f6a23f7913e44cb3461f3f608605660619032/docs/implementation-comparison-methodology.md).

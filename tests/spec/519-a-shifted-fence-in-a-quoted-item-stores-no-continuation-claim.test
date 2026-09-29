@@ -1,0 +1,76 @@
+A shifted fence in a quoted item stores no continuation claim
+
+````
+> - a
+>
+>     ```
+>     x
+flush
+.
+<blockquote>
+  <ul>
+    <li>a
+      <pre><code>x
+</code></pre>
+    </li>
+  </ul>
+</blockquote>
+<p>flush</p>
+````
+
+```
+> - a
+>
+>     ~~~
+>     x
+z
+>     b
+>     ~~~
+.
+<blockquote>
+  <ul>
+    <li>a
+      <pre><code>x
+</code></pre>
+    </li>
+  </ul>
+</blockquote>
+<p>z</p>
+<blockquote><p>b
+~~~</p></blockquote>
+```
+
+````
+> > - a
+> >
+> >     ```=html
+> >     x
+flush
+.
+<blockquote>
+  <blockquote>
+    <ul>
+      <li>a
+        x
+      </li>
+    </ul>
+  </blockquote>
+</blockquote>
+<p>flush</p>
+````
+
+````
+> - a
+>     ```
+>     x
+flush
+.
+<blockquote>
+  <ul>
+    <li>a
+<code>
+x
+flush</code></li>
+  </ul>
+</blockquote>
+````

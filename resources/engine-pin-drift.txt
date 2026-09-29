@@ -66,3 +66,7 @@
 515-a-nested-marker-comment-keeps-its-own-ownership-4  carve#2526: the ordered nested marker comment closer retains the outer item below its column.
 518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-9  carve#2552: the pin reads PART 9 §21's separator in every host but a div label, where it keeps the comment.
 518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-10  carve#2552: the pin reads PART 9 §21's separator in every host but a div label, where it keeps the comment.
+
+519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim  carve#2554: the pinned build retains the unmarked line inside a quote after a shifted code or raw fence.
+519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-2  carve#2554: the pinned build retains the unmarked line inside a quote after a shifted code or raw fence.
+519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-3  carve#2554: the pinned build retains the unmarked line inside a quote after a shifted code or raw fence.
