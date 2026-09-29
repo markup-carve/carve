@@ -9,7 +9,6 @@ Releases before 0.1.6 are archived in
 [CHANGELOG-0.1.md](./CHANGELOG-0.1.md).
 
 ## [Unreleased]
-
 ### Changed (breaking for AST consumers)
 
 - Define `code_block.content` as literal payload text, preserving the final
@@ -18,6 +17,9 @@ Releases before 0.1.6 are archived in
   reaches EOF, and emit no payload newline for an empty fence (carve#2603).
 
 ### Fixes
+
+- Keep retained list markers below the item's content column as text after
+  comments. A comment no longer lets an under-indented marker open a child list.
 
 - Release unmarked lines after code and raw fences indented past a quoted host's content column in the executable specification (carve#2554).
 - Keep nested marker-line comment ownership independent of the closer's column

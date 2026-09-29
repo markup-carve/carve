@@ -9,9 +9,7 @@ A below-column marker after a comment, where no paragraph is open
 .
 <ul>
   <li>a
-    <ul>
-      <li>s</li>
-    </ul>
+    - s
   </li>
 </ul>
 ```
@@ -25,9 +23,7 @@ A below-column marker after a comment, where no paragraph is open
 .
 <ul>
   <li>a
-    <ol>
-      <li>o</li>
-    </ol>
+    1. o
   </li>
 </ul>
 ```

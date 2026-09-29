@@ -14045,18 +14045,9 @@ ways in one parse, with a paragraph open that ` y` would then have folded into.
 
 ## A below-column marker after a comment, where no paragraph is open
 
-§24 C3's below-column branch says a dedented line "folds in as lazy item text".
-That names an OPERATION, and lazy continuation continues an OPEN PARAGRAPH (§10
-I2). A comment ends the paragraph and does NOT end the item - C3's comment
-exception says both in the same breath - so after one there is nothing to fold
-into, and the branch has no answer for a case it does not notice it is in
-(markup-carve/carve#682).
-
-The line is then classified in the context that survives. The item is still
-open, so a MARKER sits at the item body's own column 0, where C4 Rule B opens a
-list. carve-js, carve-rs and carve-php all answer this way; the executable spec
-was the lone dissenter, because it read the comment fence's BODY as prose and
-believed a paragraph was open.
+A comment closes the paragraph. When the item retains the following line,
+its content column still sets the minimum indentation for a child list.
+A marker below that column starts paragraph text inside the retained item.
 
 ::: compare
 
@@ -14071,17 +14062,14 @@ believed a paragraph was open.
 ```html
 <ul>
   <li>a
-    <ul>
-      <li>s</li>
-    </ul>
+    - s
   </li>
 </ul>
 ```
 
 :::
 
-An ordered marker is the same row, and a separate case because the two marker
-shapes are recognized by different productions:
+Ordered markers follow the same column rule:
 
 ::: compare
 
@@ -14096,20 +14084,14 @@ shapes are recognized by different productions:
 ```html
 <ul>
   <li>a
-    <ol>
-      <li>o</li>
-    </ol>
+    1. o
   </li>
 </ul>
 ```
 
 :::
 
-A NON-marker line after the same comment fence is the other half of the clause:
-it stays in the item too, beginning the item's SECOND paragraph rather than
-continuing the first. ` # h` is not a heading below the content column, so it is
-that paragraph's text - and all four readers already agreed here, which is why
-only the marker shapes ever diverged:
+A heading-shaped line below the content column is also paragraph text:
 
 ::: compare
 
@@ -42371,12 +42353,10 @@ column already answered (carve#2548).
 
 ````html
 <ul>
-  <li>t
-    <ul>
-      <li>b</li>
-    </ul>
+  <li><p>t</p>
+    <p>- b</p>
   </li>
-  <li>s</li>
+  <li><p>s</p></li>
 </ul>
 ````
 

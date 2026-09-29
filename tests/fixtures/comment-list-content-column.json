@@ -1,0 +1,114 @@
+[
+  {
+    "source": "- intro\n%% c\n - tail\n",
+    "html": "<ul>\n  <li>intro\n    - tail\n  </li>\n</ul>"
+  },
+  {
+    "source": "- intro\n%% c\n  - tail\n",
+    "html": "<ul>\n  <li>intro\n    <ul>\n      <li>tail</li>\n    </ul>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- intro\n%% c\n 1. tail\n",
+    "html": "<ul>\n  <li>intro\n    1. tail\n  </li>\n</ul>"
+  },
+  {
+    "source": "- intro\n%% c\n  1. tail\n",
+    "html": "<ul>\n  <li>intro\n    <ol>\n      <li>tail</li>\n    </ol>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- intro\n%% c\n - [x] tail\n",
+    "html": "<ul>\n  <li>intro\n    - [x] tail\n  </li>\n</ul>"
+  },
+  {
+    "source": "- intro\n%% c\n  - [x] tail\n",
+    "html": "<ul>\n  <li>intro\n    <ul>\n      <li><input type=\"checkbox\" checked disabled aria-label=\"tail\"> tail</li>\n    </ul>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- intro\n%% c\n -{.y} tail\n",
+    "html": "<ul>\n  <li>intro\n    -{.y} tail\n  </li>\n</ul>"
+  },
+  {
+    "source": "- intro\n%% c\n  -{.y} tail\n",
+    "html": "<ul>\n  <li>intro\n    <ul>\n      <li class=\"y\">tail</li>\n    </ul>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- intro\n  %% c\n - tail\n",
+    "html": "<ul>\n  <li>intro\n    - tail\n  </li>\n</ul>"
+  },
+  {
+    "source": "- intro\n  %%%\n  hidden\n  %%%\n - tail\n",
+    "html": "<ul>\n  <li>intro\n    - tail\n  </li>\n</ul>"
+  },
+  {
+    "source": "1. intro\n%% c\n - tail\n",
+    "html": "<ol>\n  <li>intro\n    - tail\n  </li>\n</ol>"
+  },
+  {
+    "source": "1. intro\n%% c\n 1. tail\n",
+    "html": "<ol>\n  <li>intro\n    1. tail\n  </li>\n</ol>"
+  },
+  {
+    "source": "10. intro\n%% c\n - tail\n",
+    "html": "<ol start=\"10\">\n  <li>intro\n    - tail\n  </li>\n</ol>"
+  },
+  {
+    "source": "10. intro\n    %% c\n - tail\n",
+    "html": "<ol start=\"10\">\n  <li>intro\n    - tail\n  </li>\n</ol>"
+  },
+  {
+    "source": "-{.x} intro\n%% c\n - tail\n",
+    "html": "<ul>\n  <li class=\"x\">intro\n    - tail\n  </li>\n</ul>"
+  },
+  {
+    "source": "- [x] intro\n%% c\n - tail\n",
+    "html": "<ul>\n  <li><input type=\"checkbox\" checked disabled aria-label=\"intro\"> intro\n    - tail\n  </li>\n</ul>"
+  },
+  {
+    "source": "- - intro\n%% c\n - tail\n",
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>intro\n        - tail\n      </li>\n    </ul>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- - intro\n%% c\n 1. tail\n",
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>intro\n        1. tail\n      </li>\n    </ul>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- - intro\n%% c\n - [x] tail\n",
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>intro\n        - [x] tail\n      </li>\n    </ul>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- - intro\n%% c\n -{.y} tail\n",
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>intro\n        -{.y} tail\n      </li>\n    </ul>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- intro\n%% c\n- tail\n",
+    "html": "<ul>\n  <li>intro</li>\n  <li>tail</li>\n</ul>"
+  },
+  {
+    "source": "- intro\n%% c\n - tail\n - more\n  continuation\n",
+    "html": "<ul>\n  <li>intro\n    - tail\n- more\ncontinuation\n  </li>\n</ul>"
+  },
+  {
+    "source": "- t\n\n  %% c\n - b\n- s\n",
+    "html": "<ul>\n  <li><p>t</p>\n    <p>- b</p>\n  </li>\n  <li><p>s</p></li>\n</ul>"
+  },
+  {
+    "source": "- intro\n%% c\n\n - tail\n",
+    "html": "<ul>\n  <li>intro</li>\n</ul>\n<ul>\n  <li>tail</li>\n</ul>"
+  },
+  {
+    "source": "> - intro\n> %% c\n>  - tail\n",
+    "html": "<blockquote>\n  <ul>\n    <li>intro\n      - tail\n    </li>\n  </ul>\n</blockquote>"
+  },
+  {
+    "source": "> - intro\n> %% c\n>  1. tail\n",
+    "html": "<blockquote>\n  <ul>\n    <li>intro\n      1. tail\n    </li>\n  </ul>\n</blockquote>"
+  },
+  {
+    "source": "> - intro\n>   %% c\n>  - tail\n",
+    "html": "<blockquote>\n  <ul>\n    <li>intro\n      - tail\n    </li>\n  </ul>\n</blockquote>"
+  },
+  {
+    "source": "> - intro\n>   %%%\n>   hidden\n>   %%%\n>  - tail\n",
+    "html": "<blockquote>\n  <ul>\n    <li>intro\n      - tail\n    </li>\n  </ul>\n</blockquote>"
+  }
+]
