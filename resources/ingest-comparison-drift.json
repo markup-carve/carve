@@ -2,238 +2,230 @@
   "version": 1,
   "measured": {
     "date": "2026-09-29",
-    "spec": "3aa041b3d57d8092524e992cecaf937d26bebc1b",
-    "js": "8ea3888523b9faa155db73c06c273a2493938157",
-    "php": "a7ffb1314602ea5131d33cb1434ed7767812c380",
-    "rust": "fa871c806fee629da09eabf3f8342fec75dc9167",
+    "spec": "89157529b36c6ae9003ca4123fba331ca9398a32",
+    "js": "e24e38e99ad46ce959d44237f8b338f1d05e92d8",
+    "php": "9b938e8a3512dd31ac5d75ae843aad957dc2f388",
+    "rust": "f985ea4d6f65a868f8a2a9e3e8cc7e4f11738a62",
     "engineMain": {
-      "js": "d54f334fc33ec286c0f5a2687c354e1e95bc418f",
-      "php": "3da86f0ef710b3da75469035999464886e3a6eda",
-      "rust": "9ab8b38b32559dfe7a6783d10a9dd15542b2939a"
+      "js": "991f8e017601dbec14ee6499330c2bb9f79bcbe6",
+      "php": "0175e15e3c1a11cb213ccb51998d529dd654660c",
+      "rust": "9118bb8aed59b5e7b589dca19a84d5e9d6199a6f"
     },
     "coverage": {
       "full": {
-        "documents": 2118,
-        "pairs": 19062
-      },
-      "additional": {
-        "spec": "0a068ca04008d04e59e181e55455e65bd45f2e57",
-        "documents": 5,
-        "pairs": 45,
-        "engines": {
-          "js": {
-            "head": "2979bd3b41ea810990b3ee6a4fb7a8948ccfee72",
-            "trackedChanges": false
-          },
-          "php": {
-            "head": "bf2ba8c3b01bb40d42359e77b7367f7658d3eb31",
-            "trackedChanges": false
-          },
-          "rust": {
-            "head": "fa871c806fee629da09eabf3f8342fec75dc9167",
-            "trackedChanges": false
-          }
-        }
+        "documents": 2190,
+        "pairs": 19710
       }
     }
   },
   "differences": [
     {
-      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-2.crv/js->rust",
-      "issue": "https://github.com/markup-carve/carve/issues/2561",
-      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
-      "fingerprint": "f060a966fe5671e77f1c0b1d3b5119323e5018edce47b16aab249a5825123a65",
+      "key": "tests/corpus/518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-10.crv/rust->js",
+      "reason": "carve-rs keeps the trailing comment in the admonition label it writes to JSON, so every other reader renders text carve-rs's own renderer drops.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2163",
+      "fingerprint": "e620ec3ea9edc1a1f9acf8c9fd439ddad279e2cf752eed3166f9b724743f0707",
       "observation": {
-        "expected": "<ol start=\"10\">\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ol>",
+        "expected": "<aside class=\"admonition note\" aria-label=\"Note\">\n  <p class=\"div-label\"></p>\n  <p>body</p>\n</aside>",
         "status": 0,
-        "actual": "<ol start=\"10\">\n  <li>t\n    z\n  </li>\n</ol>"
+        "actual": "<aside class=\"admonition note\" aria-label=\"Note\">\n  <p class=\"div-label\">%% hidden</p>\n  <p>body</p>\n</aside>"
       }
     },
     {
-      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-2.crv/php->rust",
-      "issue": "https://github.com/markup-carve/carve/issues/2561",
-      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
-      "fingerprint": "f060a966fe5671e77f1c0b1d3b5119323e5018edce47b16aab249a5825123a65",
+      "key": "tests/corpus/518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-10.crv/rust->php",
+      "reason": "carve-rs keeps the trailing comment in the admonition label it writes to JSON, so every other reader renders text carve-rs's own renderer drops.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2163",
+      "fingerprint": "e620ec3ea9edc1a1f9acf8c9fd439ddad279e2cf752eed3166f9b724743f0707",
       "observation": {
-        "expected": "<ol start=\"10\">\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ol>",
+        "expected": "<aside class=\"admonition note\" aria-label=\"Note\">\n  <p class=\"div-label\"></p>\n  <p>body</p>\n</aside>",
         "status": 0,
-        "actual": "<ol start=\"10\">\n  <li>t\n    z\n  </li>\n</ol>"
+        "actual": "<aside class=\"admonition note\" aria-label=\"Note\">\n  <p class=\"div-label\">%% hidden</p>\n  <p>body</p>\n</aside>"
       }
     },
     {
-      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-2.crv/rust->js",
-      "issue": "https://github.com/markup-carve/carve/issues/2561",
-      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
-      "fingerprint": "9ab4bddfb7edbdb757a49ab2c81f33155a654d18526068d27eccae9c70b11172",
+      "key": "tests/corpus/518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-9.crv/rust->js",
+      "reason": "carve-rs keeps the trailing comment in the admonition label it writes to JSON, so every other reader renders text carve-rs's own renderer drops.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2163",
+      "fingerprint": "19a53dc20d093fe8de62472b1f161f64a2cdd97cfd7a6ab7c6c7d10dc0b21135",
       "observation": {
-        "expected": "<ol start=\"10\">\n  <li>t\n    z\n  </li>\n</ol>",
+        "expected": "<aside class=\"admonition note\" aria-label=\"Note\">\n  <p class=\"div-label\">a</p>\n  <p>body</p>\n</aside>",
         "status": 0,
-        "actual": "<ol start=\"10\">\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ol>"
+        "actual": "<aside class=\"admonition note\" aria-label=\"Note\">\n  <p class=\"div-label\">a\t%% hidden</p>\n  <p>body</p>\n</aside>"
       }
     },
     {
-      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-2.crv/rust->php",
-      "issue": "https://github.com/markup-carve/carve/issues/2561",
-      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
-      "fingerprint": "9ab4bddfb7edbdb757a49ab2c81f33155a654d18526068d27eccae9c70b11172",
+      "key": "tests/corpus/518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-9.crv/rust->php",
+      "reason": "carve-rs keeps the trailing comment in the admonition label it writes to JSON, so every other reader renders text carve-rs's own renderer drops.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2163",
+      "fingerprint": "19a53dc20d093fe8de62472b1f161f64a2cdd97cfd7a6ab7c6c7d10dc0b21135",
       "observation": {
-        "expected": "<ol start=\"10\">\n  <li>t\n    z\n  </li>\n</ol>",
+        "expected": "<aside class=\"admonition note\" aria-label=\"Note\">\n  <p class=\"div-label\">a</p>\n  <p>body</p>\n</aside>",
         "status": 0,
-        "actual": "<ol start=\"10\">\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ol>"
+        "actual": "<aside class=\"admonition note\" aria-label=\"Note\">\n  <p class=\"div-label\">a\t%% hidden</p>\n  <p>body</p>\n</aside>"
       }
     },
     {
-      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-4.crv/js->rust",
-      "issue": "https://github.com/markup-carve/carve/issues/2561",
-      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
-      "fingerprint": "eb12ca5000ccccb5c650c66a18a2ffc925cec26d6eb6a3d9bf394a6248bd60fe",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-2.crv/js->php",
+      "reason": "carve-js reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2350",
+      "fingerprint": "64470e8d7c7a580cdd982e12ba21690536b0b7b1026bccada56130dac96d1044",
       "observation": {
-        "expected": "<ul>\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ul>",
+        "expected": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\n</code></pre>\n    </li>\n  </ul>\n</blockquote>\n<p>z</p>\n<blockquote><p>b\n~~~</p></blockquote>",
         "status": 0,
-        "actual": "<ul>\n  <li>t\n    z\n  </li>\n</ul>"
+        "actual": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\nz\nb\n</code></pre>\n    </li>\n  </ul>\n</blockquote>"
       }
     },
     {
-      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-4.crv/php->rust",
-      "issue": "https://github.com/markup-carve/carve/issues/2561",
-      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
-      "fingerprint": "eb12ca5000ccccb5c650c66a18a2ffc925cec26d6eb6a3d9bf394a6248bd60fe",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-2.crv/php->js",
+      "reason": "carve-js reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2350",
+      "fingerprint": "8814ea6155fa5d1ab27b352e145b1b9a03b213cbb1a015daa1dc95b21161c365",
       "observation": {
-        "expected": "<ul>\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ul>",
+        "expected": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\nz\nb\n</code></pre>\n    </li>\n  </ul>\n</blockquote>",
         "status": 0,
-        "actual": "<ul>\n  <li>t\n    z\n  </li>\n</ul>"
+        "actual": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\n</code></pre>\n    </li>\n  </ul>\n</blockquote>\n<p>z</p>\n<blockquote><p>b\n~~~</p></blockquote>"
       }
     },
     {
-      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-4.crv/rust->js",
-      "issue": "https://github.com/markup-carve/carve/issues/2561",
-      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
-      "fingerprint": "41c161c2ba1cf9823947e327281894eba11bd42057fe3e894a996f987d9e4f47",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-2.crv/php->rust",
+      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2170",
+      "fingerprint": "8814ea6155fa5d1ab27b352e145b1b9a03b213cbb1a015daa1dc95b21161c365",
       "observation": {
-        "expected": "<ul>\n  <li>t\n    z\n  </li>\n</ul>",
+        "expected": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\nz\nb\n</code></pre>\n    </li>\n  </ul>\n</blockquote>",
         "status": 0,
-        "actual": "<ul>\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ul>"
+        "actual": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\n</code></pre>\n    </li>\n  </ul>\n</blockquote>\n<p>z</p>\n<blockquote><p>b\n~~~</p></blockquote>"
       }
     },
     {
-      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-4.crv/rust->php",
-      "issue": "https://github.com/markup-carve/carve/issues/2561",
-      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
-      "fingerprint": "41c161c2ba1cf9823947e327281894eba11bd42057fe3e894a996f987d9e4f47",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-2.crv/rust->php",
+      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2170",
+      "fingerprint": "64470e8d7c7a580cdd982e12ba21690536b0b7b1026bccada56130dac96d1044",
       "observation": {
-        "expected": "<ul>\n  <li>t\n    z\n  </li>\n</ul>",
+        "expected": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\n</code></pre>\n    </li>\n  </ul>\n</blockquote>\n<p>z</p>\n<blockquote><p>b\n~~~</p></blockquote>",
         "status": 0,
-        "actual": "<ul>\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ul>"
+        "actual": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\nz\nb\n</code></pre>\n    </li>\n  </ul>\n</blockquote>"
       }
     },
     {
-      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-5.crv/js->php",
-      "issue": "https://github.com/markup-carve/carve/issues/2561",
-      "reason": "The engines disagree on list tightness and ownership after an invisible line; PHP splits the document into three lists.",
-      "fingerprint": "38103ec1ed5d8eb8c096c681d518978c2a3c1020993fb9f09cc6723842ad1810",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-3.crv/js->php",
+      "reason": "carve-js reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2350",
+      "fingerprint": "7de34485998f3fee77fd7f7be23fb7447d823f19a4185e07b965d995e4911207",
       "observation": {
-        "expected": "<ul>\n  <li>t</li>\n</ul>\n<ul>\n  <li>b</li>\n</ul>\n<ul>\n  <li>s</li>\n</ul>",
+        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>a\n        x\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>\n<p>flush</p>",
         "status": 0,
-        "actual": "<ul>\n  <li><p>t</p>\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n  <li><p>s</p></li>\n</ul>"
+        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>a\n        x\nflush\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>"
       }
     },
     {
-      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-5.crv/js->rust",
-      "issue": "https://github.com/markup-carve/carve/issues/2561",
-      "reason": "The engines disagree on list tightness and ownership after an invisible line; PHP splits the document into three lists.",
-      "fingerprint": "2fdafa39138c2949bca236e969100fd25eddb877129b9c6ad0f401bd1b2dbdd1",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-3.crv/php->js",
+      "reason": "carve-js reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2350",
+      "fingerprint": "0ea206f7b0680500506f2096165ee5468daf0def9451b6b65a11e7a96355b751",
       "observation": {
-        "expected": "<ul>\n  <li>t\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n  <li>s</li>\n</ul>",
+        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>a\n        x\nflush\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>",
         "status": 0,
-        "actual": "<ul>\n  <li><p>t</p>\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n  <li><p>s</p></li>\n</ul>"
+        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>a\n        x\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>\n<p>flush</p>"
       }
     },
     {
-      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-5.crv/php->js",
-      "issue": "https://github.com/markup-carve/carve/issues/2561",
-      "reason": "The engines disagree on list tightness and ownership after an invisible line; PHP splits the document into three lists.",
-      "fingerprint": "b87ee3feb472bfc7640495a04039515d886dab55fd4b17a4e26a439081fc5a7b",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-3.crv/php->rust",
+      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2170",
+      "fingerprint": "0ea206f7b0680500506f2096165ee5468daf0def9451b6b65a11e7a96355b751",
       "observation": {
-        "expected": "<ul>\n  <li><p>t</p>\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n  <li><p>s</p></li>\n</ul>",
+        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>a\n        x\nflush\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>",
         "status": 0,
-        "actual": "<ul>\n  <li>t</li>\n</ul>\n<ul>\n  <li>b</li>\n</ul>\n<ul>\n  <li>s</li>\n</ul>"
+        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>a\n        x\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>\n<p>flush</p>"
       }
     },
     {
-      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-5.crv/php->rust",
-      "issue": "https://github.com/markup-carve/carve/issues/2561",
-      "reason": "The engines disagree on list tightness and ownership after an invisible line; PHP splits the document into three lists.",
-      "fingerprint": "3e5d09278c9f85119c2bc3287d45695af88c72a1d04d4e778a24329751903fb6",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim-3.crv/rust->php",
+      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2170",
+      "fingerprint": "7de34485998f3fee77fd7f7be23fb7447d823f19a4185e07b965d995e4911207",
       "observation": {
-        "expected": "<ul>\n  <li>t\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n  <li>s</li>\n</ul>",
+        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>a\n        x\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>\n<p>flush</p>",
         "status": 0,
-        "actual": "<ul>\n  <li>t</li>\n</ul>\n<ul>\n  <li>b</li>\n</ul>\n<ul>\n  <li>s</li>\n</ul>"
+        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>a\n        x\nflush\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>"
       }
     },
     {
-      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-5.crv/rust->js",
-      "issue": "https://github.com/markup-carve/carve/issues/2561",
-      "reason": "The engines disagree on list tightness and ownership after an invisible line; PHP splits the document into three lists.",
-      "fingerprint": "f21618b256e16d0876d995abb7dee32b5a29d9ddee05eaec321c002b51589924",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim.crv/js->php",
+      "reason": "carve-js reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2350",
+      "fingerprint": "d2d59b30b291c505b37937d4eb55dcb0e8b4ac77dcfec13d34237cd6d5c2ddfb",
       "observation": {
-        "expected": "<ul>\n  <li><p>t</p>\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n  <li><p>s</p></li>\n</ul>",
+        "expected": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\n</code></pre>\n    </li>\n  </ul>\n</blockquote>\n<p>flush</p>",
         "status": 0,
-        "actual": "<ul>\n  <li>t\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n  <li>s</li>\n</ul>"
+        "actual": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\nflush\n</code></pre>\n    </li>\n  </ul>\n</blockquote>"
       }
     },
     {
-      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-5.crv/rust->php",
-      "issue": "https://github.com/markup-carve/carve/issues/2561",
-      "reason": "The engines disagree on list tightness and ownership after an invisible line; PHP splits the document into three lists.",
-      "fingerprint": "4032b063f44a6508b2a2ac01cf11857dfca0d63562c4857a6aaf1d97a21f352e",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim.crv/php->js",
+      "reason": "carve-js reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2350",
+      "fingerprint": "46fc61ef2cb4ad3f11036e467922f4fc064ff3181ac298da057e1348ae72ee77",
       "observation": {
-        "expected": "<ul>\n  <li>t</li>\n</ul>\n<ul>\n  <li>b</li>\n</ul>\n<ul>\n  <li>s</li>\n</ul>",
+        "expected": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\nflush\n</code></pre>\n    </li>\n  </ul>\n</blockquote>",
         "status": 0,
-        "actual": "<ul>\n  <li>t\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n  <li>s</li>\n</ul>"
+        "actual": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\n</code></pre>\n    </li>\n  </ul>\n</blockquote>\n<p>flush</p>"
       }
     },
     {
-      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose.crv/js->rust",
-      "issue": "https://github.com/markup-carve/carve/issues/2561",
-      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
-      "fingerprint": "eb12ca5000ccccb5c650c66a18a2ffc925cec26d6eb6a3d9bf394a6248bd60fe",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim.crv/php->rust",
+      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2170",
+      "fingerprint": "46fc61ef2cb4ad3f11036e467922f4fc064ff3181ac298da057e1348ae72ee77",
       "observation": {
-        "expected": "<ul>\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ul>",
+        "expected": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\nflush\n</code></pre>\n    </li>\n  </ul>\n</blockquote>",
         "status": 0,
-        "actual": "<ul>\n  <li>t\n    z\n  </li>\n</ul>"
+        "actual": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\n</code></pre>\n    </li>\n  </ul>\n</blockquote>\n<p>flush</p>"
       }
     },
     {
-      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose.crv/php->rust",
-      "issue": "https://github.com/markup-carve/carve/issues/2561",
-      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
-      "fingerprint": "eb12ca5000ccccb5c650c66a18a2ffc925cec26d6eb6a3d9bf394a6248bd60fe",
+      "key": "tests/corpus/519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim.crv/rust->php",
+      "reason": "carve-rs reads the flush line into the fenced block the quoted item holds; carve-php places it at document level with the corpus golden.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2170",
+      "fingerprint": "d2d59b30b291c505b37937d4eb55dcb0e8b4ac77dcfec13d34237cd6d5c2ddfb",
       "observation": {
-        "expected": "<ul>\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ul>",
+        "expected": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\n</code></pre>\n    </li>\n  </ul>\n</blockquote>\n<p>flush</p>",
         "status": 0,
-        "actual": "<ul>\n  <li>t\n    z\n  </li>\n</ul>"
+        "actual": "<blockquote>\n  <ul>\n    <li>a\n      <pre><code>x\nflush\n</code></pre>\n    </li>\n  </ul>\n</blockquote>"
       }
     },
     {
-      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose.crv/rust->js",
-      "issue": "https://github.com/markup-carve/carve/issues/2561",
-      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
-      "fingerprint": "41c161c2ba1cf9823947e327281894eba11bd42057fe3e894a996f987d9e4f47",
+      "key": "tests/corpus/524-an-empty-code-payload-renders-no-characters.crv/js->php",
+      "reason": "carve-php's --from-json writes a newline into an empty code payload its own parser renders as nothing.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/2726",
+      "fingerprint": "364a8fd5f203d767e60a5e70192580f8237d7814977ce39299efd964358dc945",
       "observation": {
-        "expected": "<ul>\n  <li>t\n    z\n  </li>\n</ul>",
+        "expected": "<pre><code></code></pre>",
         "status": 0,
-        "actual": "<ul>\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ul>"
+        "actual": "<pre><code>\n</code></pre>"
       }
     },
     {
-      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose.crv/rust->php",
-      "issue": "https://github.com/markup-carve/carve/issues/2561",
-      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
-      "fingerprint": "41c161c2ba1cf9823947e327281894eba11bd42057fe3e894a996f987d9e4f47",
+      "key": "tests/corpus/524-an-empty-code-payload-renders-no-characters.crv/php->php",
+      "reason": "carve-php's --from-json writes a newline into an empty code payload its own parser renders as nothing.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/2726",
+      "fingerprint": "364a8fd5f203d767e60a5e70192580f8237d7814977ce39299efd964358dc945",
       "observation": {
-        "expected": "<ul>\n  <li>t\n    z\n  </li>\n</ul>",
+        "expected": "<pre><code></code></pre>",
         "status": 0,
-        "actual": "<ul>\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ul>"
+        "actual": "<pre><code>\n</code></pre>"
+      }
+    },
+    {
+      "key": "tests/corpus/524-an-empty-code-payload-renders-no-characters.crv/rust->php",
+      "reason": "carve-php's --from-json writes a newline into an empty code payload its own parser renders as nothing.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/2726",
+      "fingerprint": "364a8fd5f203d767e60a5e70192580f8237d7814977ce39299efd964358dc945",
+      "observation": {
+        "expected": "<pre><code></code></pre>",
+        "status": 0,
+        "actual": "<pre><code>\n</code></pre>"
       }
     }
   ]
