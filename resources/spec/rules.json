@@ -179,6 +179,12 @@
       "scope": "parsing"
     },
     {
+      "id": "CARVE-P2-029",
+      "part": "2",
+      "title": "AN IMPORTER DROPS INFO-STRING TEXT THAT IS NOT A LANGUAGE",
+      "scope": "imports-security-extensions"
+    },
+    {
       "id": "CARVE-P2-006",
       "part": "2",
       "title": "COLUMN-EXACT DELIMITERS",
