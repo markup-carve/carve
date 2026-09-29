@@ -134,10 +134,19 @@ const shippedDeclaration = () =>
  * all three engines moved, at carve-js 31dcaaaf9, carve-rs e73e26003 and
  * carve-php 650e65499: both rows and both counts unchanged. The ledger's header
  * says which of the two is an engine defect and which is an open spec question.
+ *
+ * EMPTY AGAIN since 2026-09-29, later the same day. The one row left,
+ * `admonition.label`, was a carve-rs defect (markup-carve/carve-rs#2163, now
+ * closed). AST conformance run 36547384205 reports it FIXED over 2113 documents
+ * plus 3 synthetic samples, at carve-js db48137e8, carve-rs d8e95bdef and
+ * carve-php 4dffa3c52:
+ *
+ *   THREE-WAY VALUE COMPARISON does not match resources/ast-value-divergence.txt:
+ *     FIXED      admonition.label no longer diverges - delete its line
+ *
+ * Run 36552218597, on the next head, fails the same step again.
  */
-const LAST_MEASURED = new Map([
-  ['admonition.label', 2],
-])
+const LAST_MEASURED = new Map()
 
 /** A measurement of `count` distinct documents - the reconciler counts them. */
 const documents = (count) =>
