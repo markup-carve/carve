@@ -119,7 +119,6 @@ test('the grammar has no orphan production that the ledger does not declare', ()
  */
 const CLOSING_SPELLINGS = {
   at: ['a @ b', 'inlines'],
-  sqEsc: ["{title='a\\'b'}", 'attrs'],
   delimRun: ['/*a // b*/', 'inlines'],
   dRun: ['/*a // b*/', 'inlines'],
 }

@@ -1,0 +1,62 @@
+A quoted value and a quoted title escape different sets
+
+```
+[x]{k="a\}b"}
+.
+<p><span k="a}b">x</span></p>
+```
+
+```
+[x]{k='a\}b'}
+.
+<p><span k="a}b">x</span></p>
+```
+
+```
+[x]{k="a\\b"}
+.
+<p><span k="a\b">x</span></p>
+```
+
+```
+[x]{k='a\\b'}
+.
+<p><span k="a\b">x</span></p>
+```
+
+```
+[x]{k="a\'b"}
+.
+<p><span k="a&apos;b">x</span></p>
+```
+
+```
+[x]{title="a\|b"}
+.
+<p><span title="a|b">x</span></p>
+```
+
+```
+{k="a\}b"}
+p
+.
+<p k="a}b">p</p>
+```
+
+```
+[a](/u 't\'u')
+.
+<p><a href="/u" title="t&apos;u">a</a></p>
+```
+
+```
+[a](/u "t\"u")
+.
+<p><a href="/u" title="t&quot;u">a</a></p>
+```
+
+```
+![a](/i 't\'u')
+.
+<img src="/i" alt="a" title="t&apos;u">
+```

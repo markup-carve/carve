@@ -73,10 +73,15 @@ test('the ohm grammar forks the two slots and keeps the newline on one side', ()
   assert.match(ohmRule('qChar'), /~newline/)
   assert.match(ohmRule('sqChar'), /~newline/)
 
-  // The escape is shared deliberately - only the newline forks - so a title
-  // and an attribute value still read `\"` and `\'` the same way.
-  assert.match(ohmRule('titleQChar'), /^qEsc \|/)
-  assert.match(ohmRule('titleSqChar'), /^sqEsc \|/)
+  // The ESCAPE forks too, since carve#2581: `link_title` spells its escape as
+  // the closing quote alone and `quoted_value` takes the whole `escaped_char`
+  // set, so the title pair must not point back at `qEsc`/`sqEsc`.
+  assert.match(ohmRule('titleQChar'), /^titleQEsc \|/)
+  assert.match(ohmRule('titleSqChar'), /^titleSqEsc \|/)
+  assert.equal(ohmRule('titleQEsc'), '"\\\\" "\\""')
+  assert.equal(ohmRule('titleSqEsc'), '"\\\\" "\'"')
+  assert.equal(ohmRule('qEsc'), '"\\\\" punctChar')
+  assert.equal(ohmRule('sqEsc'), '"\\\\" punctChar')
 })
 
 // Every row the corpus pins for this rule, read back through the oracle AND
@@ -102,8 +107,8 @@ for (const [name, src, want] of CASES) {
 
 test('putting the newline back into the title class stops the match', () => {
   const restored = ohmSource
-    .replace(/^(\s*titleQChar\s*=\s*qEsc \| \(~"\\""\s*)(any\))$/m, '$1~newline $2')
-    .replace(/^(\s*titleSqChar\s*=\s*sqEsc \| \(~"'"\s*)(any\))$/m, '$1~newline $2')
+    .replace(/^(\s*titleQChar\s*=\s*titleQEsc \| \(~"\\""\s*)(any\))$/m, '$1~newline $2')
+    .replace(/^(\s*titleSqChar\s*=\s*titleSqEsc \| \(~"'"\s*)(any\))$/m, '$1~newline $2')
   assert.notEqual(restored, ohmSource, 'the mutation matched nothing - this control is dead')
 
   const mutated = ohm.grammar(restored)

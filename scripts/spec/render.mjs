@@ -94,6 +94,21 @@ const codeInner = (code) => {
   return n.ctorName === 'codeClosed' ? n.child(0) : n
 }
 
+/*
+ * The text of a `quoted_value` (PART 4), shared by both `parseAttrs`
+ * operations so the two cannot answer differently.
+ *
+ * `escaped_char` is a backslash plus ASCII PUNCTUATION, and a backslash before
+ * anything else is an ordinary character. Both readers spelled this as "strip a
+ * leading backslash from every character node", which is two errors that cancel
+ * only on the shapes the corpus happens to hold: `{k='a\b'}` lost the backslash
+ * the production keeps, and `{k="a\}b"}` kept the one the production resolves.
+ * The grammar carries the other half - `qEsc`/`sqEsc` take the whole escape as
+ * one node - so this sees `\}` and not `\` (carve#2581).
+ */
+const quotedText = (chars) =>
+  chars.children.map((c) => c.sourceString.replace(/^\\(?=[!-/:-@[-`{-~])/, '')).join('')
+
 // attribute block -> ordered list of [kind, name, value]
 function attrsOf(node) {
   if (node.numChildren === 0) return []
@@ -141,7 +156,7 @@ const attrSem = g.createSemantics().addOperation('parseAttrs', {
     return v.parseAttrs()
   },
   quoted(_o, chars, _c) {
-    return chars.children.map((c) => c.sourceString.replace(/^\\/, '')).join('')
+    return quotedText(chars)
   },
   // The grammar has allowed `attrVal = quoted | squoted | bareVal` all along,
   // but no marker attribute ever reached here with a single-quoted value: the
@@ -150,7 +165,7 @@ const attrSem = g.createSemantics().addOperation('parseAttrs', {
   // missingSemanticAction rather than a wrong answer, which is the good
   // failure mode - but it still has to exist.
   squoted(_o, chars, _c) {
-    return chars.children.map((c) => c.sourceString.replace(/^\\/, '')).join('')
+    return quotedText(chars)
   },
   bareVal(chars) {
     return chars.sourceString
@@ -939,16 +954,10 @@ sem.addOperation('parseAttrs', {
     return v.parseAttrs()
   },
   quoted(_o, chars, _c) {
-    return chars.children.map((c) => c.parseAttrs()).join('')
+    return quotedText(chars)
   },
   squoted(_o, chars, _c) {
-    return chars.children.map((c) => c.sourceString.replace(/^\\/, '')).join('')
-  },
-  qChar(c) {
-    return c.parseAttrs()
-  },
-  qEsc(_bs, q) {
-    return '"'
+    return quotedText(chars)
   },
   bareVal(chars) {
     return chars.sourceString

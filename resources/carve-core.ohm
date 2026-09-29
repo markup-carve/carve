@@ -461,10 +461,13 @@ CarveCore {
   // two files in `resources/` agree again. `destChar` already
   // excludes both space and tab, so the destination still ends at either.
   //
-  // The three engines accept a tab here and now diverge from the production;
-  // that is reported upstream rather than encoded here. No corpus document
-  // carries a tab in this slot, so narrowing it moves no golden (measured:
-  // core:check stays 675/675).
+  // THE ENGINES AGREE NOW. This said they accept a tab here and diverge from
+  // the production, which was true when it was written and is not any more:
+  // carve-js e5ff631b0, carve-php 650e65499 and carve-rs b4c4f5a08 each leave
+  // the destination closed and render the line as prose, the same as this
+  // grammar and the production. Corpus 527 pins all three documents, the two
+  // tab spellings and the single-space control, so the claim is measured
+  // rather than recalled (carve#2581).
   //
   // CARDINALITY IS EXACTLY ONE SINCE carve#912. This was `titleSp+`, a run,
   // and it carried a note saying the run had always been the looser of the two
@@ -490,15 +493,25 @@ CarveCore {
   // title declined here and fell back to literal text, while carve-js,
   // carve-php and carve-rs all read it.
   titleQuoted  = "\"" titleQChar* "\""
-  titleQChar   = qEsc | (~"\"" any)
+  titleQChar   = titleQEsc | (~"\"" any)
+  titleQEsc    = "\\" "\""
   titleSquoted = "'" titleSqChar* "'"
-  titleSqChar  = sqEsc | (~"'" any)
+  titleSqChar  = titleSqEsc | (~"'" any)
+  titleSqEsc   = "\\" "'"
+  // THE ESCAPE SET FORKS TOO (carve#2581). `link_title` spells its escape
+  // `('\', '"')` - the closing quote and nothing else - while `quoted_value`
+  // admits the full `escaped_char`, so a backslash before any ASCII
+  // punctuation is that character in an attribute value and is itself in a
+  // title. The two were spelled through one `qEsc`/`sqEsc` pair, and the
+  // title's narrower set decided the value slot: `{k="a\}b"}` read `a\}b`
+  // here where the production and all three engines read `a}b`. This is the
+  // same shape carve#2566 fixed for the newline, one rule down.
   squoted    = "'" sqChar* "'"
   sqChar     = sqEsc | (~"'" ~newline any)
-  sqEsc      = "\\" "'"
+  sqEsc      = "\\" punctChar
   quoted     = "\"" qChar* "\""
   qChar      = qEsc | (~"\"" ~newline any)
-  qEsc       = "\\" "\""
+  qEsc       = "\\" punctChar
 
   image      = "!" "[" altText "]" "(" dest destTitle? ")" attrRun?
   // `![alt][ref]` resolves against the SAME linkDefs entry a reference link

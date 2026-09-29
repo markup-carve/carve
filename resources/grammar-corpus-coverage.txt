@@ -52,6 +52,5 @@ ordMarker      LOOKAHEAD  reached only through `structural`
 spaceOrEnd     LOOKAHEAD  only in `boldItalic = "/*" ~spaceOrEnd biInner+ "*/" attrs?`
 
 at             GAP  `other` admits it, so an `@` NOT followed by a word character reaches it: `a @ b`
-sqEsc          GAP  a `\'` inside a single-quoted attribute value: `{title='a\'b'}`
 delimRun       GAP  a doubled delimiter run inside bold-italic reaches it: `/*a // b*/`
 dRun           GAP  reached with `delimRun`, by the same spelling

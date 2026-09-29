@@ -1,0 +1,19 @@
+A tab does not open the title slot
+
+```
+[a](/u	"t")
+.
+<p>[a](/u	“t”)</p>
+```
+
+```
+![a](/i	"t")
+.
+<p>![a](/i	“t”)</p>
+```
+
+```
+[a](/u "t")
+.
+<p><a href="/u" title="t">a</a></p>
+```
