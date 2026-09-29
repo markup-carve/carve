@@ -84,9 +84,15 @@ jobs:
           repository: markup-carve/carve-php
           path: carve-php
           submodules: recursive
+      # 8.4, not carve-php's 8.2 floor. Its HTML importer runs the native HTML5
+      # parser from 8.4 and the legacy libxml one below that, and the two read
+      # malformed HTML differently by design (carve-php#2731, closed as intended,
+      # and docs/html-import.md, which tells an author to use 8.4 or later). On
+      # 8.3 this job therefore reported nineteen CommonMark expected-HTML cases
+      # as cross-engine differences that no current PHP reproduces.
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.4'
       - name: Install carve-php
         working-directory: carve-php
         run: composer install --no-interaction --no-progress
@@ -149,9 +155,11 @@ jobs:
           path: carve-php
           submodules: recursive
 
+      # 8.4 for the same reason as the formatter job above: below it, carve-php's
+      # HTML importer takes the legacy libxml path.
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.4'
 
       - name: Install carve-php
         working-directory: carve-php
