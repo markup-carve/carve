@@ -419,6 +419,22 @@ export const LAZY = '\u0000L\u0000'
 /// generates those shapes instead of listing them.
 export const stripLazy = (line) => (line.startsWith(LAZY) ? line.slice(LAZY.length) : line)
 
+/// The verbatim payload of a raw block, from its lines between the delimiters.
+///
+/// `join('\n')` maps n lines to n-1 newlines, which encodes zero lines and one
+/// blank line identically - the collapse PART 2 `raw_block` forbids under AN
+/// ALL-BLANK PAYLOAD IS NOT AN ABSENT BLOCK: "Zero payload lines contribute
+/// nothing; one blank payload line contributes one newline. An implementation
+/// MUST NOT encode those two source shapes identically." So an all-empty
+/// payload gets its last line's newline back and n lines give n newlines. A
+/// whitespace-only line is verbatim content, not a blank, and joins as any
+/// other line does.
+export const rawPayload = (bodyLines) => {
+  const body = bodyLines.map(stripLazy)
+  const text = body.join('\n')
+  return body.length > 0 && body.every((line) => line === '') ? `${text}\n` : text
+}
+
 // Measurements a collector knows without walking anything (carve#752). A blank
 // separator it synthesized stands at column 0 with no content; a lazily-folded
 // line is re-materialized behind the LAZY frame, whose first character is not
@@ -2754,7 +2770,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           push({
             t: 'raw',
             format: info.lang.slice(1),
-            text: lines.slice(i + 1, close).map(stripLazy).join('\n'),
+            text: rawPayload(lines.slice(i + 1, close)),
           })
           i = close + 1
           continue
@@ -2791,7 +2807,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           push({
             t: 'raw',
             format: info.lang.slice(1),
-            text: fenceLines.slice(i + 1).map(stripLazy).join('\n'),
+            text: rawPayload(fenceLines.slice(i + 1)),
           })
           i = boundary
           continue

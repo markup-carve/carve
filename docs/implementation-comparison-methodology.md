@@ -40,6 +40,7 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator`,
 `519-a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim`,
 `520-a-dropped-raw-block-takes-no-line-in-the-container-that-holds-it`,
+`521-a-zero-line-and-a-one-blank-raw-payload-are-not-the-same-block`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
@@ -117,7 +118,20 @@ hosts wrote the text `null` where the dropped block stood, the colon div left a
 blank line, and the footnote body left one and moved the backlink into a
 paragraph of its own. The eighth, the `=html` control, already agreed. Measured
 over a generated sweep of 19 hosts and 6 payloads, 33 shapes moved and all 33 now
-match the pin. Rust and PHP were not measured here.
+match the pin. carve-rs `a40be82b6` reproduces all eight as well, each from a
+worktree built off its default branch. carve-php `b6845d49f` reproduces seven and
+differs on the footnote body: it gives the backlink a paragraph of its own, which
+is PART 9 section 16 read over the AST's last block rather than the rendered one,
+tracked at
+[carve-php#2711](https://github.com/markup-carve/carve-php/issues/2711).
+
+521's nine raw-payload documents match the pinned carve-js `c5df77f6` on all
+nine, measured document by document: it encodes a zero-line payload as `""` and
+a one-blank-line payload as `"\n"`, the distinction PART 2 `raw_block` requires,
+while the oracle encoded both as `""` until this change. carve-php `2742f817`
+and carve-rs `840e38cf` collapse the two in HTML the way the oracle did, which
+[carve#2557](https://github.com/markup-carve/carve/issues/2557) measured rather
+than this host; neither engine was built here.
 
 The former case-by-case notes remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/a22f6a23f7913e44cb3461f3f608605660619032/docs/implementation-comparison-methodology.md).
