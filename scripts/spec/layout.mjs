@@ -327,6 +327,27 @@ export function bracketRunEnd(line, open) {
   }
   return -1
 }
+// THE `[label]` SLOT, read from the two openers that carry it: a colon fence and
+// a code fence. Both spelled it `/^ *\[([^\]]*)\]/`, which is the fourth and
+// fifth copy of the `[^\]]*` shape the scanner above was written to replace -
+// and the close is BALANCED here for the same reason it is on `link_text`, since
+// the slot holds an inline run (`CARVE-P9-041`). A label carrying a link matched
+// its closer to the LINK's, so the opener never completed: the colon fence
+// degraded to a paragraph and lost the container with its children, and the code
+// fence lost its payload to an inline `<code>` span (carve#2573).
+//
+// Returns `{ label, rest }`, or `null` when the slot is absent OR has no close
+// on this line. Both answers were one answer before, and they stay one: the
+// caller leaves the text unconsumed and its trailing-junk check turns the line
+// into an ordinary paragraph either way. An unclosed backtick run reaches that
+// path too, because it opens a verbatim span to the end of the block and takes
+// the `]` into it - the scanner's own reading of PART 3 `code_span`.
+function takeLabelSlot(s) {
+  const open = /^ */.exec(s)[0].length
+  const end = bracketRunEnd(s, open)
+  if (end === -1) return null
+  return { label: s.slice(open + 1, end - 1), rest: s.slice(end) }
+}
 // SS4's two PROSE-spelled captionable hosts: a paragraph whose WHOLE content is
 // one image (inline or reference form, trailing attribute block allowed), and
 // one whose whole content is a display-math span. The other three hosts have a
@@ -894,10 +915,10 @@ function parseColonOpener(tail) {
     out.title = qt[1]
     s = s.slice(qt[0].length)
   }
-  const lb = /^ *\[([^\]]*)\]/.exec(s)
+  const lb = takeLabelSlot(s)
   if (lb) {
-    out.label = lb[1]
-    s = s.slice(lb[0].length)
+    out.label = lb.label
+    s = lb.rest
   }
   if (!/^[ \t]*$/.test(s)) return null // trailing junk -> paragraph
   if (!out.type && !out.title && out.label === null && tail.trim() !== '') return null
@@ -4118,10 +4139,10 @@ function parseFenceInfo(raw) {
     out.title = tm[1]
     s = s.slice(tm[0].length)
   }
-  const lb = /^ *\[([^\]]*)\]/.exec(s)
+  const lb = takeLabelSlot(s)
   if (lb) {
-    out.label = lb[1]
-    s = s.slice(lb[0].length)
+    out.label = lb.label
+    s = lb.rest
   }
   if (!/^[ \t]*$/.test(s)) return null
   return out

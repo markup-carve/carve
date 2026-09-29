@@ -209,6 +209,19 @@ code_fence_info = ( language_info, [space+, quoted_title], [space+, label] )
    one role, so both spellings carry the same terminal. *)
 language_info = (letter | digit | '-' | '_' | '+' | '#' | '.' | '/')+ ;  (* a single token; the punctuation covers real language tags like c++, c#, f#, asp.net, text/html. May start with a digit. The `/` is normative across all impls (so `text/html`, `image/svg` are language tokens, not split). A token MUST NOT start with `=`: a leading `=` is the raw_block opener (above), not a language. *)
 label = '[', { character - ']' }, ']' ;  (* structured metadata, e.g. [Installation]; not part of the class *)
+(* SEMANTIC CONSTRAINT: the slot ends at the MATCHING `]` -- the same balanced,
+   escape- and LITERAL-SPAN-aware close `link_text` states (CARVE-P3-001), and
+   for the same reason, since the slot holds an inline run (PART 9 §12). The
+   class above is the context-free approximation and is right on every label
+   with no nesting; it is not the close. So `[see [t](/u)]` is one label whose
+   content is a link, a `]` inside a literal span is content, and an UNCLOSED
+   backtick run takes the `]` into a verbatim span that runs past the line --
+   which leaves the slot without a close, and the opener without its metadata,
+   exactly as it leaves `[a `b](/u)` as prose rather than a link. A label read
+   to the FIRST `]` at any depth matched a nested link's closer instead of its
+   own, and the opener then failed its trailing-junk check: a colon fence lost
+   the container and its children to a paragraph, and a code fence lost its
+   payload to an inline code span (carve#2573). Not expressible context-free. *)
 code_content = (* any text until matching fence, preserved literally *) ;
 (* TABS IN CODE -- NORMATIVE [CARVE-P2-007]. Literal tab characters in code content (fenced
    code blocks and inline code spans) are PRESERVED verbatim; a tab and N spaces
