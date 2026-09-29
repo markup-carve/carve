@@ -18,6 +18,14 @@ const baseline = JSON.parse(
 const visibleText = (html) =>
   new JSDOM(html).window.document.body.textContent.replace(/\s+/g, ' ').trim()
 
+// Corpus 531's thirteen documents all import, stay canonical and keep their
+// visible text (+13 each). Only the column-2 control round-trips through HTML
+// (+1): the other twelve publish the opener inside the quote's paragraph, and
+// the importer returns those soft breaks as spaces. Markdown gains eight; the
+// thematic break returns as the dash smart typography made of it, the table row
+// with its pipes escaped, the two footnote documents with the quoted run outside
+// the note, and the description body as a bold paragraph.
+
 // The carve-js pin at 8392a032 makes the reference in corpus row 442-...-8
 // resolve. On its HTML round-trip, the imported empty ordered item is then
 // written as literal `+`, so that row loses visible-text preservation (-1).

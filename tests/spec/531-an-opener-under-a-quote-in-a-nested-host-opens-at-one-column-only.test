@@ -1,0 +1,226 @@
+An opener under a quote in a nested host opens at one column only
+
+````
+- a
+  > q
+  ```js
+  c
+  ```
+.
+<ul>
+  <li>a
+    <blockquote><p>q</p></blockquote>
+    <pre><code class="language-js">c
+</code></pre>
+  </li>
+</ul>
+````
+
+````
+- a
+  > q
+ ```js
+ c
+ ```
+.
+<ul>
+  <li>a
+    <blockquote><p>q
+<code>js
+c
+</code></p></blockquote>
+  </li>
+</ul>
+````
+
+````
+- a
+  > q
+   ```js
+   c
+   ```
+.
+<ul>
+  <li>a
+    <blockquote><p>q
+<code>js
+c
+</code></p></blockquote>
+  </li>
+</ul>
+````
+
+````
+- a
+  > q
+    ```js
+    c
+    ```
+.
+<ul>
+  <li>a
+    <blockquote><p>q
+<code>js
+c
+</code></p></blockquote>
+  </li>
+</ul>
+````
+
+````
+- a
+  > q
+        ```js
+        c
+        ```
+.
+<ul>
+  <li>a
+    <blockquote><p>q
+<code>js
+c
+</code></p></blockquote>
+  </li>
+</ul>
+````
+
+```
+- a
+  > q
+   # h
+.
+<ul>
+  <li>a
+    <blockquote><p>q
+# h</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- a
+  > q
+   ---
+.
+<ul>
+  <li>a
+    <blockquote><p>q
+—</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- a
+  > q
+   | c |
+   |---|
+   | 1 |
+.
+<ul>
+  <li>a
+    <blockquote><p>q
+| c |
+|—|
+| 1 |</p></blockquote>
+  </li>
+</ul>
+```
+
+````
+- a
+  > q
+   ```=latex
+   \r
+   ```
+.
+<ul>
+  <li>a
+    <blockquote><p>q
+<code>=latex
+\r
+</code></p></blockquote>
+  </li>
+</ul>
+````
+
+````
+- a
+  > q
+   ```=html
+   <b>r</b>
+   ```
+.
+<ul>
+  <li>a
+    <blockquote><p>q
+<code>=html
+&lt;b&gt;r&lt;/b&gt;
+</code></p></blockquote>
+  </li>
+</ul>
+````
+
+````
+x[^1]
+
+[^1]: > q
+   ```js
+   c
+   ```
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <blockquote><p>q
+<code>js
+c
+</code></p></blockquote>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+````
+
+````
+x[^1]
+
+[^1]: > q
+   ```=latex
+   \r
+   ```
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <blockquote><p>q
+<code>=latex
+\r
+</code></p></blockquote>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+````
+
+````
+:: t
+: > q
+   ```js
+   c
+   ```
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote><p>q
+<code>js
+c
+</code></p></blockquote>
+  </dd>
+</dl>
+````

@@ -525,6 +525,38 @@
         pins the controls beside the folds, because the neighbours are what make
         the rule legible.
 
+        A BLOCK OPENER IN THE BAND FOLDS ON THE SAME TERMS -- NORMATIVE [CARVE-P0-021].
+        The clause above answers a LIST MARKER, which §10 I2 never
+        lets interrupt. A code or raw fence, a heading, a thematic break and a
+        table row DO interrupt an open paragraph (§10), so the band has to be
+        said for them too, and the answer does not change: under a quote that
+        holds an open paragraph, an opener at any column but the host's content
+        column folds into that paragraph.
+
+        §2's rebasing is what the band turns on. "A recognized opener PAST that
+        column establishes its authored visual column" presumes the line IS a
+        recognized opener there, and past the column it is one only where
+        nothing can take it as text -- with a container in the open stack
+        holding an OPEN PARAGRAPH the line is ordinary over-indented text, and
+        §2's last sentence gives such text no base. AT the content column it is
+        an opener whatever is open, because that column IS the body's column 0
+        (§24 C3) and a block there ends the paragraph it sits under
+        (CARVE-P0-011). So `- a` over `  > q` opens a block at column 2 alone.
+        Column 1 is below the item's column, columns 3 through 8 are above it,
+        column 4 is the quote's own content column, and all of them fold: a line
+        that writes no `>` is in no quote at any column, and none of these
+        reaches an opener column.
+
+        THE TOP LEVEL IS THE CONTROL, and it needs no quote. `p` over an
+        indented fence folds at every nonzero column, with a blank line above
+        the fence and without, because no container minimum is there for §2 to
+        rebase past. A BLANK is the escape here as it is above: it closes the
+        paragraph, and the same opener then opens a sibling block on its own
+        authored base (carve#2598). Corpus
+        531-an-opener-under-a-quote-in-a-nested-host-opens-at-one-column-only
+        pins the band beside that column, in a list item, a footnote body and a
+        description body, because a fixture at the minimum column cannot see it.
+
         THE HOST IS NOT A PARAMETER EITHER (carve#1918). This clause is
         written about CONTAINERS, and the three indented-block collectors are
         containers alike -- a description body and a footnote body select an
