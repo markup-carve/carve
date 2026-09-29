@@ -5,7 +5,222 @@
     "spec": "3aa041b3d57d8092524e992cecaf937d26bebc1b",
     "js": "8ea3888523b9faa155db73c06c273a2493938157",
     "php": "a7ffb1314602ea5131d33cb1434ed7767812c380",
-    "rust": "fa871c806fee629da09eabf3f8342fec75dc9167"
+    "rust": "fa871c806fee629da09eabf3f8342fec75dc9167",
+    "engineMain": {
+      "js": "d54f334fc33ec286c0f5a2687c354e1e95bc418f",
+      "php": "3da86f0ef710b3da75469035999464886e3a6eda",
+      "rust": "9ab8b38b32559dfe7a6783d10a9dd15542b2939a"
+    },
+    "coverage": {
+      "full": {
+        "documents": 2118,
+        "pairs": 19062
+      },
+      "additional": {
+        "spec": "0a068ca0",
+        "documents": 5,
+        "pairs": 45
+      }
+    }
   },
-  "differences": []
+  "differences": [
+    {
+      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-2.crv/js->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2561",
+      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
+      "fingerprint": "f060a966fe5671e77f1c0b1d3b5119323e5018edce47b16aab249a5825123a65",
+      "observation": {
+        "expected": "<ol start=\"10\">\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ol>",
+        "status": 0,
+        "actual": "<ol start=\"10\">\n  <li>t\n    z\n  </li>\n</ol>"
+      }
+    },
+    {
+      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-2.crv/php->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2561",
+      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
+      "fingerprint": "f060a966fe5671e77f1c0b1d3b5119323e5018edce47b16aab249a5825123a65",
+      "observation": {
+        "expected": "<ol start=\"10\">\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ol>",
+        "status": 0,
+        "actual": "<ol start=\"10\">\n  <li>t\n    z\n  </li>\n</ol>"
+      }
+    },
+    {
+      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-2.crv/rust->js",
+      "issue": "https://github.com/markup-carve/carve/issues/2561",
+      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
+      "fingerprint": "9ab4bddfb7edbdb757a49ab2c81f33155a654d18526068d27eccae9c70b11172",
+      "observation": {
+        "expected": "<ol start=\"10\">\n  <li>t\n    z\n  </li>\n</ol>",
+        "status": 0,
+        "actual": "<ol start=\"10\">\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ol>"
+      }
+    },
+    {
+      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-2.crv/rust->php",
+      "issue": "https://github.com/markup-carve/carve/issues/2561",
+      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
+      "fingerprint": "9ab4bddfb7edbdb757a49ab2c81f33155a654d18526068d27eccae9c70b11172",
+      "observation": {
+        "expected": "<ol start=\"10\">\n  <li>t\n    z\n  </li>\n</ol>",
+        "status": 0,
+        "actual": "<ol start=\"10\">\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ol>"
+      }
+    },
+    {
+      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-4.crv/js->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2561",
+      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
+      "fingerprint": "eb12ca5000ccccb5c650c66a18a2ffc925cec26d6eb6a3d9bf394a6248bd60fe",
+      "observation": {
+        "expected": "<ul>\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>t\n    z\n  </li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-4.crv/php->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2561",
+      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
+      "fingerprint": "eb12ca5000ccccb5c650c66a18a2ffc925cec26d6eb6a3d9bf394a6248bd60fe",
+      "observation": {
+        "expected": "<ul>\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>t\n    z\n  </li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-4.crv/rust->js",
+      "issue": "https://github.com/markup-carve/carve/issues/2561",
+      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
+      "fingerprint": "41c161c2ba1cf9823947e327281894eba11bd42057fe3e894a996f987d9e4f47",
+      "observation": {
+        "expected": "<ul>\n  <li>t\n    z\n  </li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-4.crv/rust->php",
+      "issue": "https://github.com/markup-carve/carve/issues/2561",
+      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
+      "fingerprint": "41c161c2ba1cf9823947e327281894eba11bd42057fe3e894a996f987d9e4f47",
+      "observation": {
+        "expected": "<ul>\n  <li>t\n    z\n  </li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-5.crv/js->php",
+      "issue": "https://github.com/markup-carve/carve/issues/2561",
+      "reason": "The engines disagree on list tightness and ownership after an invisible line; PHP splits the document into three lists.",
+      "fingerprint": "38103ec1ed5d8eb8c096c681d518978c2a3c1020993fb9f09cc6723842ad1810",
+      "observation": {
+        "expected": "<ul>\n  <li>t</li>\n</ul>\n<ul>\n  <li>b</li>\n</ul>\n<ul>\n  <li>s</li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li><p>t</p>\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n  <li><p>s</p></li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-5.crv/js->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2561",
+      "reason": "The engines disagree on list tightness and ownership after an invisible line; PHP splits the document into three lists.",
+      "fingerprint": "2fdafa39138c2949bca236e969100fd25eddb877129b9c6ad0f401bd1b2dbdd1",
+      "observation": {
+        "expected": "<ul>\n  <li>t\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n  <li>s</li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li><p>t</p>\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n  <li><p>s</p></li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-5.crv/php->js",
+      "issue": "https://github.com/markup-carve/carve/issues/2561",
+      "reason": "The engines disagree on list tightness and ownership after an invisible line; PHP splits the document into three lists.",
+      "fingerprint": "b87ee3feb472bfc7640495a04039515d886dab55fd4b17a4e26a439081fc5a7b",
+      "observation": {
+        "expected": "<ul>\n  <li><p>t</p>\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n  <li><p>s</p></li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>t</li>\n</ul>\n<ul>\n  <li>b</li>\n</ul>\n<ul>\n  <li>s</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-5.crv/php->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2561",
+      "reason": "The engines disagree on list tightness and ownership after an invisible line; PHP splits the document into three lists.",
+      "fingerprint": "3e5d09278c9f85119c2bc3287d45695af88c72a1d04d4e778a24329751903fb6",
+      "observation": {
+        "expected": "<ul>\n  <li>t\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n  <li>s</li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>t</li>\n</ul>\n<ul>\n  <li>b</li>\n</ul>\n<ul>\n  <li>s</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-5.crv/rust->js",
+      "issue": "https://github.com/markup-carve/carve/issues/2561",
+      "reason": "The engines disagree on list tightness and ownership after an invisible line; PHP splits the document into three lists.",
+      "fingerprint": "f21618b256e16d0876d995abb7dee32b5a29d9ddee05eaec321c002b51589924",
+      "observation": {
+        "expected": "<ul>\n  <li><p>t</p>\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n  <li><p>s</p></li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>t\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n  <li>s</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose-5.crv/rust->php",
+      "issue": "https://github.com/markup-carve/carve/issues/2561",
+      "reason": "The engines disagree on list tightness and ownership after an invisible line; PHP splits the document into three lists.",
+      "fingerprint": "4032b063f44a6508b2a2ac01cf11857dfca0d63562c4857a6aaf1d97a21f352e",
+      "observation": {
+        "expected": "<ul>\n  <li>t</li>\n</ul>\n<ul>\n  <li>b</li>\n</ul>\n<ul>\n  <li>s</li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>t\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n  <li>s</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose.crv/js->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2561",
+      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
+      "fingerprint": "eb12ca5000ccccb5c650c66a18a2ffc925cec26d6eb6a3d9bf394a6248bd60fe",
+      "observation": {
+        "expected": "<ul>\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>t\n    z\n  </li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose.crv/php->rust",
+      "issue": "https://github.com/markup-carve/carve/issues/2561",
+      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
+      "fingerprint": "eb12ca5000ccccb5c650c66a18a2ffc925cec26d6eb6a3d9bf394a6248bd60fe",
+      "observation": {
+        "expected": "<ul>\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li>t\n    z\n  </li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose.crv/rust->js",
+      "issue": "https://github.com/markup-carve/carve/issues/2561",
+      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
+      "fingerprint": "41c161c2ba1cf9823947e327281894eba11bd42057fe3e894a996f987d9e4f47",
+      "observation": {
+        "expected": "<ul>\n  <li>t\n    z\n  </li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose.crv/rust->php",
+      "issue": "https://github.com/markup-carve/carve/issues/2561",
+      "reason": "JS and PHP keep the band paragraph tight after an invisible line; Rust reads the list as loose.",
+      "fingerprint": "41c161c2ba1cf9823947e327281894eba11bd42057fe3e894a996f987d9e4f47",
+      "observation": {
+        "expected": "<ul>\n  <li>t\n    z\n  </li>\n</ul>",
+        "status": 0,
+        "actual": "<ul>\n  <li><p>t</p>\n    <p>z</p>\n  </li>\n</ul>"
+      }
+    }
+  ]
 }
