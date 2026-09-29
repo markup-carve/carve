@@ -48,6 +48,7 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `526-a-quoted-value-and-a-quoted-title-escape-different-sets`,
 `527-a-tab-does-not-open-the-title-slot`,
 `528-a-footnote-body-whose-every-block-renders-nothing-is-an-empty-body`,
+`529-a-container-label-publishes-its-inline-run`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the

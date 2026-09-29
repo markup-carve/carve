@@ -73,3 +73,10 @@
 
 522-an-emphasis-marker-does-not-pair-across-a-link-bracket  carve#2565: the pin pairs an emphasis marker across the link bracket, where PART 8 resolves the link first.
 524-an-empty-code-payload-renders-no-characters  carve#2560: the pin emits a newline for a code fence with no payload lines, where `code_content` preserves zero characters. Its one-blank partner (-2) reproduces.
+
+529-a-container-label-publishes-its-inline-run  carve#2572: the pinned carve-js writes the characters the author typed in a container label, where the slot holds an inline run. Fixed in carve-js db48137e (#2356), which is past the pin.
+529-a-container-label-publishes-its-inline-run-2  carve#2572: the pinned carve-js writes the characters the author typed in a container label, where the slot holds an inline run. Fixed in carve-js db48137e (#2356), which is past the pin.
+529-a-container-label-publishes-its-inline-run-3  carve#2572: the pinned carve-js writes the characters the author typed in a container label, where the slot holds an inline run. Fixed in carve-js db48137e (#2356), which is past the pin.
+529-a-container-label-publishes-its-inline-run-5  carve#2572: the pinned carve-js writes the characters the author typed in a container label, where the slot holds an inline run. Fixed in carve-js db48137e (#2356), which is past the pin.
+529-a-container-label-publishes-its-inline-run-6  carve#2572: the pinned carve-js writes the characters the author typed in a container label, where the slot holds an inline run. Fixed in carve-js db48137e (#2356), which is past the pin.
+529-a-container-label-publishes-its-inline-run-8  carve#2573: the pinned carve-js closes the fence label at the `]` inside a code span, so the fence loses its payload to an inline code span. Fixed in carve-js db48137e (#2356), which is past the pin.
