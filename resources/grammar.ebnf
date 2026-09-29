@@ -8595,7 +8595,8 @@ EOF = (* end of file *) ;
       human-readable `message`, and its source `pos` when recorded. There are two
       codes. `structure-unspellable` says the producer dropped a whole node or
       wrapper. `field-unspellable` says it dropped or changed a named FIELD whose
-      value Carve source cannot spell, on a node it still spells, and such an entry MUST carry `field`, the field's name on
+      value Carve source cannot spell, on a node it still spells. Such an entry
+      MUST carry `field`, the field's name on
       that node. A `structure-unspellable` entry MUST NOT carry `field`.
 
         { "code": "field-unspellable", "node": "math", "field": "label",
@@ -10688,6 +10689,7 @@ EOF = (* end of file *) ;
       a blank line has "a\n\n". The break before the closing fence belongs
       to the last payload line. A fence ending at EOF without a closer retains
       whether the last payload line had a break; it MUST NOT invent one.
+      An unclosed fence with no payload lines also has content "".
       This rule does not change `raw_block.content`.
 
       An imported or programmatically built code block MAY have content "a"
@@ -10698,12 +10700,20 @@ EOF = (* end of file *) ;
 
       HTML emits the escaped content exactly between `<code>` and `</code>`;
       it adds no payload newline. HTML import retains the code element's text,
-      including whether its final break is present. Other render targets may
-      add their structural separators, but MUST NOT alter the node's content.
+      including whether its final break is present. Markdown emits its ordinary fenced block, adding a break before the
+      closing fence only when nonempty content lacks one. The plain and ANSI
+      targets emit
+      the literal payload followed by their ordinary block separators. These
+      three targets report no conversion diagnostic for that separator and
+      MUST NOT alter the node's content.
       A canonical Carve writer needs a break before a closing fence when
       nonempty content has none. It inserts that break and reports
       `field-unspellable` for `code_block.content` on the PART 11 §1d channel.
       Empty content needs no inserted payload line and reports nothing.
+      This report belongs to an API exposing conversion diagnostics (§1d).
+      HTML import itself preserves the payload and reports no loss for a
+      missing final break. An API exposing only the HTML-import report adds
+      no diagnostic code for the later canonical writer's inserted break.
 
    3a. THE SERIALIZED TREE IS PRE-RESOLVE -- NORMATIVE [CARVE-P12-005]. It records what the
       AUTHOR WROTE, not what the document resolves to. Reference resolution,

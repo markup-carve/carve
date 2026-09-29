@@ -1746,8 +1746,13 @@ readers must not infer a legacy encoding from the string alone.
 A canonical Carve fence requires a break before its closer. Writing a nonempty
 unterminated payload therefore adds a break and reports `field-unspellable`
 for `code_block.content`. Empty content remains an empty fence without a loss.
+An API exposing only HTML-import diagnostics adds no diagnostic for this
+later writing step. Markdown adds its required closing-fence separator; plain
+and ANSI retain their ordinary block separators. None changes the AST value.
 Raw blocks keep their existing encoding.
 
 `resources/ast-code-content-fixtures.json` pins parsed values for existing
 corpus documents. The AST conformance run checks each engine against these
 values even when all engines agree with each other.
+`resources/ast-code-payload-samples.json` adds exact EOF inputs, including
+inputs without a final LF, to every engine's AST parse and JSON round-trip run.

@@ -9,8 +9,7 @@ A definition body's open code fence ends at a line below its column
 <dl>
   <dt>t</dt>
   <dd>
-    <pre><code>
-</code></pre>
+    <pre><code></code></pre>
   </dd>
 </dl>
 <p>y

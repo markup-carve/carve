@@ -30,8 +30,7 @@ code no marker
 > still
 .
 <blockquote>
-  <pre><code>
-</code></pre>
+  <pre><code></code></pre>
 </blockquote>
 <p>code no marker</p>
 <blockquote><p>still</p></blockquote>

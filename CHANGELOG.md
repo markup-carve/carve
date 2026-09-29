@@ -15,7 +15,7 @@ Releases before 0.1.6 are archived in
 - Define `code_block.content` as literal payload text, preserving the final
   line break for nonempty code blocks as well as blank ones. Preserve the
   absence of a final break in the executable spec when an unclosed code fence
-  reaches EOF (carve#2603).
+  reaches EOF, and emit no payload newline for an empty fence (carve#2603).
 
 ### Fixes
 

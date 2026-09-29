@@ -2835,7 +2835,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           lang: info.lang,
           title: info.title,
           text: fenceLines.slice(i + 1).map(stripLazy).join('\n') +
-            (fenceLines.length > i + 1 && boundary === n && state.unterminatedLines?.has(lines) ? '' : '\n'),
+            (fenceLines.length > i + 1 && !(boundary === n && state.unterminatedLines?.has(lines)) ? '\n' : ''),
         })
         i = boundary
         continue

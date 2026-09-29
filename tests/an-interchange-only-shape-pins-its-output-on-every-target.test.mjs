@@ -42,7 +42,7 @@ const clauseText = (id) => {
  */
 const TARGETS = ['HTML', 'Markdown', 'plain', 'ANSI']
 
-for (const id of ['CARVE-P12-049', 'CARVE-P12-052']) {
+for (const id of ['CARVE-P12-049', 'CARVE-P12-052', 'CARVE-P12-064']) {
   test(`${id} pins its output on every render target`, () => {
     const text = clauseText(id)
     const missing = TARGETS.filter((target) => !text.includes(target))

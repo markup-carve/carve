@@ -310,6 +310,8 @@ test('HTML keeps the distinction between terminated and unterminated interchange
 test('an unterminated source fence retains whether its payload ends with a break', async () => {
   const { parse } = await import('../scripts/spec/layout.mjs')
   const { renderDoc } = await import('../scripts/spec/html.mjs')
+  assert.equal(renderDoc(parse('```')).trimEnd(), '<pre><code></code></pre>')
+  assert.equal(renderDoc(parse('```\n')).trimEnd(), '<pre><code></code></pre>')
   for (const prefix of ['', '> ', '- ', ':: term\n: ', '[^n]: ']) {
     const pad = prefix === '> ' ? '> ' : prefix === '' ? '' : '  '
     for (const ending of ['', '\n']) {
@@ -341,5 +343,17 @@ test('only a payload reaching EOF inherits the missing final break', async () =>
     ['```\r\na\r\n', 'a\n'],
   ]) {
     assert.ok(renderDoc(parse(source)).includes(`<code>${payload}</code>`), JSON.stringify(source))
+  }
+})
+
+
+test('shared EOF samples pin payload values through JSON', async () => {
+  const { parse } = await import('../scripts/spec/layout.mjs')
+  const samples = JSON.parse(readFileSync(resolve(root, 'resources/ast-code-payload-samples.json'), 'utf8'))
+  for (const sample of samples) {
+    const content = parse(sample.source).blocks[0].text
+    assert.equal(content, sample.content, sample.name)
+    const tree = JSON.parse(JSON.stringify({ type: 'document', children: [{ type: 'code_block', content }] }))
+    assert.deepEqual(checkCodeContent(tree, [sample.content]), [], sample.name)
   }
 })

@@ -1,0 +1,27 @@
+[
+  {
+    "name": "<code payload: empty EOF>",
+    "source": "```",
+    "content": ""
+  },
+  {
+    "name": "<code payload: empty after opener break>",
+    "source": "```\n",
+    "content": ""
+  },
+  {
+    "name": "<code payload: unterminated final line>",
+    "source": "```\na",
+    "content": "a"
+  },
+  {
+    "name": "<code payload: terminated final line>",
+    "source": "```\na\n",
+    "content": "a\n"
+  },
+  {
+    "name": "<code payload: one blank line>",
+    "source": "```\n\n",
+    "content": "\n"
+  }
+]

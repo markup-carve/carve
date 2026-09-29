@@ -44,7 +44,9 @@ import { pinnedCrateVersion, pinnedEngineBinary } from './lib/pinned-engine.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
+const codePayloadSamples = JSON.parse(readFileSync(resolve(root, 'resources/ast-code-payload-samples.json'), 'utf8'))
 const codeContentFixtures = JSON.parse(readFileSync(resolve(root, 'resources/ast-code-content-fixtures.json'), 'utf8'))
+for (const sample of codePayloadSamples) codeContentFixtures[sample.name] = [sample.content]
 const commentContentFixtures = JSON.parse(readFileSync(resolve(root, 'resources/ast-comment-content-fixtures.json'), 'utf8'))
 
 // tests/ast-schema.test.mjs checks the schema against the reference engine.
@@ -902,8 +904,9 @@ const ASTRAL_SAMPLES = [
 const corpusFiles = readdirSync(corpusDir)
   .filter((f) => f.endsWith('.crv'))
   .sort()
+const syntheticSamples = [...ASTRAL_SAMPLES, ...codePayloadSamples]
 const samples = [
-  ...ASTRAL_SAMPLES,
+  ...syntheticSamples,
   ...corpusFiles
     .slice(0, limit)
     .map((f) => ({ name: f, source: readFileSync(resolve(corpusDir, f), 'utf8') })),
@@ -912,8 +915,8 @@ const samples = [
 /*
  * HOW MANY DOCUMENTS THIS RUN ACTUALLY SAW, checked rather than printed.
  *
- * `--limit=0` produces a run over the three synthetic astral samples and NO
- * corpus at all, and every engine then reports its findings for those three as
+ * `--limit=0` produces a run over the synthetic samples and NO
+ * corpus at all, and every engine then reports its findings for those samples as
  * though the corpus had been measured. A typo in a CI invocation, or a corpus
  * that failed to build, reads exactly like a clean run - carve#755's second
  * variant, "asserts over an empty set".
@@ -923,7 +926,7 @@ const samples = [
  * question. With a limit it is a floor plus the sample notice already printed
  * below, because sampling is a deliberate act with a number attached.
  */
-const corpusSeen = samples.length - ASTRAL_SAMPLES.length
+const corpusSeen = samples.length - syntheticSamples.length
 const populationProblem = Number.isFinite(limit)
   ? shortfall({
       label: 'CORPUS',
@@ -956,13 +959,13 @@ if (corpusFiles.length < 100) {
 
 const satelliteSamples = samples.slice(0, satelliteLimit)
 
-// Both numbers, because they are different populations: the astral samples are
+// Both numbers, because they are different populations: the synthetic samples are
 // synthetic inputs this script carries, not documents the corpus ships, and
 // folding them into one count made a run over three synthetic cases read as a
 // run over three corpus documents.
 console.log(
   `PART 12 conformance over ${corpusSeen} corpus document(s) ` +
-    `plus ${ASTRAL_SAMPLES.length} synthetic sample(s)\n`,
+    `plus ${syntheticSamples.length} synthetic sample(s)\n`,
 )
 
 // ---- reference: carve-js ---------------------------------------------------
