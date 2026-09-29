@@ -1,0 +1,17 @@
+An empty code payload renders no characters
+
+````
+```
+```
+.
+<pre><code></code></pre>
+````
+
+````
+```
+
+```
+.
+<pre><code>
+</code></pre>
+````

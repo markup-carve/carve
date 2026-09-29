@@ -43,6 +43,7 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `521-a-zero-line-and-a-one-blank-raw-payload-are-not-the-same-block`,
 `522-an-emphasis-marker-does-not-pair-across-a-link-bracket`,
 `523-a-link-title-crosses-a-soft-wrap-and-an-attribute-value-does-not`,
+`524-an-empty-code-payload-renders-no-characters`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
@@ -134,6 +135,15 @@ while the oracle encoded both as `""` until this change. carve-php `2742f817`
 and carve-rs `840e38cf` collapse the two in HTML the way the oracle did, which
 [carve#2557](https://github.com/markup-carve/carve/issues/2557) measured rather
 than this host; neither engine was built here.
+
+524's two empty-code-payload documents split against the pinned carve-js
+`ddcae5d4`, measured by running the `engine:report` check over both. The
+one-blank document reproduces; the zero-line one does not, because the pin emits
+a newline where `code_content` preserves zero characters, and
+`resources/engine-pin-drift.txt` declares that row. carve-php and carve-rs are
+unmeasured here: every checkout on this host sits on an unmerged branch, one of
+them mid-merge, so [carve#2560](https://github.com/markup-carve/carve/issues/2560)
+carries their readings rather than this page.
 522's three documents and 523's six were added after this snapshot and were
 measured against all four builds: the pinned carve-js `c5df77f6`, carve-js
 `fb0e08e8`, carve-php `b6845d49` and carve-rs `0bf06bc3`, the three engines'
