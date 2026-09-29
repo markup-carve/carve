@@ -268,6 +268,7 @@ const MANIFEST = [
 
   // -- carve-js --------------------------------------------------------------
   { repo: 'carve-js', path: 'test/corpus.test.ts', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'test/corpus.test.ts' },
+  { repo: 'carve-js', path: 'test/include-conformance.test.ts', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', staleness: 'golden already regenerated - delete its entry', owner: 'test/include-conformance.test.ts' },
   { repo: 'carve-js', path: 'test/canonical-ahead-of-pin.ts', name: 'CANONICAL_AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'test/corpus-canonical-form.test.ts and test/corpus-render-fixtures.test.ts' },
   // The `.md` half of the same window, declared where it is read because only
   // one suite reads a Markdown sidecar (markup-carve/carve-js#2056).
@@ -288,6 +289,10 @@ const MANIFEST = [
   // neither can excuse anything.
   { repo: 'carve-js', path: 'test/include-security-conformance.test.ts', name: 'KNOWN_VECTOR_KEYS', kind: 'js', policy: 'permitted', guard: 'two-way', owner: 'adapter capability list, not an exemption' },
   { repo: 'carve-js', path: 'test/include-security-conformance.test.ts', name: 'KNOWN_EXPECTED_KEYS', kind: 'js', policy: 'permitted', guard: 'two-way', owner: 'adapter capability list, not an exemption' },
+  // The carve-js half of the i04 include golden CARVE-P12-064 moved past
+  // (carve#2623). Its carve-rs twin is HTML_AHEAD_OF_PIN below: one window,
+  // two engines, so both rows carry the same policy and retire together.
+  { repo: 'carve-js', path: 'test/include-conformance.test.ts', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', staleness: 'golden already regenerated - delete its entry', owner: 'markup-carve/carve#2623' },
 
   // -- carve-php -------------------------------------------------------------
   { repo: 'carve-php', path: 'tests/CarveCorpusTest.php', name: 'KNOWN_GAPS', kind: 'php', policy: 'owed', guard: 'two-way', owner: 'tests/CarveCorpusTest.php' },
