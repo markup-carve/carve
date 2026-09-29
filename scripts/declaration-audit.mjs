@@ -289,10 +289,6 @@ const MANIFEST = [
   // neither can excuse anything.
   { repo: 'carve-js', path: 'test/include-security-conformance.test.ts', name: 'KNOWN_VECTOR_KEYS', kind: 'js', policy: 'permitted', guard: 'two-way', owner: 'adapter capability list, not an exemption' },
   { repo: 'carve-js', path: 'test/include-security-conformance.test.ts', name: 'KNOWN_EXPECTED_KEYS', kind: 'js', policy: 'permitted', guard: 'two-way', owner: 'adapter capability list, not an exemption' },
-  // The carve-js half of the i04 include golden CARVE-P12-064 moved past
-  // (carve#2623). Its carve-rs twin is HTML_AHEAD_OF_PIN below: one window,
-  // two engines, so both rows carry the same policy and retire together.
-  { repo: 'carve-js', path: 'test/include-conformance.test.ts', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', staleness: 'golden already regenerated - delete its entry', owner: 'markup-carve/carve#2623' },
 
   // -- carve-php -------------------------------------------------------------
   { repo: 'carve-php', path: 'tests/CarveCorpusTest.php', name: 'KNOWN_GAPS', kind: 'php', policy: 'owed', guard: 'two-way', owner: 'tests/CarveCorpusTest.php' },
@@ -814,6 +810,19 @@ const MODE_BANNER = strict
 console.log(`Declaration audit - mode ${mode.toUpperCase()}`)
 console.log(`  ${MODE_BANNER}`)
 console.log(`  spec repo from this worktree, engines from ${ref}\n`)
+
+// The manifest is keyed `repo:path:name` and the undeclared sweep reads those
+// keys as a Set, so a second row for a key already present is invisible there
+// while the table below still prints it and counts its rows twice. Two PRs
+// adding the same entry at different insertion points merge without a
+// conflict, which is how one arrived (carve#2626 and carve#2628).
+const duplicateManifestKeys = duplicateKeys(MANIFEST.map((e) => `${e.repo}:${e.path}:${e.name ?? '-'}`))
+if (duplicateManifestKeys.length > 0) {
+  console.log('MANIFEST - the same declaration is listed more than once, so its rows are counted twice:')
+  for (const key of duplicateManifestKeys) console.log(`  ${key}`)
+  console.log()
+  failed += duplicateManifestKeys.length
+}
 
 // A stale pin is a RELEASE fault and a per-PR fact. It goes stale on every
 // carve-js merge, so gating a spec PR on it makes the pin bump a prerequisite
