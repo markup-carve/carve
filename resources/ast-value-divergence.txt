@@ -46,12 +46,5 @@
 # opening a div label's inline run is consumed with its whole separating run
 # (CARVE-P9-041); carve-rs's own HTML for both documents drops it, so only the
 # serializer reads the label before the comment is removed.
-#
-# `comment.content` is not a defect in any engine, because no clause decides it.
-# The question is whether a `%%%` body keeps the columns between its host's
-# content column and its own opener, and carve#2535 states it and the arguments
-# on both sides. The side that stands alone moves with the document: on corpus
-# 508 it was carve-php keeping them, here on 513 it is carve-js.
 
 admonition.label  2  carve-rs keeps the trailing comment its renderer drops; markup-carve/carve-rs#2163
-comment.content  1  carve-js keeps the columns between the host's content column and the %%% opener, no clause decides which reading is right; markup-carve/carve#2535

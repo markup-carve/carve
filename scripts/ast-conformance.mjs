@@ -616,6 +616,10 @@ let panelRan = false
 const enginePaths = new Map()
 
 function recordShape(engine, name, doc) {
+  for (const finding of checkCommentContent(doc, commentContentFixtures[name])) {
+    deferredGateFailures.push(`${engine}: ${name}: ${finding}`)
+  }
+
   let perDoc = enginePaths.get(engine)
   if (!perDoc) {
     perDoc = new Map()
@@ -797,7 +801,6 @@ function checkDocument(name, doc, raw, findings) {
   // filename to keep and no finding could be opened (carve#534 lists clusters
   // nobody could reproduce for exactly this reason).
   const own = []
-  own.push(...checkCommentContent(doc, commentContentFixtures[name]))
   checkShape(doc, own)
   checkAdjacentTextRuns(doc, own)
   checkFrontmatterSurvives(doc, source, own)
