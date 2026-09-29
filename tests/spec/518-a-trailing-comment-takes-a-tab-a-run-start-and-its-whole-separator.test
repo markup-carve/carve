@@ -1,0 +1,123 @@
+A trailing comment takes a tab, a run start and its whole separator
+
+```
+a	%% hidden
+.
+<p>a</p>
+```
+
+```
+a  %% hidden
+.
+<p>a</p>
+```
+
+```
+:: a	%% hidden
+: d
+.
+<dl>
+  <dt>a</dt>
+  <dd>d</dd>
+</dl>
+```
+
+```
+:: %% hidden
+: d
+.
+<dl>
+  <dt></dt>
+  <dd>d</dd>
+</dl>
+```
+
+```
+| a	%% hidden | b |
+|---|---|
+| 1 | 2 |
+.
+<table>
+  <thead>
+    <tr><th scope="col">a</th><th scope="col">b</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>2</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| %% hidden | b |
+|---|---|
+| 1 | 2 |
+.
+<table>
+  <thead>
+    <tr><th scope="col"></th><th scope="col">b</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>2</td></tr>
+  </tbody>
+</table>
+```
+
+```
+![alt](u)
+^ cap	%% hidden
+.
+<figure>
+  <img src="u" alt="alt">
+  <figcaption>cap</figcaption>
+</figure>
+```
+
+```
+![alt](u)
+^ %% hidden
+.
+<figure>
+  <img src="u" alt="alt">
+  <figcaption></figcaption>
+</figure>
+```
+
+```
+::: note [a	%% hidden]
+body
+:::
+.
+<aside class="admonition note" aria-label="Note">
+  <p class="div-label">a</p>
+  <p>body</p>
+</aside>
+```
+
+```
+::: note [%% hidden]
+body
+:::
+.
+<aside class="admonition note" aria-label="Note">
+  <p class="div-label"></p>
+  <p>body</p>
+</aside>
+```
+
+```
+a%%b and 50%% stay
+.
+<p>a%%b and 50%% stay</p>
+```
+
+```
+[a	%% hidden](/u)
+.
+<p><a href="/u">a</a></p>
+```
+
+```
+[%% hidden](/u)
+.
+<p><a href="/u"></a></p>
+```
