@@ -10,60 +10,18 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
-### Changed (breaking for AST consumers)
-
-- Define `code_block.content` as literal payload text, preserving the final
-  line break for nonempty code blocks as well as blank ones. Preserve the
-  absence of a final break in the executable spec when an unclosed code fence
-  reaches EOF, and emit no payload newline for an empty fence (carve#2603).
-
-### Fixes
-
-- Release unmarked lines after code and raw fences indented past a quoted host's content column in the executable specification (carve#2554).
-- Keep nested marker-line comment ownership independent of the closer's column
-  in the executable specification (carve#2526).
-- Correct executable-spec container ownership after block comments and fence
-  closers below an item's base column (carve#2507, carve#2509).
-- Pair comment spans with their own delimiters in every host (carve#2503).
-- Read a comment span's ownership from its opener's column, so a `%%%` closer
-  written below an item's content column no longer holds the line after it
-  inside the item (carve#2525).
-- End executable-spec lazy continuation after quoted fences and nested blocks
-  that leave no paragraph. Correct list, description, and `+` attachment
-  boundaries (carve#2510, carve#2514, carve#2515).
-- End it after a quoted fence a list item or footnote body holds open, at every
-  nesting depth (carve#2538, carve#2551).
-- Preserve frontmatter when writing the Markdown target (carve#2502).
-
-### Improvements
-
-- Pin code and raw fences after a blank-separated quote in a footnote body, including fences past the body's minimum column (carve#2598).
-- Compare public importer suites through one Carve reader and ingest corpus AST
-  JSON across every engine pair, with exact drift declarations (carve#2493).
-- Cover raised-colon paragraph folding at list column boundaries (carve#2494).
-- Pin unpadded hyphen-only line-block formatting (carve#2496).
-- Pin the nested colon-div spellings of a quoted fence storing no continuation
-  claim (carve#2524).
-- Reuse container-prefix state and stop unused scans in the executable spec
-  (carve#2510, carve#2515).
-- Clarify that diagnostic message text is engine-specific and excluded from
-  parity comparison (carve#2470).
-- State the contextual-escape boundary in the Carve-target rules (carve#2511).
-
-## [0.1.7] - 2026-09-25
-
 ### Breaking
 
-- The Markdown target's rich-text spelling is normative (`CARVE-P11-045`), so a
-  writer that spelled emphasis, strong, the combined token or strike another way
-  now emits different bytes (carve#2177, carve#2180).
+- The Markdown target's rich-text spelling is fixed, so a writer that spelled
+  emphasis, strong, the combined token or strike another way now emits different
+  bytes (carve#2177, carve#2180).
 - A numeric character reference's hash is escaped under `plain`, `markdown` and
-  `djot`, and the escape corpus's expectation changed with it (carve#2171,
+  `djot`, and an escaper that matched the old bytes now fails (carve#2171,
   carve#2174).
 - `footnote.id` is no longer a permitted AST alias: a definition uses `label`,
   and an ingest refuses `id` (carve#2184).
-- Every empty block container renders one blank HTML body line
-  (`CARVE-P10-001`), replacing the compact forms (carve#2184).
+- Every empty block container renders one blank HTML body line, replacing the
+  compact forms (carve#2184).
 - A footnote reference spells its target `label` on the wire, and `id` is
   refused rather than aliased (carve#2193, carve#2213).
 - A citation item carries its own mode, and the group's `mode` is kept as the
@@ -103,10 +61,9 @@ Releases before 0.1.6 are archived in
 - AST validation rejects an empty `admonition.kind`; a named container requires a
   type word (carve#2346).
 - The render-loss `code` enum is closed at two codes, and a dropped table section
-  attribute is reported as `field-unspellable` on the PART 11 §1d
-  conversion-diagnostics channel instead, so a consumer matching
-  `table-section-attributes-dropped` breaks (carve#2344).
-
+  attribute is reported as `field-unspellable` on the conversion-diagnostics
+  channel instead, so a consumer matching `table-section-attributes-dropped`
+  breaks (carve#2344).
 - The Markdown target's output is written to read correctly in a GFM reader, and
   a writer-parity batch settles block-cell images, the row-head count, a
   whitespace code line, a narrow header and GFM autolinks, so the emitted bytes
@@ -133,22 +90,25 @@ Releases before 0.1.6 are archived in
 - A definition term has no content column at any depth, and a comment or a
   definition under a term folds at every depth (carve#2411, carve#2426,
   carve#2458).
+- `code_block.content` is literal payload text: a nonempty code block keeps its
+  final line break, an unclosed fence reaching the end of the document keeps the
+  absence of one, and an empty fence carries no payload newline (carve#2560,
+  carve#2579, carve#2603).
+- A comment no longer lets a retained list marker below an item's content column
+  open a child list. The marker stays paragraph text, and two spaces still open a
+  sublist (carve#2619).
 
 ### Fixes
 
-- PART 2's no-trailing-whitespace rule names a comment in both of its lists: a
-  `%%` line's text is a content line, where exactly one space or tab after the
-  marker is the separator, and a `%%%` block's body is payload that keeps its
-  bytes (#2314).
+- The no-trailing-whitespace rule names a comment in both of its lists: a `%%`
+  line's text is a content line, where exactly one space or tab after the marker
+  is the separator, and a `%%%` block's body is payload that keeps its bytes
+  (#2314).
 - The binding contract names each binding's real HTML and Markdown importers and
   lists BBCode among the optional ones, in place of out-of-scope reasons that
   described APIs the bindings had outgrown, and the converter ledger declares no
   BBCode drift now that all three engines write an empty quote as `>` (#2310,
   #2311).
-Most of these move the shipped oracle rather than a rule: the executable
-reference and the Ohm grammar disagreed with normative text that already
-existed.
-
 - A reference definition reads both title quotes, rejects an invalid trailing
   block, and follows `link_destination` in both hand-spelled destination readers
   (carve#2122, carve#2123, carve#2124).
@@ -160,7 +120,7 @@ existed.
   cannot keep (carve#2129, carve#2130, carve#2132, carve#2134, carve#2156,
   carve#2160).
 - The combined bold-italic token takes any character as content, including an
-  asterisk run, and runs the PART 9 §9 delimiter stack (carve#2131, carve#2133,
+  asterisk run, and runs the delimiter stack (carve#2131, carve#2133,
   carve#2135, carve#2137, carve#2159, carve#2162).
 - A quote is decided by the glyph that stood before its run, and an escaped
   quote keeps its place in that chain (carve#2158, carve#2161, carve#2164,
@@ -173,7 +133,7 @@ existed.
   (carve#2157, carve#2163).
 - A caption's placeholder is any `#` that does not begin a tag, so most captions
   were going unnumbered (carve#2165, carve#2169).
-- An item's fence is read by one §10 I4 answer rather than two (carve#2141).
+- An item's fence is read by one answer rather than two (carve#2141).
 - A closer below the container's content column does not count, and one does not
   rescue a marker-line colon opener whose body folded in (carve#2145,
   carve#2147, carve#2149, carve#2154).
@@ -205,12 +165,11 @@ existed.
   a top-level marker (carve#2298, carve#2299).
 - Eight committed duplicates of the published schemas are gone, one of which had
   already drifted from the resource it copies (carve#2278).
-- The closer-lookahead sentence under `CARVE-P0-014` states its answer plainly,
-  and the wording of two clauses is clearer with the meaning unchanged
-  (carve#2142, carve#2150).
+- The closer-lookahead sentence states its answer plainly, and the wording of two
+  clauses is clearer with the meaning unchanged (carve#2142, carve#2150).
 - An unattached continuation payload is placed by its own column inside whichever
   container survives, and a `+` at a column no container's marker column names is
-  ordinary text rather than a marker (carve#2334).
+  ordinary text rather than a marker (carve#2334, carve#2343).
 - Where the author wrote no class, the structural-class position splits two ways:
   a mandatory base class leads, and a class derived from the block's own marker or
   directive name trails every authored attribute (carve#2336).
@@ -227,14 +186,11 @@ existed.
   carve#2363).
 - A lone `[` or `]` among the text brackets of bracketed inline content is
   escaped unconditionally in the minimal form, and so is a `(` after a bare `]`
-  where the bytes that follow would read as an inline link destination, so the
-  PART 11 §2b search no longer has to look for either (carve#2358, carve#2359,
-  carve#2366).
+  where the bytes that follow would read as an inline link destination
+  (carve#2358, carve#2359, carve#2366).
 - The include security obligations have clause homes: the two containment
-  refusals in §19 I10 and the two server-side host rules in §25 I1, with the
-  warning cap and live-preview invalidation stated as host guidance
-  (carve#2351).
-
+  refusals and the two server-side host rules, with the warning cap and
+  live-preview invalidation stated as host guidance (carve#2351).
 - Extension content and empty-code runs are exempt from the bracket rules
   (carve#2378).
 - A cell's blocks contribute no header, label, raw block or definition, and a
@@ -249,6 +205,56 @@ existed.
   carve#2406).
 - A verbatim line's residue past its fence opener is pinned in both containers
   (carve#2420, carve#2464).
+- Unmarked lines after a code or raw fence indented past a quoted host's content
+  column leave the quote (carve#2554).
+- A comment span pairs with its own delimiters in every host, and its ownership
+  is read from the column its opener is written at, so a `%%%` closer written
+  below an item's content column no longer decides whether the line after it
+  stays in the item (carve#2503, carve#2525, carve#2526, carve#2540).
+- Container ownership after a block comment, and after a fence closer written
+  below an item's base column, follows the item (carve#2507, carve#2509).
+- Lazy continuation ends after a quoted fence and after a nested block that
+  leaves no paragraph, and the list, description and `+` attachment boundaries
+  follow it, at every nesting depth (carve#2510, carve#2514, carve#2515,
+  carve#2538, carve#2551).
+- Frontmatter survives a write to the Markdown target (carve#2502).
+- A heading's inline spans are read before an outside comment is stripped, so a
+  `%%` inside a code span in a heading stays content and the heading id is
+  derived from the whole text (carve#2545, carve#2547).
+- A list item's tightness is read at every column its paragraph text reaches, so
+  a follower written between the marker column and the content column no longer
+  reads the item as tight (carve#2548, carve#2558).
+- A trailing `%%` comment is recognized after a tab as well as a space, and in
+  any text that can hold inline markup, not only in a heading (carve#2552,
+  carve#2562).
+- A raw block whose format does not match the target is dropped rather than
+  written out as text (carve#2556, carve#2569).
+- A raw payload of one blank line and a raw payload of no lines stay apart: the
+  blank line contributes its newline when the format matches, and no line
+  contributes nothing (carve#2557, carve#2574).
+- A container's `[label]` closes on its own bracket, so a label holding a link no
+  longer turns the container and everything it holds into prose (carve#2573,
+  carve#2576).
+- A link resolves before an emphasis marker written beside its bracket, and a
+  link title reads the character set its production spells (carve#2565,
+  carve#2566, carve#2577).
+- A link written inside a span's label keeps its destination; only a link inside
+  another link unwraps (carve#2578, carve#2586).
+- A quoted attribute value reads the whole escape set, not the closing quote
+  alone (carve#2581, carve#2589).
+- A footnote body whose blocks all render nothing is an empty body and takes the
+  compact spelling (carve#2570, carve#2597).
+- A fenced comment's payload keeps the whitespace beyond its enclosing
+  container's prefix, and the opener adds no dedent of its own (carve#2535,
+  carve#2599).
+- A container's label is an inline run, so emphasis, strong and a code span
+  written there render as elements (carve#2572, carve#2600).
+- What opens an inline run is defined for every host rather than for five named
+  ones, and a fence info token the target drops is ruled (carve#2564, carve#2594,
+  carve#2604).
+- The shared HTML-import fixture escapes the bracket opener rather than the paren
+  behind it, which is what the bracket-before-emphasis order leaves to escape
+  (carve#2602, carve#2610).
 
 ### Improvements
 
@@ -264,7 +270,7 @@ existed.
   boundaries (carve#2202, carve#2226, carve#2235, carve#2246).
 - Sectioning, small caps and ruby are interchange types, and a display equation
   may carry a label and a number (carve#2207, carve#2209, carve#2210,
-  carve#2212, carve#2214, carve#2216, carve#2221).
+  carve#2212, carve#2214, carve#2221).
 - The node-role table is derived once and published at its own `$id`, so each
   engine stops deriving it (carve#2201, carve#2220).
 - A node carries an identity that survives an edit, and an annotation range need
@@ -276,8 +282,8 @@ existed.
 - A titled directive names the region it places, and the marker's own attributes
   reach the placed element (carve#2258, carve#2266).
 - A generated region's own tags follow the marker's column, while the lines
-  between them are the byte-identical contract (`CARVE-P10-010`), which settles
-  three readings of one sentence (carve#2289, carve#2296).
+  between them are the byte-identical contract, which settles three readings of
+  one sentence (carve#2289, carve#2296).
 - A raw-kept element reports its refused attributes, and a refused style
   declaration is one of them (carve#2263, carve#2267, carve#2280, carve#2287).
 - A preserved-attribute row says it one way, and the attributes owing a row are
@@ -311,20 +317,13 @@ existed.
   div fallback before the navigation, and a directive kind's class leads authored
   attributes on a core div and trails them on an extension-owned element
   (carve#2348).
-
 - HTML import recognizes an explicit code-language hint on a code block and on a
   Sphinx, GitHub or MediaWiki wrapper, with validated tokens and a deterministic
   fallback (carve#2387, carve#2393).
 - Every lint rule's default trigger is published as a shared resource, so an
   engine no longer carries its own (carve#2397).
-- The resolution-and-rendering and AST-extensions spec modules are split, at
-  section 18 and at the 29/30 section boundary, so neither runs past the line cap
-  (carve#2416, carve#2430, carve#2431).
-
-### Corpus
-
-- The conformance corpus grows from 1740 to 1869 documents, sections 473 to 498,
-  and every ruling and reference fix above is pinned there.
+- The resolution-and-rendering and AST-extensions spec modules are split, so
+  neither runs past the line cap (carve#2416, carve#2430, carve#2431).
 - Empty and whitespace-only BBCode quotes survive as canonical `>` blocks, and a
   converter case can opt into a byte-exact `expected.crv` check where rendering
   cannot tell the ruled spelling apart (carve#2174).
@@ -335,12 +334,24 @@ existed.
   meaning through cmark-gfm 0.29.0.gfm.13 (carve#2186, carve#2187, carve#2188).
 - A literal vertical tab after a `%%` marker and an ideographic space after text
   both survive (carve#2332).
-- Which column makes a `+` a continuation marker is pinned at columns 0 through
-  3, at the top level and inside an item holding a quote (carve#2343).
-
 - The four Markdown goldens are re-cut, the list-table import is pinned with a
-  shared fixture, and four HTML import rulings are pinned, each with the carve-js
-  pin moved to match (carve#2388, carve#2405, carve#2424, carve#2446).
+  shared fixture, and four HTML import rulings are pinned (carve#2388,
+  carve#2405, carve#2424, carve#2446).
+- Code and raw fences after a blank-separated quote in a footnote body are
+  pinned, including fences past the body's minimum column (carve#2598).
+- Raised-colon paragraph folding at a list column boundary is pinned
+  (carve#2494).
+- Unpadded hyphen-only line-block formatting is pinned (carve#2496).
+- The nested colon-div spellings of a quoted fence storing no continuation claim
+  are pinned (carve#2524).
+- Diagnostic message text is engine-specific and stays out of parity comparison
+  (carve#2470).
+- The contextual-escape boundary is stated in the Carve-target rules
+  (carve#2511).
+- The one column at which a block opener opens a block under a quote in a nested
+  host is pinned; at every other column in the band the opener's lines fold into
+  the quote's paragraph, and that holds for a heading, a thematic break and a
+  table row as well as a fence (carve#2607, carve#2612).
 
 ## [0.1.6] - 2026-09-18
 
@@ -440,6 +451,5 @@ existed.
   inside the cell** (carve#2113), the §1b case the engines diverged on while
   the fixture reported them conformant.
 
-[Unreleased]: https://github.com/markup-carve/carve/compare/0.1.7...HEAD
-[0.1.7]: https://github.com/markup-carve/carve/compare/0.1.6...0.1.7
+[Unreleased]: https://github.com/markup-carve/carve/compare/0.1.6...HEAD
 [0.1.6]: https://github.com/markup-carve/carve/compare/0.1.5...0.1.6
