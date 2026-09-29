@@ -328,6 +328,10 @@ const MANIFEST = [
   // staleness half is the adapter's own test, which fails the moment a row
   // stops diverging.
   { repo: 'carve-php', path: 'tests/TestCase/Transform/IncludeSecurityConformanceTest.php', name: 'DIVERGENCES', kind: 'php', policy: 'owed', guard: 'two-way', staleness: 'testNoDeclaredDivergenceIsStale', owner: 'markup-carve/carve-php#1953' },
+  // Container-boundary rows this engine answers differently, with the answer it
+  // gives. Same shape as the DIVERGENCES above, and the named test is the half
+  // that expires a row once the shared fixture agrees with it.
+  { repo: 'carve-php', path: 'tests/TestCase/Parser/ContainerBoundariesTest.php', name: 'DIVERGENCES', kind: 'php', policy: 'owed', guard: 'two-way', staleness: 'testEveryDivergenceStillDiffers', owner: 'markup-carve/carve-php#2754' },
 
   // -- carve-rs --------------------------------------------------------------
   { repo: 'carve-rs', path: 'tests/corpus.rs', name: 'KNOWN_GAPS', kind: 'rust', policy: 'owed', guard: 'two-way', owner: 'tests/corpus.rs' },
