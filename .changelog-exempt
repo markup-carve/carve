@@ -44,3 +44,4 @@
 2609: 0.1.7 - drops two declarations describing divergences the engines no longer have. Part of the release gate tracked in carve#2498.
 2611: 0.1.7 - declares the ingest pairs the container-label corpus row brought, whose ruling the section cites under carve#2600. Ledger only.
 2617: 0.1.7 - removes the glued-fence lint exception the carve-js fix resolved. A parity declaration, not a rule.
+2637: 0.1.7 - moves the reference engine pin and drops the drift rows the bumped engine caught up on. Same ledger class as carve#2601 and carve#2617; no clause, corpus row or oracle answer moved.
