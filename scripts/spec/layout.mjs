@@ -5686,6 +5686,13 @@ function collectItems(lines, i, list, state, ind, meas) {
       // frame; this preserves the established #618/#682 ownership result.
       if (nm && nm.indent < contentCol && nm.indent > baseIndent && !openPara &&
           afterComment && itemLines.length > 0) {
+        // The sub-list ATTACHES, so it consumes the separation the invisible
+        // line left pending - §17 L2, and the same accounting the content
+        // column does above. Left standing, the flag reached the sibling
+        // marker and loosened a list its content-column spelling renders
+        // tight (carve#2548).
+        blankBeforeInvisible = false
+        pendingSeparation = false
         pushLine(lm.rest, { col: 0, rest: lm.rest, tabs: false })
         i++
         continue
@@ -5815,6 +5822,19 @@ function collectItems(lines, i, list, state, ind, meas) {
         // fence with a closer INTERRUPTS (I4), exactly as a column-0 quote/
         // heading does via startsVisibleBlock -- FENCE only matches at column 0,
         // so an indented (below-content) fence still folds as lazy text.
+        //
+        // §17 L1b, ASKED WHEREVER THE ITEM'S OWN PARAGRAPH TEXT ARRIVES. The
+        // clause names no column, so a line the item keeps as paragraph text
+        // answers the second-PARAGRAPH question here exactly as it does at the
+        // content column - the only branch that asked it. So `- t` / blank /
+        // `  %% c` / ` z` came out TIGHT while the same tree with `z` one column
+        // right is pinned LOOSE by corpus 186 (carve#2548). Every line reaching
+        // this push is visible item text: comments are kept above, markers are
+        // classified above, and a visible block opener never folds.
+        if (pendingSeparation) {
+          list.tight = false
+          pendingSeparation = false
+        }
         pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
         i++
         continue

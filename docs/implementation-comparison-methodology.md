@@ -36,6 +36,7 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim`,
 `515-a-nested-marker-comment-keeps-its-own-ownership`,
 `516-a-heading-comment-preserves-code-span-content`,
+`517-a-band-paragraph-after-an-invisible-line-leaves-the-item-loose`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
@@ -84,6 +85,15 @@ below-column closers retain the outer item, declared in
 516's eight heading documents match the pinned carve-js `c5df77f6`. They were
 added after the three-engine snapshot; Rust and PHP were not measured for this
 change.
+
+517's five band-column documents match the pinned carve-js `c5df77f6`, which
+reads all five the way this ruling does. carve-js `main` (`4c89ca26b`) does not:
+`002ef9fcc` (carve-js#2300) turned the three band paragraphs tight and the
+attached sub-list loose, and its parent `aa481d0d6` reproduces all five, so the
+engine held the reading a day before the pin was measured. carve-php
+`2742f8175` reads the three band paragraphs tight and splits the attached
+sub-list document into three lists, which is an ownership question this ruling
+does not reach. carve-rs is unmeasured here.
 
 The former case-by-case notes remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/a22f6a23f7913e44cb3461f3f608605660619032/docs/implementation-comparison-methodology.md).

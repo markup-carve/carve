@@ -320,6 +320,7 @@ index: examples/edge-cases/index.md
   an-empty-description-body-is-written-with-the-empty-sentinel
   a-colon-followed-by-only-whitespace-is-not-a-description
   a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text
+  a-band-paragraph-after-an-invisible-line-leaves-the-item-loose
 
 [edge-containers] Containers, quotes and fences
 > Divs, block quotes, code and comment fences: nesting, lazy continuation, absorption and what closes what.
