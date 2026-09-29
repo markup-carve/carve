@@ -575,6 +575,7 @@ index: examples/edge-cases/index.md
   an-autolink-body-admits-non-ascii-and-excludes-format-characters
   unresolved-reference-link
   bare-urls-stay-literal
+  a-link-inside-a-span-s-label-keeps-its-destination
   03-links-4
   03-links-8
   03-links-11
