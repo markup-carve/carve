@@ -1,0 +1,142 @@
+A zero-line and a one-blank raw payload are not the same block
+
+````
+- a
+
+  ```=html
+  ```
+
+- s
+.
+<ul>
+  <li><p>a</p>
+    
+  </li>
+  <li><p>s</p></li>
+</ul>
+````
+
+````
+- a
+
+  ```=html
+
+  ```
+
+- s
+.
+<ul>
+  <li><p>a</p>
+    
+
+  </li>
+  <li><p>s</p></li>
+</ul>
+````
+
+````
+> a
+>
+> ```=html
+> ```
+
+b
+.
+<blockquote>
+  <p>a</p>
+  
+</blockquote>
+<p>b</p>
+````
+
+````
+> a
+>
+> ```=html
+>
+> ```
+
+b
+.
+<blockquote>
+  <p>a</p>
+  
+
+</blockquote>
+<p>b</p>
+````
+
+````
+::: note
+a
+
+```=html
+```
+:::
+.
+<aside class="admonition note" aria-label="Note">
+  <p>a</p>
+  
+</aside>
+````
+
+````
+::: note
+a
+
+```=html
+
+```
+:::
+.
+<aside class="admonition note" aria-label="Note">
+  <p>a</p>
+  
+
+</aside>
+````
+
+````
+> a
+>
+> ```=html
+
+b
+.
+<blockquote>
+  <p>a</p>
+  
+</blockquote>
+<p>b</p>
+````
+
+````
+> a
+>
+> ```=html
+>
+
+b
+.
+<blockquote>
+  <p>a</p>
+  
+
+</blockquote>
+<p>b</p>
+````
+
+````
+a
+
+```=html
+
+```
+
+b
+.
+<p>a</p>
+
+
+<p>b</p>
+````
