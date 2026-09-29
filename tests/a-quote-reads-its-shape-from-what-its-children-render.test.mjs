@@ -4,16 +4,12 @@
  * framed a one-element body on three lines. The pinned carve-js reads the same
  * shape compactly, and PART 10 SS4 gives a line to each block ELEMENT.
  *
- * The first shape of that ticket is PARKED, not decided the other way. A footnote
- * body whose only block is a dropped raw keeps its blank line here, and carve-js
- * and carve-php both omit it, for that body and for a comment-only body alike. The
- * claim that the engines agreed with this renderer came from a comment in
- * html.mjs rather than from a measurement, so carve#2570 holds the question open.
- *
- * The assertion below therefore pins CURRENT behavior, not a ruling. The two
- * shapes share one mechanism, and its job is to stop a change to the child count
- * from moving the body slot as a side effect. When the parked question is answered
- * it may need to flip, and it says so here rather than reading as settled.
+ * The ticket's first shape was parked when this file was written and is now ruled
+ * the same way, as CARVE-P9-077: a footnote body whose every block renders nothing
+ * is an empty body. Its own controls live in
+ * a-footnote-body-whose-blocks-render-nothing-is-empty.test.mjs; the case kept
+ * below is the crossing point, and it is here so that a change to the child count
+ * cannot move the body slot as a side effect.
  */
 
 import test from 'node:test'
@@ -55,10 +51,9 @@ test('two visible paragraphs are still two lines', () => {
   assert.equal(html('> a\n>\n> b\n'), '<blockquote>\n  <p>a</p>\n  <p>b</p>\n</blockquote>')
 })
 
-// Current behavior, not a ruling: carve#2570 parks which side moves.
-test('a footnote body whose only block is a dropped raw keeps its blank line', () => {
+test('a footnote body whose only block is a dropped raw holds no line for it', () => {
   assert.match(
     html('x[^1]\n\n[^1]: ```=latex\n    \\x\n    ```\n'),
-    /<li id="fn1">\n\n {6}<p>/,
+    /<li id="fn1">\n {6}<p><a href="#fnref1"/,
   )
 })

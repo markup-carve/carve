@@ -47,6 +47,7 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `525-a-link-inside-a-span-s-label-keeps-its-destination`,
 `526-a-quoted-value-and-a-quoted-title-escape-different-sets`,
 `527-a-tab-does-not-open-the-title-slot`,
+`528-a-footnote-body-whose-every-block-renders-nothing-is-an-empty-body`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
@@ -178,6 +179,17 @@ closed, which the production and the ohm already said. The ohm's own note
 claimed the engines accepted that tab, and
 [#2581](https://github.com/markup-carve/carve/issues/2581) is where the
 measurement replaced the claim.
+
+528's six documents were measured against carve-js `991f8e0`, the pinned carve-js
+`c5df77f6` and carve-php `0175e15e`, each from a clean clone installed here. All
+three reproduce all six: a footnote body whose every block renders nothing takes
+the same spelling as an empty one, and the two controls keep their visible block
+on its own line. This renderer was the outlier and
+[#2570](https://github.com/markup-carve/carve/issues/2570) moved it. carve-rs is
+NOT measured here: the release binary on this host sits in a target directory
+several checkouts share and reports no version, so nothing establishes which
+commit built it. The earlier withdrawn ruling on this shape rested on a reading
+of that kind, so it is left out rather than quoted.
 
 The former case-by-case notes remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/a22f6a23f7913e44cb3461f3f608605660619032/docs/implementation-comparison-methodology.md).

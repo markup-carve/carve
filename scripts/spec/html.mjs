@@ -1495,10 +1495,11 @@ function resolveFootnotes(html, ctx) {
       continue
     }
     const body = ctx.footnoteDefs.get(label)
-    // `holdsAnInvisibleBlock` is set by the layout pass for a body whose only
-    // content was a comment -- see its note there for why a block count
-    // cannot answer this on its own.
-    const noBlocks = body.length === 0 && !body.holdsAnInvisibleBlock
+    // A body whose every block RENDERS NOTHING is an empty body (PART 9 SS16,
+    // CARVE-P9-077). `every` answers the zero-block case too, which is what
+    // keeps a definition line whose whole body is a block-attribute run on the
+    // same reading.
+    const noBlocks = body.every((b) => rendersNoElement(b))
     const out = body.map((b) => renderBlock(b, 3, ctx)).filter((x) => x !== null).join('\n')
     bodies.push({ rendered: substitute(resolveRefs(out, ctx)), noBlocks })
   }
@@ -1525,30 +1526,13 @@ function resolveFootnotes(html, ctx) {
     if (rendered.endsWith('</p>')) {
       rendered = rendered.slice(0, -4) + backlink + '</p>'
     } else {
-      // A body holding NO BLOCKS renders as the empty string, and the
-      // separator would then open the `<li>` with a blank line that no engine
-      // emits. The shape is reachable: a definition line whose whole body is a
-      // block-attribute run leaves the body empty, which is what PART 11 SS7b's
-      // sentinel is written for.
-      //
-      // A body holding ONE block that RENDERS to nothing -- a comment, or a raw
-      // block the target does not match -- keeps the blank line. The two look
-      // identical here (`rendered` is '' either way) and are told apart by the
-      // block count, not by the string.
-      //
-      // WHY THAT IS NOT SETTLED, and what this comment used to claim. It said the
-      // blank line is what all three engines emit for a comment. Measured at
-      // `0b2e5fd7` against carve-js `c5df77f6`, that is false: carve-js emits no
-      // blank line, for the comment body and for the dropped-raw body alike, and
-      // carve-php omits it too. This renderer is the outlier on both spellings,
-      // and the claim of agreement is what made the question look decided - a
-      // reading of this file taken for a measurement of the engines (carve#2570).
-      //
-      // Two readings remain and no clause picks between them: a body whose every
-      // block renders nothing is an empty body and takes the compact spelling, or
-      // it keeps a slot line for content that renders nothing. The shape is
-      // whitespace-only and nothing pins it, so carve#2570 parks it. DO NOT move
-      // this line on the strength of engine agreement in either direction.
+      // An EMPTY body renders as the empty string, and the separator would then
+      // open the `<li>` with a blank line. A body whose every block renders
+      // nothing is empty on the same terms - only what reaches the reader
+      // decides the shape (CARVE-P9-077), so a comment, a fenced comment and a
+      // dropped raw block all leave the body empty and none of them buys a line.
+      // A body holding a visible block ALONGSIDE an invisible one is not empty,
+      // and takes the separator.
       rendered += `${noBlocks ? '' : '\n'}      <p>${backlink}</p>`
     }
     return `    <li id="fn${n}">\n${rendered}\n    </li>`

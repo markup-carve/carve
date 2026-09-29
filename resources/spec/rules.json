@@ -1823,6 +1823,12 @@
       "scope": "resolution-rendering"
     },
     {
+      "id": "CARVE-P9-077",
+      "part": "9",
+      "title": "A BODY WHOSE EVERY BLOCK RENDERS NOTHING IS AN EMPTY BODY",
+      "scope": "resolution-rendering"
+    },
+    {
       "id": "CARVE-P10-011",
       "part": "10",
       "title": "DIRECTIVE CLASSES FOLLOW ELEMENT OWNERSHIP",
