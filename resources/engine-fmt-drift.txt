@@ -10,6 +10,12 @@
 # from the writer side. Both belong here; corpus-fmt-cross-read.test.mjs has
 # always consulted this file for the second kind (carve#1450).
 #
+# THE SUBJECT IS THE PIN, NOT THE THREE CHECKOUTS. Both readers above run
+# against the build package.json pins. The cross-engine writer gate -
+# `compare:impls --roundtrip`, the formatter shards of ast-conformance.yml -
+# consults no ledger, so a red shard cannot be declared here and clears only
+# when the engine does (carve#2588).
+#
 # Delete a line the moment the pin moves past its fix - the header of
 # engine-pin-drift.txt says the same thing for the same reason.
 #

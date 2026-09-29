@@ -165,7 +165,14 @@ const MANIFEST = [
   { repo: 'spec', path: 'resources/ast-extent-findings.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run ast:check' },
   // ONE OF THE ENGINE-LAG ENTRIES: see the `prPolicy` note on the
   // engine-pin ledger below. Same window, described from the writer side.
-  { repo: 'spec', path: 'resources/engine-fmt-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run fmt:check' },
+  //
+  // The owner is the PINNED-build test, not `npm run fmt:check`, which this row
+  // named until carve#2588 and which reads no `resources/` file at all. Getting
+  // that wrong is not cosmetic: it is the only place a reader can look up which
+  // check honors a declaration, and the wrong answer sent a ruling on carve#2588
+  // to declare a cross-engine shard red here, where nothing would have read it.
+  // `compare:impls --roundtrip` consults no ledger by design.
+  { repo: 'spec', path: 'resources/engine-fmt-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'tests/corpus-fmt-roundtrip.test.mjs' },
   { repo: 'spec', path: 'resources/converter-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run compare:convert' },
   // ANOTHER ENGINE-LAG ENTRY, AND THE ONE THE RULE WAS WRITTEN FOR. All
   // are owed before a tag and declared inside a pull request: see the
