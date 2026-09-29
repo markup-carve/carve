@@ -101,8 +101,15 @@ CI green:
 
    ```sh
    npm run ast:check   # resources/ast-value-divergence.txt, ast-span-divergence.txt
-   npm run fmt:check   # resources/engine-fmt-drift.txt
+   npm run fmt:check   # tests/corpus/*.fmt, no ledger of its own
    ```
+
+   `resources/engine-fmt-drift.txt` is not one of these. It is read by
+   `tests/corpus-fmt-roundtrip.test.mjs` and its two siblings under `npm test`, so
+   its precondition is the PIN like `engine-pin-drift.txt`'s. The cross-engine
+   writer gate, `compare:impls --roundtrip`, consults no ledger at all: a red
+   formatter shard cannot be declared anywhere and clears only when the engine
+   does (carve#2588).
 
    `ast:check` also compares carve-rb, from a fourth checkout, `../carve-rb`.
    That comparison declares nothing and needs nothing at a release: it fetches
