@@ -2,38 +2,12 @@
   "version": 1,
   "measured": {
     "date": "2026-09-29",
-    "spec": "3aa041b3d57d",
-    "js": "4c89ca26b88d",
-    "php": "2742f8175432",
-    "rust": "840e38cfe852"
+    "spec": "89157529b36c",
+    "js": "991f8e017601",
+    "php": "0175e15e3c1a",
+    "rust": "9118bb8aed59"
   },
   "differences": [
-    {
-      "key": "commonmark/markdown/144",
-      "reason": "Fenced code blocks: rendered HTML differs between js/php and rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "f74e4c1c41fc986fb00a23fdd7bc5669a8f34738047da13ef1dcde3f91639460",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "```\n\n```\n",
-            "html": "<pre><code>\n</code></pre>"
-          },
-          "php": {
-            "status": 0,
-            "source": "```\n```\n",
-            "html": "<pre><code>\n</code></pre>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "```;\n\n```\n",
-            "html": "<p><code>;</code></p>\n<pre><code>\n</code></pre>"
-          }
-        }
-      }
-    },
     {
       "key": "commonmark/markdown/194",
       "reason": "Link reference definitions: rendered HTML differs between js and php and rust.",
@@ -347,32 +321,6 @@
       }
     },
     {
-      "key": "commonmark/markdown/34",
-      "reason": "Entity and numeric character references: rendered HTML differs between js/php and rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "9c943a89459cc62810e8ab9e19190e4eca5d01ccacf70b6dd8630592c25ac59a",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "```f\nfoo\n```\n",
-            "html": "<pre><code class=\"language-f\">foo\n</code></pre>"
-          },
-          "php": {
-            "status": 0,
-            "source": "```f\nfoo\n```\n",
-            "html": "<pre><code class=\"language-f\">foo\n</code></pre>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "```föö\nfoo\n```\n",
-            "html": "<p><code>föö\nfoo\n</code></p>"
-          }
-        }
-      }
-    },
-    {
       "key": "commonmark/markdown/40",
       "reason": "Entity and numeric character references: rendered HTML differs between js and php/rust.",
       "issue": "https://github.com/markup-carve/carve/issues/2522",
@@ -400,25 +348,25 @@
     },
     {
       "key": "commonmark/markdown/473",
-      "reason": "Emphasis and strong emphasis: rendered HTML differs between js/php and rust.",
+      "reason": "Emphasis and strong emphasis: carve-js and carve-php rewrite the unmatched Markdown emphasis marker as a Carve marker, so the literal character in the output changes; carve-rs keeps the character the source wrote.",
       "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "58c3a0183ea273c2ce13022a027e671879646b97938aaa8631302f27dbdfef78",
+      "fingerprint": "904b64f3c3d9e9070a6d02451d71f93f03b87fe695bed58eaeae1bed074f941b",
       "observation": {
         "kind": "meaning",
         "answers": {
           "js": {
             "status": 0,
             "source": "/[bar/](/url)\n",
-            "html": "<p><em>[bar</em>](/url)</p>"
+            "html": "<p>/<a href=\"/url\">bar/</a></p>"
           },
           "php": {
             "status": 0,
             "source": "/[bar/](/url)\n",
-            "html": "<p><em>[bar</em>](/url)</p>"
+            "html": "<p>/<a href=\"/url\">bar/</a></p>"
           },
           "rust": {
             "status": 0,
-            "source": "*[bar\\*](/url)\n",
+            "source": "*[bar*](/url)\n",
             "html": "<p>*<a href=\"/url\">bar*</a></p>"
           }
         }
@@ -426,104 +374,26 @@
     },
     {
       "key": "commonmark/markdown/474",
-      "reason": "Emphasis and strong emphasis: rendered HTML differs between js/php and rust.",
+      "reason": "Emphasis and strong emphasis: carve-js and carve-php rewrite the unmatched Markdown emphasis marker as a Carve marker, so the literal character in the output changes; carve-rs keeps the character the source wrote.",
       "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "fc8493ee1b7e0488f9a7626420fe3da6ad2d4736fa0771e7e50e22b48db8b8e6",
+      "fingerprint": "f6707a6063a61425ccd9c430a58248bd74d044c89606c4fbbef7789d3facf2bf",
       "observation": {
         "kind": "meaning",
         "answers": {
           "js": {
             "status": 0,
             "source": "/foo [bar/](/url)\n",
-            "html": "<p><em>foo [bar</em>](/url)</p>"
+            "html": "<p>/foo <a href=\"/url\">bar/</a></p>"
           },
           "php": {
             "status": 0,
             "source": "/foo [bar/](/url)\n",
-            "html": "<p><em>foo [bar</em>](/url)</p>"
+            "html": "<p>/foo <a href=\"/url\">bar/</a></p>"
           },
           "rust": {
             "status": 0,
-            "source": "_foo [bar\\_](/url)\n",
+            "source": "_foo [bar_](/url)\n",
             "html": "<p>_foo <a href=\"/url\">bar_</a></p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "commonmark/markdown/491",
-      "reason": "Links: rendered HTML differs between js/rust and php.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "0bc58e570298a3fad87953435bee4972da9ca326128a4d3983d2721defd70418",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "[link](`<foo\nbar>`{=html})\n",
-            "html": "<p>[link](<foo\nbar>)</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "[link](%60%3Cfoo%0Abar%3E%60%7B=html%7D)\n",
-            "html": "<p><a href=\"%60%3Cfoo%0Abar%3E%60%7B=html%7D\">link</a></p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "[link](`<foo\nbar>)`{=html}\n",
-            "html": "<p>[link](<foo\nbar>)</p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "commonmark/markdown/493",
-      "reason": "Links: rendered HTML differs between js/rust and php.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "800cf23350368f73384a0d0447b3682ea7be1dc74565bd690e282ca95a67d829",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "[link]\\(<foo\\>)\n",
-            "html": "<p>[link](&lt;foo&gt;)</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "[link](%3Cfoo%5C%3E)\n",
-            "html": "<p><a href=\"%3Cfoo%5C%3E\">link</a></p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "[link]\\(<foo>)\n",
-            "html": "<p>[link](&lt;foo&gt;)</p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "commonmark/markdown/494",
-      "reason": "Links: rendered HTML differs between js/rust and php.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "42a82cc7a03670a22d6ab8f92aae59a8dabaa32f8e66a45b8cfce703d2dbf280",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "[a]\\(<b)c\n[a]\\(<b)c>\n[a]\\(`<b>`{=html}c)\n",
-            "html": "<p>[a](&lt;b)c\n[a](&lt;b)c&gt;\n[a](<b>c)</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "[a](%3Cb)c\n[a](b\\)c\n[a](bc)\n",
-            "html": "<p><a href=\"%3Cb\">a</a>c\n[a](b)c\n<a href=\"bc\">a</a></p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "[a]\\(<b)c\n[a]\\(<b)c>\n[a](`<b>`{=html}c\\)\n",
-            "html": "<p>[a](&lt;b)c\n[a](&lt;b)c&gt;\n[a](<b>c)</p>"
           }
         }
       }
@@ -608,26 +478,52 @@
     },
     {
       "key": "commonmark/markdown/521",
-      "reason": "Links: rendered HTML differs between js/php and rust.",
+      "reason": "Emphasis and strong emphasis: carve-js and carve-php rewrite the unmatched Markdown emphasis marker as a Carve marker, so the literal character in the output changes; carve-rs keeps the character the source wrote.",
       "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "55329c87e6ae229b922229d56d5ec4e823f729fedd1905bbb28cb9f68548a03d",
+      "fingerprint": "9651e2a9c23b91428c24fc7c566d2c95803823daca87d3332644eaca731ba677",
       "observation": {
         "kind": "meaning",
         "answers": {
           "js": {
             "status": 0,
             "source": "/[foo/](/uri)\n",
-            "html": "<p><em>[foo</em>](/uri)</p>"
+            "html": "<p>/<a href=\"/uri\">foo/</a></p>"
           },
           "php": {
             "status": 0,
             "source": "/[foo/](/uri)\n",
-            "html": "<p><em>[foo</em>](/uri)</p>"
+            "html": "<p>/<a href=\"/uri\">foo/</a></p>"
           },
           "rust": {
             "status": 0,
-            "source": "*[foo\\*](/uri)\n",
+            "source": "*[foo*](/uri)\n",
             "html": "<p>*<a href=\"/uri\">foo*</a></p>"
+          }
+        }
+      }
+    },
+    {
+      "key": "commonmark/markdown/523",
+      "reason": "Emphasis and strong emphasis: carve-js and carve-php write the unmatched marker as a Carve marker whose pair the following bracket run then breaks, losing the emphasis CommonMark keeps; carve-rs escapes the bracket instead.",
+      "issue": "https://github.com/markup-carve/carve/issues/2522",
+      "fingerprint": "2a82f4fbea71b55d1ee697a0263d5861e93d8fe4d6de4d3943dcdf0616e310c5",
+      "observation": {
+        "kind": "meaning",
+        "answers": {
+          "js": {
+            "status": 0,
+            "source": "/foo [bar/ baz]\n",
+            "html": "<p>/foo [bar/ baz]</p>"
+          },
+          "php": {
+            "status": 0,
+            "source": "/foo [bar/ baz]\n",
+            "html": "<p>/foo [bar/ baz]</p>"
+          },
+          "rust": {
+            "status": 0,
+            "source": "/foo [bar/ baz\\]\n",
+            "html": "<p><em>foo [bar</em> baz]</p>"
           }
         }
       }
@@ -712,25 +608,25 @@
     },
     {
       "key": "commonmark/markdown/534",
-      "reason": "Links: rendered HTML differs between js/php and rust.",
+      "reason": "Emphasis and strong emphasis: carve-js and carve-php rewrite the unmatched Markdown emphasis marker as a Carve marker, so the literal character in the output changes; carve-rs keeps the character the source wrote.",
       "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "2dccb839c8c8094b6ea5b81b2ca23f51e8eec7fe2601d49a98c29a89d648c178",
+      "fingerprint": "9651e2a9c23b91428c24fc7c566d2c95803823daca87d3332644eaca731ba677",
       "observation": {
         "kind": "meaning",
         "answers": {
           "js": {
             "status": 0,
             "source": "/[foo/][ref]\n\n[ref]: /uri\n",
-            "html": "<p><em>[foo</em>][ref]</p>"
+            "html": "<p>/<a href=\"/uri\">foo/</a></p>"
           },
           "php": {
             "status": 0,
             "source": "/[foo/][ref]\n\n[ref]: /uri\n",
-            "html": "<p><em>[foo</em>][ref]</p>"
+            "html": "<p>/<a href=\"/uri\">foo/</a></p>"
           },
           "rust": {
             "status": 0,
-            "source": "*[foo\\*](/uri)\n",
+            "source": "*[foo*](/uri)\n",
             "html": "<p>*<a href=\"/uri\">foo*</a></p>"
           }
         }
@@ -868,25 +764,25 @@
     },
     {
       "key": "commonmark/markdown/564",
-      "reason": "Links: rendered HTML differs between js/php and rust.",
+      "reason": "Emphasis and strong emphasis: carve-js and carve-php rewrite the unmatched Markdown emphasis marker as a Carve marker, so the literal character in the output changes; carve-rs keeps the character the source wrote.",
       "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "fb73eaeaf582465b37f7ea0fe2402ac3b14316809d13ab10718ad3383a289de1",
+      "fingerprint": "50d5699cde8f79226bd4376bc74f1ca6c84c7b7f59a4b8482db21557cceccc10",
       "observation": {
         "kind": "meaning",
         "answers": {
           "js": {
             "status": 0,
             "source": "/[foo/][foo*]\n\n[foo*]: /url\n",
-            "html": "<p><em>[foo</em>][foo*]</p>"
+            "html": "<p>/<a href=\"/url\">foo/</a></p>"
           },
           "php": {
             "status": 0,
             "source": "/[foo/][foo*]\n\n[foo*]: /url\n",
-            "html": "<p><em>[foo</em>][foo*]</p>"
+            "html": "<p>/<a href=\"/url\">foo/</a></p>"
           },
           "rust": {
             "status": 0,
-            "source": "*[foo\\*](/url)\n",
+            "source": "*[foo*](/url)\n",
             "html": "<p>*<a href=\"/url\">foo*</a></p>"
           }
         }
@@ -1096,162 +992,6 @@
             "status": 0,
             "source": "\\{\\#id .class}\n\nA paragraph\n",
             "html": "<p>{#id .class}</p>\n<p>A paragraph</p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "djot/attributes.test:227",
-      "reason": "attributes.test: rendered HTML differs between js/php and rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "fdcff9675cfd07c9ce2d0152664d2de7559d8ad65cdd02c6fd35ed4f521a4e29",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "foo{#ident % this is a comment % .class}\n",
-            "html": "<p>foo{<span class=\"tag\"><strong>#ident</strong></span> % this is a comment % .class}</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "foo{#ident % this is a comment % .class}\n",
-            "html": "<p>foo{<span class=\"tag\"><strong>#ident</strong></span> % this is a comment % .class}</p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "foo\\{\\#ident % this is a comment % .class}\n",
-            "html": "<p>foo{#ident % this is a comment % .class}</p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "djot/attributes.test:233",
-      "reason": "attributes.test: rendered HTML differs between js/php and rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "1e7155b41cf00d7cb97bcfe808008644d069feb760182bb92566bb1d2c7cdfce",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "foo{#ident % this is a comment}\n",
-            "html": "<p>foo{<span class=\"tag\"><strong>#ident</strong></span> % this is a comment}</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "foo{#ident % this is a comment}\n",
-            "html": "<p>foo{<span class=\"tag\"><strong>#ident</strong></span> % this is a comment}</p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "foo\\{\\#ident % this is a comment}\n",
-            "html": "<p>foo{#ident % this is a comment}</p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "djot/attributes.test:31",
-      "reason": "attributes.test: rendered HTML differs between js/php and rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "f0a3bb1b53e7f3d395e9e0b9cb8c582d9f6d16bb568f0301c67d55d11febc235",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "a *b{#id key=\"*\"}o\n",
-            "html": "<p>a <strong>b{<span class=\"tag\"><strong>#id</strong></span> key=“</strong>”}o</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "a *b{#id key=\"*\"}o\n",
-            "html": "<p>a <strong>b{<span class=\"tag\"><strong>#id</strong></span> key=“</strong>”}o</p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "a *b\\{\\#id key=\"*\"}o\n",
-            "html": "<p>a <strong>b{#id key=“</strong>”}o</p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "djot/attributes.test:39",
-      "reason": "attributes.test: rendered HTML differs between js/php and rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "97f875ad6698cdd59c8479020850e738e043ac3f44065662cfc00416e3c23e35",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "hi{key=\"{#hi\"}\n",
-            "html": "<p>hi{key=“{<span class=\"tag\"><strong>#hi</strong></span>”}</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "hi{key=\"{#hi\"}\n",
-            "html": "<p>hi{key=“{<span class=\"tag\"><strong>#hi</strong></span>”}</p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "hi{key=\"\\{\\#hi\"}\n",
-            "html": "<p>hi{key=“{#hi”}</p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "djot/attributes.test:60",
-      "reason": "attributes.test: rendered HTML differs between js/php and rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "d64e86f926920099a37fddc955c568dcfc54f2b76c17dc2c916f1fdb4d1b27a3",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "hi\\{key=\"abc{#hi}\"\n",
-            "html": "<p>hi{key=“abc{<span class=\"tag\"><strong>#hi</strong></span>}”</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "hi\\{key=\"abc{#hi}\"\n",
-            "html": "<p>hi{key=“abc{<span class=\"tag\"><strong>#hi</strong></span>}”</p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "hi\\{key=\"abc\\{\\#hi}\"\n",
-            "html": "<p>hi{key=“abc{#hi}”</p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "djot/attributes.test:80",
-      "reason": "attributes.test: rendered HTML differs between js/php and rust.",
-      "issue": "https://github.com/markup-carve/carve/issues/2522",
-      "fingerprint": "e37eb8b69de1e0fadbf1235a931b59267e97798c780144bcaf3e83a0a5fd3169",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "hi{#id .class\nkey=\"value\"}\n",
-            "html": "<p>hi{<span class=\"tag\"><strong>#id</strong></span> .class\nkey=“value”}</p>"
-          },
-          "php": {
-            "status": 0,
-            "source": "hi{#id .class\nkey=\"value\"}\n",
-            "html": "<p>hi{<span class=\"tag\"><strong>#id</strong></span> .class\nkey=“value”}</p>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "hi\\{\\#id .class\nkey=\"value\"}\n",
-            "html": "<p>hi{#id .class\nkey=“value”}</p>"
           }
         }
       }
