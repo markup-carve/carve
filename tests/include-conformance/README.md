@@ -161,6 +161,12 @@ sibling `../carve-js/dist/index.js`, then to an installed `@markup-carve/carve`.
 Regenerate after any **deliberate** carve-js behavior change, review the diff,
 and commit the updated goldens.
 
+A golden with no authored input behind it does not survive a re-run, so the
+generator refuses to start when it finds one and names it (carve#2630). Author
+the input, or pass `--prune` to remove goldens whose input was deliberately
+deleted. `tests/every-include-vector-has-an-authored-input.test.mjs` holds the
+same property in `npm test`, without needing a built engine.
+
 ## A ruling with no golden yet
 
 A golden is only as good as the engine it was generated from, so a rule this

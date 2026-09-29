@@ -1128,4 +1128,33 @@ export const vectors = [
       'secret.crv': 'TOP SECRET\n',
     },
   },
+
+  // --- I11 the base a target below the root resolves against ---------------
+  {
+    name: 'i11-fs-missing-target-below-the-root-names-where-it-would-appear',
+    description: 'An unresolved target in a file below the root is resolved against that file, like a resolved one.',
+    rules: ['I11'],
+    mode: 'filesystem',
+    resolver: 'filesystem',
+    root: '.',
+    entryPath: 'main.crv',
+    tree: {
+      'main.crv': '{{ sub/frag.crv }}\n',
+      'sub/frag.crv': '{{ missing.crv }}\n',
+    },
+  },
+  {
+    name: 'i11-fs-escaping-target-below-the-root-keeps-its-spelling',
+    description: 'A containment-denied target in a file below the root is not resolved against that file; its id stays as written.',
+    rules: ['I10', 'I11'],
+    mode: 'filesystem',
+    resolver: 'filesystem',
+    root: 'root',
+    entryPath: 'root/main.crv',
+    tree: {
+      'root/main.crv': '{{ sub/frag.crv }}\n',
+      'root/sub/frag.crv': '{{ ../../secret.crv }}\n',
+      'secret.crv': 'TOP SECRET\n',
+    },
+  },
 ]
