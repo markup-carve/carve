@@ -30,6 +30,7 @@ Releases before 0.1.6 are archived in
 
 ### Improvements
 
+- Pin code and raw fences after a blank-separated quote in a footnote body, including fences past the body's minimum column (carve#2598).
 - Compare public importer suites through one Carve reader and ingest corpus AST
   JSON across every engine pair, with exact drift declarations (carve#2493).
 - Cover raised-colon paragraph folding at list column boundaries (carve#2494).
