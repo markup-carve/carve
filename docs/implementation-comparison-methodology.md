@@ -51,6 +51,8 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `529-a-container-label-publishes-its-inline-run`,
 `530-a-fence-after-a-footnote-quote-has-its-own-base`,
 `531-an-opener-under-a-quote-in-a-nested-host-opens-at-one-column-only`,
+`532-a-container-label-preserves-closed-inline-constructs-before-cutting-a-comment`,
+`533-a-braced-span-cannot-close-beyond-its-bracket-run`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
