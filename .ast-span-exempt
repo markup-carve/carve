@@ -1,0 +1,26 @@
+# AST span rows that every engine reads conformantly, so no engine will ever
+# close them. Read by scripts/declaration-audit.mjs, which otherwise requires
+# resources/ast-span-divergence.txt and its measurement twin LAST_MEASURED in
+# tests/ast-spans.test.mjs to be EMPTY before a tag. One line covers both,
+# because they record one fact from two sides.
+#
+# One per line, `<type> (presence|extent)@<count>: <reason>`, in the shape
+# .fleet-pin-exempt uses. The reason is required and must name what makes the
+# readings conformant, either a fully qualified `owner/repo#N` or a
+# `CARVE-Pnn-nnn` clause id. A bare key, an empty reason, and a reason naming
+# neither are errors rather than skips, so a line here cannot degrade into a
+# blanket pass. Every declaration that applies is printed on a passing run.
+#
+# THE COUNT IS PART OF THE KEY, for the reason .fleet-pin-exempt keys on the
+# pin's sha. A line naming only the type outlives the reading it describes and
+# silences the next one; keyed on the document count it stops applying the
+# moment the divergence spreads or shrinks, and the audit says so rather than
+# passing. A line whose type no longer diverges at all is an error telling you
+# to delete it.
+#
+# WHAT DOES NOT BELONG HERE is a row an engine owes. The rows naming
+# markup-carve/carve-js#2345 and markup-carve/carve-rs#2165 are drift that
+# closes when those issues do, and they stay owed.
+
+list (extent)@1: carve-php opens at the parent content column, carve-js and carve-rs at the marker, and the two columns differ only inside the line's leading indentation. `list` is a container, so INDENT_LATITUDE makes both readings conformant and no engine has a row to answer for: markup-carve/carve#1928.
+list_item (extent)@1: the same line and the same two columns as the `list` row above, on the same document. `list_item` is a container too, so markup-carve/carve#1928 makes carve-php's parent-content-column opening conformant beside the other two readings.
