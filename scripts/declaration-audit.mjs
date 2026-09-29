@@ -268,6 +268,7 @@ const MANIFEST = [
 
   // -- carve-js --------------------------------------------------------------
   { repo: 'carve-js', path: 'test/corpus.test.ts', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'test/corpus.test.ts' },
+  { repo: 'carve-js', path: 'test/include-conformance.test.ts', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', staleness: 'golden already regenerated - delete its entry', owner: 'test/include-conformance.test.ts' },
   { repo: 'carve-js', path: 'test/canonical-ahead-of-pin.ts', name: 'CANONICAL_AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'test/corpus-canonical-form.test.ts and test/corpus-render-fixtures.test.ts' },
   // The `.md` half of the same window, declared where it is read because only
   // one suite reads a Markdown sidecar (markup-carve/carve-js#2056).
