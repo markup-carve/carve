@@ -149,6 +149,12 @@
       "scope": "parsing"
     },
     {
+      "id": "CARVE-P0-021",
+      "part": "0",
+      "title": "A BLOCK OPENER IN THE BAND FOLDS ON THE SAME TERMS",
+      "scope": "parsing"
+    },
+    {
       "id": "CARVE-P2-001",
       "part": "2",
       "title": "A HEADING MARKER STARTS AT ITS CONTAINER'S CONTENT COLUMN",

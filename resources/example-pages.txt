@@ -277,6 +277,7 @@ index: examples/edge-cases/index.md
   a-heading-at-an-item-s-content-column-leaves-no-paragraph-open
   a-quote-is-reached-by-its-marker-and-a-column-never-reaches-into-one
   a-marker-folds-into-a-quote-below-it
+  an-opener-under-a-quote-in-a-nested-host-opens-at-one-column-only
   colon-fence-as-a-block-opener-in-a-list-item
   fence-folds-as-lazy-inline-code-above-the-content-column
   indented-ordered-marker-content-column-includes-the-marker-indent

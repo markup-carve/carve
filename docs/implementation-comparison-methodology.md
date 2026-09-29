@@ -50,6 +50,7 @@ Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item
 `528-a-footnote-body-whose-every-block-renders-nothing-is-an-empty-body`,
 `529-a-container-label-publishes-its-inline-run`,
 `530-a-fence-after-a-footnote-quote-has-its-own-base`,
+`531-an-opener-under-a-quote-in-a-nested-host-opens-at-one-column-only`,
 `41-line-blocks-10`.
 The first landed on a host whose three engine checkouts were each on an
 unmerged branch, so the run above could not be retaken against clean ones; the
@@ -192,6 +193,16 @@ NOT measured here: the release binary on this host sits in a target directory
 several checkouts share and reports no version, so nothing establishes which
 commit built it. The earlier withdrawn ruling on this shape rested on a reading
 of that kind, so it is left out rather than quoted.
+
+531's thirteen documents were measured against the pinned carve-js `c5df77f6`
+here, which reproduces all thirteen, so `resources/engine-pin-drift.txt` gains
+no line. carve-php is unmeasured here. carve-rs is not measured here either, and
+it is the reader the row exists for:
+[carve-rs#2183](https://github.com/markup-carve/carve-rs/issues/2183) carries the
+engine evidence, taken at carve-rs `d8e95bdef`, that it opens a block where the
+other three fold, on every column of the band but the host's own content column.
+That ticket is the one to read for the per-engine state; nothing here re-measures
+it.
 
 The former case-by-case notes remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/a22f6a23f7913e44cb3461f3f608605660619032/docs/implementation-comparison-methodology.md).
