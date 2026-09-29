@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Releases before 0.1.6 are archived in
 [CHANGELOG-0.1.md](./CHANGELOG-0.1.md).
 
-## [Unreleased]
+## [0.1.7] - 2026-09-29
 
 ### Breaking
 
@@ -152,9 +152,10 @@ Releases before 0.1.6 are archived in
   content column leave the quote (carve#2420, carve#2464, carve#2554).
 - A comment span pairs with its own delimiters in every host and is owned by the
   column its opener is written at, a comment and a marker-line quote in a list
-  item keep their own extents, and ownership after a block comment or a fence
+  item keep their own extents, an over-indented quote marker cannot reach into a
+  code or raw fence's payload, and ownership after a block comment or a fence
   closer below an item's base column follows the item (carve#2503, carve#2507,
-  carve#2509, carve#2525, carve#2526, carve#2540, carve#2624).
+  carve#2509, carve#2525, carve#2526, carve#2540, carve#2624, carve#2626).
 - Lazy continuation ends after a quoted fence and after a nested block that
   leaves no paragraph, and the list, description and `+` attachment boundaries
   follow it at every depth (carve#2510, carve#2514, carve#2515, carve#2538,
@@ -353,5 +354,5 @@ Releases before 0.1.6 are archived in
   inside the cell** (carve#2113), the §1b case the engines diverged on while
   the fixture reported them conformant.
 
-[Unreleased]: https://github.com/markup-carve/carve/compare/0.1.6...HEAD
+[0.1.7]: https://github.com/markup-carve/carve/compare/0.1.6...0.1.7
 [0.1.6]: https://github.com/markup-carve/carve/compare/0.1.5...0.1.6
