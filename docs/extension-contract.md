@@ -1910,3 +1910,11 @@ CodeGroup is Tier-3 and NOT corpus-pinned; `resources/examples-tier3.md` is its
 only verifier in this repo. Its `mode` option, its panel naming and its
 rejection of an unknown mode are stated here and pinned by each implementation
 in its own suite, the same division §8.4 describes for Index.
+
+The indentation boundary is [§8b.3](#_8b-3-degradation-conformance)'s: the
+wrapper `<div>`'s own opening and closing tag carry the per-implementation
+indentation, one column for both, and every line between them is the
+byte-identical part. Both extensions anchor those lines - radios, labels,
+buttons, panels - at column 0 wherever the container was written, which is the
+form §13.2's fragments show. A `"static"` render (§13.1) is the one exception:
+each panel's `<section>` and `</section>` sit one level inside the wrapper.
