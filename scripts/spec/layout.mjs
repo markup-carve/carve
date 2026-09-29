@@ -4392,6 +4392,8 @@ const attachmentBoundary = (lines) => (idx) =>
   isBlank(lines[idx]) || CONT_MARKER.test(lines[idx])
 
 function authoredBlockEnd(lines, start, base, state) {
+  const comment = classifyLayoutComment(lines, start)
+  if (comment) return comment.end
   if (state.measuringAuthoredBlock) return start + 1
   const candidate = lines.slice(start).map((source) => {
     if (isBlank(source)) return source
@@ -4719,6 +4721,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     // scope. Defer the extent parse until then; a comment before a nested list
     // otherwise reparses the remaining ladder at every level (carve#2542).
     let pendingAuthoredBlock = null
+    let pendingHeadQuote = head.text[0] === '>' && (head.text.length === 1 || head.text[1] === ' ') ? i : null
     // A term on the marker line folds the lines past the content column that
     // follow it (carve#2411), so none of them opens an authored base.
     let leadTerm = DEFLIST_TERM.test(head.text.replace(/^[ \t]+/, ''))
@@ -5302,6 +5305,19 @@ function collectItems(lines, i, list, state, ind, meas) {
         const foldsIntoLeadTerm = leadTerm && col > contentCol && !nm
         const mayOpenAuthoredBlock = !foldsIntoLeadTerm && !descendantOwned &&
           !insideFence() && opensAuthoredBase(lm.rest)
+        if (pendingHeadQuote !== null && mayOpenAuthoredBlock) {
+          const start = pendingHeadQuote
+          const candidate = [head.text]
+          for (let at = start + 1; at < lines.length; at++) {
+            const measured = ind(at)
+            if (measured.col <= baseIndent && matchMarkerAt(measured)) break
+            candidate.push(measured.col < contentCol
+              ? lines[at] : dedentMeasured(measured, lines[at], contentCol).text)
+            if (isBlank(lines[at]) || COMMENT_LINE.test(lines[at])) break
+          }
+          authoredBlockLimit = start + authoredBlockEnd(candidate, 0, 0, state)
+          pendingHeadQuote = null
+        }
         if (pendingAuthoredBlock !== null && mayOpenAuthoredBlock) {
           authoredBlockLimit = authoredBlockEnd(lines, pendingAuthoredBlock, contentCol, state)
           pendingAuthoredBlock = null

@@ -194,7 +194,7 @@ test('comment span extents do not reparse the remaining ladder per level', () =>
 test('a deferred extent preserves the next opener’s authored base', () => {
   const prefix = '- a\n  %%%\n  p\n  %%%\n'
   assert.equal(renderDoc(parse(prefix + '   > q\n')),
-    '<ul>\n  <li>a\n    &gt; q\n  </li>\n</ul>')
+    '<ul>\n  <li>a\n    <blockquote><p>q</p></blockquote>\n  </li>\n</ul>')
   assert.equal(renderDoc(parse(prefix + '  # h\n   > q\n')),
     '<ul>\n  <li>a\n    <h1 id="h">h</h1>\n    <blockquote><p>q</p></blockquote>\n  </li>\n</ul>')
   assert.equal(renderDoc(parse(prefix + '  [^f]: b\n   > q\n')),
