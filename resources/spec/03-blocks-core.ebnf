@@ -170,6 +170,12 @@ fenced_code_block = code_fence_open, [space], [code_fence_info], newline,
    delimiters that admit metadata. The raw passthrough opener (```=FORMAT,
    PART 9 §20) is a SEPARATE production matched before this one (a leading `=`
    is never a language, and a raw block takes no header). *)
+(* AN IMPORTER DROPS INFO-STRING TEXT THAT IS NOT A LANGUAGE -- NORMATIVE
+   [CARVE-P2-029]. A Markdown info string is free-form, so a source may carry
+   text that is neither a `language_info` token nor one of the two metadata
+   slots above (```` ```ruby startline=3 ````). The importer DROPS that text.
+   An unrecognized token carries no defined meaning, so every structured slot
+   it could be written into is an arbitrary choice. *)
 
 code_fence_open  = (backtick_fence | tilde_fence):open ;
 code_fence_close = (backtick_fence | tilde_fence):close

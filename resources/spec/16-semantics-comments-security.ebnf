@@ -3,18 +3,23 @@
       - A `%%` token is a trailing comment marker only when the character
         immediately before it is whitespace (space or tab) or it starts the
         inline run (its first content character after leading whitespace).
-      - ANY HOST'S INLINE RUN, not only a paragraph's. A heading's text, a
-        definition term, a table cell, a figure caption and a div label begin
-        their run mid-line, and a `%%` at the start of one is a marker there on
-        the same terms. A paragraph is the one host whose run starts at a line
-        start, so the `%%` line at the block layer (PART 2) reaches that case
-        first and nothing is left for this rule to claim.
+      - AN INLINE RUN IS A DELIMITED REGION PARSED AS `inline_content` IN ITS
+        OWN RIGHT: a paragraph, a heading's text, a definition term, a table
+        cell, a figure caption, an admonition header, a container, link, span
+        or fence label. Nothing else holds a run -- not markup INSIDE one, so
+        an emphasis span's first content character does not start one; not a
+        slot the grammar declares literal (`alt_text`, a `quoted_title`); and
+        not a label matched verbatim as a key (a reference or footnote label).
+        A paragraph's run starts at a line start, where PART 2's `%%` line
+        reaches the case first.
       - When recognized, the `%%`, the WHOLE run of whitespace separating it
-        from the text before it, and ALL remaining characters up to (but not
-        including) the line break are consumed and produce no output. The
-        separating run goes in full, because the run is what marks the comment
-        off: keeping part of it publishes whitespace the author wrote as a
-        separator. `a` + two spaces + `%% c` renders `<p>a</p>`.
+        from the text before it, and ALL remaining characters to the END OF THE
+        RUN are consumed and produce no output. The separating run goes in
+        full, because the run is what marks the comment off: keeping part of it
+        publishes whitespace the author wrote as a separator. `a` + two spaces
+        + `%% c` renders `<p>a</p>`.
+      - A RUN'S OWN CLOSER ENDS IT, and the line break ends a run that has
+        none: `[a %% c](/u) t` renders `<p><a href="/u">a</a> t</p>`.
       - `%%` is NEVER recognized inside a code span or raw inline (PART 9 §20);
         those contexts pass both `%` characters through verbatim.
       - `\%%` (escaped first percent) is literal -- `%%` is literal text, not a
