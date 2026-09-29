@@ -128,9 +128,10 @@ test('every manifest entry names a policy and a guard the reporter understands',
   // `declared` belongs here as much as the rest: the reporter has always
   // implemented it, and leaving it out of this set meant an entry could only
   // reach it through `prPolicy`, which nothing validated at all (carve#1939).
-  const policies = new Set(['owed', 'permitted', 'split', 'manual', 'declared'])
+  const policies = new Set(['owed', 'permitted', 'split', 'manual', 'declared', 'split-declared'])
   const guards = new Set(['two-way', 'one-way', 'none'])
   for (const entry of MANIFEST) {
+    assert.notEqual(entry.policy, 'split-declared', 'release must retain the split debt gate')
     assert.ok(policies.has(entry.policy), `${entry.path} :: ${entry.name} has policy ${entry.policy}`)
     if (entry.prPolicy !== undefined) {
       assert.ok(policies.has(entry.prPolicy), `${entry.path} :: ${entry.name} has prPolicy ${entry.prPolicy}`)
@@ -262,4 +263,20 @@ test('a decorated declaration name is swept and explicitly manifested', () => {
   assert.ok(entry, 'the canonical writer declaration is invisible to the manifest')
   assert.equal(entry.policy, 'owed')
   assert.equal(entry.guard, 'two-way')
+})
+
+
+test('per-PR position waivers accept permitted and tracked debt, reject malformed debt', () => {
+  const { undeclaredWaiverRows, perPrPolicy } = __internals
+  const entry = MANIFEST.find(row => row.path === 'resources/ast-position-waivers.txt')
+  assert.equal(entry.policy, 'split')
+  assert.equal(perPrPolicy(entry), 'split-declared')
+  const permitted = 'carve-js sample.crv text 1 permitted'
+  const owed = 'carve-rs sample.crv text 2 markup-carve/carve-rs#123'
+  assert.deepEqual(undeclaredWaiverRows([permitted, owed]), [])
+  for (const bad of ['carve-js sample.crv text 1', 'carve-js sample.crv text 1 #123',
+    'carve-js sample.crv text 0 permitted', 'carve-js sample.crv text 1 owner/repo#no']) {
+    assert.ok(undeclaredWaiverRows([bad]).length > 0, bad)
+  }
+  assert.ok(undeclaredWaiverRows([permitted, permitted]).length > 0)
 })

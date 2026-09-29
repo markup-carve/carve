@@ -120,6 +120,7 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
     specRelaxed.map((e) => [e.path, e.policy, perPrPolicy(e)]).sort(),
     [
       ['resources/ast-extent-findings.txt', 'owed', 'declared'],
+      ['resources/ast-position-waivers.txt', 'split', 'split-declared'],
       ['resources/ast-span-divergence.txt', 'owed', 'declared'],
       ['resources/ast-value-divergence.txt', 'owed', 'declared'],
       ['resources/converter-drift.txt', 'owed', 'declared'],
