@@ -10,6 +10,13 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
+### Changed (breaking for AST consumers)
+
+- Define `code_block.content` as literal payload text, preserving the final
+  line break for nonempty code blocks as well as blank ones. Preserve the
+  absence of a final break in the executable spec when an unclosed code fence
+  reaches EOF (carve#2603).
+
 ### Fixes
 
 - Release unmarked lines after code and raw fences indented past a quoted host's content column in the executable specification (carve#2554).

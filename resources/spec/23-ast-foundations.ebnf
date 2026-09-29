@@ -126,6 +126,32 @@
       authored private-use character with generated whitespace. Temporary
       parser or writer markers MUST be collision-free and MUST NOT be published.
 
+      CODE BLOCK CONTENT IS LITERAL PAYLOAD TEXT -- NORMATIVE [CARVE-P12-064].
+      `code_block.content` MUST retain every payload character, including the
+      final line break when present. Container prefixes and fence delimiters
+      are not payload. Source line endings use the language's LF normalization.
+      A closed source fence with no payload lines has content ""; one blank
+      line has "\n"; a line containing `a` has "a\n"; that line followed by
+      a blank line has "a\n\n". The break before the closing fence belongs
+      to the last payload line. A fence ending at EOF without a closer retains
+      whether the last payload line had a break; it MUST NOT invent one.
+      This rule does not change `raw_block.content`.
+
+      An imported or programmatically built code block MAY have content "a"
+      without a final break. It is distinct from "a\n". JSON encoding and
+      decoding MUST preserve that distinction without consulting positions,
+      source text or an out-of-band flag. A reader MUST NOT guess that a
+      missing final break was omitted by a producer and append one.
+
+      HTML emits the escaped content exactly between `<code>` and `</code>`;
+      it adds no payload newline. HTML import retains the code element's text,
+      including whether its final break is present. Other render targets may
+      add their structural separators, but MUST NOT alter the node's content.
+      A canonical Carve writer needs a break before a closing fence when
+      nonempty content has none. It inserts that break and reports
+      `field-unspellable` for `code_block.content` on the PART 11 §1d channel.
+      Empty content needs no inserted payload line and reports nothing.
+
    3a. THE SERIALIZED TREE IS PRE-RESOLVE -- NORMATIVE [CARVE-P12-005]. It records what the
       AUTHOR WROTE, not what the document resolves to. Reference resolution,
       like rendering, happens after; a producer MUST NOT fold its results into
