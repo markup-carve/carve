@@ -18,9 +18,10 @@
 # passing. A line whose type no longer diverges at all is an error telling you
 # to delete it.
 #
-# WHAT DOES NOT BELONG HERE is a row an engine owes. The rows naming
-# markup-carve/carve-js#2345 and markup-carve/carve-rs#2165 are drift that
-# closes when those issues do, and they stay owed.
+# WHAT DOES NOT BELONG HERE is a row an engine owes. A fenced quote read short
+# of its closer was drift of that kind, declared over six documents and one
+# enclosing footnote, and it left the ledger when carve-js and carve-rs shipped
+# the fix rather than by being named here.
 
 list (extent)@1: carve-php opens at the parent content column, carve-js and carve-rs at the marker, and the two columns differ only inside the line's leading indentation. `list` is a container, so INDENT_LATITUDE makes both readings conformant and no engine has a row to answer for: markup-carve/carve#1928.
 list_item (extent)@1: the same line and the same two columns as the `list` row above, on the same document. `list_item` is a container too, so markup-carve/carve#1928 makes carve-php's parent-content-column opening conformant beside the other two readings.

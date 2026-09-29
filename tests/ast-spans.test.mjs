@@ -308,9 +308,22 @@ test('a row with a count but no reference is malformed, not declared', () => {
 // explicit closer, and carve#2534 settled that `::: >` has one, so the SHORT
 // reading is the one that moves: carve-js on five documents and, on the
 // captioned spelling, carve-rs with it.
+//
+// THE FENCED-QUOTE PAIR CAME BACK AGREED the same day it arrived, 2026-09-29,
+// over 2134 corpus documents plus 8 synthetic samples and 46,401 spans, at
+// carve-js 0b2f320b, carve-rs aa86be0f and carve-php e7589a0f, each a worktree
+// of that engine's own main built for this run. Two engine merges closed it
+// between the two runs: markup-carve/carve-js#2364 includes explicit closers in
+// fenced quote spans, which moved the five plain documents and the `417-...-3`
+// footnote that follows its own quote child, and markup-carve/carve-rs#2201
+// keeps a fenced quote's closer as a figure target, which is the `416-...-4`
+// captioned spelling carve-rs read short with it. That carve-js commit is an
+// ancestor of the carve-js the spec pins, so the two rows are gone against the
+// pinned build as well as against main.
+//
+// The 503 pair did not move: column 5 in carve-js and carve-rs, column 3 in
+// carve-php, the same two readings the note above recorded.
 const LAST_MEASURED = new Map([
-  ['block_quote (extent)', 6],
-  ['footnote (extent)', 1],
   ['list (extent)', 1],
   ['list_item (extent)', 1],
 ])
