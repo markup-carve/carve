@@ -1,0 +1,62 @@
+[
+  {
+    "source": "- > q\n   # h",
+    "html": "<ul>\n  <li>\n    <blockquote><p>q\n# h</p></blockquote>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- : d\n    # h",
+    "html": "<ul>\n  <li>: d\n    <h1 id=\"h\">h</h1>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- - a\n   %%%\n   x\n   %%%\n  t",
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>a</li>\n    </ul>\n    t\n  </li>\n</ul>"
+  },
+  {
+    "source": "- > ```\n  > x\n    > y\n  > ```\n  > z\n  > ```",
+    "html": "<ul>\n  <li>\n    <blockquote>\n      <pre><code>x\n</code></pre>\n    </blockquote>\n    &gt; y\n    <blockquote>\n      <pre><code>z\n</code></pre>\n    </blockquote>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- > a\nlazy\n    > b",
+    "html": "<ul>\n  <li>\n    <blockquote><p>a\nlazy\n&gt; b</p></blockquote>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- > a\n  x\n    > b",
+    "html": "<ul>\n  <li>\n    <blockquote><p>a\nx\n&gt; b</p></blockquote>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- > %%%\n  > x\n    > %%%\n  > b",
+    "html": "<ul>\n  <li>\n    <blockquote><p>x\n&gt;\nb</p></blockquote>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- > ```\n  > x\n  > ```\n    > y",
+    "html": "<ul>\n  <li>\n    <blockquote>\n      <pre><code>x\n</code></pre>\n    </blockquote>\n    &gt; y\n  </li>\n</ul>"
+  },
+  {
+    "source": "- : d\n    > q",
+    "html": "<ul>\n  <li>: d\n    <blockquote><p>q</p></blockquote>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- : d\n    ```\n    x\n    ```",
+    "html": "<ul>\n  <li>: d\n    <pre><code>x\n</code></pre>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- : d\n    ::: html\n    <b>x</b>\n    :::",
+    "html": "<ul>\n  <li>: d\n    <div class=\"html\">\n      <p>&lt;b&gt;x&lt;/b&gt;</p>\n    </div>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- : d\n\n    > q",
+    "html": "<ul>\n  <li>: d\n    <blockquote><p>q</p></blockquote>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- : d\n\n    ```\n    x\n    ```",
+    "html": "<ul>\n  <li>: d\n    <pre><code>x\n</code></pre>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- : d\n\n    ::: html\n    <b>x</b>\n    :::",
+    "html": "<ul>\n  <li>: d\n    <div class=\"html\">\n      <p>&lt;b&gt;x&lt;/b&gt;</p>\n    </div>\n  </li>\n</ul>"
+  },
+  {
+    "source": "- > ::: html\n  > <b>x</b>\n    > y\n  > :::",
+    "html": "<ul>\n  <li>\n    <blockquote>\n      <div class=\"html\">\n        <p>&lt;b&gt;x&lt;/b&gt;\n&gt; y</p>\n      </div>\n    </blockquote>\n  </li>\n</ul>"
+  }
+]

@@ -4721,7 +4721,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     // scope. Defer the extent parse until then; a comment before a nested list
     // otherwise reparses the remaining ladder at every level (carve#2542).
     let pendingAuthoredBlock = null
-    let pendingHeadQuote = head.text[0] === '>' && (head.text.length === 1 || head.text[1] === ' ') ? i : null
+    let pendingHeadQuote = head.text[0] === '>' && (head.text.length === 1 || head.text[1] === ' ') && opensParagraph(head.text, true) ? i : null
     // A term on the marker line folds the lines past the content column that
     // follow it (carve#2411), so none of them opens an authored base.
     let leadTerm = DEFLIST_TERM.test(head.text.replace(/^[ \t]+/, ''))
