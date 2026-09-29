@@ -907,7 +907,7 @@
         },
         "content": {
           "type": "string",
-          "description": "Literal Unicode content. U+E000 and all other private-use characters are preserved unchanged. Generated nonbreaking spaces use non_breaking_space nodes; no character is an AST sentinel."
+          "description": "Literal Unicode content. U+E000 and all other private-use characters are preserved unchanged. Generated nonbreaking spaces use non_breaking_space nodes; no character is an AST sentinel. Literal payload text, including its final LF when present (PART 12 section 3). Empty content, a blank line, and nonempty content with or without a final LF are distinct. Renderers do not append a payload newline."
         },
         "lang": {
           "type": "string"

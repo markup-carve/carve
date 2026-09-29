@@ -1728,3 +1728,31 @@ schema marked the field `required` on `citation` and on no other node, which lef
 that citation with no conformant encoding at all: omitting the field failed the
 schema, supplying one violated §4. It is optional now, like every other node's
 ([carve#2192](https://github.com/markup-carve/carve/issues/2192)).
+
+## Code block payload line endings
+
+`code_block.content` is literal payload text under `CARVE-P12-064`. A closed
+fence containing `a` publishes `"a\n"`; an imported code element containing
+`a` without a final break publishes `"a"`. JSON readers preserve both values.
+HTML renders their escaped content without adding a payload newline.
+
+This changes the earlier encoding, which omitted the last line's break for
+nonempty payloads. Producers must retain that break when collecting source
+lines, and consumers must stop appending it when rendering. An old `"a"` value
+cannot reveal whether its producer discarded a break. Migrate stored trees
+from their source or with explicit knowledge of the producer's encoding;
+readers must not infer a legacy encoding from the string alone.
+
+A canonical Carve fence requires a break before its closer. Writing a nonempty
+unterminated payload therefore adds a break and reports `field-unspellable`
+for `code_block.content`. Empty content remains an empty fence without a loss.
+An API exposing only HTML-import diagnostics adds no diagnostic for this
+later writing step. Markdown adds its required closing-fence separator; plain
+and ANSI retain their ordinary block separators. None changes the AST value.
+Raw blocks keep their existing encoding.
+
+`resources/ast-code-content-fixtures.json` pins parsed values for existing
+corpus documents. The AST conformance run checks each engine against these
+values even when all engines agree with each other.
+`resources/ast-code-payload-samples.json` adds exact EOF inputs, including
+inputs without a final LF, to every engine's AST parse and JSON round-trip run.

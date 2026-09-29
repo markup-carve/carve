@@ -2280,6 +2280,7 @@ export function parse(src, { authoredBodyBases = true } = {}) {
     abbrDefs: new Map(),
     authoredBodyBases,
     prefixMemos: new WeakMap(),
+    unterminatedLines: new WeakSet(src.endsWith('\n') ? [] : [lines]),
   }
   // frontmatter (PART 1): consumed; renders nothing. The closer-lookahead
   // guard: with no closing --- the line is an ordinary thematic break.
@@ -2374,6 +2375,14 @@ function flattenPastCap(lines) {
   }
   flush()
   return blocks
+}
+
+// A child reaching its parent's final source row inherits that row's line ending.
+function inheritFinalBreak(parent, child, end, state) {
+  if (end === parent.length && state.unterminatedLines?.has(parent)) {
+    state.unterminatedLines.add(child)
+  }
+  return child
 }
 
 // Depth-guarded entry: every block-container recursion re-enters here, so a
@@ -2712,7 +2721,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // one and spelled with an extra line. CARVE-P9-077 says the two ARE the
         // same body: neither reaches the reader, so nothing distinguishes them
         // downstream and the renderer needs no answer carried from the source.
-        state.footnoteDefs.set(key, parseBlocks(normalizedBody, state, false))
+        state.footnoteDefs.set(key, parseBlocks(inheritFinalBreak(lines, normalizedBody, i, state), state, false))
       }
       continue
     }
@@ -2825,7 +2834,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           t: 'code',
           lang: info.lang,
           title: info.title,
-          text: fenceLines.slice(i + 1).map(stripLazy).join('\n') + '\n',
+          text: fenceLines.slice(i + 1).map(stripLazy).join('\n') +
+            (fenceLines.length > i + 1 && !(boundary === n && state.unterminatedLines?.has(lines)) ? '\n' : ''),
         })
         i = boundary
         continue
@@ -3197,7 +3207,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             ? normalizeAuthoredBodyBases(bodyLines, state)
             : bodyLines
           if (openFence !== -1) (state.fenceOpensAt ??= new WeakMap()).set(normalizedBody, new Set([openFence]))
-          node.items.push({ ddBlocks: normalizedBody.length ? parseBlocks(normalizedBody, state, false) : [] })
+          node.items.push({ ddBlocks: normalizedBody.length ? parseBlocks(inheritFinalBreak(lines, normalizedBody, i, state), state, false) : [] })
           continue
         }
         if (isBlank(cur0)) {
@@ -3256,6 +3266,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // lines, which is what `isBlank` keeps covering.
           } else {
             i = close === -1 ? n : close + 1
+            inheritFinalBreak(lines, body, close === -1 ? n : close, state)
             if (opener.mode === 'line-block') {
               push({ t: 'line-block', lines: body.map(stripLazy) })
             } else if (opener.mode === 'hardbreaks') {
@@ -3936,7 +3947,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }
         break
       }
-      const children = parseBlocks(inner, state, false)
+      const children = parseBlocks(inheritFinalBreak(lines, inner, i, state), state, false)
       const node = { t: 'quote', children }
       // caption -> <figure><blockquote/><figcaption> (PART 9 SS4)
       const cap = captionSlot(i)
@@ -5875,7 +5886,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     }
     if (fenceOpensAt.size) (state.fenceOpensAt ??= new WeakMap()).set(itemLines, fenceOpensAt)
     if (nestedFenceOpensAt.size) (state.nestedFenceOpensAt ??= new WeakMap()).set(itemLines, nestedFenceOpensAt)
-    item.blocks = parseBlocks(itemLines, state, false, true, itemMeas)
+    item.blocks = parseBlocks(inheritFinalBreak(lines, itemLines, i, state), state, false, true, itemMeas)
     list.items.push(item)
     // Returning rather than breaking leaves `i` on the marker line, so the
     // caller parses it as the first item of the next list.

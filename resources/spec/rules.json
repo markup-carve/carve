@@ -1829,6 +1829,12 @@
       "scope": "ast-interchange"
     },
     {
+      "id": "CARVE-P12-064",
+      "part": "12",
+      "title": "CODE BLOCK CONTENT IS LITERAL PAYLOAD TEXT",
+      "scope": "ast-interchange"
+    },
+    {
       "id": "CARVE-P9-076",
       "part": "9",
       "title": "A MARKER IN A TOC BODY RETAINS ITS CONTAINER SCOPE",

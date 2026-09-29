@@ -303,8 +303,9 @@
       Each entry carries a `code`, the `node` type it is about, a short
       human-readable `message`, and its source `pos` when recorded. There are two
       codes. `structure-unspellable` says the producer dropped a whole node or
-      wrapper. `field-unspellable` says it dropped a named FIELD off a node it
-      still spells, and such an entry MUST carry `field`, the field's name on
+      wrapper. `field-unspellable` says it dropped or changed a named FIELD whose
+      value Carve source cannot spell, on a node it still spells. Such an entry
+      MUST carry `field`, the field's name on
       that node. A `structure-unspellable` entry MUST NOT carry `field`.
 
         { "code": "field-unspellable", "node": "math", "field": "label",

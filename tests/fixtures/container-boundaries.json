@@ -7,22 +7,22 @@
   {
     "name": "container-125",
     "source": "> ```\n+\n\ntail\n",
-    "html": "<blockquote>\n  <pre><code>\n</code></pre>\n</blockquote>\n<p>tail</p>"
+    "html": "<blockquote>\n  <pre><code></code></pre>\n</blockquote>\n<p>tail</p>"
   },
   {
     "name": "container-204",
     "source": "> > ```\ntail\n",
-    "html": "<blockquote>\n  <blockquote>\n    <pre><code>\n</code></pre>\n  </blockquote>\n</blockquote>\n<p>tail</p>"
+    "html": "<blockquote>\n  <blockquote>\n    <pre><code></code></pre>\n  </blockquote>\n</blockquote>\n<p>tail</p>"
   },
   {
     "name": "container-206",
     "source": "> > ```\n  tail\n",
-    "html": "<blockquote>\n  <blockquote>\n    <pre><code>\n</code></pre>\n  </blockquote>\n</blockquote>\n<p>tail</p>"
+    "html": "<blockquote>\n  <blockquote>\n    <pre><code></code></pre>\n  </blockquote>\n</blockquote>\n<p>tail</p>"
   },
   {
     "name": "container-208",
     "source": "> > ```\n- tail\n",
-    "html": "<blockquote>\n  <blockquote>\n    <pre><code>\n</code></pre>\n  </blockquote>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>"
+    "html": "<blockquote>\n  <blockquote>\n    <pre><code></code></pre>\n  </blockquote>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>"
   },
   {
     "name": "container-293",
@@ -37,12 +37,12 @@
   {
     "name": "container-375",
     "source": "- - ```\n> tail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <pre><code>\n</code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<blockquote><p>tail</p></blockquote>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <pre><code></code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<blockquote><p>tail</p></blockquote>"
   },
   {
     "name": "container-377",
     "source": "- - ```\n+\n\ntail\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <pre><code>\n</code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>\n        <pre><code></code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail</p>"
   },
   {
     "name": "container-383",
@@ -52,7 +52,7 @@
   {
     "name": "container-456",
     "source": "- > ```\ntail\n",
-    "html": "<ul>\n  <li>\n    <blockquote>\n      <pre><code>\n</code></pre>\n    </blockquote>\n  </li>\n</ul>\n<p>tail</p>"
+    "html": "<ul>\n  <li>\n    <blockquote>\n      <pre><code></code></pre>\n    </blockquote>\n  </li>\n</ul>\n<p>tail</p>"
   },
   {
     "name": "container-462",
@@ -342,17 +342,17 @@
   {
     "name": "code-plus-attached-paragraph",
     "source": "- ```\n+\ntail\n",
-    "html": "<ul>\n  <li>\n    <pre><code>\n</code></pre>\n    tail\n  </li>\n</ul>"
+    "html": "<ul>\n  <li>\n    <pre><code></code></pre>\n    tail\n  </li>\n</ul>"
   },
   {
     "name": "quote-code-plus-attached-paragraph",
     "source": "> ```\n+\ntail\n",
-    "html": "<blockquote>\n  <pre><code>\n</code></pre>\n  <p>tail</p>\n</blockquote>"
+    "html": "<blockquote>\n  <pre><code></code></pre>\n  <p>tail</p>\n</blockquote>"
   },
   {
     "name": "nested-quote-fence-after-heading",
     "source": "> # H\n> > ```\ntail\n",
-    "html": "<blockquote>\n  <h1 id=\"H\">H</h1>\n  <blockquote>\n    <pre><code>\n</code></pre>\n  </blockquote>\n</blockquote>\n<p>tail</p>"
+    "html": "<blockquote>\n  <h1 id=\"H\">H</h1>\n  <blockquote>\n    <pre><code></code></pre>\n  </blockquote>\n</blockquote>\n<p>tail</p>"
   },
   {
     "name": "nested-quote-colon-after-heading",
@@ -377,7 +377,7 @@
   {
     "name": "list-attached-code-opener",
     "source": "- ```\n+\n```\n",
-    "html": "<ul>\n  <li>\n    <pre><code>\n</code></pre>\n    <pre><code>\n</code></pre>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li>\n    <pre><code></code></pre>\n    <pre><code>\n</code></pre>\n  </li>\n</ul>"
   },
   {
     "name": "quote-list-code-attachment",
@@ -407,12 +407,12 @@
   {
     "name": "quote-attachment-heading-ids",
     "source": "> # H\n> ```\n+\n# H\n",
-    "html": "<blockquote>\n  <h1 id=\"H\">H</h1>\n  <pre><code>\n</code></pre>\n  <h1 id=\"H-2\">H</h1>\n</blockquote>"
+    "html": "<blockquote>\n  <h1 id=\"H\">H</h1>\n  <pre><code></code></pre>\n  <h1 id=\"H-2\">H</h1>\n</blockquote>"
   },
   {
     "name": "quote-attachment-link-scope",
     "source": "> [r]: /url\n> ```\n+\n[r]\n",
-    "html": "<blockquote>\n  <pre><code>\n</code></pre>\n  <p>[r]</p>\n</blockquote>"
+    "html": "<blockquote>\n  <pre><code></code></pre>\n  <p>[r]</p>\n</blockquote>"
   },
   {
     "name": "equal-length-source-lines",

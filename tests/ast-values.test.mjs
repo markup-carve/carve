@@ -22,7 +22,7 @@ import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { checkCommentContent, compareValues, reconcileDeclared, valueSignature } from '../scripts/spec/ast-values.mjs'
+import { checkCodeContent, checkCommentContent, compareValues, reconcileDeclared, valueSignature } from '../scripts/spec/ast-values.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -260,5 +260,100 @@ test('every comment payload fixture names an existing corpus document', () => {
   for (const [name, expected] of Object.entries(fixtures)) {
     assert.ok(readFileSync(resolve(root, 'tests/corpus', name), 'utf8').includes('%%%'))
     assert.ok(expected.length > 0 && expected.every((value) => typeof value === 'string'))
+  }
+})
+
+
+test('code payload fixtures reject a missing final break even when engines agree', () => {
+  const doc = { type: 'document', children: [{ type: 'code_block', content: 'a' }] }
+  assert.equal(checkCodeContent(doc, ['a\n']).length, 1)
+  doc.children[0].content = 'a\n'
+  assert.deepEqual(checkCodeContent(doc, ['a\n']), [])
+  assert.equal(checkCodeContent({ type: 'document', children: [] }, ['a\n']).length, 1)
+  assert.deepEqual(checkCodeContent(doc, undefined), [])
+  assert.equal(checkCodeContent(doc, ['a']).length, 1)
+})
+
+test('code payload fixtures retain literal text from the executable spec', async () => {
+  const { parse } = await import('../scripts/spec/layout.mjs')
+  const fixtures = JSON.parse(readFileSync(resolve(root, 'resources/ast-code-content-fixtures.json'), 'utf8'))
+  const contents = (value) => {
+    if (Array.isArray(value)) return value.flatMap(contents)
+    if (!value || typeof value !== 'object') return []
+    if (value.t === 'code') return [value.text]
+    return Object.values(value).flatMap(contents)
+  }
+  for (const [name, expected] of Object.entries(fixtures)) {
+    const source = readFileSync(resolve(root, 'tests/corpus', name), 'utf8')
+    assert.deepEqual(contents(parse(source)), expected, name)
+  }
+})
+
+test('HTML keeps the distinction between terminated and unterminated interchange payloads', async () => {
+  const { parse } = await import('../scripts/spec/layout.mjs')
+  const { renderDoc } = await import('../scripts/spec/html.mjs')
+  for (const [content, expected] of [
+    ['', '<pre><code></code></pre>'],
+    ['\n', '<pre><code>\n</code></pre>'],
+    ['a', '<pre><code>a</code></pre>'],
+    ['a\n', '<pre><code>a\n</code></pre>'],
+    ['a\n\n', '<pre><code>a\n\n</code></pre>'],
+    ['<&\n', '<pre><code>&lt;&amp;\n</code></pre>'],
+  ]) {
+    const doc = parse('```\na\n```')
+    doc.blocks[0].text = JSON.parse(JSON.stringify({ type: 'code_block', content })).content
+    assert.equal(renderDoc(doc).trimEnd(), expected, JSON.stringify(content))
+  }
+})
+
+
+test('an unterminated source fence retains whether its payload ends with a break', async () => {
+  const { parse } = await import('../scripts/spec/layout.mjs')
+  const { renderDoc } = await import('../scripts/spec/html.mjs')
+  assert.equal(renderDoc(parse('```')).trimEnd(), '<pre><code></code></pre>')
+  assert.equal(renderDoc(parse('```\n')).trimEnd(), '<pre><code></code></pre>')
+  for (const prefix of ['', '> ', '- ', ':: term\n: ', '[^n]: ']) {
+    const pad = prefix === '> ' ? '> ' : prefix === '' ? '' : '  '
+    for (const ending of ['', '\n']) {
+      const source = `${prefix}\`\`\`\n${pad}a${ending}`
+      const doc = parse(source)
+      const nodes = prefix === '[^n]: ' ? doc.footnoteDefs.get('n') : doc.blocks
+      const findCode = (value) => {
+        if (Array.isArray(value)) return value.flatMap(findCode)
+        if (!value || typeof value !== 'object') return []
+        if (value.t === 'code') return [value.text]
+        return Object.values(value).flatMap(findCode)
+      }
+      assert.deepEqual(findCode(nodes), [`a${ending}`], JSON.stringify(source))
+    }
+  }
+})
+
+
+test('only a payload reaching EOF inherits the missing final break', async () => {
+  const { parse } = await import('../scripts/spec/layout.mjs')
+  const { renderDoc } = await import('../scripts/spec/html.mjs')
+  for (const [source, payload] of [
+    ['::: note\n```\na', 'a'],
+    ['::: note\n```\na\n', 'a\n'],
+    ['::: note\n```\na\n:::', 'a\n'],
+    ['> ```\n> a\n\nafter', 'a\n'],
+    ['```\r\na\r\n```', 'a\n'],
+    ['```\r\na', 'a'],
+    ['```\r\na\r\n', 'a\n'],
+  ]) {
+    assert.ok(renderDoc(parse(source)).includes(`<code>${payload}</code>`), JSON.stringify(source))
+  }
+})
+
+
+test('shared EOF samples pin payload values through JSON', async () => {
+  const { parse } = await import('../scripts/spec/layout.mjs')
+  const samples = JSON.parse(readFileSync(resolve(root, 'resources/ast-code-payload-samples.json'), 'utf8'))
+  for (const sample of samples) {
+    const content = parse(sample.source).blocks[0].text
+    assert.equal(content, sample.content, sample.name)
+    const tree = JSON.parse(JSON.stringify({ type: 'document', children: [{ type: 'code_block', content }] }))
+    assert.deepEqual(checkCodeContent(tree, [sample.content]), [], sample.name)
   }
 })

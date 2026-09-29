@@ -788,8 +788,7 @@ block that runs to the end.
 
 ```html
 <blockquote>
-  <pre><code>
-</code></pre>
+  <pre><code></code></pre>
 </blockquote>
 ```
 
@@ -2364,8 +2363,7 @@ code no marker
 
 ```html
 <blockquote>
-  <pre><code>
-</code></pre>
+  <pre><code></code></pre>
 </blockquote>
 <p>code no marker</p>
 <blockquote><p>still</p></blockquote>
@@ -13877,8 +13875,7 @@ x
 ```html
 <ul>
   <li>
-    <pre><code>
-</code></pre>
+    <pre><code></code></pre>
   </li>
 </ul>
 <p>x
@@ -13907,8 +13904,7 @@ one stripped it. Below the content column is below the content column.
 ```html
 <ul>
   <li>
-    <pre><code>
-</code></pre>
+    <pre><code></code></pre>
   </li>
 </ul>
 <p>x
@@ -13954,8 +13950,7 @@ x
 
 ```html
 <blockquote>
-  <pre><code>
-</code></pre>
+  <pre><code></code></pre>
 </blockquote>
 <p>x
 <code></code></p>
@@ -13978,8 +13973,7 @@ x
 ```html
 <ul>
   <li>
-    <pre><code>
-</code></pre>
+    <pre><code></code></pre>
   </li>
 </ul>
 <p>x
@@ -36317,8 +36311,7 @@ whatever block it follows* asks it (markup-carve/carve#2143).
 <dl>
   <dt>t</dt>
   <dd>
-    <pre><code>
-</code></pre>
+    <pre><code></code></pre>
   </dd>
 </dl>
 <p>y
@@ -40717,8 +40710,7 @@ p
     </ul>
   </li>
 </ul>
-<pre><code>
-</code></pre>
+<pre><code></code></pre>
 `````
 
 :::
@@ -41022,8 +41014,7 @@ c
 ````html
 <blockquote>
   <blockquote>
-    <pre><code>
-</code></pre>
+    <pre><code></code></pre>
   </blockquote>
 </blockquote>
 <p>c</p>

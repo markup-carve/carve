@@ -1,0 +1,23 @@
+{
+  "11-fenced-code.crv": [
+    "print(\"hi\")\n"
+  ],
+  "524-an-empty-code-payload-renders-no-characters.crv": [
+    ""
+  ],
+  "524-an-empty-code-payload-renders-no-characters-2.crv": [
+    "\n"
+  ],
+  "291-a-fence-keeps-the-blank-line-at-the-end-of-its-content.crv": [
+    "x\n\n"
+  ],
+  "291-a-fence-keeps-the-blank-line-at-the-end-of-its-content-2.crv": [
+    "x\n\n"
+  ],
+  "291-a-fence-keeps-the-blank-line-at-the-end-of-its-content-3.crv": [
+    "x\n\n"
+  ],
+  "291-a-fence-keeps-the-blank-line-at-the-end-of-its-content-4.crv": [
+    "x\n\n"
+  ]
+}

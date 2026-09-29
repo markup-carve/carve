@@ -170,7 +170,8 @@
       item's text has no <p>; a loose item's paragraphs are wrapped.
 
    6. CODE. A fenced code block is `<pre><code[ class="language-X"]>` +
-      escaped content + a trailing newline + `</code></pre>`. An inline
+      escaped literal `code_block.content` + `</code></pre>` (PART 12 §3).
+      No payload newline is added. An inline
       code span is `<code>` + escaped content + `</code>`.
 
    7. TABLES. Alignment renders as `style="text-align: VALUE;"` (one
