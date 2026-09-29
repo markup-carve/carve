@@ -28,5 +28,9 @@
     "caption"
   ],
   "scope": "every_open_paragraph",
-  "headingAcceptsContinuation": false
+  "headingAcceptsContinuation": false,
+  "recognitionBoundary": {
+    "description": "Under a quote holding an open paragraph, an opener at any column other than the host’s content column folds into that paragraph.",
+    "rule": "CARVE-P0-021"
+  }
 }
