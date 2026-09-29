@@ -65,6 +65,20 @@ for (const [slot, source, kept] of literal) {
 }
 
 /*
+ * A label matched verbatim as a KEY is not a run either, which resolution is
+ * the only place to see: the key keeps the `%%` and its text, so it matches a
+ * definition spelled the same way and matches nothing else.
+ */
+test('a reference label is a key, not a run', () => {
+  assert.ok(html('[a][r %% x]\n\n[r %% x]: /u\n').includes('<a href="/u">a</a>'))
+  assert.ok(html('[a][r %% x]\n\n[r]: /u\n').includes('[a][r %% x]'))
+})
+
+test('a footnote label is a key, not a run', () => {
+  assert.ok(html('x[^a %% b]\n\n[^a %% b]: body\n').includes('<p>body<a href="#fnref1"'))
+})
+
+/*
  * The run is also what BOUNDS the comment: a run with an explicit closer ends
  * there before the line break does. Without that bound the comment would eat
  * the closer, the construct would never complete, and everything after it on

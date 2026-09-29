@@ -5,11 +5,13 @@
         inline run (its first content character after leading whitespace).
       - AN INLINE RUN IS A DELIMITED REGION PARSED AS `inline_content` IN ITS
         OWN RIGHT: a paragraph, a heading's text, a definition term, a table
-        cell, a figure caption, an admonition header, a bracketed label. Markup
-        inside a run opens no run, so an emphasis span's first content character
-        does not start one, and a slot the grammar declares literal (`alt_text`,
-        a link's `quoted_title`) holds no run. A paragraph's run starts at a
-        line start, where PART 2's `%%` line reaches the case first.
+        cell, a figure caption, an admonition header, a container, link, span
+        or fence label. Nothing else holds a run -- not markup INSIDE one, so
+        an emphasis span's first content character does not start one; not a
+        slot the grammar declares literal (`alt_text`, a `quoted_title`); and
+        not a label matched verbatim as a key (a reference or footnote label).
+        A paragraph's run starts at a line start, where PART 2's `%%` line
+        reaches the case first.
       - When recognized, the `%%`, the WHOLE run of whitespace separating it
         from the text before it, and ALL remaining characters to the END OF THE
         RUN are consumed and produce no output. The separating run goes in
