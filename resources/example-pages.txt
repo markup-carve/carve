@@ -427,6 +427,7 @@ index: examples/edge-cases/index.md
   a-degraded-comment-fence-leaves-a-lazy-follower-where-the-line-form-does
   a-dropped-raw-block-takes-no-line-in-the-container-that-holds-it
   a-footnote-body-whose-every-block-renders-nothing-is-an-empty-body
+  a-container-label-publishes-its-inline-run
 
 [edge-blocks] Paragraphs, breaks and captions
 > Paragraph folding, thematic breaks, caption attachment and adjacent block openers.

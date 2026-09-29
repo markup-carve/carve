@@ -1,0 +1,105 @@
+A container label publishes its inline run
+
+```
+:::[/i/]
+body
+:::
+.
+<div>
+  <p class="div-label"><em>i</em></p>
+  <p>body</p>
+</div>
+```
+
+```
+:::[*b*]
+body
+:::
+.
+<div>
+  <p class="div-label"><strong>b</strong></p>
+  <p>body</p>
+</div>
+```
+
+```
+:::[`x`]
+body
+:::
+.
+<div>
+  <p class="div-label"><code>x</code></p>
+  <p>body</p>
+</div>
+```
+
+```
+:::[plain]
+body
+:::
+.
+<div>
+  <p class="div-label">plain</p>
+  <p>body</p>
+</div>
+```
+
+```
+::: note [/i/]
+body
+:::
+.
+<aside class="admonition note" aria-label="Note">
+  <p class="div-label"><em>i</em></p>
+  <p>body</p>
+</aside>
+```
+
+```
+::: note [`x`]
+body
+:::
+.
+<aside class="admonition note" aria-label="Note">
+  <p class="div-label"><code>x</code></p>
+  <p>body</p>
+</aside>
+```
+
+```
+::: note [plain]
+body
+:::
+.
+<aside class="admonition note" aria-label="Note">
+  <p class="div-label">plain</p>
+  <p>body</p>
+</aside>
+```
+
+````
+``` js [a `]` b]
+c
+```
+.
+<pre><code class="language-js">c
+</code></pre>
+````
+
+````
+``` js [/i/]
+c
+```
+.
+<pre><code class="language-js">c
+</code></pre>
+````
+
+````
+``` js [plain]
+c
+```
+.
+<pre><code class="language-js">c
+</code></pre>
+````
