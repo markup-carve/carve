@@ -107,6 +107,23 @@
         note body consisting ONLY of a non-paragraph block still gets the
         synthesized trailing <p>. Appending to whatever paragraph happens to
         be last is undefined when the last block has no paragraph.
+      - A BODY WHOSE EVERY BLOCK RENDERS NOTHING IS AN EMPTY BODY -- NORMATIVE
+        [CARVE-P9-077]. The <li> holds the body's block elements, each on its
+        own line per PART 10 §4, and then the synthesized backlink paragraph.
+        Which lines those are is decided by what the blocks RENDER, not by how
+        many blocks the body holds: a comment, a comment fence and a raw block
+        the target does not match each produce no element, so a body holding
+        only those renders as an empty body and its <li> opens directly on the
+        backlink paragraph. A body holding a visible block ALONGSIDE an
+        invisible one is not empty and spells the visible one on its own line.
+        [CARVE-P10-001] already reads a CONTAINER body this way, and this clause
+        says the endnote item reads its own the same way. What the two do with
+        the answer differs, because an `<li>` always carries the backlink
+        paragraph: an empty container body keeps a blank line, an empty note body
+        keeps no line at all.
+        An implementation that tells an empty body apart from an all-invisible
+        one, and spells the second with a line the first does not get, is NOT
+        CONFORMING: nothing downstream distinguishes the two documents.
       - INLINE FOOTNOTE `^[content]` (pandoc form; a deliberate carve
         extension -- canonical djot has no inline footnotes). A `^`
         IMMEDIATELY before `[` opens an anonymous note whose content is the
