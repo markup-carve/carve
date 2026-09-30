@@ -48,6 +48,7 @@ block = heading
       | thematic_break
       | code_block
       | blockquote
+      | quote_block
       | list
       | table
       | line_block
