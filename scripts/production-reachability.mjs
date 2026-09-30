@@ -30,6 +30,28 @@ const withoutComments = grammar.replace(/\(\*[\s\S]*?\*\)/g, ' ')
  * references and make unrelated rules look reachable. Quoted terminals hold
  * semicolons of their own (`{';', citation_item}`), so the scan tracks quotes.
  */
+/*
+ * A quoted terminal is literal text, not a reference. `heading = '#', ...`
+ * is fine, but a terminal that happens to spell a production name would
+ * otherwise mark that rule reachable and hide it.
+ */
+const withoutTerminals = (body) => {
+  let out = ''
+  let quote = null
+  for (const ch of body) {
+    if (quote) {
+      if (ch === quote) quote = null
+      continue
+    }
+    if (ch === "'" || ch === '"') {
+      quote = ch
+      continue
+    }
+    out += ch
+  }
+  return out
+}
+
 const bodyOf = (text, from) => {
   let quote = null
   for (let i = from; i < text.length; i++) {
@@ -65,7 +87,7 @@ while (pending.length > 0) {
   const name = pending.pop()
   if (reachable.has(name) || !productions.has(name)) continue
   reachable.add(name)
-  for (const word of productions.get(name).match(/[A-Za-z_][\w-]*/g) ?? []) {
+  for (const word of withoutTerminals(productions.get(name)).match(/[A-Za-z_][\w-]*/g) ?? []) {
     if (productions.has(word) && !reachable.has(word)) pending.push(word)
   }
 }
