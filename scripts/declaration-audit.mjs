@@ -41,6 +41,7 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { parseWaivers } from './spec/ast-waivers.mjs'
 import { duplicateKeys } from './lib/drift-ledger.mjs'
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -199,13 +200,8 @@ const MANIFEST = [
   // forever. The last field decides, so a row that stops being permitted is
   // counted as owed without anyone editing this manifest.
   //
-  // NOT given `prPolicy: 'declared'`, though an OWED row here fails a per-PR
-  // run exactly as carve#2179 describes. Measured: `declared` re-reads all
-  // 132 and accepts 129, so the relaxation reports three PERMITTED rows as
-  // undeclared - it trades one false failure for another. What this file
-  // wants is a split-aware PR policy: permitted always passes, owed passes
-  // when it names an engine issue. That shape does not exist yet.
-  { repo: 'spec', path: 'resources/ast-position-waivers.txt', kind: 'txt', policy: 'split', guard: 'two-way', owner: 'tests/ast-waivers.test.mjs' },
+  // Per-PR accepts permitted rows and tracked debt; release still requires no debt.
+  { repo: 'spec', path: 'resources/ast-position-waivers.txt', kind: 'txt', policy: 'split', prPolicy: 'split-declared', guard: 'two-way', owner: 'tests/ast-waivers.test.mjs' },
   { repo: 'spec', path: 'resources/import-comparison-drift.json', name: 'differences', kind: 'json', policy: 'manual', guard: 'two-way', owner: 'npm run import:compare' },
   { repo: 'spec', path: 'resources/ingest-comparison-drift.json', name: 'differences', kind: 'json', policy: 'manual', guard: 'two-way', owner: 'npm run ast:ingest' },
   // A counts ratchet rather than a ledger, but it carries a per-document
@@ -632,6 +628,14 @@ function txtRows(src) {
   return src.split('\n').map((l) => l.trimEnd()).filter((l) => l.trim() !== '' && !l.trimStart().startsWith('#'))
 }
 
+/** Validate waiver declarations and retain the offending row in diagnostics. */
+function undeclaredWaiverRows(rows) {
+  return parseWaivers(rows.join('\n')).errors.map((error) => {
+    const line = Number(error.match(/^line (\d+):/)?.[1])
+    return line ? `${error} [${rows[line - 1]}]` : error
+  })
+}
+
 /**
  * The rows of a drift ledger that are NOT declarations.
  *
@@ -862,7 +866,7 @@ function perPrPolicy(entry) {
   return entry.policy
 }
 
-export const __internals = { blankComments, perPrPolicy, collapseBetweenLiterals, declarationIndex, bracketedBlock, topLevelEntries, liveRows, classifyPinDistance, gitPinStatus, isDeclarationName, undeclaredLedgerRows, spanRowKey, spanExemptions, MANIFEST }
+export const __internals = { blankComments, perPrPolicy, collapseBetweenLiterals, declarationIndex, bracketedBlock, topLevelEntries, liveRows, classifyPinDistance, gitPinStatus, isDeclarationName, undeclaredLedgerRows, undeclaredWaiverRows, spanRowKey, spanExemptions, MANIFEST }
 
 if (process.env.CARVE_DECL_AUDIT_LIB === '1') {
   // Imported for its helpers by the self-test; do not run the audit.
@@ -1005,19 +1009,19 @@ for (const entry of MANIFEST) {
     owed = 0
   } else if (policy === 'manual') {
     owed = 0
-  } else if (policy === 'declared') {
-    detail = undeclaredLedgerRows(judgedRows)
+  } else if (policy === 'declared' || policy === 'split-declared') {
+    detail = policy === 'split-declared' ? undeclaredWaiverRows(judgedRows) : undeclaredLedgerRows(judgedRows)
     owed = detail.length
     permitted = judgedRows.length - owed
   }
 
-  const counted = policy === 'split' || policy === 'declared'
-    ? `${judgedRows.length} (${permitted} ${policy === 'declared' ? 'declared' : 'permitted'})`
+  const counted = policy === 'split' || policy === 'declared' || policy === 'split-declared'
+    ? `${judgedRows.length} (${permitted} ${['declared', 'split-declared'].includes(policy) ? 'declared' : 'permitted'})`
     : String(judgedRows.length)
   const verdict = exemptRows.length > 0 ? `${counted} +${exemptRows.length} exempt` : counted
   const bad = owed > 0
-  const flag = bad ? (policy === 'declared' ? '   <== UNDECLARED' : '   <== OWED') : ''
-  console.log(`${label} ${pad(verdict, width.rows)} ${pad(policy, 10)} ${entry.guard}${flag}`)
+  const flag = bad ? (['declared', 'split-declared'].includes(policy) ? '   <== UNDECLARED' : '   <== OWED') : ''
+  console.log(`${label} ${pad(verdict, width.rows)} ${pad(policy, 14)} ${entry.guard}${flag}`)
   if (bad) {
     failed += 1
     for (const row of detail.slice(0, 25)) console.log(`${' '.repeat(12)}| ${row}`)
@@ -1025,7 +1029,7 @@ for (const entry of MANIFEST) {
     if (entry.exempt === 'ast-span') {
       console.log(`${' '.repeat(12)}a row conformant on EVERY side belongs in ${spanExemptName()}, with the clause that makes it so`)
     }
-  } else if (policy === 'declared' && judgedRows.length > 0) {
+  } else if (['declared', 'split-declared'].includes(policy) && judgedRows.length > 0) {
     // Say out loud that the other direction is still gated, and by what,
     // because a declared window otherwise reads as "the audit stopped caring".
     console.log(`${' '.repeat(12)}declared window of ${judgedRows.length} row(s); undeclared drift is gated by ${entry.owner}`)
