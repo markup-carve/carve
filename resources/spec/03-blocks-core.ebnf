@@ -28,13 +28,9 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    character that is not one BEGINS the heading. `##<SP><SP>h` is the heading
    `h`, not `<SP>h`.
 
-   TWO CLAUSES DECIDE IT. MARKER SEPARATORS AND PADDING SLOTS (PART 2) makes
-   a marker separator what stands between the marker and the content it
-   introduces, and the four slots it narrows to exactly one space are PADDING
-   slots -- a closed enumeration the heading marker is not in. And PART 11 §1
-   names MARKER ALIGNMENT among the spellings `fmt` may normalize while
-   preserving what the document says, which holds only if the run is not
-   content: `fmt` writes `##<SP><SP>h` as `##<SP>h`.
+   TWO CLAUSES DECIDE IT: MARKER SEPARATORS AND PADDING SLOTS lists four
+   exactly-one-space padding slots, a CLOSED SET excluding this separator. PART 11 §1 lets
+   `fmt` normalize marker alignment: `##<SP><SP>h` becomes `##<SP>h`.
 
    A TAB IS NOT SEPARATOR. `space = ' '`, so `#<SP><TAB>x` is a heading whose
    text BEGINS with the tab, and `#<TAB>x` is not a heading at all -- the
@@ -223,11 +219,9 @@ label = '[', { character - ']' }, ']' ;  (* structured metadata, e.g. [Installat
    content is a link, a `]` inside a literal span is content, and an UNCLOSED
    backtick run takes the `]` into a verbatim span that runs past the line --
    which leaves the slot without a close, and the opener without its metadata,
-   exactly as it leaves `[a `b](/u)` as prose rather than a link. A label read
-   to the FIRST `]` at any depth matched a nested link's closer instead of its
-   own, and the opener then failed its trailing-junk check: a colon fence lost
-   the container and its children to a paragraph, and a code fence lost its
-   payload to an inline code span (carve#2573). Not expressible context-free. *)
+   exactly as it leaves `[a `b](/u)` as prose rather than a link. Closing at
+   the first `]` regardless of depth would select a nested link's closer, failing
+   the opener's trailing-junk check (carve#2573). Not expressible context-free. *)
 code_content = (* any text until matching fence, preserved literally *) ;
 (* TABS IN CODE -- NORMATIVE [CARVE-P2-007]. Literal tab characters in code content (fenced
    code blocks and inline code spans) are PRESERVED verbatim; a tab and N spaces

@@ -497,15 +497,10 @@ arrow = "<--" | "-->" | "<-->"      (* → ← → ↔, canonical *)
    Matched longest-first, as `<->` already beats `<-`, so `<==` beats `<=` and
    `-->` beats the hyphen run.
 
-   `<=` KEEPS ≤: in technical prose it is far more often a comparison than a
-   leftward implication, so the left double arrow grows a character.
-
-   `->`, `<-` AND `<->` ARE DEPRECATED, NOT REMOVED. They keep rendering and
-   the canonical spelling is the doubled form.
-
-   `=>` IS REMOVED, and that is a behavior change rather than a deprecation:
-   `key => value`, `x => x + 1` and `Some(x) => x` are ordinary prose about
-   code, and every one of them silently became ⇒. *)
+   `<=` KEEPS ≤. `->`, `<-` AND `<->` ARE DEPRECATED, NOT REMOVED: they
+   still render, with the doubled forms canonical.
+   `=>` IS REMOVED and stays ordinary text, including `key => value`,
+   `x => x + 1` and `Some(x) => x`. *)
 comparison = "!=" | "<=" | ">=" ;
 (* NOT the `:name:` symbol above -- these are the fixed typographic
    replacements (© ® ™ ±). Named `typographic_symbol` so the two do not

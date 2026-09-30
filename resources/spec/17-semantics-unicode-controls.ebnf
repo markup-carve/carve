@@ -132,58 +132,26 @@
       whitespace clause happens to mention, would leave the rest to habit,
       which is the state this section replaces.
 
-      U+0000 IS NOT ONE OF THOSE CONTROLS -- NORMATIVE [CARVE-P9-062]. The NULL is
+      U+0000 IS NOT ONE OF THOSE CONTROLS -- NORMATIVE [CARVE-P9-062]. It is
       REPLACED BY U+FFFD before the first line is read (PART 0 INPUT, A NULL
-      IS REPLACED BEFORE THE FIRST LINE IS READ). So it is not content, it
-      never reaches the AST, and no target is ever asked whether to emit it.
-      T1..T4 below therefore say NOTHING about it: by the time a target runs
-      there is no NUL left to emit, and what each one emits is the ordinary
-      U+FFFD it was handed. HTML, Markdown and plain text emit that character
-      as text like any other, the canonical `carve` writer serializes it as
-      source text, and ANSI is not asked to strip it either -- T4 strips
-      CONTROLS, and U+FFFD is not one. An engine that reaches T1..T4 still
-      holding a NUL has skipped the parse boundary, not found an exception
-      here.
+      IS REPLACED BEFORE THE FIRST LINE IS READ), so never reaches the AST.
+      T1..T4 emit the resulting U+FFFD as ordinary text; the canonical `carve`
+      writer serializes it as source text. ANSI does not strip U+FFFD because
+      it is not a control. A NUL reaching a target violates the parse boundary.
 
-      T1 HTML EMITS THEM. The HTML target does not strip a non-whitespace C0
-         control from rendered text. That is the status quo, and the
-         asymmetry with T4 is DELIBERATE rather than an oversight: it is
-         stated here because it was undocumented and therefore looked like
-         one. An HTML document is consumed by a parser that treats a stray
-         control as inert character data; it is not consumed by a device
-         that ACTS on the character. Note that this is a different rule from
-         §26, which REMOVES the bidi overrides and isolates from rendered
-         text -- those are an injection vector in a renderer, a C0 control
-         is not.
-
-      T2 MARKDOWN EMITS THEM. The Markdown target does not strip them
-         either. A target that silently removes content is lossy, and the
-         reason first offered for the strip -- that a Markdown reader would
-         reclassify these characters as whitespace, so emitting them changes
-         meaning at the boundary -- does not hold. Downstream readers KEEP
-         U+000B and U+000C inline, on a lone line between paragraphs, inside a
-         code span, after a list marker and after an ATX hash; `-<VT>item`
-         opens no list, which it would if the character were whitespace to
-         that reader. They are dropped in exactly two positions, leading and
-         trailing on a line, which is where Carve drops whitespace too.
-
-      T3 PLAIN TEXT EMITS THEM, FOLLOWING MARKDOWN. Plain text is a text
-         SERIALIZATION rather than a terminal format, so it takes the fidelity
-         answer rather than the device answer.
-
-      T4 ANSI STRIPS THEM. The terminal target removes every non-whitespace
-         C0 control from text, code, math and URL values before emission.
-         This is the one target whose consumer ACTS on the character: a form
-         feed feeds or clears, and the escape U+001B introduces a sequence
-         that can move the cursor, rewrite earlier output or reach the
-         clipboard. That is a property of the device, not a general worry
-         about control characters, so it reaches this target and no other.
-         WHAT THIS ROW DOES NOT DO IS NARROW THE TERMINAL TARGET. §25
-         NON-HTML TARGETS requires it to strip DEL and the C1 controls too,
-         and that requirement is untouched here -- CSI (U+009B) and OSC
-         (U+009D) are single-character forms of the sequences that bullet
-         exists to stop, so a rule about C0 must not be read as licensing
-         them.
+      T1 HTML EMITS THEM. Non-whitespace C0 controls remain in rendered text.
+         This differs from §26's removal of bidi overrides and isolates.
+      T2 MARKDOWN EMITS THEM. They are not stripped from Markdown output.
+         Downstream readers keep U+000B and U+000C inline, between paragraphs,
+         in code spans, after list markers and after ATX hashes: `-<VT>item`
+         opens no list. They drop them only at line beginnings and endings,
+         where Carve drops whitespace too.
+      T3 PLAIN TEXT EMITS THEM, FOLLOWING MARKDOWN. Plain text preserves them
+         as text serialization.
+      T4 ANSI STRIPS THEM from text, code, math and URL values before emission.
+         WHAT THIS ROW DOES NOT DO IS NARROW THE TERMINAL TARGET: §25 NON-HTML
+         TARGETS also requires stripping DEL and C1 controls, including CSI
+         (U+009B) and OSC (U+009D).
 
       T5 WHAT THIS SECTION DOES NOT SETTLE, stated so its silence is not
          read as agreement:
@@ -270,27 +238,14 @@
    admonition, on an endnotes section, on a footnote backlink, on a tab set and
    on a `css`-mode tab panel, together with the `role` that accompanies each.
 
-   PROVENANCE IS NOT THE TEST, and cannot be. Nothing in the HTML says who
-   wrote an attribute. But where the value EQUALS the generated one the output
-   is identical whichever of them wrote it, so a value-matched drop is a no-op
-   for what a reader hears. That is why the `scope` rule is phrased as "matches
-   the value the renderer derives" rather than as a test of who wrote it. A
-   name that DIFFERS from the derived one is kept, always.
-
-   WHAT THE DROP BUYS is the only thing keeping the `labels` map alive across a
-   round trip. A kept `aria-label="Note"` is indistinguishable from an authored
-   one, and §12's author-wins rule then makes it WIN on the next render, so an
-   import that keeps a derived name has permanently unlocalized the document
-   without changing the rendered bytes.
-
-   NOTHING IS LOST, SO NOTHING IS DIAGNOSED. The renderer writes the value
-   back, so a value-matched drop is not a lossy decision and emits no
-   `attribute-dropped`. A drop of the OTHER kind, where the value could not be
-   represented, is diagnosed as it always was.
-
-   BYTE-STABILITY IS THEREFORE NOT THE TEST EITHER. A round trip over that
-   admonition is byte-identical while the defect is present, so the assertion
-   has to be that a DERIVED NAME IS ABSENT from the imported source.
+   PROVENANCE IS NOT THE TEST: HTML does not identify who authored an
+   attribute. A name differing from the generated value is always kept.
+   WHAT THE DROP BUYS: leaving a derived `aria-label="Note"` in source would
+   make it an author override on subsequent renders, defeating the `labels` map.
+   NOTHING IS LOST, SO NOTHING IS DIAGNOSED: a value-matched drop emits no
+   `attribute-dropped`; an unrepresentable value is diagnosed as before.
+   BYTE-STABILITY IS THEREFORE NOT THE TEST EITHER: assert that the imported
+   source lacks the derived name, even when the rendered bytes are identical.
 
    TWO LIMITS, both accepted rather than closed:
 
@@ -308,28 +263,16 @@
        `labels` map the render used and match against that too, which closes
        the residue; it is not required and neither half blocks the other.
 
-   WHAT IS NOT RULED HERE is dropping the name on a named construct REGARDLESS
-   of value. That would take an author's deliberate override -- an
-   `{aria-label="Wichtiger Hinweis"}` written on a `::: note`, which §12
-   honors -- so the residue above is accepted rather than closed by
-   force.
+   WHAT IS NOT RULED HERE is dropping a name regardless of value. An authored
+   override such as `{aria-label="Wichtiger Hinweis"}` on `::: note` is kept.
 
    A DERIVED VALUE IS ONE THE IMPORTER CAN RECONSTRUCT -- NORMATIVE [CARVE-P9-066].
-   The rule above says WHAT to do with a derived value; this
-   says what makes one derived, because the list of shapes it reaches is not the
-   test and cannot be. A list grows an entry every time the question recurs, and
-   an implementation keyed on one entry is a check that cannot fail for the rest
-   of the family.
-
    THE PROPERTY IS RECONSTRUCTABILITY. An attribute is DERIVED where the
    importer can rebuild its value FROM THE ELEMENT IT IS READING -- the tag, the
    classes, the `role`, the element's own text, a control beside it, or the
    documented default of a `labels` key -- and the value present EQUALS that
-   rebuild. Nothing else qualifies. It follows that the renderer wrote it, from
-   the same document the importer is reading: a value the importer can compute
-   is one the renderer computed, whichever of them ran first, which is why the
-   equality test above stands in for a provenance test that is not available.
-   A value the element does not determine is the author's and is kept.
+   rebuild. Nothing else qualifies; a value the element does not determine
+   is the author's and is kept.
 
    THE WRAPPER IS DERIVED ON THE SAME TERMS. The rule is stated over attributes
    because that is where it was first needed, but an ELEMENT can be

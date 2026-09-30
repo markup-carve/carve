@@ -176,18 +176,11 @@ caption_slot = [blank_line], caption ;
    the optional blank_line in caption_slot is the whole allowance.
 
    FIVE OF THE SEVEN HOSTS REFERENCE THIS SLOT: `code_block`, `blockquote`,
-   `table`, `figure_group` and `quote_block` (the last two hang their slot on
-   the CLOSING fence -- §4c and §4). §4's other two -- the image paragraph and
-   the standalone
-   display-math block -- attach the same caption under the same allowance, but
-   there is no production to hang the slot on, so for them §4 is the whole
-   rule. §4 says which, and why. A `^ ` line that follows neither a slot-
-   carrying host nor one of those two is ordinary inline/paragraph content --
-   which, when a paragraph is OPEN above it, means it folds INTO that
-   paragraph rather than starting a second one. §10 I7 is that half, and it
-   is where the reading was left to inference for long enough to diverge.
-   (Reading this note as "only a production attaches a caption" would make a
-   captioned image a paragraph, which §4 denies and no engine does.) *)
+   `table`, `figure_group` and `quote_block`; the last two attach it to their
+   CLOSING fence (§4c, §4). Image paragraphs and standalone display-math blocks
+   follow the same allowance under §4 without a slot-carrying production.
+   Any other `^ ` line is ordinary inline/paragraph content and, when a
+   paragraph is OPEN above it, folds into it (§10 I7). *)
 
 (* CAPTION NUMBER PLACEHOLDER -- NORMATIVE [CARVE-P2-022].
    The FIRST bare `#` in a caption's TOP-LEVEL inline_content is a number

@@ -207,21 +207,11 @@
       returns as a bare URL, and that is a DIFFERENT document: a bare URL stays
       literal where an autolink is a link.
 
-      THE NODE CARRIES NO NON-ANCHOR FLAG. Nothing on the wire marks the inner
-      link as unclickable; a consumer infers it from context. Such a flag would
-      carry a RENDER fact -- "HTML cannot nest anchors" -- back into the format
-      that describes the SOURCE, which is the layering this section rejects
-      everywhere else. §3 already gives a link `children`, and those children
-      are inline nodes with `link` and `autolink` among them, so keeping the
-      node needs no new wire surface at all. The asymmetry is recorded rather
-      than assumed -- adding the flag later is a normal additive change,
-      removing it later is a break.
-
-      RENDERED OUTPUT DOES NOT MOVE. Every target still unwraps, so this is a
-      wire-format change with no HTML, Markdown, plain or ANSI consequence.
-      What moves is what a consumer of the TREE receives: the §6 round trip on
-      the two shapes above, and that a `link` and an `autolink` are admissible
-      inside a link's children.
+      THE NODE CARRIES NO NON-ANCHOR FLAG: consumers infer unwrapping from
+      context. §3 already allows `link` and `autolink` in a link's children.
+      Adding such a flag later would be additive; removing it would be a break.
+      RENDERED OUTPUT DOES NOT MOVE on HTML, Markdown, plain or ANSI; keeping
+      the nodes preserves §6's AST round trip on the examples above.
 
       A DESTINATION IS THE AUTHOR'S TEXT, UNSANITIZED -- NORMATIVE [CARVE-P12-008]. `href`,
       `src`, and every other destination field carry what the author wrote,
@@ -330,16 +320,9 @@
       Lines are 1-based. Columns are 1-based and offsets 0-based, both counted
       in UNICODE CODEPOINTS. `endColumn` and `endOffset` are exclusive.
 
-      Codepoints rather than bytes or UTF-16 code units because a codepoint index
-      always lands on a CHARACTER BOUNDARY. A byte offset can point inside a
-      UTF-8 sequence and a UTF-16 offset inside a surrogate pair; either lets a
-      consumer slice a document into invalid text. Every implementation
-      therefore converts, and each pays it once per document rather than per
-      position.
-
-      The document root is exempt because it spans the whole source by
-      definition, so a span on it carries no information a consumer does not
-      already have.
+      Codepoint indices always land on character boundaries; bytes and UTF-16
+      units can split encoded characters. Implementations convert once per
+      document. The root is exempt because it spans the whole source.
 
       This is the field that makes a serialized AST worth exchanging: an
       editor, a language server or a tool grounding output back to source needs

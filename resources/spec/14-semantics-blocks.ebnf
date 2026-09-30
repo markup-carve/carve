@@ -89,10 +89,8 @@
          roman, any value) interrupts: the line FOLDS into P as lazy
          continuation; a list needs a blank line before it (matching Djot).
          "Liste: \n - eins \n - zwei" is ONE paragraph, so is
-         "x = 5 \n * 3 + 17"; a blank line starts the list. (Deliberate
-         change from the earlier bullet/ordered asymmetry: an ordered
-         marker is too common in prose, and the symmetric rule removes the
-         hard-wrapped-bullet false positive.) TIGHT NESTED LISTS UNAFFECTED:
+         "x = 5 \n * 3 + 17"; a blank line starts the list.
+         TIGHT NESTED LISTS UNAFFECTED:
          indented marker inside an open list ITEM opens a sublist with no
          blank line -- that is §24 C3 (content column), not this relation.
       I3 IMAGE EXCLUDED. A line that is only a bare image ("![alt](url)")
@@ -376,7 +374,7 @@
       `:::note` has no separator, so it opens nothing and is absorbed, and the
       QUOTED `> :::` under it would be absorbed on the same terms. The `:::`
       above supplies no `>` prefix: it is a PARTIAL match, and it could reach
-      that paragraph only through PART 1 S4's lazy fold. The strict column-0
+      that paragraph only through PART 0 S4's lazy fold. The strict column-0
       rule decides it instead -- a flush-left fence-shaped line interrupts, the
       quote closes, and the line is re-classified at top level, where it opens
       a div of its own. Change one line to `> :::` and the answer inverts,
@@ -486,71 +484,45 @@
               <ol>...</ol>
             </section>
 
-      NOTHING HERE IS A NEW SHAPE. The title is a child where the placed
-      element admits paragraphs, never a class (pinned rule a above); it is
-      emitted only where the author wrote one (rule b); a titled region takes
-      `aria-labelledby` at the title's minted id, an untitled one keeps the
-      name the `labels` map supplies (§16a's `endnotes`, the TOC extension's
-      `tocNav`), and an author's own `aria-label` or `aria-labelledby` still
-      wins and mints no id,
-      matched the same case-insensitive way, WHERE THE MARKER'S ATTRIBUTES REACH
-      THE PLACED ELEMENT (they reach the `<nav>`; the endnotes section takes none
-      of them, so nothing can override its name there), while any OTHER `aria-*`
-      the author writes leaves the naming alone; the label falls back to
-      `<p class="div-label">` because no group extension consumes it. An
-      untitled, unlabeled marker renders EXACTLY as it did before this clause,
-      so the `::: footnotes` corpus pin does not move. On the non-HTML targets
-      the two tokens follow PART 11 §10e T1, which already covers every named
-      container.
+      NOTHING HERE IS A NEW SHAPE. Emit the title as a child, never a class,
+      and only when authored, including an explicitly empty title. A titled
+      nameable region uses `aria-labelledby` at the title's minted id;
+      an untitled one uses the `labels` map (§16a `endnotes`, TOC `tocNav`).
+      The author's own `aria-label` or `aria-labelledby` still
+      wins, matched case-insensitively, preventing id minting
+      WHERE THE MARKER'S ATTRIBUTES REACH
+      THE PLACED ELEMENT: they reach the TOC nav, but none reaches the
+      endnotes section; any OTHER `aria-*`
+      the author writes leaves the naming alone.
+      The label renders as `<p class="div-label">` when no group extension
+      consumes it. An untitled, unlabeled marker renders EXACTLY as it did before this clause.
+      Non-HTML targets follow PART 11 §10e T1 for both tokens.
 
-      A SIBLING TITLE WAS REFUSED FOR A NAMEABLE REGION. Emitting the `<p>`
-      before the endnotes section or TOC nav puts the visible name outside the
-      region it names and leaves the region announcing the map default: "Notes"
-      on the page, "Footnotes" in the landmark list. One region cannot carry
-      two names, and the landmark clause
-      above settles which one it is -- the author's title, wherever the author
-      wrote one.
+      A SIBLING TITLE WAS REFUSED FOR A NAMEABLE REGION. Put the visible title
+      inside a region that admits it, and use it as that region's accessible
+      name rather than the map default.
 
-      THE SEPARATOR DOES NOT MOVE. `footnotes` emits `<hr>` then the `<ol>`, and
-      the title and the label precede the `<hr>`: they name the section, the
-      rule divides the notes from the body above. Suppressing the `<hr>` under a
-      title was refused, because it makes the separator conditional on a field
-      that has nothing to do with it.
+      THE SEPARATOR DOES NOT MOVE. `footnotes` emits title, label, `<hr>`,
+      then `<ol>`; a title does not suppress the separator.
 
-      THE ID COMES FROM THE ADMONITION SEQUENCE, NOT A SECOND ONE. `adm-{n}`
-      above counts Tier-1 titled blocks; a titled directive whose placed element
-      carries a name takes THE NEXT n IN THAT SAME SEQUENCE, in document order,
-      through the same slug registry. One counter for one prefix: two would
-      mint `adm-1` twice in a document holding
-      a titled admonition and a titled directive, and the registry would then
-      have to rename an id the other element's `aria-labelledby` points at.
+      THE ID COMES FROM THE ADMONITION SEQUENCE, NOT A SECOND ONE. Titled
+      nameable directives take THE NEXT n IN
+      THAT SAME SEQUENCE as `adm-{n}`, in document order through the same slug registry.
 
-      A DEGRADED MARKER CARRIES THEM TOO, WITHOUT THE NAME. A marker that places
-      nothing renders `<div class="{kind}">` -- a `::: footnotes` in a document
-      with no notes, a second one after the first has placed, a Tier-3 kind
-      whose extension is not registered -- and that div IS the placed element
-      for this rule: both tokens render inside it, even where the div is
-      otherwise empty. Authored text never vanishes, the floor
-      `docs/graceful-degradation.md` states for an unconsumed label.
+      A DEGRADED MARKER CARRIES THEM TOO, WITHOUT THE NAME. A marker placing
+      nothing renders `<div class="{kind}">`, with both tokens inside even
+      when otherwise empty: this includes absent notes, a second placement
+      marker, and an unregistered Tier-3 kind. Naming is PROHIBITED on role `generic`;
+      a plain div takes NEITHER naming attribute and mints NO id; only the nameable placed regions,
+      the endnotes section or TOC nav use the naming rule.
 
-      It takes NEITHER naming attribute and mints NO id, because ARIA marks
-      `aria-label` and `aria-labelledby` PROHIBITED on role `generic`, which a
-      plain `<div>` maps to -- the same reason `docs/extension-contract.md`
-      gives for a tab panel. The name swap reaches only a placed element that
-      can carry a name: the `<section role="doc-endnotes">` and the
-      `<nav class="toc">`. Where the element cannot, the visible title is the
-      whole of what the author gets, which is the floor, not the landmark rule.
-
-      WHERE THE ELEMENT CANNOT HOLD A PARAGRAPH, THE TOKENS PRECEDE IT. A
-      `glossary` places one `<dl>` per definition list written inside it and an
-      `index` places a `<ul>`; HTML admits no `<p>` inside either, and wrapping
-      them to make room would change what an UNTITLED document renders. Those
-      kinds emit the title and then the label BEFORE their content and mint no
-      id, which is where a `directive` that cannot name itself leaves them.
-      For `index`, authored body blocks follow those tokens and precede the
-      generated `<ul>`. `footnotes`, `toc` and every degraded `<div>` take the
-      children form above because their element holds flow content. The placed
-      endnotes section and TOC nav can carry a name; a degraded div cannot.
+      WHERE THE ELEMENT CANNOT HOLD A PARAGRAPH, THE TOKENS PRECEDE IT.
+      `glossary` places one `<dl>` per authored definition list; `index`
+      places a `<ul>`. Emit title then label BEFORE their content and mint no
+      id, without adding wrappers. For `index`, authored body blocks follow those tokens and precede the
+      generated `<ul>`. `footnotes`, `toc` and
+      degraded divs instead take tokens as children because they admit flow
+      content; only the endnotes section and TOC nav can carry a name.
 
    13. HEADING SECTION WRAPPING -- NORMATIVE [CARVE-P9-019] (governs `atx_heading` in
       PART 2 and the renderer; matches djot, see `jgm/djot` official
@@ -592,16 +564,8 @@
           # abc
           {a=b .c #x}   -> <section id="x"><h1 a="b" class="c">
           # abc
-        The id hoists because it names the region a fragment URL
-        targets, and that region is the section. Every other attribute
-        describes the heading the author wrote it on: `{.featured}`
-        marks the heading, not the whole subtree beneath it -- an
-        author who wants the subtree has a div (PART 2, `div_open`).
-        This is a KNOWN DIVERGENCE from djot, which resolved
-        `jgm/djot.js#43` the other way (all attributes migrate to the
-        section) and then implemented that resolution only when an
-        explicit id is present, so djot's two id cases disagree with
-        each other. Carve's two cases agree. See divergence-from-djot.md.
+        Other attributes describe the heading, not the surrounding section.
+        See divergence-from-djot.md for the different Djot placement.
       - HEADINGS INSIDE CONTAINERS DO NOT WRAP. The algorithm walks
         TOP-LEVEL blocks (and the sections it opens), so a heading
         inside a blockquote, div, admonition, list item, definition,
@@ -779,31 +743,18 @@
            - END OF DOCUMENT; and
            - END OF THE CONTAINER that holds the attribute.
 
-         A floating attribute is SCOPED to its container. "Applies to the next
-         block" (A2) answers WHICH block, not which container, and containment
-         already bounds everything else in this language -- so a pending
-         attribute written inside a block quote, a list item, a `dd` or a
-         footnote body does not survive that container's end and does not reach
-         a block outside it. `> {.k}` / blank / `tail` leaves `tail` UNCLASSED
-         rather than carrying an authored class out of a quote and over a blank
-         line onto a document-level paragraph; `- {.k}` / `# H` leaves the
-         heading outside the item rather than pulling it in to be attributed.
+         A floating attribute is SCOPED to its container. Drop pending
+         metadata at document end or the end of its quote, item, definition
+         body or footnote body; it MUST NOT attach outside that container.
+         `> {.k}` / blank / `tail` leaves `tail` unclassed.
 
-         DROPPING SILENTLY IS THE ONE THING THIS MAY NOT DO. Both dangling
-         cases are a lint diagnostic, `unattached-block-attribute`
-         (docs/validation.md), in the same family as the other constructs that
-         render nothing and can be written by mistake. The rule is about OUTPUT:
-         nothing is emitted for the attribute, and the processor says so.
+         DROPPING SILENTLY IS THE ONE THING THIS MAY NOT DO. Both cases report
+         `unattached-block-attribute` (docs/validation.md), while producing no
+         output for the attribute.
 
-         Which container END is reached is PART 1 S4's question, not this
-         clause's: an attribute line leaves no open paragraph, so a following
-         flush-left line does not join the container. The two
-         clauses meet on `> {.k}` / `tail`, where S4 ends the quote and A4 then
-         has nothing left for the attribute.
-
-         OUT OF SCOPE, and left open deliberately: what a container that ends up
-         EMPTY renders. That is a rendering question about empty containers in
-         general and is not settled here.
+         S4 decides container closure: the attribute leaves no open paragraph,
+         so `> {.k}` / `tail` ends the quote and A4 drops the attribute.
+         This clause does not decide how an empty container renders.
       A5 MULTI-LINE BLOCK. One block may wrap across lines ({#id\n .foo} is
          one block: id `id`, class `foo`). A BLANK line inside the braces
          ends the attempt -- the text is then literal, not a

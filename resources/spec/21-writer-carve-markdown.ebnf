@@ -5,11 +5,8 @@
       choices and the AST records them; changing one would satisfy §1 while
       still surprising the author.
 
-      FENCE LENGTH WAS A THIRD EXAMPLE HERE AND IS NOT ONE. It is removed
-      rather than implemented, on this section's own second half: a spelling is
-      the author's to keep BECAUSE THE AST RECORDS IT, and `code_block` records
-      no fence at all (PART 12 §3). Neither the length of the run nor the
-      character it is made of survives the tree.
+      FENCE LENGTH WAS A THIRD EXAMPLE HERE AND IS NOT ONE: `code_block`
+      records neither fence length nor character (PART 12 §3).
 
       THE WRITER COMPUTES THE WIDTH IT NEEDS. A fence is widened to clear the
       longest fence-character run in its content and narrowed when nothing
@@ -63,19 +60,10 @@
       `---toml`; nothing about the writer's output turns on which format the
       document named.
 
-      `---` and `---yaml` open the same frontmatter (PART 1, "a bare `---`
-      defaults to `yaml`"), so the two are synonyms with nothing in the tree to
-      tell them apart. PART 1 ALREADY NAMES THE FORM: that production calls
-      `---yaml` canonical in as many words, and it calls a WHOLE OPENER
-      canonical, not the space inside one.
-
-      A READER'S LENIENCY IS NOT A WRITER'S LICENSE, which is what the bare
-      form would be. "A bare `---` defaults to `yaml`" tells the PARSER what
-      to do with an opener that names nothing; the writer is not parsing, it
-      is choosing, and `frontmatter_format` is one production over every
-      format with no default case in it. §2 already refuses the mirror of that
-      move, where the writer emits the shortest form that happens to survive
-      re-parsing rather than the form that says what it means.
+      `---` and `---yaml` parse identically; the AST records no difference.
+      PART 1 ALREADY NAMES THE FORM: `---yaml` is the canonical whole opener.
+      A READER'S LENIENCY IS NOT A WRITER'S LICENSE: accepting bare `---`
+      as yaml does not change the writer's required spelling.
 
    6c. AN EMPTY-STRING ATTRIBUTE IS WRITTEN AS A BOOLEAN -- NORMATIVE [CARVE-P11-012]. An
       attribute whose AST value is the empty string comes back as the bare name:
@@ -101,17 +89,10 @@
       rather than `{lang}` -- the more specific production wins where both
       apply.
 
-      THIS IS NOT §6b'S MIRROR. That clause makes the writer spell `---yaml`
-      rather than the shorter `---`, and its reason is that a bare `---` is
-      NOT a production for yaml frontmatter. A boolean attribute is the
-      opposite case -- the grammar has a production for exactly this shape.
-      `{kbd=""}` and `{kbd}` say the same thing in the tree. The latter uses
-      the dedicated production for that empty-string value.
-
-      A COMPACT SEMANTIC SPAN IS WHERE IT SHOWS. `[Tab]{kbd}` is the form PART
-      9 §10 documents and the form an author writes, and it is a name whose
-      VALUE is discarded. An empty value there points at a slot that does
-      nothing.
+      THIS IS NOT §6b'S MIRROR: unlike bare frontmatter `---`, the grammar
+      has a dedicated production for an empty-string boolean value.
+      A COMPACT SEMANTIC SPAN IS WHERE IT SHOWS: `[Tab]{kbd}` is PART 9 §10's
+      form; its value is discarded.
 
    6d. A CODE FENCE OPENER IS WRITTEN GLUED TO ITS INFO STRING -- NORMATIVE [CARVE-P11-013].
       The canonical writer emits NO padding space between the fence run and
@@ -127,17 +108,10 @@
       ahead of it is glued the same way (```"src/app.js"), and so is the raw
       passthrough selector (```=html, PART 9 §20).
 
-      PART 2 ALREADY NAMES THE FORM. `fenced_code_block` calls the no-space
-      spelling canonical in as many words and records that it is what the
-      X->Carve converters emit; the READER is lenient and takes either, which
-      is a leniency and not a writer's license (§6b makes the same
-      distinction one construct over).
-
-      THE TREE RECORDS NO SLOT, which is why the writer has to be told. §6
-      leaves a spelling to the author BECAUSE THE AST RECORDS IT, and
-      `code_block` records the padding slot no more than it records the fence
-      length or the fence character (PART 12 §3) -- so the writer has nothing
-      to reproduce and must CHOOSE, exactly as §6b and §6c must.
+      PART 2 ALREADY NAMES THE FORM: `fenced_code_block` calls the glued
+      spelling canonical; a reader accepts either spacing (§6b).
+      THE TREE RECORDS NO SLOT: `code_block` records no padding, fence length
+      or fence character (PART 12 §3), so the writer chooses the canonical form.
 
    6e. A TABLE CELL'S CONTENT IS PADDED -- NORMATIVE [CARVE-P11-014].
       The canonical writer emits every cell as its PREFIX glued to the opening
@@ -627,12 +601,8 @@
           and `[` collide with a delimiter of their own character; a `#` does
           not, and M2b already gives it this test on the `escaped_text` side.
 
-      THE FINDING IS §3'S, ONE TARGET OUT. §3 records, for the canonical
-      writer, that "whether a character is significant depends on the line,
-      not on the character". M1 was the opposite choice, taken because this
-      target has no Markdown parser to hand. But the Markdown writer builds a
-      line too, so the test here is stated over the EMITTED LINE and M1b is
-      this section's §4.
+      THE FINDING IS §3'S, ONE TARGET OUT: significance depends on the
+      EMITTED LINE, which the Markdown writer can inspect without a parser.
 
       THE ASTERISK DIFFERS IN KIND, NOT IN DEGREE, which is what M1a is for.
       This writer emits `*` as an emphasis delimiter, so the asterisk is not a
@@ -648,10 +618,9 @@
         *\*\**  ->  <p><em>**</em></p>
         ****    ->  <hr />
 
-      The run being weighed was partly the writer's OWN delimiters, which the
-      escaped literals had merged into. M1b would hold this document on its own
-      terms, but M1a is stated anyway and is PERMANENT: for `*` the adjacency is
-      the shape of the target rather than an accident of one document.
+      The writer's own delimiters merged with the literal asterisks. M1a's
+      unconditional asterisk rule is PERMANENT even where M1b would preserve
+      that example.
 
       ADJACENCY IS READER-INDEPENDENT: delimiter readers resolve by RUN LENGTH,
       so an escape beside a live delimiter of the same character preserves the

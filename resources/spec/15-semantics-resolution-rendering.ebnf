@@ -92,38 +92,22 @@
         of the nav does not promote the nested marker to document top level.
         Its region goes where it would without that marker, including the
         default position when there is no other eligible placement marker.
-      - BACKLINK PLACEMENT WHEN THE BODY DOES NOT END IN A PARAGRAPH. "The
-        note's last paragraph" above presumes there is one. When the note
-        body's LAST BLOCK is not a paragraph (a code block, a block quote, a
-        table, a div, a raw block, or any other non-paragraph block), the
-        backlink is never appended into a paragraph found INSIDE or BEFORE
-        that block - the engine SYNTHESIZES a new wrapping <p> immediately
-        AFTER the last block and places the backlink there, as a sibling of
-        that block, never a descendant of it. This holds even when the last
-        block itself ends in a paragraph of its own (a block quote whose
-        content ends in a paragraph): that paragraph belongs to the quoted
-        (or otherwise contained) content, not to the note's own backlink, so
-        appending there would misattribute the backlink to the quotation. A
-        note body consisting ONLY of a non-paragraph block still gets the
-        synthesized trailing <p>. Appending to whatever paragraph happens to
-        be last is undefined when the last block has no paragraph.
+      - BACKLINK PLACEMENT WHEN THE BODY DOES NOT END IN A PARAGRAPH.
+        Append backlinks to the note's last block only when that block is a
+        paragraph. Otherwise synthesize a trailing sibling `<p>` after the
+        last block. Never use a paragraph inside or before that block, even
+        when a contained quote ends in one. A body consisting of one
+        non-paragraph block also gets the synthesized paragraph.
       - A BODY WHOSE EVERY BLOCK RENDERS NOTHING IS AN EMPTY BODY -- NORMATIVE
-        [CARVE-P9-077]. The <li> holds the body's block elements, each on its
-        own line per PART 10 §4, and then the synthesized backlink paragraph.
-        Which lines those are is decided by what the blocks RENDER, not by how
-        many blocks the body holds: a comment, a comment fence and a raw block
-        the target does not match each produce no element, so a body holding
-        only those renders as an empty body and its <li> opens directly on the
-        backlink paragraph. A body holding a visible block ALONGSIDE an
-        invisible one is not empty and spells the visible one on its own line.
-        [CARVE-P10-001] already reads a CONTAINER body this way, and this clause
-        says the endnote item reads its own the same way. What the two do with
-        the answer differs, because an `<li>` always carries the backlink
-        paragraph: an empty container body keeps a blank line, an empty note body
-        keeps no line at all.
-        An implementation that tells an empty body apart from an all-invisible
-        one, and spells the second with a line the first does not get, is NOT
-        CONFORMING: nothing downstream distinguishes the two documents.
+        [CARVE-P9-077]. Render the body's visible block elements on their own
+        lines (PART 10 §4), then the synthesized backlink paragraph. If all
+        blocks render nothing, open the `<li>` directly on that paragraph:
+        comments, comment fences and target-mismatched raw blocks add no line.
+        With visible and invisible blocks together, emit only the visible
+        blocks' lines. This uses CARVE-P10-001's render-based emptiness test,
+        but an empty note keeps no blank line because it has a backlink;
+        an empty container keeps its blank line. Empty and all-invisible
+        note bodies MUST serialize identically.
       - INLINE FOOTNOTE `^[content]` (pandoc form; a deliberate carve
         extension -- canonical djot has no inline footnotes). A `^`
         IMMEDIATELY before `[` opens an anonymous note whose content is the
@@ -212,7 +196,7 @@
 
          are both LOOSE, and so are the same documents with the closer
          written. The state of the container above the blank does not enter
-         this question either, which is the same property PART 1 S4 already
+         this question either, which is the same property PART 0 S4 already
          states for where the item ENDS.
 
          An INTERIOR fence blank does not loosen the list: content follows it
@@ -356,45 +340,21 @@
            distinct construct;
          - LEAF blocks (heading, thematic break, code block, raw block,
            paragraph) hold no child blocks; a heading is a bounded title.
-      L6 A COLLECTED DEFINITION LEAVES NO TRACE -- NORMATIVE [CARVE-P9-034] (the general
-         rule for PART 9R R1/R2 COLLECTION, stated ONCE here for every
-         container that can hold a definition). This is §10 I5's property 2 --
-         emits no visible block at its authored location -- for the two
-         definitions that also REGISTER, which is their semantic action; the
-         property itself is stated at AN INVISIBLE LINE IS ONE CLASSIFICATION
-         and is not re-derived here. A link reference or
-         footnote definition is document-level metadata: wherever it is
-         written, PASS 1 collects it into the shared symbol table and PASS
-         2 resolves uses against it from anywhere in the document (PART
-         9R). The BLOCK-LEVEL CONTEXT that held the definition line renders
-         as though that line were never written at all -- not an empty
-         paragraph standing in its place, not a blank line, not residual
-         whitespace. This holds for EVERY block-level context that can hold
-         block content: a LIST ITEM, a BLOCK QUOTE, a FOOTNOTE BODY (§16),
-         a DEFINITION-LIST `dd`, and a block attached by a `+` CONTINUATION
-         MARKER (L3/L4) alike. A future container that can hold block content
-         is covered by the same rule.
+      L6 A COLLECTED DEFINITION LEAVES NO TRACE -- NORMATIVE [CARVE-P9-034]
+         (PART 9R R1/R2 collection). Apply §10 I5 property 2 to collected link
+         and footnote definitions: pass 1 registers them in the shared symbol
+         table and pass 2 resolves uses document-wide. Their block-level host
+         renders no placeholder paragraph, blank line or residual whitespace.
+         This applies to list items, quotes, footnote bodies, definition
+         descriptions, continuation-attached blocks and any future container
+         admitting block content.
 
-         "No trace" is about OUTPUT, not about block structure -- it does
-         not exempt a definition line from §10 I5, which already governs
-         paragraph interruption everywhere, containers included (I6): a
-         definition line INTERRUPTS an open paragraph exactly as any other
-         invisible construct does, ending it with no blank line needed, so
-         a plain line immediately after a definition starts a NEW block
-         rather than folding back into the paragraph the definition
-         interrupted. What decides how that new block RENDERS is L1/L2, not
-         L6: no blank line appeared anywhere, so the item stays TIGHT
-         (L2 loosens on a blank line, never on block count alone), and by
-         L1 a tight item's paragraphs are ALL bare, this new one included --
-         not because the definition is transparent to structure, but
-         because nothing here ever loosened the item in the first place.
-         A footnote definition sitting on a list item's OWN line, followed
-         by a plain continuation line, is this exact shape: the item holds
-         TWO paragraph blocks with no blank between them and renders both
-         bare, `<li>first\n  second\n</li>`. Treating the definition as if it
-         both interrupted AND merged would need a rule found nowhere else in
-         this grammar; treating it as loosening the item on its own would
-         contradict L2 directly.
+         "No trace" describes output, not block structure. I5 still interrupts
+         the open paragraph without a blank, so following plain text starts a
+         new block. L1/L2 govern its rendering: without a loosening blank the
+         item stays tight and every paragraph, including the new one, renders
+         bare. A definition between two item paragraphs therefore leaves two
+         bare paragraph blocks; it neither merges them nor loosens the item.
 
       L7 ONE CONSUMED BOOLEAN SPELLS THE LOOSENESS NO BLANK LINE CAN --
          NORMATIVE [CARVE-P9-035]. A container's preceding BLOCK-ATTRIBUTE LINE
@@ -414,102 +374,62 @@
                <li><p>Note text.</p></li>
              </ul>
 
-         THE KEY IS NOT LIST-SPECIFIC, and writing it as if it were would have
-         been the first of at least two one-off keys. The tight/loose axis
-         exists in exactly TWO places, and this key applies wherever it exists:
-         a LIST (L1) and a DEFINITION LIST (PART 2, definition lists), and
-         any container a later clause gives the axis to, with no second key to
-         invent. A table cell and a caption suppress the paragraph wrapper with
-         no wrapped alternative at all; a block quote, div, line block and
-         footnote body always wrap. On a container with no such axis the name
-         has no special meaning and renders `loose=""` like any other boolean.
+         THE KEY IS NOT LIST-SPECIFIC. It applies to lists, definition lists,
+         and any future container with a tight/loose axis. Cells and captions
+         have no wrapped alternative; quotes, divs, line blocks and footnote
+         bodies always wrap. On a container without the axis, `loose` is an
+         ordinary boolean rendering `loose=""`.
 
-         WHAT IS UNSPELLABLE WITHOUT IT. Looseness is spelled with a blank line,
-         and a blank line needs two things to stand between, so the shape with
-         nothing on one side has no spelling:
+         WHAT IS UNSPELLABLE WITHOUT IT. A one-item list can need paragraph
+         wrapping without an inter-item blank. A definition description with
+         one block cannot spell wrapping with a blank between entries; such a
+         blank never loosens a definition list, at any entry count.
 
-           - a ONE-ITEM list. `<ul><li><p>x</p></li></ul>` has no "between
-             items" to put a blank line in.
-           - a definition description holding ONE block. A blank line between
-             two ENTRIES does not loosen a `<dl>` at all -- only a second block
-             inside the description wraps it -- so `<dd><p>x</p></dd>` is
-             unspellable at every entry count, not just at one.
+         THERE IS NO `tight` TWIN. Tightness is always spellable by removing
+         blanks; this key supplies only the otherwise unspellable loose case.
 
+         THE NAME IS THE TERM OF ART. `loose` names rendering, not the tree's
+         block-node shape, and applies across HTML, Markdown, plain and ANSI.
 
-         THERE IS NO `tight` TWIN, and its absence is a decision rather than an
-         omission. TIGHT IS ALWAYS SPELLABLE: remove the blank lines. Only loose
-         has an unspellable case, so a `tight` key would be surface with no
-         shape behind it -- and it would introduce a genuinely ambiguous
-         document, where the blank lines say loose and the attribute says tight.
-
-         THE NAME IS THE TERM OF ART, on purpose. A name describing the tree
-         would name the wrong fact -- the children are already block nodes in
-         both spellings, and what moves is how they RENDER -- and a name
-         describing the output would be an HTML artifact, where this axis has to
-         mean something on the Markdown, plain and terminal targets too. `loose`
-         is what CommonMark, djot and Markdown Extra all call this distinction.
-
-         REDUNDANT USE IS A NO-OP. `loose` on a list the blank lines already
-         made loose is legal and changes nothing, and so is `loose` on a
-         description that already holds two blocks. Rejecting it would make the
-         key context-sensitive, and a producer that always emits it is simpler
-         than one that has to decide.
+         REDUNDANT USE IS A NO-OP. The key is legal on an already-loose list
+         or a description already holding two blocks and changes no rendering.
 
          THE CANONICAL WRITER EMITS IT ONLY WHERE THE BLANK-LINE SPELLING
-         CANNOT. This follows PART 12 §15, whose writer "retains `header-rows` /
-         `footer-rows` when they are present" rather than deriving them onto
-         every table, and PART 11 §2, which spends a mark only where omitting it
-         would change the re-parsed document. On a multi-item loose list the
-         blank lines already say it, so the key would be an idle mark.
+         CANNOT. Follow PART 11 §2: emit the key only when omitting it changes
+         the re-parsed document. Multi-item loose lists already spell looseness
+         with blanks and need no key.
 
-         THE TEST IS A RE-PARSE, AND IT IS OVER THE DOCUMENT. Write the
-         container's body without the key, read it back, and emit the key
-         exactly where the container's own looseness field did not survive that
-         trip. The equality is PART 11 §1's, taken over the re-parsed document;
-         taking it over the RENDER instead answers a different question.
+         THE TEST IS A RE-PARSE, AND IT IS OVER THE DOCUMENT. Write the body
+         without the key, re-parse it, and emit the key exactly when the
+         container's looseness field fails to survive (PART 11 §1 equality).
+         Render equality is not the test.
 
-         THE ITEM COUNT IS NOT THE TEST. A ONE-ITEM list is loose whenever the
-         blank line sits INSIDE that item, and there the blank-line spelling did
-         express the looseness, so a writer keyed on the item count rewrites
-         such a document and fails `parse(fmt(x)) == parse(x)`. The count is
-         sound as a SHORTCUT IN ONE DIRECTION ONLY: two or more items always
-         re-parse loose, so the read may be skipped there.
+         THE ITEM COUNT IS NOT THE TEST. A one-item list may spell looseness
+         with an interior blank, so count alone would add an unnecessary key.
+         Two or more items always re-parse loose; that one-way shortcut may
+         skip the read.
 
-         THE COUNT IS ALSO WRONG IN THE OTHER DIRECTION. A definition list's
-         entries count as two or more on any list worth writing, and a blank
-         line between two ENTRIES does not loosen a `<dl>` at any count - so a
-         writer keyed on the count OMITS the key from the container that needs
-         it most.
+         THE COUNT IS ALSO WRONG IN THE OTHER DIRECTION. Blanks between
+         definition entries never loosen the definition list, at any count.
 
-         ON A DEFINITION LIST THE ANSWER IS UNCONDITIONAL: the writer emits the
-         key on every definition list carrying `loose`. PART 12 §8 publishes
-         `definition_list.loose` ONLY where the looseness was SPELLED, so a body
-         written without the key can never read back with the field set, and the
-         re-parse test says "emit" every time. A description that already holds
-         two blocks does not change it: there the key is redundant in the RENDER
-         and not in the TREE, and the tree is what the equality is taken over.
+         ON A DEFINITION LIST THE ANSWER IS UNCONDITIONAL: emit the key for
+         every definition list carrying `loose`. PART 12 §8 publishes that
+         field only when authored, so it never returns from a body written
+         without the key. Two-block descriptions make the key redundant in
+         rendering, not in the tree that the equality tests.
 
-         ORDERED AND NESTED CONTAINERS TAKE THE SAME KEY AT THE SAME PLACEMENT,
-         at the nested container's own indent, so this needs no rediscovering:
-         `{loose}` before `1.` loosens an `<ol>`, and an attribute line written
-         at a sub-list's indentation loosens the sub-list and not its parent.
+         ORDERED AND NESTED CONTAINERS TAKE THE SAME KEY AT THE SAME PLACEMENT.
+         `{loose}` before an ordered list loosens it; at a sublist's indent
+         it loosens the sublist, not the parent.
 
-         A BOOLEAN AND AN EMPTY VALUE ARE ONE KEY; A VALUED ONE IS NOT. PART 4
-         makes `{loose}` and `{loose=""}` the same attribute, so both are
-         consumed. `loose=x` names a value this key does not take, so it is not
-         this key: it stays an ordinary attribute and renders `loose="x"`. There
-         is no error state to define, and no spelling that half-applies.
+         A BOOLEAN AND AN EMPTY VALUE ARE ONE KEY; A VALUED ONE IS NOT.
+         Consume `{loose}` and `{loose=""}` alike (PART 4). `loose=x` remains
+         an ordinary attribute rendering `loose="x"`, without partial effect.
 
-         EACH CONTAINER CARRIES THE KEY'S EFFECT IN ITS OWN FIELD, and PART 12
-         §6's round trip covers both. A loosened LIST sets `list.tight` false --
-         the field is required there, and the axis is total, so nothing else is
-         needed. A loosened DEFINITION LIST sets `definition_list.loose`, which
-         PART 12 §8 defines: the `<dd>` wrapper is otherwise derived from the
-         description's block count, and that derivation cannot reach the one
-         shape this key exists for, so the SPELLED fact is published and nothing
-         else is. The two fields are named differently because they
-         say different things: `tight` states the whole axis for a list, while
-         `loose` records only what a definition list's own derivation misses.
-
+         EACH CONTAINER CARRIES THE KEY'S EFFECT IN ITS OWN FIELD. A list sets
+         required `list.tight` false. A loosened DEFINITION LIST sets `definition_list.loose`
+         as an authored-only field;
+         (PART 12 §8); otherwise its `<dd>` wrapping
+         is derived from description block count. PART 12 §6 round-trips both.
 
    ============================================================================ *)

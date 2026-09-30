@@ -92,12 +92,10 @@
       therefore never produces this type, which is why the schema declares it
       and the core corpus cannot reach it.
 
-      WHERE A DEFINITION IS RECOGNIZED IS NOT DECIDED HERE. §10 hoists a link
-      reference definition out of a container while §7 rules that an
-      abbreviation definition inside one is not a definition at all, and this
-      clause is about the node's SHAPE rather than about which lines produce
-      one. An implementation emitting the node for a definition it recognizes
-      satisfies this clause whichever way that question lands.
+      WHERE A DEFINITION IS RECOGNIZED IS NOT DECIDED HERE: this clause rules
+      the node's shape, not recognition or hoisting from containers (§10's
+      link-reference hoisting and §7's container-local abbreviation refusal). An emitted
+      node satisfying this shape conforms whichever recognition policy applies.
 
    18a. A CITATION ITEM IS A POSITIONED INLINE NODE -- NORMATIVE [CARVE-P12-038].
       Every item in `citation_group.items` carries `type: "citation"` and the
@@ -115,14 +113,10 @@
       BELONGING TO THAT VOCABULARY IS NOT THE SAME AS BEING AN INLINE CHILD:
       §37 holds that rule, and the inline dispatch does not name `citation`.
 
-      §4 GOVERNS THE POSITION, AS IT DOES EVERYWHERE ELSE. "The `pos` of §4" is
-      that clause whole, exemptions included: a node the producer could not
-      place omits the field, and a synthesized one MUST omit it. The schema
-      read this sentence as a hard requirement and marked `pos` required on
-      `citation` alone, which left a citation an importer or an editing API
-      built with no conformant encoding at all - omitting the field failed the
-      schema, and supplying one violated §4. A parser still places every
-      citation it reads; nothing about a parsed tree moves
+      §4 GOVERNS THE POSITION, AS IT DOES EVERYWHERE ELSE, exemptions included:
+      a producer unable to place a node omits `pos`; synthesized nodes MUST
+      omit it. The schema MUST NOT require `pos` on `citation`. A parser
+      still places every citation it reads
       ([carve#2192](https://github.com/markup-carve/carve/issues/2192)).
 
    19. A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA -- NORMATIVE [CARVE-P12-039]. A
@@ -387,16 +381,9 @@
       cell and extends nobody, so no cell's count moves. The marker is still
       published, still carrying `span`.
 
-      WHY IT IS PUBLISHED AT ALL. §5 serializes a resolution result a consumer
-      could recompute whenever recomputing it means reimplementing the
-      resolution rules, and names a generated heading id, a footnote number and
-      a caption number for that reason. The span walk is the largest of the
-      set: a NORMATIVE total function with an orphan case and a blocked case,
-      which every consumer that renders HTML or reaches a table model with
-      integer spans would otherwise implement again, separately, from prose.
-      Two consumers doing that is the divergence this part exists to prevent -
-      and unlike a heading id, a wrong answer here silently changes the shape
-      of the table rather than the text of one anchor.
+      WHY IT IS PUBLISHED AT ALL: §5 publishes resolution results alongside
+      authored constructs so consumers need not reimplement the resolution
+      rules, including this span walk's orphan and blocked cases.
 
       THE COUNT IS NOT A SECOND SPELLING OF THE MARKERS. A payload whose
       counts contradict its markers is invalid, in the sense §11 means: the
@@ -440,12 +427,8 @@
       boundary rather than dropping a wrapper, which is why it is reported where
       a lost wrapper is not, and it is NOT a render loss.
 
-      WHY A SECOND FIELD RATHER THAN A WIDER `children`. Widening the inline
-      list to admit blocks changes the COMMON case for every consumer and
-      every engine, and puts inline and block content in one array where a
-      walker would have to test each entry. Two fields cost a walker one
-      branch, in the one place block content can appear; one widened field
-      costs every reader of every cell.
+      WHY A SECOND FIELD RATHER THAN A WIDER `children`: the ordinary inline
+      case keeps its shape; a walker branches only for a block-content cell.
 
       THE COUNTS AND THE MARKERS ARE UNAFFECTED. `span`, `colspan`, `rowspan`,
       `align`, `valign` and `attrs` sit on the cell and say nothing about how

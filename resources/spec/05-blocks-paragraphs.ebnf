@@ -13,13 +13,7 @@
    CONTENT LINE is DROPPED. It does not reach the output, and it is not
    content.
 
-   The rule is the project's, not this production's, and it is stated here
-   because this is where it was first written down too narrowly:
-
-     "trailing (invisible and bad) whitespace is the one important rule we
-      have: no such thing."
-
-   So it holds for EVERY content line, not only for a paragraph's final one.
+   The rule holds for every content line.
    `abc<SP>` renders <p>abc</p>; so does `abc<SP>` followed by `def`, where the
    run sits before a SOFT BREAK; and so do a heading, a list item, a block
    quote line, a definition term or description, a footnote body line, a table
@@ -31,10 +25,8 @@
    `blank_line = {whitespace}` and `indent` take (PART 1). Every
    other character is CONTENT and survives, however invisible: a no-break
    space, a zero-width space, a BYTE ORDER MARK, an en quad, an ideographic
-   space, a form feed and a vertical tab all reach the output. That is what
-   makes the rule simple rather than a list, and it is why U+FEFF was a red
-   herring in the shape that raised this: in `<SP>U+FEFF<SP>` the BOM is
-   content and what is dropped is the trailing SPACE.
+   space, a form feed and a vertical tab all reach the output. In
+   `<SP>U+FEFF<SP>` the BOM is content; only the trailing SPACE is dropped.
 
    WHERE IT DOES NOT REACH. Verbatim content keeps its bytes: a fenced code
    block's body, a raw block's body and a `%%%` COMMENT BLOCK's body are not
@@ -44,13 +36,9 @@
    end, and the line-break backslash likewise leaves the run before it
    interior.
 
-   THE LINE BLOCK IS NOT AN EXCEPTION, in the order that matters. PART 9 §23's
-   MEDIAL GAPS rule converts an inner or trailing run of TWO OR MORE columns
-   into N\P CONTENT, and content is not whitespace, so this rule never reaches
-   it. What it does reach is §23's one-column case, which that clause leaves
-   as an ordinary collapsible space -- and a lone space cannot serve the
-   purpose §23 gives it, letting a long line wrap between words, at the end of
-   a line.
+   THE LINE BLOCK IS NOT AN EXCEPTION: PART 9 §23 MEDIAL GAPS converts a
+   INNER or TRAILING run of TWO OR MORE columns into N\P content before this rule applies.
+   Its one-column case remains collapsible whitespace and is dropped at EOL.
 
    (Carve has no two-trailing-space hard break -- a hard break is the backslash
    form, `\` + newline; see PART 3. This rule is why: a document cannot carry

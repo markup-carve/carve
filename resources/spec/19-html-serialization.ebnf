@@ -263,12 +263,9 @@
       `<code>` and the highlight syntax (`=x=`) writes `<mark>`, each the same
       authoring gesture on the same run. (The inline literal `` !`x` `` is not
       a third spelling of `<code>`: §27 drops the wrapper, which is the point
-      of it.) `code` made the cost concrete rather than merely untidy: a code
-      span is VERBATIM -- `` `*b*` `` is `<code>*b*</code>` -- while an
-      extension body is parsed, so `:code[*b*]` produced
-      `<code><strong>b</strong></code>`, one tag with two content models,
-      selected by which spelling the author reached for and reported by
-      nothing.
+      of it.) A code span is VERBATIM (`` `*b*` `` -> `<code>*b*</code>`),
+      whereas `:code[*b*]` would parse its body and produce
+      `<code><strong>b</strong></code>`, giving one tag two content models.
 
       THE TEST IS THE SPELLING, NOT THE TAG, and `abbr` is why it has to be
       said. A document-level `*[HTML]: …` definition also emits `<abbr>`, and

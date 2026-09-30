@@ -11,9 +11,8 @@
    rule once, for every container that can hold one; §16; corpus "Footnote
    definition inside a container is collected"). These rules are
    attribute-grammar / two-pass semantics --
-   deliberately NOT grammar productions: symbol-table resolution is provably
-   outside context-free syntax, and stating it as rules over declared state
-   keeps it machine-checkable without pretending it is EBNF.
+   deliberately NOT grammar productions: symbol-table resolution is outside
+   context-free syntax; these rules operate over declared state.
 
    STATE (symbol tables, PASS 1):
      linkDefs     : label -> (url, title?, attrs?)   -- LAST definition wins
@@ -66,16 +65,10 @@
       A collapsed label quotes prose, so its matching is loose; an explicit
       label is an identifier, so its matching is exact. An explicit identifier
       that names nothing is not retried as heading prose and renders literally.
-      ON THIS PATH THE LABEL ENTERS AS ITS RENDERED PLAIN TEXT, the same
-      string kind the heading side already enters as. The index is keyed
-      by the heading's rendered plain text, so `# *bold* heading` is
-      keyed `bold heading`; a collapsed `[*bold* heading][]` reaches it
-      only if its own label contributes `bold heading` too, i.e. its
-      inline markup is stripped exactly as the heading's was. Without
-      that step no heading containing emphasis, a code span or a link is
-      reachable by its collapsed spelling at all, and the author sees no
-      reason why. The four normalizations above then apply to
-      that plain text.
+      ON THIS PATH THE LABEL ENTERS AS ITS RENDERED PLAIN TEXT, like the
+      heading: `# *bold* heading` and `[*bold* heading][]` both contribute
+      `bold heading` after inline markup is stripped. The four normalizations
+      above apply to that plain text.
       VISIBLE LEAVES STAY VISIBLE. An autolink contributes its display text
       and an image contributes its alternative text to both the slug and this
       index. They are not among §25's named exclusions. A label's parsed inline

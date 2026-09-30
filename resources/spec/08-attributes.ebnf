@@ -23,14 +23,10 @@ attribute_run = attributes, {attributes} ;
    block `{ }`. All five sit inline, so no exception has to be written. A TAB
    IS SYNTAX ONLY IN THE LEADING RUN (PART 7).
 
-   `block_attributes` keeps `whitespace` at its three, and that is the
-   ruling rather than an oversight. It is the one construct in this grammar
-   whose interior can contain a LEADING INDENTATION RUN: after a
-   `continuation`, the next line's leading whitespace IS indentation, and
-   the rule that narrows the inline block is the same rule that protects
-   this one. The distinction is POSITIONAL, not per-construct - inline
-   padding is space-only everywhere, and a continuation line's leading run
-   is indentation like any other leading run.
+   `block_attributes` keeps `whitespace` in its three slots: after a
+   `continuation`, the next line's leading run IS indentation. The distinction
+   is POSITIONAL: inline padding is space-only; leading indentation retains
+   its ordinary whitespace definition.
 
    A newline inside a quoted value is governed by A QUOTED VALUE STOPS AT THE
    NEWLINE below. *)
