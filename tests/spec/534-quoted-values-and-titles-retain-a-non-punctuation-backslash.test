@@ -1,0 +1,73 @@
+Quoted values and titles retain a non-punctuation backslash
+
+```
+[a](/u "t\zu")
+.
+<p><a href="/u" title="t\zu">a</a></p>
+```
+
+```
+[a]{k="t\zu"}
+.
+<p><span k="t\zu">a</span></p>
+```
+
+```
+[a](/u "t\}u")
+.
+<p><a href="/u" title="t}u">a</a></p>
+```
+
+```
+[a]{k="t\}u"}
+.
+<p><span k="t}u">a</span></p>
+```
+
+```
+[a](/u "t\\u")
+.
+<p><a href="/u" title="t\u">a</a></p>
+```
+
+```
+[a]{k="t\\u"}
+.
+<p><span k="t\u">a</span></p>
+```
+
+```
+[a](/u 't\zu')
+.
+<p><a href="/u" title="t\zu">a</a></p>
+```
+
+```
+[a]{k='t\zu'}
+.
+<p><span k="t\zu">a</span></p>
+```
+
+```
+[a](/u 't\}u')
+.
+<p><a href="/u" title="t}u">a</a></p>
+```
+
+```
+[a]{k='t\}u'}
+.
+<p><span k="t}u">a</span></p>
+```
+
+```
+[a](/u 't\\u')
+.
+<p><a href="/u" title="t\u">a</a></p>
+```
+
+```
+[a]{k='t\\u'}
+.
+<p><span k="t\u">a</span></p>
+```

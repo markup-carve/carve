@@ -485,7 +485,7 @@ CarveCore {
   destTitle  = titleSp (titleQuoted | titleSquoted)
   titleSp    = " "
   // A TITLE CROSSES A SOFT WRAP AND AN ATTRIBUTE VALUE DOES NOT (carve#2566).
-  // `link_title` subtracts the closing quote alone, and `character` is any
+  // `link_title` subtracts its closing quote, and `character` is any
   // Unicode character, so a newline is inside the run. `quoted_value`
   // subtracts `newline` and says so under CARVE-P4-006. Both slots were
   // spelled through `quoted`/`squoted`, whose `~newline` belongs to the
@@ -494,18 +494,12 @@ CarveCore {
   // carve-php and carve-rs all read it.
   titleQuoted  = "\"" titleQChar* "\""
   titleQChar   = titleQEsc | (~"\"" any)
-  titleQEsc    = "\\" "\""
+  titleQEsc    = "\\" punctChar
   titleSquoted = "'" titleSqChar* "'"
   titleSqChar  = titleSqEsc | (~"'" any)
-  titleSqEsc   = "\\" "'"
-  // THE ESCAPE SET FORKS TOO (carve#2581). `link_title` spells its escape
-  // `('\', '"')` - the closing quote and nothing else - while `quoted_value`
-  // admits the full `escaped_char`, so a backslash before any ASCII
-  // punctuation is that character in an attribute value and is itself in a
-  // title. The two were spelled through one `qEsc`/`sqEsc` pair, and the
-  // title's narrower set decided the value slot: `{k="a\}b"}` read `a\}b`
-  // here where the production and all three engines read `a}b`. This is the
-  // same shape carve#2566 fixed for the newline, one rule down.
+  titleSqEsc   = "\\" punctChar
+  // Titles and quoted attribute values share ASCII punctuation escapes.
+  // Their character rules differ only in whether they admit a newline.
   squoted    = "'" sqChar* "'"
   sqChar     = sqEsc | (~"'" ~newline any)
   sqEsc      = "\\" punctChar

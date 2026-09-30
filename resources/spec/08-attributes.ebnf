@@ -195,11 +195,14 @@ unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - ' ' - '\t' - newlin
 
    THE SET IS THE WHOLE OF `ascii_punctuation`, not the closing quote alone:
    `{k="a\}b"}` carries `a}b` and `{k="a\\b"}` carries `a\b`, in either quote
-   spelling. `link_title` is the slot that escapes its closing quote and nothing
-   else, and the two do not share a helper - reading this one through the title's
-   set left the backslash in the value (carve#2581). *)
-quoted_value = '"', { escaped_char | (character - '"' - '\' - newline) }, '"'
-             | "'", { escaped_char | (character - "'" - '\' - newline) }, "'" ;
+   spelling. A backslash before a non-punctuation character is ordinary
+   content and is retained: `{k="a\zb"}` carries `a\zb`. Link titles take the
+   same escape set, but may contain a newline; quoted attributes may not.
+   The lookahead makes a backslash before punctuation an escape only. It
+   cannot also be ordinary content before a closing quote. *)
+literal_backslash = '\', !(ascii_punctuation) ;
+quoted_value = '"', { escaped_char | literal_backslash | (character - '"' - '\' - newline) }, '"'
+             | "'", { escaped_char | literal_backslash | (character - "'" - '\' - newline) }, "'" ;
 (* A QUOTED VALUE STOPS AT THE NEWLINE -- NORMATIVE [CARVE-P4-006].
    `block_attributes` reads the same `quoted_value`, so a line break inside
    a quoted value ends that block too. A block attribute may still span

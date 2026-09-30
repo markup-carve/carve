@@ -909,10 +909,10 @@ sem.addOperation('titleText', {
     return q.titleText()
   },
   titleQuoted(_o, chars, _c) {
-    return chars.children.map((c) => c.sourceString.replace(/^\\/, '')).join('')
+    return quotedText(chars)
   },
   titleSquoted(_o, chars, _c) {
-    return chars.children.map((c) => c.sourceString.replace(/^\\/, '')).join('')
+    return quotedText(chars)
   },
 })
 sem.addOperation('parseAttrs', {

@@ -9,7 +9,7 @@
  * `{k="a\}b"}` kept a backslash the production resolves and `{k='a\b'}` lost
  * one it keeps, while all three engines read the production. The escape now
  * forks the way the newline forked in carve#2566: the title pair keeps the
- * closing quote, the value pair takes `punctChar`.
+ * same `punctChar` set, while their newline bounds differ.
  *
  * The second was the tab in `link_title`'s padding slot. The production says
  * `space`, the ohm says `space`, and the ohm's note said the three engines
@@ -49,19 +49,17 @@ test('the production puts the whole escape set in a quoted value', () => {
   assert.match(value[1], /escaped_char/)
   assert.match(ebnf, /^escaped_char = '\\', ascii_punctuation ;$/m)
 
-  // The title's escape is the closing quote alone, which is what the two slots
-  // disagree about.
+  // Titles and values resolve the same punctuation escapes.
   const title = ebnf.match(/^link_title = ([\s\S]*?);$/m)
   assert.ok(title, 'resources/grammar.ebnf declares no `link_title`')
-  assert.doesNotMatch(title[1], /escaped_char/)
-  assert.match(title[1], /\('\\', '"'\)/)
+  assert.match(title[1], /escaped_char/)
 })
 
-test('the ohm grammar spells the two escape sets apart', () => {
+test('the ohm grammar shares the punctuation escape set', () => {
   assert.equal(ohmRule('qEsc'), '"\\\\" punctChar')
   assert.equal(ohmRule('sqEsc'), '"\\\\" punctChar')
-  assert.equal(ohmRule('titleQEsc'), '"\\\\" "\\""')
-  assert.equal(ohmRule('titleSqEsc'), '"\\\\" "\'"')
+  assert.equal(ohmRule('titleQEsc'), ohmRule('qEsc'))
+  assert.equal(ohmRule('titleSqEsc'), ohmRule('sqEsc'))
 
   // `punctChar` is `ascii_punctuation`, so the value slot and the production
   // name the same set rather than two lists that drift.

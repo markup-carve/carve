@@ -11,7 +11,7 @@
   "differences": [
     {
       "file": "tests/corpus/531-an-opener-under-a-quote-in-a-nested-host-opens-at-one-column-only-8.crv",
-      "reason": "An overindented run of table rows: carve-js reports the first row, carve-php and carve-rs report every row. Whether list-item-block-overindented fires once per overindented block or once per overindented block-shaped line is not written down, so no engine is wrong against a clause yet. The same split shows on a quote whose continuation lines are indented, and all three agree wherever each line is its own block.",
+      "reason": "The rule reports once per block, on its first line. Continuing table rows and quote lines open no new block. The measured PHP and Rust revisions still report every block-shaped line until their rule fixes land; this row records the measured mismatch against the ruling in docs/validation.md.",
       "issue": "https://github.com/markup-carve/carve/issues/2643",
       "diagnostics": {
         "js": [

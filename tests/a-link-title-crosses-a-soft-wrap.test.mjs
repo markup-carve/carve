@@ -73,13 +73,11 @@ test('the ohm grammar forks the two slots and keeps the newline on one side', ()
   assert.match(ohmRule('qChar'), /~newline/)
   assert.match(ohmRule('sqChar'), /~newline/)
 
-  // The ESCAPE forks too, since carve#2581: `link_title` spells its escape as
-  // the closing quote alone and `quoted_value` takes the whole `escaped_char`
-  // set, so the title pair must not point back at `qEsc`/`sqEsc`.
+  // The character rules keep separate newline bounds and share escapes.
   assert.match(ohmRule('titleQChar'), /^titleQEsc \|/)
   assert.match(ohmRule('titleSqChar'), /^titleSqEsc \|/)
-  assert.equal(ohmRule('titleQEsc'), '"\\\\" "\\""')
-  assert.equal(ohmRule('titleSqEsc'), '"\\\\" "\'"')
+  assert.equal(ohmRule('titleQEsc'), ohmRule('qEsc'))
+  assert.equal(ohmRule('titleSqEsc'), ohmRule('sqEsc'))
   assert.equal(ohmRule('qEsc'), '"\\\\" punctChar')
   assert.equal(ohmRule('sqEsc'), '"\\\\" punctChar')
 })

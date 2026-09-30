@@ -44,7 +44,7 @@ const flat = grammarText.replace(/\n\s*/g, ' ')
 test('grammar.ebnf excludes a newline from a quoted attribute value', () => {
   assert.match(
     flat,
-    /quoted_value = '"', \{ escaped_char \| \(character - '"' - '\\' - newline\) \}, '"' \| "'", \{ escaped_char \| \(character - "'" - '\\' - newline\) \}, "'" ;/,
+    /quoted_value = '"', \{ escaped_char \| literal_backslash \| \(character - '"' - '\\' - newline\) \}, '"' \| "'", \{ escaped_char \| literal_backslash \| \(character - "'" - '\\' - newline\) \}, "'" ;/,
     'resources/grammar.ebnf no longer excludes `newline` from `quoted_value`.\n' +
       '  `character` is ANY Unicode character, so dropping the term makes a line break\n' +
       '  content inside the quotes - which lets an INLINE attribute block span lines,\n' +

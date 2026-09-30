@@ -261,10 +261,25 @@ test('a quoted run never compares more documents than it ran', () => {
   // the corpus that run uses.
   const blocks = [...page.matchAll(/```text\n([\s\S]*?)```/g)].map((m) => m[1])
   const checked = []
+  let fullRuns = 0
   for (const block of blocks) {
     const pairs = block.match(/corpus_pairs=(\d+)/)
     if (!pairs) continue
     const limit = Number(pairs[1])
+    const targets = block.match(/targets=([^\n]+)/)?.[1].split(',') ?? []
+    const rows = [...block.matchAll(/^(\w+): compared=(\d+)/gm)]
+    if (/^counts_only=1 /m.test(block)) {
+      assert.equal(rows.length, 0, 'a count-only run cannot claim full target agreement')
+      assert.match(block, /^counts_only_note=.*no agreement claim/m)
+      const measured = block.match(/^counts_only=1 targets_measured=([^ ]+) of ([^\n]+)/m)
+      assert.ok(measured, 'a count-only run must name its measured targets')
+      assert.deepEqual(measured[1].split(','), targets)
+      assert.deepEqual(measured[2].split(','), targets)
+      continue
+    }
+    assert.ok(targets.length > 0)
+    assert.deepEqual(rows.map((row) => row[1]), targets, 'a full run needs an agreement row for every target')
+    fullRuns++
     for (const [, target, compared] of block.matchAll(/^(\w+): compared=(\d+)/gm)) {
       checked.push(`${target}=${compared}`)
       assert.ok(
@@ -273,7 +288,9 @@ test('a quoted run never compares more documents than it ran', () => {
       )
     }
   }
-  assert.ok(checked.length >= 5, `expected target-agreement rows in the quoted output; found ${checked.length}`)
+  assert.ok(fullRuns > 0 && checked.length > 0, 'expected target rows in at least one full comparison')
+  assert.match(page, /\[\d{4}-\d{2}-\d{2} five-target core run\]\(https:\/\/github\.com\/markup-carve\/carve\/blob\/[a-f0-9]{40}\/docs\/implementation-comparison-methodology\.md\)/,
+    'the count-only refresh must retain a dated link to the full core comparison')
 })
 
 test('a quoted run\'s diff total matches its own per-target rows', () => {
@@ -284,6 +301,7 @@ test('a quoted run\'s diff total matches its own per-target rows', () => {
   const blocks = [...page.matchAll(/```text\n([\s\S]*?)```/g)].map((m) => m[1])
   let checked = 0
   for (const block of blocks) {
+    if (/^counts_only=1 /m.test(block)) continue
     const total = block.match(/cross_impl_diffs=(\d+)/)
     const rows = [...block.matchAll(/^\w+: compared=\d+ diffs=(\d+)/gm)]
     if (!total || rows.length === 0) continue
@@ -295,7 +313,9 @@ test('a quoted run\'s diff total matches its own per-target rows', () => {
     )
     checked++
   }
-  assert.ok(checked >= 2, `expected both quoted runs to carry a diff total; checked ${checked}`)
+  const fullRuns = blocks.filter((block) => /corpus_pairs=/.test(block) && !/^counts_only=1 /m.test(block))
+  assert.ok(fullRuns.length > 0)
+  assert.equal(checked, fullRuns.length, 'every full comparison needs a diff total and target rows')
 })
 
 test('the landing page states that implementations share inputs without a volatile count', () => {

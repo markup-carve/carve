@@ -30,6 +30,7 @@ const roundtrip = args.has('--roundtrip')
 // this script reports divergences and exits 0, which is why two engines
 // disagreeing about a document's canonical form went unnoticed (carve#478).
 const failOnDiff = args.has('--fail-on-diff')
+const skipBuild = args.has('--skip-build')
 
 // Where to write this run's counts as JSON, so a SECOND gate can be applied to
 // them without re-running the comparison.
@@ -114,7 +115,11 @@ if (
   process.exit(2)
 }
 
-const corpusDir = join(root, corpusDirs[corpusName])
+const corpusOverrideArg = process.argv.find(a => a.startsWith('--corpus-dir='))
+const corpusOverride = corpusOverrideArg?.slice('--corpus-dir='.length)
+if (corpusOverrideArg && !corpusOverride) throw new Error('--corpus-dir requires a directory')
+if (corpusOverride && corpusName !== 'core') throw new Error('--corpus-dir requires --corpus=core')
+const corpusDir = corpusOverride ? resolve(corpusOverride) : join(root, corpusDirs[corpusName])
 const isOptional = corpusName === 'optional'
 
 // Render targets to compare. In the core corpus `html` is the only one with
@@ -827,7 +832,7 @@ function commandFor(impl, pair, target = DEFAULT_TARGET) {
 }
 
 function available(impl) {
-  if (impl.prepare) {
+  if (impl.prepare && !skipBuild) {
     const prep = run(impl.prepare, impl.cwd, [], 60000)
     if (!prep.ok) return { ok: false, reason: prep.stderr || prep.error || `exit ${prep.status}` }
   }
@@ -1319,6 +1324,11 @@ for (const impl of impls) {
   else console.log(`SKIP ${impl.name}: ${status.reason}`)
 }
 
+if (process.env.CARVE_REQUIRE_ALL_ENGINES === '1' && active.length !== impls.length) {
+  console.error('Every configured engine must be runnable when CARVE_REQUIRE_ALL_ENGINES=1.')
+  process.exit(1)
+}
+
 const revisions = comparisonRevisions(root, active)
 printComparisonRevisions(revisions)
 
@@ -1587,7 +1597,7 @@ if (roundtrip) {
 console.log('\nImplementation summary')
 const profile = corpusName === 'optional' ? 'optional/opt-in' : 'default/no-opt-in'
 console.log(
-  `profile=${profile} corpus=${corpusName} corpus_pairs=${pairs.length} shard=${shardIndex}/${shardTotal} targets=${activeTargets.join(',')}`,
+  `profile=${profile} corpus=${corpusName} selected_corpus=${corpusOverride ?? 'none'} corpus_pairs=${pairs.length} shard=${shardIndex}/${shardTotal} targets=${activeTargets.join(',')}`,
 )
 if (targetNote) console.log(`target_note=${targetNote}`)
 // A `--targets` subset can exclude a case's pinned target outright. Saying so
@@ -1808,6 +1818,7 @@ if (reportPath) {
           roundtrip,
           countsOnly,
           corpus: corpusName,
+          selectedCorpus: corpusOverride ?? null,
           limit: limit === Infinity ? null : limit,
           shard: `${shardIndex}/${shardTotal}`,
           targets: activeTargets,

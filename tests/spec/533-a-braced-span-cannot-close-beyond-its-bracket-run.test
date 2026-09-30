@@ -59,3 +59,21 @@ A braced span cannot close beyond its bracket run
 .
 <p>[{~a ~&gt; b]~}</p>
 ```
+
+```
+[{#a]#}
+.
+<p>[<span class="critic-comment">a]</span></p>
+```
+
+```
+[{+a+}]
+.
+<p>[<ins>a</ins>]</p>
+```
+
+```
+[{^a^}]
+.
+<p>[<sup>a</sup>]</p>
+```
