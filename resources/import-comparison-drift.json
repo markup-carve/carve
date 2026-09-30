@@ -2,7 +2,7 @@
   "version": 1,
   "measured": {
     "date": "2026-09-30",
-    "spec": "e8271ebb8e4d",
+    "spec": "c163f3553d35",
     "js": "ee63fd31040a",
     "php": "0785ea75c014",
     "rust": "9f3f334c7d5c"
