@@ -23,10 +23,40 @@ const ledgerText = readFileSync(resolve(repo, 'resources/unreachable-productions
 
 const withoutComments = grammar.replace(/\(\*[\s\S]*?\*\)/g, ' ')
 
+/*
+ * A body ends at its terminating semicolon, NOT at the next declaration.
+ * Splitting on declarations alone hands the LAST production every remaining
+ * byte of the file - 22KB of prose, whose ordinary words then read as
+ * references and make unrelated rules look reachable. Quoted terminals hold
+ * semicolons of their own (`{';', citation_item}`), so the scan tracks quotes.
+ */
+const bodyOf = (text, from) => {
+  let quote = null
+  for (let i = from; i < text.length; i++) {
+    const ch = text[i]
+    if (quote) {
+      if (ch === quote) quote = null
+      continue
+    }
+    if (ch === "'" || ch === '"') {
+      quote = ch
+      continue
+    }
+    if (ch === ';') return text.slice(from, i)
+  }
+  return null
+}
+
 const productions = new Map()
-for (const chunk of withoutComments.split(/\n(?=\s*[A-Za-z_][\w-]*\s*(?:::=|=)\s)/)) {
-  const match = /^\s*([A-Za-z_][\w-]*)\s*(?:::=|=)\s*([\s\S]*)$/.exec(chunk)
-  if (match) productions.set(match[1], match[2])
+const declaration = /^[ \t]*([A-Za-z_][\w-]*)[ \t]*(?:::=|=)[ \t]*/gm
+for (let m = declaration.exec(withoutComments); m; m = declaration.exec(withoutComments)) {
+  const body = bodyOf(withoutComments, m.index + m[0].length)
+  if (body === null) {
+    console.error(`production ${m[1]} is never terminated by a semicolon`)
+    process.exitCode = 1
+    continue
+  }
+  productions.set(m[1], body)
 }
 
 const reachable = new Set()
