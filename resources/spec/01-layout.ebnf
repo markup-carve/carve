@@ -237,178 +237,88 @@
         frame. Lazy continuation therefore changes the leaf operation, never
         which container survives.
 
-        NO STORED CONTINUATION CLAIM, NO LAZY LINE -- NORMATIVE [CARVE-P0-006]. The ownership
-        decision is not a leftover case, and it binds even where the unmatched
-        container is a LIST ITEM whose last block is a container. In
-
-            . >
-            X
-
-        `. ` opens an item whose content is an EMPTY block quote. `X` sits at
-        column 0, so it does not supply the item's indentation prefix, and the
-        quote boundary established no continuation claim. The owner table
-        therefore selects the document: the item closes
-        and `X` is a new top-level block. The same disposes of
-
-            - >
-            lazy
-
-        while `- > q` / `lazy` FOLDS, because the ordinary quoted line stored
-        a continuation claim whose selected leaf is an open paragraph. The
-        owner is selected before that leaf is continued.
+        NO STORED CONTINUATION CLAIM, NO LAZY LINE -- NORMATIVE [CARVE-P0-006].
+        With no stored ordinary-line continuation claim, apply the owner table
+        and its construct-specific qualifications, even when the item's last
+        block is a container. For `. >` / `X`, the table selects the document:
+        the item closes and `X` starts a document paragraph because the empty
+        quote stored no claim. `- > q` / `lazy` folds
+        because the ordinary quoted line stored a claim and its leaf is an
+        open paragraph. Select the owner before continuing the leaf.
 
         THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST BLOCK -- NORMATIVE [CARVE-P0-007].
-        EMPTINESS is not the property doing the work. The
-        parameter is the one S4 names: does any container in the open stack
-        hold an OPEN
-        PARAGRAPH. A block that leaves none leaves none wherever it was
-        written, and `- # H` writes a HEADING as the item's first block exactly
-        as `- ` plus an indented `# H` would. So each of
+        Classify marker-line content as the item's first block. A heading,
+        table, thematic break, comment, link or footnote definition, or floating
+        attribute block leaves no paragraph open; a following document-column
+        line ends the item. Ordinary prose or a quote ending in prose permits a lazy fold.
+        The same classification applies to indented blocks and quote bodies.
 
-            - # H          - | a | b |          - ---
-            tail           tail                 tail
-
-            - %% c         - [r]: /u            - [^f]: t
-            tail           tail                 tail
-
-            - {.k}
-            tail
-
-        ends its item and leaves `tail` a top-level paragraph, and each is the
-        SAME derivation the block-quote spelling already gets: `> # H` / `tail`
-        ends the quote. Only `- > q` / `tail` and `- a` /
-        `tail` fold, because those two are the ones with a paragraph open.
-
-        This also applies when a nested item's marker carries a terminated
-        comment span. In `- a` / `  - %%%` / `    hidden` / `%%%` / `tail`,
-        the comment is the inner item's first block and leaves no paragraph
-        open. `tail` is a document paragraph at every closer column. An
-        ancestor collecting that marker line MUST NOT give the closer the
-        retention of a fresh comment written below its own content column.
-        This does not extend the inner item's body to an ordinary payload line
-        below its content column: that line still ends the item under S1/S4.
-
-        A definition still gets collected from where it was written (SS17 L6);
-        ending the item disposes of the FOLLOWING line, not of the definition.
+        A terminated comment span on a nested item's marker line is that
+        item's first block. In `- a` / `  - %%%` / `    hidden` / `%%%` /
+        `tail`, `tail` is a document paragraph at every closer column. An
+        ancestor MUST NOT treat the closer as a fresh below-column comment
+        granting retention. An ordinary payload line below the inner item's
+        content column still ends that item under S1/S4. Definitions are
+        collected where written (SS17 L6); item closure governs the next line
+        and MUST NOT discard the definition.
 
         A FLOATING ATTRIBUTE BLOCK DOES NOT CHANGE THE CONTENT COLUMN --
-        NORMATIVE [CARVE-P0-008]. In
+        NORMATIVE [CARVE-P0-008]. Marker-attached attributes contribute zero
+        width to `content_column` (§24 C3). A task checkbox is content, not
+        marker width. Thus `-{#item} {#next}` / `  # H` keeps the item open and
+        attaches `{#next}` to the heading at column 2. An ordered `1.` marker
+        places the equivalent heading at column 3.
 
-            -{#item} {#next}
-              # H
+        Moving the heading one column left closes the item: the floating
+        attribute opened no paragraph. Reclassify the residue as document
+        paragraph text and discard the item's pending attribute (§15 A4).
+        It MUST NOT escape to that paragraph. A task item retains its checkbox
+        even when no block remains. Ordinary marker-line prose, which opens a
+        paragraph, permits a below-column lazy fold.
 
-        marker-attached `{#item}` is item metadata and contributes zero to the
-        content column (§24 C3), so `# H` at source column 2 is AT the bullet
-        item's content column, not below it. The item therefore survives and
-        the floating `{#next}` attaches to its heading. The task spelling has
-        the same column because the checkbox is content, not marker width; an
-        ordered `1.` marker puts the equivalent heading at column 3.
-
-        Move those headings one column left and S4 gives the opposite answer.
-        A floating attribute opens no paragraph, so the partial prefix match
-        closes the item and re-classifies the heading-shaped residue as literal
-        paragraph text in the document context. The pending attribute is scoped
-        to the item (§15 A4), becomes dangling when that item closes, and MUST
-        NOT escape to the document paragraph. Ordinary marker-line text is the
-        control: it opens a paragraph, so a below-column line lazily folds into
-        it. A task item keeps its authored checkbox even when no block remains;
-        zero width in the column calculation does not erase task state. This is
-        the same open-paragraph rule on both sides; attributes and task
-        checkboxes do not manufacture wider list markers.
-
-        A SIBLING MARKER IS ONE OF THE WAYS THE ITEM CLOSES. Under
-
-            - a
-              -{#p} b
-                {#x}
-              - c
-
-        `{#x}` reaches the sub-item's content column and so belongs to that
-        item, and `- c` closes the item with the attribute still pending. A4
-        drops it. Opening a second sublist for it is as unavailable as the
-        document paragraph above; the sublist stays one list.
-
-        The question is asked of a QUOTE recursively. `- > q` / `tail` folds
-        because the quote ends on an open paragraph; `- > # H` / `tail` does
-        not, because it ends on a heading. Non-emptiness is not the test - a
-        quote is a container like any other and its own last block answers.
+        A sibling marker also closes the item and discards pending attributes.
+        In `- a` / `  -{#p} b` / `    {#x}` / `  - c`, `{#x}` belongs to the
+        first sub-item and is dropped when `- c` closes it. The sublist remains
+        one list. For quote content, inspect the last block recursively:
+        `- > q` / `tail` folds; `- > # H` / `tail` does not.
 
         A QUOTE'S LAST BLOCK MAY ITSELF BE A QUOTE -- NORMATIVE [CARVE-P0-009].
-        "Recursively" has no depth in it, and neither does "a
-        container like any other". An OUTER quote whose last block is an inner
-        quote is answered by what the INNER quote ends on:
+        Follow the last child container to its leaf at every depth. An outer
+        quote ending in an inner heading, table or thematic break has no open
+        paragraph, so a following unmarked line cannot lazily continue it.
+        A heading at an item's content column likewise leaves no paragraph
+        open: a following below-column line cannot stay in that item. Apply
+        the owner table to surviving frames. In corpus
+        75-list-nesting-and-looseness-4, the inner item closes and `lazy` is
+        reclassified in the outer item, whose paragraph is the selected owner.
 
-            > > # H          > > | a |          > > ---
-            tail             > > | b |          tail
-                             tail
-
-        The rule reaches blocks written at an item's CONTENT COLUMN too. A
-        heading there leaves no paragraph open, so a following below-column
-        line cannot stay in that item. In a nested list the owner table is then
-        applied to the surviving frames: corpus 75-list-nesting-and-looseness-4
-        closes the inner item and reclassifies `lazy` in the outer item, whose
-        paragraph remains the selected owner. This is ownership-first S4, not a
-        depth exception.
-
-        A WRAPPED attribute block (`- {.a` / `  .b}` / `tail`) is one
-        interrupting attribute line, not a paragraph split into physical-line
-        fragments. The opener and every continuation line leave no paragraph
-        open, so `tail` is reclassified outside the item. Whether the closing
-        brace shares the opener's line cannot change the interruption rule.
+        A wrapped attribute block is one interrupting block across its opener
+        and continuation lines. `- {.a` / `  .b}` / `tail` leaves no paragraph
+        open, and `tail` is reclassified outside the item.
 
         A DEFINITION AT THE CONTENT COLUMN ENDS THE PARAGRAPH, NOT THE
-        CONTAINER -- NORMATIVE [CARVE-P0-010]. One part of the open half above
-        is settled, and by §10 I5 rather than by analogy. A link or footnote
-        definition written at a list item's `content_column`, or at a
-        definition body's, is an INTERRUPTER: it ends the paragraph it sits
-        under. Nothing about it closes the container. The container ends
-        because the NEXT line arrives at column 0 with no open paragraph left
-        anywhere in the stack, which is S4's own "otherwise" and nothing new:
+        CONTAINER -- NORMATIVE [CARVE-P0-010]. A link or footnote definition
+        at a list item's or definition body's `content_column` interrupts the
+        paragraph and registers (§10 I5). A comment there also interrupts.
+        The container stays open until a later line fails ownership selection.
+        Thus `- a` / `  [r]: /u` / `tail` registers `r`, then ends the item and
+        publishes `tail` at document level.
 
-            - a                :: t
-              [r]: /u          : a
-            tail                 [r]: /u
-                              tail
-
-        both end their container and publish `tail` at document level. A
-        COMMENT at a definition body's content column ends the paragraph the
-        same way and for the same reason (§10 I5 lists it too), so
-        `: a` over `  %% c` over `tail` ends the `dd`.
-
-        AND THE DEFINITION REGISTERS, which is I5's other half: "A link or
-        footnote definition belongs to an open list item only at that item's
-        `content_column`". Ending the container while DROPPING the definition
-        is not conforming.
-        I5's other two columns are the controls and are UNCHANGED: at DOCUMENT
-        column 0 the definition is a document-level interrupter, and at a
-        nonzero column BELOW `content_column` it is lazy paragraph text that
-        does not register at all -- `- a` / ` [r]: /u` / `tail` folds, with the
-        definition line published as text.
-
-        An ABBREVIATION definition is I5's SECOND exception (§16, and I5's AN
-        INVISIBLE LINE IS ONE CLASSIFICATION): recognized at document level
-        only, so inside a container the line is not an invisible line at all --
-        it is ordinary paragraph text and reopens the paragraph like any other
-        prose.
+        At document column 0 a definition is a document-level interrupter.
+        At a nonzero column below `content_column` it is lazy paragraph text
+        and does not register: `- a` / ` [r]: /u` / `tail` folds. Abbreviation
+        definitions are recognized only at document level (§16); inside a
+        container their lines are ordinary text and reopen the paragraph.
 
         A QUOTE IS REACHED BY ITS MARKER, AND A COLUMN NEVER REACHES INTO ONE.
-        I5's columns are read against the container a line is IN,
-        and a line that writes no `>` is in no quote whatever column it lands
-        on -- §24 C5 composes the strips and the quote's strip IS the marker.
-        Such a line reaches the quote only through S4's lazy fold,
-        so it is paragraph text: it renders where it was written and registers
-        nothing.
-
-        WITH THE MARKER WRITTEN nothing about I5 changes: `> - x` over
-        `>   [r]: /u` registers at the inner item's content column. The marker
-        is the parameter, and the quote's body is not.
+        Prefix matching requires `>` (§24 C5); indentation cannot supply it.
+        An unmarked definition line reaching it through lazy continuation is
+        paragraph text and registers nothing. With the marker supplied,
+        `> - x` / `>   [r]: /u` registers at the inner item's content column.
 
         A NEW MARKER DOES NOT REACH A DEAD CONTAINER'S COLUMN -- NORMATIVE [CARVE-P0-019].
-        A blank line ends a
-        block quote, and every column opened INSIDE it dies with it, including
-        the item columns. A later line that writes the marker again opens a NEW
-        quote; it does not re-enter the old one, and it inherits nothing from
-        it. So
+        A blank ends a block quote and the containers opened inside it. A later
+        quote marker opens a new quote without inheriting their columns.
 
             > - x
 
@@ -416,227 +326,78 @@
 
             > [r][]
 
-        has no item open when `[r]: /u` is read. The definition sits two columns
-        ABOVE the new quote's content column with nothing between, and I5's
-        first control asks for the content column exactly: `> - x` over
-        `>   [r]: /u` registers because an item is open at that column, and the
-        same two lines with a blank between them do not, because none is. The
-        definition is PARAGRAPH TEXT -- published where it was written, and
-        registering nothing, so `[r][]` stays literal.
+        No item is open when the definition is read, so its extra indentation
+        makes it paragraph text and `[r][]` remains literal. Without the blank
+        after `> - x`, the definition registers in the open item.
 
-        ABOVE A CONTENT COLUMN IS NOT AT IT, which is the general rule that
-        control is one case of. I5's three columns are exhaustive as written:
-        AT `content_column` the definition registers, at DOCUMENT column 0 it
-        registers, and at a nonzero column BELOW `content_column` it is lazy
-        paragraph text. A column ABOVE `content_column` with no item open is
-        none of the three, and it resolves the way the document level resolves
-        it: a container is a document with a margin, and indentation above the
-        margin is no more a definition site than column 2 is at the top level.
-        The single exception stays the one §24 C3 already carves out -- WITH AN
-        ITEM OPEN the test is "at or past" rather than "exactly at", because the
-        item erases an authored base before it parses the line.
-        With no item open there is no base to erase, and with more than one
-        open the clause below says which of them the test is measured from.
+        With no item open, definitions register at the context's content
+        column exactly, or at document column 0. Extra indentation provides
+        no registration site. With an item open, §24 C3 accepts at or past its
+        content column by erasing the authored block base.
 
         AT OR PAST MEANS THE DEEPEST COLUMN THE LINE REACHES -- NORMATIVE [CARVE-P0-020].
-        Containers nest, so their content columns do too, and a
-        definition can land strictly BETWEEN two open ones. The test is read
-        against the deepest column the LINE REACHES, never against the deepest
-        container left OPEN: the definition registers in the innermost open
-        container whose content column it is at or past, and a container it
-        does not reach neither owns the line nor withholds it. So
+        Register a definition in the innermost open container whose content
+        column it reaches. A deeper container that the line does not reach
+        neither owns nor withholds it. In `- - x` / `   [r]: /url`, the items'
+        content columns are 2 and 4; the definition at column 3 registers in
+        the outer item. Columns 2, 4 and 5 also register. Past a content column,
+        extra indentation may change the owner but never remove registration.
+        Corpus 441 pins the four columns.
 
-            - - x
-               [r]: /url
+        BELOW EVERY OPEN COLUMN IS UNCHANGED. A nonzero-column definition
+        below every open content column remains lazy paragraph text and does
+        not register (§24 C3).
 
-            See [r][].
+        A column cannot supply a quote prefix (CARVE-P0-010), but an eligible
+        continuation claim keeps the quote open. S4 selects that surviving
+        quote before classifying the residue. An unmarked list marker under
+        its open paragraph therefore folds under §10 I2, even at an enclosing
+        item's content column:
 
-        opens items at content columns 2 and 4, and the definition at column 3
-        registers against the outer item -- as it does at 2, at 4 and at 5.
-        Moving that one line between the columns changes nothing a reader can
-        see. No quote is needed to state the rule and none is a parameter of
-        it: `- > - - x` over `  >    [r]: /url` is the same shape wearing a
-        marker, and answers the same way. All four columns are pinned by corpus
-        441-a-definition-between-two-open-content-columns-reaches-the-outer-one,
-        the neighbours with the divergent one, because the neighbours are what
-        make the rule legible.
-
-        THE OTHER READING LEAVES A HOLE, which is what settles it. Read as the
-        deepest container still OPEN, column 3 is not at or past column 4, so
-        the line folds and defines nothing while columns 2 and 4 both register:
-        one added space removes a definition and a second restores it. Past a
-        container's content column more indentation may change WHICH container
-        owns a line; it never changes whether the line is a definition at all.
-        Nor can the deeper item be the owner. A line at column 3 does not REACH
-        the item at column 4 -- that is what reaching means -- so that item
-        could only take the line by lazy folding, and §10 I5 spends it first:
-        at a container's content column a definition INTERRUPTS the open
-        paragraph and registers, rather than folding into it. The container the
-        line does reach is the item at column 2.
-
-        BELOW EVERY OPEN COLUMN IS UNCHANGED. This clause governs a line that
-        reaches one open content column and not the next. A definition at a
-        nonzero column below the OUTERMOST open content column reaches no
-        opener column at all; it stays lazy paragraph text of the container
-        whose column it fell below (§24 C3, AN INVISIBLE LINE FOLDS LIKE ANY
-        OTHER), and this clause does not admit it.
-
-        A QUOTE IS NOT ONE OF THE COLUMNS (carve#1905), which is the other
-        boundary of this clause and the one an unmarked LIST MARKER runs into.
-        "The deepest column the LINE REACHES" ranges over the containers a
-        column can reach, and a quote is never one of them: A QUOTE IS REACHED
-        BY ITS MARKER, AND A COLUMN NEVER REACHES INTO ONE (carve#1384, above).
-        So where a quote holds the innermost open paragraph, this clause's
-        reach question does not arise for it at all. The line writes no marker,
-        so it is in no quote at whatever column it lands on; nothing about a
-        column closes one either, so the quote SURVIVES the line; and S4
-        settles ownership before it classifies any residue, selecting that
-        surviving quote, whose boundary left the deepest paragraph open. The
-        residue therefore meets §10 I2 -- list markers never interrupt -- and
-        folds. §24 C3's other branch, a marker at the content column opening a
-        SUBLIST, asks what a line does IN a container, and this line is never
-        classified in the item it merely reaches. So
-
-            - a              - > - x
-              > - x            - m
+            - a
+              > - x
               - m
 
-        both fold `- m` into the quoted item's paragraph, and the two spellings
-        are one document to this clause -- as are the deeper hosts and the
-        deeper quotes, none of which is a parameter of it.
-
-        THE PARAGRAPH TWIN IS THE DERIVATION, not an analogy. Replace the
-        quoted list with quoted prose and nothing else, and `- a` / `  > q` /
-        `  - m` folds by the same three sentences, which is how every reader
-        already answers it. Ruling the marker out of the fold would have had to
-        move that document too, or else say why one open paragraph inside a
-        quote takes a lazy line at this column and another does not.
-
-        THE NO-QUOTE SHAPES ARE THE CONTROLS, and none of them moves. Put an
-        item, a heading, a fence or a paragraph where the quote was and the
-        owner S4 selects is the enclosing ITEM: the residue is classified
-        there, §24 C3 governs at the content column, and the marker opens a
-        list element with no blank line before it, exactly as §10 I2's TIGHT
-        NESTED LISTS UNAFFECTED note already says. A BLANK LINE is the escape
-        under a quote as well, and the only one: it ends the quote and every
-        column opened inside it (A NEW MARKER DOES NOT REACH A DEAD CONTAINER'S
-        COLUMN, above), leaving the next line the item's. What the fold costs is
-        the lines AFTER it -- A LAZY FOLD KEEPS THE CONTAINER OPEN FOR FOLLOWING
-        LINES, so intervening prose does not escape the quote and carries the
-        marker under it in as well. Corpus
-        448-a-marker-at-an-enclosing-item-s-content-column-folds-into-a-quote-below-it
-        pins the controls beside the folds, because the neighbours are what make
-        the rule legible.
+        This also holds for a quote on the item marker line and at every host
+        or quote depth. Quoted prose in place of the quoted list folds alike.
+        With an item, heading, fence or paragraph instead of the quote, S4
+        selects the enclosing item and §24 C3 opens a list element at its
+        content column. A blank ends the quote and its nested columns
+        (CARVE-P0-019). Intervening lazy prose keeps the quote open, including
+        for following markers (CARVE-P0-015). Corpus 448 pins folds and controls.
 
         A BLOCK OPENER IN THE BAND FOLDS ON THE SAME TERMS -- NORMATIVE [CARVE-P0-021].
-        The clause above answers a LIST MARKER, which §10 I2 never
-        lets interrupt. A code or raw fence, a heading, a thematic break and a
-        table row DO interrupt an open paragraph (§10), so the band has to be
-        said for them too, and the answer does not change: under a quote that
-        holds an open paragraph, an opener at any column but the host's content
-        column folds into that paragraph.
+        Under a quote holding an open paragraph, a code/raw fence, heading,
+        thematic break or table row opens a block only at the host's content
+        column. At every other column it folds into the paragraph. For
+        `- a` / `  > q`, column 2 opens; column 1 and columns 3 through 8 fold,
+        including the quote's column 4. Corpus 531 pins this band in all hosts.
+        An unmarked line supplies no quote prefix. Ordinary over-indented text establishes no authored base
+        (CARVE-P0-004). After a blank closes the paragraph, an opener in the
+        host may establish a new authored base.
 
-        §2's rebasing is what the band turns on. "A recognized opener PAST that
-        column establishes its authored visual column" presumes the line IS a
-        recognized opener there, and past the column it is one only where
-        nothing can take it as text -- with a container in the open stack
-        holding an OPEN PARAGRAPH the line is ordinary over-indented text, and
-        §2's last sentence gives such text no base. AT the content column it is
-        an opener whatever is open, because that column IS the body's column 0
-        (§24 C3) and a block there ends the paragraph it sits under
-        (CARVE-P0-011). So `- a` over `  > q` opens a block at column 2 alone.
-        Column 1 is below the item's column, columns 3 through 8 are above it,
-        column 4 is the quote's own content column, and all of them fold: a line
-        that writes no `>` is in no quote at any column, and none of these
-        reaches an opener column.
+        At document level an indented fence is text at every nonzero column,
+        with or without a blank; no container minimum permits rebasing there.
+        Apply the host rule equally to list items, definition bodies and
+        footnote bodies. In `:: t` / `:  - a` / `    [r]: /url`, the body's
+        content column is 3 and the item's is 5; the definition at column 4
+        registers in the body (CARVE-P0-020). A newly marked quote after a
+        blank does not revive an ended item (CARVE-P0-019).
 
-        THE TOP LEVEL IS THE CONTROL, and it needs no quote. `p` over an
-        indented fence folds at every nonzero column, with a blank line above
-        the fence and without, because no container minimum is there for §2 to
-        rebase past. A BLANK is the escape here as it is above: it closes the
-        paragraph, and the same opener then opens a sibling block on its own
-        authored base (carve#2598). Corpus
-        531-an-opener-under-a-quote-in-a-nested-host-opens-at-one-column-only
-        pins the band beside that column, in a list item, a footnote body and a
-        description body, because a fixture at the minimum column cannot see it.
+        Ordinary prose reopens a paragraph anywhere among a container's
+        blocks, including after a table, fence or quote. Following lazy lines
+        then continue that paragraph. A blank closes it; with no open paragraph
+        to continue, a following below-column line leaves the item whether its
+        last block is a terminated or unterminated colon div, an opaque body,
+        a quote, or ordinary prose. A line at the item's content column remains
+        inside it; under a div it is the div's second block. A missing closer
+        does not alter these decisions.
 
-        THE HOST IS NOT A PARAMETER EITHER (carve#1918). This clause is
-        written about CONTAINERS, and the three indented-block collectors are
-        containers alike -- a description body and a footnote body select an
-        owner by content column exactly as a list item does (the DEFINITION
-        BODIES FOLLOW THE SAME CONTAINER REACH RULE clause below, carve#956).
-        So
-
-            :: t
-            :  - a
-                [r]: /url
-
-        opens the body at column 3 and the item inside it at column 5, and the
-        definition at column 4 registers against the BODY -- the derivation
-        `- - x` gets one construct over, and the same answer at every column of
-        the band. Every pair of hosts answers alike: a body inside a body, a
-        note inside an item, an item inside a note. A reader that answers this
-        shape one way under an item and the other under a body is reading the
-        MARKER rather than the column, which is the reading the hole above
-        already ruled out.
-
-        THIS IS THE MARKED SPELLING OF A RULE ALREADY SETTLED for the unmarked
-        one. `> - a` over a blank over four spaces reaches column 4 and is
-        inside NOTHING, so it registers nothing while the page prints it as
-        text. Re-marking the quote changes which container the
-        line is in; it does not revive the item that ended at the blank.
-
-        PROSE REOPENS THE PARAGRAPH WHEREVER IT SITS AMONG THE ITEM'S BLOCKS,
-        which is the general shape of that last sentence rather than a property
-        of abbreviations. S4 asks whether any container in the open stack holds
-        an OPEN paragraph. It does not ask whether that paragraph is the
-        container's first block, and an item whose first block is a table, a
-        fence or a quote and whose next line is prose holds one exactly as an
-        item that began with prose does. So
-
-            - | a |          - ```            - > | a |
-              b                c                + b |
-            tail               ```            tail
-                               b
-                               tail
-
-        all fold `tail` into the paragraph the prose line opened, as `- a` /
-        `tail` does. The blocks before that paragraph are spent: they
-        answered S4 while they were the item's last block and stopped answering
-        it when prose reopened one.
-
-        AN UNTERMINATED CONTAINER DOES NOT EXTEND THE ITEM PAST THAT BLANK.
-        The control above says the blank closes the paragraph so the item ends,
-        and that holds whatever container stands above the blank. S4 asks
-        whether an OPEN PARAGRAPH exists, not whether a container is still
-        waiting for its closer, so a line BELOW the item's content column after
-        a blank has nothing to continue and leaves the item -- under a
-        terminated `:::` div, an opaque body, a quote, or no container at all,
-        and under an unterminated `:::` div identically. So
-
-            - ::: d          - ::: d          - ::: d
-              b                b                b
-                               :::
-            tail                              (no blank)
-                             tail             tail
-
-        end the item in the first two spellings and fold in the third, and the
-        difference between them is the blank, never the missing closer. A
-        following line at the item's content column is the div's second block
-        rather than the end of the item.
-
-        THE COLUMN IS REACHED BY COMPOSING THE STRIPS, NOT BY WALKING THE
-        PREFIX. Which container's `content_column` a line reaches
-        is decided by §24 C5 and by nothing else: every container strips its
-        own prefix and hands the residue down, so the question is asked of the
-        INNERMOST container in the coordinates IT was handed. The shape of the
-        prefix above it -- how many quotes and list items it alternates, in
-        what order, and how deep -- is not a parameter.
-
-        The DROP is the disappearance §24 C3 already forbids under AN INVISIBLE
-        LINE FOLDS LIKE ANY OTHER: a definition may register, or it may stay
-        text, and half-folding it -- gone from the page, absent from the
-        tables -- is not an option the rule offers.
+        Compute columns by composing each container's prefix strip (§24 C5)
+        and classify in the innermost container's resulting coordinates.
+        Host kind, prefix order and nesting depth do not alter that rule.
+        A definition either registers or remains visible text; it MUST NOT
+        disappear from both rendering and definition tables.
 
         AN OPAQUE MARKER-LINE QUOTE PRESERVES THE BAND AS TEXT -- NORMATIVE [CARVE-P0-022].
         When a code or raw fence opens inside the quote prefix on a list item's
@@ -652,152 +413,72 @@
         Comment fences remain governed by PART 9 §28.
 
         AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS
-        UNDER -- NORMATIVE [CARVE-P0-011]. The definition and the
-        comment above are instances; the rule is stated as a property because
-        the instances are not enumerable.
+        UNDER -- NORMATIVE [CARVE-P0-011]. A block at the content column is
+        recognized as at document column 0 (§24 C3). It ends the preceding
+        paragraph and leaves the container open, whether the block is visible
+        or invisible.
+        Comments, link/footnote definitions and attribute blocks all apply.
+        A following document-column line leaves the container if no open
+        paragraph remains anywhere in the stack.
 
-        §24 C3 says the content column IS the container body's column 0: a
-        block opener is recognized there exactly as one is recognized only at
-        column 0 at the top level. So a line there is read
-        as a BLOCK, and a block ends the paragraph above it. WHAT THE BLOCK
-        RENDERS IS NOT A PARAMETER. A comment, a link or footnote definition
-        and an attribute block all render nothing and all three end the
-        paragraph; none of them closes the container. The container ends
-        because the FOLLOWING line is at DOCUMENT column 0 with no open
-        paragraph anywhere in the stack to continue -- S4's own "otherwise".
+        This transition covers the block's entire extent. A footnote
+        definition's indented continuation belongs to that definition and
+        permits no lazy continuation into it. A link reference definition is
+        one line; following indented prose is ordinary container text.
 
-        THE RULE IS OVER THE BLOCK, NOT OVER ITS FIRST LINE. A footnote
-        definition's indented BODY continuation is part of that block: the
-        footnote parser consumes it and permits no lazy continuation into it,
-        so nothing of the container's is open across any of it. `- a` /
-        `  [^f]: t` / `    more` / `tail` therefore ends the item exactly as
-        `- a` / `  [^f]: t` / `tail` does, and the two spellings of one
-        definition stop answering differently. A LINK reference
-        definition has no such body - it is one line in Carve, and an indented
-        line under it is ordinary container text in every reader, which is the
-        control that says this is about the block's extent and not about
-        indentation.
+        A HEADING IS THE VISIBLE CONTROL -- NORMATIVE [CARVE-P0-012]. A heading
+        at the content column leaves no paragraph open. A following line at
+        document column 0 ends the item under S4, as after a marker-line
+        heading or a heading inside a quote. A line at the item's content column
+        remains its second paragraph. At a nonzero column below it, access is
+        through S4's lazy fold; §24 C3's comment exception keeps that path open.
 
-        A HEADING IS THE VISIBLE CONTROL -- NORMATIVE [CARVE-P0-012]. At the
-        content column it is the item's own heading block, and it leaves no
-        paragraph open. A following line at document column 0 therefore ends
-        the item under S4; it cannot lazily continue the heading or a paragraph
-        that does not exist. This is the same answer as a heading on the item
-        marker line and a heading inside a quote. The line's position changes
-        which container owns the heading, not whether the heading is a block.
+        A footnote definition's extent includes blanks between its blocks:
+        `- a` / `  [^f]: t` / blank / `    more` / `tail` ends the item and
+        gives the note two blocks. Those blanks are interior to the definition.
+        A blank after a one-line link definition is outside that definition;
+        following indented prose opens the container's second paragraph, and a
+        flush-left line folds into it. Nested definition extent is not decided
+        by this clause.
 
-        BELOW the content column at a NONZERO column, the following line still
-        reaches the container only through S4's lazy fold; §24 C3's comment
-        exception keeps that path open. DOCUMENT column 0 is instead the
-        enclosing context's block position, and a line AT the content column
-        after the block remains the container's second paragraph.
-
-        THE BLOCK'S EXTENT IS THE DEFINITION'S, BLANK LINES AND ALL.
-        A footnote definition may carry more than one block, and
-        the container's reach over it is the DEFINITION'S extent rather than a
-        CONTIGUOUS indented run. The blank between the note's blocks is
-        INTERIOR to the block the container is looking at, so it hands nothing
-        back:
-
-            - a
-              [^f]: t
-
-                more
-            tail
-
-        ends the item exactly as the contiguous and the one-line spellings do.
-        `tail` is a document-level paragraph and the note holds two blocks.
-
-        THE LINK REFERENCE DEFINITION IS THE CONTROL, and it does not move. It
-        has no body, so its block IS the one line: the blank after it falls
-        OUTSIDE the block, the indented line below is the container's own
-        second paragraph, and the flush-left line folds into that. So this
-        turns on the block's extent, not on indentation and not on blank
-        lines. The NESTED spelling is not decided here.
-
-        A FENCED BODY IS NOT A PARAGRAPH -- NORMATIVE [CARVE-P0-013]. The same
-        rule, with the unmatched container's last block a CODE FENCE opened on
-        the marker line itself:
+        A FENCED BODY IS NOT A PARAGRAPH -- NORMATIVE [CARVE-P0-013]. If a line
+        supplies no indentation prefix to the fence's host, S1 stops there and
+        S2 does not apply. A verbatim body holds no open paragraph for S4 to
+        continue. In
 
             - ```
             x
             ```
 
-        `x` supplies none of the body's indentation, so S1 MATCH PREFIXES stops
-        at the ITEM and S2 FENCED BODY never fires -- S2 applies only when the
-        innermost MATCHED container is a fenced body. S4 governs, its lazy
-        branch asks for an open PARAGRAPH, and a verbatim body is not one: there
-        is no meaning to "fold in as lazy paragraph text" inside content that is
-        not markup. So the containers close, the item holds an EMPTY code block,
-        and `x` re-parses at document level -- where the trailing delimiter run
-        is ordinary inline text.
+        the item closes with an empty code block; `x` is document text and the
+        trailing run is ordinary inline text.
 
-        AND THE OWNER TABLE CARRIES NO DEPTH TERM. The example above is one
-        container deep; the rule is not. Where no container in the open stack
-        holds an open paragraph, CARVE-P0-004 selects the nearest surviving
-        ancestor whose content column the run reaches, every container between
-        the fence's host and that owner closes, and the run is classified in the
-        owner at its own column (carve#2490). At content column 4 a run at
-        column 0 or 1 reaches the document, one at column 2 the outer item:
-
-            - a
-              - b
-
-                ```
-                p
-            ```
-
-        Both items and both lists close, the inner item keeps the fence's body,
-        and the run opens a code block at document level. `%%%` is outside this:
-        its delimiters carry a whitespace slot of their own, so its run closes
-        the span at any column and ends no container.
-
-        AND NO HOST TERM. Which container holds the fence open is not a
-        parameter either. A QUOTE is reached by its marker, so an item, a
-        description body or a footnote body written inside one changes where the
-        fence is spelled and nothing about the answer: the run below still
-        reaches the document at column 0, at every depth (carve#2538).
-
-            > - a
-            >
-            >   ```
-            >   x
-            flush
+        Where no container in the stack holds an open paragraph, select the
+        nearest surviving ancestor whose content column the line reaches and
+        close intervening containers at every depth. The inner item keeps its
+        fence body; reclassify the run in the selected owner. A document-column
+        run opens a document-level code block. With inner
+        content column 4, a run at column 0 or 1 reaches the document; a run at
+        column 2 reaches an outer item. This holds for items, definition bodies
+        and footnote bodies inside quotes too: an unmarked column-0 line
+        reaches the document. Matched `%%%` spans are the exception (§28):
+        their whitespace slot admits a closer at any column, ending the span
+        without ending a container.
 
         FENCE KIND DOES NOT DETERMINE CONTAINER REACH -- NORMATIVE [CARVE-P0-014].
-        VERBATIMNESS is not the property doing the work. The reach of a
-        container is not extended by what its innermost block happens to be,
-        and the parameter S4 consults is whether ANY container in the open
-        stack holds an OPEN PARAGRAPH. The fence kind never enters, so the two
-        fence kinds are ONE rule and the asymmetry between them falls out of
-        the paragraph: a CODE fence body cannot hold an open paragraph at all,
-        so the column-0 line always takes S4's otherwise and the container
-        ends, while a COLON fence body CAN hold one and takes the lazy branch
-        when it does.
+        Container reach depends on whether an open paragraph exists in the
+        stack. Code bodies cannot hold one; colon bodies can. A column-0 line
+        ends the host when no paragraph is open; with one open, it takes S4's
+        lazy branch.
 
-        AND A FENCE THAT OPENED NO BODY IS NOT ONE EITHER. The
-        first bullet presumes a code fence body EXISTS. §10 I4 decides that, and
-        it is a question about the CLOSER: a fence interrupts an open paragraph
-        only when one follows it. Without a closer the line is ordinary
-        paragraph text, which is the answer every reader already gives at
-        document level for
+        A code fence interrupts an open paragraph only when a closer exists
+        (§10 I4). Otherwise its line is paragraph text, including at a
+        container's content column.
 
-            q
-            ```
-            b
-
-        -- one paragraph holding an unclosed inline verbatim run, not a code
-        block. So at a container's content column
-
-            - q                 > q                 : a
-              ```               > ```                 ```
-            tail                tail                tail
-
-        THE CLOSER LOOKAHEAD DOES NOT STOP AT A BELOW-COLUMN LINE. §24 C3 folds
-        such a line as lazy text while a paragraph is open, so a closer written
-        below it is still written inside the container. Stopping there makes the
-        question circular: the fence opens only if the line folds, and the line
-        folds only if the fence did not open. Not stopping answers
+        THE CLOSER LOOKAHEAD DOES NOT STOP AT A BELOW-COLUMN LINE. Search past
+        such lines when deciding whether the fence has a closer.
+        A BELOW-COLUMN LINE IS SEARCHED PAST, NEVER MATCHED. Count only closers
+        inside the container. In
 
             - a
               ```
@@ -805,89 +486,49 @@
              y
               ```
 
-        the one way the clauses allow: the fence has its closer, so a real code
-        block opens, and that open body is what ends the item at ` y`.
-
-        A BELOW-COLUMN LINE IS SEARCHED PAST, NEVER MATCHED. A closer counts
-        only when it is written inside the container; one below the content
-        column is not, so it cannot make the fence a real body. In
-
-            - a
-              ```
-              b
-             y
-            ```
-
-        the flush-left run is not a closer, the fence opens nothing, and ` y`
-        and the run fold into the item's paragraph as text.
-
-        A BLANK LINE and a TERMINATED fence are the controls, and both are
-        unchanged: a blank closes the paragraph so S4's otherwise governs,
-        and a fence with a closer is a BLOCK whose body leaves no
-        paragraph open, which is the first bullet with its premise intact.
+        the indented closer makes a real code block, which ends the item at
+        ` y`. Moving the closer to document column 0 makes it ineligible;
+        no block opens, and ` y` and the run fold as paragraph text. A blank
+        closes the paragraph; a terminated fence leaves no paragraph open.
 
         A LAZY FOLD KEEPS THE CONTAINER OPEN FOR FOLLOWING LINES -- NORMATIVE [CARVE-P0-015].
-        S4's lazy branch says NOTHING closes, and that binds the
-        lines AFTER the folded one as much as the folded one itself. A line
-        that returns to the container's content column is still that
-        container's content:
+        A lazy fold closes no container. A later line returning to the
+        container's content column remains inside it:
 
-            - x                 - x
-              :::                 :::
-              a                   a
-            d                   d
+            - x
+              :::
+              a
+            d
               b
               :::
 
-        On the left `a`, `d` and `b` are one paragraph in one div; `b` MUST NOT
-        land beside the div. The right-hand document is the same rule with the
-        fold as the last line. The CONTROL: with nothing in the stack open, the
-        flush-left line still ENDS the container and the line after it is
-        outside too.
+        `a`, `d` and `b` form one paragraph in one div. With no open paragraph,
+        the flush-left line ends the container and later lines are outside it.
 
-        A REAL DIV IS A CONTAINER LIKE ANY OTHER -- NORMATIVE [CARVE-P0-016]. An
-        unterminated `::: ` div in a container decides the same way, on the same
-        question, and the two answers differ by one line of body:
-
-            - item              - item
-              ::: note            ::: note
-              body              tail
-            tail
-
-        On the left the div holds an OPEN PARAGRAPH, so `tail` folds into it.
-        On the right the div is EMPTY -- and the item's own paragraph was closed
-        by the div that followed it -- so nothing in the stack is open, the
-        containers close and `tail` is a top-level paragraph. Closing the div
-        with a `:::` line closes the paragraph inside it and inverts the left
-        answer, which is what the third document pins.
+        A REAL DIV IS A CONTAINER LIKE ANY OTHER -- NORMATIVE [CARVE-P0-016].
+        An unterminated colon div permits a lazy fold when its last block is
+        an open paragraph: `- item` / `  ::: note` / `  body` / `tail` folds.
+        Omitting `body` leaves an empty div and no paragraph to continue, so
+        `tail` is top-level. Closing the div also closes its paragraph and
+        leaves `tail` at top level.
 
         CONTAINER KIND DOES NOT DETERMINE CONTAINER REACH -- NORMATIVE [CARVE-P0-017].
-        The same three documents written with a BLOCK QUOTE decide
-        the same way. `> quote` / `> ::: note` / `tail` closes the quote and
-        leaves `tail` at top level, and so does the CLOSED form
-        `> quote` / `> ::: note` / `> body` / `> :::` / `tail`, because a closed
-        container holds no open paragraph any more than an empty one does.
+        Apply the same test in quotes. `> quote` / `> ::: note` / `tail` ends
+        the quote, as does the form with `> body` / `> :::` before `tail`.
+        An empty or closed colon container leaves no open paragraph.
 
         DEFINITION BODIES FOLLOW THE SAME CONTAINER REACH RULE -- NORMATIVE [CARVE-P0-018].
-        The third indented-block collector answers the same way. A
-        definition
-        body's canonical `dd` demands indentation to column 2
-        (`definition_indent`), so a fence opened on the `: ` marker line whose
-        body sits BELOW that column
-        is the list spelling above with a different prefix:
+        A definition body's canonical prefix reaches column 2. In
 
             :: t
             : ```
             body
             ```
 
-        `body` supplies none of the body's indentation, so S1 MATCH PREFIXES
-        stops at the DEFINITION ENTRY and S2 FENCED BODY never fires. S4
-        governs, its lazy branch asks for an open PARAGRAPH, and a verbatim
-        body is not one. So the containers close, the `dd` holds an EMPTY code
-        block, and `body` re-parses at document level -- where the trailing
-        delimiter run is ordinary inline text, byte for byte the answer the
-        `- ``` ` spelling gets.
+        `body` misses that prefix. S1 stops at the definition entry; S2 does
+        not apply and S4 finds no open paragraph. The body closes with an empty
+        code block, and `body` and the trailing run are reclassified at document
+        level, as for the list-item form (CARVE-P0-013).
 
      S5 OPENERS. When S3/S4 classify the residue as a container opener (a
         quote marker; a list marker at an admissible column; a `+`
