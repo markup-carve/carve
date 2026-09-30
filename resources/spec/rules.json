@@ -1857,6 +1857,12 @@
       "part": "10",
       "title": "A MATCHING RAW BLOCK KEEPS ITS PLACEMENT SLOT",
       "scope": "resolution-rendering"
+    },
+    {
+      "id": "CARVE-P0-022",
+      "part": "0",
+      "title": "AN OPAQUE MARKER-LINE QUOTE PRESERVES THE BAND AS TEXT",
+      "scope": "parsing"
     }
   ],
   "retired": [

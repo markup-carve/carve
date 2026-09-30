@@ -16,10 +16,17 @@ implementation exposes.
 
 ## Core fixture counts (2026-09-30)
 
-The count-only run covers all 2,164 current core documents and their 161 target
+The count-only run covers 2,164 core documents and their 161 target
 sidecars. Each engine passed all 2,325 scored fixtures. The run checks expected
 output on each scored target; it does not compare unscored targets and makes no
 formatter or full-target agreement claim.
+
+Corpus added since this run: `535-a-marker-line-opaque-quote-keeps-overindented-markers-literal`.
+
+The 36 ownership controls were added after this count snapshot. They are not
+included in its denominators. The paired Rust fix merged in
+[carve-rs #2228](https://github.com/markup-carve/carve-rs/pull/2228); this
+recorded comparison still excludes these controls.
 
 The Rust and PHP checkouts carried uncommitted carve#2643 lint changes; the
 JavaScript checkout was clean when the run started. The table lists their base
