@@ -47,27 +47,17 @@
       seven: adjacent OR exactly one blank line attaches, two blank lines
       detach and leave the `^ ` line an ordinary paragraph.
 
-      THE SEVENTH IS THE SECOND SPELLING OF THE SECOND. A `quote_block` IS a
-      block quote (PART 2), so it captions like one and a captioned quote is a
-      FIGURE either way. The slot hangs on the CLOSING fence, as
-      `figure_group`'s does. So TWO `:::` kinds now take a closer caption, and
-      a `^ ` line after any OTHER `:::` closer is still ordinary paragraph
-      content.
+      THE SEVENTH IS THE SECOND SPELLING OF THE SECOND. `quote_block` is a
+      block quote and captions as a figure. Like `figure_group`, its caption
+      attaches at the closing fence; captions after other `:::` kinds are
+      ordinary paragraphs.
 
-      WHERE THAT ALLOWANCE IS WRITTEN DOWN differs. For FIVE hosts it is
-      STRUCTURAL -- `code_block`, `blockquote`, `table`, `figure_group` and
-      `quote_block` each end in `[caption_slot]` (PART 2; on `figure_group`
-      the slot hangs on the closing fence), and caption_slot's single optional
-      blank_line IS the rule. For the IMAGE PARAGRAPH and the STANDALONE
-      DISPLAY-MATH BLOCK it is PROSE: this clause is the rule, and PART 3
-      already says so beside `image` ("there is no separate grammar production
-      for the pair").
-
-      NOT AN OVERSIGHT. Neither of those two has a production to hang the slot
-      on. Both ARE a `paragraph` (PART 2), and what distinguishes them is a
-      condition on that paragraph's inline content, the same not-context-free
-      class as PART 7's cell_content and §15's block_attributes. `paragraph`
-      itself is NOT captionable: this enumeration is closed.
+      WHERE THAT ALLOWANCE IS WRITTEN DOWN differs. `code_block`, `blockquote`,
+      `table`, `figure_group` and `quote_block` end in `[caption_slot]`, whose
+      optional blank line specifies the allowance. Image-only and standalone
+      display-math paragraphs have no separate production; this clause defines
+      their caption attachment. The host enumeration is closed: other
+      paragraphs are not captionable.
 
    4b. WHAT A CAPTION MAKES OF ITS HOST -- EXPLANATORY. The `figure` node is
       the GENERIC captioned wrapper, not the semantic notion "figure". A
@@ -81,107 +71,62 @@
       because the author wrote "Listing", not because a code block is a listing.
 
    4c. A COMPOSITE FIGURE GROUPS ITS PANELS UNDER ONE CAPTION -- NORMATIVE [CARVE-P9-001]
-      (governs `figure_group` in PART 2). A bare `::: figure`
-      container is ONE figure holding ordered sub-figures: its direct
-      captionable children are PANELS, and the `^ ` caption after its closing
-      fence -- §4's sixth host -- is the caption of the WHOLE group. The AST
-      node is `figure_group` (PART 12 §16): `children`, an optional group
-      `caption`, attributes, position -- and deliberately NO `target`, no
-      title, no label. Every existing `figure` carries a `target`, so the
-      group is discriminated by its TYPE rather than by a consumer sniffing
-      for the field that is not there.
+      (governs `figure_group` in PART 2). A bare `::: figure` container holds
+      ordered panels. The caption after its closing fence belongs to the group.
+      The AST is `figure_group` (PART 12 §16), with `children`, optional
+      `caption`, attributes and position, and no `target`, title or label.
+      Its type distinguishes it from the existing `figure` wrapper.
 
-      THE OPENER IS BARE OR IT IS NOT THIS PRODUCTION. `figure_group_open` is
-      the fence, its separator, and the kind word `figure` -- nothing else.
-      A bare opener ALWAYS produces a `figure_group`, whatever the body holds:
-      zero panels, one, or many are all valid parses (the degenerate counts
-      are lint findings, below, not errors). An opener carrying a
-      `quoted_title` or a `label` (`::: figure "T"`, `::: figure [g]`)
-      matches `admonition_open` instead and stays a generic Tier-2 container
-      -- `<div class="figure">`, title and label preserved losslessly, the
-      pre-§4c shape -- and `carve lint` reports
-      `figure-group-opener-metadata`. The group has no title or label slot BY
-      DESIGN: its one authored metadata channel is the caption.
+      THE OPENER IS BARE OR IT IS NOT THIS PRODUCTION. `figure_group_open`
+      contains only the fence, separator and `figure`. It always produces a
+      group, including with zero or one panel. A quoted title or label instead
+      matches `admonition_open`, preserving a generic Tier-2
+      `<div class="figure">` and its metadata; lint reports
+      `figure-group-opener-metadata`. The group's metadata channel is its caption.
 
       PANELS ARE THE DIRECT CHILDREN THE INNER RULES ALREADY MAKE CAPTIONABLE
-      THINGS OF. After the body parses under the UNCHANGED §4 rules, the
-      group's direct children that are `figure` nodes (§4b's generic
-      captioned wrapper: a captioned image paragraph, a captioned code
-      listing, a captioned display-math block, a captioned quote, a promoted
-      reference image) or `table` nodes (captioned or not) are the PANELS, in
-      source order. Everything else -- paragraphs, lists, uncaptioned
-      quotes, nested containers -- is plain group content, PRESERVED IN
-      PLACE between the panels; a strict profile lints it, and no renderer
-      may silently drop or re-attach it. Two
-      consequences worth naming:
+      THINGS OF. Parse the body under §4. Direct `figure` children (captioned
+      images, code, math, quotes or promoted reference images) and `table`
+      children, captioned or not, are panels in source order. Preserve all
+      other content in place, including paragraphs, lists, uncaptioned quotes
+      and nested containers; a strict profile lints it. Renderers MUST NOT
+      drop or reattach it. An uncaptioned quote may therefore share the group's
+      caption without becoming a panel. A table panel keeps its `<caption>`;
+      the panel wrapper adds no caption.
 
-        - AN UNCAPTIONED QUOTE inside the group is plain content, which is
-          how a quotation carries a figure number without a caption of its
-          own: leave the quote bare and caption the GROUP, and the group's
-          `<figure class="carve-figure-group">` holds the `<blockquote>` and
-          the group `<figcaption>`. A CAPTIONED quote is a `figure` whose
-          target is the quote (§4b) and panels like any other captionable
-          host -- the quote is not a special host inside the group either.
-        - A TABLE PANEL keeps its own caption as the table's `<caption>`;
-          the panel wrapper adds nothing to it.
+      THE GROUP CAPTION ATTACHES AT THE CLOSER, THIS KIND ONLY. A caption,
+      including its normal multiline form, attaches adjacent to or one blank
+      line below the closing fence. Two blanks detach it into an ordinary
+      paragraph. Other `:::` kinds keep their caption behavior. Captions inside
+      the fence attach only to their local hosts.
 
-      THE GROUP CAPTION ATTACHES AT THE CLOSER, THIS KIND ONLY. A `^ ` line
-      (or multiline caption block, the normal `caption` rules) adjacent to or
-      exactly one blank line below the group's CLOSING fence is the group
-      caption; two blank lines detach it into an ordinary paragraph. Every
-      other `:::` kind keeps its behavior -- a `^ ` line after a
-      `::: note` closer is ordinary paragraph content. Captions INSIDE the
-      fence attach
-      only to their local host, unchanged.
+      THE GROUP IS ONE NUMBERING UNIT (PART 9R R5). Its caption's `#` draws one
+      number from the label's sequence. Panels draw no document-sequence number:
+      a panel caption's `#` stays literal and lints as `figure-group-panel-number`.
+      Only the group gets a list-of-figures entry. Panel ids resolve crossrefs
+      (R4) with the group's number and a letter in panel order, a..z then aa,
+      ab, ..., such as "Figure 2a"; the group's id resolves as "Figure 2".
+      Letters occur only in crossref text; no visible panel letter is generated.
+      Panel ids register as caption targets only when the group draws a number.
+      In an unnumbered group they remain anchors, like ids on uncaptioned figures.
 
-      THE GROUP IS ONE NUMBERING UNIT (PART 9R R5). A `#` placeholder in the
-      GROUP caption draws exactly one number from its label's sequence, like
-      any figure. Panels draw NOTHING from the document sequence: a `#`
-      placeholder in a PANEL caption has nothing to resolve against, stays
-      LITERAL -- the visible failure this language prefers to a silent one
-      -- and lints as
-      `figure-group-panel-number`. Only the group produces a list-of-figures
-      entry. For CROSS-REFERENCES (PART 9R R4), a panel with an id resolves
-      `</#id>` with the group's number plus a letter by panel order among the
-      panels -- "Figure 2a", letters a..z then aa, ab, ... -- and the group's
-      own id resolves as the plain "Figure 2". The letters exist in crossref
-      text only:
-      this version generates no visible `(a)` label inside the panel (authors
-      write panel letters in panel captions; the mechanism is reserved).
-      Panel ids register only when the group itself drew a number -- an
-      unnumbered group's panels are anchors but not caption crossref targets,
-      exactly as an id on an uncaptioned figure.
+      THE GROUP NUMBERS WHERE IT BEGINS, NOT WHERE ITS CAPTION SITS. Number
+      any captionable host at its own position, not at its caption line.
+      A figure group begins at its opening fence and numbers in pre-order,
+      before anything inside it.
+      A numbered figure in non-panel group content therefore draws after the
+      group even when its caption precedes the group's caption in the source.
 
-      THE GROUP NUMBERS WHERE IT BEGINS, NOT WHERE ITS CAPTION SITS. A
-      captionable host takes its number at the position of the HOST, and a
-      figure group begins at its OPENING fence -- so the group draws before
-      anything inside it does (pre-order). The one construction that can
-      observe the difference is a numbered caption inside NON-panel group
-      content -- a captioned figure inside an admonition inside the group,
-      say -- which draws AFTER the group even though its caption line sits
-      above the group's in the source: the inner figure is "Figure 2" and
-      the group "Figure 1". That construction is already the stray content a
-      strict profile lints. Caption-line order is NOT the rule: a group's
-      number is stable under edits to what it contains.
+      GROUPS DO NOT NEST. At any depth inside a group's body, a bare
+      `::: figure` opens a generic Tier-2 `<div class="figure">` and lints as
+      `figure-group-nested` (318-composite-figures-9), preserving the content.
 
-      GROUPS DO NOT NEST. A bare `::: figure` opener anywhere inside an open
-      group's body -- any depth -- is a generic Tier-2 container
-      (`<div class="figure">`), not an inner group, and lints as
-      `figure-group-nested` (318-composite-figures-9). Nested numbering is a
-      design question explicitly defers, and a generic container is
-      the lossless degradation.
+      LINT, NOT PARSE. All five findings diagnose valid parses:
+      `figure-group-opener-metadata`, `figure-group-nested` and
+      `figure-group-panel-number` are warnings; `figure-group-empty` and
+      `figure-group-single-panel` are strict-profile findings.
 
-      LINT, NOT PARSE. The five findings this clause names are diagnostics
-      over a valid parse: `figure-group-opener-metadata` and
-      `figure-group-nested` (warnings), `figure-group-panel-number`
-      (warning), and `figure-group-empty` / `figure-group-single-panel`
-      (strict-profile findings -- a one-panel or zero-panel group is usually
-      a plain figure or a plain div that grew a fence, but making it an
-      ERROR would turn an edit that deletes the second panel into a parse
-      change).
-
-      HTML SHAPE (PART 10 conventions; the corpus pins the bytes,
-      318-composite-figures):
+      HTML SHAPE (PART 10; corpus 318-composite-figures pins the bytes):
 
         <figure class="carve-figure-group [hints]" id="...">
           <figure class="carve-figure-panel" id="...">
@@ -192,25 +137,14 @@
           <figcaption>Label N: group caption</figcaption>
         </figure>
 
-      PANELS NEST DIRECTLY, WITH NO WRAPPER ELEMENT BETWEEN. HTML's `figure`
-      content model is a `figcaption` first or last plus FLOW CONTENT, and
-      `figure` is itself flow content, so nested panel figures are exactly
-      what the element admits -- no intermediate `div` is needed to make the
-      shape valid, and none is emitted. This is also the shape Pandoc's
-      writers produce for its native subfigures, which keeps HTML
-      import/export symmetric with the Pandoc bridge.
-
-      The class is FIRST on the group and on each panel, exactly the typed-
-      container convention (`admonition note`): `carve-figure-group` leads,
-      classes from the preceding attribute line -- layout hints such as
-      `columns-2` pass through as classes, profile-sanitized like any class
-      -- merge after it, then the id and remaining attributes in source
-      order. A panel renders as the `<figure>` its host already produces,
-      with `carve-figure-panel` leading its classes the same way. No group
-      caption -> no trailing `<figcaption>`. Zero panels -> the group
-      `<figure>` holds the preserved content directly; a consumer selects
-      panels by the `carve-figure-panel` class, never by position.
-      shape needs no branch on child count.
+      PANELS NEST DIRECTLY, WITH NO WRAPPER ELEMENT BETWEEN. Emit no
+      intermediate `div`. `carve-figure-group` and `carve-figure-panel` lead
+      their respective class lists, followed by authored classes (including
+      profile-sanitized layout hints), then id and remaining attributes in
+      source order. A panel uses its host's existing `<figure>` shape.
+      Omit the trailing `<figcaption>` when the group has no caption. With zero
+      panels, preserve content directly in the group. Select panels by their
+      `carve-figure-panel` class, never by child position.
 
    5. TABLE MODEL -- OPERATIONAL SEMANTICS (cell split, row validity,
       header cells, span walk, continuation rows, delimiter row, row
@@ -276,86 +210,42 @@
          and is ordinary prose. That is the ONLY case that declines, and
          corpus 115 pins it.
 
-         AND THE ROW ABOVE IS A LINE OF THE SAME CONTAINER. "In the source"
-         is not "anywhere earlier on the page": it is the container the `+`
-         line is written in. A line at a list item's `content_column` carries
-         no quote prefix, so a table written inside a quote on the marker line
-         is not above it -
+         AND THE ROW ABOVE IS A LINE OF THE SAME CONTAINER. A table in a
+         quote does not precede a continuation line lacking that quote's prefix.
+         In the following example the item's preceding block is a quote:
 
              - > | a |
                + b |
 
-         - and the block above `+ b |` at the item's own column is a
-         blockquote. T6 declines, the line is ordinary prose, and prose reopens
-         the item's paragraph (PART 1 S4's clause on that). The control is the
-         same-column spelling `- | a |` / `  | b |`: there the row above IS the
-         item's own, it joins, and no paragraph opens.
+         T6 declines and the prose reopens the item's paragraph. The control
+         `- | a |` followed by `  | b |` has two standard rows in the item's
+         own table; the second joins without opening a paragraph.
 
-         HEADER-NESS IS NOT THE DISCRIMINATOR. Declining whenever the row above
-         is ALL-HEADER answers three neighbouring documents wrongly:
+         HEADER-NESS IS NOT THE DISCRIMINATOR. Native all-header rows, including
+         later rows, accept continuations. A delimiter row directly above the
+         continuation makes it decline, including under a native header row.
 
-             |=a |=b |          | a |            |=a |
-             + cont |           |=b |            | - |
-                                + c |            + cont |
-
-         The first two JOIN - onto a native header row, and onto an all-header
-         row that is not the table's first - and the third DECLINES, on a
-         NATIVE header row, because a delimiter row sits between the two lines.
-         Header-ness answers all three backwards; the delimiter row answers all
-         three. T9 already says the rest outright: a `^` rowspan MAY reach a
-         header cell, so a header cell is an ordinary cell in every other table
-         mechanism.
-
-         AN ALL-EMPTY CONTINUATION ROW IS A CONTINUATION ROW. T2's "at least
-         one cell lies between" is written of `valid_row`, the predicate that
-         decides whether a line OPENS a table and whether it interrupts a
-         paragraph, and T2 says so: "this matches the `standard_row`
-         production". A continuation row opens nothing and produces no `<tr>`,
-         so a row whose every cell is empty appends nothing - which is what
-         this clause already provides for. Applying the standard row's guard
-         to it made ONE clause answer twice by COLUMN COUNT, since only the
-         one-column shape reaches a one-cell test:
-
-             | a | b |          | a |
-             + | |              + |
-
-         Both are absorbed.
+         AN ALL-EMPTY CONTINUATION ROW IS A CONTINUATION ROW. It opens no
+         table and produces no `<tr>`; do not apply T2's standard-row guard.
+         Its empty cells append nothing. `+ | |` below `| a | b |` and `+ |`
+         below `| a |` are both absorbed.
 
          A CONTINUATION ROW LEAVES NO PARAGRAPH OPEN -- NORMATIVE [CARVE-P9-003].
-         PART 1 S4 asks what a container's last BLOCK is, and the answer here
-         is a table however its last row is spelled: this clause gives a
-         continuation row `table_cell`s and joins them onto the row above, so
-         nothing about it reopens a paragraph. A container ending on one
-         therefore ends at a flush-left line, exactly as one ending on a
-         standard row does:
+         A container's last block remains a table after a continuation row.
+         Under S4, a following flush-left line ends the container and becomes
+         a document paragraph, as after a standard row. This applies to lists,
+         quotes and definition bodies.
 
-             - | a |            > | a |            :: t
-               + b |            > + b |            : | a |
-             tail               tail                 + b |
-                                                  tail
+         THE OPPOSITE DIRECTION IS UNCHANGED. With no table above it, `+ ...|`
+         is prose, opens a paragraph and a following flush-left line folds lazily
+         (corpus 326-...-26 and -28).
 
-         all end their container and leave `tail` a document paragraph, the
-         same derivation S4's THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST
-         BLOCK already gives `- | a | b |` over `tail`.
+         A QUOTE IS ASKED ITS OWN BODY. Apply S4 to the quote's entire body,
+         rather than peeling one physical line. Its last block determines
+         whether a paragraph remains open.
 
-         THE OPPOSITE DIRECTION IS UNCHANGED. With NO table above it a
-         `+ ...|` line is not a row at all but ordinary prose, so it leaves a
-         paragraph open and the flush-left line folds (corpus
-         326-...-26 and -28). The rule has a parameter, and this clause fixes
-         its other value; a reading that answers "row" or "prose" everywhere
-         gets one of the two halves wrong.
-
-         A QUOTE IS ASKED ITS OWN BODY. S4 already says the question is put to
-         a quote recursively and that "its own last block answers", so a quote
-         ending on a continuation row is decided by the run inside the quote
-         and not by the line that carries it. An implementation that peels the
-         `>` off ONE line loses that run, and the same quote then answers
-         differently bare and wrapped in a definition body.
-
-         A QUOTE INSIDE A QUOTE IS ASKED THE SAME QUESTION, stated in PART 1
-         S4 rather than here since it is not about a continuation row: an
-         outer quote's last block may be an inner quote, and then the INNER
-         quote's own last block answers.
+         A QUOTE INSIDE A QUOTE IS ASKED THE SAME QUESTION. Follow the last
+         child quote recursively to its own last block (PART 0 S4).
       T7 GFM DELIMITER ROW -- NORMATIVE [CARVE-P9-004]. delimiter_row(R) := R is EXACTLY
          the SECOND row of the table AND every cell matches delimiter_cell
          (optional ws, optional `:`, one or more `-`, optional `:`,
@@ -400,8 +290,6 @@
          cell block naming `scope` suppresses the emitted one, so
          `|={scope="colgroup"} a |` -- a header cell carrying attributes,
          which is grammatical because of T10 and was not before it -- is
-         `<th scope="colgroup">` and not
-         `<th scope="col" scope="colgroup">`. That is how `colgroup` and
          `<th scope="colgroup">` and not
          `<th scope="col" scope="colgroup">`. That is how `colgroup` and
          `rowgroup`, which have no marker spelling here, stay reachable: two
@@ -568,9 +456,6 @@
           - IT REVERSES ONLY WHAT THE RENDERER SUBSTITUTED. A quote the
             author typed as a typographic character is not a
             `smart_punctuation` node and is emitted unchanged either way.
-          Rationale: Markdown is the target generated for machines to read,
-          and the glyph breaks exact-match search against the source, which
-          the reader cannot undo because the glyph is all that survives.
           Pinned in tests/corpus-optional (feature
           `markdown-typography-source`, target `markdown`).
         * KIND NAMES ARE SPEC SURFACE -- an implementation inventing its own

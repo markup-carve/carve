@@ -22,15 +22,8 @@
       are the same document for the purpose of this invariant, and differ only
       in what the author wrote to get there.
 
-      Without that clause the first invariant would be unattainable by
-      construction. §5 requires the writer to escape `"` and `'`
-      UNCONDITIONALLY: a bare quote reaching the writer as text would otherwise
-      re-derive as smart punctuation (PART 9 §8) and change the document, so a
-      text node holding a quote MUST come back carrying an escape, which parses
-      to `escaped_text`. It is also the comparison §4 already performs
-      internally -- the two renders it weighs differ precisely in their
-      escaping, so telling them apart BY the escaping would escalate every
-      document.
+      §5's unconditional quote escapes reparse as `escaped_text`, so §1 and
+      §4's internal comparison both use this equality.
 
       What escaping still MUST preserve is the rendered result: the escape is
       authoring syntax, so `to_html(fmt(x)) == to_html(x)` admits no such
@@ -45,15 +38,10 @@
       reading of the rule it departed from, and the deviation is not a defect
       to be filed against it.
 
-      THE TEST IS ON THE EMITTED BYTES, not on the source and not on the
-      construct in isolation. Whether an emitted run opens what it appears to
-      open is a property of the WHOLE output document: an opener's meaning
-      depends on what precedes it, an opener that needs a closer is not one
-      without it, and the same three characters at byte 0 open something they
-      do not open on line 12. So what an implementation owes is to read its own
-      OUTPUT with its own parser. Pattern-matching the SOURCE cannot answer the
-      question -- the source is the document that already round-trips, and the
-      bytes at risk are the ones the writer just produced.
+      THE TEST IS ON THE EMITTED BYTES, over the WHOLE output document. An
+      opener depends on its preceding context and, where required, its closer.
+      The writer MUST read its own OUTPUT with its own parser; matching the
+      source or testing a construct in isolation cannot decide the emitted form.
 
       THE INVARIANT IS §1's, WHICH IS THE PARSE FORM. `parse(fmt(x)) ==
       parse(x)` is the requirement. `to_html(fmt(x)) == to_html(x)` is a
@@ -72,22 +60,17 @@
       what a producer owes where §1's invariant CAN hold. This settles what it
       owes where the invariant cannot hold at all.
 
-      A slot that takes INLINE content only -- a caption line, a fence title, a
-      table cell, an image's alternative text, a definition term -- cannot
-      carry blocks. A producer handed block content for such a slot therefore
-      FLATTENS it, and the flatten is lossy by construction: the emitted
-      document holds fewer blocks than the tree it was written from, so
-      `parse(fmt(x)) == parse(x)` is unattainable here and §1 is not the rule
-      that applies. What the producer still owes is the BOUNDARY.
+      An INLINE-only slot (caption, fence title, table cell, image alternative
+      text or definition term) cannot carry blocks. Flattening block content
+      into it necessarily loses structure, so §1's parse invariant cannot hold;
+      the producer still MUST preserve the boundary below.
 
       THE RULE. Where two former sibling blocks each contribute at least one
       TOKEN to the slot, the producer MUST emit a separator between them, and a
       separator is sufficient IF AND ONLY IF re-reading the emitted slot draws
       no token from both sides of the join: no word, no delimiter run, no
-      construct delimiter. Stated as a property and not as a list of the pairs
-      that collide, because the pairs are not enumerable -- every inline
-      construct Carve has, and every one it gains, can end one block and begin
-      the next.
+      construct delimiter. This applies to every inline construct, including
+      future constructs.
 
       A BLOCK THAT CONTRIBUTES NOTHING IS NOT A SIDE, which is why the rule is
       written over contributed tokens rather than over sibling positions.
@@ -109,29 +92,15 @@
         <p><code>a</code></p>
         <p><code>b</code></p>                   ->  `a``b`
 
-      THE UNIT IS THE TOKEN, NOT THE NODE, and that difference is the whole
-      rule. A node test passes `onetwo` and `one two` alike -- both are a
-      single `text` node -- while the boundary a reader recovers from one and
-      cannot recover from the other is a token boundary. So the test is stated
-      where the loss is.
+      THE UNIT IS THE TOKEN, NOT THE NODE: `onetwo` and `one two` each parse
+      as one text node, but only the latter preserves the word boundary.
+      IT IS §23's TEST READ BACKWARDS: PART 9 §23 preserves a line boundary
+      as a node; flattening preserves a block boundary in the emitted bytes.
 
-      IT IS §23's TEST READ BACKWARDS. PART 9 §23 states the forward half for a
-      LINE boundary: ONE boundary produces ONE node, "however the boundary is
-      spelled". A flatten is that situation arriving from the other side. The
-      block boundary leaves no node either, because the slot has nowhere to put
-      one, so it survives only in the BYTES -- and the bytes are read by a
-      tokenizer.
-
-      THE CANONICAL SEPARATOR IS ONE SPACE (U+0020), emitted at every such
-      boundary and conditioned on nothing further. A space ends a word and ends
-      a delimiter run, and it is neither punctuation nor alphanumeric, so it
-      cannot combine with the characters on either side of it into a construct
-      neither block wrote. The emitted forms of the three documents above are
-      `one two`, then `*a* *b*`, then the two code spans separated the same
-      way. Conditioning it on the neighbouring CHARACTERS -- emitting it only
-      where a collision looks likely -- is the source-pattern test §1a already
-      refuses: the question is about the bytes the producer is about to emit,
-      and a producer able to answer it is equally able to just emit the space.
+      THE CANONICAL SEPARATOR IS ONE SPACE (U+0020), at every such boundary
+      unconditionally. It ends words and
+      delimiter runs without forming a new construct. The examples above write
+      `one two`, `*a* *b*` and two code spans separated by one space.
 
       A TEXT character that becomes a live delimiter after the join is instead
       an ESCAPING question governed by §2 through §1a. This clause supplies the
@@ -379,11 +348,8 @@
 
         text `a !`, then a link to /u    ->  a \![x](/u)
 
-      SAID HERE BECAUSE IT IS DERIVABLE, not because it is new. §2's test
-      already decides these, and a writer that modelled ONE such pair and
-      emitted `!` bare everywhere else passed everything it was asked
-      (markup-carve/carve-php#2634): the gap read as a shape nobody had thought
-      about rather than as a rule this section was missing.
+      SAID HERE BECAUSE IT IS DERIVABLE: §2's emitted-byte test already
+      governs these joins (markup-carve/carve-php#2634).
 
       ESCAPE MINIMALITY STILL APPLIES INSIDE AN ESCALATED UNIT -- NORMATIVE [CARVE-P11-007].
       One occurrence needing the conservative form does not put
@@ -421,10 +387,8 @@
         `| %%%`    `| %% %`      a comment-block fence (§28) split into a line
                                  comment plus text
 
-      The second is also what §2's own THE UNIT IS THE OPENER paragraph
-      forbids one layer down: `%%%` is an opener run, and half of it plus a
-      stray character is exactly the "shape that happens to work rather than
-      one that says what it means".
+      The second also violates §2's THE UNIT IS THE OPENER: an opener run
+      such as `%%%` must not be split into a partial opener and stray text.
 
       The escaping half remains §2's test: omit an escape unless doing so
       changes the re-parsed AST.
@@ -490,10 +454,7 @@
       compute that, which an implementation MAY use and is NOT required to.
       Where the two differ, §2 wins.
 
-      §2 is the rule worth keeping, because it is the one an author can see the
-      difference in, and because §3's argument does not lead here: it shows a
-      static character TABLE cannot implement §2, not that per-character
-      decisions are impossible.
+      §3 rules out a static table, not contextual per-character decisions.
 
       The procedure, then, as a strategy:
 
@@ -519,10 +480,6 @@
       idle escapes and never correctness. It is also why the state a bounded
       search returns is still checked by W3 against the conservative form's own
       re-parse rather than assumed.
-
-      Two forms and one comparison, with the choice made by the parser rather
-      than by a table -- so the writer cannot drift from the grammar as the
-      grammar grows.
 
       THE COMPARISON IS DOCUMENT-SCOPED. A smaller scope loses reference and
       footnote definitions and can report differences escaping never caused,

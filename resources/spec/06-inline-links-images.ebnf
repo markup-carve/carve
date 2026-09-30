@@ -137,13 +137,9 @@ link_text = inline_content ;
 
    A `]` inside any of them is content, not the close.
 
-   The list is exactly the spans whose content is LITERAL, and that is the
-   whole test: a `]` there cannot be escaped, because an escape inside them is
-   not an escape. `{+ +}`, `{- -}` and `{~ ~> ~}` take `inline_content`, so
-   `[{+a\]b+}](u)` already works and they are deliberately NOT in the list.
-
-   Stated as a property rather than as three names: any future construct whose
-   content is literal joins the list by construction. *)
+   Literal content recognizes no escapes; every future literal construct
+   joins this set. `{+ +}`, `{- -}` and `{~ ~> ~}` take `inline_content`, so
+   `[{+a\]b+}](u)` works and those constructs are NOT skipped. *)
 (* SEMANTIC CONSTRAINT (links never nest): a link MUST NOT contain another
    link. The link text is inline content, so parsing it may yield a link --
    written explicitly (`[[x](y)](z)`), as a crossref/auto_text_link, or
@@ -173,9 +169,8 @@ link_text = inline_content ;
    attribute block is a span too, and an image is not a link and survives in
    either host.
 
-   A reader that enforces this from the bracket rule rather than from the
-   construct the tail selects unwraps the span case with the link one, which
-   drops the destination outright and is what carve#2578 measured here. *)
+   Enforcing this on every bracket run instead of the selected host drops a
+   span's link destination (carve#2578). *)
 link_destination = {destination_escape | balanced_parens | destination_char}+ ;
 balanced_parens = '(', {destination_escape | balanced_parens | destination_char}, ')' ;
 destination_escape = '\', ('(' | ')' | '\') ;

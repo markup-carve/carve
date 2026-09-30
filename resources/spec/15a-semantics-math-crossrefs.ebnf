@@ -21,53 +21,27 @@
       Markdown append one U+0020 followed by the same `LABEL NUMBER` text, with
       no brackets, under their ordinary inline escaping rules.
 
-      A MATH SPAN CARRIES ROLE MATH -- NORMATIVE [CARVE-P9-037]. The delimiters are written
-      for a typesetter to find. Until one runs -- and if none ever does, which
-      is the default -- the span is a plain `<span>` full of backslashes and
-      carets, and a reader announces them as prose. `role="math"` says the run
-      IS MATHEMATICS whether or not the script arrives.
-
-      THE NAME STAYS THE AUTHOR'S, and no key is added to §16a for it. A
-      formula's spoken form is per-formula content, not an engine word, and the
-      seam for it already exists: `{attrs}` merge onto this same span, so a
-      trailing {aria-label="E equals m c squared"} needs nothing new. An author
-      who spells their own `role` keeps it -- under any ASCII casing, for the
-      reason SS12 states.
-
-      `role` is written LAST, after the merged author attributes, so adding it
-      never moves an attribute the author placed (the ordering PART 10 §1
-      pins for the base class).
+      A MATH SPAN CARRIES ROLE MATH -- NORMATIVE [CARVE-P9-037].
+      The renderer adds `role="math"` even without a typesetter.
+      THE NAME STAYS THE AUTHOR'S: a trailing `aria-label` supplies the
+      formula's spoken form; no §16a key is added. An authored `role` wins
+      under any ASCII casing (SS12). Generated `role` is written LAST, after
+      merged author attributes, without moving them (PART 10 §1).
 
       AN IMPORTER WRITES THE CORE FORM, NEVER THE EXTENSION FENCE --
-      NORMATIVE [CARVE-P9-038]. An importer meeting `<div class="math display">`
-      emits the CORE display form -- `$$` followed by a verbatim backtick span,
-      a paragraph holding a `math` node -- and never the ```` ```math ````
-      fence. `<span class="math inline">` is the inline `$` form on the same
-      terms.
-
+      NORMATIVE [CARVE-P9-038]. `<div class="math display">` imports as `$$`
+      plus a verbatim backtick span in a paragraph holding a `math` node;
+      `<span class="math inline">` imports as the inline `$` form.
       THE REASON IS THAT AN IMPORTER MUST NOT EMIT A CONSTRUCT WHOSE MEANING
-      DEPENDS ON THE CONSUMER'S CONFIGURATION. The ```` ```math ```` fence is
-      an EXTENSION. With that extension not loaded it degrades to a
-      `language-math` code block, so the same imported document is mathematics
-      for one consumer and a code block for another. `math_display` is core
-      (PART 3) and needs nothing loaded.
-
-      THE ROUND-TRIP ARGUMENT IS REAL AND LOSES ANYWAY. A math-block extension
-      WRITES that div, so the fence is an exact round trip of the document that
-      produced the HTML. But an importer's job is to produce a document that
-      means what the HTML meant, and it cannot know that an extension generated
-      it at all.
-
-      The importer MUST NOT choose the fence based on whether an extension is
-      registered; identical input produces the same core form.
-
-      THE MATHML PATH WRITES NO TRAILING DELIMITER, for the reason the core
-      form has none to write. Carve math is a PREFIX on a code span, so the
-      span's own closing backtick ends the construct: a `<math>` read through
-      its `alttext` is written `` $`E = mc^2` `` inline and ``` $$`E = mc^2` ```
-      for `display="block"`, with no `$` or `$$` after the closing backtick. A
-      trailing delimiter is literal text, and it renders as a stray dollar sign
-      beside the formula.
+      DEPENDS ON THE CONSUMER'S CONFIGURATION: the ```` ```math ```` extension
+      fence degrades to `language-math` code when the extension is absent.
+      THE ROUND-TRIP ARGUMENT IS REAL AND LOSES ANYWAY: even if that extension
+      generated the HTML, the importer MUST emit the same core form regardless
+      of whether an extension is registered.
+      THE MATHML PATH WRITES NO TRAILING DELIMITER. A `<math>` read through
+      `alttext` writes `` $`E = mc^2` `` inline or ``` $$`E = mc^2` ``` for
+      `display="block"`. The closing backtick ends the construct; a trailing
+      `$` or `$$` would be literal text.
 
    19. CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES -- NORMATIVE [CARVE-P9-039]
       (resolution formalized as PART 9R rules R4/R5; behavior detail here).
@@ -226,11 +200,6 @@
            child's `[a]: /CHILD`. This is NOT a collision: it MUST NOT emit a
            Warning and MUST NOT rename anything.
 
-           RATIONALE: a reference-definition label is never addressable from
-           another file, so renaming it would be pure churn plus a spurious
-           warning. An explicit heading id or a footnote label genuinely IS
-           document-visible, so a duplicate there must be resolved and surfaced.
-
            SCOPE: the include-time rename pass covers EXPLICIT heading ids and
            footnote labels ONLY. Auto-generated (slug) heading-id collisions are
            NOT part of it; they continue to dedup via the existing heading-id
@@ -322,10 +291,6 @@
            EXAMPLE: an including document with `## Chapters` before the directive
            gives C = 2; a child starting at `# Chapter One` gives T = 1; so
            N = (2 + 1) - 1 = 2 and the child's h1 renders as an h3.
-           RATIONALE: `auto` makes a chapter file PORTABLE -- the same file can
-           be included at any depth without editing its heading levels. Because
-           the author writes `@shift:auto` explicitly at the include site, the
-           position-dependence is OPT-IN PER DIRECTIVE, not ambient behavior.
 
         I9a RECOGNITION SHAPE -- RUN, NOT NODE. Grammar-level recognition does
            NOT mean "one parsed text node matches the directive grammar". A
@@ -413,17 +378,11 @@
            ATTEMPTED TARGETS ARE INCLUDED: the set MUST contain targets that
            were ATTEMPTED but NOT resolved -- missing or unreadable, binary,
            containment-denied (I10), cycle-broken (I6), and depth- or
-           size-exceeded (I6). RATIONALE: a host that watches only the files it
-           successfully read never learns that a target it could not find has
-           since been CREATED, so a preview would stay stale at exactly the
-           moment the author fixes the problem.
+           size-exceeded (I6).
            DISTINGUISHABILITY: each entry MUST be distinguishable as RESOLVED
            versus ATTEMPTED-BUT-UNRESOLVED.
-           PURPOSE: hosts use this set for INVALIDATION (file watching) and for
-           DIAGNOSTICS. It is a CROSS-IMPLEMENTATION CONTRACT, so an editor can
-           rely on it regardless of which engine backs it. Without it, preview
-           invalidation cannot be implemented correctly. See docs/includes.md
-           (Reported dependencies, and Editor and IDE integration).
+           Hosts use this contract for invalidation and diagnostics; see
+           docs/includes.md (Reported dependencies, and Editor and IDE integration).
 
         I12 THE WRITER PRESERVES A DIRECTIVE VERBATIM. A Carve writer MUST NOT
            escape the braces of a well-formed directive; it writes the directive

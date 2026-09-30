@@ -19,16 +19,12 @@ frontmatter = &(frontmatter_open, {content_line - frontmatter_close}, frontmatte
    IN THE LEADING RUN (PART 7). So `---<TAB>yaml` is not a typed opener; it is
    a thematic break followed by ordinary lines. Reading it as frontmatter
    diverges from this production.
-   POSITION DECIDES WHICH CLAUSE GOVERNS, by ruling. Everything
-   in this paragraph is about the slot BEFORE the format token. A whitespace
-   run with NOTHING after it is not that slot: it is trailing whitespace on a
-   content line, PART 2 drops it, and the bare `---` opener it leaves opens
-   frontmatter. So `---<TAB>` and `---<SP><TAB>` are delimiters while
-   `---<TAB>yaml` is not; the two clauses do not overlap. The run is
-   PART 2's `whitespace`, spaces and tabs; a form feed or a no-break space is
-   content, so `---<FF>` is not an opener. The same split governs the code
-   fence's slot at `fenced_code_block`; refusing BOTH positions takes the
-   separator half twice.
+   POSITION DECIDES WHICH CLAUSE GOVERNS: the slot BEFORE the format token
+   differs from trailing whitespace with no token. PART 2 drops that trailing
+   `whitespace` (spaces and tabs), so `---<TAB>` and `---<SP><TAB>` are bare
+   frontmatter delimiters, but `---<TAB>yaml` is not a typed opener.
+   Form feed and no-break space are content, so `---<FF>` is not an opener.
+   The code fence's `fenced_code_block` slot follows the same split.
    CARDINALITY IS EXACTLY ONE: `---<SP><SP>yaml` is not
    a typed opener either, because the second space reaches
    `frontmatter_format`, which is letters and digits only. What is left is not

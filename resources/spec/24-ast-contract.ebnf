@@ -445,9 +445,7 @@
       and they MUST account for every row exactly once. A producer MUST NOT
       publish a partition whose counts do not sum to `rows.length`; a consumer
       MUST treat one that does not as invalid rather than repairing it. Holding
-      counts instead of a second copy of the rows is what makes a contradiction
-      between the grouping and the table's content unrepresentable, so `rows`
-      remains the single sequence every consumer reads.
+      counts keeps `rows` as the single sequence every consumer reads.
 
       `headRows` IS STATED RATHER THAN DERIVED. The leading run of header rows
       is what an HTML renderer already uses for `<thead>`, and it cannot serve

@@ -6,14 +6,10 @@
    and the directive is deliberately NOT reachable from `block`/`inline` --
    a conformant core may leave `{{ … }}` literal. *)
 include_directive = "{{", whitespace+, include_path, [include_section], [include_options], whitespace+, "}}" ;
-(* The padding is a RUN, not one space. One whitespace character is required on
-   each side - `{{c.crv}}` and `{{ c.crv}}` are literal text - because that is
-   what keeps a path from starting at `{`. Beyond the first, more changes
-   nothing: a bare path already stops at the first space and a quoted path
-   carries its own delimiters. Refusing the extra would turn an aligned
-   directive into ordinary prose with NO warning, which is the one failure mode
-   section 19's error rules exist to avoid. Tabs count, as they do everywhere
-   else whitespace does. *)
+(* The padding is a RUN, not one space: at least one whitespace character
+   is required on EACH side, so `{{c.crv}}` and `{{ c.crv}}` are literal text.
+   Additional spaces or tabs are accepted. A bare path stops at the first
+   space; a quoted path carries its own delimiters. *)
 (* THE CLOSER is the first "}}" that falls OUTSIDE any quoted run. A quoted run
    -- `quoted_include_path` here, or the `quoted_value` form of an option's
    `attribute_value` (PART 4) -- MAY contain the "}}" pair: both productions
@@ -25,10 +21,6 @@ include_directive = "{{", whitespace+, include_path, [include_section], [include
      {{ "a }} more" @k:v }} end
      {{ ch.crv @label:"a }} more" }} end
 
-   A recognizer that scans for the first "}}" without tracking quoting ends the
-   first of those at its PATH's pair and the second at its VALUE's, which is the
-   divergence this clause settles: the two were measured to disagree, and the
-   grammar as written was always on the side of admitting the pair.
    An UNTERMINATED quote does not open a run. It falls back to the unquoted
    reading, so it can never pair with a quote further along the line, and the
    closer is again the first "}}" - which is what leaves a malformed directive

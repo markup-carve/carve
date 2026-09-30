@@ -34,14 +34,10 @@
       its reading is positional and every position but one is inert.
 
       A CONTAINER PREFIX IS PART OF THE LINE, WHICH IS WHY M2b MEASURES ON IT.
-      M2b's position is the ONLY narrowing in this clause -- M2a keeps the
-      escape by default and M2c closes the set. Read as an offset into the
-      BLOCK'S CONTENT it answers a question no reader asks: the string a reader
-      parses is the emitted line, and the two differ by exactly the prefix the
-      writer put in front. §10 already decided this one character over, escaping
-      a continuation line whose text reads as a list marker only because item
-      alignment stands in front of it -- "§2 governs whether a character is
-      escaped GIVEN the line the writer emits; §10 fixes the line."
+      M2b is this clause's ONLY narrowing; M2a otherwise keeps the escape
+      and M2c closes the set. The block content
+      alone omits the prefix a reader receives; §10 likewise fixes the emitted
+      continuation line before §2 decides which characters need escapes.
 
       STATED OVER THE LINE, NOT AS A LIST OF CONTAINERS THAT COUNT:
 
@@ -53,10 +49,8 @@
         depth or mixture -- `> > `, `- > `, `- [ ] `, `[^a]: `, `   1. ` --
         without naming any of them.
 
-      An enumeration would have to be revisited every time the writer gains a
-      prefix. The line does not. Lazy continuation is not a case either: it is
-      a PARSER concept, and this writer re-prefixes every line of the
-      container, so M2b always sees the emitted prefix.
+      Lazy continuation is a parser concept; this writer re-prefixes every
+      container line, so M2b always sees the emitted prefix.
 
       NARROWING BY POSITION IS UNCHANGED, WHICH IS THE HALF THAT IS EASY TO
       LOSE. Moving the position does not widen M2b into "an escape behind a
@@ -560,14 +554,8 @@
         (six blank lines)                         (three blank lines)
         - oranges                                 - oranges
 
-      ONE would MERGE the two lists, which §1 forbids: the boundary is the only
-      thing keeping them apart, so the general normalization cannot reach this
-      run. That much §1a already decides. THREE rather than the author's run is
-      what this section adds, and it is a canonical-form choice: N1a reads
-      THREE OR MORE, so every run at or above the threshold parses identically
-      and §1 is indifferent between them. Left unstated, one document has
-      unboundedly many canonical spellings, and `fmt` carries the author's
-      whitespace into the one form whose purpose is not to.
+      One blank line would merge the lists, violating §1. N1a reads THREE
+      OR MORE, so three is the canonical form for every hard-boundary run.
 
       A RUN THAT IS NOT THE BOUNDARY NORMALIZES AS USUAL. Three blank lines
       between two paragraphs, or between two lists that already differ on an N1

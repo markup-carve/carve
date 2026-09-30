@@ -143,17 +143,11 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    starts -- not an exception to "every other character is content", but a
    statement about a stream that no longer holds the character.
 
-   IN EVERY CONSTRUCT, which is the half that had to be said. A production
-   that spells a whitespace run for itself spells THIS one: `blank_line`,
-   `indent`, `definition_indent`, `line_block_line`, `comment_line`,
-   `comment_block_open`, `comment_block_close`, `crossref_id`,
-   `footnote_indent`, `opt_ws` and `attr_separator` all read `whitespace`,
-   and the thirty-one productions that read `space` -- from
-   `heading_first_line` and `caption` to `include_options` -- read the
-   narrower slot of the same definition. Forty-two spellings, one set. An
-   implementation that reaches for a wider class in any of them is not
-   reading its own production, and the language it implements is a different
-   one at that construct only.
+   IN EVERY CONSTRUCT: all productions using `whitespace` or its narrower
+   `space` slot read exactly this definition, including blank lines, indentation,
+   line blocks, comment lines and fences, cross-reference ids, footnote
+   indentation, attribute separators, heading and caption separators and include
+   options. No construct may use a wider host-language class.
 
    AND IN THE CONSTRUCTS THAT SPELL NO RUN AT ALL, which is where this bites
    hardest, because there an implementation had to invent something. A
