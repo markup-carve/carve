@@ -3,7 +3,7 @@
   "version": "0.1.7",
   "private": true,
   "type": "module",
-  "description": "Documentation site for Carve, a post-Markdown markup language",
+  "description": "Documentation site for Carve, a lightweight markup language for documents",
   "engines": {
     "node": ">=24"
   },
