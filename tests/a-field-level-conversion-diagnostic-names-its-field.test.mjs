@@ -4,8 +4,9 @@
  *
  * That difference is the whole reason the two reports are separate (carve#2245).
  * `table_cell.blocks`, `math.label` and `math.number` are fields dropped off a
- * node the writer still spells, while `raw-format-dropped` and
- * `ruby-flattened` each name a whole node one renderer dropped. Four clauses
+ * node the writer still spells, while `raw-format-dropped`, `ruby-flattened`
+ * and `destination-denied` each name a whole node or destination one renderer
+ * dropped, flattened or blanked. Four clauses
  * told a writer to "report the loss" with no code to report it under, so an
  * engine's only options were to invent a code the published render-loss schema
  * refuses, or to drop the shape silently.
@@ -65,12 +66,13 @@ test('the channel is closed against an invented code and an invented key', () =>
   assert.equal(validate({ diagnostics: [], truncated: false }), false)
 })
 
-test('the render-loss code enum stays closed at the two render-time codes', () => {
-  /* Section 2245 ruled the enum does not grow, so the channel's codes must be
-   * absent from it and it must hold nothing else either. */
+test('the render-loss enum holds the render-time codes and neither channel code', () => {
+  /* carve#2245 split the two reports by WHEN the loss happens rather than by
+   * count, and carve#2679 added the third render-time code under that split. The
+   * channel's codes must still be absent from it. */
   assert.deepEqual(
     renderLoss.properties.losses.items.properties.code.enum,
-    ['raw-format-dropped', 'ruby-flattened'],
+    ['raw-format-dropped', 'ruby-flattened', 'destination-denied'],
   )
 })
 
