@@ -52,9 +52,34 @@ export function ingestCorpus(root) {
   return files.sort()
 }
 
-export function reconcileDifferences(actual, ledger) {
+/** Require the runtime evidence carried by every completed comparison report. */
+export function validateInterpreters(interpreters) {
+  if (!interpreters || !['js', 'php'].every(engine => typeof interpreters[engine] === 'string' && /^\d+\.\d+\.\d+/.test(interpreters[engine]))) {
+    throw new Error('Missing or invalid comparison interpreter versions')
+  }
+  return interpreters
+}
+
+/** Interpreter versions use numeric prefixes: 8.3 matches every PHP 8.3 patch. */
+export function interpreterMatches(condition, interpreters) {
+  if (!condition || typeof condition !== 'object' || Array.isArray(condition) || !Object.keys(condition).length) {
+    throw new Error('invalid interpreter condition')
+  }
+  for (const [engine, version] of Object.entries(condition)) {
+    if (!['js', 'php'].includes(engine) || typeof version !== 'string' || !/^\d+(?:\.\d+){0,2}$/.test(version)) {
+      throw new Error('invalid interpreter condition')
+    }
+  }
+  return Object.entries(condition).every(([engine, version]) => {
+    const measured = interpreters?.[engine]?.match(/^\d+(?:\.\d+)*/)?.[0]
+    return typeof measured === 'string' && (measured === version || measured.startsWith(`${version}.`))
+  })
+}
+
+export function reconcileDifferences(actual, ledger, interpreters) {
   if (ledger.version !== 1 || !Array.isArray(ledger.differences)) throw new Error('invalid comparison ledger')
   const declared = new Map()
+  const failures = []
   for (const row of ledger.differences) {
     if (typeof row.key !== 'string' || !row.key || !/^[a-f0-9]{64}$/.test(row.fingerprint ?? '')
       || !row.reason?.trim() || !/^https:\/\/github\.com\/markup-carve\/[^/]+\/issues\/\d+$/.test(row.issue ?? '')) {
@@ -63,8 +88,10 @@ export function reconcileDifferences(actual, ledger) {
     if (row.observation === undefined || fingerprint(row.observation) !== row.fingerprint) throw new Error(`invalid observation fingerprint: ${row.key}`)
     if (declared.has(row.key)) throw new Error(`duplicate comparison declaration: ${row.key}`)
     declared.set(row.key, row)
+    if (row.interpreters !== undefined && !interpreterMatches(row.interpreters, interpreters)) {
+      failures.push(`INTERPRETER MISMATCH comparison declaration: ${row.key}; wanted ${JSON.stringify(row.interpreters)}, measured ${JSON.stringify(interpreters ?? null)}`)
+    }
   }
-  const failures = []
   for (const [key, value] of Object.entries(actual)) {
     const row = declared.get(key)
     if (!row) failures.push(`NEW comparison difference: ${key}`)

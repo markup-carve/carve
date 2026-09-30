@@ -1,13 +1,13 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { selectShard } from '../scripts/lib/shard.mjs'
 import { populationFingerprint, verifyShardReports } from '../scripts/lib/shard-reports.mjs'
-import { ingestCorpus } from '../scripts/lib/import-comparison.mjs'
+import { fingerprint, ingestCorpus } from '../scripts/lib/import-comparison.mjs'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
 const corpus = readdirSync(`${root}/tests/corpus`).filter(name => name.endsWith('.crv')).sort()
@@ -20,6 +20,7 @@ function reports(population, mode) {
     complete: true, mode, shard: { index, total: 4 },
     documents: selectShard(population, { index, total: 4 }),
     population: populationFingerprint(population), revisions: { engine: 'same-commit' },
+    ...(mode === 'ingest' ? { interpreters: { js: '22.0.0', php: '8.3.0' } } : {}),
   }))
 }
 for (const [mode, population] of [['ast', [...synthetic, ...corpus]], ['ingest', ingestCorpus(root)]]) {
@@ -96,8 +97,20 @@ test('AST union runs the corpus-wide gates without engine builds', () => {
 test('ingest union reconciles the ledger once and rejects missing comparisons', () => {
   const directory = mkdtempSync(join(tmpdir(), 'carve-ingest-union-'))
   try {
-    const shards = reports(ingestCorpus(root), 'ingest')
-    const ledger = JSON.parse(readFileSync(`${root}/resources/ingest-comparison-drift.json`, 'utf8'))
+    const fixture = join(directory, 'fixture')
+    mkdirSync(join(fixture, 'scripts'), { recursive: true })
+    cpSync(join(root, 'scripts/lib'), join(fixture, 'scripts/lib'), { recursive: true })
+    cpSync(join(root, 'scripts/import-comparison.mjs'), join(fixture, 'scripts/import-comparison.mjs'))
+    mkdirSync(join(fixture, 'tests/corpus'), { recursive: true })
+    for (const name of ['a', 'b', 'c', 'd']) writeFileSync(join(fixture, `tests/corpus/${name}.crv`), 'x\n')
+    const shards = reports(ingestCorpus(fixture), 'ingest')
+    const observation = { expected: '<p>x</p>', actual: '<p>y</p>', status: 0 }
+    const ledger = { version: 1, differences: [{
+      key: `${shards[0].documents[0]}/js->php`, observation, fingerprint: fingerprint(observation),
+      reason: 'Synthetic reader disagreement', issue: 'https://github.com/markup-carve/carve/issues/2642',
+    }] }
+    mkdirSync(join(fixture, 'resources'))
+    writeFileSync(join(fixture, 'resources/ingest-comparison-drift.json'), JSON.stringify(ledger))
     for (const entry of shards) {
       entry.counts = { documents: entry.documents.length, pairs: entry.documents.length * 9 }
       entry.differences = Object.fromEntries(ledger.differences
@@ -105,16 +118,50 @@ test('ingest union reconciles the ledger once and rejects missing comparisons', 
         .map(row => [row.key, row.observation]))
       writeFileSync(join(directory, `ingest-${entry.shard.index}.json`), JSON.stringify(entry))
     }
-    const run = () => spawnSync(process.execPath, [join(root, 'scripts/import-comparison.mjs'), 'ingest', `--merge-reports=${directory}`], { cwd: root, encoding: 'utf8', timeout: 30000 })
+    const run = () => spawnSync(process.execPath, [join(fixture, 'scripts/import-comparison.mjs'), 'ingest', `--merge-reports=${directory}`], { cwd: fixture, encoding: 'utf8', timeout: 30000 })
     const good = run()
     assert.equal(good.status, 0, good.stderr)
     assert.match(good.stdout, /0 failures/)
-    const changed = shards.find(entry => Object.keys(entry.differences).length)
-    delete changed.differences[Object.keys(changed.differences)[0]]
+    const changed = shards[0]
+    const declared = ledger.differences[0].key
+    delete changed.differences[declared]
     writeFileSync(join(directory, `ingest-${changed.shard.index}.json`), JSON.stringify(changed))
     const stale = run()
     assert.equal(stale.status, 1, stale.stderr)
-    assert.match(stale.stderr, /STALE/)
+    assert.equal(stale.stderr.trim(), `STALE comparison declaration: ${declared}`)
+    changed.differences[declared] = observation
+    changed.differences[`${changed.documents[0]}/php->js`] = observation
+    writeFileSync(join(directory, 'ingest-0.json'), JSON.stringify(changed))
+    const undeclared = run()
+    assert.equal(undeclared.status, 1, undeclared.stderr)
+    assert.equal(undeclared.stderr.trim(), `NEW comparison difference: ${changed.documents[0]}/php->js`)
+    delete changed.differences[`${changed.documents[0]}/php->js`]
+    changed.differences[declared] = { ...observation, actual: '<p>z</p>' }
+    writeFileSync(join(directory, 'ingest-0.json'), JSON.stringify(changed))
+    const changedObservation = run()
+    assert.equal(changedObservation.status, 1, changedObservation.stderr)
+    assert.equal(changedObservation.stderr.trim(), `CHANGED comparison difference: ${declared}`)
+    changed.differences[declared] = observation
+    writeFileSync(join(directory, 'ingest-0.json'), JSON.stringify(changed))
+    shards[1].interpreters.php = '8.4.0'
+    writeFileSync(join(directory, 'ingest-1.json'), JSON.stringify(shards[1]))
+    const differentInterpreters = run()
+    assert.equal(differentInterpreters.status, 2, differentInterpreters.stderr)
+    assert.match(differentInterpreters.stderr, /Interpreter versions differ between shards/)
+    delete shards[1].interpreters
+    writeFileSync(join(directory, 'ingest-1.json'), JSON.stringify(shards[1]))
+    const missingInterpreters = run()
+    assert.equal(missingInterpreters.status, 2, missingInterpreters.stderr)
+    assert.match(missingInterpreters.stderr, /Missing or invalid comparison interpreter versions/)
+    shards[1].interpreters = { js: '22.0.0', php: '8.3.0' }
+    writeFileSync(join(directory, 'ingest-1.json'), JSON.stringify(shards[1]))
+    ledger.differences[0].interpreters = { php: '8.4' }
+    writeFileSync(join(fixture, 'resources/ingest-comparison-drift.json'), JSON.stringify(ledger))
+    const interpreterMismatch = run()
+    assert.equal(interpreterMismatch.status, 1, interpreterMismatch.stderr)
+    assert.match(interpreterMismatch.stderr, /INTERPRETER MISMATCH comparison declaration/)
+    delete ledger.differences[0].interpreters
+    writeFileSync(join(fixture, 'resources/ingest-comparison-drift.json'), JSON.stringify(ledger))
     shards[0].counts.pairs--
     writeFileSync(join(directory, 'ingest-0.json'), JSON.stringify(shards[0]))
     const incomplete = run()
