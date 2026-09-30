@@ -833,7 +833,15 @@ importer or JSON reader and returned through its normal CLI status are recorded
 as failures. A declaration of such a failure does not make it a deliberate or
 acceptable refusal.
 
+A declaration may include `interpreters`, for example `{"php":"8.3"}`.
+Each numeric version prefix restricts the declaration to that interpreter:
+`8.3` matches PHP 8.3 patches, and `8.3.6` matches that patch, including distro
+suffixes. Supported keys are `js` for Node and `php` for PHP. A mismatched or
+missing measured runtime fails reconciliation even when the fingerprint agrees;
+resolved differences still fail as stale declarations.
+
 Review the full report before changing a declaration. Resolve the engine defect
 or explain the changed observation in its owning issue; do not refresh the ledger
-from counts alone. Reports include checkout revisions and spec pins. These
+from counts alone. Reports include Node and PHP versions, checkout revisions and spec pins. Ingest
+report unions require matching interpreter versions in every shard. Revisions
 identify source checkouts, not the build provenance of existing binaries.
