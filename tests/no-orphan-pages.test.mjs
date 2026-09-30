@@ -38,6 +38,7 @@ const UNROUTED = new Map([
   ['docs/experiments/container-ownership.md', 'Compatibility evidence linked from the issue and pull request, not a permanent user guide.'],
   ['docs/experiments/comment-classification.md', 'Compatibility evidence linked from the issue and pull request, not a permanent user guide.'],
   ['docs/experiments/definition-footnote-authored-bases.md', 'Compatibility evidence linked from the issue and pull request, not a permanent user guide.'],
+  ['docs/review-comment-audit.md', 'Maintainer audit evidence linked from its issue and pull request.'],
   ['docs/spec-history.md', 'Retired readings linked from the docs index, not a primary navigation path.'],
   ['docs/extension-contract.md', 'Implementer contract linked from the reader-facing optional-features guide.'],
   ['docs/html-import-contract.md', 'Implementer contract linked from the reader-facing HTML import guide.'],

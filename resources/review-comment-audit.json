@@ -1,0 +1,266 @@
+{
+  "organization": "markup-carve",
+  "auditedAt": "2026-09-30",
+  "channel": "pull-request-review-comments",
+  "endpoint": "GET /repos/{owner}/{repo}/pulls/comments",
+  "repositories": [
+    {
+      "repository": "markup-carve/.github",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/astro-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/awesome-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve",
+      "comments": 47
+    },
+    {
+      "repository": "markup-carve/carve-bench",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-components",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-css",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-go",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-grammars",
+      "comments": 12
+    },
+    {
+      "repository": "markup-carve/carve-hexapdf",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-js",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-latex",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-lsp",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-mcp",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-okf",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-pdf",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-php",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-php-chat",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-php-media-embed",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-press",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-proofs",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-py",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-rb",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-rs",
+      "comments": 2
+    },
+    {
+      "repository": "markup-carve/carve-sile",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-skill",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-wasm",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/carve-wysiwyg",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/docusaurus-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/echo-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/eleventy-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/emacs-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/helix-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/highlightjs-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/homebrew-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/hugo-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/intellij-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/jekyll-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/laravel-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/laravel-carve-demo",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/mkdocs-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/obsidian-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/pandoc-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/pandoc-format-fidelity",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/pdf-to-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/pygments-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/reveal-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/rouge-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/shopware-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/sublime-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/sublime-carve-lsp",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/symfony-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/symfony-carve-demo",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/tempest-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/tempest-carve-demo",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/tree-sitter-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/vim-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/vite-plugin-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/vscode-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/webpack-loader-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/wp-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/zed-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/zensical-carve",
+      "comments": 0
+    },
+    {
+      "repository": "markup-carve/zensical-carve-demo",
+      "comments": 0
+    }
+  ],
+  "totalComments": 61,
+  "referencesToCarveRs2212": []
+}
