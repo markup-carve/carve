@@ -1756,3 +1756,33 @@ corpus documents. The AST conformance run checks each engine against these
 values even when all engines agree with each other.
 `resources/ast-code-payload-samples.json` adds exact EOF inputs, including
 inputs without a final LF, to every engine's AST parse and JSON round-trip run.
+
+<!-- BEGIN GENERATED AST FALLBACK MATRIX -->
+## Interchange fallback matrix
+
+Generated from [the checked summary table](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf). The cited clauses prevail if the summary disagrees. These wrapper/field forms have no Carve 0.1 core source spelling. Brackets restrict a row's scope. Detailed algorithms, attribute exceptions, diagnostic targets, API conditions and reporting strength remain in the cited PART 12 clauses. The diagnostic column names known codes with the targets named by the clauses; `clause` leaves the code/channel to the cited clauses, including cross-clause channel assignments. Unlisted diagnostic targets and `unspecified` action cells add no ruling.
+
+| Shape | Rule | Carve | HTML | Markdown | Plain | ANSI | Diagnostic |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `figure.shortCaption,table.shortCaption` | [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L406) | `omit_field` | `ignore_field` | `unspecified` | `ignore_field` | `ignore_field` | `clause` |
+| `figure.target[table]` | [`CARVE-P12-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L2) | `table_caption` | `figure` | `unspecified` | `unspecified` | `unspecified` | `clause` |
+| `table_cell.blocks` | [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L365) | `unspecified` | `cell_blocks` | `flatten_blocks` | `flatten_blocks` | `flatten_blocks` | `field-unspellable (Carve,Markdown,Plain,ANSI)` |
+| `small_caps` | [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L414) | `unwrap` | `smallcaps_span` | `smallcaps_span` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
+| `section` | [`CARVE-P12-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L2) | `unwrap` | `section` | `unwrap` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
+| `ruby` | [`CARVE-P12-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L61) | `parenthesized_pairs` | `ruby` | `ruby` | `parenthesized_pairs` | `parenthesized_pairs` | `ruby-flattened (Carve,Plain,ANSI)` |
+| `block_extension[unknown name]` | [`CARVE-P12-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L99) | `fallback` | `fallback` | `fallback` | `fallback` | `fallback` | `clause` |
+
+- `omit_field`: omit the field.
+- `ignore_field`: ignore the field; render the full caption once.
+- `unspecified`: not specified by this row.
+- `table_caption`: write the table and one caption slot (PART 12 §17).
+- `figure`: figure around table with outer figcaption.
+- `flatten_blocks`: flatten blocks into one cell line (PART 12 §27).
+- `cell_blocks`: render blocks in td/th.
+- `unwrap`: render children without this wrapper.
+- `smallcaps_span`: span class="smallcaps".
+- `section`: section element.
+- `parenthesized_pairs`: base(annotation) in pair order.
+- `ruby`: ruby with rt and generated rp.
+- `fallback`: render the declared fallback (PART 12 §33); the row applies only when the reader does not know the extension name and the envelope does not mark it required.
+<!-- END GENERATED AST FALLBACK MATRIX -->

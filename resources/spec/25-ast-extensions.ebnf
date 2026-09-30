@@ -1,66 +1,38 @@
 (* ============================================================================
    17. A FIGURE MAY WRAP A TABLE, AND NO CARVE SOURCE SPELLS IT -- NORMATIVE [CARVE-P12-036].
-      `figure.target` admits a `table`, and a `table` carries its own optional
-      `caption`. Those are two trees, not two spellings of one, and both render:
+      `figure.target` admits a `table`, whose own `caption` is optional.
+      The fallback matrix row `figure.target[table]` distinguishes these trees:
 
-        figure{ target: table, caption }  ->  <figure>
-                                                <table>...</table>
-                                                <figcaption>...</figcaption>
-                                              </figure>
+        figure{ target: table, caption } -> <figure><table>...</table><figcaption>...</figcaption></figure>
+        table{ caption }                -> <table><caption>...</caption>...</table>
 
-        table{ caption }                  ->  <table>
-                                                <caption>...</caption>
-                                                ...
-                                              </table>
+      PART 9 §4's source spelling produces only the second: `^ ` after a table
+      attaches to that table. AST consumers and format bridges supply the wrapper,
+      e.g. an HTML importer reading
+      `<figure><table>…<figcaption>`.
+      CARVE 0.1 SOURCE HAS NO SPELLING FOR THE WRAPPER. Like `shortCaption`
+      (§14) and `rowGroups` (§15), it survives AST encode/decode (§6).
 
-      PART 9 §4 rules the SOURCE spelling, and it produces only the second: a
-      `^ ` line after a table attaches to the table, so a parser never produces
-      the first. The producer is a format bridge -- an HTML importer reading
-      `<figure><table>…<figcaption>`, a shape HTML itself distinguishes from a
-      table carrying a `<caption>`.
+      A CANONICAL CARVE WRITER EMITS THE TARGET AND ITS CAPTION and MUST NOT
+      invent source syntax for the wrapper. It re-reads as `table{caption}`,
+      changing the HTML and losing the wrapper. A bridge/API exposing conversion
+      diagnostics SHOULD report that structural loss.
+      THE TARGET'S OWN CAPTION SLOT MAY ALREADY BE FULL. In
+      `figure{ target: table{ caption }, caption }`, the target's caption wins;
+      the figure's caption is lost with its wrapper, covered by the diagnostic
+      above. The figure's caption takes the one `^ ` slot only when the target
+      has none. A writer MUST NOT emit a second `^ ` line: after a caption it
+      would become literal body prose.
 
-      CARVE 0.1 SOURCE HAS NO SPELLING FOR THE WRAPPER. Like `shortCaption` in
-      §14 and `rowGroups` in §15, it enters a tree through an AST consumer or a
-      format bridge and survives AST encode/decode by §6. Being able to
-      REPRESENT the wrapper is not being able to AUTHOR one.
-
-      A CANONICAL CARVE WRITER EMITS THE TARGET AND ITS CAPTION -- the table
-      followed by the `^ ` line -- and MUST NOT invent source syntax for the
-      wrapper. What it writes re-reads as `table{caption}`, a different tree
-      with different HTML, so the wrapper is LOST rather than preserved. A
-      bridge or API which exposes conversion diagnostics SHOULD report that
-      structural loss. This is the one caption shape whose source round trip
-      changes the rendering, which is why it is written down here rather than
-      left to each writer to discover.
-
-      THE TARGET'S OWN CAPTION SLOT MAY ALREADY BE FULL. A `table` carries an
-      optional `caption`, so `figure{ target: table{ caption }, caption }` is a
-      schema-valid tree with TWO captions and only one `^ ` slot to write them
-      into. The wrapper's caption takes that slot only when the target has none;
-      where the target has its own, the figure's caption is LOST WITH THE
-      WRAPPER, exactly as the rest of the wrapper is, and the diagnostic above
-      covers it. A WRITER MUST NOT EMIT A SECOND `^ ` LINE for the figure's
-      caption. There is no second slot for it to land in: a `^ ` line after a
-      caption line is not a caption at all, it is an ordinary paragraph, so the
-      output would carry the caption text as literal body prose instead of
-      losing it cleanly, and the loss would stop being observable as a loss.
-
-      A FIGURE GROUP'S TABLE PANEL IS NOT THIS WRAPPER. §16 holds a
-      `figure_group`'s panels in `children` as exactly the nodes the inner
-      caption rules built, so a table panel is a plain `table` child of the
-      group -- carrying its own `caption` if it has one -- and never a `figure`
-      whose target is a table. A group wraps a SEQUENCE of panels and captions
-      the sequence, while this wrapper wraps ONE table and captions that table.
-      Carve 0.1 source still spells no `figure{target: table}`, which is what
-      makes the writer's loss unavoidable rather than a choice.
-
-      THE TABLE IS THE ONLY HOST IN THIS POSITION. PART 9 §4b states what a
-      caption makes of its host: every other captionable host -- an image, a
-      quote, a code block, a display-math paragraph -- becomes a `figure` when
-      a `^ ` line follows it, so its wrapper IS what the source spells and the
-      round trip is exact. A table is the one host whose caption has a slot of
-      its own to go into, so the wrapper around it says something the caption
-      inside it does not, and only that difference is unspellable.
+      A FIGURE GROUP'S TABLE PANEL IS NOT THIS WRAPPER. §16 keeps a table
+      panel as a plain `table` child with its own optional caption, never a
+      `figure` targeting a table. The group
+      captions a sequence; this figure captions one table, and source spells
+      no such wrapper.
+      THE TABLE IS THE ONLY HOST IN THIS POSITION. Under PART 9 §4b, every other
+      captionable host (an image, quote, code block or display-math paragraph)
+      becomes a `figure` when a `^ ` line follows it; its wrapper round-trips
+      exactly. A table has its own caption slot.
 
    18. A CITATION DEFINITION IS A NODE -- NORMATIVE [CARVE-P12-037].
       `type: "citation_definition"`, carrying:
@@ -395,17 +367,14 @@
       content every source-spelled cell has, OR `blocks`, a list of block
       nodes. Exactly one: never both, and never neither.
 
-      Carve 0.1 source has no spelling for a block inside a cell, so a parser
-      never produces `blocks`. It exists because the models a bridge reaches
-      DO: an HTML `<td>` holds flow content and a Pandoc `Cell` holds
-      `[Block]`, so a cell holding a list, two paragraphs, a quotation or a
-      code block had nowhere to land and was flattened to its text. A
-      canonical Carve writer loses the field and reports `field-unspellable`
-      for `table_cell.blocks` on the PART 11 §1d channel, the way it already
-      reports `shortCaption` and a `figure` wrapping a `table`.
-
-      HTML PUTS THE BLOCKS IN THE CELL, as flow content in the `<td>` or `<th>`
-      under the ordinary block rules. The cell's own fields are unaffected.
+      Carve 0.1 source spells no blocks inside a cell; a parser never produces
+      `blocks`. Format bridges can preserve HTML flow content or Pandoc blocks
+      in this field. The canonical writer loses the field and reports
+      `field-unspellable` for `table_cell.blocks` on the PART 11 §1d channel,
+      as it reports `shortCaption` and a `figure` wrapping a `table`.
+      The fallback matrix row `table_cell.blocks` gives the target summary.
+      HTML PUTS THE BLOCKS IN THE CELL as flow content in `<td>` or `<th>`
+      under ordinary block rules; the cell's other fields remain unchanged.
 
       THE THREE LINE-ORIENTED TARGETS FLATTEN. Markdown, plain and ANSI each
       write a cell on ONE LINE, so `blocks` reaches an inline-only slot and
@@ -448,22 +417,17 @@
       small-caps distinction supplied by an AST consumer or format bridge.
 
       CARVE 0.1 SOURCE HAS NO SPELLING FOR THIS WRAPPER. A source parser never
-      synthesizes it. The node survives AST encode/decode by §6, and a
-      structured exporter MAY map it to its target's equivalent small-caps
-      construct.
-
-      HTML renders `<span class="smallcaps">`, merging the node's attributes
-      under the ordinary span rules. Plain and ANSI output render the children
-      without changing their letter case. PART 11 §8c defines the Markdown
-      target.
-
-      A canonical Carve source writer MUST write the children without the
-      small-caps wrapper. When the node carries `attrs`, it MUST preserve them
-      on an ordinary attributed span around those children. It MUST NOT discard
-      the children, change their letter case, or invent small-caps source
-      syntax. It reports `structure-unspellable` for `small_caps` on the PART 11
-      §1d channel. A source spelling can be specified separately without
-      changing the interchange node.
+      synthesizes it; AST encode/decode preserves it (§6). Structured exporters
+      MAY map it to equivalent small caps. The fallback matrix row `small_caps`
+      gives HTML, Markdown (PART 11 §8c), plain and ANSI output.
+      HTML renders `<span class="smallcaps">`, merging `attrs` under ordinary
+      span rules. Plain and ANSI render the children without changing letter
+      case. The canonical writer MUST write the children without the small-caps
+      wrapper. It MUST preserve any `attrs` on an ordinary attributed span
+      around those children. It MUST NOT discard children, change their case or
+      invent small-caps source syntax. It reports `structure-unspellable` for `small_caps` on
+      the PART 11 §1d channel.
+      A source spelling can be specified separately without changing this node.
 
    29. A DISPLAY EQUATION MAY CARRY A LABEL AND NUMBER -- NORMATIVE
       [CARVE-P12-051]. A `math` node MAY carry `label`, a non-empty authored

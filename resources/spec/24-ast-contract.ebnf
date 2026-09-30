@@ -410,17 +410,15 @@
       alternative text, an accessible description, or a replacement for the
       required `figure.caption` / optional `table.caption`.
 
-      CARVE 0.1 SOURCE HAS NO SPELLING FOR THIS FIELD. A source parser therefore
-      never synthesizes it. It enters a tree through an AST consumer or format
-      bridge and survives AST encode/decode by §6. This structural capability
-      is intentionally independent of any future `^^` source proposal.
-
-      ORDINARY HTML, PLAIN AND ANSI OUTPUT IGNORE `shortCaption`; they continue
-      to render the full caption exactly once. A structured exporter MAY map it
-      to its target's corresponding navigation-caption field. A canonical
-      Carve source writer MUST omit the field because this version has no
-      source spelling; it MUST NOT substitute it for the full caption or
-      invent source syntax. A bridge or API which exposes conversion
+      CARVE 0.1 SOURCE HAS NO SPELLING FOR THIS FIELD (fallback matrix row
+      `figure.shortCaption,table.shortCaption`). A parser never synthesizes it;
+      AST consumers and format bridges supply it, and AST encode/decode preserves
+      it (§6). This structural capability is independent of future `^^` source
+      proposals.
+      ORDINARY HTML, PLAIN AND ANSI OUTPUT IGNORE `shortCaption`, rendering the
+      full caption exactly once. A structured exporter MAY map it to its
+      target's corresponding navigation-caption field. The canonical writer MUST omit it and MUST NOT substitute it for
+      the full caption or invent source syntax. A bridge/API exposing conversion
       diagnostics SHOULD report that structural loss.
 
       The field is optional rather than an empty array by default. Absent means

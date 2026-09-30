@@ -627,3 +627,41 @@
       answer, and nothing needs saying.
 
    ============================================================================ *)
+
+(* BEGIN AST FALLBACK MATRIX
+   PART 12 INTERCHANGE FALLBACKS. These rows summarize the cited clauses,
+   which prevail if the summary disagrees.
+   The listed wrapper/field forms have no Carve 0.1 core source spelling;
+   a parser does not synthesize those forms. Brackets restrict a row's scope.
+   Algorithms, attribute preservation, diagnostic targets, API conditions
+   and reporting strength remain in the cited clauses. The diagnostic column
+   names known codes with the targets named by the clauses; clause leaves the code/channel
+   to the cited clauses (including cross-clause channel assignments).
+   Unlisted diagnostic targets and unspecified action cells add no ruling.
+
+| Shape | Rule | Carve | HTML | Markdown | Plain | ANSI | Diagnostic |
+| figure.shortCaption,table.shortCaption | CARVE-P12-033 | omit_field | ignore_field | unspecified | ignore_field | ignore_field | clause |
+| figure.target[table] | CARVE-P12-036 | table_caption | figure | unspecified | unspecified | unspecified | clause |
+| table_cell.blocks | CARVE-P12-049 | unspecified | cell_blocks | flatten_blocks | flatten_blocks | flatten_blocks | field-unspellable (Carve,Markdown,Plain,ANSI) |
+| small_caps | CARVE-P12-050 | unwrap | smallcaps_span | smallcaps_span | unwrap | unwrap | structure-unspellable (Carve) |
+| section | CARVE-P12-052 | unwrap | section | unwrap | unwrap | unwrap | structure-unspellable (Carve) |
+| ruby | CARVE-P12-054 | parenthesized_pairs | ruby | ruby | parenthesized_pairs | parenthesized_pairs | ruby-flattened (Carve,Plain,ANSI) |
+| block_extension[unknown name] | CARVE-P12-055 | fallback | fallback | fallback | fallback | fallback | clause |
+
+   ACTIONS (details and exceptions remain in the cited clause):
+   omit_field: omit the field.
+   ignore_field: ignore the field; render the full caption once.
+   unspecified: not specified by this row.
+   table_caption: write the table and one caption slot (PART 12 §17).
+   figure: figure around table with outer figcaption.
+   flatten_blocks: flatten blocks into one cell line (PART 12 §27).
+   cell_blocks: render blocks in td/th.
+   unwrap: render children without this wrapper.
+   smallcaps_span: span class="smallcaps".
+   section: section element.
+   parenthesized_pairs: base(annotation) in pair order.
+   ruby: ruby with rt and generated rp.
+   fallback: render the declared fallback (PART 12 §33); the row applies only when
+     the reader does not know the extension name and the envelope does not
+     mark it required.
+   END AST FALLBACK MATRIX *)
