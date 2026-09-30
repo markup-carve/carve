@@ -1,0 +1,22 @@
+# Groups of productions that deliberately spell the same right-hand side.
+#
+# A rule that is COPIED rather than referenced drifts: widening one copy leaves
+# the others behind and nothing reports it. Seven productions spelled the
+# inline-span content alternation before carve#2671. Where several names denote
+# ONE rule, the fix is an alias - `emphasis_content = inline_span_content` -
+# and this file has nothing to say about it.
+#
+# This file is for the other case: names that read alike today by coincidence.
+# Three kinds of indent are separate concepts whose bodies happen to agree, and
+# a later ruling could move one without moving the others. Collapsing them
+# would encode the coincidence as a rule.
+#
+# scripts/duplicate-productions.mjs fails in both directions: an undeclared
+# duplicate group, and a declaration that no longer names one.
+#
+# Format: <space-separated productions> <TAB> <reason>
+
+definition_indent footnote_indent indent	Three different indents. A ruling could change what a definition or a footnote continuation requires without touching the others.
+caption_continuation_line lazy_continuation_line term_continuation_line	Three continuation forms. Lazy continuation, term continuation and caption folding are governed by separate clauses.
+continuation_marker_block first_block_content	The continuation marker's block and a container's first block. Their columns are ruled separately.
+abbreviation_term frontmatter_format	An abbreviation term and a frontmatter format name share a character class by accident; they name unrelated things.

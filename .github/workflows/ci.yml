@@ -198,6 +198,11 @@ jobs:
       - name: Every production is reachable or declared unreachable
         run: npm run grammar:productions
 
+      # A rule COPIED instead of referenced drifts: widening one copy leaves the
+      # others behind. Seven productions spelled one alternation before carve#2671.
+      - name: No production copies another's right-hand side undeclared
+        run: npm run grammar:duplicates
+
       - name: HTML import contract
         run: npm run html-import:check
         # The binding-contract half reads four repositories' trees through the
