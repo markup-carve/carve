@@ -133,6 +133,15 @@
       turns a comment-only line in a line block into an empty verse paragraph;
       that paragraph is visible body content (`<p></p>`), not an empty body.
 
+      A MATCHING RAW BLOCK KEEPS ITS PLACEMENT SLOT -- NORMATIVE [CARVE-P10-012].
+      A zero-line raw payload and one blank payload line are distinct under
+      PART 2 raw_block. In a nested body, a matching raw block emits one line
+      holding only the body's indentation when its payload has zero lines.
+      That placement counts as visible content for [CARVE-P10-001] and
+      [CARVE-P9-077]; it keeps a child slot beside a paragraph in a list item.
+      A comment or a raw block for another target contributes no slot. These
+      placement rules do not loosen a list; PART 9 §17 L1 governs tightness.
+
       A PLACED ELEMENT'S OWN TAGS CARRY THE PER-IMPLEMENTATION INDENTATION -- NORMATIVE
       [CARVE-P10-010]. A `directive` (PART 12 §35) places an element around content the
       extension generates -- `<nav class="toc">`, `<dl class="glossary">`,
