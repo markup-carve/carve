@@ -1851,6 +1851,12 @@
       "part": "10",
       "title": "DIRECTIVE CLASSES FOLLOW ELEMENT OWNERSHIP",
       "scope": "resolution-rendering"
+    },
+    {
+      "id": "CARVE-P10-012",
+      "part": "10",
+      "title": "A MATCHING RAW BLOCK KEEPS ITS PLACEMENT SLOT",
+      "scope": "resolution-rendering"
     }
   ],
   "retired": [
