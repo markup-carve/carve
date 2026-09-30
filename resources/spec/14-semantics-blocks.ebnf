@@ -484,8 +484,8 @@
               <ol>...</ol>
             </section>
 
-      NOTHING HERE IS A NEW SHAPE. Emit the title as a child, never a class,
-      and only when authored, including an explicitly empty title. A titled
+      NOTHING HERE IS A NEW SHAPE. Where the placed element admits paragraphs,
+      emit an authored title as a child, never a class, including an empty title. A titled
       nameable region uses `aria-labelledby` at the title's minted id;
       an untitled one uses the `labels` map (§16a `endnotes`, TOC `tocNav`).
       The author's own `aria-label` or `aria-labelledby` still

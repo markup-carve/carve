@@ -36,8 +36,8 @@
    end, and the line-break backslash likewise leaves the run before it
    interior.
 
-   THE LINE BLOCK IS NOT AN EXCEPTION: PART 9 §23 MEDIAL GAPS converts a
-   INNER or TRAILING run of TWO OR MORE columns into N\P content before this rule applies.
+   THE LINE BLOCK IS NOT AN EXCEPTION: PART 9 §23 MEDIAL GAPS converts an
+   INNER or TRAILING run of TWO OR MORE columns into N\P content first.
    Its one-column case remains collapsible whitespace and is dropped at EOL.
 
    (Carve has no two-trailing-space hard break -- a hard break is the backslash

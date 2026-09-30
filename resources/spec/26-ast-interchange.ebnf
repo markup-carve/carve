@@ -197,8 +197,8 @@
       only stated: one thing has one spelling
       ([carve#2231](https://github.com/markup-carve/carve/issues/2231)).
 
-      FOLDING THEM INTO `div` WAS REFUSED: profiles must be able to deny
-      admonitions while keeping generic containers.
+      FOLDING THEM INTO `div` WAS REFUSED: a profile can deny admonitions
+      while keeping generic containers; a fold would remove that ability.
 
       AN EXTENSION-DEFINED CONTAINER KEEPS ITS QUALIFIED NAME and declares the
       base it generalizes to, so a processor that knows only the base can still

@@ -428,8 +428,7 @@
 
          EACH CONTAINER CARRIES THE KEY'S EFFECT IN ITS OWN FIELD. A list sets
          required `list.tight` false. A loosened DEFINITION LIST sets `definition_list.loose`
-         as an authored-only field;
-         (PART 12 §8); otherwise its `<dd>` wrapping
+         as an authored-only field (PART 12 §8); otherwise its `<dd>` wrapping
          is derived from description block count. PART 12 §6 round-trips both.
 
    ============================================================================ *)

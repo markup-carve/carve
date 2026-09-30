@@ -2016,8 +2016,8 @@ raw_content = (* any content until closing fence *) ;
    end, and the line-break backslash likewise leaves the run before it
    interior.
 
-   THE LINE BLOCK IS NOT AN EXCEPTION: PART 9 §23 MEDIAL GAPS converts a
-   INNER or TRAILING run of TWO OR MORE columns into N\P content before this rule applies.
+   THE LINE BLOCK IS NOT AN EXCEPTION: PART 9 §23 MEDIAL GAPS converts an
+   INNER or TRAILING run of TWO OR MORE columns into N\P content first.
    Its one-column case remains collapsible whitespace and is dropped at EOL.
 
    (Carve has no two-trailing-space hard break -- a hard break is the backslash
@@ -4611,8 +4611,8 @@ EOF = (* end of file *) ;
               <ol>...</ol>
             </section>
 
-      NOTHING HERE IS A NEW SHAPE. Emit the title as a child, never a class,
-      and only when authored, including an explicitly empty title. A titled
+      NOTHING HERE IS A NEW SHAPE. Where the placed element admits paragraphs,
+      emit an authored title as a child, never a class, including an empty title. A titled
       nameable region uses `aria-labelledby` at the title's minted id;
       an untitled one uses the `labels` map (§16a `endnotes`, TOC `tocNav`).
       The author's own `aria-label` or `aria-labelledby` still
@@ -5344,8 +5344,7 @@ EOF = (* end of file *) ;
 
          EACH CONTAINER CARRIES THE KEY'S EFFECT IN ITS OWN FIELD. A list sets
          required `list.tight` false. A loosened DEFINITION LIST sets `definition_list.loose`
-         as an authored-only field;
-         (PART 12 §8); otherwise its `<dd>` wrapping
+         as an authored-only field (PART 12 §8); otherwise its `<dd>` wrapping
          is derived from description block count. PART 12 §6 round-trips both.
 
    ============================================================================ *)
@@ -11626,8 +11625,8 @@ EOF = (* end of file *) ;
       only stated: one thing has one spelling
       ([carve#2231](https://github.com/markup-carve/carve/issues/2231)).
 
-      FOLDING THEM INTO `div` WAS REFUSED: profiles must be able to deny
-      admonitions while keeping generic containers.
+      FOLDING THEM INTO `div` WAS REFUSED: a profile can deny admonitions
+      while keeping generic containers; a fold would remove that ability.
 
       AN EXTENSION-DEFINED CONTAINER KEEPS ITS QUALIFIED NAME and declares the
       base it generalizes to, so a processor that knows only the base can still
