@@ -1,0 +1,27 @@
+# Productions that `document` deliberately cannot reach.
+#
+# A production off the root derives nothing, so an edit to it changes no
+# document. That is correct for a construct a conformant CORE may leave alone -
+# and indistinguishable, from the grammar alone, from a rule that lost its
+# reference. quote_block sat unreachable from the modularization refactor until
+# carve#2670, and nothing reported it.
+#
+# So every unreachable production is declared here with the reason it is one,
+# and scripts/production-reachability.mjs fails in BOTH directions: a new
+# unreachable production that is not listed, and a listed one that has since
+# become reachable. The second half is what keeps this file from going stale.
+#
+# Format: <production> <TAB> <reason>
+
+include_directive	PART 9 section 19: transclusion is processor-level, and the directive is deliberately outside block/inline.
+include_path	Reached only from include_directive.
+bare_include_path	Reached only from include_path.
+quoted_include_path	Reached only from include_path.
+include_section	Reached only from include_directive.
+include_options	Reached only from include_directive.
+
+citation_group	Tier-2 citations extension: a core parser reads the bracket as literal text.
+citation_definition	Tier-2 citations extension: the definition line is a node the extension contributes.
+citation_item	Reached only from citation_group.
+citation_key	Reached only from citation_group and citation_definition.
+citation_key_char	Reached only from citation_key.
