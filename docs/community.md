@@ -6,8 +6,9 @@ description: Where to ask a question, report a bug, or show what you built with 
 
 ## Ask a question
 
-- [Discord](https://discord.gg/ENgwFBdUZV) - chat with other people using Carve.
-  Best for a quick question or showing something you are working on.
+- [The markup-carve Discord](https://discord.gg/ENgwFBdUZV) - chat with other
+  people using Carve. Best for a quick question or showing something you are
+  working on.
 - [GitHub Discussions](https://github.com/markup-carve/carve/discussions) - for
   questions worth keeping. Searchable, and an answer here helps the next person
   who asks.
