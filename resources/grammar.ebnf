@@ -717,6 +717,19 @@
         text, and half-folding it -- gone from the page, absent from the
         tables -- is not an option the rule offers.
 
+        AN OPAQUE MARKER-LINE QUOTE PRESERVES THE BAND AS TEXT -- NORMATIVE [CARVE-P0-022].
+        When a code or raw fence opens inside the quote prefix on a list item's
+        marker line, an over-indented follower establishes no fresh authored
+        base while that fence is open or remains the quote's last block. A later
+        open code or raw fence in that same quote also preserves the band; closing that later fence
+        restores the authored-base behavior under [CARVE-P0-004]. This applies
+        at any quote depth. A quote marker in the band remains literal item
+        text; it supplies no prefix to the preceding quote. A line at the item's
+        content column still opens there. A blank permits a new authored base.
+        A later quoted paragraph ends the fence-tail condition. A heading,
+        table or thematic break quote head retains authored-base behavior.
+        Comment fences remain governed by PART 9 §28.
+
         AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS
         UNDER -- NORMATIVE [CARVE-P0-011]. The definition and the
         comment above are instances; the rule is stated as a property because

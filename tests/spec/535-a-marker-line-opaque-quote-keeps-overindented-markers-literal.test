@@ -1,0 +1,640 @@
+A marker-line opaque quote keeps overindented markers literal
+
+````
+- > ```
+  > x
+  > y
+  > ```
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+y
+</code></pre>
+    </blockquote>
+  </li>
+</ul>
+````
+
+````
+- > ```
+  > x
+    > y
+  > ```
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+</code></pre>
+    </blockquote>
+    &gt; y
+    <blockquote>
+      <pre><code></code></pre>
+    </blockquote>
+  </li>
+</ul>
+````
+
+````
+- > ```
+  > x
+
+  > y
+  > ```
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+</code></pre>
+    </blockquote>
+    <blockquote><p>y
+<code></code></p></blockquote>
+  </li>
+</ul>
+````
+
+````
+- > ```
+  > x
+
+    > y
+  > ```
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+</code></pre>
+    </blockquote>
+    <blockquote><p>y
+<code></code></p></blockquote>
+  </li>
+</ul>
+````
+
+````
+- > ```
+  > x
+  > ```
+  > y
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+</code></pre>
+      <p>y</p>
+    </blockquote>
+  </li>
+</ul>
+````
+
+````
+- > ```
+  > x
+  > ```
+    > y
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+</code></pre>
+    </blockquote>
+    &gt; y
+  </li>
+</ul>
+````
+
+````
+- > ```
+  > x
+  > ```
+
+  > y
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+</code></pre>
+    </blockquote>
+    <blockquote><p>y</p></blockquote>
+  </li>
+</ul>
+````
+
+````
+- > ```
+  > x
+  > ```
+
+    > y
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+</code></pre>
+    </blockquote>
+    <blockquote><p>y</p></blockquote>
+  </li>
+</ul>
+````
+
+```
+- > ~~~
+  > x
+  > y
+  > ~~~
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+y
+</code></pre>
+    </blockquote>
+  </li>
+</ul>
+```
+
+```
+- > ~~~
+  > x
+    > y
+  > ~~~
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+</code></pre>
+    </blockquote>
+    &gt; y
+    <blockquote>
+      <pre><code></code></pre>
+    </blockquote>
+  </li>
+</ul>
+```
+
+```
+- > ~~~
+  > x
+
+  > y
+  > ~~~
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+</code></pre>
+    </blockquote>
+    <blockquote><p>y
+~~~</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- > ~~~
+  > x
+
+    > y
+  > ~~~
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+</code></pre>
+    </blockquote>
+    <blockquote><p>y
+~~~</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- > ~~~
+  > x
+  > ~~~
+  > y
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+</code></pre>
+      <p>y</p>
+    </blockquote>
+  </li>
+</ul>
+```
+
+```
+- > ~~~
+  > x
+  > ~~~
+    > y
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+</code></pre>
+    </blockquote>
+    &gt; y
+  </li>
+</ul>
+```
+
+```
+- > ~~~
+  > x
+  > ~~~
+
+  > y
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+</code></pre>
+    </blockquote>
+    <blockquote><p>y</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- > ~~~
+  > x
+  > ~~~
+
+    > y
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+</code></pre>
+    </blockquote>
+    <blockquote><p>y</p></blockquote>
+  </li>
+</ul>
+```
+
+````
+- > ```=html
+  > x
+  > y
+  > ```
+.
+<ul>
+  <li>
+    <blockquote>
+      x
+y
+    </blockquote>
+  </li>
+</ul>
+````
+
+````
+- > ```=html
+  > x
+    > y
+  > ```
+.
+<ul>
+  <li>
+    <blockquote>
+      x
+    </blockquote>
+    &gt; y
+    <blockquote>
+      <pre><code></code></pre>
+    </blockquote>
+  </li>
+</ul>
+````
+
+````
+- > ```=html
+  > x
+
+  > y
+  > ```
+.
+<ul>
+  <li>
+    <blockquote>
+      x
+    </blockquote>
+    <blockquote><p>y
+<code></code></p></blockquote>
+  </li>
+</ul>
+````
+
+````
+- > ```=html
+  > x
+
+    > y
+  > ```
+.
+<ul>
+  <li>
+    <blockquote>
+      x
+    </blockquote>
+    <blockquote><p>y
+<code></code></p></blockquote>
+  </li>
+</ul>
+````
+
+````
+- > ```=html
+  > x
+  > ```
+  > y
+.
+<ul>
+  <li>
+    <blockquote>
+      x
+      <p>y</p>
+    </blockquote>
+  </li>
+</ul>
+````
+
+````
+- > ```=html
+  > x
+  > ```
+    > y
+.
+<ul>
+  <li>
+    <blockquote>
+      x
+    </blockquote>
+    &gt; y
+  </li>
+</ul>
+````
+
+````
+- > ```=html
+  > x
+  > ```
+
+  > y
+.
+<ul>
+  <li>
+    <blockquote>
+      x
+    </blockquote>
+    <blockquote><p>y</p></blockquote>
+  </li>
+</ul>
+````
+
+````
+- > ```=html
+  > x
+  > ```
+
+    > y
+.
+<ul>
+  <li>
+    <blockquote>
+      x
+    </blockquote>
+    <blockquote><p>y</p></blockquote>
+  </li>
+</ul>
+````
+
+```
+- > # H
+  > y
+.
+<ul>
+  <li>
+    <blockquote>
+      <h1 id="H">H</h1>
+      <p>y</p>
+    </blockquote>
+  </li>
+</ul>
+```
+
+```
+- > # H
+    > y
+.
+<ul>
+  <li>
+    <blockquote>
+      <h1 id="H">H</h1>
+      <p>y</p>
+    </blockquote>
+  </li>
+</ul>
+```
+
+```
+- > | a |
+  > y
+.
+<ul>
+  <li>
+    <blockquote>
+      <table>
+        <tbody>
+          <tr><td>a</td></tr>
+        </tbody>
+      </table>
+      <p>y</p>
+    </blockquote>
+  </li>
+</ul>
+```
+
+```
+- > | a |
+    > y
+.
+<ul>
+  <li>
+    <blockquote>
+      <table>
+        <tbody>
+          <tr><td>a</td></tr>
+        </tbody>
+      </table>
+      <p>y</p>
+    </blockquote>
+  </li>
+</ul>
+```
+
+````
+- > p
+  > ```
+  > x
+  > ```
+    > y
+.
+<ul>
+  <li>
+    <blockquote>
+      <p>p</p>
+      <pre><code>x
+</code></pre>
+      <p>y</p>
+    </blockquote>
+  </li>
+</ul>
+````
+
+````
+- > p
+  >
+  > ```
+  > x
+  > ```
+    > y
+.
+<ul>
+  <li>
+    <blockquote>
+      <p>p</p>
+      <pre><code>x
+</code></pre>
+      <p>y</p>
+    </blockquote>
+  </li>
+</ul>
+````
+
+````
+- > > ```
+  > > x
+  > > ```
+    > y
+.
+<ul>
+  <li>
+    <blockquote>
+      <blockquote>
+        <pre><code>x
+</code></pre>
+      </blockquote>
+    </blockquote>
+    &gt; y
+  </li>
+</ul>
+````
+
+````
+- > > ```
+  > > x
+    > y
+.
+<ul>
+  <li>
+    <blockquote>
+      <blockquote>
+        <pre><code>x
+</code></pre>
+      </blockquote>
+    </blockquote>
+    &gt; y
+  </li>
+</ul>
+````
+
+```
+- > ***
+    > y
+.
+<ul>
+  <li>
+    <blockquote>
+      <hr>
+      <p>y</p>
+    </blockquote>
+  </li>
+</ul>
+```
+
+```
+- > %%%
+  > x
+    > y
+  > %%%
+.
+<ul>
+  <li>
+    <blockquote>
+
+    </blockquote>
+  </li>
+</ul>
+```
+
+````
+- > ```
+  > x
+  > ```
+  > ~~~
+  > z
+    > y
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+</code></pre>
+      <pre><code>z
+</code></pre>
+    </blockquote>
+    &gt; y
+  </li>
+</ul>
+````
+
+````
+- > ```
+  > x
+  > ```
+  > ~~~
+  > z
+  > ~~~
+    > y
+.
+<ul>
+  <li>
+    <blockquote>
+      <pre><code>x
+</code></pre>
+      <pre><code>z
+</code></pre>
+      <p>y</p>
+    </blockquote>
+  </li>
+</ul>
+````
