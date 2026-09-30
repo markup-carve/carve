@@ -3,9 +3,9 @@
   "measured": {
     "date": "2026-09-30",
     "spec": "8bf77c51c632fb83637f71b596452f628926872d",
-    "js": "4fe7be23368a5ba2abe3da0c6e61008a58cdd578",
-    "php": "bad18d453b14d1abeb4e99de063b280f1f181873",
-    "rust": "41bf763f52ed4a683ae67e0050c45ec48b0d00ea"
+    "js": "48b9e0e63b8bcd188b8ad7d495ed5eab3169d007",
+    "php": "aac958afc053c203f228842816409864dfd59b42",
+    "rust": "d534899e5722aa785250737220ba453fba8ad060"
   },
   "differences": []
 }
