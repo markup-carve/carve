@@ -178,6 +178,20 @@ jobs:
       - name: Normative pages state nothing the spec source does not
         run: npm run normative:check
 
+      # Three committed artifacts are assembled from sources: grammar.ebnf from
+      # resources/spec/*.ebnf, the rule index from the grammar, node-roles.json
+      # from the AST contract. Every other gate and almost every test reads the
+      # ARTIFACT, so a source-only edit is invisible to all of them - it does not
+      # fail, it silently does not apply.
+      - name: Grammar aggregate matches its spec sources
+        run: npm run spec:check
+
+      - name: Rule ids and the rule index match the grammar
+        run: npm run spec:rules:check
+
+      - name: node-roles.json matches the AST contract
+        run: npm run roles:check
+
       - name: HTML import contract
         run: npm run html-import:check
         # The binding-contract half reads four repositories' trees through the
