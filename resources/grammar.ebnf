@@ -2,8 +2,8 @@
    Carve Markup Language - EBNF Grammar
    Version: 0.1
 
-   This grammar defines the syntax of Carve, a post-Markdown lightweight markup
-   language with visual mnemonics and human-centered design.
+   This grammar defines the syntax of Carve, a lightweight markup language for
+   documents.
 
    Notation:
    - (*...*) = comment
