@@ -1,0 +1,112 @@
+name: Formatter PR conformance
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: formatter-pr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  formatter:
+    needs: engine-revisions
+    name: formatter (shard ${{ matrix.shard }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ['0/4', '1/4', '2/4', '3/4']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: actions/checkout@v4
+        with:
+          repository: markup-carve/carve-js
+          ref: ${{ needs.engine-revisions.outputs.js }}
+          path: carve-js
+          submodules: recursive
+      - name: Build carve-js
+        working-directory: carve-js
+        run: npm ci && npm run build
+      - uses: actions/checkout@v4
+        with:
+          repository: markup-carve/carve-rs
+          ref: ${{ needs.engine-revisions.outputs.rs }}
+          path: carve-rs
+          submodules: recursive
+      - name: Build carve-rs
+        working-directory: carve-rs
+        run: cargo build --release --bin carve --example social_resolvers
+      - uses: actions/checkout@v4
+        with:
+          repository: markup-carve/carve-php
+          ref: ${{ needs.engine-revisions.outputs.php }}
+          path: carve-php
+          submodules: recursive
+      # 8.4, not carve-php's 8.2 floor. Its HTML importer runs the native HTML5
+      # parser from 8.4 and the legacy libxml one below that, and the two read
+      # malformed HTML differently by design (carve-php#2731, closed as intended,
+      # and docs/html-import.md, which tells an author to use 8.4 or later). On
+      # 8.3 this job therefore reported nineteen CommonMark expected-HTML cases
+      # as cross-engine differences that no current PHP reproduces.
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+      - name: Install carve-php
+        working-directory: carve-php
+        run: composer install --no-interaction --no-progress
+      - name: Select corpus unchanged at every engine pin
+        env:
+          CARVE_REQUIRE_ALL_ENGINES: '1'
+          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+        run: node scripts/formatter-pin-corpus.mjs /tmp/formatter-corpus
+      - name: PART 11 formatter and render conformance
+        env:
+          CARVE_REQUIRE_ALL_ENGINES: '1'
+          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+        run: npm run compare:impls -- --skip-build --corpus-dir=/tmp/formatter-corpus --roundtrip --fail-on-diff --shard=${{ matrix.shard }} --report=/tmp/compare-impls.json
+      - name: Cross-engine render comparison
+        if: always()
+        run: npm run compare:report -- /tmp/compare-impls.json --allow-selected-corpus
+
+      - name: Upload comparison and corpus selection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: formatter-${{ strategy.job-index }}
+          path: |
+            /tmp/formatter-corpus.json
+            /tmp/compare-impls.json
+
+  engine-revisions:
+    runs-on: ubuntu-latest
+    outputs:
+      js: ${{ steps.heads.outputs.js }}
+      rs: ${{ steps.heads.outputs.rs }}
+      php: ${{ steps.heads.outputs.php }}
+    steps:
+      - name: Resolve engine heads once for formatter shards
+        id: heads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for engine in js rs php; do
+            head=$(gh api "repos/markup-carve/carve-$engine/commits/main" --jq .sha)
+            echo "$engine=$head" >> "$GITHUB_OUTPUT"
+          done

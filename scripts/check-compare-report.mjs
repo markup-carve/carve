@@ -84,6 +84,10 @@ if (report.schema !== 1) {
  */
 const mode = report.mode ?? {}
 const narrowed = []
+if (mode.selectedCorpus && !process.argv.includes('--allow-selected-corpus')) {
+  narrowed.push(`selected corpus directory: ${mode.selectedCorpus}`)
+}
+if (mode.selectedCorpus) console.log(`Selected corpus: ${mode.selectedCorpus}`)
 if (mode.countsOnly) {
   narrowed.push('--counts-only rendered one target instead of every comparison target')
 }

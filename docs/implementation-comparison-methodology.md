@@ -850,3 +850,18 @@ or explain the changed observation in its owning issue; do not refresh the ledge
 from counts alone. Reports include Node and PHP versions, checkout revisions and spec pins. Ingest
 report unions require matching interpreter versions in every shard. Revisions
 identify source checkouts, not the build provenance of existing binaries.
+
+## Formatter pull-request checks
+
+The formatter PR workflow checks the core documents whose source and expected
+HTML and other target fixtures are unchanged at every engine's recorded spec pin. A new or revised corpus
+case enters this gate once all three engines pin its bytes. The selection report
+lists each pin and every excluded document; a pin outside the checked-out corpus history or an empty selection fails the
+job.
+
+Four shards check all five render targets, source round trips, formatting
+idempotence and cross-reading by the current spec renderer. Engines are built
+once before comparison. The scheduled formatter workflow keeps measuring the
+entire latest corpus, so pending rulings remain visible there. Engine heads are
+resolved from their main branches once per run; an engine regression can still
+fail a PR against unchanged corpus cases.
