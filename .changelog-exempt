@@ -46,3 +46,4 @@
 2617: 0.1.7 - removes the glued-fence lint exception the carve-js fix resolved. A parity declaration, not a rule.
 2637: 0.1.7 - moves the reference engine pin and drops the drift rows the bumped engine caught up on. Same ledger class as carve#2601 and carve#2617; no clause, corpus row or oracle answer moved.
 2646: 0.1.7 - clears comparison rows describing divergences the engines no longer have, and declares the one lint difference left with its owner. Ledger only; no clause, corpus row or oracle answer moved.
+2655: 0.1.7 - removes resolved public Markdown importer drift from the measurement ledger. No clause, corpus row or oracle answer changes.

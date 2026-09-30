@@ -10,16 +10,12 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
-### Fixed
+### Improvements
 
-- Braced spans stop at their bracket run, escaped punctuation stays in quoted titles, and list lint reports each block once (#2656).
-- Empty raw slots retain their placement in list bodies (#2657).
-- Quoted fences on a list marker retain ownership across blank lines and de-indented continuations (#2658).
-
-### Changed
-
-- Inline boundary coverage and paragraph interruption rules include the resolved parser cases (#2653).
-- Resolved public Markdown importer differences no longer remain declared drift (#2655).
+- Container labels retain closed inline constructs before a comment cut. Braced inline spans pair within their bracket run, with the editorial-comment exception documented (#2653, #2656).
+- List indentation lint reports each block once. Quoted attributes and link titles share punctuation escapes and retain non-punctuation backslashes (#2656).
+- Empty raw-slot placement in list bodies is specified by the shared corpus (#2657).
+- Overindented quote markers remain literal after a fence opened on the list-item marker line. Closing a later fence restores the authored indentation base (#2658).
 
 ## [0.1.7] - 2026-09-29
 
