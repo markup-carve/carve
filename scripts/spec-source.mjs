@@ -3,6 +3,7 @@
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { updateFallbackViews } from './ast-fallback-matrix.mjs'
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const aggregatePath = resolve(repo, 'resources/grammar.ebnf')
@@ -23,6 +24,7 @@ const assemble = () => sourceFiles()
   .join('')
 
 const command = process.argv[2] ?? '--check'
+if (command === '--write' || command === '--check') updateFallbackViews(repo, command === '--write')
 
 if (command === '--write') {
   writeFileSync(aggregatePath, assemble())

@@ -20,6 +20,9 @@ filename order, so their numeric prefixes are part of the build contract.
 - `layout-transitions.json` is consumed by the executable layout checker.
 - `paragraph-interruption.json` is the closed classification defined by PART 9
   section 10.
+- The interchange fallback table in `23-ast-foundations.ebnf` summarizes
+  existing PART 12 rules. `spec:write` derives its docs view; `spec:check`
+  validates its node/field names, rule IDs, actions and diagnostic codes.
 - `target-capabilities.json` records the cross-target behavior defined by PART
   11 sections 10a through 11.
 - `rules.json` assigns one closed implementation scope to every clause carrying
