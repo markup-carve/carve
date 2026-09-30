@@ -8,7 +8,7 @@ import { parseShard, selectShard } from './lib/shard.mjs'
 import { populationFingerprint, readShardReports, verifyShardReports } from './lib/shard-reports.mjs'
 import { phpDir, rustDir, rustBinary } from './lib/engine-locations.mjs'
 import { comparisonRevisions, printComparisonRevisions } from './lib/comparison-revisions.mjs'
-import { engines, classifyImports, compareIngestDocument, processFailure, missesTarget, htmlBytes, ingestCorpus, reconcileDifferences } from './lib/import-comparison.mjs'
+import { engines, classifyImports, compareIngestDocument, processFailure, missesTarget, htmlBytes, ingestCorpus, reconcileDifferences, validateInterpreters } from './lib/import-comparison.mjs'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
 const args = process.argv.slice(2)
@@ -92,6 +92,7 @@ const readJson = path => JSON.parse(readFileSync(resolve(root, path), 'utf8'))
 const differences = {}
 const counts = {}
 const measuredDocuments = []
+let interpreters
 const revisions = comparisonRevisions(root, [
   { name: 'js', cwd: resolve(commands.js[1], '../..') },
   { name: 'php', cwd: phpDir() },
@@ -110,17 +111,24 @@ try {
         if (!report.documents.some(document => key.startsWith(`${document}/`))) throw new Error(`Unexpected difference: ${key}`)
       }
     }
-    const failures = reconcileDifferences(merged, readJson('resources/ingest-comparison-drift.json'))
+    for (const report of reports) validateInterpreters(report.interpreters)
+    if (reports.some(report => JSON.stringify(report.interpreters) !== JSON.stringify(reports[0].interpreters))) {
+      throw new Error('Interpreter versions differ between shards')
+    }
+    const failures = reconcileDifferences(merged, readJson('resources/ingest-comparison-drift.json'), reports[0].interpreters)
     for (const failure of failures) console.error(failure)
     console.log(`ingest union: ${reports.reduce((count, report) => count + report.documents.length, 0)} documents; ${failures.length} failures`)
     if (reportPath) writeFileSync(reportPath, JSON.stringify({
-      complete: true, mode, revisions: reports[0].revisions,
+      complete: true, mode, revisions: reports[0].revisions, interpreters: reports[0].interpreters,
       counts: { documents: reports.reduce((sum, report) => sum + report.counts.documents, 0),
         pairs: reports.reduce((sum, report) => sum + report.counts.pairs, 0) },
       differences: merged, failures,
     }, null, 2) + '\n')
     process.exit(failures.length ? 1 : 0)
   }
+  const phpVersion = await execute('php', ['-r', 'echo PHP_VERSION;'], { encoding: 'utf8', timeout: 5000 })
+  interpreters = validateInterpreters({ js: process.versions.node, php: phpVersion.stdout.trim() })
+  console.log(`interpreters node=${interpreters.js} php=${interpreters.php}`)
   printComparisonRevisions(revisions)
   // A broken installation must fail before it can become a declared import gap.
   for (const engine of engines) {
@@ -189,8 +197,8 @@ try {
     })
   }
   const sorted = Object.fromEntries(Object.entries(differences).sort(([a], [b]) => a.localeCompare(b, 'en')))
-  const failures = shard.total > 1 ? [] : reconcileDifferences(sorted, readJson(`resources/${mode}-comparison-drift.json`))
-  const report = { complete: true, mode, revisions, counts, differences: sorted, failures,
+  const failures = shard.total > 1 ? [] : reconcileDifferences(sorted, readJson(`resources/${mode}-comparison-drift.json`), interpreters)
+  const report = { complete: true, mode, revisions, interpreters, counts, differences: sorted, failures,
     ...(mode === 'ingest' ? {
       shard, documents: measuredDocuments.sort(),
       population: populationFingerprint(ingestCorpus(root)),
@@ -202,7 +210,7 @@ try {
   for (const failure of failures) console.error(failure)
   process.exitCode = failures.length ? 1 : 0
 } catch (error) {
-  if (reportPath) writeFileSync(reportPath, JSON.stringify({ complete: false, mode, revisions, error: error.message }, null, 2) + '\n')
+  if (reportPath) writeFileSync(reportPath, JSON.stringify({ complete: false, mode, revisions, interpreters, error: error.message }, null, 2) + '\n')
   console.error(`${mode} comparison could not complete: ${error.message}`)
   process.exitCode = 2
 }

@@ -142,6 +142,26 @@ test('ingest union reconciles the ledger once and rejects missing comparisons', 
     assert.equal(changedObservation.status, 1, changedObservation.stderr)
     assert.equal(changedObservation.stderr.trim(), `CHANGED comparison difference: ${declared}`)
     changed.differences[declared] = observation
+    writeFileSync(join(directory, 'ingest-0.json'), JSON.stringify(changed))
+    shards[1].interpreters.php = '8.4.0'
+    writeFileSync(join(directory, 'ingest-1.json'), JSON.stringify(shards[1]))
+    const differentInterpreters = run()
+    assert.equal(differentInterpreters.status, 2, differentInterpreters.stderr)
+    assert.match(differentInterpreters.stderr, /Interpreter versions differ between shards/)
+    delete shards[1].interpreters
+    writeFileSync(join(directory, 'ingest-1.json'), JSON.stringify(shards[1]))
+    const missingInterpreters = run()
+    assert.equal(missingInterpreters.status, 2, missingInterpreters.stderr)
+    assert.match(missingInterpreters.stderr, /Missing or invalid comparison interpreter versions/)
+    shards[1].interpreters = { js: '22.0.0', php: '8.3.0' }
+    writeFileSync(join(directory, 'ingest-1.json'), JSON.stringify(shards[1]))
+    ledger.differences[0].interpreters = { php: '8.4' }
+    writeFileSync(join(fixture, 'resources/ingest-comparison-drift.json'), JSON.stringify(ledger))
+    const interpreterMismatch = run()
+    assert.equal(interpreterMismatch.status, 1, interpreterMismatch.stderr)
+    assert.match(interpreterMismatch.stderr, /INTERPRETER MISMATCH comparison declaration/)
+    delete ledger.differences[0].interpreters
+    writeFileSync(join(fixture, 'resources/ingest-comparison-drift.json'), JSON.stringify(ledger))
     shards[0].counts.pairs--
     writeFileSync(join(directory, 'ingest-0.json'), JSON.stringify(shards[0]))
     const incomplete = run()
