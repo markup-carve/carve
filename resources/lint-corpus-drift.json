@@ -1,61 +1,12 @@
 {
   "version": 1,
   "measured": {
-    "date": "2026-09-29",
-    "spec": "df334ba5",
-    "js": "12d5a5ff236b248bc059018ab9ce617a1026a60e",
-    "php": "c037dd854cd8a76bbb6a537bf3eeefd5cab1dcee",
-    "rust": "2745754ccd8790625eb29cc31643501590a8fa2d",
-    "documents": 2227
+    "date": "2026-09-30",
+    "spec": "8bf77c51c632fb83637f71b596452f628926872d",
+    "js": "4fe7be23368a5ba2abe3da0c6e61008a58cdd578",
+    "php": "aac4e6616cf0e5c47355f888a29c8a233b069b14",
+    "rust": "6338c852282d1d73a04c89d2d81f4164dfac94c4",
+    "documents": 2293
   },
-  "differences": [
-    {
-      "file": "tests/corpus/531-an-opener-under-a-quote-in-a-nested-host-opens-at-one-column-only-8.crv",
-      "reason": "The rule reports once per block, on its first line. Continuing table rows and quote lines open no new block. The measured PHP and Rust revisions still report every block-shaped line until their rule fixes land; this row records the measured mismatch against the ruling in docs/validation.md.",
-      "issue": "https://github.com/markup-carve/carve/issues/2643",
-      "diagnostics": {
-        "js": [
-          [
-            "list-item-block-overindented",
-            3,
-            4
-          ]
-        ],
-        "php": [
-          [
-            "list-item-block-overindented",
-            3,
-            4
-          ],
-          [
-            "list-item-block-overindented",
-            4,
-            4
-          ],
-          [
-            "list-item-block-overindented",
-            5,
-            4
-          ]
-        ],
-        "rust": [
-          [
-            "list-item-block-overindented",
-            3,
-            4
-          ],
-          [
-            "list-item-block-overindented",
-            4,
-            4
-          ],
-          [
-            "list-item-block-overindented",
-            5,
-            4
-          ]
-        ]
-      }
-    }
-  ]
+  "differences": []
 }

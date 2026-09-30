@@ -804,6 +804,10 @@ the same carve-js CLI reader. The report separates identical source, different
 spellings with identical HTML, different HTML, and failed imports. HTML
 comparison removes only one final newline; content whitespace stays significant.
 This measures importer agreement, not conformance to CommonMark or Djot HTML.
+The completed 2026-09-30 sweep has no meaning differences or failed imports:
+421 Markdown outputs match byte for byte and 231 differ only in spelling;
+642 HTML imports match and 10 differ only in spelling. All 277 Djot imports
+and all four shared targets match byte for byte.
 Migration-report diagnostics are outside this check; `import:report` compares
 the existing HTML roundtrip report fixtures.
 Four additional fixtures enforce the [shared import targets](./migrate-from-markdown#shared-importer-targets),

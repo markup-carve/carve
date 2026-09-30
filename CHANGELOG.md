@@ -10,6 +10,17 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
+### Fixed
+
+- Braced spans stop at their bracket run, escaped punctuation stays in quoted titles, and list lint reports each block once (#2656).
+- Empty raw slots retain their placement in list bodies (#2657).
+- Quoted fences on a list marker retain ownership across blank lines and de-indented continuations (#2658).
+
+### Changed
+
+- Inline boundary coverage and paragraph interruption rules include the resolved parser cases (#2653).
+- Resolved public Markdown importer differences no longer remain declared drift (#2655).
+
 ## [0.1.7] - 2026-09-29
 
 ### Breaking
