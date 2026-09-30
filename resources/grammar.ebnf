@@ -2649,8 +2649,11 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
    satisfy the terminal with the line break after it. So
    `[r]: /u "t` + newline + `u"` is a paragraph and not a definition, in the
    executable spec and in all three engines. *)
-link_title = space, ('"', {('\', '"') | (character - '"')}, '"')
-           | space, ("'", {('\', "'") | (character - "'")}, "'") ;
+(* Titles resolve `escaped_char`, the whole ASCII punctuation escape set.
+   A backslash before any other character remains literal, as in a quoted
+   attribute value. Only the title slot admits a newline (carve#2587). *)
+link_title = space, ('"', {escaped_char | literal_backslash | (character - '"' - '\')}, '"')
+           | space, ("'", {escaped_char | literal_backslash | (character - "'" - '\')}, "'") ;
 
 reference_label = (character - ']' - '@'), {character - ']'} ;
 (* A LABEL THAT BEGINS WITH AN AT SIGN IS NOT A REFERENCE LABEL -- NORMATIVE [CARVE-P3-003].
@@ -3651,11 +3654,14 @@ unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - ' ' - '\t' - newlin
 
    THE SET IS THE WHOLE OF `ascii_punctuation`, not the closing quote alone:
    `{k="a\}b"}` carries `a}b` and `{k="a\\b"}` carries `a\b`, in either quote
-   spelling. `link_title` is the slot that escapes its closing quote and nothing
-   else, and the two do not share a helper - reading this one through the title's
-   set left the backslash in the value (carve#2581). *)
-quoted_value = '"', { escaped_char | (character - '"' - '\' - newline) }, '"'
-             | "'", { escaped_char | (character - "'" - '\' - newline) }, "'" ;
+   spelling. A backslash before a non-punctuation character is ordinary
+   content and is retained: `{k="a\zb"}` carries `a\zb`. Link titles take the
+   same escape set, but may contain a newline; quoted attributes may not.
+   The lookahead makes a backslash before punctuation an escape only. It
+   cannot also be ordinary content before a closing quote. *)
+literal_backslash = '\', !(ascii_punctuation) ;
+quoted_value = '"', { escaped_char | literal_backslash | (character - '"' - '\' - newline) }, '"'
+             | "'", { escaped_char | literal_backslash | (character - "'" - '\' - newline) }, "'" ;
 (* A QUOTED VALUE STOPS AT THE NEWLINE -- NORMATIVE [CARVE-P4-006].
    `block_attributes` reads the same `quoted_value`, so a line break inside
    a quoted value ends that block too. A block attribute may still span
@@ -4638,6 +4644,17 @@ EOF = (* end of file *) ;
          inline only entries pushed there are reachable, and those still open
          at its closer demote to literal.
          `~{/x/}{/y~/}` -> ~<em>x</em><em>y~</em>.
+      E2b BRACKET-RUN BOUND. PART 8 resolves a BRACKET RUN before bare
+         emphasis, forced spans and non-opaque editorial markup. Every delimiter pair,
+         bare or braced, must open and close inside the same run. An opener
+         inside a run cannot pair with a closer outside it, even when the run
+         resolves to literal text rather than a link or span:
+         `[{+a]+}` and `[{^a]^}` are literal text. This bounds pairing, not
+         label content: a complete braced span inside a label still parses.
+         CARVE-P3-001 defines which constructs the bracket scan skips.
+         In particular, a bracket inside an editorial comment opens no run,
+         so `[{#a]#}`
+         retains its comment and renders the outside `[`.
       E3 NO SAME-TYPE NESTING (§3). While a d-span is open, a further d
          that would open does NOT push -- it is literal content. Hence
          /usr/local/ -> <em>usr/local</em> (01-emphasis-6); the/path/here

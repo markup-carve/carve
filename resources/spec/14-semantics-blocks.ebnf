@@ -21,6 +21,17 @@
          inline only entries pushed there are reachable, and those still open
          at its closer demote to literal.
          `~{/x/}{/y~/}` -> ~<em>x</em><em>y~</em>.
+      E2b BRACKET-RUN BOUND. PART 8 resolves a BRACKET RUN before bare
+         emphasis, forced spans and non-opaque editorial markup. Every delimiter pair,
+         bare or braced, must open and close inside the same run. An opener
+         inside a run cannot pair with a closer outside it, even when the run
+         resolves to literal text rather than a link or span:
+         `[{+a]+}` and `[{^a]^}` are literal text. This bounds pairing, not
+         label content: a complete braced span inside a label still parses.
+         CARVE-P3-001 defines which constructs the bracket scan skips.
+         In particular, a bracket inside an editorial comment opens no run,
+         so `[{#a]#}`
+         retains its comment and renders the outside `[`.
       E3 NO SAME-TYPE NESTING (§3). While a d-span is open, a further d
          that would open does NOT push -- it is literal content. Hence
          /usr/local/ -> <em>usr/local</em> (01-emphasis-6); the/path/here

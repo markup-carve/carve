@@ -1,0 +1,26 @@
+[
+  {
+    "production": "quoted_value",
+    "rule": "quoted",
+    "quote": "\"",
+    "escapeRule": "qEsc"
+  },
+  {
+    "production": "quoted_value",
+    "rule": "squoted",
+    "quote": "'",
+    "escapeRule": "sqEsc"
+  },
+  {
+    "production": "link_title",
+    "rule": "titleQuoted",
+    "quote": "\"",
+    "escapeRule": "titleQEsc"
+  },
+  {
+    "production": "link_title",
+    "rule": "titleSquoted",
+    "quote": "'",
+    "escapeRule": "titleSqEsc"
+  }
+]

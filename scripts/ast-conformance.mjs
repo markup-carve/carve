@@ -1924,4 +1924,4 @@ if (deferredGateFailures.length > 0) {
   failed = true
 }
 
-if (failed) process.exit(1)
+if (failed) process.exitCode = 1

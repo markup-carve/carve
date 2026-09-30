@@ -14,14 +14,29 @@ same `.crv` / `.html` pairs and reports default conformance, optional Tier-2
 adapter coverage, rough CLI timing, and the extension hook surface each
 implementation exposes.
 
-## Snapshot (2026-09-26)
+## Core fixture counts (2026-09-30)
 
-The core corpus held 1,882 documents when this run was taken, and the run
-included every one of them at spec commit `add5471c`. The previous snapshot
-measured 1,544 documents and
-left 338 current documents in a declared-lag list. All 338 are included here.
+The count-only run covers all 2,164 current core documents and their 161 target
+sidecars. Each engine passed all 2,325 scored fixtures. The run checks expected
+output on each scored target; it does not compare unscored targets and makes no
+formatter or full-target agreement claim.
 
-Corpus added since this run: `502-an-attribute-line-under-an-attributed-sub-item-stays-in-that-item`,
+The Rust and PHP checkouts carried uncommitted carve#2643 lint changes; the
+JavaScript checkout was clean when the run started. The table lists their base
+commits. The lint changes affect diagnostics, not the measured render paths. The corpus
+includes the bracket-boundary controls and quoted-slot cases for carve#2645
+and carve#2587.
+
+<details>
+<summary>Earlier corpus measurements (2026-09-26 through 2026-09-30)</summary>
+
+
+The [2026-09-26 five-target core run](https://github.com/markup-carve/carve/blob/312001fcb712cf3c210990d2134c4f9faa1dd94c/docs/implementation-comparison-methodology.md)
+covered all 1,882 documents at spec commit `add5471c`, including the 338 that
+the preceding 1,544-document run had left in a declared-lag list. The notes
+below record subsequent corpus additions before the count refresh.
+
+Corpus added after the earlier run: `502-an-attribute-line-under-an-attributed-sub-item-stays-in-that-item`,
 `503-a-block-opener-indented-under-a-definition-term-is-term-text-at-every-depth`,
 `504-a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth`,
 `505-a-verbatim-line-keeps-what-sits-past-its-fence-opener-not-past-its-container`,
@@ -209,49 +224,46 @@ that the engines agree.
 The former case-by-case notes remain in the
 [previous snapshot](https://github.com/markup-carve/carve/blob/a22f6a23f7913e44cb3461f3f608605660619032/docs/implementation-comparison-methodology.md).
 
+</details>
+
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>1882 / 1882</strong>
+    <strong>2164 / 2164</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>1882 / 1882</strong>
+    <strong>2164 / 2164</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>1882 / 1882</strong>
+    <strong>2164 / 2164</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>0</strong>
-    <span>cross-implementation diffs</span>
+    <strong>Not measured</strong>
+    <span>unscored target agreement</span>
   </div>
 </div>
 
 | Implementation | Commit | Corpus | Scored fixtures | Mismatches | Errors |
 |----------------|--------|--------|-----------------|------------|--------|
-| Rust | `0cb580e0f` | `1882 / 1882` | `2042 / 2042` | `0` | `0` |
-| JS | `ba987c459` | `1882 / 1882` | `2042 / 2042` | `0` | `0` |
-| PHP | `6fb5c9ac` | `1882 / 1882` | `2042 / 2042` | `0` | `0` |
+| Rust | `3db5e6201` | `2164 / 2164` | `2325 / 2325` | `0` | `0` |
+| JS | `6d02fa706` | `2164 / 2164` | `2325 / 2325` | `0` | `0` |
+| PHP | `7033d04b1` | `2164 / 2164` | `2325 / 2325` | `0` | `0` |
 
-The run used `--shard=0/12` through `--shard=11/12` with clean engine
-checkouts. The twelve disjoint shards counted 1,882 documents and 9,410 target
-runs per engine. Each target compared all 1,882 documents. The scored fixtures
-were 1,882 HTML, 43 Markdown, 13 plain-text, 91 Carve, and 13 ANSI files per
-engine. No shard reported a mismatch, error, skip, or cross-engine difference.
-
-JS was built once before the shards started. A temporary copy of the comparison
-runner skipped only its redundant JS build preparation in each shard; the
-render commands, comparison logic, and corpus files were unchanged. The
-published run summary below combines the twelve shard reports. Timings are
-omitted because concurrent shards compete for machine resources.
+The command was `npm run compare:counts`, with `CARVE_RS_DIR`, `CARVE_JS_DIR`
+and `CARVE_PHP_DIR` pointing at the isolated engine checkouts. No case was
+skipped and no mismatch or engine error was reported. The output below records
+the limited target coverage of this run. The linked 2026-09-26 revision retains
+the earlier five-target snapshot.
 
 <details>
 <summary>What this run measures</summary>
 
-A scored fixture checks an engine against an expected file. Where a target has
-no fixture, the runner checks the three engines against each other. Agreement
-on rendered bytes does not prove that their AST trees agree; use
+A scored fixture checks an engine against an expected file. This count-only
+run checks those fixtures. It does not compare targets without an expected
+file; the full runner does that separately. Matching rendered bytes does not
+prove that AST trees agree; use
 `npm run ast:check` for that separate measurement. The installed build selected
 by `package.json` is also separate from the three engine commits listed above.
 
@@ -611,48 +623,41 @@ By default the script expects sibling checkouts:
 
 Override those paths with `CARVE_RS_DIR`, `CARVE_JS_DIR`, and `CARVE_PHP_DIR`.
 
-To reproduce the core snapshot, check out the engine commits in the table
-above and run all twelve shards. The stock runner rebuilds JS before each shard;
-the measured run built it once and skipped only the repeated preparation. Each
-invocation prints its own counts:
+To reproduce the core fixture counts, use the engine base commits in the table
+and run:
 
 ```bash
-for i in $(seq 0 11); do
-  CARVE_RS_DIR=../carve-rs \
-  CARVE_JS_DIR=../carve-js \
-  CARVE_PHP_DIR=../carve-php \
-  node scripts/compare-impls.mjs --shard="$i/12"
-done
+CARVE_RS_DIR=../carve-rs \
+CARVE_JS_DIR=../carve-js \
+CARVE_PHP_DIR=../carve-php \
+  npm run compare:counts
 ```
 
-The combined summary below omits `avg_ms`; concurrent CLI timing is not a
-performance measurement. See [Performance](./performance) for timing data.
+Use `npm run compare:impls` for the five-target sweep and add `-- --roundtrip`
+to check formatter conformance. The dated five-target snapshot linked above
+records its own engine commits and twelve-shard commands.
 
-Combined core shard summary, summed from twelve runner outputs:
+Core count-only summary:
 
 ```text
-Aggregated implementation summary (12 disjoint shards)
-profile=default/no-opt-in corpus=core corpus_pairs=1882 shards=12 targets=html,markdown,plain,carve,ansi
-rust: pass=2042/2042 mismatch=0 error=0 skipped=0 runs=9410
+Implementation summary
+profile=default/no-opt-in corpus=core corpus_pairs=2164 shard=0/1 targets=html,markdown,plain,carve,ansi
+rust: pass=2325/2325 mismatch=0 error=0 skipped=0 runs=2325
   mismatching documents: 0
-js: pass=2042/2042 mismatch=0 error=0 skipped=0 runs=9410
+js: pass=2325/2325 mismatch=0 error=0 skipped=0 runs=2325
   mismatching documents: 0
-php: pass=2042/2042 mismatch=0 error=0 skipped=0 runs=9410
+php: pass=2325/2325 mismatch=0 error=0 skipped=0 runs=2325
   mismatching documents: 0
 cross_impl_diffs=0
 
-Target agreement (implementations compared against each other)
-html: compared=1882 diffs=0 errors=0 fixtures=yes
-markdown: compared=1882 diffs=0 errors=0 fixtures=43
-plain: compared=1882 diffs=0 errors=0 fixtures=13
-carve: compared=1882 diffs=0 errors=0 fixtures=91
-ansi: compared=1882 diffs=0 errors=0 fixtures=13
+counts_only=1 targets_measured=html,markdown,plain,carve,ansi of html,markdown,plain,carve,ansi
+counts_only_note=this run validates the corpus counts only. Each document was rendered on the default target plus any target it carries an expected-output file for, so every SCORED case is scored - but nothing was compared engine-against-engine on an unscored target, so this makes no agreement claim and is not the published snapshot. Use `npm run compare:impls` for that.
 ```
 
-All three engines rendered every core document on every target. The `carve`
-target has expected-output files for 91 documents and checks engine agreement
-on the others. This output covers the full core corpus; no declared-lag
-category is subtracted from its denominator.
+The output names all targets that have scored fixtures. Its
+`cross_impl_diffs=0` counts only scored cases. It does not claim that every
+document was rendered on every target. Use `npm run compare:impls` for
+that full comparison and `--roundtrip` for formatter conformance.
 
 Optional run summary (CLI timings and per-case coverage lines omitted):
 

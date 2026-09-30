@@ -44555,7 +44555,7 @@ body
 
 ## A braced span cannot close beyond its bracket run
 
-A forced span or an editorial insertion, deletion or substitution opened inside a bracket run cannot pair with a closer outside that run (PART 8 parsing precedence). Both delimiters remain literal.
+A forced span or an editorial insertion, deletion or substitution opened inside a bracket run cannot pair with a closer outside that run (PART 8 parsing precedence). Both delimiters remain literal. Complete spans inside a run still parse. Editorial comments are opaque to bracket scanning, so a bracket inside a comment opens no run; the final controls pin those cases.
 
 ::: compare
 
@@ -44673,6 +44673,190 @@ A forced span or an editorial insertion, deletion or substitution opened inside 
 
 ```html
 <p>[{~a ~&gt; b]~}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{#a]#}
+```
+
+```html
+<p>[<span class="critic-comment">a]</span></p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{+a+}]
+```
+
+```html
+<p>[<ins>a</ins>]</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{^a^}]
+```
+
+```html
+<p>[<sup>a</sup>]</p>
+```
+
+:::
+
+## Quoted values and titles retain a non-punctuation backslash
+
+Quoted attributes and link titles resolve ASCII punctuation escapes. A backslash before a letter remains content; titles alone admit a newline (carve#2587).
+
+::: compare
+
+```carve
+[a](/u "t\zu")
+```
+
+```html
+<p><a href="/u" title="t\zu">a</a></p>
+```
+
+:::
+
+::: compare
+
+```carve
+[a]{k="t\zu"}
+```
+
+```html
+<p><span k="t\zu">a</span></p>
+```
+
+:::
+
+::: compare
+
+```carve
+[a](/u "t\}u")
+```
+
+```html
+<p><a href="/u" title="t}u">a</a></p>
+```
+
+:::
+
+::: compare
+
+```carve
+[a]{k="t\}u"}
+```
+
+```html
+<p><span k="t}u">a</span></p>
+```
+
+:::
+
+::: compare
+
+```carve
+[a](/u "t\\u")
+```
+
+```html
+<p><a href="/u" title="t\u">a</a></p>
+```
+
+:::
+
+::: compare
+
+```carve
+[a]{k="t\\u"}
+```
+
+```html
+<p><span k="t\u">a</span></p>
+```
+
+:::
+
+::: compare
+
+```carve
+[a](/u 't\zu')
+```
+
+```html
+<p><a href="/u" title="t\zu">a</a></p>
+```
+
+:::
+
+::: compare
+
+```carve
+[a]{k='t\zu'}
+```
+
+```html
+<p><span k="t\zu">a</span></p>
+```
+
+:::
+
+::: compare
+
+```carve
+[a](/u 't\}u')
+```
+
+```html
+<p><a href="/u" title="t}u">a</a></p>
+```
+
+:::
+
+::: compare
+
+```carve
+[a]{k='t\}u'}
+```
+
+```html
+<p><span k="t}u">a</span></p>
+```
+
+:::
+
+::: compare
+
+```carve
+[a](/u 't\\u')
+```
+
+```html
+<p><a href="/u" title="t\u">a</a></p>
+```
+
+:::
+
+::: compare
+
+```carve
+[a]{k='t\\u'}
+```
+
+```html
+<p><span k="t\u">a</span></p>
 ```
 
 :::

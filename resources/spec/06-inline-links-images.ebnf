@@ -265,8 +265,11 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
    satisfy the terminal with the line break after it. So
    `[r]: /u "t` + newline + `u"` is a paragraph and not a definition, in the
    executable spec and in all three engines. *)
-link_title = space, ('"', {('\', '"') | (character - '"')}, '"')
-           | space, ("'", {('\', "'") | (character - "'")}, "'") ;
+(* Titles resolve `escaped_char`, the whole ASCII punctuation escape set.
+   A backslash before any other character remains literal, as in a quoted
+   attribute value. Only the title slot admits a newline (carve#2587). *)
+link_title = space, ('"', {escaped_char | literal_backslash | (character - '"' - '\')}, '"')
+           | space, ("'", {escaped_char | literal_backslash | (character - "'" - '\')}, "'") ;
 
 reference_label = (character - ']' - '@'), {character - ']'} ;
 (* A LABEL THAT BEGINS WITH AN AT SIGN IS NOT A REFERENCE LABEL -- NORMATIVE [CARVE-P3-003].

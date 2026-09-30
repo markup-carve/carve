@@ -84,7 +84,7 @@ test('every deferred gate failure is drained, and the drain exits non-zero', () 
   assert.ok(drain.length > 0, 'nothing ever reads `deferredGateFailures`, so the gate cannot fail')
   assert.match(
     drain,
-    /process\.exit\(1\)/,
-    'the drain does not exit, so a deferred gate failure would report itself and pass',
+    /process\.exitCode\s*=\s*1/,
+    'the drain must set a failure status while allowing diagnostic output to finish',
   )
 })
