@@ -1785,6 +1785,4 @@ Generated from [the checked summary table](https://github.com/markup-carve/carve
 - `parenthesized_pairs`: base(annotation) in pair order.
 - `ruby`: ruby with rt and generated rp.
 - `fallback`: render the declared fallback (PART 12 §33); the row applies only when the reader does not know the extension name and the envelope does not mark it required.
-
-See the [AST rule index](./rules/ast-interchange) for each clause.
 <!-- END GENERATED AST FALLBACK MATRIX -->
