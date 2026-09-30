@@ -19,7 +19,7 @@
     "editorial_comment"
   ],
   "notImportable": [
-    "comment_block", "comment_line", "inline_comment", "braced_comment",
+    "quote_block", "comment_block", "comment_line", "inline_comment", "braced_comment",
     "literal_inline", "soft_break", "symbol", "inline_footnote", "em_dash",
     "en_dash", "braced_en_dash", "ellipsis", "arrow", "comparison",
     "typographic_symbol"
