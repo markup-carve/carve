@@ -288,7 +288,7 @@ export default defineConfig({
 
     footer: {
       message: 'Released under the MIT License.',
-      copyright: 'Carve — a post-Markdown markup language.',
+      copyright: 'Carve - a lightweight markup language for documents.',
     },
 
     search: {
