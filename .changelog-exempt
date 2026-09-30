@@ -48,3 +48,4 @@
 2646: 0.1.7 - clears comparison rows describing divergences the engines no longer have, and declares the one lint difference left with its owner. Ledger only; no clause, corpus row or oracle answer moved.
 2655: 0.1.7 - removes resolved public Markdown importer drift from the measurement ledger. No clause, corpus row or oracle answer changes.
 2669: 0.1.7 - removes resolved importer and lint comparison declarations and refreshes measured revisions. No clause, corpus row or oracle answer changes; changelog entries record the earlier rulings.
+2677: 0.1.7 - shortens layout explanations while preserving existing rule IDs and language behavior. No EBNF production, clause meaning, corpus row or oracle answer changes.
