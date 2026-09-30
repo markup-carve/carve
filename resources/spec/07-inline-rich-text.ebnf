@@ -110,7 +110,12 @@ forced_strike     = "{~", forced_content, "~}", [attribute_run] ;
 (* `{= … =}` is forced highlight (see Editorial Markup below for the
    distinction from the raw-inline `{=format}` attribute). *)
 forced_highlight  = "{=", forced_content, "=}", [attribute_run] ;
-forced_content    = (inline_element | text_run | literal_special)+ ;
+(* ONE RULE, SEVEN NAMES. Every emphasis-family span holds the same content, so
+   it is spelled once here and each slot below is a named alias of it. The names
+   stay because a call site reads better naming its own slot; widening what a
+   span may hold is one edit, here. *)
+inline_span_content = (inline_element | text_run | literal_special)+ ;
+forced_content    = inline_span_content ;
 (* AN EMPTY BRACE PAIR IS NOT A CONSTRUCT -- NORMATIVE [CARVE-P3-014]. The `+`
    above is load-bearing: an opener that meets its own closer with nothing
    between them opened nothing, and its characters are TEXT.
@@ -138,12 +143,12 @@ forced_content    = (inline_element | text_run | literal_special)+ ;
    satisfy the close condition (PART 9 §1) is literal content, not the span
    boundary. The span ends at the matched closer only. The boundary is a
    semantic constraint (PART 9 §1, §9), not a context-free one. *)
-emphasis_content = (inline_element | text_run | literal_special)+ ;
-strong_content = (inline_element | text_run | literal_special)+ ;
-bi_content = (inline_element | text_run | literal_special)+ ;
-underline_content = (inline_element | text_run | literal_special)+ ;
-strike_content = (inline_element | text_run | literal_special)+ ;
-highlight_content = (inline_element | text_run | literal_special)+ ;
+emphasis_content = inline_span_content ;
+strong_content = inline_span_content ;
+bi_content = inline_span_content ;
+underline_content = inline_span_content ;
+strike_content = inline_span_content ;
+highlight_content = inline_span_content ;
 
 (* --- Footnotes (PART 9 §16) --- *)
 (* Both implemented forms: the REFERENCE form `[^label]` resolving against a
@@ -330,11 +335,13 @@ comment_content = (* any text until the matching `#}`, preserved literally;
 
 (* --- Mentions and Tags --- *)
 mention = '@', mention_name ;
-mention_name = name_word, {'.', name_word} ;
+mention_name = dotted_name ;
 
 tag = '#', tag_name ;
-tag_name = name_word, {'.', name_word} ;
+tag_name = dotted_name ;
 
+(* A mention and a tag spell the same name; only the sigil differs. *)
+dotted_name = name_word, {'.', name_word} ;
 name_word = (letter | digit | '_' | '-')+ ;
 (* Dots are INTERIOR-only by construction: a dot followed by another name
    character continues the name (`@john.doe`, `#release-1.0`); a dot at the
