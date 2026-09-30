@@ -2,10 +2,10 @@
   "version": 1,
   "measured": {
     "date": "2026-09-30",
-    "spec": "8bf77c51c632fb83637f71b596452f628926872d",
-    "js": "48b9e0e63b8bcd188b8ad7d495ed5eab3169d007",
-    "php": "aac958afc053c203f228842816409864dfd59b42",
-    "rust": "d534899e5722aa785250737220ba453fba8ad060"
+    "spec": "b41f89b4d858ec9e71171170c01ede3743b53ca9",
+    "js": "3352c0e465ddb2fb43f7dcc849154560bc16d58b",
+    "php": "a256e00aa6ee7d1fc3508b332b77fa15795f653e",
+    "rust": "ea87db0ad129f963bcfe5cadf5b96304e40fe4a6"
   },
   "differences": []
 }

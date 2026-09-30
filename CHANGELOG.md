@@ -16,6 +16,7 @@ Releases before 0.1.6 are archived in
 - Container labels retain closed inline constructs before a comment cut. Braced inline spans pair within their bracket run, with the editorial-comment exception documented (#2653, #2656).
 - List indentation lint reports each block once. Quoted attributes and link titles share punctuation escapes and retain non-punctuation backslashes (#2656).
 - Empty raw-slot placement in list bodies is specified by the shared corpus (#2657).
+- Fenced blockquotes are reachable from the document grammar; inline name boundary rules remain in prose (#2673).
 - Overindented quote markers remain literal after a fence opened on the list-item marker line. Closing a later fence restores the authored indentation base (#2658).
 
 ## [0.1.7] - 2026-09-29
