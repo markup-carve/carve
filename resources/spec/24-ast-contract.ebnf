@@ -517,9 +517,8 @@
       node: `rowGroups.headAttrs`, `rowGroups.footAttrs` or
       `rowGroups.bodies[N].attrs`. An empty attributes object holds nothing to
       lose and is reported nowhere. It is NOT a render loss. `CARVE-P2-024`'s
-      code enum stays closed at `raw-format-dropped` and `ruby-flattened`
-      (CARVE-P11-046), and a dropped field is the one thing that report cannot
-      name. A structured
+      code enum does not hold it (CARVE-P11-046): a dropped field is the one
+      thing that report cannot name. A structured
       exporter MAY map the full partition to its target's equivalent. A
       canonical Carve source writer retains `header-rows` / `footer-rows` when
       they are present in table attributes; it MUST NOT invent a spelling for

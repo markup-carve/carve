@@ -563,6 +563,13 @@
         visible text IS its URL, and every target shows it. Blanking there
         would edit what the author wrote rather than withhold a destination:
         not required.
+
+        A BLANKED DESTINATION OWES ONE ROW on the `CARVE-P2-024` render-loss
+        report under the code `destination-denied`, in BOTH safe modes: the
+        flag does not gate the hardening, so it does not gate the reporting
+        either. A link or autolink destination and an image source blank the
+        same way and each take one row. The emitted value does not change;
+        a checked render reports what it blanked.
       - ATTRIBUTE NAME/VALUE HARDENING. On EVERY rendered element -- including
         elements emitted by extensions -- an HTML renderer MUST drop
         attributes whose name begins with `on` (case-insensitive) and the

@@ -21,12 +21,16 @@ sidecars. Each engine passed all 2,325 scored fixtures. The run checks expected
 output on each scored target; it does not compare unscored targets and makes no
 formatter or full-target agreement claim.
 
-Corpus added since this run: `535-a-marker-line-opaque-quote-keeps-overindented-markers-literal`.
+Corpus added since this run: `535-a-marker-line-opaque-quote-keeps-overindented-markers-literal`,
+`536-a-denied-destination-takes-one-render-loss-row-per-sink`.
 
 The 36 ownership controls were added after this count snapshot. They are not
 included in its denominators. The paired Rust fix merged in
 [carve-rs #2228](https://github.com/markup-carve/carve-rs/pull/2228); this
 recorded comparison still excludes these controls.
+
+Category 536 pins the two-row denied-destination case (carve#2679) and was also
+added after the snapshot, so it sits outside the denominators too.
 
 The Rust and PHP checkouts carried uncommitted carve#2643 lint changes; the
 JavaScript checkout was clean when the run started. The table lists their base
