@@ -1,0 +1,56 @@
+A container label preserves closed inline constructs before cutting a comment
+
+```
+:::[{+a %% secret+}]
+body
+:::
+.
+<div>
+  <p class="div-label"><ins>a</ins></p>
+  <p>body</p>
+</div>
+```
+
+```
+:::[{-a %% secret-}]
+body
+:::
+.
+<div>
+  <p class="div-label"><del>a</del></p>
+  <p>body</p>
+</div>
+```
+
+```
+:::[{% %% hidden %} after]
+body
+:::
+.
+<div>
+  <p class="div-label"> after</p>
+  <p>body</p>
+</div>
+```
+
+```
+:::[{# %% hidden #} after]
+body
+:::
+.
+<div>
+  <p class="div-label"><span class="critic-comment"> %% hidden </span> after</p>
+  <p>body</p>
+</div>
+```
+
+```
+:::[`a %% secret`]
+body
+:::
+.
+<div>
+  <p class="div-label"><code>a %% secret</code></p>
+  <p>body</p>
+</div>
+```

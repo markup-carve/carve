@@ -44463,3 +44463,216 @@ c
 ````
 
 :::
+
+## A container label preserves closed inline constructs before cutting a comment
+
+A container label is an inline run under CARVE-P9-041. A trailing comment inside a closed insertion or deletion ends at that construct’s closer. Delimited comments, critic comments and verbatim spans keep their own boundaries before the label’s trailing comment is considered.
+
+:::: compare
+
+```carve
+:::[{+a %% secret+}]
+body
+:::
+```
+
+```html
+<div>
+  <p class="div-label"><ins>a</ins></p>
+  <p>body</p>
+</div>
+```
+
+::::
+
+:::: compare
+
+```carve
+:::[{-a %% secret-}]
+body
+:::
+```
+
+```html
+<div>
+  <p class="div-label"><del>a</del></p>
+  <p>body</p>
+</div>
+```
+
+::::
+
+:::: compare
+
+```carve
+:::[{% %% hidden %} after]
+body
+:::
+```
+
+```html
+<div>
+  <p class="div-label"> after</p>
+  <p>body</p>
+</div>
+```
+
+::::
+
+:::: compare
+
+```carve
+:::[{# %% hidden #} after]
+body
+:::
+```
+
+```html
+<div>
+  <p class="div-label"><span class="critic-comment"> %% hidden </span> after</p>
+  <p>body</p>
+</div>
+```
+
+::::
+
+:::: compare
+
+```carve
+:::[`a %% secret`]
+body
+:::
+```
+
+```html
+<div>
+  <p class="div-label"><code>a %% secret</code></p>
+  <p>body</p>
+</div>
+```
+
+::::
+
+## A braced span cannot close beyond its bracket run
+
+A forced span or an editorial insertion, deletion or substitution opened inside a bracket run cannot pair with a closer outside that run (PART 8 parsing precedence). Both delimiters remain literal.
+
+::: compare
+
+```carve
+[{^a]^}
+```
+
+```html
+<p>[{^a]^}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{,a],}
+```
+
+```html
+<p>[{,a],}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{*a]*}
+```
+
+```html
+<p>[{*a]*}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{/a]/}
+```
+
+```html
+<p>[{/a]/}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{+a]+}
+```
+
+```html
+<p>[{+a]+}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{-a]-}
+```
+
+```html
+<p>[{-a]-}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{~a]~}
+```
+
+```html
+<p>[{~a]~}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{_a]_}
+```
+
+```html
+<p>[{_a]_}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{=a]=}
+```
+
+```html
+<p>[{=a]=}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[{~a ~> b]~}
+```
+
+```html
+<p>[{~a ~&gt; b]~}</p>
+```
+
+:::

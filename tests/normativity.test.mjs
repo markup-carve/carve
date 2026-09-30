@@ -144,6 +144,7 @@ test('interruption and target tables use closed vocabularies', () => {
   const capabilities = readJson('resources/spec/target-capabilities.json')
   const targets = ['html', 'markdown', 'plain', 'ansi', 'carve']
   const ruleIds = new Set(readJson('resources/spec/rules.json').rules.map(({ id }) => id))
+  assert.ok(ruleIds.has(interruption.recognitionBoundary.rule), 'interruption boundary cites an unknown rule')
   for (const [feature, matrix] of Object.entries(capabilities.features)) {
     assert.ok(ruleIds.has(matrix.rule), `${feature} cites an unknown rule`)
     const { rule, ...answers } = matrix

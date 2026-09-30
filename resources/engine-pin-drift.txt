@@ -24,3 +24,4 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+533-a-braced-span-cannot-close-beyond-its-bracket-run-10  The pinned JavaScript reader pairs a substitution across its bracket boundary; the fix is tracked by markup-carve/carve#2645.
