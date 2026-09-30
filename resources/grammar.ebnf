@@ -2851,7 +2851,7 @@ autolink = '<', (url_autolink | email_autolink), '>', [attribute_run] ;
    email_autolink has no explicit scheme, so it shows the address and the
    `mailto:` is added only to the href
    (`<a@b.com>` -> `<a href="mailto:a@b.com">a@b.com</a>`). *)
-url_autolink = scheme, ':', {url_char}+ ;
+url_autolink = url ;  (* the same token the destination slot reads *)
 (* The autolink body is built from `url_char` only; `<` and `>` are NOT
    url_chars, so a `<` inside the brackets cannot be part of the body --
    `<http://a.com/<script>>` is not an autolink and renders as the fully
