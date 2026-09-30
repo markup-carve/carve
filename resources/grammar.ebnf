@@ -326,11 +326,12 @@
         open paragraph. Select the owner before continuing the leaf.
 
         THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST BLOCK -- NORMATIVE [CARVE-P0-007].
-        Classify marker-line content as the item's first block. A heading,
-        table, thematic break, comment, link or footnote definition, or floating
-        attribute block leaves no paragraph open; a following document-column
-        line ends the item. Ordinary prose or a quote ending in prose permits a lazy fold.
-        The same classification applies to indented blocks and quote bodies.
+        Classify marker-line content as the item's first block, using S4's
+        test: does any container in the open stack hold an open paragraph?
+        Headings, tables, thematic breaks, comments, link/footnote definitions
+        and floating attributes leave none open. Ordinary prose, or a container
+        ending in an open paragraph, permits a lazy fold. This applies equally
+        to marker-line content, indented blocks and quote bodies.
 
         A terminated comment span on a nested item's marker line is that
         item's first block. In `- a` / `  - %%%` / `    hidden` / `%%%` /
@@ -451,9 +452,23 @@
         column. At every other column it folds into the paragraph. For
         `- a` / `  > q`, column 2 opens; column 1 and columns 3 through 8 fold,
         including the quote's column 4. Corpus 531 pins this band in all hosts.
-        An unmarked line supplies no quote prefix. Ordinary over-indented text establishes no authored base
-        (CARVE-P0-004). After a blank closes the paragraph, an opener in the
-        host may establish a new authored base.
+
+        §2's rebasing is what the band turns on. "A recognized opener PAST that
+        column establishes its authored visual column" presumes the line IS a
+        recognized opener there, and past the column it is one only where
+        nothing can take it as text -- with a container in the open stack
+        holding an OPEN PARAGRAPH the line is ordinary over-indented text, and
+        §2's last sentence gives such text no base. AT the content column it is
+        an opener whatever is open, because that column IS the body's column 0
+        (§24 C3) and a block there ends the paragraph it sits under
+        (CARVE-P0-011). So `- a` over `  > q` opens a block at column 2 alone.
+        Column 1 is below the item's column, columns 3 through 8 are above it,
+        column 4 is the quote's own content column, and all of them fold: a line
+        that writes no `>` is in no quote at any column, and none of these
+        reaches an opener column.
+
+        A blank closes the paragraph. In the host, the same opener then opens
+        a sibling block on its authored base (carve#2598).
 
         At document level an indented fence is text at every nonzero column,
         with or without a blank; no container minimum permits rebasing there.
@@ -535,12 +550,15 @@
         Where no container in the stack holds an open paragraph, select the
         nearest surviving ancestor whose content column the line reaches and
         close intervening containers at every depth. The inner item keeps its
-        fence body; reclassify the run in the selected owner. A document-column
-        run opens a document-level code block. With inner
+        fence body; reclassify the run in the selected owner at its own column
+        (carve#2490). With no open paragraph at document level, a run at
+        document column 0 opens a code block. With inner
         content column 4, a run at column 0 or 1 reaches the document; a run at
-        column 2 reaches an outer item. This holds for items, definition bodies
+        column 2 reaches an outer item.
+
+        AND NO HOST TERM (carve#2538). This holds for items, definition bodies
         and footnote bodies inside quotes too: an unmarked column-0 line
-        reaches the document. Matched `%%%` spans are the exception (§28):
+        reaches the document. Matched `%%%` spans are the exception (PART 9 §28):
         their whitespace slot admits a closer at any column, ending the span
         without ending a container.
 
