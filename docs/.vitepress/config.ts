@@ -126,6 +126,7 @@ export default defineConfig({
             text: 'Learn',
             items: [
               { text: 'Cheat Sheet', link: '/cheatsheet' },
+            { text: 'Community', link: '/community' },
               { text: 'Examples', link: '/examples' },
               { text: 'Coming from Markdown', link: '/migrate-from-markdown' },
             ],
@@ -172,6 +173,7 @@ export default defineConfig({
           { text: 'Implement Carve', link: '/implementing-carve' },
         ],
       },
+      { text: 'Community', link: '/community' },
     ],
 
     // Path-keyed (multi) sidebar so each page's sub-nav lists only its own
@@ -279,6 +281,7 @@ export default defineConfig({
 
     socialLinks: [
       { icon: 'github', link: 'https://github.com/markup-carve' },
+      { icon: 'discord', link: 'https://discord.gg/ENgwFBdUZV' },
     ],
 
     editLink: {
