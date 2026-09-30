@@ -1,6 +1,6 @@
 # Carve
 
-Carve is a markup language for documents. Its file extension is `.crv`.
+Carve is a lightweight markup language for documents and the web. Its file extension is `.crv`.
 
 ```carve
 # Release notes
