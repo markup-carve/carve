@@ -419,6 +419,19 @@
   max-width: 100%;
   height: auto;
 }
+
+/* An uncaptioned block image is a bare <img> with no wrapper - a direct child of
+   the render root, an admonition or a list item - so it matches neither rule
+   above and stays inline, putting two consecutive block images on one line.
+   Figure images are excluded because their spacing belongs to the caption. The
+   gallery and scroll-container exclusions carve-css carries are left out: this
+   site renders neither. */
+.carve-render img:not(p img):not(figure img) {
+  display: block;
+  margin: 0 0 1rem;
+  max-width: 100%;
+  height: auto;
+}
 .carve-render figcaption {
   margin-top: 0.45rem;
   padding-left: 0.6rem;
@@ -728,6 +741,32 @@
   border-bottom: 1px dotted var(--vp-c-text-3);
 }
 
+/* Highlight (`=text=` -> <mark>). Unstyled, a <mark> takes the browser default
+   yellow wash and keeps the surrounding ink, so a highlight inside a link or a
+   caption can land unreadable and ignores the dark theme. Name a background and
+   an ink together, both from variables each theme defines, and let a nested
+   inline take the highlight ink instead of its own palette color.
+
+   Duplicates carve-css; replace with an import of its core.css layer once a
+   published release carries the corrected extension rules. */
+.carve-render mark,
+.carve-playground mark {
+  --carve-highlight-bg: var(--vp-c-yellow-soft, rgba(234, 179, 8, 0.22));
+  --carve-highlight-ink: var(--vp-c-text-1);
+  background: var(--carve-highlight-bg);
+  color: var(--carve-highlight-ink);
+  border-radius: 2px;
+  padding: 0 2px;
+}
+.carve-render mark a,
+.carve-render mark del,
+.carve-render mark ins,
+.carve-playground mark a,
+.carve-playground mark del,
+.carve-playground mark ins {
+  color: inherit;
+}
+
 /* Code-block chrome (playground output): hover shows the language + copy icon
    in the top-right corner. Decoration wired in Playground.vue. */
 .carve-render pre[data-pill] {
@@ -834,3 +873,48 @@
   color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
 }
 .carve-render .code-group-radio:nth-of-type(6):checked ~ .code-group-panel:nth-of-type(6) { display: block; }
+
+/* Tab set (tabs extension, default `mode: "css"`). Measured against the pinned
+   engine: the render emits every <input.tabs-radio>+<label.tabs-label> first and
+   then all the <div.tabs-panel>s, so the wiring is :checked plus a general
+   sibling and nth-of-type - an adjacency ladder would pair a checked radio with
+   the next radio and leave every panel hidden. Same shape as code-group above.
+
+   These rules duplicate carve-css. Replace them with an import of its
+   core.css + extensions.css layers once a published release carries the
+   corrected panel wiring (0.1.0 is what resolves today, and its extensions
+   layer has the broken adjacency). */
+.carve-render .tabs { margin: 12px 0; position: relative; }
+/* Visually hidden rather than display:none so the radio stays focusable and
+   keyboard-reachable; absolute so focusing it does not scroll the page. */
+.carve-render .tabs-radio { position: absolute; top: 0; left: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.carve-render .tabs-label {
+  display: inline-block; cursor: pointer; padding: 4px 12px; font-size: 13px;
+  color: var(--vp-c-text-2); border: 1px solid transparent; border-bottom: none;
+  border-radius: 6px 6px 0 0;
+}
+.carve-render .tabs-panel { display: none; border: 1px solid var(--vp-c-divider); border-radius: 0 6px 6px 6px; padding: 0 16px; }
+.carve-render .tabs-radio:nth-of-type(1):checked ~ .tabs-label:nth-of-type(1) {
+  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
+}
+.carve-render .tabs-radio:nth-of-type(1):checked ~ .tabs-panel:nth-of-type(1) { display: block; }
+.carve-render .tabs-radio:nth-of-type(2):checked ~ .tabs-label:nth-of-type(2) {
+  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
+}
+.carve-render .tabs-radio:nth-of-type(2):checked ~ .tabs-panel:nth-of-type(2) { display: block; }
+.carve-render .tabs-radio:nth-of-type(3):checked ~ .tabs-label:nth-of-type(3) {
+  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
+}
+.carve-render .tabs-radio:nth-of-type(3):checked ~ .tabs-panel:nth-of-type(3) { display: block; }
+.carve-render .tabs-radio:nth-of-type(4):checked ~ .tabs-label:nth-of-type(4) {
+  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
+}
+.carve-render .tabs-radio:nth-of-type(4):checked ~ .tabs-panel:nth-of-type(4) { display: block; }
+.carve-render .tabs-radio:nth-of-type(5):checked ~ .tabs-label:nth-of-type(5) {
+  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
+}
+.carve-render .tabs-radio:nth-of-type(5):checked ~ .tabs-panel:nth-of-type(5) { display: block; }
+.carve-render .tabs-radio:nth-of-type(6):checked ~ .tabs-label:nth-of-type(6) {
+  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
+}
+.carve-render .tabs-radio:nth-of-type(6):checked ~ .tabs-panel:nth-of-type(6) { display: block; }
