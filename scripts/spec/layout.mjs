@@ -857,9 +857,18 @@ const TIER1 = new Set(['note', 'tip', 'warning', 'danger', 'info', 'success', 'e
 
 // parse a `:::` opener tail (STRICT, PART 9 SS12): type word, optional
 // quoted title, optional [label]; a bare pipe / backslash selects the
-// line-block / hard-break block; anything else makes the line an ordinary
-// paragraph line. A bare type is a class, so it admits an ASCII digit first.
+// line-block / hard-break block. Invalid metadata on a recognized named
+// container is dropped; an unrecognized prefix stays paragraph text. A bare
+// type is a class, so it admits an ASCII digit first.
 function parseColonOpener(tail) {
+  const valid = parseValidColonOpener(tail)
+  if (valid) return valid
+  const recovered = /^ +([A-Za-z0-9_][A-Za-z0-9_-]*)(?=$|[\s\u0085"{\[“”])[^\r\n]*$/.exec(tail)
+  if (!recovered) return null
+  return { type: recovered[1], title: null, label: null, mode: 'div', invalidMetadata: true }
+}
+
+function parseValidColonOpener(tail) {
   let s = tail
   const out = { type: null, title: null, label: null, mode: 'div' }
   if (/^[ \t]*$/.test(s)) return out // bare generic div
@@ -3297,7 +3306,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             } else if (opener.type === 'toc') {
               throw new Refuse('::: toc directive')
             } else if (
-              opener.type === 'figure' && opener.title === null && opener.label === null &&
+              !opener.invalidMetadata && opener.type === 'figure' && opener.title === null && opener.label === null &&
               !state.inFigureGroup
             ) {
               // PART 9 SS4c: a BARE `::: figure` opener is a composite figure

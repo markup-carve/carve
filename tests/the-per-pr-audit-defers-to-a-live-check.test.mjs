@@ -94,6 +94,8 @@ test('the per-PR workflow still gates undeclared drift, which is what the lenien
     /tests\/corpus-convert\.test\.mjs/,
     'npm test no longer checks the pinned converter drift in either direction',
   )
+  assert.match(pkg.scripts.test, /tests\/optional-corpus\.test\.mjs/,
+    'npm test must gate the optional reference-pin window in both directions')
   assert.match(
     scheduledWorkflow,
     /run: npm run compare:convert\b/,
@@ -130,6 +132,7 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
       ['resources/engine-pin-drift.txt', 'owed', 'declared'],
       ['resources/html-import-pin-drift.txt', 'owed', 'declared'],
       ['tests/corpus-convert.test.mjs', 'owed', 'manual'],
+      ['tests/optional-corpus.test.mjs', 'owed', 'manual'],
     ].sort(),
     'a spec ledger other than the engine-lag ones now reads differently per-PR',
   )

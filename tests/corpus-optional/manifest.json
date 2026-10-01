@@ -328,6 +328,11 @@
       "slug": "64-math-hydration-wrapper",
       "feature": "math-block",
       "description": "Display math hydration wrapper."
+    },
+    {
+      "slug": "65-tabs-invalid-title-recovery",
+      "feature": "tabs",
+      "description": "Bare tab titles are diagnosed and dropped; panels retain their blocks and use Tab N, the inner heading, or the preceding legacy label attribute."
     }
   ]
 }

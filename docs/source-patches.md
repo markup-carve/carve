@@ -88,7 +88,8 @@ toCarvePatch(source) -> SourcePatch
 
 `replacement` is the complete intended document, not an isolated snippet.
 `toCarvePatch` prepares canonical formatting and routes a proposal to
-`unresolved` when the engine reports rendering loss.
+`unresolved` when the engine reports rendering loss or formatting would drop
+invalid container metadata. Review that proposal before applying it.
 
 The initial patch creator returns the smallest single replacement by retaining
 the common UTF-8 prefix and suffix. The contract permits future engines to

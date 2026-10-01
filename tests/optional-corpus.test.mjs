@@ -178,7 +178,9 @@ const DECLARED_UNIMPLEMENTED = {
  * An entry is deleted in the commit that moves the pin past it; the check below
  * fails an entry whose case already matches, so a stale one cannot sit here.
  */
-const AHEAD_OF_PIN = {}
+const AHEAD_OF_PIN = {
+  '65-tabs-invalid-title-recovery': 'carve#2693: the reference pin predates invalid container metadata recovery',
+}
 
 /*
  * THE RATCHET ON THE EXCUSE, because an entry above can only ever turn a

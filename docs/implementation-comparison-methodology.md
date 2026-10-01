@@ -22,7 +22,8 @@ output on each scored target; it does not compare unscored targets and makes no
 formatter or full-target agreement claim.
 
 Corpus added since this run: `535-a-marker-line-opaque-quote-keeps-overindented-markers-literal`,
-`536-a-denied-destination-takes-one-render-loss-row-per-sink`.
+`536-a-denied-destination-takes-one-render-loss-row-per-sink`,
+`537-invalid-named-container-metadata-keeps-the-subtree`.
 
 The 36 ownership controls were added after this count snapshot. They are not
 included in its denominators. The paired Rust fix merged in
@@ -876,3 +877,5 @@ once before comparison. The scheduled formatter workflow keeps measuring the
 entire latest corpus, so pending rulings remain visible there. Engine heads are
 resolved from their main branches once per run; an engine regression can still
 fail a PR against unchanged corpus cases.
+
+Optional corpus added since this run: `65-tabs-invalid-title-recovery`.

@@ -171,7 +171,7 @@ metadata channel.
 
 Two strictness rules to know:
 
-- The header must use **straight double quotes**. An unquoted trailing word (`::: note Custom Title`) or typographic quotes (`::: note “Custom”`, the kind word processors and CMS text filters substitute) make the line *not a fence at all* - the whole block degrades to a literal paragraph. If you see raw `:::` lines in your output, check the quotes first.
+- The header must use **straight double quotes**. Bare titles (`::: note Custom Title`), typographic quotes, malformed labels and inline attributes are invalid metadata. Once a fence and its separated kind word identify a container, report `fence-title-syntax`, drop the opener's metadata, and parse its children as blocks. The closer keeps its usual fence-width rule. Tabs use their existing name fallback, ending at `Tab N`; a bare title never supplies the name. A glued kind (`:::note`) or a missing kind (`::: {.x}`) has no recognized container prefix and remains paragraph text.
 - The quoted opener header is the only thing that produces the visible `<p class="admonition-title">`. A `title="…"` key on the preceding attribute line is an ordinary HTML `title` attribute (a hover tooltip) like on any block - a different channel, not a fallback spelling.
 
 #### Title vs. label - which one do I want?

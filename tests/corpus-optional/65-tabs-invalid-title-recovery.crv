@@ -1,0 +1,14 @@
+:::: tabs
+::: tab Install
+Body one.
+:::
+::: tab Configure
+# Actual heading
+
+Body two.
+:::
+{label="Legacy"}
+::: tab Ignored title
+Body three.
+:::
+::::
