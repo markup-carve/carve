@@ -53,7 +53,10 @@
             "properties": {
               "code": { "const": "destination-denied" },
               "nodeType": { "const": "inline" },
-              "format": false
+              "format": false,
+              "message": {
+                "enum": ["Blanked a denied destination scheme", "Blanked a denied image source"]
+              }
             }
           }
         ],

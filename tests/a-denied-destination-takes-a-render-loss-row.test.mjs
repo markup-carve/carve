@@ -14,6 +14,11 @@
  * Both directions are checked. An enum entry alone would accept an entry naming
  * a `format` it cannot have, and the refusals below are what make the third
  * `oneOf` branch load-bearing rather than decorative.
+ *
+ * The `message` is NAMED by the clause, not engine-owned, and the schema holds
+ * the two strings as an enum. The schema cannot say WHICH sink takes which - a
+ * row carries no sink field and `nodeType` is `inline` for both - so membership
+ * is gated here and the pairing is gated in each engine against a real render.
  */
 
 import test from 'node:test'
@@ -64,4 +69,34 @@ test('a blanked destination row is refused at block level', () => {
 test('the enum still refuses an unknown code and an unknown key', () => {
   assert.equal(validate(report({ ...row, code: 'destination-blanked' })), false)
   assert.equal(validate(report({ ...row, scheme: 'javascript' })), false)
+})
+
+const CLAUSE_STRINGS = ['Blanked a denied destination scheme', 'Blanked a denied image source']
+
+test('the clause names both messages, and the schema holds exactly those two', () => {
+  const clause = readFileSync(resolve(repo, 'resources/spec/04-blocks-tables-containers.ebnf'), 'utf8')
+  for (const text of CLAUSE_STRINGS) {
+    assert.ok(clause.includes(`\`${text}\``), `CARVE-P2-024 no longer names ${text}`)
+  }
+
+  const branch = schema.properties.losses.items.oneOf.find(
+    (one) => one.properties?.code?.const === 'destination-denied',
+  )
+  assert.deepEqual(branch.properties.message.enum, CLAUSE_STRINGS)
+})
+
+test('a message outside the two named strings is refused', () => {
+  /* The three spellings the engines carried before this clause, plus two near
+   * misses. A target suffix repeats a field the row already carries, and
+   * collapsing the two sinks discards the only place the sink kind survives. */
+  const refused = [
+    'Blanked a denied destination scheme while rendering html',
+    'Blanked a denied image source while rendering html',
+    'Blanked a destination with a denied URL scheme while rendering html',
+    'blanked a denied destination scheme',
+    '',
+  ]
+  for (const message of refused) {
+    assert.equal(validate(report({ ...row, message })), false, `accepted ${JSON.stringify(message)}`)
+  }
 })
