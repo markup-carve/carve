@@ -10,8 +10,8 @@ import { miscount } from '../scripts/spec/participants.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 /*
- * One factory per section. Tier-3 is never corpus-pinned, so a hand-written
- * example here has no other verifier - rendering each section through ONLY its
+ * One factory per section. Most Tier-3 examples have no optional corpus pair.
+ * Rendering each section through ONLY its
  * own extension is what stops these from becoming decorative HTML nobody runs.
  */
 const factories = new Map([

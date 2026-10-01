@@ -46,9 +46,8 @@ none of them is the pin itself:
    longer reports.
 3. **Tier-3 examples.** `tests/examples-tier3.test.mjs` compares the
    hand-written examples in `resources/examples-tier3.md` against the pinned
-   build. Tier-3 is never corpus-pinned, so this test is their only verifier,
-   and there is no committed golden beside them - the ` ```html ` fence IS the
-   expectation. So a Tier-3 ruling that lands before the engine ships it goes in
+   build. Diagram and math hydration wrappers also have optional corpus pairs.
+   For examples without a pair, the ` ```html ` fence supplies the expectation. So a Tier-3 ruling that lands before the engine ships it goes in
    the fence, and its section is named in `AHEAD_OF_PIN` in that test file, the
    same window `resources/engine-pin-drift.txt` declares for the core corpus.
    **A diff here at bump time is a decision, never a re-snapshot**: the ledger

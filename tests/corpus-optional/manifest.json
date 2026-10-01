@@ -273,6 +273,61 @@
       "slug": "53-core-and-extension-directive-classes",
       "feature": "spoiler",
       "description": "The core div kind class leads two authored attributes; the extension wrapper class trails them (CARVE-P10-011)."
+    },
+    {
+      "slug": "54-mermaid-hydration-wrapper",
+      "feature": "fenced-render-mermaid",
+      "description": "Mermaid text hydration wrapper."
+    },
+    {
+      "slug": "55-d2-hydration-wrapper",
+      "feature": "fenced-render-d2",
+      "description": "D2 text hydration wrapper."
+    },
+    {
+      "slug": "56-graphviz-hydration-wrapper",
+      "feature": "fenced-render-graphviz",
+      "description": "Graphviz text hydration wrapper."
+    },
+    {
+      "slug": "57-dot-hydration-wrapper",
+      "feature": "fenced-render-graphviz",
+      "description": "The dot alias uses the graphviz wrapper class."
+    },
+    {
+      "slug": "58-wavedrom-hydration-wrapper",
+      "feature": "fenced-render-wavedrom",
+      "description": "WaveDrom text hydration wrapper."
+    },
+    {
+      "slug": "59-abc-hydration-wrapper",
+      "feature": "fenced-render-abc",
+      "description": "ABC music notation hydration wrapper."
+    },
+    {
+      "slug": "60-plantuml-hydration-wrapper",
+      "feature": "fenced-render-plantuml",
+      "description": "PlantUML text hydration wrapper."
+    },
+    {
+      "slug": "61-puml-hydration-wrapper",
+      "feature": "fenced-render-plantuml",
+      "description": "The puml alias uses the plantuml wrapper class."
+    },
+    {
+      "slug": "62-vega-lite-hydration-wrapper",
+      "feature": "fenced-render-vega-lite",
+      "description": "Vega-Lite JSON hydration wrapper."
+    },
+    {
+      "slug": "63-chart-hydration-wrapper",
+      "feature": "fenced-render-chart",
+      "description": "Chart.js JSON hydration wrapper."
+    },
+    {
+      "slug": "64-math-hydration-wrapper",
+      "feature": "math-block",
+      "description": "Display math hydration wrapper."
     }
   ]
 }

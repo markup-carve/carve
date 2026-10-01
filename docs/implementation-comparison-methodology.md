@@ -674,26 +674,26 @@ Optional run summary (CLI timings and per-case coverage lines omitted):
 
 ```text
 Implementation summary
-profile=optional/opt-in corpus=optional corpus_pairs=53 shard=0/1 targets=html,markdown,plain,ansi
-rust: pass=52/52 mismatch=0 error=0 skipped=1 runs=52
+profile=optional/opt-in corpus=optional corpus_pairs=64 shard=0/1 targets=html,markdown,plain,ansi
+rust: pass=64/64 mismatch=0 error=0 skipped=0 runs=64
   mismatching documents: 0
-js: pass=53/53 mismatch=0 error=0 skipped=0 runs=53
+js: pass=64/64 mismatch=0 error=0 skipped=0 runs=64
   mismatching documents: 0
-php: pass=53/53 mismatch=0 error=0 skipped=0 runs=53
+php: pass=64/64 mismatch=0 error=0 skipped=0 runs=64
   mismatching documents: 0
 cross_impl_diffs=0
 
 Target agreement (implementations compared against each other)
-html: compared=45 diffs=0 errors=0 fixtures=yes
+html: compared=56 diffs=0 errors=0 fixtures=yes
 markdown: compared=3 diffs=0 errors=0 fixtures=yes
 plain: compared=3 diffs=0 errors=0 fixtures=yes
 ansi: compared=2 diffs=0 errors=0 fixtures=yes
 ```
 
-The resolver case runs through the host callback APIs in carve-js and
-carve-php. carve-rs implements the same API in the library, but its command-line
-interface cannot accept host callbacks, so the comparison runner cannot reach
-that implementation.
+The resolver case runs through host callbacks in carve-js and carve-php, and
+through a library example binary in carve-rs. The optional corpus also covers
+the eight diagram presets, both diagram aliases, and display math. These cases
+compare hydration wrappers without invoking graphics libraries.
 
 It was 30 of 33 uncompared until carve#521, and exactly one after that until
 carve-js gained locale-aware smart quotes (carve-js#996). The features were implemented

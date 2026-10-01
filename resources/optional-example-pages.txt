@@ -41,3 +41,18 @@ out: examples/processor-options.md
   markdown-typography-source
   plain-typography-source
   ansi-typography-source
+
+[visual-wrappers] Diagram and math hydration wrappers
+> Enable these Tier-3 presets to emit wrappers for client libraries. The fixtures pin classes, accessible names and source payloads; the host library draws the graphics.
+kind: extensions-enable
+out: examples/extensions.md
+order: 3
+  fenced-render-mermaid
+  fenced-render-d2
+  fenced-render-graphviz
+  fenced-render-wavedrom
+  fenced-render-abc
+  fenced-render-plantuml
+  fenced-render-vega-lite
+  fenced-render-chart
+  math-block

@@ -235,6 +235,15 @@ const rustBaseCommand = rustCarveBinary
  * needs a CLI path; those cases stay unreached there and are reported as such.
  */
 const PLAIN_EXTENSION_FEATURES = {
+  'fenced-render-mermaid': { js: 'mermaid', php: 'FencedRenderExtension', phpFactory: 'mermaid' },
+  'fenced-render-d2': { js: 'd2', php: 'FencedRenderExtension', phpFactory: 'd2' },
+  'fenced-render-graphviz': { js: 'graphviz', php: 'FencedRenderExtension', phpFactory: 'graphviz' },
+  'fenced-render-wavedrom': { js: 'wavedrom', php: 'FencedRenderExtension', phpFactory: 'wavedrom' },
+  'fenced-render-abc': { js: 'abc', php: 'FencedRenderExtension', phpFactory: 'abc' },
+  'fenced-render-plantuml': { js: 'plantuml', php: 'FencedRenderExtension', phpFactory: 'plantuml' },
+  'fenced-render-vega-lite': { js: 'vegaLite', php: 'FencedRenderExtension', phpFactory: 'vegaLite' },
+  'fenced-render-chart': { js: 'chart', php: 'FencedRenderExtension', phpFactory: 'chart' },
+  'math-block': { js: 'mathBlock', php: 'MathBlockExtension' },
   'citations-numbered': { js: 'citations', php: 'CitationsExtension' },
   'citations-author-date': {
     js: 'citations',
@@ -302,6 +311,15 @@ const UNREACHABLE_REASONS = {}
 // Values after the key configure extensions whose optional corpus case does not
 // use the registry default.
 const RUST_EXTENSION_FEATURES = {
+  'fenced-render-mermaid': ['fenced-render'],
+  'fenced-render-d2': ['fenced-render-d2'],
+  'fenced-render-graphviz': ['fenced-render-graphviz'],
+  'fenced-render-wavedrom': ['fenced-render-wavedrom'],
+  'fenced-render-abc': ['fenced-render-abc'],
+  'fenced-render-plantuml': ['fenced-render-plantuml'],
+  'fenced-render-vega-lite': ['fenced-render-vega-lite'],
+  'fenced-render-chart': ['fenced-render-chart'],
+  'math-block': ['math-block'],
   'bare-url-autolink': ['autolink'],
   'citations-numbered': ['citations'],
   'citations-author-date': ['citations', '--citation-mode', 'author-date'],
@@ -757,7 +775,7 @@ const impls = [
           `
             require 'vendor/autoload.php';
             $converter = new MarkupCarve\\Carve\\CarveConverter();
-            $converter->addExtension(new MarkupCarve\\Carve\\Extension\\${plain.php}(${plain.phpArgs ?? ''}));
+            $converter->addExtension(${plain.phpFactory ? '' : 'new '}MarkupCarve\\Carve\\Extension\\${plain.php}${plain.phpFactory ? '::' + plain.phpFactory : ''}(${plain.phpArgs ?? ''}));
             echo $converter->convert(file_get_contents($argv[1]));
           `,
         ]
@@ -1787,8 +1805,8 @@ for (const impl of active) {
 
 console.log(
   corpusName === 'optional'
-    ? 'extension_profile_note=optional Tier-2 cases run only where an implementation exposes the matching adapter.'
-    : 'extension_profile_note=this run compares default/no-opt-in output. Use --corpus=optional for Tier-2 opt-in adapters.',
+    ? 'extension_profile_note=optional extension cases run only where an implementation exposes the matching adapter.'
+    : 'extension_profile_note=this run compares default/no-opt-in output. Use --corpus=optional for opt-in extension adapters.',
 )
 
 if (bench) {
