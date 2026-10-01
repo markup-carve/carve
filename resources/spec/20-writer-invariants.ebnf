@@ -280,11 +280,15 @@
         { "code": "field-unspellable", "node": "math", "field": "label",
           "message": "Carve source spells no equation label" }
 
-      THE MESSAGE IS PRESENTATION, AND IT IS NOT COMPARED. An entry's contract is
-      its other fields; the sentence is the engine's, so two engines describing
-      one loss in different words both conform. No clause here states what a
-      message names, and a conformance fixture states none
+      A MESSAGE NO CLAUSE NAMES IS PRESENTATION, AND IT IS NOT COMPARED. Such an
+      entry's contract is its other fields; the sentence is the engine's, so two
+      engines describing one loss in different words both conform. No clause here
+      states what a message names, and a conformance fixture states none
       (markup-carve/carve#2454).
+
+      WHERE A CLAUSE NAMES A MESSAGE, THAT TEXT IS THE CONTRACT and an engine
+      emits it verbatim, with nothing appended. `CARVE-P2-024`'s
+      `destination-denied` names two; this channel names none.
 
       THE FIELD IS WHY THIS IS NOT THAT REPORT. `CARVE-P2-024`'s `code` enum
       holds `raw-format-dropped`, `ruby-flattened` and `destination-denied`,

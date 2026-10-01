@@ -1956,8 +1956,12 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
 
    Each destination the PART 9 §25 sink denylist blanks contributes one loss in
    document order with the stable code `destination-denied`, the selected
-   `target`, `nodeType` of `inline`, its `pos` when recorded, and a short
-   message. It has NO `format`.
+   `target`, `nodeType` of `inline`, its `pos` when recorded, and NO `format`.
+   Its `message` is NAMED HERE and emitted verbatim: a link or autolink
+   destination takes `Blanked a denied destination scheme`, and an image source
+   takes `Blanked a denied image source`. `nodeType` is `inline` for both, so
+   the message is where the sink kind survives; `target` is already a field, so
+   the message does not repeat it.
 
    A loss records WHAT THE SELECTED RENDERER ACTUALLY DROPS OR FLATTENS, not
    every raw or ruby node in the tree. Matching HTML passes through (or is visibly escaped by a safe
@@ -7858,11 +7862,15 @@ EOF = (* end of file *) ;
         { "code": "field-unspellable", "node": "math", "field": "label",
           "message": "Carve source spells no equation label" }
 
-      THE MESSAGE IS PRESENTATION, AND IT IS NOT COMPARED. An entry's contract is
-      its other fields; the sentence is the engine's, so two engines describing
-      one loss in different words both conform. No clause here states what a
-      message names, and a conformance fixture states none
+      A MESSAGE NO CLAUSE NAMES IS PRESENTATION, AND IT IS NOT COMPARED. Such an
+      entry's contract is its other fields; the sentence is the engine's, so two
+      engines describing one loss in different words both conform. No clause here
+      states what a message names, and a conformance fixture states none
       (markup-carve/carve#2454).
+
+      WHERE A CLAUSE NAMES A MESSAGE, THAT TEXT IS THE CONTRACT and an engine
+      emits it verbatim, with nothing appended. `CARVE-P2-024`'s
+      `destination-denied` names two; this channel names none.
 
       THE FIELD IS WHY THIS IS NOT THAT REPORT. `CARVE-P2-024`'s `code` enum
       holds `raw-format-dropped`, `ruby-flattened` and `destination-denied`,
