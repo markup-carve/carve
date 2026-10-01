@@ -240,7 +240,7 @@ const MANIFEST = [
   // Filed as markup-carve/carve#1939; when it is fixed this entry can move.
   { repo: 'spec', path: 'tests/ast-positions.test.mjs', name: 'DECLARED_LEAF_INDENT_START', kind: 'js', policy: 'declared', guard: 'two-way', owner: 'tests/ast-positions.test.mjs' },
   { repo: 'spec', path: 'tests/the-two-import-exits-agree.test.mjs', name: 'UNMET', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/the-two-import-exits-agree.test.mjs' },
-  { repo: 'spec', path: 'tests/optional-corpus.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/optional-corpus.test.mjs' },
+  { repo: 'spec', path: 'tests/optional-corpus.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', prPolicy: 'manual', guard: 'two-way', owner: 'tests/optional-corpus.test.mjs' },
   { repo: 'spec', path: 'tests/examples-tier3.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/a-tier3-example-ahead-of-the-pin-is-declared.test.mjs' },
   { repo: 'spec', path: 'tests/every-labels-key-reaches-the-output.test.mjs', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/every-labels-key-reaches-the-output.test.mjs' },
   { repo: 'spec', path: 'tests/ast-schema.test.mjs', name: 'SCHEMA_ROLLOUT_PENDING', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'tests/ast-schema.test.mjs' },
