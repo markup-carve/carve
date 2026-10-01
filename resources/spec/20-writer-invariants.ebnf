@@ -12,9 +12,12 @@
 
       The first is about the AST, not the bytes: `fmt` MAY normalize the
       author's spelling (indentation, marker alignment, escape form) but MUST
-      NOT change what the document says. The second forbids growth -- a value
-      that gains an escape per pass violates it, which is how over-escaping is
-      usually first noticed.
+      NOT change what the document says. This includes authored destinations
+      whose schemes PART 9 §25 denies at rendered URL sinks: canonical source
+      preserves them and reports no `destination-denied` loss. A consumer
+      rendering that source applies the denylist at its own sinks. The second
+      forbids growth -- a value that gains an escape per pass violates it,
+      which is how over-escaping is usually first noticed.
 
       EQUALITY IS MODULO ESCAPING -- NORMATIVE [CARVE-P11-001]. `escaped_text` and `text`
       compare EQUAL, and an adjacent run of them compares as the single text

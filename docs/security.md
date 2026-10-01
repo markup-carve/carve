@@ -63,6 +63,14 @@ control/space characters that browsers discard when reading a scheme, so a
 scheme split by a tab or newline (e.g. `java<TAB>script:`) does not slip
 through.
 
+Canonical Carve output (`carve fmt` and the `carve` target) preserves authored
+URLs, including denied schemes. Its round-trip contract preserves the parsed
+document, as the AST interchange does. It applies no sink denylist and reports
+no `destination-denied` loss for a preserved destination. Formatting source
+is not sanitization: the tool that renders that source must filter its own URL
+sinks. HTML, Markdown and ANSI output still blank denied destinations and report
+those losses.
+
 ### Configuration
 
 The behavior is controlled through `RenderOptions` (passed to `renderHtml` or

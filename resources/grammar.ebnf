@@ -1963,6 +1963,10 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    the message is where the sink kind survives; `target` is already a field, so
    the message does not repeat it.
 
+   The canonical Carve writer preserves authored destinations under PART 11
+   and contributes no `destination-denied` row for them. PART 9 §25 binds the
+   consumer that renders the emitted source, not its interchange serialization.
+
    A loss records WHAT THE SELECTED RENDERER ACTUALLY DROPS OR FLATTENS, not
    every raw or ruby node in the tree. Matching HTML passes through (or is visibly escaped by a safe
    policy) with no loss. Markdown visibly escapes HTML raw content with no loss.
@@ -6333,6 +6337,18 @@ EOF = (* end of file *) ;
         text, and every current terminal emulator autolinks a URL in its output
         and hands the scheme to the OS handler when the reader clicks it.
 
+        CANONICAL CARVE SOURCE IS AN INTERCHANGE FORM, NOT A URL SINK. As an
+        explicit exception to the rule above, the PART 11 writer (`carve fmt`
+        and the `carve` target) MUST preserve authored destinations, including
+        denied schemes, to satisfy its parse round-trip invariant. It does not
+        apply this denylist and owes no `destination-denied` row for a
+        destination it preserves. The AST exit preserves the same values
+        (CARVE-P12-008). A consumer that renders either interchange form MUST
+        apply this clause at its own URL sinks (CARVE-P12-009); formatting or
+        serializing source is not sanitization.
+        Markdown is a lossy export for readers that this specification does
+        not bind, so its destinations remain subject to the denylist.
+
         WHAT IS BLANKED IS THE DESTINATION, NOT THE TEXT. A denied autolink's
         visible text IS its URL, and every target shows it. Blanking there
         would edit what the author wrote rather than withhold a destination:
@@ -7594,9 +7610,12 @@ EOF = (* end of file *) ;
 
       The first is about the AST, not the bytes: `fmt` MAY normalize the
       author's spelling (indentation, marker alignment, escape form) but MUST
-      NOT change what the document says. The second forbids growth -- a value
-      that gains an escape per pass violates it, which is how over-escaping is
-      usually first noticed.
+      NOT change what the document says. This includes authored destinations
+      whose schemes PART 9 §25 denies at rendered URL sinks: canonical source
+      preserves them and reports no `destination-denied` loss. A consumer
+      rendering that source applies the denylist at its own sinks. The second
+      forbids growth -- a value that gains an escape per pass violates it,
+      which is how over-escaping is usually first noticed.
 
       EQUALITY IS MODULO ESCAPING -- NORMATIVE [CARVE-P11-001]. `escaped_text` and `text`
       compare EQUAL, and an adjacent run of them compares as the single text
@@ -9979,15 +9998,17 @@ EOF = (* end of file *) ;
 
       A DESTINATION IS THE AUTHOR'S TEXT, UNSANITIZED -- NORMATIVE [CARVE-P12-008]. `href`,
       `src`, and every other destination field carry what the author wrote,
-      including a URL whose scheme no target is allowed to emit. A producer MUST
-      NOT blank or rewrite a destination on the way into the tree: that is the
-      same folding of a later stage this clause forbids everywhere else, it makes
+      including a URL whose scheme no rendered URL sink is allowed to emit.
+      A producer MUST NOT blank or rewrite a destination on the way into the
+      tree: that is the same folding of a later stage this clause forbids
+      everywhere else, it makes
       the tree lossy, and it breaks the §6 round trip. So this document
 
         [click](javascript:alert(1))
 
-      publishes `{"type":"link","href":"javascript:alert(1)"}` while every render
-      target blanks it.
+      publishes `{"type":"link","href":"javascript:alert(1)"}`. Presentation
+      targets that emit URL sinks blank the destination; canonical Carve source
+      preserves it under PART 11's round-trip invariant.
 
       A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST -- NORMATIVE [CARVE-P12-009]. The
       obligation is PART 9 section 25's URL-scheme denylist, and section 25 already says it
@@ -9997,9 +10018,10 @@ EOF = (* end of file *) ;
       another tool is the whole purpose of this PART, so the argument applies
       here with more force: a consumer that wires a serialized `href` into an
       anchor has published a live `javascript:` URL. Feeding the tree back
-      through a conforming engine applies the denylist for you, because the
-      engine is a target. Walking the tree and building output yourself does
-      not.
+      through a conforming engine applies the denylist at its presentation
+      targets' URL sinks; its canonical source writer preserves destinations.
+      Walking the tree and building output yourself does not apply the denylist
+      for you.
 
         See [getting started][] here.
 

@@ -565,6 +565,10 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    the message is where the sink kind survives; `target` is already a field, so
    the message does not repeat it.
 
+   The canonical Carve writer preserves authored destinations under PART 11
+   and contributes no `destination-denied` row for them. PART 9 §25 binds the
+   consumer that renders the emitted source, not its interchange serialization.
+
    A loss records WHAT THE SELECTED RENDERER ACTUALLY DROPS OR FLATTENS, not
    every raw or ruby node in the tree. Matching HTML passes through (or is visibly escaped by a safe
    policy) with no loss. Markdown visibly escapes HTML raw content with no loss.

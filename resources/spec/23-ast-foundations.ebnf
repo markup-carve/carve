@@ -215,15 +215,17 @@
 
       A DESTINATION IS THE AUTHOR'S TEXT, UNSANITIZED -- NORMATIVE [CARVE-P12-008]. `href`,
       `src`, and every other destination field carry what the author wrote,
-      including a URL whose scheme no target is allowed to emit. A producer MUST
-      NOT blank or rewrite a destination on the way into the tree: that is the
-      same folding of a later stage this clause forbids everywhere else, it makes
+      including a URL whose scheme no rendered URL sink is allowed to emit.
+      A producer MUST NOT blank or rewrite a destination on the way into the
+      tree: that is the same folding of a later stage this clause forbids
+      everywhere else, it makes
       the tree lossy, and it breaks the §6 round trip. So this document
 
         [click](javascript:alert(1))
 
-      publishes `{"type":"link","href":"javascript:alert(1)"}` while every render
-      target blanks it.
+      publishes `{"type":"link","href":"javascript:alert(1)"}`. Presentation
+      targets that emit URL sinks blank the destination; canonical Carve source
+      preserves it under PART 11's round-trip invariant.
 
       A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST -- NORMATIVE [CARVE-P12-009]. The
       obligation is PART 9 section 25's URL-scheme denylist, and section 25 already says it
@@ -233,9 +235,10 @@
       another tool is the whole purpose of this PART, so the argument applies
       here with more force: a consumer that wires a serialized `href` into an
       anchor has published a live `javascript:` URL. Feeding the tree back
-      through a conforming engine applies the denylist for you, because the
-      engine is a target. Walking the tree and building output yourself does
-      not.
+      through a conforming engine applies the denylist at its presentation
+      targets' URL sinks; its canonical source writer preserves destinations.
+      Walking the tree and building output yourself does not apply the denylist
+      for you.
 
         See [getting started][] here.
 

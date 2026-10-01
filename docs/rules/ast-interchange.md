@@ -24,19 +24,19 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L181) | 12 | A RESOLVED REFERENCE KEEPS ITS DESTINATION |
 | [`CARVE-P12-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L195) | 12 | A NESTED LINK AND AN AUTOLINK STAY NODES |
 | [`CARVE-P12-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L216) | 12 | A DESTINATION IS THE AUTHOR'S TEXT, UNSANITIZED |
-| [`CARVE-P12-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L260) | 12 | A CROSSREF REMAINS A HEADING-REFERENCE NODE AFTER RESOLUTION |
-| [`CARVE-P12-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L332) | 12 | A SPAN CONTAINS ITS CHILDREN'S SPANS |
-| [`CARVE-P12-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L353) | 12 | A SPAN COVERS THE MARKUP THE AUTHOR WROTE |
-| [`CARVE-P12-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L380) | 12 | A SPAN BEGINS AT THE CONSTRUCT'S OPENING MARKUP |
-| [`CARVE-P12-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L408) | 12 | A SPAN ENDS IMMEDIATELY AFTER THE CONSTRUCT'S LAST OWNED SOURCE CODEPOINT |
-| [`CARVE-P12-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L418) | 12 | A HOISTED SIBLING IS NOT A CHILD, AND A CLOSERLESS CONTAINER ENDS BEFORE IT |
-| [`CARVE-P12-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L441) | 12 | A HOISTED DEFINITION MAY CLAIM SOURCE INSIDE THE CONTAINER IT WAS AUTHORED IN |
-| [`CARVE-P12-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L483) | 12 | A DEFINITION LIST ENDS AT ITS LAST PLACED CHILD |
-| [`CARVE-P12-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L497) | 12 | A CONTAINER WITH NO PLACED CHILD AT ALL SPANS ITS OWN MARKUP AND STOPS THERE |
-| [`CARVE-P12-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L514) | 12 | A CONTAINER STARTS AT ITS OPENING MARKUP EVEN WHERE ITS FIRST CHILD IS UNPLACED |
-| [`CARVE-P12-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L529) | 12 | A CONTAINER ENDS AT THE MARKUP THAT CLOSES IT EVEN WHERE ITS LAST CHILD IS UNPLACED |
-| [`CARVE-P12-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L551) | 12 | A SPAN DOES NOT BEGIN AT A LINE TERMINATOR |
-| [`CARVE-P12-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L567) | 12 | A REASSEMBLED NODE MUST OMIT `pos` |
+| [`CARVE-P12-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L263) | 12 | A CROSSREF REMAINS A HEADING-REFERENCE NODE AFTER RESOLUTION |
+| [`CARVE-P12-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L335) | 12 | A SPAN CONTAINS ITS CHILDREN'S SPANS |
+| [`CARVE-P12-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L356) | 12 | A SPAN COVERS THE MARKUP THE AUTHOR WROTE |
+| [`CARVE-P12-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L383) | 12 | A SPAN BEGINS AT THE CONSTRUCT'S OPENING MARKUP |
+| [`CARVE-P12-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L411) | 12 | A SPAN ENDS IMMEDIATELY AFTER THE CONSTRUCT'S LAST OWNED SOURCE CODEPOINT |
+| [`CARVE-P12-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L421) | 12 | A HOISTED SIBLING IS NOT A CHILD, AND A CLOSERLESS CONTAINER ENDS BEFORE IT |
+| [`CARVE-P12-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L444) | 12 | A HOISTED DEFINITION MAY CLAIM SOURCE INSIDE THE CONTAINER IT WAS AUTHORED IN |
+| [`CARVE-P12-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L486) | 12 | A DEFINITION LIST ENDS AT ITS LAST PLACED CHILD |
+| [`CARVE-P12-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L500) | 12 | A CONTAINER WITH NO PLACED CHILD AT ALL SPANS ITS OWN MARKUP AND STOPS THERE |
+| [`CARVE-P12-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L517) | 12 | A CONTAINER STARTS AT ITS OPENING MARKUP EVEN WHERE ITS FIRST CHILD IS UNPLACED |
+| [`CARVE-P12-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L532) | 12 | A CONTAINER ENDS AT THE MARKUP THAT CLOSES IT EVEN WHERE ITS LAST CHILD IS UNPLACED |
+| [`CARVE-P12-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L554) | 12 | A SPAN DOES NOT BEGIN AT A LINE TERMINATOR |
+| [`CARVE-P12-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L570) | 12 | A REASSEMBLED NODE MUST OMIT `pos` |
 | [`CARVE-P12-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L8) | 12 | A GENERATED HEADING ID IS A RESOLUTION RESULT |
 | [`CARVE-P12-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L30) | 12 | THE DOCUMENT ROOT CARRIES EXACTLY THREE FIELDS |
 | [`CARVE-P12-025`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L41) | 12 | CONTENT IS RAW, NOT PARSED |
