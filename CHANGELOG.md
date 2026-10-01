@@ -10,19 +10,58 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
+## [0.1.8] - 2026-10-01
+
+### Breaking
+
+- A render that blanks a denied URL destination now owes one row on the
+  render-loss report, in both safe modes: one per blanked link destination,
+  autolink destination or image source, in document order, under the code
+  `destination-denied` and with no `format`. The report's `code` enum holds
+  three codes rather than two (#2679).
+- That row's message is named rather than left to the engine. A link or
+  autolink takes `Blanked a denied destination scheme` and an image source
+  takes `Blanked a denied image source`, emitted verbatim with nothing
+  appended. Where no clause names a message it stays the engine's own wording
+  and is not compared (#2686).
+
+### Fixes
+
+- A fenced blockquote is reachable from the document grammar. `quote_block` sat
+  in no rule's right-hand side, so a parser generated from the grammar alone
+  could not build one. Every remaining production is now either reachable or
+  declared unreachable with its reason, checked in both directions, and a URL
+  autolink reuses the URL production instead of respelling it (#2670).
+- A forced span or an editorial insertion, deletion or substitution opened
+  inside a bracket run cannot match a closer past that run's closing `]`, so
+  `[{+a]+}` is text; a container label keeps a construct that closes before a
+  trailing comment cut (#2618, #2645).
+- A list-indentation lint finding reports once per block rather than once per
+  block-shaped line, and a quoted attribute value and a link title share one
+  punctuation escape set, keeping a backslash that precedes anything else
+  (#2587, #2643).
+- An empty raw block written for the HTML target has one defined slot in a list
+  item, replacing a two-against-two split between the engines (#2567).
+- An over-indented quote marker stays literal after a fence opened on a list
+  item's marker line, and closing a later fence restores the authored
+  indentation base (#2627).
+
 ### Improvements
 
-- Canonical Carve source preserves authored destinations, including denied URL
-  schemes, under the formatter round-trip contract. Presentation sinks retain
-  the denylist and its loss report; consumers must apply it when rendering
-  serialized source or AST data (#2685).
-- The project description names figures, footnotes, math and citations as language capabilities (#2667).
-- Container labels retain closed inline constructs before a comment cut. Braced inline spans pair within their bracket run, with the editorial-comment exception documented (#2653, #2656).
-- List indentation lint reports each block once. Quoted attributes and link titles share punctuation escapes and retain non-punctuation backslashes (#2656).
-- The spec defines where an empty raw block for the HTML target sits in a list item (#2657).
-- The grammar declares intentionally unreachable productions and checks for missing or stale declarations. URL autolinks reuse the URL production (#2674).
-- Fenced blockquotes are reachable from the document grammar; inline name boundary rules remain in prose (#2673).
-- Overindented quote markers remain literal after a fence opened on the list-item marker line. Closing a later fence restores the authored indentation base (#2658).
+- Canonical Carve source preserves authored destinations, including the schemes
+  the render denylist refuses, because the formatter's round-trip invariant
+  comes first. It applies no denylist and owes no `destination-denied` row. The
+  HTML, Markdown and ANSI targets still blank those destinations and report the
+  loss, and a consumer that renders serialized source or AST data applies the
+  denylist at its own URL sinks (#2685).
+- An opener under a quote holding an open paragraph folds into that paragraph
+  at every column but the host's content column, and the shared
+  `paragraph-interruption.json` resource states that boundary rather than
+  describing a wider rule than the clause (#2615).
+- The documentation site reads comments in headings and captions correctly: a
+  code span keeps its percent runs, and a trailing comment keeps its scope and
+  its color in both themes, including inside a quoted heading or caption
+  (#2682).
 
 ## [0.1.7] - 2026-09-29
 
@@ -89,9 +128,6 @@ Releases before 0.1.6 are archived in
 
 ### Fixes
 
-- The docs site uses the grammar fixes for heading and caption comments. Code
-  spans keep their percent runs; trailing comments retain their comment scope
-  and color in both themes, including quoted headings and captions (#2682).
 - A `%%` line's text is a content line, separated by exactly one space or tab; a
   `%%%` block keeps its payload bytes and the whitespace beyond its container's
   prefix; a comment inside a forced span or the combined token ends at that
@@ -373,5 +409,6 @@ Releases before 0.1.6 are archived in
   inside the cell** (carve#2113), the §1b case the engines diverged on while
   the fixture reported them conformant.
 
+[0.1.8]: https://github.com/markup-carve/carve/compare/0.1.7...0.1.8
 [0.1.7]: https://github.com/markup-carve/carve/compare/0.1.6...0.1.7
 [0.1.6]: https://github.com/markup-carve/carve/compare/0.1.5...0.1.6
