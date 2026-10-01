@@ -306,8 +306,10 @@ admonition = admonition_open, newline,
 (* STRICT (djot): the opener line carries NO inline `{...}` attributes -- it
    is colon_fence, type, an optional quoted "header", an optional [label],
    and NOTHING else. Metadata outside that shape remains invalid. Recovery
-   recognizes a colon fence followed by `space+` and a type word, reports
-   fence-title-syntax, drops all opener metadata, and parses the children as
+   recognizes a colon fence followed by `space+` and an ASCII type word.
+   The type word must end at the line end, Unicode White_Space or U+FEFF,
+   a straight double quote, `{`, `[`, or a curly double quote. Recovery is
+   confined to one source line. It reports fence-title-syntax, drops all opener metadata, and parses the children as
    blocks through the matching-width closer (carve#2693). This recovery does
    not admit a bare title as valid syntax. An unrecognized fence/type prefix
    remains paragraph text.

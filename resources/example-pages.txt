@@ -326,6 +326,7 @@ index: examples/edge-cases/index.md
 [edge-containers] Containers, quotes and fences
 > Divs, block quotes, code and comment fences: nesting, lazy continuation, absorption and what closes what.
 out: examples/edge-cases/containers.md
+  invalid-named-container-metadata-keeps-the-subtree
 index: examples/edge-cases/index.md
   fenced-code-shorter-inner-fence
   blockquote-caption-after-a-blank-line
