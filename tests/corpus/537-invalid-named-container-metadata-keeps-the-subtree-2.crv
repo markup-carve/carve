@@ -1,0 +1,7 @@
+::: note "Unclosed
+Body one.
+:::
+
+::: widget [Unclosed
+Body two.
+:::

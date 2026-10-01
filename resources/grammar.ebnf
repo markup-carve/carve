@@ -1703,8 +1703,12 @@ admonition = admonition_open, newline,
 
 (* STRICT (djot): the opener line carries NO inline `{...}` attributes -- it
    is colon_fence, type, an optional quoted "header", an optional [label],
-   and NOTHING else. A trailing `{...}` (or any other text not matching the
-   header/label shape) makes the line an ordinary paragraph, not a fence.
+   and NOTHING else. Metadata outside that shape remains invalid. Recovery
+   recognizes a colon fence followed by `space+` and a type word, reports
+   fence-title-syntax, drops all opener metadata, and parses the children as
+   blocks through the matching-width closer (carve#2693). This recovery does
+   not admit a bare title as valid syntax. An unrecognized fence/type prefix
+   remains paragraph text.
    Class/id/data-* attach via a PRECEDING block-attribute line, which floats
    onto the admonition (§15).
    The "header" and [label] are the SAME two metadata tokens a code fence
@@ -1725,8 +1729,9 @@ admonition = admonition_open, newline,
    [label] slots are ordinary inter-token padding (PART 7, MARKER SEPARATORS
    AND PADDING SLOTS). The roles differ, the terminal does not, because A TAB
    IS SYNTAX ONLY IN THE LEADING RUN (PART 7). `::: note<TAB>"T"` is not an
-   admonition opener -- the line stays prose, the same way a tab after a
-   marker leaves a line as prose. *)
+   valid admonition opener. It recovers as the named container with no
+   metadata and a diagnostic. A tab in the marker-separator slot still leaves
+   the prefix unrecognized and the line as prose. *)
 admonition_open = colon_fence:open, space, admonition_type,
                   [space+, quoted_title], [space+, label] ;
 admonition_close = colon_fence_close ;
@@ -1739,8 +1744,9 @@ admonition_type = "note" | "tip" | "warning" | "danger" | "info"
 
 quoted_title = '"', {character - '"'}, '"' ;
 (* there is NO escape mechanism inside a quoted title -- a title cannot
-   contain a `"`; a line whose title is malformed is an ordinary paragraph
-   (deliberate strictness, unlike `quoted_value` which accepts escapes) *)
+   contain a `"`; a malformed title is diagnosed and dropped while its recognized
+   container keeps its children (carve#2693). Unlike `quoted_value`, this
+   token does not accept escapes *)
 
 (* --- Composite figures (PART 9 §4c) --- *)
 (* The kind word `figure` is RESERVED among the `:::` types: a BARE opener --

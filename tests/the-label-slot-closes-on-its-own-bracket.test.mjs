@@ -43,19 +43,19 @@ test('a code fence label holding a link keeps the fence', () => {
   assert.equal(html('``` [see [t](/u)]\nc\n```\n'), '<pre><code>c\n</code></pre>')
 })
 
-test('an unclosed backtick run takes the bracket, and the line is prose', () => {
+test('an unclosed backtick run takes the bracket, and the named container drops its invalid metadata', () => {
   // `link_text` reads the same shape the same way: `[a `b](/u)` is not a link,
   // because the run opens a verbatim span that reaches past the closer.
-  assert.match(html('::: note [a `b]\nx\n:::\n'), /^<p>::: note \[a <code>b\]/)
+  assert.equal(html('::: note [a `b]\nx\n:::\n'), '<aside class=\"admonition note\" aria-label=\"Note\">\n  <p>x</p>\n</aside>')
   assert.equal(html('[a `b](/u)\n'), '<p>[a <code>b](/u)</code></p>')
 })
 
 test('a bare `]` after the close is still trailing junk', () => {
-  assert.match(html('::: note [a] b]\nx\n:::\n'), /^<p>::: note \[a\] b\]/)
+  assert.equal(html('::: note [a] b]\nx\n:::\n'), '<aside class=\"admonition note\" aria-label=\"Note\">\n  <p>x</p>\n</aside>')
 })
 
-test('a slot with no close on the line is still prose', () => {
-  assert.match(html('::: note [a\nx\n:::\n'), /^<p>::: note \[a/)
+test('a slot with no close drops metadata and keeps the container', () => {
+  assert.equal(html('::: note [a\nx\n:::\n'), '<aside class=\"admonition note\" aria-label=\"Note\">\n  <p>x</p>\n</aside>')
 })
 
 test('a label with no nesting is untouched', () => {

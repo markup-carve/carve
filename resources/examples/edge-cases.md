@@ -10727,7 +10727,8 @@ non-whitespace character of its line.
 This half is pinned beside the separator half deliberately. A case that pinned
 only the separator invites a fix that narrows the whole line, and a case that
 pinned only the padding invites the reverse; carve-js carried both defects at
-once, in opposite directions.
+once, in opposite directions. Invalid metadata now reports a diagnostic and
+keeps the named container with no title or label (carve#2693).
 
 :::: compare
 
@@ -10738,9 +10739,9 @@ x
 ```
 
 ```html
-<p>::: note	“Title”
-x
-:::</p>
+<aside class="admonition note" aria-label="Note">
+  <p>x</p>
+</aside>
 ```
 
 ::::
@@ -10754,16 +10755,16 @@ x
 ```
 
 ```html
-<p>::: note 	“Title”
-x
-:::</p>
+<aside class="admonition note" aria-label="Note">
+  <p>x</p>
+</aside>
 ```
 
 ::::
 
 The `[label]` slot reverts independently of the `"title"` slot, so it carries its
 own pair: a fixture with a tab at both cannot tell them apart, because narrowing
-either one already leaves the line as prose.
+either one already drops the metadata.
 
 :::: compare
 
@@ -10774,9 +10775,9 @@ x
 ```
 
 ```html
-<p>::: note “Title”	[First]
-x
-:::</p>
+<aside class="admonition note" aria-label="Note">
+  <p>x</p>
+</aside>
 ```
 
 ::::
@@ -10790,9 +10791,9 @@ x
 ```
 
 ```html
-<p>::: note “Title” 	[First]
-x
-:::</p>
+<aside class="admonition note" aria-label="Note">
+  <p>x</p>
+</aside>
 ```
 
 ::::
@@ -45742,3 +45743,66 @@ blanked.
 ```
 
 :::
+
+## Invalid named-container metadata keeps the subtree
+
+A recognized fence and kind word keep their container when the remaining opener
+metadata is invalid. Report `fence-title-syntax`, drop all opener metadata, and
+parse the children as blocks (carve#2693). This applies to unknown kinds as well
+as core admonitions and extension containers. It does not make a bare title
+valid syntax.
+
+::::: compare
+
+````carve
+:::: outer
+::: widget Custom Title
+# Heading
+
+- first
+- second
+:::
+::::
+After.
+````
+
+```html
+<div class="outer">
+  <div class="widget">
+    <h1 id="Heading">Heading</h1>
+    <ul>
+      <li>first</li>
+      <li>second</li>
+    </ul>
+  </div>
+</div>
+<p>After.</p>
+```
+
+:::::
+
+Malformed quoted titles and labels follow the same recovery. The invalid
+metadata does not become a visible title or a label.
+
+:::: compare
+
+````carve
+::: note "Unclosed
+Body one.
+:::
+
+::: widget [Unclosed
+Body two.
+:::
+````
+
+```html
+<aside class="admonition note" aria-label="Note">
+  <p>Body one.</p>
+</aside>
+<div class="widget">
+  <p>Body two.</p>
+</div>
+```
+
+::::

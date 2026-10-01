@@ -5,9 +5,9 @@ Colon fence metadata slots must be a space too
 x
 :::
 .
-<p>::: note	“Title”
-x
-:::</p>
+<aside class="admonition note" aria-label="Note">
+  <p>x</p>
+</aside>
 ```
 
 ```
@@ -15,9 +15,9 @@ x
 x
 :::
 .
-<p>::: note 	“Title”
-x
-:::</p>
+<aside class="admonition note" aria-label="Note">
+  <p>x</p>
+</aside>
 ```
 
 ```
@@ -25,9 +25,9 @@ x
 x
 :::
 .
-<p>::: note “Title”	[First]
-x
-:::</p>
+<aside class="admonition note" aria-label="Note">
+  <p>x</p>
+</aside>
 ```
 
 ```
@@ -35,9 +35,9 @@ x
 x
 :::
 .
-<p>::: note “Title” 	[First]
-x
-:::</p>
+<aside class="admonition note" aria-label="Note">
+  <p>x</p>
+</aside>
 ```
 
 ```
