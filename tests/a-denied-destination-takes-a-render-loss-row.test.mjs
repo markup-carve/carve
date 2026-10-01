@@ -86,9 +86,10 @@ test('the clause names both messages, and the schema holds exactly those two', (
 })
 
 test('a message outside the two named strings is refused', () => {
-  /* The three spellings the engines carried before this clause, plus two near
-   * misses. A target suffix repeats a field the row already carries, and
-   * collapsing the two sinks discards the only place the sink kind survives. */
+  /* The three spellings the engines carried before the clause named the message,
+   * plus two near misses. A target suffix repeats a field the row already
+   * carries, and collapsing the two sinks discards the only place the sink kind
+   * survives. */
   const refused = [
     'Blanked a denied destination scheme while rendering html',
     'Blanked a denied image source while rendering html',
