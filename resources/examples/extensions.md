@@ -834,7 +834,13 @@ Text mode escapes the body inside a `<pre>`, escaping `&` and `<` but preserving
 `>` so arrow syntax survives:
 
 ```html
-<pre class="mermaid">graph LR; A --&gt; B</pre>
+<pre class="mermaid" role="img" aria-label="mermaid">classDiagram
+  class Parser {
+    +parse(source) Document
+    -blockPass()
+  }
+  Parser --> Document : produces
+  Document &lt;|-- Section</pre>
 ```
 
 A `chart` fence carries a Chart.js config, emitted verbatim in json mode:
@@ -846,10 +852,11 @@ A `chart` fence carries a Chart.js config, emitted verbatim in json mode:
 ````
 
 ```html
-<div class="chart"><script type="application/json">{"type":"bar","data":{"labels":["V60","Aeropress"],"datasets":[{"data":[12,7]}]}}</script></div>
+<div class="chart" role="img" aria-label="chart"><script type="application/json">{"type":"bar","data":{"labels":["V60","Aeropress"],"datasets":[{"data":[12,7]}]}}</script></div>
 ```
 
-These pairs are shown as plain fences rather than `::: compare` blocks: the
-presets are Tier-3, and Tier-3 output is deliberately never pinned in the
-conformance corpus. See [Diagrams & Charts](/diagrams) for the full preset table,
-static rendering, and degradation behavior.
+These Tier-3 examples use plain fences so the mandatory Tier-1 corpus keeps its
+default rendering. The optional corpus pins each preset's hydration wrapper and
+source payload. Output drawn by client libraries is outside that contract. See
+[Diagrams & Charts](/diagrams) for the full preset table, static rendering, and
+degradation behavior.

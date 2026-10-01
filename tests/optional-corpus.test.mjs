@@ -1,9 +1,9 @@
 /*
- * Optional Tier-2 corpus runner for the vendored reference implementation.
+ * Optional extension corpus runner for the vendored reference implementation.
  *
  * Each pair in tests/corpus-optional/ is tagged with a feature id in
  * manifest.json. The reference implementation runs only the features it
- * actually supports; unsupported Tier-2 features stay visible as skipped tests
+ * actually supports; unsupported features stay visible as skipped tests
  * instead of being silently ignored.
  *
  * A case may also name a `target`. It defaults to `html`, which is what every
@@ -40,7 +40,7 @@ const corpusDir = resolve(here, 'corpus-optional')
 const manifestPath = resolve(corpusDir, 'manifest.json')
 
 if (!existsSync(manifestPath)) {
-  throw new Error(`Optional Tier-2 corpus manifest not found at ${manifestPath}.`)
+  throw new Error(`Optional extension corpus manifest not found at ${manifestPath}.`)
 }
 
 const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'))
@@ -64,6 +64,15 @@ const targets = {
  * is pinned on more than one target.
  */
 const featureRunners = {
+  'fenced-render-mermaid': (source, render) => render(source, { extensions: [lib.mermaid()] }),
+  'fenced-render-d2': (source, render) => render(source, { extensions: [lib.d2()] }),
+  'fenced-render-graphviz': (source, render) => render(source, { extensions: [lib.graphviz()] }),
+  'fenced-render-wavedrom': (source, render) => render(source, { extensions: [lib.wavedrom()] }),
+  'fenced-render-abc': (source, render) => render(source, { extensions: [lib.abc()] }),
+  'fenced-render-plantuml': (source, render) => render(source, { extensions: [lib.plantuml()] }),
+  'fenced-render-vega-lite': (source, render) => render(source, { extensions: [lib.vegaLite()] }),
+  'fenced-render-chart': (source, render) => render(source, { extensions: [lib.chart()] }),
+  'math-block': (source, render) => render(source, { extensions: [lib.mathBlock()] }),
   'social-link-templates': (source, render) =>
     render(source, {
       mentionUrl: '/users/{name}',

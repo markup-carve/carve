@@ -17,6 +17,15 @@
  * and `tests/no-orphan-pages.test.mjs` asserts both directions of it.
  */
 export const optionalFeatureTitles = new Map([
+  ['fenced-render-mermaid', 'Mermaid hydration wrapper'],
+  ['fenced-render-d2', 'D2 hydration wrapper'],
+  ['fenced-render-graphviz', 'Graphviz hydration wrapper'],
+  ['fenced-render-wavedrom', 'WaveDrom hydration wrapper'],
+  ['fenced-render-abc', 'ABC music notation hydration wrapper'],
+  ['fenced-render-plantuml', 'PlantUML hydration wrapper'],
+  ['fenced-render-vega-lite', 'Vega-Lite hydration wrapper'],
+  ['fenced-render-chart', 'Chart.js hydration wrapper'],
+  ['math-block', 'Display math hydration wrapper'],
   ['citations-numbered', 'Citations, numbered'],
   ['citations-author-date', 'Citations, author-date'],
   ['code-callouts', 'CodeCallouts'],

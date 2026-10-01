@@ -1,11 +1,16 @@
-# Carve optional Tier-2 corpus
+# Carve optional extension corpus
 
 This directory contains **optional** `(input.crv, expected output)` pairs for
-Tier-2 features from the Carve extensions contract.
+Tier-2 features and Tier-3 hydration wrappers from the Carve extensions contract.
 
 Unlike the mandatory Tier-1 corpus in [`../corpus/`](../corpus/), these cases
 require a feature to be explicitly enabled or configured by the implementation.
 The canonical feature ids live in [`manifest.json`](./manifest.json).
+
+Diagram and math cases pin the HTML wrappers emitted by the engine, including
+classes, accessible names, and source payloads. They do not pin SVG, canvas, or
+other output drawn by host libraries. Enable the named preset without a static
+renderer to consume these cases.
 
 ## Feature-tagged consumption
 
@@ -23,6 +28,9 @@ Examples:
 - `social-link-templates` → mention/tag URL template config
 - `social-link-resolvers` → host callbacks returning a complete destination or
   an unresolved result for each parsed mention/tag node
+- `fenced-render-mermaid` → the Mermaid preset; other diagram presets use
+  `fenced-render-<preset>` (the `dot` and `puml` aliases share their preset id)
+- `math-block` → the display math extension
 - `symbol-map` → `:name:` symbol map (e.g. shortcode-to-glyph for emoji)
 - `smart-quotes-locale-de` → locale-aware quote extension/config
 - `bare-url-autolink` → bare-URL autolink extension/config

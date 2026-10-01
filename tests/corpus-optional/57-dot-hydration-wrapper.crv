@@ -1,0 +1,3 @@
+``` dot
+digraph { A -> B }
+```
