@@ -559,6 +559,18 @@
         text, and every current terminal emulator autolinks a URL in its output
         and hands the scheme to the OS handler when the reader clicks it.
 
+        CANONICAL CARVE SOURCE IS AN INTERCHANGE FORM, NOT A URL SINK. As an
+        explicit exception to the rule above, the PART 11 writer (`carve fmt`
+        and the `carve` target) MUST preserve authored destinations, including
+        denied schemes, to satisfy its parse round-trip invariant. It does not
+        apply this denylist and owes no `destination-denied` row for a
+        destination it preserves. The AST exit preserves the same values
+        (CARVE-P12-008). A consumer that renders either interchange form MUST
+        apply this clause at its own URL sinks (CARVE-P12-009); formatting or
+        serializing source is not sanitization.
+        Markdown is a lossy export for readers that this specification does
+        not bind, so its destinations remain subject to the denylist.
+
         WHAT IS BLANKED IS THE DESTINATION, NOT THE TEXT. A denied autolink's
         visible text IS its URL, and every target shows it. Blanking there
         would edit what the author wrote rather than withhold a destination:

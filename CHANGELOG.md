@@ -12,6 +12,10 @@ Releases before 0.1.6 are archived in
 
 ### Improvements
 
+- Canonical Carve source preserves authored destinations, including denied URL
+  schemes, under the formatter round-trip contract. Presentation sinks retain
+  the denylist and its loss report; consumers must apply it when rendering
+  serialized source or AST data (#2685).
 - The project description names figures, footnotes, math and citations as language capabilities (#2667).
 - Container labels retain closed inline constructs before a comment cut. Braced inline spans pair within their bracket run, with the editorial-comment exception documented (#2653, #2656).
 - List indentation lint reports each block once. Quoted attributes and link titles share punctuation escapes and retain non-punctuation backslashes (#2656).
@@ -85,6 +89,9 @@ Releases before 0.1.6 are archived in
 
 ### Fixes
 
+- The docs site uses the grammar fixes for heading and caption comments. Code
+  spans keep their percent runs; trailing comments retain their comment scope
+  and color in both themes, including quoted headings and captions (#2682).
 - A `%%` line's text is a content line, separated by exactly one space or tab; a
   `%%%` block keeps its payload bytes and the whitespace beyond its container's
   prefix; a comment inside a forced span or the combined token ends at that
