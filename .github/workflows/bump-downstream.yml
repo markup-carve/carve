@@ -47,10 +47,15 @@ concurrency:
   group: bump-downstream
   cancel-in-progress: false
 
+# Each job below declares timeout-minutes. A job without one inherits GitHub's
+# 360-minute default, so a stalled package mirror or a fallback source build can
+# hold a runner for hours before anything stops it. The slowest job measured in
+# this repo takes 4 minutes, so 20 leaves plenty of room to grow.
 jobs:
   bump:
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -577,6 +582,7 @@ jobs:
   matrix-coverage:
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: read
     steps:
@@ -636,6 +642,7 @@ jobs:
   close-superseded-drafts:
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:

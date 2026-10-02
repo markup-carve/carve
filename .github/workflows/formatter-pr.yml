@@ -11,6 +11,10 @@ concurrency:
   group: formatter-pr-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+# Every job below declares timeout-minutes, so none of them can inherit GitHub's
+# 360-minute default and hold a runner for hours on a stalled download. 20 is the
+# default for an ordinary job here; the shards keep the larger bounds they were
+# given deliberately.
 jobs:
   formatter:
     needs: engine-revisions
@@ -104,6 +108,7 @@ jobs:
 
   engine-revisions:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     outputs:
       js: ${{ steps.heads.outputs.js }}
       rs: ${{ steps.heads.outputs.rs }}

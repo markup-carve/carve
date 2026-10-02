@@ -49,10 +49,15 @@ concurrency:
   group: dependency-map
   cancel-in-progress: true
 
+# The job below declares timeout-minutes. A job without one inherits GitHub's
+# 360-minute default, so a stalled package mirror or a fallback source build can
+# hold a runner for hours before anything stops it. The slowest job measured in
+# this repo takes 4 minutes, so 20 leaves plenty of room to grow.
 jobs:
   regenerate:
     name: Regenerate and push the wiki page
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: write # the wiki repo, not this one
     steps:

@@ -14,9 +14,14 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
+# Each job below declares timeout-minutes. A job without one inherits GitHub's
+# 360-minute default, so a stalled package mirror or a fallback source build can
+# hold a runner for hours before anything stops it. CI jobs in this repo get 20;
+# a deploy does more than CI, so the two jobs here get 30.
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
         with:
@@ -45,6 +50,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
