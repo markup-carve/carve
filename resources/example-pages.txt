@@ -77,6 +77,8 @@ out: examples/core.md
   a-table-with-no-bodies-keeps-its-head-and-foot
   invalid-table-body-metadata-stays-ordinary
   a-span-across-bodies-keeps-their-header-semantics
+  a-head-and-foot-consuming-all-rows-leave-no-implicit-body
+  explicit-body-counts-include-native-header-cells
   11-fenced-code
   11-fenced-code-3
   11-fenced-code-4

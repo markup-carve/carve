@@ -46032,3 +46032,47 @@ Body two.
 ```
 
 ::::
+
+## A head and foot consuming all rows leave no implicit body
+
+:::: compare
+
+```carve
+{header-rows=1 footer-rows=1}
+| H | G |
+| F | T |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">H</th><th scope="col">G</th></tr>
+  </thead>
+  <tfoot>
+    <tr><td>F</td><td>T</td></tr>
+  </tfoot>
+</table>
+```
+
+::::
+
+## Explicit body counts include native header cells
+
+:::: compare
+
+```carve
+{body-rows=2}
+|= A |= B |
+| c | d |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><th scope="row">A</th><th scope="row">B</th></tr>
+    <tr><td>c</td><td>d</td></tr>
+  </tbody>
+</table>
+```
+
+::::
