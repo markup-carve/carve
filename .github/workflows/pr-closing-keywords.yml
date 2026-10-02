@@ -8,10 +8,15 @@ on:
 permissions:
   contents: read
 
+# Each job below declares timeout-minutes. A job without one inherits GitHub's
+# 360-minute default, so a stalled package mirror or a fallback source build can
+# hold a runner for hours before anything stops it. The slowest job measured in
+# this repo takes 4 minutes, so 20 leaves plenty of room to grow.
 jobs:
   check:
     name: one closing keyword per issue
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6

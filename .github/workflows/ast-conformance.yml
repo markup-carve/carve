@@ -45,6 +45,10 @@ concurrency:
   group: ast-conformance-${{ github.event_name }}
   cancel-in-progress: ${{ github.event_name == 'workflow_dispatch' }}
 
+# Every job below declares timeout-minutes, so none of them can inherit GitHub's
+# 360-minute default and hold a runner for hours on a stalled download. 20 is the
+# default for an ordinary job here; the shards keep the larger bounds they were
+# given deliberately.
 jobs:
   formatter:
     needs: ast-revisions
@@ -123,6 +127,7 @@ jobs:
 
   ast-revisions:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     outputs:
       js: ${{ steps.heads.outputs.js }}
       rs: ${{ steps.heads.outputs.rs }}
