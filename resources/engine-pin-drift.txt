@@ -25,9 +25,3 @@
 #
 # Format: <slug><space><space><reason>
 
-255-colon-fence-metadata-slots-must-be-a-space-too  carve#2693: the reference pin predates invalid named-container metadata recovery.
-255-colon-fence-metadata-slots-must-be-a-space-too-2  carve#2693: the reference pin predates invalid named-container metadata recovery.
-255-colon-fence-metadata-slots-must-be-a-space-too-3  carve#2693: the reference pin predates invalid named-container metadata recovery.
-255-colon-fence-metadata-slots-must-be-a-space-too-4  carve#2693: the reference pin predates invalid named-container metadata recovery.
-537-invalid-named-container-metadata-keeps-the-subtree  carve#2693: the reference pin predates invalid named-container metadata recovery.
-537-invalid-named-container-metadata-keeps-the-subtree-2  carve#2693: the reference pin predates invalid named-container metadata recovery.
