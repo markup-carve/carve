@@ -16,7 +16,12 @@ jobs:
     needs: engine-revisions
     name: formatter (shard ${{ matrix.shard }})
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # The pinned subset is smaller than the full corpus, but not small enough to
+    # change the arithmetic: the slowest shard of the five substantive runs
+    # before 2026-10-02 took 994, 1117, 1129, 1157 and 1162 seconds against a
+    # 1200-second cap. Matches ast-conformance.yml, for the same reason
+    # (carve#2697).
+    timeout-minutes: 40
     strategy:
       fail-fast: false
       matrix:
