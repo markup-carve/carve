@@ -75,14 +75,17 @@ jobs:
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
         run: node scripts/formatter-pin-corpus.mjs /tmp/formatter-corpus
       - name: PART 11 formatter and render conformance
+        id: compare
         env:
           CARVE_REQUIRE_ALL_ENGINES: '1'
           CARVE_JS_DIR: ${{ github.workspace }}/carve-js
           CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
         run: npm run compare:impls -- --skip-build --corpus-dir=/tmp/formatter-corpus --roundtrip --fail-on-diff --shard=${{ matrix.shard }} --report=/tmp/compare-impls.json
+      # Runs when the step above fails, and not when it was cancelled and wrote
+      # no report - see the same guard in ast-conformance.yml (carve#2697).
       - name: Cross-engine render comparison
-        if: always()
+        if: ${{ steps.compare.conclusion == 'success' || steps.compare.conclusion == 'failure' }}
         run: npm run compare:report -- /tmp/compare-impls.json --allow-selected-corpus
 
       - name: Upload comparison and corpus selection
