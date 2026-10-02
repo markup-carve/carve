@@ -50,7 +50,10 @@ jobs:
     needs: ast-revisions
     name: formatter (shard ${{ matrix.shard }})
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # A full-corpus roundtrip shard measured 15 to 19 minutes across the green
+    # runs of 2026-09-30 and 2026-10-01, so a 20-minute cap was crossed by
+    # ordinary runner variance rather than by a regression (carve#2697).
+    timeout-minutes: 40
     strategy:
       fail-fast: false
       matrix:
@@ -101,13 +104,21 @@ jobs:
         working-directory: carve-php
         run: composer install --no-interaction --no-progress
       - name: PART 11 formatter and render conformance
+        id: compare
         env:
           CARVE_JS_DIR: ${{ github.workspace }}/carve-js
           CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
         run: npm run compare:impls -- --roundtrip --fail-on-diff --shard=${{ matrix.shard }} --report=/tmp/compare-impls.json
+      # Reads the report the step above writes, so it must run when that step
+      # FAILS - but not when it was cancelled and wrote nothing. Under
+      # `always()` a shard killed by the job timeout reported "No report" here,
+      # and the verdict ticket then named this step, which reads as an engine
+      # disagreeing about a render when nothing was compared at all
+      # (carve#2697). `cancelled()` cannot carry the guard: it answers for the
+      # RUN, and a job that exhausts `timeout-minutes` leaves the run alive.
       - name: Cross-engine render comparison
-        if: always()
+        if: ${{ steps.compare.conclusion == 'success' || steps.compare.conclusion == 'failure' }}
         run: npm run compare:report -- /tmp/compare-impls.json
 
   ast-revisions:
