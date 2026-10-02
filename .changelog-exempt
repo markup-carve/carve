@@ -53,3 +53,4 @@
 2680: 0.1.7 - adds a checked summary of existing AST fallback clauses and shortens their explanations. No production, language behavior, corpus row or oracle answer changes.
 2667: 0.1.8 - replaces the one-sentence description of Carve in the grammar and preamble headers. Marketing copy: no production, clause meaning, corpus row or oracle answer changes.
 2676: 0.1.8 - spells the emphasis-family span content and the dotted name once and aliases the other production names to them, and adds the duplicate-production gate. Call sites and the accepted language are unchanged.
+2694: 0.1.8 - pins the diagram and math hydration wrappers as optional-corpus rows and corrects the stale wrapper markup in the extensions example page. Every engine already emitted those wrappers: the cross-engine optional-corpus comparison passes on the new rows with no pin-drift declaration, so no document renders differently.

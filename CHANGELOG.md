@@ -45,6 +45,12 @@ Releases before 0.1.6 are archived in
 - An over-indented quote marker stays literal after a fence opened on a list
   item's marker line, and closing a later fence restores the authored
   indentation base (#2627).
+- A named `:::` container whose opener metadata is invalid keeps the container
+  and its children. A malformed quoted title, a bare unquoted title or a tab
+  before the title now builds the named container, drops the opener metadata
+  and reports `fence-title-syntax`, where the opener and its closer previously
+  reached the page as paragraph text. An unrecognized fence or type prefix is
+  still prose (#2693, #2695).
 
 ### Improvements
 
