@@ -4,6 +4,10 @@ Foreign source in, Carve out. The conformance corpus in [`../corpus/`](../corpus
 pairs a `.crv` with an expected render, so it covers everything that READS
 Carve; this directory covers what WRITES it.
 
+The [external AST compatibility corpus](../external-compat/README.md) adds
+foreign AST mappings, structural rendering comparisons, source round trips
+and loss diagnostics against eight independent parser targets.
+
 The gap it closes is recorded in
 [carve#1130](https://github.com/markup-carve/carve/issues/1130): six converter
 fixes in one stretch of work, each found by a different engine's suite or by

@@ -1,0 +1,58 @@
+name: External AST compatibility
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: '30 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: external-compat-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  compatibility:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Prefer HTTPS for Git dependencies
+        run: |
+          git config --global url."https://github.com/".insteadOf ssh://git@github.com/
+          git config --global url."https://github.com/".insteadOf git@github.com:
+      - run: npm ci
+      - name: Provision native readers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmark libmd4c-dev libmd4c-html0-dev
+          python -m pip install -r scripts/compat/requirements.txt
+          mkdir -p /tmp/carve-external-compat
+          cc -std=c99 -Wall -Wextra -Werror \
+            "-DCARVE_MD4C_VERSION=\"$(dpkg-query -W -f='${Version}' libmd4c0)\"" \
+            scripts/compat/md4c-driver.c -lmd4c -lmd4c-html \
+            -o /tmp/carve-external-compat/md4c-driver
+      - name: Compare every foreign reader with Carve
+        env:
+          CARVE_MD4C_DRIVER: /tmp/carve-external-compat/md4c-driver
+          CARVE_COMPAT_PYTHON: python
+        run: npm run compat:check -- --report=/tmp/external-compat.json
+      - name: Save compatibility evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-compat
+          path: /tmp/external-compat.json
+          if-no-files-found: error

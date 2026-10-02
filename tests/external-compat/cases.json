@@ -1,0 +1,346 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "heading-and-unicode",
+      "carve": "## Café 😀\n\nGrüße & tea.\n",
+      "markdown": "## Café 😀\n\nGrüße & tea.\n",
+      "djot": "## Café 😀\n\nGrüße & tea.\n",
+      "rst": "Café 😀\n=======\n\nGrüße & tea.\n",
+      "asciidoc": "== Café 😀\n\nGrüße & tea.\n",
+      "html": "<h2>Café 😀</h2><p>Grüße &amp; tea.</p>"
+    },
+    {
+      "id": "inline-structure",
+      "carve": "A /word/ and *bold*, `x < y`, [link](https://example.org/a?q=1&b=2).\n",
+      "markdown": "A *word* and **bold**, `x < y`, [link](https://example.org/a?q=1&b=2).\n",
+      "djot": "A _word_ and *bold*, `x < y`, [link](https://example.org/a?q=1&b=2).\n",
+      "rst": "A *word* and **bold**, ``x < y``, `link <https://example.org/a?q=1&b=2>`_.\n",
+      "asciidoc": "A _word_ and *bold*, `x < y`, https://example.org/a?q=1&b=2[link].\n",
+      "html": "<p>A <em>word</em> and <strong>bold</strong>, <code>x &lt; y</code>, <a href=\"https://example.org/a?q=1&amp;b=2\">link</a>.</p>"
+    },
+    {
+      "id": "loose-bullet-list",
+      "carve": "- one\n\n- *two*\n",
+      "markdown": "- one\n\n- **two**\n",
+      "djot": "- one\n\n- *two*\n",
+      "rst": "- one\n\n- **two**\n",
+      "asciidoc": "* one\n\n* *two*\n",
+      "html": "<ul><li><p>one</p></li><li><p><strong>two</strong></p></li></ul>"
+    },
+    {
+      "id": "ordered-start",
+      "carve": "3. three\n\n4. four\n",
+      "markdown": "3. three\n\n4. four\n",
+      "djot": "3. three\n\n4. four\n",
+      "rst": "3. three\n\n4. four\n",
+      "asciidoc": "[start=3]\n. three\n\n. four\n",
+      "html": "<ol start=\"3\"><li><p>three</p></li><li><p>four</p></li></ol>"
+    },
+    {
+      "id": "quote",
+      "carve": "> A /quote/.\n",
+      "markdown": "> A *quote*.\n",
+      "djot": "> A _quote_.\n",
+      "rst": "    A *quote*.\n",
+      "asciidoc": "[quote]\n____\nA _quote_.\n____\n",
+      "html": "<blockquote><p>A <em>quote</em>.</p></blockquote>"
+    },
+    {
+      "id": "code-block",
+      "carve": "```text\na < b & c\n\nlast\n```\n",
+      "markdown": "```text\na < b & c\n\nlast\n```\n",
+      "djot": "```text\na < b & c\n\nlast\n```\n",
+      "rst": ".. code:: text\n\n    a < b & c\n\n    last\n",
+      "asciidoc": "[source,text]\n----\na < b & c\n\nlast\n----\n",
+      "html": "<pre><code class=\"language-text\">a &lt; b &amp; c\n\nlast\n</code></pre>"
+    },
+    {
+      "id": "thematic-break",
+      "carve": "Before.\n\n---\n\nAfter.\n",
+      "markdown": "Before.\n\n---\n\nAfter.\n",
+      "djot": "Before.\n\n---\n\nAfter.\n",
+      "rst": "Before.\n\n----------\n\nAfter.\n",
+      "asciidoc": "Before.\n\n'''\n\nAfter.\n",
+      "html": "<p>Before.</p><hr><p>After.</p>"
+    },
+    {
+      "id": "titled-image-and-link",
+      "tools": [
+        "mdast",
+        "hast",
+        "commonmark",
+        "cmark",
+        "md4c"
+      ],
+      "carve": "An ![alt](image.png \"caption\") and [link](https://example.org \"title\").\n",
+      "markdown": "An ![alt](image.png \"caption\") and [link](https://example.org \"title\").\n",
+      "html": "<p>An <img src=\"image.png\" alt=\"alt\" title=\"caption\"> and <a href=\"https://example.org\" title=\"title\">link</a>.</p>"
+    },
+    {
+      "id": "hard-break",
+      "tools": [
+        "mdast",
+        "hast",
+        "commonmark",
+        "cmark",
+        "md4c",
+        "djot"
+      ],
+      "carve": "one\\\ntwo\n",
+      "markdown": "one\\\ntwo\n",
+      "djot": "one\\\ntwo\n",
+      "html": "<p>one<br>two</p>"
+    },
+    {
+      "id": "authored-attributes",
+      "tools": [
+        "hast",
+        "djot"
+      ],
+      "carve": "{#authored .note}\nA paragraph.\n",
+      "djot": "{#authored .note}\nA paragraph.\n",
+      "html": "<p id=\"authored\" class=\"note\">A paragraph.</p>"
+    },
+    {
+      "id": "gfm-strike",
+      "tools": [
+        "mdast",
+        "hast"
+      ],
+      "carve": "A ~deleted~ word.\n",
+      "markdown": "A ~~deleted~~ word.\n",
+      "html": "<p>A <del>deleted</del> word.</p>"
+    },
+    {
+      "id": "tight-list",
+      "tools": [
+        "mdast",
+        "hast",
+        "commonmark",
+        "cmark",
+        "djot",
+        "md4c"
+      ],
+      "carve": "- one\n- two\n",
+      "markdown": "- one\n- two\n",
+      "djot": "- one\n- two\n",
+      "html": "<ul><li>one</li><li>two</li></ul>"
+    },
+    {
+      "id": "nested-list",
+      "carve": "- outer\n\n  second paragraph\n\n  - inner\n\n  - sibling\n\n- next\n",
+      "markdown": "- outer\n\n  second paragraph\n\n  - inner\n\n  - sibling\n\n- next\n",
+      "djot": "- outer\n\n  second paragraph\n\n  - inner\n\n  - sibling\n\n- next\n",
+      "html": "<ul><li><p>outer</p><p>second paragraph</p><ul><li><p>inner</p></li><li><p>sibling</p></li></ul></li><li><p>next</p></li></ul>",
+      "rst": "- outer\n\n  second paragraph\n\n  - inner\n\n  - sibling\n\n- next\n",
+      "asciidoc": "* outer\n+\nsecond paragraph\n+\n** inner\n\n** sibling\n\n* next\n"
+    },
+    {
+      "id": "soft-wrap",
+      "tools": [
+        "mdast",
+        "hast",
+        "commonmark",
+        "cmark",
+        "djot",
+        "md4c"
+      ],
+      "carve": "one\ntwo\n",
+      "markdown": "one\ntwo\n",
+      "djot": "one\ntwo\n",
+      "html": "<p>one\ntwo</p>"
+    },
+    {
+      "id": "reference-link",
+      "tools": [
+        "mdast",
+        "commonmark",
+        "cmark",
+        "md4c"
+      ],
+      "carve": "A [link](https://example.org \"title\").\n",
+      "markdown": "A [link][dest].\n\n[dest]: https://example.org \"title\"\n"
+    },
+    {
+      "id": "literal-markers",
+      "tools": [
+        "mdast",
+        "hast",
+        "commonmark",
+        "cmark",
+        "md4c"
+      ],
+      "carve": "A \\* literal and \\_ literal.\n",
+      "markdown": "A \\* literal and \\_ literal.\n",
+      "html": "<p>A * literal and _ literal.</p>"
+    },
+    {
+      "id": "adjacent-emphasis",
+      "carve": "/a/ /b/\n",
+      "markdown": "*a* *b*\n",
+      "djot": "_a_ _b_\n",
+      "rst": "*a* *b*\n",
+      "asciidoc": "_a_ _b_\n",
+      "html": "<p><em>a</em> <em>b</em></p>"
+    },
+    {
+      "id": "document-title",
+      "tools": [
+        "asciidoctor"
+      ],
+      "carve": "# Top\n\nBody.\n",
+      "asciidoc": "= Top\n\nBody.\n"
+    },
+    {
+      "id": "heading-hierarchy",
+      "tools": [
+        "docutils",
+        "asciidoctor"
+      ],
+      "carve": "## First\n\n### Second\n\n#### Third\n",
+      "rst": "First\n=====\n\nSecond\n------\n\nThird\n~~~~~\n",
+      "asciidoc": "== First\n\n=== Second\n\n==== Third\n"
+    },
+    {
+      "id": "rst-escaped-text",
+      "tools": [
+        "docutils"
+      ],
+      "carve": "A \\*b\\* and foo\\_ and a\\\\b.\n",
+      "rst": "A \\*b\\* and foo\\_ and a\\\\b.\n"
+    },
+    {
+      "id": "ascii-literal-replacements",
+      "tools": [
+        "asciidoctor"
+      ],
+      "carve": "don\\'t \\-\\- {nbsp} https://example.org a\\\\b\n",
+      "asciidoc": "pass:[don't -- {nbsp} https://example.org a&#92;b]\n"
+    },
+    {
+      "id": "midword-literal-markers",
+      "tools": [
+        "docutils",
+        "asciidoctor"
+      ],
+      "carve": "un\\*break\\*able\n",
+      "rst": "un\\*break\\*able\n",
+      "asciidoc": "pass:[un*break*able]\n"
+    },
+    {
+      "id": "relative-link",
+      "tools": [
+        "docutils",
+        "asciidoctor"
+      ],
+      "carve": "[rel](/a/b)\n",
+      "rst": "`rel </a/b>`__\n",
+      "asciidoc": "link:/a/b[rel]\n"
+    },
+    {
+      "id": "duplicate-link-labels",
+      "tools": [
+        "docutils",
+        "asciidoctor"
+      ],
+      "carve": "[x](https://a.org) [x](https://b.org)\n",
+      "rst": "`x <https://a.org>`__ `x <https://b.org>`__\n",
+      "asciidoc": "https://a.org[x] https://b.org[x]\n"
+    },
+    {
+      "id": "generic-html-attributes",
+      "tools": [
+        "hast"
+      ],
+      "carve": "{title=tip data-foo=value}\nA paragraph.\n",
+      "html": "<p title=\"tip\" data-foo=\"value\">A paragraph.</p>"
+    },
+    {
+      "id": "code-fence-collisions",
+      "carve": "````text\n----\n```\n____\nlast\n````\n",
+      "markdown": "````text\n----\n```\n____\nlast\n````\n",
+      "djot": "````text\n----\n```\n____\nlast\n````\n",
+      "rst": ".. code:: text\n\n    ----\n    ```\n    ____\n    last\n",
+      "asciidoc": "[source,text]\n-----\n----\n```\n____\nlast\n-----\n",
+      "html": "<pre><code class=\"language-text\">----\n```\n____\nlast\n</code></pre>"
+    },
+    {
+      "id": "inline-code-backticks",
+      "tools": [
+        "mdast",
+        "hast",
+        "commonmark",
+        "cmark",
+        "djot",
+        "asciidoctor",
+        "md4c"
+      ],
+      "carve": "Code: ```x `` y```.\n",
+      "markdown": "Code: ```x `` y```.\n",
+      "djot": "Code: ```x `` y```.\n",
+      "asciidoc": "Code: ``pass:[x `` y]``.\n",
+      "html": "<p>Code: <code>x `` y</code>.</p>"
+    },
+    {
+      "id": "hard-break-with-inline-code",
+      "tools": [
+        "mdast",
+        "hast",
+        "commonmark",
+        "cmark",
+        "djot",
+        "md4c"
+      ],
+      "carve": "Code: ```x `` y```\\\nnext\n",
+      "markdown": "Code: ```x `` y```\\\nnext\n",
+      "djot": "Code: ```x `` y```\\\nnext\n",
+      "html": "<p>Code: <code>x `` y</code><br>next</p>"
+    },
+    {
+      "id": "code-before-quote",
+      "tools": [
+        "docutils",
+        "asciidoctor"
+      ],
+      "carve": "``` text\nx\n```\n\n> q\n",
+      "rst": ".. code:: text\n\n    x\n\n..\n\n    q\n",
+      "asciidoc": "[source,text]\n----\nx\n----\n\n[quote]\n____\nq\n____\n"
+    },
+    {
+      "id": "list-before-quote",
+      "tools": [
+        "docutils"
+      ],
+      "carve": "- a\n\n  b\n\n> q\n",
+      "rst": "- a\n\n  b\n\n..\n\n    q\n"
+    },
+    {
+      "id": "adjacent-sibling-lists",
+      "tools": [
+        "docutils",
+        "asciidoctor"
+      ],
+      "carve": "* a\n\n  aa\n\n- b\n\n  bb\n",
+      "rst": "- a\n\n  aa\n\n..\n\n- b\n\n  bb\n",
+      "asciidoc": "* a\n+\naa\n\n//\n\n* b\n+\nbb\n"
+    },
+    {
+      "id": "literal-block-markers",
+      "tools": [
+        "docutils"
+      ],
+      "carve": "\\- a\n\n1\\. a\n\n#. a\n\nsee foo::\n\nnext\n",
+      "rst": "\\- a\n\n1\\. a\n\n\\#. a\n\nsee foo\\:\\:\n\nnext\n"
+    },
+    {
+      "id": "code-javascript-language",
+      "carve": "``` js\nconst x = 1;\n```\n",
+      "markdown": "``` js\nconst x = 1;\n```\n",
+      "djot": "``` js\nconst x = 1;\n```\n",
+      "rst": ".. code:: js\n\n    const x = 1;\n",
+      "asciidoc": "[source,js]\n----\nconst x = 1;\n----\n",
+      "html": "<pre><code class=\"language-js\">const x = 1;\n</code></pre>"
+    }
+  ]
+}

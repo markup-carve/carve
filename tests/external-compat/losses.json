@@ -1,0 +1,381 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "underline-export",
+      "direction": "export",
+      "carve": "A _marked_ word.\n",
+      "tools": [
+        "mdast",
+        "hast",
+        "commonmark",
+        "cmark",
+        "djot",
+        "docutils",
+        "asciidoctor",
+        "md4c"
+      ],
+      "expected": {
+        "code": "unsupported-node",
+        "fidelity": "degraded",
+        "path": "/children/0/children/1"
+      },
+      "retained": "marked"
+    },
+    {
+      "id": "authored-attribute-export",
+      "direction": "export",
+      "carve": "{#authored .note}\nA paragraph.\n",
+      "tools": [
+        "mdast",
+        "commonmark",
+        "cmark",
+        "docutils",
+        "asciidoctor",
+        "md4c"
+      ],
+      "expected": {
+        "code": "unsupported-field",
+        "fidelity": "dropped",
+        "path": "/children/0/attrs"
+      },
+      "retained": "A paragraph."
+    },
+    {
+      "id": "code-metadata-import",
+      "direction": "import",
+      "tools": [
+        "mdast",
+        "commonmark",
+        "cmark",
+        "md4c"
+      ],
+      "source": "```js caption=demo\nx\n```\n",
+      "expected": {
+        "code": "unsupported-field",
+        "fidelity": "dropped",
+        "path": "/children/0/info",
+        "pathsByTool": {
+          "mdast": "/children/0/meta",
+          "md4c": "/events/1/info"
+        }
+      },
+      "retained": "x"
+    },
+    {
+      "id": "task-state-import",
+      "direction": "import",
+      "tools": [
+        "mdast"
+      ],
+      "source": "- [x] done\n",
+      "expected": {
+        "code": "unsupported-field",
+        "fidelity": "dropped",
+        "path": "/children/0/children/0/checked"
+      },
+      "retained": "done"
+    },
+    {
+      "id": "table-import",
+      "direction": "import",
+      "tools": [
+        "mdast"
+      ],
+      "source": "| Header Alpha | Header Beta |\n| - | - |\n| Cell Gamma | Cell Delta |\n",
+      "expected": {
+        "code": "unsupported-node",
+        "fidelity": "degraded",
+        "path": "/children/0"
+      },
+      "retained": "Header AlphaHeader BetaCell GammaCell Delta"
+    },
+    {
+      "id": "aside-import",
+      "direction": "import",
+      "tools": [
+        "hast"
+      ],
+      "source": "<aside>A note.</aside>",
+      "expected": {
+        "code": "unsupported-node",
+        "fidelity": "degraded",
+        "path": "/children/0"
+      },
+      "retained": "A note."
+    },
+    {
+      "id": "raw-html-import",
+      "direction": "import",
+      "tools": [
+        "commonmark",
+        "cmark",
+        "md4c"
+      ],
+      "source": "<aside>A note.</aside>\n",
+      "expected": {
+        "code": "unsupported-node",
+        "fidelity": "degraded",
+        "path": "/children/0",
+        "pathsByTool": {
+          "md4c": "/events/1"
+        }
+      },
+      "retained": "A note."
+    },
+    {
+      "id": "div-import",
+      "direction": "import",
+      "tools": [
+        "djot"
+      ],
+      "source": "::: note\nA note.\n:::\n",
+      "expected": {
+        "code": "unsupported-node",
+        "fidelity": "degraded",
+        "path": "/children/0"
+      },
+      "retained": "A note."
+    },
+    {
+      "id": "note-import",
+      "direction": "import",
+      "tools": [
+        "docutils"
+      ],
+      "source": ".. note:: A note.\n",
+      "expected": {
+        "code": "unsupported-node",
+        "fidelity": "degraded",
+        "path": "/children/0"
+      },
+      "retained": "A note."
+    },
+    {
+      "id": "admonition-import",
+      "direction": "import",
+      "tools": [
+        "asciidoctor"
+      ],
+      "source": "NOTE: A note.\n",
+      "expected": {
+        "code": "unsupported-node",
+        "fidelity": "degraded",
+        "path": "/blocks/0"
+      },
+      "retained": "A note."
+    },
+    {
+      "id": "standalone-anchor-import",
+      "direction": "import",
+      "tools": [
+        "docutils"
+      ],
+      "source": ".. _authored:\n\nA paragraph.\n",
+      "expected": {
+        "code": "unsupported-node",
+        "fidelity": "dropped",
+        "path": "/children/0"
+      },
+      "retained": "A paragraph."
+    },
+    {
+      "id": "ascii-block-id",
+      "direction": "import",
+      "tools": [
+        "asciidoctor"
+      ],
+      "source": "[#authored]\nParagraph body.\n",
+      "expected": {
+        "code": "unsupported-field",
+        "fidelity": "dropped",
+        "path": "/blocks/0/id"
+      },
+      "retained": "Paragraph body."
+    },
+    {
+      "id": "ascii-block-role",
+      "direction": "import",
+      "tools": [
+        "asciidoctor"
+      ],
+      "source": "[.authored]\nParagraph body.\n",
+      "expected": {
+        "code": "unsupported-field",
+        "fidelity": "dropped",
+        "path": "/blocks/0/roles"
+      },
+      "retained": "Paragraph body."
+    },
+    {
+      "id": "ascii-block-title",
+      "direction": "import",
+      "tools": [
+        "asciidoctor"
+      ],
+      "source": ".Block title\nParagraph body.\n",
+      "expected": {
+        "code": "unsupported-field",
+        "fidelity": "dropped",
+        "path": "/blocks/0/title"
+      },
+      "retained": "Paragraph body."
+    },
+    {
+      "id": "ascii-checkbox",
+      "direction": "import",
+      "tools": [
+        "asciidoctor"
+      ],
+      "source": "* [x] done\n",
+      "expected": {
+        "code": "unsupported-field",
+        "fidelity": "dropped",
+        "path": "/blocks/0/items/0/checkbox"
+      },
+      "retained": "done"
+    },
+    {
+      "id": "ascii-quote-attribution",
+      "direction": "import",
+      "tools": [
+        "asciidoctor"
+      ],
+      "source": "[quote, Author]\n____\nQuotation body.\n____\n",
+      "expected": {
+        "code": "unsupported-field",
+        "fidelity": "dropped",
+        "path": "/blocks/0/attribution"
+      },
+      "retained": "Quotation body."
+    },
+    {
+      "id": "rst-class",
+      "direction": "import",
+      "tools": [
+        "docutils"
+      ],
+      "source": ".. class:: note\n\nParagraph body.\n",
+      "expected": {
+        "code": "unsupported-field",
+        "fidelity": "dropped",
+        "path": "/children/0/attributes/classes"
+      },
+      "retained": "Paragraph body."
+    },
+    {
+      "id": "rst-lettered-list",
+      "direction": "import",
+      "tools": [
+        "docutils"
+      ],
+      "source": "a. first\nb. second\n",
+      "expected": {
+        "code": "unsupported-field",
+        "fidelity": "dropped",
+        "path": "/children/0/attributes/enumtype"
+      },
+      "retained": "firstsecond"
+    },
+    {
+      "id": "rst-image-width",
+      "direction": "import",
+      "tools": [
+        "docutils"
+      ],
+      "source": ".. image:: image.png\n   :alt: Preview\n   :width: 100\n",
+      "expected": {
+        "code": "unsupported-field",
+        "fidelity": "dropped",
+        "path": "/children/0/attributes/width"
+      },
+      "retained": "Preview"
+    },
+    {
+      "id": "djot-lettered-list",
+      "direction": "import",
+      "tools": [
+        "djot"
+      ],
+      "source": "a. first\nb. second\n",
+      "expected": {
+        "code": "unsupported-field",
+        "fidelity": "dropped",
+        "path": "/children/0/style"
+      },
+      "retained": "firstsecond"
+    },
+    {
+      "id": "html-stray-list-content",
+      "direction": "import",
+      "tools": [
+        "hast"
+      ],
+      "source": "<ul>stray content<li>item</li></ul>",
+      "expected": {
+        "code": "unsupported-node",
+        "fidelity": "degraded",
+        "path": "/children/0/children/0"
+      },
+      "retained": "stray content"
+    },
+    {
+      "id": "commonmark-strike-export",
+      "direction": "export",
+      "tools": [
+        "commonmark",
+        "cmark",
+        "md4c"
+      ],
+      "carve": "A ~removed~ word.\n",
+      "expected": {
+        "code": "unsupported-node",
+        "fidelity": "degraded",
+        "path": "/children/0/children/1"
+      },
+      "retained": "removed"
+    },
+    {
+      "id": "rst-top-heading-export",
+      "direction": "export",
+      "tools": [
+        "docutils"
+      ],
+      "carve": "# Top\n\nBody.\n",
+      "expected": {
+        "code": "unsupported-field",
+        "fidelity": "degraded",
+        "path": "/children/0/level"
+      },
+      "retained": "Top"
+    },
+    {
+      "id": "rst-isolated-subheading-export",
+      "direction": "export",
+      "tools": [
+        "docutils"
+      ],
+      "carve": "### Subheading\n",
+      "expected": {
+        "code": "unsupported-field",
+        "fidelity": "degraded",
+        "path": "/children/0/level"
+      },
+      "retained": "Subheading"
+    },
+    {
+      "id": "rst-inline-code-delimiter-export",
+      "direction": "export",
+      "tools": [
+        "docutils"
+      ],
+      "carve": "Code: ```x `` y```.\n",
+      "expected": {
+        "code": "unsupported-field",
+        "fidelity": "degraded",
+        "path": "/children/0/children/1/value"
+      },
+      "retained": "x `` y"
+    }
+  ]
+}
