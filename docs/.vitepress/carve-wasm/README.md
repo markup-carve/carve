@@ -23,6 +23,13 @@ has to drop that flag.
 
 Build from a released carve-wasm tag, not an arbitrary `main` commit.
 
+The sync script passes `--remap-path-prefix` for `CARGO_HOME` and the
+carve-wasm checkout, because a release build otherwise embeds the build
+machine's own directory layout in its panic locations. Panic strings in this
+copy therefore read `/cargo/git/checkouts/...`, which is a synthetic prefix and
+not a path on anyone's disk. `tests/no-host-paths-in-tracked-files.test.mjs`
+fails the suite if a rebuild reintroduces a real one.
+
 ## Provenance
 
 This copy was built from carve-wasm **v0.1.2**, which pins carve-rs

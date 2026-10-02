@@ -23,6 +23,7 @@ import {
 } from 'node:fs'
 import { resolve, dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { homedir } from 'node:os'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, '..')
@@ -56,10 +57,28 @@ if (!existsSync(wasmRoot)) {
 //
 // If a page ever needs `parseJson`, an importer or a checked renderer, this
 // flag is what removed it - drop the flag rather than reaching around it.
+//
+// RUSTFLAGS remaps the build host's source prefixes out of the artifact. Rust
+// embeds panic locations as absolute paths, so a release build writes the
+// developer's cargo home into the committed .wasm - 30 such strings shipped on
+// the public docs site, and no text grep could see them because they live in a
+// binary. carve-rs arrives as a git dependency, so both the registry and the
+// git checkout sit under CARGO_HOME; remapping it covers both.
+const cargoHome =
+  process.env.CARGO_HOME || resolve(homedir(), '.cargo')
+const remap = [
+  `--remap-path-prefix=${cargoHome}=/cargo`,
+  `--remap-path-prefix=${wasmRoot}=/carve-wasm`,
+].join(' ')
+
 console.log(`Building carve-wasm at ${wasmRoot}...`)
 execSync('wasm-pack build --target web --release --no-default-features', {
   cwd: wasmRoot,
   stdio: 'inherit',
+  env: {
+    ...process.env,
+    RUSTFLAGS: `${process.env.RUSTFLAGS ?? ''} ${remap}`.trim(),
+  },
 })
 
 const pkgDir = resolve(wasmRoot, 'pkg')
