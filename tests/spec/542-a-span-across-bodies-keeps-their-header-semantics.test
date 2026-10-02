@@ -1,0 +1,18 @@
+A span across bodies keeps their header semantics
+
+```
+{body-rows=2,1 body-header-rows=0,1 body-header-cols=1,0}
+| a | b |
+| ^ | c |
+| ^ | D |
+| e | f |
+.
+<table>
+  <tbody>
+    <tr><th scope="row" rowspan="3">a</th><td>b</td></tr>
+    <tr><td>c</td></tr>
+    <tr><th scope="col">D</th></tr>
+    <tr><td>e</td><td>f</td></tr>
+  </tbody>
+</table>
+```

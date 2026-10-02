@@ -1,0 +1,32 @@
+Multiple table bodies have positional source metadata
+
+```
+{header-rows=1 body-rows=1,1 body-header-rows=1,0 body-header-cols=1,0 footer-rows=1 widths=33.3,66.7}
+| H | G |
+| BH | BG |
+| a | b |
+| c | d |
+| F | T |
+^ Caption
+.
+<table>
+  <caption>Caption</caption>
+  <colgroup>
+    <col style="width: 33.3%;">
+    <col style="width: 66.7%;">
+  </colgroup>
+  <thead>
+    <tr><th scope="col">H</th><th scope="col">G</th></tr>
+  </thead>
+  <tbody>
+    <tr><th scope="col">BH</th><th scope="col">BG</th></tr>
+    <tr><th scope="row">a</th><td>b</td></tr>
+  </tbody>
+  <tbody>
+    <tr><td>c</td><td>d</td></tr>
+  </tbody>
+  <tfoot>
+    <tr><td>F</td><td>T</td></tr>
+  </tfoot>
+</table>
+```

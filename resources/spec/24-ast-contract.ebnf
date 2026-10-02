@@ -468,9 +468,10 @@
       after it as one body, no foot, no row-head columns.
 
       A ROW-HEAD COUNT THE CELLS ALREADY STATE IS NOT A PARTITION. A body's
-      `rowHeadColumns` counts leading columns that are header cells in every
-      row of the body, which those cells' own `header` flags say, and every
-      renderer reads the cells. So a producer publishes no `rowGroups` for a
+      `rowHeadColumns` gives the number of leading columns HTML renders as
+      row headers in the body's data rows. A cell's own `header` flag remains
+      independent and also promotes it to a header. When the cells already
+      state that same count, every renderer can derive it from the cells. So a producer publishes no `rowGroups` for a
       table whose one departure from the implicit partition is that count on
       its single body: the field would state nothing the rows do not, and a
       writer that cannot spell it loses nothing and reports nothing
@@ -483,17 +484,33 @@
       `header-rows=N` and/or `footer-rows=N`. An empty boolean value means one;
       otherwise N MUST be a non-negative decimal integer, and the two counts
       MUST NOT exceed the number of rows. The parser synthesizes one body group
-      holding all rows between them. Explicit header rows promote every cell in
-      those rows to a column-header cell; native `|=` cells outside that head
+      holding all rows between them. HTML promotes every cell in explicit
+      header rows to a column-header cell; native `|=` cells outside that head
       remain header cells and default to row scope. The attributes are consumed
       in HTML, where the three ranges render as `thead`, `tbody`, and `tfoot`.
 
-      CORE PIPE-TABLE SOURCE CANNOT SPELL multiple bodies, intermediate body
-      headers, or per-group row-head counts. Those richer partitions may enter
-      through an AST consumer or format bridge and survive AST encode/decode by
-      §6. The ListTable
-      extension authors a leading head, header-led body groups, a foot and
-      leading row-header columns; empty group boundaries remain interchange-only.
+      A pipe table MAY additionally carry `body-rows="N,..."`. Each entry
+      gives the number of data rows in one body, in source order. An empty
+      value states zero bodies; a zero entry states an empty body. When this
+      key is absent, the single body described above applies.
+      `body-header-rows="N,..."` gives the leading header-row count of each
+      body, defaulting to zero when omitted. `body-header-cols="N,..."`
+      gives each body's leading row-header-column count. An empty entry means
+      the optional `rowHeadColumns` field is absent; zero explicitly sets it
+      to zero. Both positional lists require `body-rows` and MUST have exactly
+      the same number of entries. An empty header-row entry is invalid. An
+      empty header-column entry occupies one position; with zero bodies both
+      header lists MUST be absent. Counts MUST be non-negative decimal integers
+      no greater than 9007199254740991. The leading head, all body headers
+      and data rows, and the foot MUST account for every row exactly once.
+      Invalid body metadata synthesizes no partition; all row-group metadata
+      attributes, including `header-rows` and `footer-rows`, remain ordinary
+      attributes in HTML. Valid body metadata is consumed in HTML. The source
+      attributes do not alter the cells' authored `header` fields; HTML promotes
+      column and row headers from the explicit partition.
+
+      The ListTable extension also authors header-led bodies through its
+      `header-row` markers. Its list node shape is distinct from a core table.
 
       Optional `headAttrs` and `footAttrs` carry attributes on the table head
       and foot. Each body group's optional `attrs` carries its attributes.
@@ -520,9 +537,13 @@
       code enum does not hold it (CARVE-P11-046): a dropped field is the one
       thing that report cannot name. A structured
       exporter MAY map the full partition to its target's equivalent. A
-      canonical Carve source writer retains `header-rows` / `footer-rows` when
-      they are present in table attributes; it MUST NOT invent a spelling for
-      richer grouping or drop/reorder rows to suit it.
+      canonical Carve source writer retains authored metadata attributes and
+      supplies missing attributes for the explicit partition. It uses
+      `body-rows`, `body-header-rows`, and `body-header-cols` for partitions
+      beyond one body without body headers or row-head counts. It MUST NOT
+      replace conflicting authored attributes or drop/reorder rows. If the
+      retained attributes cannot reconstruct the partition, it reports a
+      `field-unspellable` entry with `node` `table` and `field` `rowGroups`.
 
    16. A COMPOSITE FIGURE IS ITS OWN NODE TYPE -- NORMATIVE [CARVE-P12-035]
       (PART 9 §4c). The type is `figure_group`, and the wire shape:

@@ -1178,9 +1178,9 @@ not report `rowspan` or `colspan` as dropped, since the placeholders spell
 them. It reports the row attributes above, what a cell's blocks lose exactly as
 the same blocks report anywhere else, and whatever the option-off import
 reports about the table as a whole: a second caption, a `<colgroup>`, the row
-grouping and section attributes, and a rowspan clipped at the header rows. Both
-exits report the row grouping, because the list table has no slot for it on
-either one.
+grouping and section attributes, and a rowspan clipped at the header rows.
+The ListTable exits report lost grouping because that list node has no slot for
+it. Core pipe tables preserve the grouping with positional body attributes.
 
 ```html
 <table>
@@ -2129,7 +2129,7 @@ of its rows
 ```
 
 ```
-Merged 2 <tbody> groups into one; Carve source has no body grouping
+Merged 2 <tbody> groups into one; the ListTable fallback cannot preserve body grouping
 The table head changes from 1 to 0 row(s); Carve derives it from the leading run
 of header rows
 ```

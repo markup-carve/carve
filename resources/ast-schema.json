@@ -3198,7 +3198,7 @@
         },
         "rowGroups": {
           "type": "object",
-          "description": "Optional explicit head/body/foot partition of `rows`, imported from or destined for a format whose table model has one. It PARTITIONS `rows` and never repeats them: the counts consume `rows` in order, head first, then each body, then the foot, and they MUST account for every row exactly once. ListTable can author a leading head, header-led body groups, a foot, and leading row-header columns; partitions without those source landmarks remain interchange-only. Absent means the implicit structure every renderer already derives.",
+          "description": "Optional explicit head/body/foot partition of `rows`, imported from or destined for a format whose table model has one. It PARTITIONS `rows` and never repeats them: the counts consume `rows` in order, head first, then each body, then the foot, and they MUST account for every row exactly once. ListTable can author a leading head, header-led body groups, a foot, and leading row-header columns; pipe-table body-rows, body-header-rows, and body-header-cols preserve arbitrary body partitions. Absent means the implicit structure every renderer already derives.",
           "required": [
             "headRows",
             "bodies",
