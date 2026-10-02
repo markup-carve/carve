@@ -793,10 +793,11 @@ and carve-rs; off by default, enable per processor.
   AST. Intermediate marked headers map to `rowGroups.bodies[].headRows`, and
   explicitly marked cells map to `table_cell.header`. Column alignment resolves into cell styles and
   widths render through `<colgroup>`/`<col>` before the row groups.
-- Multiple body groups remain exchange-AST metadata. ListTable has one body
-  list, so a canonical source writer flattens `rowGroups.bodies` into that body
-  and reports the lost boundaries; `footer-rows` does not imply body-group
-  syntax.
+- Core pipe tables preserve body boundaries with `body-rows`, body headers
+  with `body-header-rows`, and per-body row-header columns with
+  `body-header-cols`. ListTable keeps its list node shape and `header-row`
+  markers. See [table row groups](./ast-json-contract.md) for the positional
+  attributes.
 
 ### 5.3 Degradation
 

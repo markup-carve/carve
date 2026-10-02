@@ -351,6 +351,7 @@ the block below them.
 | --- | --- | --- |
 | `loose` | a list, a definition list | the container's children render as **blocks** rather than inline runs |
 | `header-rows=N`, `footer-rows=N` | a pipe table | the leading / trailing row ranges become `<thead>` / `<tfoot>` |
+| `body-rows`, `body-header-rows`, `body-header-cols` | a pipe table | body partitions, intermediate headers, and row-header columns; valid positional lists are consumed |
 | `aligns`, `valigns`, `widths` | a pipe table | per-column alignment and width, as positional comma-separated lists |
 | `align=left\|right\|center` | a paragraph, div, or heading | renders the modern `text-align` CSS declaration instead of the legacy HTML attribute |
 

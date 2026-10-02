@@ -130,14 +130,27 @@ account for every row exactly once, so the grouping can never contradict the
 table's content. `rows` stays the one sequence every consumer reads. Absent
 means the implicit structure renderers already derive - a leading run of header
 rows as the head, everything after it as one body, no foot. Pipe-table parsers
-synthesize the simple partition spelled by `header-rows` / `footer-rows`, and
-ListTable-aware converters may additionally synthesize header-led body groups
-and row-header columns. Partitions without those landmarks remain
-interchange-only. Like `shortCaption`,
-it exists so a richer table model (several `tbody` groups, a group's own
-intermediate header rows, a foot, a count of leading row-header columns)
-survives a format bridge. HTML renders source-spelled head/foot ranges;
-plain and ANSI keep flattening the table.
+synthesize explicit groups from `header-rows`, `footer-rows`, and the body
+metadata attributes:
+
+| Attribute | Meaning |
+| --- | --- |
+| `body-rows="2,3"` | Two bodies containing two and three data rows |
+| `body-header-rows="1,0"` | One intermediate header row in the first body |
+| `body-header-cols="1,"` | One row-header column in the first body; unset in the second |
+
+Body header lists require `body-rows` and must have one entry per body. Missing
+body header rows default to zero. Empty column entries preserve an absent
+`rowHeadColumns`; `0` preserves an explicit zero. `body-rows=""` states no
+bodies, while `body-rows=0` states one empty body. All row counts together must
+partition the table exactly. Invalid body metadata stays ordinary attributes
+and produces no explicit partition. Canonical source writers supply missing
+metadata attributes and diagnose conflicting authored values.
+
+HTML renders one `tbody` per body and promotes its intermediate column headers
+and leading row-header columns. Plain and ANSI keep the flat rows. Section
+attributes remain interchange metadata and their loss is diagnosed separately.
+
 
 A `table` may also carry an optional positional `columns` array (§19). Each
 entry describes the corresponding column and may hold `align` (`left`, `right`

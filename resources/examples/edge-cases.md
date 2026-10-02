@@ -45806,3 +45806,273 @@ Body two.
 ```
 
 ::::
+
+## Multiple table bodies have positional source metadata
+
+:::: compare
+
+```carve
+{header-rows=1 body-rows=1,1 body-header-rows=1,0 body-header-cols=1,0 footer-rows=1 widths=33.3,66.7}
+| H | G |
+| BH | BG |
+| a | b |
+| c | d |
+| F | T |
+^ Caption
+```
+
+```html
+<table>
+  <caption>Caption</caption>
+  <colgroup>
+    <col style="width: 33.3%;">
+    <col style="width: 66.7%;">
+  </colgroup>
+  <thead>
+    <tr><th scope="col">H</th><th scope="col">G</th></tr>
+  </thead>
+  <tbody>
+    <tr><th scope="col">BH</th><th scope="col">BG</th></tr>
+    <tr><th scope="row">a</th><td>b</td></tr>
+  </tbody>
+  <tbody>
+    <tr><td>c</td><td>d</td></tr>
+  </tbody>
+  <tfoot>
+    <tr><td>F</td><td>T</td></tr>
+  </tfoot>
+</table>
+```
+
+::::
+
+## Empty table bodies keep their source boundaries
+
+:::: compare
+
+```carve
+{body-rows=0,1 body-header-rows=0,1 body-header-cols=,0}
+| H | G |
+| a | b |
+```
+
+```html
+<table>
+  <tbody>
+  </tbody>
+  <tbody>
+    <tr><th scope="col">H</th><th scope="col">G</th></tr>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+## A table with no bodies keeps its head and foot
+
+:::: compare
+
+```carve
+{header-rows=1 footer-rows=1 body-rows=""}
+| H | G |
+| F | T |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">H</th><th scope="col">G</th></tr>
+  </thead>
+  <tfoot>
+    <tr><td>F</td><td>T</td></tr>
+  </tfoot>
+</table>
+```
+
+::::
+
+## Invalid table body metadata stays ordinary
+
+:::: compare
+
+```carve
+{header-rows=1 body-rows=x}
+| a | b |
+| c | d |
+```
+
+```html
+<table header-rows="1" body-rows="x">
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>c</td><td>d</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+:::: compare
+
+```carve
+{body-rows=1,1 body-header-rows=0}
+| a | b |
+| c | d |
+```
+
+```html
+<table body-rows="1,1" body-header-rows="0">
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>c</td><td>d</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+:::: compare
+
+```carve
+{body-rows=1}
+| a | b |
+| c | d |
+```
+
+```html
+<table body-rows="1">
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>c</td><td>d</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+:::: compare
+
+```carve
+{header-rows=1 body-header-rows=1}
+| a | b |
+| c | d |
+```
+
+```html
+<table header-rows="1" body-header-rows="1">
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>c</td><td>d</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+:::: compare
+
+```carve
+{body-rows=1,1 body-header-cols=x,0}
+| a | b |
+| c | d |
+```
+
+```html
+<table body-rows="1,1" body-header-cols="x,0">
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>c</td><td>d</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+:::: compare
+
+```carve
+{body-rows=9007199254740992}
+| a | b |
+| c | d |
+```
+
+```html
+<table body-rows="9007199254740992">
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>c</td><td>d</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+## A span across bodies keeps their header semantics
+
+:::: compare
+
+```carve
+{body-rows=2,1 body-header-rows=0,1 body-header-cols=1,0}
+| a | b |
+| ^ | c |
+| ^ | D |
+| e | f |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><th scope="row" rowspan="3">a</th><td>b</td></tr>
+    <tr><td>c</td></tr>
+    <tr><th scope="col">D</th></tr>
+    <tr><td>e</td><td>f</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+## A head and foot consuming all rows leave no implicit body
+
+:::: compare
+
+```carve
+{header-rows=1 footer-rows=1}
+| H | G |
+| F | T |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">H</th><th scope="col">G</th></tr>
+  </thead>
+  <tfoot>
+    <tr><td>F</td><td>T</td></tr>
+  </tfoot>
+</table>
+```
+
+::::
+
+## Explicit body counts include native header cells
+
+:::: compare
+
+```carve
+{body-rows=2}
+|= A |= B |
+| c | d |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><th scope="row">A</th><th scope="row">B</th></tr>
+    <tr><td>c</td><td>d</td></tr>
+  </tbody>
+</table>
+```
+
+::::

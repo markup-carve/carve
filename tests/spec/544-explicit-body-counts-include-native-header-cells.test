@@ -1,0 +1,14 @@
+Explicit body counts include native header cells
+
+```
+{body-rows=2}
+|= A |= B |
+| c | d |
+.
+<table>
+  <tbody>
+    <tr><th scope="row">A</th><th scope="row">B</th></tr>
+    <tr><td>c</td><td>d</td></tr>
+  </tbody>
+</table>
+```

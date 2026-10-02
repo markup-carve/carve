@@ -152,7 +152,8 @@ boolean_attribute = identifier - ('_', {character}) ;
      footer-rows   trailing row ranges become `thead` / `tfoot`, boolean
                    meaning one (PART 12 §15)
 
-   `aligns`, `valigns` and `widths` (PART 12 §19) are the same class in
+   `body-rows`, `body-header-rows` and `body-header-cols` (PART 12 §15),
+   and `aligns`, `valigns` and `widths` (PART 12 §19) are the same class in
    key/value form. Every other name reaches the output as the attribute it is,
    and each of these does too on a block that has nothing to consume it: the
    name is not reserved, it is read by the block below it. *)

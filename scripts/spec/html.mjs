@@ -1012,6 +1012,29 @@ function numberCaption(text, ctx, id, panelIds) {
   return text.slice(0, at) + n + text.slice(at + 1)
 }
 
+function tableBodyGroups(keys, rows) {
+  const count = value => /^\d+$/.test(value.trim()) && Number.isSafeInteger(Number(value.trim())) ? Number(value.trim()) : null
+  const edge = key => !keys.has(key) ? 0 : String(keys.get(key)).trim() === '' ? 1 : count(String(keys.get(key)))
+  const head = edge('header-rows'), foot = edge('footer-rows')
+  if (head === null || foot === null || head > rows || foot > rows - head || !keys.has('body-rows')) return null
+  const raw = String(keys.get('body-rows'))
+  const data = raw.trim() === '' ? [] : raw.split(',')
+  const headers = keys.has('body-header-rows') ? String(keys.get('body-header-rows')).split(',') : null
+  const columns = keys.has('body-header-cols') ? String(keys.get('body-header-cols')).split(',') : null
+  if ((headers && headers.length !== data.length) || (columns && columns.length !== data.length)) return null
+  const bodies = []
+  let remaining = rows - head - foot
+  for (let i = 0; i < data.length; i++) {
+    const bodyRows = count(data[i]), headRows = headers ? count(headers[i]) : 0
+    const columnValue = columns?.[i].trim()
+    const rowHeadColumns = columnValue ? count(columnValue) : 0
+    if (bodyRows === null || headRows === null || rowHeadColumns === null || headRows > remaining || bodyRows > remaining - headRows) return null
+    remaining -= headRows + bodyRows
+    bodies.push({ bodyRows, headRows, rowHeadColumns })
+  }
+  return remaining === 0 ? { head, foot, bodies } : null
+}
+
 // --- tables: PART 9 SS5 T5 span walk + serialization -------------------------
 function renderTable(node, depth, ctx) {
   const pad = '  '.repeat(depth)
@@ -1020,13 +1043,24 @@ function renderTable(node, depth, ctx) {
   for (const list of node.battrs ?? []) {
     const keep = []
     for (const attr of list) {
-      if (attr[0] === 'kv' && ['aligns', 'valigns', 'widths', 'header-rows', 'footer-rows'].includes(attr[1])) tableKeys.set(attr[1], attr[2])
+      if (['kv', 'bool'].includes(attr[0]) && ['aligns', 'valigns', 'widths', 'header-rows', 'footer-rows', 'body-rows', 'body-header-rows', 'body-header-cols'].includes(attr[1])) tableKeys.set(attr[1], attr[0] === 'bool' ? '' : attr[2])
       else keep.push(attr)
     }
     if (keep.length) ordinaryAttrs.push(keep)
   }
-  const ba = ordinaryAttrs.length ? renderBlockAttrs(ordinaryAttrs) : ''
   const rows = node.rows
+  const hasBody = ['body-rows', 'body-header-rows', 'body-header-cols'].some(key => tableKeys.has(key))
+  const groups = hasBody ? tableBodyGroups(tableKeys, rows.length) : null
+  if (hasBody && groups === null) {
+    const rowKeys = new Set(['header-rows', 'footer-rows', 'body-rows', 'body-header-rows', 'body-header-cols'])
+    ordinaryAttrs.length = 0
+    for (const list of node.battrs ?? []) {
+      const attrs = list.filter(attr => !['kv', 'bool'].includes(attr[0]) || !['aligns', 'valigns', 'widths'].includes(attr[1]))
+      if (attrs.length) ordinaryAttrs.push(attrs)
+    }
+    for (const key of rowKeys) tableKeys.delete(key)
+  }
+  const ba = ordinaryAttrs.length ? renderBlockAttrs(ordinaryAttrs) : ''
   const widest = rows.reduce((n, row) => Math.max(n, row.cells.length), 0)
   const positional = (key) => tableKeys.has(key) ? String(tableKeys.get(key)).split(',').map((v) => v.trim()) : []
   const attrAlign = positional('aligns').map((v) => ['left', 'right', 'center'].includes(v) ? v : null)
@@ -1092,20 +1126,30 @@ function renderTable(node, depth, ctx) {
     return Number(value)
   }
   const explicitPartition = tableKeys.has('header-rows') || tableKeys.has('footer-rows')
-  let headCount = rowCount('header-rows')
-  const footCount = rowCount('footer-rows')
+  let headCount = groups?.head ?? rowCount('header-rows')
+  const footCount = groups?.foot ?? rowCount('footer-rows')
   if (headCount + footCount > rows.length) throw new Refuse('table header and footer rows overlap')
-  if (!explicitPartition) {
+  if (!explicitPartition && !groups) {
     while (headCount < rows.length && rows[headCount].isHead) headCount++
   }
   const footStart = rows.length - footCount
+  const bodyRanges = []
+  const contexts = rows.map((_, row) => ({ header: row < headCount, columns: 0 }))
+  let bodyStart = headCount
+  for (const body of groups?.bodies ?? (footStart > headCount ? [{ headRows: 0, bodyRows: footStart - headCount, rowHeadColumns: 0 }] : [])) {
+    const end = bodyStart + body.headRows + body.bodyRows
+    bodyRanges.push([bodyStart, end])
+    for (let row = bodyStart; row < end; row++) contexts[row] = { header: row < bodyStart + body.headRows, columns: body.rowHeadColumns }
+    bodyStart = end
+  }
+  const boundaries = [headCount, footStart, ...bodyRanges.map(([, end]) => end)]
   const crossesSection = rows.some((row, r) => row.cells.some((cell, c) => {
     if (consumed.has(key(r, c)) || (cell.rowspan ?? 1) <= 1) return false
     const end = r + cell.rowspan - 1
-    return (r < headCount && end >= headCount) || (r < footStart && end >= footStart)
+    return boundaries.some(boundary => r < boundary && end >= boundary)
   }))
   const renderCell = (cell, r, c) => {
-    const isHeader = cell.header || r < headCount
+    const isHeader = cell.header || contexts[r].header || c < contexts[r].columns
     const tag = isHeader ? 'th' : 'td'
     let a = ''
     // The cell's own block is parsed FIRST, only to see whether it names
@@ -1126,7 +1170,7 @@ function renderTable(node, depth, ctx) {
     // `scope`s as far as any consumer is concerned. The test is about avoiding
     // that collision, not about folding the author's name.
     if (isHeader && !/ scope="/i.test(parsed)) {
-      a += r < headCount ? ' scope="col"' : ' scope="row"'
+      a += contexts[r].header ? ' scope="col"' : ' scope="row"'
     }
     if (cell.rowspan) a += ` rowspan="${cell.rowspan}"`
     if (cell.colspan) a += ` colspan="${cell.colspan}"`
@@ -1177,7 +1221,6 @@ function renderTable(node, depth, ctx) {
   // shapes with no rule to measure either against. One layout needs no
   // exception, and the emitted HTML is read by people: these documents ARE the
   // documentation, and their diffs are how a table defect gets noticed.
-  const bodyStart = headCount
   const section = (tag, from, to) => {
     out.push(`${pad}  <${tag}>`)
     for (let r = from; r < to; r++) out.push(`${pad}    ${renderRow(rows[r], r)}`)
@@ -1186,7 +1229,7 @@ function renderTable(node, depth, ctx) {
   if (crossesSection) section('tbody', 0, rows.length)
   else {
     if (headCount > 0) section('thead', 0, headCount)
-    if (footStart > bodyStart) section('tbody', bodyStart, footStart)
+    for (const [from, to] of bodyRanges) section('tbody', from, to)
     if (footStart < rows.length) section('tfoot', footStart, rows.length)
   }
   out.push(`${pad}</table>`)

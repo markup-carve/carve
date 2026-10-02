@@ -23,7 +23,14 @@ formatter or full-target agreement claim.
 
 Corpus added since this run: `535-a-marker-line-opaque-quote-keeps-overindented-markers-literal`,
 `536-a-denied-destination-takes-one-render-loss-row-per-sink`,
-`537-invalid-named-container-metadata-keeps-the-subtree`.
+`537-invalid-named-container-metadata-keeps-the-subtree`,
+`538-multiple-table-bodies-have-positional-source-metadata`,
+`539-empty-table-bodies-keep-their-source-boundaries`,
+`540-a-table-with-no-bodies-keeps-its-head-and-foot`,
+`541-invalid-table-body-metadata-stays-ordinary`,
+`542-a-span-across-bodies-keeps-their-header-semantics`,
+`543-a-head-and-foot-consuming-all-rows-leave-no-implicit-body`,
+`544-explicit-body-counts-include-native-header-cells`.
 
 The 36 ownership controls were added after this count snapshot. They are not
 included in its denominators. The paired Rust fix merged in
