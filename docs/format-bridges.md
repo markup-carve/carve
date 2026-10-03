@@ -167,6 +167,10 @@ not publish their changing totals.
 | carve-php's [ProseMirror bridge](https://github.com/markup-carve/carve-php/blob/main/docs/prosemirror.md) | `ProseMirrorRenderer::renderJson()` | `ProseMirrorToCarve::convertJson()` | PHP only. No Node runtime, which is what lets a Tiptap editor in the browser and PHP rendering in a queue worker or CLI command share one stored document. |
 | [carve-grammars](https://github.com/markup-carve/carve-grammars) | `carveToProseMirror()` | `serializeToCarve()` | Node. Owns the `CarveKit` schema and the shared name map. |
 
+How much of a document survives each pandoc writer and reader, and what the
+pandoc-carve bridge preserves on the same probes, is measured in
+[pandoc-format-fidelity](https://markup-carve.github.io/pandoc-format-fidelity/).
+
 Two of those bridges reach the same target model from different runtimes, which
 is the arrangement to expect rather than a duplication to resolve: an editor
 needs the model in the runtime the application already has. The PHP pair is what
