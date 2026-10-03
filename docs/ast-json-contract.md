@@ -29,6 +29,44 @@ Editors, linters, converters, and document-comparison tools need structured
 content, not finished HTML. A shared JSON format prevents each implementation
 from assigning different field names to the same information.
 
+## Reading the round-trip requirements
+
+The following guide brings the existing requirements together; it adds no
+serialization rule. A JSON round trip, a source round trip and an HTML
+comparison answer different questions.
+
+| Operation | What is preserved | Where the requirement lives |
+| --- | --- | --- |
+| Encode and decode a parsed AST | The parsed tree and its published fields. `text` and `escaped_text` remain distinct on the wire. Adjacent `text` nodes are already coalesced in the parsed tree. | Part 12 §§1a, 6 |
+| Format Carve source and parse it again | The parsed document, except where the declared wrapper ceiling applies, using Part 11's equality modulo escaping: adjacent `text` and `escaped_text` runs compare by their characters. The writer is also byte-idempotent. | Part 11 clauses 1 and 1c |
+| Write an imported or edited AST as Carve source | Source-spellable structure, subject to the declared ceilings and construct-specific fallbacks. A valid interchange tree can contain information Carve 0.1 source cannot spell. | Part 11 clauses 1b-1d; Part 12's node-specific clauses |
+| Compare rendered HTML | The rendering required by the selected target. Matching HTML alone does not establish AST identity or satisfy the source writer's parse invariant. | Part 11 clauses 1 and 1a; Part 10 |
+
+The distinction between the two equalities matters: collapsing escaped nodes
+can be valid for the writer comparison while losing authored form in JSON.
+
+Starting points in the source modules are [writer invariants](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf),
+[AST foundations](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf)
+and [AST contract](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf).
+The [complete grammar](https://github.com/markup-carve/carve/blob/main/resources/grammar.ebnf)
+includes the remaining target and node-specific clauses; Part 12's fallback
+matrix summarizes the target behavior of interchange-only shapes.
+
+Representability depends on the shape and field values, not just the node type.
+For example, a paragraph containing only an image loses its wrapper under the
+writer's declared ceiling. A code block with content `"a"` survives JSON
+unchanged, but writing a closed Carve fence adds a payload newline and reports
+`field-unspellable` for `code_block.content` through a conversion-diagnostics
+API. A `shortCaption` survives interchange but is omitted from Carve 0.1 source;
+a bridge/API exposing conversion diagnostics should report that structural
+loss under Part 12 §14. The sections
+below retain the individual fallbacks and their reporting requirements.
+
+Use [format bridges](./format-bridges) to distinguish AST-returning conversions
+from source-writing conversions, and [HTML import](./html-import) for that
+importer's preservation and diagnostic contract. These channels have different
+jobs; a render-loss report does not replace a conversion-diagnostics report.
+
 ## Editing APIs
 
 All three engines create and apply AST patches addressed by JSON Pointers.

@@ -4,6 +4,12 @@ description: Convert Carve to and from Pandoc and ProseMirror without using rend
 
 # Format conversion
 
+For the existing JSON, source-writer and rendering round-trip requirements,
+see [Reading the round-trip requirements](./ast-json-contract#reading-the-round-trip-requirements).
+An AST-returning bridge can preserve information that its source-writing exit
+must degrade; validity under the JSON schema does not guarantee a Carve 0.1
+source spelling.
+
 Carve can convert to and from Pandoc documents for LaTeX, Typst, or DOCX output,
 and ProseMirror documents used by editors such as Tiptap. These converters work
 with structured documents instead of using rendered HTML as an intermediate
