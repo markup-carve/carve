@@ -23,7 +23,7 @@
  * That is what carve#533 asked for - it found the pin three documents behind
  * with nothing reporting it, because this script ran in no CI job at all.
  *
- * Usage: node scripts/engine-report.mjs [--diff] [--check]
+ * Usage: node scripts/engine-report.mjs [--diff] [--check] [--structure]
  */
 
 import { readdirSync, readFileSync } from 'node:fs'
@@ -32,11 +32,13 @@ import { fileURLToPath } from 'node:url'
 import { carveToHtml } from '@markup-carve/carve'
 import { shortfall } from './spec/participants.mjs'
 import { parseDriftLedger } from './lib/drift-ledger.mjs'
+import { compareHtmlStructure } from './lib/html-structure.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, '..', 'tests/corpus')
 const diffMode = process.argv.includes('--diff')
 const checkMode = process.argv.includes('--check')
+const structureMode = process.argv.includes('--structure')
 
 const slugs = readdirSync(corpusDir)
   .filter((f) => f.endsWith('.crv'))
@@ -96,6 +98,7 @@ console.log(`threw:                   ${threw.length}`)
 for (const t of threw) console.log(`  ! ${t.slug}: ${t.message}`)
 for (const m of mismatches) {
   console.log(`\n--- ${m.slug}`)
+  if (structureMode) console.log(`HTML diagnostic: ${compareHtmlStructure(m.expected, m.got)}`)
   if (diffMode) {
     console.log(`expected:\n${m.expected}`)
     console.log(`got:\n${m.got}`)
