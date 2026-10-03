@@ -38,9 +38,9 @@ comparison answer different questions.
 | Operation | What is preserved | Where the requirement lives |
 | --- | --- | --- |
 | Encode and decode a parsed AST | The parsed tree and its published fields. `text` and `escaped_text` remain distinct on the wire. Adjacent `text` nodes are already coalesced in the parsed tree. | Part 12 §§1a, 6 |
-| Format Carve source and parse it again | The parsed document, except where the declared wrapper ceiling applies, using Part 11's equality modulo escaping: adjacent `text` and `escaped_text` runs compare by their characters. The writer is also byte-idempotent. | Part 11 §§1, 1c |
-| Write an imported or edited AST as Carve source | Source-spellable structure, subject to the declared ceilings and construct-specific fallbacks. A valid interchange tree can contain information Carve 0.1 source cannot spell. | Part 11 §§1b-1d; Part 12's node-specific clauses |
-| Compare rendered HTML | The rendering required by the selected target. Matching HTML alone does not establish AST identity or satisfy the source writer's parse invariant. | Part 11 §§1, 1a; Part 10 |
+| Format Carve source and parse it again | The parsed document, except where the declared wrapper ceiling applies, using Part 11's equality modulo escaping: adjacent `text` and `escaped_text` runs compare by their characters. The writer is also byte-idempotent. | Part 11 clauses 1 and 1c |
+| Write an imported or edited AST as Carve source | Source-spellable structure, subject to the declared ceilings and construct-specific fallbacks. A valid interchange tree can contain information Carve 0.1 source cannot spell. | Part 11 clauses 1b-1d; Part 12's node-specific clauses |
+| Compare rendered HTML | The rendering required by the selected target. Matching HTML alone does not establish AST identity or satisfy the source writer's parse invariant. | Part 11 clauses 1 and 1a; Part 10 |
 
 The distinction between the two equalities matters: collapsing escaped nodes
 can be valid for the writer comparison while losing authored form in JSON.
