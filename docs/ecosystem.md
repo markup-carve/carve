@@ -145,11 +145,16 @@ Opt-in extensions that add non-core syntax.
 | [carve-php-media-embed](https://github.com/markup-carve/carve-php-media-embed) | carve-php | Embeds audio and video through dereuromark/media-embed. |
 | [carve-php-chat](https://github.com/markup-carve/carve-php-chat) | carve-php | Renders Carve to chat-platform markup (WhatsApp, Slack, Telegram, Discord) via data-driven flavor definitions. |
 
-## Benchmarks
+## Evidence & benchmarks
 
-| Project | Description |
-|---|---|
-| [carve-bench](https://github.com/markup-carve/carve-bench) | Cross-engine render performance benchmarks (carve-js / carve-php / carve-rs). |
+Measurements of the language and its engines, each published as a website built from committed results.
+
+| Project | Website | Description |
+|---|---|---|
+| [carve-proofs](https://github.com/markup-carve/carve-proofs) | [Proofs](https://markup-carve.github.io/carve-proofs/) | Machine-checked models of Carve parsing rules, compared with the reference implementations. |
+| [carve-bench](https://github.com/markup-carve/carve-bench) | [Bench](https://markup-carve.github.io/carve-bench/) | Cross-engine render performance benchmarks (carve-js / carve-php / carve-rs). |
+| [carve-compat](https://github.com/markup-carve/carve-compat) | [Compat](https://markup-carve.github.io/carve-compat/) | Cross-format AST compatibility: foreign parsers mapped to Carve's AST and read back. |
+| [pandoc-format-fidelity](https://github.com/markup-carve/pandoc-format-fidelity) | [Fidelity](https://markup-carve.github.io/pandoc-format-fidelity/) | How much of a document survives a pandoc conversion, per format and feature, including the pandoc-carve bridge. |
 
 ## AI / agent tooling
 
