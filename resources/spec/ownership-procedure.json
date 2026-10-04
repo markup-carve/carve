@@ -108,7 +108,8 @@
       ],
       "checkerHelpers": [
         "ownershipTransition",
-        "bodyLeavesParagraphOpen"
+        "bodyLeavesParagraphOpen",
+        "afterCommentTransition"
       ],
       "constraint": "Container survival, paragraph openness and ordinary-line claims remain separate facts."
     }

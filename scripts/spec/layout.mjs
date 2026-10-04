@@ -1055,6 +1055,21 @@ export function commentFenceOpensSpan(lines, index) {
   return opener !== null && commentFenceCloserAhead(lines, index, opener[1])
 }
 
+/**
+ * Advance a list collector's after-comment flag from classified line facts.
+ * Paragraph closure, prefix availability and span tracking remain with the caller.
+ * A marker-line span closer preserves the flag it arrived with.
+ */
+export function afterCommentTransition(previous, {
+  belowCloser = false, spanClosed = false, markerLine = false,
+  inCommentSpan = false, comment = false, blank = false,
+}) {
+  if (belowCloser || (spanClosed && !markerLine)) return true
+  if (spanClosed || inCommentSpan) return previous
+  if (comment) return true
+  return blank ? previous : false
+}
+
 export function classifyLayoutComment(lines, index) {
   const opener = COMMENT_FENCE.exec(lines[index] ?? '')
   if (opener) {
@@ -5486,16 +5501,12 @@ function collectItems(lines, i, list, state, ind, meas) {
         // does need the span (carve#985), and matches it with
         // COMMENT_FENCE_BODY rather than `findCloser`, whose alphabet is
         // backticks and tildes.
-        if (belowCloser) {
-          // The span is located below every content column, so its closer
-          // leaves THAT column's retention: the frame stays available.
-          afterComment = true
-        } else if (inCommentSpan) {
-          // The span's own lines say nothing here: the opener already set both
-          // states, and a payload line that reopened a paragraph made the
-          // CLOSER's column decide who owns the following line.
-        } else if (COMMENT_LINE.test(dedented)) afterComment = true
-        else if (dmeas.rest !== '') afterComment = false
+        afterComment = afterCommentTransition(afterComment, {
+          belowCloser,
+          inCommentSpan,
+          comment: !belowCloser && !inCommentSpan && COMMENT_LINE.test(dedented),
+          blank: dmeas.rest === '',
+        })
         // record the first sub-list's content column (carve#322)
         if (subCol < 0 && nm && nm.indent >= contentCol) {
           subCol = nm.indent + nm.markerWidth
@@ -5829,7 +5840,10 @@ function collectItems(lines, i, list, state, ind, meas) {
         // no span and keeps its retention rule (corpus 214).
         if (spanBefore && !(fence.opaque?.kind === 'comment' || nestedOpaque?.kind === 'comment')) {
           closePara()
-          if (!spanFromMarkerLine) afterComment = true
+          afterComment = afterCommentTransition(afterComment, {
+            spanClosed: true,
+            markerLine: spanFromMarkerLine,
+          })
         }
         // An opener written HERE locates the span below every content column,
         // so its closer answers with this column's retention wherever it is
