@@ -210,7 +210,8 @@ names every merge that moved shipped source and is cited nowhere:
   still young enough to move. Run it yourself any time with
   `npm run changelog:check`, and `.github/workflows/changelog-drift.yml` runs
   the same bare invocation daily against `main`, filing one tracking issue while
-  the pending section is behind. That is the only thing that asks between a merge
+  the pending section is behind. That run stays green on a finding, since the
+  issue is the report, and goes red only when the gate cannot judge. That is the only thing that asks between a merge
   and a tag; per-pull-request is deliberately not where this lives, since only
   the release-cutting change writes a section.
 

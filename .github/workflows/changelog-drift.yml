@@ -15,9 +15,13 @@ name: Changelog drift
 # files where the backlog already looks.
 #
 # The reporter is ast-conformance.yml's, kept deliberately: one tracking issue,
-# opened by the first red run, edited by every later one, closed by the first
-# green one. Closing it by hand does not mute it, because the lookup below
-# matches OPEN issues only.
+# opened by the first failing measurement, edited by every later one, closed by
+# the first clean one. Closing it by hand does not mute it, because the lookup
+# below matches OPEN issues only.
+#
+# A drift verdict (exit 3) files that ticket and the run stays GREEN: the ticket
+# is the channel (carve#2706). A gate that could not judge, or a reporter that
+# could not file, keeps the run RED.
 
 on:
   schedule:
@@ -52,13 +56,13 @@ jobs:
           node-version: 24
 
       # No version argument: the gate reads every heading above the first tagged
-      # one. The step records its own exit status as an output BEFORE failing, so
-      # the reporter below can read the verdict off a red step rather than
-      # re-running the gate.
+      # one. The step records its exit status as an output for the reporter, and
+      # fails on any status other than 0 and the drift verdict 3.
       - name: Which merges the unreleased section does not account for
         id: measure
         env:
           GH_TOKEN: ${{ github.token }}
+          FILES_A_TICKET: ${{ github.ref_name == github.event.repository.default_branch }}
         run: |
           set -o pipefail
           node scripts/changelog-completeness.mjs 2>&1 | tee /tmp/changelog-drift.txt && status=0 || status=$?
@@ -70,6 +74,11 @@ jobs:
             cat /tmp/changelog-drift.txt
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+          # Off the default branch the reporter files nothing, so drift stays red there.
+          if [ "$status" = 3 ] && [ "$FILES_A_TICKET" = true ]; then
+            echo "Drift verdict: the reporter files it, and the run stays green."
+            exit 0
+          fi
           exit "$status"
 
       # THE READER. A scheduled job reports into a run nobody is obliged to open,
@@ -115,7 +124,7 @@ jobs:
             echo "The unreleased section accounts for every merge on $HEAD_SHA."
             if [ -n "$issue" ]; then
               gh issue comment "$issue" --repo "$REPO" --body \
-                "Green again: run $RUN_URL on \`$HEAD_SHA\`. Closing. The next red run opens a fresh ticket rather than reopening this one."
+                "Clean again: run $RUN_URL on \`$HEAD_SHA\`. Closing. The next failing measurement opens a fresh ticket rather than reopening this one."
               gh issue close "$issue" --repo "$REPO"
               echo "Closed #$issue."
             fi
@@ -129,6 +138,11 @@ jobs:
             echo "CHANGELOG.md. Nothing else asks this between a merge and a tag, so the"
             echo "alternative to this ticket is finding out on cut day."
             echo
+            if [ "${STATUS:-1}" != "3" ]; then
+              echo "**The gate could not judge** (exit \`${STATUS:-none}\`), so this run is red and"
+              echo "the output below is a broken check, not a list of missing entries. Fix that first."
+              echo
+            fi
             echo "| | |"
             echo "| --- | --- |"
             echo "| run | $RUN_URL |"
@@ -150,8 +164,8 @@ jobs:
             echo "which now reads the same sections this run did."
             echo
             echo "This ticket is filed and maintained by the workflow. It is EDITED by each"
-            echo "later red run and CLOSED by the first green one. Closing it by hand does"
-            echo "not silence it: the next red run files a new one."
+            echo "later failing measurement and CLOSED by the first clean one. Closing it by"
+            echo "hand does not silence it: the next failing measurement files a new one."
           } > /tmp/changelog-drift-verdict.md
 
           if [ -n "$issue" ]; then
@@ -159,6 +173,7 @@ jobs:
             echo "Updated #$issue."
           else
             url="$(gh issue create --repo "$REPO" --title "$TITLE" \
+              --label chore --label area:tooling \
               --body-file /tmp/changelog-drift-verdict.md)"
             echo "Filed $url."
           fi
