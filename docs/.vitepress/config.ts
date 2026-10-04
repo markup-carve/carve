@@ -239,6 +239,7 @@ export default defineConfig({
             { text: 'Import HTML', link: '/html-import' },
             { text: 'Format Conversion', link: '/format-bridges' },
             { text: 'Development', link: '/development' },
+            { text: 'Container Ownership', link: '/ownership-procedure' },
             { text: 'Formal Grammar', link: '/grammar' },
             {
               text: 'Specification Rules',
