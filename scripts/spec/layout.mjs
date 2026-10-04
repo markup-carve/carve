@@ -1294,6 +1294,12 @@ function tryAttrLine(lines, i) {
   return { lists, next: li + 1 }
 }
 
+// Single-line recognition only; callers supply the column and ownership guards.
+// Abbreviations are document-only and remain text in these container contexts.
+function isDefinitionOrAttributeLine(line) {
+  return FOOTNOTE_DEF.test(line) || isLinkDef(line) || !!tryAttrLine([line], 0)
+}
+
 function isBlank(line) {
   return /^[ \t]*$/.test(line)
 }
@@ -1520,8 +1526,7 @@ function opensParagraph(text, atBlockPosition = false, tableOpen = false, memo =
     }
     if (COMMENT_LINE.test(text) || COMMENT_FENCE_BODY.test(text)) return finish(false)
     if (isTableRow(text) || isContinuationRow(text, openTable)) return finish(false)
-    if (FOOTNOTE_DEF.test(text) || isLinkDef(text)) return finish(false)
-    if (tryAttrLine([text], 0)) return finish(false)
+    if (isDefinitionOrAttributeLine(text)) return finish(false)
     // AN EMPTY UNTERMINATED COLON CONTAINER HOLDS NO PARAGRAPH, so a flush-left
     // plain line below it continues nothing and closes what is above it. The
     // list host already answers that way; the description host folded the line
@@ -3115,7 +3120,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
              * `dd` is not the document however its columns line up.
              */
             if (authoredCol === 0 &&
-                (FOOTNOTE_DEF.test(dedented) || isLinkDef(dedented) || tryAttrLine([dedented], 0))) break
+                isDefinitionOrAttributeLine(dedented)) break
             // A COLUMN-0 LINE AFTER A DESCRIPTION-HOSTED NOTE IS A DOCUMENT
             // SIBLING (carve#1974). The note absorbed its floor-reaching opener,
             // so the body's only open paragraph is the note's, at body column 2;
@@ -5887,7 +5892,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       // A definition BELOW every open content column is untouched - it never
       // reaches column 0 in any collector, so it still folds as text (corpus
       // 183).
-      if (!nm && lm.col === 0 && (FOOTNOTE_DEF.test(line) || isLinkDef(line) || tryAttrLine([line], 0))) break
+      if (!nm && lm.col === 0 && isDefinitionOrAttributeLine(line)) break
       // A surviving frame after a comment can own a nonzero below-column line,
       // which begins a new paragraph rather than continuing the closed one.
       // Document column zero remains owned by the document.
