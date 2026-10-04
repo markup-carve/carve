@@ -1,0 +1,879 @@
+[
+  {
+    "source": "- head\n %% hidden\n tail\n",
+    "checker": {
+      "blocks": [
+        {
+          "t": "list",
+          "task": false,
+          "bullet": "-",
+          "ord": null,
+          "tight": true,
+          "items": [
+            {
+              "blocks": [
+                {
+                  "t": "para",
+                  "lines": [
+                    "head"
+                  ]
+                },
+                {
+                  "t": "para",
+                  "lines": [
+                    "tail"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "linkDefs": {
+        "map": []
+      },
+      "footnoteDefs": {
+        "map": []
+      },
+      "abbrDefs": {
+        "map": []
+      },
+      "unterminatedLines": {}
+    },
+    "publicAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
+          "items": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "head"
+                    }
+                  ]
+                },
+                {
+                  "type": "comment",
+                  "content": "hidden",
+                  "block": false,
+                  "pos": {
+                    "startLine": 2,
+                    "endLine": 2,
+                    "startColumn": 2,
+                    "endColumn": 11,
+                    "startOffset": 8,
+                    "endOffset": 17
+                  }
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "tail"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": "- head\n  %% hidden\ntail\n",
+    "checker": {
+      "blocks": [
+        {
+          "t": "list",
+          "task": false,
+          "bullet": "-",
+          "ord": null,
+          "tight": true,
+          "items": [
+            {
+              "blocks": [
+                {
+                  "t": "para",
+                  "lines": [
+                    "head"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "para",
+          "lines": [
+            "tail"
+          ]
+        }
+      ],
+      "linkDefs": {
+        "map": []
+      },
+      "footnoteDefs": {
+        "map": []
+      },
+      "abbrDefs": {
+        "map": []
+      },
+      "unterminatedLines": {}
+    },
+    "publicAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
+          "items": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "head"
+                    }
+                  ]
+                },
+                {
+                  "type": "comment",
+                  "content": "hidden",
+                  "block": false,
+                  "pos": {
+                    "startLine": 2,
+                    "endLine": 2,
+                    "startColumn": 3,
+                    "endColumn": 12,
+                    "startOffset": 9,
+                    "endOffset": 18
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "tail"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": "- %%%\n  hidden\n%%%\ntail\n",
+    "checker": {
+      "blocks": [
+        {
+          "t": "list",
+          "task": false,
+          "bullet": "-",
+          "ord": null,
+          "tight": true,
+          "items": [
+            {
+              "blocks": []
+            }
+          ]
+        },
+        {
+          "t": "para",
+          "lines": [
+            "tail"
+          ]
+        }
+      ],
+      "linkDefs": {
+        "map": []
+      },
+      "footnoteDefs": {
+        "map": []
+      },
+      "abbrDefs": {
+        "map": []
+      },
+      "unterminatedLines": {}
+    },
+    "publicAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
+          "items": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "comment",
+                  "content": "hidden",
+                  "block": true,
+                  "pos": {
+                    "startLine": 1,
+                    "endLine": 3,
+                    "startColumn": 3,
+                    "endColumn": 4,
+                    "startOffset": 2,
+                    "endOffset": 18
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "tail"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": "- head\n  %%%\n  hidden\n%%%\n\n  tail\n",
+    "checker": {
+      "blocks": [
+        {
+          "t": "list",
+          "task": false,
+          "bullet": "-",
+          "ord": null,
+          "tight": false,
+          "items": [
+            {
+              "blocks": [
+                {
+                  "t": "para",
+                  "lines": [
+                    "head"
+                  ]
+                },
+                {
+                  "t": "para",
+                  "lines": [
+                    "tail"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "linkDefs": {
+        "map": []
+      },
+      "footnoteDefs": {
+        "map": []
+      },
+      "abbrDefs": {
+        "map": []
+      },
+      "unterminatedLines": {}
+    },
+    "publicAst": {
+      "type": "document",
+      "children": [
+        {
+          "type": "list",
+          "items": [
+            {
+              "type": "list_item",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "head"
+                    }
+                  ]
+                },
+                {
+                  "type": "comment",
+                  "content": "hidden",
+                  "block": true,
+                  "pos": {
+                    "startLine": 2,
+                    "endLine": 4,
+                    "startColumn": 3,
+                    "endColumn": 4,
+                    "startOffset": 9,
+                    "endOffset": 25
+                  }
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "tail"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "source": "- head\n %% hidden\n\n tail\n",
+    "checker": {
+      "blocks": [
+        {
+          "t": "list",
+          "task": false,
+          "bullet": "-",
+          "ord": null,
+          "tight": true,
+          "items": [
+            {
+              "blocks": [
+                {
+                  "t": "para",
+                  "lines": [
+                    "head"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "para",
+          "lines": [
+            "tail"
+          ]
+        }
+      ],
+      "linkDefs": {
+        "map": []
+      },
+      "footnoteDefs": {
+        "map": []
+      },
+      "abbrDefs": {
+        "map": []
+      },
+      "unterminatedLines": {}
+    }
+  },
+  {
+    "source": "- head\n %% hidden\n visible\ntail\n",
+    "checker": {
+      "blocks": [
+        {
+          "t": "list",
+          "task": false,
+          "bullet": "-",
+          "ord": null,
+          "tight": true,
+          "items": [
+            {
+              "blocks": [
+                {
+                  "t": "para",
+                  "lines": [
+                    "head"
+                  ]
+                },
+                {
+                  "t": "para",
+                  "lines": [
+                    "visible",
+                    "tail"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "linkDefs": {
+        "map": []
+      },
+      "footnoteDefs": {
+        "map": []
+      },
+      "abbrDefs": {
+        "map": []
+      },
+      "unterminatedLines": {}
+    }
+  },
+  {
+    "source": "- head\n\t%% hidden\ntail\n",
+    "checker": {
+      "blocks": [
+        {
+          "t": "list",
+          "task": false,
+          "bullet": "-",
+          "ord": null,
+          "tight": true,
+          "items": [
+            {
+              "blocks": [
+                {
+                  "t": "para",
+                  "lines": [
+                    "head"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "para",
+          "lines": [
+            "tail"
+          ]
+        }
+      ],
+      "linkDefs": {
+        "map": []
+      },
+      "footnoteDefs": {
+        "map": []
+      },
+      "abbrDefs": {
+        "map": []
+      },
+      "unterminatedLines": {}
+    }
+  },
+  {
+    "source": "- head\n %%%\n hidden\n %%%\n tail\n",
+    "checker": {
+      "blocks": [
+        {
+          "t": "list",
+          "task": false,
+          "bullet": "-",
+          "ord": null,
+          "tight": true,
+          "items": [
+            {
+              "blocks": [
+                {
+                  "t": "para",
+                  "lines": [
+                    "head"
+                  ]
+                },
+                {
+                  "t": "para",
+                  "lines": [
+                    "tail"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "linkDefs": {
+        "map": []
+      },
+      "footnoteDefs": {
+        "map": []
+      },
+      "abbrDefs": {
+        "map": []
+      },
+      "unterminatedLines": {}
+    }
+  },
+  {
+    "source": "- head\n  %%%%\n  hidden\n%%%%\ntail\n",
+    "checker": {
+      "blocks": [
+        {
+          "t": "list",
+          "task": false,
+          "bullet": "-",
+          "ord": null,
+          "tight": true,
+          "items": [
+            {
+              "blocks": [
+                {
+                  "t": "para",
+                  "lines": [
+                    "head"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "para",
+          "lines": [
+            "tail"
+          ]
+        }
+      ],
+      "linkDefs": {
+        "map": []
+      },
+      "footnoteDefs": {
+        "map": []
+      },
+      "abbrDefs": {
+        "map": []
+      },
+      "unterminatedLines": {}
+    }
+  },
+  {
+    "source": "- outer\n  - head\n    %%%\n    hidden\n%%%\n\n    tail\n",
+    "checker": {
+      "blocks": [
+        {
+          "t": "list",
+          "task": false,
+          "bullet": "-",
+          "ord": null,
+          "tight": true,
+          "items": [
+            {
+              "blocks": [
+                {
+                  "t": "para",
+                  "lines": [
+                    "outer"
+                  ]
+                },
+                {
+                  "t": "list",
+                  "task": false,
+                  "bullet": "-",
+                  "ord": null,
+                  "tight": false,
+                  "items": [
+                    {
+                      "blocks": [
+                        {
+                          "t": "para",
+                          "lines": [
+                            "head"
+                          ]
+                        },
+                        {
+                          "t": "para",
+                          "lines": [
+                            "tail"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "linkDefs": {
+        "map": []
+      },
+      "footnoteDefs": {
+        "map": []
+      },
+      "abbrDefs": {
+        "map": []
+      },
+      "unterminatedLines": {},
+      "nestedFenceOpensAt": {}
+    }
+  },
+  {
+    "source": "- head\n  %%%\n  hidden\n%%%\n\n[^n]: note\n\nref[^n]\n",
+    "checker": {
+      "blocks": [
+        {
+          "t": "list",
+          "task": false,
+          "bullet": "-",
+          "ord": null,
+          "tight": true,
+          "items": [
+            {
+              "blocks": [
+                {
+                  "t": "para",
+                  "lines": [
+                    "head"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "para",
+          "lines": [
+            "ref[^n]"
+          ]
+        }
+      ],
+      "linkDefs": {
+        "map": []
+      },
+      "footnoteDefs": {
+        "map": [
+          [
+            "n",
+            [
+              {
+                "t": "para",
+                "lines": [
+                  "note"
+                ]
+              }
+            ]
+          ]
+        ]
+      },
+      "abbrDefs": {
+        "map": []
+      },
+      "unterminatedLines": {}
+    }
+  },
+  {
+    "source": "- head\n  %%%\n  hidden\n%%%\n\n[label]: /dest\n\n[label]\n",
+    "checker": {
+      "blocks": [
+        {
+          "t": "list",
+          "task": false,
+          "bullet": "-",
+          "ord": null,
+          "tight": true,
+          "items": [
+            {
+              "blocks": [
+                {
+                  "t": "para",
+                  "lines": [
+                    "head"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "para",
+          "lines": [
+            "[label]"
+          ]
+        }
+      ],
+      "linkDefs": {
+        "map": [
+          [
+            "label",
+            {
+              "rawLabel": "label",
+              "url": "/dest"
+            }
+          ]
+        ]
+      },
+      "footnoteDefs": {
+        "map": []
+      },
+      "abbrDefs": {
+        "map": []
+      },
+      "unterminatedLines": {}
+    }
+  },
+  {
+    "source": "- %%%\n  hidden\n%%%\n tail\n",
+    "checker": {
+      "blocks": [
+        {
+          "t": "list",
+          "task": false,
+          "bullet": "-",
+          "ord": null,
+          "tight": true,
+          "items": [
+            {
+              "blocks": []
+            }
+          ]
+        },
+        {
+          "t": "para",
+          "lines": [
+            "tail"
+          ]
+        }
+      ],
+      "linkDefs": {
+        "map": []
+      },
+      "footnoteDefs": {
+        "map": []
+      },
+      "abbrDefs": {
+        "map": []
+      },
+      "unterminatedLines": {}
+    }
+  },
+  {
+    "source": "- head\n  %%%\n  hidden\n  %%%\n tail\n",
+    "checker": {
+      "blocks": [
+        {
+          "t": "list",
+          "task": false,
+          "bullet": "-",
+          "ord": null,
+          "tight": true,
+          "items": [
+            {
+              "blocks": [
+                {
+                  "t": "para",
+                  "lines": [
+                    "head"
+                  ]
+                },
+                {
+                  "t": "para",
+                  "lines": [
+                    "tail"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "linkDefs": {
+        "map": []
+      },
+      "footnoteDefs": {
+        "map": []
+      },
+      "abbrDefs": {
+        "map": []
+      },
+      "unterminatedLines": {}
+    }
+  },
+  {
+    "source": "- head\n  %% hidden\n tail\n",
+    "checker": {
+      "blocks": [
+        {
+          "t": "list",
+          "task": false,
+          "bullet": "-",
+          "ord": null,
+          "tight": true,
+          "items": [
+            {
+              "blocks": [
+                {
+                  "t": "para",
+                  "lines": [
+                    "head"
+                  ]
+                },
+                {
+                  "t": "para",
+                  "lines": [
+                    "tail"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "linkDefs": {
+        "map": []
+      },
+      "footnoteDefs": {
+        "map": []
+      },
+      "abbrDefs": {
+        "map": []
+      },
+      "unterminatedLines": {}
+    }
+  },
+  {
+    "source": "- head\n  %% hidden\n  ---\n tail\n",
+    "checker": {
+      "blocks": [
+        {
+          "t": "list",
+          "task": false,
+          "bullet": "-",
+          "ord": null,
+          "tight": true,
+          "items": [
+            {
+              "blocks": [
+                {
+                  "t": "para",
+                  "lines": [
+                    "head"
+                  ]
+                },
+                {
+                  "t": "hr"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "t": "para",
+          "lines": [
+            "tail"
+          ]
+        }
+      ],
+      "linkDefs": {
+        "map": []
+      },
+      "footnoteDefs": {
+        "map": []
+      },
+      "abbrDefs": {
+        "map": []
+      },
+      "unterminatedLines": {}
+    }
+  }
+]
