@@ -126,7 +126,10 @@
  * it rather than degrading to an answer it cannot back.
  *
  * Exit 0  every shipped-source pull request in range is cited or exempt.
- * Exit 1  at least one is not, and every one of them is named below.
+ * Exit 3  at least one is not, and every one of them is named below.
+ * Exit 1  the gate could not judge: no `gh` answer, no section, a malformed
+ *         `.changelog-exempt`, or a crash. changelog-drift.yml files exit 3 as
+ *         a ticket and stays green; anything else keeps the run red.
  */
 import { readFileSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -450,7 +453,7 @@ if (malformed.length || missing.length) {
             `Write them up, or exempt one with a reason in ${EXEMPT_FILE}.`,
         );
     }
-    process.exit(1);
+    process.exit(malformed.length ? 1 : 3);
 }
 
 const read = [section, ...alsoRead].map((h) => `[${h}]`).join(' and ');
