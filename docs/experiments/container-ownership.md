@@ -4,6 +4,9 @@ description: "Compatibility report for the ownership-first container state model
 
 # Container ownership experiment
 
+For the current clause and collector map, see [Container ownership procedure
+map](../ownership-procedure). This report records the earlier state-split experiment.
+
 This report records the compatibility gate for [carve#1730](https://github.com/markup-carve/carve/issues/1730). The experiment separates two facts that older prose and collectors sometimes represented with one boolean:
 
 - whether a container frame remains available to own another line;
