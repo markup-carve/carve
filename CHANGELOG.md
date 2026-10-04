@@ -10,6 +10,13 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
+### Improvements
+
+- A pipe table keeps multiple bodies, intermediate header rows, empty body
+  boundaries and per-body row-header columns in canonical source, through the
+  positional `body-rows`, `body-header-rows` and `body-header-cols` attributes.
+  Invalid body metadata leaves every row-group attribute ordinary (#2708).
+
 ## [0.1.8] - 2026-10-01
 
 ### Breaking
