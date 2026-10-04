@@ -16,6 +16,8 @@ npm run docs:build
 
 See [MAINTAINING.md](https://github.com/markup-carve/carve/blob/main/MAINTAINING.md)
 for release and cross-implementation work.
+The [container ownership map](./ownership-procedure) connects current rules
+to collector phases, helpers and proof evidence.
 
 ## Diagnosing HTML drift
 

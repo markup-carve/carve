@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "authority": "Navigation map of existing clauses; not a replacement parser or a conformance profile.",
+  "qualifications": [
+    "CARVE-P9-051",
+    "CARVE-P9-052",
+    "CARVE-P9-053",
+    "CARVE-P9-033",
+    "CARVE-P9-067"
+  ],
+  "phases": [
+    {
+      "id": "normalize",
+      "title": "Normalize source",
+      "rules": [
+        "CARVE-P0-001",
+        "CARVE-P0-002"
+      ],
+      "checkerHelpers": [
+        "normalizeSource"
+      ],
+      "constraint": "Input normalization precedes column measurement."
+    },
+    {
+      "id": "prefix-payload",
+      "title": "Decode prefixes and honor payloads",
+      "rules": [
+        "CARVE-P0-008",
+        "CARVE-P0-013",
+        "CARVE-P0-019"
+      ],
+      "checkerHelpers": [
+        "indentCols",
+        "dedentMeasured",
+        "quotePrefixSummary",
+        "bodyHasOpenCodeFence"
+      ],
+      "constraint": "An active payload does not grant its host a missing prefix. A quote needs a marker or an eligible claim."
+    },
+    {
+      "id": "comments",
+      "title": "Classify comments",
+      "rules": [
+        "CARVE-P0-005"
+      ],
+      "checkerHelpers": [
+        "classifyLayoutComment",
+        "commentFenceOpensSpan"
+      ],
+      "constraint": "After payload and prefix handling, classify comments only in a context available to admit them; an item lacking a prefix, claim or retained ownership ends before classifying a below-column comment in its enclosing context."
+    },
+    {
+      "id": "owner",
+      "title": "Select the surviving owner",
+      "rules": [
+        "CARVE-P0-006",
+        "CARVE-P0-007",
+        "CARVE-P0-010",
+        "CARVE-P0-020",
+        "CARVE-P0-021",
+        "CARVE-P0-014"
+      ],
+      "checkerHelpers": [
+        "parseListRun",
+        "opensParagraph",
+        "markerCarriesContinuation",
+        "bodyLeavesParagraphOpen"
+      ],
+      "constraint": "Classify candidate openers for claim eligibility, then select ownership before accepting a block or lazy fold."
+    },
+    {
+      "id": "base",
+      "title": "Establish the authored block base",
+      "rules": [
+        "CARVE-P0-004",
+        "CARVE-P0-022"
+      ],
+      "checkerHelpers": [
+        "normalizeAuthoredBodyBases",
+        "authoredBlockEnd"
+      ],
+      "constraint": "Only a recognized opener can establish a base in its selected owner; ordinary over-indented text cannot."
+    },
+    {
+      "id": "extent",
+      "title": "Consume the block or attachment extent",
+      "rules": [
+        "CARVE-P0-011",
+        "CARVE-P0-012",
+        "CARVE-P0-016",
+        "CARVE-P0-017",
+        "CARVE-P0-018"
+      ],
+      "checkerHelpers": [
+        "parseBlocks",
+        "firstBlockEnd",
+        "attachedBlockEnd"
+      ],
+      "constraint": "Closed leaves and containing frames have separate lifetimes. Attachment consumes one complete block; its first-block form is limited to list items and definition descriptions."
+    },
+    {
+      "id": "transition",
+      "title": "Update paragraph state and stored ownership",
+      "rules": [
+        "CARVE-P0-003",
+        "CARVE-P0-015",
+        "CARVE-P0-009"
+      ],
+      "checkerHelpers": [
+        "ownershipTransition",
+        "bodyLeavesParagraphOpen"
+      ],
+      "constraint": "Container survival, paragraph openness and ordinary-line claims remain separate facts."
+    }
+  ],
+  "evidence": {
+    "fixtures": [
+      {
+        "path": "tests/fixtures/container-ownership.json",
+        "count": 472
+      },
+      {
+        "path": "tests/fixtures/container-ownership-boundaries.json",
+        "count": 15
+      }
+    ],
+    "projection": "Reviewed HTML bytes; these fixtures do not prove invisible AST ownership or arbitrary-depth equivalence."
+  }
+}
