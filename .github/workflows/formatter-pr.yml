@@ -110,16 +110,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     outputs:
-      js: ${{ steps.heads.outputs.js }}
-      rs: ${{ steps.heads.outputs.rs }}
-      php: ${{ steps.heads.outputs.php }}
+      js: ${{ steps.releases.outputs.js }}
+      rs: ${{ steps.releases.outputs.rs }}
+      php: ${{ steps.releases.outputs.php }}
     steps:
-      - name: Resolve engine heads once for formatter shards
-        id: heads
+      # Releases, not main: an engine merge must not flip a spec PR's verdict.
+      - name: Resolve each engine's latest release once for formatter shards
+        id: releases
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          set -euo pipefail
           for engine in js rs php; do
-            head=$(gh api "repos/markup-carve/carve-$engine/commits/main" --jq .sha)
-            echo "$engine=$head" >> "$GITHUB_OUTPUT"
+            tag=$(gh api "repos/markup-carve/carve-$engine/releases/latest" --jq .tag_name)
+            sha=$(gh api "repos/markup-carve/carve-$engine/commits/$tag" --jq .sha)
+            echo "carve-$engine $tag -> $sha"
+            echo "$engine=$sha" >> "$GITHUB_OUTPUT"
           done

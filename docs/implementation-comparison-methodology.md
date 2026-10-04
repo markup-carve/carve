@@ -881,8 +881,9 @@ job.
 Four shards check all five render targets, source round trips, formatting
 idempotence and cross-reading by the current spec renderer. Engines are built
 once before comparison. The scheduled formatter workflow keeps measuring the
-entire latest corpus, so pending rulings remain visible there. Engine heads are
-resolved from their main branches once per run; an engine regression can still
-fail a PR against unchanged corpus cases.
+entire latest corpus, so pending rulings remain visible there. Each engine is
+checked out at its latest published release, resolved once per run, so a merge
+to an engine's main cannot change the verdict on a spec PR. Engine regressions
+on main surface in the scheduled workflow instead.
 
 Optional corpus added since this run: `65-tabs-invalid-title-recovery`.
