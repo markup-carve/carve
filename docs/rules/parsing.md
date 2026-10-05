@@ -102,11 +102,11 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L259) | 9 | N1a HARD BOUNDARY AFTER THREE BLANK LINES |
 | [`CARVE-P9-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L344) | 9 | A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH EXPECTING A CLOSER |
 | [`CARVE-P9-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L364) | 9 | ABSORPTION REACHES A PARAGRAPH'S OWN LINES ONLY |
-| [`CARVE-P9-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L622) | 9 | INLINE SPAN VS LINK DISAMBIGUATION |
-| [`CARVE-P9-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L650) | 9 | EMPTY OR INVALID ATTRIBUTE BLOCK |
-| [`CARVE-P9-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L673) | 9 | BOOLEAN ATTRIBUTES |
-| [`CARVE-P9-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L713) | 9 | A2a AN INVISIBLE CONSTRUCT IS NOT THE NEXT BLOCK |
-| [`CARVE-P9-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L738) | 9 | A4 DROP IF DANGLING |
+| [`CARVE-P9-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L624) | 9 | INLINE SPAN VS LINK DISAMBIGUATION |
+| [`CARVE-P9-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L652) | 9 | EMPTY OR INVALID ATTRIBUTE BLOCK |
+| [`CARVE-P9-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L675) | 9 | BOOLEAN ATTRIBUTES |
+| [`CARVE-P9-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L715) | 9 | A2a AN INVISIBLE CONSTRUCT IS NOT THE NEXT BLOCK |
+| [`CARVE-P9-024`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L740) | 9 | A4 DROP IF DANGLING |
 | [`CARVE-P9-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L151) | 9 | L1a THE ITEM'S FIRST BLOCK DOES NOT MATTER |
 | [`CARVE-P9-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L166) | 9 | L1b AN INVISIBLE LINE DOES NOT CANCEL THE SEPARATION |
 | [`CARVE-P9-031`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L233) | 9 | CONTINUATION-MARKER FLUSH-LEFT MEANS COLUMN 0 |

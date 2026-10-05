@@ -956,14 +956,17 @@ rather than adding a primitive.
 - `:term[word]` (the core inline extension form) references a term. The link
   target is derived from the *bracket text*, not a separate key.
 
-### 7.2 Slug
+### 7.2 Id and matching
 
 - A term's id is `gloss-{slug}`, where `slug` is the heading-id slug of the
-  term's plain text with lowercasing on and ASCII folding off
-  (`slugify(text, {lowercase: true})` - the same routine §-cross-references use,
-  so `:term[HTTP]` and a `:: HTTP` entry agree on `gloss-http`). `:term[word]`
-  slugs its own bracket text the same way, so the two sides meet without an
-  explicit key.
+  term's plain text, case preserved and ASCII folding off (PART 2 HEADING
+  IDENTIFIERS, the same derivation a heading id uses), so `:: HTTP` gets
+  `gloss-HTTP`.
+- `:term[word]` is a name lookup and compares EXACTLY, like every other one
+  (PART 9R R1, `CARVE-P9R-010`): its bracket text and each term's text are
+  trimmed, internal whitespace runs collapsed to one space and NFC-normalized,
+  then compared without case folding. `:term[HTTP]` finds `:: HTTP`;
+  `:term[http]` does not.
 
 ### 7.3 Rendering
 
@@ -974,10 +977,10 @@ rather than adding a primitive.
   is trivially identical across implementations (alphabetizing is the author's
   job). On a duplicate slug the first entry wins the id; later duplicates still
   render their `<dt>`/`<dd>` but without the id.
-- `:term[word]` renders `<a href="#gloss-{slug}" class="term">{word}</a>` when
-  `slug` matches a defined term. When it matches none (resolved, but the term is
-  not in any `::: glossary`), it degrades to `<span class="term">{word}</span>` -
-  no link, nothing dropped.
+- `:term[word]` renders `<a href="#gloss-{slug}" class="term">{word}</a>`, with
+  the `slug` of the first term it matches. When it matches none (resolved, but
+  the term is not in any `::: glossary`, or differs only in case), it degrades to
+  `<span class="term">{word}</span>` - no link, nothing dropped.
 
 ### 7.4 Degradation
 
@@ -1018,8 +1021,12 @@ either alone.
 
 - Each `:index[term]` in the document body emits
   `<span id="idx-{slug}-{n}" class="index-term"></span>`, where `slug` is the
-  §7.2 slug of the term and `n` is that slug's 1-based occurrence count in
-  document order. The element is empty, so nothing shows inline.
+  heading-id slug of the term's plain text with lowercasing on and ASCII folding
+  off (`slugify(text, {lowercase: true})`) and `n` is that slug's 1-based
+  occurrence count in document order. The element is empty, so nothing shows
+  inline.
+- `:index[Carve]` and `:index[carve]` share a slug and so make one entry. That
+  is grouping, not a name lookup, so `CARVE-P9R-010` does not apply.
 - Only body occurrences are indexed. A marker inside deferred content - a
   footnote definition, which the renderer may drop (unreferenced) or reorder -
   renders **inert** (`<span class="index-term"></span>`, no id) and is not
@@ -1665,6 +1672,9 @@ Wikilinks::new().with_url_generator(Box::new(|page| format!("/docs/{}.html", slu
 
 Names a heading by its plain text, so an author never has to know the slug
 rules. `[[Heading Text|click here]]` sets its own display text.
+
+The name is compared exactly, case included, like every name lookup (PART 9R
+R1, `CARVE-P9R-010`): `[[getting started]]` does not find `# Getting Started`.
 
 A reference resolves only when exactly one heading matches. A heading that does
 not exist, and text that appears on more than one heading - where no choice

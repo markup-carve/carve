@@ -183,15 +183,15 @@ Not enabled on this site, so the output is shown rather than rendered.
 : Application Programming Interface.
 :::
 
-Use the :term[API].
+Use the :term[API]; :term[api] differs in case and links nothing.
 ```
 
 ```html
 <dl class="glossary">
-  <dt id="gloss-api">API</dt>
+  <dt id="gloss-API">API</dt>
   <dd>Application Programming Interface.</dd>
 </dl>
-<p>Use the <a href="#gloss-api" class="term">API</a>.</p>
+<p>Use the <a href="#gloss-API" class="term">API</a>; <span class="term">api</span> differs in case and links nothing.</p>
 ```
 
 :::
