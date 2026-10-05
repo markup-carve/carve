@@ -101,7 +101,7 @@ the command-line and editor behavior stay aligned.
 | `duplicate-heading-id` | two headings producing the same id, either by slug collision or repeated explicit `{#id}` |
 | `broken-crossref` | a `</#id>` cross-reference with no matching heading or numbered caption id; when the id exists on another element, the message names that element and suggests `[text](#id)`, since a cross-reference cannot target it. Matching is case-sensitive (PART 9R R4); a case-only mismatch names the real id, and `carve fmt --migrate` rewrites the reference to it when exactly one id matches |
 | `broken-fragment-link` | a `[text](#id)` link, inline or through a `[label]: #id` definition, whose fragment matches no id in the rendered document. Matching is case-sensitive like the rendered `href`; a case-only mismatch names the real id. `#`, `#top`, other files and URLs are not checked. The render that collects the ids is the caller's own, carrying the extensions passed to the linter. A link absent from that render is not checked, such as one inside an unreferenced footnote definition, which `unused-footnote-definition` already reports |
-| `unresolved-reference-link` | a `[text][label]` or `[text][]` reference link with no matching link definition; only the collapsed `[text][]` also falls back to the implicit heading target, so an explicit label that names no definition is unresolved even when a heading carries that text (PART 9R R1). Matching is case-sensitive; a case-only mismatch names the real label or heading text, and `carve fmt --migrate` rewrites the label to it when exactly one target matches |
+| `unresolved-reference-link` | a `[text][label]` or `[text][]` reference link, or a `![alt][label]` or `![alt][]` reference image, with no matching link definition; only the collapsed `[text][]` also falls back to the implicit heading target, so an explicit label that names no definition is unresolved even when a heading carries that text (PART 9R R1). Matching is case-sensitive; a case-only mismatch names the real label or heading text, and `carve fmt --migrate` rewrites the label to it when exactly one target matches |
 | `fence-opener-fallback` | a line that opens like a fenced code block but whose info string is not valid - a misplaced attribute block, tabs or extra spaces in the opener, or an info string that is not a language followed by an optional `"title"` and `[label]`. The line falls back to paragraph text, so the block the author meant is not a code block at all |
 | `unresolved-footnote` | a `[^label]` footnote reference with no matching `[^label]: ...` definition |
 | `duplicate-footnote-definition` | a repeated `[^label]: ...` definition; the first definition wins and later ones are ignored |
@@ -356,7 +356,8 @@ input.
 | carve-rs | 37 default triggers; `unattached-block-attribute`; Markdown strong/strike and Djot plus/caret checks; no platform checks |
 
 `bibliography-placement-in-container` and `table-marker-run-padding` are
-specified but absent from these builds. The engines still emit
+specified but absent from these builds, and none of them reports
+`unresolved-reference-link` for a reference image yet. The engines still emit
 `table-alignment-run-padding`. The broader Djot migration checks remain specific
 to carve-js. Diagnostic message wording is engine-specific; compare the rule id
 and source location.
