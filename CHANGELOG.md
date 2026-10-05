@@ -10,8 +10,33 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
+### Breaking
+
+- Every name lookup compares case exactly: `</#id>` crossrefs, collapsed and
+  labeled references, footnote labels, caption and equation ids, and an
+  include's `#name`. A case-only mismatch no longer resolves, and `{#Tip}` and
+  `{#tip}` are two ids. Slug derivation, whitespace collapsing and NFC are
+  unchanged (#2732).
+- An include renames a colliding explicit id on any element, not only a heading
+  id or a footnote label. Explicit ids share one namespace, the first
+  occurrence in expanded order keeps the name, each later copy from another
+  inclusion takes its own least free `-N` and emits a warning, and a reference
+  written in the same inclusion follows the rename (#2729, #2732).
+
+### Fixes
+
+- The `broken-fragment-link` rule reads the caller's own render, carrying the
+  extensions passed to the linter, so a link absent from that render is not
+  checked. A link inside an unreferenced footnote definition is left to
+  `unused-footnote-definition`, held by corpus row 545 (#2730, #2731).
+
 ### Improvements
 
+- An include fragment names any block carrying that explicit id, not only a
+  heading. A matching heading still selects its section first; otherwise the
+  first such block in document order, at any depth, is selected alone with its
+  own attributes. An id on an inline span, list item, table row or cell selects
+  nothing (#2727).
 - A pipe table keeps multiple bodies, intermediate header rows, empty body
   boundaries and per-body row-header columns in canonical source, through the
   positional `body-rows`, `body-header-rows` and `body-header-cols` attributes.
