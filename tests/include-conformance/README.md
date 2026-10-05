@@ -201,53 +201,6 @@ the security suite's "Corpus ahead of the engines" (carve#1992).
   to `scripts/include-conformance-vectors.mjs` under rule `I1`, generate against
   THAT engine, read the golden before committing it, and delete this entry.
 
-- **Selecting a block by id** (I1a). `#name` selects a heading's section
-  first, as before, and otherwise the first block carrying the explicit id. No
-  engine implements the block step yet: all three select top-level headings
-  only and warn `include-section` for anything else, so a golden generated
-  today would pin the warning. `scripts/spec/include-fragment.mjs` states the
-  selection over a parsed AST and
-  `tests/an-include-fragment-names-a-heading-or-a-block.test.mjs` runs it in
-  `npm test`.
-
-  To close this: once one engine selects blocks, add vectors under rule `I1`
-  for a selected code block, a heading winning over an earlier block id, a
-  heading inside a container, and a list-item id that selects nothing
-  (`include-section`, dependency still resolved). Generate against that
-  engine, read the goldens, and delete this entry.
-
-- **Renaming any colliding explicit id** (I5). Explicit ids on every element
-  share one namespace with heading ids and are renamed on collision the way
-  heading ids already are (`i05-heading-id-rename`), with references in the
-  renamed target's own file following the rename. No engine does this yet.
-  Measured on all three engines' `main` on 2026-10-05: a parent `{#tip}`
-  paragraph plus a whole-file include bringing another `{#tip}` paragraph
-  renders `id="tip"` twice, so a golden generated today would pin invalid HTML.
-
-  To close this: once one engine renames non-heading ids, add vectors under
-  rule `I5` for two paragraphs sharing an id, a heading and a paragraph sharing
-  one, an inline span colliding with a block, and a child's `[text](#tip)`
-  following its own renamed target while a link to a parent-only id stays put.
-  Generate against that engine, read the goldens, and delete this entry.
-
-- **A digit-leading `#name`** (I1a, PART 6 `include_section`). The name is an
-  `explicit_identifier`, so `{{ c.crv #2024-plan }}` is a directive. The pinned
-  carve-js (0.1.10) does not recognize it and leaves the text literal with no
-  warning, so a golden generated today would pin that silent miss. The
-  engine-free scanner reads it, and
-  `tests/an-include-fragment-names-a-heading-or-a-block.test.mjs` selects
-  through it. To close this: add an `I1` vector selecting a digit-leading id
-  once an engine reads it, and delete this entry.
-
-- **A reference follows the FIRST renamed copy** (I5). When one child holds a
-  colliding `{#dup}` twice, the copies become `dup-2` and `dup-3`
-  (`i05-each-renamed-copy-takes-its-own-suffix`), and a `</#dup>` in that child
-  resolves to `dup-2`, the copy the child reaches first when read on its own.
-  The pinned carve-js sends it to `dup-3`, so a golden generated today would pin
-  the last copy. To close this: once one engine follows the first copy, add a
-  `</#dup>` to that vector's child (or a new `I5` vector), generate against that
-  engine, read the golden, and delete this entry.
-
 ## How to add a vector
 
 1. Add an input object to `scripts/include-conformance-vectors.mjs` (`name`,
@@ -274,17 +227,17 @@ rules):
 
 | Rule | Vectors | Rule | Vectors |
 |---|---|---|---|
-| I1 syntax / path-required | 15 | I9 verbatim protection | 5 |
+| I1 syntax / path-required | 21 | I9 verbatim protection | 5 |
 | I2 block vs inline | 8 | I9a recognition run | 7 |
-| I3 resolution model | 2 | I10 containment (filesystem) | 6 |
-| I4 fragment containment / attribution | 8 | I11 dependency reporting | 11 |
-| I5 cross-file collisions | 8 | I12 formatter preservation | 16 |
+| I3 resolution model | 2 | I10 containment (filesystem) | 7 |
+| I4 fragment containment / attribution | 8 | I11 dependency reporting | 14 |
+| I5 cross-file collisions | 16 | I12 formatter preservation | 16 |
 | I6 limits (cycle/depth/budget) | 5 | I13 no side effects | 7 |
-| I7 errors + no-leak | 4 | I14 one recognition set | 8 |
+| I7 errors + no-leak | 5 | I14 one recognition set | 8 |
 | I8 heading shift + auto | 16 | I15 the Carve target does not expand | 2 |
 | heading-include | 3 | multi-directive / quoted-path | 1 / 2 |
 
-**105 vectors total.**
+**121 vectors total.**
 
 ### What the virtual model cannot express
 

@@ -1,0 +1,29 @@
+{
+  "name": "i05-an-inline-span-colliding-with-a-block",
+  "description": "An inline span id in the child colliding with a parent block id is renamed like a block id.",
+  "rules": [
+    "I5"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{#tip}\nParent.\n\n{{ a.crv }}\n",
+  "files": {
+    "a.crv": "A [span]{#tip} here.\n"
+  },
+  "expected": {
+    "html": "<p id=\"tip\">Parent.</p>\n<p>A <span id=\"tip-2\">span</span> here.</p>",
+    "fmt": "{#tip}\nParent.\n\n{{ a.crv }}\n",
+    "warnings": [
+      {
+        "rule": "include-heading-id-rename",
+        "file": "a.crv"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "a.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

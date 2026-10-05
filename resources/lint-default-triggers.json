@@ -2,6 +2,7 @@
   "bidi-control-in-source": "a‮b\n",
   "duplicate-heading-id": "# A\n\n# A\n",
   "broken-crossref": "see </#nope>\n",
+  "broken-fragment-link": "see [text](#nope)\n",
   "unresolved-reference-link": "see [text][nope]\n",
   "unresolved-footnote": "see[^nope]\n",
   "duplicate-footnote-definition": "x[^a]\n\n[^a]: one\n\n[^a]: two\n",

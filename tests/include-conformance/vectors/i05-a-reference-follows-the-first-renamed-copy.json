@@ -1,0 +1,33 @@
+{
+  "name": "i05-a-reference-follows-the-first-renamed-copy",
+  "description": "With two colliding copies renamed -2 and -3, a crossref in that child resolves to -2, the copy it reaches first.",
+  "rules": [
+    "I5"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{#dup}\n# Parent\n\n{{ a.crv }}\n",
+  "files": {
+    "a.crv": "{#dup}\n# One\n\n{#dup}\n# Two\n\nSee </#dup>.\n"
+  },
+  "expected": {
+    "html": "<section id=\"dup\">\n  <h1>Parent</h1>\n</section>\n<section id=\"dup-2\">\n  <h1>One</h1>\n</section>\n<section id=\"dup-3\">\n  <h1>Two</h1>\n  <p>See <a href=\"#dup-2\">One</a>.</p>\n</section>",
+    "fmt": "{#dup}\n# Parent\n\n{{ a.crv }}\n",
+    "warnings": [
+      {
+        "rule": "include-heading-id-rename",
+        "file": "a.crv"
+      },
+      {
+        "rule": "include-heading-id-rename",
+        "file": "a.crv"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "a.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

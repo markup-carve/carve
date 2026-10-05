@@ -1,0 +1,29 @@
+{
+  "name": "i01-section-list-item-id-selects-nothing",
+  "description": "A list item id names no selectable block: include-section, the directive stays literal, the dependency still resolves (I1a).",
+  "rules": [
+    "I1",
+    "I11"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ c.crv #li }}\n",
+  "files": {
+    "c.crv": "-{#li} item\n- two\n"
+  },
+  "expected": {
+    "html": "<p>{{ c.crv <span class=\"tag\"><strong>#li</strong></span> }}</p>",
+    "fmt": "{{ c.crv #li }}\n",
+    "warnings": [
+      {
+        "rule": "include-section"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "c.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

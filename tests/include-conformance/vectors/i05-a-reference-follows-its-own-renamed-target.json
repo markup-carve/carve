@@ -1,0 +1,29 @@
+{
+  "name": "i05-a-reference-follows-its-own-renamed-target",
+  "description": "A child's link to its own renamed id follows the rename; a link to an id only the parent holds stays put.",
+  "rules": [
+    "I5"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{#tip}\nParent [p](#only) tip.\n\n{#only}\nonly\n\n{{ a.crv }}\n",
+  "files": {
+    "a.crv": "{#tip}\nChild tip.\n\nSee [mine](#tip) and [parent](#only).\n"
+  },
+  "expected": {
+    "html": "<p id=\"tip\">Parent <a href=\"#only\">p</a> tip.</p>\n<p id=\"only\">only</p>\n<p id=\"tip-2\">Child tip.</p>\n<p>See <a href=\"#tip-2\">mine</a> and <a href=\"#only\">parent</a>.</p>",
+    "fmt": "{#tip}\nParent [p](#only) tip.\n\n{#only}\nonly\n\n{{ a.crv }}\n",
+    "warnings": [
+      {
+        "rule": "include-heading-id-rename",
+        "file": "a.crv"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "a.crv",
+        "resolved": true
+      }
+    ]
+  }
+}
