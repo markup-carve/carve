@@ -108,7 +108,10 @@ export function authoredDocuments() {
  * does not is a citation definition, which is Tier-2 and outside the subset
  * `scripts/spec` models at all.
  *
- * The last move was 98 -> 104: docs/includes.md, the PART 9 section 19 page,
+ * The last move was 105 -> 106: docs/includes.md adds a sample selecting a
+ * non-heading block by its id; answered, like the page's other directives.
+ *
+ * Before that, 98 -> 104: docs/includes.md, the PART 9 section 19 page,
  * carries six samples (`docs/includes.md#1` through `#6`). All six are answered
  * - a directive is ordinary paragraph text to the oracle, which is exactly the
  * property the page documents: with no resolver configured nothing expands, so
@@ -134,5 +137,5 @@ export function authoredDocuments() {
  * message says which way it moved and what to do, because a red gate whose fix
  * is "look up how this file works" is a red gate that gets deleted.
  */
-export const AUTHORED_POPULATION = 105
-export const AUTHORED_ANSWERED = 104
+export const AUTHORED_POPULATION = 106
+export const AUTHORED_ANSWERED = 105
