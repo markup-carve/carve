@@ -1,0 +1,29 @@
+{
+  "name": "i05-rename-suffix-skips-an-id-written-later",
+  "description": "A rename takes the least -N no explicit id in the assembled document uses, including one written after the include.",
+  "rules": [
+    "I5"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{#dup}\n# Parent\n\n{{ a.crv }}\n\n{#dup-2}\n# Later\n",
+  "files": {
+    "a.crv": "{#dup}\n# Child\n"
+  },
+  "expected": {
+    "html": "<section id=\"dup\">\n  <h1>Parent</h1>\n</section>\n<section id=\"dup-3\">\n  <h1>Child</h1>\n</section>\n<section id=\"dup-2\">\n  <h1>Later</h1>\n</section>",
+    "fmt": "{#dup}\n# Parent\n\n{{ a.crv }}\n\n{#dup-2}\n# Later\n",
+    "warnings": [
+      {
+        "rule": "include-heading-id-rename",
+        "file": "a.crv"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "a.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

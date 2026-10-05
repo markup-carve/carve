@@ -9,7 +9,7 @@ description: "Document-wide resolution, core semantic behavior, and HTML seriali
 
 Document-wide resolution, core semantic behavior, and HTML serialization.
 
-This view contains 44 of 306 active rules. Every rule remains mandatory where applicable.
+This view contains 45 of 307 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -35,19 +35,20 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9-068`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L726) | 9 | A RETURNED DOCUMENT NEVER SILENTLY LACKS AUTHORED TEXT |
 | [`CARVE-P9-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L2) | 9 | MATH |
 | [`CARVE-P9-037`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L24) | 9 | A MATH SPAN CARRIES ROLE MATH |
-| [`CARVE-P9-040`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L452) | 9 | RAW PASSTHROUGH |
+| [`CARVE-P9-040`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L459) | 9 | RAW PASSTHROUGH |
 | [`CARVE-P9-059`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L36) | 9 | INLINE LITERAL |
 | [`CARVE-P9-061`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L117) | 9 | C0 CONTROLS ON THE RENDER TARGETS |
 | [`CARVE-P9-062`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L135) | 9 | U+0000 IS NOT ONE OF THOSE CONTROLS |
-| [`CARVE-P9R-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L59) | 9R | THE EXPLICIT FORM DOES NOT REACH THE INDEX |
-| [`CARVE-P9R-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L108) | 9R | R1a A DEFINITION IS COLLECTED FROM A LINE THE BLOCK STRUCTURE KEEPS |
-| [`CARVE-P9R-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L188) | 9R | R1b A MATCHER'S COORDINATES ARE LOCAL, NOT ABSOLUTE |
-| [`CARVE-P9R-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L206) | 9R | A NOTE INSIDE AN UNRESOLVED REFERENCE IS NOT A REFERENCE |
-| [`CARVE-P9R-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L236) | 9R | WHAT IS CLONED IS THE HEADING'S INLINE NODES |
-| [`CARVE-P9R-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L243) | 9R | DERIVED DISPLAY TEXT CLONES THE SAME NODES |
-| [`CARVE-P9R-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L305) | 9R | R7 BLOCK IMAGE PROMOTION |
-| [`CARVE-P9R-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L149) | 9R | AN UNANSWERABLE PROBE KEEPS THE CANDIDATE TEXT |
-| [`CARVE-P9R-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L273) | 9R | R5a LABELED DISPLAY EQUATIONS ARE NUMBERED |
+| [`CARVE-P9R-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L69) | 9R | THE EXPLICIT FORM DOES NOT REACH THE INDEX |
+| [`CARVE-P9R-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L115) | 9R | R1a A DEFINITION IS COLLECTED FROM A LINE THE BLOCK STRUCTURE KEEPS |
+| [`CARVE-P9R-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L195) | 9R | R1b A MATCHER'S COORDINATES ARE LOCAL, NOT ABSOLUTE |
+| [`CARVE-P9R-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L213) | 9R | A NOTE INSIDE AN UNRESOLVED REFERENCE IS NOT A REFERENCE |
+| [`CARVE-P9R-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L242) | 9R | WHAT IS CLONED IS THE HEADING'S INLINE NODES |
+| [`CARVE-P9R-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L249) | 9R | DERIVED DISPLAY TEXT CLONES THE SAME NODES |
+| [`CARVE-P9R-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L311) | 9R | R7 BLOCK IMAGE PROMOTION |
+| [`CARVE-P9R-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L156) | 9R | AN UNANSWERABLE PROBE KEEPS THE CANDIDATE TEXT |
+| [`CARVE-P9R-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L279) | 9R | R5a LABELED DISPLAY EQUATIONS ARE NUMBERED |
+| [`CARVE-P9R-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L56) | 9R | NO NAME LOOKUP FOLDS CASE |
 | [`CARVE-P10-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L120) | 10 | AN EMPTY CONTAINER BODY |
 | [`CARVE-P10-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L198) | 10 | A ROW IS A ROW, IN EVERY SECTION |
 | [`CARVE-P10-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L216) | 10 | SEMANTIC SPAN ATTRIBUTES |

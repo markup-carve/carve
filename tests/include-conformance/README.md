@@ -239,6 +239,15 @@ the security suite's "Corpus ahead of the engines" (carve#1992).
   through it. To close this: add an `I1` vector selecting a digit-leading id
   once an engine reads it, and delete this entry.
 
+- **A reference follows the FIRST renamed copy** (I5). When one child holds a
+  colliding `{#dup}` twice, the copies become `dup-2` and `dup-3`
+  (`i05-each-renamed-copy-takes-its-own-suffix`), and a `</#dup>` in that child
+  resolves to `dup-2`, the copy the child reaches first when read on its own.
+  The pinned carve-js sends it to `dup-3`, so a golden generated today would pin
+  the last copy. To close this: once one engine follows the first copy, add a
+  `</#dup>` to that vector's child (or a new `I5` vector), generate against that
+  engine, read the golden, and delete this entry.
+
 ## How to add a vector
 
 1. Add an input object to `scripts/include-conformance-vectors.mjs` (`name`,

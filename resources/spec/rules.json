@@ -1019,6 +1019,12 @@
       "scope": "resolution-rendering"
     },
     {
+      "id": "CARVE-P9R-010",
+      "part": "9R",
+      "title": "NO NAME LOOKUP FOLDS CASE",
+      "scope": "resolution-rendering"
+    },
+    {
       "id": "CARVE-P10-001",
       "part": "10",
       "title": "AN EMPTY CONTAINER BODY",

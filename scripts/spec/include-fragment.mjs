@@ -15,8 +15,8 @@ const NOT_SELECTABLE = new Set([
   'frontmatter',
 ])
 
-/* R4 folds case and compares NFC forms. */
-const key = (id) => id.normalize('NFC').toLowerCase()
+/* R4 compares NFC forms exactly. */
+const key = (id) => id.normalize('NFC')
 
 const schema = JSON.parse(readFileSync(new URL('../../resources/ast-schema.json', import.meta.url), 'utf8'))
 const BLOCK_TYPES = new Set(schema.$defs.blockNode.properties.type.enum)

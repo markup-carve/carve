@@ -97,8 +97,8 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    is the default. ASCII-folding has TWO modes: BEST-EFFORT keeps characters
    its shared transliteration table cannot map, while STRICT drops that residue
    so the id matches `[0-9A-Za-z-]`. The table is not normative, but engines
-   MUST use the same table. Cross-references resolve case-insensitively against
-   the case-preserved id table. *)
+   MUST use the same table. Cross-references match the id table EXACTLY, case
+   included (PART 9R R4). *)
 
 (* --- Thematic Breaks --- *)
 thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})), newline ;

@@ -46,6 +46,7 @@ test('normalized collisions retain the established winner rules', () => {
   )
 })
 
-test('the implicit heading fallback still folds case and NFC', () => {
-  assert.match(html('# Café\n\nsee [cafe\u0301][]\n'), /href="#Café"/)
+test('the implicit heading fallback folds NFC but not case', () => {
+  assert.match(html('# Café\n\nsee [Cafe\u0301][]\n'), /href="#Café"/)
+  assert.doesNotMatch(html('# Café\n\nsee [cafe\u0301][]\n'), /href=/)
 })

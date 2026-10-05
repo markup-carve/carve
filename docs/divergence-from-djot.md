@@ -27,35 +27,38 @@ see [Technical Rationale](/technical-rationale). For the feature matrix against
 Markdown and MDX too, see [Carve vs Markdown, Djot & MDX](/comparison).
 :::
 
-## 1. Case-preserving heading ids with case-insensitive cross-references
+## 1. Case-preserving heading ids, matched exactly
 
 **Djot:** heading ids preserve case and non-ASCII, with no Unicode
-normalization (`# Getting Started` → `Getting-Started`). Cross-references are
-not a core Djot feature.
+normalization (`# Getting Started` → `Getting-Started`). Reference labels and
+implicit heading references (`[Getting Started][]`) match case-sensitively.
 
-**Carve:** the default id is the same shape - **case-preserving, no Unicode
-normalization, non-ASCII kept verbatim** (`# Getting Started` →
-`Getting-Started`, `# Über uns` → `Über-uns`). This is deliberately aligned
-with Djot and is fully portable: the slug is a pure ASCII run-replacement over
-the raw code points, with no case-folding or normalization tables, so every
-implementation (php, js, rust) produces a byte-identical id.
+**Carve:** the same on both counts. The default id is **case-preserving, with
+non-ASCII kept verbatim** (`# Getting Started` → `Getting-Started`,
+`# Über uns` → `Über-uns`). The slug is a pure ASCII run-replacement over the
+raw code points, with no case-folding tables, so every implementation (php, js,
+rust) produces a byte-identical id.
 
-Where Carve goes further is **resolution**: `</#id>` and `[Heading][]`
-cross-references match their target **case-insensitively** and link to the
-target's actual (case-preserved) id. So a lowercase reference still resolves
-even though the emitted id keeps its original case:
+Every name lookup is **exact**: `</#id>` cross-references, `[Heading][]`
+references, `[text][label]` labels, footnote labels and an include's `#name`
+compare case as written. Only whitespace is normalized in labels, as in Djot.
+A reference that differs from its target only in case does not resolve:
 
 ```
 # My API Reference        →  id="My-API-Reference"
-See </#my-api-reference>  →  resolves to href="#My-API-Reference",
-                              link text cloned from the heading
+See </#My-API-Reference>  →  href="#My-API-Reference", text cloned from the heading
+See </#my-api-reference>  →  literal; carve lint names `My-API-Reference`
 ```
 
-**Why.** Case-preserving ids need no Unicode case-folding in the slug, so the
-algorithm stays zero-dependency and byte-identical across implementations (a
-whole-string lowercase would even diverge on Greek final-sigma). Folding at
-*resolution* time keeps the emitted id Djot-shaped while still letting authors
-write references in whatever case they like.
+**Why.** One rule for every lookup, with no Unicode case-folding table anywhere
+(a whole-string lowercase diverges on Greek final sigma and Turkish dotted I).
+It matches the browser too: `href="#Plan"` does not reach `id="plan"`, so a
+`</#plan>` that resolved while `[x](#plan)` broke would be inconsistent. And
+`{#Tip}` and `{#tip}` stay two ids that each reference reaches unambiguously.
+Earlier Carve resolved cross-references and heading references
+case-insensitively. To migrate, `carve lint` reports a case-only mismatch with
+the exact spelling, and `carve fmt --migrate` rewrites it when exactly one
+target matches.
 
 **Opt-in transforms.** GitHub/SSG-style lowercase anchors and share-safe
 ASCII fragments remain available as opt-in, orthogonal options
@@ -932,9 +935,9 @@ Most Djot source needs only mechanical changes:
 4. `{% comment %}` keeps working; rewrite to `%%` only where you want the
    comment to run to the end of the line.
 5. Heading anchors are case-preserving (Djot-shaped), so hand-written
-   `</#Anchor>` links work as written - cross-references resolve
-   case-insensitively. For lowercase anchors, enable the opt-in
-   `lowercaseHeadingIds` transform.
+   `</#Anchor>` links work as written. References match case exactly, as in
+   Djot. For lowercase anchors, enable the opt-in `lowercaseHeadingIds`
+   transform.
 6. A marker line (`- `, `> `, `# `, a table row, a fence) directly under a line
    of prose now starts a block. Where you relied on Djot keeping it in the
    paragraph, add a blank line or escape the marker.

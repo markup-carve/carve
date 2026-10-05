@@ -810,8 +810,8 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    is the default. ASCII-folding has TWO modes: BEST-EFFORT keeps characters
    its shared transliteration table cannot map, while STRICT drops that residue
    so the id matches `[0-9A-Za-z-]`. The table is not normative, but engines
-   MUST use the same table. Cross-references resolve case-insensitively against
-   the case-preserved id table. *)
+   MUST use the same table. Cross-references match the id table EXACTLY, case
+   included (PART 9R R4). *)
 
 (* --- Thematic Breaks --- *)
 thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})), newline ;
@@ -2511,11 +2511,9 @@ auto_text_link = "</#", crossref_id, '>' ;  (* cross-reference with auto text *)
 crossref_id = {character - ('>' | whitespace | newline)}+ ;
 (* The crossref id token accepts NON-ASCII characters: automatic heading ids
    PRESERVE Unicode and case (`# Café Notes` -> `Café-Notes`), so `</#Café-Notes>`
-   must be writable. Resolution is CASE-INSENSITIVE: the reference is folded and
-   matched against the case-preserved id table, then the link emits the target's
-   actual id (`</#café-notes>` resolves to `Café-Notes`). Matching is NOT
-   ASCII-folded, so an ASCII spelling of a non-ASCII id (`cafe` vs `Café`) does
-   NOT resolve (corpus 15-heading-ids). EXPLICIT ids (`{#id}`) remain ASCII
+   must be writable. Resolution is EXACT (PART 9R R4): no case fold and no
+   ASCII fold, so `</#café-notes>` and `</#Cafe-Notes>` both name nothing next
+   to `Café-Notes` and stay literal (corpus 15-heading-ids). EXPLICIT ids (`{#id}`) remain ASCII
    `identifier`s -- the asymmetry is deliberate: authors control explicit
    ids, auto ids follow the heading text. *)
 
@@ -5602,13 +5600,20 @@ EOF = (* end of file *) ;
            the same namespace came from a DIFFERENT file inclusion (another
            file, or another inclusion of the same file); the first occurrence
            keeps its name. Duplicates that one file already held on its own are
-           not created by expansion and are not this rule's business. The
-           rename appends the least `-N` (integer N >= 2) not already taken in
-           that namespace: first `-2`, then `-3`, and so on. A Warning MUST be
-           emitted per rename.
+           not created by expansion and are not this rule's business.
+           EVERY RENAMED OCCURRENCE TAKES ITS OWN SUFFIX: the least `-N`
+           (integer N >= 2) such that the result is used by NO explicit name of
+           that namespace anywhere in the fully assembled document -- the
+           parent, earlier and later includes, the child itself -- and by no
+           earlier rename. A child holding a colliding `{#d}` twice therefore
+           yields `d-2` and `d-3`, never two `d-2`s, and a `{#d-2}` written
+           after the include pushes the rename to `d-3`. A Warning MUST be
+           emitted per renamed occurrence.
            REFERENCES FOLLOW THE RENAME. A reference written in the SAME file
            inclusion as the renamed target, that resolves to that target when
-           the file is read on its own, resolves to the new name instead:
+           the file is read on its own, resolves to the new name instead
+           (where that file held several renamed copies, to the FIRST, the
+           one the file reaches when read on its own):
              - a `</#id>` cross-reference (R4);
              - a link or image destination that is exactly `#` followed by the
                id, whether written inline (`[text](#tip)`) or reached through
@@ -7009,23 +7014,32 @@ EOF = (* end of file *) ;
       headings keyed by their rendered plain text -- and resolves to
       `#{slug}` of the FIRST heading with that text. linkDefs WINS on a
       tie, so an explicit `[label]: url` definition always beats a
-      same-named heading. Matching against the heading index is LOOSER
-      than the linkDefs matching above: the label and the heading text
-      are both trimmed, their internal whitespace runs collapsed to one
-      space, NFC-NORMALIZED, and then compared case-INSENSITIVELY, so
-      `[getting started][]` finds `# Getting Started` and `[Café][]`
-      finds `# Cafe` + U+0301. That asymmetry is
-      deliberate -- a linkDefs label is an identifier the author wrote
-      twice and can keep identical, while a heading ref is prose the
-      author is quoting from elsewhere in the document.
+      same-named heading. Against the heading index, the label and the
+      heading text are both trimmed, their internal whitespace runs
+      collapsed to one space, NFC-NORMALIZED, and then compared EXACTLY:
+      `[Café][]` finds `# Cafe` + U+0301, while `[getting started][]`
+      does not find `# Getting Started` and stays literal (corpus
+      173-implicit-heading-references-with-no-definition).
+      NO NAME LOOKUP FOLDS CASE -- NORMATIVE [CARVE-P9R-010]. Every place
+      Carve looks a name up compares case exactly: R1's linkDefs and
+      heading index, R2's footnote labels, R4's crossrefs against
+      headingIds and captionIds, and an include's `#name` (PART 9 §19
+      I1a). One rule for every lookup needs no Unicode case-folding table
+      (§25 already refuses one for slugs: Greek final sigma, Turkish
+      dotted I), agrees with an HTML fragment (`href="#Plan"` does not
+      reach `id="plan"` in a browser) and with Djot, and keeps `{#Tip}`
+      and `{#tip}` two ids. A reference that differs from its target
+      only in case is UNRESOLVED; a linter SHOULD name the exact spelling
+      (docs/validation.md), and `carve fmt --migrate` rewrites it when
+      exactly one target matches it case-insensitively (corpus
+      546-every-name-lookup-compares-case-exactly).
       THE EXPLICIT FORM DOES NOT REACH THE INDEX -- NORMATIVE [CARVE-P9R-001].
       The fallback above is scoped to the COLLAPSED `[text][]` and to
       nothing else. An explicit `[text][label]` whose label matches no
       linkDefs entry is unresolved and renders as literal source text; it
-      does not fall through to the heading index at ANY spelling, folded
-      or exact.
-      A collapsed label quotes prose, so its matching is loose; an explicit
-      label is an identifier, so its matching is exact. An explicit identifier
+      does not fall through to the heading index at ANY spelling.
+      A collapsed label quotes heading prose, so it may reach the index; an
+      explicit label is an identifier and does not. An explicit identifier
       that names nothing is not retried as heading prose and renders literally.
       ON THIS PATH THE LABEL ENTERS AS ITS RENDERED PLAIN TEXT, like the
       heading: `# *bold* heading` and `[*bold* heading][]` both contribute
@@ -7053,11 +7067,9 @@ EOF = (* end of file *) ;
       NFC and NOT NFKC: canonical equivalence only, so `ﬁle` does not
       match `file` and `① one` does not match `1 one` -- compatibility
       folding would change which text an author is quoting. NFC belongs in the
-      list for two reasons. The id side is ALREADY NFC (§25), so without it a
-      document publishes `id="Café"` and then declines `[Café][]` against the
-      heading that produced it. And NFC is a WEAKER fold than the case fold
-      this list already admits, so admitting the stronger one and refusing the
-      weaker one is backwards. The index holds
+      list because the id side is ALREADY NFC (§25): without it a document
+      publishes `id="Café"` and then declines `[Café][]` against the heading
+      that produced it. The index holds
       headings at top level and
       inside divs, admonitions, list items, and definitions, but
       DECLINES any heading with a blockquote ancestor, in either
@@ -7186,10 +7198,9 @@ EOF = (* end of file *) ;
    R3 ABBREVIATIONS. Each abbrDefs term matches in rendered text at WORD
       BOUNDARIES only and emits <abbr>. Expansion is bounded per PART 9 §25
       (an empty term is rejected; total work stays O(n)).
-   R4 CROSSREFS (behavior detail in PART 9 §19). </#id> folds
-      case-insensitively and matches against the case-preserved headingIds
-      (an ASCII spelling of a non-ASCII id does NOT resolve; corpus
-      15-heading-ids), then against captionIds for numbered captions and
+   R4 CROSSREFS (behavior detail in PART 9 §19). </#id> matches the
+      case-preserved headingIds EXACTLY (neither a case-only nor an ASCII
+      spelling of an id resolves; corpus 15-heading-ids), then captionIds for numbered captions and
       directly numbered display equations. The link text is LABEL + NUMBER,
       e.g. "Figure 1" or "Eq. 2"; caption markup is preserved, while a direct
       equation's label is a string.
@@ -7244,8 +7255,8 @@ EOF = (* end of file *) ;
 
       The node's `attrs.id`, when present, registers the label and number in
       captionIds for R4 with kind `equation`. `label` supplies visible text and
-      is NOT the id. Keys are NFC-normalized and matched case-insensitively, as
-      R4 matches the other id tables. R5's first-registration rule resolves
+      is NOT the id. Keys are NFC-normalized and matched exactly, as R4
+      matches the other id tables. R5's first-registration rule resolves
       collisions within captionIds. R4's heading-first lookup still makes a
       collision with a heading id resolve to the heading.
       Inline math never draws a number, even if an ingested node carries a
@@ -10117,19 +10128,19 @@ EOF = (* end of file *) ;
       between `</#` and `>`, and where it resolves the destination is published
       BESIDE it as `href`.
 
-        See </#intro>.
+        See </#Intro>.
 
       with `# Intro` above it publishes
 
-        {"type":"heading_ref","target":"intro","href":"#Intro"}
+        {"type":"heading_ref","target":"Intro","href":"#Intro"}
 
       and with no such heading
 
         {"type":"heading_ref","target":"Nope"}
 
-      `target` is the authored spelling, NOT the id it resolved to: ids resolve
-      case-insensitively (PART 9 §19), so `</#intro>` and `</#Intro>` reach the
-      same heading and only `target` says which one the author wrote. A tree
+      `target` is the authored spelling, kept whether or not it resolves: a
+      `</#intro>` beside `# Intro` names no id (PART 9R R4) and publishes
+      `target` alone. A tree
       publishing `{"type":"link","href":"#Intro","fromCrossref":true}` has
       serialized a later stage by the rule at the top of this section, and it
       cannot be written back: the writer reconstructs `</#` + the id + `>`, so
@@ -10719,7 +10730,7 @@ EOF = (* end of file *) ;
 
    10. A LINK REFERENCE DEFINITION IS A NODE -- NORMATIVE [CARVE-P12-029].
       `type: "link_reference_definition"`, carrying:
-        label   the reference label as the author wrote it, before case folding
+        label   the reference label as the author wrote it, unnormalized
         href    the destination; present and non-empty, since a definition with
                 an empty destination is not a definition but paragraph text
         title   the quoted title, unescaped, when the definition carries one

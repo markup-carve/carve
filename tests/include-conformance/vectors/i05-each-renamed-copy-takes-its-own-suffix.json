@@ -1,0 +1,33 @@
+{
+  "name": "i05-each-renamed-copy-takes-its-own-suffix",
+  "description": "A child holding a colliding explicit id twice renames each copy to its own suffix (-2, -3), one warning each.",
+  "rules": [
+    "I5"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{#dup}\n# Parent\n\n{{ a.crv }}\n",
+  "files": {
+    "a.crv": "{#dup}\n# One\n\n{#dup}\n# Two\n"
+  },
+  "expected": {
+    "html": "<section id=\"dup\">\n  <h1>Parent</h1>\n</section>\n<section id=\"dup-2\">\n  <h1>One</h1>\n</section>\n<section id=\"dup-3\">\n  <h1>Two</h1>\n</section>",
+    "fmt": "{#dup}\n# Parent\n\n{{ a.crv }}\n",
+    "warnings": [
+      {
+        "rule": "include-heading-id-rename",
+        "file": "a.crv"
+      },
+      {
+        "rule": "include-heading-id-rename",
+        "file": "a.crv"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "a.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

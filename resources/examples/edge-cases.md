@@ -4080,7 +4080,7 @@ reference links) inside a footnote body resolve against document-level targets.
 
 Body[^n]
 
-[^n]: see </#h>
+[^n]: see </#H>
 ```
 
 ```html
@@ -4441,7 +4441,7 @@ A self-reference resolves once:
 ::: compare
 
 ```carve
-# A </#a>
+# A </#A>
 ```
 
 ```html
@@ -4457,9 +4457,9 @@ A mutual cycle resolves to one level on each side:
 ::: compare
 
 ```carve
-# A </#b>
+# A </#B>
 
-# B </#a>
+# B </#A>
 ```
 
 ```html
@@ -4480,7 +4480,7 @@ A normal (non-cyclic) cross-reference still resolves:
 ```carve
 # Intro
 
-See </#intro>.
+See </#Intro>.
 ```
 
 ```html
@@ -6750,11 +6750,10 @@ read it as an attribute line, and neither could be shown wrong (carve#454).
 ## Implicit heading references with no definition
 
 A `[text][]` that matches no link definition falls back to the document's
-headings by their rendered text (PART 11 R1). The match is looser than the
-exact, case-sensitive link-definition match in the same rule: it trims,
-collapses whitespace and folds case, because a definition label is an
-identifier the author wrote twice while a heading reference is prose quoted
-from elsewhere in the document.
+headings by their rendered text (PART 11 R1). The label and the heading text
+are both trimmed, whitespace-collapsed and NFC-normalized, then compared
+exactly: case is not folded, so `[getting started][]` does not reach
+`# Getting Started` and stays literal.
 
 A heading under a blockquote is declined - quoted text names the quoted
 document's headings, not this one's - while a list item resolves, because that
@@ -6770,7 +6769,7 @@ spec had never implemented it (carve#453).
 ```carve
 # Getting Started
 
-See [getting started][] and [Missing][].
+See [Getting Started][], [getting started][] and [Missing][].
 
 > # Quoted
 
@@ -6790,7 +6789,7 @@ See [Defined][].
 ```html
 <section id="Getting-Started">
   <h1>Getting Started</h1>
-  <p>See <a href="#Getting-Started">getting started</a> and [Missing][].</p>
+  <p>See <a href="#Getting-Started">Getting Started</a>, [getting started][] and [Missing][].</p>
   <blockquote>
     <h1 id="Quoted">Quoted</h1>
   </blockquote>
@@ -8967,7 +8966,7 @@ see[^a] and [t][r]
 
 ## A heading reference folds Unicode normalization, but not compatibility
 
-The heading index is matched loosely on purpose (PART 9R R1): trimmed, internal whitespace collapsed, NFC-normalized, then compared case-insensitively. NFC has to be in that list because the ID side already normalizes (§25) - without it a document publishes `id="Café"` and then declines `[Café][]` against the very heading that produced it, and the two spellings look identical on screen so the miss has no visible cause. The heading below is written `Cafe` + U+0301 and the reference is precomposed U+00E9.
+The heading index is keyed on rendered plain text (PART 9R R1): trimmed, internal whitespace collapsed, NFC-normalized, then compared exactly. NFC has to be in that list because the ID side already normalizes (§25) - without it a document publishes `id="Café"` and then declines `[Café][]` against the very heading that produced it, and the two spellings look identical on screen so the miss has no visible cause. The heading below is written `Cafe` + U+0301 and the reference is precomposed U+00E9.
 
 Compatibility folding is NOT in the list: `[file][]` does not reach `# ﬁle`. NFKC would change which text the author is quoting rather than how it is spelled. carve-rs folded NFC and the other three did not (carve#725).
 
@@ -13582,8 +13581,8 @@ paragraph
 
 PART 9R R1's implicit heading fallback keys the index by each heading's RENDERED
 PLAIN TEXT, so `# *bold* heading` is registered as `bold heading`. R1 said the
-label and the heading text are "both" trimmed, collapsed, NFC-normalized and
-case-folded, but it never said which string the label side contributes - its
+label and the heading text are "both" trimmed, collapsed and NFC-normalized
+(case-folded too, at the time), but it never said which string the label side contributes - its
 source run or its rendered plain text. Read as the source run, the asterisks
 survive all four normalizations and no heading containing markup is reachable by
 its collapsed spelling; read as rendered plain text, it is. Nothing pinned
@@ -46092,3 +46091,87 @@ Body.
 ```
 
 ::::
+
+## Every name lookup compares case exactly
+
+A `</#id>` cross-reference, a collapsed `[text][]` heading reference and a
+`[text][label]` reference all match their target exactly, case included (PART
+9R R1, R4). A spelling that differs only in case names nothing and stays
+literal; `carve lint` reports it with the exact spelling.
+
+::: compare
+
+```carve
+{#Plan}
+# Plan
+
+See </#Plan> and </#plan>.
+```
+
+```html
+<section id="Plan">
+  <h1>Plan</h1>
+  <p>See <a href="#Plan">Plan</a> and &lt;/#plan&gt;.</p>
+</section>
+```
+
+:::
+
+Ids that differ only in case are two ids, and each reference reaches its own:
+
+::: compare
+
+```carve
+{#Tip}
+# Upper
+
+{#tip}
+# Lower
+
+</#Tip> and </#tip>
+```
+
+```html
+<section id="Tip">
+  <h1>Upper</h1>
+</section>
+<section id="tip">
+  <h1>Lower</h1>
+  <p><a href="#Tip">Upper</a> and <a href="#tip">Lower</a></p>
+</section>
+```
+
+:::
+
+The heading index and the definition labels follow the same rule:
+
+::: compare
+
+```carve
+See [Plan][] and [plan][].
+
+# Plan
+```
+
+```html
+<p>See <a href="#Plan">Plan</a> and [plan][].</p>
+<section id="Plan">
+  <h1>Plan</h1>
+</section>
+```
+
+:::
+
+::: compare
+
+```carve
+[x][Label] and [y][label]
+
+[label]: /u
+```
+
+```html
+<p>[x][Label] and <a href="/u">y</a></p>
+```
+
+:::

@@ -80,7 +80,7 @@ caption has to be written as raw HTML.
 
 | | Markdown | Djot | MDX | **Carve** |
 |---|:---:|:---:|:---:|:---:|
-| Automatic heading ids | ⚠️ tooling | ✅ | 🧩 | ✅ case-preserving, case-insensitive refs |
+| Automatic heading ids | ⚠️ tooling | ✅ | 🧩 | ✅ case-preserving, exact refs |
 | Cross-references `</#id>` | ❌ | ❌ | ❌ | ✅ |
 | Implicit heading refs `[Heading][]` | 🧩 (Obsidian uses `[[…]]`) | ❌ | ❌ | ✅ |
 

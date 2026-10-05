@@ -266,19 +266,19 @@
       between `</#` and `>`, and where it resolves the destination is published
       BESIDE it as `href`.
 
-        See </#intro>.
+        See </#Intro>.
 
       with `# Intro` above it publishes
 
-        {"type":"heading_ref","target":"intro","href":"#Intro"}
+        {"type":"heading_ref","target":"Intro","href":"#Intro"}
 
       and with no such heading
 
         {"type":"heading_ref","target":"Nope"}
 
-      `target` is the authored spelling, NOT the id it resolved to: ids resolve
-      case-insensitively (PART 9 §19), so `</#intro>` and `</#Intro>` reach the
-      same heading and only `target` says which one the author wrote. A tree
+      `target` is the authored spelling, kept whether or not it resolves: a
+      `</#intro>` beside `# Intro` names no id (PART 9R R4) and publishes
+      `target` alone. A tree
       publishing `{"type":"link","href":"#Intro","fromCrossref":true}` has
       serialized a later stage by the rule at the top of this section, and it
       cannot be written back: the writer reconstructs `</#` + the id + `>`, so

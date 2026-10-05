@@ -54,8 +54,9 @@ wherever else whitespace does.
 
 - **`#section`** names a heading or a block in the resolved source (see
   [Selecting by id](#selecting-by-id-section)). The id is matched the same way a
-  `</#id>` cross-reference matches. The name takes any spelling an explicit
-  `{#id}` takes, so a digit-leading id such as `#2024-plan` is nameable.
+  `</#id>` cross-reference matches: exactly, case included. The name takes any
+  spelling an explicit `{#id}` takes, so a digit-leading id such as
+  `#2024-plan` is nameable.
 - **`@key:value`** is an extensible option slot. Options are space-separated.
   - **`@lines:N-M`** includes the 1-based, inclusive physical-line range `N`
     through `M` of the resolved source.
@@ -574,8 +575,7 @@ targeted across file boundaries:
   has one `id` namespace per document, so a heading `{#tip}` and a paragraph
   `{#tip}` collide just as two headings do.
   Names are compared **exactly**, case included, as HTML compares ids: `{#Tip}`
-  and `{#tip}` do not collide. A case-insensitive `</#tip>` then reaches the
-  first of them in document order.
+  and `{#tip}` do not collide, and `</#tip>` reaches only the lowercase one.
 - **Footnote labels.** Footnotes are collected and numbered globally in the
   assembled document. Labels are a **separate** namespace: `[^tip]` never
   collides with `{#tip}`.
@@ -589,11 +589,14 @@ The processor MUST resolve duplicates **deterministically** by
    **different** file inclusion (another file, or another inclusion of the same
    file). The first occurrence keeps its name. Duplicates a single file already
    held on its own are not created by expansion and are not renamed here.
-2. **Rename scheme.** Each renamed occurrence gets the least `-N` (integer
-   `N >= 2`) that is not already taken in the same namespace: first `-2`, then
-   `-3`, and so on.
-3. **Warning per rename.** Every rename emits a Warning so the collision is
-   visible and debuggable.
+2. **Rename scheme.** Every renamed occurrence gets its own suffix: the least
+   `-N` (integer `N >= 2`) that no explicit name of the same namespace uses
+   **anywhere in the assembled document** (the parent, earlier and later
+   includes, and the child itself) and that no earlier rename took. A child
+   holding a colliding `{#d}` twice yields `d-2` and `d-3`, and a `{#d-2}`
+   written after the include pushes the rename to `d-3`.
+3. **Warning per rename.** Every renamed occurrence emits its own Warning so
+   the collision is visible and debuggable.
 4. **Automatic ids are out of scope.** An id the author did not write - the slug
    a heading derives from its own text - is disambiguated the way it already is
    inside a single document, and **without** a Warning. Two chapters opening
@@ -614,6 +617,9 @@ own:
 - a link or image destination that is exactly `#` followed by the id, written
   inline or reached through that file's own reference definition;
 - a footnote reference, for a renamed footnote label.
+
+Where the file held several renamed copies of one name, its references follow
+the first (`d-2`), the copy the file reaches first when read on its own.
 
 A reference in any **other** file keeps the name as written and reaches the
 first occurrence, which is how a child links to a target the parent defines. A
@@ -746,7 +752,7 @@ Every failure path is **visible**, never a silent drop. Each of these emits a
 |---|---|
 | Unreadable / missing path | Warning + literal directive |
 | Binary / non-text content | Warning + literal directive |
-| A `#section` that selects nothing | Warning + literal directive |
+| A `#section` that selects nothing | Warning + literal directive; a case-only mismatch names the exact id |
 | Both `#section` and a line-range (`@lines`) present | Warning + literal directive |
 | Block-structured content in inline position (inline include) | Warning + literal directive |
 | Inclusion cycle | Warning + literal directive |

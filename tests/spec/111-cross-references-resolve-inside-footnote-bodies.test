@@ -5,7 +5,7 @@ Cross-references resolve inside footnote bodies
 
 Body[^n]
 
-[^n]: see </#h>
+[^n]: see </#H>
 .
 <section id="H">
   <h1>H</h1>

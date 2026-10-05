@@ -1,0 +1,50 @@
+Every name lookup compares case exactly
+
+```
+{#Plan}
+# Plan
+
+See </#Plan> and </#plan>.
+.
+<section id="Plan">
+  <h1>Plan</h1>
+  <p>See <a href="#Plan">Plan</a> and &lt;/#plan&gt;.</p>
+</section>
+```
+
+```
+{#Tip}
+# Upper
+
+{#tip}
+# Lower
+
+</#Tip> and </#tip>
+.
+<section id="Tip">
+  <h1>Upper</h1>
+</section>
+<section id="tip">
+  <h1>Lower</h1>
+  <p><a href="#Tip">Upper</a> and <a href="#tip">Lower</a></p>
+</section>
+```
+
+```
+See [Plan][] and [plan][].
+
+# Plan
+.
+<p>See <a href="#Plan">Plan</a> and [plan][].</p>
+<section id="Plan">
+  <h1>Plan</h1>
+</section>
+```
+
+```
+[x][Label] and [y][label]
+
+[label]: /u
+.
+<p>[x][Label] and <a href="/u">y</a></p>
+```
