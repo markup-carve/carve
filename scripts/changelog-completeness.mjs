@@ -209,7 +209,41 @@ export const unreleasedSections = (changelog, tags) => {
     return out;
 };
 
-export const __internals = { VERSION_TAG, sectionHeadings, unreleasedSections };
+/**
+ * `.changelog-exempt`, parsed. Keys are pull request numbers; a line that is
+ * neither a comment nor `<number>: <reason>` is malformed and refused.
+ */
+export const parseExemptions = (text, exemptFile = EXEMPT_FILE) => {
+    const pullRequests = new Map();
+    const malformed = [];
+    text.split('\n').forEach((raw, i) => {
+        const line = raw.trim();
+        if (!line || line.startsWith('#')) return;
+        const m = line.match(/^#?(\d+)\s*[:\s]\s*(\S.*)$/);
+        if (!m) { malformed.push(`${exemptFile}:${i + 1}: expected '<number>: <reason>', got '${line}'`); return; }
+        pullRequests.set(m[1], m[2].trim());
+    });
+    return { pullRequests, malformed };
+};
+
+/**
+ * The two summary lines, from one description of one range, so the number a
+ * reader compares between a red run and the green run that cleared it cannot
+ * depend on which way the gate exited.
+ */
+export const verdict = ({ shipped, exempt, missing, unattributed, sections, from, exemptFile = EXEMPT_FILE }) => ({
+    failure:
+        `changelog-completeness: ${missing} of ${shipped} pull request(s) ${from} moved ` +
+        `shipped source and are cited nowhere in ${sections.map((h) => `[${h}]`).join(' or ')}. ` +
+        `Write them up, or exempt one with a reason in ${exemptFile}.`,
+    pass:
+        `changelog-completeness: ${sections.map((h) => `[${h}]`).join(' and ')} account(s) for all ` +
+        `${shipped - exempt} shipped-source pull request(s) ${from}` +
+        (exempt ? `, ${exempt} exempt` : '') +
+        (unattributed ? `, ${unattributed} commit(s) carrying no pull request` : ''),
+});
+
+export const __internals = { VERSION_TAG, sectionHeadings, unreleasedSections, parseExemptions, verdict };
 
 if (process.env.CARVE_CHANGELOG_LIB === '1') {
   // Imported for its helpers by the self-test; do not run the gate.
@@ -397,18 +431,9 @@ const cited = new Set([section, ...alsoRead].flatMap((h) => localReferences(text
 // so the escape hatch cannot decay into a list of bare numbers nobody can
 // audit, and every one that applies is printed on a passing run too.
 
-const exemptions = new Map();
-const malformed = [];
 const exemptPath = resolve(root, EXEMPT_FILE);
-if (existsSync(exemptPath)) {
-    readFileSync(exemptPath, 'utf8').split('\n').forEach((raw, i) => {
-        const line = raw.trim();
-        if (!line || line.startsWith('#')) return;
-        const m = line.match(/^#?(\d+)\s*[:\s]\s*(\S.*)$/);
-        if (!m) { malformed.push(`${EXEMPT_FILE}:${i + 1}: expected '<number>: <reason>', got '${line}'`); return; }
-        exemptions.set(m[1], m[2].trim());
-    });
-}
+const { pullRequests: exemptions, malformed } =
+    parseExemptions(existsSync(exemptPath) ? readFileSync(exemptPath, 'utf8') : '');
 
 const missing = [];
 const skipped = [];
@@ -428,6 +453,14 @@ for (const { sha, subject } of unattributed) {
 }
 
 const from = previous ? `since ${previous}` : 'so far';
+const summary = verdict({
+    shipped: shipping.size,
+    exempt: skipped.length,
+    missing: missing.length,
+    unattributed: unattributed.length,
+    sections: [section, ...alsoRead],
+    from,
+});
 if (malformed.length || missing.length) {
     for (const e of malformed) console.log(`::error::${e}`);
     for (const [number, title] of missing) {
@@ -446,22 +479,10 @@ if (malformed.length || missing.length) {
             );
         }
     }
-    if (missing.length) {
-        console.log(
-            `changelog-completeness: ${missing.length} of ${shipping.size} pull request(s) ${from} moved ` +
-            `shipped source and are cited nowhere in ${[section, ...alsoRead].map((h) => `[${h}]`).join(' or ')}. ` +
-            `Write them up, or exempt one with a reason in ${EXEMPT_FILE}.`,
-        );
-    }
+    if (missing.length) console.log(summary.failure);
     process.exit(malformed.length ? 1 : 3);
 }
 
-const read = [section, ...alsoRead].map((h) => `[${h}]`).join(' and ');
-console.log(
-    `changelog-completeness: ${read} account(s) for all ${shipping.size - skipped.length} ` +
-    `shipped-source pull request(s) ${from}` +
-    (skipped.length ? `, ${skipped.length} exempt` : '') +
-    (unattributed.length ? `, ${unattributed.length} commit(s) carrying no pull request` : ''),
-);
+console.log(summary.pass);
 
 }
