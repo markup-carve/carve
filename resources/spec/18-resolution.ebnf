@@ -47,23 +47,32 @@
       headings keyed by their rendered plain text -- and resolves to
       `#{slug}` of the FIRST heading with that text. linkDefs WINS on a
       tie, so an explicit `[label]: url` definition always beats a
-      same-named heading. Matching against the heading index is LOOSER
-      than the linkDefs matching above: the label and the heading text
-      are both trimmed, their internal whitespace runs collapsed to one
-      space, NFC-NORMALIZED, and then compared case-INSENSITIVELY, so
-      `[getting started][]` finds `# Getting Started` and `[Café][]`
-      finds `# Cafe` + U+0301. That asymmetry is
-      deliberate -- a linkDefs label is an identifier the author wrote
-      twice and can keep identical, while a heading ref is prose the
-      author is quoting from elsewhere in the document.
+      same-named heading. Against the heading index, the label and the
+      heading text are both trimmed, their internal whitespace runs
+      collapsed to one space, NFC-NORMALIZED, and then compared EXACTLY:
+      `[Café][]` finds `# Cafe` + U+0301, while `[getting started][]`
+      does not find `# Getting Started` and stays literal (corpus
+      173-implicit-heading-references-with-no-definition).
+      NO NAME LOOKUP FOLDS CASE -- NORMATIVE [CARVE-P9R-010]. Every place
+      Carve looks a name up compares case exactly: R1's linkDefs and
+      heading index, R2's footnote labels, R4's crossrefs against
+      headingIds and captionIds, and an include's `#name` (PART 9 §19
+      I1a). One rule for every lookup needs no Unicode case-folding table
+      (§25 already refuses one for slugs: Greek final sigma, Turkish
+      dotted I), agrees with an HTML fragment (`href="#Plan"` does not
+      reach `id="plan"` in a browser) and with Djot, and keeps `{#Tip}`
+      and `{#tip}` two ids. A reference that differs from its target
+      only in case is UNRESOLVED; a linter SHOULD name the exact spelling
+      (docs/validation.md), and `carve fmt --migrate` rewrites it when
+      exactly one target matches it case-insensitively (corpus
+      546-every-name-lookup-compares-case-exactly).
       THE EXPLICIT FORM DOES NOT REACH THE INDEX -- NORMATIVE [CARVE-P9R-001].
       The fallback above is scoped to the COLLAPSED `[text][]` and to
       nothing else. An explicit `[text][label]` whose label matches no
       linkDefs entry is unresolved and renders as literal source text; it
-      does not fall through to the heading index at ANY spelling, folded
-      or exact.
-      A collapsed label quotes prose, so its matching is loose; an explicit
-      label is an identifier, so its matching is exact. An explicit identifier
+      does not fall through to the heading index at ANY spelling.
+      A collapsed label quotes heading prose, so it may reach the index; an
+      explicit label is an identifier and does not. An explicit identifier
       that names nothing is not retried as heading prose and renders literally.
       ON THIS PATH THE LABEL ENTERS AS ITS RENDERED PLAIN TEXT, like the
       heading: `# *bold* heading` and `[*bold* heading][]` both contribute
@@ -91,11 +100,9 @@
       NFC and NOT NFKC: canonical equivalence only, so `ﬁle` does not
       match `file` and `① one` does not match `1 one` -- compatibility
       folding would change which text an author is quoting. NFC belongs in the
-      list for two reasons. The id side is ALREADY NFC (§25), so without it a
-      document publishes `id="Café"` and then declines `[Café][]` against the
-      heading that produced it. And NFC is a WEAKER fold than the case fold
-      this list already admits, so admitting the stronger one and refusing the
-      weaker one is backwards. The index holds
+      list because the id side is ALREADY NFC (§25): without it a document
+      publishes `id="Café"` and then declines `[Café][]` against the heading
+      that produced it. The index holds
       headings at top level and
       inside divs, admonitions, list items, and definitions, but
       DECLINES any heading with a blockquote ancestor, in either
@@ -224,10 +231,9 @@
    R3 ABBREVIATIONS. Each abbrDefs term matches in rendered text at WORD
       BOUNDARIES only and emits <abbr>. Expansion is bounded per PART 9 §25
       (an empty term is rejected; total work stays O(n)).
-   R4 CROSSREFS (behavior detail in PART 9 §19). </#id> folds
-      case-insensitively and matches against the case-preserved headingIds
-      (an ASCII spelling of a non-ASCII id does NOT resolve; corpus
-      15-heading-ids), then against captionIds for numbered captions and
+   R4 CROSSREFS (behavior detail in PART 9 §19). </#id> matches the
+      case-preserved headingIds EXACTLY (neither a case-only nor an ASCII
+      spelling of an id resolves; corpus 15-heading-ids), then captionIds for numbered captions and
       directly numbered display equations. The link text is LABEL + NUMBER,
       e.g. "Figure 1" or "Eq. 2"; caption markup is preserved, while a direct
       equation's label is a string.
@@ -282,8 +288,8 @@
 
       The node's `attrs.id`, when present, registers the label and number in
       captionIds for R4 with kind `equation`. `label` supplies visible text and
-      is NOT the id. Keys are NFC-normalized and matched case-insensitively, as
-      R4 matches the other id tables. R5's first-registration rule resolves
+      is NOT the id. Keys are NFC-normalized and matched exactly, as R4
+      matches the other id tables. R5's first-registration rule resolves
       collisions within captionIds. R4's heading-first lookup still makes a
       collision with a heading id resolve to the heading.
       Inline math never draws a number, even if an ingested node carries a

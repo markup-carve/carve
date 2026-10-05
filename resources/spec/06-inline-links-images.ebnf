@@ -462,11 +462,9 @@ auto_text_link = "</#", crossref_id, '>' ;  (* cross-reference with auto text *)
 crossref_id = {character - ('>' | whitespace | newline)}+ ;
 (* The crossref id token accepts NON-ASCII characters: automatic heading ids
    PRESERVE Unicode and case (`# Café Notes` -> `Café-Notes`), so `</#Café-Notes>`
-   must be writable. Resolution is CASE-INSENSITIVE: the reference is folded and
-   matched against the case-preserved id table, then the link emits the target's
-   actual id (`</#café-notes>` resolves to `Café-Notes`). Matching is NOT
-   ASCII-folded, so an ASCII spelling of a non-ASCII id (`cafe` vs `Café`) does
-   NOT resolve (corpus 15-heading-ids). EXPLICIT ids (`{#id}`) remain ASCII
+   must be writable. Resolution is EXACT (PART 9R R4): no case fold and no
+   ASCII fold, so `</#café-notes>` and `</#Cafe-Notes>` both name nothing next
+   to `Café-Notes` and stay literal (corpus 15-heading-ids). EXPLICIT ids (`{#id}`) remain ASCII
    `identifier`s -- the asymmetry is deliberate: authors control explicit
    ids, auto ids follow the heading text. *)
 

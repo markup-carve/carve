@@ -1,0 +1,24 @@
+{
+  "name": "i05-ids-differing-only-in-case-do-not-collide",
+  "description": "Ids are compared exactly, as HTML compares them: {#Tip} and {#tip} are two ids, so nothing is renamed.",
+  "rules": [
+    "I5"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{#Tip}\n# Parent\n\n{{ a.crv }}\n",
+  "files": {
+    "a.crv": "{#tip}\n# Child\n"
+  },
+  "expected": {
+    "html": "<section id=\"Tip\">\n  <h1>Parent</h1>\n</section>\n<section id=\"tip\">\n  <h1>Child</h1>\n</section>",
+    "fmt": "{#Tip}\n# Parent\n\n{{ a.crv }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

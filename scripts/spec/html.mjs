@@ -122,7 +122,7 @@ function renderDocPass(doc, footnoteProbe) {
     linkDefs: doc.linkDefs,
     abbrDefs: doc.abbrDefs,
     footnoteDefs: doc.footnoteDefs,
-    headingIds: new Map(), // lower-cased slug -> { id, html }
+    headingIds: new Map(), // exact slug -> { id, html }
     // PART 11 R1 implicit heading fallback: normalized rendered TEXT -> id.
     // Separate from headingIds, which is keyed by slug and serves `</#id>`.
     headingRefs: new Map(),
@@ -131,7 +131,7 @@ function renderDocPass(doc, footnoteProbe) {
     // while still slugging it and keeping it a crossref target.
     inBlockquote: false,
     captionSeq: new Map(), // caption label word -> counter (R5)
-    captionIds: new Map(), // lower-cased id -> "Label N" (R4)
+    captionIds: new Map(), // exact id -> "Label N" (R4)
     footnotesMarkerCount: 0,
     footnotesMarkerDepths: [],
     footnotesMarkerAttrs: [],
@@ -175,7 +175,7 @@ function renderDocPass(doc, footnoteProbe) {
         hAttrs = renderTextBlockAttrs(rest, `h${b.level}`)
       }
       if (id === null) id = ctx.slug(slugText(b.text))
-      ctx.headingIds.set(id.toLowerCase(), { id, html })
+      ctx.headingIds.set(id, { id, html })
       noteHeadingRef(ctx, derivedText(b.text), id)
       out.push(`${indent()}<section id="${escapeAttr(id)}">`)
       sections.push(b.level)
@@ -674,7 +674,7 @@ function renderBlock(b, depth, ctx) {
       }
       const attrStr = renderTextBlockAttrs(b.battrs, `h${b.level}`)
       const id = authored ?? ctx.slug(slugText(b.text))
-      ctx.headingIds.set(id.toLowerCase(), { id, html })
+      ctx.headingIds.set(id, { id, html })
       noteHeadingRef(ctx, derivedText(b.text), id)
       const idAttr = authored === null ? ` id="${escapeAttr(id)}"` : ''
       return `${pad}<h${b.level}${attrStr}${idAttr}>${html}</h${b.level}>`
@@ -1003,10 +1003,10 @@ function numberCaption(text, ctx, id, panelIds) {
   const label = text.slice(0, at).replace(/[ \t\n\r]+$/, '')
   const n = (ctx.captionSeq.get(label) ?? 0) + 1
   ctx.captionSeq.set(label, n)
-  if (id) ctx.captionIds.set(id.toLowerCase(), `${label} ${n}`)
+  if (id) ctx.captionIds.set(id, `${label} ${n}`)
   if (panelIds) {
     panelIds.forEach((pid, k) => {
-      if (pid) ctx.captionIds.set(pid.toLowerCase(), `${label} ${n}${panelLetter(k)}`)
+      if (pid) ctx.captionIds.set(pid, `${label} ${n}${panelLetter(k)}`)
     })
   }
   return text.slice(0, at) + n + text.slice(at + 1)
@@ -1354,10 +1354,8 @@ function resolveRefsOnce(html, ctx) {
 }
 
 /*
- * R1 matches the heading index LOOSER than it matches link definitions: trim,
- * collapse internal whitespace, NFC-normalize, fold case. A definition label is
- * an identifier the author wrote twice; a heading reference is prose quoted from
- * elsewhere in the document.
+ * R1 keys the heading index on rendered plain text: trim, collapse internal
+ * whitespace, NFC-normalize. Case is compared exactly, as everywhere else.
  *
  * NFC and not NFKC. Without it the id side is normalized (§25) and this side is
  * not, so a document publishes `id="Café"` and then declines `[Café][]` against
@@ -1366,7 +1364,7 @@ function resolveRefsOnce(html, ctx) {
  */
 function refKey(text) {
   // R1's run, not `\s`: a no-break space or an em space is content (PART 7).
-  return stripTags(text).replace(/^[ \t\n\f\r]+|[ \t\n\f\r]+$/g, '').replace(/[ \t\n\f\r]+/g, ' ').normalize('NFC').toLowerCase()
+  return stripTags(text).replace(/^[ \t\n\f\r]+|[ \t\n\f\r]+$/g, '').replace(/[ \t\n\f\r]+/g, ' ').normalize('NFC')
 }
 
 /* Register a heading in the implicit-reference index. FIRST wins. */
@@ -1612,9 +1610,9 @@ function resolveFootnotes(html, ctx) {
 // --- PART 9R R4: crossrefs ---------------------------------------------------
 function resolveCrossrefs(html, ctx) {
   return html.replace(/xref(text)?:(.*?)/g, (_, textOnly, id) => {
-    const hit = ctx.headingIds.get(id.toLowerCase())
+    const hit = ctx.headingIds.get(id)
     if (!hit) {
-      const cap = ctx.captionIds.get(id.toLowerCase())
+      const cap = ctx.captionIds.get(id)
       if (cap) return textOnly ? cap : `<a href="#${id}">${cap}</a>`
       // unresolved: literal source text (PART 9 SS19), HTML-escaped -- an
       // unresolved id may carry `<`/`>`/`&` (e.g. `</#<script>`) which must not

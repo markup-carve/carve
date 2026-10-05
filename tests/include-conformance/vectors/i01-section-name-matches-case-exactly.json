@@ -1,0 +1,29 @@
+{
+  "name": "i01-section-name-matches-case-exactly",
+  "description": "A #name matches an id exactly, as a crossref does (R4): #intro selects nothing next to # Intro.",
+  "rules": [
+    "I1",
+    "I7"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ c.crv #intro }}\n\n{{ c.crv #Intro }}\n",
+  "files": {
+    "c.crv": "# Intro\n\nbody\n"
+  },
+  "expected": {
+    "html": "<p>{{ c.crv <span class=\"tag\"><strong>#intro</strong></span> }}</p>\n<section id=\"Intro\">\n  <h1>Intro</h1>\n  <p>body</p>\n</section>",
+    "fmt": "{{ c.crv #intro }}\n\n{{ c.crv #Intro }}\n",
+    "warnings": [
+      {
+        "rule": "include-section"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "c.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

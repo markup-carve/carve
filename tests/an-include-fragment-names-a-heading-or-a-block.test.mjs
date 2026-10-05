@@ -39,8 +39,11 @@ test('a heading wins over an earlier block with the same id', () => {
   assert.deepEqual(types(pick(child, 'x')), ['heading', 'paragraph'])
 })
 
-test('an auto slug is a heading id, so it beats a block', () => {
-  assert.deepEqual(types(pick('{#hello}\npara\n\n# Hello\n\nbody', 'hello')), ['heading', 'paragraph'])
+test('an auto slug is a heading id, and the name matches case exactly (PART 9R R4)', () => {
+  const child = '{#hello}\npara\n\n# Hello\n\nbody'
+  assert.deepEqual(types(pick(child, 'Hello')), ['heading', 'paragraph'])
+  assert.deepEqual(types(pick(child, 'hello')), ['paragraph'])
+  assert.equal(pick('# Hello\n\nbody', 'hello'), null)
 })
 
 test('the first block in document order wins, and a container precedes its contents', () => {

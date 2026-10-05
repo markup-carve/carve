@@ -23,19 +23,19 @@ const inlines = (source) => {
 }
 
 test('a resolved crossref keeps the authored id and publishes the destination', () => {
-  const [, ref] = inlines('# Intro\n\nSee </#intro>.\n')
+  const [, ref] = inlines('# Intro\n\nSee </#Intro>.\n')
   assert.equal(ref.type, 'heading_ref')
-  assert.equal(ref.target, 'intro')
+  assert.equal(ref.target, 'Intro')
   assert.equal(ref.href, '#Intro')
 })
 
-test('the authored id is the spelling written, not the id resolved to', () => {
-  // Ids resolve case-insensitively, so `href` cannot carry this distinction
-  // and a tree without `target` cannot be written back as authored.
-  const [, lower] = inlines('# Intro\n\nSee </#intro>.\n')
-  const [, upper] = inlines('# Intro\n\nSee </#Intro>.\n')
-  assert.equal(lower.href, upper.href)
-  assert.notEqual(lower.target, upper.target)
+test('the authored id is the spelling written', () => {
+  // A case-only mismatch names no id under exact matching, so only `target`
+  // carries what the author wrote. Whether `href` is present is the corpus's
+  // question (15-heading-ids-2), declared ahead of this pin.
+  const [, ref] = inlines('# Intro\n\nSee </#intro>.\n')
+  assert.equal(ref.type, 'heading_ref')
+  assert.equal(ref.target, 'intro')
 })
 
 test('an unresolved crossref is still a node', () => {
@@ -53,7 +53,7 @@ test('an unresolved crossref is still a node', () => {
 test('the display text is not on the wire', () => {
   // §3a: the heading is in the same document. Copying its inline content into
   // every reference is unbounded where `href` is fixed-size.
-  const [, ref] = inlines('# Intro\n\nSee </#intro>.\n')
+  const [, ref] = inlines('# Intro\n\nSee </#Intro>.\n')
   assert.equal(ref.children, undefined)
   assert.equal(ref.resolvedText, undefined)
 })

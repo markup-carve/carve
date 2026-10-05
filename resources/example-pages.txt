@@ -557,6 +557,7 @@ index: examples/edge-cases/index.md
   an-image-s-alt-text-closes-where-a-link-s-text-closes
   an-editorial-comment-s-bracket-is-content-not-the-close
   reference-labels-are-case-sensitive
+  every-name-lookup-compares-case-exactly
   link-destination-parentheses-balance
   empty-link-and-image-titles-are-preserved
   a-backslash-in-a-link-destination-is-a-literal-character

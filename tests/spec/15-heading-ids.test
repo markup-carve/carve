@@ -14,7 +14,7 @@ Heading IDs
 {#api-v2}
 # API
 
-See </#cafe-notes>, </#section-2024-recap>, </#setup-2>, and </#api-v2>.
+See </#cafe-notes>, </#section-2024-recap>, </#Setup-2>, and </#api-v2>.
 .
 <section id="Café-Notes">
   <h1>Café Notes</h1>
@@ -40,11 +40,11 @@ See </#cafe-notes>, </#section-2024-recap>, </#setup-2>, and </#api-v2>.
 ```
 # Getting Started
 
-Jump to </#getting-started>.
+Jump to </#Getting-Started>, not </#getting-started>.
 .
 <section id="Getting-Started">
   <h1>Getting Started</h1>
-  <p>Jump to <a href="#Getting-Started">Getting Started</a>.</p>
+  <p>Jump to <a href="#Getting-Started">Getting Started</a>, not &lt;/#getting-started&gt;.</p>
 </section>
 ```
 

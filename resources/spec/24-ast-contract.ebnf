@@ -198,7 +198,7 @@
 
    10. A LINK REFERENCE DEFINITION IS A NODE -- NORMATIVE [CARVE-P12-029].
       `type: "link_reference_definition"`, carrying:
-        label   the reference label as the author wrote it, before case folding
+        label   the reference label as the author wrote it, unnormalized
         href    the destination; present and non-empty, since a definition with
                 an empty destination is not a definition but paragraph text
         title   the quoted title, unescaped, when the definition carries one

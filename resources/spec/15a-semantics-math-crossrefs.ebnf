@@ -224,13 +224,20 @@
            the same namespace came from a DIFFERENT file inclusion (another
            file, or another inclusion of the same file); the first occurrence
            keeps its name. Duplicates that one file already held on its own are
-           not created by expansion and are not this rule's business. The
-           rename appends the least `-N` (integer N >= 2) not already taken in
-           that namespace: first `-2`, then `-3`, and so on. A Warning MUST be
-           emitted per rename.
+           not created by expansion and are not this rule's business.
+           EVERY RENAMED OCCURRENCE TAKES ITS OWN SUFFIX: the least `-N`
+           (integer N >= 2) such that the result is used by NO explicit name of
+           that namespace anywhere in the fully assembled document -- the
+           parent, earlier and later includes, the child itself -- and by no
+           earlier rename. A child holding a colliding `{#d}` twice therefore
+           yields `d-2` and `d-3`, never two `d-2`s, and a `{#d-2}` written
+           after the include pushes the rename to `d-3`. A Warning MUST be
+           emitted per renamed occurrence.
            REFERENCES FOLLOW THE RENAME. A reference written in the SAME file
            inclusion as the renamed target, that resolves to that target when
-           the file is read on its own, resolves to the new name instead:
+           the file is read on its own, resolves to the new name instead
+           (where that file held several renamed copies, to the FIRST, the
+           one the file reaches when read on its own):
              - a `</#id>` cross-reference (R4);
              - a link or image destination that is exactly `#` followed by the
                id, whether written inline (`[text](#tip)`) or reached through

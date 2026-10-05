@@ -31,7 +31,8 @@ Corpus added since this run: `535-a-marker-line-opaque-quote-keeps-overindented-
 `542-a-span-across-bodies-keeps-their-header-semantics`,
 `543-a-head-and-foot-consuming-all-rows-leave-no-implicit-body`,
 `544-explicit-body-counts-include-native-header-cells`,
-`545-an-unreferenced-footnote-definition-takes-its-links-out-of-the-render`.
+`545-an-unreferenced-footnote-definition-takes-its-links-out-of-the-render`,
+`546-every-name-lookup-compares-case-exactly`.
 
 The 36 ownership controls were added after this count snapshot. They are not
 included in its denominators. The paired Rust fix merged in

@@ -1076,6 +1076,46 @@ export const vectors = [
       'b.crv': '{#intro}\n# B\n\nSecond.\n',
     },
   },
+  {
+    name: 'i05-each-renamed-copy-takes-its-own-suffix',
+    description:
+      'A child holding a colliding explicit id twice renames each copy to its own suffix (-2, -3), one warning each.',
+    rules: ['I5'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{#dup}\n# Parent\n\n{{ a.crv }}\n',
+    files: { 'a.crv': '{#dup}\n# One\n\n{#dup}\n# Two\n' },
+  },
+  {
+    name: 'i05-rename-suffix-skips-an-id-written-later',
+    description:
+      'A rename takes the least -N no explicit id in the assembled document uses, including one written after the include.',
+    rules: ['I5'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    // `dup-2` is free when the child is reached and taken by the parent's last
+    // heading. Taking it would publish `id="dup-2"` twice.
+    entry: '{#dup}\n# Parent\n\n{{ a.crv }}\n\n{#dup-2}\n# Later\n',
+    files: { 'a.crv': '{#dup}\n# Child\n' },
+  },
+  {
+    name: 'i05-ids-differing-only-in-case-do-not-collide',
+    description: 'Ids are compared exactly, as HTML compares them: {#Tip} and {#tip} are two ids, so nothing is renamed.',
+    rules: ['I5'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{#Tip}\n# Parent\n\n{{ a.crv }}\n',
+    files: { 'a.crv': '{#tip}\n# Child\n' },
+  },
+  {
+    name: 'i01-section-name-matches-case-exactly',
+    description: 'A #name matches an id exactly, as a crossref does (R4): #intro selects nothing next to # Intro.',
+    rules: ['I1', 'I7'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{ c.crv #intro }}\n\n{{ c.crv #Intro }}\n',
+    files: { 'c.crv': '# Intro\n\nbody\n' },
+  },
 
   // --- I15 the Carve target does not expand --------------------------------
   {

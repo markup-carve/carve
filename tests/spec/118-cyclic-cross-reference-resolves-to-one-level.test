@@ -1,7 +1,7 @@
 Cyclic cross-reference resolves to one level
 
 ```
-# A </#a>
+# A </#A>
 .
 <section id="A">
   <h1>A <a href="#A">A </a></h1>
@@ -9,9 +9,9 @@ Cyclic cross-reference resolves to one level
 ```
 
 ```
-# A </#b>
+# A </#B>
 
-# B </#a>
+# B </#A>
 .
 <section id="A">
   <h1>A <a href="#B">B </a></h1>
@@ -24,7 +24,7 @@ Cyclic cross-reference resolves to one level
 ```
 # Intro
 
-See </#intro>.
+See </#Intro>.
 .
 <section id="Intro">
   <h1>Intro</h1>

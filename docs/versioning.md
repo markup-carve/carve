@@ -174,6 +174,26 @@ shape. Documents that already hold a bare `::: figure` fence reclassify, and a
 previously dangling caption starts consuming a figure number, which can renumber
 later figures in the same document - `carve lint` reports the affected shapes.
 
+**Name lookups match case exactly.** A `</#id>` cross-reference, a collapsed
+`[Heading][]` reference and an include's `#name` used to match their target
+case-insensitively. Every lookup now compares case as written (PART 9R R4), as
+reference and footnote labels already did:
+
+```
+# Getting Started
+
+See </#getting-started> and [getting started][].
+```
+
+```html
+<p>See <a href="#Getting-Started">Getting Started</a> and <a href="#Getting-Started">getting started</a>.</p>   <!-- before -->
+<p>See &lt;/#getting-started&gt; and [getting started][].</p>                                               <!-- after -->
+```
+
+`carve lint` reports each case-only mismatch with the exact target spelling,
+and `carve fmt --migrate` rewrites the reference to that spelling when exactly
+one target matches it case-insensitively. Ids themselves are unchanged.
+
 ### Checking documents mechanically
 
 The marker is machine-readable, so this does not have to be done by eye. In

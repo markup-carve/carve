@@ -109,8 +109,8 @@ heading text by the following algorithm, applied in order:
 5. **Preserve case and non-ASCII characters** — the slug keeps the heading's
    original letter case and any non-ASCII characters verbatim
    (`Über café` → `Über-café`, `日本語` stays `日本語`). This matches
-   djot.js / djot-php. Cross-references resolve **case-insensitively**, so a
-   lowercase `</#über-café>` still finds it.
+   djot.js / djot-php. Cross-references match the id **exactly**, so
+   `</#Über-café>` finds it and `</#über-café>` does not.
 6. If the result starts with a digit, prefix `s-` (a bare leading digit
    is a valid HTML id but an invalid CSS selector). If the result is
    empty, the identifier is `s`.
@@ -139,8 +139,8 @@ heading text by the following algorithm, applied in order:
 
 Identifiers **preserve case and non-ASCII characters**, matching djot.js /
 djot-php (per [jgm/djot#393](https://github.com/jgm/djot/pull/393)). Cross-references
-resolve **case-insensitively**, so a lowercase `</#id>` still finds a capitalized
-heading and links to the target's actual (case-preserved) id. The rendered `id` is
+match the id **exactly**, case included, the way a browser matches an `href`
+fragment. The rendered `id` is
 consumed by anchor highlighting, `:target` rules, `document.querySelector('#' + id)`,
 and URL fragments; a leading digit gets the `s-` prefix so it is always a valid bare
 CSS selector. Processors MAY apply the opt-in `lowercaseHeadingIds` /

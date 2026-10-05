@@ -47,7 +47,7 @@
         },
         "label": {
           "type": "string",
-          "description": "The reference label as the author wrote it, before case folding. Matching is case-sensitive (PART 9R R1)."
+          "description": "The reference label as the author wrote it, before whitespace normalization. Matching is case-sensitive (PART 9R R1)."
         },
         "href": {
           "type": "string",
@@ -1504,7 +1504,7 @@
         },
         "target": {
           "type": "string",
-          "description": "Raw id between `</#` and `>`, as the author spelled it. Ids resolve case-insensitively, so this is not necessarily the id it resolved to."
+          "description": "Raw id between `</#` and `>`, as the author spelled it. Ids match exactly (PART 9R R4), so a case-only mismatch is unresolved and publishes no `href`."
         },
         "href": {
           "type": "string",
