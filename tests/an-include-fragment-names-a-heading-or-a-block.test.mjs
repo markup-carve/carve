@@ -12,6 +12,7 @@ import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parse, resolve as resolveDoc } from '@markup-carve/carve'
 import { selectFragment } from '../scripts/spec/include-fragment.mjs'
+import { scanDirective } from '../scripts/spec/include-directive.mjs'
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const types = (blocks) => blocks?.map((b) => b.type) ?? null
@@ -79,4 +80,16 @@ test('a list item, a table row, an inline span and a footnote select nothing', (
   assert.equal(pick('| ![a](a){#im} |', 'im'), null)
   assert.equal(pick('See[^n].\n\n[^n]: {#w}\n    note', 'w'), null)
   assert.equal(pick('{#p}\npara', 'nope'), null)
+})
+
+test('a digit-leading explicit id is nameable (include_section takes explicit_identifier)', () => {
+  const name = scanDirective('{{ plans.crv #2024-plan }}', 0)?.section
+  assert.equal(name, '2024-plan')
+  const selected = pick('{#2024-plan}\n```text\nship it\n```\n\nafter', name)
+  assert.deepEqual(types(selected), ['code_block'])
+  assert.equal(selected[0].attrs.id, '2024-plan')
+  // The control: a letter-led name still reads, and a name the id class cannot
+  // spell (it opens on `-`) leaves the whole directive literal.
+  assert.equal(scanDirective('{{ plans.crv #plan-2024 }}', 0)?.section, 'plan-2024')
+  assert.equal(scanDirective('{{ plans.crv #-x }}', 0), null)
 })

@@ -3407,7 +3407,11 @@ bare_include_path = {character - ('#' | '@' | '}' | ' ' | newline)}+ ;
    and the rest is read as the option slot it is not. `\"` is a literal quote
    inside the quoted form. *)
 quoted_include_path = '"', {('\\', '"') | (character - ('"' | newline))}+, '"' ;
-include_section = '#', identifier ;
+include_section = '#', explicit_identifier ;
+(* `explicit_identifier`, not `identifier`: the name selects by explicit id
+   (PART 9 §19 I1a), so every id `{#...}` can spell is nameable, digit-leading
+   ones such as `{#2024-plan}` included. No new ambiguity: the bare path already
+   stops at `#`, and neither identifier class holds a space, `@` or `}`. *)
 include_options = {whitespace+, '@', identifier, ':', attribute_value}+ ;
 
 (* ============================================================================
@@ -5503,7 +5507,9 @@ EOF = (* end of file *) ;
            the literal value `auto` (context-relative, computed by the processor
            per I8), never both. Every other `@key` is RESERVED.
 
-        I1a FRAGMENT SELECTION (`#name`). `name` is matched the way a `</#id>`
+        I1a FRAGMENT SELECTION (`#name`). `name` is an `explicit_identifier`
+           (PART 6), so every explicit id is nameable, digit-leading ones such
+           as `{#2024-plan}` included. It is matched the way a `</#id>`
            cross-reference matches (R4), against the child's OWN parse, before
            the child's nested includes expand. Two steps, the first that
            matches wins:
@@ -5575,20 +5581,42 @@ EOF = (* end of file *) ;
            is handled according to whether it is DOCUMENT-VISIBLE or FILE-LOCAL.
 
            DOCUMENT-VISIBLE IDENTIFIERS -- DETERMINISTIC RENAME-ON-COLLISION.
-           EXPLICIT heading ids (the link targets of `</#id>` cross-references)
-           and FOOTNOTE labels (footnotes are collected and numbered globally in
-           the assembled document) are document-visible: they are exposed by the
-           assembled document and can be targeted across file boundaries. When
-           expansion brings together duplicates of either, the FIRST occurrence
-           in document order keeps its label / id and each later duplicate is
-           renamed. Order is: parent before child, and an earlier include before
-           a later include (the fully expanded document read top to bottom).
-           The rename appends the least `-N` (integer N >= 2) that is not already
-           taken in that namespace: first `-2`, then `-3`, and so on. Explicit
-           heading ids and footnote labels are SEPARATE namespaces. References to
-           a renamed target follow the rename, so the renamed target's own
-           `</#id>` cross-references and footnote references still resolve to it.
-           A Warning MUST be emitted per rename.
+           Two namespaces are document-visible: they are exposed by the
+           assembled document and can be targeted across file boundaries.
+           (a) ELEMENT IDS. Every EXPLICIT id `{#id}` on ANY element -- a
+               heading, any other block (paragraph, list, table, figure, code
+               block, div, admonition, ...), a list item, a table row or cell,
+               an inline span, link, image or other inline element -- is ONE
+               namespace, because HTML has one `id` namespace per document: a
+               heading `{#tip}` and a paragraph `{#tip}` collide exactly as two
+               headings do.
+           (b) FOOTNOTE LABELS (footnotes are collected and numbered globally
+               in the assembled document). This is a SEPARATE namespace: a
+               footnote `[^tip]` never collides with an element `{#tip}`.
+           ORDER is the fully expanded document read top to bottom: parent
+           before child, and an earlier include before a later include. An
+           occurrence is RENAMED when an EARLIER occurrence of the same name in
+           the same namespace came from a DIFFERENT file inclusion (another
+           file, or another inclusion of the same file); the first occurrence
+           keeps its name. Duplicates that one file already held on its own are
+           not created by expansion and are not this rule's business. The
+           rename appends the least `-N` (integer N >= 2) not already taken in
+           that namespace: first `-2`, then `-3`, and so on. A Warning MUST be
+           emitted per rename.
+           REFERENCES FOLLOW THE RENAME. A reference written in the SAME file
+           inclusion as the renamed target, that resolves to that target when
+           the file is read on its own, resolves to the new name instead:
+             - a `</#id>` cross-reference (R4);
+             - a link or image destination that is exactly `#` followed by the
+               id, whether written inline (`[text](#tip)`) or reached through
+               that file's own reference definition (`[a]: #tip`, file-local,
+               below);
+             - a footnote reference `[^label]`, for a renamed footnote label.
+           A reference in ANY OTHER file inclusion keeps the name as written,
+           and therefore reaches the first occurrence: naming an id the parent
+           also defines is how a child links to the parent's target. A
+           fragment link to an id its own file does not define is never
+           rewritten.
 
            FILE-LOCAL IDENTIFIERS -- SCOPED, NOT RENAMED. A REFERENCE-DEFINITION
            label is file-local metadata: it is resolved WITHIN the document that
@@ -5599,9 +5627,10 @@ EOF = (* end of file *) ;
            child's `[a]: /CHILD`. This is NOT a collision: it MUST NOT emit a
            Warning and MUST NOT rename anything.
 
-           SCOPE: the include-time rename pass covers EXPLICIT heading ids and
-           footnote labels ONLY. Auto-generated (slug) heading-id collisions are
-           NOT part of it; they continue to dedup via the existing heading-id
+           SCOPE: the include-time rename pass covers EXPLICIT element ids (on
+           any element, headings included) and footnote labels ONLY.
+           Auto-generated (slug) heading-id collisions are NOT part of it and
+           emit no Warning; they continue to dedup via the existing heading-id
            tracker (§13, which suffixes duplicate slugs once the files are
            merged). ORDERING: the include-time explicit-id / footnote rename runs
            BEFORE the §13 slug dedup, so ids are deterministic (the explicit-id

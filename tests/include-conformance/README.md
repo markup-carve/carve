@@ -216,6 +216,29 @@ the security suite's "Corpus ahead of the engines" (carve#1992).
   (`include-section`, dependency still resolved). Generate against that
   engine, read the goldens, and delete this entry.
 
+- **Renaming any colliding explicit id** (I5). Explicit ids on every element
+  share one namespace with heading ids and are renamed on collision the way
+  heading ids already are (`i05-heading-id-rename`), with references in the
+  renamed target's own file following the rename. No engine does this yet.
+  Measured on all three engines' `main` on 2026-10-05: a parent `{#tip}`
+  paragraph plus a whole-file include bringing another `{#tip}` paragraph
+  renders `id="tip"` twice, so a golden generated today would pin invalid HTML.
+
+  To close this: once one engine renames non-heading ids, add vectors under
+  rule `I5` for two paragraphs sharing an id, a heading and a paragraph sharing
+  one, an inline span colliding with a block, and a child's `[text](#tip)`
+  following its own renamed target while a link to a parent-only id stays put.
+  Generate against that engine, read the goldens, and delete this entry.
+
+- **A digit-leading `#name`** (I1a, PART 6 `include_section`). The name is an
+  `explicit_identifier`, so `{{ c.crv #2024-plan }}` is a directive. The pinned
+  carve-js (0.1.10) does not recognize it and leaves the text literal with no
+  warning, so a golden generated today would pin that silent miss. The
+  engine-free scanner reads it, and
+  `tests/an-include-fragment-names-a-heading-or-a-block.test.mjs` selects
+  through it. To close this: add an `I1` vector selecting a digit-leading id
+  once an engine reads it, and delete this entry.
+
 ## How to add a vector
 
 1. Add an input object to `scripts/include-conformance-vectors.mjs` (`name`,

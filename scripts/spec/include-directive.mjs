@@ -63,6 +63,8 @@ export function findCloser(text, from = 0) {
 }
 
 const IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_-]*/
+// include_section takes explicit_identifier, which may also open on a digit.
+const EXPLICIT_IDENTIFIER = /^[A-Za-z0-9_][A-Za-z0-9_-]*/
 const UNQUOTED_VALUE = /^[A-Za-z0-9._:-]+/
 
 /* `include_path`: the quoted form, else the bare run. */
@@ -121,7 +123,7 @@ export function scanDirective(text, open) {
     let j = i
     while (j < inner.length && isWhitespace(inner[j])) j += 1
     if (inner[j] === '#') {
-      const m = IDENTIFIER.exec(inner.slice(j + 1))
+      const m = EXPLICIT_IDENTIFIER.exec(inner.slice(j + 1))
       if (!m) return null
       section = m[0]
       i = j + 1 + m[0].length
