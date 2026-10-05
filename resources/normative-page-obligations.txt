@@ -48,7 +48,7 @@ docs/includes.md :: WEAKER PART 9 §19 I4 :: Source positions SHOULD be remapped
 docs/includes.md :: PART 9 §19 I11 :: MUST report, alongside the expanded document :: A processor that expands includes MUST report the set
 docs/includes.md :: PART 9 §19 I11 :: the set MUST contain targets that were ATTEMPTED :: - Attempted targets are included, not just successful ones.
 docs/includes.md :: PART 9 §19 I11 :: MUST be distinguishable as RESOLVED versus ATTEMPTED :: - Resolved versus attempted is observable. Each entry MUST
-docs/includes.md :: PART 9 §19 I5 :: DETERMINISTIC RENAME-ON-COLLISION :: The processor MUST resolve duplicates of either deterministically by
+docs/includes.md :: PART 9 §19 I5 :: DETERMINISTIC RENAME-ON-COLLISION :: The processor MUST resolve duplicates deterministically by
 docs/includes.md :: PART 9 §19 I5 :: it MUST NOT emit a Warning :: This is not a collision: it MUST NOT emit
 docs/includes.md :: PART 9 §19 I5 :: MUST NOT rename anything :: This is not a collision: it MUST NOT emit
 docs/includes.md :: PART 9 §19 I6 :: MUST detect inclusion CYCLES :: - Cycles. The processor MUST detect an inclusion cycle

@@ -108,7 +108,10 @@ export function authoredDocuments() {
  * does not is a citation definition, which is Tier-2 and outside the subset
  * `scripts/spec` models at all.
  *
- * The last move was 105 -> 106: docs/includes.md adds a sample selecting a
+ * The last move was 106 -> 108: docs/includes.md adds a parent and a child
+ * sample showing a paragraph id renamed on collision; both answered.
+ *
+ * Before that, 105 -> 106: docs/includes.md adds a sample selecting a
  * non-heading block by its id; answered, like the page's other directives.
  *
  * Before that, 98 -> 104: docs/includes.md, the PART 9 section 19 page,
@@ -137,5 +140,5 @@ export function authoredDocuments() {
  * message says which way it moved and what to do, because a red gate whose fix
  * is "look up how this file works" is a red gate that gets deleted.
  */
-export const AUTHORED_POPULATION = 106
-export const AUTHORED_ANSWERED = 105
+export const AUTHORED_POPULATION = 108
+export const AUTHORED_ANSWERED = 107

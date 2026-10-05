@@ -54,7 +54,8 @@ wherever else whitespace does.
 
 - **`#section`** names a heading or a block in the resolved source (see
   [Selecting by id](#selecting-by-id-section)). The id is matched the same way a
-  `</#id>` cross-reference matches.
+  `</#id>` cross-reference matches. The name takes any spelling an explicit
+  `{#id}` takes, so a digit-leading id such as `#2024-plan` is nameable.
 - **`@key:value`** is an extensible option slot. Options are space-separated.
   - **`@lines:N-M`** includes the 1-based, inclusive physical-line range `N`
     through `M` of the resolved source.
@@ -564,21 +565,33 @@ How an identifier behaves when expansion merges files depends on whether it is
 
 ### Document-visible identifiers are renamed on collision
 
-**Explicit heading ids** (the link targets of `</#id>` cross-references) and
-**footnote labels** (footnotes are collected and numbered globally in the
-assembled document) are exposed by the assembled document and can be targeted
-across file boundaries. The processor MUST resolve duplicates of either
-**deterministically** by **rename-on-collision**:
+Two kinds of identifier are exposed by the assembled document and can be
+targeted across file boundaries:
+
+- **Explicit element ids.** Every `{#id}` an author writes, on **any** element:
+  a heading, a paragraph, a list, a table, a code block, a div, a list item, a
+  table cell, an inline span or link. They are **one** namespace, because HTML
+  has one `id` namespace per document, so a heading `{#tip}` and a paragraph
+  `{#tip}` collide just as two headings do.
+  Names are compared **exactly**, case included, as HTML compares ids: `{#Tip}`
+  and `{#tip}` do not collide. A case-insensitive `</#tip>` then reaches the
+  first of them in document order.
+- **Footnote labels.** Footnotes are collected and numbered globally in the
+  assembled document. Labels are a **separate** namespace: `[^tip]` never
+  collides with `{#tip}`.
+
+The processor MUST resolve duplicates **deterministically** by
+**rename-on-collision**:
 
 1. **Ordering.** Read the fully expanded document top to bottom: parent before
-   child, and an earlier include before a later include. The **first**
-   occurrence in that order keeps its label / id.
-2. **Rename scheme.** Each later duplicate is renamed by appending the least
-   `-N` (integer `N >= 2`) that is not already taken in the same namespace:
-   first `-2`, then `-3`, and so on. Footnote labels and explicit heading ids
-   are separate namespaces. References to a renamed target follow the rename,
-   so the renamed target's own cross-references and footnote references still
-   resolve to it.
+   child, and an earlier include before a later include. An occurrence is
+   renamed when an **earlier** occurrence of the same name came from a
+   **different** file inclusion (another file, or another inclusion of the same
+   file). The first occurrence keeps its name. Duplicates a single file already
+   held on its own are not created by expansion and are not renamed here.
+2. **Rename scheme.** Each renamed occurrence gets the least `-N` (integer
+   `N >= 2`) that is not already taken in the same namespace: first `-2`, then
+   `-3`, and so on.
 3. **Warning per rename.** Every rename emits a Warning so the collision is
    visible and debuggable.
 4. **Automatic ids are out of scope.** An id the author did not write - the slug
@@ -590,6 +603,41 @@ across file boundaries. The processor MUST resolve duplicates of either
    as its own document (I4) still has to RENAME here, because each child stamps
    its own slug independently and nothing re-stamps after the merge - the rule
    is about what is REPORTED, not about letting duplicate ids reach the output.
+
+### References follow the rename
+
+A reference follows a rename when it is written in the **same file inclusion**
+as the renamed target and resolves to that target when the file is read on its
+own:
+
+- a `</#id>` cross-reference;
+- a link or image destination that is exactly `#` followed by the id, written
+  inline or reached through that file's own reference definition;
+- a footnote reference, for a renamed footnote label.
+
+A reference in any **other** file keeps the name as written and reaches the
+first occurrence, which is how a child links to a target the parent defines. A
+fragment link to an id its own file does not define is never rewritten.
+
+```carve
+%% parent.crv
+{#tip}
+Keep the dough cold.
+
+{{ child.crv }}
+```
+
+```carve
+%% child.crv
+{#tip}
+Rest it overnight.
+
+[The tip above](#tip) is the one this file wrote.
+```
+
+The child's paragraph is renamed to `tip-2` with a Warning, and its
+`[The tip above](#tip)` follows it to `#tip-2`. Without the rename the output
+would carry `id="tip"` twice, which is invalid HTML.
 
 ### Footnotes are answered in the assembled document
 
@@ -632,13 +680,13 @@ The parent's `[a][]` resolves to `/PARENT` and the child's to `/CHILD`. This is
 
 **Rationale.** A reference-definition label is never addressable from another
 file, so renaming it would be pure churn plus a spurious warning. An explicit
-heading id or a footnote label is visible in the document, so a duplicate
+element id or a footnote label is visible in the document, so a duplicate
 there must be resolved and surfaced.
 
 ### Scope and ordering
 
-The include-time rename pass is scoped to **explicit heading ids and footnote
-labels only**. Auto-generated (slug) heading-id collisions are **not** part of
+The include-time rename pass is scoped to **explicit element ids (headings
+included) and footnote labels only**. Auto-generated (slug) heading-id collisions are **not** part of
 this pass: they continue to be de-duplicated by the existing heading-id tracker
 (PART 9 §13, which already appends `-2`, `-3`, … to duplicate slugs once the
 files are merged into one document). Two `## Introduction` headings from
