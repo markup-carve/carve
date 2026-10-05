@@ -4647,6 +4647,47 @@ function collectItems(lines, i, list, state, ind, meas) {
     const startPara = () => { openPara = true; para = []; defBodyIndent = null }
     const openParaWith = (line) => { if (!openPara) para = []; openPara = true; para.push(line); defBodyIndent = null }
     /*
+     * THE COLLECTOR'S THREE CLAIM QUESTIONS, ASKED SEPARATELY.
+     *
+     * "Does this item claim the next line" is three facts, and `openPara`
+     * together with testing a line's shape at the frame's own column 0 answered
+     * all three at once. Every rule written for a flush-left line below a
+     * nested item then failed on that conflation rather than on its own merits:
+     * generalizing the shape test also erased "this line was absorbed into an
+     * open paragraph", and dropping the paragraph gate made an item swallow
+     * indented openers as text (carve#2744).
+     *
+     * The three are composed at each decision site below and never folded back
+     * into one predicate. Writes to `openPara` stay where they are: these name
+     * the QUESTIONS, not the state that answers the first one.
+     */
+    // Q1. IS A PARAGRAPH OPEN IN THIS ITEM?
+    const paragraphIsOpen = () => openPara
+    /*
+     * Q2. IS THIS LINE A BLOCK OPENER, measured at a STATED anchor column?
+     *
+     * `text` arrives dedented to that anchor, which is the parameter the old
+     * spelling lacked: it always passed the raw line, so every shape test was
+     * anchored at the frame's column 0. `FENCE` and `startsVisibleBlock` match
+     * only at column 0, so the anchor is what the shape tests read as block
+     * position, and choosing it is now the caller's.
+     */
+    const opensBlockAt = (text, idx) =>
+      startsVisibleBlock(text) || isTableRow(text) || COLON_FENCE.test(text) ||
+      (FENCE.test(text) && hasCloser(lines, idx))
+    /*
+     * Q3. WHICH CONTAINER OWNS A COLUMN?
+     *
+     * Two readings, because the collector needs both and they coincide only for
+     * a top-level item: against this item's own columns, and against the
+     * enclosing frame's block position. `outer` is at or left of this item's
+     * marker, so a sibling or an ancestor; `below` is inside the item's frame
+     * but left of its content column; `item` is the item's own content.
+     */
+    const columnOwner = (col) =>
+      col <= baseIndent ? 'outer' : col < contentCol ? 'below' : 'item'
+    const atFrameColumn = (col) => col === 0
+    /*
      * §10 I4 FOR A BODY LINE: a code fence interrupts an OPEN paragraph only
      * when a closer follows it. Without one it opens nothing and stays
      * paragraph text, which is what the block reader below already does with
@@ -4662,7 +4703,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     const bodyFenceOpens = (idx, dedented, blockBase = contentCol) => {
       const m = FENCE.exec(dedented)
       if (!m || parseFenceInfo(m[2]) === null) return false // INVALID-FENCE FALLBACK
-      if (!openPara) return true // at block start it runs to the end of the container
+      if (!paragraphIsOpen()) return true // at block start it runs to the end of the container
       // An ANCESTOR collector already answered §10 I4 for this source line, over
       // lines its own break then removed from this body. One line, one answer.
       if (state.nestedFenceOpensAt?.get(lines)?.has(idx)) return true
@@ -4750,7 +4791,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     // scope. Defer the extent parse until then; a comment before a nested list
     // otherwise reparses the remaining ladder at every level (carve#2542).
     let pendingAuthoredBlock = null
-    let pendingHeadQuote = head.text[0] === '>' && (head.text.length === 1 || head.text[1] === ' ') && openPara ? i : null
+    let pendingHeadQuote = head.text[0] === '>' && (head.text.length === 1 || head.text[1] === ' ') && paragraphIsOpen() ? i : null
     // A term on the marker line folds the lines past the content column that
     // follow it (carve#2411), so none of them opens an authored base.
     let leadTerm = DEFLIST_TERM.test(head.text.replace(/^[ \t]+/, ''))
@@ -4832,7 +4873,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     // container, after a paragraph only when a closer follows at its own
     // column. A run indented past that column is payload (CARVE-P2-006).
     const nestedFenceOpens = (idx, run, sourceCol) => {
-      if (!openPara) return true
+      if (!paragraphIsOpen()) return true
       // The same inherited answer `bodyFenceOpens` reads. An INTERMEDIATE
       // collector sees the fence indented too, and its own lookahead runs over
       // lines an ancestor's break has already truncated, so at three levels the
@@ -5062,7 +5103,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       if (line.startsWith(LAZY)) {
         // a lazy line from an OUTER context propagates to the deepest open
         // paragraph (PART 9 SS10 I2)
-        if (!openPara) break
+        if (!paragraphIsOpen()) break
         pushLine(line, lm)
         i++
         continue
@@ -5515,7 +5556,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         // record the first sub-list's content column (carve#322)
         if (subCol < 0 && nm && nm.indent >= contentCol) {
           subCol = nm.indent + nm.markerWidth
-          paraBeforeSublist = openPara ? [...para] : []
+          paraBeforeSublist = paragraphIsOpen() ? [...para] : []
         }
         // does the deepest structure now hold an OPEN paragraph that lazy
         // text may fold into? markers open a sub-item paragraph; quotes an
@@ -5748,7 +5789,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       // so a descendant's open body ends this container too and the run is
       // classified where the column puts it (carve#2490).
       if (!commentTokenBelow && (nestedVerbatim() || (fence.opaque && fence.opaque.opens !== false))) break
-      if (nm && nm.indent <= baseIndent) {
+      if (nm && columnOwner(nm.indent) === 'outer') {
         // §17 L1, first clause: the item WAS followed by a blank line before
         // this sibling marker - an invisible attachment in between does not
         // undo that, because the clause is about the blank, not about what
@@ -5758,7 +5799,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         }
         break // sibling or outer list
       }
-      if (nm && nm.indent < contentCol && nm.indent > baseIndent && openPara && itemLines.length > 0) {
+      if (nm && columnOwner(nm.indent) === 'below' && paragraphIsOpen() && itemLines.length > 0) {
         // a marker BELOW the content column folds as lazy item text
         // (PART 9 SS24 C3; list markers never interrupt, SS10 I2)
         pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
@@ -5766,7 +5807,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         continue
       }
       // A retained item still requires its content column for a child list.
-      if (nm && nm.indent < contentCol && nm.indent > baseIndent && !openPara &&
+      if (nm && columnOwner(nm.indent) === 'below' && !paragraphIsOpen() &&
           afterComment && itemLines.length > 0) {
         pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
         startPara()
@@ -5798,13 +5839,13 @@ function collectItems(lines, i, list, state, ind, meas) {
       // Asked of `itemLines` rather than of `fence.opaque`, because the tracker
       // reads each line at the item's dedent and its opener test refuses an
       // indented run, so a span a DESCENDANT holds is invisible to it.
-      if (!nm && COMMENT_FENCE_BODY.test(lm.rest) && lm.col === 0 && itemLines.length > 0 &&
+      if (!nm && COMMENT_FENCE_BODY.test(lm.rest) && atFrameColumn(lm.col) && itemLines.length > 0 &&
           commentFenceOpensSpan(lines, i) && nestedOpaque?.kind !== 'comment' && !bodyHoldsOpenCommentSpan(itemLines)) {
         break
       }
       // A column-zero comment cannot revive a closed item (#2504).
       // Keep delimiters inside an existing comment span with that span.
-      if (!nm && lm.col === 0 && lm.rest.startsWith('%%') && !openPara && nestedOpaque?.kind !== 'comment' &&
+      if (!nm && atFrameColumn(lm.col) && lm.rest.startsWith('%%') && !paragraphIsOpen() && nestedOpaque?.kind !== 'comment' &&
           !bodyHoldsOpenCommentSpan(itemLines)) break
       if (!nm && lm.rest.startsWith('%%') && itemLines.length > 0) {
         // KEEP ONE COLUMN of the original indentation. Stripping it entirely
@@ -5892,11 +5933,14 @@ function collectItems(lines, i, list, state, ind, meas) {
       // A definition BELOW every open content column is untouched - it never
       // reaches column 0 in any collector, so it still folds as text (corpus
       // 183).
-      if (!nm && lm.col === 0 && isDefinitionOrAttributeLine(line)) break
+      if (!nm && atFrameColumn(lm.col) && isDefinitionOrAttributeLine(line)) break
       // A surviving frame after a comment can own a nonzero below-column line,
       // which begins a new paragraph rather than continuing the closed one.
       // Document column zero remains owned by the document.
-      if (!nm && (openPara || (afterComment && lm.col > 0)) && itemLines.length > 0 && !startsVisibleBlock(line) && !isTableRow(line) && !COLON_FENCE.test(line) && !(FENCE.test(line) && hasCloser(lines, i))) {
+      // Q1 (or a frame surviving a comment, which Q3 answers), Q3, then Q2 at
+      // the frame's own column 0 - the anchor the raw line carries.
+      if (!nm && (paragraphIsOpen() || (afterComment && !atFrameColumn(lm.col))) &&
+          itemLines.length > 0 && !opensBlockAt(line, i)) {
         // lazy fold into the open item paragraph (SS10 I2 / SS24 C3). A column-0
         // fence with a closer INTERRUPTS (I4), exactly as a column-0 quote/
         // heading does via startsVisibleBlock -- FENCE only matches at column 0,
