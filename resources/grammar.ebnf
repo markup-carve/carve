@@ -3407,9 +3407,10 @@ bare_include_path = {character - ('#' | '@' | '}' | ' ' | newline)}+ ;
    and the rest is read as the option slot it is not. `\"` is a literal quote
    inside the quoted form. *)
 quoted_include_path = '"', {('\\', '"') | (character - ('"' | newline))}+, '"' ;
-include_section = '#', explicit_identifier ;
-(* `explicit_identifier`, not `identifier`: the name selects by explicit id
-   (PART 9 §19 I1a), so every id `{#...}` can spell is nameable, digit-leading
+include_section = id_attribute ;
+(* The same spelling as `id_attribute`, so `explicit_identifier`, not
+   `identifier`: the name selects by explicit id (PART 9 §19 I1a), so every id
+   `{#...}` can spell is nameable, digit-leading
    ones such as `{#2024-plan}` included. No new ambiguity: the bare path already
    stops at `#`, and neither identifier class holds a space, `@` or `}`. *)
 include_options = {whitespace+, '@', identifier, ':', attribute_value}+ ;
