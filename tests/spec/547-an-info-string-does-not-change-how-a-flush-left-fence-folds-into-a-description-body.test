@@ -1,0 +1,61 @@
+An info string does not change how a flush-left fence folds into a description body
+
+````
+:: t
+:  - ```
+     ```
+```rust
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+    <p><code>rust</code></p>
+  </dd>
+</dl>
+````
+
+````
+:: t
+:  - ```
+     ```
+```
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+    <p><code></code></p>
+  </dd>
+</dl>
+````
+
+````
+:: t
+:  - ```
+     ```
+```rust
+c
+```
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<pre><code class="language-rust">c
+</code></pre>
+````
