@@ -115,10 +115,6 @@ const NOT_IN_THE_PIN_YET = new Map([
     'specified by markup-carve/carve#1464; no engine emits it yet, and it ' +
       'supersedes table-alignment-run-padding once they do',
   ],
-  [
-    'broken-fragment-link',
-    'added by markup-carve/carve-js#2497; the pinned build predates it',
-  ],
 ])
 
 /** The rules this map calls with options, i.e. the ones that are not default-on. */
@@ -245,7 +241,8 @@ test('an opt-in rule reports nothing until it is asked for', () => {
  */
 // Internal list-indentation grouping labels in the pinned linter. They merge
 // adjacent diagnostics; neither string is ever emitted as a warning rule id.
-const NOT_A_RULE = new Set(['definition-list', 'footnote-definition'])
+// `semantic-span` is an extension name broken-fragment-link compares against.
+const NOT_A_RULE = new Set(['definition-list', 'footnote-definition', 'semantic-span'])
 
 function ruleIdsInBuild() {
   const lintSource = readFileSync(

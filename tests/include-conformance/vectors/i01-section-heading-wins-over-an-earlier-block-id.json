@@ -1,0 +1,24 @@
+{
+  "name": "i01-section-heading-wins-over-an-earlier-block-id",
+  "description": "A heading carrying the id wins over an earlier block with the same id: the heading section is selected (I1a).",
+  "rules": [
+    "I1"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ c.crv #x }}\n",
+  "files": {
+    "c.crv": "{#x}\nfirst\n\n{#x}\n# H\n\nbody\n"
+  },
+  "expected": {
+    "html": "<section id=\"x\">\n  <h1>H</h1>\n  <p>body</p>\n</section>",
+    "fmt": "{{ c.crv #x }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "c.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

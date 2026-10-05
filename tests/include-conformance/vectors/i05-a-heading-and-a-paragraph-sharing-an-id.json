@@ -1,0 +1,29 @@
+{
+  "name": "i05-a-heading-and-a-paragraph-sharing-an-id",
+  "description": "Heading ids and other explicit ids share one namespace: a child paragraph colliding with a parent heading is renamed.",
+  "rules": [
+    "I5"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{#tip}\n# Tip\n\n{{ a.crv }}\n",
+  "files": {
+    "a.crv": "{#tip}\nChild tip.\n"
+  },
+  "expected": {
+    "html": "<section id=\"tip\">\n  <h1>Tip</h1>\n  <p id=\"tip-2\">Child tip.</p>\n</section>",
+    "fmt": "{#tip}\n# Tip\n\n{{ a.crv }}\n",
+    "warnings": [
+      {
+        "rule": "include-heading-id-rename",
+        "file": "a.crv"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "a.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

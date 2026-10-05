@@ -24,8 +24,3 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-
-15-heading-ids-2  exact-case name lookup: the pin still folds case in `</#id>`, so `</#getting-started>` resolves instead of staying literal
-173-implicit-heading-references-with-no-definition  exact-case name lookup: the pin still folds case in the heading index, so `[getting started][]` resolves
-546-every-name-lookup-compares-case-exactly  exact-case name lookup: the pin still folds case in `</#id>`
-546-every-name-lookup-compares-case-exactly-3  exact-case name lookup: the pin still folds case in the heading index

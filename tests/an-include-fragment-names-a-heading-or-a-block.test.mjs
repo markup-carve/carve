@@ -1,8 +1,8 @@
 /*
  * PART 9 §19 I1a: `{{ path #name }}` selects a heading's section first, then a
- * block carrying the explicit id. No engine implements the block step yet, so
- * the include-conformance goldens cannot pin it (see that suite's README). The
- * arbiter is scripts/spec/include-fragment.mjs; the pinned engine only parses.
+ * block carrying the explicit id. The include-conformance goldens pin it per
+ * engine (i01-section-*); this is the engine-free arbiter,
+ * scripts/spec/include-fragment.mjs, and the pinned engine only parses.
  */
 
 import { test } from 'node:test'

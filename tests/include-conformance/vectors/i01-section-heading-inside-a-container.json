@@ -1,0 +1,24 @@
+{
+  "name": "i01-section-heading-inside-a-container",
+  "description": "A heading inside a container is selectable, and its section stops at the end of that container (I1a).",
+  "rules": [
+    "I1"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ c.crv #q }}\n",
+  "files": {
+    "c.crv": "> {#q}\n> ## Q\n>\n> in\n\nafter\n"
+  },
+  "expected": {
+    "html": "<section id=\"q\">\n  <h2>Q</h2>\n  <p>in</p>\n</section>",
+    "fmt": "{{ c.crv #q }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "c.crv",
+        "resolved": true
+      }
+    ]
+  }
+}
