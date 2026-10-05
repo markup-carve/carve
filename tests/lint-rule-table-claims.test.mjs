@@ -115,6 +115,10 @@ const NOT_IN_THE_PIN_YET = new Map([
     'specified by markup-carve/carve#1464; no engine emits it yet, and it ' +
       'supersedes table-alignment-run-padding once they do',
   ],
+  [
+    'broken-fragment-link',
+    'added by markup-carve/carve-js#2497; the pinned build predates it',
+  ],
 ])
 
 /** The rules this map calls with options, i.e. the ones that are not default-on. */
