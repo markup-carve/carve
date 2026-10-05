@@ -1,0 +1,9 @@
+An unreferenced footnote definition takes its links out of the render
+
+```
+[^u]: see [x](#nope)
+
+Body.
+.
+<p>Body.</p>
+```

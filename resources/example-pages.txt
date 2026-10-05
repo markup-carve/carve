@@ -650,6 +650,7 @@ index: examples/edge-cases/index.md
   a-recognized-opener-in-a-body-needs-no-blank-line-above-it
   one-authored-base-rule-reaches-a-definition-nested-in-a-list-item
   a-comment-in-a-footnote-body-is-invisible-in-both-spellings
+  an-unreferenced-footnote-definition-takes-its-links-out-of-the-render
 [edge-definitions] Definition lists and abbreviations
 > Terms and descriptions, abbreviation definitions and the document levels that may declare them.
 out: examples/edge-cases/definitions.md
