@@ -573,6 +573,9 @@ targeted across file boundaries:
   table cell, an inline span or link. They are **one** namespace, because HTML
   has one `id` namespace per document, so a heading `{#tip}` and a paragraph
   `{#tip}` collide just as two headings do.
+  Names are compared **exactly**, case included, as HTML compares ids: `{#Tip}`
+  and `{#tip}` do not collide. A case-insensitive `</#tip>` then reaches the
+  first of them in document order.
 - **Footnote labels.** Footnotes are collected and numbered globally in the
   assembled document. Labels are a **separate** namespace: `[^tip]` never
   collides with `{#tip}`.

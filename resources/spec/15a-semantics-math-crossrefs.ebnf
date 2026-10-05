@@ -213,6 +213,8 @@
                namespace, because HTML has one `id` namespace per document: a
                heading `{#tip}` and a paragraph `{#tip}` collide exactly as two
                headings do.
+               Names are compared EXACTLY, case included, as HTML compares
+               ids: `{#Tip}` and `{#tip}` do not collide.
            (b) FOOTNOTE LABELS (footnotes are collected and numbered globally
                in the assembled document). This is a SEPARATE namespace: a
                footnote `[^tip]` never collides with an element `{#tip}`.
