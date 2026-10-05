@@ -118,9 +118,8 @@
            (stops at space / `#` / `@` / `}`) or double-quoted for spaces, and
            is resolved RELATIVE TO THE INCLUDING FILE. Options split into two
            disjoint kinds. SELECTION options choose WHICH content is pulled in:
-           `#section` (semantic -- the subtree rooted at the heading whose id
-           equals `section`, that heading through content up to the next
-           same-or-higher-level heading) and `@lines:N-M` (physical -- a 1-based
+           `#section` (semantic -- a heading's section or one block, I1a) and
+           `@lines:N-M` (physical -- a 1-based
            inclusive line range). The two SELECTION mechanisms are MUTUALLY
            EXCLUSIVE: a directive MUST select by `#section` OR by a line-range,
            NEVER both; a directive carrying both is an ERROR (Warning + literal,
@@ -130,6 +129,33 @@
            a line-range, or neither. `@shift` takes EITHER a signed integer OR
            the literal value `auto` (context-relative, computed by the processor
            per I8), never both. Every other `@key` is RESERVED.
+
+        I1a FRAGMENT SELECTION (`#name`). `name` is matched the way a `</#id>`
+           cross-reference matches (R4), against the child's OWN parse, before
+           the child's nested includes expand. Two steps, the first that
+           matches wins:
+           (1) HEADING. A heading whose id (explicit `{#id}` or auto slug) is
+               `name` selects its SECTION: that heading and the sibling blocks
+               after it in the same block sequence, up to the next heading of
+               the same or higher level or the end of that sequence. A heading
+               nested in a container is bounded by its container.
+           (2) BLOCK. Otherwise a BLOCK carrying the EXPLICIT id `name`
+               selects exactly that block, with its own attributes. A block is
+               a `blockNode` (PART 12) standing in a block sequence of the
+               child's body, at any depth, other than a definition (footnote,
+               reference, abbreviation, citation), a comment or frontmatter.
+           Within a step, the FIRST match in document order wins (a container
+           precedes its descendants). An id carried only by something that is
+           not a block in the body -- an inline element, a list item, a table
+           row or cell, a definition term, a footnote definition or a block
+           inside one -- selects NOTHING: the directive is an ERROR (Warning +
+           literal, per I7), as for an id the child does not contain. Every
+           other rule treats a block selection as it treats a section: I2 in
+           inline position (a selected paragraph splices its inlines and its
+           own attributes do not carry into the sentence; any other block is
+           block-in-inline), I4 provenance, I5, I6, I8 (T is measured over the
+           selected block; no headings in it makes `auto` a no-op), I11 (a
+           missing id leaves the dependency RESOLVED) and I13.
 
         I2 BLOCK vs INLINE. A directive ALONE on its own line is a BLOCK
            include: the resolved content merges as BLOCKS at the directive
@@ -233,7 +259,8 @@
            invoking their resolver -- not resolved and then refused -- and the
            two bounds therefore limit reads as well as emitted output.
 
-        I7 ERRORS. Unreadable path, binary / non-text content, BOTH selection
+        I7 ERRORS. Unreadable path, binary / non-text content, a `#name` that
+           selects nothing (I1a), BOTH selection
            mechanisms present (`#section` + a line-range, I1), block-structured
            content in INLINE position (I2), cycle, depth-exceeded,
            size-exceeded, call-bound-exceeded, and a directive reached AFTER

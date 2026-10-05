@@ -52,10 +52,9 @@ would turn an aligned directive into prose with **no** warning, which is the one
 failure mode the [Errors](#errors) rules exist to avoid. Tabs count, as they do
 wherever else whitespace does.
 
-- **`#section`** includes only the subtree rooted at the heading whose id equals
-  `section`: that heading through the content up to (but not including) the next
-  heading of the **same or higher** level. The id is matched the same way a
-  `</#id>` cross-reference matches (explicit `{#id}` or the auto-generated slug).
+- **`#section`** names a heading or a block in the resolved source (see
+  [Selecting by id](#selecting-by-id-section)). The id is matched the same way a
+  `</#id>` cross-reference matches.
 - **`@key:value`** is an extensible option slot. Options are space-separated.
   - **`@lines:N-M`** includes the 1-based, inclusive physical-line range `N`
     through `M` of the resolved source.
@@ -89,7 +88,7 @@ directive as the literal text the [Errors](#errors) rules describe.
 Directive options fall into two disjoint kinds:
 
 - **Selection options** choose *which* content is pulled in: `#section`
-  (semantic - a heading's subtree) and a line-range `@lines:N-M` (physical - raw
+  (semantic - a heading's section or one block) and a line-range `@lines:N-M` (physical - raw
   source lines).
 - **Transform options** reshape content that has already been selected:
   `@shift:N` (heading-level shift). Future transform options join this kind.
@@ -105,6 +104,51 @@ the directive **literal**, exactly like the other error cases (see
 **Transform** options are orthogonal to selection. `@shift` is **not** a
 selection option: it MAY accompany `#section`, a line-range, or neither, and it
 composes with whichever selection (if any) the directive uses.
+
+### Selecting by id (`#section`)
+
+The name is looked up in the child's own parse, before the child's nested
+includes expand. The first step that matches wins:
+
+1. **A heading.** A heading whose id is the name - explicit `{#id}` or the
+   auto slug - selects its **section**: the heading and the blocks after it, up
+   to the next heading of the **same or higher** level. A heading inside a
+   container stops at the end of that container.
+2. **A block.** Otherwise, a block carrying the **explicit** id selects exactly
+   that block, attributes included: a paragraph, list, table, figure, code
+   block, block quote, div, admonition, and so on, at any depth.
+
+```carve
+{{ recipes.crv #dough }}
+```
+
+with `recipes.crv` containing
+
+````carve
+# Pizza
+
+{#dough}
+```text
+500 g flour
+325 g water
+```
+````
+
+includes the code block alone, still carrying `id="dough"`.
+
+- **First match wins.** Within a step, the first match in document order is
+  selected; a container comes before the blocks inside it.
+- **Headings come first.** A heading match wins over a block match anywhere
+  in the file, so a document that already selects a section keeps its meaning.
+- **Not a block, not selectable.** An id on an inline element, a list item, a
+  table row or cell, a definition term or a footnote selects nothing. Neither
+  does a block inside a footnote. The directive warns and stays literal, the
+  same as a name the child does not contain.
+- **Everything else is unchanged.** A selected block is treated like a
+  selected section: an inline include splices a selected paragraph's inlines
+  (its own attributes stay behind), `@shift` reaches the headings inside the
+  block, and cycles, collisions, provenance and dependencies follow the rules
+  below.
 
 ### Heading-level shift (`@shift`)
 
@@ -654,6 +698,7 @@ Every failure path is **visible**, never a silent drop. Each of these emits a
 |---|---|
 | Unreadable / missing path | Warning + literal directive |
 | Binary / non-text content | Warning + literal directive |
+| A `#section` that selects nothing | Warning + literal directive |
 | Both `#section` and a line-range (`@lines`) present | Warning + literal directive |
 | Block-structured content in inline position (inline include) | Warning + literal directive |
 | Inclusion cycle | Warning + literal directive |
