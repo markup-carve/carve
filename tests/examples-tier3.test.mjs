@@ -43,7 +43,15 @@ const factories = new Map([
  * still compared EXACTLY, against the output the entry claims, and an unrelated
  * change in it cannot hide inside the declaration.
  */
-const AHEAD_OF_PIN = {}
+const AHEAD_OF_PIN = {
+  Glossary: {
+    reason: 'Extensions §7.2 (2026-10-05) - a glossary id keeps case and :term matches exactly',
+    pinned: [
+      ['gloss-API', 'gloss-api'],
+      ['<span class="term">api</span>', '<a href="#gloss-api" class="term">api</a>'],
+    ],
+  },
+}
 
 const scan = scanExampleSource(readFileSync(resolve(__dirname, '../resources/examples-tier3.md'), 'utf8').split('\n'))
 

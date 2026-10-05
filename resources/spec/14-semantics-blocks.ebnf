@@ -408,7 +408,9 @@
         The canonical set is the eight call-out types
         `note`, `tip`, `warning`, `danger`, `info`, `success`,
         `example`, `quote`. Consuming CSS frameworks target these exact
-        class names.
+        class names. A type is a keyword, not a name, and matches
+        exactly: `::: Note` is not the `note` admonition but the Tier-2
+        `<div class="Note">`.
 
       Tier 2 -- ANY OTHER (custom) type renders as a generic block-level
         `<div>` carrying the verbatim type as its class:
