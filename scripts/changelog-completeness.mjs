@@ -125,6 +125,18 @@
  * Needs `gh` authenticated (CI passes GITHUB_TOKEN). It refuses to run without
  * it rather than degrading to an answer it cannot back.
  *
+ * A COMMIT WITH NO PULL REQUEST is reported as a notice, and `.changelog-exempt`
+ * can close it out by sha. Work normally arrives through a squash merge, which
+ * carries its number in the subject; a direct push to `main` carries nothing to
+ * cite, and the notice used to recur on every run with no way to answer it
+ * (carve#2723).
+ *
+ * ONE RANGE PRODUCES ONE SHIPPED-SOURCE COUNT. The failing and the passing line
+ * both report the size of the range, and exempt entries are named beside it
+ * rather than subtracted from it. They used to divide the range differently -
+ * 21 against 11 for one unchanged tree - so a red run and the green run that
+ * cleared it looked like they had measured different work.
+ *
  * Exit 0  every shipped-source pull request in range is cited or exempt.
  * Exit 3  at least one is not, and every one of them is named below.
  * Exit 1  the gate could not judge: no `gh` answer, no section, a malformed
@@ -210,20 +222,44 @@ export const unreleasedSections = (changelog, tags) => {
 };
 
 /**
- * `.changelog-exempt`, parsed. Keys are pull request numbers; a line that is
- * neither a comment nor `<number>: <reason>` is malformed and refused.
+ * `.changelog-exempt`, parsed into the two things it can key on: a pull request
+ * number, and a commit sha for work that reached `main` without one. A line
+ * that is neither a comment nor `<key>: <reason>` is malformed and refused.
+ *
+ * A sha key needs at least 7 hex characters and at least one letter among
+ * them. The letter is what tells the two keys apart: an all-digit key is a
+ * pull request number, which is the only form that existed before, and
+ * nothing already in the file changes meaning.
  */
+export const SHA_KEY = /^([0-9a-f]{7,40})$/;
+
 export const parseExemptions = (text, exemptFile = EXEMPT_FILE) => {
     const pullRequests = new Map();
+    const commits = new Map();
     const malformed = [];
     text.split('\n').forEach((raw, i) => {
         const line = raw.trim();
         if (!line || line.startsWith('#')) return;
-        const m = line.match(/^#?(\d+)\s*[:\s]\s*(\S.*)$/);
-        if (!m) { malformed.push(`${exemptFile}:${i + 1}: expected '<number>: <reason>', got '${line}'`); return; }
-        pullRequests.set(m[1], m[2].trim());
+        const m = line.match(/^#?(\S+?)\s*[:\s]\s*(\S.*)$/);
+        const key = m?.[1];
+        const reason = m?.[2]?.trim();
+        if (key && /^\d+$/.test(key)) { pullRequests.set(key, reason); return; }
+        if (key && SHA_KEY.test(key) && /[a-f]/.test(key)) { commits.set(key, reason); return; }
+        malformed.push(
+            `${exemptFile}:${i + 1}: expected '<number>: <reason>' or '<commit sha>: <reason>', got '${line}'`,
+        );
     });
-    return { pullRequests, malformed };
+    return { pullRequests, commits, malformed };
+};
+
+/**
+ * The reason a commit is exempt, found by the abbreviated key the file holds.
+ * The gate reads full shas from `git log`, so a key matches when it is a
+ * prefix of one.
+ */
+export const exemptionForCommit = (commits, sha) => {
+    for (const [key, reason] of commits) if (String(sha).startsWith(key)) return reason;
+    return undefined;
 };
 
 /**
@@ -238,12 +274,12 @@ export const verdict = ({ shipped, exempt, missing, unattributed, sections, from
         `Write them up, or exempt one with a reason in ${exemptFile}.`,
     pass:
         `changelog-completeness: ${sections.map((h) => `[${h}]`).join(' and ')} account(s) for all ` +
-        `${shipped - exempt} shipped-source pull request(s) ${from}` +
+        `${shipped} shipped-source pull request(s) ${from}` +
         (exempt ? `, ${exempt} exempt` : '') +
         (unattributed ? `, ${unattributed} commit(s) carrying no pull request` : ''),
 });
 
-export const __internals = { VERSION_TAG, sectionHeadings, unreleasedSections, parseExemptions, verdict };
+export const __internals = { VERSION_TAG, sectionHeadings, unreleasedSections, parseExemptions, exemptionForCommit, verdict };
 
 if (process.env.CARVE_CHANGELOG_LIB === '1') {
   // Imported for its helpers by the self-test; do not run the gate.
@@ -361,7 +397,7 @@ const unattributed = [];
 for (const { sha, subject } of commits) {
     if (!touchesShipped(sha)) continue;
     const number = pullRequest(subject);
-    if (!number) { unattributed.push({ sha: sha.slice(0, 9), subject }); continue; }
+    if (!number) { unattributed.push({ sha, subject }); continue; }
     if (!shipping.has(number)) shipping.set(number, subject.replace(/\s*\(#\d+\)\s*$/, ''));
     // Only a QUALIFIED reference counts here: the trailing `(#1972)` is the
     // pull request's own number, so a bare one says nothing.
@@ -432,7 +468,7 @@ const cited = new Set([section, ...alsoRead].flatMap((h) => localReferences(text
 // audit, and every one that applies is printed on a passing run too.
 
 const exemptPath = resolve(root, EXEMPT_FILE);
-const { pullRequests: exemptions, malformed } =
+const { pullRequests: exemptions, commits: exemptCommits, malformed } =
     parseExemptions(existsSync(exemptPath) ? readFileSync(exemptPath, 'utf8') : '');
 
 const missing = [];
@@ -448,8 +484,18 @@ for (const [number, title] of [...shipping].sort((a, b) => Number(a[0]) - Number
 for (const [number, title, reason] of skipped) {
     console.log(`exempt: #${number} ${title}\n        (${EXEMPT_FILE}: ${reason})`);
 }
+// A commit pushed straight to `main` has no pull request to cite, so the
+// exempt file keys it by sha. Without that the notice had no answer and
+// recurred on every run until the next cut (carve#2723).
+const reported = [];
 for (const { sha, subject } of unattributed) {
-    console.log(`::notice::${sha} touched shipped source with no pull request to cite: ${subject}`);
+    const reason = exemptionForCommit(exemptCommits, sha);
+    if (reason) {
+        console.log(`exempt: ${sha.slice(0, 9)} ${subject}\n        (${EXEMPT_FILE}: ${reason})`);
+        continue;
+    }
+    reported.push({ sha, subject });
+    console.log(`::notice::${sha.slice(0, 9)} touched shipped source with no pull request to cite: ${subject}`);
 }
 
 const from = previous ? `since ${previous}` : 'so far';
@@ -457,7 +503,7 @@ const summary = verdict({
     shipped: shipping.size,
     exempt: skipped.length,
     missing: missing.length,
-    unattributed: unattributed.length,
+    unattributed: reported.length,
     sections: [section, ...alsoRead],
     from,
 });
