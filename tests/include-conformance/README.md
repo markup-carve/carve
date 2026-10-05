@@ -201,6 +201,21 @@ the security suite's "Corpus ahead of the engines" (carve#1992).
   to `scripts/include-conformance-vectors.mjs` under rule `I1`, generate against
   THAT engine, read the golden before committing it, and delete this entry.
 
+- **Selecting a block by id** (I1a). `#name` selects a heading's section
+  first, as before, and otherwise the first block carrying the explicit id. No
+  engine implements the block step yet: all three select top-level headings
+  only and warn `include-section` for anything else, so a golden generated
+  today would pin the warning. `scripts/spec/include-fragment.mjs` states the
+  selection over a parsed AST and
+  `tests/an-include-fragment-names-a-heading-or-a-block.test.mjs` runs it in
+  `npm test`.
+
+  To close this: once one engine selects blocks, add vectors under rule `I1`
+  for a selected code block, a heading winning over an earlier block id, a
+  heading inside a container, and a list-item id that selects nothing
+  (`include-section`, dependency still resolved). Generate against that
+  engine, read the goldens, and delete this entry.
+
 ## How to add a vector
 
 1. Add an input object to `scripts/include-conformance-vectors.mjs` (`name`,
