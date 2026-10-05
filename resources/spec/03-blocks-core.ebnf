@@ -590,7 +590,11 @@ definition_indent = whitespace, {whitespace} ;
        column (§10, A COMMENT IS THE ONE EXCEPTION), and a definition or
        attribute line at a nonzero column below the column is lazy paragraph
        text of THIS body (§10 I5, AN INVISIBLE LINE FOLDS LIKE ANY OTHER). At
-       DOCUMENT column 0 they are interrupters and the body does end.
+       DOCUMENT column 0 they are interrupters and the body does end. An INFO
+       STRING decides nothing here: a flush-left fence line with no closer
+       ahead opens no block, so below a closed nested fence it is the body's
+       content whether or not it carries a language, and a TERMINATED fence at
+       that column is a different line which ends the body for either spelling.
 
      - AT the column, the line is the body's own block content, so a block
        opener opens inside the `dd`.

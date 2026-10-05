@@ -46175,3 +46175,92 @@ See [Plan][] and [plan][].
 ```
 
 :::
+
+## An info string does not change how a flush-left fence folds into a description body
+
+A flush-left fence line below a closed nested fence in a description body is
+the body's content whether or not it carries a language, so the language text
+folds as content like any other run.
+
+::: compare
+
+````carve
+:: t
+:  - ```
+     ```
+```rust
+````
+
+````html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+    <p><code>rust</code></p>
+  </dd>
+</dl>
+````
+
+:::
+
+The bare run folds the same way:
+
+::: compare
+
+````carve
+:: t
+:  - ```
+     ```
+```
+````
+
+````html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+    <p><code></code></p>
+  </dd>
+</dl>
+````
+
+:::
+
+A terminated fence at that column is a different line: it opens a block and
+ends the body, for a language-tagged run as for a bare one.
+
+::: compare
+
+````carve
+:: t
+:  - ```
+     ```
+```rust
+c
+```
+````
+
+````html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<pre><code class="language-rust">c
+</code></pre>
+````
+
+:::

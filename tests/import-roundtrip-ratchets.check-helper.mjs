@@ -221,6 +221,12 @@ const visibleText = (html) =>
 // 401-a-marker-at-an-item-content-column-opens-a-sublist-first-in-the-item-or-not
 // and 413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not-3.
 
+// Section 547 adds three info-string documents (carve#2735). All three import,
+// are fixed points and keep their visible text, so those three counts move by
+// the full three, as does the HTML round trip. The Markdown round trip does not
+// move: all three hold a definition list, which that target writes as a bold
+// paragraph, so the term never survives to be read back.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {
