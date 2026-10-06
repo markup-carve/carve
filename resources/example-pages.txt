@@ -702,6 +702,7 @@ index: examples/edge-cases/index.md
   a-block-opener-indented-under-a-definition-term-is-term-text-at-every-depth
   a-comment-or-a-definition-under-a-definition-term-folds-at-every-depth
   an-info-string-does-not-change-how-a-flush-left-fence-folds-into-a-description-body
+  a-description-body-whose-own-block-is-a-fence-keeps-no-line-below-its-column
 [edge-attributes] Attributes
 > Attribute lines and inline blocks, names and values, classes, booleans and the semantic/language sugar.
 out: examples/edge-cases/attributes.md
