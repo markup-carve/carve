@@ -10,6 +10,8 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
+## [0.1.8] - 2026-10-06
+
 ### Breaking
 
 - Every name lookup compares case exactly: `</#id>` crossrefs, collapsed and
@@ -22,30 +24,12 @@ Releases before 0.1.6 are archived in
   occurrence in expanded order keeps the name, each later copy from another
   inclusion takes its own least free `-N` and emits a warning, and a reference
   written in the same inclusion follows the rename (#2729, #2732).
-
-### Fixes
-
-- The `broken-fragment-link` rule reads the caller's own render, carrying the
-  extensions passed to the linter, so a link absent from that render is not
-  checked. A link inside an unreferenced footnote definition is left to
-  `unused-footnote-definition`, held by corpus row 545 (#2730, #2731).
-
-### Improvements
-
-- An include fragment names any block carrying that explicit id, not only a
-  heading. A matching heading still selects its section first; otherwise the
-  first such block in document order, at any depth, is selected alone with its
-  own attributes. An id on an inline span, list item, table row or cell selects
-  nothing (#2727).
-- A pipe table keeps multiple bodies, intermediate header rows, empty body
-  boundaries and per-body row-header columns in canonical source, through the
-  positional `body-rows`, `body-header-rows` and `body-header-cols` attributes.
-  Invalid body metadata leaves every row-group attribute ordinary (#2708).
-
-## [0.1.8] - 2026-10-01
-
-### Breaking
-
+- A glossary reference compares its bracket text with each term's text exactly,
+  under the same rule as every other name lookup: trimmed, whitespace
+  collapsed, NFC, no case folding. A glossary id keeps its case, so two terms
+  differing only in case take two ids. The index keeps its own lowercased slug,
+  which the contract now calls grouping rather than a name lookup, and an
+  admonition type stays a keyword (#2739).
 - A render that blanks a denied URL destination now owes one row on the
   render-loss report, in both safe modes: one per blanked link destination,
   autolink destination or image source, in document order, under the code
@@ -59,6 +43,19 @@ Releases before 0.1.6 are archived in
 
 ### Fixes
 
+- The `broken-fragment-link` rule reads the caller's own render, carrying the
+  extensions passed to the linter, so a link absent from that render is not
+  checked. A link inside an unreferenced footnote definition is left to
+  `unused-footnote-definition`, held by corpus row 545 (#2730, #2731).
+- A reference image with no matching definition is reported under
+  `unresolved-reference-link`, the rule that already covered reference links.
+  `![alt][label]` and `![alt][]` take the same case-only hint under no new rule
+  id, and the link trigger stays the only default trigger (#2740).
+- An info string decides nothing for a flush-left fence line below a closed
+  nested fence in a description body. With no closer ahead the line is the
+  body's content whether or not it carries a language, and a terminated fence
+  at that column ends the body for a bare run and a tagged one alike. Corpus
+  row 547 pins all three readings (#2741).
 - A fenced blockquote is reachable from the document grammar. `quote_block` sat
   in no rule's right-hand side, so a parser generated from the grammar alone
   could not build one. Every remaining production is now either reachable or
@@ -86,6 +83,15 @@ Releases before 0.1.6 are archived in
 
 ### Improvements
 
+- An include fragment names any block carrying that explicit id, not only a
+  heading. A matching heading still selects its section first; otherwise the
+  first such block in document order, at any depth, is selected alone with its
+  own attributes. An id on an inline span, list item, table row or cell selects
+  nothing (#2727).
+- A pipe table keeps multiple bodies, intermediate header rows, empty body
+  boundaries and per-body row-header columns in canonical source, through the
+  positional `body-rows`, `body-header-rows` and `body-header-cols` attributes.
+  Invalid body metadata leaves every row-group attribute ordinary (#2708).
 - Canonical Carve source preserves authored destinations, including the schemes
   the render denylist refuses, because the formatter's round-trip invariant
   comes first. It applies no denylist and owes no `destination-denied` row. The
