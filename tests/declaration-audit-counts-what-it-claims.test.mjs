@@ -26,7 +26,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -338,7 +338,7 @@ test('reference build gate accepts only an ancestral spec gitlink update', (t) =
   const divergent = gitReferenceBuildStatus(dir, 'HEAD', updated)
   assert.equal(divergent.relation, 'diverged')
   assert.notEqual(divergent.specPinOnly, true)
-  for (const script of ['prebuild', 'postbuild', 'preprepare', 'postprepare', 'preinstall', 'install', 'postinstall', 'prepack', 'postpack', 'prepublish', 'prepublishOnly']) {
+  for (const script of ['prebuild', 'postbuild', 'preprepare', 'postprepare', 'preinstall', 'install', 'postinstall', 'prepack', 'postpack', 'prepublish', 'prepublishOnly', 'dependencies']) {
     git('reset', '--hard', pin)
     writeFileSync(join(dir, 'package.json'), JSON.stringify({ ...packageConfig, scripts: { ...packageConfig.scripts, [script]: 'node spec/build.js' } }))
     git('commit', '-qam', 'spec-dependent build')
@@ -354,6 +354,29 @@ test('reference build gate accepts only an ancestral spec gitlink update', (t) =
   git('update-index', '--cacheinfo', `160000,${unsafePin},spec`)
   git('commit', '-qm', 'spec pin update with unsafe compiler inputs')
   assert.equal(gitReferenceBuildStatus(dir, unsafePin, 'HEAD').specPinOnly, false)
+  for (const unsafeInput of ['paths', 'typeRoots', 'types', 'rootDirs']) {
+    git('reset', '--hard', pin)
+    writeFileSync(join(dir, 'tsconfig.json'), JSON.stringify({ compilerOptions: { rootDir: 'src', outDir: 'dist', [unsafeInput]: ['spec'] }, include: ['src/**/*'] }))
+    git('commit', '-qam', 'external compiler inputs')
+    const unsafePin = git('rev-parse', 'HEAD')
+    git('update-index', '--cacheinfo', `160000,${unsafePin},spec`)
+    git('commit', '-qm', 'spec pin with external compiler inputs')
+    assert.equal(gitReferenceBuildStatus(dir, unsafePin, 'HEAD').specPinOnly, false, unsafeInput)
+  }
+  for (const input of ['binding.gyp', 'src/link.ts']) {
+    git('reset', '--hard', pin)
+    if (input === 'binding.gyp') writeFileSync(join(dir, input), '{}')
+    else {
+      mkdirSync(join(dir, 'src'), { recursive: true })
+      symlinkSync('../spec/input.ts', join(dir, input))
+    }
+    git('add', input)
+    git('commit', '-qm', 'spec-dependent input')
+    const unsafePin = git('rev-parse', 'HEAD')
+    git('update-index', '--cacheinfo', `160000,${unsafePin},spec`)
+    git('commit', '-qm', 'spec pin with indirect build inputs')
+    assert.equal(gitReferenceBuildStatus(dir, unsafePin, 'HEAD').specPinOnly, false, input)
+  }
   git('config', 'diff.ignoreSubmodules', 'all')
   assert.equal(gitReferenceBuildStatus(dir, pin, updated).specPinOnly, true)
   assert.equal(gitReferenceBuildStatus(dir, pin, 'HEAD').specPinOnly, false)

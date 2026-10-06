@@ -421,6 +421,7 @@ function gitReferenceBuildStatus(dir, pin, mainRef = 'origin/main') {
   if (status instanceof Error || status.relation !== 'behind') return status
   try {
     const paths = execFileSync('git', ['-C', dir, 'diff-tree', '-r', '--no-renames', '--no-relative', '--ignore-submodules=none', '--name-only', '-z', pin, status.main, '--'], { encoding: 'utf8' })
+    if (paths !== 'spec\0') return { ...status, specPinOnly: false }
     const isSpecGitlink = (commit) => /^160000 commit [0-9a-f]{40}\tspec\n$/.test(
       execFileSync('git', ['-C', dir, 'ls-tree', commit, '--', 'spec'], { encoding: 'utf8' }),
     )
@@ -430,7 +431,8 @@ function gitReferenceBuildStatus(dir, pin, mainRef = 'origin/main') {
     const sourceTree = execFileSync('git', ['-C', dir, 'ls-tree', '-r', pin, '--', 'src'], { encoding: 'utf8' })
     const nativeBuild = execFileSync('git', ['-C', dir, 'ls-tree', pin, '--', 'binding.gyp'], { encoding: 'utf8' })
     const isolatedBuild = scripts.build === 'tsc' && scripts.prepare === 'npm run build' &&
-      ['prebuild', 'postbuild', 'preprepare', 'postprepare', 'preinstall', 'install', 'postinstall', 'prepack', 'postpack', 'prepublish', 'prepublishOnly'].every((name) => !scripts[name]) &&
+      ['prebuild', 'postbuild', 'preprepare', 'postprepare', 'preinstall', 'install', 'postinstall', 'prepack', 'postpack', 'prepublish', 'prepublishOnly', 'dependencies'].every((name) => !scripts[name]) &&
+      ['paths', 'typeRoots', 'types', 'rootDirs'].every((name) => config.compilerOptions?.[name] === undefined) &&
       config.compilerOptions?.rootDir === 'src' && config.compilerOptions?.outDir === 'dist' &&
       JSON.stringify(config.include) === '["src/**/*"]' && !config.extends && !config.references && !config.files &&
       !/^120000 /m.test(sourceTree) && nativeBuild === '' &&
