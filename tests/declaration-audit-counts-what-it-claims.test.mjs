@@ -290,7 +290,9 @@ test('reference build gate accepts only an ancestral spec gitlink update', (t) =
   git('config', 'user.email', 'audit@example.invalid')
   git('config', 'user.name', 'Declaration audit')
   writeFileSync(join(dir, 'runtime.js'), 'export const value = 1\n')
-  writeFileSync(join(dir, 'package.json'), '{"scripts":{"build":"tsc"}}\n')
+  const packageConfig = { scripts: { build: 'tsc', prepare: 'npm run build' }, files: ['dist', 'README.md', 'LICENSE', 'action.yml', '.pre-commit-hooks.yaml'] }
+  writeFileSync(join(dir, 'package.json'), JSON.stringify(packageConfig))
+  writeFileSync(join(dir, 'tsconfig.json'), JSON.stringify({ compilerOptions: { rootDir: 'src', outDir: 'dist' }, include: ['src/**/*'] }))
   git('add', '.')
   git('commit', '-qm', 'initial source')
   const first = git('rev-parse', 'HEAD')
@@ -306,7 +308,7 @@ test('reference build gate accepts only an ancestral spec gitlink update', (t) =
   assert.ok(gitReferenceBuildStatus(dir, '0'.repeat(40), updated) instanceof Error)
   assert.ok(gitReferenceBuildStatus(dir, pin, 'missing-ref') instanceof Error)
 
-  for (const path of ['runtime.js', 'package.json', 'README.md']) {
+  for (const path of ['runtime.js', 'package.json', 'README.md', '.gitmodules']) {
     git('reset', '--hard', updated)
     writeFileSync(join(dir, path), 'changed\n')
     git('add', path)
@@ -333,5 +335,26 @@ test('reference build gate accepts only an ancestral spec gitlink update', (t) =
   git('reset', '--hard', pin)
   writeFileSync(join(dir, 'runtime.js'), 'side branch\n')
   git('commit', '-qam', 'divergent source')
-  assert.equal(gitReferenceBuildStatus(dir, 'HEAD', updated).relation, 'diverged')
+  const divergent = gitReferenceBuildStatus(dir, 'HEAD', updated)
+  assert.equal(divergent.relation, 'diverged')
+  assert.notEqual(divergent.specPinOnly, true)
+  for (const script of ['prebuild', 'postbuild', 'preprepare', 'postprepare', 'preinstall', 'install', 'postinstall']) {
+    git('reset', '--hard', pin)
+    writeFileSync(join(dir, 'package.json'), JSON.stringify({ ...packageConfig, scripts: { ...packageConfig.scripts, [script]: 'node spec/build.js' } }))
+    git('commit', '-qam', 'spec-dependent build')
+    const unsafePin = git('rev-parse', 'HEAD')
+    git('update-index', '--cacheinfo', `160000,${unsafePin},spec`)
+    git('commit', '-qm', 'spec pin update with unsafe build')
+    assert.equal(gitReferenceBuildStatus(dir, unsafePin, 'HEAD').specPinOnly, false, script)
+  }
+  git('reset', '--hard', pin)
+  writeFileSync(join(dir, 'tsconfig.json'), JSON.stringify({ compilerOptions: { rootDir: '.', outDir: 'dist' }, include: ['src/**/*', 'spec/**/*'] }))
+  git('commit', '-qam', 'include spec in build')
+  const unsafePin = git('rev-parse', 'HEAD')
+  git('update-index', '--cacheinfo', `160000,${unsafePin},spec`)
+  git('commit', '-qm', 'spec pin update with unsafe compiler inputs')
+  assert.equal(gitReferenceBuildStatus(dir, unsafePin, 'HEAD').specPinOnly, false)
+  git('config', 'diff.ignoreSubmodules', 'all')
+  assert.equal(gitReferenceBuildStatus(dir, pin, updated).specPinOnly, true)
+  assert.equal(gitReferenceBuildStatus(dir, pin, 'HEAD').specPinOnly, false)
 })

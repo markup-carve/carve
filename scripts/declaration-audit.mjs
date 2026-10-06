@@ -420,11 +420,19 @@ function gitReferenceBuildStatus(dir, pin, mainRef = 'origin/main') {
   const status = gitPinStatus(dir, pin, mainRef)
   if (status instanceof Error || status.relation !== 'behind') return status
   try {
-    const paths = execFileSync('git', ['-C', dir, 'diff', '--name-only', '-z', pin, status.main, '--'], { encoding: 'utf8' })
+    const paths = execFileSync('git', ['-C', dir, 'diff-tree', '-r', '--no-renames', '--no-relative', '--ignore-submodules=none', '--name-only', '-z', pin, status.main, '--'], { encoding: 'utf8' })
     const isSpecGitlink = (commit) => /^160000 commit [0-9a-f]{40}\tspec\n$/.test(
       execFileSync('git', ['-C', dir, 'ls-tree', commit, '--', 'spec'], { encoding: 'utf8' }),
     )
-    return { ...status, specPinOnly: paths === 'spec\0' && isSpecGitlink(pin) && isSpecGitlink(status.main) }
+    const pkg = JSON.parse(execFileSync('git', ['-C', dir, 'show', `${pin}:package.json`], { encoding: 'utf8' }))
+    const config = JSON.parse(execFileSync('git', ['-C', dir, 'show', `${pin}:tsconfig.json`], { encoding: 'utf8' }))
+    const scripts = pkg.scripts ?? {}
+    const isolatedBuild = scripts.build === 'tsc' && scripts.prepare === 'npm run build' &&
+      ['prebuild', 'postbuild', 'preprepare', 'postprepare', 'preinstall', 'install', 'postinstall'].every((name) => !scripts[name]) &&
+      config.compilerOptions?.rootDir === 'src' && config.compilerOptions?.outDir === 'dist' &&
+      JSON.stringify(config.include) === '["src/**/*"]' && !config.extends && !config.references && !config.files &&
+      JSON.stringify(pkg.files) === '["dist","README.md","LICENSE","action.yml",".pre-commit-hooks.yaml"]'
+    return { ...status, specPinOnly: isolatedBuild && paths === 'spec\0' && isSpecGitlink(pin) && isSpecGitlink(status.main) }
   } catch (error) {
     return new Error(`cannot verify reference build at ${pin}: ${error.message}`)
   }
@@ -948,7 +956,7 @@ if (pinStatus instanceof Error) {
   console.log(`PIN STALENESS  UNVERIFIABLE - ${pinStatus.message}${pinNote}\n`)
   if (pinVerdictIsGated) failed += 1
 } else if (pinStatus.specPinOnly) {
-  console.log(`PIN STALENESS  behind at ${pinStatus.pin.slice(0, 8)}; reference build unchanged (only spec gitlink differs from ${pinStatus.main.slice(0, 8)})\n`)
+  console.log(`PIN STALENESS  behind at ${pinStatus.pin.slice(0, 8)}; reference build unchanged (only spec gitlink differs from ${pinStatus.main.slice(0, 8)})${pinNote}\n`)
 } else if (pinStatus.relation !== 'current') {
   console.log(
     `PIN STALENESS  ${pinStatus.relation.toUpperCase()} - @markup-carve/carve ${pinStatus.pin.slice(0, 8)} ` +
