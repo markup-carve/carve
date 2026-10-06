@@ -21,8 +21,9 @@
  * report would have covered.
  */
 import { test } from 'node:test'
+import { spawnSync } from 'node:child_process'
 import assert from 'node:assert/strict'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { isAbsolute, join, relative, resolve } from 'node:path'
 import { rustBinary, rustBinaryCandidates } from '../scripts/lib/engine-locations.mjs'
@@ -40,17 +41,20 @@ const plant = (dir, rel) => {
 const withTargetDir = (value, fn) => {
   const had = Object.hasOwn(process.env, 'CARGO_TARGET_DIR')
   const previous = process.env.CARGO_TARGET_DIR
+  const buildTarget = process.env.CARGO_BUILD_TARGET_DIR
+  delete process.env.CARGO_BUILD_TARGET_DIR
   if (value === undefined) delete process.env.CARGO_TARGET_DIR
   else process.env.CARGO_TARGET_DIR = value
   try {
     return fn()
   } finally {
+    if (buildTarget !== undefined) process.env.CARGO_BUILD_TARGET_DIR = buildTarget
     if (had) process.env.CARGO_TARGET_DIR = previous
     else delete process.env.CARGO_TARGET_DIR
   }
 }
 
-const sandbox = () => mkdtempSync(join(tmpdir(), 'carve-rs-resolve-'))
+const sandbox = () => realpathSync(mkdtempSync(join(tmpdir(), 'carve-rs-resolve-')))
 
 test('a binary built into a shared CARGO_TARGET_DIR is found', () => {
   const root = sandbox()
@@ -171,6 +175,7 @@ test('every runner that needs the binary resolves it through this helper', async
     'engine-claims.mjs',
     'degradation-claims.mjs',
     'ast-conformance.mjs',
+    'shape-table.mjs',
   ]
   const offenders = runners.filter((name) => {
     const source = readFileSync(resolve(here, 'scripts', name), 'utf8')
@@ -181,4 +186,47 @@ test('every runner that needs the binary resolves it through this helper', async
       .some((line) => line.includes('target/release/carve') && !line.trimStart().startsWith('//'))
   })
   assert.deepEqual(offenders, [], `runner(s) still hard-coding the target path: ${offenders.join(', ')}`)
+  for (const name of runners) {
+    const source = readFileSync(resolve(here, 'scripts', name), 'utf8')
+    assert.doesNotMatch(source, /rustBinaryCandidates\([^\n]*\)\.find/, `${name} bypasses binary provenance checks`)
+  }
+})
+
+const cargoAvailable = spawnSync('cargo', ['--version']).status === 0
+
+test('Cargo config selects the build directory ahead of a leftover checkout binary', { skip: !cargoAvailable }, () => {
+  const root = sandbox()
+  const checkout = join(root, 'carve-rs')
+  mkdirSync(join(checkout, '.cargo'), { recursive: true })
+  mkdirSync(join(checkout, 'src'), { recursive: true })
+  writeFileSync(join(checkout, 'Cargo.toml'), '[package]\nname = "carve-resolver-test"\nversion = "0.1.0"\nedition = "2021"\n')
+  writeFileSync(join(checkout, 'src/main.rs'), 'fn main() {}\n')
+  writeFileSync(join(checkout, '.cargo/config.toml'), '[build]\ntarget-dir = "../configured-target"\n')
+  plant(checkout, 'target/release/carve')
+  const built = plant(root, 'configured-target/debug/carve')
+  writeFileSync(`${built}.d`, `${built}: ${join(checkout, 'src/main.rs')}\n`)
+  const foreign = plant(root, 'configured-target/release/carve')
+  writeFileSync(`${foreign}.d`, `${foreign}: /another-checkout/src/main.rs\n`)
+  try {
+    assert.equal(withTargetDir(undefined, () => rustBinary(checkout)), built)
+    rmSync(`${built}.d`)
+    assert.equal(withTargetDir(undefined, () => rustBinary(checkout)), null)
+    assert.ok(withTargetDir(undefined, () => rustBinaryCandidates(checkout)).includes(built))
+    const override = plant(root, 'override/release/carve')
+    assert.equal(withTargetDir(join(root, 'override'), () => rustBinary(checkout)), override)
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
+test('unreadable Cargo metadata preserves checkout discovery', { skip: !cargoAvailable }, () => {
+  const root = sandbox()
+  const checkout = join(root, 'carve-rs')
+  const built = plant(checkout, 'target/release/carve')
+  writeFileSync(join(checkout, 'Cargo.toml'), 'invalid manifest\n')
+  try {
+    assert.equal(withTargetDir(undefined, () => rustBinary(checkout)), built)
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
 })
