@@ -176,6 +176,11 @@ test('every runner that needs the binary resolves it through this helper', async
     'degradation-claims.mjs',
     'ast-conformance.mjs',
     'shape-table.mjs',
+    'lint-corpus-check.mjs',
+    'migration-evidence-claims.mjs',
+    'import-report-claims.mjs',
+    'parity-check.mjs',
+    'import-comparison.mjs',
   ]
   const offenders = runners.filter((name) => {
     const source = readFileSync(resolve(here, 'scripts', name), 'utf8')
