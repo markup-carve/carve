@@ -488,12 +488,13 @@ The specification is normative on the **outcome** and permissive on the
   can cut a fence or a div in half and manufacture exactly such a torn
   construct. The tear is bounded to the fragment; the parent document is never
   affected.
-- Source positions **MUST** identify the file they are measured in, so that
+- Source positions **SHOULD** identify the file they are measured in, so that
   source-mapped hosts (editors, highlighters, error reporters) can attribute an
-  included span to the child file rather than to the directive. A node an
-  include pulled in keeps the coordinates of **its own file** and carries that
-  file's canonical id in `pos.file`; a node from the document being parsed has
-  no `pos.file`, so a document with no includes is unchanged.
+  included span to the child file rather than to the directive (PART 9 §19 I4).
+  When a processor provides file attribution, `pos.file` carries the file's
+  canonical id and every coordinate is measured in that file (PART 12 §41).
+  A node from the document being parsed has no `pos.file`, so a document with
+  no includes is unchanged.
 
   Line and column alone cannot carry this. A child's first paragraph and the
   parent's first paragraph both report line 1, and nothing in the tree

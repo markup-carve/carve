@@ -16,8 +16,8 @@ implementation exposes.
 
 ## Core fixture counts (2026-09-30)
 
-The count-only run covers 2,164 core documents and their 161 target
-sidecars. Each engine passed all 2,325 scored fixtures. The run checks expected
+The count-only run covers 2,165 core documents and their 161 target
+sidecars. Each engine passed all 2,326 scored fixtures. The run checks expected
 output on each scored target; it does not compare unscored targets and makes no
 formatter or full-target agreement claim.
 

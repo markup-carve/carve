@@ -657,13 +657,10 @@ test('every obligation on a declared normative page names a clause that exists',
   assert.deepEqual(declared, ['docs/includes.md'])
 })
 
-test('the obligations ledger declares its gaps out loud', () => {
+test('the normative page has no unstated or stronger-than-spec obligations', () => {
   const { unstated, weaker } = audit()
-  // Security obligations now have clauses; the warning cap and preview
-  // invalidation are host guidance. Source positions remain weaker in I4.
   assert.equal(unstated.length, 0)
-  assert.equal(weaker.length, 1)
-  assert.equal(weaker[0].clause, 'WEAKER PART 9 §19 I4')
+  assert.deepEqual(weaker, [])
 })
 
 test('every obligation the includes page states names the clause that now carries it', () => {
