@@ -63,11 +63,13 @@ carve lint --platform github doc.crv
 Exact-case lookup changes heading cross-references, numbered caption and equation
 references, collapsed references that fall back to heading text, and include
 fragment selection. Link-definition labels and footnote labels were already
-case-sensitive. Whitespace normalization, NFC and core heading slug derivation
-are unchanged. Case-distinct ids remain separate targets.
+case-sensitive. Whitespace normalization, NFC and default heading slug derivation
+are unchanged. Case-distinct ids identify separate targets.
 
-Run `carve lint` before upgrading existing documents. `carve fmt --migrate`
-repairs unambiguous case-only cross-reference and link or image label misses.
+With the new engine, run `carve lint` before deploying the rendered output.
+`carve fmt --migrate`
+repairs unambiguous case-only cross-reference and link or image label misses,
+including label mistakes that were already unresolved before this release.
 Review the result: changing a collapsed label also changes its visible text or
 image alternative text. Ambiguous matches and labels carrying inline markup
 need manual review. Include selectors, glossary references and external

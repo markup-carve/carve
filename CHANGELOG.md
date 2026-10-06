@@ -14,19 +14,11 @@ Releases before 0.1.6 are archived in
 
 ### Compatibility and migration
 
-Exact-case lookup changes heading cross-references, numbered caption and equation
-references, collapsed references that fall back to heading text, and include
-fragment selection. Link-definition labels and footnote labels were already
-case-sensitive. Whitespace normalization, NFC and core heading slug derivation
-are unchanged. Case-distinct ids remain separate targets.
-
-Run `carve lint` before upgrading existing documents. `carve fmt --migrate`
-repairs unambiguous case-only cross-reference and link or image label misses.
-Review the result: changing a collapsed label also changes its visible text or
-image alternative text. Ambiguous matches and labels carrying inline markup
-need manual review. Include selectors, glossary references and external
-fragment links are outside this repair. Glossary ids now preserve case, so
-update links to those ids separately. Ordinary `fmt` does not apply this repair.
+With the new engine, lint existing documents before deploying their output.
+`fmt --migrate` repairs unambiguous case-only reference misses. Review changes
+to collapsed link text and image alt text; include selectors, glossary
+references and external fragment links need manual review. See the
+[migration guide](docs/validation.md#upgrading-exact-case-references).
 
 ### Breaking
 
@@ -34,7 +26,7 @@ update links to those ids separately. Ordinary `fmt` does not apply this repair.
   references that fall back to heading text, and include fragment selectors now
   compare case exactly. Link-definition labels and footnote labels already did.
   A case-only mismatch is unresolved; `{#Tip}` and `{#tip}` remain separate
-  targets. Slug derivation, whitespace normalization and NFC are unchanged (#2732).
+  targets. Default heading slug derivation, whitespace normalization and NFC are unchanged (#2732).
 - An include renames a colliding explicit id on any element, not only a heading
   id or a footnote label. Explicit ids share one namespace, the first
   occurrence in expanded order keeps the name, each later copy from another
@@ -58,6 +50,10 @@ update links to those ids separately. Ordinary `fmt` does not apply this repair.
   and is not compared (#2686).
 
 ### Fixes
+
+- The upgrade guide distinguishes newly exact lookups from labels that already
+  matched case exactly, and explains migration limits. Tests keep case-distinct
+  numbered captions and equations separate (#2759).
 
 - The `broken-fragment-link` rule reads the caller's own render, carrying the
   extensions passed to the linter, so a link absent from that render is not
