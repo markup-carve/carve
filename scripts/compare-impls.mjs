@@ -817,6 +817,31 @@ const RENDER_TIMEOUT_MS = 60000
 function run(cmd, cwd, extraArgs = [], timeout = RENDER_TIMEOUT_MS) {
   const [bin, ...baseArgs] = cmd
   const started = process.hrtime.bigint()
+  /*
+   * NAME THE MISSING CHECKOUT RATHER THAN BLAMING THE BINARY.
+   *
+   * `spawnSync` reports ENOENT for a missing cwd exactly as it does for a
+   * missing executable, and its message names only the binary. So an absent
+   * engine checkout - the ordinary state of a fresh environment, and what
+   * CARVE_RS_DIR and friends exist to point at - was reported as
+   * "spawnSync cargo ENOENT" on a machine where cargo is installed and on
+   * PATH. That reading sent a reader to install a toolchain they already had
+   * (carve#2754).
+   *
+   * The two causes need different fixes, so they get different sentences.
+   */
+  if (cwd !== undefined && cwd !== null && !existsSync(cwd)) {
+    return {
+      ok: false,
+      status: null,
+      stdout: '',
+      rawStdout: '',
+      stderr: '',
+      elapsedMs: 0,
+      error: `engine checkout not found at ${cwd} (set the matching CARVE_*_DIR to a real path)`,
+      signal: null,
+    }
+  }
   const result = spawnSync(bin, [...baseArgs, ...extraArgs], {
     cwd,
     encoding: 'utf8',
