@@ -9,7 +9,7 @@ description: "Optional and host-facing behavior, importer contracts, security li
 
 Optional and host-facing behavior, importer contracts, security limits, diagnostics, and extension surfaces.
 
-This view contains 29 of 307 active rules. Every rule remains mandatory where applicable.
+This view contains 29 of 308 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -27,7 +27,7 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L506) | 9 | SECURITY REQUIREMENTS |
 | [`CARVE-P9-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L597) | 9 | A URL-LIST ATTRIBUTE IS PROBED TOKEN-WISE, NOT AT ITS HEAD |
 | [`CARVE-P9-056`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L710) | 9 | A FLATTENED OPENER IS ORDINARY PARAGRAPH TEXT |
-| [`CARVE-P9-057`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L771) | 9 | AT THE RENDER CEILING, A RENDERER REFUSES |
+| [`CARVE-P9-057`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L784) | 9 | AT THE RENDER CEILING, A RENDERER REFUSES |
 | [`CARVE-P9-058`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L2) | 9 | TROJAN-SOURCE / INVISIBLE-UNICODE HARDENING |
 | [`CARVE-P9-063`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L173) | 9 | THE ENGINE'S OWN WORDS ARE A RENDER OPTION |
 | [`CARVE-P9-064`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L211) | 9 | AN EXTENSION WRITES INTO THE SAME MAP |
