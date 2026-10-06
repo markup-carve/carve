@@ -26,7 +26,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, renameSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -311,6 +311,7 @@ test('reference build gate accepts only an ancestral spec gitlink update', (t) =
   git('commit', '-qm', 'spec pin update')
   const updated = git('rev-parse', 'HEAD')
   assert.equal(gitReferenceBuildStatus(dir, pin, updated).specPinOnly, true)
+  assert.equal(gitReferenceBuildStatus(dir, pin, 'HEAD').specPinOnly, true)
   assert.equal(gitReferenceBuildStatus(dir, pin, pin).relation, 'current')
   assert.equal(gitReferenceBuildStatus(dir, updated, pin).relation, 'ahead')
   assert.ok(gitReferenceBuildStatus(dir, '0'.repeat(40), updated) instanceof Error)
@@ -390,6 +391,13 @@ test('reference build gate accepts only an ancestral spec gitlink update', (t) =
   writeFileSync(join(dir, 'spec', 'ambient.d.ts'), 'declare const value: number\n')
   writeFileSync(inputList, join(dir, 'src', 'runtime.ts') + '\n' + join(dir, 'spec', 'ambient.d.ts') + '\n')
   assert.equal(gitReferenceBuildStatus(dir, pin, updated).specPinOnly, false, 'compiler reads spec declaration')
+  renameSync(join(dir, 'node_modules'), join(dir, 'spec', 'dependencies'))
+  symlinkSync('./spec/dependencies', join(dir, 'node_modules'))
+  writeFileSync(join(dir, 'spec', 'dependencies', 'input.d.ts'), 'declare const value: number\n')
+  writeFileSync(inputList, join(dir, 'spec', 'dependencies', 'input.d.ts') + '\n')
+  assert.equal(gitReferenceBuildStatus(dir, pin, updated).specPinOnly, false, 'dependencies directory points into spec')
+  rmSync(join(dir, 'node_modules'))
+  renameSync(join(dir, 'spec', 'dependencies'), join(dir, 'node_modules'))
   writeFileSync(inputList, join(dir, 'missing.d.ts') + '\n')
   assert.ok(gitReferenceBuildStatus(dir, pin, updated) instanceof Error)
   writeFileSync(inputList, '')

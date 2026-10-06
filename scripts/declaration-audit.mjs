@@ -417,7 +417,7 @@ function gitPinStatus(dir, pin, mainRef = 'origin/main') {
 // Accept a spec gitlink update only after checking the build's actual inputs.
 function referenceBuildInputs(dir) {
   const output = execFileSync(process.execPath, [join(dir, 'node_modules/typescript/bin/tsc'), '--noEmit', '--listFiles', '--pretty', 'false', '--incremental', 'false', '--composite', 'false'], { cwd: dir, encoding: 'utf8' })
-  return output.trim().split(/\r?\n/).filter(Boolean).map((path) => realpathSync(path))
+  return output.trim().split(/\r?\n/).filter(Boolean).map((path) => realpathSync(resolve(dir, path)))
 }
 function gitReferenceBuildStatus(dir, pin, mainRef = 'origin/main') {
   const status = gitPinStatus(dir, pin, mainRef)
@@ -435,9 +435,9 @@ function gitReferenceBuildStatus(dir, pin, mainRef = 'origin/main') {
     const nativeBuild = execFileSync('git', ['-C', dir, 'ls-tree', pin, '--', 'binding.gyp'], { encoding: 'utf8' })
     const isolatedBuild = scripts.build === 'tsc' && scripts.prepare === 'npm run build' &&
       ['prebuild', 'postbuild', 'preprepare', 'postprepare', 'preinstall', 'install', 'postinstall', 'prepack', 'postpack', 'prepublish', 'prepublishOnly', 'dependencies'].every((name) => !scripts[name]) &&
-      !pkg.imports && !pkg.workspaces &&
-      [pkg.dependencies, pkg.devDependencies, pkg.optionalDependencies].every((group) =>
-        Object.values(group ?? {}).every((value) => typeof value === 'string' && !/^(?:file|link|workspace):/.test(value))) &&
+      !pkg.imports && !pkg.workspaces && !pkg.overrides &&
+      [pkg.dependencies, pkg.devDependencies, pkg.optionalDependencies, pkg.peerDependencies].every((group) =>
+        Object.values(group ?? {}).every((value) => typeof value === 'string' && !/^(?:(?:file|link|workspace):|\.{1,2}\/|\/|~)/.test(value))) &&
       ['baseUrl', 'paths', 'typeRoots', 'types', 'rootDirs'].every((name) => config.compilerOptions?.[name] === undefined) &&
       config.compilerOptions?.rootDir === 'src' && config.compilerOptions?.outDir === 'dist' &&
       JSON.stringify(config.include) === '["src/**/*"]' && !config.extends && !config.references && !config.files &&
@@ -446,12 +446,13 @@ function gitReferenceBuildStatus(dir, pin, mainRef = 'origin/main') {
     if (!isolatedBuild || !isSpecGitlink(pin) || !isSpecGitlink(status.main)) return { ...status, specPinOnly: false }
     const head = execFileSync('git', ['-C', dir, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()
     if (head !== status.main) return { ...status, specPinOnly: false }
-    execFileSync('git', ['-C', dir, 'diff', '--quiet', 'HEAD', '--', '.', ':(exclude)spec'], { stdio: 'ignore' })
-    const untracked = execFileSync('git', ['-C', dir, 'ls-files', '--others', '--exclude-standard', '--', 'src'], { encoding: 'utf8' })
+    execFileSync('git', ['-C', dir, 'diff', '--quiet', '--no-ext-diff', '--no-textconv', 'HEAD', '--', '.', ':(exclude)spec'], { stdio: 'ignore' })
+    const untracked = execFileSync('git', ['-C', dir, 'ls-files', '--others', '--', 'src'], { encoding: 'utf8' })
     if (untracked !== '') return { ...status, specPinOnly: false }
     const inputs = referenceBuildInputs(dir)
     const roots = ['src', 'node_modules'].map((path) => realpathSync(join(dir, path)) + sep)
-    return { ...status, specPinOnly: inputs.length > 0 && inputs.every((path) => roots.some((root) => path.startsWith(root))) }
+    const specRoot = (existsSync(join(dir, 'spec')) ? realpathSync(join(dir, 'spec')) : resolve(dir, 'spec')) + sep
+    return { ...status, specPinOnly: inputs.length > 0 && inputs.every((path) => !path.startsWith(specRoot) && roots.some((root) => path.startsWith(root))) }
   } catch (error) {
     return new Error(`cannot verify reference build at ${pin}: ${error.message}`)
   }
