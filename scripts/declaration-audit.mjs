@@ -427,10 +427,13 @@ function gitReferenceBuildStatus(dir, pin, mainRef = 'origin/main') {
     const pkg = JSON.parse(execFileSync('git', ['-C', dir, 'show', `${pin}:package.json`], { encoding: 'utf8' }))
     const config = JSON.parse(execFileSync('git', ['-C', dir, 'show', `${pin}:tsconfig.json`], { encoding: 'utf8' }))
     const scripts = pkg.scripts ?? {}
+    const sourceTree = execFileSync('git', ['-C', dir, 'ls-tree', '-r', pin, '--', 'src'], { encoding: 'utf8' })
+    const nativeBuild = execFileSync('git', ['-C', dir, 'ls-tree', pin, '--', 'binding.gyp'], { encoding: 'utf8' })
     const isolatedBuild = scripts.build === 'tsc' && scripts.prepare === 'npm run build' &&
-      ['prebuild', 'postbuild', 'preprepare', 'postprepare', 'preinstall', 'install', 'postinstall'].every((name) => !scripts[name]) &&
+      ['prebuild', 'postbuild', 'preprepare', 'postprepare', 'preinstall', 'install', 'postinstall', 'prepack', 'postpack', 'prepublish', 'prepublishOnly'].every((name) => !scripts[name]) &&
       config.compilerOptions?.rootDir === 'src' && config.compilerOptions?.outDir === 'dist' &&
       JSON.stringify(config.include) === '["src/**/*"]' && !config.extends && !config.references && !config.files &&
+      !/^120000 /m.test(sourceTree) && nativeBuild === '' &&
       JSON.stringify(pkg.files) === '["dist","README.md","LICENSE","action.yml",".pre-commit-hooks.yaml"]'
     return { ...status, specPinOnly: isolatedBuild && paths === 'spec\0' && isSpecGitlink(pin) && isSpecGitlink(status.main) }
   } catch (error) {
@@ -926,7 +929,7 @@ const width = { repo: 9, path: 60, name: 32, rows: 20 }
 const pad = (s, n) => String(s).padEnd(n).slice(0, n)
 
 const MODE_BANNER = strict
-  ? 'RELEASE - is this tree clear to tag? Every owed list must be empty and the pin current.'
+  ? 'RELEASE - is this tree clear to tag? Every owed list must be empty and the reference build current.'
   : 'PER-PR - is this pull request defective? A declared engine-pin window passes; pin staleness reports.'
 console.log(`Declaration audit - mode ${mode.toUpperCase()}`)
 console.log(`  ${MODE_BANNER}`)
@@ -1193,7 +1196,7 @@ if (failed > 0) {
 console.log(
   `DECLARATION AUDIT PASSED (mode: ${mode}) - ` +
     (strict
-      ? 'every owed list is empty, the pin is current, and every guard is two-directional.'
+      ? 'every owed list is empty, the reference build is current, and every guard is two-directional.'
       : 'every owed list is empty, every engine-lag window is declared, and every guard is two-directional.'),
 )
 }

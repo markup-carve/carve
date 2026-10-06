@@ -338,7 +338,7 @@ test('reference build gate accepts only an ancestral spec gitlink update', (t) =
   const divergent = gitReferenceBuildStatus(dir, 'HEAD', updated)
   assert.equal(divergent.relation, 'diverged')
   assert.notEqual(divergent.specPinOnly, true)
-  for (const script of ['prebuild', 'postbuild', 'preprepare', 'postprepare', 'preinstall', 'install', 'postinstall']) {
+  for (const script of ['prebuild', 'postbuild', 'preprepare', 'postprepare', 'preinstall', 'install', 'postinstall', 'prepack', 'postpack', 'prepublish', 'prepublishOnly']) {
     git('reset', '--hard', pin)
     writeFileSync(join(dir, 'package.json'), JSON.stringify({ ...packageConfig, scripts: { ...packageConfig.scripts, [script]: 'node spec/build.js' } }))
     git('commit', '-qam', 'spec-dependent build')
