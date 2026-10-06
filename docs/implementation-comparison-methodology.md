@@ -250,15 +250,15 @@ The former case-by-case notes remain in the
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>2164 / 2164</strong>
+    <strong>2165 / 2165</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>2164 / 2164</strong>
+    <strong>2165 / 2165</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>2164 / 2164</strong>
+    <strong>2165 / 2165</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -269,9 +269,9 @@ The former case-by-case notes remain in the
 
 | Implementation | Commit | Corpus | Scored fixtures | Mismatches | Errors |
 |----------------|--------|--------|-----------------|------------|--------|
-| Rust | `3db5e6201` | `2164 / 2164` | `2325 / 2325` | `0` | `0` |
-| JS | `6d02fa706` | `2164 / 2164` | `2325 / 2325` | `0` | `0` |
-| PHP | `7033d04b1` | `2164 / 2164` | `2325 / 2325` | `0` | `0` |
+| Rust | `ba1fb3990` | `2165 / 2165` | `2326 / 2326` | `0` | `0` |
+| JS | `e8a0766bb` | `2165 / 2165` | `2326 / 2326` | `0` | `0` |
+| PHP | `0c7a4b5b0` | `2165 / 2165` | `2326 / 2326` | `0` | `0` |
 
 The command was `npm run compare:counts`, with `CARVE_RS_DIR`, `CARVE_JS_DIR`
 and `CARVE_PHP_DIR` pointing at the isolated engine checkouts. No case was
@@ -663,12 +663,12 @@ Core count-only summary:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=2164 shard=0/1 targets=html,markdown,plain,carve,ansi
-rust: pass=2325/2325 mismatch=0 error=0 skipped=0 runs=2325
+profile=default/no-opt-in corpus=core corpus_pairs=2165 shard=0/1 targets=html,markdown,plain,carve,ansi
+rust: pass=2326/2326 mismatch=0 error=0 skipped=0 runs=2326
   mismatching documents: 0
-js: pass=2325/2325 mismatch=0 error=0 skipped=0 runs=2325
+js: pass=2326/2326 mismatch=0 error=0 skipped=0 runs=2326
   mismatching documents: 0
-php: pass=2325/2325 mismatch=0 error=0 skipped=0 runs=2325
+php: pass=2326/2326 mismatch=0 error=0 skipped=0 runs=2326
   mismatching documents: 0
 cross_impl_diffs=0
 
