@@ -12,13 +12,29 @@ Releases before 0.1.6 are archived in
 
 ## [0.1.8] - 2026-10-06
 
+### Compatibility and migration
+
+Exact-case lookup changes heading cross-references, numbered caption and equation
+references, collapsed references that fall back to heading text, and include
+fragment selection. Link-definition labels and footnote labels were already
+case-sensitive. Whitespace normalization, NFC and core heading slug derivation
+are unchanged. Case-distinct ids remain separate targets.
+
+Run `carve lint` before upgrading existing documents. `carve fmt --migrate`
+repairs unambiguous case-only cross-reference and link or image label misses.
+Review the result: changing a collapsed label also changes its visible text or
+image alternative text. Ambiguous matches and labels carrying inline markup
+need manual review. Include selectors, glossary references and external
+fragment links are outside this repair. Glossary ids now preserve case, so
+update links to those ids separately. Ordinary `fmt` does not apply this repair.
+
 ### Breaking
 
-- Every name lookup compares case exactly: `</#id>` crossrefs, collapsed and
-  labeled references, footnote labels, caption and equation ids, and an
-  include's `#name`. A case-only mismatch no longer resolves, and `{#Tip}` and
-  `{#tip}` are two ids. Slug derivation, whitespace collapsing and NFC are
-  unchanged (#2732).
+- Heading cross-references, numbered caption and equation references, collapsed
+  references that fall back to heading text, and include fragment selectors now
+  compare case exactly. Link-definition labels and footnote labels already did.
+  A case-only mismatch is unresolved; `{#Tip}` and `{#tip}` remain separate
+  targets. Slug derivation, whitespace normalization and NFC are unchanged (#2732).
 - An include renames a colliding explicit id on any element, not only a heading
   id or a footnote label. Explicit ids share one namespace, the first
   occurrence in expanded order keeps the name, each later copy from another
