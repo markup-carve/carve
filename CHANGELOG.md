@@ -18,14 +18,14 @@ With the new engine, lint existing documents before deploying their output.
 `fmt --migrate` repairs unambiguous case-only reference misses. Review changes
 to collapsed link text and image alt text; include selectors, glossary
 references and external fragment links need manual review. See the
-[migration guide](docs/validation.md#upgrading-exact-case-references).
+[migration guide](https://github.com/markup-carve/carve/blob/main/docs/validation.md#upgrading-exact-case-references).
 
 ### Breaking
 
 - Heading cross-references, numbered caption and equation references, collapsed
   references that fall back to heading text, and include fragment selectors now
   compare case exactly. Link-definition labels and footnote labels already did.
-  A case-only mismatch is unresolved; `{#Tip}` and `{#tip}` remain separate
+  A case-only mismatch is unresolved; `{#Tip}` and `{#tip}` identify separate
   targets. Default heading slug derivation, whitespace normalization and NFC are unchanged (#2732).
 - An include renames a colliding explicit id on any element, not only a heading
   id or a footnote label. Explicit ids share one namespace, the first
