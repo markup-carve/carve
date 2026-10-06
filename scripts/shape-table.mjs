@@ -97,7 +97,7 @@ function spawnShape(label, bin, args, opts) {
 
 function rsShape(source) {
   const bin = rustBinary(rustDir())
-  if (!bin) return { missing: 'carve-rs: no built binary (set CARVE_RS_DIR / CARGO_TARGET_DIR)' }
+  if (!bin) return { missing: 'carve-rs: no checkout-matching built binary (set CARVE_RS_DIR / CARGO_TARGET_DIR)' }
 
   return spawnShape('carve-rs', bin, ['--json'], { input: source })
 }

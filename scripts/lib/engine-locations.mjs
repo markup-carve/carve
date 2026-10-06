@@ -57,7 +57,17 @@ function binaryLocations(dir) {
   }
   // Absolute paths remain valid when a runner changes its working directory.
   if (dir) candidates.push(resolve(dir, 'target/release/carve'), resolve(dir, 'target/debug/carve'))
-  return { candidates: [...new Set(candidates)], configured: Boolean(targetDir && !override) }
+  return { candidates: [...new Set(candidates)], configured: Boolean(targetDir && !override &&
+    resolve(targetDir) !== resolve(realpathSync(dir), 'target')) }
+}
+
+/** A regular checkout artifact retains the resolver's existing trust policy. */
+function localCheckoutBuild(binary, dir) {
+  try {
+    return realpathSync(binary).startsWith(`${join(realpathSync(dir), 'target')}/`)
+  } catch {
+    return false
+  }
 }
 
 /** Paths searched, including configured artifacts rejected for unknown provenance. */
@@ -69,5 +79,5 @@ export function rustBinaryCandidates(dir = rustDir()) {
 export function rustBinary(dir = rustDir()) {
   const { candidates, configured } = binaryLocations(dir)
   return candidates.find((candidate) => existsSync(candidate) &&
-    (!configured || builtFromCheckout(candidate, dir))) ?? null
+    (!configured || localCheckoutBuild(candidate, dir) || builtFromCheckout(candidate, dir))) ?? null
 }

@@ -23,7 +23,7 @@
 import { test } from 'node:test'
 import { spawnSync } from 'node:child_process'
 import assert from 'node:assert/strict'
-import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { isAbsolute, join, relative, resolve } from 'node:path'
 import { rustBinary, rustBinaryCandidates } from '../scripts/lib/engine-locations.mjs'
@@ -215,10 +215,15 @@ test('Cargo config selects the build directory ahead of a leftover checkout bina
   try {
     assert.equal(withTargetDir(undefined, () => rustBinary(checkout)), built)
     rmSync(`${built}.d`)
-    assert.equal(withTargetDir(undefined, () => rustBinary(checkout)), null)
+    assert.equal(withTargetDir(undefined, () => rustBinary(checkout)), join(checkout, 'target/release/carve'))
     assert.ok(withTargetDir(undefined, () => rustBinaryCandidates(checkout)).includes(built))
     const override = plant(root, 'override/release/carve')
     assert.equal(withTargetDir(join(root, 'override'), () => rustBinary(checkout)), override)
+    rmSync(join(checkout, 'target'), { recursive: true })
+    const unrelated = plant(root, 'unrelated-target/release/carve')
+    writeFileSync(`${unrelated}.d`, `${unrelated}: /another-checkout/src/main.rs\n`)
+    symlinkSync(join(root, 'unrelated-target'), join(checkout, 'target'), 'junction')
+    assert.equal(withTargetDir(undefined, () => rustBinary(checkout)), null)
   } finally {
     rmSync(root, { recursive: true, force: true })
   }
@@ -231,6 +236,25 @@ test('unreadable Cargo metadata preserves checkout discovery', { skip: !cargoAva
   writeFileSync(join(checkout, 'Cargo.toml'), 'invalid manifest\n')
   try {
     assert.equal(withTargetDir(undefined, () => rustBinary(checkout)), built)
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
+test('a default target directory accepts an ordinary checkout binary without a depfile', { skip: !cargoAvailable }, () => {
+  const root = sandbox()
+  const checkout = join(root, 'carve-rs')
+  mkdirSync(join(checkout, '.cargo'), { recursive: true })
+  mkdirSync(join(checkout, 'src'), { recursive: true })
+  writeFileSync(join(checkout, 'Cargo.toml'), '[package]\nname = "carve-resolver-test"\nversion = "0.1.0"\nedition = "2021"\n')
+  writeFileSync(join(checkout, 'src/main.rs'), 'fn main() {}\n')
+  writeFileSync(join(checkout, '.cargo/config.toml'), '[build]\ntarget-dir = "target"\n')
+  const built = plant(checkout, 'target/release/carve')
+  const alias = join(root, 'checkout-alias')
+  symlinkSync(checkout, alias, 'junction')
+  try {
+    assert.equal(withTargetDir(undefined, () => rustBinary(checkout)), built)
+    assert.equal(withTargetDir(undefined, () => rustBinary(alias)), built)
   } finally {
     rmSync(root, { recursive: true, force: true })
   }
