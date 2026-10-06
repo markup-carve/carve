@@ -1,0 +1,17 @@
+A description body whose own block is a fence keeps no line below its column
+
+````
+:: t
+: ```
+code
+```
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <pre><code></code></pre>
+  </dd>
+</dl>
+<p>code
+<code></code></p>
+````
