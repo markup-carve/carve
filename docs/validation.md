@@ -58,6 +58,27 @@ report nothing without it:
 carve lint --platform github doc.crv
 ```
 
+## Automatic Repair
+
+`carve fmt --migrate` rewrites the case-only reference misses that have exactly
+one candidate: a `</#id>` cross-reference to a heading, numbered caption or
+equation whose id differs only in case; a collapsed or explicit link or image
+reference whose label matches a link definition only case-insensitively; or a
+collapsed link reference that falls back to plain heading text with a case-only
+mismatch.
+
+It leaves a reference alone when more than one target matches it
+case-insensitively, and when a collapsed reference would fall back to heading
+text carrying inline markup. The skip is that fallback alone, not inline markup
+in general: `## *Label*` with `[*label*][]` stays as written, while
+`[*l*abel][]` and `[t][*l*abel]` against a `[*L*abel]: /u` definition are both
+rewritten. Include selectors, glossary references and external fragment links
+are outside the repair.
+
+Rewriting a collapsed label changes the visible link text, and a collapsed
+image's alternative text, so read the result rather than committing it unseen.
+Ordinary `fmt` leaves every reference as authored.
+
 ## Programmatic API
 
 JavaScript and TypeScript callers can use `lintCarve` directly:

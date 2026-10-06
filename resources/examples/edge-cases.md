@@ -46176,6 +46176,52 @@ See [Plan][] and [plan][].
 
 :::
 
+Numbered captions and equation captions keep the same distinction:
+
+::: compare
+
+```carve
+{#Fig}
+![upper](upper.png)
+^ Figure #: upper
+
+{#fig}
+![lower](lower.png)
+^ Figure #: lower
+
+{#Eq}
+$$`x`
+^ Equation #: upper
+
+{#eq}
+$$`y`
+^ Equation #: lower
+
+</#Fig>, </#fig>, </#FIG>, </#Eq>, </#eq>, </#EQ>.
+```
+
+```html
+<figure id="Fig">
+  <img src="upper.png" alt="upper">
+  <figcaption>Figure 1: upper</figcaption>
+</figure>
+<figure id="fig">
+  <img src="lower.png" alt="lower">
+  <figcaption>Figure 2: lower</figcaption>
+</figure>
+<figure id="Eq">
+  <p><span class="math display" role="math">\[x\]</span></p>
+  <figcaption>Equation 1: upper</figcaption>
+</figure>
+<figure id="eq">
+  <p><span class="math display" role="math">\[y\]</span></p>
+  <figcaption>Equation 2: lower</figcaption>
+</figure>
+<p><a href="#Fig">Figure 1</a>, <a href="#fig">Figure 2</a>, &lt;/#FIG&gt;, <a href="#Eq">Equation 1</a>, <a href="#eq">Equation 2</a>, &lt;/#EQ&gt;.</p>
+```
+
+:::
+
 ## An info string does not change how a flush-left fence folds into a description body
 
 A flush-left fence line below a closed nested fence in a description body is

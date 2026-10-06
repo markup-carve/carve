@@ -1,0 +1,17 @@
+{#Fig}
+![upper](upper.png)
+^ Figure #: upper
+
+{#fig}
+![lower](lower.png)
+^ Figure #: lower
+
+{#Eq}
+$$`x`
+^ Equation #: upper
+
+{#eq}
+$$`y`
+^ Equation #: lower
+
+</#Fig>, </#fig>, </#FIG>, </#Eq>, </#eq>, </#EQ>.

@@ -12,13 +12,22 @@ Releases before 0.1.6 are archived in
 
 ## [0.1.8] - 2026-10-06
 
+### Compatibility and migration
+
+With the new engine, lint existing documents before deploying their output.
+`fmt --migrate` repairs unambiguous case-only reference misses. Review changes
+to collapsed link text and image alt text; include selectors, glossary
+references and external fragment links need manual review. See the
+[migration guide](https://github.com/markup-carve/carve/blob/main/docs/validation.md#automatic-repair).
+
 ### Breaking
 
-- Every name lookup compares case exactly: `</#id>` crossrefs, collapsed and
-  labeled references, footnote labels, caption and equation ids, and an
-  include's `#name`. A case-only mismatch no longer resolves, and `{#Tip}` and
-  `{#tip}` are two ids. Slug derivation, whitespace collapsing and NFC are
-  unchanged (#2732).
+- Heading cross-references, numbered caption and equation references,
+  and collapsed references that fall back to heading text now compare case
+  exactly. Link-definition labels and footnote labels already did; the include
+  selector rule now agrees with the exact lookup the engines already shipped.
+  A case-only mismatch is unresolved; `{#Tip}` and `{#tip}` identify separate
+  targets. Default heading slug derivation, whitespace normalization and NFC are unchanged (#2732).
 - An include renames a colliding explicit id on any element, not only a heading
   id or a footnote label. Explicit ids share one namespace, the first
   occurrence in expanded order keeps the name, each later copy from another
@@ -42,6 +51,10 @@ Releases before 0.1.6 are archived in
   and is not compared (#2686).
 
 ### Fixes
+
+- The upgrade guide distinguishes newly exact lookups from labels that already
+  matched case exactly, and explains migration limits. Tests keep case-distinct
+  numbered captions and equations separate (#2759).
 
 - The `broken-fragment-link` rule reads the caller's own render, carrying the
   extensions passed to the linter, so a link absent from that render is not

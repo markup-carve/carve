@@ -54,6 +54,24 @@ the production instead of duplicating it. The same audit exposed two previously
 unstated transforms: one leading byte-order mark is stripped, and every U+0000
 is replaced by U+FFFD (carve#872, carve#1523).
 
+## Name lookup and case
+
+Name lookup once compared case-insensitively for heading cross-references,
+numbered caption and equation references, collapsed references falling back to
+heading text, and include fragment selectors. With only `{#tip}` defined,
+`</#Tip>` and `</#tip>` both reached that section. The include rule inherited
+that reading from the cross-reference rule although the engines compared a
+`#section` selector exactly.
+
+Link-definition labels and footnote labels compared exactly throughout. This
+also held for collapsed and explicit link references. The changelog wording
+that grouped them with the change overstated it.
+
+Lookup is now exact everywhere, so case-distinct ids identify separate targets
+(carve#2732). Glossary ids preserve case under the same reading, while index
+slugs stay lowercased (carve#2739). Default heading slug derivation, whitespace
+normalization and NFC are unchanged.
+
 ## Container ownership
 
 Before carve#1730, case notes often inferred whether a container survived from
