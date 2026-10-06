@@ -22,9 +22,10 @@ references and external fragment links need manual review. See the
 
 ### Breaking
 
-- Heading cross-references, numbered caption and equation references, collapsed
-  references that fall back to heading text, and include fragment selectors now
-  compare case exactly. Link-definition labels and footnote labels already did.
+- Heading cross-references, numbered caption and equation references,
+  and collapsed references that fall back to heading text now compare case
+  exactly. Link-definition labels and footnote labels already did; the include
+  selector rule now agrees with the exact lookup the engines already shipped.
   A case-only mismatch is unresolved; `{#Tip}` and `{#tip}` identify separate
   targets. Default heading slug derivation, whitespace normalization and NFC are unchanged (#2732).
 - An include renames a colliding explicit id on any element, not only a heading

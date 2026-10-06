@@ -61,9 +61,10 @@ carve lint --platform github doc.crv
 ## Upgrading exact-case references
 
 Exact-case lookup changes heading cross-references, numbered caption and equation
-references, collapsed references that fall back to heading text, and include
-fragment selection. Link-definition labels and footnote labels were already
-case-sensitive. Whitespace normalization, NFC and default heading slug derivation
+references, and collapsed references that fall back to heading text.
+Link-definition labels, footnote labels and include fragment selectors were
+already case-sensitive in the previous published engines. The specification
+now states the same exact include-selector rule those engines shipped. Whitespace normalization, NFC and default heading slug derivation
 are unchanged. Case-distinct ids identify separate targets.
 
 With the new engine, run `carve lint` before deploying the rendered output.
