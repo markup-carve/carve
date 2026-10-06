@@ -2299,7 +2299,13 @@ function normalizeSource(src) {
   return src
 }
 
-export function parse(src, { authoredBodyBases = true } = {}) {
+/*
+ * `stateSink` is an OBSERVABILITY parameter and nothing else: the collector's
+ * cross-container channel (`state`) is internal, so a lifecycle published onto
+ * it could not otherwise be checked by a test. Passing one changes no answer.
+ * Introduced with the per-descendant question-1 state (carve#2746).
+ */
+export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) {
   src = normalizeSource(src)
   const lines = src.split('\n')
   if (lines[lines.length - 1] === '') lines.pop()
@@ -2311,6 +2317,9 @@ export function parse(src, { authoredBodyBases = true } = {}) {
     prefixMemos: new WeakMap(),
     unterminatedLines: new WeakSet(src.endsWith('\n') ? [] : [lines]),
   }
+  // Only when a sink is passed. An always-present key would change the state
+  // object's own shape, which a structural test deep-compares.
+  if (stateSink) state.descendantQ1Log = (stateSink.descendantQ1 = [])
   // frontmatter (PART 1): consumed; renders nothing. The closer-lookahead
   // guard: with no closing --- the line is an ordinary thematic break.
   // The slot before the format token is PADDING and takes `space` (PART 7;
@@ -4771,6 +4780,59 @@ function collectItems(lines, i, list, state, ind, meas) {
       ? contentCol + headSubMarker.indent + headSubMarker.markerWidth
       : -1
     let subCol = -1
+    /*
+     * PER-DESCENDANT QUESTION 1 (carve#2746).
+     *
+     * Q1 is not one bit. It is per-container state - whether a paragraph is
+     * open, what that paragraph holds for SS12 absorption, and the fence stack -
+     * and this collector held it only for ITSELF. Asking Q2 at a descendant's
+     * column therefore asked it with Q1 answered for the wrong container, which
+     * is why each candidate rule for a flush-left line below a nested item
+     * failed in the other candidate's direction rather than on its merits
+     * (carve#2744, carve#2746).
+     *
+     * Lifecycle, and it is the whole contract:
+     *   SEEDED from the marker line, where a descendant spelled `- - x` has
+     *     already taken content this collector never sees as a body line.
+     *   ADVANCED by each line the descendant takes, in the DESCENDANT's
+     *     coordinates, so the state reads as that container would read it.
+     *   READABLE at the column the descendant owns, through `descendantQ1At`.
+     *
+     * It is recorded and never consulted by the answers below. That is
+     * deliberate: this commit must move no row, and a rule that wants Q1 for a
+     * descendant now has somewhere to ask rather than having to re-derive it
+     * from this collector's own paragraph.
+     */
+    const descendantQ1 = { col: -1, open: false, para: [], absorbedFence: null }
+    const seedDescendantQ1 = (col, text) => {
+      descendantQ1.col = col
+      descendantQ1.open = text !== ''
+      descendantQ1.para = text !== '' ? [text] : []
+      descendantQ1.absorbedFence = null
+    }
+    /*
+     * One line the descendant takes. `text` is already in the descendant's
+     * coordinates. A blank closes its paragraph, the SS12 rule this collector
+     * applies to its own; anything else extends it, which is what makes an
+     * absorbed opener readable at all.
+     */
+    const advanceDescendantQ1 = (text, absorbed) => {
+      if (descendantQ1.col < 0) return
+      if (text.trim() === '') { descendantQ1.open = false; descendantQ1.para = []; return }
+      if (!descendantQ1.open) { descendantQ1.open = true; descendantQ1.para = [] }
+      descendantQ1.para.push(text)
+      if (absorbed) descendantQ1.absorbedFence = absorbed
+    }
+    // Readable at the column the descendant owns, and nowhere else: asking
+    // outside that column is the conflation this state exists to end.
+    const descendantQ1At = (col) => descendantQ1.col >= 0 && col >= descendantQ1.col
+      ? { open: descendantQ1.open, para: [...descendantQ1.para], absorbedFence: descendantQ1.absorbedFence }
+      : null
+    // SEED. `- - :::d` puts `:::d` in the descendant before this collector reads
+    // a single body line; `para`'s first line here is the raw `- - :::d`, whose
+    // `- - ` is MARKERS rather than indentation, so no dedent recovers it. That
+    // is the second gap carve#2746 measured, and the seed is what closes it.
+    if (headSubMarker) seedDescendantQ1(headSubCol, headSubMarker.text)
     // Open fence state inside the item's own content, so an interior blank line
     // is fence content, not an item-loosening separator (carve#326 C). This is
     // deliberately an incremental tracker: only a valid opener sets state and
@@ -4949,6 +5011,10 @@ function collectItems(lines, i, list, state, ind, meas) {
     }
     const commentHoldsLine = (span, measured) => span?.kind === 'comment' &&
       (!span.markerLine || measured.col >= span.col || measured.rest.startsWith('%%'))
+    // Set by `trackNestedFence` for the one line it is reading, drained by the
+    // caller into the descendant's Q1 state. A return value cannot carry it:
+    // the function's `null` is load-bearing (carve#2746).
+    let absorbedFenceSeen = null
     const trackNestedFence = (open, dmeas, sourceCol, idx, descendantOwned) => {
       if (open) {
         if (open.kind === 'comment') {
@@ -4981,7 +5047,18 @@ function collectItems(lines, i, list, state, ind, meas) {
       }
       const f = FENCE.exec(dmeas.rest)
       if (!f || parseFenceInfo(f[2]) === null) return null
-      return nestedFenceOpens(idx, f[1], sourceCol) ? { kind: 'code', run: f[1], col: dmeas.col } : null
+      if (nestedFenceOpens(idx, f[1], sourceCol)) return { kind: 'code', run: f[1], col: dmeas.col }
+      /*
+       * ABSORBED. The fence opened nothing because the descendant holds an open
+       * paragraph and no closer sits at its column, so this returns `null` and
+       * the signal was lost - the first gap carve#2746 measured. It cannot come
+       * back as `kind: 'code'`: `nestedVerbatim()` would end the item and
+       * `nestedFenceOpensAt` would tell the nested parse the fence opens. So it
+       * is recorded in the descendant's own Q1 state, which nothing below reads,
+       * and `nestedOpaque` still goes to `null` exactly as before.
+       */
+      absorbedFenceSeen = { run: f[1], col: dmeas.col }
+      return null
     }
     // A comment closes the leaf paragraph but leaves the item frame available.
     // This flag records that explicit transition for the next ownership step.
@@ -5531,7 +5608,14 @@ function collectItems(lines, i, list, state, ind, meas) {
         // hold an open paragraph, so the fence folds into it and the run below
         // the base folds with it. `descendantOwned` is the collector's existing
         // spelling of "a known descendant item owns this column".
+        absorbedFenceSeen = null
         nestedOpaque = trackNestedFence(nestedOpaque, dmeas, lm.col, i, descendantOwned)
+        // ADVANCE. One line the descendant takes, in the descendant's own
+        // coordinates, which is what makes the state readable at its column.
+        if (descendantOwned) {
+          if (descendantQ1.col < 0) seedDescendantQ1(subCol >= 0 ? subCol : headSubCol, '')
+          advanceDescendantQ1(dmeas.rest, absorbedFenceSeen)
+        }
         // A descendant's fence whose closer this collector is about to BREAK
         // away: hand the answer down so the nested parse reads the line the same
         // way (carve#1399, one level further in). Without it the item held an
@@ -5966,6 +6050,14 @@ function collectItems(lines, i, list, state, ind, meas) {
     }
     if (fenceOpensAt.size) (state.fenceOpensAt ??= new WeakMap()).set(itemLines, fenceOpensAt)
     if (nestedFenceOpensAt.size) (state.nestedFenceOpensAt ??= new WeakMap()).set(itemLines, nestedFenceOpensAt)
+    /*
+     * PUBLISH the descendant's Q1 state, so a lifecycle nothing can read is not
+     * a lifecycle nobody can check. It goes to the caller's sink and NOT onto
+     * `state`: a key there changes the state object's own shape, which a
+     * structural test deep-compares, and the sink is already the surface
+     * carve#2746 asks to be readable at the descendant's column.
+     */
+    if (descendantQ1.col >= 0) state.descendantQ1Log?.push({ col: descendantQ1.col, ...descendantQ1At(descendantQ1.col) })
     item.blocks = parseBlocks(inheritFinalBreak(lines, itemLines, i, state), state, false, true, itemMeas)
     list.items.push(item)
     // Returning rather than breaking leaves `i` on the marker line, so the
