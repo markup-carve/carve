@@ -35,9 +35,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      # Full history, not the default single-commit clone: the gate chain below
+      # runs the suite, and tests/the-fleet-pin-check-fires.test.mjs resolves a
+      # spec commit through `origin/main` and `HEAD~4`. A shallow checkout has
+      # neither, so that test died on `cannot resolve a spec commit` and the
+      # workflow read its own checkout depth as "the bumped engine moves
+      # something here" and drafted every PR it opened (carve#2758).
       - uses: actions/checkout@v6
         with:
           token: ${{ secrets.BUMP_TOKEN }}
+          fetch-depth: 0
       - uses: actions/setup-node@v6
         with:
           node-version: '20'
