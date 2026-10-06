@@ -58,14 +58,14 @@ is replaced by U+FFFD (carve#872, carve#1523).
 
 Name lookup once compared case-insensitively for heading cross-references,
 numbered caption and equation references, collapsed references falling back to
-heading text, and include fragment selectors. With both ids present, `</#Tip>`
-and `</#tip>` both reached a single `{#tip}` section. The include rule inherited
+heading text, and include fragment selectors. With only `{#tip}` defined,
+`</#Tip>` and `</#tip>` both reached that section. The include rule inherited
 that reading from the cross-reference rule although the engines compared a
 `#section` selector exactly.
 
-Link-definition labels and footnote labels compared exactly throughout, in both
-casing directions and in their collapsed and explicit forms. The changelog
-wording that grouped them with the change overstated it.
+Link-definition labels and footnote labels compared exactly throughout. This
+also held for collapsed and explicit link references. The changelog wording
+that grouped them with the change overstated it.
 
 Lookup is now exact everywhere, so case-distinct ids identify separate targets
 (carve#2732). Glossary ids preserve case under the same reading, while index

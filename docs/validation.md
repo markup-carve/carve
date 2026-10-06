@@ -61,9 +61,11 @@ carve lint --platform github doc.crv
 ## Automatic Repair
 
 `carve fmt --migrate` rewrites the case-only reference misses that have exactly
-one candidate: a `</#id>` cross-reference whose target differs from it only in
-case, and a collapsed or explicit link or image reference whose label matches a
-link definition only case-insensitively.
+one candidate: a `</#id>` cross-reference to a heading, numbered caption or
+equation whose id differs only in case; a collapsed or explicit link or image
+reference whose label matches a link definition only case-insensitively; or a
+collapsed link reference that falls back to plain heading text with a case-only
+mismatch.
 
 It leaves a reference alone when more than one target matches it
 case-insensitively, and when a collapsed reference would fall back to heading
