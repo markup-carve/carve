@@ -228,8 +228,8 @@ const visibleText = (html) =>
 // paragraph, so the term never survives to be read back.
 
 // Corpus 546 row 5 imports, remains canonical and keeps visible text. Neither
-// source round trip survives: HTML returns inline links and numbered caption
-// text; Markdown loses the caption structure and reference destinations.
+// source round trip survives: HTML returns inline links, literal Figure
+// numbers and Equation captions as paragraphs. Markdown returns ordinary text.
 
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
