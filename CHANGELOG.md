@@ -56,6 +56,10 @@ Releases before 0.1.6 are archived in
   body's content whether or not it carries a language, and a terminated fence
   at that column ends the body for a bare run and a tagged one alike. Corpus
   row 547 pins all three readings (#2741).
+- A description body whose own block is a fence takes no line below the
+  body's column: the fence opened on the body line holds nothing, and the
+  flush-left lines beneath it are a paragraph outside the list rather than
+  that fence's content. Corpus row 548 pins the reading (#2747, #2752).
 - A fenced blockquote is reachable from the document grammar. `quote_block` sat
   in no rule's right-hand side, so a parser generated from the grammar alone
   could not build one. Every remaining production is now either reachable or
@@ -83,6 +87,11 @@ Releases before 0.1.6 are archived in
 
 ### Improvements
 
+- The canonical writer may take the refuse arm past the nesting cap:
+  over-cap flattening owes it no spellable tree, so a typed refusal is a
+  legitimate outcome of the cap and not a defect, while emitting source
+  that reads back as a different document stays forbidden. `CARVE-P9-078`
+  carries the measurement and the overturn condition (#2743, #2753).
 - An include fragment names any block carrying that explicit id, not only a
   heading. A matching heading still selects its section first; otherwise the
   first such block in document order, at any depth, is selected alone with its
