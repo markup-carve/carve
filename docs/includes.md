@@ -502,15 +502,16 @@ The specification is normative on the **outcome** and permissive on the
   The identity is the one the resolver returned (spec I11's canonical id), so
   it matches the dependency list entry for the same file.
 
-  Nested includes attribute to the file the node actually came from, not to the
-  file that pulled its parent in: a grandchild's nodes carry the grandchild's
-  id. A processor therefore stamps a resolved child AFTER expanding that
+  When a processor provides file attribution, nested includes attribute to the
+  file the node actually came from, not to the file that pulled its parent in:
+  a grandchild's nodes carry the grandchild's id. A processor therefore stamps a
+  resolved child after expanding that
   child's own includes, and only where no identity is already recorded.
 
   An **inline** include's leading and trailing text joins the host's text
   run, which PART 12 §1a coalesces, and the merged run carries the host's span.
-  Provenance is kept per node, not per character: every other node the child
-  contributes still names the child's file.
+  When file attribution is provided, provenance is kept per node, not per
+  character: every other node the child contributes still names the child's file.
 
 Worked example - `snippet.crv` ends inside an unclosed fence:
 

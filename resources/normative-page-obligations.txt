@@ -25,8 +25,7 @@
 # the row goes red. `-` where there is no clause to anchor into.
 #
 # The anchor is also what makes WEAKER mechanical rather than a note: the row
-# for a stronger page obligation anchors on the clause's own SHOULD, so a
-# clause that is
+# for a stronger page obligation anchors on the clause's own SHOULD. A clause
 # later strengthened to MUST fails the row and forces the gap to be closed here.
 #
 #   <page> :: <clause | UNSTATED | WEAKER <clause>> :: <anchor | -> :: <opening words>
