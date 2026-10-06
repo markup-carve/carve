@@ -414,9 +414,25 @@ function gitPinStatus(dir, pin, mainRef = 'origin/main') {
   }
 }
 
+// A spec gitlink update cannot change the JavaScript package built by tsc.
+// Accept only that tree difference, with both entries still submodules.
+function gitReferenceBuildStatus(dir, pin, mainRef = 'origin/main') {
+  const status = gitPinStatus(dir, pin, mainRef)
+  if (status instanceof Error || status.relation !== 'behind') return status
+  try {
+    const paths = execFileSync('git', ['-C', dir, 'diff', '--name-only', '-z', pin, status.main, '--'], { encoding: 'utf8' })
+    const isSpecGitlink = (commit) => /^160000 commit [0-9a-f]{40}\tspec\n$/.test(
+      execFileSync('git', ['-C', dir, 'ls-tree', commit, '--', 'spec'], { encoding: 'utf8' }),
+    )
+    return { ...status, specPinOnly: paths === 'spec\0' && isSpecGitlink(pin) && isSpecGitlink(status.main) }
+  } catch (error) {
+    return new Error(`cannot verify reference build at ${pin}: ${error.message}`)
+  }
+}
+
 function carveJsPinStatus(dir, mainRef = 'origin/main') {
   const pin = pinnedCarveJsSha()
-  return pin instanceof Error ? pin : gitPinStatus(dir, pin, mainRef)
+  return pin instanceof Error ? pin : gitReferenceBuildStatus(dir, pin, mainRef)
 }
 
 /** Test trees to sweep, per repo. */
@@ -867,7 +883,7 @@ function perPrPolicy(entry) {
   return entry.policy
 }
 
-export const __internals = { blankComments, perPrPolicy, collapseBetweenLiterals, declarationIndex, bracketedBlock, topLevelEntries, liveRows, classifyPinDistance, gitPinStatus, isDeclarationName, undeclaredLedgerRows, undeclaredWaiverRows, spanRowKey, spanExemptions, MANIFEST }
+export const __internals = { blankComments, perPrPolicy, collapseBetweenLiterals, declarationIndex, bracketedBlock, topLevelEntries, liveRows, classifyPinDistance, gitPinStatus, gitReferenceBuildStatus, isDeclarationName, undeclaredLedgerRows, undeclaredWaiverRows, spanRowKey, spanExemptions, MANIFEST }
 
 if (process.env.CARVE_DECL_AUDIT_LIB === '1') {
   // Imported for its helpers by the self-test; do not run the audit.
@@ -931,6 +947,8 @@ const pinStatus = carveJsPinStatus(REPOS['carve-js'].dir, ref === 'worktree' ? '
 if (pinStatus instanceof Error) {
   console.log(`PIN STALENESS  UNVERIFIABLE - ${pinStatus.message}${pinNote}\n`)
   if (pinVerdictIsGated) failed += 1
+} else if (pinStatus.specPinOnly) {
+  console.log(`PIN STALENESS  behind at ${pinStatus.pin.slice(0, 8)}; reference build unchanged (only spec gitlink differs from ${pinStatus.main.slice(0, 8)})\n`)
 } else if (pinStatus.relation !== 'current') {
   console.log(
     `PIN STALENESS  ${pinStatus.relation.toUpperCase()} - @markup-carve/carve ${pinStatus.pin.slice(0, 8)} ` +

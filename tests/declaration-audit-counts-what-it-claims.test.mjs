@@ -26,13 +26,13 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 process.env.CARVE_DECL_AUDIT_LIB = '1'
 const { __internals } = await import('../scripts/declaration-audit.mjs')
-const { liveRows, blankComments, classifyPinDistance, gitPinStatus, isDeclarationName, undeclaredLedgerRows, MANIFEST } = __internals
+const { liveRows, blankComments, classifyPinDistance, gitPinStatus, gitReferenceBuildStatus, isDeclarationName, undeclaredLedgerRows, MANIFEST } = __internals
 
 const rows = (kind, name, src) => {
   const out = liveRows({ kind, name }, src)
@@ -279,4 +279,59 @@ test('per-PR position waivers accept permitted and tracked debt, reject malforme
     assert.ok(undeclaredWaiverRows([bad]).length > 0, bad)
   }
   assert.ok(undeclaredWaiverRows([permitted, permitted]).length > 0)
+})
+
+
+test('reference build gate accepts only an ancestral spec gitlink update', (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'carve-reference-build-'))
+  t.after(() => rmSync(dir, { recursive: true, force: true }))
+  const git = (...args) => execFileSync('git', ['-C', dir, ...args], { encoding: 'utf8' }).trim()
+  git('init', '-q')
+  git('config', 'user.email', 'audit@example.invalid')
+  git('config', 'user.name', 'Declaration audit')
+  writeFileSync(join(dir, 'runtime.js'), 'export const value = 1\n')
+  writeFileSync(join(dir, 'package.json'), '{"scripts":{"build":"tsc"}}\n')
+  git('add', '.')
+  git('commit', '-qm', 'initial source')
+  const first = git('rev-parse', 'HEAD')
+  git('update-index', '--add', '--cacheinfo', `160000,${first},spec`)
+  git('commit', '-qm', 'spec gitlink')
+  const pin = git('rev-parse', 'HEAD')
+  git('update-index', '--cacheinfo', `160000,${pin},spec`)
+  git('commit', '-qm', 'spec pin update')
+  const updated = git('rev-parse', 'HEAD')
+  assert.equal(gitReferenceBuildStatus(dir, pin, updated).specPinOnly, true)
+  assert.equal(gitReferenceBuildStatus(dir, pin, pin).relation, 'current')
+  assert.equal(gitReferenceBuildStatus(dir, updated, pin).relation, 'ahead')
+  assert.ok(gitReferenceBuildStatus(dir, '0'.repeat(40), updated) instanceof Error)
+  assert.ok(gitReferenceBuildStatus(dir, pin, 'missing-ref') instanceof Error)
+
+  for (const path of ['runtime.js', 'package.json', 'README.md']) {
+    git('reset', '--hard', updated)
+    writeFileSync(join(dir, path), 'changed\n')
+    git('add', path)
+    git('commit', '-qm', `change ${path}`)
+    assert.equal(gitReferenceBuildStatus(dir, pin, 'HEAD').specPinOnly, false, path)
+  }
+  git('reset', '--hard', updated)
+  git('rm', '--cached', 'spec')
+  rmSync(join(dir, 'spec'), { recursive: true, force: true })
+  writeFileSync(join(dir, 'spec'), 'ordinary file\n')
+  git('add', 'spec')
+  git('commit', '-qm', 'replace submodule with file')
+  const ordinary = git('rev-parse', 'HEAD')
+  assert.equal(gitReferenceBuildStatus(dir, pin, ordinary).specPinOnly, false)
+  writeFileSync(join(dir, 'spec'), 'another ordinary file\n')
+  git('commit', '-qam', 'change ordinary spec file')
+  assert.equal(gitReferenceBuildStatus(dir, ordinary, 'HEAD').specPinOnly, false)
+  rmSync(join(dir, 'spec'))
+  mkdirSync(join(dir, 'spec'))
+  writeFileSync(join(dir, 'spec', 'fixture'), 'ordinary directory\n')
+  git('add', 'spec')
+  git('commit', '-qm', 'replace spec file with directory')
+  assert.equal(gitReferenceBuildStatus(dir, pin, 'HEAD').specPinOnly, false)
+  git('reset', '--hard', pin)
+  writeFileSync(join(dir, 'runtime.js'), 'side branch\n')
+  git('commit', '-qam', 'divergent source')
+  assert.equal(gitReferenceBuildStatus(dir, 'HEAD', updated).relation, 'diverged')
 })
