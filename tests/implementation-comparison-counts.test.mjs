@@ -213,7 +213,7 @@ test('the core table scores the fixtures present in the corpus', () => {
   const rows = coreRows()
   assert.equal(rows.length, 3)
   for (const row of rows) {
-    assert.equal(Number(row[5]) + Number(row[7]), scored, `${row[1]} quotes ${row[5]} scored fixtures; corpus has ${scored}`)
+    assert.equal(Number(row[5]) + Number(row[7]), scored, `${row[1]} scored fixtures plus errors differ from the corpus population ${scored}`)
   }
 })
 

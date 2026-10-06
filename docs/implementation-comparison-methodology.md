@@ -217,10 +217,10 @@ The historical five-target run linked above records that broader coverage.
 input set. `compare:impls` renders the CORPUS through every engine; the
 combinatorial check renders several curated products of AXES and diffs the same
 way. The original family crosses heading level, attribute provenance, container
-nesting and trailing body. Six additional families cross the seams that a
-2026-08-16 hand sweep found outside that product: unclosed inline runs,
-container-scoped floating attributes, terminal container children, ordered
-marker spellings, caption positions and `+`-attached block positions.
+nesting and trailing body. Seven additional families cover unclosed inline
+runs, container-scoped floating attributes, terminal container children,
+ordered marker spellings, caption positions, `+`-attached block positions, and
+repeated children.
 
 The corpus pins constructs; nothing in it pins
 what happens when two constructs meet, and a pair space is larger than a
@@ -256,8 +256,8 @@ checkouts that job already builds. `--inventory` lists each family's population
 without running an engine; per-family population guards prevent an emptied or
 partially walked product from reporting a false clean result.
 
-All 304 generated documents currently agree across the four participants. A
-future finding with a focused issue may be declared by exact document id in the
+The inventory contains 346 generated documents across eight families. A
+finding with a focused issue may be declared by exact document id in the
 runner: it remains in every report but does not fail the weekly job, while an
 undeclared finding does. With all four participants present, a declaration that
 no longer reproduces also fails, forcing the debt entry to be removed with its
@@ -352,7 +352,8 @@ engines then parsed differently, tight in one and loose in another: an
 HTML-level parser divergence the corpus structurally could not see, because the
 input only exists after formatting.
 
-Three numbers come out of it:
+The summary reports a document count and three failure counts. This
+illustrative output shows their format; it is not the current corpus run:
 
 ```text
 roundtrip_compared=499 roundtrip_diffs=0 semantic_failures=0 idempotence_failures=0

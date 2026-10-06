@@ -491,8 +491,8 @@ The specification is normative on the **outcome** and permissive on the
 - Source positions **SHOULD** identify the file they are measured in, so that
   source-mapped hosts (editors, highlighters, error reporters) can attribute an
   included span to the child file rather than to the directive (PART 9 §19 I4).
-  When a processor provides file attribution, `pos.file` carries the file's
-  canonical id and every coordinate is measured in that file (PART 12 §41).
+  When a processor provides file attribution, every coordinate is measured
+  in the file named by `pos.file` (PART 12 §41).
   A node from the document being parsed has no `pos.file`, so a document with
   no includes is unchanged.
 
