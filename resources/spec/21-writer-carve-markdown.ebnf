@@ -211,8 +211,7 @@
       line's content, not a blank line's padding. Inside a list item whose
       content column is 2, a code-block line of four spaces is a code line of
       two spaces, as it is inside a block quote after `> `. A line no wider
-      than the content column is an empty code line
-      ([carve#2403](https://github.com/markup-carve/carve/issues/2403)).
+      than the content column is an empty code line.
 
       The case this decides is a blank line INSIDE a list item, where the item's
       continuation is indented. Indenting the blank line to the content column
