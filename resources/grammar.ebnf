@@ -6592,6 +6592,19 @@ EOF = (* end of file *) ;
         A returned document MUST NOT lack text the author typed. PART 9R R1a
         records the earlier violation of this rule.
 
+        A conformance run needs to know which arm the canonical writer takes
+        past the cap, and the answer is "refuse".
+
+        THE CANONICAL WRITER MAY TAKE THE REFUSE ARM PAST THE CAP -- NORMATIVE
+        [CARVE-P9-078]. Over-cap flattening owes it no spellable tree: the
+        flattened opener is literal paragraph text carrying the ladder's own
+        indentation, and a value line that starts with whitespace has no Carve
+        spelling. The writer's typed refusal is therefore a legitimate outcome
+        of the cap and not a defect. What a writer MUST NOT do is the third
+        thing, which is neither arm of the rule above: emit source that does
+        not read back as the document it was given. Every other target still
+        renders the degraded tree.
+
         Recursive RENDER / RESOLVE /
         FILTER passes over a programmatically constructed tree MUST be
         bounded too, not only the parse path -- but their ceiling MUST NOT
