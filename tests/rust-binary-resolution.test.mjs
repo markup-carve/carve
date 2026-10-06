@@ -1,24 +1,7 @@
 /*
- * WHERE THE carve-rs BINARY IS, pinned in BOTH directions.
- *
- * Seven runners resolved this path, each carrying its own copy of the same
- * two-element list, and none of them consulted `CARGO_TARGET_DIR`. On a machine
- * that sets it - the recommended configuration here, because a full carve-rs
- * build is roughly 17G and parallel sessions otherwise fill the disk - the
- * binary exists, is fresh, and every one of those runners reported it absent.
- *
- * The consequence is worse in three of them than in the other four.
- * `fuzz-impls` and `compare:impls` refuse to run without all three engines, so
- * they say so and exit. `engine-claims`, `degradation-claims` and
- * `fmt-fixture-claims` build an engine LIST and then compare whatever is in it,
- * so an unresolved binary silently drops carve-rs from the comparison. A gate
- * that quietly measures two engines while claiming to measure three is the
- * defect class this repo keeps finding (carve#1287).
- *
- * So this asserts both halves. A binary under CARGO_TARGET_DIR is found, and a
- * binary built the ordinary way is STILL found when the variable is unset - the
- * second is the regression the fix could plausibly cause and the one no bug
- * report would have covered.
+ * Check configured, explicit, and ordinary Rust build locations. Shared
+ * artifacts must identify the checkout; regular local builds and explicit
+ * overrides retain their existing discovery behavior.
  */
 import { test } from 'node:test'
 import { spawnSync } from 'node:child_process'
@@ -256,6 +239,50 @@ test('a default target directory accepts an ordinary checkout binary without a d
     assert.equal(withTargetDir(undefined, () => rustBinary(checkout)), built)
     assert.equal(withTargetDir(undefined, () => rustBinary(alias)), built)
   } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
+test('an unconfigured shared target symlink needs a matching checkout depfile', () => {
+  const root = sandbox()
+  const checkout = join(root, 'carve-rs')
+  mkdirSync(checkout, { recursive: true })
+  const shared = plant(root, 'shared/release/carve')
+  symlinkSync(join(root, 'shared'), join(checkout, 'target'), 'junction')
+  try {
+    writeFileSync(`${shared}.d`, `${shared}: /another-checkout/src/main.rs\n`)
+    assert.equal(withTargetDir(undefined, () => rustBinary(checkout)), null)
+    writeFileSync(`${shared}.d`, `${shared}: ${join(checkout, 'src/main.rs')}\n`)
+    assert.equal(withTargetDir(undefined, () => rustBinary(checkout)), join(checkout, 'target/release/carve'))
+    assert.equal(withTargetDir(join(root, 'missing-override'), () => rustBinary(checkout)), join(checkout, 'target/release/carve'))
+    writeFileSync(`${shared}.d`, `${shared}: /another-checkout/src/main.rs\n`)
+    assert.equal(withTargetDir(join(root, 'missing-override'), () => rustBinary(checkout)), null)
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
+
+test('file symlinks use the real depfile and report rejected artifacts', () => {
+  const root = sandbox()
+  const checkout = join(root, 'carve-rs')
+  const foreign = plant(root, 'shared/release/carve')
+  const matching = plant(root, 'shared/debug/carve')
+  mkdirSync(join(checkout, 'target/release'), { recursive: true })
+  mkdirSync(join(checkout, 'target/debug'), { recursive: true })
+  symlinkSync(foreign, join(checkout, 'target/release/carve'))
+  symlinkSync(matching, join(checkout, 'target/debug/carve'))
+  writeFileSync(`${matching}.d`, `${matching}: ${join(checkout, 'src/main.rs')}\n`)
+  const messages = []
+  const original = console.error
+  console.error = (...args) => messages.push(args.join(' '))
+  try {
+    assert.equal(withTargetDir(undefined, () => rustBinary(checkout)), join(checkout, 'target/debug/carve'))
+    assert.equal(messages.length, 1)
+    assert.match(messages[0], /skipped artifacts with missing or foreign checkout depfiles/)
+    assert.ok(messages[0].includes(join(checkout, 'target/release/carve')))
+  } finally {
+    console.error = original
     rmSync(root, { recursive: true, force: true })
   }
 })

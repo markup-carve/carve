@@ -7,7 +7,7 @@
  */
 import { existsSync, readFileSync, realpathSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
-import { isAbsolute, join, resolve } from 'node:path'
+import { isAbsolute, join, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)))
@@ -35,7 +35,7 @@ function configuredTargetDir(dir) {
 function builtFromCheckout(binary, dir) {
   try {
     const dependency = join(realpathSync(dir), 'src/main.rs').replace(/ /g, '\\ ')
-    const depfile = readFileSync(`${binary}.d`, 'utf8').replace(/\\\r?\n/g, ' ')
+    const depfile = readFileSync(`${realpathSync(binary)}.d`, 'utf8').replace(/\\\r?\n/g, ' ')
     return depfile.split('\n')[0].split(': ').slice(1).join(': ').split(/(?<!\\)\s+/).includes(dependency)
   } catch {
     return false
@@ -45,6 +45,7 @@ function builtFromCheckout(binary, dir) {
 /** Prefer the active Cargo target directory to artifacts left in the checkout. */
 function binaryLocations(dir) {
   const candidates = []
+  const trusted = new Set()
   const override = process.env.CARGO_TARGET_DIR
   const targetDir = override || configuredTargetDir(dir)
   if (targetDir) {
@@ -54,17 +55,17 @@ function binaryLocations(dir) {
     const base = isAbsolute(targetDir) ? targetDir : resolve(dir ?? root, targetDir)
     const builds = [join(base, 'release/carve'), join(base, 'debug/carve')]
     candidates.push(...builds)
+    if (override) for (const binary of builds) trusted.add(binary)
   }
   // Absolute paths remain valid when a runner changes its working directory.
   if (dir) candidates.push(resolve(dir, 'target/release/carve'), resolve(dir, 'target/debug/carve'))
-  return { candidates: [...new Set(candidates)], configured: Boolean(targetDir && !override &&
-    resolve(targetDir) !== resolve(realpathSync(dir), 'target')) }
+  return { candidates: [...new Set(candidates)], trusted }
 }
 
 /** A regular checkout artifact retains the resolver's existing trust policy. */
 function localCheckoutBuild(binary, dir) {
   try {
-    return realpathSync(binary).startsWith(`${join(realpathSync(dir), 'target')}/`)
+    return realpathSync(binary).startsWith(`${join(realpathSync(dir), 'target')}${sep}`)
   } catch {
     return false
   }
@@ -77,7 +78,18 @@ export function rustBinaryCandidates(dir = rustDir()) {
 
 /** Explicit target overrides are trusted; discovered builds need checkout provenance. */
 export function rustBinary(dir = rustDir()) {
-  const { candidates, configured } = binaryLocations(dir)
-  return candidates.find((candidate) => existsSync(candidate) &&
-    (!configured || localCheckoutBuild(candidate, dir) || builtFromCheckout(candidate, dir))) ?? null
+  const { candidates, trusted } = binaryLocations(dir)
+  const rejected = []
+  for (const candidate of candidates) {
+    if (!existsSync(candidate)) continue
+    if (trusted.has(candidate) || localCheckoutBuild(candidate, dir) || builtFromCheckout(candidate, dir)) {
+      if (rejected.length) console.error(`carve-rs: skipped artifacts with missing or foreign checkout depfiles: ${rejected.join(', ')}`)
+      return candidate
+    }
+    rejected.push(candidate)
+  }
+  if (rejected.length) {
+    console.error(`carve-rs: no checkout-matching binary; missing or foreign depfiles for ${resolve(dir)}: ${rejected.join(', ')}`)
+  }
+  return null
 }
