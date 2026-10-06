@@ -37,8 +37,8 @@
  */
 
 import { execFileSync } from 'node:child_process'
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
-import { dirname, join, resolve } from 'node:path'
+import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs'
+import { dirname, join, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { parseWaivers } from './spec/ast-waivers.mjs'
@@ -414,8 +414,11 @@ function gitPinStatus(dir, pin, mainRef = 'origin/main') {
   }
 }
 
-// A spec gitlink update cannot change the JavaScript package built by tsc.
-// Accept only that tree difference, with both entries still submodules.
+// Accept a spec gitlink update only after checking the build's actual inputs.
+function referenceBuildInputs(dir) {
+  const output = execFileSync(process.execPath, [join(dir, 'node_modules/typescript/bin/tsc'), '--noEmit', '--listFiles', '--pretty', 'false', '--incremental', 'false', '--composite', 'false'], { cwd: dir, encoding: 'utf8' })
+  return output.trim().split(/\r?\n/).filter(Boolean).map((path) => realpathSync(path))
+}
 function gitReferenceBuildStatus(dir, pin, mainRef = 'origin/main') {
   const status = gitPinStatus(dir, pin, mainRef)
   if (status instanceof Error || status.relation !== 'behind') return status
@@ -432,12 +435,23 @@ function gitReferenceBuildStatus(dir, pin, mainRef = 'origin/main') {
     const nativeBuild = execFileSync('git', ['-C', dir, 'ls-tree', pin, '--', 'binding.gyp'], { encoding: 'utf8' })
     const isolatedBuild = scripts.build === 'tsc' && scripts.prepare === 'npm run build' &&
       ['prebuild', 'postbuild', 'preprepare', 'postprepare', 'preinstall', 'install', 'postinstall', 'prepack', 'postpack', 'prepublish', 'prepublishOnly', 'dependencies'].every((name) => !scripts[name]) &&
-      ['paths', 'typeRoots', 'types', 'rootDirs'].every((name) => config.compilerOptions?.[name] === undefined) &&
+      !pkg.imports && !pkg.workspaces &&
+      [pkg.dependencies, pkg.devDependencies, pkg.optionalDependencies].every((group) =>
+        Object.values(group ?? {}).every((value) => typeof value === 'string' && !/^(?:file|link|workspace):/.test(value))) &&
+      ['baseUrl', 'paths', 'typeRoots', 'types', 'rootDirs'].every((name) => config.compilerOptions?.[name] === undefined) &&
       config.compilerOptions?.rootDir === 'src' && config.compilerOptions?.outDir === 'dist' &&
       JSON.stringify(config.include) === '["src/**/*"]' && !config.extends && !config.references && !config.files &&
       !/^120000 /m.test(sourceTree) && nativeBuild === '' &&
       JSON.stringify(pkg.files) === '["dist","README.md","LICENSE","action.yml",".pre-commit-hooks.yaml"]'
-    return { ...status, specPinOnly: isolatedBuild && paths === 'spec\0' && isSpecGitlink(pin) && isSpecGitlink(status.main) }
+    if (!isolatedBuild || !isSpecGitlink(pin) || !isSpecGitlink(status.main)) return { ...status, specPinOnly: false }
+    const head = execFileSync('git', ['-C', dir, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()
+    if (head !== status.main) return { ...status, specPinOnly: false }
+    execFileSync('git', ['-C', dir, 'diff', '--quiet', 'HEAD', '--', '.', ':(exclude)spec'], { stdio: 'ignore' })
+    const untracked = execFileSync('git', ['-C', dir, 'ls-files', '--others', '--exclude-standard', '--', 'src'], { encoding: 'utf8' })
+    if (untracked !== '') return { ...status, specPinOnly: false }
+    const inputs = referenceBuildInputs(dir)
+    const roots = ['src', 'node_modules'].map((path) => realpathSync(join(dir, path)) + sep)
+    return { ...status, specPinOnly: inputs.length > 0 && inputs.every((path) => roots.some((root) => path.startsWith(root))) }
   } catch (error) {
     return new Error(`cannot verify reference build at ${pin}: ${error.message}`)
   }
