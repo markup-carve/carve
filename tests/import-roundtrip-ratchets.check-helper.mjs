@@ -227,6 +227,10 @@ const visibleText = (html) =>
 // move: all three hold a definition list, which that target writes as a bold
 // paragraph, so the term never survives to be read back.
 
+// Corpus 546 row 5 imports, remains canonical and keeps visible text. Neither
+// source round trip survives: HTML returns inline links and numbered caption
+// text; Markdown loses the caption structure and reference destinations.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {
