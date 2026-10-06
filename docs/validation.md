@@ -58,24 +58,24 @@ report nothing without it:
 carve lint --platform github doc.crv
 ```
 
-## Upgrading exact-case references
+## Automatic Repair
 
-Exact-case lookup changes heading cross-references, numbered caption and equation
-references, and collapsed references that fall back to heading text.
-Link-definition labels, footnote labels and include fragment selectors were
-already case-sensitive in the previous published engines. The specification
-now states the same exact include-selector rule those engines shipped. Whitespace normalization, NFC and default heading slug derivation
-are unchanged. Case-distinct ids identify separate targets.
+`carve fmt --migrate` rewrites the case-only reference misses that have exactly
+one candidate: a `</#id>` cross-reference whose target differs from it only in
+case, and a collapsed or explicit link or image reference whose label matches a
+link definition only case-insensitively.
 
-With the new engine, run `carve lint` before deploying the rendered output.
-`carve fmt --migrate`
-repairs unambiguous case-only cross-reference and link or image label misses,
-including label mistakes that were already unresolved before this release.
-Review the result: changing a collapsed label also changes its visible text or
-image alternative text. Ambiguous matches and labels carrying inline markup
-need manual review. Include selectors, glossary references and external
-fragment links are outside this repair. Glossary ids now preserve case, so
-update links to those ids separately. Ordinary `fmt` does not apply this repair.
+It leaves a reference alone when more than one target matches it
+case-insensitively, and when a collapsed reference would fall back to heading
+text carrying inline markup. The skip is that fallback alone, not inline markup
+in general: `## *Label*` with `[*label*][]` stays as written, while
+`[*l*abel][]` and `[t][*l*abel]` against a `[*L*abel]: /u` definition are both
+rewritten. Include selectors, glossary references and external fragment links
+are outside the repair.
+
+Rewriting a collapsed label changes the visible link text, and a collapsed
+image's alternative text, so read the result rather than committing it unseen.
+Ordinary `fmt` leaves every reference as authored.
 
 ## Programmatic API
 

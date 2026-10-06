@@ -18,7 +18,7 @@ With the new engine, lint existing documents before deploying their output.
 `fmt --migrate` repairs unambiguous case-only reference misses. Review changes
 to collapsed link text and image alt text; include selectors, glossary
 references and external fragment links need manual review. See the
-[migration guide](https://github.com/markup-carve/carve/blob/main/docs/validation.md#upgrading-exact-case-references).
+[migration guide](https://github.com/markup-carve/carve/blob/main/docs/spec-history.md#name-lookup-and-case).
 
 ### Breaking
 
