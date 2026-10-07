@@ -488,12 +488,13 @@ The specification is normative on the **outcome** and permissive on the
   can cut a fence or a div in half and manufacture exactly such a torn
   construct. The tear is bounded to the fragment; the parent document is never
   affected.
-- Source positions **MUST** identify the file they are measured in, so that
+- Source positions **SHOULD** identify the file they are measured in, so that
   source-mapped hosts (editors, highlighters, error reporters) can attribute an
-  included span to the child file rather than to the directive. A node an
-  include pulled in keeps the coordinates of **its own file** and carries that
-  file's canonical id in `pos.file`; a node from the document being parsed has
-  no `pos.file`, so a document with no includes is unchanged.
+  included span to the child file rather than to the directive (PART 9 §19 I4).
+  When a processor provides file attribution, every coordinate is measured
+  in the file named by `pos.file` (PART 12 §41).
+  A node from the document being parsed has no `pos.file`, so a document with
+  no includes is unchanged.
 
   Line and column alone cannot carry this. A child's first paragraph and the
   parent's first paragraph both report line 1, and nothing in the tree
@@ -501,15 +502,16 @@ The specification is normative on the **outcome** and permissive on the
   The identity is the one the resolver returned (spec I11's canonical id), so
   it matches the dependency list entry for the same file.
 
-  Nested includes attribute to the file the node actually came from, not to the
-  file that pulled its parent in: a grandchild's nodes carry the grandchild's
-  id. A processor therefore stamps a resolved child AFTER expanding that
+  When a processor provides file attribution, nested includes attribute to the
+  file the node actually came from, not to the file that pulled its parent in:
+  a grandchild's nodes carry the grandchild's id. A processor therefore stamps a
+  resolved child after expanding that
   child's own includes, and only where no identity is already recorded.
 
   An **inline** include's leading and trailing text joins the host's text
   run, which PART 12 §1a coalesces, and the merged run carries the host's span.
-  Provenance is kept per node, not per character: every other node the child
-  contributes still names the child's file.
+  When file attribution is provided, provenance is kept per node, not per
+  character: every other node the child contributes still names the child's file.
 
 Worked example - `snippet.crv` ends inside an unclosed fence:
 

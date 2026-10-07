@@ -1,44 +1,8 @@
 /*
- * The comparison page quotes a run, and a quoted run goes stale.
- *
- * docs/implementation-comparison-methodology.md embeds the raw output of
- * `npm run compare:impls` so a reader can see what the tool reports without
- * running four engines. That output carries `corpus_pairs=N`, and N is a fact
- * about this repository that anyone can check - so nobody did. The page said
- * 302 core pairs when there were 529, and its own hand-written correction note
- * ("has since grown to 31 pairs") was itself out of date at 33.
- *
- * This pins only the counts, not the whole block. The timings and the pass
- * lines are properties of the machine that ran it and are meant to be a
- * snapshot; the corpus size is not, and a page claiming the tool covers 302
- * documents when it covers 529 understates it by 43%.
- *
- * A DECLARED LAG, and why it is not a hole in the above.
- *
- * `compare:impls` needs three engine checkouts, and a corpus change can land on
- * a host that has none. Under the rule as first written the only way to keep
- * this file green was then to edit the denominators by hand - to publish a
- * three-engine measurement nobody took. That is worse than a stale page: a
- * stale number is visibly old, a fabricated one is not, and for carve#887 the
- * fabricated number would also have been WRONG, since carve-rs still opens an
- * admonition on a tabbed metadata slot (markup-carve/carve-rs#722).
- *
- * So the page may DECLARE the categories added after its quoted run, in one
- * line naming them, and this file adds their fixtures back before comparing.
- * The declaration cannot carry a count - it names categories, and the count is
- * derived here by listing their files - so there is nothing in it to fabricate.
- * It fails in both directions, which is what makes it a check rather than an
- * escape hatch:
- *
- *   - a category is declared but contributes no fixture (renamed, renumbered,
- *     removed) -> red, so the line cannot rot into a blanket excuse.
- *   - the run IS retaken and the quoted number moves, but the line stays ->
- *     quoted + lag now exceeds the corpus -> red, so whoever re-runs
- *     `compare:impls` has to delete it in the same commit.
- *
- * It is the same shape as `resources/engine-pin-drift.txt`, for the same
- * reason: the corpus is deliberately allowed to run ahead, and what must never
- * happen is not knowing which window you are in (carve#533).
+ * Reconcile the comparison snapshot with the live corpus and its declared lag.
+ * Lag names fixture categories rather than hand-entered counts, so both stale
+ * declarations and undeclared corpus additions fail these checks.
+ * Timings remain properties of the recorded run and are not asserted here.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -53,7 +17,7 @@ const landing = readFileSync(resolve(root, 'docs/index.md'), 'utf8')
 const countPairs = (dir) =>
   readdirSync(resolve(root, dir)).filter((f) => f.endsWith('.crv')).length
 
-const quoted = [...page.matchAll(/corpus=(core|optional) corpus_pairs=(\d+)/g)].map((m) => ({
+const quoted = [...page.matchAll(/corpus=(core|optional)(?: selected_corpus=none)? corpus_pairs=(\d+)/g)].map((m) => ({
   corpus: m[1],
   pairs: Number(m[2]),
 }))
@@ -107,7 +71,7 @@ const effectiveCore = () => countPairs('tests/corpus') - laggedPairs
 
 const coreRows = () => {
   const core = page.split('## Optional Tier-2 Profile')[0]
-  return [...core.matchAll(/^\| (Rust|JS|PHP) \| [^|]+ \| `(\d+) \/ (\d+)` \| `(\d+) \/ (\d+)` \|/gm)]
+  return [...core.matchAll(/^\| (Rust|JS|PHP) \| [^|]+ \| `(\d+) \/ (\d+)` \| `(\d+) \/ (\d+)` \| `(\d+)` \| `(\d+)` \|/gm)]
 }
 
 test('the page quotes a run for both corpora', () => {
@@ -249,7 +213,7 @@ test('the core table scores the fixtures present in the corpus', () => {
   const rows = coreRows()
   assert.equal(rows.length, 3)
   for (const row of rows) {
-    assert.equal(Number(row[5]), scored, `${row[1]} quotes ${row[5]} scored fixtures; corpus has ${scored}`)
+    assert.equal(Number(row[5]) + Number(row[7]), scored, `${row[1]} scored fixtures plus errors differ from the corpus population ${scored}`)
   }
 })
 
@@ -325,4 +289,36 @@ test('the landing page states that implementations share inputs without a volati
     /same \d+ Carve inputs/,
     'the landing-page advantage should not require an update whenever the corpus grows',
   )
+})
+
+test('the core introduction agrees with its scored-fixture table', () => {
+  const prose = page.replace(/\s+/g, ' ')
+  const population = /The count-only run covers ([\d,]+) core documents and their ([\d,]+) target sidecars\./.exec(prose)
+  const scored = /The run scores ([\d,]+) fixtures per engine\./.exec(prose)
+  assert.ok(population, 'core introduction must state its document and sidecar counts')
+  assert.ok(scored, 'core introduction must state its scored-fixture count')
+  const count = (text) => Number(text.replaceAll(',', ''))
+  const documents = count(population[1])
+  const sidecars = count(population[2])
+  const fixtures = count(scored[1])
+  assert.equal(documents + sidecars, fixtures)
+  for (const row of coreRows()) {
+    assert.equal(Number(row[4]) + Number(row[6]), Number(row[5]), `${row[1]} scored results do not add up`)
+    assert.equal(Number(row[3]), documents, `${row[1]} document count differs from the introduction`)
+    assert.equal(Number(row[5]) + Number(row[7]), fixtures, `${row[1]} scored denominator differs from the introduction`)
+  }
+})
+
+test('the optional table accounts for the quoted profile population', () => {
+  const section = page.split('## Optional Tier-2 Profile')[1].split('## CLI timing')[0]
+  const rows = [...section.matchAll(/^\| (Rust|JS|PHP) \| `(\d+) \/ (\d+)` \| `(\d+)` \| `(\d+)` \| `(\d+)` \|/gm)]
+  assert.equal(rows.length, 3)
+  const population = quoted.find(({ corpus }) => corpus === 'optional').pairs
+  for (const [, engine, passed, measured, skipped, mismatches, errors] of rows) {
+    assert.equal(Number(measured) + Number(errors) + Number(skipped), population, `${engine} optional table omits cases`)
+    assert.equal(Number(passed) + Number(mismatches), Number(measured), `${engine} optional results do not add up`)
+    const summary = new RegExp(`^${engine.toLowerCase()}: pass=(\\d+)/(\\d+) mismatch=(\\d+) error=(\\d+) skipped=(\\d+)`, 'm').exec(page.split('Optional run summary')[1])
+    assert.ok(summary, `${engine} optional summary is missing`)
+    assert.deepEqual(summary.slice(1), [passed, measured, mismatches, errors, skipped], `${engine} optional table differs from its summary`)
+  }
 })
