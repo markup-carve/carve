@@ -1,0 +1,25 @@
+{
+  "name": "i01-section-after-a-tab",
+  "description": "A tab separates the path from the section name, as whitespace does everywhere else in the directive.",
+  "rules": [
+    "I1",
+    "slot-adjacency"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child\t#pick }}",
+  "files": {
+    "child": "# A\n\nskip\n\n{#pick}\n# B\n\nyes\n\n# D\n\nskip"
+  },
+  "expected": {
+    "html": "<section id=\"pick\">\n  <h1>B</h1>\n  <p>yes</p>\n</section>",
+    "fmt": "{{ child\t#pick }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

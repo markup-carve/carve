@@ -1,0 +1,26 @@
+{
+  "name": "i01-section-adjacent-to-a-quoted-path",
+  "description": "A quoted path takes an adjacent section name too, including a path holding a space.",
+  "rules": [
+    "I1",
+    "slot-adjacency",
+    "quoted-path"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ \"my chapter.crv\"#pick }}",
+  "files": {
+    "my chapter.crv": "# A\n\nskip\n\n{#pick}\n# B\n\nyes\n\n# D\n\nskip"
+  },
+  "expected": {
+    "html": "<section id=\"pick\">\n  <h1>B</h1>\n  <p>yes</p>\n</section>",
+    "fmt": "{{ \"my chapter.crv\"#pick }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "my chapter.crv",
+        "resolved": true
+      }
+    ]
+  }
+}
