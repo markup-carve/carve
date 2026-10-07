@@ -55,11 +55,19 @@ failure mode the [Errors](#errors) rules exist to avoid. Tabs count, as they do
 wherever else whitespace does.
 
 **Inside the padding, the separators are optional.** Neither `#section` nor
-`@key:value` requires whitespace in front of it, in any position: `{{ path#section }}`,
-`{{ "path"#section }}`, `{{ path@shift:1 }}` and `{{ path #Name@shift:1 }}` are all
-well formed and mean what their spaced spellings mean. That is what the stop rules
-are for - a bare path ends at `#` or `@`, and a section name holds neither - so
-requiring the whitespace would leave those stops with nothing to do.
+`@key:value` requires whitespace in front of it, in any position. Each of these is
+well formed and means what its spaced spelling means:
+
+```
+{{ path#section }}
+{{ "path"#section }}
+{{ path@shift:1 }}
+{{ path #Name@shift:1 }}
+```
+
+That is what the stop rules are for - a bare path ends at `#` or `@`, and a section
+name holds neither - so requiring the whitespace would leave those stops with
+nothing to do.
 
 - **`#section`** names a heading or a block in the resolved source (see
   [Selecting by id](#selecting-by-id-section)). The id is matched the same way a
