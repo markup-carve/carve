@@ -17,14 +17,11 @@ concurrency:
 
 jobs:
   declarations:
-    # Not "the pin is current": per-PR, pin staleness is REPORTED and the
-    # declared spec-ahead window passes (carve#1811). The release cut runs
-    # `npm run declarations:check`, which is the verdict that requires both.
+    # Per-PR checks accept declared spec-ahead windows. The release cut uses
+    # `npm run declarations:check`, which requires empty owed lists and a current pin.
     name: declarations are visible and every window is declared
     runs-on: ubuntu-latest
-    # 10 like every other job here. At 5 the cap sat inside `npm ci`'s own range
-    # and killed the job mid-install, which then reported as a declaration
-    # failure - the wrong component entirely (carve#1942).
+    # Keep the job cap above the five-minute install cap.
     timeout-minutes: 10
 
     steps:
@@ -59,33 +56,18 @@ jobs:
           node-version: 24
           cache: npm
 
-      # THE REASON THIS JOB STALLED. `docs build` and `mermaid diagrams valid`
-      # both rewrite the git dependencies to HTTPS before installing; this job
-      # did not, so `npm ci` fetched carve-js, carve-grammars and
-      # vite-plugin-carve over ssh://git@github.com and hung there (carve#1942).
+      # Use HTTPS for Git dependencies on runners without SSH credentials.
       - name: Prefer HTTPS for Git dependencies
         run: |
           git config --global url."https://github.com/".insteadOf ssh://git@github.com/
           git config --global url."https://github.com/".insteadOf git@github.com:
 
-      # Its own cap, so an install stall fails AS an install stall instead of
-      # taking the job down and reading as a declaration finding.
+      # Bound installation separately from the declaration audit.
       - name: Install
         timeout-minutes: 5
         run: npm ci
 
-      # PER-PR MODE, not the release verdict (carve#1811). The two answer
-      # different questions and the engine-pin ledger is where they part: a
-      # release cannot ship with the spec-ahead window open, but a pull request
-      # is how that window OPENS. `declarations:check` - the strict mode - is
-      # what the release cut runs by hand; gating a spec PR on it made every
-      # ruling that leads the engines red by construction.
-      #
-      # What still fails here: an UNDECLARED engine-pin row, every other owed
-      # ledger, the AST divergence lists, a missing guard anchor, and the
-      # UNDECLARED constant sweep. Undeclared DRIFT - a slug the pin does not
-      # reproduce and nobody wrote down, the carve#533 state - is gated in the
-      # conformance job by `npm run engine:report -- --check`.
+      # Gate declaration coverage here; engine:report checks live pin drift below.
       - name: Every declaration is visible (per-PR verdict)
         env:
           CARVE_JS_DIR: ${{ github.workspace }}/engines/carve-js
@@ -101,33 +83,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # The floor tracks THIS repo's `engines` field (">=24"), which is
-        # deliberately decoupled from @markup-carve/carve's ">=20".
-        #
-        # It used to track carve-js, on the reasoning that the oldest
-        # runtime the published package promises has to be shown conformant
-        # somewhere. That coupling is dropped here: carve-docs is private,
-        # is never installed as a dependency, and ships data (the corpus
-        # fixtures) rather than code, so its runtime is a contributor and CI
-        # concern only. Meanwhile its own toolchain has moved on -- 20 is
-        # long past end-of-life, 22 enters Maintenance in October 2026, and
-        # @mermaid-lint/cli already requires ">=22".
-        #
-        # The cost is real and worth naming: conformance on Node 20 and 22
-        # is no longer proven anywhere in this repo. If the ">=20" promise
-        # on the published package needs backing, that belongs in carve-js's
-        # own matrix, against the code that actually makes the promise.
-        #
-        # The ceiling is this repo's own contribution. carve-js's matrix
-        # stops at 22, so 24 (Active LTS) and 26 (Current) are unverified
-        # anywhere else.
-        #
-        # 26 gates like every other leg rather than running
-        # continue-on-error: these steps are the corpus, the formal Core
-        # grammar and the pinned reference build, so a red leg is a real
-        # conformance signal — and a spec repo wants to hear that loudly. If
-        # a future Node genuinely breaks a toolchain rather than the spec,
-        # demote that leg then, with the breakage on record.
+        # Match this repository's Node minimum and test the current release too.
+        # Published engine runtime support belongs in each engine repository.
+        # Node 26 gates normally; demote it only for recorded toolchain breakage.
         node-version: [24, 26]
 
     steps:
@@ -170,11 +128,7 @@ jobs:
       - name: Conformance
         run: npm test
 
-      # ON pull_request, NOT on a schedule. Every input is inside the repo - a
-      # docs page, resources/spec/ and two ledgers - so nothing outside a pull
-      # request can turn it red overnight, which is the failure mode that makes
-      # a scheduled gate stop being read (markup-carve/intellij-carve#128). Red
-      # here always means this diff.
+      # Audit normative pages on each PR; inputs come from this repository.
       - name: Normative pages state nothing the spec source does not
         run: npm run normative:check
 
@@ -221,49 +175,17 @@ jobs:
       - name: Grammar reachability (corpus vs formal Core grammar)
         run: npm run grammar:reach
 
-      # PART 11 section 1, over documents the corpus cannot reach.
-      #
-      # The corpus pins documents somebody wrote, and every one of them
-      # round-trips - which is why a year of corpus testing did not find any of
-      # the six shapes carve#994 opened with, and why the round-trip gates that
-      # do exist can only confirm that documents already known to round-trip
-      # still do. scripts/property-check.mjs generates documents nobody wrote
-      # and asserts the same invariant over them. Its alphabet was extended in
-      # the same change to reach the constructs those six shapes are built
-      # from - it reached none of them before, which the mutation below is what
-      # established.
-      #
-      # It ran in NO job, was in no test, and was imported by no test. Not a
-      # check that cannot fail - a check that is never executed (carve#755).
-      #
-      # Bounded and deterministic so it can gate per PR: 2000 documents from a
-      # fixed seed, measured at 1.1s. The seed makes a failure reproducible and
-      # comparable between builds, and the scheduled sweep uses the SAME seed at
-      # a larger count, so this set is a prefix of that one.
-      #
-      # PROVED to fail at this count: reverting the carve-js#903 guard in the
-      # pinned writer - the one space that keeps a header cell's leading `~`
-      # from being read as an alignment marker - turns this step red with 99
-      # undeclared violations. It is red at 2000, not only at the scheduled
-      # 20000, which is what makes 2000 the count rather than a guess.
-      #
-      # Single-engine only here. The --engines mode needs three built
-      # checkouts, which only ast-conformance.yml provisions.
+      # Check writer invariants on 2,000 generated documents with a fixed seed.
+      # The scheduled sweep extends the same sequence. This job uses the pinned
+      # engine. ast-conformance.yml provisions checkouts for --engines mode,
+      # which is currently unwired. The 2,000-case set detects the
+      # table-alignment regression verified by reverting carve-js#903.
       - name: PART 11 canonical-writer invariants (generated documents)
         run: npm run property:check -- --count=2000
 
-      # The pinned reference build vs the corpus. NOT a gate on drift -- the
-      # corpus is deliberately allowed to run ahead of the engine, and gating
-      # on the mismatch itself would reinstate exactly the deadlock
-      # scripts/engine-report.mjs exists to document.
-      #
-      # This gates on the drift being DECLARED. resources/engine-pin-drift.txt
-      # names the slugs the pin is knowingly behind on and why; a spec PR that
-      # puts the corpus ahead adds a line there and stays green. Undeclared
-      # drift, and lines the pin has caught up on, both go red.
-      #
-      # It ran in no job at all until now, which is how carve#533 found the
-      # pinned build three documents behind with nothing reporting it.
+      # Fail on undeclared drift and on declarations the pin has caught up on.
+      # Add spec-ahead fixtures to resources/engine-pin-drift.txt and remove them
+      # once the pinned engine reproduces them.
       - name: Pinned reference build matches its declared drift
         run: npm run engine:report -- --check
 
