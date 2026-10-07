@@ -52,6 +52,8 @@ references and external fragment links need manual review. See the
 
 ### Fixes
 
+- The release reference-pin check accepts a spec-submodule-only update when the JavaScript build is unchanged. Other pin differences still fail the check (#2762).
+
 - The upgrade guide distinguishes newly exact lookups from labels that already
   matched case exactly, and explains migration limits. Tests keep case-distinct
   numbered captions and equations separate (#2759).
