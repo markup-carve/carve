@@ -114,11 +114,10 @@ export function scanDirective(text, open) {
   i = path.next
 
   let section = null
-  // The production writes `[include_section]` glued to the path, but every
-  // spelling anyone actually reads - docs/includes.md's `{{ path #section }}`
-  // and the generated golden `{{ child #pick }}` - puts a space there, so the
-  // run is admitted. Which of the two the grammar means is not this module's
-  // question; the closer is.
+  // The production glues `[include_section]` to the path and `[include_options]`
+  // to whatever precedes it, and the separating whitespace is OPTIONAL in both
+  // slots (carve#2773): `{{ c.crv#sec }}` and `{{ c.crv #Alpha@shift:1 }}` are
+  // as well formed as the spaced spellings.
   {
     let j = i
     while (j < inner.length && isWhitespace(inner[j])) j += 1
@@ -134,7 +133,7 @@ export function scanDirective(text, open) {
   for (;;) {
     let j = i
     while (j < inner.length && isWhitespace(inner[j])) j += 1
-    if (j === i || inner[j] !== '@') break
+    if (inner[j] !== '@') break
     const key = IDENTIFIER.exec(inner.slice(j + 1))
     if (!key) return null
     let k = j + 1 + key[0].length

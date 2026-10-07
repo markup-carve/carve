@@ -15,11 +15,11 @@
     "fmt": "{#dup}\n# Parent\n\n{{ a.crv }}\n",
     "warnings": [
       {
-        "rule": "include-heading-id-rename",
+        "rule": "include-id-rename",
         "file": "a.crv"
       },
       {
-        "rule": "include-heading-id-rename",
+        "rule": "include-id-rename",
         "file": "a.crv"
       }
     ],

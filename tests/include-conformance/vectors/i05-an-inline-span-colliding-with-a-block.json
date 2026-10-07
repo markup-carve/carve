@@ -15,7 +15,7 @@
     "fmt": "{#tip}\nParent.\n\n{{ a.crv }}\n",
     "warnings": [
       {
-        "rule": "include-heading-id-rename",
+        "rule": "include-id-rename",
         "file": "a.crv"
       }
     ],

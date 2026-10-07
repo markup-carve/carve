@@ -10,6 +10,20 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
+### Breaking
+
+- The include rename warning carries the rule id `include-id-rename`, renamed
+  from `include-heading-id-rename`. The rename pass stopped being about headings
+  in 0.1.8 and its message followed; the id did not. Tools matching on the old
+  id have to follow (#2772).
+
+### Fixed
+
+- An include option needs no whitespace before its `@`, in either position:
+  `{{ path@shift:1 }}` and `{{ path #Name@shift:1 }}` are well formed. The
+  grammar required a whitespace run while the path and the section name were
+  both specified to stop at `@`, which left that split unparseable (#2773).
+
 ## [0.1.8] - 2026-10-06
 
 ### Compatibility and migration

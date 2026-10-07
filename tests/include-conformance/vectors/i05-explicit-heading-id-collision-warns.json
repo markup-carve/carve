@@ -16,7 +16,7 @@
     "fmt": "{{ a.crv }}\n\n{{ b.crv }}\n",
     "warnings": [
       {
-        "rule": "include-heading-id-rename",
+        "rule": "include-id-rename",
         "file": "b.crv"
       }
     ],

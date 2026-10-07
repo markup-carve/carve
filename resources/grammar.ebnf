@@ -3409,7 +3409,14 @@ include_section = id_attribute ;
    `{#...}` can spell is nameable, digit-leading
    ones such as `{#2024-plan}` included. No new ambiguity: the bare path already
    stops at `#`, and neither identifier class holds a space, `@` or `}`. *)
-include_options = {whitespace+, '@', identifier, ':', attribute_value}+ ;
+include_options = {[whitespace+], '@', identifier, ':', attribute_value}+ ;
+(* The whitespace before an `@` is OPTIONAL, in EVERY position. `bare_include_path`
+   stops at `@` and `include_section` holds no `@` either, so both slots are
+   already spelled to let an option butt straight up against them:
+   `{{ c.crv@shift:1 }}` and `{{ c.crv #Alpha@shift:1 }}` are well formed, and so
+   is the spaced `{{ c.crv @shift:1 @lines:1-2 }}`. Requiring the run would make
+   those two stop rules mean nothing, since nothing but an option can follow a
+   path or a section name. *)
 
 (* ============================================================================
    PART 7: LEXICAL ELEMENTS

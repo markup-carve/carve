@@ -37,6 +37,8 @@ and security.
 {{ path @key:value }}
 {{ path #section @key:value }}
 {{ path @shift:N }}
+{{ path#section }}
+{{ path#section@key:value }}
 ```
 
 - **`path`** is either **bare** (it stops at the first space, `#`, `@`, or
@@ -52,12 +54,21 @@ would turn an aligned directive into prose with **no** warning, which is the one
 failure mode the [Errors](#errors) rules exist to avoid. Tabs count, as they do
 wherever else whitespace does.
 
+**Inside the padding, the separators are optional.** Neither `#section` nor
+`@key:value` requires whitespace in front of it, in any position: `{{ path#section }}`,
+`{{ "path"#section }}`, `{{ path@shift:1 }}` and `{{ path #Name@shift:1 }}` are all
+well formed and mean what their spaced spellings mean. That is what the stop rules
+are for - a bare path ends at `#` or `@`, and a section name holds neither - so
+requiring the whitespace would leave those stops with nothing to do.
+
 - **`#section`** names a heading or a block in the resolved source (see
   [Selecting by id](#selecting-by-id-section)). The id is matched the same way a
   `</#id>` cross-reference matches: exactly, case included. The name takes any
   spelling an explicit `{#id}` takes, so a digit-leading id such as
-  `#2024-plan` is nameable.
-- **`@key:value`** is an extensible option slot. Options are space-separated.
+  `#2024-plan` is nameable. The name ends at the first character the id class
+  cannot spell, which is how an option can follow it with no space.
+- **`@key:value`** is an extensible option slot. Each option opens at its own
+  `@`; the whitespace between options, and before the first one, is optional.
   - **`@lines:N-M`** includes the 1-based, inclusive physical-line range `N`
     through `M` of the resolved source.
   - **`@shift:N`** shifts the level of every included heading by the signed

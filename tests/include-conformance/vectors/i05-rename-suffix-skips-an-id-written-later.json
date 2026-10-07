@@ -15,7 +15,7 @@
     "fmt": "{#dup}\n# Parent\n\n{{ a.crv }}\n\n{#dup-2}\n# Later\n",
     "warnings": [
       {
-        "rule": "include-heading-id-rename",
+        "rule": "include-id-rename",
         "file": "a.crv"
       }
     ],
