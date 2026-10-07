@@ -38,7 +38,7 @@ import { dirname, resolve as resolvePath } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { classifyShapeDisagreement, shapeOf, shapePaths } from './spec/ast-shape.mjs'
-import { phpDir, rustBinaryCandidates, rustDir } from './lib/engine-locations.mjs'
+import { phpDir, rustBinary, rustDir } from './lib/engine-locations.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolvePath(here, '..')
@@ -96,8 +96,8 @@ function spawnShape(label, bin, args, opts) {
 }
 
 function rsShape(source) {
-  const bin = rustBinaryCandidates(rustDir()).find((c) => existsSync(c))
-  if (!bin) return { missing: 'carve-rs: no built binary (set CARVE_RS_DIR / CARGO_TARGET_DIR)' }
+  const bin = rustBinary(rustDir())
+  if (!bin) return { missing: 'carve-rs: no checkout-matching built binary (set CARVE_RS_DIR / CARGO_TARGET_DIR)' }
 
   return spawnShape('carve-rs', bin, ['--json'], { input: source })
 }

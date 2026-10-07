@@ -231,6 +231,7 @@ export function engineRunners(base = root) {
   const rs = at('CARVE_RS_DIR', '../carve-rs')
   const js = at('CARVE_JS_DIR', '../carve-js')
   const php = at('CARVE_PHP_DIR', '../carve-php')
+  const bin = rustBinary(rs)
 
   return [
     {
@@ -241,7 +242,6 @@ export function engineRunners(base = root) {
       // something that does not exist and record ERROR for an engine that is
       // built and fresh (carve#1287).
       run: (f) => {
-        const bin = rustBinary(rs)
         if (!bin) throw new Error(`carve-rs is not built; looked in ${rustBinaryCandidates(rs).join(', ')}`)
 
         return execFileSync(bin, ['--carve', f], { encoding: 'utf8' })
