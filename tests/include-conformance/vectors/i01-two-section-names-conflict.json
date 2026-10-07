@@ -1,0 +1,24 @@
+{
+  "name": "i01-two-section-names-conflict",
+  "description": "Two section names select nothing: the directive stays literal and the conflict is warned.",
+  "rules": [
+    "I1",
+    "I7"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child #Alpha #Beta }}",
+  "files": {
+    "child": "{#Alpha}\nfirst\n\n{#Beta}\nsecond"
+  },
+  "expected": {
+    "html": "<p>{{ child <span class=\"tag\"><strong>#Alpha</strong></span> <span class=\"tag\"><strong>#Beta</strong></span> }}</p>",
+    "fmt": "{{ child #Alpha #Beta }}\n",
+    "warnings": [
+      {
+        "rule": "include-selection-conflict"
+      }
+    ],
+    "dependencies": []
+  }
+}

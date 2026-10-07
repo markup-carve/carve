@@ -1,0 +1,20 @@
+{
+  "name": "i01-padding-outside-the-braces-is-still-required",
+  "description": "The adjacency inside the slots does not relax the padding: {{path#name}} with no outer padding is ordinary text.",
+  "rules": [
+    "I1",
+    "slot-adjacency"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{child#pick}}",
+  "files": {
+    "child": "{#pick}\nbody"
+  },
+  "expected": {
+    "html": "<p>{{child#pick}}</p>",
+    "fmt": "{{child#pick}}\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

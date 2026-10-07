@@ -131,6 +131,76 @@ export const vectors = [
     checkFmtExpandEquivalence: true,
   },
 
+  // --- I1 syntax: how the selector and the option slot are SPELLED ---------
+  // The separating whitespace is optional in both slots (carve#2773). Every
+  // other vector writes the one spaced spelling, which is what let three
+  // published engines diverge on the rest (carve#2774). The arbiter is
+  // scripts/spec/include-directive.mjs.
+  {
+    name: 'i01-section-adjacent-to-a-bare-path',
+    description: 'A section name needs no space after a bare path; it selects what the spaced spelling selects.',
+    rules: ['I1', 'slot-adjacency'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{ child#pick }}',
+    files: { child: '# A\n\nskip\n\n{#pick}\n# B\n\nyes\n\n# D\n\nskip' },
+    checkFmtExpandEquivalence: true,
+  },
+  {
+    name: 'i01-section-adjacent-to-a-quoted-path',
+    description: 'A quoted path takes an adjacent section name too, including a path holding a space.',
+    rules: ['I1', 'slot-adjacency', 'quoted-path'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{ "my chapter.crv"#pick }}',
+    files: { 'my chapter.crv': '# A\n\nskip\n\n{#pick}\n# B\n\nyes\n\n# D\n\nskip' },
+  },
+  {
+    name: 'i01-section-after-a-tab',
+    description: 'A tab separates the path from the section name, as whitespace does everywhere else in the directive.',
+    rules: ['I1', 'slot-adjacency'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{ child\t#pick }}',
+    files: { child: '# A\n\nskip\n\n{#pick}\n# B\n\nyes\n\n# D\n\nskip' },
+  },
+  {
+    name: 'i01-option-adjacent-to-a-path',
+    description: 'An option needs no space after a bare path.',
+    rules: ['I1', 'slot-adjacency'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{ child@shift:1 }}',
+    files: { child: '# Head\n\nBody.' },
+  },
+  {
+    name: 'i01-option-adjacent-to-a-section',
+    description: 'Both slots adjacent at once: a section name glued to the path and an option glued to the name.',
+    rules: ['I1', 'slot-adjacency'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{ child#pick@shift:1 }}',
+    files: { child: '# A\n\nskip\n\n{#pick}\n# B\n\nyes\n\n# D\n\nskip' },
+  },
+  {
+    name: 'i01-two-section-names-conflict',
+    description: 'Two section names select nothing: the directive stays literal and the conflict is warned.',
+    rules: ['I1', 'I7'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{ child #Alpha #Beta }}',
+    files: { child: '{#Alpha}\nfirst\n\n{#Beta}\nsecond' },
+  },
+  {
+    name: 'i01-padding-outside-the-braces-is-still-required',
+    description: 'The adjacency inside the slots does not relax the padding: {{path#name}} with no outer padding is ordinary text.',
+    rules: ['I1', 'slot-adjacency'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{child#pick}}',
+    files: { child: '{#pick}\nbody' },
+  },
+
   // --- I2 block vs inline --------------------------------------------------
   {
     name: 'i02-block-alone-merges-blocks',

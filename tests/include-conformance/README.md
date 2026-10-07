@@ -42,7 +42,7 @@ goldens).
 |---|---|---|
 | `name` | all | Unique id; also the file basename. |
 | `description` | all | One-line summary of what the vector pins. |
-| `rules` | all | The §19 rule ids exercised (`I1`…`I14`, `I9a`, plus the pseudo-rules `multi-directive`, `quoted-path`). |
+| `rules` | all | The §19 rule ids exercised (`I1`…`I14`, `I9a`, plus the pseudo-rules `multi-directive`, `quoted-path`, `slot-adjacency`). |
 | `mode` | all | `virtual` (in-memory files map) or `filesystem` (a real tmp tree). |
 | `resolver` | all | `none` (no resolver → I3 literal), `virtual` (serve `files`), or `filesystem` (fileSystemResolver over the tree). |
 | `entry` | virtual | The top-level document source. |
@@ -231,17 +231,18 @@ rules):
 
 | Rule | Vectors | Rule | Vectors |
 |---|---|---|---|
-| I1 syntax / path-required | 21 | I9 verbatim protection | 5 |
+| I1 syntax / path-required | 28 | I9 verbatim protection | 5 |
 | I2 block vs inline | 8 | I9a recognition run | 7 |
 | I3 resolution model | 2 | I10 containment (filesystem) | 7 |
 | I4 fragment containment / attribution | 8 | I11 dependency reporting | 14 |
 | I5 cross-file collisions | 16 | I12 formatter preservation | 16 |
 | I6 limits (cycle/depth/budget) | 5 | I13 no side effects | 7 |
-| I7 errors + no-leak | 5 | I14 one recognition set | 8 |
+| I7 errors + no-leak | 6 | I14 one recognition set | 8 |
 | I8 heading shift + auto | 16 | I15 the Carve target does not expand | 2 |
-| heading-include | 3 | multi-directive / quoted-path | 1 / 2 |
+| heading-include | 3 | multi-directive / quoted-path | 1 / 3 |
+| slot-adjacency | 6 | | |
 
-**121 vectors total.**
+**128 vectors total.**
 
 ### What the virtual model cannot express
 
