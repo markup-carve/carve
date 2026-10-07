@@ -130,6 +130,7 @@ references and external fragment links need manual review. See the
   code span keeps its percent runs, and a trailing comment keeps its scope and
   its color in both themes, including inside a quoted heading or caption
   (#2682).
+- Active grammar and spec comments state the current rule without the engine history that reached it. No production, clause meaning, corpus row or oracle answer moves (#2766).
 
 ## [0.1.7] - 2026-09-29
 
