@@ -15,7 +15,7 @@
     "fmt": "{#tip}\nParent [p](#only) tip.\n\n{#only}\nonly\n\n{{ a.crv }}\n",
     "warnings": [
       {
-        "rule": "include-heading-id-rename",
+        "rule": "include-id-rename",
         "file": "a.crv"
       }
     ],

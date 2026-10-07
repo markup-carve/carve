@@ -91,8 +91,12 @@ dependency `id`/order, that is a divergence the suite is meant to surface.
 - **`rule`** — the stable rule id, the cross-engine contract. The canonical set:
   `include-unresolved`, `include-non-text`, `include-cycle`, `include-depth`,
   `include-budget`, `include-selection-conflict`, `include-block-in-inline`,
-  `include-section`, `include-heading-clamp`, `include-heading-id-rename`,
+  `include-section`, `include-heading-clamp`, `include-id-rename`,
   `include-footnote-rename`, `include-unknown-option`.
+  `include-id-rename` was `include-heading-id-rename` through 0.1.8. The rename
+  pass stopped being about headings in carve#2729 and the message followed it;
+  the id did not. Renaming it is breaking for anything matching on the id
+  (carve#2772).
   There is deliberately **no id for a refusal**: a containment denial and a
   missing file share `include-unresolved`, because §19's Errors table has one row
   for both. Four goldens pin the shared id (`i10-fs-dotdot-escape-denied`,

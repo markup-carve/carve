@@ -96,3 +96,74 @@ test('a digit-leading explicit id is nameable (include_section takes explicit_id
   assert.equal(scanDirective('{{ plans.crv #plan-2024 }}', 0)?.section, 'plan-2024')
   assert.equal(scanDirective('{{ plans.crv #-x }}', 0), null)
 })
+
+/*
+ * PART 6: how the selector and the option slot are SPELLED. Every directive
+ * above writes `{{ path #name }}` - one space, one name, a bare path - and that
+ * single spelling is what let three published engines diverge on the other four
+ * (carve#2774). The separating whitespace is optional in both slots
+ * (carve#2773), so each of these is well formed and means what its spaced
+ * spelling means. The arbiter is scripts/spec/include-directive.mjs; no engine
+ * is consulted.
+ */
+const slots = (source) => {
+  const d = scanDirective(source, 0)
+  return d && { path: d.path, quoted: d.quoted, section: d.section, options: d.options, end: d.end }
+}
+
+test('a section name needs no space in front of it', () => {
+  assert.deepEqual(slots('{{ plans.crv#section }}'), {
+    path: 'plans.crv', quoted: false, section: 'section', options: [], end: 23,
+  })
+  // The named control: the spaced spelling reads the same slots.
+  assert.deepEqual(slots('{{ plans.crv #section }}').section, 'section')
+})
+
+test('a quoted path takes an adjacent section name too', () => {
+  assert.deepEqual(slots('{{ "plans.crv"#section }}'), {
+    path: 'plans.crv', quoted: true, section: 'section', options: [], end: 25,
+  })
+  assert.equal(slots('{{ "my plans.crv"#section }}').path, 'my plans.crv')
+})
+
+test('a tab separates the path from the name, as whitespace does everywhere', () => {
+  assert.deepEqual(slots('{{ plans.crv\t#section }}').section, 'section')
+  assert.deepEqual(slots('{{\tplans.crv\t#section\t}}').section, 'section')
+})
+
+test('an option needs no space in front of it, after a path or after a name', () => {
+  assert.deepEqual(slots('{{ plans.crv@shift:1 }}'), {
+    path: 'plans.crv', quoted: false, section: null, options: [['shift', '1']], end: 23,
+  })
+  assert.deepEqual(slots('{{ plans.crv #Alpha@shift:1 }}'), {
+    path: 'plans.crv', quoted: false, section: 'Alpha', options: [['shift', '1']], end: 30,
+  })
+  // Adjacent in both slots at once, and two adjacent options in a row.
+  assert.deepEqual(slots('{{ plans.crv#Alpha@shift:2@lines:1-2 }}').options, [
+    ['shift', '2'],
+    ['lines', '1-2'],
+  ])
+})
+
+test('the padding around the whole directive is still required on both sides', () => {
+  assert.equal(scanDirective('{{plans.crv@shift:1 }}', 0), null)
+  assert.equal(scanDirective('{{ plans.crv@shift:1}}', 0), null)
+  assert.equal(scanDirective('{{plans.crv#section}}', 0), null)
+})
+
+test('an adjacent spelling selects the same fragment the spaced one does', () => {
+  const child = '{#dough}\n```text\n500 g flour\n```\n\nafter'
+  for (const source of [
+    '{{ recipes.crv #dough }}',
+    '{{ recipes.crv#dough }}',
+    '{{ "recipes.crv"#dough }}',
+    '{{ recipes.crv\t#dough }}',
+    '{{ recipes.crv#dough@shift:1 }}',
+  ]) {
+    const name = scanDirective(source, 0)?.section
+    assert.equal(name, 'dough', source)
+    const selected = pick(child, name)
+    assert.deepEqual(types(selected), ['code_block'], source)
+    assert.equal(selected[0].attrs.id, 'dough', source)
+  }
+})
