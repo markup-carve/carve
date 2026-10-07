@@ -27,7 +27,8 @@ references and external fragment links need manual review. See the
   exactly. Link-definition labels and footnote labels already did; the include
   selector rule now agrees with the exact lookup the engines already shipped.
   A case-only mismatch is unresolved; `{#Tip}` and `{#tip}` identify separate
-  targets. Default heading slug derivation, whitespace normalization and NFC are unchanged (#2732).
+  targets. Default heading slug derivation, whitespace normalization and NFC
+  are unchanged (#2732, #2759).
 - An include renames a colliding explicit id on any element, not only a heading
   id or a footnote label. Explicit ids share one namespace, the first
   occurrence in expanded order keeps the name, each later copy from another
