@@ -5,8 +5,9 @@
  * which directory "the php engine" means. Both honor the same env vars, which
  * is how CI points at checkouts that are not siblings.
  */
-import { existsSync } from 'node:fs'
-import { isAbsolute, join, resolve } from 'node:path'
+import { existsSync, readFileSync, realpathSync } from 'node:fs'
+import { spawnSync } from 'node:child_process'
+import { isAbsolute, join, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)))
@@ -14,51 +15,81 @@ const root = resolve(fileURLToPath(new URL('../..', import.meta.url)))
 export const rustDir = () => process.env.CARVE_RS_DIR ?? resolve(root, '../carve-rs')
 export const phpDir = () => process.env.CARVE_PHP_DIR ?? resolve(root, '../carve-php')
 
-/*
- * WHERE THE carve-rs BINARY IS, shared by every runner that needs one.
- *
- * `CARGO_TARGET_DIR` moves every cargo artifact out of the checkout, which is
- * the convention on a machine that runs several carve-rs sessions at once - a
- * full build is roughly 17G and parallel checkouts otherwise fill the disk. A
- * resolver that only looks under `<checkout>/target` therefore reports "not
- * built" for a binary that exists and is fresh.
- *
- * That is worse than an inconvenience because of what sits underneath it. Seven
- * runners resolved this path, each with its own copy of the same two-element
- * list, and three of them (engine-claims, degradation-claims, fmt-fixture-
- * claims) treat an unresolved binary as "this engine is not here" - so on the
- * recommended machine configuration they compared TWO engines and said nothing
- * about the third. A gate that silently drops a participant is the defect class
- * this repo keeps finding; the fix is one resolver, not seven (carve#1287).
- *
- * Order matters: when CARGO_TARGET_DIR is set, cargo writes THERE, so a
- * `target/` still sitting in the checkout is a leftover from before the
- * variable was set and must not win.
- */
-export function rustBinaryCandidates(dir = rustDir()) {
+/** Resolve Cargo configuration without building or fetching dependencies. */
+function configuredTargetDir(dir) {
+  if (!dir || !existsSync(join(dir, 'Cargo.toml'))) return null
+  const result = spawnSync('cargo', ['metadata', '--format-version=1', '--no-deps', '--offline'], {
+    cwd: dir, encoding: 'utf8', timeout: 10000, maxBuffer: 1024 * 1024,
+  })
+  if (result.status !== 0) return null
+  try {
+    const target = JSON.parse(result.stdout).target_directory
+    if (typeof target !== 'string' || !isAbsolute(target)) return null
+    return target
+  } catch {
+    return null
+  }
+}
+
+/** Cargo's depfile identifies which checkout produced a shared artifact. */
+function builtFromCheckout(binary, dir) {
+  try {
+    const dependency = join(realpathSync(dir), 'src/main.rs').replace(/ /g, '\\ ')
+    const depfile = readFileSync(`${realpathSync(binary)}.d`, 'utf8').replace(/\\\r?\n/g, ' ')
+    return depfile.split('\n')[0].split(': ').slice(1).join(': ').split(/(?<!\\)\s+/).includes(dependency)
+  } catch {
+    return false
+  }
+}
+
+/** Prefer the active Cargo target directory to artifacts left in the checkout. */
+function binaryLocations(dir) {
   const candidates = []
-  const targetDir = process.env.CARGO_TARGET_DIR
+  const trusted = new Set()
+  const override = process.env.CARGO_TARGET_DIR
+  const targetDir = override || configuredTargetDir(dir)
   if (targetDir) {
     // cargo resolves a relative CARGO_TARGET_DIR against the directory cargo
     // itself ran in, which for this binary is the carve-rs checkout and never
     // this repo. Resolving it against `root` would invent a path nothing built.
     const base = isAbsolute(targetDir) ? targetDir : resolve(dir ?? root, targetDir)
-    candidates.push(join(base, 'release/carve'), join(base, 'debug/carve'))
+    const builds = [join(base, 'release/carve'), join(base, 'debug/carve')]
+    candidates.push(...builds)
+    if (override) for (const binary of builds) trusted.add(binary)
   }
-  // ABSOLUTE, always. `CARVE_RS_DIR` may be relative - docs/implementation-
-  // comparison.md spells it `../carve-rs` - and compare-impls spawns this
-  // binary with `cwd` set to the checkout. A path relative to THIS repo is
-  // then re-resolved against the checkout and lands where nothing built:
-  // `vendor/carve-rs` becomes `vendor/carve-rs/vendor/carve-rs/...` and the
-  // spawn fails ENOENT, so the runner drops carve-rs and exits 2. The runners
-  // that spawn WITHOUT a cwd never saw it, which is why only one of the seven
-  // was affected. `resolve` anchors against this process's cwd, the same base
-  // `existsSync` above uses, so the check and the spawn cannot disagree.
+  // Absolute paths remain valid when a runner changes its working directory.
   if (dir) candidates.push(resolve(dir, 'target/release/carve'), resolve(dir, 'target/debug/carve'))
-  return candidates
+  return { candidates: [...new Set(candidates)], trusted }
 }
 
-/** The first carve-rs binary that exists, or null when the checkout is unbuilt. */
+/** A regular checkout artifact retains the resolver's existing trust policy. */
+function localCheckoutBuild(binary, dir) {
+  try {
+    return realpathSync(binary).startsWith(`${join(realpathSync(dir), 'target')}${sep}`)
+  } catch {
+    return false
+  }
+}
+
+/** Paths searched, including configured artifacts rejected for unknown provenance. */
+export function rustBinaryCandidates(dir = rustDir()) {
+  return binaryLocations(dir).candidates
+}
+
+/** Explicit target overrides are trusted; discovered builds need checkout provenance. */
 export function rustBinary(dir = rustDir()) {
-  return rustBinaryCandidates(dir).find((candidate) => existsSync(candidate)) ?? null
+  const { candidates, trusted } = binaryLocations(dir)
+  const rejected = []
+  for (const candidate of candidates) {
+    if (!existsSync(candidate)) continue
+    if (trusted.has(candidate) || localCheckoutBuild(candidate, dir) || builtFromCheckout(candidate, dir)) {
+      if (rejected.length) console.error(`carve-rs: skipped artifacts with missing or foreign checkout depfiles: ${rejected.join(', ')}`)
+      return candidate
+    }
+    rejected.push(candidate)
+  }
+  if (rejected.length) {
+    console.error(`carve-rs: no checkout-matching binary; missing or foreign depfiles for ${resolve(dir)}: ${rejected.join(', ')}`)
+  }
+  return null
 }
