@@ -37,8 +37,8 @@
  */
 
 import { execFileSync } from 'node:child_process'
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
-import { dirname, join, resolve } from 'node:path'
+import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs'
+import { dirname, join, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { parseWaivers } from './spec/ast-waivers.mjs'
@@ -414,9 +414,53 @@ function gitPinStatus(dir, pin, mainRef = 'origin/main') {
   }
 }
 
+// Accept a spec gitlink update only after checking the build's actual inputs.
+function referenceBuildInputs(dir) {
+  const output = execFileSync(process.execPath, [join(dir, 'node_modules/typescript/bin/tsc'), '--noEmit', '--listFiles', '--pretty', 'false', '--incremental', 'false', '--composite', 'false'], { cwd: dir, encoding: 'utf8' })
+  return output.trim().split(/\r?\n/).filter(Boolean).map((path) => realpathSync(resolve(dir, path)))
+}
+function gitReferenceBuildStatus(dir, pin, mainRef = 'origin/main') {
+  const status = gitPinStatus(dir, pin, mainRef)
+  if (status instanceof Error || status.relation !== 'behind') return status
+  try {
+    const paths = execFileSync('git', ['-C', dir, 'diff-tree', '-r', '--no-renames', '--no-relative', '--ignore-submodules=none', '--name-only', '-z', pin, status.main, '--'], { encoding: 'utf8' })
+    if (paths !== 'spec\0') return { ...status, specPinOnly: false }
+    const isSpecGitlink = (commit) => /^160000 commit [0-9a-f]{40}\tspec\n$/.test(
+      execFileSync('git', ['-C', dir, 'ls-tree', commit, '--', 'spec'], { encoding: 'utf8' }),
+    )
+    const pkg = JSON.parse(execFileSync('git', ['-C', dir, 'show', `${pin}:package.json`], { encoding: 'utf8' }))
+    const config = JSON.parse(execFileSync('git', ['-C', dir, 'show', `${pin}:tsconfig.json`], { encoding: 'utf8' }))
+    const scripts = pkg.scripts ?? {}
+    const sourceTree = execFileSync('git', ['-C', dir, 'ls-tree', '-r', pin, '--', 'src'], { encoding: 'utf8' })
+    const nativeBuild = execFileSync('git', ['-C', dir, 'ls-tree', pin, '--', 'binding.gyp'], { encoding: 'utf8' })
+    const isolatedBuild = scripts.build === 'tsc' && scripts.prepare === 'npm run build' &&
+      ['prebuild', 'postbuild', 'preprepare', 'postprepare', 'preinstall', 'install', 'postinstall', 'prepack', 'postpack', 'prepublish', 'prepublishOnly', 'dependencies'].every((name) => !scripts[name]) &&
+      !pkg.imports && !pkg.workspaces && !pkg.overrides &&
+      [pkg.dependencies, pkg.devDependencies, pkg.optionalDependencies, pkg.peerDependencies].every((group) =>
+        Object.values(group ?? {}).every((value) => typeof value === 'string' && !/^(?:(?:file|link|workspace):|\.{1,2}\/|\/|~)/.test(value))) &&
+      ['baseUrl', 'paths', 'typeRoots', 'types', 'rootDirs'].every((name) => config.compilerOptions?.[name] === undefined) &&
+      config.compilerOptions?.rootDir === 'src' && config.compilerOptions?.outDir === 'dist' &&
+      JSON.stringify(config.include) === '["src/**/*"]' && !config.extends && !config.references && !config.files &&
+      !/^120000 /m.test(sourceTree) && nativeBuild === '' &&
+      JSON.stringify(pkg.files) === '["dist","README.md","LICENSE","action.yml",".pre-commit-hooks.yaml"]'
+    if (!isolatedBuild || !isSpecGitlink(pin) || !isSpecGitlink(status.main)) return { ...status, specPinOnly: false }
+    const head = execFileSync('git', ['-C', dir, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()
+    if (head !== status.main) return { ...status, specPinOnly: false }
+    execFileSync('git', ['-C', dir, 'diff', '--quiet', '--no-ext-diff', '--no-textconv', 'HEAD', '--', '.', ':(exclude)spec'], { stdio: 'ignore' })
+    const untracked = execFileSync('git', ['-C', dir, 'ls-files', '--others', '--', 'src'], { encoding: 'utf8' })
+    if (untracked !== '') return { ...status, specPinOnly: false }
+    const inputs = referenceBuildInputs(dir)
+    const roots = ['src', 'node_modules'].map((path) => realpathSync(join(dir, path)) + sep)
+    const specRoot = (existsSync(join(dir, 'spec')) ? realpathSync(join(dir, 'spec')) : resolve(dir, 'spec')) + sep
+    return { ...status, specPinOnly: inputs.length > 0 && inputs.every((path) => !path.startsWith(specRoot) && roots.some((root) => path.startsWith(root))) }
+  } catch (error) {
+    return new Error(`cannot verify reference build at ${pin}: ${error.message}`)
+  }
+}
+
 function carveJsPinStatus(dir, mainRef = 'origin/main') {
   const pin = pinnedCarveJsSha()
-  return pin instanceof Error ? pin : gitPinStatus(dir, pin, mainRef)
+  return pin instanceof Error ? pin : gitReferenceBuildStatus(dir, pin, mainRef)
 }
 
 /** Test trees to sweep, per repo. */
@@ -867,7 +911,7 @@ function perPrPolicy(entry) {
   return entry.policy
 }
 
-export const __internals = { blankComments, perPrPolicy, collapseBetweenLiterals, declarationIndex, bracketedBlock, topLevelEntries, liveRows, classifyPinDistance, gitPinStatus, isDeclarationName, undeclaredLedgerRows, undeclaredWaiverRows, spanRowKey, spanExemptions, MANIFEST }
+export const __internals = { blankComments, perPrPolicy, collapseBetweenLiterals, declarationIndex, bracketedBlock, topLevelEntries, liveRows, classifyPinDistance, gitPinStatus, gitReferenceBuildStatus, isDeclarationName, undeclaredLedgerRows, undeclaredWaiverRows, spanRowKey, spanExemptions, MANIFEST }
 
 if (process.env.CARVE_DECL_AUDIT_LIB === '1') {
   // Imported for its helpers by the self-test; do not run the audit.
@@ -902,7 +946,7 @@ const width = { repo: 9, path: 60, name: 32, rows: 20 }
 const pad = (s, n) => String(s).padEnd(n).slice(0, n)
 
 const MODE_BANNER = strict
-  ? 'RELEASE - is this tree clear to tag? Every owed list must be empty and the pin current.'
+  ? 'RELEASE - is this tree clear to tag? Every owed list must be empty and the reference build current.'
   : 'PER-PR - is this pull request defective? A declared engine-pin window passes; pin staleness reports.'
 console.log(`Declaration audit - mode ${mode.toUpperCase()}`)
 console.log(`  ${MODE_BANNER}`)
@@ -931,6 +975,8 @@ const pinStatus = carveJsPinStatus(REPOS['carve-js'].dir, ref === 'worktree' ? '
 if (pinStatus instanceof Error) {
   console.log(`PIN STALENESS  UNVERIFIABLE - ${pinStatus.message}${pinNote}\n`)
   if (pinVerdictIsGated) failed += 1
+} else if (pinStatus.specPinOnly) {
+  console.log(`PIN STALENESS  behind at ${pinStatus.pin.slice(0, 8)}; reference build unchanged (only spec gitlink differs from ${pinStatus.main.slice(0, 8)})${pinNote}\n`)
 } else if (pinStatus.relation !== 'current') {
   console.log(
     `PIN STALENESS  ${pinStatus.relation.toUpperCase()} - @markup-carve/carve ${pinStatus.pin.slice(0, 8)} ` +
@@ -1167,7 +1213,7 @@ if (failed > 0) {
 console.log(
   `DECLARATION AUDIT PASSED (mode: ${mode}) - ` +
     (strict
-      ? 'every owed list is empty, the pin is current, and every guard is two-directional.'
+      ? 'every owed list is empty, the reference build is current, and every guard is two-directional.'
       : 'every owed list is empty, every engine-lag window is declared, and every guard is two-directional.'),
 )
 }

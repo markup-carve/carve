@@ -26,13 +26,13 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, renameSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 process.env.CARVE_DECL_AUDIT_LIB = '1'
 const { __internals } = await import('../scripts/declaration-audit.mjs')
-const { liveRows, blankComments, classifyPinDistance, gitPinStatus, isDeclarationName, undeclaredLedgerRows, MANIFEST } = __internals
+const { liveRows, blankComments, classifyPinDistance, gitPinStatus, gitReferenceBuildStatus, isDeclarationName, undeclaredLedgerRows, MANIFEST } = __internals
 
 const rows = (kind, name, src) => {
   const out = liveRows({ kind, name }, src)
@@ -279,4 +279,134 @@ test('per-PR position waivers accept permitted and tracked debt, reject malforme
     assert.ok(undeclaredWaiverRows([bad]).length > 0, bad)
   }
   assert.ok(undeclaredWaiverRows([permitted, permitted]).length > 0)
+})
+
+
+test('reference build gate accepts only an ancestral spec gitlink update', (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'carve-reference-build-'))
+  t.after(() => rmSync(dir, { recursive: true, force: true }))
+  const git = (...args) => execFileSync('git', ['-C', dir, ...args], { encoding: 'utf8' }).trim()
+  git('init', '-q')
+  git('config', 'user.email', 'audit@example.invalid')
+  git('config', 'user.name', 'Declaration audit')
+  mkdirSync(join(dir, 'src'))
+  writeFileSync(join(dir, 'src', 'runtime.ts'), 'export const value = 1\n')
+  writeFileSync(join(dir, 'runtime.js'), 'export const value = 1\n')
+  writeFileSync(join(dir, '.git', 'info', 'exclude'), 'node_modules/\n')
+  mkdirSync(join(dir, 'node_modules', 'typescript', 'bin'), { recursive: true })
+  // Stub the external compiler's file-list protocol; production uses tsc.
+  writeFileSync(join(dir, 'node_modules', 'typescript', 'bin', 'tsc'), "process.stdout.write(require('node:fs').readFileSync('node_modules/compiler-inputs.txt', 'utf8'))")
+  const inputList = join(dir, 'node_modules', 'compiler-inputs.txt')
+  writeFileSync(inputList, join(dir, 'src', 'runtime.ts') + '\n')
+  const packageConfig = { scripts: { build: 'tsc', prepare: 'npm run build' }, files: ['dist', 'README.md', 'LICENSE', 'action.yml', '.pre-commit-hooks.yaml'] }
+  writeFileSync(join(dir, 'package.json'), JSON.stringify(packageConfig))
+  writeFileSync(join(dir, 'tsconfig.json'), JSON.stringify({ compilerOptions: { rootDir: 'src', outDir: 'dist' }, include: ['src/**/*'] }))
+  git('add', '.')
+  git('commit', '-qm', 'initial source')
+  const first = git('rev-parse', 'HEAD')
+  git('update-index', '--add', '--cacheinfo', `160000,${first},spec`)
+  git('commit', '-qm', 'spec gitlink')
+  const pin = git('rev-parse', 'HEAD')
+  git('update-index', '--cacheinfo', `160000,${pin},spec`)
+  git('commit', '-qm', 'spec pin update')
+  const updated = git('rev-parse', 'HEAD')
+  assert.equal(gitReferenceBuildStatus(dir, pin, updated).specPinOnly, true)
+  assert.equal(gitReferenceBuildStatus(dir, pin, 'HEAD').specPinOnly, true)
+  assert.equal(gitReferenceBuildStatus(dir, pin, pin).relation, 'current')
+  assert.equal(gitReferenceBuildStatus(dir, updated, pin).relation, 'ahead')
+  assert.ok(gitReferenceBuildStatus(dir, '0'.repeat(40), updated) instanceof Error)
+  assert.ok(gitReferenceBuildStatus(dir, pin, 'missing-ref') instanceof Error)
+
+  for (const path of ['runtime.js', 'package.json', 'README.md', '.gitmodules']) {
+    git('reset', '--hard', updated)
+    writeFileSync(join(dir, path), 'changed\n')
+    git('add', path)
+    git('commit', '-qm', `change ${path}`)
+    assert.equal(gitReferenceBuildStatus(dir, pin, 'HEAD').specPinOnly, false, path)
+  }
+  git('reset', '--hard', updated)
+  git('rm', '--cached', 'spec')
+  rmSync(join(dir, 'spec'), { recursive: true, force: true })
+  writeFileSync(join(dir, 'spec'), 'ordinary file\n')
+  git('add', 'spec')
+  git('commit', '-qm', 'replace submodule with file')
+  const ordinary = git('rev-parse', 'HEAD')
+  assert.equal(gitReferenceBuildStatus(dir, pin, ordinary).specPinOnly, false)
+  writeFileSync(join(dir, 'spec'), 'another ordinary file\n')
+  git('commit', '-qam', 'change ordinary spec file')
+  assert.equal(gitReferenceBuildStatus(dir, ordinary, 'HEAD').specPinOnly, false)
+  rmSync(join(dir, 'spec'))
+  mkdirSync(join(dir, 'spec'))
+  writeFileSync(join(dir, 'spec', 'fixture'), 'ordinary directory\n')
+  git('add', 'spec')
+  git('commit', '-qm', 'replace spec file with directory')
+  assert.equal(gitReferenceBuildStatus(dir, pin, 'HEAD').specPinOnly, false)
+  git('reset', '--hard', pin)
+  writeFileSync(join(dir, 'runtime.js'), 'side branch\n')
+  git('commit', '-qam', 'divergent source')
+  const divergent = gitReferenceBuildStatus(dir, 'HEAD', updated)
+  assert.equal(divergent.relation, 'diverged')
+  assert.notEqual(divergent.specPinOnly, true)
+  for (const script of ['prebuild', 'postbuild', 'preprepare', 'postprepare', 'preinstall', 'install', 'postinstall', 'prepack', 'postpack', 'prepublish', 'prepublishOnly', 'dependencies']) {
+    git('reset', '--hard', pin)
+    writeFileSync(join(dir, 'package.json'), JSON.stringify({ ...packageConfig, scripts: { ...packageConfig.scripts, [script]: 'node spec/build.js' } }))
+    git('commit', '-qam', 'spec-dependent build')
+    const unsafePin = git('rev-parse', 'HEAD')
+    git('update-index', '--cacheinfo', `160000,${unsafePin},spec`)
+    git('commit', '-qm', 'spec pin update with unsafe build')
+    assert.equal(gitReferenceBuildStatus(dir, unsafePin, 'HEAD').specPinOnly, false, script)
+  }
+  git('reset', '--hard', pin)
+  writeFileSync(join(dir, 'tsconfig.json'), JSON.stringify({ compilerOptions: { rootDir: '.', outDir: 'dist' }, include: ['src/**/*', 'spec/**/*'] }))
+  git('commit', '-qam', 'include spec in build')
+  const unsafePin = git('rev-parse', 'HEAD')
+  git('update-index', '--cacheinfo', `160000,${unsafePin},spec`)
+  git('commit', '-qm', 'spec pin update with unsafe compiler inputs')
+  assert.equal(gitReferenceBuildStatus(dir, unsafePin, 'HEAD').specPinOnly, false)
+  for (const unsafeInput of ['baseUrl', 'paths', 'typeRoots', 'types', 'rootDirs']) {
+    git('reset', '--hard', pin)
+    writeFileSync(join(dir, 'tsconfig.json'), JSON.stringify({ compilerOptions: { rootDir: 'src', outDir: 'dist', [unsafeInput]: ['spec'] }, include: ['src/**/*'] }))
+    git('commit', '-qam', 'external compiler inputs')
+    const unsafePin = git('rev-parse', 'HEAD')
+    git('update-index', '--cacheinfo', `160000,${unsafePin},spec`)
+    git('commit', '-qm', 'spec pin with external compiler inputs')
+    assert.equal(gitReferenceBuildStatus(dir, unsafePin, 'HEAD').specPinOnly, false, unsafeInput)
+  }
+  for (const input of ['binding.gyp', 'src/link.ts']) {
+    git('reset', '--hard', pin)
+    if (input === 'binding.gyp') writeFileSync(join(dir, input), '{}')
+    else {
+      mkdirSync(join(dir, 'src'), { recursive: true })
+      symlinkSync('../spec/input.ts', join(dir, input))
+    }
+    git('add', input)
+    git('commit', '-qm', 'spec-dependent input')
+    const unsafePin = git('rev-parse', 'HEAD')
+    git('update-index', '--cacheinfo', `160000,${unsafePin},spec`)
+    git('commit', '-qm', 'spec pin with indirect build inputs')
+    assert.equal(gitReferenceBuildStatus(dir, unsafePin, 'HEAD').specPinOnly, false, input)
+  }
+  git('reset', '--hard', updated)
+  mkdirSync(join(dir, 'spec'), { recursive: true })
+  writeFileSync(join(dir, 'spec', 'ambient.d.ts'), 'declare const value: number\n')
+  writeFileSync(inputList, join(dir, 'src', 'runtime.ts') + '\n' + join(dir, 'spec', 'ambient.d.ts') + '\n')
+  assert.equal(gitReferenceBuildStatus(dir, pin, updated).specPinOnly, false, 'compiler reads spec declaration')
+  renameSync(join(dir, 'node_modules'), join(dir, 'spec', 'dependencies'))
+  symlinkSync('./spec/dependencies', join(dir, 'node_modules'))
+  writeFileSync(join(dir, 'spec', 'dependencies', 'input.d.ts'), 'declare const value: number\n')
+  writeFileSync(inputList, join(dir, 'spec', 'dependencies', 'input.d.ts') + '\n')
+  assert.equal(gitReferenceBuildStatus(dir, pin, updated).specPinOnly, false, 'dependencies directory points into spec')
+  rmSync(join(dir, 'node_modules'))
+  renameSync(join(dir, 'spec', 'dependencies'), join(dir, 'node_modules'))
+  writeFileSync(inputList, join(dir, 'missing.d.ts') + '\n')
+  assert.ok(gitReferenceBuildStatus(dir, pin, updated) instanceof Error)
+  writeFileSync(inputList, '')
+  assert.equal(gitReferenceBuildStatus(dir, pin, updated).specPinOnly, false, 'empty compiler trace')
+  writeFileSync(inputList, join(dir, 'src', 'runtime.ts') + '\n')
+  writeFileSync(join(dir, 'src', 'untracked.ts'), 'export const extra = 1\n')
+  assert.equal(gitReferenceBuildStatus(dir, pin, updated).specPinOnly, false, 'untracked compiler source')
+  rmSync(join(dir, 'src', 'untracked.ts'))
+  git('config', 'diff.ignoreSubmodules', 'all')
+  assert.equal(gitReferenceBuildStatus(dir, pin, updated).specPinOnly, true)
+  assert.equal(gitReferenceBuildStatus(dir, ordinary, updated).relation, 'ahead')
 })
