@@ -132,9 +132,8 @@ class_attribute = '.', explicit_identifier ;
    `attrs.keyValues`: `{class=foo}` and `{.foo}` parse to one tree. The two
    spellings are not interchangeable in source, because `class_attribute` reads
    the `explicit_identifier` the fence word does while `attribute_value` reaches
-   past it -- `-col` and `w-1/2` are classes only the key-value form can spell
-   (carve#2435). One concept, one slot, the way PART 4 above already makes the
-   three spellings of `lang` meet in one. *)
+   past it: `-col` and `w-1/2` are classes only the key-value form can spell.
+   PART 4's three spellings of `lang` likewise share one slot. *)
 key_value_attribute = identifier, '=', attribute_value ;
 (* A bare identifier is a VALUE-LESS BOOLEAN attribute in source. It has the same
    empty-string AST value as `name=""` and renders `name=""` (a carve

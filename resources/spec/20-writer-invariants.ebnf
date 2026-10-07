@@ -286,8 +286,7 @@
       A MESSAGE NO CLAUSE NAMES IS PRESENTATION, AND IT IS NOT COMPARED. Such an
       entry's contract is its other fields; the sentence is the engine's, so two
       engines describing one loss in different words both conform. No clause here
-      states what a message names, and a conformance fixture states none
-      (markup-carve/carve#2454).
+      states what a message names, and a conformance fixture states none.
 
       WHERE A CLAUSE NAMES A MESSAGE, THAT TEXT IS THE CONTRACT and an engine
       emits it verbatim, with nothing appended. `CARVE-P2-024`'s
@@ -355,9 +354,6 @@
       for the Markdown target; it is the same reading here and is not restated.
 
         text `a !`, then a link to /u    ->  a \![x](/u)
-
-      SAID HERE BECAUSE IT IS DERIVABLE: §2's emitted-byte test already
-      governs these joins (markup-carve/carve-php#2634).
 
       ESCAPE MINIMALITY STILL APPLIES INSIDE AN ESCALATED UNIT -- NORMATIVE [CARVE-P11-007].
       One occurrence needing the conservative form does not put

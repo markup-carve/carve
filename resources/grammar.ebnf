@@ -2300,22 +2300,17 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
    inside it and a title CROSSES A SOFT WRAP: `[a](/u "t` + newline + `u")` is a
    titled link whose title holds the line break. `quoted_value` (PART 4) is the
    other answer and subtracts `newline` under CARVE-P4-006, so a wrapped
-   ATTRIBUTE value ends its block instead. Two productions, two answers, and
-   neither is the other's default - resources/carve-core.ohm spelled both
-   through one pair of helpers and the attribute rule's exclusion reached this
-   slot, which made a wrapped title decline in the executable spec while all
-   three engines read it (carve#2566). A BLANK line is not this rule's
-   business: it ends the paragraph, and the title with it.
+   ATTRIBUTE value ends its block instead. A BLANK line ends the paragraph,
+   and the title with it.
    `image_title = link_title`, so an image title wraps on the same terms. The
    REFERENCE-DEFINITION slot does not. What bounds it is the prose above
    `reference_definition`, which puts both of its roles on one line (PART 7),
    rather than that production's closing `newline`: a wrapped title would
    satisfy the terminal with the line break after it. So
-   `[r]: /u "t` + newline + `u"` is a paragraph and not a definition, in the
-   executable spec and in all three engines. *)
+   `[r]: /u "t` + newline + `u"` is a paragraph and not a definition. *)
 (* Titles resolve `escaped_char`, the whole ASCII punctuation escape set.
    A backslash before any other character remains literal, as in a quoted
-   attribute value. Only the title slot admits a newline (carve#2587). *)
+   attribute value. Only the title slot admits a newline. *)
 link_title = space, ('"', {escaped_char | literal_backslash | (character - '"' - '\')}, '"')
            | space, ("'", {escaped_char | literal_backslash | (character - "'" - '\')}, "'") ;
 
@@ -3251,9 +3246,8 @@ class_attribute = '.', explicit_identifier ;
    `attrs.keyValues`: `{class=foo}` and `{.foo}` parse to one tree. The two
    spellings are not interchangeable in source, because `class_attribute` reads
    the `explicit_identifier` the fence word does while `attribute_value` reaches
-   past it -- `-col` and `w-1/2` are classes only the key-value form can spell
-   (carve#2435). One concept, one slot, the way PART 4 above already makes the
-   three spellings of `lang` meet in one. *)
+   past it: `-col` and `w-1/2` are classes only the key-value form can spell.
+   PART 4's three spellings of `lang` likewise share one slot. *)
 key_value_attribute = identifier, '=', attribute_value ;
 (* A bare identifier is a VALUE-LESS BOOLEAN attribute in source. It has the same
    empty-string AST value as `name=""` and renders `name=""` (a carve
@@ -7982,8 +7976,7 @@ EOF = (* end of file *) ;
       A MESSAGE NO CLAUSE NAMES IS PRESENTATION, AND IT IS NOT COMPARED. Such an
       entry's contract is its other fields; the sentence is the engine's, so two
       engines describing one loss in different words both conform. No clause here
-      states what a message names, and a conformance fixture states none
-      (markup-carve/carve#2454).
+      states what a message names, and a conformance fixture states none.
 
       WHERE A CLAUSE NAMES A MESSAGE, THAT TEXT IS THE CONTRACT and an engine
       emits it verbatim, with nothing appended. `CARVE-P2-024`'s
@@ -8051,9 +8044,6 @@ EOF = (* end of file *) ;
       for the Markdown target; it is the same reading here and is not restated.
 
         text `a !`, then a link to /u    ->  a \![x](/u)
-
-      SAID HERE BECAUSE IT IS DERIVABLE: §2's emitted-byte test already
-      governs these joins (markup-carve/carve-php#2634).
 
       ESCAPE MINIMALITY STILL APPLIES INSIDE AN ESCALATED UNIT -- NORMATIVE [CARVE-P11-007].
       One occurrence needing the conservative form does not put
@@ -8544,8 +8534,7 @@ EOF = (* end of file *) ;
       line's content, not a blank line's padding. Inside a list item whose
       content column is 2, a code-block line of four spaces is a code line of
       two spaces, as it is inside a block quote after `> `. A line no wider
-      than the content column is an empty code line
-      ([carve#2403](https://github.com/markup-carve/carve/issues/2403)).
+      than the content column is an empty code line.
 
       The case this decides is a blank line INSIDE a list item, where the item's
       continuation is indented. Indenting the blank line to the content column
