@@ -18,6 +18,10 @@ const baseline = JSON.parse(
 const visibleText = (html) =>
   new JSDOM(html).window.document.body.textContent.replace(/\s+/g, ' ').trim()
 
+// Pin 44ae9824 adds the Markdown round trip for corpus 283: an empty
+// footnote body imports as `{empty}` instead of losing its sentinel. Comparing
+// all 2225 documents with 7d93ec64 finds no other Markdown membership change.
+
 // Corpus 531's thirteen documents all import, stay canonical and keep their
 // visible text (+13 each). Only the column-2 control round-trips through HTML
 // (+1): the other twelve publish the opener inside the quote's paragraph, and
