@@ -1,4 +1,4 @@
-name: Release Gate
+name: Release packages and assets
 
 # This repository publishes nothing on a tag: the tag appears when a maintainer
 # publishes the prepared draft release, so there is no publish job for a gate to
@@ -8,16 +8,37 @@ name: Release Gate
 # while the tag is still young enough to move. Same shape, and the same reason,
 # as markup-carve/carve-php's release gate.
 on:
-  push:
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
-  # A rehearsal against whatever package.json currently declares, so the first
-  # time this runs is not the moment a tag makes it awkward.
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      publish:
+        required: true
+        type: boolean
+      tag:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+      release_tag:
+        required: true
+        type: string
+      source_sha:
+        required: true
+        type: string
+      release_id:
+        required: true
+        type: string
+      release_body:
+        required: true
+        type: string
+      notes_digest:
+        required: true
+        type: string
 
 permissions:
-  contents: read
-
+  contents: write
+  actions: read
+  id-token: write
 jobs:
   changelog:
     name: the changelog section accounts for every merge in this release
@@ -31,6 +52,14 @@ jobs:
           # tags and the history behind them.
           fetch-depth: 0
 
+          ref: ${{ inputs.source_sha }}
+      - name: Expose the candidate tag locally
+        if: ${{ !inputs.publish }}
+        shell: bash
+        env:
+          CANDIDATE_TAG: ${{ inputs.tag }}
+        run: |
+          git tag "$CANDIDATE_TAG" "${{ inputs.source_sha }}"
       - uses: actions/setup-node@v6
         with:
           node-version: 24
@@ -46,8 +75,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          if [ "${{ 'push' }}" = "workflow_dispatch" ]; then
             node scripts/changelog-completeness.mjs
           else
-            node scripts/changelog-completeness.mjs "${GITHUB_REF_NAME}"
+            node scripts/changelog-completeness.mjs "${LANE_TAG}"
           fi
+env:
+  LANE_TAG: ${{ inputs.tag }}
+  LANE_REF: ${{ format('refs/tags/{0}', inputs.tag) }}
+  LANE_REF_TYPE: tag
+  LANE_PUBLISH: ${{ inputs.publish }}

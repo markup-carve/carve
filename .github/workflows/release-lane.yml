@@ -1,0 +1,130 @@
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Stable version to check or publish, without v
+        required: true
+        type: string
+      publish:
+        description: Publish after checks and one approval
+        required: true
+        default: false
+        type: boolean
+permissions:
+  contents: write
+  actions: read
+  id-token: write
+concurrency:
+  group: release-${{ github.repository }}-${{ inputs.version }}
+  cancel-in-progress: false
+jobs:
+  candidate:
+    name: Check exact commit, CI and prepared notes
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      sha: ${{ steps.candidate.outputs.sha }}
+      tag: ${{ steps.candidate.outputs.tag }}
+      version: ${{ steps.candidate.outputs.version }}
+      release_id: ${{ steps.candidate.outputs.release_id }}
+      body: ${{ steps.candidate.outputs.body }}
+      notes_digest: ${{ steps.candidate.outputs.notes_digest }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - id: candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.version }}
+          RELEASE_SHA: ${{ github.sha }}
+          RELEASE_PUBLISH: ${{ inputs.publish }}
+        run: python .github/scripts/release-lane.py metadata
+  preflight:
+    name: Build and validate before approval
+    needs: candidate
+    uses: ./.github/workflows/release-gate.yml
+    with:
+      publish: false
+      tag: ${{ needs.candidate.outputs.tag }}
+      version: ${{ needs.candidate.outputs.version }}
+      release_tag: ${{ needs.candidate.outputs.tag }}
+      source_sha: ${{ needs.candidate.outputs.sha }}
+      release_id: ${{ needs.candidate.outputs.release_id }}
+      release_body: ${{ needs.candidate.outputs.body }}
+      notes_digest: ${{ needs.candidate.outputs.notes_digest }}
+    secrets: inherit
+  approve:
+    name: Approve once and tag the checked commit
+    if: ${{ inputs.publish }}
+    needs:
+      - candidate
+      - preflight
+    environment: release-approval
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.candidate.outputs.sha }}
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.candidate.outputs.tag }}
+          RELEASE_SHA: ${{ needs.candidate.outputs.sha }}
+          RELEASE_NOTES_DIGEST: ${{ needs.candidate.outputs.notes_digest }}
+        run: python .github/scripts/release-lane.py approve
+  publish:
+    name: Publish checked packages and assets
+    needs:
+      - candidate
+      - approve
+    uses: ./.github/workflows/release-gate.yml
+    with:
+      publish: true
+      tag: ${{ needs.candidate.outputs.tag }}
+      version: ${{ needs.candidate.outputs.version }}
+      release_tag: ${{ needs.candidate.outputs.tag }}
+      source_sha: ${{ needs.candidate.outputs.sha }}
+      release_id: ${{ needs.candidate.outputs.release_id }}
+      release_body: ${{ needs.candidate.outputs.body }}
+      notes_digest: ${{ needs.candidate.outputs.notes_digest }}
+    secrets: inherit
+  finalize:
+    name: Verify availability and publish release notes
+    needs:
+      - candidate
+      - publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.candidate.outputs.sha }}
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.candidate.outputs.tag }}
+          RELEASE_SHA: ${{ needs.candidate.outputs.sha }}
+          RELEASE_NOTES_DIGEST: ${{ needs.candidate.outputs.notes_digest }}
+        run: python .github/scripts/release-lane.py finalize
+  report:
+    name: Report publication status even on failure
+    if: ${{ always() && inputs.publish && needs.approve.result == 'success' }}
+    needs:
+      - candidate
+      - approve
+      - publish
+      - finalize
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.candidate.outputs.sha }}
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.candidate.outputs.tag }}
+          RELEASE_SHA: ${{ needs.candidate.outputs.sha }}
+          RELEASE_NOTES_DIGEST: ${{ needs.candidate.outputs.notes_digest }}
+        run: python .github/scripts/release-lane.py report

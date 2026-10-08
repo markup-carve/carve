@@ -1,0 +1,15 @@
+{
+  "workflow": ".github/workflows/release-lane.yml",
+  "publisher": ".github/workflows/release-gate.yml",
+  "publisher_environments": [],
+  "registries": {},
+  "assets": [],
+  "versions": [
+    {
+      "path": "package.json",
+      "field": [
+        "version"
+      ]
+    }
+  ]
+}
