@@ -1,0 +1,317 @@
+[
+  {
+    "name": "punctuation-0",
+    "source": "x ![a\\!b](/i) y\n",
+    "alt": "a!b",
+    "html": "<p>x <img src=\"/i\" alt=\"a!b\"> y</p>",
+    "table": "| ![a\\!b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-1",
+    "source": "x ![a\\\"b](/i) y\n",
+    "alt": "a\"b",
+    "html": "<p>x <img src=\"/i\" alt=\"a&quot;b\"> y</p>",
+    "table": "| ![a\\\"b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-2",
+    "source": "x ![a\\#b](/i) y\n",
+    "alt": "a#b",
+    "html": "<p>x <img src=\"/i\" alt=\"a#b\"> y</p>",
+    "table": "| ![a\\#b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-3",
+    "source": "x ![a\\$b](/i) y\n",
+    "alt": "a$b",
+    "html": "<p>x <img src=\"/i\" alt=\"a$b\"> y</p>",
+    "table": "| ![a\\$b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-4",
+    "source": "x ![a\\%b](/i) y\n",
+    "alt": "a%b",
+    "html": "<p>x <img src=\"/i\" alt=\"a%b\"> y</p>",
+    "table": "| ![a\\%b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-5",
+    "source": "x ![a\\&b](/i) y\n",
+    "alt": "a&b",
+    "html": "<p>x <img src=\"/i\" alt=\"a&amp;b\"> y</p>",
+    "table": "| ![a\\&b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-6",
+    "source": "x ![a\\'b](/i) y\n",
+    "alt": "a'b",
+    "html": "<p>x <img src=\"/i\" alt=\"a&#039;b\"> y</p>",
+    "table": "| ![a\\'b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-7",
+    "source": "x ![a\\(b](/i) y\n",
+    "alt": "a(b",
+    "html": "<p>x <img src=\"/i\" alt=\"a(b\"> y</p>",
+    "table": "| ![a\\(b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-8",
+    "source": "x ![a\\)b](/i) y\n",
+    "alt": "a)b",
+    "html": "<p>x <img src=\"/i\" alt=\"a)b\"> y</p>",
+    "table": "| ![a\\)b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-9",
+    "source": "x ![a\\*b](/i) y\n",
+    "alt": "a*b",
+    "html": "<p>x <img src=\"/i\" alt=\"a*b\"> y</p>",
+    "table": "| ![a\\*b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-10",
+    "source": "x ![a\\+b](/i) y\n",
+    "alt": "a+b",
+    "html": "<p>x <img src=\"/i\" alt=\"a+b\"> y</p>",
+    "table": "| ![a\\+b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-11",
+    "source": "x ![a\\,b](/i) y\n",
+    "alt": "a,b",
+    "html": "<p>x <img src=\"/i\" alt=\"a,b\"> y</p>",
+    "table": "| ![a\\,b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-12",
+    "source": "x ![a\\-b](/i) y\n",
+    "alt": "a-b",
+    "html": "<p>x <img src=\"/i\" alt=\"a-b\"> y</p>",
+    "table": "| ![a\\-b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-13",
+    "source": "x ![a\\.b](/i) y\n",
+    "alt": "a.b",
+    "html": "<p>x <img src=\"/i\" alt=\"a.b\"> y</p>",
+    "table": "| ![a\\.b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-14",
+    "source": "x ![a\\/b](/i) y\n",
+    "alt": "a/b",
+    "html": "<p>x <img src=\"/i\" alt=\"a/b\"> y</p>",
+    "table": "| ![a\\/b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-15",
+    "source": "x ![a\\:b](/i) y\n",
+    "alt": "a:b",
+    "html": "<p>x <img src=\"/i\" alt=\"a:b\"> y</p>",
+    "table": "| ![a\\:b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-16",
+    "source": "x ![a\\;b](/i) y\n",
+    "alt": "a;b",
+    "html": "<p>x <img src=\"/i\" alt=\"a;b\"> y</p>",
+    "table": "| ![a\\;b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-17",
+    "source": "x ![a\\<b](/i) y\n",
+    "alt": "a<b",
+    "html": "<p>x <img src=\"/i\" alt=\"a&lt;b\"> y</p>",
+    "table": "| ![a\\<b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-18",
+    "source": "x ![a\\=b](/i) y\n",
+    "alt": "a=b",
+    "html": "<p>x <img src=\"/i\" alt=\"a=b\"> y</p>",
+    "table": "| ![a\\=b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-19",
+    "source": "x ![a\\>b](/i) y\n",
+    "alt": "a>b",
+    "html": "<p>x <img src=\"/i\" alt=\"a&gt;b\"> y</p>",
+    "table": "| ![a\\>b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-20",
+    "source": "x ![a\\?b](/i) y\n",
+    "alt": "a?b",
+    "html": "<p>x <img src=\"/i\" alt=\"a?b\"> y</p>",
+    "table": "| ![a\\?b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-21",
+    "source": "x ![a\\@b](/i) y\n",
+    "alt": "a@b",
+    "html": "<p>x <img src=\"/i\" alt=\"a@b\"> y</p>",
+    "table": "| ![a\\@b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-22",
+    "source": "x ![a\\[b](/i) y\n",
+    "alt": "a[b",
+    "html": "<p>x <img src=\"/i\" alt=\"a[b\"> y</p>",
+    "table": "| ![a\\[b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-23",
+    "source": "x ![a\\\\b](/i) y\n",
+    "alt": "a\\b",
+    "html": "<p>x <img src=\"/i\" alt=\"a\\b\"> y</p>",
+    "table": "| ![a\\\\b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-24",
+    "source": "x ![a\\]b](/i) y\n",
+    "alt": "a]b",
+    "html": "<p>x <img src=\"/i\" alt=\"a]b\"> y</p>",
+    "table": "| ![a\\]b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-25",
+    "source": "x ![a\\^b](/i) y\n",
+    "alt": "a^b",
+    "html": "<p>x <img src=\"/i\" alt=\"a^b\"> y</p>",
+    "table": "| ![a\\^b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-26",
+    "source": "x ![a\\_b](/i) y\n",
+    "alt": "a_b",
+    "html": "<p>x <img src=\"/i\" alt=\"a_b\"> y</p>",
+    "table": "| ![a\\_b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-27",
+    "source": "x ![a\\`b](/i) y\n",
+    "alt": "a`b",
+    "html": "<p>x <img src=\"/i\" alt=\"a`b\"> y</p>",
+    "table": "| ![a\\`b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-28",
+    "source": "x ![a\\{b](/i) y\n",
+    "alt": "a{b",
+    "html": "<p>x <img src=\"/i\" alt=\"a{b\"> y</p>",
+    "table": "| ![a\\{b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-29",
+    "source": "x ![a\\|b](/i) y\n",
+    "alt": "a|b",
+    "html": "<p>x <img src=\"/i\" alt=\"a|b\"> y</p>",
+    "table": "| ![a\\|b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-30",
+    "source": "x ![a\\}b](/i) y\n",
+    "alt": "a}b",
+    "html": "<p>x <img src=\"/i\" alt=\"a}b\"> y</p>",
+    "table": "| ![a\\}b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "punctuation-31",
+    "source": "x ![a\\~b](/i) y\n",
+    "alt": "a~b",
+    "html": "<p>x <img src=\"/i\" alt=\"a~b\"> y</p>",
+    "table": "| ![a\\~b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "non-punctuation-q",
+    "source": "x ![a\\qb](/i) y\n",
+    "alt": "a\\qb",
+    "html": "<p>x <img src=\"/i\" alt=\"a\\qb\"> y</p>",
+    "table": "| ![a\\\\qb](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "non-punctuation-9",
+    "source": "x ![a\\9b](/i) y\n",
+    "alt": "a\\9b",
+    "html": "<p>x <img src=\"/i\" alt=\"a\\9b\"> y</p>",
+    "table": "| ![a\\\\9b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "non-punctuation-é",
+    "source": "x ![a\\éb](/i) y\n",
+    "alt": "a\\éb",
+    "html": "<p>x <img src=\"/i\" alt=\"a\\éb\"> y</p>",
+    "table": "| ![a\\\\éb](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "non-punctuation-中",
+    "source": "x ![a\\中b](/i) y\n",
+    "alt": "a\\中b",
+    "html": "<p>x <img src=\"/i\" alt=\"a\\中b\"> y</p>",
+    "table": "| ![a\\\\中b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "backslashes-1",
+    "source": "x ![a\\|b](/i) y\n",
+    "alt": "a|b",
+    "html": "<p>x <img src=\"/i\" alt=\"a|b\"> y</p>",
+    "table": "| ![a\\|b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "backslashes-2",
+    "source": "x ![a\\\\|b](/i) y\n",
+    "alt": "a\\|b",
+    "html": "<p>x <img src=\"/i\" alt=\"a\\|b\"> y</p>",
+    "table": "| ![a\\\\\\|b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "backslashes-3",
+    "source": "x ![a\\\\\\|b](/i) y\n",
+    "alt": "a\\|b",
+    "html": "<p>x <img src=\"/i\" alt=\"a\\|b\"> y</p>",
+    "table": "| ![a\\\\\\|b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "backslashes-4",
+    "source": "x ![a\\\\\\\\|b](/i) y\n",
+    "alt": "a\\\\|b",
+    "html": "<p>x <img src=\"/i\" alt=\"a\\\\|b\"> y</p>",
+    "table": "| ![a\\\\\\\\\\|b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "backslashes-5",
+    "source": "x ![a\\\\\\\\\\|b](/i) y\n",
+    "alt": "a\\\\|b",
+    "html": "<p>x <img src=\"/i\" alt=\"a\\\\|b\"> y</p>",
+    "table": "| ![a\\\\\\\\\\|b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "backslashes-6",
+    "source": "x ![a\\\\\\\\\\\\|b](/i) y\n",
+    "alt": "a\\\\\\|b",
+    "html": "<p>x <img src=\"/i\" alt=\"a\\\\\\|b\"> y</p>",
+    "table": "| ![a\\\\\\\\\\\\\\|b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "literal-markup",
+    "source": "x ![/italic/ *bold* [nested] `code`](/i) y\n",
+    "alt": "/italic/ *bold* [nested] `code`",
+    "html": "<p>x <img src=\"/i\" alt=\"/italic/ *bold* [nested] `code`\"> y</p>",
+    "table": "| ![\\/italic\\/ \\*bold\\* \\[nested\\] \\`code\\`](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "full-reference",
+    "source": "x ![a\\|b][r] y\n\n[r]: /i\n",
+    "alt": "a|b",
+    "html": "<p>x <img src=\"/i\" alt=\"a|b\"> y</p>",
+    "table": "| ![a\\|b](/i) | z |\n|---|---|\n| c | d |\n"
+  },
+  {
+    "name": "collapsed-reference",
+    "source": "x ![a\\|b][] y\n\n[a\\|b]: /i\n",
+    "alt": "a|b",
+    "html": "<p>x <img src=\"/i\" alt=\"a|b\"> y</p>",
+    "table": "| ![a\\|b](/i) | z |\n|---|---|\n| c | d |\n"
+  }
+]

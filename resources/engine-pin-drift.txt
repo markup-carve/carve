@@ -24,3 +24,4 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+316-an-image-s-alt-text-closes-where-a-link-s-text-closes-4  # Image alt punctuation escapes resolve under #2782; the pinned reader retains them.
