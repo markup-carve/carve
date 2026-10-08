@@ -55,7 +55,11 @@ def main():
             fresh = api(environment_path + '/deployment-branch-policies')['branch_policies']
             assert fresh and all(p['name'] == default and p.get('type', 'branch') == 'branch' for p in fresh)
     for name in config['publisher_environments']:
-        env = api(f'repos/{args.repo}/environments/{name}')
+        try:
+            env = api(f'repos/{args.repo}/environments/{name}')
+        except subprocess.CalledProcessError as error:
+            assert not args.apply and '404' in error.stderr, error.stderr
+            continue
         if not any(rule['type'] == 'required_reviewers' for rule in env['protection_rules']):
             continue
         print('Remove the second review from', args.repo, name)
