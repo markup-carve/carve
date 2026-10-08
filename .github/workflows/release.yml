@@ -1,0 +1,264 @@
+name: Release
+
+# THE TAG IS CREATED BY THIS WORKFLOW, AFTER THE GATES PASS AND AFTER A HUMAN
+# APPROVES. Before this file existed, a release here was a maintainer pressing
+# "Publish release" on a prepared draft: GitHub created the tag from that one
+# click, `release-gate.yml` then ran the completeness check on the tag, and a red
+# result arrived after the only irreversible act in the release. That gate says so
+# in its own header - it "cannot hold a release back".
+#
+# This repository pushes to no registry, so the irreversible act is the tag alone.
+# That is still irreversible enough to matter: every engine, grammar and editor in
+# the organization resolves this repository by tag or by commit, and three sibling
+# repositories lost a version to a tag that went out before its gates
+# (carve-grammars v0.1.10 and v0.1.12, carve-js v0.1.4).
+#
+# Inverted here, in the shape carve-grammars settled on. `workflow_dispatch` runs
+# the gates against `main`, the approval sits between them and the tag, and the
+# tag is created only after both. The one human decision in a release is an
+# approval on a green gate.
+#
+# Every job declares timeout-minutes so a hung step fails in minutes rather than
+# inheriting the 360-minute GitHub default.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, without a leading v (e.g. 0.1.9)'
+        required: true
+        type: string
+
+concurrency:
+  # Two runs creating the same tag is a race with an irreversible loser.
+  group: release-${{ inputs.version }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    name: The manifests and the changelog agree
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The completeness gate walks every merge back to the previous tag, so
+          # it needs the tags and the history behind them.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      # First, because on a dispatched workflow it is the cheapest thing that can
+      # go wrong and the most expensive one to discover late. Tags here carry no
+      # `v`, which is what `release-gate.yml` matches on.
+      - name: The tag does not exist yet
+        run: |
+          VER="${{ inputs.version }}"
+          if git rev-parse -q --verify "refs/tags/${VER}" >/dev/null; then
+            echo "::error::Tag ${VER} already exists. Supersede it with a new version."
+            exit 1
+          fi
+
+      - name: package.json declares this version
+        run: |
+          VER="${{ inputs.version }}"
+          GOT="$(node -p "require('./package.json').version")"
+          if [ "$VER" != "$GOT" ]; then
+            echo "::error::package.json declares $GOT, but this run would release $VER."
+            exit 1
+          fi
+
+      # package-lock.json carries the version twice: once at the root and once in
+      # the self-referential `packages[""]` entry. A cut that moves one and not
+      # the other is what refused a sibling's tag on 2026-10-08.
+      - name: package-lock.json declares this version in both places
+        run: |
+          VER="${{ inputs.version }}"
+          ROOT="$(node -p "require('./package-lock.json').version")"
+          SELF="$(node -p "require('./package-lock.json').packages[''].version")"
+          if [ "$VER" != "$ROOT" ] || [ "$VER" != "$SELF" ]; then
+            echo "::error::package-lock.json declares root=$ROOT self=$SELF, not $VER."
+            exit 1
+          fi
+
+      - name: The changelog describes this version
+        run: |
+          VER="${{ inputs.version }}"
+          if ! grep -qE "^## \[?${VER//./\\.}\]?" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no section for $VER."
+            exit 1
+          fi
+
+      # ...and it describes ALL of it. The step above only asks whether a section
+      # EXISTS, and a section exists from the moment `chore: cut X.Y.Z` writes it;
+      # development then carries on over it and nobody reopens it. 0.1.6 shipped
+      # that way, with `[Unreleased]` empty for the 33 merges after it.
+      - name: The changelog section accounts for every merge in this release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/changelog-completeness.mjs "${{ inputs.version }}"
+
+  release-notes:
+    name: A release draft for this version exists and targets this commit
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      # `write`, not `read`: a DRAFT release is invisible to a caller without push
+      # access, so under `contents: read` the listing comes back empty and the gate
+      # reports "no release" for a draft sitting right there with notes in it.
+      # See markup-carve/carve-wasm#80.
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # GATE: the notes are not the workflow's to write. A changelog entry is
+      # deliberately one or two lines for a contributor, which makes poor release
+      # notes for a reader deciding whether to upgrade.
+      #
+      # Found by listing rather than `gh release view <tag>`: a draft's tag is not
+      # a git ref, so addressing one by tag can match nothing, change nothing and
+      # still exit 0.
+      - name: Exactly one draft exists, it has notes, and it targets this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VER="${{ inputs.version }}"
+          all="$(gh api "repos/$GITHUB_REPOSITORY/releases" --paginate \
+            --jq "[.[] | select(.tag_name == \"${VER}\")]")"
+          count="$(printf '%s' "$all" | jq 'length')"
+          if [ "$count" = "0" ]; then
+            echo "::error::no release object for ${VER}. Write the draft notes first."
+            echo "::error::if a draft DOES exist, this job could not see it -" \
+                 "check that the job still declares contents: write"
+            exit 1
+          fi
+          if [ "$count" != "1" ]; then
+            echo "::error::${count} release objects carry the tag ${VER}. Leave one."
+            exit 1
+          fi
+          release="$(printf '%s' "$all" | jq '.[0]')"
+          if [ "$(printf '%s' "$release" | jq -r '.draft')" != "true" ]; then
+            echo "::error::the release for ${VER} is already published, so this run" \
+                 "cannot be what releases it."
+            exit 1
+          fi
+          body="$(printf '%s' "$release" | jq -r '.body // ""')"
+          if [ -z "${body//[[:space:]]/}" ]; then
+            echo "::error::the draft for ${VER} has no notes."
+            exit 1
+          fi
+          # The footer every release in this organization ends with, as a bare URL
+          # so a reader can see where it goes.
+          if ! printf '%s' "$body" | grep -qF '**Full Changelog**: https://github.com/'; then
+            echo "::error::the draft is missing its bare-URL '**Full Changelog**:' footer."
+            exit 1
+          fi
+          # A draft target is a COMMITISH: it is whatever was written, a branch
+          # name or a sha. Both forms are correct as long as they resolve to the
+          # commit these gates are measuring, so accept either rather than
+          # insisting on one spelling - a sibling lane refused a run after an
+          # approval for exactly that.
+          target="$(printf '%s' "$release" | jq -r '.target_commitish')"
+          if [ "$target" = "$GITHUB_SHA" ]; then
+            echo "draft targets this commit by sha"
+          elif resolved="$(git rev-parse -q --verify "refs/remotes/origin/${target}")" \
+               && [ "$resolved" = "$GITHUB_SHA" ]; then
+            echo "draft targets ${target}, whose head is this commit"
+          else
+            echo "::error::the draft targets ${target}, which is not ${GITHUB_SHA}." \
+                 "The gates measure this commit, so the notes would describe another one."
+            exit 1
+          fi
+
+  tag:
+    name: Create the tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [guard, release-notes]
+    # THE APPROVAL GATE, and the ONLY job that declares an environment. `needs:`
+    # makes this unreachable until both gate jobs pass, and the environment holds
+    # it until a required reviewer approves, so whoever approves is looking at a
+    # green gate rather than at nothing.
+    #
+    # GitHub asks for an approval once per gated JOB, so declaring the environment
+    # on the publish job too would ask twice for one decision, and the second
+    # prompt would arrive after the tag already existed - measured on
+    # carve-grammars run 37767870312. The approval belongs on the first
+    # irreversible step and nowhere else.
+    environment: release
+    permissions:
+      # `contents: write`, explicitly. Creating a ref with the default token
+      # answers `403 Resource not accessible by integration`, which killed eight
+      # releases in this organization immediately after their approval.
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Push the tag
+        run: |
+          VER="${{ inputs.version }}"
+          # Re-check under the approval: main moves while a run waits for a
+          # reviewer, and the gates measured the commit that was current then.
+          GOT="$(node -p "require('./package.json').version")"
+          LOCK="$(node -p "require('./package-lock.json').packages[''].version")"
+          if [ "$VER" != "$GOT" ] || [ "$VER" != "$LOCK" ]; then
+            echo "::error::the version surface now reads package.json=$GOT" \
+                 "package-lock=$LOCK. main moved while this run waited for" \
+                 "approval, so the gate result no longer describes it. Re-run."
+            exit 1
+          fi
+          if git rev-parse -q --verify "refs/tags/${VER}" >/dev/null; then
+            echo "::error::Tag ${VER} appeared while this run waited. Stopping."
+            exit 1
+          fi
+          git tag "${VER}" "$GITHUB_SHA"
+          git push origin "refs/tags/${VER}"
+          echo "tagged ${VER} at $GITHUB_SHA"
+
+  publish:
+    name: Publish the release notes
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [tag]
+    # NO `environment:` here - see the tag job. `needs: [tag]` already makes this
+    # unreachable without the approval.
+    #
+    # It also runs in THIS run rather than on the new tag, because a ref created
+    # with `github.token` does not trigger other workflows: a tag-triggered job
+    # would simply never fire.
+    permissions:
+      contents: write
+    steps:
+      - name: Un-draft the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VER="${{ inputs.version }}"
+          id="$(gh api "repos/$GITHUB_REPOSITORY/releases" --paginate \
+            --jq "[.[] | select(.tag_name == \"${VER}\" and .draft)] | first | .id // empty")"
+          if [ -z "$id" ]; then
+            echo "No draft release for ${VER}; nothing to publish."
+            exit 0
+          fi
+          # `tag_name` goes with every PATCH of a release. Omit it on a DRAFT and
+          # GitHub replaces the tag with a generated `untagged-*` placeholder,
+          # because a draft's tag is a string on the object rather than a git ref.
+          # `-F` (not `-f`) for draft, so it is sent as a boolean: the string
+          # "false" is truthy and publishes either way, which is how a release
+          # here went out by accident.
+          gh api "repos/$GITHUB_REPOSITORY/releases/$id" -X PATCH \
+            -f tag_name="${VER}" -F draft=false --jq '"published \(.tag_name)"'
+          # Read it back: exit status does not tell you whether the tag survived.
+          gh api "repos/$GITHUB_REPOSITORY/releases/$id" \
+            --jq '"draft=\(.draft) tag=\(.tag_name)"'
