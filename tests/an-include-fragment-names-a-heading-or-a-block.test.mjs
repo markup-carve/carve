@@ -145,6 +145,26 @@ test('an option needs no space in front of it, after a path or after a name', ()
   ])
 })
 
+test('an unquoted option value ends at the next marker and takes the rest of unquoted_value', () => {
+  assert.deepEqual(slots('{{ plans.crv @shift:+1 }}').options, [['shift', '+1']])
+  assert.deepEqual(slots('{{ plans.crv @k:w-1/2 }}').options, [['k', 'w-1/2']])
+  assert.deepEqual(slots('{{ plans.crv @shift:1@lines:1-2 }}').options, [
+    ['shift', '1'],
+    ['lines', '1-2'],
+  ])
+  // A newline in any spelling is not value text.
+  assert.equal(scanDirective('{{ plans.crv @shift:1\r@lines:1-2 }}', 0), null)
+  // An `@` inside a value takes the quoted form.
+  assert.deepEqual(slots('{{ plans.crv @k:"a@b" }}').options, [['k', 'a@b']])
+})
+
+test('a quoted path decodes the quote and the backslash, and keeps every other pair', () => {
+  assert.equal(slots('{{ "a\\"b.crv" }}').path, 'a"b.crv')
+  assert.equal(slots('{{ "a\\\\b.crv" }}').path, 'a\\b.crv')
+  assert.equal(slots('{{ "a\\.crv" }}').path, 'a\\.crv')
+  assert.equal(slots('{{ "notes\\new.crv" }}').path, 'notes\\new.crv')
+})
+
 test('the padding around the whole directive is still required on both sides', () => {
   assert.equal(scanDirective('{{plans.crv@shift:1 }}', 0), null)
   assert.equal(scanDirective('{{ plans.crv@shift:1}}', 0), null)

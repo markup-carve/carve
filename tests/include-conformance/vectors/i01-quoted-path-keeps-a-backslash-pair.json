@@ -1,0 +1,26 @@
+{
+  "name": "i01-quoted-path-keeps-a-backslash-pair",
+  "description": "A backslash before anything but a quote or a backslash is path text: the decoy without it is not opened (carve#2778).",
+  "rules": [
+    "I1",
+    "quoted-path"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ \"a\\.crv\" }}",
+  "files": {
+    "a\\.crv": "kept",
+    "a.crv": "decoded"
+  },
+  "expected": {
+    "html": "<p>kept</p>",
+    "fmt": "{{ \"a\\.crv\" }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a\\.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

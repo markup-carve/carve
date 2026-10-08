@@ -44,7 +44,9 @@ and security.
 - **`path`** is either **bare** (it stops at the first space, `#`, `@`, or
   `}`) or **double-quoted** (`"my chapter.crv"`) when it contains spaces. The
   path is resolved **relative to the including file**; resolution is the host's
-  job (see [The host resolver](#the-host-resolver)).
+  job (see [The host resolver](#the-host-resolver)). Inside the quotes, `\"` is a
+  literal quote and `\\` a literal backslash. Every other backslash is path text,
+  so `"notes\new.crv"` names the file `notes\new.crv`.
 The padding around the path is a **run** of whitespace, not one space. At least
 one character is required on each side - `{{path}}` and `{{ path}}` are ordinary
 text, because that requirement is what keeps a path from starting at `{` - but
@@ -77,6 +79,8 @@ nothing to do.
   cannot spell, which is how an option can follow it with no space.
 - **`@key:value`** is an extensible option slot. Each option opens at its own
   `@`; the whitespace between options, and before the first one, is optional.
+  An unquoted value ends at the next `@`, so `@shift:1@lines:1-8` is two
+  options. A value that needs an `@` is quoted.
   - **`@lines:N-M`** includes the 1-based, inclusive physical-line range `N`
     through `M` of the resolved source.
   - **`@shift:N`** shifts the level of every included heading by the signed

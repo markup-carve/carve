@@ -1,0 +1,26 @@
+{
+  "name": "i01-quoted-path-decodes-an-escaped-backslash",
+  "description": "An escaped backslash in a quoted path is one backslash (carve#2778).",
+  "rules": [
+    "I1",
+    "quoted-path"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ \"a\\\\b.crv\" }}",
+  "files": {
+    "a\\b.crv": "one backslash",
+    "a\\\\b.crv": "two backslashes"
+  },
+  "expected": {
+    "html": "<p>one backslash</p>",
+    "fmt": "{{ \"a\\\\b.crv\" }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a\\b.crv",
+        "resolved": true
+      }
+    ]
+  }
+}
