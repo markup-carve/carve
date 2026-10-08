@@ -2580,10 +2580,13 @@ alt_text = {character} ;
 
    The VALUE is not `inline_content`. `alt` is an HTML attribute, so nothing
    inside the run is inline-parsed and no smart typography applies:
-   `![x /b/ y](/u)` gives `alt="x /b/ y"`, an escape stays as authored
-   (`![x \] y](/u)` gives `alt="x \] y"`), and a nested link or image inside
-   the run contributes its source bytes, not an element. Only the CLOSE is
-   shared with `link_text`; the content model is not. *)
+   `![x /b/ y](/u)` gives `alt="x /b/ y"`. Resolve `escaped_char` in
+   the scalar value: `![x \] y](/u)` gives `alt="x ] y"`, and `\|` gives
+   a literal pipe, including in a table cell. A backslash before a
+   non-punctuation character stays literal. Nested links, images and literal
+   span delimiters contribute text rather than elements; escape decoding does
+   not invoke inline parsing. The matching close uses
+   `link_text`; the value remains scalar. *)
 image_source = link_destination ;  (* absolute or relative, like links *)
 image_title = link_title ;
 (* A reference / collapsed-reference image resolves its label against the

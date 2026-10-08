@@ -12,6 +12,10 @@ Releases before 0.1.6 are archived in
 
 ### Breaking
 
+- Image alt text now resolves backslash escapes before ASCII punctuation.
+  Markup stays literal. A table image can spell a pipe as `\|`; a literal
+  backslash before punctuation must be doubled.
+
 - The include rename warning carries the rule id `include-id-rename`, renamed
   from `include-heading-id-rename`. The rename pass stopped being about headings
   in 0.1.8 and its message followed; the id did not. Tools matching on the old

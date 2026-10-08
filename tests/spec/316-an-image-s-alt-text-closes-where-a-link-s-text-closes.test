@@ -25,7 +25,7 @@ a ![t[z[q]]][r]{.c} b
 ```
 a ![t\]z](/i.png) b
 .
-<p>a <img src="/i.png" alt="t\]z"> b</p>
+<p>a <img src="/i.png" alt="t]z"> b</p>
 ```
 
 ```

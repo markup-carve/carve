@@ -586,7 +586,7 @@ const sem = g.createSemantics().addOperation('h', {
   image(_b, _o, alt, _c, _p, dest, title, _cp, attrs) {
     const t = title.numChildren ? ` title="${escapeAttr(title.child(0).titleText())}"` : ''
     const a = renderAttrs(attrsOf(attrs))
-    return `<img src="${escapeAttr(checkUrl(destValue(dest)))}" alt="${escapeAttr(alt.sourceString)}"${t}${a}>`
+    return `<img src="${escapeAttr(checkUrl(destValue(dest)))}" alt="${escapeAttr(alt.sourceString.replace(/\\([!-/:-@\[-`{-~])/g, '$1'))}"${t}${a}>`
   },
   imageRef(_b, _o, alt, _c, _ro, label, _rc, attrs) {
     // Same sentinel as a reference LINK, flagged so resolution emits an

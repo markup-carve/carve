@@ -1264,7 +1264,7 @@ function resolveImageRef(parsed, ctx, literal) {
   const a = def.attrs?.length
     ? renderBlockAttrs([def.attrs, attrList ?? []])
     : renderAttrs(attrList ?? [])
-  return `<img src="${escapeAttr(checkUrl(def.url))}" alt="${escapeAttr(alt)}"${t}${a}>`
+  return `<img src="${escapeAttr(checkUrl(def.url))}" alt="${escapeAttr(alt.replace(/\\([!-/:-@\[-`{-~])/g, '$1'))}"${t}${a}>`
 }
 
 // --- PART 9R R1: reference links --------------------------------------------

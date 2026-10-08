@@ -17790,7 +17790,7 @@ a ![t\]z](/i.png) b
 ```
 
 ```html
-<p>a <img src="/i.png" alt="t\]z"> b</p>
+<p>a <img src="/i.png" alt="t]z"> b</p>
 ```
 
 :::
