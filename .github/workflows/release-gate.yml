@@ -1,12 +1,17 @@
 name: Release Gate
 
-# This repository publishes nothing on a tag: the tag appears when a maintainer
-# publishes the prepared draft release, so there is no publish job for a gate to
-# sit in front of. `scripts/pre-tag-check.sh` is the gate that runs BEFORE that
-# button, and this is the automated second look. It cannot hold a release back,
-# but a red run on the tag tells a maintainer the notes went out incomplete
-# while the tag is still young enough to move. Same shape, and the same reason,
-# as markup-carve/carve-php's release gate.
+# SUPERSEDED FOR A DISPATCHED RELEASE, and kept as a rehearsal. `release.yml`
+# now runs this same completeness check BEFORE the tag, with the approval between
+# them, so the gate that can actually hold a release back lives there.
+#
+# The tag trigger below no longer fires on a release either: `release.yml` creates
+# the tag with `github.token`, and a ref created with that token does not trigger
+# other workflows. It still fires on a tag pushed by hand, which is the one route
+# `release.yml` does not cover, so it stays as the backstop for that case.
+#
+# Do not read a green run here as a release gate. A gate downstream of the
+# irreversible act cannot withhold anything, which is what this header used to
+# say about itself.
 on:
   push:
     tags:
