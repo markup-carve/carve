@@ -83,8 +83,9 @@ function readPath(inner, at) {
 }
 
 const unescape = (raw) => raw.replace(/\\(.)/g, '$1')
-// A quoted path decodes `\"` and `\\` only; every other pair is path text.
-const unescapePath = (raw) => raw.replace(/\\(["\\])/g, '$1')
+// A quoted path takes the quoted attribute value's escape set (PART 4): a
+// backslash before ASCII punctuation yields it, any other pair is path text.
+const unescapePath = (raw) => raw.replace(/\\([!-/:-@[-`{-~])/g, '$1')
 
 /* `attribute_value` (PART 4): a quoted run in either quote, else the bare set. */
 function readValue(inner, at) {

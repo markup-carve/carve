@@ -44,9 +44,11 @@ and security.
 - **`path`** is either **bare** (it stops at the first space, `#`, `@`, or
   `}`) or **double-quoted** (`"my chapter.crv"`) when it contains spaces. The
   path is resolved **relative to the including file**; resolution is the host's
-  job (see [The host resolver](#the-host-resolver)). Inside the quotes, `\"` is a
-  literal quote and `\\` a literal backslash. Every other backslash is path text,
-  so `"notes\new.crv"` names the file `notes\new.crv`.
+  job (see [The host resolver](#the-host-resolver)). Inside the quotes, a backslash
+  escapes as it does in a quoted attribute value: before ASCII punctuation it
+  yields that character, so `\"` is a quote and `"a\.crv"` names `a.crv`. Before
+  anything else it is path text, so `"notes\new.crv"` names the file
+  `notes\new.crv`.
 The padding around the path is a **run** of whitespace, not one space. At least
 one character is required on each side - `{{path}}` and `{{ path}}` are ordinary
 text, because that requirement is what keeps a path from starting at `{` - but

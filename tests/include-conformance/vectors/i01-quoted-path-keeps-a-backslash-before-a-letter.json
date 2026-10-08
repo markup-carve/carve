@@ -1,0 +1,25 @@
+{
+  "name": "i01-quoted-path-keeps-a-backslash-before-a-letter",
+  "description": "A backslash before anything but ASCII punctuation is path text: \\n is not a newline.",
+  "rules": [
+    "I1",
+    "quoted-path"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ \"notes\\new.crv\" }}",
+  "files": {
+    "notes\\new.crv": "kept"
+  },
+  "expected": {
+    "html": "<p>kept</p>",
+    "fmt": "{{ \"notes\\new.crv\" }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "notes\\new.crv",
+        "resolved": true
+      }
+    ]
+  }
+}
