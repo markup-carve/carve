@@ -10,6 +10,10 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
+### Fixed
+
+- Playground quotes preserve paragraph spacing and align attribution with the quote body.
+
 ### Breaking
 
 - Image alt text now resolves backslash escapes before ASCII punctuation.
