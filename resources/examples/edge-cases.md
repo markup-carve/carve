@@ -17734,8 +17734,8 @@ alt text may hold a bracket, at any depth, in every form and in every host
 that re-parses the run.
 
 What the run does NOT share with link text is its content model. `alt` is an
-HTML attribute, so nothing inside is inline-parsed: an escape stays as
-authored and a backtick run stays a backtick run.
+HTML attribute, so nothing inside is inline-parsed. ASCII punctuation
+escapes resolve in its scalar value; backtick delimiters remain literal text.
 
 ::: compare
 
