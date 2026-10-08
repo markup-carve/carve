@@ -918,3 +918,28 @@
   color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
 }
 .carve-render .tabs-radio:nth-of-type(6):checked ~ .tabs-panel:nth-of-type(6) { display: block; }
+
+/* Quote bodies use document ink; only the attribution is secondary text. */
+.carve-render blockquote {
+  color: var(--vp-c-text-1);
+  border-inline-start: 3px solid color-mix(in srgb, var(--vp-c-text-1) 50%, var(--vp-c-bg));
+  border-inline-end: 0;
+  padding-inline-end: 0;
+  padding-inline-start: 1rem;
+  padding-block: .25rem;
+  margin-inline: 0;
+}
+.carve-render blockquote > p { margin-block: 0 .75rem; }
+.carve-render blockquote > :first-child { margin-block-start: 0; }
+.carve-render blockquote > :last-child { margin-block-end: 0; }
+.carve-render figure:has(> blockquote) { text-align: start; }
+.carve-render figure > blockquote { margin-block-end: 0; }
+.carve-render figure:has(> blockquote) > figcaption {
+  border: 0;
+  padding-inline-end: 0;
+  padding-inline-start: calc(1rem + 3px);
+  font-style: normal;
+}
+@media (forced-colors: active) {
+  .carve-render blockquote { border-color: CanvasText; }
+}
