@@ -101,6 +101,11 @@ class WorkflowPolicyTests(unittest.TestCase):
                     self.assertTrue(any('inputs.publish' in step.get('with', {}).get(key, '') for key in ['name', 'pattern']), step)
                     self.assertNotEqual(step.get('if'), '${{ inputs.publish }}')
 
+    def test_publisher_jobs_never_request_the_lane_approval(self):
+        self.assertNotIn('release-approval', self.config['publisher_environments'])
+        for job in self.publisher['jobs'].values():
+            self.assertNotEqual(job.get('environment'), 'release-approval')
+
     def test_failure_reporting_runs_after_a_publish_failure(self):
         self.assertIn('always()', self.lane['jobs']['report']['if'])
         self.assertIn('approve', self.lane['jobs']['report']['needs'])

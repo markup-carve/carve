@@ -21,6 +21,7 @@ def main():
     parser.add_argument('--apply', action='store_true')
     args = parser.parse_args()
     config = json.loads(Path('.github/release-lane.json').read_text())
+    assert 'release-approval' not in config['publisher_environments'], 'Approval must not be a publisher environment'
     repository = api('repos/' + args.repo)
     default = repository['default_branch']
     workflow = api(f'repos/{args.repo}/contents/{config["workflow"]}?ref={default}')
