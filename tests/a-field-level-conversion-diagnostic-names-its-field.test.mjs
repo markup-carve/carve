@@ -72,13 +72,13 @@ test('the render-loss enum holds the render-time codes and neither channel code'
    * channel's codes must still be absent from it. */
   assert.deepEqual(
     renderLoss.properties.losses.items.properties.code.enum,
-    ['raw-format-dropped', 'ruby-flattened', 'destination-denied'],
+    ['raw-format-dropped', 'ruby-flattened', 'destination-denied', 'editorial-comment-flattened'],
   )
 })
 
-test('--allow-loss names the two render-loss codes and neither channel code', () => {
+test('--allow-loss names the three render-loss codes and neither channel code', () => {
   const offered = [...grammar.matchAll(/`--allow-loss ([a-z-]+)`/g)].map((match) => match[1])
-  assert.deepEqual([...new Set(offered)].sort(), ['raw-format-dropped', 'ruby-flattened'])
+  assert.deepEqual([...new Set(offered)].sort(), ['editorial-comment-flattened', 'raw-format-dropped', 'ruby-flattened'])
 })
 
 /*

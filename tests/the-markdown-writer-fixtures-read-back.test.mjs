@@ -172,3 +172,17 @@ test('list-table-cell-soft-break: the cell an item becomes joins with a space to
   assert.match(cmarkGfmToHtml(byName('list-table-cell-soft-break').markdown), /<td>one two<\/td>/)
   assert.match(clauseText('CARVE-P11-061'), /EVERY CELL, not the list-table path alone/)
 })
+
+test('editorial-comment-span: the comment keeps its critic-comment span', () => {
+  assert.match(clauseText('CARVE-P11-045'), /MUST use `<span class="critic-comment">`/)
+  const html = cmarkGfmToHtml(byName('editorial-comment-span').markdown)
+  assert.match(html, /und <span class="critic-comment">Notiz<\/span> hier/)
+})
+
+test('editorial-comment-content-is-text: the literal content reads back as text', () => {
+  const golden = byName('editorial-comment-content-is-text').markdown
+  assert.match(cmarkGfmToHtml(golden), /<span class="critic-comment"> \*b\* &lt;c&gt; <\/span>/)
+  // Control: unescaped, the reader parses the content as emphasis and a tag.
+  const bare = cmarkGfmToHtml(golden.replaceAll('\\*', '*').replace('\\<', '<'))
+  assert.match(bare, /<em>b<\/em> <c>/)
+})

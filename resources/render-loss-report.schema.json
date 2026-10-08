@@ -27,7 +27,7 @@
         "type": "object",
         "required": ["code", "target", "nodeType", "message"],
         "properties": {
-          "code": { "enum": ["raw-format-dropped", "ruby-flattened", "destination-denied"] },
+          "code": { "enum": ["raw-format-dropped", "ruby-flattened", "destination-denied", "editorial-comment-flattened"] },
           "format": { "type": "string" },
           "target": { "enum": ["html", "markdown", "plain", "ansi", "carve"] },
           "nodeType": { "enum": ["inline", "block"] },
@@ -57,6 +57,14 @@
               "message": {
                 "enum": ["Blanked a denied destination scheme", "Blanked a denied image source"]
               }
+            }
+          },
+          {
+            "properties": {
+              "code": { "const": "editorial-comment-flattened" },
+              "nodeType": { "const": "inline" },
+              "format": false,
+              "message": { "const": "Flattened an editorial comment into the surrounding text" }
             }
           }
         ],

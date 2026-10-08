@@ -1949,7 +1949,8 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
 
 
    RENDER-LOSS REPORTING -- NORMATIVE [CARVE-P2-024]. Target routing may
-   intentionally omit a raw node or flatten a `ruby` node, but a checked
+   intentionally omit a raw node or flatten a `ruby` node or an editorial
+   comment, but a checked
    renderer MUST make that loss observable. Its
    result has `value`, `losses`, `totalLosses`, and `truncated`. Each omitted
    raw node contributes one loss in document order with the stable code
@@ -1965,6 +1966,14 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    Plain, ANSI and canonical Carve output keep both sides visibly as
    `base(annotation)` but lose their association. HTML and Markdown preserve
    native ruby and report no loss.
+
+   Each editorial comment that Plain or ANSI writes as bare text contributes
+   one loss in document order with the stable code
+   `editorial-comment-flattened`, the selected `target`, `nodeType` of
+   `inline`, its `pos` when recorded, and NO `format`. Its `message` is NAMED
+   HERE and emitted verbatim: `Flattened an editorial comment into the
+   surrounding text`. HTML, Markdown and canonical Carve keep the comment and
+   report no loss.
 
    Each destination the PART 9 §25 sink denylist blanks contributes one loss in
    document order with the stable code `destination-denied`, the selected
@@ -1996,8 +2005,9 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    every binding MUST expose the checked result and strict form. A CLI MUST keep
    rendered stdout pure, summarize losses on stderr, fail with
    `--strict-losses`, offer a machine-readable JSON report, and permit the
-   explicit exceptions `--allow-loss raw-format-dropped` and
-   `--allow-loss ruby-flattened`. Import-loss reports
+   explicit exceptions `--allow-loss raw-format-dropped`,
+   `--allow-loss ruby-flattened` and
+   `--allow-loss editorial-comment-flattened`. Import-loss reports
    are separate: they describe source-to-AST migration, while this report
    describes AST-to-target rendering. *)
 
@@ -8000,11 +8010,12 @@ EOF = (* end of file *) ;
 
       WHERE A CLAUSE NAMES A MESSAGE, THAT TEXT IS THE CONTRACT and an engine
       emits it verbatim, with nothing appended. `CARVE-P2-024`'s
-      `destination-denied` names two; this channel names none.
+      `destination-denied` names two and `editorial-comment-flattened` one;
+      this channel names none.
 
       THE FIELD IS WHY THIS IS NOT THAT REPORT. `CARVE-P2-024`'s `code` enum
-      holds `raw-format-dropped`, `ruby-flattened` and `destination-denied`,
-      each naming a whole node or destination one selected renderer dropped,
+      holds `raw-format-dropped`, `ruby-flattened`, `destination-denied` and
+      `editorial-comment-flattened`, each naming a whole node or destination one selected renderer dropped,
       flattened or blanked. It answers what THIS
       RENDER dropped; this channel answers what the OUTPUT MODEL CANNOT SAY, on
       every target at once, and it is the only one of the two that can name a
@@ -9084,7 +9095,11 @@ EOF = (* end of file *) ;
       `underline`, `<mark>` for `highlight`, `<sub>` for `subscript` and
       `<sup>` for `superscript`. `small_caps` uses
       `<span class="smallcaps">`, merging its other attributes under the
-      ordinary span rules. `ruby` uses `<ruby>`, with one base run and one
+      ordinary span rules. An editorial comment (`editorial_comment`, the
+      `critic_comment` node) has no Markdown delimiter spelling either and
+      MUST use `<span class="critic-comment">`. Its content is literal
+      (CARVE-P3-016): the writer emits it as one text run under the ordinary
+      text escapes and parses nothing inside it. `ruby` uses `<ruby>`, with one base run and one
       `<rt>` per pair plus generated `<rp>(</rp>` / `<rp>)</rp>` fallback.
       Its base and annotation children use the Markdown inline writer inside
       those HTML tags, and its outer attributes follow the ordinary HTML
