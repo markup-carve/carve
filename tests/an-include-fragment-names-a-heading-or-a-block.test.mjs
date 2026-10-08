@@ -158,11 +158,14 @@ test('an unquoted option value ends at the next marker and takes the rest of unq
   assert.deepEqual(slots('{{ plans.crv @k:"a@b" }}').options, [['k', 'a@b']])
 })
 
-test('a quoted path decodes the quote and the backslash, and keeps every other pair', () => {
+test('a quoted path decodes escaped punctuation, as a quoted attribute value does', () => {
   assert.equal(slots('{{ "a\\"b.crv" }}').path, 'a"b.crv')
   assert.equal(slots('{{ "a\\\\b.crv" }}').path, 'a\\b.crv')
-  assert.equal(slots('{{ "a\\.crv" }}').path, 'a\\.crv')
+  assert.equal(slots('{{ "a\\.crv" }}').path, 'a.crv')
+  assert.equal(slots('{{ "a\\#b.crv" }}').path, 'a#b.crv')
+  // A backslash before anything but ASCII punctuation is path text.
   assert.equal(slots('{{ "notes\\new.crv" }}').path, 'notes\\new.crv')
+  assert.equal(slots('{{ "a\\101.crv" }}').path, 'a\\101.crv')
 })
 
 test('the padding around the whole directive is still required on both sides', () => {

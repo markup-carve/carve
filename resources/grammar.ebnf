@@ -3404,9 +3404,11 @@ bare_include_path = {character - ('#' | '@' | '}' | ' ' | newline)}+ ;
 (* A path carrying a space is DOUBLE-QUOTED, and only then: the bare form stops
    at the first space, so an unquoted `my chapter.crv` ends the path at `my`
    and the rest is read as the option slot it is not. Inside the quoted form a
-   backslash takes the next character with it, and two pairs decode: `\"` is a
-   literal quote and `\\` a literal backslash. Every other pair is path text, so
-   `"a\.crv"` names `a\.crv` and `"notes\new.crv"` names `notes\new.crv`. *)
+   backslash takes the next character with it and decodes as it does in a
+   quoted attribute value (PART 4): before ASCII punctuation it yields that
+   character, so `\"` is a quote, `\\` a backslash and `"a\.crv"` names
+   `a.crv`; before anything else it is path text, so `"notes\new.crv"` names
+   `notes\new.crv`. *)
 quoted_include_path = '"', {('\\', character - newline) | (character - ('"' | '\\' | newline))}+, '"' ;
 include_section = id_attribute ;
 (* The same spelling as `id_attribute`, so `explicit_identifier`, not

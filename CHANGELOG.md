@@ -28,8 +28,10 @@ Releases before 0.1.6 are archived in
   grammar required a whitespace run while the path and the section name were
   both specified to stop at `@`, which left that split unparseable (#2773).
 - An unquoted include option value ends at the next `@`, so
-  `{{ path @shift:1@lines:1-8 }}` is two options. A quoted include path decodes
-  `\"` and `\\` only and keeps every other backslash pair as path text (#2778).
+  `{{ path @shift:1@lines:1-8 }}` is two options (#2778).
+- A quoted include path takes the escape set of a quoted attribute value: a
+  backslash before ASCII punctuation yields that character, so `"a\.crv"` names
+  `a.crv`, and any other backslash is path text (#2778).
 
 ## [0.1.8] - 2026-10-06
 
