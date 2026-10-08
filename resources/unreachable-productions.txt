@@ -19,6 +19,8 @@ bare_include_path	Reached only from include_path.
 quoted_include_path	Reached only from include_path.
 include_section	Reached only from include_directive.
 include_options	Reached only from include_directive.
+include_option_value	Reached only from include_options.
+include_unquoted_value	Reached only from include_option_value.
 
 citation_group	Tier-2 citations extension: a core parser reads the bracket as literal text.
 citation_definition	Tier-2 citations extension: the definition line is a node the extension contributes.

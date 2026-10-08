@@ -12,7 +12,7 @@ include_directive = "{{", whitespace+, include_path, [include_section], [include
    space; a quoted path carries its own delimiters. *)
 (* THE CLOSER is the first "}}" that falls OUTSIDE any quoted run. A quoted run
    -- `quoted_include_path` here, or the `quoted_value` form of an option's
-   `attribute_value` (PART 4) -- MAY contain the "}}" pair: both productions
+   `include_option_value` -- MAY contain the "}}" pair: both productions
    exclude only their own quote character, the backslash and the newline, so a
    "}}" between the quotes belongs to the quoted run and does NOT end the
    directive. Both spellings therefore close at the "}}" that FOLLOWS the
@@ -29,16 +29,24 @@ include_path = bare_include_path | quoted_include_path ;
 bare_include_path = {character - ('#' | '@' | '}' | ' ' | newline)}+ ;
 (* A path carrying a space is DOUBLE-QUOTED, and only then: the bare form stops
    at the first space, so an unquoted `my chapter.crv` ends the path at `my`
-   and the rest is read as the option slot it is not. `\"` is a literal quote
-   inside the quoted form. *)
-quoted_include_path = '"', {('\\', '"') | (character - ('"' | newline))}+, '"' ;
+   and the rest is read as the option slot it is not. Inside the quoted form a
+   backslash takes the next character with it, and two pairs decode: `\"` is a
+   literal quote and `\\` a literal backslash. Every other pair is path text, so
+   `"a\.crv"` names `a\.crv` and `"notes\new.crv"` names `notes\new.crv`. *)
+quoted_include_path = '"', {('\\', character - newline) | (character - ('"' | '\\' | newline))}+, '"' ;
 include_section = id_attribute ;
 (* The same spelling as `id_attribute`, so `explicit_identifier`, not
    `identifier`: the name selects by explicit id (PART 9 §19 I1a), so every id
    `{#...}` can spell is nameable, digit-leading
    ones such as `{#2024-plan}` included. No new ambiguity: the bare path already
    stops at `#`, and neither identifier class holds a space, `@` or `}`. *)
-include_options = {[whitespace+], '@', identifier, ':', attribute_value}+ ;
+include_options = {[whitespace+], '@', identifier, ':', include_option_value}+ ;
+include_option_value = include_unquoted_value | quoted_value ;
+include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' - '\t' - newline )+ ;
+(* `unquoted_value` (PART 4) less the `@`. An unquoted value ends at the next
+   option's marker, so `@shift:1@lines:1-8` is two options and never one shift
+   whose value is `1@lines:1-8`. A value that needs an `@` takes the quoted
+   form. *)
 (* The whitespace before an `@` is OPTIONAL, in EVERY position. `bare_include_path`
    stops at `@` and `include_section` holds no `@` either, so both slots are
    already spelled to let an option butt straight up against them:

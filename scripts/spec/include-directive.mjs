@@ -65,14 +65,16 @@ export function findCloser(text, from = 0) {
 const IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_-]*/
 // include_section takes explicit_identifier, which may also open on a digit.
 const EXPLICIT_IDENTIFIER = /^[A-Za-z0-9_][A-Za-z0-9_-]*/
-const UNQUOTED_VALUE = /^[A-Za-z0-9._:-]+/
+// `include_unquoted_value`: PART 4's `unquoted_value` less the `@`, so a value
+// ends at the next option's marker.
+const UNQUOTED_VALUE = /^[^}|"'\\ \t\r\n@]+/
 
 /* `include_path`: the quoted form, else the bare run. */
 function readPath(inner, at) {
   if (inner[at] === '"') {
     const end = quotedRunEnd(inner, at)
     if (end === -1) return null
-    return { value: unescape(inner.slice(at + 1, end)), quoted: true, next: end + 1 }
+    return { value: unescapePath(inner.slice(at + 1, end)), quoted: true, next: end + 1 }
   }
   let i = at
   while (i < inner.length && !'#@} \t'.includes(inner[i])) i += 1
@@ -81,6 +83,8 @@ function readPath(inner, at) {
 }
 
 const unescape = (raw) => raw.replace(/\\(.)/g, '$1')
+// A quoted path decodes `\"` and `\\` only; every other pair is path text.
+const unescapePath = (raw) => raw.replace(/\\(["\\])/g, '$1')
 
 /* `attribute_value` (PART 4): a quoted run in either quote, else the bare set. */
 function readValue(inner, at) {
