@@ -90,6 +90,14 @@
       those HTML tags, and its outer attributes follow the ordinary HTML
       attribute rules.
 
+      AN EDITORIAL COMMENT KEEPS ITS BOUNDARY. `editorial_comment` has no
+      delimiter spelling either and MUST use `<span class="critic-comment">`,
+      the spelling the HTML target gives it (CARVE-P3-017). Its content is
+      literal (CARVE-P3-016), so the writer HTML-escapes the content and runs
+      no inline writer inside the tags. Emitting the bare content is forbidden:
+      the note then reads as part of the author's sentence, which is the one
+      thing `{#` exists not to do (carve#2791).
+
       THE TEST IS ON THE EMITTED BYTES, as in §1a. In the first document the
       strong delimiter reads back as `strong`, so replacing it with `<strong>`
       is a wider departure than the rule permits. In the second, `~~ ~~` does

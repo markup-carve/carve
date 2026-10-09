@@ -947,5 +947,11 @@
     "rule": "CARVE-P11-061",
     "carve": "{header-rows=1}\n::: list-table\n- - A\n  - B\n- - one\n    two\n  - x\n:::\n",
     "markdown": "| A | B |\n| --- | --- |\n| one two | x |\n"
+  },
+  {
+    "name": "editorial-comment-keeps-its-boundary",
+    "rule": "CARVE-P11-045",
+    "carve": "a {+ins+} {-del-} {~old~>new~} b{# note #}\n",
+    "markdown": "a <ins>ins</ins> <del>del</del> <del>old</del><ins>new</ins> b<span class=\"critic-comment\"> note </span>\n"
   }
 ]

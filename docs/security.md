@@ -288,8 +288,9 @@ does not launder an attack:
 
 - **Markdown** is treated as a security boundary because it is routinely
   re-rendered to HTML downstream. Its output escapes embedded HTML (`<`, `>`,
-  `&` in text and in the `<sup>` / `<sub>` / `<mark>` / `<ins>` / `<u>` fallback
-  tags Markdown has no native form for), runs link / image destinations through
+  `&` in text and in the `<sup>` / `<sub>` / `<mark>` / `<ins>` / `<u>` /
+  `<span class="critic-comment">` fallback tags Markdown has no native form
+  for, whose content is escaped even where it is literal in Carve), runs link / image destinations through
   the same URL-scheme denylist, and **escapes** raw `=html` instead of emitting
   it. So `carve(untrusted) -> Markdown -> Markdown-to-HTML` cannot inject script.
 - **ANSI** strips C0 / C1 control characters (keeping tab and newline) from
