@@ -10,23 +10,24 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
-### Fixed
-
-- Playground quotes preserve paragraph spacing and align attribution with the quote body.
+## [0.1.9] - 2026-10-09
 
 ### Breaking
 
-- Image alt text now resolves backslash escapes before ASCII punctuation.
-  Markup stays literal. A table image can spell a pipe as `\|`; a literal
-  backslash before punctuation must be doubled.
-
+- Image alt text resolves backslash escapes before ASCII punctuation. Markup
+  stays literal, so a table image can spell a pipe as `\|`, and a literal
+  backslash before punctuation has to be doubled (#2782).
 - The include rename warning carries the rule id `include-id-rename`, renamed
   from `include-heading-id-rename`. The rename pass stopped being about headings
   in 0.1.8 and its message followed; the id did not. Tools matching on the old
   id have to follow (#2772).
 
-### Fixed
+### Fixes
 
+- The Markdown target writes an editorial comment as a `critic-comment` span
+  instead of flattening it into the surrounding prose, so a note stays a note.
+  Plain text and ANSI still flatten it and now report it as a render loss under
+  the code `editorial-comment-flattened` (#2793).
 - An include option needs no whitespace before its `@`, in either position:
   `{{ path@shift:1 }}` and `{{ path #Name@shift:1 }}` are well formed. The
   grammar required a whitespace run while the path and the section name were
@@ -35,7 +36,12 @@ Releases before 0.1.6 are archived in
   `{{ path @shift:1@lines:1-8 }}` is two options (#2778).
 - A quoted include path takes the escape set of a quoted attribute value: a
   backslash before ASCII punctuation yields that character, so `"a\.crv"` names
-  `a.crv`, and any other backslash is path text (#2778).
+  `a.crv`, and any other backslash is path text (#2784).
+
+### Improvements
+
+- Quotes on the documentation site keep their paragraph spacing and align the
+  attribution with the quote body (#2783).
 
 ## [0.1.8] - 2026-10-06
 
@@ -505,6 +511,7 @@ references and external fragment links need manual review. See the
   inside the cell** (carve#2113), the §1b case the engines diverged on while
   the fixture reported them conformant.
 
+[0.1.9]: https://github.com/markup-carve/carve/compare/0.1.8...0.1.9
 [0.1.8]: https://github.com/markup-carve/carve/compare/0.1.7...0.1.8
 [0.1.7]: https://github.com/markup-carve/carve/compare/0.1.6...0.1.7
 [0.1.6]: https://github.com/markup-carve/carve/compare/0.1.5...0.1.6
