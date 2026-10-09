@@ -128,6 +128,25 @@ items. The ordered item keeps `[x]` as text and reports
 reaches the loss, under
 [a lost checkbox on an ordered task item](./html-import-contract#a-lost-checkbox-on-an-ordered-task-item-says-it-one-way).
 
+### Markdown construct assessment
+
+Markdown assessment uses CommonMark plus GFM. The machine-readable inventory is
+`resources/markdown-import-inventory.json`. Each assessed occurrence emits its
+inventory code, fidelity and confidence with a `line:N` path naming the original
+input line. CRLF counts as one line ending. Delimiters inside code or raw HTML
+are content, not additional Markdown constructs.
+
+Preserved constructs retain their meaning; normalized constructs change their
+spelling or reference representation. Raw HTML uses `raw-preserved` with
+`degraded` fidelity because it remains opaque and depends on the render profile.
+An ordered task marker uses `structure-unspellable` with `dropped` fidelity.
+Other known losses must also be reported at their source line.
+
+Assessment must account for the complete input. Any unassessed construct retains
+`fidelity-unverified`, alongside assessed occurrences and known losses. Successful
+conversion, identical rendered HTML, and a canonical fixed point alone do not
+prove complete assessment. Empty diagnostics require complete assessment.
+
 The producer's `fidelity` is final: bindings MUST NOT reclassify it, and
 fidelity MUST NOT be inferred from human-readable message text. Report and
 diagnostic objects are intentionally open; consumers MUST ignore members they

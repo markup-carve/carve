@@ -1,0 +1,217 @@
+{
+  "schemaVersion": 1,
+  "sourceFormat": "markdown",
+  "dialect": "commonmark-gfm",
+  "constructs": [
+    {
+      "construct": "paragraph",
+      "code": "markdown-paragraph",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "text",
+      "code": "markdown-text",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "atx-heading",
+      "code": "markdown-atx-heading",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "setext-heading",
+      "code": "markdown-setext-heading",
+      "fidelity": "normalized",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "thematic-break",
+      "code": "markdown-thematic-break",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "block-quote",
+      "code": "markdown-block-quote",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "bullet-list",
+      "code": "markdown-bullet-list",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "ordered-list",
+      "code": "markdown-ordered-list",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "list-item",
+      "code": "markdown-list-item",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "fenced-code",
+      "code": "markdown-fenced-code",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "indented-code",
+      "code": "markdown-indented-code",
+      "fidelity": "normalized",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "code-span",
+      "code": "markdown-code-span",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "emphasis",
+      "code": "markdown-emphasis",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "strong",
+      "code": "markdown-strong",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "strikethrough",
+      "code": "markdown-strikethrough",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "link",
+      "code": "markdown-link",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "image",
+      "code": "markdown-image",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "reference-link",
+      "code": "markdown-reference-link",
+      "fidelity": "normalized",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "reference-definition",
+      "code": "markdown-reference-definition",
+      "fidelity": "normalized",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "autolink",
+      "code": "markdown-autolink",
+      "fidelity": "normalized",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "hard-break",
+      "code": "markdown-hard-break",
+      "fidelity": "normalized",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "soft-break",
+      "code": "markdown-soft-break",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "entity",
+      "code": "markdown-entity",
+      "fidelity": "normalized",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "escape",
+      "code": "markdown-escape",
+      "fidelity": "normalized",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "table",
+      "code": "markdown-table",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "table-row",
+      "code": "markdown-table-row",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "table-cell",
+      "code": "markdown-table-cell",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "bullet-task",
+      "code": "markdown-bullet-task",
+      "fidelity": "preserved",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
+      "construct": "ordered-task",
+      "code": "structure-unspellable",
+      "fidelity": "dropped",
+      "confidence": "exact",
+      "severity": "warning"
+    },
+    {
+      "construct": "raw-html",
+      "code": "raw-preserved",
+      "fidelity": "degraded",
+      "confidence": "exact",
+      "severity": "info"
+    }
+  ]
+}
