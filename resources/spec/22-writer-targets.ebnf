@@ -91,7 +91,11 @@
       `critic_comment` node) has no Markdown delimiter spelling either and
       MUST use `<span class="critic-comment">`. Its content is literal
       (CARVE-P3-016): the writer emits it as one text run under the ordinary
-      text escapes and parses nothing inside it. `ruby` uses `<ruby>`, with one base run and one
+      text escapes and parses nothing inside it. A deletion (the `deletion`
+      node, and the deletion half of a substitution) has no Markdown
+      delimiter spelling either and MUST use `<del class="critic-delete">`;
+      a `<del>` WITHOUT that class is a `strike` this clause sent to inline
+      HTML, and reads back as one. `ruby` uses `<ruby>`, with one base run and one
       `<rt>` per pair plus generated `<rp>(</rp>` / `<rp>)</rp>` fallback.
       Its base and annotation children use the Markdown inline writer inside
       those HTML tags, and its outer attributes follow the ordinary HTML
