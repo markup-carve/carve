@@ -2422,7 +2422,7 @@
             ".",
             ")"
           ],
-          "description": "Ordered-marker delimiter AS AUTHORED (PART 11 section 6). Absent means the default `.`."
+          "description": "Ordered-marker delimiter AS AUTHORED (PART 11 section 6). Absent means the default `.`, and a CONFORMING PARSE OMITS THIS FIELD when the author wrote `.` rather than recording the default, the same way `taskState` is written only for a state that is not the default (carve#2828)."
         },
         "bareMarker": {
           "const": true,
@@ -2433,7 +2433,7 @@
             "-",
             "*"
           ],
-          "description": "Bullet character AS AUTHORED (PART 11 section 6). Absent means the default `-`."
+          "description": "Bullet character AS AUTHORED (PART 11 section 6). Absent means the default `-`, and a CONFORMING PARSE OMITS THIS FIELD when the author wrote `-` rather than recording the default, the same way `taskState` is written only for a state that is not the default (carve#2828)."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
