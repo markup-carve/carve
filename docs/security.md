@@ -18,8 +18,9 @@ There is one *explicit*, author-opted raw passthrough - `` ```=html `` blocks
 and `` `…`{=html} `` inline - which emits verbatim HTML and is on by default.
 For UNTRUSTED input you MUST disable it: set
 `allowRawHtml: false` (carve-js) / `Options::with_raw_html(false)` (carve-rs) /
-enable `SafeMode` (carve-php), which escapes the raw content to text instead of
-emitting it.
+enable `SafeMode` (carve-php). The raw content is then escaped instead of
+emitted: an `=html` block is shown as a code block
+(`<pre><code class="language-html">`, PART 10 §6) and inline raw as text.
 
 ```carve
 <script>alert(1)</script>

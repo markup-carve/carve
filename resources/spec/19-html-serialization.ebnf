@@ -183,6 +183,16 @@
       No payload newline is added. An inline
       code span is `<code>` + escaped content + `</code>`.
 
+      AN ESCAPED RAW BLOCK IS WRITTEN AS CODE -- NORMATIVE [CARVE-P10-013].
+      A raw block that a safe policy escapes rather than omits serializes
+      exactly as a fenced code block whose language is the raw block's
+      recorded `format`, verbatim. The escape is not a render loss; a policy
+      that omits the block still reports `raw-format-dropped` ([CARVE-P2-024]).
+
+        > ```=html      ->  <pre><code class="language-html">&lt;p&gt;raw&lt;/p&gt;
+        > <p>raw</p>        </code></pre>
+        > ```
+
    7. TABLES. Alignment renders as `style="text-align: VALUE;"` (one
       space after the colon, trailing semicolon); a cell with no effective
       alignment emits NO style attribute. `rowspan`/`colspan` are emitted

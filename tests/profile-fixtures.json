@@ -7,7 +7,7 @@
     "article-raw-denied": {
         "carve": "Para.\n\n```=html\n<b>x</b>\n```\n",
         "profile": "article",
-        "html": "<p>Para.</p>\n<p>&lt;b&gt;x&lt;/b&gt;</p>\n"
+        "html": "<p>Para.</p>\n<pre><code class=\"language-html\">&lt;b&gt;x&lt;/b&gt;\n</code></pre>\n"
     },
     "article-raw-inline": {
         "carve": "A `<b>x</b>`{=html} end.",

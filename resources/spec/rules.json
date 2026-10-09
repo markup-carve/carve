@@ -1875,6 +1875,12 @@
       "part": "0",
       "title": "AN OPAQUE MARKER-LINE QUOTE PRESERVES THE BAND AS TEXT",
       "scope": "parsing"
+    },
+    {
+      "id": "CARVE-P10-013",
+      "part": "10",
+      "title": "AN ESCAPED RAW BLOCK IS WRITTEN AS CODE",
+      "scope": "imports-security-extensions"
     }
   ],
   "retired": [

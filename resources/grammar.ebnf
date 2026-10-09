@@ -1990,7 +1990,7 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
 
    A loss records WHAT THE SELECTED RENDERER ACTUALLY DROPS OR FLATTENS, not
    every raw or ruby node in the tree. Matching HTML passes through (or is visibly escaped by a safe
-   policy) with no loss. Markdown visibly escapes HTML raw content with no loss.
+   policy, [CARVE-P10-013]) with no loss. Markdown visibly escapes HTML raw content with no loss.
    ANSI visibly degrades a raw BLOCK to `[raw:format] content` with no loss, but
    reports a raw INLINE it omits. Plain text reports every raw node it omits.
    The canonical Carve writer preserves raw nodes and reports none.
@@ -7538,6 +7538,16 @@ EOF = (* end of file *) ;
       escaped literal `code_block.content` + `</code></pre>` (PART 12 §3).
       No payload newline is added. An inline
       code span is `<code>` + escaped content + `</code>`.
+
+      AN ESCAPED RAW BLOCK IS WRITTEN AS CODE -- NORMATIVE [CARVE-P10-013].
+      A raw block that a safe policy escapes rather than omits serializes
+      exactly as a fenced code block whose language is the raw block's
+      recorded `format`, verbatim. The escape is not a render loss; a policy
+      that omits the block still reports `raw-format-dropped` ([CARVE-P2-024]).
+
+        > ```=html      ->  <pre><code class="language-html">&lt;p&gt;raw&lt;/p&gt;
+        > <p>raw</p>        </code></pre>
+        > ```
 
    7. TABLES. Alignment renders as `style="text-align: VALUE;"` (one
       space after the colon, trailing semicolon); a cell with no effective

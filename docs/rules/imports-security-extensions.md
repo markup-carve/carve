@@ -9,7 +9,7 @@ description: "Optional and host-facing behavior, importer contracts, security li
 
 Optional and host-facing behavior, importer contracts, security limits, diagnostics, and extension surfaces.
 
-This view contains 29 of 308 active rules. Every rule remains mandatory where applicable.
+This view contains 30 of 309 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -33,8 +33,8 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9-064`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L211) | 9 | AN EXTENSION WRITES INTO THE SAME MAP |
 | [`CARVE-P9-065`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L232) | 9 | AN IMPORTER DOES NOT BAKE A DERIVED NAME INTO SOURCE |
 | [`CARVE-P9-066`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L269) | 9 | A DERIVED VALUE IS ONE THE IMPORTER CAN RECONSTRUCT |
-| [`CARVE-P10-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L302) | 10 | THE OTHER SEMANTIC NAMES ARE AN EXTENSION |
-| [`CARVE-P10-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L321) | 10 | AN EXTENDED TASK STATE NAMES ITSELF ON THE ITEM |
+| [`CARVE-P10-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L312) | 10 | THE OTHER SEMANTIC NAMES ARE AN EXTENSION |
+| [`CARVE-P10-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L331) | 10 | AN EXTENDED TASK STATE NAMES ITSELF ON THE ITEM |
 | [`CARVE-P10-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L145) | 10 | A PLACED ELEMENT'S OWN TAGS CARRY THE PER-IMPLEMENTATION INDENTATION |
 | [`CARVE-P12-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L230) | 12 | A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST |
 | [`CARVE-P12-032`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L332) | 12 | SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR |
@@ -44,3 +44,4 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-037`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L37) | 12 | A CITATION DEFINITION IS A NODE |
 | [`CARVE-P12-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L72) | 12 | A CITATION ITEM IS A POSITIONED INLINE NODE |
 | [`CARVE-P12-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L94) | 12 | A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA |
+| [`CARVE-P10-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L186) | 10 | AN ESCAPED RAW BLOCK IS WRITTEN AS CODE |
