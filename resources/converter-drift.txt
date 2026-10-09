@@ -162,31 +162,21 @@
 
 # CARVE-P2-030, ruled at carve#2799: a BARE `---` block imports as frontmatter
 # only where its content SHAPES as a mapping. A typed opener is frontmatter
-# unconditionally, which is what every engine already does.
-# No engine tests the content today - a leading block with a closer becomes
-# frontmatter unconditionally - so the four cases whose blocks are NOT mappings
-# are ahead of all three engines.
+# unconditionally.
 #
-# Measured on the ticket: carve-js `0.1.11-dev`, carve-php `9e6dc20e0` and
-# carve-rs `344511377` all convert `---` / `Foo` / `---` to frontmatter and
-# lose `Foo`. The other three inputs reach the same unconditional conversion.
-# This repo's pinned build (carve-js `a7d618ba`) was re-measured here and fails
-# the same four; see PINNED_DRIFT in tests/corpus-convert.test.mjs.
+# NOTHING IS DECLARED, and that is a MEASUREMENT rather than an omission. Each
+# engine was built from its own `origin/main` in a fresh worktree and run over
+# all thirteen cases (71 to 83); every produced document was rendered through
+# this repo's pinned carve-js and compared with the case's expected.html.
 #
-# An engine that already differs on one of these shows up as a STALE line, not
-# as a silent pass. Delete the line in the commit that proves the fix.
-rust/71-markdown-a-scalar-leading-block-is-not-front-matter  no mapping test on the importer's leading block
-js/71-markdown-a-scalar-leading-block-is-not-front-matter  no mapping test on the importer's leading block
-php/71-markdown-a-scalar-leading-block-is-not-front-matter  no mapping test on the importer's leading block
-rust/73-markdown-a-comment-only-leading-block-is-not-front-matter  no mapping test on the importer's leading block
-js/73-markdown-a-comment-only-leading-block-is-not-front-matter  no mapping test on the importer's leading block
-php/73-markdown-a-comment-only-leading-block-is-not-front-matter  no mapping test on the importer's leading block
-rust/77-markdown-a-key-holding-a-colon-is-not-a-mapping  no mapping test on the importer's leading block
-js/77-markdown-a-key-holding-a-colon-is-not-a-mapping  no mapping test on the importer's leading block
-php/77-markdown-a-key-holding-a-colon-is-not-a-mapping  no mapping test on the importer's leading block
-rust/78-markdown-a-list-first-line-is-not-a-mapping  no mapping test on the importer's leading block
-js/78-markdown-a-list-first-line-is-not-a-mapping  no mapping test on the importer's leading block
-php/78-markdown-a-list-first-line-is-not-a-mapping  no mapping test on the importer's leading block
-rust/83-markdown-a-bare-opener-takes-no-toml-shape  no mapping test on the importer's leading block
-js/83-markdown-a-bare-opener-takes-no-toml-shape  no mapping test on the importer's leading block
-php/83-markdown-a-bare-opener-takes-no-toml-shape  no mapping test on the importer's leading block
+#   carve-js  `931b12a5f` (#2605 merged)          13/13 pass
+#   carve-php `2e6d935f9` (#2974, #2976 merged)   13/13 pass
+#   carve-rs  `d90a9e9d9` (#2390 merged)          13/13 pass
+#
+# The three engine fixes landed the same day the clause did. A declaration for
+# an engine that no longer drifts masks the next regression, which is what the
+# header above warns about and what the twenty stale lines two blocks up cost.
+#
+# The repo's PINNED build is a separate question and is still behind: it pins
+# carve-js `b12ebf89`, which predates #2605, so five cases are declared in
+# PINNED_DRIFT in tests/corpus-convert.test.mjs until the pin moves.
