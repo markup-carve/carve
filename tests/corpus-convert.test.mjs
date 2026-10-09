@@ -121,17 +121,7 @@ const PINNED_UNIMPLEMENTED = {}
  * that starts matching fails as STALE until the entry is deleted in the commit
  * that moves the pin, and the meaning assertion still runs regardless.
  */
-const PINNED_DRIFT = {
-  // CARVE-P2-030, ruled at carve#2799. The pinned build converts any leading
-  // `---` block with a closer to frontmatter, so the five cases whose blocks
-  // do not shape as a mapping are ahead of it. Measured against carve-js
-  // `b12ebf89`: case 71 loses `Foo` outright.
-  '71-markdown-a-scalar-leading-block-is-not-front-matter': 'the pinned importer has no mapping test',
-  '73-markdown-a-comment-only-leading-block-is-not-front-matter': 'the pinned importer has no mapping test',
-  '77-markdown-a-key-holding-a-colon-is-not-a-mapping': 'the pinned importer has no mapping test',
-  '78-markdown-a-list-first-line-is-not-a-mapping': 'the pinned importer has no mapping test',
-  '83-markdown-a-bare-opener-takes-no-toml-shape': 'the pinned importer has no mapping test',
-}
+const PINNED_DRIFT = {}
 const PINNED_SOURCE_DRIFT = {}
 
 /**
