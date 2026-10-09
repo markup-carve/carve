@@ -37,6 +37,13 @@ Releases before 0.1.6 are archived in
 - A quoted include path takes the escape set of a quoted attribute value: a
   backslash before ASCII punctuation yields that character, so `"a\.crv"` names
   `a.crv`, and any other backslash is path text (#2784).
+- The Markdown target escapes a literal opening bracket inside a link label or
+  an image description, so a label holding brackets stays one label instead of
+  splitting part of itself out of the anchor (#2797).
+- Where a safe policy escapes a raw block rather than omitting it, the HTML
+  target writes it as a fenced code block in the raw block's recorded format.
+  The escape reports no render loss; omitting the block still reports
+  `raw-format-dropped` (#2801).
 
 ### Improvements
 
