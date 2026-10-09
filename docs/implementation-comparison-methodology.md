@@ -20,6 +20,13 @@ The count-only run covers 2,225 core documents and their 161 target sidecars.
 The run scores 2,386 fixtures per engine. It checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
 
+Corpus added since this run: `549-an-ordered-list-carries-its-authored-delimiter`.
+
+Those five rows and the rewritten `31-ordered-list-start-and-delimiter-2` pin
+CARVE-P10-014, which no engine has shipped yet, so they are outside this run's
+denominators and its `mismatch=0`. `resources/engine-pin-drift.txt` carries the
+same six slugs for the pinned reader.
+
 The fixture trees match spec commit `2c3d174b`. The runner reported tracked
 changes in the spec worktree; the engine worktrees were clean at the commits
 below. These are checkout identities, separate from binary build provenance.

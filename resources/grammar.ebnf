@@ -7787,6 +7787,39 @@ EOF = (* end of file *) ;
       author did not write, and the states are an author's shorthand rather
       than a vocabulary this spec can translate.
 
+   12. AN ORDERED LIST'S DELIMITER NAMES ITSELF ON THE LIST -- NORMATIVE
+      [CARVE-P10-014]. PART 2 admits `.` and `)` after an ordered marker and
+      §1 carries only `type` and `start`, so `1)` and `1.` rendered identical
+      bytes: the distinction the author made survived the file (PART 11 §6)
+      and died at the renderer, out of reach of any stylesheet. The list
+      carries `data-delim` holding the authored character:
+
+        1) first   ->  <ol data-delim=")">
+                         <li>first</li>
+                       </ol>
+
+      ONLY WHERE THE AST RECORDS A DELIMITER, which is the same rule PART 11
+      §6 states for the field: a `delim` of `.` is absent there and carries no
+      attribute here, because the default needs no spelling, and such a list's
+      bytes are unchanged by this clause.
+
+      ON THE `<ol>`, NOT ON THE `<li>`. The delimiter is a property of the
+      LIST, fixed once by its first item's marker (§11 N2), so a nested list
+      derives its own from its own marker and does not inherit the attribute.
+
+      IT IS A STRUCTURAL ATTRIBUTE and leads the authored ones (§1), beside
+      `<ol>`'s own `type` and `start`, which it trails: the list derives it
+      from its own marker rather than from anything the author attached.
+
+      THE VALUE IS THE RECORDED CHARACTER, escaped as §2 escapes any value,
+      and a value outside PART 2's enumeration is not one this clause writes.
+
+      AN IMPORTER CONSUMES IT, as §11 says of `data-task-state` and for the
+      same reason: without it a rendered `1)` imports back as `1.`, silently,
+      because both spellings rendered the same bytes before this clause. A
+      value outside PART 2's enumeration is an author attribute, not a
+      delimiter.
+
 
    ============================================================================ *)
 (* ============================================================================

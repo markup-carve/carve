@@ -1887,6 +1887,12 @@
       "part": "10",
       "title": "AN ESCAPED RAW BLOCK IS WRITTEN AS CODE",
       "scope": "imports-security-extensions"
+    },
+    {
+      "id": "CARVE-P10-014",
+      "part": "10",
+      "title": "AN ORDERED LIST'S DELIMITER NAMES ITSELF ON THE LIST",
+      "scope": "resolution-rendering"
     }
   ],
   "retired": [

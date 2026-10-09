@@ -1,0 +1,54 @@
+An ordered list carries its authored delimiter
+
+```
+1) first
+2) second
+.
+<ol data-delim=")">
+  <li>first</li>
+  <li>second</li>
+</ol>
+```
+
+```
+1. first
+2. second
+.
+<ol>
+  <li>first</li>
+  <li>second</li>
+</ol>
+```
+
+```
+c) gamma
+d) delta
+.
+<ol type="a" start="3" data-delim=")">
+  <li>gamma</li>
+  <li>delta</li>
+</ol>
+```
+
+```
+{k=v .attr}
+1) first
+.
+<ol data-delim=")" k="v" class="attr">
+  <li>first</li>
+</ol>
+```
+
+```
+1. outer
+
+   1) inner
+.
+<ol>
+  <li>outer
+    <ol data-delim=")">
+      <li>inner</li>
+    </ol>
+  </li>
+</ol>
+```
