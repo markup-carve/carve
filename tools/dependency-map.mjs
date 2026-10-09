@@ -144,7 +144,8 @@ async function repoManifestPaths(repo, branch) {
  * narrow: this list decides which files get a header read, and widening it to
  * "every .json" would spend a request per fixture in the org.
  */
-const VENDOR_CANDIDATE = /\.(iife\.js|bundle\.js|min\.js|umd\.js|wasm|css)$|\/(server|engine|carve)\.js$/
+// UPSTREAM.md: a byte-for-byte copy cannot carry a header, so its directory's note does.
+const VENDOR_CANDIDATE = /\.(iife\.js|bundle\.js|min\.js|umd\.js|wasm|css)$|\/(server|engine|carve)\.js$|(^|\/)UPSTREAM\.md$/
 
 /*
  * THE PIN THAT LIVES IN THE ARTIFACT.
@@ -467,6 +468,18 @@ function parseManifest(kind, path, text, gitlinks) {
       if (owner.toLowerCase() !== ORG.toLowerCase() || seen.has(`${target}@${tag}`)) continue
       seen.add(`${target}@${tag}`)
       edges.push({ kind: 'git', ref: tag, target, name: '(formula)', spec: `${target}@${tag}`, field: 'formula', path })
+    }
+    // A formula built from source names the repo by git url and tag instead
+    // (crv2pdf.rb). `head` urls are excluded: they follow a branch, not a pin.
+    for (const match of text.matchAll(/^\s*url\s+"https:\/\/github\.com\/([\w.-]+)\/([\w.-]+?)(?:\.git)?",\s*tag:\s*"([^"]+)"/gm)) {
+      const [, owner, target, tag] = match
+      if (owner.toLowerCase() !== ORG.toLowerCase() || seen.has(`${target}@${tag}`)) continue
+      seen.add(`${target}@${tag}`)
+      edges.push({ kind: 'git', ref: tag, target, name: '(formula)', spec: `${target}@${tag}`, field: 'formula', path })
+    }
+    // A staged npm resource pins its package by the tarball's version.
+    for (const match of text.matchAll(/registry\.npmjs\.org\/((?:@[\w.-]+\/)?[\w.-]+)\/-\/[\w.-]+?-(\d[\w.+-]*)\.tgz/g)) {
+      push(match[1], match[2], 'formula')
     }
     return edges
   }
@@ -1229,7 +1242,7 @@ function renderMarkdown(edges, { repos, skipped, generatedFrom, states, source }
 
 // ---------------------------------------------------------------------------
 
-export { classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, ciInstalls, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange }
+export { VENDOR_CANDIDATE, classify, parseManifest, renderMermaid, renderSpine, renderConsumers, releaseLayers, renderReleaseOrder, ciReferences, ciInstalls, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange }
 
 /*
  * What this run was generated FROM, for staleSourceBanner above.
