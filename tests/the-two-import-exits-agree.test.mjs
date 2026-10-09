@@ -138,11 +138,29 @@ const SOURCE_LAYOUT_FIELDS = new Set([
  * pin-lag entry asserts only that SOME failure remains - never which - so a
  * wrong field inside one is invisible for as long as the entry stands.
  */
+/*
+ * EXCEPT `delim`, WHICH HTML NOW CARRIES (CARVE-P10-014, markup-carve/carve#2796).
+ *
+ * Every field above shares one ground: only a parse could know it, so an import
+ * recording it would state a spelling it never saw. PART 10 §12 ends that for
+ * the ordered delimiter - `<ol data-delim=")">` holds the character and the
+ * clause has the importer read it - so an import that records `delim` is
+ * reporting what the HTML said, exactly as `taskState` reports
+ * `data-task-state`, which is why that field is not on the list either.
+ *
+ * It stays in SOURCE_LAYOUT_FIELDS for the parse-versus-tree comparison below,
+ * which is a different question: whether the two exits SPELL it alike. Only the
+ * fixture check is relaxed, and only for this one field.
+ */
+const IMPORT_RECOVERABLE_FIELDS = new Set(['delim'])
+
 const sourceLayoutKeys = (value, path = '') => {
   if (Array.isArray(value)) return value.flatMap((item, i) => sourceLayoutKeys(item, `${path}[${i}]`))
   if (value === null || typeof value !== 'object') return []
   return Object.entries(value).flatMap(([key, inner]) =>
-    SOURCE_LAYOUT_FIELDS.has(key) ? [`${path}.${key}`] : sourceLayoutKeys(inner, `${path}.${key}`),
+    SOURCE_LAYOUT_FIELDS.has(key) && !IMPORT_RECOVERABLE_FIELDS.has(key)
+      ? [`${path}.${key}`]
+      : sourceLayoutKeys(inner, `${path}.${key}`),
   )
 }
 
