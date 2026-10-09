@@ -1018,7 +1018,6 @@ async function runConvertMode() {
   // assertion. Keeping this in the existing converter runner gives it the same
   // per-engine drift ledger and stale-entry checks instead of inventing a
   // weaker one-engine fixture sweep (carve#1600).
-  const { carveToHtml } = await import('@markup-carve/carve')
   const htmlImportDir = join(root, 'tests/html-import')
   for (const slug of readdirSync(htmlImportDir).sort()) {
     const dir = join(htmlImportDir, slug)
@@ -1029,7 +1028,8 @@ async function runConvertMode() {
       format: 'html',
       options: existsSync(optionsPath) ? JSON.parse(readFileSync(optionsPath, 'utf8')) : {},
       file: join(dir, 'input.html'),
-      expected: carveToHtml(readFileSync(join(dir, 'expected.crv'), 'utf8')).trim(),
+      expected: null,
+      expectedSource: join(dir, 'expected.crv'),
       canonical: null,
     })
   }
@@ -1153,6 +1153,18 @@ async function runConvertMode() {
   const tmp = mkdtempSync(join(tmpdir(), 'carve-convert-'))
   try {
     for (const kase of cases) {
+      if (kase.expectedSource) {
+        const expected = run(renderCommand, renderImpl.cwd, [kase.expectedSource]);
+        if (!expected.ok) {
+          failures.push(`carve-js failed to render the expected source for ${kase.slug}: ${expected.stderr || expected.error || expected.status}`);
+          for (const impl of active) {
+            convertStats[impl.name].error++;
+            unscored.set(`${impl.name}/${kase.slug}`, "carve-js failed to render the expected source");
+          }
+          continue;
+        }
+        kase.expected = expected.stdout;
+      }
       const rendered = []
       for (const impl of active) {
         const command = impl.convertCommand(kase.format, kase.options)
