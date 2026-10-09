@@ -3154,7 +3154,8 @@ smart_quote = '"' | "'" ;
    span: each `"` / `'` is independently mapped to a left or right
    typographic quote by its PRECEDING character. It is a LEFT (opening)
    quote when preceded by start-of-content, whitespace (incl. NBSP
-   U+00A0), OR one of the opening/operator characters `( [ { = : - /`;
+   U+00A0 and a soft or hard line break, so a quote that starts a line
+   opens), OR one of the opening/operator characters `( [ { = : - /`;
    OTHERWISE it is a RIGHT (closing) quote. So an apostrophe (`don't`)
    is a right single quote, while `a="b"`, `:"q"`, `-"q"`, `/"q"` and
    `("q")` all OPEN the first quote. The SAME opening set applies to BOTH

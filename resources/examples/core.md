@@ -2628,7 +2628,7 @@ He paused -- then ran --- fast... "Stop!" it's over.
 
 :::
 
-A quote opens (left/opening quote) when it follows start-of-content, whitespace (incl. NBSP), or one of the opening/operator characters `( [ { = : - /`; otherwise it closes. So a quote right after `=`, `:`, `-`, `/`, or an opening paren still opens the first quote (grammar `smart_quote`).
+A quote opens (left/opening quote) when it follows start-of-content, whitespace (incl. NBSP and a line break), or one of the opening/operator characters `( [ { = : - /`; otherwise it closes. So a quote right after `=`, `:`, `-`, `/`, or an opening paren still opens the first quote (grammar `smart_quote`).
 
 ::: compare
 
@@ -2671,7 +2671,7 @@ a"b
 .”q”
 ,”q”
 a”b
-””</p>
+““</p>
 ```
 
 :::
@@ -2760,7 +2760,7 @@ The open/close decision reads the character before the quote. A bare emphasis
 delimiter is not that character - the quote sees the start of the emphasis
 CONTENT - and nothing at all before a quote opens it. A quote directly after
 another one follows whichever half that one resolved to, so a nested pair opens
-while an empty pair stays closed.
+and so does an empty pair.
 
 ::: compare
 
@@ -2779,6 +2779,43 @@ a*'q'*
 <p>“hello”</p>
 <p>“‘nested’”</p>
 <p>a*’q’*</p>
+```
+
+:::
+
+A soft or hard line break counts as whitespace, so a quote that starts a line
+opens, in a paragraph and inside a container alike. The decade-elision
+apostrophe keeps its reading there.
+
+::: compare
+
+```carve
+He paused, then said
+"I will not go," and left.\
+'Fine,' she said.
+
+> She said
+> "no" twice.
+
+- He said
+  "no" twice.
+
+Back in the
+'90s it was rare.
+```
+
+```html
+<p>He paused, then said
+“I will not go,” and left.<br>
+‘Fine,’ she said.</p>
+<blockquote><p>She said
+“no” twice.</p></blockquote>
+<ul>
+  <li>He said
+“no” twice.</li>
+</ul>
+<p>Back in the
+’90s it was rare.</p>
 ```
 
 :::
