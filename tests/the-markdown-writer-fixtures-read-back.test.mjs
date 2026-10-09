@@ -186,3 +186,12 @@ test('editorial-comment-content-is-text: the literal content reads back as text'
   const bare = cmarkGfmToHtml(golden.replaceAll('\\*', '*').replace('\\<', '<'))
   assert.match(bare, /<em>b<\/em> <c>/)
 })
+
+test('literal brackets keep complete link labels and image descriptions', () => {
+  const normalized = (html) => html.trim().replaceAll(' />', '>')
+  for (const c of cases.filter((c) => c.name.startsWith('literal-bracket-'))) {
+    assert.equal(normalized(cmarkGfmToHtml(c.markdown)), normalized(ownHtml(c)))
+    assert.notEqual(normalized(cmarkGfmToHtml(c.markdown.replaceAll('\\[', '['))), normalized(ownHtml(c)))
+  }
+  assert.match(clauseText('CARVE-P11-023'), /`\[` IS ALSO ESCAPED INSIDE AN EMITTED LINK LABEL OR IMAGE DESCRIPTION/)
+})
