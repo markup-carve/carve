@@ -290,11 +290,12 @@
 
       WHERE A CLAUSE NAMES A MESSAGE, THAT TEXT IS THE CONTRACT and an engine
       emits it verbatim, with nothing appended. `CARVE-P2-024`'s
-      `destination-denied` names two; this channel names none.
+      `destination-denied` names two and `editorial-comment-flattened` one;
+      this channel names none.
 
       THE FIELD IS WHY THIS IS NOT THAT REPORT. `CARVE-P2-024`'s `code` enum
-      holds `raw-format-dropped`, `ruby-flattened` and `destination-denied`,
-      each naming a whole node or destination one selected renderer dropped,
+      holds `raw-format-dropped`, `ruby-flattened`, `destination-denied` and
+      `editorial-comment-flattened`, each naming a whole node or destination one selected renderer dropped,
       flattened or blanked. It answers what THIS
       RENDER dropped; this channel answers what the OUTPUT MODEL CANNOT SAY, on
       every target at once, and it is the only one of the two that can name a

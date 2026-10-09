@@ -84,7 +84,11 @@
       `underline`, `<mark>` for `highlight`, `<sub>` for `subscript` and
       `<sup>` for `superscript`. `small_caps` uses
       `<span class="smallcaps">`, merging its other attributes under the
-      ordinary span rules. `ruby` uses `<ruby>`, with one base run and one
+      ordinary span rules. An editorial comment (`editorial_comment`, the
+      `critic_comment` node) has no Markdown delimiter spelling either and
+      MUST use `<span class="critic-comment">`. Its content is literal
+      (CARVE-P3-016): the writer emits it as one text run under the ordinary
+      text escapes and parses nothing inside it. `ruby` uses `<ruby>`, with one base run and one
       `<rt>` per pair plus generated `<rp>(</rp>` / `<rp>)</rp>` fallback.
       Its base and annotation children use the Markdown inline writer inside
       those HTML tags, and its outer attributes follow the ordinary HTML

@@ -947,5 +947,17 @@
     "rule": "CARVE-P11-061",
     "carve": "{header-rows=1}\n::: list-table\n- - A\n  - B\n- - one\n    two\n  - x\n:::\n",
     "markdown": "| A | B |\n| --- | --- |\n| one two | x |\n"
+  },
+  {
+    "name": "editorial-comment-span",
+    "rule": "CARVE-P11-045",
+    "carve": "Text {+neu+} und {#Notiz#} hier.\n",
+    "markdown": "Text <ins>neu</ins> und <span class=\"critic-comment\">Notiz</span> hier.\n"
+  },
+  {
+    "name": "editorial-comment-content-is-text",
+    "rule": "CARVE-P11-045",
+    "carve": "a {# *b* <c> #} e\n",
+    "markdown": "a <span class=\"critic-comment\"> \\*b\\* \\<c> </span> e\n"
   }
 ]
