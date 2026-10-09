@@ -38,7 +38,7 @@ import assert from 'node:assert/strict'
 import { readFileSync, readdirSync } from 'node:fs'
 import { basename, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { carveToCarve, parse, toAstJson } from '@markup-carve/carve'
+import { carveToCarve, carveToHtml, markdownToCarve, renderMarkdown, parse, toAstJson } from '@markup-carve/carve'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const dir = resolve(here, 'corpus-roundtrip')
@@ -138,3 +138,24 @@ for (const { slug, source, expected } of cases) {
     assert.equal(carveToCarve(source), expected)
   })
 }
+
+
+test('PART 11 §10n: Markdown empty-header scaffolding imports without a paragraph', () => {
+  const source = '| 1 | 2 |\n| 3 | 4 |\n'
+  const markdown = renderMarkdown(parse(source))
+  assert.equal(markdown, '|  |  |\n| --- | --- |\n| 1 | 2 |\n| 3 | 4 |\n')
+  const imported = markdownToCarve(markdown)
+  assert.equal(imported, source)
+  assert.equal(carveToHtml(imported), carveToHtml(source))
+})
+
+test('PART 11 §10n: Markdown content or alignment keeps its header', () => {
+  for (const markdown of [
+    '| A | |\n| --- | --- |\n| 1 | 2 |\n',
+    '| | |\n| :--- | ---: |\n| 1 | 2 |\n',
+  ]) {
+    const html = carveToHtml(markdownToCarve(markdown))
+    assert.match(html, /<thead>/)
+    assert.doesNotMatch(html, /<p>\|/)
+  }
+})

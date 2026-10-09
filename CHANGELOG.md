@@ -10,6 +10,12 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
+### Fixes
+
+- Markdown import omits an empty, unaligned table header instead of emitting
+  a paragraph of pipes. Headers with content or alignment remain table rows,
+  and the migration report identifies the omitted row (#2840).
+
 ## [0.1.9] - 2026-10-09
 
 ### Breaking
