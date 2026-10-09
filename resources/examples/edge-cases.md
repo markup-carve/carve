@@ -46363,6 +46363,10 @@ derives the attribute from its own marker.
 </ol>
 ```
 
+:::
+
+::: compare
+
 ```carve
 1. first
 2. second
@@ -46374,6 +46378,10 @@ derives the attribute from its own marker.
   <li>second</li>
 </ol>
 ```
+
+:::
+
+::: compare
 
 ```carve
 c) gamma
@@ -46387,6 +46395,10 @@ d) delta
 </ol>
 ```
 
+:::
+
+::: compare
+
 ```carve
 {k=v .attr}
 1) first
@@ -46397,6 +46409,10 @@ d) delta
   <li>first</li>
 </ol>
 ```
+
+:::
+
+::: compare
 
 ```carve
 1. outer
