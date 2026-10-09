@@ -1991,7 +1991,16 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "See [ref](https://one.example).\n"
+            "output": "See [ref](https://one.example).\n",
+            "diagnostics": [
+              {
+                "code": "fidelity-unverified",
+                "severity": "warning",
+                "fidelity": "dropped",
+                "confidence": "fallback"
+              }
+            ],
+            "exit": 1
           }
         }
       },

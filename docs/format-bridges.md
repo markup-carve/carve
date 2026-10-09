@@ -169,6 +169,8 @@ Existing aggregate loss rows may lack a location while assessment is incomplete;
 the fallback prevents treating those reports as complete. The JS importer also
 omits a fallback loss location when reference or frontmatter preprocessing
 changes the source lines and it cannot establish the original position.
+Rust leaves unresolved duplicate reference definitions unverified; it does not
+reparse isolated lines to infer extra definitions.
 Assessment checks source typography. Glyph typography is a render choice.
 Conversion and rendering are separate boundaries: destination filtering and
 raw HTML handling belong to the render profile.
