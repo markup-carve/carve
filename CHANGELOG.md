@@ -44,6 +44,11 @@ Releases before 0.1.6 are archived in
   target writes it as a fenced code block in the raw block's recorded format.
   The escape reports no render loss; omitting the block still reports
   `raw-format-dropped` (#2801).
+- Markdown import treats a leading bare `---` block as front matter only where
+  its content shapes as a mapping, so a document opening on a thematic break
+  and a setext heading keeps both instead of losing them to metadata. A typed
+  opener such as `---yaml` is front matter unconditionally, and every
+  conversion to front matter is now reported (#2803).
 
 ### Improvements
 
