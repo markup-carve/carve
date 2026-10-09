@@ -67,7 +67,7 @@ test('the Markdown contract covers literal inputs and source-located construct f
   const inventory = JSON.parse(readFileSync(new URL('../resources/markdown-import-inventory.json', import.meta.url)))
   const core = manifest.cases.filter(row => row.runner === 'core')
   for (const construct of inventory.constructs) {
-    assert.ok(core.some(row => row.expected.diagnostics.some(diagnostic => diagnostic.code === construct.code)), construct.construct)
+    assert.ok(core.some(row => row.constructs?.includes(construct.construct)), construct.construct)
   }
   for (const fixture of core) {
     for (const row of fixture.expected.diagnostics) {

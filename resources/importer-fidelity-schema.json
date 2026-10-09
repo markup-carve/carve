@@ -141,6 +141,14 @@
               }
             },
             "additionalProperties": false
+          },
+          "constructs": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$"
+            }
           }
         },
         "additionalProperties": false,

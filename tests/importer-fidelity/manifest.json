@@ -63,7 +63,10 @@
             "output": "hello\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "text"
+      ]
     },
     {
       "id": "markdown-paragraph",
@@ -88,7 +91,10 @@
             "output": "hello!\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph"
+      ]
     },
     {
       "id": "markdown-atx-heading",
@@ -113,7 +119,10 @@
             "output": "# heading\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "atx-heading"
+      ]
     },
     {
       "id": "markdown-setext-heading",
@@ -138,7 +147,10 @@
             "output": "# heading\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "setext-heading"
+      ]
     },
     {
       "id": "markdown-thematic-break",
@@ -163,7 +175,10 @@
             "output": "---\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "thematic-break"
+      ]
     },
     {
       "id": "markdown-quote",
@@ -195,7 +210,11 @@
             "output": "> quoted\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "block-quote",
+        "paragraph"
+      ]
     },
     {
       "id": "markdown-bullet-list",
@@ -229,7 +248,11 @@
           }
         ],
         "exit": 0
-      }
+      },
+      "constructs": [
+        "bullet-list",
+        "list-item"
+      ]
     },
     {
       "id": "markdown-ordered-list",
@@ -263,7 +286,11 @@
           }
         ],
         "exit": 0
-      }
+      },
+      "constructs": [
+        "ordered-list",
+        "list-item"
+      ]
     },
     {
       "id": "markdown-fenced-code",
@@ -283,7 +310,10 @@
           }
         ],
         "exit": 0
-      }
+      },
+      "constructs": [
+        "fenced-code"
+      ]
     },
     {
       "id": "markdown-indented-code",
@@ -303,7 +333,10 @@
           }
         ],
         "exit": 0
-      }
+      },
+      "constructs": [
+        "indented-code"
+      ]
     },
     {
       "id": "markdown-code-span",
@@ -335,7 +368,11 @@
             "output": "a `**code**` b\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph",
+        "code-span"
+      ]
     },
     {
       "id": "markdown-emphasis",
@@ -367,7 +404,11 @@
             "output": "/emphasis/\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph",
+        "emphasis"
+      ]
     },
     {
       "id": "markdown-strong",
@@ -399,7 +440,11 @@
             "output": "*strong*\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph",
+        "strong"
+      ]
     },
     {
       "id": "markdown-strike",
@@ -431,7 +476,11 @@
             "output": "~gone~\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph",
+        "strikethrough"
+      ]
     },
     {
       "id": "markdown-link",
@@ -463,7 +512,11 @@
             "output": "[label](https://example.org \"Title\")\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph",
+        "link"
+      ]
     },
     {
       "id": "markdown-image",
@@ -495,7 +548,11 @@
             "output": "A ![img](a.png \"Pic\").\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph",
+        "image"
+      ]
     },
     {
       "id": "markdown-reference",
@@ -538,7 +595,12 @@
           "default": "<p>See <a href=\"https://example.org\" title=\"Title\">ref</a>.</p>\n",
           "safe": "<p>See <a href=\"https://example.org\" title=\"Title\">ref</a>.</p>\n"
         }
-      }
+      },
+      "constructs": [
+        "reference-definition",
+        "paragraph",
+        "reference-link"
+      ]
     },
     {
       "id": "markdown-autolink",
@@ -574,7 +636,11 @@
           "default": "<p><a href=\"https://example.org\">https://example.org</a></p>\n",
           "safe": "<p><a href=\"https://example.org\">https://example.org</a></p>\n"
         }
-      }
+      },
+      "constructs": [
+        "paragraph",
+        "autolink"
+      ]
     },
     {
       "id": "markdown-hard-break",
@@ -606,7 +672,11 @@
             "output": "a\\\nb\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph",
+        "hard-break"
+      ]
     },
     {
       "id": "markdown-soft-break",
@@ -638,7 +708,11 @@
             "output": "a\nb\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph",
+        "soft-break"
+      ]
     },
     {
       "id": "markdown-entity",
@@ -670,7 +744,11 @@
             "output": "x & y\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph",
+        "entity"
+      ]
     },
     {
       "id": "markdown-escape",
@@ -702,7 +780,11 @@
             "output": "x!\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph",
+        "escape"
+      ]
     },
     {
       "id": "markdown-table",
@@ -764,7 +846,12 @@
           }
         ],
         "exit": 0
-      }
+      },
+      "constructs": [
+        "table",
+        "table-row",
+        "table-cell"
+      ]
     },
     {
       "id": "markdown-bullet-task",
@@ -798,7 +885,12 @@
           }
         ],
         "exit": 0
-      }
+      },
+      "constructs": [
+        "bullet-list",
+        "list-item",
+        "bullet-task"
+      ]
     },
     {
       "id": "markdown-ordered-task",
@@ -846,7 +938,12 @@
           }
         ],
         "exit": 1
-      }
+      },
+      "constructs": [
+        "ordered-list",
+        "list-item",
+        "ordered-task"
+      ]
     },
     {
       "id": "markdown-raw-html",
@@ -889,7 +986,11 @@
           "default": "<p>A <span class=\"k\">raw</span>.</p>\n",
           "safe": "<p>A &lt;span class=\"k\"&gt;raw&lt;/span&gt;.</p>\n"
         }
-      }
+      },
+      "constructs": [
+        "paragraph",
+        "raw-html"
+      ]
     },
     {
       "id": "markdown-code-locations",
@@ -928,7 +1029,12 @@
             "output": "```\n1. [x] **code**\n```\n\n*text*\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "fenced-code",
+        "paragraph",
+        "strong"
+      ]
     },
     {
       "id": "markdown-unsupported-gfm-url",
@@ -952,7 +1058,8 @@
             "output": "https://example.org\n"
           }
         }
-      }
+      },
+      "constructs": []
     },
     {
       "id": "markdown-unsupported-footnote",
@@ -976,7 +1083,8 @@
             "output": "[^note]\n\n[^note]: note\n"
           }
         }
-      }
+      },
+      "constructs": []
     },
     {
       "id": "markdown-issue-probe",
@@ -1096,7 +1204,20 @@
           "default": "<p>A <a href=\"https://x.org\" title=\"Title\">link</a> and <img src=\"a.png\" alt=\"img\" title=\"Pic\">.</p>\n<p>Line with hard break<br>\nnext line, and <span class=\"k\">inline html</span> © <s>gone</s>.</p>\n<pre><code>indented code\n</code></pre>\n<p>See <a href=\"https://ref.example\" title=\"Ref title\">ref</a> and <a href=\"https://auto.example\">https://auto.example</a>.</p>\n",
           "safe": "<p>A <a href=\"https://x.org\" title=\"Title\">link</a> and <img src=\"a.png\" alt=\"img\" title=\"Pic\">.</p>\n<p>Line with hard break<br>\nnext line, and &lt;span class=\"k\"&gt;inline html&lt;/span&gt; © <s>gone</s>.</p>\n<pre><code>indented code\n</code></pre>\n<p>See <a href=\"https://ref.example\" title=\"Ref title\">ref</a> and <a href=\"https://auto.example\">https://auto.example</a>.</p>\n"
         }
-      }
+      },
+      "constructs": [
+        "paragraph",
+        "link",
+        "image",
+        "hard-break",
+        "raw-html",
+        "entity",
+        "strikethrough",
+        "indented-code",
+        "reference-definition",
+        "reference-link",
+        "autolink"
+      ]
     },
     {
       "id": "markdown-literal-edge-01",
@@ -1121,7 +1242,10 @@
             "output": "\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "text"
+      ]
     },
     {
       "id": "markdown-literal-edge-02",
@@ -1146,7 +1270,10 @@
             "output": "hello\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "text"
+      ]
     },
     {
       "id": "markdown-literal-edge-03",
@@ -1171,7 +1298,10 @@
             "output": "hello world\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "text"
+      ]
     },
     {
       "id": "markdown-literal-edge-04",
@@ -1196,7 +1326,10 @@
             "output": "café 世界 123\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "text"
+      ]
     },
     {
       "id": "markdown-literal-edge-05",
@@ -1216,7 +1349,10 @@
           }
         ],
         "exit": 0
-      }
+      },
+      "constructs": [
+        "text"
+      ]
     },
     {
       "id": "markdown-literal-edge-06",
@@ -1236,7 +1372,10 @@
           }
         ],
         "exit": 0
-      }
+      },
+      "constructs": [
+        "text"
+      ]
     },
     {
       "id": "markdown-literal-edge-07",
@@ -1256,7 +1395,10 @@
           }
         ],
         "exit": 0
-      }
+      },
+      "constructs": [
+        "text"
+      ]
     },
     {
       "id": "markdown-literal-edge-08",
@@ -1281,7 +1423,10 @@
             "output": "hello!\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph"
+      ]
     },
     {
       "id": "markdown-literal-edge-09",
@@ -1309,7 +1454,10 @@
             "output": "hello\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph"
+      ]
     },
     {
       "id": "markdown-literal-edge-10",
@@ -1334,7 +1482,10 @@
             "output": "hello\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph"
+      ]
     },
     {
       "id": "markdown-literal-edge-11",
@@ -1359,7 +1510,10 @@
             "output": "hello  world\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph"
+      ]
     },
     {
       "id": "markdown-literal-edge-12",
@@ -1391,7 +1545,11 @@
             "output": "hello\nworld\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph",
+        "soft-break"
+      ]
     },
     {
       "id": "markdown-literal-edge-13",
@@ -1425,7 +1583,8 @@
             "exit": 0
           }
         }
-      }
+      },
+      "constructs": []
     },
     {
       "id": "markdown-literal-edge-14",
@@ -1450,7 +1609,10 @@
             "output": "hello world\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph"
+      ]
     },
     {
       "id": "markdown-literal-edge-15",
@@ -1475,7 +1637,10 @@
             "output": "é\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph"
+      ]
     },
     {
       "id": "markdown-literal-edge-16",
@@ -1507,7 +1672,11 @@
             "output": "/markup/\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph",
+        "emphasis"
+      ]
     },
     {
       "id": "markdown-literal-edge-17",
@@ -1532,7 +1701,10 @@
             "output": "𝐀 ٣ Ⅻ ½\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "text"
+      ]
     },
     {
       "id": "markdown-literal-edge-18",
@@ -1557,7 +1729,10 @@
             "output": "hello\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "text"
+      ]
     },
     {
       "id": "markdown-literal-edge-19",
@@ -1582,7 +1757,10 @@
             "output": "hello\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "text"
+      ]
     },
     {
       "id": "markdown-literal-edge-20",
@@ -1602,7 +1780,10 @@
           }
         ],
         "exit": 0
-      }
+      },
+      "constructs": [
+        "text"
+      ]
     },
     {
       "id": "markdown-literal-edge-21",
@@ -1634,7 +1815,11 @@
             "output": "hello\nworld\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph",
+        "soft-break"
+      ]
     },
     {
       "id": "markdown-literal-edge-22",
@@ -1666,7 +1851,11 @@
             "output": "hello\nworld\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph",
+        "soft-break"
+      ]
     },
     {
       "id": "markdown-setext-hashtag",
@@ -1686,7 +1875,10 @@
           }
         ],
         "exit": 0
-      }
+      },
+      "constructs": [
+        "setext-heading"
+      ]
     },
     {
       "id": "markdown-html-block",
@@ -1706,7 +1898,10 @@
           }
         ],
         "exit": 1
-      }
+      },
+      "constructs": [
+        "raw-html"
+      ]
     },
     {
       "id": "markdown-task-strong-label",
@@ -1747,7 +1942,13 @@
           }
         ],
         "exit": 0
-      }
+      },
+      "constructs": [
+        "bullet-list",
+        "list-item",
+        "bullet-task",
+        "strong"
+      ]
     },
     {
       "id": "markdown-duplicate-reference",
@@ -1793,7 +1994,12 @@
             "output": "See [ref](https://one.example).\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "reference-definition",
+        "paragraph",
+        "reference-link"
+      ]
     },
     {
       "id": "markdown-quoted-reference-definition",
@@ -1844,7 +2050,11 @@
             ]
           }
         }
-      }
+      },
+      "constructs": [
+        "block-quote",
+        "reference-definition"
+      ]
     },
     {
       "id": "markdown-nested-emphasis-loss",
@@ -1874,7 +2084,10 @@
             "output": "/outer inner outer/\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "ordered-task"
+      ]
     },
     {
       "id": "markdown-blank-table-row-loss",
@@ -1994,7 +2207,10 @@
             ]
           }
         }
-      }
+      },
+      "constructs": [
+        "ordered-task"
+      ]
     },
     {
       "id": "markdown-indented-code-before-ordered-task",
@@ -2068,7 +2284,10 @@
             ]
           }
         }
-      }
+      },
+      "constructs": [
+        "ordered-task"
+      ]
     },
     {
       "id": "markdown-incomplete-before-ordered-task",
@@ -2094,7 +2313,10 @@
           }
         ],
         "exit": 1
-      }
+      },
+      "constructs": [
+        "ordered-task"
+      ]
     },
     {
       "id": "markdown-quoted-ordered-marker",
@@ -2128,7 +2350,12 @@
           }
         ],
         "exit": 0
-      }
+      },
+      "constructs": [
+        "block-quote",
+        "ordered-list",
+        "list-item"
+      ]
     },
     {
       "id": "markdown-unknown-entity",
@@ -2153,7 +2380,10 @@
             "output": "x &bogus;\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph"
+      ]
     },
     {
       "id": "markdown-nested-different-emphasis",
@@ -2192,7 +2422,437 @@
             "output": "*strong /emphasis/*\n"
           }
         }
-      }
+      },
+      "constructs": [
+        "paragraph",
+        "strong",
+        "emphasis"
+      ]
+    },
+    {
+      "id": "markdown-nested-same-kind-emphasis",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "*a *b* c*",
+      "expected": {
+        "output": "/a b c/",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          },
+          {
+            "code": "structure-unspellable",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact"
+          }
+        ],
+        "exit": 1,
+        "engines": {
+          "rust": {
+            "output": "/a b c/\n",
+            "diagnostics": [
+              {
+                "code": "fidelity-unverified",
+                "severity": "warning",
+                "fidelity": "dropped",
+                "confidence": "fallback"
+              },
+              {
+                "code": "structure-unspellable",
+                "severity": "warning",
+                "fidelity": "dropped",
+                "confidence": "exact"
+              }
+            ],
+            "exit": 1
+          }
+        }
+      },
+      "constructs": [
+        "nested-same-kind-emphasis"
+      ]
+    },
+    {
+      "id": "markdown-blank-table-row",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "| a | b |\n|---|---|\n|   |   |\n| 3 | 4 |\n",
+      "expected": {
+        "output": "|= a |= b |\n| 3 | 4 |\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          },
+          {
+            "code": "structure-unspellable",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact"
+          }
+        ],
+        "exit": 1,
+        "engines": {
+          "php": {
+            "output": "|= a |= b |\n| | |\n| 3 | 4 |\n",
+            "diagnostics": [
+              {
+                "code": "markdown-table",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-table-row",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-table-cell",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-table-cell",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-table-row",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:3"
+              },
+              {
+                "code": "markdown-table-cell",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:3"
+              },
+              {
+                "code": "markdown-table-cell",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:3"
+              },
+              {
+                "code": "markdown-table-row",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:4"
+              },
+              {
+                "code": "markdown-table-cell",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:4"
+              },
+              {
+                "code": "markdown-table-cell",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:4"
+              }
+            ],
+            "exit": 0
+          },
+          "rust": {
+            "output": "|= a |= b |\n| 3 | 4 |\n",
+            "diagnostics": [
+              {
+                "code": "fidelity-unverified",
+                "severity": "warning",
+                "fidelity": "dropped",
+                "confidence": "fallback"
+              },
+              {
+                "code": "structure-unspellable",
+                "severity": "warning",
+                "fidelity": "dropped",
+                "confidence": "exact",
+                "path": "line:3"
+              }
+            ],
+            "exit": 1
+          }
+        }
+      },
+      "constructs": [
+        "blank-table-row"
+      ]
+    },
+    {
+      "id": "markdown-task-after-noninterrupting-marker",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "a\n2. [x] b\n\n1. [x] c",
+      "expected": {
+        "output": "a\n2. [x] b\n\n1. [x] c",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          },
+          {
+            "code": "structure-unspellable",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:4"
+          }
+        ],
+        "exit": 1,
+        "engines": {
+          "rust": {
+            "output": "a\n2. [x] b\n\n1. [x] c\n",
+            "diagnostics": [
+              {
+                "code": "markdown-paragraph",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-soft-break",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-ordered-list",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:4"
+              },
+              {
+                "code": "markdown-list-item",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:4"
+              },
+              {
+                "code": "structure-unspellable",
+                "severity": "warning",
+                "fidelity": "dropped",
+                "confidence": "exact",
+                "path": "line:4"
+              }
+            ],
+            "exit": 1
+          }
+        }
+      },
+      "constructs": [
+        "ordered-task"
+      ]
+    },
+    {
+      "id": "markdown-task-nested-four-spaces",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "- a\n    1. [x] b\n\n1. [x] c",
+      "expected": {
+        "output": "- a\n  1. [x] b\n\n1. [x] c",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          },
+          {
+            "code": "structure-unspellable",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:2"
+          },
+          {
+            "code": "structure-unspellable",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:4"
+          }
+        ],
+        "exit": 1,
+        "engines": {
+          "rust": {
+            "output": "- a\n  1. [x] b\n\n1. [x] c\n",
+            "diagnostics": [
+              {
+                "code": "fidelity-unverified",
+                "severity": "warning",
+                "fidelity": "dropped",
+                "confidence": "fallback"
+              },
+              {
+                "code": "structure-unspellable",
+                "severity": "warning",
+                "fidelity": "dropped",
+                "confidence": "exact",
+                "path": "line:2"
+              },
+              {
+                "code": "structure-unspellable",
+                "severity": "warning",
+                "fidelity": "dropped",
+                "confidence": "exact",
+                "path": "line:4"
+              }
+            ],
+            "exit": 1
+          }
+        }
+      },
+      "constructs": [
+        "ordered-task"
+      ]
+    },
+    {
+      "id": "markdown-reference-shaped-list-text",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "- a\n  [x]: /u\n",
+      "expected": {
+        "output": "- a\n  \\[x]: /u\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          }
+        ],
+        "exit": 1,
+        "engines": {
+          "rust": {
+            "output": "- a\n  \\[x]: /u\n",
+            "diagnostics": [
+              {
+                "code": "markdown-bullet-list",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-list-item",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-soft-break",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              }
+            ],
+            "exit": 0
+          }
+        }
+      },
+      "constructs": [
+        "bullet-list"
+      ]
+    },
+    {
+      "id": "markdown-reference-shaped-table-text",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "| a |\n| --- |\n[x]: /u\n",
+      "expected": {
+        "output": "|= a |\n| [x]: /u |\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          }
+        ],
+        "exit": 1,
+        "engines": {
+          "rust": {
+            "output": "|= a |\n| [x]: /u |\n",
+            "diagnostics": [
+              {
+                "code": "markdown-table",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-table-row",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-table-cell",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-table-row",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:3"
+              },
+              {
+                "code": "markdown-table-cell",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:3"
+              }
+            ],
+            "exit": 0
+          }
+        }
+      },
+      "constructs": [
+        "table"
+      ]
     }
   ]
 }

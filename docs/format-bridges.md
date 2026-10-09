@@ -166,7 +166,9 @@ The inventory names the construct families, not a claim that every combination
 is already assessed. Ambiguous syntax, unsupported dialect extensions and
 mismatches between assessed structure and writer output remain unverified.
 Existing aggregate loss rows may lack a location while assessment is incomplete;
-the fallback prevents treating those reports as complete.
+the fallback prevents treating those reports as complete. The JS importer also
+omits a fallback loss location when reference or frontmatter preprocessing
+changes the source lines and it cannot establish the original position.
 Assessment checks source typography. Glyph typography is a render choice.
 Conversion and rendering are separate boundaries: destination filtering and
 raw HTML handling belong to the render profile.

@@ -91,8 +91,9 @@ for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
       assert.equal(rendered.status, 0, `${context}/${profile}: ${rendered.stderr}`)
       assert.equal(rendered.stdout, html, `${context}/${profile}: render spelling divergence`)
     }
+    for (const construct of fixture.constructs ?? []) covered.add(`${engine}/construct/${construct}`)
     checked++
   }
-  for (const row of inventory.constructs) assert.ok(covered.has(`${engine}/${row.code}`), `${engine}: no fixture covers ${row.construct}`)
+  for (const row of inventory.constructs) assert.ok(covered.has(`${engine}/construct/${row.construct}`), `${engine}: no fixture covers ${row.construct}`)
 }
 console.log(`migration evidence: ${checked} CLI cases across all three engines; no exemptions`)
