@@ -14,6 +14,7 @@ import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Ajv2020 } from 'ajv/dist/2020.js'
+import { carveToAnsiWithReport, carveToMarkdownWithReport, carveToPlainTextWithReport } from '@markup-carve/carve'
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const schema = JSON.parse(readFileSync(resolve(repo, 'resources/render-loss-report.schema.json'), 'utf8'))
@@ -57,4 +58,22 @@ test('the clause names the code, the message and the CLI exception the schema ho
     (one) => one.properties?.code?.const === 'editorial-comment-flattened',
   )
   assert.equal(branch.properties.message.const, MESSAGE)
+})
+
+test('the pinned engine emits the row on plain and ansi and none on markdown', () => {
+  const source = 'Text {+neu+} und {#Notiz#} hier.\n'
+  for (const [render, target] of [[carveToPlainTextWithReport, 'plain'], [carveToAnsiWithReport, 'ansi']]) {
+    const { value: _value, ...result } = render(source)
+    assert.equal(validate(result), true, JSON.stringify(validate.errors))
+    assert.deepEqual(result.losses.map(({ pos: _pos, ...loss }) => loss), [
+      { code: 'editorial-comment-flattened', target, nodeType: 'inline', message: MESSAGE },
+    ])
+  }
+  const markdown = carveToMarkdownWithReport(source)
+  assert.equal(markdown.totalLosses, 0)
+  const fixtures = JSON.parse(readFileSync(resolve(repo, 'tests/fixtures/markdown-writer-targets.json'), 'utf8'))
+  for (const name of ['editorial-comment-span', 'editorial-comment-content-is-text']) {
+    const c = fixtures.find((f) => f.name === name)
+    assert.equal(carveToMarkdownWithReport(c.carve).value, c.markdown, name)
+  }
 })
