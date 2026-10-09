@@ -68,18 +68,49 @@ const proseLines = (text) => {
   return out.join('\n')
 }
 
+/*
+ * The version this repo is PREPARING. A compare link whose newer end names it
+ * cannot resolve until the tag exists, and the tag is cut after the docs are
+ * written - so fetching it reports a 404 through every release cut. That is
+ * the gate failing on its own ordering rather than a bad link, so the one
+ * range ending at the unreleased version is skipped until it is tagged.
+ */
+const pendingVersion = JSON.parse(readFileSync(resolve(repoRoot, 'package.json'), 'utf8')).version
+const hasTag = (version) => {
+  try {
+    return execFileSync('git', ['tag', '--list', version], { cwd: repoRoot, encoding: 'utf8' }).trim() !== ''
+  } catch {
+    return false
+  }
+}
+const pendingTag = pendingVersion && !hasTag(pendingVersion)
+const isPendingCompare = (url) => {
+  const match = url.match(/^https?:\/\/github\.com\/[^/]+\/[^/]+\/compare\/[^.]\S*?\.\.\.(\S+)$/)
+  return pendingTag && match !== null && match[1] === pendingVersion
+}
+
 const targets = new Map()
+const pending = []
 for (const file of files) {
   const text = proseLines(readFileSync(resolve(repoRoot, file), 'utf8'))
   for (const match of text.matchAll(/https?:\/\/[^)\s"'<>\]]+/g)) {
     const url = match[0].replace(/[.,;:]+$/, '')
     if (NEVER_FETCH.some((pattern) => pattern.test(url))) continue
+    if (isPendingCompare(url)) {
+      pending.push({ url, file })
+      continue
+    }
     if (!targets.has(url)) targets.set(url, new Set())
     targets.get(url).add(file)
   }
 }
 
 console.log(`checking ${targets.size} external links from ${files.length} files\n`)
+
+for (const { url, file } of pending) {
+  console.log(`  SKIPPED pending the ${pendingVersion} tag  ${url}\n    cited by: ${file}`)
+}
+if (pending.length > 0) console.log('')
 
 const failures = []
 const entries = [...targets]
