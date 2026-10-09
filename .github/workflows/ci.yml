@@ -16,6 +16,55 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  markdown-migration:
+    name: Markdown migration fidelity
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install contract checks
+        run: npm ci
+      - uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-js
+          ref: main
+          path: engines/carve-js
+          submodules: recursive
+      - name: Build JS importer
+        working-directory: engines/carve-js
+        run: npm ci && npm run build
+      - uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-rs
+          ref: main
+          path: engines/carve-rs
+          submodules: recursive
+      - name: Build Rust importer
+        working-directory: engines/carve-rs
+        run: cargo build --bin carve
+      - uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-php
+          ref: main
+          path: engines/carve-php
+          submodules: recursive
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+      - name: Install PHP importer
+        working-directory: engines/carve-php
+        run: composer install --no-interaction --no-progress
+      - name: Replay Markdown and legacy migration evidence
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/engines/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/engines/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/engines/carve-php
+        run: npm run migration:evidence
+
   declarations:
     # Per-PR checks accept declared spec-ahead windows. The release cut uses
     # `npm run declarations:check`, which requires empty owed lists and a current pin.
