@@ -123,7 +123,7 @@ const PINNED_UNIMPLEMENTED = {}
  */
 const PINNED_DRIFT = {
   // CARVE-P2-030, ruled at carve#2799. The pinned build converts any leading
-  // `---` block with a closer to frontmatter, so the four cases whose blocks
+  // `---` block with a closer to frontmatter, so the five cases whose blocks
   // do not shape as a mapping are ahead of it. Measured against carve-js
   // `a7d618ba`: case 71 loses `Foo` outright.
   '71-markdown-a-scalar-leading-block-is-not-front-matter': 'the pinned importer has no mapping test',

@@ -17,7 +17,9 @@ const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
 const MAPPING = ['title: Hi', 'title:', 'title:\tHi', '"my title": Hi', "'my title': Hi", 'title: [unclosed']
 
-const NOT_MAPPING = ['Foo', 'a:b: Hi', '- one', '[seq]', '{a: 1}', '  title: Hi', 'title:Hi']
+// `:foo: Hi` belongs here because the key holds a `:` at its first position,
+// which the "holds no `:`" half of the rule refuses like any other position.
+const NOT_MAPPING = ['Foo', 'a:b: Hi', ':foo: Hi', '- one', '[seq]', '{a: 1}', '  title: Hi', 'title:Hi']
 
 test('a first remaining line that shapes as a mapping is front matter', () => {
   for (const line of MAPPING) assert.equal(shapesAsMapping([line]), true, JSON.stringify(line))

@@ -4,7 +4,8 @@
  */
 
 const QUOTED_KEY = /^(?:"(?:[^"\\]|\\.)*"|'(?:[^']|'')*')\s*:(?:[ \t]|$)/
-const BARE_KEY = /^[^\s\-[{"'#][^:]*:(?:[ \t]|$)/
+// The key "holds no `:`", so a colon is excluded at the first position too.
+const BARE_KEY = /^[^\s\-[{"'#:][^:]*:(?:[ \t]|$)/
 
 /** Does a BARE `---` block's body shape as a mapping? */
 export const shapesAsMapping = (lines) => {
