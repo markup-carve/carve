@@ -191,6 +191,12 @@
       "scope": "imports-security-extensions"
     },
     {
+      "id": "CARVE-P2-030",
+      "part": "2",
+      "title": "A BARE `---` BLOCK IS IMPORTED AS FRONTMATTER ONLY WHERE IT SHAPES AS A MAPPING",
+      "scope": "imports-security-extensions"
+    },
+    {
       "id": "CARVE-P2-006",
       "part": "2",
       "title": "COLUMN-EXACT DELIMITERS",

@@ -146,6 +146,87 @@ target cannot be interactive - the interaction, never the words. A bridge
 governs what a *converter* may drop when a target model is smaller than
 Carve's - a node, never in silence.
 
+## A bare `---` block becomes front matter only when it shapes as a mapping
+
+Markdown has no front matter. Jekyll, Hugo and every other generator in that
+family consume a leading `---` block before the Markdown reader sees it, and
+Carve spells the same envelope natively, so the importer preserves it. The
+convention is not a license to claim every bare `---` block: under CommonMark,
+`Foo` over `---` is a thematic break and a setext heading, and reading it as
+front matter deletes `Foo` from the document.
+
+[`CARVE-P2-030`](./rules/imports-security-extensions) gates the bare spelling on
+a **shape test**, which is deliberately not a call into a YAML library. Take the
+lines between the opener and the closer, skip blank lines and lines whose first
+non-space character is `#`, and the block is front matter when the first
+remaining line, at column 0, is a key followed by `:` and then a space, a tab or
+the end of the line. The key is a double-quoted or single-quoted string, or a run
+that starts with neither whitespace nor any of `-`, `[`, `{`, `"`, `'`, `#`, and
+holds no `:`.
+
+No remaining line, meaning an empty or a comment-only block, is not a mapping, so
+it is not front matter. An indented key is the first remaining line and fails the
+column-0 test; only blank lines and `#` lines are skipped.
+
+A bare `---` defaults to `yaml`, so that is the only shape rule it can take, and
+`---` / `[table]` / `---` is not front matter. There is no toml shape rule at
+all: a typed `---toml` is front matter unconditionally and a bare opener is yaml,
+so a toml shape test would have no reachable caller.
+
+A shape test gives identical results in every engine and conformance cases can
+pin it, while a real parser would add a dependency to carve-php and carve-rs and
+let libraries that disagree on YAML edge cases make two conformant engines answer
+differently on one input. The one divergence from a real parse is malformed
+content: `title: [unclosed` has the shape, so it is front matter here.
+
+This block is a thematic break, a setext heading and a paragraph:
+
+```markdown
+---
+Foo
+---
+Bar
+---
+Baz
+```
+
+and this one is front matter:
+
+```markdown
+---
+# site settings
+title: Hi
+---
+```
+
+### A typed opener needs no test
+
+`---yaml`, `---toml`, `---json`, `---neon` and any other `frontmatter_format`
+are front matter unconditionally. A thematic break is a dash run and nothing
+else, so a typed opener never collides with one and never underlines a setext
+heading; with no closer ahead of it the line is ordinary paragraph text. The
+collision the shape test resolves can only happen on the bare spelling, and once
+the author named the format there is nothing left to infer. `---yaml` / `Foo` /
+`---` is front matter whose payload is a scalar, which is the author's business.
+
+The cases are pinned in `tests/corpus-convert/`, numbers 71 to 83.
+
+### Every conversion is reported
+
+Writing front matter from a leading block always produces a diagnostic, bare or
+typed, whether or not the conversion looks lossy. The lines leave the document
+body for metadata a reader cannot see in the output, which is the condition
+[`CARVE-P2-024`](./rules/imports-security-extensions) states for a transformation
+that has to be made observable. A second heuristic deciding which conversions
+look lossy would be the same class of judgment the gate above exists to remove.
+
+The code is `frontmatter-synthesized`, on the importer's own migration report
+rather than on a render-loss report: nothing was dropped from a rendered
+document, and the render-loss codes describe what one selected renderer could not
+emit. It carries `normalized` fidelity at `inferred` confidence and `info`
+severity, since the content survives in a place the source did not name, so it
+does not fail a loss gate on its own.
+
 ## Check conversion in both directions
 
 Before storing converted content, test both directions on documents that matter

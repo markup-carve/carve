@@ -1,0 +1,4 @@
+---yaml
+Foo
+---
+Body

@@ -40,22 +40,22 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P2-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L26) | 2 | THE HEADING MARKER SEPARATOR IS A RUN |
 | [`CARVE-P2-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L49) | 2 | SINGLE-LINE HEADINGS |
 | [`CARVE-P2-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L74) | 2 | HEADING IDENTIFIERS |
-| [`CARVE-P2-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L134) | 2 | CODE-FENCE INFO STRING |
-| [`CARVE-P2-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L182) | 2 | COLUMN-EXACT DELIMITERS |
-| [`CARVE-P2-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L226) | 2 | TABS IN CODE |
-| [`CARVE-P2-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L240) | 2 | LAZY CONTINUATION |
-| [`CARVE-P2-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L278) | 2 | MARKER REQUIRES CONTENT |
-| [`CARVE-P2-026`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L289) | 2 | THE DESCRIPTION MARKER |
-| [`CARVE-P2-027`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L307) | 2 | WHICH CHARACTERS THE CONTENT TEST IGNORES |
-| [`CARVE-P2-028`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L494) | 2 | A TERM HAS NO CONTENT COLUMN |
-| [`CARVE-P2-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L298) | 2 | A LEADING CONTENT TAB FOLLOWS NORMAL INDENTATION |
-| [`CARVE-P2-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L334) | 2 | A BARE DOT OPENS A DECIMAL LIST |
-| [`CARVE-P2-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L353) | 2 | A BARE DOT AFTER A BLANK LINE OPENS A LIST |
-| [`CARVE-P2-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L377) | 2 | WHITESPACE IS THE DISCRIMINATOR |
-| [`CARVE-P2-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L407) | 2 | MARKER-LINE NESTED LIST |
-| [`CARVE-P2-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L561) | 2 | INDENTATION IS COLUMNS, NOT CHARACTERS |
-| [`CARVE-P2-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L576) | 2 | BELOW THE BODY'S COLUMN THE BODY ENDS |
-| [`CARVE-P2-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L644) | 2 | AUTHORED BLOCK BASES |
+| [`CARVE-P2-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L195) | 2 | CODE-FENCE INFO STRING |
+| [`CARVE-P2-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L243) | 2 | COLUMN-EXACT DELIMITERS |
+| [`CARVE-P2-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L287) | 2 | TABS IN CODE |
+| [`CARVE-P2-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L301) | 2 | LAZY CONTINUATION |
+| [`CARVE-P2-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L339) | 2 | MARKER REQUIRES CONTENT |
+| [`CARVE-P2-026`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L350) | 2 | THE DESCRIPTION MARKER |
+| [`CARVE-P2-027`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L368) | 2 | WHICH CHARACTERS THE CONTENT TEST IGNORES |
+| [`CARVE-P2-028`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L555) | 2 | A TERM HAS NO CONTENT COLUMN |
+| [`CARVE-P2-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L359) | 2 | A LEADING CONTENT TAB FOLLOWS NORMAL INDENTATION |
+| [`CARVE-P2-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L395) | 2 | A BARE DOT OPENS A DECIMAL LIST |
+| [`CARVE-P2-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L414) | 2 | A BARE DOT AFTER A BLANK LINE OPENS A LIST |
+| [`CARVE-P2-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L438) | 2 | WHITESPACE IS THE DISCRIMINATOR |
+| [`CARVE-P2-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L468) | 2 | MARKER-LINE NESTED LIST |
+| [`CARVE-P2-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L622) | 2 | INDENTATION IS COLUMNS, NOT CHARACTERS |
+| [`CARVE-P2-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L637) | 2 | BELOW THE BODY'S COLUMN THE BODY ENDS |
+| [`CARVE-P2-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L705) | 2 | AUTHORED BLOCK BASES |
 | [`CARVE-P2-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/04-blocks-tables-containers.ebnf#L14) | 2 | THE ROW TERMINATOR AND AN OPEN RUN |
 | [`CARVE-P2-020`](https://github.com/markup-carve/carve/blob/main/resources/spec/04-blocks-tables-containers.ebnf#L138) | 2 | THE CAPTION MARKER SEPARATOR IS A RUN |
 | [`CARVE-P2-021`](https://github.com/markup-carve/carve/blob/main/resources/spec/04-blocks-tables-containers.ebnf#L157) | 2 | MULTI-LINE CAPTIONS |
