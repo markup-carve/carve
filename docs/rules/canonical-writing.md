@@ -9,7 +9,7 @@ description: "Canonical Carve source, Markdown and plain-text targets, round tri
 
 Canonical Carve source, Markdown and plain-text targets, round trips, and escaping.
 
-This view contains 63 of 311 active rules. Every rule remains mandatory where applicable.
+This view contains 64 of 312 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -68,10 +68,11 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P11-060`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L182) | 11 | TEXT THAT GFM WOULD AUTOLINK IS ESCAPED |
 | [`CARVE-P11-061`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L269) | 11 | A SOFT BREAK IN A TABLE CELL IS ONE SPACE |
 | [`CARVE-P11-062`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L780) | 11 | THE MARKDOWN TARGET KEEPS FRONTMATTER |
+| [`CARVE-P11-063`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L812) | 11 | AN OPT-IN MODE CARRIES AN ELEMENT-LESS CONTAINER IN A COMMENT |
 | [`CARVE-P11-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L551) | 11 | A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES |
 | [`CARVE-P11-037`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L570) | 11 | AN UNSPELLABLE BLOCK DOES NOT CANCEL THE ADJACENCY IT CANNOT SPELL |
-| [`CARVE-P11-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L812) | 11 | THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG |
-| [`CARVE-P11-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L865) | 11 | THE MARKDOWN TARGET KEEPS A FRAGMENT LINK |
+| [`CARVE-P11-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L878) | 11 | THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG |
+| [`CARVE-P11-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L931) | 11 | THE MARKDOWN TARGET KEEPS A FRAGMENT LINK |
 | [`CARVE-P11-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L231) | 11 | A RESOLUTION RESULT ABOUT THE WRAPPER IS NOT CONTENT OF IT |
 | [`CARVE-P11-040`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L454) | 11 | AN EMPTY DESCRIPTION BODY IS WRITTEN WITH THE SENTINEL `{empty}` |
 | [`CARVE-P11-041`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L165) | 11 | A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE |
