@@ -20,7 +20,7 @@ The count-only run covers 2,225 core documents and their 161 target sidecars.
 The run scores 2,386 fixtures per engine. It checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
 
-Corpus added since this run: `549-an-ordered-list-carries-its-authored-delimiter`, `19-smart-typography-dashes-and-quotes-10`.
+Corpus added since this run: `549-an-ordered-list-carries-its-authored-delimiter`, `19-smart-typography-dashes-and-quotes-10`, `19-smart-typography-dashes-and-quotes-11`.
 
 Those five rows and the rewritten `31-ordered-list-start-and-delimiter-2` pin
 CARVE-P10-014, which no engine has shipped yet, so they are outside this run's
