@@ -9215,7 +9215,10 @@ EOF = (* end of file *) ;
       and `ruby` nodes have no
       Markdown delimiter spelling and MUST use inline HTML: `<u>` for
       `underline`, `<mark>` for `highlight`, `<sub>` for `subscript` and
-      `<sup>` for `superscript`. `small_caps` uses
+      `<sup>` for `superscript`. Each of those four MUST carry its attribute
+      set onto the element it emits, under the same ordinary HTML attribute
+      rules `ruby` follows below; one with no attributes emits the bare tag.
+      `small_caps` uses
       `<span class="smallcaps">`, merging its other attributes under the
       ordinary span rules. An editorial comment (`editorial_comment`, the
       `critic_comment` node) has no Markdown delimiter spelling either and
