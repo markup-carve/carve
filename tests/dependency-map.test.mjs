@@ -20,7 +20,7 @@ import * as nodePath from 'node:path'
 import { parseDependencyLedger, auditDependencyLedger } from '../scripts/lib/drift-ledger.mjs'
 import { test } from 'node:test'
 
-import { classify, parseManifest, renderMermaid, releaseLayers, renderReleaseOrder, ciReferences, ciInstalls, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange } from '../tools/dependency-map.mjs'
+import { VENDOR_CANDIDATE, classify, parseManifest, renderMermaid, releaseLayers, renderReleaseOrder, ciReferences, ciInstalls, notARelease, vendorProvenance, staleSourceBanner, volatileMask, isSubstantiveChange } from '../tools/dependency-map.mjs'
 
 const cases = [
   ['github: shorthand', '@markup-carve/carve', 'github:markup-carve/carve-js#3ba8ba32', 'carve-js', '3ba8ba32'],
@@ -283,6 +283,22 @@ test('a Homebrew formula pins the release it downloads, once per tag', () => {
   assert.equal(edges[0].ref, '0.1.6')
 })
 
+test('a source-built formula pins its git tag and its staged npm packages', () => {
+  const rb = [
+    'url "https://github.com/markup-carve/carve-pdf.git",',
+    '    tag:      "0.1.2",',
+    '    revision: "e208c8253c71860dd4686618a123e8d19d05f794"',
+    'head "https://github.com/markup-carve/carve-pdf.git", branch: "main"',
+    'url "https://registry.npmjs.org/@markup-carve/carve/-/carve-0.1.10.tgz"',
+    'url "https://registry.npmjs.org/parse5/-/parse5-7.3.0.tgz"',
+  ].join('\n')
+  const edges = parseManifest('brew', 'Formula/crv2pdf.rb', rb)
+  assert.deepEqual(
+    edges.map((e) => [e.target, e.kind, e.ref]),
+    [['carve-pdf', 'git', '0.1.2'], ['carve-js', 'registry', '0.1.10']],
+  )
+})
+
 test('a repo does not depend on itself through its own CI', () => {
   const yaml = 'repository: markup-carve/carve-go\nrepository: markup-carve/carve-rs'
   assert.deepEqual([...ciReferences(yaml, 'carve-go', KNOWN)], ['carve-rs'])
@@ -377,6 +393,19 @@ test('a vendored build names the repo and commit it was built from', () => {
   const found = vendorProvenance(head, 'intellij-carve', KNOWN)
   assert.equal(found?.target, 'carve-rs')
   assert.equal(found?.ref, '37ed8904f2a5dd540fd0bddb2294fe348f17eb7d')
+})
+
+test('a byte-for-byte copy is pinned by its directory UPSTREAM.md', () => {
+  assert.ok(VENDOR_CANDIDATE.test('themes/carve-css/UPSTREAM.md'))
+  assert.ok(!VENDOR_CANDIDATE.test('docs/UPSTREAMING.md'))
+  const head = [
+    '# Vendored carve-css',
+    '',
+    'Vendored from markup-carve/carve-css version 0.1.5, commit 818245f.',
+  ].join('\n')
+  const found = vendorProvenance(head, 'carve-pdf', new Set(['carve-css']))
+  assert.equal(found?.target, 'carve-css')
+  assert.equal(found?.ref, '818245f')
 })
 
 test('a vendored build with no commit still names its source', () => {

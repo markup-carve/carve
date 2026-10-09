@@ -2820,6 +2820,24 @@ Back in the
 
 :::
 
+Start-of-content opens a single quote exactly as it opens a double one, so a
+word that begins with an elision apostrophe gets a LEFT single quote. This is a
+deliberate divergence from djot.js, which closes it, and it is not the
+line-break case above: the predecessor here is the start of the content, which
+the clause names in its opening set.
+
+::: compare
+
+```carve
+'tis the season to be 'jolly'
+```
+
+```html
+<p>‘tis the season to be ‘jolly’</p>
+```
+
+:::
+
 ## Smart typography arrows and symbols
 
 Arrows, comparisons, plus/minus and symbols are converted. Fractions are
