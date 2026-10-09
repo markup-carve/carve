@@ -11,8 +11,8 @@ description: Every place Carve deliberately parses differently from Djot - the r
 Carve starts from [Djot](https://djot.net) - John MacFarlane's predictable,
 backtracking-free reimagining of Markdown - and keeps almost all of it: the
 linear parse model, generic containers, arbitrary attributes, footnotes, math,
-and smart typography all carry over - the last of those with the same rules but
-a smaller AST shape (see section 12 below). Definition lists are one of the
+and smart typography all carry over. Smart typography has a smaller AST shape
+and does not support Djot's forced quote markers (see section 12 below). Definition lists are one of the
 deliberate breaks (see section 9 below).
 
 Carve diverges because a handful of Djot's choices optimize for
@@ -460,9 +460,9 @@ flush-left block regardless.
 
 Both languages agree on the important half: a typographic substitution has to be
 *represented* in the AST, or the formatter cannot reproduce what the author
-typed. The substitution rules are also the same - unconditional, per-character
-quote direction from the preceding character, `\"` for a literal. The divergence
-is the shape of the representation.
+typed. Carve chooses quote direction per character from the preceding character;
+`\"` and `\'` escape to literal straight quotes. Its AST representation
+differs from Djot's.
 
 **Djot:** three types. `double_quoted` and `single_quoted` are *containers* that
 wrap the quoted content, and `smart_punctuation` is a leaf retaining the source
@@ -491,6 +491,19 @@ carrying both halves buys the same round-trip with none of that.
 
 For [profiles](/profiles) the node is classified as `text`: it is visible prose
 with no capability of its own, so it is not separately nameable.
+
+### Forced quote direction
+
+Djot supports `{"`, `"}`, `{'`, and `'}` to force opening or closing
+quotes. Carve does not recognize these markers: the brace remains literal,
+and the straight quote follows Carve's contextual substitution rule.
+For example, `a {"b c` renders as `<p>a {“b c</p>` in Carve,
+where Djot renders `<p>a “b c</p>`.
+
+Write `“`, `”`, `‘`, or `’` directly when you need a specific quote direction
+in Carve. These literal characters retain their spelling; they do not use
+locale-specific smart-quote substitutions. For example, `a “b c` renders
+as `<p>a “b c</p>`.
 
 ### Turning it off
 
