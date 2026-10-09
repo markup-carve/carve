@@ -29,3 +29,5 @@
 549-an-ordered-list-carries-its-authored-delimiter-3  CARVE-P10-014 just landed: the pin writes no data-delim
 549-an-ordered-list-carries-its-authored-delimiter-4  CARVE-P10-014 just landed: the pin writes no data-delim
 549-an-ordered-list-carries-its-authored-delimiter-5  CARVE-P10-014 just landed: the pin writes no data-delim
+19-smart-typography-dashes-and-quotes-3  carve#2822 just landed: the pin closes a quote after a line break
+19-smart-typography-dashes-and-quotes-10  carve#2822 just landed: the pin closes a quote after a line break
