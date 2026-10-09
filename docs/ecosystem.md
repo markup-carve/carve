@@ -151,7 +151,7 @@ Measurements of the language and its engines, each published as a website built 
 
 | Project | Website | Description |
 |---|---|---|
-| [carve-conformance](https://github.com/markup-carve/carve-conformance) | [Conformance](https://markup-carve.github.io/carve-conformance/) | Machine-checked models of Carve parsing rules, reader agreement across the reference implementations, and cross-format AST compatibility: foreign parsers mapped to Carve's AST and read back. |
+| [carve-conformance](https://github.com/markup-carve/carve-conformance) | [Conformance](https://markup-carve.github.io/carve-conformance/) | Machine-checked models of Carve parsing rules and cross-format AST compatibility, compared with the reference implementations. |
 | [carve-bench](https://github.com/markup-carve/carve-bench) | [Bench](https://markup-carve.github.io/carve-bench/) | Cross-engine render performance benchmarks (carve-js / carve-php / carve-rs). |
 | [pandoc-format-fidelity](https://github.com/markup-carve/pandoc-format-fidelity) | [Fidelity](https://markup-carve.github.io/pandoc-format-fidelity/) | How much of a document survives a pandoc conversion, per format and feature, including the pandoc-carve bridge. |
 
