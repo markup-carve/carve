@@ -1014,7 +1014,7 @@ async function runConvertMode() {
 
   // The HTML-import contract is a second, larger HTML population. Run every
   // source through all available importers here as well, using its normative
-  // expected Carve source rendered by the pinned JS engine as the meaning
+  // expected Carve source rendered by the selected JS CLI as the meaning
   // assertion. Keeping this in the existing converter runner gives it the same
   // per-engine drift ledger and stale-entry checks instead of inventing a
   // weaker one-engine fixture sweep (carve#1600).
@@ -1023,13 +1023,18 @@ async function runConvertMode() {
     const dir = join(htmlImportDir, slug)
     if (!statSync(dir).isDirectory()) continue
     const optionsPath = join(dir, 'options.json')
+    const expectedSource = join(dir, 'expected.crv')
+    if (!existsSync(expectedSource)) {
+      console.error(`Missing expected Carve source for HTML-import case ${slug}.`)
+      process.exit(2)
+    }
     cases.push({
       slug: `html-import--${slug}`,
       format: 'html',
       options: existsSync(optionsPath) ? JSON.parse(readFileSync(optionsPath, 'utf8')) : {},
       file: join(dir, 'input.html'),
       expected: null,
-      expectedSource: join(dir, 'expected.crv'),
+      expectedSource,
       canonical: null,
     })
   }
@@ -1154,16 +1159,12 @@ async function runConvertMode() {
   try {
     for (const kase of cases) {
       if (kase.expectedSource) {
-        const expected = run(renderCommand, renderImpl.cwd, [kase.expectedSource]);
+        const expected = run(renderCommand, renderImpl.cwd, [kase.expectedSource])
         if (!expected.ok) {
-          failures.push(`carve-js failed to render the expected source for ${kase.slug}: ${expected.stderr || expected.error || expected.status}`);
-          for (const impl of active) {
-            convertStats[impl.name].error++;
-            unscored.set(`${impl.name}/${kase.slug}`, "carve-js failed to render the expected source");
-          }
-          continue;
+          console.error(`carve-js failed to render the expected source for ${kase.slug}: ${expected.stderr || expected.error || expected.status}`)
+          process.exit(2)
         }
-        kase.expected = expected.stdout;
+        kase.expected = expected.stdout
       }
       const rendered = []
       for (const impl of active) {
