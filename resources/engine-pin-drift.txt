@@ -24,3 +24,8 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+31-ordered-list-start-and-delimiter-2  CARVE-P10-014 just landed: the pin writes <ol> for a `)` list
+549-an-ordered-list-carries-its-authored-delimiter  CARVE-P10-014 just landed: the pin writes no data-delim
+549-an-ordered-list-carries-its-authored-delimiter-3  CARVE-P10-014 just landed: the pin writes no data-delim
+549-an-ordered-list-carries-its-authored-delimiter-4  CARVE-P10-014 just landed: the pin writes no data-delim
+549-an-ordered-list-carries-its-authored-delimiter-5  CARVE-P10-014 just landed: the pin writes no data-delim

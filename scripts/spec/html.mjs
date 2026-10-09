@@ -839,6 +839,9 @@ function renderList(list, depth, ctx) {
     tag = 'ol'
     if (list.ord.type) structural += ` type="${list.ord.type}"`
     if (list.ord.start) structural += ` start="${list.ord.start}"`
+    // CARVE-P10-014: the recorded delimiter, which HTML has no attribute for,
+    // trailing `type` and `start` and only where it is not the default `.`.
+    if (list.ord.delim === ')') structural += ` data-delim="${escapeAttr(list.ord.delim)}"`
   }
   const attrs = structural + authored
   const items = list.items.map((item) => renderItem(item, list, depth + 1, ctx))

@@ -6163,5 +6163,8 @@ function finalizeOrdered(list) {
   list.ord = {
     type: typeMap[chosen.dialect],
     start: chosen.value !== 1 ? chosen.value : null,
+    // PART 11 §6 records the delimiter only where it is not the default `.`,
+    // and CARVE-P10-014 writes what is recorded.
+    delim: list.ord.delim === ')' ? ')' : null,
   }
 }

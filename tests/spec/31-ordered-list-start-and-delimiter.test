@@ -14,7 +14,7 @@ Ordered list start and delimiter
 1) one
 2) two
 .
-<ol>
+<ol data-delim=")">
   <li>one</li>
   <li>two</li>
 </ol>
