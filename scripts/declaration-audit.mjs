@@ -279,6 +279,7 @@ const MANIFEST = [
   { repo: 'spec', path: 'tests/a-wrapper-its-content-spells-away-is-a-ceiling.test.mjs', name: 'PIN_LAG', kind: 'js-string', policy: 'owed', guard: 'two-way', optional: true, owner: 'markup-carve/carve-js#1422' },
   { repo: 'spec', path: 'tests/an-ingested-default-start-is-not-re-emitted.test.mjs', name: 'PIN_LAG', kind: 'js-string', policy: 'owed', guard: 'two-way', optional: true, owner: 'markup-carve/carve-js#1391, markup-carve/carve-rs#1293' },
   { repo: 'spec', path: 'tests/an-unspellable-block-does-not-cancel-list-adjacency.test.mjs', name: 'PIN_LAG', kind: 'js-string', policy: 'owed', guard: 'two-way', optional: true, owner: 'markup-carve/carve#1621' },
+  { repo: 'spec', path: 'tests/a-default-marker-is-not-recorded.test.mjs', name: 'PIN_LAG', kind: 'js-string', policy: 'owed', guard: 'two-way', optional: true, owner: 'markup-carve/carve#2828' },
 
   // -- carve-js --------------------------------------------------------------
   { repo: 'carve-js', path: 'test/corpus.test.ts', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'test/corpus.test.ts' },

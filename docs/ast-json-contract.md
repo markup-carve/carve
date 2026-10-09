@@ -215,11 +215,14 @@ not export its internals, and it does not invent a synonym.
 
 Author-choice fields preserve a spelling when it differs from the default.
 `list.bulletChar` records `*` while absence means `-`; likewise,
+`list.delim` records `)` while absence means `.`,
 `thematic_break.marker` records `*` or `_` while absence means `-`, and
 `list_item.taskState` records the task marker character while absence means the
 default for the box (`x` when `checked` is true, a space when it is false). A
 writer reproduces the recorded character and uses the default when the field is
-absent.
+absent, and a PARSE records nothing where the author wrote the default
+(carve#2828): one document has one spelling in the tree, so a consumer comparing
+AST JSON across engines or across versions is comparing like with like.
 The marker records the CHARACTER only: `***` and `*****` are one spelling, and
 no run length is recorded, on the same reasoning that took fence length off this
 list in carve#1000.
