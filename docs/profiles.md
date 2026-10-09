@@ -164,6 +164,12 @@ Deny always beats allow; an allowlist is a closed set.
   does not. A disallowed `link` keeps its label text; a disallowed `image`
   keeps its alt text. A disallowed `ruby` has no `children`; its text content is
   each pair's base followed by `(`, its annotation, and `)` in pair order.
+  A disallowed `raw_block` becomes a `code_block` when the profile allows
+  code blocks. It keeps the raw format as the code language, its attributes and
+  source position, and its literal payload with fenced-code line endings.
+  If code blocks are also disallowed, the raw payload becomes paragraph
+  text; an empty payload becomes a `[raw_block]` marker and reports
+  `to_text_yielded_nothing`. This fallback never emits passthrough HTML.
 - **`strip`** — remove the node and its subtree entirely.
 - **`error`** — abort and report a profile violation (type + reason).
 
@@ -326,8 +332,8 @@ Presets: **`unrestricted`** (all schemes/hosts), **`internalOnly`**
   not an opt-in plugin).
 - The filter runs **once, on the parsed AST**, before any renderer, so the
   guarantee is renderer-agnostic.
-- `to_text` is the safe default: it never silently deletes content, only its
-  markup.
+- `to_text` is the safe default: visible content survives as text, or for a
+  denied `raw_block` as a code block. Nodes that render nothing are removed.
 - Parity is byte-checked against `carve-php` via golden fixtures (the presets
   and the resolution rule above are the shared source of truth).
 
