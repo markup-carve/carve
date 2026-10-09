@@ -49,6 +49,15 @@ Releases before 0.1.6 are archived in
   and a setext heading keeps both instead of losing them to metadata. A typed
   opener such as `---yaml` is front matter unconditionally, and every
   conversion to front matter is now reported (#2803).
+- Markdown import reports per-construct fidelity against a published contract:
+  `resources/importer-fidelity-schema.json` and the migration report schema
+  define the codes, confidence levels and source-path rules, and the three
+  engines are replayed against shared evidence. Djot and BBCode keep their
+  existing fail-closed checks (#2800).
+- An ordered list carries its authored delimiter into the HTML as `data-delim`,
+  so `1)` and `1.` no longer render identical bytes and a stylesheet can reach
+  the distinction the author made. HTML import consumes the attribute back into
+  the authored delimiter (#2809, #2826).
 
 ### Improvements
 
