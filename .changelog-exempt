@@ -64,3 +64,4 @@
 # Commits that reached `main` with no pull request to cite, keyed by sha. A
 # direct push has no number, so there is nothing else to record it under.
 0512ccfd: 0.1.8 - pushed straight to main. Replaces the one-sentence description of Carve in the README, the site config, the grammar header and the preamble header. Marketing copy: no production, clause meaning, corpus row or oracle answer changes. Same class as carve#2667.
+2805: 0.1.9 - clears two post-cut gates and moves no shipped source: it cites three merges in the section that had already been written, and teaches scripts/check-external-links.mjs to skip the one compare range whose newer end is the version being prepared. Gate machinery, which is the class this file keeps.
