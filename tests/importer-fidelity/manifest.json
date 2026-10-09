@@ -51,6 +51,7 @@
         "diagnostics": [
           {
             "code": "literal-text-verified",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
@@ -59,16 +60,7 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "hello\n",
-            "diagnostics": [
-              {
-                "code": "literal-text-verified",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              }
-            ],
-            "exit": 0
+            "output": "hello\n"
           }
         }
       }
@@ -84,6 +76,7 @@
         "diagnostics": [
           {
             "code": "markdown-paragraph",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
@@ -92,16 +85,7 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "hello!\n",
-            "diagnostics": [
-              {
-                "code": "markdown-paragraph",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              }
-            ],
-            "exit": 0
+            "output": "hello!\n"
           }
         }
       }
@@ -117,6 +101,7 @@
         "diagnostics": [
           {
             "code": "markdown-atx-heading",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
@@ -125,16 +110,7 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "# heading\n",
-            "diagnostics": [
-              {
-                "code": "markdown-atx-heading",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              }
-            ],
-            "exit": 0
+            "output": "# heading\n"
           }
         }
       }
@@ -150,6 +126,7 @@
         "diagnostics": [
           {
             "code": "markdown-setext-heading",
+            "severity": "info",
             "fidelity": "normalized",
             "confidence": "exact",
             "path": "line:1"
@@ -158,16 +135,7 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "# heading\n",
-            "diagnostics": [
-              {
-                "code": "markdown-setext-heading",
-                "confidence": "exact",
-                "fidelity": "normalized",
-                "path": "line:1"
-              }
-            ],
-            "exit": 0
+            "output": "# heading\n"
           }
         }
       }
@@ -183,6 +151,7 @@
         "diagnostics": [
           {
             "code": "markdown-thematic-break",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
@@ -191,16 +160,7 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "---\n",
-            "diagnostics": [
-              {
-                "code": "markdown-thematic-break",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              }
-            ],
-            "exit": 0
+            "output": "---\n"
           }
         }
       }
@@ -216,12 +176,14 @@
         "diagnostics": [
           {
             "code": "markdown-block-quote",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-paragraph",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
@@ -230,22 +192,7 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "> quoted\n",
-            "diagnostics": [
-              {
-                "code": "markdown-block-quote",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-paragraph",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              }
-            ],
-            "exit": 0
+            "output": "> quoted\n"
           }
         }
       }
@@ -261,18 +208,21 @@
         "diagnostics": [
           {
             "code": "markdown-bullet-list",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-list-item",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-list-item",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:2"
@@ -292,18 +242,21 @@
         "diagnostics": [
           {
             "code": "markdown-ordered-list",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-list-item",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-list-item",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:2"
@@ -323,6 +276,7 @@
         "diagnostics": [
           {
             "code": "markdown-fenced-code",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
@@ -342,6 +296,7 @@
         "diagnostics": [
           {
             "code": "markdown-indented-code",
+            "severity": "info",
             "fidelity": "normalized",
             "confidence": "exact",
             "path": "line:1"
@@ -361,12 +316,14 @@
         "diagnostics": [
           {
             "code": "markdown-paragraph",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-code-span",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
@@ -375,22 +332,7 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "a `**code**` b\n",
-            "diagnostics": [
-              {
-                "code": "markdown-paragraph",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-code-span",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              }
-            ],
-            "exit": 0
+            "output": "a `**code**` b\n"
           }
         }
       }
@@ -406,12 +348,14 @@
         "diagnostics": [
           {
             "code": "markdown-paragraph",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-emphasis",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
@@ -420,22 +364,7 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "/emphasis/\n",
-            "diagnostics": [
-              {
-                "code": "markdown-paragraph",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-emphasis",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              }
-            ],
-            "exit": 0
+            "output": "/emphasis/\n"
           }
         }
       }
@@ -451,12 +380,14 @@
         "diagnostics": [
           {
             "code": "markdown-paragraph",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-strong",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
@@ -465,22 +396,7 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "*strong*\n",
-            "diagnostics": [
-              {
-                "code": "markdown-paragraph",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-strong",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              }
-            ],
-            "exit": 0
+            "output": "*strong*\n"
           }
         }
       }
@@ -496,12 +412,14 @@
         "diagnostics": [
           {
             "code": "markdown-paragraph",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-strikethrough",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
@@ -510,22 +428,7 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "~gone~\n",
-            "diagnostics": [
-              {
-                "code": "markdown-paragraph",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-strikethrough",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              }
-            ],
-            "exit": 0
+            "output": "~gone~\n"
           }
         }
       }
@@ -541,12 +444,14 @@
         "diagnostics": [
           {
             "code": "markdown-paragraph",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-link",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
@@ -555,22 +460,7 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "[label](https://example.org \"Title\")\n",
-            "diagnostics": [
-              {
-                "code": "markdown-paragraph",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-link",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              }
-            ],
-            "exit": 0
+            "output": "[label](https://example.org \"Title\")\n"
           }
         }
       }
@@ -586,12 +476,14 @@
         "diagnostics": [
           {
             "code": "markdown-paragraph",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-image",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
@@ -600,22 +492,7 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "A ![img](a.png \"Pic\").\n",
-            "diagnostics": [
-              {
-                "code": "markdown-paragraph",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-image",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              }
-            ],
-            "exit": 0
+            "output": "A ![img](a.png \"Pic\").\n"
           }
         }
       }
@@ -631,18 +508,21 @@
         "diagnostics": [
           {
             "code": "markdown-reference-definition",
+            "severity": "info",
             "fidelity": "normalized",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-paragraph",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:3"
           },
           {
             "code": "markdown-reference-link",
+            "severity": "info",
             "fidelity": "normalized",
             "confidence": "exact",
             "path": "line:3"
@@ -651,29 +531,12 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "See [ref](https://example.org \"Title\").\n",
-            "diagnostics": [
-              {
-                "code": "markdown-reference-definition",
-                "confidence": "exact",
-                "fidelity": "normalized",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-paragraph",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:3"
-              },
-              {
-                "code": "markdown-reference-link",
-                "confidence": "exact",
-                "fidelity": "normalized",
-                "path": "line:3"
-              }
-            ],
-            "exit": 0
+            "output": "See [ref](https://example.org \"Title\").\n"
           }
+        },
+        "html": {
+          "default": "<p>See <a href=\"https://example.org\" title=\"Title\">ref</a>.</p>\n",
+          "safe": "<p>See <a href=\"https://example.org\" title=\"Title\">ref</a>.</p>\n"
         }
       }
     },
@@ -688,12 +551,14 @@
         "diagnostics": [
           {
             "code": "markdown-paragraph",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-autolink",
+            "severity": "info",
             "fidelity": "normalized",
             "confidence": "exact",
             "path": "line:1"
@@ -702,23 +567,12 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "[https://example.org](https://example.org)\n",
-            "diagnostics": [
-              {
-                "code": "markdown-paragraph",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-autolink",
-                "confidence": "exact",
-                "fidelity": "normalized",
-                "path": "line:1"
-              }
-            ],
-            "exit": 0
+            "output": "[https://example.org](https://example.org)\n"
           }
+        },
+        "html": {
+          "default": "<p><a href=\"https://example.org\">https://example.org</a></p>\n",
+          "safe": "<p><a href=\"https://example.org\">https://example.org</a></p>\n"
         }
       }
     },
@@ -733,12 +587,14 @@
         "diagnostics": [
           {
             "code": "markdown-paragraph",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-hard-break",
+            "severity": "info",
             "fidelity": "normalized",
             "confidence": "exact",
             "path": "line:1"
@@ -747,22 +603,7 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "a\\\nb\n",
-            "diagnostics": [
-              {
-                "code": "markdown-paragraph",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-hard-break",
-                "confidence": "exact",
-                "fidelity": "normalized",
-                "path": "line:1"
-              }
-            ],
-            "exit": 0
+            "output": "a\\\nb\n"
           }
         }
       }
@@ -778,12 +619,14 @@
         "diagnostics": [
           {
             "code": "markdown-paragraph",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-soft-break",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
@@ -792,22 +635,7 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "a\nb\n",
-            "diagnostics": [
-              {
-                "code": "markdown-paragraph",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-soft-break",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              }
-            ],
-            "exit": 0
+            "output": "a\nb\n"
           }
         }
       }
@@ -823,12 +651,14 @@
         "diagnostics": [
           {
             "code": "markdown-paragraph",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-entity",
+            "severity": "info",
             "fidelity": "normalized",
             "confidence": "exact",
             "path": "line:1"
@@ -837,22 +667,7 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "x & y\n",
-            "diagnostics": [
-              {
-                "code": "markdown-paragraph",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-entity",
-                "confidence": "exact",
-                "fidelity": "normalized",
-                "path": "line:1"
-              }
-            ],
-            "exit": 0
+            "output": "x & y\n"
           }
         }
       }
@@ -868,12 +683,14 @@
         "diagnostics": [
           {
             "code": "markdown-paragraph",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-escape",
+            "severity": "info",
             "fidelity": "normalized",
             "confidence": "exact",
             "path": "line:1"
@@ -882,22 +699,7 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "x!\n",
-            "diagnostics": [
-              {
-                "code": "markdown-paragraph",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-escape",
-                "confidence": "exact",
-                "fidelity": "normalized",
-                "path": "line:1"
-              }
-            ],
-            "exit": 0
+            "output": "x!\n"
           }
         }
       }
@@ -913,42 +715,49 @@
         "diagnostics": [
           {
             "code": "markdown-table",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-table-row",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-table-cell",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-table-cell",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-table-row",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:3"
           },
           {
             "code": "markdown-table-cell",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:3"
           },
           {
             "code": "markdown-table-cell",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:3"
@@ -968,18 +777,21 @@
         "diagnostics": [
           {
             "code": "markdown-bullet-list",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-list-item",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-bullet-task",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
@@ -999,30 +811,35 @@
         "diagnostics": [
           {
             "code": "markdown-ordered-list",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-list-item",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "structure-unspellable",
+            "severity": "warning",
             "fidelity": "dropped",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-list-item",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:2"
           },
           {
             "code": "structure-unspellable",
+            "severity": "warning",
             "fidelity": "dropped",
             "confidence": "exact",
             "path": "line:2"
@@ -1042,18 +859,21 @@
         "diagnostics": [
           {
             "code": "markdown-paragraph",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "raw-preserved",
+            "severity": "info",
             "fidelity": "degraded",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "raw-preserved",
+            "severity": "info",
             "fidelity": "degraded",
             "confidence": "exact",
             "path": "line:1"
@@ -1062,29 +882,12 @@
         "exit": 1,
         "engines": {
           "rust": {
-            "output": "A `<span class=\"k\">raw</span>`{=html}.\n",
-            "diagnostics": [
-              {
-                "code": "markdown-paragraph",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              },
-              {
-                "code": "raw-preserved",
-                "confidence": "exact",
-                "fidelity": "degraded",
-                "path": "line:1"
-              },
-              {
-                "code": "raw-preserved",
-                "confidence": "exact",
-                "fidelity": "degraded",
-                "path": "line:1"
-              }
-            ],
-            "exit": 1
+            "output": "A `<span class=\"k\">raw</span>`{=html}.\n"
           }
+        },
+        "html": {
+          "default": "<p>A <span class=\"k\">raw</span>.</p>\n",
+          "safe": "<p>A &lt;span class=\"k\"&gt;raw&lt;/span&gt;.</p>\n"
         }
       }
     },
@@ -1099,18 +902,21 @@
         "diagnostics": [
           {
             "code": "markdown-fenced-code",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-paragraph",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:5"
           },
           {
             "code": "markdown-strong",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:5"
@@ -1119,28 +925,7 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "```\n1. [x] **code**\n```\n\n*text*\n",
-            "diagnostics": [
-              {
-                "code": "markdown-fenced-code",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-paragraph",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:5"
-              },
-              {
-                "code": "markdown-strong",
-                "confidence": "exact",
-                "fidelity": "preserved",
-                "path": "line:5"
-              }
-            ],
-            "exit": 0
+            "output": "```\n1. [x] **code**\n```\n\n*text*\n"
           }
         }
       }
@@ -1156,6 +941,7 @@
         "diagnostics": [
           {
             "code": "fidelity-unverified",
+            "severity": "warning",
             "fidelity": "dropped",
             "confidence": "fallback"
           }
@@ -1163,15 +949,7 @@
         "exit": 1,
         "engines": {
           "rust": {
-            "output": "https://example.org\n",
-            "diagnostics": [
-              {
-                "code": "fidelity-unverified",
-                "confidence": "fallback",
-                "fidelity": "dropped"
-              }
-            ],
-            "exit": 1
+            "output": "https://example.org\n"
           }
         }
       }
@@ -1187,6 +965,7 @@
         "diagnostics": [
           {
             "code": "fidelity-unverified",
+            "severity": "warning",
             "fidelity": "dropped",
             "confidence": "fallback"
           }
@@ -1194,15 +973,7 @@
         "exit": 1,
         "engines": {
           "rust": {
-            "output": "[^note]\n\n[^note]: note\n",
-            "diagnostics": [
-              {
-                "code": "fidelity-unverified",
-                "confidence": "fallback",
-                "fidelity": "dropped"
-              }
-            ],
-            "exit": 1
+            "output": "[^note]\n\n[^note]: note\n"
           }
         }
       }
@@ -1218,84 +989,98 @@
         "diagnostics": [
           {
             "code": "markdown-paragraph",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-link",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-image",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:1"
           },
           {
             "code": "markdown-paragraph",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:3"
           },
           {
             "code": "markdown-hard-break",
+            "severity": "info",
             "fidelity": "normalized",
             "confidence": "exact",
             "path": "line:3"
           },
           {
             "code": "raw-preserved",
+            "severity": "info",
             "fidelity": "degraded",
             "confidence": "exact",
             "path": "line:4"
           },
           {
             "code": "raw-preserved",
+            "severity": "info",
             "fidelity": "degraded",
             "confidence": "exact",
             "path": "line:4"
           },
           {
             "code": "markdown-entity",
+            "severity": "info",
             "fidelity": "normalized",
             "confidence": "exact",
             "path": "line:4"
           },
           {
             "code": "markdown-strikethrough",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:4"
           },
           {
             "code": "markdown-indented-code",
+            "severity": "info",
             "fidelity": "normalized",
             "confidence": "exact",
             "path": "line:6"
           },
           {
             "code": "markdown-reference-definition",
+            "severity": "info",
             "fidelity": "normalized",
             "confidence": "exact",
             "path": "line:8"
           },
           {
             "code": "markdown-paragraph",
+            "severity": "info",
             "fidelity": "preserved",
             "confidence": "exact",
             "path": "line:10"
           },
           {
             "code": "markdown-reference-link",
+            "severity": "info",
             "fidelity": "normalized",
             "confidence": "exact",
             "path": "line:10"
           },
           {
             "code": "markdown-autolink",
+            "severity": "info",
             "fidelity": "normalized",
             "confidence": "exact",
             "path": "line:10"
@@ -1304,94 +1089,1107 @@
         "exit": 1,
         "engines": {
           "rust": {
-            "output": "A [link](https://x.org \"Title\") and ![img](a.png \"Pic\").\n\nLine with hard break\\\nnext line, and `<span class=\"k\">inline html</span>`{=html} © ~gone~.\n\n```\nindented code\n```\n\nSee [ref](https://ref.example \"Ref title\") and [https://auto.example](https://auto.example).\n",
+            "output": "A [link](https://x.org \"Title\") and ![img](a.png \"Pic\").\n\nLine with hard break\\\nnext line, and `<span class=\"k\">inline html</span>`{=html} © ~gone~.\n\n```\nindented code\n```\n\nSee [ref](https://ref.example \"Ref title\") and [https://auto.example](https://auto.example).\n"
+          }
+        },
+        "html": {
+          "default": "<p>A <a href=\"https://x.org\" title=\"Title\">link</a> and <img src=\"a.png\" alt=\"img\" title=\"Pic\">.</p>\n<p>Line with hard break<br>\nnext line, and <span class=\"k\">inline html</span> © <s>gone</s>.</p>\n<pre><code>indented code\n</code></pre>\n<p>See <a href=\"https://ref.example\" title=\"Ref title\">ref</a> and <a href=\"https://auto.example\">https://auto.example</a>.</p>\n",
+          "safe": "<p>A <a href=\"https://x.org\" title=\"Title\">link</a> and <img src=\"a.png\" alt=\"img\" title=\"Pic\">.</p>\n<p>Line with hard break<br>\nnext line, and &lt;span class=\"k\"&gt;inline html&lt;/span&gt; © <s>gone</s>.</p>\n<pre><code>indented code\n</code></pre>\n<p>See <a href=\"https://ref.example\" title=\"Ref title\">ref</a> and <a href=\"https://auto.example\">https://auto.example</a>.</p>\n"
+        }
+      }
+    },
+    {
+      "id": "markdown-literal-edge-01",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "",
+      "expected": {
+        "output": "",
+        "diagnostics": [
+          {
+            "code": "literal-text-verified",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "rust": {
+            "output": "\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-literal-edge-02",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "hello",
+      "expected": {
+        "output": "hello",
+        "diagnostics": [
+          {
+            "code": "literal-text-verified",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "rust": {
+            "output": "hello\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-literal-edge-03",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "hello world",
+      "expected": {
+        "output": "hello world",
+        "diagnostics": [
+          {
+            "code": "literal-text-verified",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "rust": {
+            "output": "hello world\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-literal-edge-04",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "café 世界 123",
+      "expected": {
+        "output": "café 世界 123",
+        "diagnostics": [
+          {
+            "code": "literal-text-verified",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "rust": {
+            "output": "café 世界 123\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-literal-edge-05",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "hello\n",
+      "expected": {
+        "output": "hello\n",
+        "diagnostics": [
+          {
+            "code": "literal-text-verified",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0
+      }
+    },
+    {
+      "id": "markdown-literal-edge-06",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "hello\r\n",
+      "expected": {
+        "output": "hello\n",
+        "diagnostics": [
+          {
+            "code": "literal-text-verified",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0
+      }
+    },
+    {
+      "id": "markdown-literal-edge-07",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "hello\r",
+      "expected": {
+        "output": "hello\n",
+        "diagnostics": [
+          {
+            "code": "literal-text-verified",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0
+      }
+    },
+    {
+      "id": "markdown-literal-edge-08",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "hello!",
+      "expected": {
+        "output": "hello!",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "rust": {
+            "output": "hello!\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-literal-edge-09",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": " hello",
+      "expected": {
+        "output": " hello",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "php": {
+            "output": "hello"
+          },
+          "rust": {
+            "output": "hello\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-literal-edge-10",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "hello ",
+      "expected": {
+        "output": "hello ",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "rust": {
+            "output": "hello\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-literal-edge-11",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "hello  world",
+      "expected": {
+        "output": "hello  world",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "rust": {
+            "output": "hello  world\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-literal-edge-12",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "hello\nworld",
+      "expected": {
+        "output": "hello\nworld",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-soft-break",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "rust": {
+            "output": "hello\nworld\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-literal-edge-13",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "hello\tworld",
+      "expected": {
+        "output": "hello\tworld",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          }
+        ],
+        "exit": 1,
+        "engines": {
+          "rust": {
+            "output": "hello\tworld\n",
             "diagnostics": [
               {
                 "code": "markdown-paragraph",
                 "confidence": "exact",
                 "fidelity": "preserved",
+                "path": "line:1",
+                "severity": "info"
+              }
+            ],
+            "exit": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-literal-edge-14",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "hello world",
+      "expected": {
+        "output": "hello world",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "rust": {
+            "output": "hello world\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-literal-edge-15",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "é",
+      "expected": {
+        "output": "é",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "rust": {
+            "output": "é\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-literal-edge-16",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "*markup*",
+      "expected": {
+        "output": "/markup/",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-emphasis",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "rust": {
+            "output": "/markup/\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-literal-edge-17",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "𝐀 ٣ Ⅻ ½",
+      "expected": {
+        "output": "𝐀 ٣ Ⅻ ½",
+        "diagnostics": [
+          {
+            "code": "literal-text-verified",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "rust": {
+            "output": "𝐀 ٣ Ⅻ ½\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-literal-edge-18",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "hello\n\n",
+      "expected": {
+        "output": "hello\n\n",
+        "diagnostics": [
+          {
+            "code": "literal-text-verified",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "rust": {
+            "output": "hello\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-literal-edge-19",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "hello\r\n\r\n",
+      "expected": {
+        "output": "hello\n\n",
+        "diagnostics": [
+          {
+            "code": "literal-text-verified",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "rust": {
+            "output": "hello\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-literal-edge-20",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "\n",
+      "expected": {
+        "output": "\n",
+        "diagnostics": [
+          {
+            "code": "literal-text-verified",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0
+      }
+    },
+    {
+      "id": "markdown-literal-edge-21",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "hello\rworld",
+      "expected": {
+        "output": "hello\nworld",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-soft-break",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "rust": {
+            "output": "hello\nworld\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-literal-edge-22",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "hello\r\nworld",
+      "expected": {
+        "output": "hello\nworld",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-soft-break",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "rust": {
+            "output": "hello\nworld\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-setext-hashtag",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "#hashtag\n===\n",
+      "expected": {
+        "output": "# \\#hashtag\n",
+        "diagnostics": [
+          {
+            "code": "markdown-setext-heading",
+            "severity": "info",
+            "fidelity": "normalized",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0
+      }
+    },
+    {
+      "id": "markdown-html-block",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "<div>\nx\n</div>\n",
+      "expected": {
+        "output": "```=html\n<div>\nx\n</div>\n```\n",
+        "diagnostics": [
+          {
+            "code": "raw-preserved",
+            "severity": "info",
+            "fidelity": "degraded",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 1
+      }
+    },
+    {
+      "id": "markdown-task-strong-label",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "- [x] **done**\n",
+      "expected": {
+        "output": "- [x] *done*\n",
+        "diagnostics": [
+          {
+            "code": "markdown-bullet-list",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-list-item",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-bullet-task",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-strong",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0
+      }
+    },
+    {
+      "id": "markdown-duplicate-reference",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "[ref]: https://one.example\n[ref]: https://two.example\n\nSee [ref].",
+      "expected": {
+        "output": "See [ref][].\n\n[ref]: https://one.example",
+        "diagnostics": [
+          {
+            "code": "markdown-reference-definition",
+            "severity": "info",
+            "fidelity": "normalized",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-reference-definition",
+            "severity": "info",
+            "fidelity": "normalized",
+            "confidence": "exact",
+            "path": "line:2"
+          },
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:4"
+          },
+          {
+            "code": "markdown-reference-link",
+            "severity": "info",
+            "fidelity": "normalized",
+            "confidence": "exact",
+            "path": "line:4"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "rust": {
+            "output": "See [ref](https://one.example).\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-quoted-reference-definition",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "> [a]: /u\n",
+      "expected": {
+        "output": "> \n\n[a]: /u\n",
+        "diagnostics": [
+          {
+            "code": "markdown-block-quote",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-reference-definition",
+            "severity": "info",
+            "fidelity": "normalized",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "php": {
+            "output": ">\n\n[a]: /u\n"
+          },
+          "rust": {
+            "output": ">\n",
+            "diagnostics": [
+              {
+                "code": "markdown-reference-definition",
+                "confidence": "exact",
+                "fidelity": "normalized",
+                "path": "line:1",
+                "severity": "info"
+              },
+              {
+                "code": "markdown-block-quote",
+                "confidence": "exact",
+                "fidelity": "preserved",
+                "path": "line:1",
+                "severity": "info"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-nested-emphasis-loss",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "*outer *inner* outer*",
+      "expected": {
+        "output": "/outer inner outer/",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          },
+          {
+            "code": "structure-unspellable",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact"
+          }
+        ],
+        "exit": 1,
+        "engines": {
+          "rust": {
+            "output": "/outer inner outer/\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-blank-table-row-loss",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "| A | B |\n| --- | --- |\n| | |\n| x | y |\n",
+      "expected": {
+        "output": "|= A |= B |\n| x | y |\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          },
+          {
+            "code": "structure-unspellable",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact"
+          }
+        ],
+        "exit": 1,
+        "engines": {
+          "php": {
+            "output": "|= A |= B |\n| | |\n| x | y |\n",
+            "diagnostics": [
+              {
+                "code": "markdown-table",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
                 "path": "line:1"
               },
               {
-                "code": "markdown-link",
-                "confidence": "exact",
+                "code": "markdown-table-row",
+                "severity": "info",
                 "fidelity": "preserved",
+                "confidence": "exact",
                 "path": "line:1"
               },
               {
-                "code": "markdown-image",
-                "confidence": "exact",
+                "code": "markdown-table-cell",
+                "severity": "info",
                 "fidelity": "preserved",
+                "confidence": "exact",
                 "path": "line:1"
               },
               {
-                "code": "markdown-paragraph",
-                "confidence": "exact",
+                "code": "markdown-table-cell",
+                "severity": "info",
                 "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-table-row",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
                 "path": "line:3"
               },
               {
-                "code": "markdown-hard-break",
+                "code": "markdown-table-cell",
+                "severity": "info",
+                "fidelity": "preserved",
                 "confidence": "exact",
-                "fidelity": "normalized",
                 "path": "line:3"
               },
               {
-                "code": "raw-preserved",
+                "code": "markdown-table-cell",
+                "severity": "info",
+                "fidelity": "preserved",
                 "confidence": "exact",
-                "fidelity": "degraded",
+                "path": "line:3"
+              },
+              {
+                "code": "markdown-table-row",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
                 "path": "line:4"
               },
               {
-                "code": "raw-preserved",
+                "code": "markdown-table-cell",
+                "severity": "info",
+                "fidelity": "preserved",
                 "confidence": "exact",
-                "fidelity": "degraded",
                 "path": "line:4"
               },
               {
-                "code": "markdown-entity",
+                "code": "markdown-table-cell",
+                "severity": "info",
+                "fidelity": "preserved",
                 "confidence": "exact",
-                "fidelity": "normalized",
                 "path": "line:4"
+              }
+            ],
+            "exit": 0
+          },
+          "rust": {
+            "diagnostics": [
+              {
+                "code": "fidelity-unverified",
+                "confidence": "fallback",
+                "fidelity": "dropped",
+                "severity": "warning"
               },
               {
-                "code": "markdown-strikethrough",
+                "code": "structure-unspellable",
+                "confidence": "exact",
+                "fidelity": "dropped",
+                "path": "line:3",
+                "severity": "warning"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-indented-code-before-ordered-task",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "1.     [x] code\n\n1. [x] real\n",
+      "expected": {
+        "output": "1. ```\n   [x] code\n   ```\n\n2. [x] real\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          },
+          {
+            "code": "structure-unspellable",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:3"
+          }
+        ],
+        "exit": 1,
+        "engines": {
+          "rust": {
+            "diagnostics": [
+              {
+                "code": "markdown-ordered-list",
                 "confidence": "exact",
                 "fidelity": "preserved",
-                "path": "line:4"
+                "path": "line:1",
+                "severity": "info"
+              },
+              {
+                "code": "markdown-list-item",
+                "confidence": "exact",
+                "fidelity": "preserved",
+                "path": "line:1",
+                "severity": "info"
               },
               {
                 "code": "markdown-indented-code",
                 "confidence": "exact",
                 "fidelity": "normalized",
-                "path": "line:6"
+                "path": "line:1",
+                "severity": "info"
               },
               {
-                "code": "markdown-reference-definition",
+                "code": "markdown-list-item",
                 "confidence": "exact",
-                "fidelity": "normalized",
-                "path": "line:8"
+                "fidelity": "preserved",
+                "path": "line:3",
+                "severity": "info"
               },
               {
                 "code": "markdown-paragraph",
                 "confidence": "exact",
                 "fidelity": "preserved",
-                "path": "line:10"
+                "path": "line:3",
+                "severity": "info"
               },
               {
-                "code": "markdown-reference-link",
+                "code": "structure-unspellable",
                 "confidence": "exact",
-                "fidelity": "normalized",
-                "path": "line:10"
-              },
-              {
-                "code": "markdown-autolink",
-                "confidence": "exact",
-                "fidelity": "normalized",
-                "path": "line:10"
+                "fidelity": "dropped",
+                "path": "line:3",
+                "severity": "warning"
               }
-            ],
-            "exit": 1
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-incomplete-before-ordered-task",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "https://example.org\n\n1. [x] done\n",
+      "expected": {
+        "output": "https://example.org\n\n1. [x] done\n",
+        "diagnostics": [
+          {
+            "code": "fidelity-unverified",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "fallback"
+          },
+          {
+            "code": "structure-unspellable",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:3"
+          }
+        ],
+        "exit": 1
+      }
+    },
+    {
+      "id": "markdown-quoted-ordered-marker",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "> 1. [x] done\n",
+      "expected": {
+        "output": "> 1. [x] done\n",
+        "diagnostics": [
+          {
+            "code": "markdown-block-quote",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-ordered-list",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-list-item",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0
+      }
+    },
+    {
+      "id": "markdown-unknown-entity",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "x &bogus;",
+      "expected": {
+        "output": "x &bogus;",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "rust": {
+            "output": "x &bogus;\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "markdown-nested-different-emphasis",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "**strong _emphasis_**",
+      "expected": {
+        "output": "*strong /emphasis/*",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-strong",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-emphasis",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0,
+        "engines": {
+          "rust": {
+            "output": "*strong /emphasis/*\n"
           }
         }
       }

@@ -90,6 +90,13 @@
                     "path": {
                       "type": "string",
                       "pattern": "^line:[1-9][0-9]*$"
+                    },
+                    "severity": {
+                      "enum": [
+                        "info",
+                        "warning",
+                        "error"
+                      ]
                     }
                   },
                   "additionalProperties": false
@@ -112,6 +119,22 @@
                   },
                   "rust": {
                     "$ref": "#/$defs/engineExpected"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "html": {
+                "type": "object",
+                "required": [
+                  "default",
+                  "safe"
+                ],
+                "properties": {
+                  "default": {
+                    "type": "string"
+                  },
+                  "safe": {
+                    "type": "string"
                   }
                 },
                 "additionalProperties": false
@@ -142,6 +165,46 @@
                 }
               }
             }
+          },
+          {
+            "if": {
+              "properties": {
+                "runner": {
+                  "const": "external"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "sourceFormat": {
+                  "enum": [
+                    "pandoc-json",
+                    "pdf-extraction-json"
+                  ]
+                },
+                "expected": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "engines"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "exit"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "html"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           }
         ]
       }
@@ -151,11 +214,6 @@
   "$defs": {
     "engineExpected": {
       "type": "object",
-      "required": [
-        "diagnostics",
-        "output",
-        "exit"
-      ],
       "properties": {
         "output": {
           "type": "string"
@@ -191,6 +249,13 @@
               "path": {
                 "type": "string",
                 "pattern": "^line:[1-9][0-9]*$"
+              },
+              "severity": {
+                "enum": [
+                  "info",
+                  "warning",
+                  "error"
+                ]
               }
             },
             "additionalProperties": false
@@ -203,7 +268,8 @@
           ]
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "minProperties": 1
     }
   }
 }

@@ -212,6 +212,20 @@
       "fidelity": "degraded",
       "confidence": "exact",
       "severity": "info"
+    },
+    {
+      "construct": "nested-same-kind-emphasis",
+      "code": "structure-unspellable",
+      "fidelity": "dropped",
+      "confidence": "exact",
+      "severity": "warning"
+    },
+    {
+      "construct": "blank-table-row",
+      "code": "structure-unspellable",
+      "fidelity": "dropped",
+      "confidence": "exact",
+      "severity": "warning"
     }
   ]
 }

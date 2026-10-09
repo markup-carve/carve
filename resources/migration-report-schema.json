@@ -46,5 +46,83 @@
         ]
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "sourceFormat": {
+            "const": "markdown"
+          }
+        },
+        "required": [
+          "sourceFormat"
+        ]
+      },
+      "then": {
+        "properties": {
+          "diagnostics": {
+            "items": {
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "code": {
+                        "enum": [
+                          "markdown-atx-heading",
+                          "markdown-autolink",
+                          "markdown-block-quote",
+                          "markdown-bullet-list",
+                          "markdown-bullet-task",
+                          "markdown-code-span",
+                          "markdown-emphasis",
+                          "markdown-entity",
+                          "markdown-escape",
+                          "markdown-fenced-code",
+                          "markdown-hard-break",
+                          "markdown-image",
+                          "markdown-indented-code",
+                          "markdown-link",
+                          "markdown-list-item",
+                          "markdown-ordered-list",
+                          "markdown-paragraph",
+                          "markdown-reference-definition",
+                          "markdown-reference-link",
+                          "markdown-setext-heading",
+                          "markdown-soft-break",
+                          "markdown-strikethrough",
+                          "markdown-strong",
+                          "markdown-table",
+                          "markdown-table-cell",
+                          "markdown-table-row",
+                          "markdown-thematic-break",
+                          "raw-preserved"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "code"
+                    ]
+                  },
+                  "then": {
+                    "required": [
+                      "path"
+                    ],
+                    "properties": {
+                      "path": {
+                        "type": "string",
+                        "pattern": "^line:[1-9][0-9]*$"
+                      }
+                    }
+                  }
+                }
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        }
+      }
+    }
+  ]
 }

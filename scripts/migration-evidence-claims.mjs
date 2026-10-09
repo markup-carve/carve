@@ -56,7 +56,7 @@ const manifest = JSON.parse(readFileSync(resolve(root, 'tests/importer-fidelity/
 const covered = new Set()
 for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
   for (const fixture of manifest.cases.filter(row => row.runner === 'core')) {
-    const expected = fixture.expected.engines?.[engine] ?? fixture.expected
+    const expected = { ...fixture.expected, ...fixture.expected.engines?.[engine] }
     const result = spawnSync(command, [...prefix, 'migrate', '--from', fixture.sourceFormat, '--report', '-', '--check-loss'],
       { input: fixture.input, encoding: 'utf8', timeout: 30000, maxBuffer: 1024 * 1024 })
     const context = `${engine}/${fixture.id}`
@@ -67,18 +67,29 @@ for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
     assert.ok(validateReport(report), `${context}: ${JSON.stringify(validateReport.errors)}`)
     assert.equal(report.sourceFormat, fixture.sourceFormat, context)
     assert.equal(result.stdout, expected.output, context)
-    const diagnostics = report.diagnostics.map(({ code, fidelity, confidence, path }) => ({ code, fidelity, confidence, ...(path ? { path } : {}) }))
+    const diagnostics = report.diagnostics.map(({ code, severity, fidelity, confidence, path }) => ({ code, severity, fidelity, confidence, ...(path ? { path } : {}) }))
     assert.deepEqual(diagnostics, expected.diagnostics, context)
-    for (const row of diagnostics) {
+    for (const row of report.diagnostics) {
+      assert.ok(row.message.length > 0, context)
+      if (row.code === 'structure-unspellable' && fixture.id.includes('ordered-task')) assert.equal(row.message, 'An ordered task item is not spellable as a Carve task item; the checkbox marker was kept as text', context)
       const contract = classes.get(row.code)
       if (!contract) {
         assert.equal(row.code, 'fidelity-unverified', context)
         continue
       }
+      assert.equal(row.severity, contract.severity, context)
       assert.equal(row.fidelity, contract.fidelity, context)
       assert.equal(row.confidence, contract.confidence, context)
-      assert.match(row.path ?? '', /^line:[1-9][0-9]*$/, context)
+      if (!diagnostics.some(item => item.code === 'fidelity-unverified')) assert.match(row.path ?? '', /^line:[1-9][0-9]*$/, context)
       covered.add(`${engine}/${row.code}`)
+    }
+    for (const [profile, html] of Object.entries(fixture.expected.html ?? {})) {
+      const rendered = spawnSync(command, [...prefix, ...(profile === 'safe' ? ['--safe'] : [])],
+        { input: result.stdout, encoding: 'utf8', timeout: 30000, maxBuffer: 1024 * 1024 })
+      assert.ifError(rendered.error)
+      assert.equal(rendered.signal, null, `${context}/${profile}`)
+      assert.equal(rendered.status, 0, `${context}/${profile}: ${rendered.stderr}`)
+      assert.equal(rendered.stdout, html, `${context}/${profile}: render spelling divergence`)
     }
     checked++
   }

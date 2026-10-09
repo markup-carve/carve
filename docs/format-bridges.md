@@ -132,15 +132,16 @@ reaches the loss, under
 ### Markdown construct assessment
 
 Markdown assessment uses CommonMark plus GFM. The machine-readable inventory is
-[`resources/markdown-import-inventory.json`](../resources/markdown-import-inventory.json).
+[`resources/markdown-import-inventory.json`](./markdown-import-inventory.json).
 The `text` entry covers complete literal inputs through `literal-text-verified`.
 Each assessed occurrence emits its
 inventory code, fidelity and confidence with a `line:N` path naming the original
 input line. CRLF counts as one line ending. Delimiters inside code or raw HTML
 are content, not additional Markdown constructs.
 
-Preserved constructs retain their meaning; normalized constructs change their
-spelling or reference representation. Raw HTML uses `raw-preserved` with
+Preserved constructs retain their Markdown meaning in native Carve syntax.
+Normalized constructs resolve source representations such as entities, escapes,
+references and alternate block forms; their output may already use that spelling. Raw HTML uses `raw-preserved` with
 `degraded` fidelity because it remains opaque and depends on the render profile.
 An ordered task marker uses `structure-unspellable` with `dropped` fidelity.
 Known losses remain in the report when complete assessment is unavailable.
@@ -154,11 +155,19 @@ Keeping reference definitions or inlining their resolved destinations both use
 `normalized` when labels, destinations and titles retain their meaning. Pointy
 autolinks and explicit links follow the same rule. Splitting an inline raw HTML
 run into several raw spans is permitted when their combined HTML retains the
-same content. The safe render profile escapes raw markup; it does not remove it.
+same content. Native HTML may use `<s>` for strikethrough and add accessible labels to task
+checkboxes. Diagnostic order may follow parser traversal; paths identify the
+source occurrences.
+
+The `--safe` raw HTML switch escapes raw markup. Profiles that deny raw nodes
+may instead remove it.
 
 The inventory names the construct families, not a claim that every combination
 is already assessed. Ambiguous syntax, unsupported dialect extensions and
 mismatches between assessed structure and writer output remain unverified.
+Existing aggregate loss rows may lack a location while assessment is incomplete;
+the fallback prevents treating those reports as complete.
+Assessment checks source typography. Glyph typography is a render choice.
 Conversion and rendering are separate boundaries: destination filtering and
 raw HTML handling belong to the render profile.
 
