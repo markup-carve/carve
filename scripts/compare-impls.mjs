@@ -1069,6 +1069,15 @@ async function runConvertMode() {
     process.exit(1)
   }
   const renderCommand = renderImpl.defaultCommand('html')
+  for (const kase of cases) {
+    if (!kase.expectedSource) continue
+    const expected = run(renderCommand, renderImpl.cwd, [kase.expectedSource])
+    if (!expected.ok) {
+      console.error(`carve-js failed to render the expected source for ${kase.slug}: ${expected.stderr || expected.error || expected.status}`)
+      process.exit(2)
+    }
+    kase.expected = expected.stdout
+  }
 
   const enginePopulation = shortfall({
     label: 'CROSS-ENGINE',
@@ -1158,14 +1167,6 @@ async function runConvertMode() {
   const tmp = mkdtempSync(join(tmpdir(), 'carve-convert-'))
   try {
     for (const kase of cases) {
-      if (kase.expectedSource) {
-        const expected = run(renderCommand, renderImpl.cwd, [kase.expectedSource])
-        if (!expected.ok) {
-          console.error(`carve-js failed to render the expected source for ${kase.slug}: ${expected.stderr || expected.error || expected.status}`)
-          process.exit(2)
-        }
-        kase.expected = expected.stdout
-      }
       const rendered = []
       for (const impl of active) {
         const command = impl.convertCommand(kase.format, kase.options)
