@@ -22,9 +22,11 @@ const visibleText = (html) =>
 // footnote body imports as `{empty}` instead of losing its sentinel. Comparing
 // all 2225 documents with 7d93ec64 finds no other Markdown membership change.
 
-// Pin b12ebf89 loses the Markdown round trip for corpus 487-...-9: carve-js#2603
-// respells the imported frontmatter opener and drops the form feed after `---yaml`.
-// Comparing all 2225 documents with a7d618ba finds no other membership change.
+// Corpus 487-...-9 misses the Markdown round trip on bytes only. The importer
+// escapes every literal Markdown hyphen run, so `---yaml<FF>` comes back as
+// `\-\-\-yaml<FF>`; the canonical writer escapes only where Carve would
+// smart-dash. Both render the same: a deliberate conservative escape, not a
+// loss. Pin 6c6f3988 keeps the form feed b12ebf89 dropped (carve-js#2613).
 
 // Corpus 531's thirteen documents all import, stay canonical and keep their
 // visible text (+13 each). Only the column-2 control round-trips through HTML
