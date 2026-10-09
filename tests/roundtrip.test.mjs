@@ -159,3 +159,12 @@ test('PART 11 §10n: Markdown content or alignment keeps its header', () => {
     assert.doesNotMatch(html, /<p>\|/)
   }
 })
+
+test('PART 11 §10n: omitted blank Markdown body rows do not split a table', () => {
+  const markdown = '| A | B |\n| --- | --- |\n| 1 | 2 |\n| | |\n| 3 | 4 |\n'
+  const imported = markdownToCarve(markdown)
+  assert.equal(imported, '|= A |= B |\n| 1 | 2 |\n| 3 | 4 |\n')
+  const html = carveToHtml(imported)
+  assert.equal((html.match(/<table>/g) ?? []).length, 1)
+  assert.doesNotMatch(html, /<p>\|/)
+})
