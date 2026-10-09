@@ -2124,80 +2124,21 @@
         "exit": 1,
         "engines": {
           "php": {
-            "output": "|= A |= B |\n| | |\n| x | y |\n",
             "diagnostics": [
               {
-                "code": "markdown-table",
-                "severity": "info",
-                "fidelity": "preserved",
-                "confidence": "exact",
-                "path": "line:1"
+                "code": "fidelity-unverified",
+                "confidence": "fallback",
+                "fidelity": "dropped",
+                "severity": "warning"
               },
               {
-                "code": "markdown-table-row",
-                "severity": "info",
-                "fidelity": "preserved",
+                "code": "structure-unspellable",
                 "confidence": "exact",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-table-cell",
-                "severity": "info",
-                "fidelity": "preserved",
-                "confidence": "exact",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-table-cell",
-                "severity": "info",
-                "fidelity": "preserved",
-                "confidence": "exact",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-table-row",
-                "severity": "info",
-                "fidelity": "preserved",
-                "confidence": "exact",
-                "path": "line:3"
-              },
-              {
-                "code": "markdown-table-cell",
-                "severity": "info",
-                "fidelity": "preserved",
-                "confidence": "exact",
-                "path": "line:3"
-              },
-              {
-                "code": "markdown-table-cell",
-                "severity": "info",
-                "fidelity": "preserved",
-                "confidence": "exact",
-                "path": "line:3"
-              },
-              {
-                "code": "markdown-table-row",
-                "severity": "info",
-                "fidelity": "preserved",
-                "confidence": "exact",
-                "path": "line:4"
-              },
-              {
-                "code": "markdown-table-cell",
-                "severity": "info",
-                "fidelity": "preserved",
-                "confidence": "exact",
-                "path": "line:4"
-              },
-              {
-                "code": "markdown-table-cell",
-                "severity": "info",
-                "fidelity": "preserved",
-                "confidence": "exact",
-                "path": "line:4"
+                "fidelity": "dropped",
+                "path": "line:3",
+                "severity": "warning"
               }
-            ],
-            "exit": 0
+            ]
           },
           "rust": {
             "diagnostics": [

@@ -663,6 +663,18 @@
       already takes from its first aligned row. A table with a header row
       keeps §10d, which writes that row as the header.
 
+      ON MARKDOWN IMPORT, an all-empty header with no column alignment is
+      omitted, together with its delimiter row. It is the scaffolding this
+      clause writes, not a Carve header row: PART 9 §5 rejects a row whose
+      cells are all blank, even when they carry header markers. The body
+      keeps its GFM column width, and the importer MUST NOT turn the omitted
+      header into a paragraph of pipes. All-blank body rows are likewise
+      omitted rather than splitting the table with paragraph text. A header
+      carrying cell content or column alignment is retained. An omitted row
+      is reported as `structure-unspellable` by the migration fidelity report;
+      a standalone GFM empty header cannot be distinguished from writer
+      scaffolding.
+
       A ROW IS A HEADER ROW WHEN EVERY CELL IT OWNS IS A HEADER CELL. A span
       placeholder (a cell carrying `span`) is not a cell of its own: it
       belongs to the cell whose `colspan` or `rowspan` covers it, so
