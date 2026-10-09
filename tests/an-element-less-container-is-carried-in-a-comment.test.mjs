@@ -85,23 +85,16 @@ test('a document with no element-less container gains no comment either way', ()
 })
 
 for (const { name, carve, carrier } of CARRIED) {
-  test(`the carrier mode brackets ${name}`, () => {
-    if (PIN_LAG) {
-      // Red proof: today's output holds no marker at all, so the bytes the
-      // clause requires are not reachable on this build by any option.
-      assert.ok(
-        !carveToMarkdown(carve).includes('<!-- carve:'),
-        `pin lag is declared and the engine now writes a marker - delete PIN_LAG: ${PIN_LAG}`,
-      )
-      return
-    }
-    assert.equal(carveToMarkdown(carve, { carrier: true }), carrier)
-  })
-
   test(`the carrier mode round-trips ${name}`, () => {
     if (PIN_LAG) {
-      // The import half: the markers come back as raw HTML blocks, not as the
-      // container they name.
+      // THE LIVE DETECTOR IS THE IMPORT HALF, deliberately, and the writer
+      // half is NOT asserted under lag. "Today's output holds no marker"
+      // would pass forever: the clause requires the mode-off output to stay
+      // marker-free, so an engine shipping the writer could never turn it
+      // red - the dead-check shape this repo keeps finding. The import has
+      // no such out: the markers come back as raw HTML blocks today, and the
+      // first engine to read one fails this and takes the declaration with
+      // it. Then the writer bytes below start being asserted.
       const { value } = migrateMarkdown(carrier)
       assert.match(
         value,
@@ -110,6 +103,7 @@ for (const { name, carve, carrier } of CARRIED) {
       )
       return
     }
+    assert.equal(carveToMarkdown(carve, { carrier: true }), carrier)
     assert.equal(migrateMarkdown(carrier).value, carve)
   })
 }
