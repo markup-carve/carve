@@ -41,7 +41,7 @@ const schema = JSON.parse(readFileSync(resolve(root, 'resources/ast-schema.json'
 // Declared lag against the `@markup-carve/carve` build package.json pins.
 // EMPTY IS THE GOAL: it goes out in the commit that moves the pin past
 // markup-carve/carve-js#1511.
-const PIN_LAG = 'carve#2828 just landed: the pinned build records `delim: "."` and `bulletChar: "-"`'
+const PIN_LAG = 'carve#2828  just landed: the pinned build records `delim: "."` and `bulletChar: "-"`'
 
 const list = (src) => {
   const node = toAstJson(parse(src)).children[0]
