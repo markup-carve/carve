@@ -9803,9 +9803,10 @@ EOF = (* end of file *) ;
       keeps its GFM column width, and the importer MUST NOT turn the omitted
       header into a paragraph of pipes. All-blank body rows are likewise
       omitted rather than splitting the table with paragraph text. A header
-      carrying cell content or column alignment is retained. An omitted row is reported as
-      `structure-unspellable` by the migration fidelity report; a standalone
-      GFM empty header cannot be distinguished from writer scaffolding.
+      carrying cell content or column alignment is retained. An omitted row
+      is reported as `structure-unspellable` by the migration fidelity report;
+      a standalone GFM empty header cannot be distinguished from writer
+      scaffolding.
 
       A ROW IS A HEADER ROW WHEN EVERY CELL IT OWNS IS A HEADER CELL. A span
       placeholder (a cell carrying `span`) is not a cell of its own: it
