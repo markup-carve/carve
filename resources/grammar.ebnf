@@ -8885,10 +8885,15 @@ EOF = (* end of file *) ;
           target in a text node is escaped, whatever else stands on the line.
       M1b `_` AND `[` ARE ESCAPED IF AND ONLY IF the character is
           ADJACENT ON THE EMITTED LINE to an UNESCAPED DELIMITER OF THE SAME
-          CHARACTER -- that is, the position immediately before it or
+          CHARACTER, or the second condition below for that character holds.
+          Adjacency means the position immediately before it or
           immediately after it in the line the writer is building holds that
           same character, put there by the writer as MARKUP and not behind a
-          backslash. Adjacent -> escape it. Not adjacent -> emit it bare.
+          backslash. Otherwise emit it bare.
+          `[` IS ALSO ESCAPED INSIDE AN EMITTED LINK LABEL OR IMAGE
+          DESCRIPTION. This applies to literal opening brackets throughout
+          the label's inline text descendants and the image's alt text.
+          It does not change code spans, destinations, titles, or raw HTML.
           `_` TAKES A SECOND CONDITION, OVER THE INLINE CONTENT IT IS EMITTED
           IN (a paragraph, heading or table cell, across its line breaks): it
           is also escaped when another live `_` there could close the emphasis
@@ -8997,6 +9002,18 @@ EOF = (* end of file *) ;
       cannot arise: this writer emits no `_` as markup, and a condition that
       only ADDS an escape can never drop one that was holding a run boundary
       apart. It binds every engine at once, like the rest of the clause.
+
+      THE LINK LABEL'S SECOND CONDITION HAS THE SAME OUTPUT ARGUMENT.
+      M1 escapes a literal `]` unconditionally. Leaving its matching `[` bare
+      inside a generated link label therefore leaves an unmatched opener.
+      For the Carve link `[a [b] c](/u)`, adjacency alone emits
+      `[a [b\] c](/u)`. CommonMark 6.3 reads the inner opener as the link:
+      `a ` falls outside the anchor and `b] c` becomes its label. Emitting
+      `[a \[b\] c](/u)` instead keeps `a [b] c` inside the `/u` anchor.
+      The writer's own closing bracket and destination supply the collision.
+      This condition adds the escape needed to preserve the complete label;
+      ordinary text outside a generated link label still uses adjacency.
+      It binds every engine at once.
 
       M2 IS WHY A LINE-LEVEL TEST REACHES WHERE §2 NEEDS A PARSER. M1 governs
       a character that reached the writer inside a TEXT node -- one the Carve

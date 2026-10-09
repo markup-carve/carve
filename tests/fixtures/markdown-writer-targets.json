@@ -959,5 +959,29 @@
     "rule": "CARVE-P11-045",
     "carve": "a {# *b* <c> #} e\n",
     "markdown": "a <span class=\"critic-comment\"> \\*b\\* \\<c> </span> e\n"
+  },
+  {
+    "name": "literal-bracket-link-label-0",
+    "rule": "CARVE-P11-023",
+    "carve": "[a [b] c](/u)\n",
+    "markdown": "[a \\[b\\] c](/u)\n"
+  },
+  {
+    "name": "literal-bracket-link-label-1",
+    "rule": "CARVE-P11-023",
+    "carve": "[a [b [c] d] e](/u)\n",
+    "markdown": "[a \\[b \\[c\\] d\\] e](/u)\n"
+  },
+  {
+    "name": "literal-bracket-link-label-2",
+    "rule": "CARVE-P11-023",
+    "carve": "[a *b [c] d* e](/u)\n",
+    "markdown": "[a **b \\[c\\] d** e](/u)\n"
+  },
+  {
+    "name": "literal-bracket-image-description",
+    "rule": "CARVE-P11-023",
+    "carve": "before ![a [b] c](/u)\n",
+    "markdown": "before ![a \\[b\\] c](/u)\n"
   }
 ]
