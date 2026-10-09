@@ -1014,22 +1014,27 @@ async function runConvertMode() {
 
   // The HTML-import contract is a second, larger HTML population. Run every
   // source through all available importers here as well, using its normative
-  // expected Carve source rendered by the pinned JS engine as the meaning
+  // expected Carve source rendered by the selected JS CLI as the meaning
   // assertion. Keeping this in the existing converter runner gives it the same
   // per-engine drift ledger and stale-entry checks instead of inventing a
   // weaker one-engine fixture sweep (carve#1600).
-  const { carveToHtml } = await import('@markup-carve/carve')
   const htmlImportDir = join(root, 'tests/html-import')
   for (const slug of readdirSync(htmlImportDir).sort()) {
     const dir = join(htmlImportDir, slug)
     if (!statSync(dir).isDirectory()) continue
     const optionsPath = join(dir, 'options.json')
+    const expectedSource = join(dir, 'expected.crv')
+    if (!existsSync(expectedSource)) {
+      console.error(`Missing expected Carve source for HTML-import case ${slug}.`)
+      process.exit(2)
+    }
     cases.push({
       slug: `html-import--${slug}`,
       format: 'html',
       options: existsSync(optionsPath) ? JSON.parse(readFileSync(optionsPath, 'utf8')) : {},
       file: join(dir, 'input.html'),
-      expected: carveToHtml(readFileSync(join(dir, 'expected.crv'), 'utf8')).trim(),
+      expected: null,
+      expectedSource,
       canonical: null,
     })
   }
@@ -1064,6 +1069,15 @@ async function runConvertMode() {
     process.exit(1)
   }
   const renderCommand = renderImpl.defaultCommand('html')
+  for (const kase of cases) {
+    if (!kase.expectedSource) continue
+    const expected = run(renderCommand, renderImpl.cwd, [kase.expectedSource])
+    if (!expected.ok) {
+      console.error(`carve-js failed to render the expected source for ${kase.slug}: ${expected.stderr || expected.error || expected.status}`)
+      process.exit(2)
+    }
+    kase.expected = expected.stdout
+  }
 
   const enginePopulation = shortfall({
     label: 'CROSS-ENGINE',
