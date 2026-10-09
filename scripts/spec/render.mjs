@@ -1583,11 +1583,11 @@ export function renderBlockAttrs(lists) {
   return parts.join('')
 }
 
-// quote-context decision (PART 9 SS8): OPENING after whitespace or an
-// opening context character; CLOSING otherwise (incl. start of input -
-// corpus 37-3 pins a line-initial pair as two closers). A single quote
-// directly before a digit is always an apostrophe ('70s, '24).
-const QUOTE_OPEN_PREV = new Set([' ', '\t', '=', ':', '-', '/', '(', '[', '{'])
+// quote-context decision (PART 9 SS8): OPENING after whitespace (a soft or
+// hard line break included, carve#2822) or an opening context character;
+// CLOSING otherwise. A single quote directly before a digit is always an
+// apostrophe ('70s, '24).
+const QUOTE_OPEN_PREV = new Set([' ', '\t', '\n', '\r', '=', ':', '-', '/', '(', '[', '{'])
 // PART 7's whitespace plus the NO-BREAK SPACE, for the hyphen-run flanking
 // test (carve#1443). A vertical tab and a form feed are deliberately OUT:
 // Carve reads both as content, and `\s` takes them.
