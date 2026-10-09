@@ -177,6 +177,7 @@
 # an engine that no longer drifts masks the next regression, which is what the
 # header above warns about and what the twenty stale lines two blocks up cost.
 #
-# The repo's PINNED build is a separate question and is still behind: it pins
-# carve-js `b12ebf89`, which predates #2605, so five cases are declared in
-# PINNED_DRIFT in tests/corpus-convert.test.mjs until the pin moves.
+# The repo's PINNED build was a separate question: it pinned carve-js
+# `b12ebf89`, which predates #2605, so five cases were declared in PINNED_DRIFT
+# in tests/corpus-convert.test.mjs. The pin now sits at carve-js `6c6f3988`, all
+# five reported STALE against it, and their entries are deleted.
