@@ -284,6 +284,9 @@ const MANIFEST = [
   // carve#2828 yet, and the assertion that declares it fails in both
   // directions (tests/a-default-marker-is-not-recorded.test.mjs).
   { repo: 'spec', path: 'tests/a-default-marker-is-not-recorded.test.mjs', name: 'PIN_LAG', kind: 'js-string', policy: 'owed', prPolicy: 'declared', guard: 'two-way', optional: true, owner: 'markup-carve/carve#2828' },
+  // The same shape for CARVE-P11-063: the clause landed spec-first and no
+  // engine writes or reads the carrier comment yet (carve#2810).
+  { repo: 'spec', path: 'tests/an-element-less-container-is-carried-in-a-comment.test.mjs', name: 'PIN_LAG', kind: 'js-string', policy: 'owed', prPolicy: 'declared', guard: 'two-way', optional: true, owner: 'markup-carve/carve#2810' },
 
   // -- carve-js --------------------------------------------------------------
   { repo: 'carve-js', path: 'test/corpus.test.ts', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'test/corpus.test.ts' },

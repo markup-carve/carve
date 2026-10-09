@@ -136,6 +136,7 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
       // a default list marker. Its row names the ticket and the assertion that
       // reads it fails in both directions (carve#2828).
       ['tests/a-default-marker-is-not-recorded.test.mjs', 'owed', 'declared'],
+      ['tests/an-element-less-container-is-carried-in-a-comment.test.mjs', 'owed', 'declared'],
       ['tests/corpus-convert.test.mjs', 'owed', 'manual'],
       ['tests/optional-corpus.test.mjs', 'owed', 'manual'],
       ['tests/examples-tier3.test.mjs', 'owed', 'manual'],

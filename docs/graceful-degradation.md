@@ -149,6 +149,34 @@ token rather than drop it.
 Class 1 is a cheap markup transform. Classes 2 and 3 need a build-time renderer
 and must be configured as part of the document build.
 
+## Carrying a container through a Markdown round trip
+
+Flattening keeps the words and loses the container. On the Markdown target that
+is total for a tab set, an admonition, a named div, a columns container, a
+disclosure, a spoiler and a composite figure's group wrapper: no element, no
+marker and no attribute survives, so an import cannot tell a container was ever
+there. An admonition loses its kind, and a named div loses its attributes along
+with its name.
+
+An opt-in **carrier mode** closes that round trip. It leaves the visible
+fallback exactly as it is and brackets each of those containers with an HTML
+comment holding the Carve opener and closer verbatim:
+
+```markdown
+<!-- carve: ::: note -->
+An admonition body.
+<!-- carve: ::: -->
+```
+
+Without the markers the file is the readable Markdown this target emits today,
+which is why the mode is off by default: a renderer with raw HTML turned off
+shows the comment as text. A damaged marker set - one deleted, two reordered, an
+unbalanced pair - imports as plain Markdown and reports it, rather than guessing
+at a structure the markers no longer describe.
+
+`CARVE-P11-063` has the normative rule, including the escape for a payload that
+carries `-->`. No engine ships the mode yet.
+
 ## How the renderer chooses: the `mode` signal
 
 The renderer does not guess how the output will be used. The application chooses

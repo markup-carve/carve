@@ -809,6 +809,72 @@
       that node carries without parsing it, so nothing here can fail on a body
       the format's own loader would reject.
 
+  10s. AN OPT-IN MODE CARRIES AN ELEMENT-LESS CONTAINER IN A COMMENT --
+      NORMATIVE [CARVE-P11-063]. An ELEMENT-LESS CONTAINER is a container
+      block this target writes as its children alone: no element, no marker
+      and no attribute of its own reaches the output, so nothing there says a
+      container was present. Under the CARRIER MODE, which the host turns on
+      and which is OFF by default, the target brackets each one with an HTML
+      comment carrying the Carve opener and the Carve closer VERBATIM:
+
+        ::: note                 ->  <!-- carve: ::: note -->
+        An admonition body.          An admonition body.
+        :::                          <!-- carve: ::: -->
+
+      THE SET, measured on the released engines: a tab set and each of its
+      panels (`tabs`, `code-group`), an admonition of any kind whether or not
+      it carries a title, a named div and each div nested in one, a columns
+      container and each column, a disclosure, a spoiler, and a composite
+      figure's group wrapper. A container this target DOES spell is not one
+      and takes no comment: an attributes-only opener (`::: {.warning}`) is
+      written verbatim, and a list table is written as a pipe table.
+
+      THE MARKER IS `<!-- carve: `, the payload, ` -->`. A `-->` the payload
+      carries is written `--\>`, and an `\` the payload itself carries before
+      such a `>` is written `\\`. Nothing else is escaped: the payload is
+      Carve source, so Carve's own escape is the one the reader already has.
+      The import reverses exactly those two.
+
+      A COMMENT AND NOT A LINK REFERENCE DEFINITION is the one choice here
+      that is not obvious, and it was measured rather than argued.
+      `[meta]: # (payload)` collapses in commonmark.js's refmap, emits one
+      token for three in marked, makes pandoc warn `Duplicate link reference`
+      on each one after the first, and lets an author's `[text][Meta]`
+      resolve to the marker, because label matching ignores case. An HTML
+      comment survives as a node in all three, can interrupt a paragraph, and
+      is not entity-decoded. The mode is OPT-IN because a renderer with raw
+      HTML turned off shows the comment as text.
+
+      THE ROUND TRIP IS WHAT THE MODE BUYS. A document this target writes
+      with the mode on, imported back with `markdown` as the source format,
+      returns every container the set names: its kind, its title, its
+      attributes, and the nesting its fence widths record. It promises no
+      more than that. A construct outside the set degrades exactly as it does
+      today, the mode off emits the bytes this target emits today, a document
+      holding no element-less container gains no comment under either
+      setting, and this is not the byte-identical source round trip §10k's
+      comparison governs.
+
+      A DAMAGED MARKER SET IMPORTS AS PLAIN MARKDOWN, NEVER A GUESS. A
+      Markdown editor that deleted one marker, reordered two, or left the set
+      unbalanced has destroyed the structure the markers recorded, and a
+      reconstruction that is wrong is worse than a fallback that is honest.
+      The import reads the file as ordinary Markdown, comments and all, and
+      reports one `carrier-markers-damaged` diagnostic on the migration
+      report (`resources/migration-report-schema.json`) with `degraded`
+      fidelity and `fallback` confidence. There is no partial reconstruction
+      and no per-marker recovery.
+
+      WHAT THIS CLAUSE DOES NOT COVER, so a reader does not look for it here.
+      A construct whose Markdown output already holds an element needs no
+      carrier: `highlight`, `subscript`, `superscript` and a CriticMarkup
+      insertion round-trip through `<mark>`, `<sub>`, `<sup>` and `<ins>`
+      today. Where such an element does not read back (`<u>`, the
+      `critic-comment` span, `<abbr>`, `<del>`), and where this target drops
+      a construct's attributes, the emitted bytes are faithful and the defect
+      is on the import or in §8c, not here. `small_caps` and `ruby` have no
+      Carve opener to carry.
+
   11. THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG --
       NORMATIVE [CARVE-P11-038]. GFM has no heading-id syntax: a reader derives every
       heading's id from its text, and `## H {#h}` shows the suffix as text.

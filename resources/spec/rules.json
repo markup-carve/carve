@@ -1415,6 +1415,12 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-063",
+      "part": "11",
+      "title": "AN OPT-IN MODE CARRIES AN ELEMENT-LESS CONTAINER IN A COMMENT",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P11-036",
       "part": "11",
       "title": "A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES",

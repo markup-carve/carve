@@ -43,6 +43,12 @@
             "if": { "properties": { "code": { "enum": ["fidelity-unverified", "diagnostics-truncated"] } }, "required": ["code"] },
             "then": { "properties": { "fidelity": { "const": "dropped" }, "confidence": { "const": "fallback" } } }
           }
+        ,
+          {
+            "$comment": "CARVE-P11-063: a damaged carrier-comment set imports as plain Markdown, never a guess.",
+            "if": { "properties": { "code": { "const": "carrier-markers-damaged" } }, "required": ["code"] },
+            "then": { "properties": { "fidelity": { "const": "degraded" }, "confidence": { "const": "fallback" } } }
+          }
         ]
       }
     }
