@@ -12,7 +12,7 @@
     },
     {
       "construct": "text",
-      "code": "markdown-text",
+      "code": "literal-text-verified",
       "fidelity": "preserved",
       "confidence": "exact",
       "severity": "info"

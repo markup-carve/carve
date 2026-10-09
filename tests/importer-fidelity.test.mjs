@@ -7,7 +7,7 @@ import { migrateBbcode, migrateDjot, migrateHtml, migrateMarkdown } from '@marku
 const manifest = JSON.parse(readFileSync(new URL('./importer-fidelity/manifest.json', import.meta.url)))
 const schema = JSON.parse(readFileSync(new URL('../resources/importer-fidelity-schema.json', import.meta.url)))
 const reportSchema = JSON.parse(readFileSync(new URL('../resources/migration-report-schema.json', import.meta.url)))
-const formats = ['pandoc-json', 'pdf-extraction-json']
+const formats = ['markdown', 'pandoc-json', 'pdf-extraction-json']
 const fidelity = ['preserved', 'normalized', 'degraded', 'dropped']
 const confidence = ['exact', 'inferred', 'fallback']
 
@@ -48,7 +48,7 @@ test('opaque raw HTML and incomplete assessment fail closed under the report sch
   assert.equal(validate(incomplete), false, 'truncation must not validate as merely degraded')
 })
 
-test('built-in importers without construct-level evidence report that boundary explicitly', () => {
+test('the pinned engine retains its pre-assessment compatibility boundary', () => {
   const validate = new Ajv2020().compile(reportSchema)
   for (const [sourceFormat, result] of [
     ['markdown', migrateMarkdown('**strong**')],
@@ -64,7 +64,7 @@ test('built-in importers without construct-level evidence report that boundary e
   }
 })
 
-test('a known ordered task loss is reported beside the incomplete-assessment row', () => {
+test('the pinned engine retains ordered task losses beside its compatibility fallback', () => {
   const result = migrateMarkdown('1. [x] done\n')
   const validate = new Ajv2020().compile(reportSchema)
   assert.equal(validate(result.report), true, JSON.stringify(validate.errors))

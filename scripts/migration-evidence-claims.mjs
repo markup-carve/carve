@@ -28,7 +28,7 @@ const cases = [
 ]
 let checked = 0
 for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
-  for (const format of ['markdown', 'djot', 'bbcode']) {
+  for (const format of ['djot', 'bbcode']) {
     for (const [source, verified] of cases) {
       const result = spawnSync(command, [...prefix, 'migrate', '--from', format, '--report', '-', '--check-loss'],
         { input: source, encoding: 'utf8', timeout: 30000, maxBuffer: 1024 * 1024 })
@@ -49,5 +49,39 @@ for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
       checked++
     }
   }
+}
+const inventory = JSON.parse(readFileSync(resolve(root, 'resources/markdown-import-inventory.json'), 'utf8'))
+const classes = new Map(inventory.constructs.map(row => [row.code, row]))
+const manifest = JSON.parse(readFileSync(resolve(root, 'tests/importer-fidelity/manifest.json'), 'utf8'))
+const covered = new Set()
+for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
+  for (const fixture of manifest.cases.filter(row => row.runner === 'core')) {
+    const expected = fixture.expected.engines?.[engine] ?? fixture.expected
+    const result = spawnSync(command, [...prefix, 'migrate', '--from', fixture.sourceFormat, '--report', '-', '--check-loss'],
+      { input: fixture.input, encoding: 'utf8', timeout: 30000, maxBuffer: 1024 * 1024 })
+    const context = `${engine}/${fixture.id}`
+    assert.ifError(result.error)
+    assert.equal(result.signal, null, context)
+    assert.equal(result.status, expected.exit, `${context}: ${result.stderr}`)
+    const report = JSON.parse(result.stderr)
+    assert.ok(validateReport(report), `${context}: ${JSON.stringify(validateReport.errors)}`)
+    assert.equal(report.sourceFormat, fixture.sourceFormat, context)
+    assert.equal(result.stdout, expected.output, context)
+    const diagnostics = report.diagnostics.map(({ code, fidelity, confidence, path }) => ({ code, fidelity, confidence, ...(path ? { path } : {}) }))
+    assert.deepEqual(diagnostics, expected.diagnostics, context)
+    for (const row of diagnostics) {
+      const contract = classes.get(row.code)
+      if (!contract) {
+        assert.equal(row.code, 'fidelity-unverified', context)
+        continue
+      }
+      assert.equal(row.fidelity, contract.fidelity, context)
+      assert.equal(row.confidence, contract.confidence, context)
+      assert.match(row.path ?? '', /^line:[1-9][0-9]*$/, context)
+      covered.add(`${engine}/${row.code}`)
+    }
+    checked++
+  }
+  for (const row of inventory.constructs) assert.ok(covered.has(`${engine}/${row.code}`), `${engine}: no fixture covers ${row.construct}`)
 }
 console.log(`migration evidence: ${checked} CLI cases across all three engines; no exemptions`)
