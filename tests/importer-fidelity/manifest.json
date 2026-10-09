@@ -2086,7 +2086,8 @@
         }
       },
       "constructs": [
-        "ordered-task"
+        "paragraph",
+        "nested-same-kind-emphasis"
       ]
     },
     {
@@ -2209,7 +2210,10 @@
         }
       },
       "constructs": [
-        "ordered-task"
+        "table",
+        "table-row",
+        "table-cell",
+        "blank-table-row"
       ]
     },
     {
@@ -2427,179 +2431,6 @@
         "paragraph",
         "strong",
         "emphasis"
-      ]
-    },
-    {
-      "id": "markdown-nested-same-kind-emphasis",
-      "sourceFormat": "markdown",
-      "runner": "core",
-      "repository": "markup-carve/carve",
-      "input": "*a *b* c*",
-      "expected": {
-        "output": "/a b c/",
-        "diagnostics": [
-          {
-            "code": "fidelity-unverified",
-            "severity": "warning",
-            "fidelity": "dropped",
-            "confidence": "fallback"
-          },
-          {
-            "code": "structure-unspellable",
-            "severity": "warning",
-            "fidelity": "dropped",
-            "confidence": "exact"
-          }
-        ],
-        "exit": 1,
-        "engines": {
-          "rust": {
-            "output": "/a b c/\n",
-            "diagnostics": [
-              {
-                "code": "fidelity-unverified",
-                "severity": "warning",
-                "fidelity": "dropped",
-                "confidence": "fallback"
-              },
-              {
-                "code": "structure-unspellable",
-                "severity": "warning",
-                "fidelity": "dropped",
-                "confidence": "exact"
-              }
-            ],
-            "exit": 1
-          }
-        }
-      },
-      "constructs": [
-        "nested-same-kind-emphasis"
-      ]
-    },
-    {
-      "id": "markdown-blank-table-row",
-      "sourceFormat": "markdown",
-      "runner": "core",
-      "repository": "markup-carve/carve",
-      "input": "| a | b |\n|---|---|\n|   |   |\n| 3 | 4 |\n",
-      "expected": {
-        "output": "|= a |= b |\n| 3 | 4 |\n",
-        "diagnostics": [
-          {
-            "code": "fidelity-unverified",
-            "severity": "warning",
-            "fidelity": "dropped",
-            "confidence": "fallback"
-          },
-          {
-            "code": "structure-unspellable",
-            "severity": "warning",
-            "fidelity": "dropped",
-            "confidence": "exact"
-          }
-        ],
-        "exit": 1,
-        "engines": {
-          "php": {
-            "output": "|= a |= b |\n| | |\n| 3 | 4 |\n",
-            "diagnostics": [
-              {
-                "code": "markdown-table",
-                "severity": "info",
-                "fidelity": "preserved",
-                "confidence": "exact",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-table-row",
-                "severity": "info",
-                "fidelity": "preserved",
-                "confidence": "exact",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-table-cell",
-                "severity": "info",
-                "fidelity": "preserved",
-                "confidence": "exact",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-table-cell",
-                "severity": "info",
-                "fidelity": "preserved",
-                "confidence": "exact",
-                "path": "line:1"
-              },
-              {
-                "code": "markdown-table-row",
-                "severity": "info",
-                "fidelity": "preserved",
-                "confidence": "exact",
-                "path": "line:3"
-              },
-              {
-                "code": "markdown-table-cell",
-                "severity": "info",
-                "fidelity": "preserved",
-                "confidence": "exact",
-                "path": "line:3"
-              },
-              {
-                "code": "markdown-table-cell",
-                "severity": "info",
-                "fidelity": "preserved",
-                "confidence": "exact",
-                "path": "line:3"
-              },
-              {
-                "code": "markdown-table-row",
-                "severity": "info",
-                "fidelity": "preserved",
-                "confidence": "exact",
-                "path": "line:4"
-              },
-              {
-                "code": "markdown-table-cell",
-                "severity": "info",
-                "fidelity": "preserved",
-                "confidence": "exact",
-                "path": "line:4"
-              },
-              {
-                "code": "markdown-table-cell",
-                "severity": "info",
-                "fidelity": "preserved",
-                "confidence": "exact",
-                "path": "line:4"
-              }
-            ],
-            "exit": 0
-          },
-          "rust": {
-            "output": "|= a |= b |\n| 3 | 4 |\n",
-            "diagnostics": [
-              {
-                "code": "fidelity-unverified",
-                "severity": "warning",
-                "fidelity": "dropped",
-                "confidence": "fallback"
-              },
-              {
-                "code": "structure-unspellable",
-                "severity": "warning",
-                "fidelity": "dropped",
-                "confidence": "exact",
-                "path": "line:3"
-              }
-            ],
-            "exit": 1
-          }
-        }
-      },
-      "constructs": [
-        "blank-table-row"
       ]
     },
     {

@@ -94,6 +94,6 @@ for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
     for (const construct of fixture.constructs ?? []) covered.add(`${engine}/construct/${construct}`)
     checked++
   }
-  for (const row of inventory.constructs) assert.ok(covered.has(`${engine}/construct/${row.construct}`), `${engine}: no fixture covers ${row.construct}`)
+  for (const row of inventory.constructs) assert.ok(covered.has(`${engine}/${row.code}`) && covered.has(`${engine}/construct/${row.construct}`), `${engine}: no fixture covers ${row.construct}`)
 }
 console.log(`migration evidence: ${checked} CLI cases across all three engines; no exemptions`)
