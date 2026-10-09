@@ -24,19 +24,21 @@ import * as pinned from '@markup-carve/carve'
 import { parse as djotParse, renderHTML as djotRenderHTML } from '@djot/djot'
 import { FORMAT_EXTENSIONS } from '../scripts/lib/converter-formats.mjs'
 import { cmarkGfmToHtml } from '../scripts/lib/markdown-oracle.mjs'
+import { frontmatterEnd } from '../scripts/lib/frontmatter-shape.mjs'
 
 const { bbcodeToCarve, carveToHtml, djotToCarve, htmlToCarve, markdownToCarve } = pinned
 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, 'corpus-convert')
 
-// Site generators conventionally consume a leading YAML envelope before
-// handing the body to Djot. It is already valid Carve frontmatter, so migration
-// preserves it while the independent Djot oracle reads only the body.
-const djotBody = (source) => {
-  if (!source.startsWith('---\n')) return source
-  const close = source.indexOf('\n---\n', 4)
-  return close === -1 ? source : source.slice(close + 5)
+// Site generators conventionally consume a leading frontmatter envelope before
+// handing the body to Djot or to a Markdown reader. It is already valid Carve
+// frontmatter, so migration preserves it while the independent oracle reads
+// only the body. WHICH leading blocks are an envelope is CARVE-P2-030's shape
+// test, so the adapter cannot excuse a block the clause makes document content.
+const envelopeBody = (source) => {
+  const end = frontmatterEnd(source)
+  return end === -1 ? source : source.slice(end)
 }
 
 const bbcodeTextOracle = (source) => {
@@ -119,7 +121,17 @@ const PINNED_UNIMPLEMENTED = {}
  * that starts matching fails as STALE until the entry is deleted in the commit
  * that moves the pin, and the meaning assertion still runs regardless.
  */
-const PINNED_DRIFT = {}
+const PINNED_DRIFT = {
+  // CARVE-P2-030, ruled at carve#2799. The pinned build converts any leading
+  // `---` block with a closer to frontmatter, so the five cases whose blocks
+  // do not shape as a mapping are ahead of it. Measured against carve-js
+  // `b12ebf89`: case 71 loses `Foo` outright.
+  '71-markdown-a-scalar-leading-block-is-not-front-matter': 'the pinned importer has no mapping test',
+  '73-markdown-a-comment-only-leading-block-is-not-front-matter': 'the pinned importer has no mapping test',
+  '77-markdown-a-key-holding-a-colon-is-not-a-mapping': 'the pinned importer has no mapping test',
+  '78-markdown-a-list-first-line-is-not-a-mapping': 'the pinned importer has no mapping test',
+  '83-markdown-a-bare-opener-takes-no-toml-shape': 'the pinned importer has no mapping test',
+}
 const PINNED_SOURCE_DRIFT = {}
 
 /**
@@ -273,8 +285,8 @@ test('convert then render matches the pinned bytes', () => {
 test('a Djot site-frontmatter adapter preserves the envelope bytes', () => {
   const source = readFileSync(resolve(corpusDir, '34-djot-site-frontmatter-is-not-djot/input.djot'), 'utf8')
   const migrated = djotToCarve(source)
-  const migratedBody = djotBody(migrated)
-  const sourceBody = djotBody(source)
+  const migratedBody = envelopeBody(migrated)
+  const sourceBody = envelopeBody(source)
   assert.equal(migratedBody, sourceBody)
   const matches = migrated.slice(0, migrated.length - migratedBody.length) === source.slice(0, source.length - sourceBody.length)
   const drift = PINNED_SOURCE_DRIFT['34-djot-site-frontmatter-is-not-djot']
@@ -288,7 +300,7 @@ test('the migrated document says what the source language says', () => {
     const source = readFileSync(resolve(dir, inputs[0]), 'utf8')
     const expected = readFileSync(resolve(dir, 'expected.html'), 'utf8')
     const ours = textOf(expected)
-    const oracleSource = slug === '34-djot-site-frontmatter-is-not-djot' ? djotBody(source) : source
+    const oracleSource = envelopeBody(source)
     const theirs = textOf(FORMATS[format].oracle(oracleSource))
     if (ours !== theirs) {
       wrong.push(`${slug}\n    ${format} reader: ${JSON.stringify(theirs)}\n       migrated: ${JSON.stringify(ours)}`)

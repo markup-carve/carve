@@ -159,3 +159,24 @@
 # commit closes without anything in this repo moving.
 #
 # THIS FILE IS EMPTY OF MARKDOWN-IMPORTER DECLARATIONS AGAIN.
+
+# CARVE-P2-030, ruled at carve#2799: a BARE `---` block imports as frontmatter
+# only where its content SHAPES as a mapping. A typed opener is frontmatter
+# unconditionally.
+#
+# NOTHING IS DECLARED, and that is a MEASUREMENT rather than an omission. Each
+# engine was built from its own `origin/main` in a fresh worktree and run over
+# all thirteen cases (71 to 83); every produced document was rendered through
+# this repo's pinned carve-js and compared with the case's expected.html.
+#
+#   carve-js  `931b12a5f` (#2605 merged)          13/13 pass
+#   carve-php `2e6d935f9` (#2974, #2976 merged)   13/13 pass
+#   carve-rs  `d90a9e9d9` (#2390 merged)          13/13 pass
+#
+# The three engine fixes landed the same day the clause did. A declaration for
+# an engine that no longer drifts masks the next regression, which is what the
+# header above warns about and what the twenty stale lines two blocks up cost.
+#
+# The repo's PINNED build is a separate question and is still behind: it pins
+# carve-js `b12ebf89`, which predates #2605, so five cases are declared in
+# PINNED_DRIFT in tests/corpus-convert.test.mjs until the pin moves.

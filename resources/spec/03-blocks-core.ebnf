@@ -103,6 +103,67 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
 (* --- Thematic Breaks --- *)
 thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})), newline ;
 
+(* A BARE `---` BLOCK IS IMPORTED AS FRONTMATTER ONLY WHERE IT SHAPES AS A
+   MAPPING -- NORMATIVE [CARVE-P2-030]. A Markdown importer meeting a BARE
+   `---` block at byte 0 of its SOURCE writes Carve frontmatter only where the
+   test below calls the block a mapping. Everywhere else it writes the thematic
+   break and the source lines for what they are -- under CommonMark, `Foo` over
+   `---` is a setext heading -- in forms that cannot reopen frontmatter
+   (PART 11 §6).
+
+   A TYPED OPENER IS FRONTMATTER UNCONDITIONALLY, for every
+   `frontmatter_format`: `---yaml`, `---toml`, `---json`, `---neon`. No shape
+   test runs on one. `---yaml` / `Foo` / `---` is frontmatter whose payload is
+   a scalar, which is the author's business and not the importer's.
+
+   THE COLLISION IS THE BARE SPELLING'S ALONE, which is why the test is too. A
+   break is a dash run and nothing else (PART 1), so a typed opener is never a
+   thematic break and never a setext underline; with no closer ahead of it the
+   line is ordinary paragraph text. Once the author named the format there is
+   nothing left to infer.
+
+   A BARE OPENER TAKES THE YAML TEST AND ONLY THAT ONE. PART 1 says a bare
+   `---` defaults to `yaml`, so exactly one shape rule can apply to it. The
+   consequence worth spelling: `---` / `[table]` / `---` is NOT frontmatter --
+   `[table]` is no yaml mapping, and a toml rule does not reach a bare opener.
+
+   THERE IS NO TOML SHAPE RULE, and the earlier refinement's one is dropped
+   rather than kept for later. A typed `---toml` is frontmatter unconditionally
+   and a bare opener is yaml, so a toml shape test has no reachable caller, and
+   a rule no implementation can reach is a check that cannot fire.
+
+   THE TEST. Take the lines between the opener and the closer. Skip blank lines
+   and lines whose first non-space character is `#`. The block is frontmatter
+   when the first remaining line, AT COLUMN 0, is a key followed by `:` and
+   then a space, a tab or the end of the line. The key is a double-quoted or
+   single-quoted string, or a run that starts with neither whitespace nor any
+   of `-`, `[`, `{`, `"`, `'`, `#`, and holds no `:`.
+
+   NO REMAINING LINE IS NOT A MAPPING, so an empty or comment-only block is not
+   frontmatter either.
+
+   COLUMN 0 IS A TEST ON THE FIRST REMAINING LINE, NOT A SECOND SKIP RULE. An
+   indented key is that line and fails the test; only a blank line and a
+   `#` line are ever skipped.
+
+   IT IS A SHAPE TEST AND NOT A PARSE, deliberately: the shape gives identical
+   results in every engine, conformance cases can pin it, and it adds no YAML
+   dependency to an implementation. Libraries disagree on YAML edge cases, so a
+   real parse would let two conformant engines answer differently on one input.
+   The ONE divergence from a real parse is MALFORMED CONTENT: `title: [unclosed`
+   has the shape, so it is frontmatter here.
+
+   THE GATE IS THE IMPORTER'S, NOT THE GRAMMAR'S. `frontmatter_content` is
+   opaque lines (PART 1), so `---` / `Foo` / `---` is valid Carve frontmatter
+   and nothing in the grammar separates it from a document's metadata. What an
+   import owes is what the SOURCE means, and CommonMark has no frontmatter.
+
+   EVERY CONVERSION IS REPORTED, bare or typed, whether or not it looks lossy:
+   lines leave the document body for metadata a reader cannot see in the
+   output. The code is `frontmatter-synthesized` on the importer's own
+   migration report (`docs/format-bridges.md`), not a render loss -- a rendered
+   document lost nothing. *)
+
 (* --- Code Blocks --- *)
 code_block = fenced_code_block, [caption_slot] ;
 (* A trailing caption (PART 9 §4) wraps the code block in a figure: a
