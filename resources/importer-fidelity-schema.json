@@ -32,11 +32,15 @@
           "sourceFormat": {
             "enum": [
               "pandoc-json",
-              "pdf-extraction-json"
+              "pdf-extraction-json",
+              "markdown"
             ]
           },
           "runner": {
-            "const": "external"
+            "enum": [
+              "external",
+              "core"
+            ]
           },
           "repository": {
             "type": "string",
@@ -82,18 +86,198 @@
                         "inferred",
                         "fallback"
                       ]
+                    },
+                    "path": {
+                      "type": "string",
+                      "pattern": "^line:[1-9][0-9]*$"
+                    },
+                    "severity": {
+                      "enum": [
+                        "info",
+                        "warning",
+                        "error"
+                      ]
                     }
                   },
                   "additionalProperties": false
                 }
+              },
+              "exit": {
+                "enum": [
+                  0,
+                  1
+                ]
+              },
+              "engines": {
+                "type": "object",
+                "properties": {
+                  "js": {
+                    "$ref": "#/$defs/engineExpected"
+                  },
+                  "php": {
+                    "$ref": "#/$defs/engineExpected"
+                  },
+                  "rust": {
+                    "$ref": "#/$defs/engineExpected"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "html": {
+                "type": "object",
+                "required": [
+                  "default",
+                  "safe"
+                ],
+                "properties": {
+                  "default": {
+                    "type": "string"
+                  },
+                  "safe": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          },
+          "constructs": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$"
+            }
+          }
+        },
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "runner": {
+                  "const": "core"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "sourceFormat": {
+                  "const": "markdown"
+                },
+                "expected": {
+                  "required": [
+                    "exit"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "runner": {
+                  "const": "external"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "sourceFormat": {
+                  "enum": [
+                    "pandoc-json",
+                    "pdf-extraction-json"
+                  ]
+                },
+                "expected": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "engines"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "exit"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "html"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "engineExpected": {
+      "type": "object",
+      "properties": {
+        "output": {
+          "type": "string"
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "code",
+              "fidelity",
+              "confidence"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "fidelity": {
+                "enum": [
+                  "preserved",
+                  "normalized",
+                  "degraded",
+                  "dropped"
+                ]
+              },
+              "confidence": {
+                "enum": [
+                  "exact",
+                  "inferred",
+                  "fallback"
+                ]
+              },
+              "path": {
+                "type": "string",
+                "pattern": "^line:[1-9][0-9]*$"
+              },
+              "severity": {
+                "enum": [
+                  "info",
+                  "warning",
+                  "error"
+                ]
               }
             },
             "additionalProperties": false
           }
         },
-        "additionalProperties": false
-      }
+        "exit": {
+          "enum": [
+            0,
+            1
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
     }
-  },
-  "additionalProperties": false
+  }
 }

@@ -2,12 +2,12 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import Ajv2020 from 'ajv/dist/2020.js'
-import { migrateBbcode, migrateDjot, migrateHtml, migrateMarkdown } from '@markup-carve/carve'
+import { migrateBbcode, migrateDjot, migrateHtml } from '@markup-carve/carve'
 
 const manifest = JSON.parse(readFileSync(new URL('./importer-fidelity/manifest.json', import.meta.url)))
 const schema = JSON.parse(readFileSync(new URL('../resources/importer-fidelity-schema.json', import.meta.url)))
 const reportSchema = JSON.parse(readFileSync(new URL('../resources/migration-report-schema.json', import.meta.url)))
-const formats = ['pandoc-json', 'pdf-extraction-json']
+const formats = ['markdown', 'pandoc-json', 'pdf-extraction-json']
 const fidelity = ['preserved', 'normalized', 'degraded', 'dropped']
 const confidence = ['exact', 'inferred', 'fallback']
 
@@ -48,10 +48,9 @@ test('opaque raw HTML and incomplete assessment fail closed under the report sch
   assert.equal(validate(incomplete), false, 'truncation must not validate as merely degraded')
 })
 
-test('built-in importers without construct-level evidence report that boundary explicitly', () => {
+test('the pinned engine retains its pre-assessment compatibility boundary', () => {
   const validate = new Ajv2020().compile(reportSchema)
   for (const [sourceFormat, result] of [
-    ['markdown', migrateMarkdown('**strong**')],
     ['djot', migrateDjot('_emphasis_')],
     ['bbcode', migrateBbcode('[b]strong[/b]')]
   ]) {
@@ -64,17 +63,34 @@ test('built-in importers without construct-level evidence report that boundary e
   }
 })
 
-test('a known ordered task loss is reported beside the incomplete-assessment row', () => {
-  const result = migrateMarkdown('1. [x] done\n')
-  const validate = new Ajv2020().compile(reportSchema)
-  assert.equal(validate(result.report), true, JSON.stringify(validate.errors))
-  assert.equal(result.value, '1. [x] done\n')
-  const rows = result.report.diagnostics.map(({ code, fidelity, confidence }) => ({ code, fidelity, confidence })).sort((a, b) => a.code.localeCompare(b.code))
-  const expected = [
-    { code: 'fidelity-unverified', fidelity: 'dropped', confidence: 'fallback' },
-    { code: 'structure-unspellable', fidelity: 'dropped', confidence: 'exact' },
-  ]
-  assert.deepEqual(rows, expected)
+test('the Markdown contract covers literal inputs and source-located construct families', () => {
+  const inventory = JSON.parse(readFileSync(new URL('../resources/markdown-import-inventory.json', import.meta.url)))
+  const core = manifest.cases.filter(row => row.runner === 'core')
+  for (const construct of inventory.constructs) {
+    assert.ok(core.some(row => row.constructs?.includes(construct.construct)), construct.construct)
+  }
+  for (const fixture of core) {
+    for (const row of fixture.expected.diagnostics) {
+      const contract = inventory.constructs.find(construct => construct.code === row.code)
+      if (contract) assert.equal(row.fidelity, contract.fidelity, fixture.id)
+    }
+  }
+})
+
+test('Markdown construct paths and external fixture boundaries are enforced', () => {
+  const validateReport = new Ajv2020().compile(reportSchema)
+  const report = { schemaVersion: 2, sourceFormat: 'markdown', diagnostics: [{
+    code: 'markdown-strong', message: 'Strong emphasis.', severity: 'info', fidelity: 'preserved', confidence: 'exact', path: 'line:1'
+  }] }
+  assert.equal(validateReport(report), true)
+  report.diagnostics[0].path = 'line:0'
+  assert.equal(validateReport(report), false)
+  delete report.diagnostics[0].path
+  assert.equal(validateReport(report), false)
+  const validateManifest = new Ajv2020().compile(schema)
+  const external = structuredClone(manifest.cases.find(row => row.runner === 'external'))
+  external.expected.exit = 0
+  assert.equal(validateManifest({ schemaVersion: 2, cases: [external] }), false)
 })
 
 test('externally replayed fixtures name their release-gate repository', () => {

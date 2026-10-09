@@ -112,9 +112,10 @@ subset: empty input (including input containing only line endings) or Unicode le
 spaces, with optional trailing line endings. After CR and CRLF normalization
 and removal of trailing LF characters, output must equal input and no known
 loss may be present. This produces `literal-text-verified` with `preserved`
-fidelity, `exact` confidence, and `info` severity. Other input remains
-`fidelity-unverified`; this evidence does not cover general markup migration.
-`scripts/migration-evidence-claims.mjs` checks the subset and loss-gate exits
+fidelity, `exact` confidence, and `info` severity. Djot and BBCode retain `fidelity-unverified` outside that subset. Markdown
+uses the construct assessment below.
+`scripts/migration-evidence-claims.mjs` checks the literal subset, Markdown
+construct fixtures, and loss-gate exits
 across all three engines without exemptions. The CLI accepts
 `migrate --from markdown|djot|bbcode --report - --check-loss`; converted source
 goes to stdout and the JSON report goes to stderr.
@@ -123,10 +124,56 @@ goes to stdout and the JSON report goes to stderr.
 importer MUST also report each known construct-level loss. For example, GFM
 reads a checkbox on `1. [x] done`, but Carve spells task markers only on bullet
 items. The ordered item keeps `[x]` as text and reports
-`structure-unspellable` as `dropped` with `exact` confidence alongside
-`fidelity-unverified`. Its message is pinned once, for every entry point that
+`structure-unspellable` as `dropped` with `exact` confidence. Incomplete
+assessment also retains `fidelity-unverified`. Its message is pinned once, for every entry point that
 reaches the loss, under
 [a lost checkbox on an ordered task item](./html-import-contract#a-lost-checkbox-on-an-ordered-task-item-says-it-one-way).
+
+### Markdown construct assessment
+
+Markdown assessment uses CommonMark plus GFM. The machine-readable inventory is
+[`resources/markdown-import-inventory.json`](./markdown-import-inventory.json).
+The `text` entry covers complete literal inputs through `literal-text-verified`.
+Each assessed occurrence emits its
+inventory code, fidelity and confidence with a `line:N` path naming the original
+input line. CRLF counts as one line ending. Delimiters inside code or raw HTML
+are content, not additional Markdown constructs.
+
+Preserved constructs retain their Markdown meaning in native Carve syntax.
+Normalized constructs resolve source representations such as entities, escapes,
+references and alternate block forms; their output may already use that spelling. Raw HTML uses `raw-preserved` with
+`degraded` fidelity because it remains opaque and depends on the render profile.
+An ordered task marker uses `structure-unspellable` with `dropped` fidelity.
+Known losses remain in the report when complete assessment is unavailable.
+
+Assessment must account for the complete input. Any unassessed construct retains
+`fidelity-unverified`, alongside known losses. Successful
+conversion, identical rendered HTML, and a canonical fixed point alone do not
+prove complete assessment. Empty diagnostics require complete assessment.
+
+Keeping reference definitions or inlining their resolved destinations both use
+`normalized` when labels, destinations and titles retain their meaning. Pointy
+autolinks and explicit links follow the same rule. Splitting an inline raw HTML
+run into several raw spans is permitted when their combined HTML retains the
+same content. Native HTML may use `<s>` for strikethrough and add accessible labels to task
+checkboxes. Diagnostic order may follow parser traversal; paths identify the
+source occurrences.
+
+The `--safe` raw HTML switch escapes raw markup. Profiles that deny raw nodes
+may instead remove it.
+
+The inventory names the construct families, not a claim that every combination
+is already assessed. Ambiguous syntax, unsupported dialect extensions and
+mismatches between assessed structure and writer output remain unverified.
+Existing aggregate loss rows may lack a location while assessment is incomplete;
+the fallback prevents treating those reports as complete. The JS importer also
+omits a fallback loss location when reference or frontmatter preprocessing
+changes the source lines and it cannot establish the original position.
+Rust leaves unresolved duplicate reference definitions unverified; it does not
+reparse isolated lines to infer extra definitions.
+Assessment checks source typography. Glyph typography is a render choice.
+Conversion and rendering are separate boundaries: destination filtering and
+raw HTML handling belong to the render profile.
 
 The producer's `fidelity` is final: bindings MUST NOT reclassify it, and
 fidelity MUST NOT be inferred from human-readable message text. Report and

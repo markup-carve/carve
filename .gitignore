@@ -31,5 +31,6 @@ docs/public/render-loss-report.schema.json
 docs/public/conversion-diagnostics.schema.json
 docs/public/source-patch.schema.json
 docs/public/importer-fidelity-manifest.json
+docs/public/markdown-import-inventory.json
 docs/examples/
 docs/.vitepress/generated-examples.json

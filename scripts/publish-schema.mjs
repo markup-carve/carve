@@ -37,3 +37,8 @@ copyFileSync(
   resolve(root, 'tests', 'importer-fidelity', 'manifest.json'),
   resolve(root, 'docs', 'public', 'importer-fidelity-manifest.json')
 )
+
+copyFileSync(
+  resolve(root, 'resources', 'markdown-import-inventory.json'),
+  resolve(root, 'docs', 'public', 'markdown-import-inventory.json')
+)
