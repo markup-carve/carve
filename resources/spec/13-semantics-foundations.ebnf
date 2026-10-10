@@ -27,9 +27,13 @@
         `%` is compared -- trailing text on either fence line is insignificant,
         and an opener with no matching closer ahead opens nothing (§28).
 
-   3. NO SAME-TYPE NESTING
-      - /nested /italic/ here/ is invalid
-      - /nested *bold* here/ is valid
+   3. NO BARE SAME-TYPE NESTING
+      - Bare /nested /italic/ here/ does not produce nested italic nodes.
+      - /nested *bold* here/ permits cross-type nesting.
+      - Explicit braced children MAY repeat an active kind (PART 9 §22):
+        {/outer {/inner/} tail/} has two italic nodes. The same exception
+        applies under a bare parent: *outer {*inner*} tail* has two strong nodes.
+        Bare same-kind delimiters inside a braced parent remain literal.
       - A consequence (§9 SAME-DELIMITER ADJACENCY): a doubled bare delimiter
         never opens nested same-type emphasis -- it is literal text. So `**x**`
         -> `**x**` and `~~x~~` -> `~~x~~`, uniform with the already-literal

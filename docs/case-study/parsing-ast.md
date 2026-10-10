@@ -33,10 +33,10 @@ Parse in this precedence order:
 
 1. **Literal over markup.** A delimiter with no valid match (per the
    word-boundary conditions) is literal text.
-2. **Opener → nearest valid same-type closer.** Same-type delimiters between
-   them are literal content (same-type spans do not nest), so `/usr/local/`
+2. **Opener → nearest valid same-type closer.** Bare same-type delimiters between
+   them are literal content (bare same-type spans do not nest), so `/usr/local/`
    is `<em>usr/local</em>`, *not* `<em>usr</em>local/`.
-3. **Different-type spans nest**, resolved with a delimiter stack in a single
+3. **Different-type spans and explicit braced same-kind children nest**, resolved with a delimiter stack in a single
    left-to-right pass: linear time, no backtracking (Design Principle 1).
 
 This is *not* "shortest span / earliest opening wins": that rule would truncate

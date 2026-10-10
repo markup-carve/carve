@@ -2468,6 +2468,8 @@ The shared set is deliberately small and each directory has one subject:
 | `empty-heading` | a bare empty heading and an attributed whitespace-only one, each dropped with one row |
 | `code-span-holding-blocks` | two blocks flattened into a `<code>`, joined with no separator and the lost boundary reported |
 
+The same-kind nesting rows above describe the current pinned importer. [The explicit braced nesting specification](./nested-braced-emphasis) removes that native spelling ceiling; these fixtures must be updated when the importer implements it. Their present flattening reports are not the required behavior under the new rule.
+
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one
 would be pinning source no writer produces, and the first engine to run its

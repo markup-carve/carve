@@ -170,16 +170,16 @@
       second node beside it, a text run, a NO-BREAK SPACE (§7) -- keeps its
       wrapper and no ceiling is reached.
 
-      AN INLINE WRAPPER REACHES THE SAME CEILING. A span nested at any depth
-      in a span of the same kind has no spelling where both levels need the
-      braced form, because PART 9 §9 E3 leaves the inner opener literal while
-      the outer span is open: the inner `{/` in `{/a *b {/c/}*/}` is text. A
-      braced span of another kind between the two levels starts its own
-      scope, so the inner span nests and no ceiling is reached:
-      `{/b{*c{/d/}*}/}` keeps both emphases. A writer refuses a tree that
-      does reach the ceiling; an importer unwraps the inner level and
-      reports `structure-unspellable`, so `<sup><sup>x</sup></sup>` imports as
-      `{^x^}`.
+      EXPLICIT SAME-TYPE EMPHASIS DOES NOT REACH THIS CEILING. PART 9 §22
+      permits a braced child of an active kind, so repeated emphasis,
+      including <sup><sup>x</sup></sup>, has a native spelling. The writer
+      MUST preserve both nodes, their child order and their attributes,
+      using braced spans where bare syntax cannot represent the tree.
+      An importer MUST NOT unwrap a representable same-kind child or report
+      structure-unspellable merely for that relationship. Depth-limit
+      recovery and other independently unspellable shapes retain their
+      diagnostics. Markdown and Djot export follow their own target
+      contracts; removing this native ceiling does not widen those syntaxes.
 
       DECIDED ON THE SPELLING, NEVER ON RESOLUTION -- and PART 9R R7 does not
       change that. R7's promotion phase reads the RESOLVED tree; this clause

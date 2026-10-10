@@ -69,9 +69,10 @@
         template tags (`{% raw %}`, `{% endif %}`), which is the one shape
         where a Liquid or Nunjucks source reaches the parser as text.
 
-   22. FORCED INTRAWORD EMPHASIS -- NORMATIVE [CARVE-P9-043] (governs the forced_* productions
+   22. FORCED EMPHASIS AND EXPLICIT SAME-TYPE NESTING -- NORMATIVE [CARVE-P9-043] (governs the forced_* productions
       in PART 3). The brace-pair family is the escape hatch for emphasis where a
-      bare delimiter would otherwise stay literal (§9 word boundary).
+      bare delimiter would otherwise stay literal (§9 word boundary), and
+      for a same-kind child that a bare opener cannot represent (§9 E3).
       - FORMS. Each emphasis mark has a forced form that renders the SAME
         element as its bare delimiter:
           {/x/}   -> <em>x</em>        {*x*}   -> <strong>x</strong>
@@ -87,12 +88,24 @@
         (§9): {/a/b/} -> <em>a/b</em>. Inner content otherwise parses normally,
         so cross-type nesting works: {/italic *bold*/} -> <em>italic
         <strong>bold</strong></em>.
+      - EXPLICIT SAME-TYPE NESTING. A valid forced opener MAY open a child
+        of any of the seven emphasis kinds even when that kind is active.
+        {*outer {*inner*} tail*} and *outer {*inner*} tail* each have two
+        strong nodes. Bare same-kind delimiters inside a forced parent stay
+        literal; doubled bare delimiters retain their existing meaning.
+        The X} closes the innermost reachable matching braced span. It MUST
+        NOT cross an intervening braced boundary (E2a) or bracket-run bound
+        (E2b). Unmatched explicit openers remain literal, not implicitly
+        closed at end of input: {*a {*b*} keeps its literal outer opener
+        and its closed inner strong span. Empty forced spans remain literal.
+        Existing nesting limits apply; no repeated suffix search or
+        backtracking is introduced by this exception.
       - `{~ … ~}` DISAMBIGUATION. The brace pair is editorial SUBSTITUTION when
         it contains a top-level `~>` ({~old~>new~} -> <del>old</del><ins>new
         </ins>), and forced STRIKETHROUGH otherwise ({~old~} ->
         <s>old</s>). The `~>` test is the discriminator. TOP-LEVEL means the
-        search skips verbatim content -- code, math, an inline literal, a
-        comment -- and an escaped `\~>`, so {~`a~>b~} is <s><code>a~>b</code>
+        search skips nested braced spans and verbatim content -- code, math,
+        an inline literal, a comment -- and an escaped `\~>`, so {~`a~>b~} is <s><code>a~>b</code>
         </s>.
       - `{= … =}` is forced highlight (<mark>), distinct from the raw-inline
         `{=format}` attribute on a code span (`` `x`{=html} ``), which has no
@@ -100,7 +113,9 @@
       - ESCAPING. A literal `{/` (etc.) is written `\{/` -- one backslash on the
         brace is enough; the inner delimiter need not be escaped.
       - ATTRIBUTES. A forced span MAY carry a trailing `[attribute_run]` like
-        any bare span: {*x*}{.c} -> <strong class="c">x</strong>.
+        any bare span: {*x*}{.c} -> <strong class="c">x</strong>. Child and
+        parent attribute runs attach independently; neither inherits the
+        other's attributes merely because they have the same kind.
       (corpus 01-emphasis-12 forced-intraword, 01-emphasis-13 forced-nesting.)
 
    23. LINE BLOCK (VERSE) -- NORMATIVE [CARVE-P9-044] (governs `line_block` in PART 2). A

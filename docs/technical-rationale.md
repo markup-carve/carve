@@ -175,7 +175,7 @@ left-to-right pass. In Carve's grammar the rule is explicit:
 - prefer literal text when a delimiter has no valid match
 - match an opener to the nearest valid same-type closer
 - allow different delimiter types to nest
-- do not allow same-type spans to nest
+- allow same-type nesting only through explicit braced children
 
 That yields deterministic behavior without repeatedly revisiting earlier input.
 More precisely: the parser may inspect nearby characters to decide whether a
@@ -216,9 +216,9 @@ A backtracking-oriented design would be more like:
 3. discover that this breaks the larger structure you want
 4. rewind and try a later `/` instead
 
-Carve's rule avoids that whole class of parser behavior. Same-type delimiters
-inside the span are literal content, so there is no alternate same-type parse
-tree to explore.
+Carve resolves delimiters without trying alternate parse trees. Bare same-type
+openers inside an active span remain literal; explicit braced children have
+their own boundaries and use the delimiter stack.
 
 ## Two-pass reference resolution without backtracking
 
@@ -639,8 +639,8 @@ Expected structure:
 <strong>bold <em>italic</em></strong>
 ```
 
-This works because different delimiter types may nest and same-type nesting is
-not part of the language.
+Different delimiter types may nest. Same-type children need explicit braced
+openers; bare same-type nesting remains excluded.
 
 ### Example 2: later definitions without reparsing earlier text
 

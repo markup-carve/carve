@@ -32,16 +32,18 @@
          In particular, a bracket inside an editorial comment opens no run,
          so `[{#a]#}`
          retains its comment and renders the outside `[`.
-      E3 NO SAME-TYPE NESTING (§3). While a d-span is open, a further d
-         that would open does NOT push -- it is literal content. Hence
-         /usr/local/ -> <em>usr/local</em> (01-emphasis-6); the/path/here
-         literal (first `/` has no left boundary); unbalanced trailing runs
-         stay literal: /b// -> <em>b</em>/ and /x// -> <em>x</em>/
-         (edge-cases.md §1). OPEN means reachable under E2a, for a forced
-         delimiter as for a bare one: inside a braced inline only the span
-         that opened it and the entries pushed there count, so the inner
-         `{*c*}` in `{*a {/b {*c*} d/} e*}` nests, and a `*}` there closes
-         nothing outside the `{/ /}`.
+      E3 NO BARE SAME-TYPE NESTING (§3). While a reachable d-span is open,
+         a further bare d that would open does NOT push -- it is literal.
+         Hence /usr/local/ -> <em>usr/local</em> (01-emphasis-6);
+         the/path/here is literal; unbalanced trailing runs stay literal:
+         /b// -> <em>b</em>/ and /x// -> <em>x</em>/.
+         An explicit braced opener is exempt: it MAY push a child of the
+         same kind under either a bare or a braced parent (§22). Each braced
+         span creates the E2a boundary; its closer closes that span, never
+         an ancestor across an intervening braced boundary. Thus
+         {*a {*b*} c*} nests, while {*a *b* c*} keeps the inner bare stars
+         literal. Cross-type behavior is unchanged: {*a {/b {*c*} d/} e*}
+         nests, and a *} inside the {/ /} closes nothing outside it.
       E4 OPEN. Otherwise a d satisfying bare_opener(d) pushes an entry.
       E5 END OF BLOCK. Entries still open demote to literal.
       Forced `{X … X}` spans (§22) push/pop on the SAME stack; only the

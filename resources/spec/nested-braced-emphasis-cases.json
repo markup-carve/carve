@@ -1,0 +1,597 @@
+{
+  "rule": "CARVE-P9-043",
+  "status": "specification-ahead-of-implementations",
+  "cases": [
+    {
+      "id": "direct-strong",
+      "source": "{*outer {*inner*} tail*}",
+      "children": [
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "outer "
+            },
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "inner"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " tail"
+            }
+          ]
+        }
+      ],
+      "html": "<p><strong>outer <strong>inner</strong> tail</strong></p>"
+    },
+    {
+      "id": "direct-emphasis",
+      "source": "{/outer {/inner/} tail/}",
+      "children": [
+        {
+          "type": "emphasis",
+          "children": [
+            {
+              "type": "text",
+              "value": "outer "
+            },
+            {
+              "type": "emphasis",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "inner"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " tail"
+            }
+          ]
+        }
+      ],
+      "html": "<p><em>outer <em>inner</em> tail</em></p>"
+    },
+    {
+      "id": "direct-underline",
+      "source": "{_outer {_inner_} tail_}",
+      "children": [
+        {
+          "type": "underline",
+          "children": [
+            {
+              "type": "text",
+              "value": "outer "
+            },
+            {
+              "type": "underline",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "inner"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " tail"
+            }
+          ]
+        }
+      ],
+      "html": "<p><u>outer <u>inner</u> tail</u></p>"
+    },
+    {
+      "id": "direct-strike",
+      "source": "{~outer {~inner~} tail~}",
+      "children": [
+        {
+          "type": "strike",
+          "children": [
+            {
+              "type": "text",
+              "value": "outer "
+            },
+            {
+              "type": "strike",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "inner"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " tail"
+            }
+          ]
+        }
+      ],
+      "html": "<p><s>outer <s>inner</s> tail</s></p>"
+    },
+    {
+      "id": "direct-highlight",
+      "source": "{=outer {=inner=} tail=}",
+      "children": [
+        {
+          "type": "highlight",
+          "children": [
+            {
+              "type": "text",
+              "value": "outer "
+            },
+            {
+              "type": "highlight",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "inner"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " tail"
+            }
+          ]
+        }
+      ],
+      "html": "<p><mark>outer <mark>inner</mark> tail</mark></p>"
+    },
+    {
+      "id": "direct-superscript",
+      "source": "{^outer {^inner^} tail^}",
+      "children": [
+        {
+          "type": "superscript",
+          "children": [
+            {
+              "type": "text",
+              "value": "outer "
+            },
+            {
+              "type": "superscript",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "inner"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " tail"
+            }
+          ]
+        }
+      ],
+      "html": "<p><sup>outer <sup>inner</sup> tail</sup></p>"
+    },
+    {
+      "id": "direct-subscript",
+      "source": "{,outer {,inner,} tail,}",
+      "children": [
+        {
+          "type": "subscript",
+          "children": [
+            {
+              "type": "text",
+              "value": "outer "
+            },
+            {
+              "type": "subscript",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "inner"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " tail"
+            }
+          ]
+        }
+      ],
+      "html": "<p><sub>outer <sub>inner</sub> tail</sub></p>"
+    },
+    {
+      "id": "bare-parent-strong",
+      "source": "*outer {*inner*} tail*",
+      "children": [
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "outer "
+            },
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "inner"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " tail"
+            }
+          ]
+        }
+      ],
+      "html": "<p><strong>outer <strong>inner</strong> tail</strong></p>"
+    },
+    {
+      "id": "bare-parent-emphasis",
+      "source": "/outer {/inner/} tail/",
+      "children": [
+        {
+          "type": "emphasis",
+          "children": [
+            {
+              "type": "text",
+              "value": "outer "
+            },
+            {
+              "type": "emphasis",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "inner"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " tail"
+            }
+          ]
+        }
+      ],
+      "html": "<p><em>outer <em>inner</em> tail</em></p>"
+    },
+    {
+      "id": "bare-parent-underline",
+      "source": "_outer {_inner_} tail_",
+      "children": [
+        {
+          "type": "underline",
+          "children": [
+            {
+              "type": "text",
+              "value": "outer "
+            },
+            {
+              "type": "underline",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "inner"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " tail"
+            }
+          ]
+        }
+      ],
+      "html": "<p><u>outer <u>inner</u> tail</u></p>"
+    },
+    {
+      "id": "bare-parent-strike",
+      "source": "~outer {~inner~} tail~",
+      "children": [
+        {
+          "type": "strike",
+          "children": [
+            {
+              "type": "text",
+              "value": "outer "
+            },
+            {
+              "type": "strike",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "inner"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " tail"
+            }
+          ]
+        }
+      ],
+      "html": "<p><s>outer <s>inner</s> tail</s></p>"
+    },
+    {
+      "id": "bare-parent-highlight",
+      "source": "=outer {=inner=} tail=",
+      "children": [
+        {
+          "type": "highlight",
+          "children": [
+            {
+              "type": "text",
+              "value": "outer "
+            },
+            {
+              "type": "highlight",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "inner"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " tail"
+            }
+          ]
+        }
+      ],
+      "html": "<p><mark>outer <mark>inner</mark> tail</mark></p>"
+    },
+    {
+      "id": "three-levels",
+      "source": "{*a {*b {*c*} d*} e*}",
+      "children": [
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "b "
+                },
+                {
+                  "type": "strong",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "c"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "value": " d"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " e"
+            }
+          ]
+        }
+      ],
+      "html": "<p><strong>a <strong>b <strong>c</strong> d</strong> e</strong></p>"
+    },
+    {
+      "id": "cross-kind-ancestor",
+      "source": "{/a *b {/c/}*/}",
+      "children": [
+        {
+          "type": "emphasis",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "b "
+                },
+                {
+                  "type": "emphasis",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "c"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "html": "<p><em>a <strong>b <em>c</em></strong></em></p>"
+    },
+    {
+      "id": "independent-attributes",
+      "source": "{*a {*b*}{.inner} c*}{.outer}",
+      "children": [
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "b"
+                }
+              ],
+              "attrs": {
+                "classes": [
+                  "inner"
+                ],
+                "order": [
+                  ".inner"
+                ]
+              }
+            },
+            {
+              "type": "text",
+              "value": " c"
+            }
+          ],
+          "attrs": {
+            "classes": [
+              "outer"
+            ],
+            "order": [
+              ".outer"
+            ]
+          }
+        }
+      ],
+      "html": "<p><strong class=\"outer\">a <strong class=\"inner\">b</strong> c</strong></p>"
+    },
+    {
+      "id": "bare-child-remains-literal",
+      "source": "{*a *b* c*}",
+      "children": [
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "a *b* c"
+            }
+          ]
+        }
+      ],
+      "html": "<p><strong>a *b* c</strong></p>"
+    },
+    {
+      "id": "doubled-bare-remains-literal",
+      "source": "**x**",
+      "children": [
+        {
+          "type": "text",
+          "value": "**x**"
+        }
+      ],
+      "html": "<p>**x**</p>"
+    },
+    {
+      "id": "empty-remains-literal",
+      "source": "{**}",
+      "children": [
+        {
+          "type": "text",
+          "value": "{**}"
+        }
+      ],
+      "html": "<p>{**}</p>"
+    },
+    {
+      "id": "unmatched-outer",
+      "source": "{*a {*b*}",
+      "children": [
+        {
+          "type": "text",
+          "value": "{*a "
+        },
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "b"
+            }
+          ]
+        }
+      ],
+      "html": "<p>{*a <strong>b</strong></p>"
+    },
+    {
+      "id": "opaque-code",
+      "source": "{*a `{*b*}` c*}",
+      "children": [
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "code",
+              "value": "{*b*}"
+            },
+            {
+              "type": "text",
+              "value": " c"
+            }
+          ]
+        }
+      ],
+      "html": "<p><strong>a <code>{*b*}</code> c</strong></p>"
+    },
+    {
+      "id": "cross-kind-boundary",
+      "source": "{*a {/b *} d/} e*}",
+      "children": [
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "emphasis",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "b *} d"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " e"
+            }
+          ]
+        }
+      ],
+      "html": "<p><strong>a <em>b *} d</em> e</strong></p>"
+    },
+    {
+      "id": "literal-escaped-spelling",
+      "source": "\\{\\*x\\*\\}",
+      "children": [
+        {
+          "type": "text",
+          "value": "{*x*}"
+        }
+      ],
+      "html": "<p>{*x*}</p>"
+    }
+  ]
+}
