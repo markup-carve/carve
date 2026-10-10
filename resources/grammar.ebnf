@@ -10034,6 +10034,50 @@ EOF = (* end of file *) ;
       Carve source, so Carve's own escape is the one the reader already has.
       The import reverses exactly those two.
 
+      A COMPOSITE FIGURE'S CAPTION LINE TAKES A MARKER OF ITS OWN, directly
+      after the closer's. The caption slot hangs BELOW the closing fence, so
+      the pair bracketing the container cannot enclose it, and carrying it the
+      way an attribute line above an opener is carried keeps one rule rather
+      than two. The payload is the caption line verbatim, `^` and all:
+
+        ::: figure               ->  <!-- carve: ::: figure -->
+        :::: panel                   <!-- carve: :::: panel -->
+        ![a](x.png)                  ![a](x.png)
+        ::::
+        :::                          <!-- carve: :::: -->
+        ^ Group caption              <!-- carve: ::: -->
+                                     <!-- carve: ^ Group caption -->
+                                     **Group caption**
+
+      THE IMPORT REPLACES THE CAPTION'S RENDERED PARAGRAPH RATHER THAN
+      APPENDING A SECOND ONE. This is the one thing the attribute-line
+      precedent does not cover: an attribute line has no rendered form of its
+      own, while a caption also renders as body text, so a marker that only
+      added the caption line back would leave that paragraph standing beside
+      it and the caption would appear twice. The paragraph replaced is the one
+      the marker stands directly above and no other, so the same caption text
+      appearing as ordinary body text elsewhere in the document is untouched.
+
+      A CAPTION MARKER BELONGS TO THE CONTAINER THE MARKER BEFORE IT CLOSED.
+      One standing above an opener, or one with no closer before it, has lost
+      what it recorded, and the set is damaged under the rule below. A `^ ...`
+      line INSIDE the container is not the caption slot: it is literal text
+      that renders as a paragraph, and it takes no marker of its own.
+
+      A MARKER IS READ AT A LINE'S OWN START, so a HOST THAT PREFIXES ITS LINES
+      CARRIES NOTHING: a comment written at a list item's content column or
+      behind a block quote's `>` is not read back, and a container in such a
+      host degrades there exactly as it does with the mode off. The narrowing
+      is deliberate rather than pending. A marker-shaped line in VERBATIM
+      content records no container and is never read, and at a list item's
+      content column a marker and a verbatim line are not distinguishable
+      without the block structure standing around them - so a marker written
+      where it cannot be read back is worse than degrading honestly, because
+      the output would look carried while nothing restores it. A TABLE CELL is
+      narrower still: this target flattens a cell to a single line, so there is
+      no line for a marker to stand on, and the container's own body is
+      flattened with it, leaving a restored marker nothing to bracket.
+
       A COMMENT AND NOT A LINK REFERENCE DEFINITION is the one choice here
       that is not obvious, and it was measured rather than argued.
       `[meta]: # (payload)` collapses in commonmark.js's refmap, emits one
@@ -10055,9 +10099,10 @@ EOF = (* end of file *) ;
       comparison governs.
 
       A DAMAGED MARKER SET IMPORTS AS PLAIN MARKDOWN, NEVER A GUESS. A
-      Markdown editor that deleted one marker, reordered two, or left the set
-      unbalanced has destroyed the structure the markers recorded, and a
-      reconstruction that is wrong is worse than a fallback that is honest.
+      Markdown editor that deleted one marker, reordered two, left the set
+      unbalanced or moved a caption marker off the closer it belongs to has
+      destroyed the structure the markers recorded, and a reconstruction that
+      is wrong is worse than a fallback that is honest.
       The import reads the file as ordinary Markdown, comments and all, and
       reports one `carrier-markers-damaged` diagnostic on the migration
       report (`resources/migration-report-schema.json`) with `degraded`
