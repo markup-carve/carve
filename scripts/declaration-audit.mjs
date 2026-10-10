@@ -320,6 +320,7 @@ const MANIFEST = [
   // -- carve-php -------------------------------------------------------------
   { repo: 'carve-php', path: 'tests/CarveCorpusTest.php', name: 'KNOWN_GAPS', kind: 'php', policy: 'owed', guard: 'two-way', owner: 'tests/CarveCorpusTest.php' },
   { repo: 'carve-php', path: 'tests/CarveCorpusTest.php', name: 'AHEAD_OF_PIN', kind: 'php', policy: 'owed', guard: 'two-way', owner: 'tests/CarveCorpusTest.php' },
+  { repo: 'carve-php', path: 'tests/TestCase/Converter/ConverterCorpusTest.php', name: 'AHEAD_OF_PIN', kind: 'php', policy: 'owed', guard: 'two-way', owner: 'tests/TestCase/Converter/ConverterCorpusTest.php' },
   { repo: 'carve-php', path: 'tests/OptionalCorpusTest.php', name: 'KNOWN_GAPS', kind: 'php', policy: 'owed', guard: 'two-way', owner: 'tests/OptionalCorpusTest.php' },
   { repo: 'carve-php', path: 'tests/OptionalCorpusTest.php', name: 'DECLARED_UNIMPLEMENTED', kind: 'php', policy: 'owed', guard: 'two-way', owner: 'tests/OptionalCorpusTest.php' },
   { repo: 'carve-php', path: 'tests/OptionalCorpusTest.php', name: 'AHEAD_OF_PIN', kind: 'php', policy: 'owed', guard: 'two-way', owner: 'tests/OptionalCorpusTest.php' },

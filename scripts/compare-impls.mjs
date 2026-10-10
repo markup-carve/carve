@@ -306,9 +306,7 @@ const PLAIN_EXTENSION_FEATURES = {
  * (carve#535).
  */
 const UNREACHABLE_REASONS = {
-  'smart-typography-quotes-off': 'carve#2875: the clause and corpus precede quotes-only support in the pinned engines',
 }
-const QUOTES_ONLY_AHEAD_OF_ENGINES = true
 
 // Optional features selected through carve-rs's repeatable registry-key flag.
 // Values after the key configure extensions whose optional corpus case does not
@@ -376,7 +374,6 @@ const impls = [
       return [...rustBaseCommand, 'migrate', '--from', format]
     },
     optionalCommand(feature, target = DEFAULT_TARGET) {
-      if (feature === 'smart-typography-quotes-off' && QUOTES_ONLY_AHEAD_OF_ENGINES) return null
       // DEFAULT typography is the engine's ordinary rendering on whichever
       // target the case names - no option at all, which is the whole point of
       // the control (carve#915).
@@ -495,7 +492,6 @@ const impls = [
       ]
     },
     optionalCommand(feature, target = DEFAULT_TARGET) {
-      if (feature === 'smart-typography-quotes-off' && QUOTES_ONLY_AHEAD_OF_ENGINES) return null
       // DEFAULT typography is the engine's ordinary rendering on whichever
       // target the case names - no option at all, which is the whole point of
       // the control (carve#915).
@@ -613,7 +609,6 @@ const impls = [
       return this.convertCommand(format)
     },
     optionalCommand(feature, target = DEFAULT_TARGET) {
-      if (feature === 'smart-typography-quotes-off' && QUOTES_ONLY_AHEAD_OF_ENGINES) return null
       // DEFAULT typography is the engine's ordinary rendering on whichever
       // target the case names - no option at all, which is the whole point of
       // the control (carve#915).
