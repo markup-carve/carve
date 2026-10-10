@@ -9,7 +9,7 @@ description: "Document-wide resolution, core semantic behavior, and HTML seriali
 
 Document-wide resolution, core semantic behavior, and HTML serialization.
 
-This view contains 48 of 316 active rules. Every rule remains mandatory where applicable.
+This view contains 50 of 320 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -62,4 +62,6 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P10-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L37) | 10 | DIRECTIVE CLASSES FOLLOW ELEMENT OWNERSHIP |
 | [`CARVE-P10-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L136) | 10 | A MATCHING RAW BLOCK KEEPS ITS PLACEMENT SLOT |
 | [`CARVE-P10-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L401) | 10 | AN ORDERED LIST'S DELIMITER NAMES ITSELF ON THE LIST |
+| [`CARVE-P10-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L435) | 10 | ROUNDTRIP EXPORT WRITES NAMED CARRIERS |
+| [`CARVE-P10-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L467) | 10 | THE HTML CARRIERS ARE THE NAMES IN THIS INVENTORY |
 | [`CARVE-P9-079`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L497) | 9 | A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT |

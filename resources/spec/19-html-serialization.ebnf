@@ -432,4 +432,118 @@
       delimiter.
 
 
+   13. ROUNDTRIP EXPORT WRITES NAMED CARRIERS -- NORMATIVE [CARVE-P10-015].
+      §1 to §12 describe the bytes every render writes. A document also holds
+      distinctions this serialization has no spelling for, and once a render
+      drops one no import can recover it. ROUNDTRIP EXPORT is one opt-in that
+      adds the carriers §13a names and changes nothing else:
+
+        PHP renderer          setRoundTripMode(true)
+        JavaScript options    roundtrip: true
+        Rust options          roundtrip: true / with_roundtrip(true)
+        CLI                   --roundtrip
+
+      IT IS OFF BY DEFAULT on every surface. The default bytes are the ones
+      §1 to §12 pin, and enabling the option neither removes nor reorders an
+      attribute those sections write.
+
+      THE TARGET DECIDES THE CARRIER. For HTML it is the names in §13a. For
+      Markdown it is the container carrier comments of PART 11, which that
+      target already writes under its own option; the shared flag SELECTS
+      them rather than redefining them. A Markdown export carries containers
+      and no more, and is not a claim to preserve what §13a lists.
+
+      WHAT IT GUARANTEES IS RECOVERY OF THE NAMED DISTINCTIONS, not
+      byte-identical source. A distinction the AST already records --
+      `list.bulletChar`, `thematic_break.marker`, a link's or image's `ref`
+      and `rawRef`, an `autolink` node, a `footnote_ref` label, an
+      `escaped_text` node, a `raw_inline` format, an authored `id` under
+      `attrs` -- is recoverable from the tree whether or not HTML carried it.
+      These carriers exist because this serialization collapses those
+      distinctions, not because the tree lost them. A distinction the AST
+      does NOT record, a table's separator-row widths among them, exists
+      only where a carrier holds it.
+
+   13a. THE HTML CARRIERS ARE THE NAMES IN THIS INVENTORY -- NORMATIVE
+      [CARVE-P10-016]. Under roundtrip export, and only under it, the HTML
+      target writes these names and no other preservation name. Each row is
+      the attribute, the node it rides on, and what the value holds:
+
+        data-marker                 <ul>, <ol>    the authored list marker,
+                                                  written only where it is
+                                                  not the default (`-` for a
+                                                  bullet list, `.` for an
+                                                  ordered one)
+        data-char                   <hr>          the authored thematic-break
+                                                  character, written only
+                                                  where it is not `-`
+        data-djot-explicit-id       <section>,    presence: the id was
+                                    <h1>-<h6>     authored, not generated. It
+                                                  rides the `<section>` where
+                                                  PART 9 §13 wraps one, and
+                                                  the heading where it does
+                                                  not
+        data-djot-ref               <a>, <img>    the reference label the link
+                                                  or image resolved by
+        data-djot-autolink          <a>           presence: the link was
+                                                  authored as an autolink
+        data-djot-footnote-label    <a>, <li>     the authored footnote label,
+                                                  on the reference and on the
+                                                  endnote item
+        data-djot-inline-footnote   <li>          presence: the endnote came
+                                                  from an inline footnote
+        data-djot-col-widths        <table>       the authored separator-row
+                                                  widths, comma-joined
+        data-djot-raw               <span>        the raw inline's format; the
+                                                  span holds its content
+        data-djot-escaped           <span>        presence; the span holds the
+                                                  escaped character
+        data-djot-src               <pre>, a      the construct's Carve source
+                                    container     verbatim
+        data-djot-abbreviations     <template>    the document's abbreviation
+                                                  definitions, one per line
+
+      A VALUE ESCAPES AS §2 ESCAPES ANY ATTRIBUTE VALUE. §2's text-content
+      exception for U+00A0 is not an attribute rule, so a carrier value
+      holding a no-break space keeps that character.
+
+      A PRESENCE CARRIER CARRIES NOTHING IN ITS VALUE.
+      `data-djot-explicit-id`, `data-djot-autolink`,
+      `data-djot-inline-footnote` and `data-djot-escaped` say what they say
+      by being there. A writer writes the empty value or `1`; a reader reads
+      presence and does not compare the value.
+
+      `data-djot-` IS THE SERIALIZER'S PROTOCOL, not an author's content. A
+      reader of these bytes consumes the names in this inventory rather than
+      writing one back out as an authored attribute. A name under that prefix
+      which this inventory does not list is reserved: an engine does not
+      invent one, and a listed name is not renamed without an import rule
+      that keeps reading the old spelling.
+
+      THE SPEC'S OWN ATTRIBUTES ARE NOT CARRIERS. A task list's `task-list`
+      class and its items' `data-task-state` (§11), and an ordered list's
+      `data-delim` (§12), are written by every render, with or without this
+      option, and each has its own clause. This option neither gates nor
+      duplicates them.
+
+   13b. EXPORT DOES NOT SELECT AN IMPORT MODE -- NORMATIVE [CARVE-P10-017].
+      Roundtrip export adds information to OUTPUT. HTML import's `roundtrip`
+      mode decides reconstruction and raw-HTML preservation of INPUT, and
+      finding one of these carriers in a document is not a reason to trust
+      that document. Enabling export never enables a trusted import, never
+      widens an importer's mode, and never relaxes a destination check. An
+      importer that returns a `data-djot-src` payload verbatim does so on its
+      own trust setting, never on the exporter's.
+
+   13c. AN ALIAS NEVER TURNS PRESERVATION OFF -- NORMATIVE [CARVE-P10-018].
+      The Markdown carrier options that predate this one -- PHP
+      `setCarryMarkers(true)`, JavaScript `carryMarkers: true`, Rust
+      `with_carry_markers(true)`, CLI `--carry-markers` -- keep working with
+      their current Markdown-only scope. Where the canonical option and a
+      legacy alias can both be supplied, EITHER ENABLED OPTION ENABLES
+      PRESERVATION, in either order: a default never overrides an alias the
+      caller enabled. `carryMarkers` is not redefined as an HTML option. A
+      narrower control, if one is ever wanted, is a separate explicit setting
+      rather than a change to this rule.
+
    ============================================================================ *)

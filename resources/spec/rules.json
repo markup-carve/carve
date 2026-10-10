@@ -1913,6 +1913,30 @@
       "scope": "resolution-rendering"
     },
     {
+      "id": "CARVE-P10-015",
+      "part": "10",
+      "title": "ROUNDTRIP EXPORT WRITES NAMED CARRIERS",
+      "scope": "resolution-rendering"
+    },
+    {
+      "id": "CARVE-P10-016",
+      "part": "10",
+      "title": "THE HTML CARRIERS ARE THE NAMES IN THIS INVENTORY",
+      "scope": "resolution-rendering"
+    },
+    {
+      "id": "CARVE-P10-017",
+      "part": "10",
+      "title": "EXPORT DOES NOT SELECT AN IMPORT MODE",
+      "scope": "imports-security-extensions"
+    },
+    {
+      "id": "CARVE-P10-018",
+      "part": "10",
+      "title": "AN ALIAS NEVER TURNS PRESERVATION OFF",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P3-023",
       "part": "3",
       "title": "SMART QUOTE DIRECTION",
