@@ -314,6 +314,19 @@ jobs:
             ingest-*.json
           if-no-files-found: error
 
+  # A SHARD THAT DIES EARLY MAKES THIS JOB MEASURE NOTHING, and it says so
+  # quietly. The verdict is a union of the shard reports, so while the shards
+  # were failing in an earlier step than `ast:check` they wrote no reports, this
+  # job merged an empty set, and its own red looked like the shards' red rather
+  # than a question nobody had asked. A full day passed that way. The first run
+  # after the shards came back produced TWO findings at once that neither had
+  # been introduced that day: an UNGATED frontmatter finding against all four
+  # engines, which was the oracle's own defect (carve#2881, carve#2889), and a
+  # span row that turned out to be declared already.
+  #
+  # So read a red here against WHAT THE SHARDS MANAGED TO MEASURE. "Green" and
+  # "did not run" reach this job looking identical, and only the shard reports
+  # tell them apart.
   ast-union:
     name: AST full-corpus verdict
     needs: ast-shards
