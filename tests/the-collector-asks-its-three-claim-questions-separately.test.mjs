@@ -78,16 +78,25 @@ test('an absorbed fence in a descendant is recorded without opening anything', (
   const source = '- a\n  - c\n  b\n    ```\n  ```\nflush\n'
   parse(source, { stateSink: sink })
   assert.equal(sink.descendantQ1.at(-1).absorbedFence.run, '```')
-  assert.equal(sink.descendantQ1.at(-1).open, true)
-  // The fence is absorbed, so it renders as text and `flush` stays in the item.
+  // The paragraph the fence is absorbed INTO is this item's own (`b`, at the
+  // item's content column), not the descendant's: `b` already closed the
+  // sub-item above it. So the descendant holds no open paragraph, and the
+  // absorbed opener does not invent one (markup-carve/carve#2884).
+  assert.equal(sink.descendantQ1.at(-1).open, false)
+  // The fence is absorbed, so it renders as text and `flush` stays in the item -
+  // the item's own paragraph is the deepest frame here, and it is open.
   assert.match(renderDoc(parse(source)), /flush<\/li>/)
 })
 
 test('a descendant s marker-line fence closer is not an unterminated opener', () => {
   // The opener is the MARKER line, so asking the shape question of the line in
-  // hand reads the closer as an opener of its own and pushes `x` out.
+  // hand reads the closer as an opener of its own - which would leave the fence
+  // unterminated. It is terminated, the descendant holds an empty code block,
+  // and a closed fence is not an open paragraph: `x` is a document paragraph
+  // (markup-carve/carve#2884, corpus
+  // 553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-3).
   assert.equal(
     renderDoc(parse('- - ```\n    ```\nx\n')),
-    '<ul>\n  <li>\n    <ul>\n      <li>\n        <pre><code></code></pre>\n      </li>\n    </ul>\n    x\n  </li>\n</ul>',
+    '<ul>\n  <li>\n    <ul>\n      <li>\n        <pre><code></code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>x</p>',
   )
 })
