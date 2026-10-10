@@ -46,19 +46,28 @@ const CARRIED = [
   {
     name: 'an admonition, whose KIND is what today drops',
     carve: '::: note\nAn admonition body.\n:::\n',
-    carrier: '<!-- carve: ::: note -->\nAn admonition body.\n<!-- carve: ::: -->\n',
+    carrier: '<!-- carve: ::: note -->\nAn admonition body.\n\n<!-- carve: ::: -->\n',
   },
   {
-    name: 'a named div, which drops its name AND its attributes',
-    carve: '::: wrapper {.fancy}\nA generic div.\n:::\n',
-    carrier: '<!-- carve: ::: wrapper {.fancy} -->\nA generic div.\n<!-- carve: ::: -->\n',
+    // AN ATTRIBUTED CONTAINER'S ATTRIBUTES LIVE ON THE LINE ABOVE, not on the
+    // opener: PART 4 is STRICT that "the opener line carries NO inline
+    // `{...}` attributes". An opener written `::: wrapper {.fancy}` loses the
+    // `{.fancy}` at PARSE time on a conformant engine, so no writer can carry
+    // it and no round trip can return it. The attribute line takes a marker
+    // of its own.
+    name: 'a named div, which drops its name AND the attribute line above it',
+    carve: '{.fancy}\n::: wrapper\nA generic div.\n:::\n',
+    carrier:
+      '<!-- carve: {.fancy} -->\n<!-- carve: ::: wrapper -->\nA generic div.\n\n<!-- carve: ::: -->\n',
   },
   {
     // THE ESCAPE, which is the only spelling in the payload that is not
-    // Carve source read back verbatim.
+    // Carve source read back verbatim. It rides the opener's QUOTED HEADER,
+    // which PART 4 does admit, rather than an inline attribute it does not.
     name: 'a payload carrying `-->`',
-    carve: '::: wrapper {title="a --> b"}\nBody.\n:::\n',
-    carrier: '<!-- carve: ::: wrapper {title="a --\\> b"} -->\nBody.\n<!-- carve: ::: -->\n',
+    carve: '::: note "a --> b"\nBody.\n:::\n',
+    carrier:
+      '<!-- carve: ::: note "a --\\> b" -->\n**a \u2192 b**\n\nBody.\n\n<!-- carve: ::: -->\n',
   },
 ]
 
@@ -75,6 +84,7 @@ test('the mode OFF emits exactly the bytes this target emits today', () => {
   assert.equal(carveToMarkdown(CARRIED[0].carve), '**Overview**\n\nFirst panel.\n\n**Install**\n\nSecond panel.\n')
   assert.equal(carveToMarkdown(CARRIED[1].carve), 'An admonition body.\n')
   assert.equal(carveToMarkdown(CARRIED[2].carve), 'A generic div.\n')
+  assert.equal(carveToMarkdown(CARRIED[3].carve), '**a \u2192 b**\n\nBody.\n')
 })
 
 test('a document with no element-less container gains no comment either way', () => {
