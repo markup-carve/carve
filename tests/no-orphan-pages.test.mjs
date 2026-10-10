@@ -33,6 +33,7 @@ const repoRoot = resolve(__dirname, '..')
 const config = readFileSync(resolve(repoRoot, 'docs/.vitepress/config.ts'), 'utf8')
 
 const UNROUTED = new Map([
+  ['docs/nested-braced-emphasis.md', 'Detailed syntax contract linked from Syntax Edge Cases, not a primary navigation path.'],
   ['docs/README.md', 'GitHub-facing orientation for people browsing docs/ source; srcExclude keeps it off the site.'],
   ['docs/index.md', 'The home page itself - it is the route everything else hangs off.'],
   ['docs/experiments/container-ownership.md', 'Compatibility evidence linked from the issue and pull request, not a permanent user guide.'],

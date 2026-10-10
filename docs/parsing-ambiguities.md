@@ -31,7 +31,7 @@ literal too. For deliberate intraword emphasis use the forced `{X … X}` family
 - **closes** only if *not* preceded by whitespace **and** *not* followed by an
   alphanumeric (so `x /a/b y` stays literal: the candidate closer is followed
   by `b`)
-- inner `/` characters become literal content (same-type spans do not nest)
+- inner `/` characters become literal content (bare same-type spans do not nest)
 
 The **same-delimiter adjacency** part of that rule applies to all five
 single-character delimiters: a delimiter adjacent to another of the same
@@ -260,7 +260,7 @@ See *[the docs](url) for more* info
 
 ## 8. Nested Emphasis
 
-**Rule:** Same-type nesting is invalid. Different-type nesting is valid.
+**Rule:** Bare same-type nesting is invalid. Explicit braced children may repeat an active kind; different-type nesting remains valid. See [explicit same-kind emphasis nesting](./nested-braced-emphasis) for the rule and implementation status.
 
 ```carve
 /This /does not/ nest/         # Invalid - ambiguous
@@ -270,8 +270,8 @@ See *[the docs](url) for more* info
 ```
 
 **Parsing:** An opener matches a valid closer of the same type (a delimiter
-closes only when not preceded by whitespace, see §1). Same-type delimiters
-*inside* the span are literal content (same-type spans do not nest), so
+closes only when not preceded by whitespace, see §1). Bare same-type delimiters
+*inside* the span are literal content (bare same-type spans do not nest), so
 `/usr/local/` is `<em>usr/local</em>`, not `<em>usr</em>local/`. Different-type
 spans nest fully (`*Bold with /italic/ inside*`). Resolution uses a delimiter
 stack in a single left-to-right pass: linear time, no backtracking.

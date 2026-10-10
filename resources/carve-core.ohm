@@ -178,7 +178,7 @@ CarveCore {
   inline     = word | spComment | bracedComment | inlineSpace
              | arrow | span | inlineNote | litDelim
              | symbol | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
-             | editorial | bracedDash | forcedSpan
+             | editorial | bracedDash | emptyForced | overlapForced | forcedSpan
              | mathD | mathI | litInline | codeA | nbspEsc | hardBreak | escape | imageRef | image | bracketed
              | autolink | bang | dollar
              | ellipsis | dashRun | dot | dash | plus | pct | lt | gt
@@ -221,7 +221,7 @@ CarveCore {
   // constructs allowed inside any span (everything except spans themselves,
   // which are listed per-delimiter to exclude self-nesting)
   rich       = arrow | symbol | delimRun | inlineNote | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
-             | editorial | bracedDash | forcedSpan | mathD | mathI
+             | editorial | bracedDash | emptyForced | overlapForced | forcedSpan | mathD | mathI
              | litInline | codeA | escape | imageRef | image | bracketed | autolink | bang | dollar
              | ellipsis | dashRun | dquote | squote
              | dot | dash | plus | pct
@@ -330,6 +330,8 @@ CarveCore {
   // --- Forced intraword spans {X...X} (PART 9 SS22) and editorial markup.
   // A same-type delimiter inside a forced span is literal until the `X}`
   // closer; other constructs nest normally.
+  emptyForced = "{" ("//" | "**" | "__" | "~~" | "^^" | ",," | "==") "}"
+  overlapForced = "{" ("/" | "*" | "_" | "~" | "^" | "," | "=") "}"
   forcedSpan = forced<"/"> | forced<"*"> | forced<"_"> | forced<"~">
              | forced<"^"> | forced<","> | forced<"=">
   // CONTENT IS REQUIRED (`+`, not `*`): `forced_content` in grammar.ebnf is a
@@ -337,13 +339,7 @@ CarveCore {
   // not a superscript. An empty pair is not the construct, so its characters
   // are text (carve#1447).
   forced<d>  = "{" d fInner<d>+ d "}" attrRun?
-  // A forced opener of the SAME kind does not open while this span is open
-  // (PART 9 SS9 E3), so it is refused here and its characters fall through to
-  // `other` and `litDelim`. `editorial` and `bracedDash` are tried ahead of the
-  // guard: they share the `{~` spelling and are not forced spans. A RUN of the
-  // span's own delimiter is refused with it, so its characters are taken one
-  // at a time and the closer is still there to be matched (carve#2096).
-  fInner<d>  = ~(d "}") (fCodeU<d> | fPrefixU<d> | editorial | bracedDash | ~forced<d> ~dRun<d> rich
+  fInner<d>  = ~(d "}") (fCodeU<d> | fPrefixU<d> | editorial | bracedDash | ~dRun<d> rich
              | span | word | fSpComment<d> | bracedComment | inlineSpace | litDelim
              | bang | dollar | ellipsis | dashRun | dot | dash | plus | pct
              | lt | gt | dquote | squote | hash | nl | other | "{" | "}" | anyChar)
@@ -370,7 +366,7 @@ CarveCore {
   edSubItem<stop> = ~stop ~"~}" edSubAtom
   // A `$` or `!` prefix needs no alternative of its own: the backtick run
   // behind it is what carries the arrow, and this rule skips that run.
-  edSubAtom  = escape | edSubCode | bracedComment | edCommentBody | edChar
+  edSubAtom  = escape | edSubCode | bracedComment | edCommentBody | emptyForced | overlapForced | forcedSpan | edChar
   edSubCode  = codeClosed | edSubCodeU
   edSubCodeU = "\u0060" "\u0060"* (~"~}" any)*
   edComment  = edCommentBody

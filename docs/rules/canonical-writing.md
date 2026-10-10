@@ -19,13 +19,13 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P11-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L35) | 11 | THE INVARIANT OUTRANKS THE PER-CONSTRUCT RULES |
 | [`CARVE-P11-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L62) | 11 | A FLATTEN PRESERVES THE BOUNDARY IT DISSOLVES |
 | [`CARVE-P11-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L131) | 11 | A WRAPPER ITS OWN CONTENT SPELLS AWAY IS A DECLARED CEILING |
-| [`CARVE-P11-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L215) | 11 | WRAPPER LOSS IS THE ONLY EQUALITY CARVE-OUT |
-| [`CARVE-P11-046`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L268) | 11 | THE CONVERSION-DIAGNOSTICS CHANNEL |
-| [`CARVE-P11-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L314) | 11 | THE ESCAPING RULE |
-| [`CARVE-P11-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L359) | 11 | ESCAPE MINIMALITY STILL APPLIES INSIDE AN ESCALATED UNIT |
-| [`CARVE-P11-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L380) | 11 | THE WRITER DOES NOT SUBSTITUTE ONE CONSTRUCT FOR ANOTHER |
-| [`CARVE-P11-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L401) | 11 | THE SCOPE OF AN ESCALATION IS THE SMALLEST UNIT THAT FAILS |
-| [`CARVE-P11-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L524) | 11 | SEARCH COST BELONGS TO THE STRATEGY, NOT THE OUTPUT |
+| [`CARVE-P11-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L226) | 11 | WRAPPER LOSS IS THE ONLY EQUALITY CARVE-OUT |
+| [`CARVE-P11-046`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L279) | 11 | THE CONVERSION-DIAGNOSTICS CHANNEL |
+| [`CARVE-P11-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L325) | 11 | THE ESCAPING RULE |
+| [`CARVE-P11-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L370) | 11 | ESCAPE MINIMALITY STILL APPLIES INSIDE AN ESCALATED UNIT |
+| [`CARVE-P11-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L391) | 11 | THE WRITER DOES NOT SUBSTITUTE ONE CONSTRUCT FOR ANOTHER |
+| [`CARVE-P11-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L412) | 11 | THE SCOPE OF AN ESCALATION IS THE SMALLEST UNIT THAT FAILS |
+| [`CARVE-P11-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L535) | 11 | SEARCH COST BELONGS TO THE STRATEGY, NOT THE OUTPUT |
 | [`CARVE-P11-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L56) | 11 | A FRONTMATTER OPENER IS WRITTEN `---yaml` |
 | [`CARVE-P11-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L68) | 11 | AN EMPTY-STRING ATTRIBUTE IS WRITTEN AS A BOOLEAN |
 | [`CARVE-P11-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L97) | 11 | A CODE FENCE OPENER IS WRITTEN GLUED TO ITS INFO STRING |
@@ -75,7 +75,7 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P11-037`](https://github.com/markup-carve/carve/blob/main/resources/spec/22-writer-targets.ebnf#L622) | 11 | AN UNSPELLABLE BLOCK DOES NOT CANCEL THE ADJACENCY IT CANNOT SPELL |
 | [`CARVE-P11-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/22a-writer-target-metadata.ebnf#L148) | 11 | THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG |
 | [`CARVE-P11-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/22a-writer-target-metadata.ebnf#L203) | 11 | THE MARKDOWN TARGET KEEPS A FRAGMENT LINK |
-| [`CARVE-P11-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L231) | 11 | A RESOLUTION RESULT ABOUT THE WRAPPER IS NOT CONTENT OF IT |
+| [`CARVE-P11-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/20-writer-invariants.ebnf#L242) | 11 | A RESOLUTION RESULT ABOUT THE WRAPPER IS NOT CONTENT OF IT |
 | [`CARVE-P11-040`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L454) | 11 | AN EMPTY DESCRIPTION BODY IS WRITTEN WITH THE SENTINEL `{empty}` |
 | [`CARVE-P11-041`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L165) | 11 | A TASK MARKER IS WRITTEN WITH THE STATE THE AUTHOR CHOSE |
 | [`CARVE-P11-042`](https://github.com/markup-carve/carve/blob/main/resources/spec/21-writer-carve-markdown.ebnf#L497) | 11 | A BLOCK THAT OPENS A TIGHT ITEM IS WRITTEN ON THE MARKER LINE |

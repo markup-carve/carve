@@ -181,11 +181,13 @@ This is =highlighted= text.
 
 The `/italic/` syntax comes from Org-mode, where it has worked well for decades.
 
-#### Rule: No Nesting of Same Type
+#### Rule: No Bare Nesting of Same Type
 ```
 /This /does not/ nest/    --> Invalid
 /This *does* nest/        --> Valid: italic with bold inside
 ```
+
+Explicit braced children may repeat an active kind. See [the specification change](../nested-braced-emphasis) for examples and implementation status.
 
 A direct consequence: a **doubled** bare delimiter never opens nested
 same-type emphasis, so it stays literal text, uniformly across all five

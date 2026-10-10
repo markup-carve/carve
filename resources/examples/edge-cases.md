@@ -35758,11 +35758,10 @@ the destination is part of the `href`.
 
 :::
 
-## A forced opener of an open kind is literal
+## Braced emphasis can nest its own kind
 
-PART 9 §9 E3. Forced spans push and pop on the same stack as bare ones, so a
-`{X` whose kind is already open is content, and a bare `X` inside a forced span
-of that kind is content under §22.
+PART 9 §9 E3. Braced emphasis can nest another braced span of the same kind.
+A bare delimiter of an already open kind remains content within that scope.
 
 ::: compare
 
@@ -35771,7 +35770,7 @@ a{*{*x*}*}b
 ```
 
 ```html
-<p>a<strong>{*x</strong>*}b</p>
+<p>a<strong><strong>x</strong></strong>b</p>
 ```
 
 :::
@@ -35783,7 +35782,7 @@ a{*{*x*}*}b
 ```
 
 ```html
-<p><strong>a {*b</strong>} c*</p>
+<p><strong>a <strong>b</strong> c</strong></p>
 ```
 
 :::
@@ -35807,7 +35806,7 @@ a{*{*x*}*}b
 ```
 
 ```html
-<p><em>a *b {/c</em>*/}</p>
+<p><em>a <strong>b <em>c</em></strong></em></p>
 ```
 
 :::

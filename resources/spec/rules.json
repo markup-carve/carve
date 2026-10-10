@@ -835,7 +835,7 @@
     {
       "id": "CARVE-P9-043",
       "part": "9",
-      "title": "FORCED INTRAWORD EMPHASIS",
+      "title": "FORCED EMPHASIS AND EXPLICIT SAME-TYPE NESTING",
       "scope": "parsing"
     },
     {

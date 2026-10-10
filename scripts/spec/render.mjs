@@ -657,6 +657,12 @@ const sem = g.createSemantics().addOperation('h', {
       escapeHtml(glued.sourceString)
     )
   },
+  emptyForced(_open, _markers, _close) {
+    return escapeHtml(this.sourceString)
+  },
+  overlapForced(_open, _marker, _close) {
+    return escapeHtml(this.sourceString)
+  },
   forcedSpan(f) {
     return f.h()
   },
@@ -1036,32 +1042,6 @@ function classify(t, src, blocked) {
   t.canClose = bareCloser(t.ch, prev, next)
 }
 
-// E3 refused this forced span's opener, so the span is its own characters:
-// two delimiter candidates around the content it had, and a trailing
-// attribute block that now attaches to whatever the closer closes.
-function demoteForced(t, literalDelims = '') {
-  const n = t.node
-  // The enclosing span holds this delimiter literal, so the demoted
-  // characters are content rather than candidates.
-  const delim = (child) =>
-    literalDelims.includes(t.ch)
-      ? { k: 't', h: escapeHtml(t.ch) }
-      : { k: 'd', ch: t.ch, at: child.source.startIdx }
-  const out = [
-    { k: 't', h: '{' },
-    delim(n.child(1)),
-    ...buildToks(n.child(2).children, literalDelims),
-    delim(n.child(3)),
-    { k: 't', h: '}' },
-  ]
-  const attrs = n.child(5)
-  if (attrs.numChildren > 0) {
-    const node = attrs.child(0)
-    out.push({ k: 'attrs', node, at: node.source.startIdx, h: escapeHtml(node.sourceString) })
-  }
-  return out
-}
-
 // Build the flat token stream from a list of CST child nodes (inline* or
 // fInner*). A bare `/ * _ ~ =` becomes a delimiter candidate; every other
 // alternative renders to an HTML fragment now. `literalDelims` (the enclosing
@@ -1073,8 +1053,6 @@ function buildToks(children, literalDelims = '') {
     const c = children[ci]
     const alt = c.child(0)
     const name = alt.ctorName
-    // A forced span is a stack entry, not a leaf: E3 holds its opener literal
-    // while a span of its kind is open, so the decision waits for the stack.
     const forcedNode = forcedUnder(alt)
     if (forcedNode && STACK_DELIMS.has(forcedNode.child(1).sourceString)) {
       toks.push({
@@ -1096,7 +1074,7 @@ function buildToks(children, literalDelims = '') {
       const loose = alt.child(1).children[0]
       if (loose) {
         // Attaches to the span this delimiter closes; otherwise its literal fallback.
-        toks.push({ k: 'attrs', node: loose, at: loose.source.startIdx, h: loose.h() })
+        toks.push({ k: 'attrs', node: loose, at: loose.source.startIdx, h: loose.h(), heldMarker: literalDelims.includes(ch), markerAt: alt.source.startIdx, markerChar: ch })
       }
       continue
     }
@@ -1106,6 +1084,15 @@ function buildToks(children, literalDelims = '') {
     // alternative arrives wrapped in `rich`, as `forcedUnder` also unwraps.
     let marker = alt
     while (marker.ctorName === 'rich') marker = marker.child(0)
+    if (marker.ctorName === 'delimRun') {
+      for (let offset = 0; offset < marker.sourceString.length; offset++) {
+        const ch = marker.sourceString[offset]
+        toks.push(STACK_DELIMS.has(ch) && !literalDelims.includes(ch)
+          ? { k: 'd', ch, at: marker.source.startIdx + offset }
+          : { k: 't', h: escapeHtml(ch) })
+      }
+      continue
+    }
     if (QUOTE_RULES.has(marker.ctorName)) {
       const h = c.h()
       toks.push({ k: 't', h, quote: { at: marker.source.startIdx, record: quoteRun.records.at(-1) } })
@@ -1263,16 +1250,6 @@ function pairDelims(toks, src, literalDelims = '', blocked) {
   for (let j = 0; j < toks.length; j++) {
     const t = toks[j]
     if (t.k === 'f') {
-      // E3: while a span of this kind is open, the forced opener is literal.
-      // The enclosing span counts as open, which is what holds its own
-      // delimiter literal in the first place.
-      if (literalDelims.includes(t.ch) || openers.some((oi) => toks[oi].ch === t.ch)) {
-        const rep = demoteForced(t, literalDelims)
-        for (const r of rep) classify(r, src, blocked)
-        toks.splice(j, 1, ...rep)
-        j--
-        continue
-      }
       t.k = 't'
       t.h = t.node.h()
       continue
@@ -1309,7 +1286,7 @@ function pairDelims(toks, src, literalDelims = '', blocked) {
 
 // Pair, then block every opener whose guard did not open a span of its own,
 // and pair again. Blocking only removes openers, so the loop ends.
-function pairGuarded(build, src, literalDelims = '') {
+function pairGuarded(build, src, literalDelims = '', contentAt = 0) {
   const blocked = new Set()
   for (;;) {
     const toks = build()
@@ -1318,7 +1295,7 @@ function pairGuarded(build, src, literalDelims = '') {
     let grew = false
     for (const i of openMap.keys()) {
       const t = toks[i]
-      if (guardedBy(t.ch, src[t.at - 1]) && !opens.has(t.at - 1)) {
+      if (t.at > contentAt && guardedBy(t.ch, src[t.at - 1]) && !opens.has(t.at - 1)) {
         blocked.add(t.at)
         grew = true
       }
@@ -1342,12 +1319,13 @@ function applyQuotes(toks, openMap, src, contentAt) {
 }
 
 function resolveEmphasis(build, src, literalDelims = '', contentAt = 0) {
-  const { toks, openMap } = pairGuarded(build, src, literalDelims)
+  const { toks, openMap } = pairGuarded(build, src, literalDelims, contentAt)
   applyQuotes(toks, openMap, src, contentAt)
   resolveNameRun(toks, openMap)
   applyMarkerBoundary(toks, openMap, src, contentAt)
   // Build the span tree by walking the paired ranges (properly nested).
   const consumed = new Set() // attrs tokens attached to a span
+  const closers = new Set(openMap.values())
   const renderRange = (lo, hi) => {
     let out = ''
     let i = lo
@@ -1377,7 +1355,11 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0) {
         // what is inside them (carve#2084). renderInlineInner re-reads the text
         // with this brace escaped, which is the same document and puts the
         // block's characters back into the surrounding inline stream.
-        if (!consumed.has(i)) unattachedAttrs.push(t.at)
+        if (!consumed.has(i)) {
+          const marker = toks[i - 1]
+          const literalMarker = t.heldMarker || (marker?.k === 'd' && !openMap.has(i - 1) && !closers.has(i - 1))
+          unattachedAttrs.push({ at: t.at, literalMarker: literalMarker && t.markerAt + 1 === t.at, markerChar: t.markerChar })
+        }
       } else out += t.h
       i++
     }
@@ -1826,8 +1808,12 @@ function renderInlineInner(text) {
       unattachedAttrs = saved
       return out
     }
-    const first = Math.min.apply(null, offsets)
-    source = source.slice(0, first) + '\\' + source.slice(first)
+    const first = offsets.reduce((left, right) => left.at <= right.at ? left : right)
+    // A literal delimiter cannot carry attributes. Preserve a following
+    // editorial comment by escaping that delimiter instead of its brace.
+    const comment = first.literalMarker && source[first.at - 1] === first.markerChar && source.startsWith('{#', first.at) && source.indexOf('#}', first.at + 2) >= 0
+    const escapeAt = comment ? first.at - 1 : first.at
+    source = source.slice(0, escapeAt) + '\\' + source.slice(escapeAt)
   }
 }
 
