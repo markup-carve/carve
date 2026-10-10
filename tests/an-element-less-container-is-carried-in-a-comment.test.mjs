@@ -13,25 +13,19 @@
  * the pinned build and must pass today, because a carrier that moved the
  * default output would be a breaking change rather than an opt-in mode.
  *
- * PIN LAG IS DECLARED, never tolerated - the same rule as
- * resources/engine-pin-drift.txt and the PIN_LAG string in
- * tests/a-default-marker-is-not-recorded.test.mjs, and it fails in BOTH
- * directions. No engine has shipped the clause; when one does, the assertions
- * below go red and the declaration goes out with the pin bump.
+ * THE ASSERTIONS ARE LIVE. All three engines ship the clause, the pin sits
+ * past carve-js#2674, and the declared lag that stood in for them is gone.
  *
- * NO OPTION SPELLING IS PROBED. Whether the mode is a CLI flag, an API option
- * or both is not ruled, so these cases assert what the pinned build CANNOT
- * produce by any means rather than naming a parameter the clause does not fix.
+ * THE OPTION SPELLING IS THE HOST'S, NOT THE CLAUSE'S. §10s says only that
+ * the host turns the mode on and that it is off by default, so `carryMarkers`
+ * below is the carve-js parameter and not a conformance requirement. An engine
+ * that spells it otherwise is still conformant, and this file would need the
+ * other spelling to measure it.
  */
 
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { carveToMarkdown, migrateMarkdown } from '@markup-carve/carve'
-
-// Declared lag against the `@markup-carve/carve` build package.json pins.
-// EMPTY IS THE GOAL: it goes out in the commit that moves the pin past the
-// first engine to ship CARVE-P11-063 (markup-carve/carve#2810).
-const PIN_LAG = 'carve#2810  just landed: no engine writes or reads the carrier comment yet'
 
 // The clause's expected bytes, per element-less container. Measured inputs on
 // the left, the carrier-mode output the clause requires on the right.
@@ -80,7 +74,7 @@ const DAMAGED = {
 }
 
 test('the mode OFF emits exactly the bytes this target emits today', () => {
-  // The control. Not guarded by PIN_LAG: it has to hold on every build.
+  // The control: it has to hold on every build.
   assert.equal(carveToMarkdown(CARRIED[0].carve), '**Overview**\n\nFirst panel.\n\n**Install**\n\nSecond panel.\n')
   assert.equal(carveToMarkdown(CARRIED[1].carve), 'An admonition body.\n')
   assert.equal(carveToMarkdown(CARRIED[2].carve), 'A generic div.\n')
@@ -96,24 +90,7 @@ test('a document with no element-less container gains no comment either way', ()
 
 for (const { name, carve, carrier } of CARRIED) {
   test(`the carrier mode round-trips ${name}`, () => {
-    if (PIN_LAG) {
-      // THE LIVE DETECTOR IS THE IMPORT HALF, deliberately, and the writer
-      // half is NOT asserted under lag. "Today's output holds no marker"
-      // would pass forever: the clause requires the mode-off output to stay
-      // marker-free, so an engine shipping the writer could never turn it
-      // red - the dead-check shape this repo keeps finding. The import has
-      // no such out: the markers come back as raw HTML blocks today, and the
-      // first engine to read one fails this and takes the declaration with
-      // it. Then the writer bytes below start being asserted.
-      const { value } = migrateMarkdown(carrier)
-      assert.match(
-        value,
-        /```=html/,
-        `pin lag is declared and the import now reads the marker - delete PIN_LAG: ${PIN_LAG}`,
-      )
-      return
-    }
-    assert.equal(carveToMarkdown(carve, { carrier: true }), carrier)
+    assert.equal(carveToMarkdown(carve, { carryMarkers: true }), carrier)
     assert.equal(migrateMarkdown(carrier).value, carve)
   })
 }
@@ -122,14 +99,6 @@ for (const [shape, source] of Object.entries(DAMAGED)) {
   test(`${shape} imports as plain Markdown plus one diagnostic, never a guess`, () => {
     const { report } = migrateMarkdown(source)
     const damaged = report.diagnostics.filter((d) => d.code === 'carrier-markers-damaged')
-    if (PIN_LAG) {
-      assert.equal(
-        damaged.length,
-        0,
-        `pin lag is declared and the engine now reports the damage - delete PIN_LAG: ${PIN_LAG}`,
-      )
-      return
-    }
     assert.equal(damaged.length, 1, 'a damaged marker set owes exactly one diagnostic')
     assert.equal(damaged[0].fidelity, 'degraded')
     assert.equal(damaged[0].confidence, 'fallback')

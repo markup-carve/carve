@@ -179,5 +179,5 @@
 #
 # The repo's PINNED build was a separate question: it pinned carve-js
 # `b12ebf89`, which predates #2605, so five cases were declared in PINNED_DRIFT
-# in tests/corpus-convert.test.mjs. The pin now sits at carve-js `6c6f3988`, all
-# five reported STALE against it, and their entries are deleted.
+# in tests/corpus-convert.test.mjs. When the pin reached carve-js `6c6f3988` all
+# five reported STALE against it, and their entries were deleted.
