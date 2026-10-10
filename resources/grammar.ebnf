@@ -6127,8 +6127,18 @@ EOF = (* end of file *) ;
         (E2b). Unmatched explicit openers remain literal, not implicitly
         closed at end of input: {*a {*b*} keeps its literal outer opener
         and its closed inner strong span. Empty forced spans remain literal.
-        MATCHED OPENERS ONLY. An explicit opener with no matching closer
-        inside its bracket run creates no E2a boundary and stays literal.
+        MATCHING ORDER. A preliminary linear token pass pairs braced spans
+        within each bracket run. It skips existing opaque constructs and
+        pushes unescaped candidate openers. A closer pairs only with the
+        top candidate of its matching kind; a closer blocked by another
+        kind is recorded as literal, with no later retry. Unpaired openers
+        at end of the run stay literal. Only paired spans establish E2a
+        boundaries during inline resolution. A blocked closer stays literal
+        even if its blocking opener is subsequently found unpaired.
+        Thus {*a {/b *} c*} is all literal. In {~a {*x ~>y~} z*}, the ~}
+        is blocked: {~a stays literal and the strong contains x ~>y~} z.
+        MATCHED OPENERS ONLY. An explicit opener with no indexed matching
+        closer creates no E2a boundary and stays literal.
         Thus *a {*b c* remains one strong node containing a literal {*.
         With {*a {*b c*}, the closer belongs to the inner span: the outer
         opener is literal and the inner strong contains b c. Matching may
@@ -6139,8 +6149,16 @@ EOF = (* end of file *) ;
         nested markup, stays literal. Its closer MUST NOT close a parent.
         A linear matching index or equivalent counted skip MUST bound the
         literal range; this recovery must not recursively parse it or
-        rescan the remaining suffix for each rejected opener. An unmatched
+        rescan the remaining suffix for each rejected opener. LITERAL here
+        means the current inline source characters as text: do not decode
+        escapes or produce nodes for code, autolinks or other markup inside
+        the rejected range. Earlier document ingestion policies still apply.
+        Bare and braced spans consume the same existing depth budget.
+        An unmatched
         over-limit opener follows the matched-openers rule above.
+      - UNPAIRED CLOSERS. An X} with no indexed braced match and no blocked
+        closer mark is processed as an ordinary bare X followed by literal
+        }. Thus *a b*} closes a bare strong span and leaves } outside it.
       - `{~ … ~}` DISAMBIGUATION. The brace pair is editorial SUBSTITUTION when
         it contains a top-level `~>` ({~old~>new~} -> <del>old</del><ins>new
         </ins>), and forced STRIKETHROUGH otherwise ({~old~} ->
@@ -8273,7 +8291,11 @@ EOF = (* end of file *) ;
       and braced-parent spellings of outer strong with an inner strong
       canonicalize to {*outer {*inner*} tail*}. Other emphasis nodes keep
       their existing spelling rules; a repeated kind does not force an
-      unrelated sibling into braces.
+      unrelated sibling into braces. If a literal ~> would be visible at
+      top level inside an emitted forced strike, the writer MUST escape its
+      tilde as \~>; changing a child from braced to bare MUST NOT change the
+      parent into substitution. This also applies through non-opaque bare
+      children. Separator escaping follows the emitted structure.
       An importer MUST NOT unwrap a representable same-kind child or report
       structure-unspellable merely for that relationship. Depth-limit
       recovery and other independently unspellable shapes retain their

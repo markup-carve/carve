@@ -181,7 +181,11 @@
       and braced-parent spellings of outer strong with an inner strong
       canonicalize to {*outer {*inner*} tail*}. Other emphasis nodes keep
       their existing spelling rules; a repeated kind does not force an
-      unrelated sibling into braces.
+      unrelated sibling into braces. If a literal ~> would be visible at
+      top level inside an emitted forced strike, the writer MUST escape its
+      tilde as \~>; changing a child from braced to bare MUST NOT change the
+      parent into substitution. This also applies through non-opaque bare
+      children. Separator escaping follows the emitted structure.
       An importer MUST NOT unwrap a representable same-kind child or report
       structure-unspellable merely for that relationship. Depth-limit
       recovery and other independently unspellable shapes retain their

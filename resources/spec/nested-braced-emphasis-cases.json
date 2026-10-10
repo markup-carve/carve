@@ -437,7 +437,8 @@
           ]
         }
       ],
-      "html": "<p><em>a <strong>b <em>c</em></strong></em></p>"
+      "html": "<p><em>a <strong>b <em>c</em></strong></em></p>",
+      "canonical": "{/a *b {/c/}*/}"
     },
     {
       "id": "independent-attributes",
@@ -600,11 +601,28 @@
       "source": "\\{\\*x\\*\\}",
       "children": [
         {
+          "type": "escaped_text",
+          "value": "{"
+        },
+        {
+          "type": "escaped_text",
+          "value": "*"
+        },
+        {
           "type": "text",
-          "value": "{*x*}"
+          "value": "x"
+        },
+        {
+          "type": "escaped_text",
+          "value": "*"
+        },
+        {
+          "type": "escaped_text",
+          "value": "}"
         }
       ],
-      "html": "<p>{*x*}</p>"
+      "html": "<p>{*x*}</p>",
+      "canonical": "\\{\\*x\\*\\}"
     },
     {
       "id": "bare-kind-hidden-by-braced-boundary",
@@ -646,7 +664,8 @@
           ]
         }
       ],
-      "html": "<p><strong>a <em>b <strong>c</strong> d</em> e</strong></p>"
+      "html": "<p><strong>a <em>b <strong>c</strong> d</em> e</strong></p>",
+      "canonical": "{*a /b {*c*} d/ e*}"
     },
     {
       "id": "stray-inner-opener-takes-closer",
@@ -722,7 +741,8 @@
           ]
         }
       ],
-      "html": "<p><s>a <strong>x~&gt;y</strong> b</s></p>"
+      "html": "<p><s>a <strong>x~&gt;y</strong> b</s></p>",
+      "canonical": "~a *x\\~>y* b~"
     },
     {
       "id": "unmatched-frame-hides-no-separator",
@@ -859,6 +879,589 @@
         }
       ],
       "html": "<p><sup><sup>x</sup></sup></p>"
+    },
+    {
+      "id": "blocked-closer-never-retried",
+      "source": "{*a {/b *} c*}",
+      "children": [
+        {
+          "type": "text",
+          "value": "{*a {/b *} c*}"
+        }
+      ],
+      "html": "<p>{*a {/b *} c*}</p>"
+    },
+    {
+      "id": "crossing-braced-candidates",
+      "source": "{~a {*x ~>y~} z*}",
+      "children": [
+        {
+          "type": "text",
+          "value": "{~a "
+        },
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "x ~>y~} z"
+            }
+          ]
+        }
+      ],
+      "html": "<p>{~a <strong>x ~&gt;y~} z</strong></p>"
+    },
+    {
+      "id": "orphan-closer-remains-text",
+      "source": "a*} b",
+      "children": [
+        {
+          "type": "text",
+          "value": "a*} b"
+        }
+      ],
+      "html": "<p>a*} b</p>"
+    },
+    {
+      "id": "orphan-closer-closes-bare-parent",
+      "source": "*a b*}",
+      "children": [
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "a b"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "value": "}"
+        }
+      ],
+      "html": "<p><strong>a b</strong>}</p>"
+    },
+    {
+      "id": "forced-strike-canonical-separator-escape",
+      "source": "left{~{*x~>y*}~}right",
+      "canonical": "left{~*x\\~>y*~}right",
+      "children": [
+        {
+          "type": "text",
+          "value": "left"
+        },
+        {
+          "type": "strike",
+          "children": [
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "x~>y"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "value": "right"
+        }
+      ],
+      "html": "<p>left<s><strong>x~&gt;y</strong></s>right</p>"
+    },
+    {
+      "id": "three-levels-emphasis",
+      "source": "{/a {/b {/c/} d/} e/}",
+      "children": [
+        {
+          "type": "emphasis",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "emphasis",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "b "
+                },
+                {
+                  "type": "emphasis",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "c"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "value": " d"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " e"
+            }
+          ]
+        }
+      ],
+      "html": "<p><em>a <em>b <em>c</em> d</em> e</em></p>",
+      "canonical": "{/a {/b {/c/} d/} e/}"
+    },
+    {
+      "id": "three-levels-underline",
+      "source": "{_a {_b {_c_} d_} e_}",
+      "children": [
+        {
+          "type": "underline",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "underline",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "b "
+                },
+                {
+                  "type": "underline",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "c"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "value": " d"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " e"
+            }
+          ]
+        }
+      ],
+      "html": "<p><u>a <u>b <u>c</u> d</u> e</u></p>",
+      "canonical": "{_a {_b {_c_} d_} e_}"
+    },
+    {
+      "id": "three-levels-strike",
+      "source": "{~a {~b {~c~} d~} e~}",
+      "children": [
+        {
+          "type": "strike",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "strike",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "b "
+                },
+                {
+                  "type": "strike",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "c"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "value": " d"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " e"
+            }
+          ]
+        }
+      ],
+      "html": "<p><s>a <s>b <s>c</s> d</s> e</s></p>",
+      "canonical": "{~a {~b {~c~} d~} e~}"
+    },
+    {
+      "id": "three-levels-highlight",
+      "source": "{=a {=b {=c=} d=} e=}",
+      "children": [
+        {
+          "type": "highlight",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "highlight",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "b "
+                },
+                {
+                  "type": "highlight",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "c"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "value": " d"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " e"
+            }
+          ]
+        }
+      ],
+      "html": "<p><mark>a <mark>b <mark>c</mark> d</mark> e</mark></p>",
+      "canonical": "{=a {=b {=c=} d=} e=}"
+    },
+    {
+      "id": "three-levels-superscript",
+      "source": "{^a {^b {^c^} d^} e^}",
+      "children": [
+        {
+          "type": "superscript",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "superscript",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "b "
+                },
+                {
+                  "type": "superscript",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "c"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "value": " d"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " e"
+            }
+          ]
+        }
+      ],
+      "html": "<p><sup>a <sup>b <sup>c</sup> d</sup> e</sup></p>",
+      "canonical": "{^a {^b {^c^} d^} e^}"
+    },
+    {
+      "id": "three-levels-subscript",
+      "source": "{,a {,b {,c,} d,} e,}",
+      "children": [
+        {
+          "type": "subscript",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "subscript",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "b "
+                },
+                {
+                  "type": "subscript",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "c"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "value": " d"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " e"
+            }
+          ]
+        }
+      ],
+      "html": "<p><sub>a <sub>b <sub>c</sub> d</sub> e</sub></p>",
+      "canonical": "{,a {,b {,c,} d,} e,}"
+    },
+    {
+      "id": "escaped-apparent-child-closer",
+      "source": "{*a {*b\\*} c*} d*}",
+      "children": [
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "b"
+                },
+                {
+                  "type": "escaped_text",
+                  "value": "*"
+                },
+                {
+                  "type": "text",
+                  "value": "} c"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " d"
+            }
+          ]
+        }
+      ],
+      "html": "<p><strong>a <strong>b*} c</strong> d</strong></p>"
+    },
+    {
+      "id": "consecutive-child-attributes",
+      "source": "{*a {*b*}{.one}{.two} c*}{.outer}",
+      "children": [
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "b"
+                }
+              ],
+              "attrs": {
+                "classes": [
+                  "one",
+                  "two"
+                ],
+                "order": [
+                  ".one",
+                  ".two"
+                ]
+              }
+            },
+            {
+              "type": "text",
+              "value": " c"
+            }
+          ],
+          "attrs": {
+            "classes": [
+              "outer"
+            ],
+            "order": [
+              ".outer"
+            ]
+          }
+        }
+      ],
+      "html": "<p><strong class=\"outer\">a <strong class=\"one two\">b</strong> c</strong></p>"
+    },
+    {
+      "id": "attribute-value-apparent-closer",
+      "source": "{*a {*b*}{k=\"*}\"} c*}",
+      "children": [
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "b"
+                }
+              ],
+              "attrs": {
+                "keyValues": {
+                  "k": "*}"
+                },
+                "order": [
+                  "k"
+                ]
+              }
+            },
+            {
+              "type": "text",
+              "value": " c"
+            }
+          ]
+        }
+      ],
+      "html": "<p><strong>a <strong k=\"*}\">b</strong> c</strong></p>"
+    },
+    {
+      "id": "adjacent-sibling-children",
+      "source": "{*a {*b*}{*c*} d*}",
+      "children": [
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "b"
+                }
+              ]
+            },
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "c"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " d"
+            }
+          ]
+        }
+      ],
+      "html": "<p><strong>a <strong>b</strong><strong>c</strong> d</strong></p>"
+    },
+    {
+      "id": "opaque-raw",
+      "source": "{*a `{*x*}`{=html} c*}",
+      "children": [
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "raw_inline",
+              "format": "html",
+              "content": "{*x*}"
+            },
+            {
+              "type": "text",
+              "value": " c"
+            }
+          ]
+        }
+      ],
+      "html": "<p><strong>a {*x*} c</strong></p>"
+    },
+    {
+      "id": "opaque-literal",
+      "source": "{*a !`{*x*}` c*}",
+      "children": [
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "literal_inline",
+              "content": "{*x*}"
+            },
+            {
+              "type": "text",
+              "value": " c"
+            }
+          ]
+        }
+      ],
+      "html": "<p><strong>a {*x*} c</strong></p>"
+    },
+    {
+      "id": "opaque-math",
+      "source": "{*a $`{*x*}` c*}",
+      "children": [
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "math",
+              "display": false,
+              "content": "{*x*}"
+            },
+            {
+              "type": "text",
+              "value": " c"
+            }
+          ]
+        }
+      ],
+      "html": "<p><strong>a <span class=\"math inline\" role=\"math\">\\({*x*}\\)</span> c</strong></p>"
     }
   ],
   "depthCases": [
@@ -890,6 +1493,484 @@
         }
       ],
       "html": "<p>{*a {*b*} c*}</p>"
+    },
+    {
+      "id": "over-limit-escape-stays-source-text",
+      "remainingInlineDepth": 1,
+      "source": "{^{^a\\*b^}^}",
+      "children": [
+        {
+          "type": "superscript",
+          "children": [
+            {
+              "type": "text",
+              "value": "{^a\\*b^}"
+            }
+          ]
+        }
+      ],
+      "html": "<p><sup>{^a\\*b^}</sup></p>"
+    },
+    {
+      "id": "over-limit-code-stays-source-text",
+      "remainingInlineDepth": 1,
+      "source": "{^{^`a ^} b`^}^}",
+      "children": [
+        {
+          "type": "superscript",
+          "children": [
+            {
+              "type": "text",
+              "value": "{^`a ^} b`^}"
+            }
+          ]
+        }
+      ],
+      "html": "<p><sup>{^`a ^} b`^}</sup></p>"
+    },
+    {
+      "id": "exactly-at-inline-limit",
+      "remainingInlineDepth": 1,
+      "source": "{^x^}",
+      "children": [
+        {
+          "type": "superscript",
+          "children": [
+            {
+              "type": "text",
+              "value": "x"
+            }
+          ]
+        }
+      ],
+      "html": "<p><sup>x</sup></p>"
+    },
+    {
+      "id": "unmatched-at-inline-limit",
+      "remainingInlineDepth": 0,
+      "source": "{^x",
+      "children": [
+        {
+          "type": "text",
+          "value": "{^x"
+        }
+      ],
+      "html": "<p>{^x</p>"
+    }
+  ],
+  "hostCases": [
+    {
+      "id": "host-link",
+      "source": "[{*a {*b*} c*}](/u)",
+      "document": {
+        "type": "document",
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "link",
+                "href": "/u",
+                "children": [
+                  {
+                    "type": "strong",
+                    "children": [
+                      {
+                        "type": "text",
+                        "value": "a "
+                      },
+                      {
+                        "type": "strong",
+                        "children": [
+                          {
+                            "type": "text",
+                            "value": "b"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "text",
+                        "value": " c"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "srcByteLength": 19
+      },
+      "html": "<p><a href=\"/u\"><strong>a <strong>b</strong> c</strong></a></p>"
+    },
+    {
+      "id": "host-heading",
+      "source": "# {*a {*b*} c*}",
+      "document": {
+        "type": "document",
+        "children": [
+          {
+            "type": "heading",
+            "level": 1,
+            "children": [
+              {
+                "type": "strong",
+                "children": [
+                  {
+                    "type": "text",
+                    "value": "a "
+                  },
+                  {
+                    "type": "strong",
+                    "children": [
+                      {
+                        "type": "text",
+                        "value": "b"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "text",
+                    "value": " c"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "srcByteLength": 15
+      },
+      "html": "<section>\n  <h1><strong>a <strong>b</strong> c</strong></h1>\n</section>"
+    },
+    {
+      "id": "host-quote",
+      "source": "> {*a {*b*} c*}",
+      "document": {
+        "type": "document",
+        "children": [
+          {
+            "type": "block_quote",
+            "children": [
+              {
+                "type": "paragraph",
+                "children": [
+                  {
+                    "type": "strong",
+                    "children": [
+                      {
+                        "type": "text",
+                        "value": "a "
+                      },
+                      {
+                        "type": "strong",
+                        "children": [
+                          {
+                            "type": "text",
+                            "value": "b"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "text",
+                        "value": " c"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "srcByteLength": 15
+      },
+      "html": "<blockquote><p><strong>a <strong>b</strong> c</strong></p></blockquote>"
+    },
+    {
+      "id": "host-list",
+      "source": "- {*a {*b*} c*}",
+      "document": {
+        "type": "document",
+        "children": [
+          {
+            "type": "list",
+            "ordered": false,
+            "tight": true,
+            "items": [
+              {
+                "type": "list_item",
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "children": [
+                      {
+                        "type": "strong",
+                        "children": [
+                          {
+                            "type": "text",
+                            "value": "a "
+                          },
+                          {
+                            "type": "strong",
+                            "children": [
+                              {
+                                "type": "text",
+                                "value": "b"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "text",
+                            "value": " c"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "bulletChar": "-"
+          }
+        ],
+        "srcByteLength": 15
+      },
+      "html": "<ul>\n  <li><strong>a <strong>b</strong> c</strong></li>\n</ul>"
+    },
+    {
+      "id": "host-table",
+      "source": "| {*a {*b*} c*} |",
+      "document": {
+        "type": "document",
+        "children": [
+          {
+            "type": "table",
+            "rows": [
+              {
+                "type": "table_row",
+                "cells": [
+                  {
+                    "type": "table_cell",
+                    "header": false,
+                    "children": [
+                      {
+                        "type": "strong",
+                        "children": [
+                          {
+                            "type": "text",
+                            "value": "a "
+                          },
+                          {
+                            "type": "strong",
+                            "children": [
+                              {
+                                "type": "text",
+                                "value": "b"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "text",
+                            "value": " c"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "srcByteLength": 17
+      },
+      "html": "<table>\n  <tbody>\n    <tr><td><strong>a <strong>b</strong> c</strong></td></tr>\n  </tbody>\n</table>"
+    },
+    {
+      "id": "host-footnote",
+      "source": "[^n]\n\n[^n]: {*a {*b*} c*}",
+      "document": {
+        "type": "document",
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "footnote_ref",
+                "label": "n"
+              }
+            ]
+          },
+          {
+            "type": "footnote",
+            "label": "n",
+            "children": [
+              {
+                "type": "paragraph",
+                "children": [
+                  {
+                    "type": "strong",
+                    "children": [
+                      {
+                        "type": "text",
+                        "value": "a "
+                      },
+                      {
+                        "type": "strong",
+                        "children": [
+                          {
+                            "type": "text",
+                            "value": "b"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "text",
+                        "value": " c"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "srcByteLength": 25
+      },
+      "html": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p><strong>a <strong>b</strong> c</strong><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+    },
+    {
+      "id": "host-depth-heading",
+      "source": "# {^{^x^}^}",
+      "document": {
+        "type": "document",
+        "children": [
+          {
+            "type": "heading",
+            "level": 1,
+            "children": [
+              {
+                "type": "superscript",
+                "children": [
+                  {
+                    "type": "text",
+                    "value": "{^x^}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "srcByteLength": 11
+      },
+      "html": "<section>\n  <h1><sup>{^x^}</sup></h1>\n</section>",
+      "remainingInlineDepth": 1
+    },
+    {
+      "id": "host-depth-quote",
+      "source": "> {^{^x^}^}",
+      "document": {
+        "type": "document",
+        "children": [
+          {
+            "type": "block_quote",
+            "children": [
+              {
+                "type": "paragraph",
+                "children": [
+                  {
+                    "type": "superscript",
+                    "children": [
+                      {
+                        "type": "text",
+                        "value": "{^x^}"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "srcByteLength": 11
+      },
+      "html": "<blockquote><p><sup>{^x^}</sup></p></blockquote>",
+      "remainingInlineDepth": 1
+    },
+    {
+      "id": "host-depth-list",
+      "source": "- {^{^x^}^}",
+      "document": {
+        "type": "document",
+        "children": [
+          {
+            "type": "list",
+            "ordered": false,
+            "tight": true,
+            "items": [
+              {
+                "type": "list_item",
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "children": [
+                      {
+                        "type": "superscript",
+                        "children": [
+                          {
+                            "type": "text",
+                            "value": "{^x^}"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "bulletChar": "-"
+          }
+        ],
+        "srcByteLength": 11
+      },
+      "html": "<ul>\n  <li><sup>{^x^}</sup></li>\n</ul>",
+      "remainingInlineDepth": 1
+    },
+    {
+      "id": "host-depth-table",
+      "source": "| {^{^x^}^} |",
+      "document": {
+        "type": "document",
+        "children": [
+          {
+            "type": "table",
+            "rows": [
+              {
+                "type": "table_row",
+                "cells": [
+                  {
+                    "type": "table_cell",
+                    "header": false,
+                    "children": [
+                      {
+                        "type": "superscript",
+                        "children": [
+                          {
+                            "type": "text",
+                            "value": "{^x^}"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "srcByteLength": 13
+      },
+      "html": "<table>\n  <tbody>\n    <tr><td><sup>{^x^}</sup></td></tr>\n  </tbody>\n</table>",
+      "remainingInlineDepth": 1
     }
   ]
 }

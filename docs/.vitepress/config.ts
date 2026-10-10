@@ -157,6 +157,7 @@ export default defineConfig({
             text: 'Understand',
             items: [
               { text: 'Technical Rationale', link: '/technical-rationale' },
+              { text: 'Nested Braced Emphasis', link: '/nested-braced-emphasis' },
               { text: 'Feature Availability', link: '/native-features-analysis' },
               { text: 'Security', link: '/security' },
               { text: 'Carve vs Markdown/Djot/MDX', link: '/comparison' },
@@ -224,6 +225,7 @@ export default defineConfig({
           collapsed: true,
           items: [
             { text: 'Technical Rationale', link: '/technical-rationale' },
+            { text: 'Nested Braced Emphasis', link: '/nested-braced-emphasis' },
             { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
             { text: 'File Inclusion', link: '/includes' },
             { text: 'Validation', link: '/validation' },
