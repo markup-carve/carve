@@ -333,6 +333,30 @@
       "slug": "65-tabs-invalid-title-recovery",
       "feature": "tabs",
       "description": "Bare tab titles are diagnosed and dropped; panels retain their blocks and use Tab N, the inner heading, or the preceding legacy label attribute."
+    },
+    {
+      "slug": "66-smart-typography-quotes-off-html",
+      "feature": "smart-typography-quotes-off",
+      "target": "html",
+      "description": "Quote source runs, including apostrophes and derived heading labels, with other smart substitutions enabled."
+    },
+    {
+      "slug": "66-smart-typography-quotes-off-markdown",
+      "feature": "smart-typography-quotes-off",
+      "target": "markdown",
+      "description": "Quote source runs, including apostrophes and derived heading labels, with other smart substitutions enabled."
+    },
+    {
+      "slug": "66-smart-typography-quotes-off-plain",
+      "feature": "smart-typography-quotes-off",
+      "target": "plain",
+      "description": "Quote source runs, including apostrophes and derived heading labels, with other smart substitutions enabled."
+    },
+    {
+      "slug": "66-smart-typography-quotes-off-ansi",
+      "feature": "smart-typography-quotes-off",
+      "target": "ansi",
+      "description": "Quote source runs, including apostrophes and derived heading labels, with other smart substitutions enabled."
     }
   ]
 }

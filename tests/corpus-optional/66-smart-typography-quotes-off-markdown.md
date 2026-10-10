@@ -1,0 +1,13 @@
+He said "hello" and 'yes'; it's fine… a–b, c—d.
+
+Arrows → ← ↔ ⇒ and comparisons ≠ ≤ ≥ and © ® ™ ±.
+
+Typed “curly” ‘quotes’ and escaped \"plain\" stay literal.
+
+Code: `a--b "q" (c)`.
+
+- [ ] Don't "guess"… a–b
+
+# Don't "guess"… a–b
+
+[Don't "guess"… a–b](#dont-guess-ab)

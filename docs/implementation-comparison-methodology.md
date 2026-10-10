@@ -126,6 +126,10 @@ than rely on the ceilings agreeing, because §25 says they will not.
 
 ## Optional Tier-2 Profile
 
+Optional corpus added since this run: `66-smart-typography-quotes-off-html`,
+`66-smart-typography-quotes-off-markdown`, `66-smart-typography-quotes-off-plain`,
+`66-smart-typography-quotes-off-ansi`.
+
 The optional profile was measured on 2026-10-07 CEST with the same engine commits as
 the core snapshot. It enables a shared adapter per feature where each
 implementation exposes one. Unsupported feature/implementation combinations are
