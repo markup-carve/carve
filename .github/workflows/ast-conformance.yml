@@ -134,15 +134,17 @@ jobs:
       rb: ${{ steps.heads.outputs.rb }}
       php: ${{ steps.heads.outputs.php }}
     steps:
-      - name: Resolve engine heads once for all AST shards
+      # The reviewed pins, not `commits/main`. Resolving each engine's default
+      # branch once and checking that SHA out everywhere is still a float, one
+      # step removed: it only guarantees the shards agree with EACH OTHER about
+      # which unreviewed engine they measured. An engine merge minutes before
+      # 04:00 UTC then failed this job on a repository whose commits had not
+      # touched any of it (carve#2869, carve#2881). bump-engine-pin.yml moves
+      # the pins daily, so the move is reviewed rather than discovered here.
+      - uses: actions/checkout@v4
+      - name: Read the reviewed engine pins for all AST shards
         id: heads
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          for engine in js rs rb php; do
-            head=$(gh api "repos/markup-carve/carve-$engine/commits/main" --jq .sha)
-            echo "$engine=$head" >> "$GITHUB_OUTPUT"
-          done
+        run: node scripts/set-engine-pin.mjs --github-output >> "$GITHUB_OUTPUT"
 
   ast-shards:
     needs: ast-revisions
