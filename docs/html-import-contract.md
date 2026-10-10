@@ -2425,8 +2425,8 @@ The shared set is deliberately small and each directory has one subject:
 | `task-state-is-consumed` | a `data-task-state` read as the item's state beside a ticked box that needs none, and a value outside the enumeration that stays the author's attribute |
 | `task-list-class-and-done-state-are-consumed` | a list's `task-list` class consumed beside an authored class that stays, and a done item's `data-task-state="x"` consumed with its ticked box |
 | `ordered-delimiter-is-consumed` | a `data-delim` read as the list's delimiter, the bare `<ol>` that stays `.`, the attribute beside `type` and `start`, and a value outside the enumeration that stays the author's attribute |
-| `same-kind-strong-nesting` | a strong directly inside a strong where both levels need braces, whose inner level is unwrapped with a row (PART 11 §1c) |
-| `same-kind-superscript-nesting` | the same nesting on a braced-only kind, where the unwrap loses the second raise and the row says so |
+| `same-kind-strong-nesting` | a strong directly inside a strong, with both levels preserved as braced spans (PART 11 §1c) |
+| `same-kind-superscript-nesting` | two superscript levels preserved as nested braced spans |
 | `same-kind-indirect-nesting` | an emphasis inside a strong inside an emphasis, kept because the braced strong between them starts its own scope (PART 9 §9 E3, #2091) |
 | `table-cell-hard-break` | a `<br>` in a cell written as one space between words, as nothing at the cell's end, and as a space at the edge of a span inside the cell, one row per break (PART 11 §1b) |
 | `adjacent-code-spans` | two `<code>` elements with nothing between them, separated by an empty delimited comment so the backtick runs do not merge (PART 11 §10k N3) |
@@ -2468,7 +2468,7 @@ The shared set is deliberately small and each directory has one subject:
 | `empty-heading` | a bare empty heading and an attributed whitespace-only one, each dropped with one row |
 | `code-span-holding-blocks` | two blocks flattened into a `<code>`, joined with no separator and the lost boundary reported |
 
-The `same-kind-strong-nesting` and `same-kind-superscript-nesting` fixtures describe the current pinned importer; update their `expected.crv` and `expected.report.json` on implementation. Keep `same-kind-indirect-nesting` as an existing-preservation control. [The explicit braced nesting specification](./nested-braced-emphasis) removes that native spelling ceiling; these fixtures must be updated when the importer implements it. Their present flattening reports are not the required behavior under the new rule.
+The `same-kind-strong-nesting` and `same-kind-superscript-nesting` fixtures require both levels to survive without a loss report. `same-kind-indirect-nesting` remains an existing-preservation control. The [explicit braced nesting specification](./nested-braced-emphasis) defines their native spelling. The HTML import pin drift ledger records the released importer until its implementation catches up.
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one
