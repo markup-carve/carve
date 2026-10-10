@@ -473,5 +473,40 @@
     "id": "literal-unmatched-bare-before-comment",
     "source": "{/a b*{#id} /} #} c/}",
     "html": "<p><em>a b*<span class=\"critic-comment\">id} /} </span> c</em></p>"
+  },
+  {
+    "id": "detached-comment-bracket-crossing",
+    "source": "{*x {#a} [b #} c] y*}",
+    "html": "<p><strong>x <span class=\"critic-comment\">a} [b </span> c] y</strong></p>"
+  },
+  {
+    "id": "held-marker-comment-bracket-crossing",
+    "source": "{*x *{#a} [b #} c] y*}",
+    "html": "<p><strong>x *<span class=\"critic-comment\">a} [b </span> c] y</strong></p>"
+  },
+  {
+    "id": "word-comment-bracket-crossing",
+    "source": "{*x z{#a} [b #} c] y*}",
+    "html": "<p><strong>x z<span class=\"critic-comment\">a} [b </span> c] y</strong></p>"
+  },
+  {
+    "id": "detached-comment-line-comment-code-tail",
+    "source": "{*x {#a} %% #} `*}` c*}",
+    "html": "<p><strong>x <span class=\"critic-comment\">a} %% </span> <code>*}</code> c</strong></p>"
+  },
+  {
+    "id": "detached-comment-quoted-attribute-prefix",
+    "source": "{*x {#id key=\"#} `*}`\"} y*}",
+    "html": "<p><strong>x <span class=\"critic-comment\">id key=\"</span> <code>*}</code>”} y</strong></p>"
+  },
+  {
+    "id": "comment-backslash-is-literal",
+    "source": "{#a\\*b#}",
+    "html": "<p><span class=\"critic-comment\">a\\*b</span></p>"
+  },
+  {
+    "id": "comment-trailing-backslash-is-literal",
+    "source": "{#x\\#}",
+    "html": "<p><span class=\"critic-comment\">x\\</span></p>"
   }
 ]
