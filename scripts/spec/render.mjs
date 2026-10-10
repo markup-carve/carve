@@ -1074,7 +1074,7 @@ function buildToks(children, literalDelims = '') {
       const loose = alt.child(1).children[0]
       if (loose) {
         // Attaches to the span this delimiter closes; otherwise its literal fallback.
-        toks.push({ k: 'attrs', node: loose, at: loose.source.startIdx, h: loose.h() })
+        toks.push({ k: 'attrs', node: loose, at: loose.source.startIdx, h: loose.h(), heldMarker: literalDelims.includes(ch), markerAt: alt.source.startIdx, markerChar: ch })
       }
       continue
     }
@@ -1325,6 +1325,7 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0) {
   applyMarkerBoundary(toks, openMap, src, contentAt)
   // Build the span tree by walking the paired ranges (properly nested).
   const consumed = new Set() // attrs tokens attached to a span
+  const closers = new Set(openMap.values())
   const renderRange = (lo, hi) => {
     let out = ''
     let i = lo
@@ -1354,7 +1355,11 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0) {
         // what is inside them (carve#2084). renderInlineInner re-reads the text
         // with this brace escaped, which is the same document and puts the
         // block's characters back into the surrounding inline stream.
-        if (!consumed.has(i)) unattachedAttrs.push(t.at)
+        if (!consumed.has(i)) {
+          const marker = toks[i - 1]
+          const literalMarker = t.heldMarker || (marker?.k === 'd' && !openMap.has(i - 1) && !closers.has(i - 1))
+          unattachedAttrs.push({ at: t.at, literalMarker: literalMarker && t.markerAt + 1 === t.at, markerChar: t.markerChar })
+        }
       } else out += t.h
       i++
     }
@@ -1803,8 +1808,12 @@ function renderInlineInner(text) {
       unattachedAttrs = saved
       return out
     }
-    const first = Math.min.apply(null, offsets)
-    source = source.slice(0, first) + '\\' + source.slice(first)
+    const first = offsets.reduce((left, right) => left.at <= right.at ? left : right)
+    // A literal delimiter cannot carry attributes. Preserve a following
+    // editorial comment by escaping that delimiter instead of its brace.
+    const comment = first.literalMarker && source[first.at - 1] === first.markerChar && source.startsWith('{#', first.at) && source.indexOf('#}', first.at + 2) >= 0
+    const escapeAt = comment ? first.at - 1 : first.at
+    source = source.slice(0, escapeAt) + '\\' + source.slice(escapeAt)
   }
 }
 

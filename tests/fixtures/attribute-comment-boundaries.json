@@ -1,0 +1,477 @@
+[
+  {
+    "id": "braced-*-*",
+    "source": "{*a {*b*}{#child} c*} d {#note#}",
+    "html": "<p><strong>a <strong id=\"child\">b</strong> c</strong> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-*-/",
+    "source": "{*a {/b/}{#child} c*} d {#note#}",
+    "html": "<p><strong>a <em id=\"child\">b</em> c</strong> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-*-_",
+    "source": "{*a {_b_}{#child} c*} d {#note#}",
+    "html": "<p><strong>a <u id=\"child\">b</u> c</strong> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-*-~",
+    "source": "{*a {~b~}{#child} c*} d {#note#}",
+    "html": "<p><strong>a <s id=\"child\">b</s> c</strong> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-*-=",
+    "source": "{*a {=b=}{#child} c*} d {#note#}",
+    "html": "<p><strong>a <mark id=\"child\">b</mark> c</strong> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-*-^",
+    "source": "{*a {^b^}{#child} c*} d {#note#}",
+    "html": "<p><strong>a <sup id=\"child\">b</sup> c</strong> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-*-,",
+    "source": "{*a {,b,}{#child} c*} d {#note#}",
+    "html": "<p><strong>a <sub id=\"child\">b</sub> c</strong> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-/-*",
+    "source": "{/a {*b*}{#child} c/} d {#note#}",
+    "html": "<p><em>a <strong id=\"child\">b</strong> c</em> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-/-/",
+    "source": "{/a {/b/}{#child} c/} d {#note#}",
+    "html": "<p><em>a <em id=\"child\">b</em> c</em> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-/-_",
+    "source": "{/a {_b_}{#child} c/} d {#note#}",
+    "html": "<p><em>a <u id=\"child\">b</u> c</em> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-/-~",
+    "source": "{/a {~b~}{#child} c/} d {#note#}",
+    "html": "<p><em>a <s id=\"child\">b</s> c</em> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-/-=",
+    "source": "{/a {=b=}{#child} c/} d {#note#}",
+    "html": "<p><em>a <mark id=\"child\">b</mark> c</em> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-/-^",
+    "source": "{/a {^b^}{#child} c/} d {#note#}",
+    "html": "<p><em>a <sup id=\"child\">b</sup> c</em> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-/-,",
+    "source": "{/a {,b,}{#child} c/} d {#note#}",
+    "html": "<p><em>a <sub id=\"child\">b</sub> c</em> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-_-*",
+    "source": "{_a {*b*}{#child} c_} d {#note#}",
+    "html": "<p><u>a <strong id=\"child\">b</strong> c</u> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-_-/",
+    "source": "{_a {/b/}{#child} c_} d {#note#}",
+    "html": "<p><u>a <em id=\"child\">b</em> c</u> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-_-_",
+    "source": "{_a {_b_}{#child} c_} d {#note#}",
+    "html": "<p><u>a <u id=\"child\">b</u> c</u> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-_-~",
+    "source": "{_a {~b~}{#child} c_} d {#note#}",
+    "html": "<p><u>a <s id=\"child\">b</s> c</u> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-_-=",
+    "source": "{_a {=b=}{#child} c_} d {#note#}",
+    "html": "<p><u>a <mark id=\"child\">b</mark> c</u> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-_-^",
+    "source": "{_a {^b^}{#child} c_} d {#note#}",
+    "html": "<p><u>a <sup id=\"child\">b</sup> c</u> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-_-,",
+    "source": "{_a {,b,}{#child} c_} d {#note#}",
+    "html": "<p><u>a <sub id=\"child\">b</sub> c</u> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-~-*",
+    "source": "{~a {*b*}{#child} c~} d {#note#}",
+    "html": "<p><s>a <strong id=\"child\">b</strong> c</s> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-~-/",
+    "source": "{~a {/b/}{#child} c~} d {#note#}",
+    "html": "<p><s>a <em id=\"child\">b</em> c</s> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-~-_",
+    "source": "{~a {_b_}{#child} c~} d {#note#}",
+    "html": "<p><s>a <u id=\"child\">b</u> c</s> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-~-~",
+    "source": "{~a {~b~}{#child} c~} d {#note#}",
+    "html": "<p><s>a <s id=\"child\">b</s> c</s> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-~-=",
+    "source": "{~a {=b=}{#child} c~} d {#note#}",
+    "html": "<p><s>a <mark id=\"child\">b</mark> c</s> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-~-^",
+    "source": "{~a {^b^}{#child} c~} d {#note#}",
+    "html": "<p><s>a <sup id=\"child\">b</sup> c</s> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-~-,",
+    "source": "{~a {,b,}{#child} c~} d {#note#}",
+    "html": "<p><s>a <sub id=\"child\">b</sub> c</s> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-=-*",
+    "source": "{=a {*b*}{#child} c=} d {#note#}",
+    "html": "<p><mark>a <strong id=\"child\">b</strong> c</mark> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-=-/",
+    "source": "{=a {/b/}{#child} c=} d {#note#}",
+    "html": "<p><mark>a <em id=\"child\">b</em> c</mark> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-=-_",
+    "source": "{=a {_b_}{#child} c=} d {#note#}",
+    "html": "<p><mark>a <u id=\"child\">b</u> c</mark> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-=-~",
+    "source": "{=a {~b~}{#child} c=} d {#note#}",
+    "html": "<p><mark>a <s id=\"child\">b</s> c</mark> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-=-=",
+    "source": "{=a {=b=}{#child} c=} d {#note#}",
+    "html": "<p><mark>a <mark id=\"child\">b</mark> c</mark> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-=-^",
+    "source": "{=a {^b^}{#child} c=} d {#note#}",
+    "html": "<p><mark>a <sup id=\"child\">b</sup> c</mark> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-=-,",
+    "source": "{=a {,b,}{#child} c=} d {#note#}",
+    "html": "<p><mark>a <sub id=\"child\">b</sub> c</mark> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-^-*",
+    "source": "{^a {*b*}{#child} c^} d {#note#}",
+    "html": "<p><sup>a <strong id=\"child\">b</strong> c</sup> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-^-/",
+    "source": "{^a {/b/}{#child} c^} d {#note#}",
+    "html": "<p><sup>a <em id=\"child\">b</em> c</sup> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-^-_",
+    "source": "{^a {_b_}{#child} c^} d {#note#}",
+    "html": "<p><sup>a <u id=\"child\">b</u> c</sup> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-^-~",
+    "source": "{^a {~b~}{#child} c^} d {#note#}",
+    "html": "<p><sup>a <s id=\"child\">b</s> c</sup> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-^-=",
+    "source": "{^a {=b=}{#child} c^} d {#note#}",
+    "html": "<p><sup>a <mark id=\"child\">b</mark> c</sup> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-^-^",
+    "source": "{^a {^b^}{#child} c^} d {#note#}",
+    "html": "<p><sup>a <sup id=\"child\">b</sup> c</sup> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-^-,",
+    "source": "{^a {,b,}{#child} c^} d {#note#}",
+    "html": "<p><sup>a <sub id=\"child\">b</sub> c</sup> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-,-*",
+    "source": "{,a {*b*}{#child} c,} d {#note#}",
+    "html": "<p><sub>a <strong id=\"child\">b</strong> c</sub> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-,-/",
+    "source": "{,a {/b/}{#child} c,} d {#note#}",
+    "html": "<p><sub>a <em id=\"child\">b</em> c</sub> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-,-_",
+    "source": "{,a {_b_}{#child} c,} d {#note#}",
+    "html": "<p><sub>a <u id=\"child\">b</u> c</sub> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-,-~",
+    "source": "{,a {~b~}{#child} c,} d {#note#}",
+    "html": "<p><sub>a <s id=\"child\">b</s> c</sub> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-,-=",
+    "source": "{,a {=b=}{#child} c,} d {#note#}",
+    "html": "<p><sub>a <mark id=\"child\">b</mark> c</sub> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-,-^",
+    "source": "{,a {^b^}{#child} c,} d {#note#}",
+    "html": "<p><sub>a <sup id=\"child\">b</sup> c</sub> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "braced-,-,",
+    "source": "{,a {,b,}{#child} c,} d {#note#}",
+    "html": "<p><sub>a <sub id=\"child\">b</sub> c</sub> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-*-/",
+    "source": "{*a /b/{#child} c*} d {#note#}",
+    "html": "<p><strong>a <em id=\"child\">b</em> c</strong> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-*-_",
+    "source": "{*a _b_{#child} c*} d {#note#}",
+    "html": "<p><strong>a <u id=\"child\">b</u> c</strong> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-*-~",
+    "source": "{*a ~b~{#child} c*} d {#note#}",
+    "html": "<p><strong>a <s id=\"child\">b</s> c</strong> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-*-=",
+    "source": "{*a =b={#child} c*} d {#note#}",
+    "html": "<p><strong>a <mark id=\"child\">b</mark> c</strong> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-/-*",
+    "source": "{/a *b*{#child} c/} d {#note#}",
+    "html": "<p><em>a <strong id=\"child\">b</strong> c</em> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-/-_",
+    "source": "{/a _b_{#child} c/} d {#note#}",
+    "html": "<p><em>a <u id=\"child\">b</u> c</em> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-/-~",
+    "source": "{/a ~b~{#child} c/} d {#note#}",
+    "html": "<p><em>a <s id=\"child\">b</s> c</em> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-/-=",
+    "source": "{/a =b={#child} c/} d {#note#}",
+    "html": "<p><em>a <mark id=\"child\">b</mark> c</em> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-_-*",
+    "source": "{_a *b*{#child} c_} d {#note#}",
+    "html": "<p><u>a <strong id=\"child\">b</strong> c</u> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-_-/",
+    "source": "{_a /b/{#child} c_} d {#note#}",
+    "html": "<p><u>a <em id=\"child\">b</em> c</u> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-_-~",
+    "source": "{_a ~b~{#child} c_} d {#note#}",
+    "html": "<p><u>a <s id=\"child\">b</s> c</u> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-_-=",
+    "source": "{_a =b={#child} c_} d {#note#}",
+    "html": "<p><u>a <mark id=\"child\">b</mark> c</u> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-~-*",
+    "source": "{~a *b*{#child} c~} d {#note#}",
+    "html": "<p><s>a <strong id=\"child\">b</strong> c</s> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-~-/",
+    "source": "{~a /b/{#child} c~} d {#note#}",
+    "html": "<p><s>a <em id=\"child\">b</em> c</s> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-~-_",
+    "source": "{~a _b_{#child} c~} d {#note#}",
+    "html": "<p><s>a <u id=\"child\">b</u> c</s> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-~-=",
+    "source": "{~a =b={#child} c~} d {#note#}",
+    "html": "<p><s>a <mark id=\"child\">b</mark> c</s> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-=-*",
+    "source": "{=a *b*{#child} c=} d {#note#}",
+    "html": "<p><mark>a <strong id=\"child\">b</strong> c</mark> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-=-/",
+    "source": "{=a /b/{#child} c=} d {#note#}",
+    "html": "<p><mark>a <em id=\"child\">b</em> c</mark> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-=-_",
+    "source": "{=a _b_{#child} c=} d {#note#}",
+    "html": "<p><mark>a <u id=\"child\">b</u> c</mark> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-=-~",
+    "source": "{=a ~b~{#child} c=} d {#note#}",
+    "html": "<p><mark>a <s id=\"child\">b</s> c</mark> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-^-*",
+    "source": "{^a *b*{#child} c^} d {#note#}",
+    "html": "<p><sup>a <strong id=\"child\">b</strong> c</sup> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-^-/",
+    "source": "{^a /b/{#child} c^} d {#note#}",
+    "html": "<p><sup>a <em id=\"child\">b</em> c</sup> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-^-_",
+    "source": "{^a _b_{#child} c^} d {#note#}",
+    "html": "<p><sup>a <u id=\"child\">b</u> c</sup> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-^-~",
+    "source": "{^a ~b~{#child} c^} d {#note#}",
+    "html": "<p><sup>a <s id=\"child\">b</s> c</sup> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-^-=",
+    "source": "{^a =b={#child} c^} d {#note#}",
+    "html": "<p><sup>a <mark id=\"child\">b</mark> c</sup> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-,-*",
+    "source": "{,a *b*{#child} c,} d {#note#}",
+    "html": "<p><sub>a <strong id=\"child\">b</strong> c</sub> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-,-/",
+    "source": "{,a /b/{#child} c,} d {#note#}",
+    "html": "<p><sub>a <em id=\"child\">b</em> c</sub> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-,-_",
+    "source": "{,a _b_{#child} c,} d {#note#}",
+    "html": "<p><sub>a <u id=\"child\">b</u> c</sub> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-,-~",
+    "source": "{,a ~b~{#child} c,} d {#note#}",
+    "html": "<p><sub>a <s id=\"child\">b</s> c</sub> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "bare-,-=",
+    "source": "{,a =b={#child} c,} d {#note#}",
+    "html": "<p><sub>a <mark id=\"child\">b</mark> c</sub> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "atom-*-span",
+    "source": "{*a [b]{#child} c*} d {#note#}",
+    "html": "<p><strong>a <span id=\"child\">b</span> c</strong> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "atom-*-code",
+    "source": "{*a `b`{#child} c*} d {#note#}",
+    "html": "<p><strong>a <code id=\"child\">b</code> c</strong> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "atom-/-span",
+    "source": "{/a [b]{#child} c/} d {#note#}",
+    "html": "<p><em>a <span id=\"child\">b</span> c</em> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "atom-/-code",
+    "source": "{/a `b`{#child} c/} d {#note#}",
+    "html": "<p><em>a <code id=\"child\">b</code> c</em> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "atom-_-span",
+    "source": "{_a [b]{#child} c_} d {#note#}",
+    "html": "<p><u>a <span id=\"child\">b</span> c</u> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "atom-_-code",
+    "source": "{_a `b`{#child} c_} d {#note#}",
+    "html": "<p><u>a <code id=\"child\">b</code> c</u> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "atom-~-span",
+    "source": "{~a [b]{#child} c~} d {#note#}",
+    "html": "<p><s>a <span id=\"child\">b</span> c</s> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "atom-~-code",
+    "source": "{~a `b`{#child} c~} d {#note#}",
+    "html": "<p><s>a <code id=\"child\">b</code> c</s> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "atom-=-span",
+    "source": "{=a [b]{#child} c=} d {#note#}",
+    "html": "<p><mark>a <span id=\"child\">b</span> c</mark> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "atom-=-code",
+    "source": "{=a `b`{#child} c=} d {#note#}",
+    "html": "<p><mark>a <code id=\"child\">b</code> c</mark> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "atom-^-span",
+    "source": "{^a [b]{#child} c^} d {#note#}",
+    "html": "<p><sup>a <span id=\"child\">b</span> c</sup> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "atom-^-code",
+    "source": "{^a `b`{#child} c^} d {#note#}",
+    "html": "<p><sup>a <code id=\"child\">b</code> c</sup> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "atom-,-span",
+    "source": "{,a [b]{#child} c,} d {#note#}",
+    "html": "<p><sub>a <span id=\"child\">b</span> c</sub> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "atom-,-code",
+    "source": "{,a `b`{#child} c,} d {#note#}",
+    "html": "<p><sub>a <code id=\"child\">b</code> c</sub> d <span class=\"critic-comment\">note</span></p>"
+  },
+  {
+    "id": "literal-own-kind-before-comment",
+    "source": "{*a *{#id} *} #} b*}",
+    "html": "<p><strong>a *<span class=\"critic-comment\">id} *} </span> b</strong></p>"
+  },
+  {
+    "id": "literal-unmatched-bare-before-comment",
+    "source": "{/a b*{#id} /} #} c/}",
+    "html": "<p><em>a b*<span class=\"critic-comment\">id} /} </span> c</em></p>"
+  }
+]
