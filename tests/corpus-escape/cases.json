@@ -40,12 +40,21 @@
       }
     },
     {
-      "name": "tripled-percent-is-not-an-opener",
+      "name": "a-percent-run-longer-than-two-still-opens-on-its-first-two",
       "input": "a %%%c b",
       "expected": {
-        "plain": "a %%%c b",
-        "markdown": "a %%%c b",
-        "djot": "a %%%c b"
+        "plain": "a \\%%%c b",
+        "markdown": "a \\%%%c b",
+        "djot": "a \\%%%c b"
+      }
+    },
+    {
+      "name": "a-four-percent-run-opens-on-its-first-two-as-well",
+      "input": "a %%%%c b",
+      "expected": {
+        "plain": "a \\%%%%c b",
+        "markdown": "a \\%%%%c b",
+        "djot": "a \\%%%%c b"
       }
     },
     {
