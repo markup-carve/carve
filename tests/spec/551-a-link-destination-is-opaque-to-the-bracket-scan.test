@@ -35,3 +35,27 @@ a [b [x](u) c]
 .
 <p>a [b <a href="u">x</a> c]</p>
 ```
+
+```
+a [b [x](http://u/]) c
+.
+<p>a [b <a href="http://u/]">x</a> c</p>
+```
+
+```
+a [b ![x](http://u/]) c
+.
+<p>a [b <img src="http://u/]" alt="x"> c</p>
+```
+
+```
+a [b [x](http://u/] "t]") c
+.
+<p>a [b <a href="http://u/]" title="t]">x</a> c</p>
+```
+
+```
+a [[http\:\/\/u\/\]](http://u/])
+.
+<p>a [<a href="http://u/]">http://u/]</a></p>
+```

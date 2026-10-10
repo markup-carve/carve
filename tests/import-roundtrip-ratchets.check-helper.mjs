@@ -241,6 +241,15 @@ const visibleText = (html) =>
 // source round trip survives: HTML returns inline links, literal Figure
 // numbers and Equation captions as paragraphs. Markdown returns ordinary text.
 
+// Section 551 gains four nested-destination rows (carve#2860). All four
+// import, are fixed points and keep their visible text, so those three counts
+// move by the full four. Only the first three round-trip through HTML: `-10`
+// writes its link text with every URL character escaped, and the importer
+// escapes only the `]`, so the source is not recovered byte for byte. The
+// Markdown round trip does not move on any of the four: the Markdown importer
+// percent-encodes the `]` in the destination, so `http://u/]` returns as
+// `http://u/%5D`.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {

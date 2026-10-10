@@ -46611,3 +46611,66 @@ a [b [x](u) c]
 ```
 
 :::
+
+With an OUTSTANDING `[` in the surrounding text the two readings part company,
+which is what makes these the shapes the gap was found on. The `]` in the
+destination below is the first one the scan meets, and a scan that closed on it
+would end the run inside a destination and leave the whole line literal.
+
+::: compare
+
+```carve
+a [b [x](http://u/]) c
+```
+
+```html
+<p>a [b <a href="http://u/]">x</a> c</p>
+```
+
+:::
+
+The image spelling of the same shape, since the skip belongs to the destination
+and not to what precedes it.
+
+::: compare
+
+```carve
+a [b ![x](http://u/]) c
+```
+
+```html
+<p>a [b <img src="http://u/]" alt="x"> c</p>
+```
+
+:::
+
+And with a `]` in the title beside the one in the destination, so the slot is
+skipped past its closing parenthesis rather than up to the destination's end.
+
+::: compare
+
+```carve
+a [b [x](http://u/] "t]") c
+```
+
+```html
+<p>a [b <a href="http://u/]" title="t]">x</a> c</p>
+```
+
+:::
+
+The shape the ruling was filed on, where the link TEXT spells the destination it
+points at with every bracket escaped. The text's escapes are resolved and the
+destination's brackets are not, so the two readings meet in one line.
+
+::: compare
+
+```carve
+a [[http\:\/\/u\/\]](http://u/])
+```
+
+```html
+<p>a [<a href="http://u/]">http://u/]</a></p>
+```
+
+:::

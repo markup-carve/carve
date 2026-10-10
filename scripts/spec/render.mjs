@@ -60,6 +60,12 @@ export function destValue(dest) {
   return unescapeDest(dest.sourceString)
 }
 
+// The `dest` and `destTitle?` nodes of one `destSlot`. The slot is one
+// production read from three places (a link tail, an image, the nested-run
+// skip in `brContent`), so its two readers take its parts from here rather
+// than each spelling the slot's children out again.
+const destSlotParts = (slot) => [slot.child(1), slot.child(2)]
+
 // A reference definition's destination is the same `link_destination`: its
 // value, or null when the run is not one (an unbalanced parenthesis).
 export function matchDestination(text) {
@@ -583,7 +589,8 @@ const sem = g.createSemantics().addOperation('h', {
     // not a link (PART 3, carve#2578).
     return tail.child(0).applyTail(inner, raw)
   },
-  image(_b, _o, alt, _c, _p, dest, title, _cp, attrs) {
+  image(_b, _o, alt, _c, slot, attrs) {
+    const [dest, title] = destSlotParts(slot)
     const t = title.numChildren ? ` title="${escapeAttr(title.child(0).titleText())}"` : ''
     const a = renderAttrs(attrsOf(attrs))
     return `<img src="${escapeAttr(checkUrl(destValue(dest)))}" alt="${escapeAttr(alt.sourceString.replace(/\\([!-/:-@\[-`{-~])/g, '$1'))}"${t}${a}>`
@@ -855,7 +862,8 @@ const sem = g.createSemantics().addOperation('h', {
 
 // tails need the already-rendered link text
 sem.addOperation('applyTail(text, source)', {
-  linkTail(_o, dest, title, _c, attrs) {
+  linkTail(slot, attrs) {
+    const [dest, title] = destSlotParts(slot)
     const text = flattenInnerLinks(this.args.text)
     // A footnote in link text is a §16 LIMITATION, not an unrenderable
     // document: the clause states the outcome ("nests an <a> in an <a>") and
