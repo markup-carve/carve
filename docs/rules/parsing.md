@@ -63,14 +63,14 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P2-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/04-blocks-tables-containers.ebnf#L528) | 2 | THE INTERIOR IS VERBATIM, THE OPENING IS PLACED |
 | [`CARVE-P2-025`](https://github.com/markup-carve/carve/blob/main/resources/spec/05-blocks-paragraphs.ebnf#L12) | 2 | NO TRAILING WHITESPACE |
 | [`CARVE-P3-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L130) | 3 | WHICH SPANS THE SCAN SKIPS |
-| [`CARVE-P3-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L204) | 3 | WHITESPACE HERE IS UNICODE WHITESPACE |
-| [`CARVE-P3-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L265) | 3 | A LABEL THAT BEGINS WITH AN AT SIGN IS NOT A REFERENCE LABEL |
-| [`CARVE-P3-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L279) | 3 | THE FALLBACK IS THE VERBATIM SOURCE RUN, NOT A RESCAN |
-| [`CARVE-P3-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L307) | 3 | ANCHORED AT END OF LINE |
-| [`CARVE-P3-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L335) | 3 | AN INVALID BLOCK IS NOT `attributes`, SO THE LINE IS NOT A DEFINITION |
-| [`CARVE-P3-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L350) | 3 | TRAILING ATTRIBUTES ON A DEFINITION |
-| [`CARVE-P3-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L387) | 3 | THE DEFINITION MARKER SEPARATOR |
-| [`CARVE-P3-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L479) | 3 | AN AUTOLINK BODY ADMITS NON-ASCII AND EXCLUDES FORMAT CHARACTERS |
+| [`CARVE-P3-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L217) | 3 | WHITESPACE HERE IS UNICODE WHITESPACE |
+| [`CARVE-P3-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L278) | 3 | A LABEL THAT BEGINS WITH AN AT SIGN IS NOT A REFERENCE LABEL |
+| [`CARVE-P3-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L292) | 3 | THE FALLBACK IS THE VERBATIM SOURCE RUN, NOT A RESCAN |
+| [`CARVE-P3-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L320) | 3 | ANCHORED AT END OF LINE |
+| [`CARVE-P3-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L348) | 3 | AN INVALID BLOCK IS NOT `attributes`, SO THE LINE IS NOT A DEFINITION |
+| [`CARVE-P3-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L363) | 3 | TRAILING ATTRIBUTES ON A DEFINITION |
+| [`CARVE-P3-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L400) | 3 | THE DEFINITION MARKER SEPARATOR |
+| [`CARVE-P3-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L492) | 3 | AN AUTOLINK BODY ADMITS NON-ASCII AND EXCLUDES FORMAT CHARACTERS |
 | [`CARVE-P3-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L11) | 3 | TRAILING ATTRIBUTES on math |
 | [`CARVE-P3-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L55) | 3 | FORMAL word-boundary guards |
 | [`CARVE-P3-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L119) | 3 | AN EMPTY BRACE PAIR IS NOT A CONSTRUCT |

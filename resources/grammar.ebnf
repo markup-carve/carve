@@ -2258,12 +2258,25 @@ link_text = inline_content ;
      `code`            inline code
      !`literal`        inline literal (PART 9 §27)
      {# comment #}     editorial comment
+     (dest "title")    a link or image destination slot
 
    A `]` inside any of them is content, not the close.
 
    Literal content recognizes no escapes; every future literal construct
    joins this set. `{+ +}`, `{- -}` and `{~ ~> ~}` take `inline_content`, so
-   `[{+a\]b+}](u)` works and those constructs are NOT skipped. *)
+   `[{+a\]b+}](u)` works and those constructs are NOT skipped.
+
+   THE DESTINATION SLOT joined this set by that criterion, not by a separate
+   rule: a destination has no escape processing (`docs/dismissed-syntax.md`,
+   normative), so a `]` there is an ordinary URL character with no second
+   spelling. What is skipped is the parenthesized slot through its closing
+   parenthesis, title included, and NOT a trailing attribute block -- an
+   attribute value does resolve escapes, so `[t[x](/u){title="]"}y](/z)`
+   closes at the `]` in the value for the same reason `[t{# c #}{title="]"}x]`
+   does. Without the destination in this set the `]` in
+   `a [b [x](http://u/]) c` closed the outstanding `[` and the line went
+   literal, losing the link (ruled on carve-php#3046; carve#2860 in the
+   executable spec). *)
 (* SEMANTIC CONSTRAINT (links never nest): a link MUST NOT contain another
    link. The link text is inline content, so parsing it may yield a link --
    written explicitly (`[[x](y)](z)`), as a crossref/auto_text_link, or

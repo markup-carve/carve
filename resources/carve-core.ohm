@@ -434,10 +434,21 @@ CarveCore {
   // `{+ +}`, `{- -}` and `{~ ~> ~}` take inline content and are deliberately
   // absent: an escape inside them IS an escape, so `[{+a\]b+}](u)` already has
   // a spelling.
+  //
+  // A NESTED RUN CARRIES ITS DESTINATION SLOT, because a destination resolves
+  // no escapes either and so joins the clause's open set (CARVE-P3-001, ruled
+  // on carve-php#3046). Without it the `]` in `a [b [x](http://u/]) c` closed
+  // the outstanding `[` and the line went literal, where every engine keeps
+  // the link. The SLOT and not `linkTail`: `attrRun` is outside it for the
+  // reason stated above, since an attribute value does resolve escapes.
   brContent  = escape | litInlineBody | code | edCommentBody | nested | (~"]" any)
-  nested     = "[" brContent* "]"
+  nested     = "[" brContent* "]" destSlot?
   brTail     = linkTail | refTail | attrRun | emptyAttrs
-  linkTail   = "(" dest destTitle? ")" attrRun?
+  linkTail   = destSlot attrRun?
+  // ONE SPELLING of the parenthesized destination slot, read from the link
+  // tail, the image and the nested-run skip above. It was written out twice
+  // and the skip would have been a third copy.
+  destSlot   = "(" dest destTitle? ")"
   refTail    = "[" refLabel? "]" attrRun?
   refLabel   = (~"]" ~newline any)+
   // A destination's parentheses BALANCE (grammar link_destination), so a URL
@@ -507,7 +518,7 @@ CarveCore {
   qChar      = qEsc | (~"\"" ~newline any)
   qEsc       = "\\" punctChar
 
-  image      = "!" "[" altText "]" "(" dest destTitle? ")" attrRun?
+  image      = "!" "[" altText "]" destSlot attrRun?
   // `![alt][ref]` resolves against the SAME linkDefs entry a reference link
   // does, taking url, title and attrs from it (PART 9R R1). Without this rule
   // the `!` fell through to `bang` and the rest matched `bracketed`, so an
