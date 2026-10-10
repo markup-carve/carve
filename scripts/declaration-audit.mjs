@@ -340,6 +340,10 @@ const MANIFEST = [
   // the `declared` format check can never pass on a php-array row. Printed here
   // for the reader; the engine test is the gate.
   { repo: 'carve-php', path: 'tests/TestCase/Converter/ConverterCorpusTest.php', name: 'DECLARED_DRIFT', kind: 'php', policy: 'manual', guard: 'two-way', staleness: 'testEveryDeclaredDriftStillDiverges', owner: 'tests/TestCase/Converter/ConverterCorpusTest.php' },
+  // The converter corpus's own ahead-of-pin list, landed by carve-php#3071 with
+  // the task-list hooks. Two-way: each row asserts the pinned golden still
+  // differs, so an entry cannot outlive the pin bump that closes it.
+  { repo: 'carve-php', path: 'tests/TestCase/Converter/ConverterCorpusTest.php', name: 'AHEAD_OF_PIN', kind: 'php', policy: 'owed', guard: 'two-way', owner: 'tests/TestCase/Converter/ConverterCorpusTest.php' },
   // Empty cross-engine skip-list for the include/transclusion conformance
   // vectors (markup-carve/carve-php#373). Two-way since carve-php#2491: the
   // staleness half re-runs each declared vector and fails when every golden
