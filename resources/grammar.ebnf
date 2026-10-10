@@ -9456,8 +9456,8 @@ EOF = (* end of file *) ;
 
       Trailing whitespace, soft breaks and nodes that emit nothing do not
       turn a terminal hard break into an interior one. Repeated hard breaks
-      retain their count. A break-only inline fragment appends `<!---->` to its final `<br>`
-      so it cannot start a CommonMark HTML block. The empty HTML comment
+      retain their count. Outside a heading or table cell, a break-only inline fragment appends
+      `<!---->` to its final `<br>` so it cannot start a CommonMark HTML block. The empty HTML comment
       contributes no rendered text.
 
         paragraph children    text "a", hard_break

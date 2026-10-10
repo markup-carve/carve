@@ -238,6 +238,20 @@ test('terminal and heading hard breaks survive their inline HTML spelling', () =
 for (const item of JSON.parse(read('tests/fixtures/markdown-inline-hard-breaks.json'))) {
   test(`hard breaks survive ${item.template}: ${item.name}`, () => {
     clauseText(item.rule)
-    assert.equal((cmarkGfmToHtml(item.markdown).match(/<br\b/g) ?? []).length, item.breaks)
+    const paths = []
+    const visit = (node, ancestors = []) => {
+      const next = node.tagName ? [...ancestors, node.tagName] : ancestors
+      if (node.tagName === 'br') paths.push(next)
+      for (const child of node.childNodes ?? []) visit(child, next)
+    }
+    visit(parseFragment(cmarkGfmToHtml(item.markdown)))
+    assert.deepEqual(paths, item.ancestors)
   })
 }
+
+test('the GitHub-verified heading fixture links to its text anchors', () => {
+  const html = cmarkGfmToHtml(read('tests/fixtures/markdown-heading-inline.md'))
+  const headings = parseFragment(html).childNodes.filter(node => node.tagName === 'h1')
+  assert.deepEqual(headings.map(codeText), ['AB', 'Ax\nyB'])
+  assert.deepEqual(hrefs(html), ['#ab', '#axyb'])
+})
