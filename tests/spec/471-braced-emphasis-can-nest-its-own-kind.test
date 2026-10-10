@@ -1,15 +1,15 @@
-A forced opener of an open kind is literal
+Braced emphasis can nest its own kind
 
 ```
 a{*{*x*}*}b
 .
-<p>a<strong>{*x</strong>*}b</p>
+<p>a<strong><strong>x</strong></strong>b</p>
 ```
 
 ```
 *a {*b*} c*
 .
-<p><strong>a {*b</strong>} c*</p>
+<p><strong>a <strong>b</strong> c</strong></p>
 ```
 
 ```
@@ -21,7 +21,7 @@ a{*{*x*}*}b
 ```
 {/a *b {/c/}*/}
 .
-<p><em>a *b {/c</em>*/}</p>
+<p><em>a <strong>b <em>c</em></strong></em></p>
 ```
 
 ```
