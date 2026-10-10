@@ -6,8 +6,9 @@
  *
  * The token owns BOTH `/` and `*`, which is why the repair is a set of literal
  * delimiters rather than the single one a forced span needs: §9 E3 holds both
- * of its own delimiters literal inside it, bare and forced alike, while the
- * other three resolve normally.
+ * of its own BARE delimiters literal inside it, while the other three resolve
+ * normally. E3 is NO BARE SAME-TYPE NESTING, so a BRACED child of either of
+ * the token's two kinds nests inside it (carve#2903).
  *
  * `scripts/formal-core-check.mjs` cannot see it: no corpus document writes a
  * bare span or a marker inside a combined token, so all 1740 inputs stayed
@@ -37,10 +38,14 @@ test("the combined token's own two delimiters stay literal inside it", () => {
   assert.equal(html('/*a *b* c*/ x\n'), bi('a *b* c'))
   assert.equal(html('/*a /b/ c*/ x\n'), bi('a /b/ c'))
   assert.equal(html('/*/x/*/ y\n'), '<p><strong><em>/x/</em></strong> y</p>')
-  // E3 counts the enclosing span as open for a FORCED opener as for a bare
-  // one, so the braces are content and the delimiters inside them are text.
-  assert.equal(html('/*a {*b*} c*/ x\n'), bi('a {*b*} c'))
-  assert.equal(html('/*a {/b/} c*/ x\n'), bi('a {/b/} c'))
+  // E3 restricts BARE openers only, so a braced child of either activated
+  // kind nests here the same as anywhere else (carve#2903).
+  assert.equal(html('/*a {*b*} c*/ x\n'), bi('a <strong>b</strong> c'))
+  assert.equal(html('/*a {/b/} c*/ x\n'), bi('a <em>b</em> c'))
+  // The reverse was always allowed and does not move: a combined token is an
+  // ordinary child of a braced span of either of its kinds. It is a test and
+  // not a corpus row because the pinned writer cannot spell the tree yet.
+  assert.equal(html('{*a /*b*/ c*}\n'), '<p><strong>a <strong><em>b</em></strong> c</strong></p>')
   // A forced span of another delimiter is unaffected.
   assert.equal(html('/*a {_b_} c*/ x\n'), bi('a <u>b</u> c'))
 })

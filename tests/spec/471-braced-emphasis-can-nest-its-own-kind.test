@@ -56,3 +56,42 @@ a{*{*x*}*}b
 <p><mark> =h= </mark></p>
 <p><em> /x/ </em></p>
 ```
+
+```
+{**}
+
+{*}
+.
+<p>{**}</p>
+<p>{*}</p>
+```
+
+```
+{*a {**} b*}
+.
+<p><strong>a {**} b</strong></p>
+```
+
+```
+\{*x*}
+
+\{\*x\*\}
+.
+<p>{<strong>x</strong>}</p>
+<p>{*x*}</p>
+```
+
+```
+{~a {*x ~>y~} z*}
+.
+<p>{~a <strong>x <s>&gt;y</s>} z</strong></p>
+```
+
+```
+/*a {*b*} c*/ x
+
+/*a {/b/} c*/ x
+.
+<p><strong><em>a <strong>b</strong> c</em></strong> x</p>
+<p><strong><em>a <em>b</em> c</em></strong> x</p>
+```

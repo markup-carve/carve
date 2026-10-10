@@ -42,13 +42,17 @@ The measured pinned output for `*a {*b*} c*` is `<p><strong>a {*b</strong>} c*</
 - `{*a {*b c*}` now leaves the outer opener literal and closes the inner strong span. Previously the outer strong contained literal `{*b c`.
 - `{~a {*x~>y*} b~}` now produces strike containing a strong child whose text is `x~>y`. Previously the pinned implementation produced deletion and insertion around the separator. This is an explicit substitution-boundary change within the proposal.
 
-An author who wants literal punctuation can escape it:
+Escaping the brace prevents a forced opener, and that is all it does. The inner delimiters stay active, so `\{*x*}` is a literal brace around a bare strong span:
+
+~~~carve
+\{*x*}
+~~~
+
+One backslash is therefore enough for a literal `{*` opener, and not enough for a whole literal `{*x*}`. To keep the span literal, escape the active marks too:
 
 ~~~carve
 \{\*x\*\}
 ~~~
-
-Escaping only the opening brace prevents a forced opener, but other punctuation can still participate in ordinary inline parsing. A canonical writer must escape all active punctuation needed to preserve literal text.
 
 ## Writing, import, and export
 

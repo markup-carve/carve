@@ -6122,6 +6122,10 @@ EOF = (* end of file *) ;
         strong nodes. Bare openers remain literal while a same-kind span
         is reachable under E2a; an intervening braced boundary can hide
         that ancestor. Doubled bare delimiters retain their existing meaning.
+        A combined token activates two kinds, and E3 reads both as ordinary
+        active kinds, so a braced child of either nests inside it:
+        /*a {*b*} c*/ holds a strong child. The absence of a carve-out for
+        the combined token is deliberate (carve#2903).
         The X} closes the innermost reachable matching braced span. It MUST
         NOT cross an intervening braced boundary (E2a) or bracket-run bound
         (E2b). Unmatched explicit openers remain literal, not implicitly
@@ -6156,9 +6160,7 @@ EOF = (* end of file *) ;
         Thus {*a {/b *} c*} closes strong at the first *}: the unmatched
         italic opener is literal. In {*a {/b *} d/} e*}, the matched
         italic discards the inner *} from outer matching and strong closes
-        at e*}. In {~a {*x ~>y~} z*}, the matched strong discards the ~}
-        from outer matching: {~a is literal; strong contains text x ,
-        bare strike >y, and literal } z. Bare behavior remains unchanged.
+        at e*}. Bare behavior remains unchanged.
         MATCHED OPENERS ONLY. An explicit opener with no indexed matching
         closer creates no E2a boundary and stays literal.
         Thus *a {*b c* remains one strong node containing a literal {*.
@@ -6202,10 +6204,12 @@ EOF = (* end of file *) ;
       - `{= … =}` is forced highlight (<mark>), distinct from the raw-inline
         `{=format}` attribute on a code span (`` `x`{=html} ``), which has no
         trailing `=` before the `}`.
-      - ESCAPING. Escaping the brace in `\{/` prevents a forced opener.
-        It does not suppress ordinary parsing of subsequent punctuation.
-        To preserve a whole literal {*x*}, escape the active stars as well:
-        \{\*x\*\}. The canonical writer applies ordinary literal escaping.
+      - ESCAPING. A literal `{/` (etc.) is written `\{/` -- one backslash on the
+        brace is enough; the inner delimiter need not be escaped. That escapes
+        the OPENER only: the inner delimiters stay active, so `\{*x*}` is a
+        literal brace around a bare strong span. To keep a whole {*x*} literal,
+        escape the active marks as well: \{\*x\*\}. The canonical writer
+        applies ordinary literal escaping.
       - ATTRIBUTES. A forced span MAY carry a trailing `[attribute_run]` like
         any bare span: {*x*}{.c} -> <strong class="c">x</strong>. Child and
         parent attribute runs attach independently; neither inherits the

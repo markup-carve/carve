@@ -144,6 +144,11 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
       // Markdown importer has not followed, and the declaration names the
       // issue that retires it.
       ['tests/a-markdown-destination-keeps-its-brackets.test.mjs', 'owed', 'declared'],
+      // The TWO-EXITS window of CARVE-P9-043 (carve#2877), same rule again: the
+      // pinned parser cannot read a ruled same-kind tree back out of
+      // expected.crv, so the fixture's two exits cannot agree until the pin
+      // moves, and each row names the issue that retires it.
+      ['tests/the-two-import-exits-agree.test.mjs', 'owed', 'manual'],
       // The TASK LIST window (carve#2887): the oracle renders the `task-list`
       // class and the done state before the pin does, on two authored
       // documents and on one placement fixture, each naming the issue.
