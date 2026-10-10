@@ -175,6 +175,13 @@
       including <sup><sup>x</sup></sup>, has a native spelling. The writer
       MUST preserve both nodes, their child order and their attributes,
       using braced spans where bare syntax cannot represent the tree.
+      CANONICAL REPEATED KINDS: every emphasis node with an ancestor or
+      descendant of its own kind MUST use its forced braced spelling,
+      including when other emphasis kinds intervene. Thus both bare-parent
+      and braced-parent spellings of outer strong with an inner strong
+      canonicalize to {*outer {*inner*} tail*}. Other emphasis nodes keep
+      their existing spelling rules; a repeated kind does not force an
+      unrelated sibling into braces.
       An importer MUST NOT unwrap a representable same-kind child or report
       structure-unspellable merely for that relationship. Depth-limit
       recovery and other independently unspellable shapes retain their

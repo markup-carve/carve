@@ -79,7 +79,9 @@ bare_closer(d) = <&(non_ws), d, !(alnum) ;
      alphanumeric. (A following same-delimiter is allowed: in `/x//` the
      first `/` after `x` closes; the trailing `/` stays literal.)
    Run disambiguation (nearest valid closer, delimiter stack, no bare same-type
-   nesting; explicit braced children may repeat a kind) is PART 9 §9; the `01-emphasis` corpus cases pin it.
+   nesting; explicit braced children may repeat a kind) is PART 9 §9.
+   Existing `01-emphasis` cases pin bare behavior; new explicit nesting is
+   specified in resources/spec/nested-braced-emphasis-cases.json.
    Forced `{X … X}` spans bypass BOTH guards entirely (PART 9 §22). *)
 
 emphasis = bare_opener('/'), emphasis_content, bare_closer('/'), [attribute_run] ;  (* italic *)

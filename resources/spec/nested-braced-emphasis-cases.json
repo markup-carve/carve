@@ -29,7 +29,8 @@
           ]
         }
       ],
-      "html": "<p><strong>outer <strong>inner</strong> tail</strong></p>"
+      "html": "<p><strong>outer <strong>inner</strong> tail</strong></p>",
+      "canonical": "{*outer {*inner*} tail*}"
     },
     {
       "id": "direct-emphasis",
@@ -58,7 +59,8 @@
           ]
         }
       ],
-      "html": "<p><em>outer <em>inner</em> tail</em></p>"
+      "html": "<p><em>outer <em>inner</em> tail</em></p>",
+      "canonical": "{/outer {/inner/} tail/}"
     },
     {
       "id": "direct-underline",
@@ -87,7 +89,8 @@
           ]
         }
       ],
-      "html": "<p><u>outer <u>inner</u> tail</u></p>"
+      "html": "<p><u>outer <u>inner</u> tail</u></p>",
+      "canonical": "{_outer {_inner_} tail_}"
     },
     {
       "id": "direct-strike",
@@ -116,7 +119,8 @@
           ]
         }
       ],
-      "html": "<p><s>outer <s>inner</s> tail</s></p>"
+      "html": "<p><s>outer <s>inner</s> tail</s></p>",
+      "canonical": "{~outer {~inner~} tail~}"
     },
     {
       "id": "direct-highlight",
@@ -145,7 +149,8 @@
           ]
         }
       ],
-      "html": "<p><mark>outer <mark>inner</mark> tail</mark></p>"
+      "html": "<p><mark>outer <mark>inner</mark> tail</mark></p>",
+      "canonical": "{=outer {=inner=} tail=}"
     },
     {
       "id": "direct-superscript",
@@ -174,7 +179,8 @@
           ]
         }
       ],
-      "html": "<p><sup>outer <sup>inner</sup> tail</sup></p>"
+      "html": "<p><sup>outer <sup>inner</sup> tail</sup></p>",
+      "canonical": "{^outer {^inner^} tail^}"
     },
     {
       "id": "direct-subscript",
@@ -203,7 +209,8 @@
           ]
         }
       ],
-      "html": "<p><sub>outer <sub>inner</sub> tail</sub></p>"
+      "html": "<p><sub>outer <sub>inner</sub> tail</sub></p>",
+      "canonical": "{,outer {,inner,} tail,}"
     },
     {
       "id": "bare-parent-strong",
@@ -232,7 +239,8 @@
           ]
         }
       ],
-      "html": "<p><strong>outer <strong>inner</strong> tail</strong></p>"
+      "html": "<p><strong>outer <strong>inner</strong> tail</strong></p>",
+      "canonical": "{*outer {*inner*} tail*}"
     },
     {
       "id": "bare-parent-emphasis",
@@ -261,7 +269,8 @@
           ]
         }
       ],
-      "html": "<p><em>outer <em>inner</em> tail</em></p>"
+      "html": "<p><em>outer <em>inner</em> tail</em></p>",
+      "canonical": "{/outer {/inner/} tail/}"
     },
     {
       "id": "bare-parent-underline",
@@ -290,7 +299,8 @@
           ]
         }
       ],
-      "html": "<p><u>outer <u>inner</u> tail</u></p>"
+      "html": "<p><u>outer <u>inner</u> tail</u></p>",
+      "canonical": "{_outer {_inner_} tail_}"
     },
     {
       "id": "bare-parent-strike",
@@ -319,7 +329,8 @@
           ]
         }
       ],
-      "html": "<p><s>outer <s>inner</s> tail</s></p>"
+      "html": "<p><s>outer <s>inner</s> tail</s></p>",
+      "canonical": "{~outer {~inner~} tail~}"
     },
     {
       "id": "bare-parent-highlight",
@@ -348,7 +359,8 @@
           ]
         }
       ],
-      "html": "<p><mark>outer <mark>inner</mark> tail</mark></p>"
+      "html": "<p><mark>outer <mark>inner</mark> tail</mark></p>",
+      "canonical": "{=outer {=inner=} tail=}"
     },
     {
       "id": "three-levels",
@@ -390,7 +402,8 @@
           ]
         }
       ],
-      "html": "<p><strong>a <strong>b <strong>c</strong> d</strong> e</strong></p>"
+      "html": "<p><strong>a <strong>b <strong>c</strong> d</strong> e</strong></p>",
+      "canonical": "{*a {*b {*c*} d*} e*}"
     },
     {
       "id": "cross-kind-ancestor",
@@ -592,6 +605,291 @@
         }
       ],
       "html": "<p>{*x*}</p>"
+    },
+    {
+      "id": "bare-kind-hidden-by-braced-boundary",
+      "source": "{*a {/b *c* d/} e*}",
+      "children": [
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "emphasis",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "b "
+                },
+                {
+                  "type": "strong",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "c"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "value": " d"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " e"
+            }
+          ]
+        }
+      ],
+      "html": "<p><strong>a <em>b <strong>c</strong> d</em> e</strong></p>"
+    },
+    {
+      "id": "stray-inner-opener-takes-closer",
+      "source": "{*a {*b c*}",
+      "children": [
+        {
+          "type": "text",
+          "value": "{*a "
+        },
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "b c"
+            }
+          ]
+        }
+      ],
+      "html": "<p>{*a <strong>b c</strong></p>"
+    },
+    {
+      "id": "unmatched-child-creates-no-boundary",
+      "source": "*a {*b c*",
+      "children": [
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "a {*b c"
+            }
+          ]
+        }
+      ],
+      "html": "<p><strong>a {*b c</strong></p>"
+    },
+    {
+      "id": "bracket-run-boundary",
+      "source": "[{*a {*b] c*} d*}",
+      "children": [
+        {
+          "type": "text",
+          "value": "[{*a {*b] c*} d*}"
+        }
+      ],
+      "html": "<p>[{*a {*b] c*} d*}</p>"
+    },
+    {
+      "id": "nested-frame-hides-substitution-separator",
+      "source": "{~a {*x~>y*} b~}",
+      "children": [
+        {
+          "type": "strike",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "x~>y"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " b"
+            }
+          ]
+        }
+      ],
+      "html": "<p><s>a <strong>x~&gt;y</strong> b</s></p>"
+    },
+    {
+      "id": "unmatched-frame-hides-no-separator",
+      "source": "{~a {*x ~>y~}",
+      "children": [
+        {
+          "type": "substitution",
+          "old": [
+            {
+              "type": "text",
+              "value": "a {*x "
+            }
+          ],
+          "new": [
+            {
+              "type": "text",
+              "value": "y"
+            }
+          ]
+        }
+      ],
+      "html": "<p><del>a {*x </del><ins>y</ins></p>"
+    },
+    {
+      "id": "strike-in-substitution-side",
+      "source": "{~old {~x~} ~>new~}",
+      "children": [
+        {
+          "type": "substitution",
+          "old": [
+            {
+              "type": "text",
+              "value": "old "
+            },
+            {
+              "type": "strike",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "x"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " "
+            }
+          ],
+          "new": [
+            {
+              "type": "text",
+              "value": "new"
+            }
+          ]
+        }
+      ],
+      "html": "<p><del>old <s>x</s> </del><ins>new</ins></p>"
+    },
+    {
+      "id": "substitution-in-strike",
+      "source": "{~a {~x~>y~} b~}",
+      "children": [
+        {
+          "type": "strike",
+          "children": [
+            {
+              "type": "text",
+              "value": "a "
+            },
+            {
+              "type": "substitution",
+              "old": [
+                {
+                  "type": "text",
+                  "value": "x"
+                }
+              ],
+              "new": [
+                {
+                  "type": "text",
+                  "value": "y"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " b"
+            }
+          ]
+        }
+      ],
+      "html": "<p><s>a <del>x</del><ins>y</ins> b</s></p>"
+    },
+    {
+      "id": "adjacent-braced-children",
+      "source": "{*{*x*}*}",
+      "canonical": "{*{*x*}*}",
+      "children": [
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "x"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "html": "<p><strong><strong>x</strong></strong></p>"
+    },
+    {
+      "id": "adjacent-superscript",
+      "source": "{^{^x^}^}",
+      "canonical": "{^{^x^}^}",
+      "children": [
+        {
+          "type": "superscript",
+          "children": [
+            {
+              "type": "superscript",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "x"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "html": "<p><sup><sup>x</sup></sup></p>"
+    }
+  ],
+  "depthCases": [
+    {
+      "id": "over-limit-child-closer-stays-literal",
+      "remainingInlineDepth": 1,
+      "source": "{^{^x^}^}",
+      "children": [
+        {
+          "type": "superscript",
+          "children": [
+            {
+              "type": "text",
+              "value": "{^x^}"
+            }
+          ]
+        }
+      ],
+      "html": "<p><sup>{^x^}</sup></p>"
+    },
+    {
+      "id": "over-limit-whole-span-stays-literal",
+      "remainingInlineDepth": 0,
+      "source": "{*a {*b*} c*}",
+      "children": [
+        {
+          "type": "text",
+          "value": "{*a {*b*} c*}"
+        }
+      ],
+      "html": "<p>{*a {*b*} c*}</p>"
     }
   ]
 }

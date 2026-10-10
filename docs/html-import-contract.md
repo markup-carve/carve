@@ -2468,7 +2468,7 @@ The shared set is deliberately small and each directory has one subject:
 | `empty-heading` | a bare empty heading and an attributed whitespace-only one, each dropped with one row |
 | `code-span-holding-blocks` | two blocks flattened into a `<code>`, joined with no separator and the lost boundary reported |
 
-The same-kind nesting rows above describe the current pinned importer. [The explicit braced nesting specification](./nested-braced-emphasis) removes that native spelling ceiling; these fixtures must be updated when the importer implements it. Their present flattening reports are not the required behavior under the new rule.
+The `same-kind-strong-nesting` and `same-kind-superscript-nesting` fixtures describe the current pinned importer; update their `expected.crv` and `expected.report.json` on implementation. Keep `same-kind-indirect-nesting` as an existing-preservation control. [The explicit braced nesting specification](./nested-braced-emphasis) removes that native spelling ceiling; these fixtures must be updated when the importer implements it. Their present flattening reports are not the required behavior under the new rule.
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one

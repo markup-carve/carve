@@ -36,7 +36,7 @@
          a further bare d that would open does NOT push -- it is literal.
          Hence /usr/local/ -> <em>usr/local</em> (01-emphasis-6);
          the/path/here is literal; unbalanced trailing runs stay literal:
-         /b// -> <em>b</em>/ and /x// -> <em>x</em>/.
+         /b// -> <em>b</em>/ and /x// -> <em>x</em>/ (edge-cases.md §1).
          An explicit braced opener is exempt: it MAY push a child of the
          same kind under either a bare or a braced parent (§22). Each braced
          span creates the E2a boundary; its closer closes that span, never

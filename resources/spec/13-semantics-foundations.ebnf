@@ -33,7 +33,8 @@
       - Explicit braced children MAY repeat an active kind (PART 9 §22):
         {/outer {/inner/} tail/} has two italic nodes. The same exception
         applies under a bare parent: *outer {*inner*} tail* has two strong nodes.
-        Bare same-kind delimiters inside a braced parent remain literal.
+        Bare openers remain literal while a same-kind span is reachable
+        under E2a; an intervening braced boundary can hide that ancestor.
       - A consequence (§9 SAME-DELIMITER ADJACENCY): a doubled bare delimiter
         never opens nested same-type emphasis -- it is literal text. So `**x**`
         -> `**x**` and `~~x~~` -> `~~x~~`, uniform with the already-literal

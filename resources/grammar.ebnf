@@ -2774,7 +2774,9 @@ bare_closer(d) = <&(non_ws), d, !(alnum) ;
      alphanumeric. (A following same-delimiter is allowed: in `/x//` the
      first `/` after `x` closes; the trailing `/` stays literal.)
    Run disambiguation (nearest valid closer, delimiter stack, no bare same-type
-   nesting; explicit braced children may repeat a kind) is PART 9 §9; the `01-emphasis` corpus cases pin it.
+   nesting; explicit braced children may repeat a kind) is PART 9 §9.
+   Existing `01-emphasis` cases pin bare behavior; new explicit nesting is
+   specified in resources/spec/nested-braced-emphasis-cases.json.
    Forced `{X … X}` spans bypass BOTH guards entirely (PART 9 §22). *)
 
 emphasis = bare_opener('/'), emphasis_content, bare_closer('/'), [attribute_run] ;  (* italic *)
@@ -3800,9 +3802,10 @@ EOF = (* end of file *) ;
    - A bare opener matches the NEAREST reachable valid closer of its type.
      Further bare openers of an active kind remain literal (PART 9 §3);
      e.g. /usr/local/ -> <em>usr/local</em>. Explicit braced children may
-     repeat the parent kind (PART 9 §22), without crossing a braced boundary.
-   - Different-type spans and explicit same-type children use a delimiter stack in a
-     single left-to-right pass (NO backtracking, linear time); e.g.
+     repeat a reachable parent kind (PART 9 §22), without crossing a braced
+     boundary.
+   - Different-type spans and explicit same-type children use a delimiter
+     stack in a single left-to-right pass (NO backtracking, linear time); e.g.
      *bold /italic/* and /italic *bold*/ nests fully.
 
    Note: "shorter spans / earlier opening wins" does NOT apply -- it would
@@ -3846,7 +3849,8 @@ EOF = (* end of file *) ;
       - Explicit braced children MAY repeat an active kind (PART 9 §22):
         {/outer {/inner/} tail/} has two italic nodes. The same exception
         applies under a bare parent: *outer {*inner*} tail* has two strong nodes.
-        Bare same-kind delimiters inside a braced parent remain literal.
+        Bare openers remain literal while a same-kind span is reachable
+        under E2a; an intervening braced boundary can hide that ancestor.
       - A consequence (§9 SAME-DELIMITER ADJACENCY): a doubled bare delimiter
         never opens nested same-type emphasis -- it is literal text. So `**x**`
         -> `**x**` and `~~x~~` -> `~~x~~`, uniform with the already-literal
@@ -4357,7 +4361,7 @@ EOF = (* end of file *) ;
          a further bare d that would open does NOT push -- it is literal.
          Hence /usr/local/ -> <em>usr/local</em> (01-emphasis-6);
          the/path/here is literal; unbalanced trailing runs stay literal:
-         /b// -> <em>b</em>/ and /x// -> <em>x</em>/.
+         /b// -> <em>b</em>/ and /x// -> <em>x</em>/ (edge-cases.md §1).
          An explicit braced opener is exempt: it MAY push a child of the
          same kind under either a bare or a braced parent (§22). Each braced
          span creates the E2a boundary; its closer closes that span, never
@@ -6115,32 +6119,57 @@ EOF = (* end of file *) ;
       - EXPLICIT SAME-TYPE NESTING. A valid forced opener MAY open a child
         of any of the seven emphasis kinds even when that kind is active.
         {*outer {*inner*} tail*} and *outer {*inner*} tail* each have two
-        strong nodes. Bare same-kind delimiters inside a forced parent stay
-        literal; doubled bare delimiters retain their existing meaning.
+        strong nodes. Bare openers remain literal while a same-kind span
+        is reachable under E2a; an intervening braced boundary can hide
+        that ancestor. Doubled bare delimiters retain their existing meaning.
         The X} closes the innermost reachable matching braced span. It MUST
         NOT cross an intervening braced boundary (E2a) or bracket-run bound
         (E2b). Unmatched explicit openers remain literal, not implicitly
         closed at end of input: {*a {*b*} keeps its literal outer opener
         and its closed inner strong span. Empty forced spans remain literal.
-        Existing nesting limits apply; no repeated suffix search or
-        backtracking is introduced by this exception.
+        MATCHED OPENERS ONLY. An explicit opener with no matching closer
+        inside its bracket run creates no E2a boundary and stays literal.
+        Thus *a {*b c* remains one strong node containing a literal {*.
+        With {*a {*b c*}, the closer belongs to the inner span: the outer
+        opener is literal and the inner strong contains b c. Matching may
+        be indexed in a preliminary linear token pass; resolution remains
+        a left-to-right stack pass, without retrying failed suffixes.
+        DEPTH LIMIT. When an otherwise matched braced span would exceed
+        the existing cap, its whole spelling, including its closer and
+        nested markup, stays literal. Its closer MUST NOT close a parent.
+        A linear matching index or equivalent counted skip MUST bound the
+        literal range; this recovery must not recursively parse it or
+        rescan the remaining suffix for each rejected opener. An unmatched
+        over-limit opener follows the matched-openers rule above.
       - `{~ … ~}` DISAMBIGUATION. The brace pair is editorial SUBSTITUTION when
         it contains a top-level `~>` ({~old~>new~} -> <del>old</del><ins>new
         </ins>), and forced STRIKETHROUGH otherwise ({~old~} ->
         <s>old</s>). The `~>` test is the discriminator. TOP-LEVEL means the
         search skips nested braced spans and verbatim content -- code, math,
-        an inline literal, a comment -- and an escaped `\~>`, so {~`a~>b~} is <s><code>a~>b</code>
-        </s>.
+        an inline literal, a comment -- and an escaped `\~>`, so {~`a~>b~} is
+        <s><code>a~>b</code></s>. Only MATCHED nested braced spans are skipped;
+        an unmatched opener hides no separator. Track separators by their
+        braced frame during the linear token pass, not with a suffix scan
+        per {~ opener. At a matched frame's closer, a visible top-level ~>
+        selects substitution; otherwise the frame is strike. A nested {~
+        frame is resolved independently, including in either substitution
+        side. This boundary clarification changes {~a {*x~>y*} b~} from
+        substitution to strike containing strong text x~>y. It does not
+        change the meanings of editorial insertion or deletion.
       - `{= … =}` is forced highlight (<mark>), distinct from the raw-inline
         `{=format}` attribute on a code span (`` `x`{=html} ``), which has no
         trailing `=` before the `}`.
-      - ESCAPING. A literal `{/` (etc.) is written `\{/` -- one backslash on the
-        brace is enough; the inner delimiter need not be escaped.
+      - ESCAPING. Escaping the brace in `\{/` prevents a forced opener.
+        It does not suppress ordinary parsing of subsequent punctuation.
+        To preserve a whole literal {*x*}, escape the active stars as well:
+        \{\*x\*\}. The canonical writer applies ordinary literal escaping.
       - ATTRIBUTES. A forced span MAY carry a trailing `[attribute_run]` like
         any bare span: {*x*}{.c} -> <strong class="c">x</strong>. Child and
         parent attribute runs attach independently; neither inherits the
         other's attributes merely because they have the same kind.
-      (corpus 01-emphasis-12 forced-intraword, 01-emphasis-13 forced-nesting.)
+      Existing corpus 01-emphasis-12 and -13 cover earlier forced behavior.
+      New nesting expectations are specified in
+      resources/spec/nested-braced-emphasis-cases.json until corpus rollout.
 
    23. LINE BLOCK (VERSE) -- NORMATIVE [CARVE-P9-044] (governs `line_block` in PART 2). A
       `::: |` fenced block preserves the author's per-line layout.
@@ -8238,6 +8267,13 @@ EOF = (* end of file *) ;
       including <sup><sup>x</sup></sup>, has a native spelling. The writer
       MUST preserve both nodes, their child order and their attributes,
       using braced spans where bare syntax cannot represent the tree.
+      CANONICAL REPEATED KINDS: every emphasis node with an ancestor or
+      descendant of its own kind MUST use its forced braced spelling,
+      including when other emphasis kinds intervene. Thus both bare-parent
+      and braced-parent spellings of outer strong with an inner strong
+      canonicalize to {*outer {*inner*} tail*}. Other emphasis nodes keep
+      their existing spelling rules; a repeated kind does not force an
+      unrelated sibling into braces.
       An importer MUST NOT unwrap a representable same-kind child or report
       structure-unspellable merely for that relationship. Depth-limit
       recovery and other independently unspellable shapes retain their
