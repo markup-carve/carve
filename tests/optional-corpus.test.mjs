@@ -179,12 +179,7 @@ const DECLARED_UNIMPLEMENTED = {
  * An entry is deleted in the commit that moves the pin past it; the check below
  * fails an entry whose case already matches, so a stale one cannot sit here.
  */
-const AHEAD_OF_PIN = {
-  '66-smart-typography-quotes-off-html': 'carve#2875: the pinned engine lacks the quotes-only option',
-  '66-smart-typography-quotes-off-markdown': 'carve#2875: the pinned engine lacks the quotes-only option',
-  '66-smart-typography-quotes-off-plain': 'carve#2875: the pinned engine lacks the quotes-only option',
-  '66-smart-typography-quotes-off-ansi': 'carve#2875: the pinned engine lacks the quotes-only option',
-}
+const AHEAD_OF_PIN = {}
 
 /*
  * THE RATCHET ON THE EXCUSE, because an entry above can only ever turn a
