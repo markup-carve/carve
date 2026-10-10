@@ -22,7 +22,7 @@ test('an invisible block provides no placement slot or second paragraph', () => 
 // Declared lag against the `@markup-carve/carve` build package.json pins.
 // EMPTY IS THE GOAL: it goes out in the commit that moves the pin past the
 // engine that writes the `task-list` class (markup-carve/carve#2887).
-const PIN_LAG = 'carve#2887  the pin predates the task-list class on a task list'
+const PIN_LAG = ''
 const TASK_CASE = '- [ ] ```=html\n  ```\n'
 
 test('matching, dropped and visible blocks retain placement across 108 shapes', () => {

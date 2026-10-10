@@ -121,11 +121,7 @@ const PINNED_UNIMPLEMENTED = {}
  * that starts matching fails as STALE until the entry is deleted in the commit
  * that moves the pin, and the meaning assertion still runs regardless.
  */
-const PINNED_DRIFT = {
-  "39-djot-native-structure-sweep": "Task-list HTML hooks, markup-carve/carve#2887",
-  "42-markdown-native-structure-sweep": "Task-list HTML hooks, markup-carve/carve#2887",
-  "70-markdown-a-task-label-that-is-also-a-reference-definition": "Task-list HTML hooks, markup-carve/carve#2887"
-}
+const PINNED_DRIFT = {}
 const PINNED_SOURCE_DRIFT = {}
 
 /**
