@@ -20,7 +20,7 @@ The count-only run covers 2,225 core documents and their 161 target sidecars.
 The run scores 2,386 fixtures per engine. It checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
 
-Corpus added since this run: `549-an-ordered-list-carries-its-authored-delimiter`, `19-smart-typography-dashes-and-quotes-10`, `19-smart-typography-dashes-and-quotes-11`, `550-a-dash-run-opens-frontmatter-only-at-the-start-and-only-a-dash-run`.
+Corpus added since this run: `549-an-ordered-list-carries-its-authored-delimiter`, `19-smart-typography-dashes-and-quotes-10`, `19-smart-typography-dashes-and-quotes-11`, `550-a-dash-run-opens-frontmatter-only-at-the-start-and-only-a-dash-run`, `551-a-link-destination-is-opaque-to-the-bracket-scan`.
 
 The first three names, five rows, and the rewritten
 `31-ordered-list-start-and-delimiter-2` pin CARVE-P10-014, which no engine has
@@ -32,6 +32,12 @@ Category `550` is outside them for the ordinary reason. Its four rows are the
 example source's deliberate multi-pair `::: compare` block, added after this run
 on a host with no carve-rs checkout to retake the three-engine sweep with
 (markup-carve/carve#2833). No engine lags the rule they pin.
+
+Category `551` is outside them for the same reason: its six rows pin link
+destination opacity and were added after this run (markup-carve/carve#2859). No
+engine lags the rule. All three render the six documents as pinned, which is what
+`check-expected` reports beside them, and the shapes they do not cover are the
+ones the executable spec itself still reads the old way (markup-carve/carve#2860).
 
 The fixture trees match spec commit `2c3d174b`. The runner reported tracked
 changes in the spec worktree; the engine worktrees were clean at the commits
