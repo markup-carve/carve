@@ -9365,13 +9365,35 @@ EOF = (* end of file *) ;
                                    ->  Mail a<!---->@b.co and mailto:c<!---->@d.co
 
       E1 reads on the emitted line and in text only, as U1 and U2 do. The
-      comment REACHES THE OUTPUT, which no other spelling in this section does,
+      comment REACHES THE OUTPUT,
       and a reader that strips comments before matching addresses re-links.
       Neither reader this target answers to strips it
       ([carve#2413](https://github.com/markup-carve/carve/issues/2413)).
 
+  8j. INLINE CODE PRESERVES ITS PAYLOAD -- NORMATIVE [CARVE-P11-064]. The
+      Markdown target MUST preserve the exact code text. CommonMark code spans
+      replace newlines with spaces and remove one edge space from a padded
+      payload. The writer chooses a backtick fence and padding that preserve
+      the value. Empty values and values containing TAB or LF use inline
+      `<code>` so both cmark-gfm and Pandoc preserve the payload.
+
+      Pandoc expands literal tabs in native code spans. The HTML fallback
+      writes SPACE as `&#32;`, TAB as `&#9;`, LF as
+      `<!---->&#10;<!---->`, and ASCII punctuation
+      U+0021 through U+002F, U+003A through U+0040, U+005B through U+0060, and
+      U+007B through U+007E as decimal character references. An encoded `@`
+      is followed by `<!---->`. Other characters remain unchanged. The empty
+      HTML comments guard spaces beside newlines and prevent email autolinking;
+      they contribute no code text in the rendered HTML.
+
+        code value    "a" + LF + "b"
+        Markdown      <code>a<!---->&#10;<!---->b</code>
+        code value    ""
+        Markdown      <code></code>
+
    9. THE MARKDOWN TARGET'S HARD BREAK -- NORMATIVE [CARVE-P11-026]. A `hard_break` is emitted
-      as a BACKSLASH before the newline, never as two trailing spaces.
+      as a BACKSLASH before the newline, never as two trailing spaces, except
+      where §9a or §9c requires inline HTML.
 
       Both spellings mean the same thing to a CommonMark reader. The difference
       is what survives handling: trailing whitespace is removed by editors that
@@ -9397,7 +9419,7 @@ EOF = (* end of file *) ;
 
       `<br>` is the spelling GFM readers render as a line break inside a cell,
       and it is the same inline-HTML fallback §8c uses for a node that has no
-      Markdown spelling. §9 holds everywhere a Markdown line can end.
+      Markdown spelling. §9 holds where its backslash and newline read back as a hard break.
 
       NO CARVE SOURCE SPELLS THIS TREE. A table row is one line, so a hard
       break has no Carve spelling inside a cell. The tree reaches the writer
@@ -9424,6 +9446,29 @@ EOF = (* end of file *) ;
       NOT `<br>`, which §9a writes for a hard break. A soft break is the break
       that does not render as a break, so `<br>` would show a line break the
       document never had, which is the substitution §2a forbids.
+
+  9c. A HARD BREAK AT AN INLINE BOUNDARY SURVIVES -- NORMATIVE
+      [CARVE-P11-065]. A backslash at the end of a paragraph reads as literal
+      text, and a newline ends an ATX heading. In those positions the Markdown
+      target MUST emit a `hard_break` as inline `<br>`. The final hard break in
+      any inline child list MUST also use `<br>`, including a transparent
+      span's children, to keep the break inside that list.
+
+      Trailing whitespace, soft breaks and nodes that emit nothing do not
+      turn a terminal hard break into an interior one. Repeated hard breaks
+      retain their count. Outside a heading or table cell, a break-only inline fragment appends
+      `<!---->` to its final `<br>` so it cannot start a CommonMark HTML block. The empty HTML comment
+      contributes no rendered text.
+
+        paragraph children    text "a", hard_break
+        Markdown              a<br>
+        paragraph children    hard_break
+        Markdown              <br><!---->
+        heading children      text "a", hard_break, text "b"
+        Markdown              # a<br>b
+
+      Ordinary interior hard breaks still use §9. Heading soft breaks retain
+      the target's existing line-folding behavior.
 
   10. A LIST ITEM'S CONTINUATION LINES ARE ALIGNED -- NORMATIVE [CARVE-P11-027]. Every
       continuation line of a list item is indented to the WIDTH OF THE MARKER,
@@ -9929,6 +9974,8 @@ EOF = (* end of file *) ;
       `list-table` is a standard kind name, and a GFM reader has the table
       natively where the nested list is the one thing it reads wrongly.
 
+   ============================================================================ *)
+(* ============================================================================
   10r. THE MARKDOWN TARGET KEEPS FRONTMATTER -- NORMATIVE [CARVE-P11-062]. A
       `frontmatter` node is emitted FIRST, as its own block: a `---` opener
       carrying the format token wherever the format is not `yaml`, the content
@@ -10045,7 +10092,9 @@ EOF = (* end of file *) ;
       G1 TEXT: the heading's text content under PART 2 HEADING IDENTIFIERS'
          contribution rule, each character as this target writes it (a smart
          punctuation glyph as the glyph, its source under source typography),
-         NFC-normalized, with leading and trailing whitespace removed. PART 2
+         NFC-normalized, with leading and trailing whitespace removed. A hard
+         break contributes no text here: §9c writes `<br>`, whose text content
+         is empty. A soft break contributes the heading's folded SPACE. PART 2
          counts an image's alt text and GitHub does not, so a heading holding
          an image can get a slug GitHub does not assign; PART 2's rule is kept
          so that every engine derives the text one way;

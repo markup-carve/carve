@@ -2,6 +2,7 @@
  * PART 11's Markdown-target clauses, and the shared fixture each engine renders
  * against.
  *
+ * tests/fixtures/markdown-code-payload.json checks exact code text and context.
  * tests/fixtures/markdown-writer-targets.json holds the Markdown bytes the
  * clauses decide. The engines assert their own output against it; this file
  * checks the fixture itself, through cmark-gfm (the reader the importers answer
@@ -9,6 +10,7 @@
  * GFM reader builds from each golden has to match the structure the HTML target
  * builds from the same tree.
  */
+import { parseFragment } from 'parse5'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -194,4 +196,62 @@ test('literal brackets keep complete link labels and image descriptions', () => 
     assert.notEqual(normalized(cmarkGfmToHtml(c.markdown.replaceAll('\\[', '['))), normalized(ownHtml(c)))
   }
   assert.match(clauseText('CARVE-P11-023'), /`\[` IS ALSO ESCAPED INSIDE AN EMITTED LINK LABEL OR IMAGE DESCRIPTION/)
+})
+
+const codePayloadCases = JSON.parse(read('tests/fixtures/markdown-code-payload.json'))
+const codeText = (node) => node.nodeName === '#text'
+  ? node.value : (node.childNodes ?? []).map(codeText).join('')
+const inlineCodeRecords = (html) => {
+  const values = []
+  const visit = (node, ancestors = []) => {
+    if (node.tagName === 'pre') return
+    const path = node.tagName ? [...ancestors, node.tagName] : ancestors
+    if (node.tagName === 'code') {
+      values.push({ value: codeText(node), ancestors: path, elements: (node.childNodes ?? []).filter(child => child.tagName).map(child => child.tagName) })
+      return
+    }
+    for (const child of node.childNodes ?? []) visit(child, path)
+  }
+  visit(parseFragment(html))
+  return values
+}
+
+for (const [index, item] of codePayloadCases.entries()) {
+  test(`code payload ${index} stays exact in ${item.template}`, () => {
+    clauseText(item.rule)
+    assert.deepEqual(inlineCodeRecords(cmarkGfmToHtml(item.markdown)), [{ value: item.value, ancestors: item.ancestors, elements: [] }])
+  })
+}
+
+test('control: a native code span changes payload newlines', () => {
+  assert.notDeepEqual(inlineCodeRecords(cmarkGfmToHtml('`a\nb`\n')), [{ value: 'a\nb', ancestors: ['p', 'code'], elements: [] }])
+})
+
+test('terminal and heading hard breaks survive their inline HTML spelling', () => {
+  assert.equal(cmarkGfmToHtml('a<br>\n'), '<p>a<br></p>\n')
+  assert.equal(cmarkGfmToHtml('<br><!---->\n'), '<p><br><!----></p>\n')
+  assert.equal(cmarkGfmToHtml('# a<br>b\n'), '<h1>a<br>b</h1>\n')
+  assert.equal(cmarkGfmToHtml('a\\\n<br>\n'), '<p>a<br />\n<br></p>\n')
+  assert.notEqual(cmarkGfmToHtml('a\\\n'), '<p>a<br /></p>\n')
+})
+
+for (const item of JSON.parse(read('tests/fixtures/markdown-inline-hard-breaks.json'))) {
+  test(`hard breaks survive ${item.template}: ${item.name}`, () => {
+    clauseText(item.rule)
+    const paths = []
+    const visit = (node, ancestors = []) => {
+      const next = node.tagName ? [...ancestors, node.tagName] : ancestors
+      if (node.tagName === 'br') paths.push(next)
+      for (const child of node.childNodes ?? []) visit(child, next)
+    }
+    visit(parseFragment(cmarkGfmToHtml(item.markdown)))
+    assert.deepEqual(paths, item.ancestors)
+  })
+}
+
+test('the GitHub-verified heading fixture links to its text anchors', () => {
+  const html = cmarkGfmToHtml(read('tests/fixtures/markdown-heading-inline.md'))
+  const headings = parseFragment(html).childNodes.filter(node => node.tagName === 'h1')
+  assert.deepEqual(headings.map(codeText), ['AB', 'Ax\nyB'])
+  assert.deepEqual(hrefs(html), ['#ab', '#axyb'])
 })

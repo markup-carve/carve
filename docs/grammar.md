@@ -39,7 +39,7 @@ The modules follow the processing pipeline:
 | `13-semantics-foundations.ebnf` to `17-semantics-unicode-controls.ebnf` | Operational semantics, split by concern |
 | `18-resolution.ebnf` | Whole-document resolution |
 | `19-html-serialization.ebnf` | HTML serialization |
-| `20-writer-invariants.ebnf` to `22-writer-targets.ebnf` | Canonical and non-HTML writers |
+| `20-writer-invariants.ebnf` to `22a-writer-target-metadata.ebnf` | Canonical and non-HTML writers |
 | `23-ast-foundations.ebnf` to `26-ast-interchange.ebnf` | AST wire contract |
 
 [`resources/grammar.ebnf`](https://github.com/markup-carve/carve/blob/main/resources/grammar.ebnf)
