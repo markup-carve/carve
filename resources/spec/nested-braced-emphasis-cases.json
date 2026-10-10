@@ -464,7 +464,7 @@
                   "inner"
                 ],
                 "order": [
-                  ".inner"
+                  ".class"
                 ]
               }
             },
@@ -478,7 +478,7 @@
               "outer"
             ],
             "order": [
-              ".outer"
+              ".class"
             ]
           }
         }
@@ -1314,8 +1314,7 @@
                   "two"
                 ],
                 "order": [
-                  ".one",
-                  ".two"
+                  ".class"
                 ]
               }
             },
@@ -1329,7 +1328,7 @@
               "outer"
             ],
             "order": [
-              ".outer"
+              ".class"
             ]
           }
         }

@@ -1,0 +1,77 @@
+[
+  {
+    "id": "malformed-01",
+    "source": "a *}{~/}{*/}{/_}{*_}{~/} z",
+    "html": "<p>a <strong>}{~/}{</strong>/}<em><u>}{*</u>}{~</em> z</p>"
+  },
+  {
+    "id": "malformed-02",
+    "source": "a _}{_~>{~_}{~~}x _}x _} z",
+    "html": "<p>a _}<u><s>&gt;{</s></u>{~~}x _}x _} z</p>"
+  },
+  {
+    "id": "malformed-03",
+    "source": "a ~}{_/}{/~>{*_}{//}{*~} z",
+    "html": "<p>a <s>}<u><em>}{</em>~&gt;{*</u>{//}{*</s>} z</p>"
+  },
+  {
+    "id": "malformed-04",
+    "source": "a *}{_*}{*~>{/_}{**}{~~} z",
+    "html": "<p>a *}<u><strong>}{</strong>~&gt;{/</u>{**}{~~} z</p>"
+  },
+  {
+    "id": "malformed-05",
+    "source": "a ~}{/*}{_*}{_~}{~_}{_*} z",
+    "html": "<p>a ~}{/<strong>}{_</strong>}<u><s>}{</s></u>{_*} z</p>"
+  },
+  {
+    "id": "malformed-06",
+    "source": "a /}{/_}x ~>x _}{_/}{_*} z",
+    "html": "<p>a /}<em><u>}x ~&gt;x _}{</u></em>{_*} z</p>"
+  },
+  {
+    "id": "malformed-07",
+    "source": "a *}{/~>{/~>{/_}{*_}{~/} z",
+    "html": "<p>a *}{<em>~&gt;{</em>~&gt;<em><u>}{*</u>}{~</em> z</p>"
+  },
+  {
+    "id": "malformed-08",
+    "source": "a _}{_~>{/~>{~_} z",
+    "html": "<p>a _}<u><s>&gt;{/</s>&gt;{~</u> z</p>"
+  },
+  {
+    "id": "malformed-09",
+    "source": "a /}{/_}{*_}{*/}{/_}{~~} z",
+    "html": "<p>a <em>}<em><u>}{*</u>}{*</em>{</em>_}{~~} z</p>"
+  },
+  {
+    "id": "malformed-10",
+    "source": "a /}{~_}{~_}{_~}x *}{~_} z",
+    "html": "<p>a /}{<s>_}{</s>_}<u><s>}x *}{</s></u> z</p>"
+  },
+  {
+    "id": "malformed-11",
+    "source": "a _}{_~}{*~>{__}x *}{~_} z",
+    "html": "<p>a _}<u><s>}<strong>~&gt;{__}x </strong>{</s></u> z</p>"
+  },
+  {
+    "id": "malformed-12",
+    "source": "a *}{/~>{~~>{~/}{~~}{_~> z",
+    "html": "<p>a *}<em><s>&gt;{</s>~&gt;{~</em>{~~}{_~&gt; z</p>"
+  },
+  {
+    "id": "malformed-13",
+    "source": "a _}{_~}{/~>{~_} z",
+    "html": "<p>a _}<u><s>}{/</s>&gt;{~</u> z</p>"
+  },
+  {
+    "id": "malformed-14",
+    "source": "a _}{~~}{_*}{/~>{*_}{/_} z",
+    "html": "<p>a <u>}{~~}<u><strong>}{/~&gt;{</strong></u>{/</u>} z</p>"
+  },
+  {
+    "id": "malformed-15",
+    "source": "a ~}{/~}{/_}{_*}{_/}{_*} z",
+    "html": "<p>a <s>}{/</s>}<em><u>}{</u>*}{_</em>{_*} z</p>"
+  }
+]
