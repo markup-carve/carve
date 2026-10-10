@@ -71,18 +71,8 @@ const CARRIED = [
   },
 ]
 
-// Declared lag against the `@markup-carve/carve` build package.json pins, for
-// THE CAPTION ROWS ONLY. carve#2851 ruled that a composite figure's caption
-// line takes a marker of its own, directly after the closer's, and that the
-// import REPLACES the caption's rendered paragraph rather than appending a
-// second one. The pinned build ships §10s without it.
-//
-// EMPTY IS THE GOAL: it goes out with the pin bump past the first engine to
-// carry the caption (carve-php#3044, carve-js#2684).
-// The row format the declaration audit reads is `<slug><two or more
-// spaces><reason>`: a bare slug is a window TOLERATED, not declared.
-const CAPTION_LAG =
-  'carve#2851  the pinned build writes no caption marker and reads one as a damaged set'
+// The pin includes the caption carrier rule (carve-js#2684).
+const CAPTION_LAG = ''
 
 // A composite figure's caption line, which the marker pair cannot enclose
 // because its slot hangs BELOW the closing fence. `live` marks a row the

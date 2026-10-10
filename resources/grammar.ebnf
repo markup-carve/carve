@@ -3163,22 +3163,56 @@ ellipsis = "..." ;    (* → … *)
    `-----`=—–, `------`=——, `-------`=—–– (PART 9 §8). *)
 
 smart_quote = '"' | "'" ;
-(* Smart quotes are PER-CHARACTER contextual substitution, NOT a paired
-   span: each `"` / `'` is independently mapped to a left or right
-   typographic quote by its PRECEDING character. It is a LEFT (opening)
-   quote when preceded by start-of-content, whitespace (incl. NBSP
-   U+00A0 and a soft or hard line break, so a quote that starts a line
-   opens), OR one of the opening/operator characters `( [ { = : - /`;
-   OTHERWISE it is a RIGHT (closing) quote. So an apostrophe (`don't`)
-   is a right single quote, while `a="b"`, `:"q"`, `-"q"`, `/"q"` and
-   `("q")` all OPEN the first quote. The SAME opening set applies to BOTH
-   `"` and `'` (e.g. `('q')` -> `(‘q’)`, `{'q'}` -> `{‘q’}`). Outside that
-   set the quote CLOSES: after a closing bracket (`}` `)` `]`), after
-   sentence punctuation (`.` `,`), or mid-word (`a"b`) it is a right quote.
-   An unpaired quote still converts; an empty `""` opens both marks (the
-   second `"` follows a non-opening `"` but has nothing to close against);
-   the substitution never spans or pairs across other inline constructs.
-   `\"` / `\'` escape to the straight character (PART 9 §8). *)
+(* SMART QUOTE DIRECTION -- NORMATIVE [CARVE-P3-023].
+   The PREVIOUS character is the last EMITTED character. A construct that
+   renders nothing, including an empty braced comment, contributes no
+   character: `\{{%%}"q"` renders `{“q”` (CARVE-P9-079). The end of a
+   closed inline element (emphasis, span, link, code) counts as a word
+   character whatever it ends in, so the quote after it CLOSES:
+   `[—]{.c}"q"` renders `<span class="c">—</span>”q”`.
+   Letters and digits are judged by Unicode code point, so a character
+   outside the Basic Multilingual Plane is a letter like any other.
+
+   A quote OPENS after start-of-content, whitespace (space, tab, CR, LF,
+   NBSP U+00A0, or a soft or hard line break), or `( [ { = : - – — /`, or
+   an opening curly quote `“` or `‘`. Otherwise it CLOSES. The opening set
+   applies to both quote characters: `"'q'"` renders `“‘q’”`.
+   A single quote before an ASCII digit is an APOSTROPHE: `'90s` renders `’90s`.
+
+   R1. AFTER A DASH (`-`, `–`, or `—`), a quote CLOSES when the next source
+   character is absent, whitespace as above, or one of `" ' . , ; : ! ? ) ]`.
+   Otherwise it opens. Thus `"Wait---" he said.` renders `“Wait—” he said.`,
+   while `he said—"Go"` renders `he said—“Go”`.
+
+   R2. LISTED ELISIONS. A single quote that would open and is followed by
+   a maximal run of Unicode letters equal, case-insensitively, to one of
+   `tis tisn twas twasn twere twill twould em cause til n bout` is an
+   APOSTROPHE. EXCEPTION: if the character after that word is a single quote
+   and the following character is neither a Unicode letter nor a Unicode
+   number, the word is quoted. Thus `'tisn't` renders `’tisn’t`, but `'em'`
+   renders `‘em’`.
+
+   R3. SINGLE QUOTES DO NOT NEST. Scan one block's inline content in source
+   order, sharing one open-single-quote state across its nested inline
+   constructs. Content rendered elsewhere, including an inline footnote,
+   has fresh state, is finalized separately, and leaves the surrounding
+   state unchanged: `say ^['note] 'two'` keeps `‘two’` in the paragraph.
+   An opening single quote before a Unicode letter or number, unless R2
+   applies, is an APOSTROPHE if a span is already open; otherwise it starts
+   the span. Thus `'I told 'em so,' he said.` renders `‘I told ’em so,’ he said.`
+   An opener before anything else opens as usual and, if no span is open,
+   starts one that is never demoted: `'*bold* text` keeps its opening quote.
+   A closing single quote whose previous character is not whitespace closes
+   the span. A mid-word apostrophe (previous and next are letters or numbers,
+   or next is an ASCII digit) never closes it: `'Jane's dog'` is `‘Jane’s dog’`.
+   At the END OF CONTENT, demote a still-open span's opener to an apostrophe
+   if it was followed by a letter or number. EXCEPTIONS: retain an opener at
+   the start of the content or directly after `“`. Thus `say 'word` renders
+   `say ’word`, while `'word` keeps `‘word` and `"'word` keeps `“‘word`.
+
+   An APOSTROPHE is U+2019 IN EVERY LOCALE. Opening and closing quotes use
+   the locale's quote glyphs. Escaped `\"` and `\'` remain straight
+   characters; code, raw content, URLs and attribute values are unchanged. *)
 
 arrow = "<--" | "-->" | "<-->"      (* → ← → ↔, canonical *)
       | "<==" | "==>" | "<=>"       (* → ⇐ ⇒ ⇔ *)
@@ -4251,6 +4285,12 @@ EOF = (* end of file *) ;
           separately nameable in a profile (profiles.md).
         See divergence-from-djot.md section 12 for how this compares to
         Djot's container-node model.
+      - A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT -- NORMATIVE [CARVE-P9-079].
+        The previous-character test in `smart_quote` reads the last emitted
+        character. A construct that emits nothing contributes no character,
+        including a braced comment with an empty body. `\{{%%}"q"` renders
+        `<p>{“q”</p>`, just as `\{"q"` does. Content bearing attributes still
+        contributes its text: `[x]{.c}"q"` closes on the `x`.
 
    ============================================================================ *)
 (* ============================================================================

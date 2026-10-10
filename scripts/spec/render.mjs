@@ -8,6 +8,7 @@
  */
 
 import { readFileSync } from 'node:fs'
+import { randomUUID } from 'node:crypto'
 import { resolve as presolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import * as ohm from 'ohm-js'
@@ -564,7 +565,7 @@ const sem = g.createSemantics().addOperation('h', {
     noFootnotes = true
     let inner
     try {
-      inner = renderInline(content.sourceString, '[')
+      inner = renderInline(content.sourceString, '', true)
     } finally {
       noFootnotes = saved
     }
@@ -609,8 +610,6 @@ const sem = g.createSemantics().addOperation('h', {
     return `<a href="${escapeAttr(checkUrl(href))}"${a}>${escapeHtml(raw)}</a>`
   },
   escape(_bs, ch) {
-    // An escaped quote renders straight, so the quote after it closes (PART 3).
-    if (QUOTE_CHARS.has(ch.sourceString)) lastQuoteGlyph = ch.sourceString
     return escapeHtml(ch.sourceString)
   },
   nbspEsc(_bs, _sp) {
@@ -692,7 +691,7 @@ const sem = g.createSemantics().addOperation('h', {
   rawInline(code, _ob, fmt, _cb) {
     // PART 9 SS20: emitted UNESCAPED for the html format, dropped otherwise
     const text = codeText(codeInner(code).child(1))
-    return fmt.sourceString === 'html' ? text : ''
+    return fmt.sourceString === 'html' ? quoteOpaque(text) : ''
   },
   litInline(span, attrs) {
     const code = span.child(1)
@@ -1108,7 +1107,8 @@ function buildToks(children, literalDelims = '') {
     let marker = alt
     while (marker.ctorName === 'rich') marker = marker.child(0)
     if (QUOTE_RULES.has(marker.ctorName)) {
-      toks.push({ k: 't', h: c.h(), quote: { at: marker.source.startIdx, single: marker.ctorName === 'squote' } })
+      const h = c.h()
+      toks.push({ k: 't', h, quote: { at: marker.source.startIdx, record: quoteRun.records.at(-1) } })
       continue
     }
     // An escaped quote renders straight and is what the next quote reads.
@@ -1140,7 +1140,9 @@ function buildToks(children, literalDelims = '') {
       }
       continue
     }
-    toks.push({ k: 't', h: c.h() })
+    const boundary = ['rawInline', 'litInline', 'shortcode'].includes(marker.ctorName)
+      ? `\uE000quote-boundary:${quoteRun.key}\uE001` : ''
+    toks.push({ k: 't', h: c.h() + boundary })
   }
   return toks
 }
@@ -1325,51 +1327,23 @@ function pairGuarded(build, src, literalDelims = '') {
   }
 }
 
-// PART 3 decides each quote by its preceding character, and the start of a
-// span's content counts as start-of-content. Both need the pairing, so every
-// quote in the run is decided here, in source order, from the glyph that stood
-// before the run.
-function applyQuotes(toks, openMap, src, contentAt, startGlyph) {
-  const opens = new Set()
-  for (const i of openMap.keys()) opens.add(toks[i].at)
-  const candidates = new Set()
-  for (const t of toks) if (t.k === 'd') candidates.add(t.at)
-  let last = startGlyph
-  let seen = false
+// Pairing supplies the opening context of an emphasis span; quote state follows rendered order.
+function applyQuotes(toks, openMap, src, contentAt) {
+  const opens = new Set([...openMap.keys()].map((i) => toks[i].at))
+  const candidates = new Set(toks.filter((t) => t.k === 'd').map((t) => t.at))
   for (const t of toks) {
-    if (t.straight !== undefined) {
-      seen = true
-      last = t.straight
-      continue
+    if (!t.quote) continue
+    const pi = quotePrevIdx(src, t.quote.at)
+    const prev = pi > 0 ? src[pi - 1] : quotePrevCtx
+    if (EMPHASIS_DELIMS.has(prev)) {
+      t.quote.record.spanStart = candidates.has(pi - 1) ? opens.has(pi - 1) : pi === contentAt
     }
-    if (t.quote === undefined) continue
-    seen = true
-    const { at, single } = t.quote
-    const open = single ? '\u2018' : '\u201c'
-    const close = single ? '\u2019' : '\u201d'
-    const prev = at > 0 ? src[at - 1] : quotePrevCtx
-    const next = src[at + 1] ?? ''
-    let decided
-    if (single && /[0-9]/.test(next) && !/[\p{L}\p{N}]/u.test(prev)) decided = close
-    else if (EMPHASIS_DELIMS.has(prev)) {
-      // The delimiter before it: an opener puts the quote at the start of a
-      // span's content; one that pairs nothing is an ordinary character. A
-      // delimiter that is not a candidate at all belongs to the span this run
-      // is inside, and the quote opening the run stands at its content start.
-      decided = candidates.has(at - 1) ? (opens.has(at - 1) ? open : close) : at === contentAt ? open : close
-    } else if (prev === '') decided = open
-    else if (QUOTE_CHARS.has(prev)) decided = last === '\u201c' || last === '\u2018' ? open : close
-    else decided = QUOTE_OPEN_PREV.has(prev) ? open : close
-    t.h = decided
-    last = decided
   }
-  if (seen) lastQuoteGlyph = last
 }
 
 function resolveEmphasis(build, src, literalDelims = '', contentAt = 0) {
-  const startGlyph = lastQuoteGlyph
   const { toks, openMap } = pairGuarded(build, src, literalDelims)
-  applyQuotes(toks, openMap, src, contentAt, startGlyph)
+  applyQuotes(toks, openMap, src, contentAt)
   resolveNameRun(toks, openMap)
   applyMarkerBoundary(toks, openMap, src, contentAt)
   // Build the span tree by walking the paired ranges (properly nested).
@@ -1595,17 +1569,23 @@ export function renderBlockAttrs(lists) {
 // hard line break included, carve#2822) or an opening context character;
 // CLOSING otherwise. A single quote directly before a digit is always an
 // apostrophe ('70s, '24).
-const QUOTE_OPEN_PREV = new Set([' ', '\t', '\n', '\r', '=', ':', '-', '/', '(', '[', '{'])
+// Comments emit nothing; step back over them when checking an emphasis boundary.
+function quotePrevIdx(src, at) {
+  let i = at
+  while (i >= 4 && src[i - 1] === '}' && src[i - 2] === '%') {
+    const open = src.lastIndexOf('{%', i - 3)
+    if (open < 0 || src[open - 1] === '\\' || src.slice(open + 2, i - 2).includes('%}')) break
+    i = open
+  }
+  return i
+}
+
+const QUOTE_OPEN_PREV = new Set([' ', '\t', '\n', '\r', '\u00a0', '=', ':', '-', '–', '—', '/', '(', '[', '{', '“', '‘'])
 // PART 7's whitespace plus the NO-BREAK SPACE, for the hyphen-run flanking
 // test (carve#1443). A vertical tab and a form feed are deliberately OUT:
 // Carve reads both as content, and `\s` takes them.
 const FLANK_SPACE = /[ \t\n\r\u00a0]/
 const QUOTE_CHARS = new Set(['"', "'"])
-// The glyph the previous quote resolved to, so a quote directly after
-// another one can tell which half it follows: after an OPENING quote it opens
-// (`"'q'"` nests), after a closing one it closes (`""` is a pair). The
-// character alone cannot say - both spellings are the same byte.
-let lastQuoteGlyph = ''
 // A quote directly after a bare delimiter that OPENS a span stands at the
 // START of that span's content, which is an opening context (carve#348).
 // After a delimiter that opens nothing the delimiter IS the preceding
@@ -1614,31 +1594,106 @@ let lastQuoteGlyph = ''
 // has run. `/` and `=` are in the opening set already, either way.
 const EMPHASIS_DELIMS = new Set(['*', '_', '~'])
 const QUOTE_RULES = new Set(['dquote', 'squote'])
+const ELISION_WORDS = new Set(['tis', 'tisn', 'twas', 'twasn', 'twere', 'twill', 'twould', 'em', 'cause', 'til', 'n', 'bout'])
+const quoteAlnum = (c) => c !== '' && /[\p{L}\p{N}]/u.test(c)
+const quoteSpace = (c) => /[ \t\n\r\u00a0]/.test(c)
+const QUOTE_LETTER_RUN = /\p{L}+/uy
+let quoteRun = null
+function quoteOpaque(value) {
+  const id = quoteRun.opaque.push(value) - 1
+  return `\uE000quote-opaque:${quoteRun.key}:${id}\uE001`
+}
+
 function smartQuote(node, open, close, single) {
   const src = node.source.sourceString
   const at = node.source.startIdx
-  const prev = at > 0 ? src[at - 1] : quotePrevCtx
-  const next = src[at + 1] ?? ''
-  if (single && /[0-9]/.test(next) && !/[\p{L}\p{N}]/u.test(prev)) {
-    lastQuoteGlyph = close
-    return close // apostrophe
+  const next = String.fromCodePoint(src.codePointAt(at + 1) ?? 0).replace('\0', '')
+  QUOTE_LETTER_RUN.lastIndex = at + 1
+  const word = single ? (QUOTE_LETTER_RUN.exec(src)?.[0] ?? '') : ''
+  const end = at + 1 + word.length
+  const record = {
+    single, open, close, next,
+    contentStart: at === 0 && quoteRun.depth === 1,
+    initialContext: at === 0 ? quotePrevCtx : undefined,
+    elision: ELISION_WORDS.has(word.toLowerCase()) && !(src[end] === "'" && !quoteAlnum(String.fromCodePoint(src.codePointAt(end + 1) ?? 0).replace('\0', ''))),
   }
-  // Nothing before the quote is the MOST opening context there is - start of
-  // the input, or of a recursive inline parse with no carried context. This
-  // used to fall through to `close`, so every line beginning with a quote got
-  // a closing glyph (`"hello"` rendered as `”hello”`).
-  const decided =
-    prev === ''
-      ? open
-      : QUOTE_CHARS.has(prev)
-        ? lastQuoteGlyph === '\u201c' || lastQuoteGlyph === '\u2018'
-          ? open
-          : close
-        : QUOTE_OPEN_PREV.has(prev)
-          ? open
-          : close
-  lastQuoteGlyph = decided
-  return decided
+  const id = quoteRun.records.push(record) - 1
+  return `\uE000quote:${quoteRun.key}:${id}\uE001`
+}
+
+function* quotePieces(text) {
+  for (let i = 0; i < text.length;) {
+    const start = i
+    if (text[i] === '\uE000') {
+      const end = text.indexOf('\uE001', i + 1)
+      i = end < 0 ? text.length : end + 1
+    } else if (text.startsWith('<!--', i)) {
+      const end = text.indexOf('-->', i + 4)
+      i = end < 0 ? text.length : end + 3
+    } else if (text[i] === '<') {
+      let quoted = ''
+      for (i++; i < text.length && text[i] !== '\uE000'; i++) {
+        const ch = text[i]
+        if (quoted) { if (ch === quoted) quoted = '' }
+        else if (ch === '"' || ch === "'") quoted = ch
+        else if (ch === '>') { i++; break }
+      }
+    } else if (text[i] === '&') {
+      for (i++; i < text.length && /[A-Za-z0-9#]/.test(text[i]); i++) {}
+      if (text[i] === ';') i++
+    } else i++
+    yield text.slice(start, i)
+  }
+}
+
+function settleQuotes(html, run, prevCtx) {
+  let prev = prevCtx, span = null
+  const scan = (text) => {
+    for (const piece of quotePieces(text)) {
+      const quote = /^\uE000quote:([0-9a-f-]+):(\d+)\uE001$/.exec(piece)
+      if (quote?.[1] === run.key) {
+        const r = run.records[Number(quote[2])]
+        if (r.initialContext !== undefined) prev = r.initialContext
+        if (r.spanStart) prev = ''
+        const dashClose = '-–—'.includes(prev) && prev !== '' && (r.next === '' || quoteSpace(r.next) || '"\'.,;:!?)]'.includes(r.next))
+        const opening = (r.spanStart ?? (prev === '' || QUOTE_OPEN_PREV.has(prev))) && !dashClose
+        let apostrophe = r.single && (/[0-9]/.test(r.next) || (!opening && quoteAlnum(r.next)))
+        if (r.single && !apostrophe && !opening && !quoteSpace(prev)) span = null
+        if (r.single && opening && !apostrophe) {
+          if (quoteAlnum(r.next)) apostrophe = r.elision || span !== null
+          if (!apostrophe && span === null) span = { record: r, demote: quoteAlnum(r.next) && !r.contentStart && prev !== '“' }
+        }
+        r.glyph = apostrophe ? '’' : opening ? r.open : r.close
+        prev = r.glyph
+      } else if (piece.startsWith('\uE000ref:')) {
+        const payload = JSON.parse(piece.slice(5, -1))
+        if (payload.text !== undefined) scan(payload.text)
+        prev = 'x'
+      } else if (piece.startsWith('\uE000')) {
+        prev = 'x'
+      } else if (piece.startsWith('<')) {
+        if (/^<br\b/i.test(piece)) prev = '\n'
+        else if (/^<\//.test(piece) || /^<img\b/i.test(piece)) prev = 'x'
+      } else {
+        const entities = { '&nbsp;': '\u00a0', '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&apos;': "'" }
+        const numeric = /^&#(?:x([0-9a-f]+)|([0-9]+));$/i.exec(piece)
+        const value = numeric ? parseInt(numeric[1] ?? numeric[2], numeric[1] ? 16 : 10) : null
+        prev = entities[piece] ?? (value !== null ? String.fromCodePoint(value > 0x10ffff ? 0xfffd : value) : piece.at(-1))
+      }
+    }
+  }
+  scan(html)
+  if (span?.demote) span.record.glyph = '’'
+  // Reference frames JSON-escape their sentinels, so replace both representations.
+  return html.replace(/(?:\uE000|\\u[eE]000)quote-boundary:([0-9a-f-]+)(?:\uE001|\\u[eE]001)/g,
+    (marker, key) => key === run.key ? '' : marker).replace(/(?:\uE000|\\u[eE]000)quote:([0-9a-f-]+):(\d+)(?:\uE001|\\u[eE]001)/g,
+    (marker, key, id) => key === run.key ? run.records[Number(id)].glyph : marker)
+    .replace(/(\uE000|\\u[eE]000)quote-opaque:([0-9a-f-]+):(\d+)(?:\uE001|\\u[eE]001)/g,
+      (marker, prefix, key, id) => {
+        if (key !== run.key) return marker
+        const value = run.opaque[Number(id)]
+        return prefix === '\uE000' ? value : JSON.stringify(value).slice(1, -1)
+      })
 }
 
 let quotePrevCtx = '' // preceding character for recursive inline parses
@@ -1732,14 +1787,20 @@ export function deTypography(s) {
   return out
 }
 
-export function renderInline(text, prevCtx = '') {
+export function renderInline(text, prevCtx = '', separateQuoteScope = false) {
   const saved = quotePrevCtx
-  lastQuoteGlyph = ''
+  const outerRun = quoteRun
+  const root = outerRun === null || separateQuoteScope
+  if (root) quoteRun = { records: [], opaque: [], depth: 0, key: randomUUID() }
+  quoteRun.depth++
   quotePrevCtx = prevCtx
   try {
-    return renderInlineInner(text)
+    const html = renderInlineInner(text)
+    return root ? settleQuotes(html, quoteRun, prevCtx) : html
   } finally {
     quotePrevCtx = saved
+    quoteRun.depth--
+    quoteRun = outerRun
   }
 }
 
