@@ -2267,6 +2267,29 @@ export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = fal
  */
 export const replaceNulls = (src) => src.replace(/\u0000/g, '\uFFFD')
 
+/**
+ * The frontmatter OPENER line, bare or typed. Exported so the one artifact that
+ * asks this question outside the layout keeps asking it the same way.
+ */
+export const FRONTMATTER_OPENER = /^---(?:[ \t]*$|(?! *[^\S ])( (?! )|[A-Za-z0-9]+[ \t]*$))/
+
+/**
+ * Whether a SOURCE opens frontmatter at all: an opener line AND a closing dash
+ * run below it.
+ *
+ * The closer is half the rule, and the conformance oracle's own copy of this
+ * test had only `/^---\r?\n/` - so a document that is a lone `---`, an ordinary
+ * thematic break, was reported as frontmatter the tree failed to carry. That
+ * finding class is UNGATED by design, with no ledger to declare it in, so the
+ * oracle alone failed `AST full-corpus verdict` against all three engines at
+ * once - and all three were right (carve#2881).
+ */
+export function sourceOpensFrontmatter(source) {
+  const lines = String(source).split('\n').map((line) => line.replace(/\r$/, ''))
+  if (lines[0] === undefined || !FRONTMATTER_OPENER.test(lines[0])) return false
+  return lines.slice(1).some((line) => /^---[ \t]*$/.test(line))
+}
+
 function normalizeSource(src) {
   // A single leading U+FEFF is stripped before the first line is read, so
   // `<BOM># T` is a heading rather than paragraph text. All three engines do
@@ -2366,7 +2389,7 @@ export function parse(src, { authoredBodyBases = true, stateSink = null } = {}) 
   // whole of that reading, and it is deliberately spelled with the same two
   // characters PART 2's `whitespace` admits - a form feed or a no-break space
   // is CONTENT, so `---<FF>` is not an opener and falls through as before.
-  if (lines[0] !== undefined && /^---(?:[ \t]*$|(?! *[^\S ])( (?! )|[A-Za-z0-9]+[ \t]*$))/.test(lines[0])) {
+  if (lines[0] !== undefined && FRONTMATTER_OPENER.test(lines[0])) {
     for (let j = 1; j < lines.length; j++) {
       if (/^---[ \t]*$/.test(lines[j])) {
         lines.splice(0, j + 1)
