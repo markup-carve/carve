@@ -6141,10 +6141,14 @@ EOF = (* end of file *) ;
         Those discarded closers lie inside the matched child and cannot
         later close an ancestor. Updating per-kind heads on each push/pop
         makes lookup constant-time; each closer is popped at most once.
-        Candidate kinds are the seven forced emphasis forms and the
-        non-opaque {+ +} and {- -} editorial forms. A {~ ~} frame has one
-        matching kind whether subsequently classified as strike or
-        substitution. Code, raw, math, literal, editorial comment {# #},
+        Apply this pairing rule to the seven forced emphasis kinds.
+        Existing matched {+ +} and {- -} editorial frames impose E2a
+        boundaries: process their inline content as separate regions and
+        skip the whole frame when pairing outside it. Their matching,
+        nesting and malformed-recovery rules are unchanged; this exception
+        does not admit same-kind editorial insertion or deletion. A {~ ~}
+        frame has one matching kind whether subsequently classified as
+        strike or substitution. Code, raw, math, literal, editorial comment {# #},
         delimited comment {% %}, attributes, link/image destinations with
         titles, and autolinks retain their existing opaque scans.
         Only indexed pairs establish E2a boundaries in forward resolution.

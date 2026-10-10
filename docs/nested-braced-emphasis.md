@@ -31,7 +31,7 @@ Child and parent attributes attach independently:
 {*a {*b*}{.inner} c*}{.outer}
 ~~~
 
-Strike substitution uses a separator visible in its own braced frame. A matched nested braced span hides its separators; an unmatched opener hides none. Each nested strike/substitution frame is classified independently. This clarifies a previously incomplete boundary rule and changes some existing substitution input, as shown below. Editorial insertion and deletion retain their meanings.
+Strike substitution uses a separator visible in its own braced frame. A matched nested braced span hides its separators; an unmatched opener hides none. Each nested strike/substitution frame is classified independently. This clarifies a previously incomplete boundary rule and changes some existing substitution input, as shown below. Editorial insertion and deletion retain their matching, nesting, and recovery rules. Their existing matched boundaries delimit the emphasis pairing regions; this change does not admit repeated insertion or deletion wrappers.
 
 ## Compatibility
 

@@ -25,10 +25,10 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9-074`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L638) | 9 | A MARKDOWN LABEL THAT IS BOTH A CHECKBOX AND A DEFINED REFERENCE IS THE CHECKBOX |
 | [`CARVE-P9-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L31) | 9 | AN IMPORTER WRITES THE CORE FORM, NEVER THE EXTENSION FENCE |
 | [`CARVE-P9-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L46) | 9 | CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES |
-| [`CARVE-P9-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L585) | 9 | SECURITY REQUIREMENTS |
-| [`CARVE-P9-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L676) | 9 | A URL-LIST ATTRIBUTE IS PROBED TOKEN-WISE, NOT AT ITS HEAD |
-| [`CARVE-P9-056`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L789) | 9 | A FLATTENED OPENER IS ORDINARY PARAGRAPH TEXT |
-| [`CARVE-P9-057`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L863) | 9 | AT THE RENDER CEILING, A RENDERER REFUSES |
+| [`CARVE-P9-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L589) | 9 | SECURITY REQUIREMENTS |
+| [`CARVE-P9-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L680) | 9 | A URL-LIST ATTRIBUTE IS PROBED TOKEN-WISE, NOT AT ITS HEAD |
+| [`CARVE-P9-056`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L793) | 9 | A FLATTENED OPENER IS ORDINARY PARAGRAPH TEXT |
+| [`CARVE-P9-057`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L867) | 9 | AT THE RENDER CEILING, A RENDERER REFUSES |
 | [`CARVE-P9-058`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L2) | 9 | TROJAN-SOURCE / INVISIBLE-UNICODE HARDENING |
 | [`CARVE-P9-063`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L173) | 9 | THE ENGINE'S OWN WORDS ARE A RENDER OPTION |
 | [`CARVE-P9-064`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L211) | 9 | AN EXTENSION WRITES INTO THE SAME MAP |
