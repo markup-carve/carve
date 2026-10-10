@@ -39,7 +39,7 @@ Nested item looseness does not propagate to the outer item
 
     > q
 .
-<ul>
+<ul class="task-list">
   <li><input type="checkbox" disabled aria-label="a"> a
     <ul>
       <li>b

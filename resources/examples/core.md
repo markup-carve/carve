@@ -798,7 +798,7 @@ A task item's content column is the bullet width (2), since the checkbox is cont
 ```
 
 ```html
-<ul>
+<ul class="task-list">
   <li><input type="checkbox" disabled aria-label="outer"> outer
     <ul>
       <li>inner</li>
@@ -1232,15 +1232,15 @@ whitespace-ONLY lines can tell `> >` from `> > `.
 ```
 
 ```html
-<ul>
+<ul class="task-list">
   <li><input type="checkbox" disabled aria-label="todo"> todo</li>
-  <li><input type="checkbox" checked disabled aria-label="done"> done</li>
+  <li data-task-state="x"><input type="checkbox" checked disabled aria-label="done"> done</li>
 </ul>
 ```
 
 :::
 
-Only `[x]`/`[X]` render a checked box; every other state (`[ ]`, `[-]`, `[_]`, `[>]`, `[?]`) renders an unchecked box. The four extended states name the box they carry with `data-task-state`, so a stylesheet can tell a dropped task from an open one; `[ ]` and `[x]` carry nothing, because the box already says which they are.
+The list carries the `task-list` class, so a stylesheet can reach a task list without `:has()`. Only `[x]`/`[X]` render a checked box; every other state (`[ ]`, `[-]`, `[_]`, `[>]`, `[?]`) renders an unchecked box. Every state but the open `[ ]` names itself on the item with `data-task-state`: a done item carries `x`, and the four extended states carry their own character, so a stylesheet can tell a dropped task from an open one.
 
 ::: compare
 
@@ -1252,11 +1252,81 @@ Only `[x]`/`[X]` render a checked box; every other state (`[ ]`, `[-]`, `[_]`, `
 ```
 
 ```html
-<ul>
+<ul class="task-list">
   <li data-task-state="-"><input type="checkbox" disabled aria-label="dropped"> dropped</li>
   <li data-task-state="_"><input type="checkbox" disabled aria-label="paused"> paused</li>
   <li data-task-state="&gt;"><input type="checkbox" disabled aria-label="deferred"> deferred</li>
   <li data-task-state="?"><input type="checkbox" disabled aria-label="maybe"> maybe</li>
+</ul>
+```
+
+:::
+
+`[X]` is the same state as `[x]`, so it writes the same lowercase `x`.
+
+::: compare
+
+```carve
+- [X] upper
+- [x] lower
+```
+
+```html
+<ul class="task-list">
+  <li data-task-state="x"><input type="checkbox" checked disabled aria-label="upper"> upper</li>
+  <li data-task-state="x"><input type="checkbox" checked disabled aria-label="lower"> lower</li>
+</ul>
+```
+
+:::
+
+`task-list` is a base class: it leads when the author wrote no class, and it joins the front of the authored class slot, which keeps its own position, when one exists.
+
+::: compare
+
+```carve
+{#i}
+- [ ] a
+```
+
+```html
+<ul class="task-list" id="i">
+  <li><input type="checkbox" disabled aria-label="a"> a</li>
+</ul>
+```
+
+:::
+
+::: compare
+
+```carve
+{k=v .c}
+- [ ] a
+```
+
+```html
+<ul k="v" class="task-list c">
+  <li><input type="checkbox" disabled aria-label="a"> a</li>
+</ul>
+```
+
+:::
+
+A plain item after task items starts a new list, so a list is all tasks or none, and only the task list carries the class.
+
+::: compare
+
+```carve
+- [ ] task
+- plain
+```
+
+```html
+<ul class="task-list">
+  <li><input type="checkbox" disabled aria-label="task"> task</li>
+</ul>
+<ul>
+  <li>plain</li>
 </ul>
 ```
 

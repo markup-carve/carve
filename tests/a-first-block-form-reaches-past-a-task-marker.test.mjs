@@ -37,21 +37,21 @@ const html = (src) => renderDoc(parse(src)).replace(/\s+/g, ' ').replace(/> </g,
 test('a bare + after a task marker opens the first-block form', () => {
   assert.equal(
     html('- [x] +\n| a | b |\n'),
-    '<ul><li><input type="checkbox" checked disabled><table><tbody><tr><td>a</td><td>b</td></tr></tbody></table></li></ul>',
+    '<ul class="task-list"><li data-task-state="x"><input type="checkbox" checked disabled><table><tbody><tr><td>a</td><td>b</td></tr></tbody></table></li></ul>',
   )
 })
 
 test('the box still carries the state the author wrote', () => {
   assert.equal(
     html('- [ ] +\n> q\n'),
-    '<ul><li><input type="checkbox" disabled><blockquote><p>q</p></blockquote></li></ul>',
+    '<ul class="task-list"><li><input type="checkbox" disabled><blockquote><p>q</p></blockquote></li></ul>',
   )
 })
 
 test('a task item whose whole content is a bare + is empty, and that is how a writer spells one', () => {
   // The row the drift ledger was carrying. An empty task item has no other
   // spelling: `- [x]` is an item whose TEXT is `[x]`, asserted below.
-  assert.equal(html('-{#k} [x] +\n'), '<ul><li id="k"><input type="checkbox" checked disabled></li></ul>')
+  assert.equal(html('-{#k} [x] +\n'), '<ul class="task-list"><li data-task-state="x" id="k"><input type="checkbox" checked disabled></li></ul>')
   assert.equal(html('-{#k} [x]\n'), '<ul><li id="k">[x]</li></ul>')
 })
 
@@ -61,9 +61,9 @@ test('content after the + keeps the whole run as item text', () => {
   // what a writer emits for one.
   assert.equal(
     html('- [x] + text\n'),
-    '<ul><li><input type="checkbox" checked disabled aria-label="+ text"> + text</li></ul>',
+    '<ul class="task-list"><li data-task-state="x"><input type="checkbox" checked disabled aria-label="+ text"> + text</li></ul>',
   )
-  assert.equal(html('- [x] \\+\n'), '<ul><li><input type="checkbox" checked disabled aria-label="+"> +</li></ul>')
+  assert.equal(html('- [x] \\+\n'), '<ul class="task-list"><li data-task-state="x"><input type="checkbox" checked disabled aria-label="+"> +</li></ul>')
 })
 
 test('the plain-bullet form is unchanged', () => {

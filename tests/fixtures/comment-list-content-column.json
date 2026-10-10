@@ -21,7 +21,7 @@
   },
   {
     "source": "- intro\n%% c\n  - [x] tail\n",
-    "html": "<ul>\n  <li>intro\n    <ul>\n      <li><input type=\"checkbox\" checked disabled aria-label=\"tail\"> tail</li>\n    </ul>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li>intro\n    <ul class=\"task-list\">\n      <li data-task-state=\"x\"><input type=\"checkbox\" checked disabled aria-label=\"tail\"> tail</li>\n    </ul>\n  </li>\n</ul>"
   },
   {
     "source": "- intro\n%% c\n -{.y} tail\n",
@@ -61,7 +61,7 @@
   },
   {
     "source": "- [x] intro\n%% c\n - tail\n",
-    "html": "<ul>\n  <li><input type=\"checkbox\" checked disabled aria-label=\"intro\"> intro\n    - tail\n  </li>\n</ul>"
+    "html": "<ul class=\"task-list\">\n  <li data-task-state=\"x\"><input type=\"checkbox\" checked disabled aria-label=\"intro\"> intro\n    - tail\n  </li>\n</ul>"
   },
   {
     "source": "- - intro\n%% c\n - tail\n",

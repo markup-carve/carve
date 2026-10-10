@@ -180,7 +180,7 @@ const DECLARED_UNIMPLEMENTED = {
  * fails an entry whose case already matches, so a stale one cannot sit here.
  */
 const AHEAD_OF_PIN = {
-  '66-smart-typography-quotes-off-html': 'carve#2875: the pinned engine lacks the quotes-only option',
+  '66-smart-typography-quotes-off-html': 'carve#2875 and carve#2887: the pin lacks quotes-only typography and task-list hooks',
   '66-smart-typography-quotes-off-markdown': 'carve#2875: the pinned engine lacks the quotes-only option',
   '66-smart-typography-quotes-off-plain': 'carve#2875: the pinned engine lacks the quotes-only option',
   '66-smart-typography-quotes-off-ansi': 'carve#2875: the pinned engine lacks the quotes-only option',

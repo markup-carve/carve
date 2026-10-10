@@ -37,3 +37,5 @@
 #     Delete the line in the same commit as the fix.
 #
 # Format: <document id><space><space><reason>
+docs/index.md#1  engine lags PART 10 §11 [CARVE-P10-009]: the pin predates the task-list class and the done-state attribute (carve#2887)
+docs/.vitepress/examples/demo.crv  engine lags PART 10 §11 [CARVE-P10-009]: the pin predates the task-list class and the done-state attribute (carve#2887)

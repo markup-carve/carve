@@ -195,7 +195,10 @@ const MANIFEST = [
   // deliberately a per-entry opt-in rather than a blanket relaxation of
   // `owed`, so relaxing a third ledger stays a visible edit here.
   { repo: 'spec', path: 'resources/engine-pin-drift.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run engine:report -- --check' },
-  { repo: 'spec', path: 'resources/oracle-divergence.txt', kind: 'txt', policy: 'owed', guard: 'two-way', owner: 'tests/the-oracle-reads-the-authored-documents.test.mjs' },
+  // Declared inside a pull request for the same reason: a spec rule the
+  // oracle already renders lands before the pin, on every authored document
+  // that uses the construct (carve#2887).
+  { repo: 'spec', path: 'resources/oracle-divergence.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'tests/the-oracle-reads-the-authored-documents.test.mjs' },
   // 132 rows, every one `permitted`: PART 12 §4 exempts a REASSEMBLED node
   // forever. The last field decides, so a row that stops being permitted is
   // counted as owed without anyone editing this manifest.
@@ -280,6 +283,7 @@ const MANIFEST = [
   { repo: 'spec', path: 'tests/an-ingested-default-start-is-not-re-emitted.test.mjs', name: 'PIN_LAG', kind: 'js-string', policy: 'owed', guard: 'two-way', optional: true, owner: 'markup-carve/carve-js#1391, markup-carve/carve-rs#1293' },
   { repo: 'spec', path: 'tests/an-unspellable-block-does-not-cancel-list-adjacency.test.mjs', name: 'PIN_LAG', kind: 'js-string', policy: 'owed', guard: 'two-way', optional: true, owner: 'markup-carve/carve#1621' },
   { repo: 'spec', path: 'tests/a-markdown-destination-keeps-its-brackets.test.mjs', name: 'PIN_LAG', kind: 'js-string', policy: 'owed', prPolicy: 'declared', guard: 'two-way', optional: true, owner: 'markup-carve/carve#2865' },
+  { repo: 'spec', path: 'tests/empty-raw-list-placement.test.mjs', name: 'PIN_LAG', kind: 'js-string', policy: 'owed', prPolicy: 'declared', guard: 'two-way', optional: true, owner: 'markup-carve/carve#2887' },
   // An engine-pin window scoped to the CAPTION ROWS of CARVE-P11-063, not to
   // the clause: carve#2851's ruling landed spec-first and the pinned build
   // writes no caption marker, while every other row in that file is live. The

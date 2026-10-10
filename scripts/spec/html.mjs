@@ -826,7 +826,7 @@ function withBlockImageAttrs(image, attrs) {
 function renderList(list, depth, ctx) {
   const pad = '  '.repeat(depth)
   let tag = 'ul'
-  const authored = list.battrs ? renderBlockAttrs(list.battrs) : ''
+  const authored = list.battrs || list.task ? renderBlockAttrs(withTaskListClass(list)) : ''
   // A STRUCTURAL ATTRIBUTE LEADS (PART 11 §5.1). `type` and `start` are fixed
   // by the first item's marker, so they are the element's own shape rather than
   // something added on top of what the author wrote, and they are emitted
@@ -846,6 +846,19 @@ function renderList(list, depth, ctx) {
   const attrs = structural + authored
   const items = list.items.map((item) => renderItem(item, list, depth + 1, ctx))
   return `${pad}<${tag}${attrs}>\n${items.join('\n')}\n${pad}</${tag}>`
+}
+
+// PART 10 SS1: a task list's `task-list` base class is prepended INSIDE the
+// authored class slot, which keeps its first-appearance position, and leads
+// when the author wrote no class (carve#2887). The math span does the same.
+function withTaskListClass(list) {
+  const lists = list.battrs ?? []
+  if (!list.task) return lists
+  const base = ['class', 'task-list']
+  const at = lists.findIndex((attrs) => attrs.some(isClass))
+  if (at === -1) return [[base], ...lists]
+  const first = lists[at].findIndex(isClass)
+  return lists.map((attrs, i) => (i === at ? [...attrs.slice(0, first), base, ...attrs.slice(first)] : attrs))
 }
 
 // PART 2 `task_marker`: the task box is named by what the item VISIBLY says. Only the
@@ -879,8 +892,11 @@ function renderItem(item, list, depth, ctx) {
   // whose first block is not a paragraph, or whose text derives to nothing,
   // takes NO attribute: an empty name is worse than none.
   // PART 10 S11. Structural, so it leads the authored attributes (S1).
-  if (item.taskState !== undefined) {
-    liAttrs = ` data-task-state="${escapeAttr(item.taskState)}"${liAttrs}`
+  // A done item names its state too, always as the lowercase `x` (carve#2887).
+  const taskState = item.taskState ?? (list.task && item.checked ? 'x' : undefined)
+  if (taskState !== undefined) {
+    liAttrs = liAttrs.replace(/ data-task-state="[^"]*"/gi, '')
+    liAttrs = ` data-task-state="${escapeAttr(taskState)}"${liAttrs}`
   }
   const taskName = list.task ? taskLabel(item) : ''
   const prefix = list.task

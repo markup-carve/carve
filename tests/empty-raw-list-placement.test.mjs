@@ -19,11 +19,27 @@ test('an invisible block provides no placement slot or second paragraph', () => 
   }
 })
 
+// Declared lag against the `@markup-carve/carve` build package.json pins.
+// EMPTY IS THE GOAL: it goes out in the commit that moves the pin past the
+// engine that writes the `task-list` class (markup-carve/carve#2887).
+const PIN_LAG = 'carve#2887  the pin predates the task-list class on a task list'
+const TASK_CASE = '- [ ] ```=html\n  ```\n'
+
 test('matching, dropped and visible blocks retain placement across 108 shapes', () => {
   const cases = JSON.parse(readFileSync(new URL('./fixtures/empty-raw-list-placement.json', import.meta.url), 'utf8'))
   assert.equal(cases.length, 108)
   for (const { source, html } of cases) {
     assert.equal(renderDoc(parse(source)), html, source)
+    if (PIN_LAG && source === TASK_CASE) {
+      // The detector is the missing class itself, so the first engine to write
+      // it fails here and takes the declaration with it.
+      assert.equal(
+        carveToHtml(source),
+        html.replace(' class="task-list"', ''),
+        `pin lag is declared and the class is no longer missing - delete PIN_LAG: ${PIN_LAG}`,
+      )
+      continue
+    }
     assert.equal(carveToHtml(source), html, source)
   }
 })

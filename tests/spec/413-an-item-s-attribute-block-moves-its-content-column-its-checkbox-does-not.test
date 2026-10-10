@@ -4,8 +4,8 @@ An item's attribute block moves its content column; its checkbox does not
 -{#k} [x] bare
   # inside
 .
-<ul>
-  <li id="k"><input type="checkbox" checked disabled aria-label="bare"> bare
+<ul class="task-list">
+  <li data-task-state="x" id="k"><input type="checkbox" checked disabled aria-label="bare"> bare
     <h1 id="inside">inside</h1>
   </li>
 </ul>
@@ -15,8 +15,8 @@ An item's attribute block moves its content column; its checkbox does not
 -{#k} [x] old
       # outside
 .
-<ul>
-  <li id="k"><input type="checkbox" checked disabled aria-label="old"> old
+<ul class="task-list">
+  <li data-task-state="x" id="k"><input type="checkbox" checked disabled aria-label="old"> old
     <h1 id="outside">outside</h1>
   </li>
 </ul>
@@ -26,8 +26,8 @@ An item's attribute block moves its content column; its checkbox does not
 - [x] a
   # h
 .
-<ul>
-  <li><input type="checkbox" checked disabled aria-label="a"> a
+<ul class="task-list">
+  <li data-task-state="x"><input type="checkbox" checked disabled aria-label="a"> a
     <h1 id="h">h</h1>
   </li>
 </ul>
@@ -63,8 +63,8 @@ An item's attribute block moves its content column; its checkbox does not
 .
 <ul>
   <li><p>outer</p>
-    <ul>
-      <li id="k"><input type="checkbox" checked disabled aria-label="inner"> inner</li>
+    <ul class="task-list">
+      <li data-task-state="x" id="k"><input type="checkbox" checked disabled aria-label="inner"> inner</li>
     </ul>
     <p>after</p>
   </li>
@@ -102,8 +102,8 @@ An item's attribute block moves its content column; its checkbox does not
 -{title="😀"} [x] a
   # h
 .
-<ul>
-  <li title="😀"><input type="checkbox" checked disabled aria-label="a"> a
+<ul class="task-list">
+  <li data-task-state="x" title="😀"><input type="checkbox" checked disabled aria-label="a"> a
     <h1 id="h">h</h1>
   </li>
 </ul>

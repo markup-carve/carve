@@ -1461,7 +1461,7 @@ heading at column 4 therefore uses column 4 as its authored base.
 ```
 
 ```html
-<ul>
+<ul class="task-list">
   <li><input type="checkbox" disabled aria-label="item"> item
     <h1 id="H">H</h1>
   </li>
@@ -3179,7 +3179,7 @@ For a task item the block abuts the marker, before the task marker:
 ```
 
 ```html
-<ul>
+<ul class="task-list">
   <li class="c"><input type="checkbox" disabled aria-label="A classed task item."> A classed task item.</li>
 </ul>
 ```
@@ -5509,7 +5509,7 @@ The content-column threshold follows the marker, so a task item's nested block b
 ```
 
 ```html
-<ul>
+<ul class="task-list">
   <li><input type="checkbox" disabled aria-label="a"> a
     <ul>
       <li>b
@@ -24062,11 +24062,11 @@ carve-php write it in all of them (carve#1381).
 ```
 
 ```html
-<ul>
+<ul class="task-list">
   <li><input type="checkbox" disabled> 
     <blockquote><p>q</p></blockquote>
   </li>
-  <li><input type="checkbox" checked disabled> 
+  <li data-task-state="x"><input type="checkbox" checked disabled> 
     <h1 id="h">h</h1>
   </li>
   <li><input type="checkbox" disabled> 
@@ -26166,9 +26166,9 @@ nothing is written in English and a translated document translates it once.
 ```
 
 ```html
-<ul>
+<ul class="task-list">
   <li><input type="checkbox" disabled aria-label="read the docs"> read the <em>docs</em></li>
-  <li><input type="checkbox" checked disabled aria-label="done"> done</li>
+  <li data-task-state="x"><input type="checkbox" checked disabled aria-label="done"> done</li>
 </ul>
 ```
 
@@ -26185,7 +26185,7 @@ worse than none. The checkbox and its state are still written.
 ```
 
 ```html
-<ul>
+<ul class="task-list">
   <li><input type="checkbox" disabled> 
     <blockquote><p>quoted lead</p></blockquote>
   </li>
@@ -27592,8 +27592,8 @@ the item.
 ```
 
 ```html
-<ul>
-  <li id="k"><input type="checkbox" checked disabled aria-label="bare"> bare
+<ul class="task-list">
+  <li data-task-state="x" id="k"><input type="checkbox" checked disabled aria-label="bare"> bare
     <h1 id="inside">inside</h1>
   </li>
 </ul>
@@ -27613,8 +27613,8 @@ rule. The metadata spelling can no longer silently select between structures.
 ```
 
 ```html
-<ul>
-  <li id="k"><input type="checkbox" checked disabled aria-label="old"> old
+<ul class="task-list">
+  <li data-task-state="x" id="k"><input type="checkbox" checked disabled aria-label="old"> old
     <h1 id="outside">outside</h1>
   </li>
 </ul>
@@ -27634,8 +27634,8 @@ inside the item - the checkbox still moves nothing.
 ```
 
 ```html
-<ul>
-  <li><input type="checkbox" checked disabled aria-label="a"> a
+<ul class="task-list">
+  <li data-task-state="x"><input type="checkbox" checked disabled aria-label="a"> a
     <h1 id="h">h</h1>
   </li>
 </ul>
@@ -27701,8 +27701,8 @@ do not change the nesting or looseness calculation.
 ```html
 <ul>
   <li><p>outer</p>
-    <ul>
-      <li id="k"><input type="checkbox" checked disabled aria-label="inner"> inner</li>
+    <ul class="task-list">
+      <li data-task-state="x" id="k"><input type="checkbox" checked disabled aria-label="inner"> inner</li>
     </ul>
     <p>after</p>
   </li>
@@ -27769,8 +27769,8 @@ content rather than marker width.
 ```
 
 ```html
-<ul>
-  <li title="😀"><input type="checkbox" checked disabled aria-label="a"> a
+<ul class="task-list">
+  <li data-task-state="x" title="😀"><input type="checkbox" checked disabled aria-label="a"> a
     <h1 id="h">h</h1>
   </li>
 </ul>
@@ -27876,8 +27876,8 @@ that heading (PART 1 S4, PART 9 §15 A4, PART 9 §24 C3; carve-rs#1373).
 ```
 
 ```html
-<ul>
-  <li id="k"><input type="checkbox" checked disabled> 
+<ul class="task-list">
+  <li data-task-state="x" id="k"><input type="checkbox" checked disabled> 
     <h1 id="h">h</h1>
   </li>
 </ul>
@@ -27947,8 +27947,8 @@ does open a paragraph, so the same below-column line lazily continues it.
 ```
 
 ```html
-<ul>
-  <li id="k"><input type="checkbox" checked disabled> </li>
+<ul class="task-list">
+  <li data-task-state="x" id="k"><input type="checkbox" checked disabled> </li>
 </ul>
 <p># h</p>
 ```
