@@ -4228,7 +4228,22 @@ EOF = (* end of file *) ;
           every target, and a target-dependent default would let
           `to_html(x)` and `to_markdown(x)` disagree about what the
           document says.
-        Pinned in tests/corpus-optional (feature `smart-typography-off`).
+        A host MAY additionally accept a per-family value on the same switch.
+        The only ruled family is `quotes`: `smartTypography: { quotes: false }`
+        emits the SOURCE RUN for `left_double_quote`, `right_double_quote`,
+        `left_single_quote`, and `right_single_quote`, including mid-word
+        apostrophes. Every other smart-punctuation kind still emits its glyph.
+        An omitted `quotes` field or `quotes: true` retains the default glyph
+        output. The boolean FALSE and source mode still disable ALL families;
+        existing boolean and mode values keep their meaning. API spelling is
+        host-specific; PHP and Rust may expose an equivalent quotes-source mode.
+        Parsing, AST nodes, escapes, literal curly quotes, and heading ids are
+        unchanged. This setting is document-global on HTML, Markdown, plain
+        text, and ANSI, including text derived from nodes for labels and alt
+        text. A host that does not implement it MUST reject the value rather
+        than accept it silently. No in-document switch or other family is ruled.
+        Pinned in tests/corpus-optional (features `smart-typography-off` and
+        `smart-typography-quotes-off`).
       - SMART TYPOGRAPHY RECORDS SOURCE AND RESOLVED KIND -- NORMATIVE [CARVE-P9-012]. A recognized substitution is its
         own inline node, `smart_punctuation`, carrying BOTH halves: the
         resolved KIND and the author's SOURCE RUN. A presentation renderer

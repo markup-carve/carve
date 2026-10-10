@@ -505,6 +505,19 @@ in Carve. These literal characters retain their spelling; they do not use
 locale-specific smart-quote substitutions. For example, `a “b c` renders
 as `<p>a “b c</p>`.
 
+### Turning off quotes alone
+
+A host may accept `smartTypography: { quotes: false }`, or an equivalent
+quotes-source mode, to emit the source runs for quotes and apostrophes while
+keeping other smart substitutions enabled. An omitted `quotes` field or
+`quotes: true` keeps the default output. The existing boolean and source modes
+keep their meaning.
+
+The option changes rendering on every presentation target. Parsing, AST nodes,
+heading IDs, typed curly quotes, and escapes are unchanged. Hosts that do not
+implement the option must reject it rather than accept it silently. The
+`smart-typography-quotes-off` corpus feature pins all four targets.
+
 ### Turning it off
 
 The transform runs with no extension registered. A smart-quotes / locale

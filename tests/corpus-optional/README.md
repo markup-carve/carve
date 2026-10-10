@@ -36,6 +36,8 @@ Examples:
 - `bare-url-autolink` → bare-URL autolink extension/config
 - `smart-typography-off` → the optional document-global `smartTypography: false`
   switch (PART 9 §8); implementations that do not offer the switch skip the case
+- `smart-typography-quotes-off` → `smartTypography: { quotes: false }` or an
+  equivalent quotes-source mode; quote source runs with other substitutions on
 - `markdown-typography-source` → the optional Markdown-renderer setting that
   emits a smart-punctuation node's source run instead of its glyph (PART 9 §8)
 

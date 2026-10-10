@@ -305,7 +305,10 @@ const PLAIN_EXTENSION_FEATURES = {
  * stamp ordering the second case turns on, so both are wired below instead
  * (carve#535).
  */
-const UNREACHABLE_REASONS = {}
+const UNREACHABLE_REASONS = {
+  'smart-typography-quotes-off': 'carve#2875: the clause and corpus precede quotes-only support in the pinned engines',
+}
+const QUOTES_ONLY_AHEAD_OF_ENGINES = true
 
 // Optional features selected through carve-rs's repeatable registry-key flag.
 // Values after the key configure extensions whose optional corpus case does not
@@ -346,6 +349,7 @@ const SOURCE_TYPOGRAPHY_FEATURES = new Set([
 ])
 
 const JS_OPTION_FEATURES = {
+  'smart-typography-quotes-off': '{ smartTypography: { quotes: false } }',
   'smart-typography-off': '{ smartTypography: false }',
   'markdown-typography-source': "{ smartTypography: 'source' }",
   'plain-typography-source': "{ smartTypography: 'source' }",
@@ -372,6 +376,7 @@ const impls = [
       return [...rustBaseCommand, 'migrate', '--from', format]
     },
     optionalCommand(feature, target = DEFAULT_TARGET) {
+      if (feature === 'smart-typography-quotes-off' && QUOTES_ONLY_AHEAD_OF_ENGINES) return null
       // DEFAULT typography is the engine's ordinary rendering on whichever
       // target the case names - no option at all, which is the whole point of
       // the control (carve#915).
@@ -422,6 +427,9 @@ const impls = [
       }
       // One flag, whichever target the case pins: the mode is a property of
       // the renderer, and every presentation renderer carries it.
+      if (feature === 'smart-typography-quotes-off') {
+        return [...rustBaseCommand, '--smart-typography', 'quotes-source', ...flags]
+      }
       if (SOURCE_TYPOGRAPHY_FEATURES.has(feature)) {
         return [...rustBaseCommand, '--smart-typography', 'source', ...flags]
       }
@@ -487,6 +495,7 @@ const impls = [
       ]
     },
     optionalCommand(feature, target = DEFAULT_TARGET) {
+      if (feature === 'smart-typography-quotes-off' && QUOTES_ONLY_AHEAD_OF_ENGINES) return null
       // DEFAULT typography is the engine's ordinary rendering on whichever
       // target the case names - no option at all, which is the whole point of
       // the control (carve#915).
@@ -604,6 +613,7 @@ const impls = [
       return this.convertCommand(format)
     },
     optionalCommand(feature, target = DEFAULT_TARGET) {
+      if (feature === 'smart-typography-quotes-off' && QUOTES_ONLY_AHEAD_OF_ENGINES) return null
       // DEFAULT typography is the engine's ordinary rendering on whichever
       // target the case names - no option at all, which is the whole point of
       // the control (carve#915).
@@ -654,6 +664,9 @@ const impls = [
       }
       if (target === 'ansi' && feature === 'ansi-typography-source') {
         return ['php', 'bin/carve', '--smart-typography', 'source', ...CLI_FLAGS.ansi]
+      }
+      if (feature === 'smart-typography-quotes-off') {
+        return ['php', 'bin/carve', '--smart-typography', 'quotes-source', ...CLI_FLAGS[target]]
       }
       if (target !== 'html') return null
       if (feature === 'smart-typography-off') {

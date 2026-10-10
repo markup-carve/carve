@@ -119,6 +119,7 @@ const featureRunners = {
    * syntax, so the reference engine intentionally does not run that case.
    */
   'bare-url-autolink': (source, render) => render(source, { extensions: [autolink()] }),
+  'smart-typography-quotes-off': (source, render) => render(source, { smartTypography: { quotes: false } }),
   'smart-typography-off': (source, render) => render(source, { smartTypography: false }),
   'markdown-typography-source': (source, render) => render(source, { smartTypography: 'source' }),
   /*
@@ -178,7 +179,12 @@ const DECLARED_UNIMPLEMENTED = {
  * An entry is deleted in the commit that moves the pin past it; the check below
  * fails an entry whose case already matches, so a stale one cannot sit here.
  */
-const AHEAD_OF_PIN = {}
+const AHEAD_OF_PIN = {
+  '66-smart-typography-quotes-off-html': 'carve#2875: the pinned engine lacks the quotes-only option',
+  '66-smart-typography-quotes-off-markdown': 'carve#2875: the pinned engine lacks the quotes-only option',
+  '66-smart-typography-quotes-off-plain': 'carve#2875: the pinned engine lacks the quotes-only option',
+  '66-smart-typography-quotes-off-ansi': 'carve#2875: the pinned engine lacks the quotes-only option',
+}
 
 /*
  * THE RATCHET ON THE EXCUSE, because an entry above can only ever turn a

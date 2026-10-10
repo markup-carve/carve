@@ -42,6 +42,7 @@ export const optionalFeatureTitles = new Map([
   ['symbol-map', 'Symbol map'],
   ['smart-quotes-locale-de', 'Smart quotes (de locale)'],
   ['bare-url-autolink', 'Bare-URL autolinking'],
+  ['smart-typography-quotes-off', 'Smart typography with straight quotes'],
   ['smart-typography-off', 'Smart typography off'],
   ['smart-typography-default', 'Smart typography at default (control)'],
   ['section-wrapper-off', 'Section wrapper off'],
