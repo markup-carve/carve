@@ -562,6 +562,7 @@ index: examples/edge-cases/index.md
   reference-labels-are-case-sensitive
   every-name-lookup-compares-case-exactly
   link-destination-parentheses-balance
+  a-link-destination-is-opaque-to-the-bracket-scan
   empty-link-and-image-titles-are-preserved
   a-backslash-in-a-link-destination-is-a-literal-character
   an-empty-link-destination-is-not-a-link
