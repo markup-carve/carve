@@ -44,7 +44,7 @@ import { rustBinary } from './lib/engine-locations.mjs'
 import { parseShard, selectShard } from './lib/shard.mjs'
 import { populationFingerprint, readShardReports, verifyShardReports } from './lib/shard-reports.mjs'
 import { comparisonRevisions } from './lib/comparison-revisions.mjs'
-import { pinnedCrateVersion, pinnedEngineBinary } from './lib/pinned-engine.mjs'
+import { pinLabel, pinnedEnginePin, pinnedEngineBinary } from './lib/pinned-engine.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
@@ -1309,7 +1309,7 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
  * HTML byte-for-byte - which cannot see an AST-only change, because a link
  * reference definition renders nothing.
  */
-const rbPin = pinnedCrateVersion(resolve(rbDir, 'ext/carve/Cargo.toml'))
+const rbPin = pinnedEnginePin(resolve(rbDir, 'ext/carve/Cargo.toml'))
 
 /** The pinned engine's shape for each document carve-rb was measured on. */
 function pinnedEngineShapes(binary) {
@@ -1343,15 +1343,15 @@ if (rbShapes.size > 0) {
     console.error(`BINDING PARITY: not measured - ${pinned.why}.`)
     console.error('Provide a carve binary at the pin through CARVE_RS_PINNED_BIN, or allow `cargo install`.\n')
     if (process.env.CARVE_REQUIRE_ALL_ENGINES === '1') {
-      deferredGateFailures.push(`BINDING PARITY: could not obtain carve-lang ${rbPin ?? 'unknown'} - ${pinned.why}.`)
+      deferredGateFailures.push(`BINDING PARITY: could not obtain ${pinLabel(rbPin)} - ${pinned.why}.`)
     }
   } else {
-    if (pinned.built) console.log(`BINDING PARITY: built carve-lang ${rbPin} from crates.io for the comparison.`)
+    if (pinned.built) console.log(`BINDING PARITY: built ${pinLabel(rbPin)} for the comparison.`)
     // An OVERRIDE is a build this run did not choose, so the verdict says so
     // rather than naming the pin it was only asked to stand in for.
     const against = pinned.source === 'override'
-      ? `the binary CARVE_RS_PINNED_BIN names (asked for carve-lang ${rbPin})`
-      : `carve-lang ${rbPin}, the version it pins`
+      ? `the binary CARVE_RS_PINNED_BIN names (asked for ${pinLabel(rbPin)})`
+      : `${pinLabel(rbPin)}, the engine it pins`
     const { shapes: pinShapes, failures } = pinnedEngineShapes(pinned.path)
     const drifted = []
     for (const [name, shape] of rbShapes) {
@@ -1359,7 +1359,7 @@ if (rbShapes.size > 0) {
       if (engine !== undefined && engine !== shape) drifted.push(name)
     }
     const compared = [...rbShapes.keys()].filter((name) => pinShapes.has(name)).length
-    for (const failure of failures) console.error(`  carve-lang ${rbPin} could not serialize ${failure}`)
+    for (const failure of failures) console.error(`  ${pinLabel(rbPin)} could not serialize ${failure}`)
     if (drifted.length === 0) {
       console.log(
         `BINDING PARITY: carve-rb's tree matches ${against} on all ${compared} shared document(s).\n`,
@@ -1378,7 +1378,7 @@ if (rbShapes.size > 0) {
       // from the run.
       if (process.env.CARVE_REQUIRE_ALL_ENGINES === '1') {
         deferredGateFailures.push(
-          `BINDING PARITY: carve-rb does not reproduce carve-lang ${rbPin} on ` +
+          `BINDING PARITY: carve-rb does not reproduce ${pinLabel(rbPin)} on ` +
             `${drifted.length} of ${compared} document(s).`,
         )
       }

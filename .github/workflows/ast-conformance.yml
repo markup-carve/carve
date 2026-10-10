@@ -254,25 +254,37 @@ jobs:
       # does not pay for it inside the conformance run, and cached on the pin:
       # the key changes exactly when `ext/carve/Cargo.toml` moves, which is the
       # only thing that invalidates it (carve#2483).
+      # Through the shared reader, not a `sed` of its own. The workflow's copy
+      # matched only `version = "…"`, so carve-rb's move to a `git`/`rev` pair
+      # killed four AST shards here on a day this repository had not touched
+      # any of it (carve#2881).
       - name: Read carve-rb's carve-lang pin
         id: rb-pin
-        run: |
-          PIN=$(sed -n 's/.*package = "carve-lang", version = "=\{0,1\}\([^"]*\)".*/\1/p' \
-            carve-rb/ext/carve/Cargo.toml | head -1)
-          test -n "$PIN" || { echo "could not read the carve-lang pin"; exit 1; }
-          echo "version=$PIN" >> "$GITHUB_OUTPUT"
+        run: node scripts/engine-pin-fields.mjs carve-rb/ext/carve/Cargo.toml >> "$GITHUB_OUTPUT"
 
       - name: Cache the pinned carve-lang build
         uses: actions/cache@v4
         with:
           path: ${{ runner.temp }}/carve-lang-pin
-          key: carve-lang-pin-${{ runner.os }}-${{ steps.rb-pin.outputs.version }}
+          key: carve-lang-pin-${{ runner.os }}-${{ steps.rb-pin.outputs.cache }}
 
       - name: Build carve-lang at carve-rb's pin
+        env:
+          PIN_KIND: ${{ steps.rb-pin.outputs.kind }}
+          PIN_VALUE: ${{ steps.rb-pin.outputs.value }}
+          PIN_GIT: ${{ steps.rb-pin.outputs.git }}
+          PIN_ROOT: ${{ runner.temp }}/carve-lang-pin
         run: |
-          test -x "${{ runner.temp }}/carve-lang-pin/bin/carve" \
-            || cargo install carve-lang --version '${{ steps.rb-pin.outputs.version }}' \
-                 --locked --bin carve --root "${{ runner.temp }}/carve-lang-pin"
+          set -euo pipefail
+          if [ -x "$PIN_ROOT/bin/carve" ]; then
+            echo "cache hit for $PIN_KIND $PIN_VALUE"
+            exit 0
+          fi
+          if [ "$PIN_KIND" = version ]; then
+            cargo install carve-lang --version "$PIN_VALUE" --locked --bin carve --root "$PIN_ROOT"
+          else
+            cargo install carve-lang --git "$PIN_GIT" --rev "$PIN_VALUE" --locked --bin carve --root "$PIN_ROOT"
+          fi
 
       - name: PART 12 shard measurements
         env:

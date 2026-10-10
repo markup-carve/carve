@@ -22,15 +22,23 @@ import { resolve } from 'node:path'
  */
 
 /**
- * The `carve-lang` version a binding pins, read from its manifest.
+ * The `carve-lang` pin a binding carries, read from its manifest.
  *
  * The LINE has to name carve-lang, either as the dependency key or through
  * `package =`. A pattern that took the first `version = "…"` on any dependency
  * line read carve-rb's `magnus = { version = "0.8" }` and reported the pin as
  * 0.8 - which fails loudly at `cargo install`, but only after the comparison
  * has already decided what it is comparing against.
+ *
+ * Two spellings are a pin. A crates.io version is the one org policy asks for.
+ * A `git`/`rev` pair is what carve-rb moved to in carve-rb#185, and a reader
+ * that knew only the first spelling returned null on it, which the workflow
+ * step turned into a hard failure of four AST shards (carve#2881).
+ *
+ * @returns {{ kind: 'version', value: string, git: null }
+ *   | { kind: 'rev', value: string, git: string } | null}
  */
-export function pinnedCrateVersion(manifestPath) {
+export function pinnedEnginePin(manifestPath) {
   let manifest
   try {
     manifest = readFileSync(manifestPath, 'utf8')
@@ -41,35 +49,58 @@ export function pinnedCrateVersion(manifestPath) {
     const named = /^\s*(?:carve-lang|carve_lang)\s*=/.test(line) || /\bpackage\s*=\s*"carve-lang"/.test(line)
     if (!named) continue
     const version = /\bversion\s*=\s*"=?([^"]+)"/.exec(line)?.[1]
-    if (version) return version
+    if (version) return { kind: 'version', value: version, git: null }
+    const rev = /\brev\s*=\s*"([0-9a-fA-F]{7,40})"/.exec(line)?.[1]
+    const git = /\bgit\s*=\s*"([^"]+)"/.exec(line)?.[1]
+    if (rev && git) return { kind: 'rev', value: rev, git }
     // `carve-lang = "=0.1.6"`, the shorthand with no inline table.
-    return /=\s*"=?([^"]+)"\s*$/.exec(line)?.[1] ?? null
+    const short = /=\s*"=?([^"]+)"\s*$/.exec(line)?.[1]
+    return short ? { kind: 'version', value: short, git: null } : null
   }
   return null
 }
 
-/** What `cargo install --root` recorded in that root, so a cache hit is checked. */
-function installedVersion(root) {
+/** The `carve-lang` row `cargo install --root` recorded, so a cache hit is checked. */
+function installedRow(root) {
   try {
-    return /^"carve-lang ([^ ]+) /m.exec(readFileSync(resolve(root, '.crates.toml'), 'utf8'))?.[1] ?? null
+    return /^"carve-lang ([^"]+)"/m.exec(readFileSync(resolve(root, '.crates.toml'), 'utf8'))?.[1] ?? null
   } catch {
     return null
   }
 }
 
+/** Whether the row that root recorded is the pin asked for, not another build. */
+function rowIsPin(row, pin) {
+  if (!row) return false
+  // `0.1.6 (registry+https://…)` for a version pin; `0.1.9 (git+https://…?rev=889e916f#889e916f…)`
+  // for a rev. The version pin matches on the version word, the rev pin on the
+  // revision, because a git build's version word is whatever the crate happened
+  // to carry at that commit and says nothing about which commit it was.
+  return pin.kind === 'version'
+    ? row.split(' ')[0] === pin.value
+    : new RegExp(`\\b${pin.value.slice(0, 7)}[0-9a-fA-F]*\\b`).test(row)
+}
+
+/** How a pin reads in a message, so a failure names the thing it could not get. */
+export function pinLabel(pin) {
+  if (!pin) return 'unknown'
+  return pin.kind === 'version' ? `carve-lang ${pin.value}` : `carve-lang at ${pin.git} rev ${pin.value.slice(0, 8)}`
+}
+
 /**
- * A `carve` binary at `version`, built from crates.io and cached per version.
+ * A `carve` binary at `pin`, built once and cached per pin.
  *
  * `CARVE_RS_PINNED_BIN` overrides it outright, for a CI job that provisions the
  * build in its own step and for an offline run. `source` says which of the
  * three it was, because an override can point at any build and a report that
  * names the pin either way is claiming something it did not check.
  *
+ * @param {{ kind: 'version'|'rev', value: string, git: string|null }|null} pin
  * @returns {{ path: string|null, why: string|null, built: boolean,
  *   source: 'override'|'cache'|'built'|null }}
  */
-export function pinnedEngineBinary(version, { cacheRoot, install = true } = {}) {
-  if (!version) {
+export function pinnedEngineBinary(pin, { cacheRoot, install = true } = {}) {
+  if (!pin) {
     return { path: null, why: 'could not read the pinned carve-lang version', built: false, source: null }
   }
 
@@ -80,29 +111,32 @@ export function pinnedEngineBinary(version, { cacheRoot, install = true } = {}) 
       : { path: null, why: `CARVE_RS_PINNED_BIN=${override} does not exist`, built: false, source: null }
   }
 
-  const root = cacheRoot ?? process.env.CARVE_PIN_CACHE ?? resolve(tmpdir(), `carve-lang-pin-${version}`)
+  const root = cacheRoot ?? process.env.CARVE_PIN_CACHE ?? resolve(tmpdir(), `carve-lang-pin-${pin.kind}-${pin.value}`)
   const binary = resolve(root, 'bin', 'carve')
-  // The version is in the path AND checked in the root's own record: a cache
+  // The pin is in the path AND checked in the root's own record: a cache
   // directory that holds something else would otherwise be read as this pin.
-  if (existsSync(binary) && installedVersion(root) === version) {
+  if (existsSync(binary) && rowIsPin(installedRow(root), pin)) {
     return { path: binary, why: null, built: false, source: 'cache' }
   }
   if (!install) {
-    return { path: null, why: `no cached carve-lang ${version} under ${root}`, built: false, source: null }
+    return { path: null, why: `no cached ${pinLabel(pin)} under ${root}`, built: false, source: null }
   }
 
-  // `--locked` so the published lockfile decides the dependency versions, and
-  // the inherited CARGO_TARGET_DIR is dropped: this build belongs to the pin,
-  // not to whatever checkout the caller was building.
+  // `--locked` so the pinned lockfile decides the dependency versions, and the
+  // inherited CARGO_TARGET_DIR is dropped: this build belongs to the pin, not
+  // to whatever checkout the caller was building.
   const { CARGO_TARGET_DIR: _ignored, ...env } = process.env
+  const args = pin.kind === 'version'
+    ? ['install', 'carve-lang', '--version', pin.value]
+    : ['install', 'carve-lang', '--git', pin.git, '--rev', pin.value]
   const install_ = spawnSync(
     'cargo',
-    ['install', 'carve-lang', '--version', version, '--locked', '--bin', 'carve', '--root', root],
+    [...args, '--locked', '--bin', 'carve', '--root', root],
     { encoding: 'utf8', env, stdio: ['ignore', 'pipe', 'pipe'], timeout: 900_000 },
   )
   if (install_.status !== 0 || !existsSync(binary)) {
     const detail = (install_.stderr ?? '').trim().split('\n').filter(Boolean).at(-1) ?? 'no output'
-    return { path: null, why: `cargo install carve-lang ${version} failed: ${detail}`, built: false, source: null }
+    return { path: null, why: `cargo install ${pinLabel(pin)} failed: ${detail}`, built: false, source: null }
   }
   return { path: binary, why: null, built: true, source: 'built' }
 }
