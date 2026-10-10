@@ -18,6 +18,15 @@ const baseline = JSON.parse(
 const visibleText = (html) =>
   new JSDOM(html).window.document.body.textContent.replace(/\s+/g, ' ').trim()
 
+// The baseline still named 606f968e, but the actual prior package pin
+// 99de7db7 reproduces its Markdown count: 543 over 2292 documents.
+// Pin b186025b gains 16 Markdown round trips and loses none. The gains are
+// category 11 rows 11, 12 and 16; category 233 row 1; category 258 rows 1
+// through 9; category 263 row 1; category 330 row 1; and category 509 row 2.
+// Membership was measured across the two pinned builds. The engine range
+// includes the Markdown code-payload fixes in carve-js#2686 and #2701.
+// Corpus size, HTML import populations and the HTML round-trip count hold.
+
 // Pin 44ae9824 adds the Markdown round trip for corpus 283: an empty
 // footnote body imports as `{empty}` instead of losing its sentinel. Comparing
 // all 2225 documents with 7d93ec64 finds no other Markdown membership change.

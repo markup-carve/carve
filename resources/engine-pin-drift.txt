@@ -24,31 +24,3 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-75-list-nesting-and-looseness-4  a below-column line needs an open paragraph at the deepest frame (carve#2884); the pin still folds
-553-a-below-column-line-continues-a-paragraph-only-where-one-is-open  a below-column line needs an open paragraph at the deepest frame (carve#2884); the pin still folds
-553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-2  a below-column line needs an open paragraph at the deepest frame (carve#2884); the pin still folds
-553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-3  a below-column line needs an open paragraph at the deepest frame (carve#2884); the pin still folds
-553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-4  a below-column line needs an open paragraph at the deepest frame (carve#2884); the pin still folds
-553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-5  a below-column line needs an open paragraph at the deepest frame (carve#2884); the pin still folds
-553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-6  a below-column line needs an open paragraph at the deepest frame (carve#2884); the pin still folds
-553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-7  a below-column line needs an open paragraph at the deepest frame (carve#2884); the pin still folds
-05-lists-12  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
-06-task-lists  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
-06-task-lists-2  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
-06-task-lists-3  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
-06-task-lists-4  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
-06-task-lists-5  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
-06-task-lists-6  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
-144-nested-item-looseness-does-not-propagate-to-the-outer-item-3  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
-363-a-task-item-s-checkbox-is-not-decided-by-its-first-block  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
-393-an-engine-written-shape-says-what-it-is-called-3  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
-393-an-engine-written-shape-says-what-it-is-called-4  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
-413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
-413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not-2  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
-413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not-3  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
-413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not-6  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
-413-an-item-s-attribute-block-moves-its-content-column-its-checkbox-does-not-9  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
-415-a-floating-attribute-does-not-widen-a-list-item-s-content-column-3  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
-415-a-floating-attribute-does-not-widen-a-list-item-s-content-column-7  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
-75-list-nesting-and-looseness-9  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
-90-list-item-attributes-4  the pin predates the task-list class and the done-state data-task-state="x" (PART 10 §11, carve#2887)
