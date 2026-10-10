@@ -9,6 +9,7 @@
  * GFM reader builds from each golden has to match the structure the HTML target
  * builds from the same tree.
  */
+import { parseFragment } from 'parse5'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -194,4 +195,39 @@ test('literal brackets keep complete link labels and image descriptions', () => 
     assert.notEqual(normalized(cmarkGfmToHtml(c.markdown.replaceAll('\\[', '['))), normalized(ownHtml(c)))
   }
   assert.match(clauseText('CARVE-P11-023'), /`\[` IS ALSO ESCAPED INSIDE AN EMITTED LINK LABEL OR IMAGE DESCRIPTION/)
+})
+
+const codePayloadCases = JSON.parse(read('tests/fixtures/markdown-code-payload.json'))
+const codeText = (node) => node.nodeName === '#text'
+  ? node.value : (node.childNodes ?? []).map(codeText).join('')
+const inlineCodeValues = (html) => {
+  const values = []
+  const visit = (node) => {
+    if (node.tagName === 'pre') return
+    if (node.tagName === 'code') {
+      values.push(codeText(node))
+      return
+    }
+    for (const child of node.childNodes ?? []) visit(child)
+  }
+  visit(parseFragment(html))
+  return values
+}
+
+for (const [index, item] of codePayloadCases.entries()) {
+  test(`code payload ${index} stays exact in ${item.template}`, () => {
+    assert.deepEqual(inlineCodeValues(cmarkGfmToHtml(item.markdown)), [item.value])
+  })
+}
+
+test('control: a native code span changes payload newlines', () => {
+  assert.notDeepEqual(inlineCodeValues(cmarkGfmToHtml('`a\nb`\n')), ['a\nb'])
+})
+
+test('terminal and heading hard breaks survive their inline HTML spelling', () => {
+  assert.equal(cmarkGfmToHtml('a<br>\n'), '<p>a<br></p>\n')
+  assert.equal(cmarkGfmToHtml('<br><!-- -->\n'), '<p><br><!-- --></p>\n')
+  assert.equal(cmarkGfmToHtml('# a<br>b\n'), '<h1>a<br>b</h1>\n')
+  assert.equal(cmarkGfmToHtml('a\\\n<br>\n'), '<p>a<br />\n<br></p>\n')
+  assert.notEqual(cmarkGfmToHtml('a\\\n'), '<p>a<br /></p>\n')
 })

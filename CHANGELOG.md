@@ -12,6 +12,10 @@ Releases before 0.1.6 are archived in
 
 ### Fixes
 
+- Define Markdown fallbacks that preserve inline code whitespace and hard breaks
+  at paragraph ends, wrapper boundaries and inside headings. Add native Markdown
+  readback cases for exact code payloads.
+
 - Markdown import omits an empty, unaligned table header instead of emitting
   a paragraph of pipes. Headers with content or alignment remain table rows,
   and the migration report identifies the omitted row (#2840).
