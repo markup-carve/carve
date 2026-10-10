@@ -4893,16 +4893,21 @@ function collectItems(lines, i, list, state, ind, meas) {
         if (descendantQ1.open) descendantQ1.para.push(text)
         return
       }
+      // A VERBATIM PAYLOAD IS OPAQUE (PART 0), so it may not touch the colon or
+      // table state: a `::: note` written inside a code fence is text, and
+      // counting it as a container opener left a depth the closer never cleared
+      // (raised by codex review). A VERBATIM BODY IS ALSO NOT A PARAGRAPH
+      // (CARVE-P0-013), so the answer here is the same either way.
+      if (verbatim) { close(); return }
       const rowOpen = descTableOpen
       descTableOpen = tableRunStep(rowOpen, text)
-      // A VERBATIM BODY IS NOT A PARAGRAPH (CARVE-P0-013), and a colon
-      // container's blocks sit at the container's own column, which a line
-      // below the descendant cannot reach either.
+      // A colon container's blocks sit at the container's own column, which a
+      // line below the descendant cannot reach.
       const opener = isColonBlockOpener(text) && !COLON_CLOSER.test(text)
       const closer = COLON_CLOSER.test(text)
       if (opener) descColon++
       else if (closer && descColon > 0) descColon--
-      if (verbatim || opener || closer || descColon > 0) { close(); return }
+      if (opener || closer || descColon > 0) { close(); return }
       if (!descendantLineOpensParagraph(text, rowOpen, idx)) { close(); return }
       if (!descendantQ1.open) { descendantQ1.open = true; descendantQ1.para = [] }
       descendantQ1.para.push(text)

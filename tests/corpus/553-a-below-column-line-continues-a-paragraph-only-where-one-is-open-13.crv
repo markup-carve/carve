@@ -1,6 +1,7 @@
 - a
   - b
+    ```
     ::: note
-    x
-    :::
+    ```
+    text
 lazy
