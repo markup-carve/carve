@@ -2118,46 +2118,11 @@
             "code": "structure-unspellable",
             "severity": "warning",
             "fidelity": "dropped",
-            "confidence": "exact"
+            "confidence": "exact",
+            "path": "line:3"
           }
         ],
-        "exit": 1,
-        "engines": {
-          "php": {
-            "diagnostics": [
-              {
-                "code": "fidelity-unverified",
-                "confidence": "fallback",
-                "fidelity": "dropped",
-                "severity": "warning"
-              },
-              {
-                "code": "structure-unspellable",
-                "confidence": "exact",
-                "fidelity": "dropped",
-                "path": "line:3",
-                "severity": "warning"
-              }
-            ]
-          },
-          "rust": {
-            "diagnostics": [
-              {
-                "code": "fidelity-unverified",
-                "confidence": "fallback",
-                "fidelity": "dropped",
-                "severity": "warning"
-              },
-              {
-                "code": "structure-unspellable",
-                "confidence": "exact",
-                "fidelity": "dropped",
-                "path": "line:3",
-                "severity": "warning"
-              }
-            ]
-          }
-        }
+        "exit": 1
       },
       "constructs": [
         "table",
