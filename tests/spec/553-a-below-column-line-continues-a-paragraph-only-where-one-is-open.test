@@ -1,0 +1,289 @@
+A below-column line continues a paragraph only where one is open
+
+```
+- a
+  - b
+    # N
+lazy
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <h1 id="N">N</h1>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>lazy</p>
+```
+
+```
+- a
+  - b
+    - c
+      # N
+lazy
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <ul>
+          <li>c
+            <h1 id="N">N</h1>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>lazy</p>
+```
+
+```
+- a
+  - b
+    ---
+lazy
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <hr>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>lazy</p>
+```
+
+````
+- a
+  - b
+    ```
+    code
+    ```
+lazy
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <pre><code>code
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>lazy</p>
+````
+
+```
+- a
+  - b
+    ::: note
+    x
+    :::
+lazy
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <aside class="admonition note" aria-label="Note">
+          <p>x</p>
+        </aside>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>lazy</p>
+```
+
+```
+- a
+  - b
+    | h |
+    | - |
+    | c |
+lazy
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <table>
+          <thead>
+            <tr><th scope="col">h</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>c</td></tr>
+          </tbody>
+        </table>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>lazy</p>
+```
+
+```
+- a
+  - b
+    > # H
+lazy
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <blockquote>
+          <h1 id="H">H</h1>
+        </blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>lazy</p>
+```
+
+```
+- a
+  - b
+    text
+lazy
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+text
+lazy</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - b
+    > q
+lazy
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <blockquote><p>q
+lazy</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - b
+    - c
+lazy
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <ul>
+          <li>c
+lazy</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - b
+    # N
+
+lazy
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <h1 id="N">N</h1>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>lazy</p>
+```
+
+```
+- a
+  - b
+    # N
+  lazy
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <h1 id="N">N</h1>
+      </li>
+    </ul>
+    lazy
+  </li>
+</ul>
+```
+
+````
+- a
+  - b
+    ```
+    ::: note
+    ```
+    text
+lazy
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <pre><code>::: note
+</code></pre>
+        text
+lazy
+      </li>
+    </ul>
+  </li>
+</ul>
+````
+
+```
+- a
+  - b
+    ::: note
+    x
+    :::
+    text
+lazy
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <aside class="admonition note" aria-label="Note">
+          <p>x</p>
+        </aside>
+        text
+lazy
+      </li>
+    </ul>
+  </li>
+</ul>
+```

@@ -4827,10 +4827,51 @@ function collectItems(lines, i, list, state, ind, meas) {
      * from this collector's own paragraph.
      */
     const descendantQ1 = { col: -1, open: false, para: [], absorbedFence: null }
-    const seedDescendantQ1 = (col, text) => {
+    // Open colon containers and the table run inside the descendant, so its own
+    // last block can be classified without rescanning this item's body.
+    let descColon = 0
+    let descTableOpen = false
+    // Whether the LAST visible body line landed in a descendant frame, which is
+    // what makes the descendant the DEEPEST frame for the line below.
+    let deepestIsDescendant = false
+    // Whether a descendant frame is OPEN AT ALL. It runs from the marker that
+    // opens it until a non-blank line lands back at this item's own content.
+    // `descendantOwned` is a COLUMN test and cannot tell those apart: an
+    // indented fence this item's own paragraph absorbed sits at a descendant's
+    // column with no descendant open (carve#2746's absorbed-fence row).
+    let descLive = false
+    /*
+     * ONE DESCENDANT LINE'S OWN Q1 -- CARVE-P0-009. The descendant's last block
+     * answers, exactly as this item's own does for itself: a heading, a
+     * thematic break, a table row, a definition or an attribute block leaves no
+     * paragraph open however deep it sits. `atBlockPosition` is true because
+     * every line reaching here is at the descendant's block position, and the
+     * marker peel inside `opensParagraph` carries the question further in.
+     */
+    const descendantLineOpensParagraph = (text, rowOpen = false, idx = -1, memo = null) =>
+      // A FENCED BODY IS NOT A PARAGRAPH (CARVE-P0-013). A bare fence run at the
+      // descendant's own column is its opener or its closer, and neither leaves
+      // a paragraph open - an absorbed opener is paragraph text and never
+      // reaches here, because the caller answers it first.
+      text.trim() !== '' && !PURE_FENCE.test(text) &&
+      opensParagraph(text, true, rowOpen,
+        rowOpen ? null : (memo ?? (idx >= 0 ? prefixMemo(state, lines, idx).paragraph : null)))
+    /*
+     * Q1 AT THE DEEPEST FRAME -- CARVE-P0-009, the one-line rule. A below-column
+     * line continues a paragraph if and only if one is open at the deepest
+     * frame; otherwise it closes the list and begins a new block. This item's
+     * own `openPara` answers only while this item IS the deepest frame.
+     */
+    const deepestParagraphOpen = () => {
+      if (!paragraphIsOpen()) return false
+      if (!deepestIsDescendant) return true
+      const d = descendantQ1At(descendantQ1.col)
+      return d === null ? true : d.open
+    }
+    const seedDescendantQ1 = (col, text, memo = null) => {
       descendantQ1.col = col
-      descendantQ1.open = text !== ''
-      descendantQ1.para = text !== '' ? [text] : []
+      descendantQ1.open = text !== '' && descendantLineOpensParagraph(text, false, -1, memo)
+      descendantQ1.para = descendantQ1.open ? [text] : []
       descendantQ1.absorbedFence = null
     }
     /*
@@ -4839,12 +4880,37 @@ function collectItems(lines, i, list, state, ind, meas) {
      * applies to its own; anything else extends it, which is what makes an
      * absorbed opener readable at all.
      */
-    const advanceDescendantQ1 = (text, absorbed) => {
+    const advanceDescendantQ1 = (text, absorbed, verbatim = false, idx = -1) => {
       if (descendantQ1.col < 0) return
-      if (text.trim() === '') { descendantQ1.open = false; descendantQ1.para = []; return }
+      const close = () => { descendantQ1.open = false; descendantQ1.para = [] }
+      if (text.trim() === '') { close(); descTableOpen = false; return }
+      // An ABSORBED opener is paragraph text, so it extends the paragraph that
+      // absorbed it rather than closing anything. With no paragraph open there
+      // is nothing to absorb it: `- - ``` ` / `    ``` ` closes an empty code
+      // block, and the item holds no paragraph for the line below.
+      if (absorbed) {
+        descendantQ1.absorbedFence = absorbed
+        if (descendantQ1.open) descendantQ1.para.push(text)
+        return
+      }
+      // A VERBATIM PAYLOAD IS OPAQUE (PART 0), so it may not touch the colon or
+      // table state: a `::: note` written inside a code fence is text, and
+      // counting it as a container opener left a depth the closer never cleared
+      // (raised by codex review). A VERBATIM BODY IS ALSO NOT A PARAGRAPH
+      // (CARVE-P0-013), so the answer here is the same either way.
+      if (verbatim) { close(); return }
+      const rowOpen = descTableOpen
+      descTableOpen = tableRunStep(rowOpen, text)
+      // A colon container's blocks sit at the container's own column, which a
+      // line below the descendant cannot reach.
+      const opener = isColonBlockOpener(text) && !COLON_CLOSER.test(text)
+      const closer = COLON_CLOSER.test(text)
+      if (opener) descColon++
+      else if (closer && descColon > 0) descColon--
+      if (opener || closer || descColon > 0) { close(); return }
+      if (!descendantLineOpensParagraph(text, rowOpen, idx)) { close(); return }
       if (!descendantQ1.open) { descendantQ1.open = true; descendantQ1.para = [] }
       descendantQ1.para.push(text)
-      if (absorbed) descendantQ1.absorbedFence = absorbed
     }
     // Readable at the column the descendant owns, and nowhere else: asking
     // outside that column is the conflation this state exists to end.
@@ -4855,7 +4921,13 @@ function collectItems(lines, i, list, state, ind, meas) {
     // a single body line; `para`'s first line here is the raw `- - :::d`, whose
     // `- - ` is MARKERS rather than indentation, so no dedent recovers it. That
     // is the second gap carve#2746 measured, and the seed is what closes it.
-    if (headSubMarker) seedDescendantQ1(headSubCol, headSubMarker.text)
+    if (headSubMarker) {
+      // The SAME memoized peel the marker-line seed above uses: without it the
+      // suffix is re-walked at every nesting depth, which is quadratic on a
+      // line of stacked markers (tests/container-differential.test.mjs).
+      seedDescendantQ1(headSubCol, headSubMarker.text, prefixMemo(state, itemLines, 0).paragraph)
+      descLive = true
+    }
     // Open fence state inside the item's own content, so an interior blank line
     // is fence content, not an item-loosening separator (carve#326 C). This is
     // deliberately an incremental tracker: only a valid opener sets state and
@@ -5635,9 +5707,24 @@ function collectItems(lines, i, list, state, ind, meas) {
         nestedOpaque = trackNestedFence(nestedOpaque, dmeas, lm.col, i, descendantOwned)
         // ADVANCE. One line the descendant takes, in the descendant's own
         // coordinates, which is what makes the state readable at its column.
-        if (descendantOwned) {
-          if (descendantQ1.col < 0) seedDescendantQ1(subCol >= 0 ? subCol : headSubCol, '')
-          advanceDescendantQ1(dmeas.rest, absorbedFenceSeen)
+        // A COMMENT SPAN WRITTEN BELOW THIS COLUMN IS NOT THE DESCENDANT'S. Its
+        // payload is opaque and its closer travels with its opener
+        // (CARVE-P9-053), so neither may touch the descendant's Q1 nor make the
+        // descendant the deepest frame - corpus 513-...-5 keeps `tail` in an
+        // item whose paragraph the span never closed.
+        if (!belowCloser && !inCommentSpan) {
+          if (descendantOwned) {
+            if (descendantQ1.col < 0) seedDescendantQ1(subCol >= 0 ? subCol : headSubCol, '')
+            // A line that opens, carries or closes an opaque descendant body is
+            // verbatim, and a verbatim body holds no paragraph.
+            advanceDescendantQ1(dmeas.rest, absorbedFenceSeen,
+              nestedOpaque !== null || wasNested !== null, i)
+          }
+          if (dmeas.rest !== '') {
+            if (nm && nm.indent >= contentCol) descLive = true
+            else if (!descendantOwned) descLive = false
+            deepestIsDescendant = descLive
+          }
         }
         // A descendant's fence whose closer this collector is about to BREAK
         // away: hand the answer down so the nested parse reads the line the same
@@ -5906,7 +5993,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         }
         break // sibling or outer list
       }
-      if (nm && columnOwner(nm.indent) === 'below' && paragraphIsOpen() && itemLines.length > 0) {
+      if (nm && columnOwner(nm.indent) === 'below' && deepestParagraphOpen() && itemLines.length > 0) {
         // a marker BELOW the content column folds as lazy item text
         // (PART 9 SS24 C3; list markers never interrupt, SS10 I2)
         pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
@@ -5914,7 +6001,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         continue
       }
       // A retained item still requires its content column for a child list.
-      if (nm && columnOwner(nm.indent) === 'below' && !paragraphIsOpen() &&
+      if (nm && columnOwner(nm.indent) === 'below' && !deepestParagraphOpen() &&
           afterComment && itemLines.length > 0) {
         pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
         startPara()
@@ -6046,7 +6133,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       // Document column zero remains owned by the document.
       // Q1 (or a frame surviving a comment, which Q3 answers), Q3, then Q2 at
       // the frame's own column 0 - the anchor the raw line carries.
-      if (!nm && (paragraphIsOpen() || (afterComment && !atFrameColumn(lm.col))) &&
+      if (!nm && (deepestParagraphOpen() || (afterComment && !atFrameColumn(lm.col))) &&
           itemLines.length > 0 && !opensBlockAt(line, i)) {
         // lazy fold into the open item paragraph (SS10 I2 / SS24 C3). A column-0
         // fence with a closer INTERRUPTS (I4), exactly as a column-0 quote/

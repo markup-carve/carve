@@ -24,3 +24,11 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+75-list-nesting-and-looseness-4  a below-column line needs an open paragraph at the deepest frame (carve#2884); the pin still folds
+553-a-below-column-line-continues-a-paragraph-only-where-one-is-open  a below-column line needs an open paragraph at the deepest frame (carve#2884); the pin still folds
+553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-2  a below-column line needs an open paragraph at the deepest frame (carve#2884); the pin still folds
+553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-3  a below-column line needs an open paragraph at the deepest frame (carve#2884); the pin still folds
+553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-4  a below-column line needs an open paragraph at the deepest frame (carve#2884); the pin still folds
+553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-5  a below-column line needs an open paragraph at the deepest frame (carve#2884); the pin still folds
+553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-6  a below-column line needs an open paragraph at the deepest frame (carve#2884); the pin still folds
+553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-7  a below-column line needs an open paragraph at the deepest frame (carve#2884); the pin still folds

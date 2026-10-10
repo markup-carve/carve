@@ -287,11 +287,17 @@
         Follow the last child container to its leaf at every depth. An outer
         quote ending in an inner heading, table or thematic break has no open
         paragraph, so a following unmarked line cannot lazily continue it.
-        A heading at an item's content column likewise leaves no paragraph
-        open: a following below-column line cannot stay in that item. Apply
-        the owner table to surviving frames. In corpus
-        75-list-nesting-and-looseness-4, the inner item closes and `lazy` is
-        reclassified in the outer item, whose paragraph is the selected owner.
+        A below-column line continues a paragraph if and only if one is open
+        at the deepest frame. Otherwise it closes the list and begins a new
+        block, and no surviving frame adopts it: a line below an item's
+        content column is not that item's content, so the owner table does
+        not select one for it. A heading at an item's content column leaves
+        no paragraph open, and neither does a thematic break, a fenced code
+        block, a `:::` container, a table, or a nested list whose own leaf
+        holds none. A paragraph, a block quote and a definition body do hold
+        one, and the line folds into it as before. In corpus
+        75-list-nesting-and-looseness-4 the inner item closes and `lazy` is a
+        document paragraph.
 
         A wrapped attribute block is one interrupting block across its opener
         and continuation lines. `- {.a` / `  .b}` / `tail` leaves no paragraph
