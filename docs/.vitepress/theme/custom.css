@@ -509,10 +509,8 @@
 }
 
 /*
- * Task lists. Carve emits a plain `<ul><li><input type="checkbox">…` with no
- * wrapper class (unlike VitePress's own `.contains-task-list`), so style the
- * checkbox items directly: drop the bullet and pull the checkbox into the
- * marker gutter. Applies in prose and the Playground output (both `.vp-doc`).
+ * Task lists. Style checkbox items directly so the pinned renderer and the
+ * task-list class both place the checkbox in the marker gutter. Applies in prose and the Playground output (both `.vp-doc`).
  */
 .vp-doc li:has(> input[type='checkbox']) {
   list-style: none;

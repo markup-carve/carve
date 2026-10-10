@@ -7506,8 +7506,8 @@ EOF = (* end of file *) ;
       effective attributes emits none. (A top-level heading's id moves
       to <section> and its other attributes do not, §13; with the
       `sections` option off, or for a heading inside a container, the id
-      stays on the <h*> with the rest.) A mandatory base class (math `math inline|display`) is
-      prepended to that class slot.
+      stays on the <h*> with the rest.) A mandatory base class (math `math inline|display`,
+      a task list's `task-list`, §11) is prepended to that class slot.
 
       A STRUCTURAL ATTRIBUTE LEADS. An attribute the element derives from
       its OWN marker or destination is not "generated" in the sense below:
@@ -7820,7 +7820,7 @@ EOF = (* end of file *) ;
       fallback. `cite` denotes a work title or source and is unrelated to a
       bibliographic `[@key]` citation, which is the Citations extension's.
 
-   11. AN EXTENDED TASK STATE NAMES ITSELF ON THE ITEM -- NORMATIVE [CARVE-P10-009].
+   11. A TASK LIST AND ITS NAMED TASK STATES NAME THEMSELVES -- NORMATIVE [CARVE-P10-009].
       PART 2 admits seven task states and §2's box has two
       positions, so `[-]`, `[_]`, `[>]` and `[?]` rendered bytes identical to
       `[ ]`: the distinction the author made survived the file (PART 11 §6g)
@@ -7830,10 +7830,31 @@ EOF = (* end of file *) ;
         - [-] dropped   ->  <li data-task-state="-"><input type="checkbox"
                             disabled aria-label="dropped"> dropped</li>
 
-      ONLY WHERE THE AST RECORDS A STATE, which is the same rule PART 12
-      states for the field: `[ ]` and `[x]` carry no attribute, because the
-      box already says which they are, and their bytes are unchanged by this
-      clause. An item whose `taskState` is absent emits nothing here.
+      A DONE ITEM NAMES ITS STATE TOO. `[x]` and `[X]` are one state, so both
+      carry `data-task-state="x"`, always the lowercase `x`, and one selector
+      (`li[data-task-state="x"]`) reaches a done item's text without `:has()`.
+      AN OPEN ITEM STAYS BARE: `[ ]` carries no attribute. The AST does not
+      change: `checked` records the done state and `taskState` stays absent
+      for `[ ]`, `[x]` and `[X]` (PART 12), so the renderer writes `x` from
+      `checked`.
+
+      THE LIST CARRIES `task-list`. A task list's `<ul>` carries the
+      mandatory base class `task-list` (§1): it leads when the author wrote no
+      class and is prepended inside the authored class slot when one exists.
+      PART 9 §11 N1 makes plain-vs-task a same-list axis, so a list is all
+      task items or none and the class reaches every item. For an imported or
+      supplied AST, derive this class only on a nonempty unordered list whose
+      direct items all have a checkbox. Mixed and ordered lists gain no derived
+      task-list class. An authored task-list class remains authored when that
+      shape is absent. A plain list nested
+      inside a task item is not a task list and stays bare:
+
+        - [ ] open       ->  <ul class="task-list">
+        - [x] done             <li><input type="checkbox" disabled
+                               aria-label="open"> open</li>
+                               <li data-task-state="x"><input type="checkbox"
+                               checked disabled aria-label="done"> done</li>
+                             </ul>
 
       ON THE `<li>`, NOT ON THE `<input>`. The state is a property of the
       ITEM -- PART 2 says so of the checkbox itself -- and a stylesheet
@@ -7843,7 +7864,10 @@ EOF = (* end of file *) ;
 
       IT IS A STRUCTURAL ATTRIBUTE and leads the authored ones (§1), like
       `<ol>`'s `type` and a link's `href`: the item derives it from its own
-      marker rather than from anything the author attached.
+      marker rather than from anything the author attached. When a structural
+      state is derived, suppress an authored attribute with the same
+      ASCII-case-insensitive name so the item has one state attribute. Without
+      a derived state, authored attributes retain their existing behavior.
 
       THE VALUE IS THE RECORDED CHARACTER, escaped as §2 escapes any value --
       `>` is written `&gt;`, and a value outside PART 2's enumeration is not
@@ -7856,6 +7880,10 @@ EOF = (* end of file *) ;
       is what lets a document survive a render-and-import cycle: without it
       `[-]` comes back as `[ ]`, silently, because both spellings render the
       same box and no diagnostic can see a difference that is not there.
+      `data-task-state="x"` beside a checked box is the done state, consumed
+      with the box rather than kept as an authored attribute, and the list's
+      `task-list` class is consumed as a structural class: neither comes back
+      in the imported source.
 
       THE ACCESSIBLE NAME DOES NOT MOVE. The box keeps the item's own text as
       its `aria-label` (PART 2). Naming the state there would invent copy the

@@ -4,9 +4,9 @@ Task lists
 - [ ] todo
 - [x] done
 .
-<ul>
+<ul class="task-list">
   <li><input type="checkbox" disabled aria-label="todo"> todo</li>
-  <li><input type="checkbox" checked disabled aria-label="done"> done</li>
+  <li data-task-state="x"><input type="checkbox" checked disabled aria-label="done"> done</li>
 </ul>
 ```
 
@@ -16,10 +16,50 @@ Task lists
 - [>] deferred
 - [?] maybe
 .
-<ul>
+<ul class="task-list">
   <li data-task-state="-"><input type="checkbox" disabled aria-label="dropped"> dropped</li>
   <li data-task-state="_"><input type="checkbox" disabled aria-label="paused"> paused</li>
   <li data-task-state="&gt;"><input type="checkbox" disabled aria-label="deferred"> deferred</li>
   <li data-task-state="?"><input type="checkbox" disabled aria-label="maybe"> maybe</li>
+</ul>
+```
+
+```
+- [X] upper
+- [x] lower
+.
+<ul class="task-list">
+  <li data-task-state="x"><input type="checkbox" checked disabled aria-label="upper"> upper</li>
+  <li data-task-state="x"><input type="checkbox" checked disabled aria-label="lower"> lower</li>
+</ul>
+```
+
+```
+{#i}
+- [ ] a
+.
+<ul class="task-list" id="i">
+  <li><input type="checkbox" disabled aria-label="a"> a</li>
+</ul>
+```
+
+```
+{k=v .c}
+- [ ] a
+.
+<ul k="v" class="task-list c">
+  <li><input type="checkbox" disabled aria-label="a"> a</li>
+</ul>
+```
+
+```
+- [ ] task
+- plain
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled aria-label="task"> task</li>
+</ul>
+<ul>
+  <li>plain</li>
 </ul>
 ```

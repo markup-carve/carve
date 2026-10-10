@@ -1,3 +1,4 @@
 # HTML import fixtures the pinned reference engine does not reproduce.
 # Format: <fixture><two spaces><reason>. Remove entries when the pin catches up.
 # html-import:check rejects both undeclared mismatches and stale entries.
+task-list-class-and-done-state-are-consumed  the pin predates consuming the task-list class and data-task-state="x" (PART 10 §11, carve#2887)

@@ -1087,7 +1087,7 @@
     {
       "id": "CARVE-P10-009",
       "part": "10",
-      "title": "AN EXTENDED TASK STATE NAMES ITSELF ON THE ITEM",
+      "title": "A TASK LIST AND ITS NAMED TASK STATES NAME THEMSELVES",
       "scope": "imports-security-extensions"
     },
     {

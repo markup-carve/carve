@@ -144,6 +144,11 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
       // Markdown importer has not followed, and the declaration names the
       // issue that retires it.
       ['tests/a-markdown-destination-keeps-its-brackets.test.mjs', 'owed', 'declared'],
+      // The TASK LIST window (carve#2887): the oracle renders the `task-list`
+      // class and the done state before the pin does, on two authored
+      // documents and on one placement fixture, each naming the issue.
+      ['resources/oracle-divergence.txt', 'owed', 'declared'],
+      ['tests/empty-raw-list-placement.test.mjs', 'owed', 'declared'],
     ].sort(),
     'a spec ledger other than the engine-lag ones now reads differently per-PR',
   )
@@ -179,15 +184,14 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
   // cannot be written without naming an `owner/repo#N`, so relaxing them buys a
   // tracked window rather than an untraceable note.
   //
-  // THE ORACLE LEDGER STAYS, and the rule it stands for with it: it declares
-  // what the spec's own oracle reads differently from the engines, which is
-  // this repo's debt and nobody else's, so there is no window to wait out.
+  // Referenced oracle differences are declared per PR and remain owed for release.
   for (const path of [
     'resources/oracle-divergence.txt',
   ]) {
     const e = MANIFEST.find((x) => x.repo === 'spec' && x.path === path)
     assert.ok(e, `${path} left the manifest`)
-    assert.equal(perPrPolicy(e), 'owed', `${path} is no longer owed per-PR`)
+    assert.equal(perPrPolicy(e), 'declared', `${path} must require a declared window per PR`)
+    assert.equal(e.policy, 'owed', `${path} must remain owed for release`)
   }
 })
 

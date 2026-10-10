@@ -1882,6 +1882,23 @@ instead, the way it already reads the checkbox `<input>` rather than keeping it
 as content: both are halves of the item's state. A value outside the enumeration
 is not a state, and the item takes the box it carries.
 
+The done state is read the same way. A renderer writes `data-task-state="x"` on
+every done item, `[x]` and `[X]` alike, so `data-task-state="x"` beside a checked
+box is the done state: it is consumed with the box, and the item comes back as
+`- [x]` with no attribute block. The list's `task-list` class is consumed as a
+structural class, like the class an admonition's kind writes: the renderer
+writes it on every task list, so it does not come back in the imported source,
+and an authored class beside it stays.
+
+````html
+<ul class="task-list c"><li data-task-state="x"><input type="checkbox" checked disabled aria-label="done"> done</li></ul>
+````
+
+````
+{.c}
+- [x] done
+````
+
 ### What makes a value derived
 
 A value is derived where the importer can **rebuild it from the element it is
@@ -2406,6 +2423,7 @@ The shared set is deliberately small and each directory has one subject:
 | `table-degraded` | a `<thead>` between two `<tbody>` runs, which the row-grouping field cannot describe: the head is a prefix of the rows and the foot a suffix |
 | `list-table-for-block-cells` | a table with a list, a code block and two paragraphs in its cells, imported with `options.json` setting `listTableForBlockCells`: spans as `^` and `<`, a `<th>` outside the header rows as `{header}`, a cell class on its item, a hard break kept, a lone `^` escaped, and the row's `id` reported |
 | `task-state-is-consumed` | a `data-task-state` read as the item's state beside a ticked box that needs none, and a value outside the enumeration that stays the author's attribute |
+| `task-list-class-and-done-state-are-consumed` | a list's `task-list` class consumed beside an authored class that stays, and a done item's `data-task-state="x"` consumed with its ticked box |
 | `ordered-delimiter-is-consumed` | a `data-delim` read as the list's delimiter, the bare `<ol>` that stays `.`, the attribute beside `type` and `start`, and a value outside the enumeration that stays the author's attribute |
 | `same-kind-strong-nesting` | a strong directly inside a strong where both levels need braces, whose inner level is unwrapped with a row (PART 11 §1c) |
 | `same-kind-superscript-nesting` | the same nesting on a braced-only kind, where the unwrap loses the second raise and the row says so |

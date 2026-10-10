@@ -421,7 +421,7 @@
   },
   {
     "source": "- [ ] ```=html\n  ```\n",
-    "html": "<ul>\n  <li><input type=\"checkbox\" disabled> \n    \n  </li>\n</ul>"
+    "html": "<ul class=\"task-list\">\n  <li><input type=\"checkbox\" disabled> \n    \n  </li>\n</ul>"
   },
   {
     "source": "::: div\n```=html\n```\n:::\n",
