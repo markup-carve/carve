@@ -8,18 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Releases before 0.1.6 are archived in
 [CHANGELOG-0.1.md](./CHANGELOG-0.1.md).
 
-## [Unreleased]
-
-### Fixes
-
-- Define Markdown fallbacks that preserve inline code whitespace and hard breaks
-  at paragraph ends, wrapper boundaries and inside headings (#2855).
-
-- Markdown import omits an empty, unaligned table header instead of emitting
-  a paragraph of pipes. Headers with content or alignment remain table rows,
-  and the migration report identifies the omitted row (#2840).
-
-## [0.1.9] - 2026-10-09
+## [0.1.9] - 2026-10-10
 
 ### Breaking
 
@@ -67,6 +56,28 @@ Releases before 0.1.6 are archived in
   so `1)` and `1.` no longer render identical bytes and a stylesheet can reach
   the distinction the author made. HTML import consumes the attribute back into
   the authored delimiter (#2809, #2826).
+- Define Markdown fallbacks that preserve inline code whitespace and hard breaks
+  at paragraph ends, wrapper boundaries and inside headings (#2855).
+- Markdown import omits an empty, unaligned table header instead of emitting
+  a paragraph of pipes. Headers with content or alignment remain table rows,
+  and the migration report identifies the omitted row (#2840).
+- A quote mark after a line break opens rather than closes, so a quotation that
+  wraps onto the next line keeps its opening mark instead of rendering two
+  closing marks (#2827).
+- A parse omits a list's marker when it is the default for its kind, so
+  `data-delim` and the AST `marker` field only ever carry a marker the author
+  chose. Consumers reading the field have to treat its absence as the default
+  (#2834).
+- The Markdown target carries an element-less container through a round trip in
+  an HTML comment instead of dropping it, so the container survives export and
+  re-import. A damaged or truncated carrier is reported as
+  `carrier-markers-damaged` (#2841, CARVE-P11-063).
+- The Markdown target carries attributes on underline, highlight, subscript and
+  superscript, the four inline constructs Markdown cannot spell, so their
+  attributes survive the round trip (#2842).
+- A Markdown deletion is written as `<del class="critic-delete">` so a
+  CriticMarkup deletion reads back as one, and a bare `<del>` stays an ordinary
+  strike (#2846).
 
 ### Improvements
 
