@@ -1,0 +1,37 @@
+A link destination is opaque to the bracket scan
+
+```
+[x](http://u/])
+.
+<p><a href="http://u/]">x</a></p>
+```
+
+```
+[x](http://u/[)
+.
+<p><a href="http://u/[">x</a></p>
+```
+
+```
+[x](http://u/[a])
+.
+<p><a href="http://u/[a]">x</a></p>
+```
+
+```
+![x](http://u/[a])
+.
+<img src="http://u/[a]" alt="x">
+```
+
+```
+[x](http://u/] "t]")
+.
+<p><a href="http://u/]" title="t]">x</a></p>
+```
+
+```
+a [b [x](u) c]
+.
+<p>a [b <a href="u">x</a> c]</p>
+```

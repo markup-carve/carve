@@ -46509,3 +46509,105 @@ x
 ```
 
 :::
+
+
+## A link destination is opaque to the bracket scan
+
+A destination has no escape processing (`docs/dismissed-syntax.md`), so a `]` in
+it is an ordinary URL character and cannot be spelled any other way. The scan
+that closes a bracketed run therefore skips a destination whole, the way it
+already skips a code span and an editorial comment: `CARVE-P3-001` states the
+criterion as an open set, and every construct whose content is literal joins it.
+
+Nothing here was covered before, and the reason is worth recording. Both Djot
+importers used to percent-encode a bracket in a destination, so the `]` was
+deleted before any parser saw it. Removing that encoding, which the Djot
+contract requires, exposed a gap that had been unreachable for as long as the
+encoding existed (markup-carve/carve#2859).
+
+A `]` closes nothing inside a destination.
+
+::: compare
+
+```carve
+[x](http://u/])
+```
+
+```html
+<p><a href="http://u/]">x</a></p>
+```
+
+:::
+
+An unbalanced `[` is a URL character too, and needs no partner.
+
+::: compare
+
+```carve
+[x](http://u/[)
+```
+
+```html
+<p><a href="http://u/[">x</a></p>
+```
+
+:::
+
+A balanced pair is carried whole, with no second spelling and no encoding.
+
+::: compare
+
+```carve
+[x](http://u/[a])
+```
+
+```html
+<p><a href="http://u/[a]">x</a></p>
+```
+
+:::
+
+An image reads the same destination production, so it holds the brackets too.
+
+::: compare
+
+```carve
+![x](http://u/[a])
+```
+
+```html
+<img src="http://u/[a]" alt="x">
+```
+
+:::
+
+A title is quoted rather than bracketed, so a `]` is content there as well, and
+a destination and a title can each hold one.
+
+::: compare
+
+```carve
+[x](http://u/] "t]")
+```
+
+```html
+<p><a href="http://u/]" title="t]">x</a></p>
+```
+
+:::
+
+The control, which is what keeps the skip from reaching too far: a `]` in
+ordinary text still closes an outstanding `[`. The run below holds a link and
+stays literal, because it has no tail of its own.
+
+::: compare
+
+```carve
+a [b [x](u) c]
+```
+
+```html
+<p>a [b <a href="u">x</a> c]</p>
+```
+
+:::
