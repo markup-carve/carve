@@ -9,7 +9,7 @@ description: "Optional and host-facing behavior, importer contracts, security li
 
 Optional and host-facing behavior, importer contracts, security limits, diagnostics, and extension surfaces.
 
-This view contains 31 of 316 active rules. Every rule remains mandatory where applicable.
+This view contains 32 of 320 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -46,3 +46,4 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-038`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L72) | 12 | A CITATION ITEM IS A POSITIONED INLINE NODE |
 | [`CARVE-P12-039`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L94) | 12 | A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA |
 | [`CARVE-P10-013`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L186) | 10 | AN ESCAPED RAW BLOCK IS WRITTEN AS CODE |
+| [`CARVE-P10-017`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L529) | 10 | EXPORT DOES NOT SELECT AN IMPORT MODE |
