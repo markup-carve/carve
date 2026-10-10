@@ -339,6 +339,7 @@ const MANIFEST = [
   // it because `liveRows` collapses the `'slug' => 'reason'` row's whitespace, so
   // the `declared` format check can never pass on a php-array row. Printed here
   // for the reader; the engine test is the gate.
+  { repo: 'carve-php', path: 'tests/TestCase/Converter/ConverterCorpusTest.php', name: 'AHEAD_OF_PIN', kind: 'php', policy: 'owed', guard: 'two-way', staleness: 'testEveryDeclaredDriftStillDiverges', owner: 'tests/TestCase/Converter/ConverterCorpusTest.php' },
   { repo: 'carve-php', path: 'tests/TestCase/Converter/ConverterCorpusTest.php', name: 'DECLARED_DRIFT', kind: 'php', policy: 'manual', guard: 'two-way', staleness: 'testEveryDeclaredDriftStillDiverges', owner: 'tests/TestCase/Converter/ConverterCorpusTest.php' },
   // Empty cross-engine skip-list for the include/transclusion conformance
   // vectors (markup-carve/carve-php#373). Two-way since carve-php#2491: the
