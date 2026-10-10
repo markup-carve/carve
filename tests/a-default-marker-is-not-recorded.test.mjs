@@ -20,12 +20,8 @@
  * ruling, so `1) x` keeping `")"` and `* x` keeping `"*"` are asserted beside
  * the omission rather than trusted.
  *
- * PIN LAG IS DECLARED, never tolerated - the same rule as
- * resources/engine-pin-drift.txt and the PIN_LAG map in
- * tests/html-import-contract.check.mjs, and it fails in BOTH directions. The
- * pinned build records both defaults; when the engines land the ruling and the
- * pin moves past it, the declaration below goes red and the line goes out with
- * the bump.
+ * THE ASSERTIONS ARE LIVE. The pin sits past carve-js#2644, which omits both
+ * defaults, and the declared lag that stood in for them is gone.
  */
 
 import { test } from 'node:test'
@@ -37,11 +33,6 @@ import { parse, renderCarve, toAstJson } from '@markup-carve/carve'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const schema = JSON.parse(readFileSync(resolve(root, 'resources/ast-schema.json'), 'utf8'))
-
-// Declared lag against the `@markup-carve/carve` build package.json pins.
-// EMPTY IS THE GOAL: it goes out in the commit that moves the pin past
-// markup-carve/carve-js#1511.
-const PIN_LAG = 'carve#2828  just landed: the pinned build records `delim: "."` and `bulletChar: "-"`'
 
 const list = (src) => {
   const node = toAstJson(parse(src)).children[0]
@@ -63,19 +54,11 @@ test('the schema says outright that a parse omits a default marker', () => {
 
 test('a parse omits `delim` on the default `.` marker', () => {
   const node = list('1. Note text.\n')
-  if (PIN_LAG) {
-    assert.equal(node.delim, '.', `pin lag is declared and the engine no longer has it - delete PIN_LAG: ${PIN_LAG}`)
-    return
-  }
   assert.ok(!('delim' in node), 'the parse recorded the default ordered delimiter')
 })
 
 test('a parse omits `bulletChar` on the default `-` marker', () => {
   const node = list('- item\n')
-  if (PIN_LAG) {
-    assert.equal(node.bulletChar, '-', `pin lag is declared and the engine no longer has it - delete PIN_LAG: ${PIN_LAG}`)
-    return
-  }
   assert.ok(!('bulletChar' in node), 'the parse recorded the default bullet character')
 })
 
