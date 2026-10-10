@@ -30,7 +30,7 @@ import {
   partitionFindings,
 } from './spec/ast-waivers.mjs'
 import { checkPositions } from './spec/ast-positions.mjs'
-import { replaceNulls } from './spec/layout.mjs'
+import { replaceNulls, sourceOpensFrontmatter } from './spec/layout.mjs'
 import { checkReferenceFields } from './spec/ast-references.mjs'
 import {
   UNKNOWN_PROPERTY_PROBE,
@@ -231,9 +231,15 @@ function checkShape(doc, findings) {
  * A serializer that drops the block entirely produces a perfectly valid
  * document - which is the failure carve#411 found in carve-php, and one no
  * shape check can catch.
+ *
+ * Through the layout's own predicate. This read `/^---\r?\n/`, which is the
+ * opener without the closer, so a document that is a lone `---` - an ordinary
+ * thematic break - was reported as frontmatter the tree had dropped. The class
+ * is UNGATED by design, so the oracle failed the full-corpus verdict against
+ * all three engines at once and no ledger could absorb it (carve#2881).
  */
 function checkFrontmatterSurvives(doc, source, findings) {
-  if (!/^---\r?\n/.test(source)) return
+  if (!sourceOpensFrontmatter(source)) return
   const hasNode = Array.isArray(doc.children) && doc.children.some((n) => n?.type === 'frontmatter')
   // The pre-§7 root form still counts as carrying it, so an engine that has not
   // moved it into the tree is reported ONCE by the schema rather than twice.

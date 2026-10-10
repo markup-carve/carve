@@ -72,7 +72,7 @@ test('the conformance report normalizes the source it measures against', () => {
   const script = readFileSync(resolve(repo, 'scripts/ast-conformance.mjs'), 'utf8')
   assert.match(
     script,
-    /import \{ replaceNulls \} from '\.\/spec\/layout\.mjs'/,
+    /import \{[^}]*\breplaceNulls\b[^}]*\} from '\.\/spec\/layout\.mjs'/,
     'scripts/ast-conformance.mjs no longer imports replaceNulls',
   )
   const at = script.indexOf('function checkDocument(')
