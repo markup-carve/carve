@@ -1,6 +1,6 @@
 # A<br>B
 
-[heading](#a-b)
+[heading](#ab)
 
 # A<code>x<!---->&#10;<!---->y</code>B
 

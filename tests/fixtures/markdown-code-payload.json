@@ -1,1442 +1,4110 @@
 [
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "",
     "markdown": "<code></code>\n",
-    "code": ""
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "a",
     "markdown": "`a`\n",
-    "code": "a"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": " a",
     "markdown": "` a`\n",
-    "code": " a"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "a ",
     "markdown": "`a `\n",
-    "code": "a "
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": " a ",
     "markdown": "`  a  `\n",
-    "code": " a "
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "  a  ",
     "markdown": "`   a   `\n",
-    "code": "  a  "
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": " ",
     "markdown": "` `\n",
-    "code": " "
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "  ",
     "markdown": "`  `\n",
-    "code": "  "
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "\n",
     "markdown": "<code><!---->&#10;<!----></code>\n",
-    "code": "\n"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "\na",
     "markdown": "<code><!---->&#10;<!---->a</code>\n",
-    "code": "\na"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "a\n",
     "markdown": "<code>a<!---->&#10;<!----></code>\n",
-    "code": "a\n"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "\na\n",
     "markdown": "<code><!---->&#10;<!---->a<!---->&#10;<!----></code>\n",
-    "code": "\na\n"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "a\nb",
     "markdown": "<code>a<!---->&#10;<!---->b</code>\n",
-    "code": "a\nb"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "a\n\nb",
     "markdown": "<code>a<!---->&#10;<!----><!---->&#10;<!---->b</code>\n",
-    "code": "a\n\nb"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "a\n\n\nb",
     "markdown": "<code>a<!---->&#10;<!----><!---->&#10;<!----><!---->&#10;<!---->b</code>\n",
-    "code": "a\n\n\nb"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "`",
     "markdown": "`` ` ``\n",
-    "code": "`"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "`a",
     "markdown": "`` `a ``\n",
-    "code": "`a"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "a`",
     "markdown": "`` a` ``\n",
-    "code": "a`"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "`a`",
     "markdown": "`` `a` ``\n",
-    "code": "`a`"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "\nx\n```",
     "markdown": "<code><!---->&#10;<!---->x<!---->&#10;<!---->&#96;&#96;&#96;</code>\n",
-    "code": "\nx\n```"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "a\tb",
     "markdown": "<code>a&#9;b</code>\n",
-    "code": "a\tb"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "\t a \t",
-    "markdown": "<code>&#9; a &#9;</code>\n",
-    "code": "\t a \t"
+    "markdown": "<code>&#9;&#32;a&#32;&#9;</code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "a\\b",
     "markdown": "`a\\b`\n",
-    "code": "a\\b"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "&<>",
     "markdown": "`&<>`\n",
-    "code": "&<>"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "Ω",
     "markdown": "`Ω`\n",
-    "code": "Ω"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "https://example.test\n",
     "markdown": "<code>https&#58;&#47;&#47;example&#46;test<!---->&#10;<!----></code>\n",
-    "code": "https://example.test\n"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "a@b.test\n",
     "markdown": "<code>a&#64;<!---->b&#46;test<!---->&#10;<!----></code>\n",
-    "code": "a@b.test\n"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "www.example.test\n",
     "markdown": "<code>www&#46;example&#46;test<!---->&#10;<!----></code>\n",
-    "code": "www.example.test\n"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "a|b\n",
     "markdown": "<code>a&#124;b<!---->&#10;<!----></code>\n",
-    "code": "a|b\n"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "*a*~b~\n",
     "markdown": "<code>&#42;a&#42;&#126;b&#126;<!---->&#10;<!----></code>\n",
-    "code": "*a*~b~\n"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "[x](u)\n",
     "markdown": "<code>&#91;x&#93;&#40;u&#41;<!---->&#10;<!----></code>\n",
-    "code": "[x](u)\n"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "a\\b\n",
     "markdown": "<code>a&#92;b<!---->&#10;<!----></code>\n",
-    "code": "a\\b\n"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "-- \"x\" ...\n",
-    "markdown": "<code>&#45;&#45; &#34;x&#34; &#46;&#46;&#46;<!---->&#10;<!----></code>\n",
-    "code": "-- \"x\" ...\n"
+    "markdown": "<code>&#45;&#45;&#32;&#34;x&#34;&#32;&#46;&#46;&#46;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "` \n `",
-    "markdown": "<code>&#96; <!---->&#10;<!----> &#96;</code>\n",
-    "code": "` \n `"
+    "markdown": "<code>&#96;&#32;<!---->&#10;<!---->&#32;&#96;</code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "a \nb",
-    "markdown": "<code>a <!---->&#10;<!---->b</code>\n",
-    "code": "a \nb"
+    "markdown": "<code>a&#32;<!---->&#10;<!---->b</code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "a\n b",
-    "markdown": "<code>a<!---->&#10;<!----> b</code>\n",
-    "code": "a\n b"
+    "markdown": "<code>a<!---->&#10;<!---->&#32;b</code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": " \n ",
-    "markdown": "<code> <!---->&#10;<!----> </code>\n",
-    "code": " \n "
+    "markdown": "<code>&#32;<!---->&#10;<!---->&#32;</code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "\t\n\t",
     "markdown": "<code>&#9;<!---->&#10;<!---->&#9;</code>\n",
-    "code": "\t\n\t"
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "a \n b",
-    "markdown": "<code>a <!---->&#10;<!----> b</code>\n",
-    "code": "a \n b"
+    "markdown": "<code>a&#32;<!---->&#10;<!---->&#32;b</code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "`seed`",
     "value": "a\t\n b@c.test",
-    "markdown": "<code>a&#9;<!---->&#10;<!----> b&#64;<!---->c&#46;test</code>\n",
-    "code": "a\t\n b@c.test"
+    "markdown": "<code>a&#9;<!---->&#10;<!---->&#32;b&#64;<!---->c&#46;test</code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
+    "template": "`seed`",
+    "value": "&<>\n",
+    "markdown": "<code>&#38;&#60;&#62;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "`seed`",
+    "value": "&amp;\n",
+    "markdown": "<code>&#38;amp&#59;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "`seed`",
+    "value": "<!--\n-->",
+    "markdown": "<code>&#60;&#33;&#45;&#45;<!---->&#10;<!---->&#45;&#45;&#62;</code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "`seed`",
+    "value": "Ω\n中",
+    "markdown": "<code>Ω<!---->&#10;<!---->中</code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "`seed`",
+    "value": "a\t<>&\"",
+    "markdown": "<code>a&#9;&#60;&#62;&#38;&#34;</code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "`seed`",
+    "value": "\n[<&]\t",
+    "markdown": "<code><!---->&#10;<!---->&#91;&#60;&#38;&#93;&#9;</code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "`seed`",
+    "value": "-->\n",
+    "markdown": "<code>&#45;&#45;&#62;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "`seed`",
+    "value": "a\n@b.test",
+    "markdown": "<code>a<!---->&#10;<!---->&#64;<!---->b&#46;test</code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "`seed`",
+    "value": "  a\n  b  ",
+    "markdown": "<code>&#32;&#32;a<!---->&#10;<!---->&#32;&#32;b&#32;&#32;</code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "`seed`",
+    "value": "a  b\tc",
+    "markdown": "<code>a&#32;&#32;b&#9;c</code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "`seed`",
+    "value": " \n  ",
+    "markdown": "<code>&#32;<!---->&#10;<!---->&#32;&#32;</code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "`seed`",
+    "value": "\t  a  \t",
+    "markdown": "<code>&#9;&#32;&#32;a&#32;&#32;&#9;</code>\n",
+    "ancestors": [
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "",
     "markdown": "- <code></code>\n",
-    "code": ""
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "a",
     "markdown": "- `a`\n",
-    "code": "a"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": " a",
     "markdown": "- ` a`\n",
-    "code": " a"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "a ",
     "markdown": "- `a `\n",
-    "code": "a "
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": " a ",
     "markdown": "- `  a  `\n",
-    "code": " a "
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "  a  ",
     "markdown": "- `   a   `\n",
-    "code": "  a  "
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": " ",
     "markdown": "- ` `\n",
-    "code": " "
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "  ",
     "markdown": "- `  `\n",
-    "code": "  "
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "\n",
     "markdown": "- <code><!---->&#10;<!----></code>\n",
-    "code": "\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "\na",
     "markdown": "- <code><!---->&#10;<!---->a</code>\n",
-    "code": "\na"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "a\n",
     "markdown": "- <code>a<!---->&#10;<!----></code>\n",
-    "code": "a\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "\na\n",
     "markdown": "- <code><!---->&#10;<!---->a<!---->&#10;<!----></code>\n",
-    "code": "\na\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "a\nb",
     "markdown": "- <code>a<!---->&#10;<!---->b</code>\n",
-    "code": "a\nb"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "a\n\nb",
     "markdown": "- <code>a<!---->&#10;<!----><!---->&#10;<!---->b</code>\n",
-    "code": "a\n\nb"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "a\n\n\nb",
     "markdown": "- <code>a<!---->&#10;<!----><!---->&#10;<!----><!---->&#10;<!---->b</code>\n",
-    "code": "a\n\n\nb"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "`",
     "markdown": "- `` ` ``\n",
-    "code": "`"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "`a",
     "markdown": "- `` `a ``\n",
-    "code": "`a"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "a`",
     "markdown": "- `` a` ``\n",
-    "code": "a`"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "`a`",
     "markdown": "- `` `a` ``\n",
-    "code": "`a`"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "\nx\n```",
     "markdown": "- <code><!---->&#10;<!---->x<!---->&#10;<!---->&#96;&#96;&#96;</code>\n",
-    "code": "\nx\n```"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "a\tb",
     "markdown": "- <code>a&#9;b</code>\n",
-    "code": "a\tb"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "\t a \t",
-    "markdown": "- <code>&#9; a &#9;</code>\n",
-    "code": "\t a \t"
+    "markdown": "- <code>&#9;&#32;a&#32;&#9;</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "a\\b",
     "markdown": "- `a\\b`\n",
-    "code": "a\\b"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "&<>",
     "markdown": "- `&<>`\n",
-    "code": "&<>"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "Ω",
     "markdown": "- `Ω`\n",
-    "code": "Ω"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "https://example.test\n",
     "markdown": "- <code>https&#58;&#47;&#47;example&#46;test<!---->&#10;<!----></code>\n",
-    "code": "https://example.test\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "a@b.test\n",
     "markdown": "- <code>a&#64;<!---->b&#46;test<!---->&#10;<!----></code>\n",
-    "code": "a@b.test\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "www.example.test\n",
     "markdown": "- <code>www&#46;example&#46;test<!---->&#10;<!----></code>\n",
-    "code": "www.example.test\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "a|b\n",
     "markdown": "- <code>a&#124;b<!---->&#10;<!----></code>\n",
-    "code": "a|b\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "*a*~b~\n",
     "markdown": "- <code>&#42;a&#42;&#126;b&#126;<!---->&#10;<!----></code>\n",
-    "code": "*a*~b~\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "[x](u)\n",
     "markdown": "- <code>&#91;x&#93;&#40;u&#41;<!---->&#10;<!----></code>\n",
-    "code": "[x](u)\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "a\\b\n",
     "markdown": "- <code>a&#92;b<!---->&#10;<!----></code>\n",
-    "code": "a\\b\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "-- \"x\" ...\n",
-    "markdown": "- <code>&#45;&#45; &#34;x&#34; &#46;&#46;&#46;<!---->&#10;<!----></code>\n",
-    "code": "-- \"x\" ...\n"
+    "markdown": "- <code>&#45;&#45;&#32;&#34;x&#34;&#32;&#46;&#46;&#46;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "` \n `",
-    "markdown": "- <code>&#96; <!---->&#10;<!----> &#96;</code>\n",
-    "code": "` \n `"
+    "markdown": "- <code>&#96;&#32;<!---->&#10;<!---->&#32;&#96;</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "a \nb",
-    "markdown": "- <code>a <!---->&#10;<!---->b</code>\n",
-    "code": "a \nb"
+    "markdown": "- <code>a&#32;<!---->&#10;<!---->b</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "a\n b",
-    "markdown": "- <code>a<!---->&#10;<!----> b</code>\n",
-    "code": "a\n b"
+    "markdown": "- <code>a<!---->&#10;<!---->&#32;b</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": " \n ",
-    "markdown": "- <code> <!---->&#10;<!----> </code>\n",
-    "code": " \n "
+    "markdown": "- <code>&#32;<!---->&#10;<!---->&#32;</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "\t\n\t",
     "markdown": "- <code>&#9;<!---->&#10;<!---->&#9;</code>\n",
-    "code": "\t\n\t"
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "a \n b",
-    "markdown": "- <code>a <!---->&#10;<!----> b</code>\n",
-    "code": "a \n b"
+    "markdown": "- <code>a&#32;<!---->&#10;<!---->&#32;b</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- `seed`",
     "value": "a\t\n b@c.test",
-    "markdown": "- <code>a&#9;<!---->&#10;<!----> b&#64;<!---->c&#46;test</code>\n",
-    "code": "a\t\n b@c.test"
+    "markdown": "- <code>a&#9;<!---->&#10;<!---->&#32;b&#64;<!---->c&#46;test</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
+    "template": "- `seed`",
+    "value": "&<>\n",
+    "markdown": "- <code>&#38;&#60;&#62;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- `seed`",
+    "value": "&amp;\n",
+    "markdown": "- <code>&#38;amp&#59;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- `seed`",
+    "value": "<!--\n-->",
+    "markdown": "- <code>&#60;&#33;&#45;&#45;<!---->&#10;<!---->&#45;&#45;&#62;</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- `seed`",
+    "value": "Ω\n中",
+    "markdown": "- <code>Ω<!---->&#10;<!---->中</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- `seed`",
+    "value": "a\t<>&\"",
+    "markdown": "- <code>a&#9;&#60;&#62;&#38;&#34;</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- `seed`",
+    "value": "\n[<&]\t",
+    "markdown": "- <code><!---->&#10;<!---->&#91;&#60;&#38;&#93;&#9;</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- `seed`",
+    "value": "-->\n",
+    "markdown": "- <code>&#45;&#45;&#62;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- `seed`",
+    "value": "a\n@b.test",
+    "markdown": "- <code>a<!---->&#10;<!---->&#64;<!---->b&#46;test</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- `seed`",
+    "value": "  a\n  b  ",
+    "markdown": "- <code>&#32;&#32;a<!---->&#10;<!---->&#32;&#32;b&#32;&#32;</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- `seed`",
+    "value": "a  b\tc",
+    "markdown": "- <code>a&#32;&#32;b&#9;c</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- `seed`",
+    "value": " \n  ",
+    "markdown": "- <code>&#32;<!---->&#10;<!---->&#32;&#32;</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- `seed`",
+    "value": "\t  a  \t",
+    "markdown": "- <code>&#9;&#32;&#32;a&#32;&#32;&#9;</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "",
     "markdown": "- - <code></code>\n",
-    "code": ""
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "a",
     "markdown": "- - `a`\n",
-    "code": "a"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": " a",
     "markdown": "- - ` a`\n",
-    "code": " a"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "a ",
     "markdown": "- - `a `\n",
-    "code": "a "
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": " a ",
     "markdown": "- - `  a  `\n",
-    "code": " a "
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "  a  ",
     "markdown": "- - `   a   `\n",
-    "code": "  a  "
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": " ",
     "markdown": "- - ` `\n",
-    "code": " "
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "  ",
     "markdown": "- - `  `\n",
-    "code": "  "
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "\n",
     "markdown": "- - <code><!---->&#10;<!----></code>\n",
-    "code": "\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "\na",
     "markdown": "- - <code><!---->&#10;<!---->a</code>\n",
-    "code": "\na"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "a\n",
     "markdown": "- - <code>a<!---->&#10;<!----></code>\n",
-    "code": "a\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "\na\n",
     "markdown": "- - <code><!---->&#10;<!---->a<!---->&#10;<!----></code>\n",
-    "code": "\na\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "a\nb",
     "markdown": "- - <code>a<!---->&#10;<!---->b</code>\n",
-    "code": "a\nb"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "a\n\nb",
     "markdown": "- - <code>a<!---->&#10;<!----><!---->&#10;<!---->b</code>\n",
-    "code": "a\n\nb"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "a\n\n\nb",
     "markdown": "- - <code>a<!---->&#10;<!----><!---->&#10;<!----><!---->&#10;<!---->b</code>\n",
-    "code": "a\n\n\nb"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "`",
     "markdown": "- - `` ` ``\n",
-    "code": "`"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "`a",
     "markdown": "- - `` `a ``\n",
-    "code": "`a"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "a`",
     "markdown": "- - `` a` ``\n",
-    "code": "a`"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "`a`",
     "markdown": "- - `` `a` ``\n",
-    "code": "`a`"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "\nx\n```",
     "markdown": "- - <code><!---->&#10;<!---->x<!---->&#10;<!---->&#96;&#96;&#96;</code>\n",
-    "code": "\nx\n```"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "a\tb",
     "markdown": "- - <code>a&#9;b</code>\n",
-    "code": "a\tb"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "\t a \t",
-    "markdown": "- - <code>&#9; a &#9;</code>\n",
-    "code": "\t a \t"
+    "markdown": "- - <code>&#9;&#32;a&#32;&#9;</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "a\\b",
     "markdown": "- - `a\\b`\n",
-    "code": "a\\b"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "&<>",
     "markdown": "- - `&<>`\n",
-    "code": "&<>"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "Ω",
     "markdown": "- - `Ω`\n",
-    "code": "Ω"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "https://example.test\n",
     "markdown": "- - <code>https&#58;&#47;&#47;example&#46;test<!---->&#10;<!----></code>\n",
-    "code": "https://example.test\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "a@b.test\n",
     "markdown": "- - <code>a&#64;<!---->b&#46;test<!---->&#10;<!----></code>\n",
-    "code": "a@b.test\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "www.example.test\n",
     "markdown": "- - <code>www&#46;example&#46;test<!---->&#10;<!----></code>\n",
-    "code": "www.example.test\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "a|b\n",
     "markdown": "- - <code>a&#124;b<!---->&#10;<!----></code>\n",
-    "code": "a|b\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "*a*~b~\n",
     "markdown": "- - <code>&#42;a&#42;&#126;b&#126;<!---->&#10;<!----></code>\n",
-    "code": "*a*~b~\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "[x](u)\n",
     "markdown": "- - <code>&#91;x&#93;&#40;u&#41;<!---->&#10;<!----></code>\n",
-    "code": "[x](u)\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "a\\b\n",
     "markdown": "- - <code>a&#92;b<!---->&#10;<!----></code>\n",
-    "code": "a\\b\n"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "-- \"x\" ...\n",
-    "markdown": "- - <code>&#45;&#45; &#34;x&#34; &#46;&#46;&#46;<!---->&#10;<!----></code>\n",
-    "code": "-- \"x\" ...\n"
+    "markdown": "- - <code>&#45;&#45;&#32;&#34;x&#34;&#32;&#46;&#46;&#46;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "` \n `",
-    "markdown": "- - <code>&#96; <!---->&#10;<!----> &#96;</code>\n",
-    "code": "` \n `"
+    "markdown": "- - <code>&#96;&#32;<!---->&#10;<!---->&#32;&#96;</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "a \nb",
-    "markdown": "- - <code>a <!---->&#10;<!---->b</code>\n",
-    "code": "a \nb"
+    "markdown": "- - <code>a&#32;<!---->&#10;<!---->b</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "a\n b",
-    "markdown": "- - <code>a<!---->&#10;<!----> b</code>\n",
-    "code": "a\n b"
+    "markdown": "- - <code>a<!---->&#10;<!---->&#32;b</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": " \n ",
-    "markdown": "- - <code> <!---->&#10;<!----> </code>\n",
-    "code": " \n "
+    "markdown": "- - <code>&#32;<!---->&#10;<!---->&#32;</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "\t\n\t",
     "markdown": "- - <code>&#9;<!---->&#10;<!---->&#9;</code>\n",
-    "code": "\t\n\t"
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "a \n b",
-    "markdown": "- - <code>a <!---->&#10;<!----> b</code>\n",
-    "code": "a \n b"
+    "markdown": "- - <code>a&#32;<!---->&#10;<!---->&#32;b</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "- - `seed`",
     "value": "a\t\n b@c.test",
-    "markdown": "- - <code>a&#9;<!---->&#10;<!----> b&#64;<!---->c&#46;test</code>\n",
-    "code": "a\t\n b@c.test"
+    "markdown": "- - <code>a&#9;<!---->&#10;<!---->&#32;b&#64;<!---->c&#46;test</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
+    "template": "- - `seed`",
+    "value": "&<>\n",
+    "markdown": "- - <code>&#38;&#60;&#62;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- - `seed`",
+    "value": "&amp;\n",
+    "markdown": "- - <code>&#38;amp&#59;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- - `seed`",
+    "value": "<!--\n-->",
+    "markdown": "- - <code>&#60;&#33;&#45;&#45;<!---->&#10;<!---->&#45;&#45;&#62;</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- - `seed`",
+    "value": "Ω\n中",
+    "markdown": "- - <code>Ω<!---->&#10;<!---->中</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- - `seed`",
+    "value": "a\t<>&\"",
+    "markdown": "- - <code>a&#9;&#60;&#62;&#38;&#34;</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- - `seed`",
+    "value": "\n[<&]\t",
+    "markdown": "- - <code><!---->&#10;<!---->&#91;&#60;&#38;&#93;&#9;</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- - `seed`",
+    "value": "-->\n",
+    "markdown": "- - <code>&#45;&#45;&#62;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- - `seed`",
+    "value": "a\n@b.test",
+    "markdown": "- - <code>a<!---->&#10;<!---->&#64;<!---->b&#46;test</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- - `seed`",
+    "value": "  a\n  b  ",
+    "markdown": "- - <code>&#32;&#32;a<!---->&#10;<!---->&#32;&#32;b&#32;&#32;</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- - `seed`",
+    "value": "a  b\tc",
+    "markdown": "- - <code>a&#32;&#32;b&#9;c</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- - `seed`",
+    "value": " \n  ",
+    "markdown": "- - <code>&#32;<!---->&#10;<!---->&#32;&#32;</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "- - `seed`",
+    "value": "\t  a  \t",
+    "markdown": "- - <code>&#9;&#32;&#32;a&#32;&#32;&#9;</code>\n",
+    "ancestors": [
+      "ul",
+      "li",
+      "ul",
+      "li",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "",
     "markdown": "> <code></code>\n",
-    "code": ""
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "a",
     "markdown": "> `a`\n",
-    "code": "a"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": " a",
     "markdown": "> ` a`\n",
-    "code": " a"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "a ",
     "markdown": "> `a `\n",
-    "code": "a "
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": " a ",
     "markdown": "> `  a  `\n",
-    "code": " a "
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "  a  ",
     "markdown": "> `   a   `\n",
-    "code": "  a  "
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": " ",
     "markdown": "> ` `\n",
-    "code": " "
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "  ",
     "markdown": "> `  `\n",
-    "code": "  "
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "\n",
     "markdown": "> <code><!---->&#10;<!----></code>\n",
-    "code": "\n"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "\na",
     "markdown": "> <code><!---->&#10;<!---->a</code>\n",
-    "code": "\na"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "a\n",
     "markdown": "> <code>a<!---->&#10;<!----></code>\n",
-    "code": "a\n"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "\na\n",
     "markdown": "> <code><!---->&#10;<!---->a<!---->&#10;<!----></code>\n",
-    "code": "\na\n"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "a\nb",
     "markdown": "> <code>a<!---->&#10;<!---->b</code>\n",
-    "code": "a\nb"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "a\n\nb",
     "markdown": "> <code>a<!---->&#10;<!----><!---->&#10;<!---->b</code>\n",
-    "code": "a\n\nb"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "a\n\n\nb",
     "markdown": "> <code>a<!---->&#10;<!----><!---->&#10;<!----><!---->&#10;<!---->b</code>\n",
-    "code": "a\n\n\nb"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "`",
     "markdown": "> `` ` ``\n",
-    "code": "`"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "`a",
     "markdown": "> `` `a ``\n",
-    "code": "`a"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "a`",
     "markdown": "> `` a` ``\n",
-    "code": "a`"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "`a`",
     "markdown": "> `` `a` ``\n",
-    "code": "`a`"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "\nx\n```",
     "markdown": "> <code><!---->&#10;<!---->x<!---->&#10;<!---->&#96;&#96;&#96;</code>\n",
-    "code": "\nx\n```"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "a\tb",
     "markdown": "> <code>a&#9;b</code>\n",
-    "code": "a\tb"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "\t a \t",
-    "markdown": "> <code>&#9; a &#9;</code>\n",
-    "code": "\t a \t"
+    "markdown": "> <code>&#9;&#32;a&#32;&#9;</code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "a\\b",
     "markdown": "> `a\\b`\n",
-    "code": "a\\b"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "&<>",
     "markdown": "> `&<>`\n",
-    "code": "&<>"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "Ω",
     "markdown": "> `Ω`\n",
-    "code": "Ω"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "https://example.test\n",
     "markdown": "> <code>https&#58;&#47;&#47;example&#46;test<!---->&#10;<!----></code>\n",
-    "code": "https://example.test\n"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "a@b.test\n",
     "markdown": "> <code>a&#64;<!---->b&#46;test<!---->&#10;<!----></code>\n",
-    "code": "a@b.test\n"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "www.example.test\n",
     "markdown": "> <code>www&#46;example&#46;test<!---->&#10;<!----></code>\n",
-    "code": "www.example.test\n"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "a|b\n",
     "markdown": "> <code>a&#124;b<!---->&#10;<!----></code>\n",
-    "code": "a|b\n"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "*a*~b~\n",
     "markdown": "> <code>&#42;a&#42;&#126;b&#126;<!---->&#10;<!----></code>\n",
-    "code": "*a*~b~\n"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "[x](u)\n",
     "markdown": "> <code>&#91;x&#93;&#40;u&#41;<!---->&#10;<!----></code>\n",
-    "code": "[x](u)\n"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "a\\b\n",
     "markdown": "> <code>a&#92;b<!---->&#10;<!----></code>\n",
-    "code": "a\\b\n"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "-- \"x\" ...\n",
-    "markdown": "> <code>&#45;&#45; &#34;x&#34; &#46;&#46;&#46;<!---->&#10;<!----></code>\n",
-    "code": "-- \"x\" ...\n"
+    "markdown": "> <code>&#45;&#45;&#32;&#34;x&#34;&#32;&#46;&#46;&#46;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "` \n `",
-    "markdown": "> <code>&#96; <!---->&#10;<!----> &#96;</code>\n",
-    "code": "` \n `"
+    "markdown": "> <code>&#96;&#32;<!---->&#10;<!---->&#32;&#96;</code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "a \nb",
-    "markdown": "> <code>a <!---->&#10;<!---->b</code>\n",
-    "code": "a \nb"
+    "markdown": "> <code>a&#32;<!---->&#10;<!---->b</code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "a\n b",
-    "markdown": "> <code>a<!---->&#10;<!----> b</code>\n",
-    "code": "a\n b"
+    "markdown": "> <code>a<!---->&#10;<!---->&#32;b</code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": " \n ",
-    "markdown": "> <code> <!---->&#10;<!----> </code>\n",
-    "code": " \n "
+    "markdown": "> <code>&#32;<!---->&#10;<!---->&#32;</code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "\t\n\t",
     "markdown": "> <code>&#9;<!---->&#10;<!---->&#9;</code>\n",
-    "code": "\t\n\t"
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "a \n b",
-    "markdown": "> <code>a <!---->&#10;<!----> b</code>\n",
-    "code": "a \n b"
+    "markdown": "> <code>a&#32;<!---->&#10;<!---->&#32;b</code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "> `seed`",
     "value": "a\t\n b@c.test",
-    "markdown": "> <code>a&#9;<!---->&#10;<!----> b&#64;<!---->c&#46;test</code>\n",
-    "code": "a\t\n b@c.test"
+    "markdown": "> <code>a&#9;<!---->&#10;<!---->&#32;b&#64;<!---->c&#46;test</code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
+    "template": "> `seed`",
+    "value": "&<>\n",
+    "markdown": "> <code>&#38;&#60;&#62;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "> `seed`",
+    "value": "&amp;\n",
+    "markdown": "> <code>&#38;amp&#59;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "> `seed`",
+    "value": "<!--\n-->",
+    "markdown": "> <code>&#60;&#33;&#45;&#45;<!---->&#10;<!---->&#45;&#45;&#62;</code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "> `seed`",
+    "value": "Ω\n中",
+    "markdown": "> <code>Ω<!---->&#10;<!---->中</code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "> `seed`",
+    "value": "a\t<>&\"",
+    "markdown": "> <code>a&#9;&#60;&#62;&#38;&#34;</code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "> `seed`",
+    "value": "\n[<&]\t",
+    "markdown": "> <code><!---->&#10;<!---->&#91;&#60;&#38;&#93;&#9;</code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "> `seed`",
+    "value": "-->\n",
+    "markdown": "> <code>&#45;&#45;&#62;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "> `seed`",
+    "value": "a\n@b.test",
+    "markdown": "> <code>a<!---->&#10;<!---->&#64;<!---->b&#46;test</code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "> `seed`",
+    "value": "  a\n  b  ",
+    "markdown": "> <code>&#32;&#32;a<!---->&#10;<!---->&#32;&#32;b&#32;&#32;</code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "> `seed`",
+    "value": "a  b\tc",
+    "markdown": "> <code>a&#32;&#32;b&#9;c</code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "> `seed`",
+    "value": " \n  ",
+    "markdown": "> <code>&#32;<!---->&#10;<!---->&#32;&#32;</code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "> `seed`",
+    "value": "\t  a  \t",
+    "markdown": "> <code>&#9;&#32;&#32;a&#32;&#32;&#9;</code>\n",
+    "ancestors": [
+      "blockquote",
+      "p",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "",
     "markdown": "**<code></code>**\n",
-    "code": ""
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "a",
     "markdown": "**`a`**\n",
-    "code": "a"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": " a",
     "markdown": "**` a`**\n",
-    "code": " a"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "a ",
     "markdown": "**`a `**\n",
-    "code": "a "
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": " a ",
     "markdown": "**`  a  `**\n",
-    "code": " a "
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "  a  ",
     "markdown": "**`   a   `**\n",
-    "code": "  a  "
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": " ",
     "markdown": "**` `**\n",
-    "code": " "
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "  ",
     "markdown": "**`  `**\n",
-    "code": "  "
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "\n",
     "markdown": "**<code><!---->&#10;<!----></code>**\n",
-    "code": "\n"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "\na",
     "markdown": "**<code><!---->&#10;<!---->a</code>**\n",
-    "code": "\na"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "a\n",
     "markdown": "**<code>a<!---->&#10;<!----></code>**\n",
-    "code": "a\n"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "\na\n",
     "markdown": "**<code><!---->&#10;<!---->a<!---->&#10;<!----></code>**\n",
-    "code": "\na\n"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "a\nb",
     "markdown": "**<code>a<!---->&#10;<!---->b</code>**\n",
-    "code": "a\nb"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "a\n\nb",
     "markdown": "**<code>a<!---->&#10;<!----><!---->&#10;<!---->b</code>**\n",
-    "code": "a\n\nb"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "a\n\n\nb",
     "markdown": "**<code>a<!---->&#10;<!----><!---->&#10;<!----><!---->&#10;<!---->b</code>**\n",
-    "code": "a\n\n\nb"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "`",
     "markdown": "**`` ` ``**\n",
-    "code": "`"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "`a",
     "markdown": "**`` `a ``**\n",
-    "code": "`a"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "a`",
     "markdown": "**`` a` ``**\n",
-    "code": "a`"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "`a`",
     "markdown": "**`` `a` ``**\n",
-    "code": "`a`"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "\nx\n```",
     "markdown": "**<code><!---->&#10;<!---->x<!---->&#10;<!---->&#96;&#96;&#96;</code>**\n",
-    "code": "\nx\n```"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "a\tb",
     "markdown": "**<code>a&#9;b</code>**\n",
-    "code": "a\tb"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "\t a \t",
-    "markdown": "**<code>&#9; a &#9;</code>**\n",
-    "code": "\t a \t"
+    "markdown": "**<code>&#9;&#32;a&#32;&#9;</code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "a\\b",
     "markdown": "**`a\\b`**\n",
-    "code": "a\\b"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "&<>",
     "markdown": "**`&<>`**\n",
-    "code": "&<>"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "Ω",
     "markdown": "**`Ω`**\n",
-    "code": "Ω"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "https://example.test\n",
     "markdown": "**<code>https&#58;&#47;&#47;example&#46;test<!---->&#10;<!----></code>**\n",
-    "code": "https://example.test\n"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "a@b.test\n",
     "markdown": "**<code>a&#64;<!---->b&#46;test<!---->&#10;<!----></code>**\n",
-    "code": "a@b.test\n"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "www.example.test\n",
     "markdown": "**<code>www&#46;example&#46;test<!---->&#10;<!----></code>**\n",
-    "code": "www.example.test\n"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "a|b\n",
     "markdown": "**<code>a&#124;b<!---->&#10;<!----></code>**\n",
-    "code": "a|b\n"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "*a*~b~\n",
     "markdown": "**<code>&#42;a&#42;&#126;b&#126;<!---->&#10;<!----></code>**\n",
-    "code": "*a*~b~\n"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "[x](u)\n",
     "markdown": "**<code>&#91;x&#93;&#40;u&#41;<!---->&#10;<!----></code>**\n",
-    "code": "[x](u)\n"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "a\\b\n",
     "markdown": "**<code>a&#92;b<!---->&#10;<!----></code>**\n",
-    "code": "a\\b\n"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "-- \"x\" ...\n",
-    "markdown": "**<code>&#45;&#45; &#34;x&#34; &#46;&#46;&#46;<!---->&#10;<!----></code>**\n",
-    "code": "-- \"x\" ...\n"
+    "markdown": "**<code>&#45;&#45;&#32;&#34;x&#34;&#32;&#46;&#46;&#46;<!---->&#10;<!----></code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "` \n `",
-    "markdown": "**<code>&#96; <!---->&#10;<!----> &#96;</code>**\n",
-    "code": "` \n `"
+    "markdown": "**<code>&#96;&#32;<!---->&#10;<!---->&#32;&#96;</code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "a \nb",
-    "markdown": "**<code>a <!---->&#10;<!---->b</code>**\n",
-    "code": "a \nb"
+    "markdown": "**<code>a&#32;<!---->&#10;<!---->b</code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "a\n b",
-    "markdown": "**<code>a<!---->&#10;<!----> b</code>**\n",
-    "code": "a\n b"
+    "markdown": "**<code>a<!---->&#10;<!---->&#32;b</code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": " \n ",
-    "markdown": "**<code> <!---->&#10;<!----> </code>**\n",
-    "code": " \n "
+    "markdown": "**<code>&#32;<!---->&#10;<!---->&#32;</code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "\t\n\t",
     "markdown": "**<code>&#9;<!---->&#10;<!---->&#9;</code>**\n",
-    "code": "\t\n\t"
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "a \n b",
-    "markdown": "**<code>a <!---->&#10;<!----> b</code>**\n",
-    "code": "a \n b"
+    "markdown": "**<code>a&#32;<!---->&#10;<!---->&#32;b</code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "*`seed`*",
     "value": "a\t\n b@c.test",
-    "markdown": "**<code>a&#9;<!---->&#10;<!----> b&#64;<!---->c&#46;test</code>**\n",
-    "code": "a\t\n b@c.test"
+    "markdown": "**<code>a&#9;<!---->&#10;<!---->&#32;b&#64;<!---->c&#46;test</code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
+    "template": "*`seed`*",
+    "value": "&<>\n",
+    "markdown": "**<code>&#38;&#60;&#62;<!---->&#10;<!----></code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "*`seed`*",
+    "value": "&amp;\n",
+    "markdown": "**<code>&#38;amp&#59;<!---->&#10;<!----></code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "*`seed`*",
+    "value": "<!--\n-->",
+    "markdown": "**<code>&#60;&#33;&#45;&#45;<!---->&#10;<!---->&#45;&#45;&#62;</code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "*`seed`*",
+    "value": "Ω\n中",
+    "markdown": "**<code>Ω<!---->&#10;<!---->中</code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "*`seed`*",
+    "value": "a\t<>&\"",
+    "markdown": "**<code>a&#9;&#60;&#62;&#38;&#34;</code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "*`seed`*",
+    "value": "\n[<&]\t",
+    "markdown": "**<code><!---->&#10;<!---->&#91;&#60;&#38;&#93;&#9;</code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "*`seed`*",
+    "value": "-->\n",
+    "markdown": "**<code>&#45;&#45;&#62;<!---->&#10;<!----></code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "*`seed`*",
+    "value": "a\n@b.test",
+    "markdown": "**<code>a<!---->&#10;<!---->&#64;<!---->b&#46;test</code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "*`seed`*",
+    "value": "  a\n  b  ",
+    "markdown": "**<code>&#32;&#32;a<!---->&#10;<!---->&#32;&#32;b&#32;&#32;</code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "*`seed`*",
+    "value": "a  b\tc",
+    "markdown": "**<code>a&#32;&#32;b&#9;c</code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "*`seed`*",
+    "value": " \n  ",
+    "markdown": "**<code>&#32;<!---->&#10;<!---->&#32;&#32;</code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "*`seed`*",
+    "value": "\t  a  \t",
+    "markdown": "**<code>&#9;&#32;&#32;a&#32;&#32;&#9;</code>**\n",
+    "ancestors": [
+      "p",
+      "strong",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "",
     "markdown": "|  |\n| --- |\n| <code></code> |\n",
-    "code": ""
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "a",
     "markdown": "|  |\n| --- |\n| `a` |\n",
-    "code": "a"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": " a",
     "markdown": "|  |\n| --- |\n| ` a` |\n",
-    "code": " a"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "a ",
     "markdown": "|  |\n| --- |\n| `a ` |\n",
-    "code": "a "
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": " a ",
     "markdown": "|  |\n| --- |\n| `  a  ` |\n",
-    "code": " a "
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "  a  ",
     "markdown": "|  |\n| --- |\n| `   a   ` |\n",
-    "code": "  a  "
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": " ",
     "markdown": "|  |\n| --- |\n| ` ` |\n",
-    "code": " "
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "  ",
     "markdown": "|  |\n| --- |\n| `  ` |\n",
-    "code": "  "
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "\n",
     "markdown": "|  |\n| --- |\n| <code><!---->&#10;<!----></code> |\n",
-    "code": "\n"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "\na",
     "markdown": "|  |\n| --- |\n| <code><!---->&#10;<!---->a</code> |\n",
-    "code": "\na"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "a\n",
     "markdown": "|  |\n| --- |\n| <code>a<!---->&#10;<!----></code> |\n",
-    "code": "a\n"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "\na\n",
     "markdown": "|  |\n| --- |\n| <code><!---->&#10;<!---->a<!---->&#10;<!----></code> |\n",
-    "code": "\na\n"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "a\nb",
     "markdown": "|  |\n| --- |\n| <code>a<!---->&#10;<!---->b</code> |\n",
-    "code": "a\nb"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "a\n\nb",
     "markdown": "|  |\n| --- |\n| <code>a<!---->&#10;<!----><!---->&#10;<!---->b</code> |\n",
-    "code": "a\n\nb"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "a\n\n\nb",
     "markdown": "|  |\n| --- |\n| <code>a<!---->&#10;<!----><!---->&#10;<!----><!---->&#10;<!---->b</code> |\n",
-    "code": "a\n\n\nb"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "`",
     "markdown": "|  |\n| --- |\n| `` ` `` |\n",
-    "code": "`"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "`a",
     "markdown": "|  |\n| --- |\n| `` `a `` |\n",
-    "code": "`a"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "a`",
     "markdown": "|  |\n| --- |\n| `` a` `` |\n",
-    "code": "a`"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "`a`",
     "markdown": "|  |\n| --- |\n| `` `a` `` |\n",
-    "code": "`a`"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "\nx\n```",
     "markdown": "|  |\n| --- |\n| <code><!---->&#10;<!---->x<!---->&#10;<!---->&#96;&#96;&#96;</code> |\n",
-    "code": "\nx\n```"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "a\tb",
     "markdown": "|  |\n| --- |\n| <code>a&#9;b</code> |\n",
-    "code": "a\tb"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "\t a \t",
-    "markdown": "|  |\n| --- |\n| <code>&#9; a &#9;</code> |\n",
-    "code": "\t a \t"
+    "markdown": "|  |\n| --- |\n| <code>&#9;&#32;a&#32;&#9;</code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "a\\b",
     "markdown": "|  |\n| --- |\n| `a\\b` |\n",
-    "code": "a\\b"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "&<>",
     "markdown": "|  |\n| --- |\n| `&<>` |\n",
-    "code": "&<>"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "Ω",
     "markdown": "|  |\n| --- |\n| `Ω` |\n",
-    "code": "Ω"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "https://example.test\n",
     "markdown": "|  |\n| --- |\n| <code>https&#58;&#47;&#47;example&#46;test<!---->&#10;<!----></code> |\n",
-    "code": "https://example.test\n"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "a@b.test\n",
     "markdown": "|  |\n| --- |\n| <code>a&#64;<!---->b&#46;test<!---->&#10;<!----></code> |\n",
-    "code": "a@b.test\n"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "www.example.test\n",
     "markdown": "|  |\n| --- |\n| <code>www&#46;example&#46;test<!---->&#10;<!----></code> |\n",
-    "code": "www.example.test\n"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "a|b\n",
     "markdown": "|  |\n| --- |\n| <code>a&#124;b<!---->&#10;<!----></code> |\n",
-    "code": "a|b\n"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "*a*~b~\n",
     "markdown": "|  |\n| --- |\n| <code>&#42;a&#42;&#126;b&#126;<!---->&#10;<!----></code> |\n",
-    "code": "*a*~b~\n"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "[x](u)\n",
     "markdown": "|  |\n| --- |\n| <code>&#91;x&#93;&#40;u&#41;<!---->&#10;<!----></code> |\n",
-    "code": "[x](u)\n"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "a\\b\n",
     "markdown": "|  |\n| --- |\n| <code>a&#92;b<!---->&#10;<!----></code> |\n",
-    "code": "a\\b\n"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "-- \"x\" ...\n",
-    "markdown": "|  |\n| --- |\n| <code>&#45;&#45; &#34;x&#34; &#46;&#46;&#46;<!---->&#10;<!----></code> |\n",
-    "code": "-- \"x\" ...\n"
+    "markdown": "|  |\n| --- |\n| <code>&#45;&#45;&#32;&#34;x&#34;&#32;&#46;&#46;&#46;<!---->&#10;<!----></code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "` \n `",
-    "markdown": "|  |\n| --- |\n| <code>&#96; <!---->&#10;<!----> &#96;</code> |\n",
-    "code": "` \n `"
+    "markdown": "|  |\n| --- |\n| <code>&#96;&#32;<!---->&#10;<!---->&#32;&#96;</code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "a \nb",
-    "markdown": "|  |\n| --- |\n| <code>a <!---->&#10;<!---->b</code> |\n",
-    "code": "a \nb"
+    "markdown": "|  |\n| --- |\n| <code>a&#32;<!---->&#10;<!---->b</code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "a\n b",
-    "markdown": "|  |\n| --- |\n| <code>a<!---->&#10;<!----> b</code> |\n",
-    "code": "a\n b"
+    "markdown": "|  |\n| --- |\n| <code>a<!---->&#10;<!---->&#32;b</code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": " \n ",
-    "markdown": "|  |\n| --- |\n| <code> <!---->&#10;<!----> </code> |\n",
-    "code": " \n "
+    "markdown": "|  |\n| --- |\n| <code>&#32;<!---->&#10;<!---->&#32;</code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "\t\n\t",
     "markdown": "|  |\n| --- |\n| <code>&#9;<!---->&#10;<!---->&#9;</code> |\n",
-    "code": "\t\n\t"
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "a \n b",
-    "markdown": "|  |\n| --- |\n| <code>a <!---->&#10;<!----> b</code> |\n",
-    "code": "a \n b"
+    "markdown": "|  |\n| --- |\n| <code>a&#32;<!---->&#10;<!---->&#32;b</code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
   },
   {
+    "rule": "CARVE-P11-064",
     "template": "| `seed` |",
     "value": "a\t\n b@c.test",
-    "markdown": "|  |\n| --- |\n| <code>a&#9;<!---->&#10;<!----> b&#64;<!---->c&#46;test</code> |\n",
-    "code": "a\t\n b@c.test"
+    "markdown": "|  |\n| --- |\n| <code>a&#9;<!---->&#10;<!---->&#32;b&#64;<!---->c&#46;test</code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "| `seed` |",
+    "value": "&<>\n",
+    "markdown": "|  |\n| --- |\n| <code>&#38;&#60;&#62;<!---->&#10;<!----></code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "| `seed` |",
+    "value": "&amp;\n",
+    "markdown": "|  |\n| --- |\n| <code>&#38;amp&#59;<!---->&#10;<!----></code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "| `seed` |",
+    "value": "<!--\n-->",
+    "markdown": "|  |\n| --- |\n| <code>&#60;&#33;&#45;&#45;<!---->&#10;<!---->&#45;&#45;&#62;</code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "| `seed` |",
+    "value": "Ω\n中",
+    "markdown": "|  |\n| --- |\n| <code>Ω<!---->&#10;<!---->中</code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "| `seed` |",
+    "value": "a\t<>&\"",
+    "markdown": "|  |\n| --- |\n| <code>a&#9;&#60;&#62;&#38;&#34;</code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "| `seed` |",
+    "value": "\n[<&]\t",
+    "markdown": "|  |\n| --- |\n| <code><!---->&#10;<!---->&#91;&#60;&#38;&#93;&#9;</code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "| `seed` |",
+    "value": "-->\n",
+    "markdown": "|  |\n| --- |\n| <code>&#45;&#45;&#62;<!---->&#10;<!----></code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "| `seed` |",
+    "value": "a\n@b.test",
+    "markdown": "|  |\n| --- |\n| <code>a<!---->&#10;<!---->&#64;<!---->b&#46;test</code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "| `seed` |",
+    "value": "  a\n  b  ",
+    "markdown": "|  |\n| --- |\n| <code>&#32;&#32;a<!---->&#10;<!---->&#32;&#32;b&#32;&#32;</code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "| `seed` |",
+    "value": "a  b\tc",
+    "markdown": "|  |\n| --- |\n| <code>a&#32;&#32;b&#9;c</code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "| `seed` |",
+    "value": " \n  ",
+    "markdown": "|  |\n| --- |\n| <code>&#32;<!---->&#10;<!---->&#32;&#32;</code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "| `seed` |",
+    "value": "\t  a  \t",
+    "markdown": "|  |\n| --- |\n| <code>&#9;&#32;&#32;a&#32;&#32;&#9;</code> |\n",
+    "ancestors": [
+      "table",
+      "tbody",
+      "tr",
+      "td",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "",
+    "markdown": "# <code></code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "a",
+    "markdown": "# `a`\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": " a",
+    "markdown": "# ` a`\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "a ",
+    "markdown": "# `a `\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": " a ",
+    "markdown": "# `  a  `\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "  a  ",
+    "markdown": "# `   a   `\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": " ",
+    "markdown": "# ` `\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "  ",
+    "markdown": "# `  `\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "\n",
+    "markdown": "# <code><!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "\na",
+    "markdown": "# <code><!---->&#10;<!---->a</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "a\n",
+    "markdown": "# <code>a<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "\na\n",
+    "markdown": "# <code><!---->&#10;<!---->a<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "a\nb",
+    "markdown": "# <code>a<!---->&#10;<!---->b</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "a\n\nb",
+    "markdown": "# <code>a<!---->&#10;<!----><!---->&#10;<!---->b</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "a\n\n\nb",
+    "markdown": "# <code>a<!---->&#10;<!----><!---->&#10;<!----><!---->&#10;<!---->b</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "`",
+    "markdown": "# `` ` ``\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "`a",
+    "markdown": "# `` `a ``\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "a`",
+    "markdown": "# `` a` ``\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "`a`",
+    "markdown": "# `` `a` ``\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "\nx\n```",
+    "markdown": "# <code><!---->&#10;<!---->x<!---->&#10;<!---->&#96;&#96;&#96;</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "a\tb",
+    "markdown": "# <code>a&#9;b</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "\t a \t",
+    "markdown": "# <code>&#9;&#32;a&#32;&#9;</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "a\\b",
+    "markdown": "# `a\\b`\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "&<>",
+    "markdown": "# `&<>`\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "Ω",
+    "markdown": "# `Ω`\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "https://example.test\n",
+    "markdown": "# <code>https&#58;&#47;&#47;example&#46;test<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "a@b.test\n",
+    "markdown": "# <code>a&#64;<!---->b&#46;test<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "www.example.test\n",
+    "markdown": "# <code>www&#46;example&#46;test<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "a|b\n",
+    "markdown": "# <code>a&#124;b<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "*a*~b~\n",
+    "markdown": "# <code>&#42;a&#42;&#126;b&#126;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "[x](u)\n",
+    "markdown": "# <code>&#91;x&#93;&#40;u&#41;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "a\\b\n",
+    "markdown": "# <code>a&#92;b<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "-- \"x\" ...\n",
+    "markdown": "# <code>&#45;&#45;&#32;&#34;x&#34;&#32;&#46;&#46;&#46;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "` \n `",
+    "markdown": "# <code>&#96;&#32;<!---->&#10;<!---->&#32;&#96;</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "a \nb",
+    "markdown": "# <code>a&#32;<!---->&#10;<!---->b</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "a\n b",
+    "markdown": "# <code>a<!---->&#10;<!---->&#32;b</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": " \n ",
+    "markdown": "# <code>&#32;<!---->&#10;<!---->&#32;</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "\t\n\t",
+    "markdown": "# <code>&#9;<!---->&#10;<!---->&#9;</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "a \n b",
+    "markdown": "# <code>a&#32;<!---->&#10;<!---->&#32;b</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "a\t\n b@c.test",
+    "markdown": "# <code>a&#9;<!---->&#10;<!---->&#32;b&#64;<!---->c&#46;test</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "&<>\n",
+    "markdown": "# <code>&#38;&#60;&#62;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "&amp;\n",
+    "markdown": "# <code>&#38;amp&#59;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "<!--\n-->",
+    "markdown": "# <code>&#60;&#33;&#45;&#45;<!---->&#10;<!---->&#45;&#45;&#62;</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "Ω\n中",
+    "markdown": "# <code>Ω<!---->&#10;<!---->中</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "a\t<>&\"",
+    "markdown": "# <code>a&#9;&#60;&#62;&#38;&#34;</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "\n[<&]\t",
+    "markdown": "# <code><!---->&#10;<!---->&#91;&#60;&#38;&#93;&#9;</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "-->\n",
+    "markdown": "# <code>&#45;&#45;&#62;<!---->&#10;<!----></code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "a\n@b.test",
+    "markdown": "# <code>a<!---->&#10;<!---->&#64;<!---->b&#46;test</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "  a\n  b  ",
+    "markdown": "# <code>&#32;&#32;a<!---->&#10;<!---->&#32;&#32;b&#32;&#32;</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "a  b\tc",
+    "markdown": "# <code>a&#32;&#32;b&#9;c</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": " \n  ",
+    "markdown": "# <code>&#32;<!---->&#10;<!---->&#32;&#32;</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
+  },
+  {
+    "rule": "CARVE-P11-064",
+    "template": "# `seed`",
+    "value": "\t  a  \t",
+    "markdown": "# <code>&#9;&#32;&#32;a&#32;&#32;&#9;</code>\n",
+    "ancestors": [
+      "h1",
+      "code"
+    ]
   }
 ]

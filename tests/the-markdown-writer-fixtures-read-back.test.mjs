@@ -2,6 +2,7 @@
  * PART 11's Markdown-target clauses, and the shared fixture each engine renders
  * against.
  *
+ * tests/fixtures/markdown-code-payload.json checks exact code text and context.
  * tests/fixtures/markdown-writer-targets.json holds the Markdown bytes the
  * clauses decide. The engines assert their own output against it; this file
  * checks the fixture itself, through cmark-gfm (the reader the importers answer
@@ -200,15 +201,16 @@ test('literal brackets keep complete link labels and image descriptions', () => 
 const codePayloadCases = JSON.parse(read('tests/fixtures/markdown-code-payload.json'))
 const codeText = (node) => node.nodeName === '#text'
   ? node.value : (node.childNodes ?? []).map(codeText).join('')
-const inlineCodeValues = (html) => {
+const inlineCodeRecords = (html) => {
   const values = []
-  const visit = (node) => {
+  const visit = (node, ancestors = []) => {
     if (node.tagName === 'pre') return
+    const path = node.tagName ? [...ancestors, node.tagName] : ancestors
     if (node.tagName === 'code') {
-      values.push(codeText(node))
+      values.push({ value: codeText(node), ancestors: path, elements: (node.childNodes ?? []).filter(child => child.tagName).map(child => child.tagName) })
       return
     }
-    for (const child of node.childNodes ?? []) visit(child)
+    for (const child of node.childNodes ?? []) visit(child, path)
   }
   visit(parseFragment(html))
   return values
@@ -216,18 +218,26 @@ const inlineCodeValues = (html) => {
 
 for (const [index, item] of codePayloadCases.entries()) {
   test(`code payload ${index} stays exact in ${item.template}`, () => {
-    assert.deepEqual(inlineCodeValues(cmarkGfmToHtml(item.markdown)), [item.value])
+    clauseText(item.rule)
+    assert.deepEqual(inlineCodeRecords(cmarkGfmToHtml(item.markdown)), [{ value: item.value, ancestors: item.ancestors, elements: [] }])
   })
 }
 
 test('control: a native code span changes payload newlines', () => {
-  assert.notDeepEqual(inlineCodeValues(cmarkGfmToHtml('`a\nb`\n')), ['a\nb'])
+  assert.notDeepEqual(inlineCodeRecords(cmarkGfmToHtml('`a\nb`\n')), [{ value: 'a\nb', ancestors: ['p', 'code'], elements: [] }])
 })
 
 test('terminal and heading hard breaks survive their inline HTML spelling', () => {
   assert.equal(cmarkGfmToHtml('a<br>\n'), '<p>a<br></p>\n')
-  assert.equal(cmarkGfmToHtml('<br><!-- -->\n'), '<p><br><!-- --></p>\n')
+  assert.equal(cmarkGfmToHtml('<br><!---->\n'), '<p><br><!----></p>\n')
   assert.equal(cmarkGfmToHtml('# a<br>b\n'), '<h1>a<br>b</h1>\n')
   assert.equal(cmarkGfmToHtml('a\\\n<br>\n'), '<p>a<br />\n<br></p>\n')
   assert.notEqual(cmarkGfmToHtml('a\\\n'), '<p>a<br /></p>\n')
 })
+
+for (const item of JSON.parse(read('tests/fixtures/markdown-inline-hard-breaks.json'))) {
+  test(`hard breaks survive ${item.template}: ${item.name}`, () => {
+    clauseText(item.rule)
+    assert.equal((cmarkGfmToHtml(item.markdown).match(/<br\b/g) ?? []).length, item.breaks)
+  })
+}

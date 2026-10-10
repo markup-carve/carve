@@ -1669,7 +1669,7 @@
     {
       "id": "CARVE-P12-031",
       "part": "12",
-      "title": "A ROOT THAT DEVIATES FROM \u00a77 IS REJECTED ON INGEST",
+      "title": "A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST",
       "scope": "ast-interchange"
     },
     {

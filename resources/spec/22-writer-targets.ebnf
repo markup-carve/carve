@@ -232,7 +232,7 @@
                                    ->  Mail a<!---->@b.co and mailto:c<!---->@d.co
 
       E1 reads on the emitted line and in text only, as U1 and U2 do. The
-      comment REACHES THE OUTPUT, which no other spelling in this section does,
+      comment REACHES THE OUTPUT,
       and a reader that strips comments before matching addresses re-links.
       Neither reader this target answers to strips it
       ([carve#2413](https://github.com/markup-carve/carve/issues/2413)).
@@ -241,15 +241,17 @@
       Markdown target MUST preserve the exact code text. CommonMark code spans
       replace newlines with spaces and remove one edge space from a padded
       payload. The writer chooses a backtick fence and padding that preserve
-      the value. Where no code-span spelling preserves it, including an empty
-      value or a value containing a tab or newline, the target uses inline `<code>`.
+      the value. Empty values and values containing TAB or LF use inline
+      `<code>` so both cmark-gfm and Pandoc preserve the payload.
 
-      A multiline payload is encoded on one physical line. Character references
-      keep its newlines and punctuation inside the code element, including in
-      a heading or table cell. The fallback MUST prevent GFM autolinking inside
-      the code value. Empty comments may guard spaces beside a newline or split an
-      email address's text runs;
-      it contributes no code text under §10k N3.
+      Pandoc expands literal tabs in native code spans. The HTML fallback
+      writes SPACE as `&#32;`, TAB as `&#9;`, LF as
+      `<!---->&#10;<!---->`, and ASCII punctuation
+      U+0021 through U+002F, U+003A through U+0040, U+005B through U+0060, and
+      U+007B through U+007E as decimal character references. An encoded `@`
+      is followed by `<!---->`. Other characters remain unchanged. The empty
+      HTML comments guard spaces beside newlines and prevent email autolinking;
+      they contribute no code text in the rendered HTML.
 
         code value    "a" + LF + "b"
         Markdown      <code>a<!---->&#10;<!---->b</code>
@@ -315,19 +317,20 @@
   9c. A HARD BREAK AT AN INLINE BOUNDARY SURVIVES -- NORMATIVE
       [CARVE-P11-065]. A backslash at the end of a paragraph reads as literal
       text, and a newline ends an ATX heading. In those positions the Markdown
-      target MUST emit a `hard_break` as inline `<br>`. A wrapper's final hard
-      break may also use `<br>` to keep the break inside that wrapper.
+      target MUST emit a `hard_break` as inline `<br>`. The final hard break in
+      any inline child list MUST also use `<br>`, including a transparent
+      span's children, to keep the break inside that list.
 
       Trailing whitespace, soft breaks and nodes that emit nothing do not
       turn a terminal hard break into an interior one. Repeated hard breaks
-      retain their count. If a break-only paragraph's `<br>` would start a
-      CommonMark HTML block, the writer appends an empty comment so the break
-      remains inline. The comment contributes nothing under §10k N3.
+      retain their count. A break-only inline fragment appends `<!---->` to its final `<br>`
+      so it cannot start a CommonMark HTML block. The empty HTML comment
+      contributes no rendered text.
 
         paragraph children    text "a", hard_break
         Markdown              a<br>
         paragraph children    hard_break
-        Markdown              <br><!-- -->
+        Markdown              <br><!---->
         heading children      text "a", hard_break, text "b"
         Markdown              # a<br>b
 
@@ -837,185 +840,5 @@
       processor enabled ListTable for HTML: this target takes no extension set,
       `list-table` is a standard kind name, and a GFM reader has the table
       natively where the nested list is the one thing it reads wrongly.
-
-  10r. THE MARKDOWN TARGET KEEPS FRONTMATTER -- NORMATIVE [CARVE-P11-062]. A
-      `frontmatter` node is emitted FIRST, as its own block: a `---` opener
-      carrying the format token wherever the format is not `yaml`, the content
-      VERBATIM, and a bare `---` closer. HTML, plain text and the terminal omit
-      it.
-
-        ---toml            ->  markdown  ---toml
-        t = 1                            t = 1
-        ---                              ---
-        (blank)                          (blank)
-        x                                x
-
-      THE SPLIT IS §10a'S TEST, not a new one. HTML may drop an unused
-      definition "because HTML has nowhere to put a definition nobody used";
-      Markdown has exactly somewhere to put frontmatter, so on this target the
-      drop is content loss. Plain text and the terminal are on HTML's side of
-      that test here rather than Markdown's: neither reads a delimited metadata
-      block, so emitting one leaves raw YAML in prose, which is not
-      preservation.
-
-      THE FORMAT TOKEN IS CARVE'S, NOT THE ECOSYSTEM'S. A `toml` body is not
-      rewritten to `+++`, and no per-format delimiter table is implied. A
-      reader that does not know the fence declines to parse it; one handed a
-      TOML body under a bare `---` reads it as YAML and is wrong about the
-      values. Declining beats being wrong, and the emitted block re-imports as
-      the same node.
-
-      THE CONTENT IS NOT VALIDATED. PART 12 §7 keeps `content` raw because a
-      malformed block is still a document's frontmatter; this target emits what
-      that node carries without parsing it, so nothing here can fail on a body
-      the format's own loader would reject.
-
-  10s. AN OPT-IN MODE CARRIES AN ELEMENT-LESS CONTAINER IN A COMMENT --
-      NORMATIVE [CARVE-P11-063]. An ELEMENT-LESS CONTAINER is a container
-      block this target writes as its children alone: no element, no marker
-      and no attribute of its own reaches the output, so nothing there says a
-      container was present. Under the CARRIER MODE, which the host turns on
-      and which is OFF by default, the target brackets each one with an HTML
-      comment carrying the Carve opener and the Carve closer VERBATIM:
-
-        ::: note                 ->  <!-- carve: ::: note -->
-        An admonition body.          An admonition body.
-        :::                          <!-- carve: ::: -->
-
-      THE SET, measured on the released engines: a tab set and each of its
-      panels (`tabs`, `code-group`), an admonition of any kind whether or not
-      it carries a title, a named div and each div nested in one, a columns
-      container and each column, a disclosure, a spoiler, and a composite
-      figure's group wrapper. A container this target DOES spell is not one
-      and takes no comment: an attributes-only opener (`::: {.warning}`) is
-      written verbatim, and a list table is written as a pipe table.
-
-      THE MARKER IS `<!-- carve: `, the payload, ` -->`. A `-->` the payload
-      carries is written `--\>`, and an `\` the payload itself carries before
-      such a `>` is written `\\`. Nothing else is escaped: the payload is
-      Carve source, so Carve's own escape is the one the reader already has.
-      The import reverses exactly those two.
-
-      A COMMENT AND NOT A LINK REFERENCE DEFINITION is the one choice here
-      that is not obvious, and it was measured rather than argued.
-      `[meta]: # (payload)` collapses in commonmark.js's refmap, emits one
-      token for three in marked, makes pandoc warn `Duplicate link reference`
-      on each one after the first, and lets an author's `[text][Meta]`
-      resolve to the marker, because label matching ignores case. An HTML
-      comment survives as a node in all three, can interrupt a paragraph, and
-      is not entity-decoded. The mode is OPT-IN because a renderer with raw
-      HTML turned off shows the comment as text.
-
-      THE ROUND TRIP IS WHAT THE MODE BUYS. A document this target writes
-      with the mode on, imported back with `markdown` as the source format,
-      returns every container the set names: its kind, its title, its
-      attributes, and the nesting its fence widths record. It promises no
-      more than that. A construct outside the set degrades exactly as it does
-      today, the mode off emits the bytes this target emits today, a document
-      holding no element-less container gains no comment under either
-      setting, and this is not the byte-identical source round trip §10k's
-      comparison governs.
-
-      A DAMAGED MARKER SET IMPORTS AS PLAIN MARKDOWN, NEVER A GUESS. A
-      Markdown editor that deleted one marker, reordered two, or left the set
-      unbalanced has destroyed the structure the markers recorded, and a
-      reconstruction that is wrong is worse than a fallback that is honest.
-      The import reads the file as ordinary Markdown, comments and all, and
-      reports one `carrier-markers-damaged` diagnostic on the migration
-      report (`resources/migration-report-schema.json`) with `degraded`
-      fidelity and `fallback` confidence. There is no partial reconstruction
-      and no per-marker recovery.
-
-      WHAT THIS CLAUSE DOES NOT COVER, so a reader does not look for it here.
-      A construct whose Markdown output already holds an element needs no
-      carrier: `highlight`, `subscript`, `superscript` and a CriticMarkup
-      insertion round-trip through `<mark>`, `<sub>`, `<sup>` and `<ins>`
-      today. Where such an element does not read back (`<u>`, the
-      `critic-comment` span, `<abbr>`, `<del>`), and where this target drops
-      a construct's attributes, the emitted bytes are faithful and the defect
-      is on the import or in §8c, not here. `small_caps` and `ruby` have no
-      Carve opener to carry.
-
-  11. THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG --
-      NORMATIVE [CARVE-P11-038]. GFM has no heading-id syntax: a reader derives every
-      heading's id from its text, and `## H {#h}` shows the suffix as text.
-      So this target writes no `{#id}` suffix. A link or a resolved
-      cross-reference whose fragment names a heading is written with that
-      heading's GFM SLUG as its fragment:
-
-        {#h}
-        ## Rise and divergence     ->  ## Rise and divergence
-
-        See </#h>.                 ->  See [Rise and divergence](#rise-and-divergence).
-
-      THE SLUG is the one GitHub assigns (github-slugger) and `pandoc -f gfm`
-      reads:
-
-      G1 TEXT: the heading's text content under PART 2 HEADING IDENTIFIERS'
-         contribution rule, each character as this target writes it (a smart
-         punctuation glyph as the glyph, its source under source typography),
-         NFC-normalized, with leading and trailing whitespace removed. PART 2
-         counts an image's alt text and GitHub does not, so a heading holding
-         an image can get a slug GitHub does not assign; PART 2's rule is kept
-         so that every engine derives the text one way;
-      G2 lowercased (Unicode default case mapping);
-      G3 with every character removed that is not a letter, a mark, a number,
-         connector punctuation (`_`), U+0020 SPACE or `-`;
-      G4 with each SPACE replaced by `-`;
-      G5 DEDUPLICATED over every heading the target writes, linked or not, in
-         the order it writes them. Each base keeps a count starting at 0. A
-         base not yet taken is the slug. Otherwise the count is raised by one
-         and `-` plus the count appended, repeating while the result is
-         taken; the result is then taken too.
-
-      THE REFERENCE IS STILL RECOGNIZED BY THE ID THE DOCUMENT ASSIGNED. A
-      fragment names a heading when it equals that heading's id, explicit or
-      derived under PART 2; only the WRITTEN destination is the slug. A
-      heading the target does not write as a heading (one flattened into a
-      table cell) is not a target, and a fragment naming no heading is §11a's.
-
-      NO ANCHOR CAN DANGLE, which is carve#352's rule kept by other means. The
-      target writes no anchor at all, and the reader derives each slug from
-      text the target wrote, so every link to a heading resolves in a GFM
-      reader. A heading whose text removes to nothing has the empty slug, and
-      a link to it is written `#`, or `#-1` and so on for a repeat.
-
-      A CROSS-REFERENCE CONTRIBUTES NOTHING TO THE TEXT, as PART 2 says: by the
-      time this target runs, resolution has replaced `</#a>` with a link
-      carrying the target heading's text, and counting it would slug
-      `# A </#a>` as `a-a`.
-
-      THE SCAN INCLUDES FOOTNOTE DEFINITION BODIES. They render as block
-      content, so a heading or a reference inside one is a heading or a
-      reference.
-
-  11a. THE MARKDOWN TARGET KEEPS A FRAGMENT LINK -- NORMATIVE [CARVE-P11-049].
-      A `link` whose destination is a fragment (`#id`) is emitted as a Markdown
-      link whether or not `id` names a heading. The author wrote the
-      destination, so it is content: writing the label alone drops it, and a
-      reader of the Markdown loses a link the HTML target keeps.
-
-        {#h}
-        ## Head                   ->  ## Head
-
-        See [head](#h), [three](#chap03) and [gone](#nowhere).
-                                  ->  See [head](#head), [three](#chap03) and [gone](#nowhere).
-
-      A FRAGMENT THAT NAMES NO HEADING ADDS NO ANCHOR ANYWHERE: the target
-      writes no ids, so `#chap03` above points at an id the Markdown does not
-      carry. The link is kept anyway, because a page that embeds the Markdown
-      can carry the id, and dropping the destination cannot be undone.
-
-      THE DESTINATION IS WRITTEN LIKE ANY OTHER. A fragment that names a
-      heading is the heading's GFM slug (§11); any other fragment is the
-      authored destination under the ordinary destination encoding, `#`
-      alone included.
-
-      THE LABEL IS WRITTEN LIKE ANY OTHER LINK LABEL. `[[1]](#n1)` is emitted
-      as `[\[1\]](#n1)`, with both text brackets escaped inside the label.
-
-      A CROSS-REFERENCE IS OUTSIDE THIS CLAUSE. §11 still writes a resolved
-      cross-reference to a target that is not a heading as its display text;
-      this clause changes only the `link` node.
 
    ============================================================================ *)

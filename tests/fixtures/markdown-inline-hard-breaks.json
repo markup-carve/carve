@@ -1,0 +1,555 @@
+[
+  {
+    "rule": "CARVE-P11-065",
+    "template": "seed",
+    "name": "terminal",
+    "markdown": "seed<br>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "seed",
+    "name": "only",
+    "markdown": "<br><!---->\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "seed",
+    "name": "repeated",
+    "markdown": "seed\\\n<br>\n",
+    "breaks": 2
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "seed",
+    "name": "interior",
+    "markdown": "seed\\\ntail\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "seed",
+    "name": "trailing-space",
+    "markdown": "seed<br>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "seed",
+    "name": "trailing-soft-break",
+    "markdown": "seed<br>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "- seed",
+    "name": "terminal",
+    "markdown": "- seed<br>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "- seed",
+    "name": "only",
+    "markdown": "- <br><!---->\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "- seed",
+    "name": "repeated",
+    "markdown": "- seed\\\n  <br>\n",
+    "breaks": 2
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "- seed",
+    "name": "interior",
+    "markdown": "- seed\\\n  tail\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "- seed",
+    "name": "trailing-space",
+    "markdown": "- seed<br>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "- seed",
+    "name": "trailing-soft-break",
+    "markdown": "- seed<br>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "- - seed",
+    "name": "terminal",
+    "markdown": "- - seed<br>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "- - seed",
+    "name": "only",
+    "markdown": "- - <br><!---->\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "- - seed",
+    "name": "repeated",
+    "markdown": "- - seed\\\n    <br>\n",
+    "breaks": 2
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "- - seed",
+    "name": "interior",
+    "markdown": "- - seed\\\n    tail\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "- - seed",
+    "name": "trailing-space",
+    "markdown": "- - seed<br>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "- - seed",
+    "name": "trailing-soft-break",
+    "markdown": "- - seed<br>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "> seed",
+    "name": "terminal",
+    "markdown": "> seed<br>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "> seed",
+    "name": "only",
+    "markdown": "> <br><!---->\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "> seed",
+    "name": "repeated",
+    "markdown": "> seed\\\n> <br>\n",
+    "breaks": 2
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "> seed",
+    "name": "interior",
+    "markdown": "> seed\\\n> tail\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "> seed",
+    "name": "trailing-space",
+    "markdown": "> seed<br>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "> seed",
+    "name": "trailing-soft-break",
+    "markdown": "> seed<br>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{*seed*}",
+    "name": "terminal",
+    "markdown": "**seed<br>**\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{*seed*}",
+    "name": "only",
+    "markdown": "**<br><!---->**\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{*seed*}",
+    "name": "repeated",
+    "markdown": "**seed\\\n<br>**\n",
+    "breaks": 2
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{*seed*}",
+    "name": "interior",
+    "markdown": "**seed\\\ntail**\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{*seed*}",
+    "name": "trailing-space",
+    "markdown": "**seed<br>**\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{*seed*}",
+    "name": "trailing-soft-break",
+    "markdown": "**seed<br>**\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{/seed/}",
+    "name": "terminal",
+    "markdown": "*seed<br>*\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{/seed/}",
+    "name": "only",
+    "markdown": "*<br><!---->*\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{/seed/}",
+    "name": "repeated",
+    "markdown": "*seed\\\n<br>*\n",
+    "breaks": 2
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{/seed/}",
+    "name": "interior",
+    "markdown": "*seed\\\ntail*\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{/seed/}",
+    "name": "trailing-space",
+    "markdown": "*seed<br>*\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{/seed/}",
+    "name": "trailing-soft-break",
+    "markdown": "*seed<br>*\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{^seed^}",
+    "name": "terminal",
+    "markdown": "<sup>seed<br></sup>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{^seed^}",
+    "name": "only",
+    "markdown": "<sup><br><!----></sup>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{^seed^}",
+    "name": "repeated",
+    "markdown": "<sup>seed\\\n<br></sup>\n",
+    "breaks": 2
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{^seed^}",
+    "name": "interior",
+    "markdown": "<sup>seed\\\ntail</sup>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{^seed^}",
+    "name": "trailing-space",
+    "markdown": "<sup>seed<br> </sup>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{^seed^}",
+    "name": "trailing-soft-break",
+    "markdown": "<sup>seed<br>\n</sup>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "[seed](https://example.test)",
+    "name": "terminal",
+    "markdown": "[seed<br>](https://example.test)\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "[seed](https://example.test)",
+    "name": "only",
+    "markdown": "[<br><!---->](https://example.test)\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "[seed](https://example.test)",
+    "name": "repeated",
+    "markdown": "[seed\\\n<br>](https://example.test)\n",
+    "breaks": 2
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "[seed](https://example.test)",
+    "name": "interior",
+    "markdown": "[seed\\\ntail](https://example.test)\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "[seed](https://example.test)",
+    "name": "trailing-space",
+    "markdown": "[seed<br> ](https://example.test)\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "[seed](https://example.test)",
+    "name": "trailing-soft-break",
+    "markdown": "[seed<br>\n](https://example.test)\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "# seed",
+    "name": "terminal",
+    "markdown": "# seed<br>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "# seed",
+    "name": "only",
+    "markdown": "# <br>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "# seed",
+    "name": "repeated",
+    "markdown": "# seed<br><br>\n",
+    "breaks": 2
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "# seed",
+    "name": "interior",
+    "markdown": "# seed<br>tail\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "# seed",
+    "name": "trailing-space",
+    "markdown": "# seed<br>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "# seed",
+    "name": "trailing-soft-break",
+    "markdown": "# seed<br>\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "| seed |",
+    "name": "terminal",
+    "markdown": "|  |\n| --- |\n| seed<br> |\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "| seed |",
+    "name": "only",
+    "markdown": "|  |\n| --- |\n| <br> |\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "| seed |",
+    "name": "repeated",
+    "markdown": "|  |\n| --- |\n| seed<br><br> |\n",
+    "breaks": 2
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "| seed |",
+    "name": "interior",
+    "markdown": "|  |\n| --- |\n| seed<br>tail |\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "| seed |",
+    "name": "trailing-space",
+    "markdown": "|  |\n| --- |\n| seed<br> |\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "| seed |",
+    "name": "trailing-soft-break",
+    "markdown": "|  |\n| --- |\n| seed<br> |\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "::: note \"seed\"\nbody\n:::",
+    "name": "terminal",
+    "markdown": "**seed<br>**\n\nbody\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "::: note \"seed\"\nbody\n:::",
+    "name": "only",
+    "markdown": "**<br><!---->**\n\nbody\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "::: note \"seed\"\nbody\n:::",
+    "name": "repeated",
+    "markdown": "**seed\\\n<br>**\n\nbody\n",
+    "breaks": 2
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "::: note \"seed\"\nbody\n:::",
+    "name": "interior",
+    "markdown": "**seed\\\ntail**\n\nbody\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "::: note \"seed\"\nbody\n:::",
+    "name": "trailing-space",
+    "markdown": "**seed<br>**\n\nbody\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "::: note \"seed\"\nbody\n:::",
+    "name": "trailing-soft-break",
+    "markdown": "**seed<br>**\n\nbody\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "::: details \"seed\"\nbody\n:::",
+    "name": "terminal",
+    "markdown": "**seed<br>**\n\nbody\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "::: details \"seed\"\nbody\n:::",
+    "name": "only",
+    "markdown": "**<br><!---->**\n\nbody\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "::: details \"seed\"\nbody\n:::",
+    "name": "repeated",
+    "markdown": "**seed\\\n<br>**\n\nbody\n",
+    "breaks": 2
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "::: details \"seed\"\nbody\n:::",
+    "name": "interior",
+    "markdown": "**seed\\\ntail**\n\nbody\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "::: details \"seed\"\nbody\n:::",
+    "name": "trailing-space",
+    "markdown": "**seed<br>**\n\nbody\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "::: details \"seed\"\nbody\n:::",
+    "name": "trailing-soft-break",
+    "markdown": "**seed<br>**\n\nbody\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "# seed",
+    "name": "soft-break-edge-spaces",
+    "markdown": "# a b\n",
+    "breaks": 0
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "# seed",
+    "name": "soft-break-edge-tabs",
+    "markdown": "# a b\n",
+    "breaks": 0
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{#target}\n# seed\n\n[heading](#target)\n",
+    "name": "heading-link",
+    "markdown": "# A<br>B\n\n[heading](#ab)\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{#target}\n# seed\n\n[heading](#target)\n",
+    "name": "heading-nested-link",
+    "markdown": "# **A<br>B**\n\n[heading](#ab)\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{#target}\n# seed\n\n[heading](#target)\n",
+    "name": "heading-space-link",
+    "markdown": "# A<br> B\n\n[heading](#a-b)\n",
+    "breaks": 1
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{#target}\n# seed\n\n[heading](#target)\n",
+    "name": "heading-repeated-link",
+    "markdown": "# A<br><br>B\n\n[heading](#ab)\n",
+    "breaks": 2
+  },
+  {
+    "rule": "CARVE-P11-065",
+    "template": "{#target}\n# seed\n\n[heading](#target)\n",
+    "name": "heading-soft-link",
+    "markdown": "# A B\n\n[heading](#a-b)\n",
+    "breaks": 0
+  }
+]
