@@ -139,6 +139,11 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
       // like the ledgers above: its declaration names the issue that retires
       // it, so it is tracked work that leaves when the engines' pin moves.
       ['tests/an-element-less-container-is-carried-in-a-comment.test.mjs', 'owed', 'declared'],
+      // The MARKDOWN DESTINATION window (carve#2865), on the same rule: the
+      // ruling is settled and merged on the Djot side (carve#2854), the
+      // Markdown importer has not followed, and the declaration names the
+      // issue that retires it.
+      ['tests/a-markdown-destination-keeps-its-brackets.test.mjs', 'owed', 'declared'],
     ].sort(),
     'a spec ledger other than the engine-lag ones now reads differently per-PR',
   )
