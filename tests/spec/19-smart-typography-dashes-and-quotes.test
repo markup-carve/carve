@@ -123,5 +123,159 @@ Back in the
 ```
 'tis the season to be 'jolly'
 .
-<p>‘tis the season to be ‘jolly’</p>
+<p>’tis the season to be ‘jolly’</p>
+```
+
+```
+"Wait---" he said.
+.
+<p>“Wait—” he said.</p>
+```
+
+```
+he said---"Go" and replied–"Now".
+.
+<p>he said—“Go” and replied–“Now”.</p>
+```
+
+```
+end-"
+
+end-".
+
+end-'!
+.
+<p>end-”</p>
+<p>end-”.</p>
+<p>end-’!</p>
+```
+
+```
+'tis 'em 'twasn't
+.
+<p>’tis ’em ’twasn’t</p>
+```
+
+```
+'TIS 'tisn 'twas 'twasn 'twere 'twill 'twould 'cause 'til 'n 'bout
+
+say 'tissue'
+.
+<p>’TIS ’tisn ’twas ’twasn ’twere ’twill ’twould ’cause ’til ’n ’bout</p>
+<p>say ‘tissue’</p>
+```
+
+```
+'n' and 'em' and 'tis'
+.
+<p>‘n’ and ‘em’ and ‘tis’</p>
+```
+
+```
+'em'2
+.
+<p>’em’2</p>
+```
+
+```
+'tis Jane's dog
+.
+<p>’tis Jane’s dog</p>
+```
+
+```
+'I told 'em so,' he said.
+.
+<p>‘I told ’em so,’ he said.</p>
+```
+
+```
+'I said 'hello there,' she replied.
+.
+<p>‘I said ’hello there,’ she replied.</p>
+```
+
+```
+say 'word
+.
+<p>say ’word</p>
+```
+
+```
+'word
+.
+<p>‘word</p>
+```
+
+```
+"'word
+.
+<p>“‘word</p>
+```
+
+```
+say '*bold* text
+.
+<p>say ‘<strong>bold</strong> text</p>
+```
+
+```
+'Jane's '90s dog and 'word'
+.
+<p>‘Jane’s ’90s dog and ’word’</p>
+```
+
+```
+'I *said 'hello* there,' she replied.
+.
+<p>‘I <strong>said ’hello</strong> there,’ she replied.</p>
+```
+
+```
+'one
+
+say 'two'
+.
+<p>‘one</p>
+<p>say ‘two’</p>
+```
+
+```
+say ^['note] 'two'
+.
+<p>say <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> ‘two’</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>‘note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+'one ^[say 'note] 'two'
+.
+<p>‘one <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> ’two’</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>say ’note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+"Wait---{%%}" he said.
+.
+<p>“Wait—” he said.</p>
+```
+
+```
+“'word'” and ‘"word"’
+.
+<p>“‘word’” and ‘“word”’</p>
 ```

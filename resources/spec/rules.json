@@ -1911,6 +1911,18 @@
       "part": "10",
       "title": "AN ORDERED LIST'S DELIMITER NAMES ITSELF ON THE LIST",
       "scope": "resolution-rendering"
+    },
+    {
+      "id": "CARVE-P3-023",
+      "part": "3",
+      "title": "SMART QUOTE DIRECTION",
+      "scope": "parsing"
+    },
+    {
+      "id": "CARVE-P9-079",
+      "part": "9",
+      "title": "A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT",
+      "scope": "resolution-rendering"
     }
   ],
   "retired": [

@@ -2628,7 +2628,7 @@ He paused -- then ran --- fast... "Stop!" it's over.
 
 :::
 
-A quote opens (left/opening quote) when it follows start-of-content, whitespace (incl. NBSP and a line break), or one of the opening/operator characters `( [ { = : - /`; otherwise it closes. So a quote right after `=`, `:`, `-`, `/`, or an opening paren still opens the first quote (grammar `smart_quote`).
+A quote opens (left/opening quote) when it follows start-of-content, whitespace (incl. NBSP and a line break), or one of the opening/operator characters `( [ { = : - – — /` or an opening curly quote; otherwise it closes, subject to the dash, elision and single-quote rules below. So a quote right after `=`, `:`, `-`, `/`, or an opening paren still opens the first quote (grammar `smart_quote`).
 
 ::: compare
 
@@ -2650,7 +2650,7 @@ a="b"
 
 :::
 
-When a quote does **not** follow one of those opening contexts it closes instead — so a quote right after a closing bracket (`}` `)` `]`), after sentence punctuation (`.` `,`), or mid-word always becomes a right/closing quote. An empty `""` opens both marks (the second `"` follows a `"`, which is not an opening context, yet there is nothing to its right to close against, so it too renders as an opening quote).
+When a quote does **not** follow one of those opening contexts it closes instead, so a quote right after a closing bracket (`}` `)` `]`), after sentence punctuation (`.` `,`), or mid-word always becomes a right/closing quote. An empty `""` opens both marks (the second `"` follows a `"`, which is not an opening context, yet there is nothing to its right to close against, so it too renders as an opening quote).
 
 ::: compare
 
@@ -2700,7 +2700,7 @@ The same opening set applies to the single quote `'`. After `(`, `[`, `=`, `:`, 
 
 :::
 
-A single quote after `{` opens too — shown on its own line because a trailing `{…}` would otherwise be read as an attribute block.
+A single quote after `{` opens too, shown on its own line because a trailing `{…}` would otherwise be read as an attribute block.
 
 ::: compare
 
@@ -2820,11 +2820,8 @@ Back in the
 
 :::
 
-Start-of-content opens a single quote exactly as it opens a double one, so a
-word that begins with an elision apostrophe gets a LEFT single quote. This is a
-deliberate divergence from djot.js, which closes it, and it is not the
-line-break case above: the predecessor here is the start of the content, which
-the clause names in its opening set.
+A listed elision takes an apostrophe even at the start of the content. A later
+quoted word still opens and closes normally (CARVE-P3-023).
 
 ::: compare
 
@@ -2833,7 +2830,329 @@ the clause names in its opening set.
 ```
 
 ```html
-<p>‘tis the season to be ‘jolly’</p>
+<p>’tis the season to be ‘jolly’</p>
+```
+
+:::
+
+An interrupted quotation closes after a dash (R1).
+
+::: compare
+
+```carve
+"Wait---" he said.
+```
+
+```html
+<p>“Wait—” he said.</p>
+```
+
+:::
+
+A dash before quoted text still introduces an opening quote.
+
+::: compare
+
+```carve
+he said---"Go" and replied–"Now".
+```
+
+```html
+<p>he said—“Go” and replied–“Now”.</p>
+```
+
+:::
+
+End-of-content and closing punctuation after a dash close the quote.
+
+::: compare
+
+```carve
+end-"
+
+end-".
+
+end-'!
+```
+
+```html
+<p>end-”</p>
+<p>end-”.</p>
+<p>end-’!</p>
+```
+
+:::
+
+Listed elisions take apostrophes, including a contraction after the word (R2).
+
+::: compare
+
+```carve
+'tis 'em 'twasn't
+```
+
+```html
+<p>’tis ’em ’twasn’t</p>
+```
+
+:::
+
+The elision list is case-insensitive and uses the whole letter run.
+
+::: compare
+
+```carve
+'TIS 'tisn 'twas 'twasn 'twere 'twill 'twould 'cause 'til 'n 'bout
+
+say 'tissue'
+```
+
+```html
+<p>’TIS ’tisn ’twas ’twasn ’twere ’twill ’twould ’cause ’til ’n ’bout</p>
+<p>say ‘tissue’</p>
+```
+
+:::
+
+A quoted elision word keeps its quote pair.
+
+::: compare
+
+```carve
+'n' and 'em' and 'tis'
+```
+
+```html
+<p>‘n’ and ‘em’ and ‘tis’</p>
+```
+
+:::
+
+A quote before a digit after the closing mark prevents the quoted-word exception.
+
+::: compare
+
+```carve
+'em'2
+```
+
+```html
+<p>’em’2</p>
+```
+
+:::
+
+An elision and a possessive both use apostrophes.
+
+::: compare
+
+```carve
+'tis Jane's dog
+```
+
+```html
+<p>’tis Jane’s dog</p>
+```
+
+:::
+
+A single-quoted span contains an elision without opening a nested span (R3).
+
+::: compare
+
+```carve
+'I told 'em so,' he said.
+```
+
+```html
+<p>‘I told ’em so,’ he said.</p>
+```
+
+:::
+
+An unlisted inner opener is also an apostrophe while a single-quote span is open.
+
+::: compare
+
+```carve
+'I said 'hello there,' she replied.
+```
+
+```html
+<p>‘I said ’hello there,’ she replied.</p>
+```
+
+:::
+
+An unclosed mid-paragraph opener is demoted at the end of the content.
+
+::: compare
+
+```carve
+say 'word
+```
+
+```html
+<p>say ’word</p>
+```
+
+:::
+
+An unclosed opener at the start keeps its opening glyph.
+
+::: compare
+
+```carve
+'word
+```
+
+```html
+<p>‘word</p>
+```
+
+:::
+
+An unclosed opener directly after an opening double quote keeps its glyph.
+
+::: compare
+
+```carve
+"'word
+```
+
+```html
+<p>“‘word</p>
+```
+
+:::
+
+An opener before inline markup is never demoted.
+
+::: compare
+
+```carve
+say '*bold* text
+```
+
+```html
+<p>say ‘<strong>bold</strong> text</p>
+```
+
+:::
+
+Possessives and quotes before digits do not close an open single-quote span.
+
+::: compare
+
+```carve
+'Jane's '90s dog and 'word'
+```
+
+```html
+<p>‘Jane’s ’90s dog and ’word’</p>
+```
+
+:::
+
+Quote state follows nested inline content in the surrounding block.
+
+::: compare
+
+```carve
+'I *said 'hello* there,' she replied.
+```
+
+```html
+<p>‘I <strong>said ’hello</strong> there,’ she replied.</p>
+```
+
+:::
+
+Each block starts with fresh single-quote state.
+
+::: compare
+
+```carve
+'one
+
+say 'two'
+```
+
+```html
+<p>‘one</p>
+<p>say ‘two’</p>
+```
+
+:::
+
+An inline footnote keeps its own quote state and finalizes it separately.
+
+::: compare
+
+```carve
+say ^['note] 'two'
+```
+
+```html
+<p>say <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> ‘two’</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>‘note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+A footnote leaves an already-open surrounding single quote intact.
+
+::: compare
+
+```carve
+'one ^[say 'note] 'two'
+```
+
+```html
+<p>‘one <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> ’two’</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>say ’note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+An empty braced comment is transparent after a dash (R4).
+
+::: compare
+
+```carve
+"Wait---{%%}" he said.
+```
+
+```html
+<p>“Wait—” he said.</p>
+```
+
+:::
+
+A quote after a curly opening quote opens too.
+
+::: compare
+
+```carve
+“'word'” and ‘"word"’
+```
+
+```html
+<p>“‘word’” and ‘“word”’</p>
 ```
 
 :::
@@ -3630,7 +3949,7 @@ say\ 'twas a fine\ "day"
 ```
 
 ```html
-<p>say&nbsp;‘twas a fine&nbsp;“day”</p>
+<p>say&nbsp;’twas a fine&nbsp;“day”</p>
 ```
 
 :::

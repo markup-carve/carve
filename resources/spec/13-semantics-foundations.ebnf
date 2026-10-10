@@ -479,5 +479,11 @@
           separately nameable in a profile (profiles.md).
         See divergence-from-djot.md section 12 for how this compares to
         Djot's container-node model.
+      - A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT -- NORMATIVE [CARVE-P9-079].
+        The previous-character test in `smart_quote` reads the last emitted
+        character. A construct that emits nothing contributes no character,
+        including a braced comment with an empty body. `\{{%%}"q"` renders
+        `<p>{“q”</p>`, just as `\{"q"` does. Content bearing attributes still
+        contributes its text: `[x]{.c}"q"` closes on the `x`.
 
    ============================================================================ *)
