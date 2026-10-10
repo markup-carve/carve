@@ -16,8 +16,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # The engine revisions every job below checks out, read from the file a human
+  # reviews. These jobs used to check out `ref: main`, so an unrelated engine
+  # merge reddened every open pull request here on an assertion none of them
+  # touched, and the gate could not tell "this change broke something" from
+  # "another repository moved" (carve#2869). An engine merge now arrives through
+  # bump-engine-pin.yml as one reviewable change instead.
+  engine-pins:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      js: ${{ steps.pins.outputs.js }}
+      php: ${{ steps.pins.outputs.php }}
+      rs: ${{ steps.pins.outputs.rs }}
+    steps:
+      - uses: actions/checkout@v6
+      - id: pins
+        run: node scripts/set-engine-pin.mjs --github-output >> "$GITHUB_OUTPUT"
+
   markdown-migration:
     name: Markdown migration fidelity
+    needs: engine-pins
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -31,7 +50,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: markup-carve/carve-js
-          ref: main
+          ref: ${{ needs.engine-pins.outputs.js }}
           path: engines/carve-js
           submodules: recursive
       - name: Build JS importer
@@ -40,7 +59,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: markup-carve/carve-rs
-          ref: main
+          ref: ${{ needs.engine-pins.outputs.rs }}
           path: engines/carve-rs
           submodules: recursive
       - name: Build Rust importer
@@ -49,7 +68,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: markup-carve/carve-php
-          ref: main
+          ref: ${{ needs.engine-pins.outputs.php }}
           path: engines/carve-php
           submodules: recursive
       - uses: shivammathur/setup-php@v2
