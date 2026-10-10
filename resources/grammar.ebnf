@@ -6127,16 +6127,34 @@ EOF = (* end of file *) ;
         (E2b). Unmatched explicit openers remain literal, not implicitly
         closed at end of input: {*a {*b*} keeps its literal outer opener
         and its closed inner strong span. Empty forced spans remain literal.
-        MATCHING ORDER. A preliminary linear token pass pairs braced spans
-        within each bracket run. It skips existing opaque constructs and
-        pushes unescaped candidate openers. A closer pairs only with the
-        top candidate of its matching kind; a closer blocked by another
-        kind is recorded as literal, with no later retry. Unpaired openers
-        at end of the run stay literal. Only paired spans establish E2a
-        boundaries during inline resolution. A blocked closer stays literal
-        even if its blocking opener is subsequently found unpaired.
-        Thus {*a {/b *} c*} is all literal. In {~a {*x ~>y~} z*}, the ~}
-        is blocked: {~a stays literal and the strong contains x ~>y~} z.
+        MATCHING ORDER. Tokenize candidate braced openers and closers
+        inside each bracket run, preserving escapes and existing opacity.
+        Tokens do not overlap: a mark consumed by {X cannot also form X}.
+        Thus {*} is unmatched literal input, not an empty paired span.
+        Pair them in a RIGHT-TO-LEFT pass. A closer is pushed onto a stack
+        and a per-kind head indexes the nearest available closer. An opener
+        with no available closer of its kind remains literal and changes
+        no stack entry. Otherwise pair it with that indexed closer; pop
+        every closer above it as a discarded BRACED closer, then pop the
+        paired closer. Discarding prevents braced pairing only; forward
+        resolution still evaluates its bare mark under E2a.
+        Those discarded closers lie inside the matched child and cannot
+        later close an ancestor. Updating per-kind heads on each push/pop
+        makes lookup constant-time; each closer is popped at most once.
+        Candidate kinds are the seven forced emphasis forms and the
+        non-opaque {+ +} and {- -} editorial forms. A {~ ~} frame has one
+        matching kind whether subsequently classified as strike or
+        substitution. Code, raw, math, literal, editorial comment {# #},
+        delimited comment {% %}, attributes, link/image destinations with
+        titles, and autolinks retain their existing opaque scans.
+        Only indexed pairs establish E2a boundaries in forward resolution.
+        Empty paired forms stay literal as a whole, including their closer.
+        Thus {*a {/b *} c*} closes strong at the first *}: the unmatched
+        italic opener is literal. In {*a {/b *} d/} e*}, the matched
+        italic discards the inner *} from outer matching and strong closes
+        at e*}. In {~a {*x ~>y~} z*}, the matched strong discards the ~}
+        from outer matching: {~a is literal; strong contains text x ,
+        bare strike >y, and literal } z. Bare behavior remains unchanged.
         MATCHED OPENERS ONLY. An explicit opener with no indexed matching
         closer creates no E2a boundary and stays literal.
         Thus *a {*b c* remains one strong node containing a literal {*.
@@ -6156,9 +6174,12 @@ EOF = (* end of file *) ;
         Bare and braced spans consume the same existing depth budget.
         An unmatched
         over-limit opener follows the matched-openers rule above.
-      - UNPAIRED CLOSERS. An X} with no indexed braced match and no blocked
-        closer mark is processed as an ordinary bare X followed by literal
-        }. Thus *a b*} closes a bare strong span and leaves } outside it.
+      - UNPAIRED AND DISCARDED CLOSERS. An X} with no indexed braced match,
+        including a discarded closer, is processed as an ordinary bare X
+        followed by literal }. It MUST NOT be retried as a braced closer.
+        E2a still bounds which bare entries are reachable: {/x ~b~} d/}
+        contains italic with bare strike b followed by literal } d.
+        Thus *a b*} closes a bare strong span and leaves } outside it.
       - `{~ … ~}` DISAMBIGUATION. The brace pair is editorial SUBSTITUTION when
         it contains a top-level `~>` ({~old~>new~} -> <del>old</del><ins>new
         </ins>), and forced STRIKETHROUGH otherwise ({~old~} ->

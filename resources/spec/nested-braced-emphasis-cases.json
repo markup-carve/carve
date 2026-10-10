@@ -881,15 +881,24 @@
       "html": "<p><sup><sup>x</sup></sup></p>"
     },
     {
-      "id": "blocked-closer-never-retried",
+      "id": "unmatched-cross-kind-opener-is-transparent",
       "source": "{*a {/b *} c*}",
       "children": [
         {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "a {/b "
+            }
+          ]
+        },
+        {
           "type": "text",
-          "value": "{*a {/b *} c*}"
+          "value": " c*}"
         }
       ],
-      "html": "<p>{*a {/b *} c*}</p>"
+      "html": "<p><strong>a {/b </strong> c*}</p>"
     },
     {
       "id": "crossing-braced-candidates",
@@ -904,12 +913,25 @@
           "children": [
             {
               "type": "text",
-              "value": "x ~>y~} z"
+              "value": "x "
+            },
+            {
+              "type": "strike",
+              "children": [
+                {
+                  "type": "text",
+                  "value": ">y"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": "} z"
             }
           ]
         }
       ],
-      "html": "<p>{~a <strong>x ~&gt;y~} z</strong></p>"
+      "html": "<p>{~a <strong>x <s>&gt;y</s>} z</strong></p>"
     },
     {
       "id": "orphan-closer-remains-text",
@@ -1462,6 +1484,62 @@
         }
       ],
       "html": "<p><strong>a <span class=\"math inline\" role=\"math\">\\({*x*}\\)</span> c</strong></p>"
+    },
+    {
+      "id": "empty-child-stays-literal-within-parent",
+      "source": "{*a {**} b*}",
+      "children": [
+        {
+          "type": "strong",
+          "children": [
+            {
+              "type": "text",
+              "value": "a {**} b"
+            }
+          ]
+        }
+      ],
+      "html": "<p><strong>a {**} b</strong></p>"
+    },
+    {
+      "id": "discarded-braced-closer-can-close-bare-child",
+      "source": "{/x ~b~} d/}",
+      "children": [
+        {
+          "type": "emphasis",
+          "children": [
+            {
+              "type": "text",
+              "value": "x "
+            },
+            {
+              "type": "strike",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "b"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": "} d"
+            }
+          ]
+        }
+      ],
+      "html": "<p><em>x <s>b</s>} d</em></p>"
+    },
+    {
+      "id": "opener-closer-tokens-do-not-overlap",
+      "source": "{*}",
+      "children": [
+        {
+          "type": "text",
+          "value": "{*}"
+        }
+      ],
+      "html": "<p>{*}</p>"
     }
   ],
   "depthCases": [
