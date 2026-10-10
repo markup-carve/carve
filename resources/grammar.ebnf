@@ -10065,18 +10065,21 @@ EOF = (* end of file *) ;
       that renders as a paragraph, and it takes no marker of its own.
 
       A MARKER IS READ AT A LINE'S OWN START, so a HOST THAT PREFIXES ITS LINES
-      CARRIES NOTHING: a comment written at a list item's content column or
-      behind a block quote's `>` is not read back, and a container in such a
-      host degrades there exactly as it does with the mode off. The narrowing
-      is deliberate rather than pending. A marker-shaped line in VERBATIM
-      content records no container and is never read, and at a list item's
-      content column a marker and a verbatim line are not distinguishable
-      without the block structure standing around them - so a marker written
-      where it cannot be read back is worse than degrading honestly, because
-      the output would look carried while nothing restores it. A TABLE CELL is
-      narrower still: this target flattens a cell to a single line, so there is
-      no line for a marker to stand on, and the container's own body is
-      flattened with it, leaving a restored marker nothing to bracket.
+      CARRIES NOTHING TODAY: a comment written at a list item's content column
+      or behind a block quote's `>` is not read back, and a container in such a
+      host degrades there exactly as it does with the mode off. That is PENDING
+      rather than deliberate, and markup-carve/carve#2850 tracks it: reading a
+      prefixed marker means reading it off the parsed tree instead of a scan
+      over source lines. A marker-shaped line in VERBATIM content records no
+      container and is never read, and at a list item's content column a marker
+      and a verbatim line are not distinguishable without the block structure
+      standing around them - so until that read lands, a marker written where
+      it cannot be read back is worse than degrading honestly, because the
+      output would look carried while nothing restores it. A TABLE CELL is
+      narrower still, and permanently: this target flattens a cell to a single
+      line, so there is no line for a marker to stand on, and the container's
+      own body is flattened with it, leaving a restored marker nothing to
+      bracket. No read recovers that, so the cell narrowing is deliberate.
 
       A COMMENT AND NOT A LINK REFERENCE DEFINITION is the one choice here
       that is not obvious, and it was measured rather than argued.
