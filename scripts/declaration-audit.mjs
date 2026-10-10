@@ -279,6 +279,14 @@ const MANIFEST = [
   { repo: 'spec', path: 'tests/a-wrapper-its-content-spells-away-is-a-ceiling.test.mjs', name: 'PIN_LAG', kind: 'js-string', policy: 'owed', guard: 'two-way', optional: true, owner: 'markup-carve/carve-js#1422' },
   { repo: 'spec', path: 'tests/an-ingested-default-start-is-not-re-emitted.test.mjs', name: 'PIN_LAG', kind: 'js-string', policy: 'owed', guard: 'two-way', optional: true, owner: 'markup-carve/carve-js#1391, markup-carve/carve-rs#1293' },
   { repo: 'spec', path: 'tests/an-unspellable-block-does-not-cancel-list-adjacency.test.mjs', name: 'PIN_LAG', kind: 'js-string', policy: 'owed', guard: 'two-way', optional: true, owner: 'markup-carve/carve#1621' },
+  // An engine-pin window scoped to the CAPTION ROWS of CARVE-P11-063, not to
+  // the clause: carve#2851's ruling landed spec-first and the pinned build
+  // writes no caption marker, while every other row in that file is live. The
+  // guard is two-directional and MEASURED, not claimed - at the pinned build
+  // the declaration carries 4 assertions that go red without it, and against a
+  // build that carries the caption all 4 fire with the `delete CAPTION_LAG`
+  // message that `staleness` names.
+  { repo: 'spec', path: 'tests/an-element-less-container-is-carried-in-a-comment.test.mjs', name: 'CAPTION_LAG', kind: 'js-string', policy: 'owed', prPolicy: 'declared', guard: 'two-way', optional: true, staleness: 'delete CAPTION_LAG', owner: 'markup-carve/carve#2851' },
 
   // -- carve-js --------------------------------------------------------------
   { repo: 'carve-js', path: 'test/corpus.test.ts', name: 'AHEAD_OF_PIN', kind: 'js', policy: 'owed', guard: 'two-way', owner: 'test/corpus.test.ts' },

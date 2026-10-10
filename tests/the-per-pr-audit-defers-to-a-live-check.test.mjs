@@ -107,7 +107,8 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
   // The SPEC entries whose per-PR policy differs from their release policy are
   // the engine-lag ledgers, via the manifest `prPolicy` they opted into, plus
   // the AST extent ledger (carve#2179) and the AST value and span ledgers
-  // (carve#2175). Each is here for the same reason: its row cannot be written
+  // (carve#2175). A per-clause engine-pin window joins them on the same rule:
+  // the §10s caption window (carve#2851) declares the issue that retires it. Each is here for the same reason: its row cannot be written
   // without naming an `owner/repo#N`, so a declaration is tracked work that
   // leaves when the issue closes. The SPAN ledger joined them once its row grew
   // that third column, which is what carve#2179 had asked for.
@@ -134,6 +135,10 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
       ['tests/corpus-convert.test.mjs', 'owed', 'manual'],
       ['tests/optional-corpus.test.mjs', 'owed', 'manual'],
       ['tests/examples-tier3.test.mjs', 'owed', 'manual'],
+      // The CAPTION window of CARVE-P11-063 (carve#2851), an engine-pin window
+      // like the ledgers above: its declaration names the issue that retires
+      // it, so it is tracked work that leaves when the engines' pin moves.
+      ['tests/an-element-less-container-is-carried-in-a-comment.test.mjs', 'owed', 'declared'],
     ].sort(),
     'a spec ledger other than the engine-lag ones now reads differently per-PR',
   )

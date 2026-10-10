@@ -174,8 +174,38 @@ shows the comment as text. A damaged marker set - one deleted, two reordered, an
 unbalanced pair - imports as plain Markdown and reports it, rather than guessing
 at a structure the markers no longer describe.
 
+A composite figure's caption line takes a marker of its own, directly after the
+closer's, because the caption slot hangs below the closing fence and the pair
+bracketing the container cannot enclose it:
+
+```markdown
+<!-- carve: ::: figure -->
+<!-- carve: :::: panel -->
+![a](x.png)
+
+<!-- carve: :::: -->
+<!-- carve: ::: -->
+<!-- carve: ^ Group caption -->
+**Group caption**
+```
+
+A caption also renders as body text, so the import replaces that paragraph
+instead of adding a second copy of the caption. The paragraph replaced is the
+one the marker stands directly above and no other, so the same text appearing
+as ordinary body text elsewhere is untouched.
+
+A marker is read at a line's own start, so a host that prefixes its lines
+carries nothing: a container inside a list item or a block quote degrades there
+exactly as it does with the mode off. That is deliberate - a marker-shaped line
+in verbatim content records no container, and at a list item's content column
+the two are not distinguishable without the block structure around them, so a
+marker written where it cannot be read back would look carried while nothing
+restored it. A table cell is narrower still, because this target flattens a cell
+to one line and flattens the container's body with it.
+
 `CARVE-P11-063` has the normative rule, including the escape for a payload that
-carries `-->`. No engine ships the mode yet.
+carries `-->`. carve-php and carve-js ship the mode; carve-rs does not have it
+yet.
 
 ## How the renderer chooses: the `mode` signal
 
