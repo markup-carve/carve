@@ -287,3 +287,121 @@ lazy
   </li>
 </ul>
 ```
+
+````
+- - ```
+    ```
+x
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>x</p>
+````
+
+````
+- - ```
+    ```
+```
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+<pre><code></code></pre>
+````
+
+````
+- - ```
+    x
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code>x
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
+
+````
+:: t
+: - - ```
+      ```
+x
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code></code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<p>x</p>
+````
+
+````
+:: t
+: - - ```
+      ```
+```
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code></code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<pre><code></code></pre>
+````
+
+````
+:: t
+: - - ```
+      x
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code>x
+</code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </dd>
+</dl>
+````

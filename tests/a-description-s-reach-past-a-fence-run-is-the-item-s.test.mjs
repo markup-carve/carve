@@ -189,3 +189,21 @@ test('the inner-item row now takes the owner table', () => {
       '</code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<pre><code></code></pre>',
   )
 })
+
+test('a closed marker-line fence ends lazy reach in both hosts', () => {
+  for (const [prefix, padding] of [['- - ', '    '], [':: t\n: - - ', '      ']]) {
+    for (const tail of ['x', '```']) {
+      const out = html(`${prefix}\`\`\`\n${padding}\`\`\`\n${tail}\n`)
+      const close = prefix.startsWith('::') ? '</dl>' : '</ul>'
+      assert.ok(out.lastIndexOf(close) < out.lastIndexOf(tail === 'x' ? '<p>x</p>' : '<pre>'), out)
+    }
+  }
+})
+
+test('an unfinished marker-line fence keeps its first body line', () => {
+  for (const [prefix, padding] of [['- - ', '    '], [':: t\n: - - ', '      ']]) {
+    const out = html(`${prefix}\`\`\`\n${padding}x\n`)
+    assert.match(out, /<pre><code>x\n<\/code><\/pre>/)
+    assert.doesNotMatch(out, /<p>x<\/p>/)
+  }
+})

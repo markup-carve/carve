@@ -46311,9 +46311,9 @@ $$`y`
 
 ## An info string does not change how a flush-left fence folds into a description body
 
-A flush-left fence line below a closed nested fence in a description body is
-the body's content whether or not it carries a language, so the language text
-folds as content like any other run.
+A closed nested fence leaves no paragraph open. A flush-left fence line ends
+the description body and opens a document block, with or without a language
+(CARVE-P0-009; carve#2895).
 
 ::: compare
 
@@ -46333,14 +46333,14 @@ folds as content like any other run.
         <pre><code></code></pre>
       </li>
     </ul>
-    <p><code>rust</code></p>
   </dd>
 </dl>
+<pre><code class="language-rust"></code></pre>
 ````
 
 :::
 
-The bare run folds the same way:
+The bare run ends the body too:
 
 ::: compare
 
@@ -46360,15 +46360,14 @@ The bare run folds the same way:
         <pre><code></code></pre>
       </li>
     </ul>
-    <p><code></code></p>
   </dd>
 </dl>
+<pre><code></code></pre>
 ````
 
 :::
 
-A terminated fence at that column is a different line: it opens a block and
-ends the body, for a language-tagged run as for a bare one.
+A terminated fence at that column also opens outside the body.
 
 ::: compare
 
@@ -47224,6 +47223,140 @@ lazy
     </ul>
   </li>
 </ul>
+```
+
+A closed fence opened on nested markers leaves no paragraph for a below-column
+line. This applies to list items and description bodies (carve#2895).
+An unfinished opener keeps its first body line inside its fence.
+
+````carve
+- - ```
+    ```
+x
+````
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>x</p>
+```
+
+````carve
+- - ```
+    ```
+```
+````
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+<pre><code></code></pre>
+```
+
+````carve
+- - ```
+    x
+````
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code>x
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+````carve
+:: t
+: - - ```
+      ```
+x
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code></code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<p>x</p>
+```
+
+````carve
+:: t
+: - - ```
+      ```
+```
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code></code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<pre><code></code></pre>
+```
+
+````carve
+:: t
+: - - ```
+      x
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code>x
+</code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </dd>
+</dl>
 ```
 
 :::

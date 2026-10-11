@@ -1707,6 +1707,27 @@ function bodyEndsWrappedAttr(bodyLines, depth = 0) {
 // fence's closer would make the real closer look like an opener and fold the
 // line below back into the body.
 function bodyClosesAFenceAt(bodyLines, last) {
+  // CARVE-P0-009 applies to a marker-line fence in a description body too.
+  // Track its host column so an unfinished opener still leaves prose open.
+  const host = hostLadder()
+  let paragraphOpen = false
+  for (let index = 0; index <= last; index++) {
+    const hadFence = host.fence !== null
+    if (hostFenceStep(host, bodyLines[index])) {
+      if (index === last && hadFence && host.fence === null) return true
+      continue
+    }
+    const { inner, blockStart } = hostAdvance(host, bodyLines[index], paragraphOpen)
+    if (blockStart) {
+      const opener = hostFenceOpener(host, inner)
+      if (opener) {
+        host.fence = { run: opener[1], host: host.columns.at(-1), column: inner.col }
+        paragraphOpen = false
+        continue
+      }
+    }
+    paragraphOpen = opensParagraph(inner.rest, blockStart)
+  }
   let closedAt = -1
   let k = 0
   while (k <= last) {
