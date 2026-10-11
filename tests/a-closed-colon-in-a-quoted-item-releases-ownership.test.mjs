@@ -4,6 +4,56 @@ import {parse} from '../scripts/spec/layout.mjs'
 import {renderDoc} from '../scripts/spec/html.mjs'
 import {readFileSync} from 'node:fs'
 
+for (const depth of [0, 1, 2]) for (const malformed of [false, true]) {
+  test(`line-block payload opens no colon container at quote depth ${depth}, malformed ${malformed}`, () => {
+    const quote = '> '.repeat(depth)
+    const source = `${quote}- ::: |\n${quote}  :::: box\n${quote}  :::\n` +
+      (malformed ? `${quote}  :::bad\n${quote}  :::\n` : '') + '- tail\n'
+    const document = parse(source)
+    let owner = document.blocks[0]
+    for (let n = 0; n < depth; n++) owner = owner.children[0]
+    assert.deepEqual(owner.items[0].blocks[0], {t: 'line-block', lines: [':::: box']})
+    if (depth > 0 && malformed) {
+      assert.equal(document.blocks.length, 1)
+      assert.deepEqual(owner.items[0].blocks[1].lines, [':::bad', ':::', '- tail'])
+    } else if (depth > 0) {
+      assert.deepEqual(document.blocks[1], parse('- tail\n').blocks[0])
+    } else {
+      assert.deepEqual(owner.items[1].blocks, parse('tail\n').blocks)
+    }
+  })
+}
+
+test('a nested line block ignores block-looking payload until its own closer', () => {
+  const source = '::: box\n:::: |\n::::: inner\n%%%\n```\n- marker\n::::\n:::\n'
+  const block = parse(source).blocks[0]
+  assert.equal(block.t, 'colon-div')
+  assert.deepEqual(block.children, [{t: 'line-block', lines: ['::::: inner', '%%%', '```', '- marker']}])
+})
+
+test('a hardbreak container still parses nested colon blocks', () => {
+  const block = parse('::: \\\n:::: box\nx\n::::\n:::\n').blocks[0]
+  assert.equal(block.t, 'hardbreaks')
+  assert.equal(block.children[0].t, 'colon-div')
+  assert.deepEqual(block.children[0].children, parse('x\n').blocks)
+})
+
+for (const depth of [1, 2]) for (const payload of ['%%%', '```', '- marker']) {
+  test(`literal ${payload} in a line block does not change the following paragraph claim at depth ${depth}`, () => {
+    const quote = '> '.repeat(depth)
+    const source = `${quote}- ::: |\n${quote}  ${payload}\n${quote}  :::\n` +
+      `${quote}  :::bad\n${quote}  :::\n- tail\n`
+    const document = parse(source)
+    assert.equal(document.blocks.length, 1)
+    let owner = document.blocks[0]
+    for (let n = 0; n < depth; n++) owner = owner.children[0]
+    assert.deepEqual(owner.items[0].blocks, [
+      {t: 'line-block', lines: [payload]},
+      {t: 'para', lines: [':::bad', ':::', '- tail']},
+    ])
+  })
+}
+
 for (const depth of [1, 2]) for (const marker of ['-', '*', '1.']) {
   for (const width of [3, 4, 5]) for (const body of ['', 'text']) for (const column of [0, 2]) {
     test(`depth ${depth}, ${marker}, ${width} colons, ${body || 'empty'}, tail ${column}`, () => {

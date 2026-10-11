@@ -935,8 +935,18 @@ function parseValidColonOpener(tail) {
 }
 
 function findColonCloser(lines, openIdx, len) {
-  const stack = [len]
+  const first = COLON_FENCE.exec(lines[openIdx] ?? '')
+  const stack = [{ length: len, mode: first ? parseColonOpener(first[2])?.mode : 'div' }]
   for (let j = openIdx + 1; j < lines.length; j++) {
+    const top = stack.at(-1)
+    if (top.mode === 'line-block') {
+      const closer = COLON_CLOSER.exec(lines[j])
+      if (closer?.[1].length === top.length) {
+        stack.pop()
+        if (stack.length === 0) return j
+      }
+      continue
+    }
     // A code fence, a raw block and a comment block are OPAQUE: their contents
     // are content, not markup, so a colon fence written inside one closes
     // nothing and opens nothing (carve#450). The span is skipped from the line
@@ -950,16 +960,17 @@ function findColonCloser(lines, openIdx, len) {
     const c = COLON_CLOSER.exec(lines[j])
     if (c) {
       const closeLen = c[1].length
-      if (closeLen === stack[stack.length - 1]) {
+      if (closeLen === top.length) {
         stack.pop()
         if (stack.length === 0) return j
       } else {
-        stack.push(closeLen)
+        stack.push({ length: closeLen, mode: 'div' })
       }
       continue
     }
     const o = COLON_FENCE.exec(lines[j])
-    if (o && parseColonOpener(o[2]) !== null) stack.push(o[1].length)
+    const opener = o && parseColonOpener(o[2])
+    if (opener) stack.push({ length: o[1].length, mode: opener.mode })
   }
   return -1
 }
@@ -1848,6 +1859,9 @@ function hostLadder() {
  */
 function hostAdvance(h, line, paraOpen) {
   const meas = indentCols(line)
+  if (h.colons?.at(-1)?.mode === 'line-block' && meas.col >= h.colons.at(-1).base) {
+    return { meas, inner: meas, blockStart: false }
+  }
   if (meas.rest === '' || h.colonComment || COMMENT_LINE.test(meas.rest)) return { meas, inner: meas, blockStart: false }
   // ONLY A LIST ITEM'S PARAGRAPH GIVES WAY. `- d` / `  - x` opens a sublist, so
   // the marker interrupts; the same marker at a DESCRIPTION or FOOTNOTE body's
@@ -1917,10 +1931,6 @@ function hostColonStep(h, inner, bodyFollows, commentCloses = () => false, marke
     if (comment && comment[1].length === h.colonComment) h.colonComment = null
     return true
   }
-  if (COMMENT_LINE.test(inner.rest)) {
-    if (comment && commentCloses(comment[1].length)) h.colonComment = comment[1].length
-    return false
-  }
   const stack = h.colons ??= []
   while (stack.length && inner.rest !== '' && inner.col < stack.at(-1).base) stack.pop()
   const colon = COLON_FENCE.exec(inner.rest)
@@ -1929,9 +1939,15 @@ function hostColonStep(h, inner, bodyFollows, commentCloses = () => false, marke
     stack.pop()
     return true
   }
+  if (top?.mode === 'line-block') return true
+  if (COMMENT_LINE.test(inner.rest)) {
+    if (comment && commentCloses(comment[1].length)) h.colonComment = comment[1].length
+    return false
+  }
   const base = h.columns.at(-1)
   if (stack.length >= remainingDepth) return false
-  if (base > 0 && colon && parseColonOpener(colon[2]) !== null && (!markerLine || bodyFollows(base))) {
+  const opener = colon && parseColonOpener(colon[2])
+  if (base > 0 && opener && (!markerLine || bodyFollows(base))) {
     let absorbed = false
     if (COLON_CLOSER.test(inner.rest)) {
       let held = h.colonParagraph
@@ -1948,7 +1964,7 @@ function hostColonStep(h, inner, bodyFollows, commentCloses = () => false, marke
       absorbed = held.invalid
     }
     if (!absorbed) {
-      stack.push({ length: colon[1].length, column: inner.col, base })
+      stack.push({ length: colon[1].length, column: inner.col, base, mode: opener.mode })
       return true
     }
   }
@@ -3964,7 +3980,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           return
         }
         const comment = COMMENT_FENCE_BODY.exec(l)
-        if (comment) {
+        if (comment && qHost.colons?.at(-1)?.mode !== 'line-block') {
           for (let j = idx + 1; j < n; j++) {
             const quoted = QUOTE.exec(lines[j] ?? '')
             if (!quoted) break
