@@ -8103,11 +8103,13 @@ EOF = (* end of file *) ;
         data-carve-inline-footnote  <li>          presence: the endnote came
                                                   from an inline footnote
         data-carve-raw              <span>        the raw inline's format; the
-                                                  span holds its content
+                                                  span's TEXT holds its content
         data-carve-escaped          <span>        presence; the span holds the
                                                   one escaped character
-        data-carve-abbreviations    <template>    the document's abbreviation
-                                                  definitions, one per line
+        data-carve-abbreviations    <template>    presence; the template's TEXT
+                                                  holds the document's
+                                                  abbreviation definitions, one
+                                                  `*[ABBR]: expansion` per line
 
       AN ORDERED LIST'S DELIMITER IS `data-delim`, NOT A SECOND CARRIER. §12
       writes the authored delimiter on every render, and an ordered list's
@@ -8155,6 +8157,16 @@ EOF = (* end of file *) ;
       A VALUE ESCAPES AS §2 ESCAPES ANY ATTRIBUTE VALUE. §2's text-content
       exception for U+00A0 is not an attribute rule, so a carrier value
       holding a no-break space keeps that character.
+
+      A CARRIER THAT HOLDS ITS PAYLOAD AS CONTENT ESCAPES IT AS §2 ESCAPES TEXT
+      CONTENT, and a reader takes the element's TEXT rather than its serialized
+      markup. `data-carve-raw`, `data-carve-escaped` and
+      `data-carve-abbreviations` are the three, and for `data-carve-raw` this is
+      not a formatting preference: written unescaped, a payload of `<b>` opens a
+      tag the span never closes and the rest of the paragraph disappears into
+      it. Reading the serialized markup back is the same mistake from the other
+      side, because it escapes the payload a second time and a raw inline
+      holding `&` returns holding `&amp;`.
 
       A PRESENCE CARRIER CARRIES NOTHING IN ITS VALUE.
       `data-carve-explicit-id`, `data-carve-autolink`,
