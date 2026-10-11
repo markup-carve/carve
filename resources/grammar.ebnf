@@ -8193,8 +8193,8 @@ EOF = (* end of file *) ;
       document's attributes: `<hr data-char="_">` imports as `___`, not as
       `---{data-char=_}`, and `<a href="/u" data-carve-ref="lbl">text</a>`
       imports as `[text][lbl]`, not as `[text](/u){data-carve-ref=lbl}`. A
-      reserved name this importer has no use for is still consumed, and
-      reported, rather than passed through.
+      reserved name an importer has no use for is still consumed rather than
+      passed through, with or without a diagnostic saying so.
 
       WHAT THE MODE DECIDES IS SOMETHING ELSE -- reconstruction of raw HTML,
       and the trust of a carried payload, which is §13e.
