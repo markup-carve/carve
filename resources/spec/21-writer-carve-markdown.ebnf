@@ -204,14 +204,22 @@
       table comes back as `|:-----|---:|`. A width below 1 is written as 1,
       since a separator cell needs a character.
 
-      THE FIELD DECIDES THE CELL COUNT, AND THE WRITER NEVER PADS TO THE
-      HEADER'S WIDTH. An entry count that disagrees with the header row is
-      spelled for the entries that exist and no further, because a separator
-      cell the author did not write is a cell, and §1 breaks on it: the
-      document re-parses with a `separatorWidths` the source never had. One
-      engine padded, and three of four ragged-table cases failed
-      `parse(fmt(x)) == parse(x)` as a result, which is the shape of defect this
-      sentence exists to name.
+      THE FIELD DECIDES THE CELL COUNT, AND THE WRITER NEITHER PADS TO NOR
+      TRUNCATES AT THE HEADER'S WIDTH. The count is the number of ENTRIES, and
+      the header row does not enter it. A separator cell the author did not
+      write is a cell, and one the author wrote and the writer dropped is a
+      cell lost, and §1 breaks either way: the document re-parses with a
+      `separatorWidths` the source never had.
+
+      BOTH DIRECTIONS WERE REAL. One engine padded to the header's width and
+      three of four ragged cases failed `parse(fmt(x)) == parse(x)`; another
+      counted over the header and TRUNCATED, failing two of four. In each the
+      surviving shape was the one its tests happened to carry, which is why
+      this sentence names the count rather than leaving it to be derived.
+
+      AN ENTRY PAST THE HEADER'S LAST CELL TAKES NO ALIGNMENT, having no cell
+      to take one from: `[3, 3]` over a one-cell centered header writes
+      `|:---:|---|`.
 
       IT IS NOT A LAYOUT INSTRUCTION. The widths are the dash runs the author
       typed, not column widths, and nothing downstream aligns a table to them.
