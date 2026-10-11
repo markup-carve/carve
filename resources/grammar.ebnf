@@ -8248,8 +8248,16 @@ EOF = (* end of file *) ;
       reserved name an importer has no use for is still consumed rather than
       passed through, with or without a diagnostic saying so.
 
-      WHAT THE MODE DECIDES IS SOMETHING ELSE -- reconstruction of raw HTML,
-      and the trust of a carried payload, which is §13e.
+      ONE CARRIER IS THE EXCEPTION, and §13e is why. `data-carve-raw` RETURNS
+      ITS PAYLOAD VERBATIM as a raw inline, so consuming it is not
+      reconstructing syntax the tree already expresses -- it decides that
+      foreign content may re-enter the document as raw. That stays on the
+      importer's own trust setting, and an importer that declines it drops the
+      carrier and takes the span's text.
+
+      WHAT THE MODE DECIDES IS NOTHING ELSE. Every other name in §13a is
+      consumed whatever the mode, and reconstruction of raw HTML outside a
+      carrier is §13e's question rather than this clause's.
 
    13e. EXPORT DOES NOT SELECT AN IMPORT MODE -- NORMATIVE [CARVE-P10-017].
       Roundtrip export adds information to OUTPUT. HTML import's `roundtrip`
