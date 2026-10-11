@@ -8215,7 +8215,7 @@ EOF = (* end of file *) ;
       distinction the tree discards is to add the PART 12 field FIRST, and then
       this clause follows.
 
-      THE SEPARATOR-ROW ROW IS WHAT THE RULE ADMITTING A CARRIER LOOKS LIKE.
+      THE `data-carve-col-widths` ROW SATISFIES THE CARRIER RULE.
       `data-carve-col-widths` was absent from this inventory until
       `table.separatorWidths` existed, and it is listed now because that field
       does. The order was not a formality: an engine that wrote the carrier
@@ -8251,13 +8251,18 @@ EOF = (* end of file *) ;
       belongs on the carrier rather than on the field.
 
       A READER REFUSES THE WHOLE CARRIER -- writing no field at all, which
-      means the `|=` form -- where any entry is not a run of decimal digits, or
+      means the `|=` form -- where any entry is empty, contains whitespace,
+      or is not a run of decimal digits, or
       where any entry is below 1 or exceeds 1000. Not a partial read and not a
-      clamp to the bound: both put a separator row on the page whose widths nobody wrote,
+      clamp to the bound: both put a separator row on the page whose widths
+      nobody wrote,
       and refusing leaves the table correct in its other spelling.
 
-      A WRITER WRITES NO CARRIER where the field holds an entry above 1000, for
-      the same reason read the other way: a carrier a conforming reader will
+      THE READER COMPARES THE DECIMAL VALUE WITHOUT INTEGER OVERFLOW. Leading
+      zeros do not change that value; a writer emits ordinary decimal integers.
+
+      A WRITER WRITES NO CARRIER where the field is absent, empty, or holds an
+      entry below 1 or above 1000, for the same reason read the other way: a carrier a conforming reader will
       refuse is a round-trip promise the writer cannot keep. The FIELD itself
       has no upper bound, because a parse records what the author typed and no
       amplification happens there.
@@ -9251,10 +9256,12 @@ EOF = (* end of file *) ;
       A SEPARATOR FORM REQUIRES AN ALL-HEADER FIRST ROW. An interchange
       tree may carry the field beside a first row containing non-header cells,
       but a separator would promote those cells under PART 9 T7.1. The source
-      writer therefore keeps their native form and omits `separatorWidths`,
+      writer does not change a cell's meaning to preserve the field's spelling.
+      A source-conversion API that refuses unspellable fields refuses this
+      combination with its typed source-unspellable error. A producer providing
+      a lossy fallback keeps the native form and omits `separatorWidths`,
       reporting `field-unspellable`, node `table`, field `separatorWidths`,
-      through the conversion-diagnostics channel of §1d [CARVE-P11-046]. It
-      does not change a cell's meaning to preserve the field's spelling.
+      through the conversion-diagnostics channel of §1d [CARVE-P11-046].
 
       ALIGNMENT IS WRITTEN ONCE. In a separator form, a header cell with a
       separator entry uses that entry's colon spelling and carries no native
@@ -10966,8 +10973,8 @@ EOF = (* end of file *) ;
                    tree written before this field, and every tree a converter
                    assembles, decodes to the spelling Carve teaches
         table      `rows`, and the AUTHOR-CHOICE field `separatorWidths` when
-                   the author wrote a separator row (PART 11 §6). It is an
-                   array of integers, one per separator cell, each the count of
+                   the author wrote a separator row (PART 11 §6h). It is an
+                   array of positive integers, one per separator cell, each the count of
                    `-` characters that cell spelled, alignment colons excluded:
                    `|:-----|---:|` records `[5, 3]`. Absent means the author
                    wrote NO separator row and spelled the header with `|=`

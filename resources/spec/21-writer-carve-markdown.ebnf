@@ -194,10 +194,12 @@
       A SEPARATOR FORM REQUIRES AN ALL-HEADER FIRST ROW. An interchange
       tree may carry the field beside a first row containing non-header cells,
       but a separator would promote those cells under PART 9 T7.1. The source
-      writer therefore keeps their native form and omits `separatorWidths`,
+      writer does not change a cell's meaning to preserve the field's spelling.
+      A source-conversion API that refuses unspellable fields refuses this
+      combination with its typed source-unspellable error. A producer providing
+      a lossy fallback keeps the native form and omits `separatorWidths`,
       reporting `field-unspellable`, node `table`, field `separatorWidths`,
-      through the conversion-diagnostics channel of §1d [CARVE-P11-046]. It
-      does not change a cell's meaning to preserve the field's spelling.
+      through the conversion-diagnostics channel of §1d [CARVE-P11-046].
 
       ALIGNMENT IS WRITTEN ONCE. In a separator form, a header cell with a
       separator entry uses that entry's colon spelling and carries no native

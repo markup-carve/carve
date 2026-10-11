@@ -12,7 +12,7 @@
   },
   "expected": {
     "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">A</th><th scope=\"col\">cell</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>1</td><td>2</td></tr>\n  </tbody>\n</table>",
-    "fmt": "|= A |= {{ c.crv }} |\n| 1 | 2 |\n",
+    "fmt": "| A | {{ c.crv }} |\n|---|---|\n| 1 | 2 |\n",
     "warnings": [],
     "dependencies": [
       {

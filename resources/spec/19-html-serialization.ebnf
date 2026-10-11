@@ -545,7 +545,7 @@
       distinction the tree discards is to add the PART 12 field FIRST, and then
       this clause follows.
 
-      THE SEPARATOR-ROW ROW IS WHAT THE RULE ADMITTING A CARRIER LOOKS LIKE.
+      THE `data-carve-col-widths` ROW SATISFIES THE CARRIER RULE.
       `data-carve-col-widths` was absent from this inventory until
       `table.separatorWidths` existed, and it is listed now because that field
       does. The order was not a formality: an engine that wrote the carrier
@@ -581,13 +581,18 @@
       belongs on the carrier rather than on the field.
 
       A READER REFUSES THE WHOLE CARRIER -- writing no field at all, which
-      means the `|=` form -- where any entry is not a run of decimal digits, or
+      means the `|=` form -- where any entry is empty, contains whitespace,
+      or is not a run of decimal digits, or
       where any entry is below 1 or exceeds 1000. Not a partial read and not a
-      clamp to the bound: both put a separator row on the page whose widths nobody wrote,
+      clamp to the bound: both put a separator row on the page whose widths
+      nobody wrote,
       and refusing leaves the table correct in its other spelling.
 
-      A WRITER WRITES NO CARRIER where the field holds an entry above 1000, for
-      the same reason read the other way: a carrier a conforming reader will
+      THE READER COMPARES THE DECIMAL VALUE WITHOUT INTEGER OVERFLOW. Leading
+      zeros do not change that value; a writer emits ordinary decimal integers.
+
+      A WRITER WRITES NO CARRIER where the field is absent, empty, or holds an
+      entry below 1 or above 1000, for the same reason read the other way: a carrier a conforming reader will
       refuse is a round-trip promise the writer cannot keep. The FIELD itself
       has no upper bound, because a parse records what the author typed and no
       amplification happens there.
