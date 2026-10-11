@@ -119,10 +119,6 @@ function declaredFields() {
     target.set(label, new Set([...(target.get(label) ?? []), ...own]))
   }
 
-  for (const fixture of JSON.parse(readFileSync(resolve(repo, 'resources/raw-payload-source-fixtures.json'), 'utf8'))) {
-    walk(toAstJson(parse(fixture.source, { positions: true })))
-  }
-
   return { byType, anywhere }
 }
 
@@ -159,6 +155,10 @@ function producedFields() {
     const parsed = parse(source, { positions: true })
     walk(toAstJson(parsed))
     walk(toAstJson(resolveDoc(parse(source, { positions: true }))))
+  }
+
+  for (const fixture of JSON.parse(readFileSync(resolve(repo, 'resources/raw-payload-source-fixtures.json'), 'utf8'))) {
+    walk(toAstJson(parse(fixture.source, { positions: true })))
   }
 
   return { byType, anywhere }
