@@ -2738,7 +2738,7 @@
         },
         "content": {
           "type": "string",
-          "description": "Literal payload text, including any authored final LF, under the same line-ending rules as code_block.content. Includes private-use Unicode characters."
+          "description": "Literal payload text, including private-use Unicode characters, including its final LF when present, matching code_block.content. Empty and blank payloads remain distinct. Matching raw output removes one final LF unless content consists entirely of LFs; code fallbacks use the literal string."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"

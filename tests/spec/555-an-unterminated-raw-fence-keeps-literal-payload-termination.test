@@ -1,0 +1,26 @@
+An unterminated raw fence keeps literal payload termination
+
+````
+```=html
+<b>raw</b>
+.
+<b>raw</b>
+````
+
+````
+before
+
+```=latex
+x
+.
+<p>before</p>
+````
+
+````
+before
+
+```=markdown
+x
+.
+<p>before</p>
+````

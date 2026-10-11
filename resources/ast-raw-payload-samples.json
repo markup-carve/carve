@@ -1,0 +1,247 @@
+[
+  {
+    "name": "<raw payload: root-''>",
+    "source": "```=html\n",
+    "content": ""
+  },
+  {
+    "name": "<raw payload: root-'\\n'>",
+    "source": "```=html\n\n",
+    "content": "\n"
+  },
+  {
+    "name": "<raw payload: root-'x'>",
+    "source": "```=html\nx",
+    "content": "x"
+  },
+  {
+    "name": "<raw payload: root-'x\\n'>",
+    "source": "```=html\nx\n",
+    "content": "x\n"
+  },
+  {
+    "name": "<raw payload: root-'x\\n\\n'>",
+    "source": "```=html\nx\n\n",
+    "content": "x\n\n"
+  },
+  {
+    "name": "<raw payload: root-' x\\t'>",
+    "source": "```=html\n x\t",
+    "content": " x\t"
+  },
+  {
+    "name": "<raw payload: quote-''>",
+    "source": "> ```=html\n",
+    "content": ""
+  },
+  {
+    "name": "<raw payload: quote-'\\n'>",
+    "source": "> ```=html\n> \n",
+    "content": "\n"
+  },
+  {
+    "name": "<raw payload: quote-'x'>",
+    "source": "> ```=html\n> x",
+    "content": "x"
+  },
+  {
+    "name": "<raw payload: quote-'x\\n'>",
+    "source": "> ```=html\n> x\n",
+    "content": "x\n"
+  },
+  {
+    "name": "<raw payload: quote-'x\\n\\n'>",
+    "source": "> ```=html\n> x\n> \n",
+    "content": "x\n\n"
+  },
+  {
+    "name": "<raw payload: quote-' x\\t'>",
+    "source": "> ```=html\n>  x\t",
+    "content": " x\t"
+  },
+  {
+    "name": "<raw payload: list-''>",
+    "source": "- ```=html\n",
+    "content": ""
+  },
+  {
+    "name": "<raw payload: list-'\\n'>",
+    "source": "- ```=html\n  \n",
+    "content": "\n"
+  },
+  {
+    "name": "<raw payload: list-'x'>",
+    "source": "- ```=html\n  x",
+    "content": "x"
+  },
+  {
+    "name": "<raw payload: list-'x\\n'>",
+    "source": "- ```=html\n  x\n",
+    "content": "x\n"
+  },
+  {
+    "name": "<raw payload: list-'x\\n\\n'>",
+    "source": "- ```=html\n  x\n  \n",
+    "content": "x\n\n"
+  },
+  {
+    "name": "<raw payload: list-' x\\t'>",
+    "source": "- ```=html\n   x\t",
+    "content": " x\t"
+  },
+  {
+    "name": "<raw payload: quoted-list-''>",
+    "source": "> - ```=html\n",
+    "content": ""
+  },
+  {
+    "name": "<raw payload: quoted-list-'\\n'>",
+    "source": "> - ```=html\n>   \n",
+    "content": "\n"
+  },
+  {
+    "name": "<raw payload: quoted-list-'x'>",
+    "source": "> - ```=html\n>   x",
+    "content": "x"
+  },
+  {
+    "name": "<raw payload: quoted-list-'x\\n'>",
+    "source": "> - ```=html\n>   x\n",
+    "content": "x\n"
+  },
+  {
+    "name": "<raw payload: quoted-list-'x\\n\\n'>",
+    "source": "> - ```=html\n>   x\n>   \n",
+    "content": "x\n\n"
+  },
+  {
+    "name": "<raw payload: quoted-list-' x\\t'>",
+    "source": "> - ```=html\n>    x\t",
+    "content": " x\t"
+  },
+  {
+    "name": "<raw payload: div-''>",
+    "source": "::: note\n```=html\n",
+    "content": ""
+  },
+  {
+    "name": "<raw payload: div-'\\n'>",
+    "source": "::: note\n```=html\n\n",
+    "content": "\n"
+  },
+  {
+    "name": "<raw payload: div-'x'>",
+    "source": "::: note\n```=html\nx",
+    "content": "x"
+  },
+  {
+    "name": "<raw payload: div-'x\\n'>",
+    "source": "::: note\n```=html\nx\n",
+    "content": "x\n"
+  },
+  {
+    "name": "<raw payload: div-'x\\n\\n'>",
+    "source": "::: note\n```=html\nx\n\n",
+    "content": "x\n\n"
+  },
+  {
+    "name": "<raw payload: div-' x\\t'>",
+    "source": "::: note\n```=html\n x\t",
+    "content": " x\t"
+  },
+  {
+    "name": "<raw payload: marker-only-eof-0>",
+    "source": "> ```=html\n> ",
+    "content": ""
+  },
+  {
+    "name": "<raw payload: marker-only-eof-1>",
+    "source": "> ```=html\n> \n> ",
+    "content": "\n"
+  },
+  {
+    "name": "<raw payload: marker-only-eof-2>",
+    "source": "> ```=html\n> x\n> \n> ",
+    "content": "x\n\n"
+  },
+  {
+    "name": "<raw payload: marker-only-eof-3>",
+    "source": "- ```=html\n  \n  ",
+    "content": "\n"
+  },
+  {
+    "name": "<raw payload: html EOF 'a'>",
+    "source": "```=html\na",
+    "content": "a"
+  },
+  {
+    "name": "<raw payload: html EOF 'a\\n'>",
+    "source": "```=html\na\n",
+    "content": "a\n"
+  },
+  {
+    "name": "<raw payload: html EOF 'a\\n\\n'>",
+    "source": "```=html\na\n\n",
+    "content": "a\n\n"
+  },
+  {
+    "name": "<raw payload: latex EOF 'a'>",
+    "source": "```=latex\na",
+    "content": "a"
+  },
+  {
+    "name": "<raw payload: latex EOF 'a\\n'>",
+    "source": "```=latex\na\n",
+    "content": "a\n"
+  },
+  {
+    "name": "<raw payload: latex EOF 'a\\n\\n'>",
+    "source": "```=latex\na\n\n",
+    "content": "a\n\n"
+  },
+  {
+    "name": "<raw payload: markdown EOF 'a'>",
+    "source": "```=markdown\na",
+    "content": "a"
+  },
+  {
+    "name": "<raw payload: markdown EOF 'a\\n'>",
+    "source": "```=markdown\na\n",
+    "content": "a\n"
+  },
+  {
+    "name": "<raw payload: markdown EOF 'a\\n\\n'>",
+    "source": "```=markdown\na\n\n",
+    "content": "a\n\n"
+  },
+  {
+    "name": "<raw payload: closed empty>",
+    "source": "```=html\n```\n",
+    "content": ""
+  },
+  {
+    "name": "<raw payload: closed blank>",
+    "source": "```=html\n\n```\n",
+    "content": "\n"
+  },
+  {
+    "name": "<raw payload: closed nonblank>",
+    "source": "```=html\nx\n```\n",
+    "content": "x\n"
+  },
+  {
+    "name": "<raw payload: closed trailing blank>",
+    "source": "```=html\nx\n\n```\n",
+    "content": "x\n\n"
+  },
+  {
+    "name": "<raw payload: quoted closed>",
+    "source": "> ```=html\n> x\n> ```\n",
+    "content": "x\n"
+  },
+  {
+    "name": "<raw payload: item boundary>",
+    "source": "- ```=html\n  x\nout\n",
+    "content": "x\n"
+  }
+]

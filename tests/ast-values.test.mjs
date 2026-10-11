@@ -22,7 +22,7 @@ import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { checkCodeContent, checkCommentContent, compareValues, reconcileDeclared, valueSignature } from '../scripts/spec/ast-values.mjs'
+import { checkRawContent, checkCodeContent, checkCommentContent, compareValues, reconcileDeclared, valueSignature } from '../scripts/spec/ast-values.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -355,5 +355,38 @@ test('shared EOF samples pin payload values through JSON', async () => {
     assert.equal(content, sample.content, sample.name)
     const tree = JSON.parse(JSON.stringify({ type: 'document', children: [{ type: 'code_block', content }] }))
     assert.deepEqual(checkCodeContent(tree, [sample.content]), [], sample.name)
+  }
+})
+
+
+test('raw content checks reject absent, wrong and extra payloads', () => {
+  const raw = content => ({ type: 'raw_block', format: 'html', content })
+  const doc = children => ({ type: 'document', children })
+  assert.deepEqual(checkRawContent(doc([raw('x\n')]), ['x\n']), [])
+  assert.equal(checkRawContent(doc([]), ['x\n']).length, 1)
+  assert.equal(checkRawContent(doc([raw('x')]), ['x\n']).length, 1)
+  assert.equal(checkRawContent(doc([raw('x\n'), raw('')]), ['x\n']).length, 1)
+  assert.deepEqual(checkRawContent(doc([raw('x')]), undefined), [])
+})
+
+test('raw source samples retain independent literal payloads in every host', async () => {
+  const { parse } = await import('../scripts/spec/layout.mjs')
+  const samples = JSON.parse(readFileSync(resolve(root, 'resources/ast-raw-payload-samples.json'), 'utf8'))
+  const raws = value => {
+    if (!value || typeof value !== 'object') return []
+    if (Array.isArray(value)) return value.flatMap(raws)
+    return (value.t === 'raw' ? [value.text] : []).concat(Object.values(value).flatMap(raws))
+  }
+  for (const sample of samples) assert.deepEqual(raws(parse(sample.source)), [sample.content], sample.name)
+})
+
+
+test('shared raw AST vectors keep literal fallback and matching-output adaptation separate', async () => {
+  const { rawPassthrough } = await import('../scripts/spec/html.mjs')
+  const vectors = JSON.parse(readFileSync(resolve(root, 'tests/fixtures/raw-payload-termination.json'), 'utf8'))
+  for (const vector of vectors) {
+    assert.equal(vector.raw.content, vector.codeContent, vector.id)
+    assert.equal(rawPassthrough(vector.raw.content), vector.rawPassthrough, vector.id)
+    assert.deepEqual(checkRawContent({ type: 'document', children: [vector.raw] }, [vector.codeContent]), [], vector.id)
   }
 })

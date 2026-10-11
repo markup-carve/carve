@@ -14,6 +14,7 @@ const corpus = readdirSync(`${root}/tests/corpus`).filter(name => name.endsWith(
 const synthetic = [
   '<astral: emphasis after an emoji>', '<astral: inside a blockquote>', '<astral: across two lines>',
   ...JSON.parse(readFileSync(`${root}/resources/ast-code-payload-samples.json`, 'utf8')).map(sample => sample.name),
+  ...JSON.parse(readFileSync(`${root}/resources/ast-raw-payload-samples.json`, 'utf8')).map(sample => sample.name),
 ]
 function reports(population, mode) {
   return Array.from({ length: 4 }, (_, index) => ({

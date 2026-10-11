@@ -19,7 +19,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Ajv2020 } from 'ajv/dist/2020.js'
 import { classifyShapeDisagreement, shapeOf, shapePaths } from './spec/ast-shape.mjs'
-import { checkCodeContent, checkCommentContent, compareValues, reconcileDeclared, valueSignature } from './spec/ast-values.mjs'
+import { checkRawContent, checkCodeContent, checkCommentContent, compareValues, reconcileDeclared, valueSignature } from './spec/ast-values.mjs'
 import { compareSpans, countPlaced, reconcileSpans, spanSignature } from './spec/ast-spans.mjs'
 import {
   describeDocuments,
@@ -51,6 +51,8 @@ const root = resolve(here, '..')
 const codePayloadSamples = JSON.parse(readFileSync(resolve(root, 'resources/ast-code-payload-samples.json'), 'utf8'))
 const codeContentFixtures = JSON.parse(readFileSync(resolve(root, 'resources/ast-code-content-fixtures.json'), 'utf8'))
 for (const sample of codePayloadSamples) codeContentFixtures[sample.name] = [sample.content]
+const rawPayloadSamples = JSON.parse(readFileSync(resolve(root, 'resources/ast-raw-payload-samples.json'), 'utf8'))
+const rawContentFixtures = Object.fromEntries(rawPayloadSamples.map(sample => [sample.name, [sample.content]]))
 const commentContentFixtures = JSON.parse(readFileSync(resolve(root, 'resources/ast-comment-content-fixtures.json'), 'utf8'))
 
 // tests/ast-schema.test.mjs checks the schema against the reference engine.
@@ -642,6 +644,10 @@ let panelRan = false
 const enginePaths = new Map()
 
 function recordShape(engine, name, doc) {
+  for (const finding of checkRawContent(doc, rawContentFixtures[name])) {
+    deferredGateFailures.push(`${engine}: ${name}: ${finding}`)
+  }
+
   for (const finding of checkCodeContent(doc, codeContentFixtures[name])) {
     deferredGateFailures.push(`${engine}: ${name}: ${finding}`)
   }
@@ -927,7 +933,7 @@ const ASTRAL_SAMPLES = [
 const corpusFiles = readdirSync(corpusDir)
   .filter((f) => f.endsWith('.crv'))
   .sort()
-const syntheticSamples = [...ASTRAL_SAMPLES, ...codePayloadSamples]
+const syntheticSamples = [...ASTRAL_SAMPLES, ...codePayloadSamples, ...rawPayloadSamples]
 const fullSamples = [
   ...syntheticSamples,
   ...corpusFiles.slice(0, limit)

@@ -11053,7 +11053,6 @@ EOF = (* end of file *) ;
       to the last payload line. A fence ending at EOF without a closer retains
       whether the last payload line had a break; it MUST NOT invent one.
       An unclosed fence with no payload lines also has content "".
-      This rule does not change `raw_block.content`.
 
       An imported or programmatically built code block MAY have content "a"
       without a final break. It is distinct from "a\n". JSON encoding and

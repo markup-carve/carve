@@ -442,19 +442,9 @@ export const stripLazy = (line) => (line.startsWith(LAZY) ? line.slice(LAZY.leng
 
 /// The verbatim payload of a raw block, from its lines between the delimiters.
 ///
-/// `join('\n')` maps n lines to n-1 newlines, which encodes zero lines and one
-/// blank line identically - the collapse PART 2 `raw_block` forbids under AN
-/// ALL-BLANK PAYLOAD IS NOT AN ABSENT BLOCK: "Zero payload lines contribute
-/// nothing; one blank payload line contributes one newline. An implementation
-/// MUST NOT encode those two source shapes identically." So an all-empty
-/// payload gets its last line's newline back and n lines give n newlines. A
-/// whitespace-only line is verbatim content, not a blank, and joins as any
-/// other line does.
-export const rawPayload = (bodyLines) => {
-  const body = bodyLines.map(stripLazy)
-  const text = body.join('\n')
-  return body.length > 0 && body.every((line) => line === '') ? `${text}\n` : text
-}
+// Raw and code nodes share literal payload characters; rendering adapts raw output.
+export const rawPayload = (bodyLines, terminated = true) =>
+  bodyLines.map(stripLazy).join('\n') + (bodyLines.length && terminated ? '\n' : '')
 
 // Measurements a collector knows without walking anything (carve#752). A blank
 // separator it synthesized stands at column 0 with no content; a lazily-folded
@@ -3016,7 +3006,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           push({
             t: 'raw',
             format: info.lang.slice(1),
-            text: rawPayload(fenceLines.slice(i + 1)),
+            text: rawPayload(fenceLines.slice(i + 1), !(boundary === n && state.unterminatedLines?.has(lines))),
           })
           i = boundary
           continue

@@ -1818,7 +1818,11 @@ for `code_block.content`. Empty content remains an empty fence without a loss.
 An API exposing only HTML-import diagnostics adds no diagnostic for this
 later writing step. Markdown adds its required closing-fence separator; plain
 and ANSI retain their ordinary block separators. None changes the AST value.
-Raw blocks keep their existing encoding.
+`raw_block.content` retains literal payload and its final LF under
+`CARVE-P12-065`, matching code content. Matching raw output removes one final LF
+unless the content consists entirely of LFs; safe and profile code fallbacks
+use the literal string. A canonical writer that inserts a missing payload LF
+reports `field-unspellable` for `raw_block.content` on the conversion channel.
 
 `resources/ast-code-content-fixtures.json` pins parsed values for existing
 corpus documents. The AST conformance run checks each engine against these

@@ -1,3 +1,5 @@
+export const rawPassthrough = content => /^\n*$/.test(content) ? content : content.replace(/\n$/, '')
+
 /*
  * Executable PART 10 (block serialization) + PART 9R (resolution passes)
  * over the layout tree. Byte-parity with the conformance corpus is the
@@ -659,7 +661,7 @@ function renderBlock(b, depth, ctx) {
       // something the source did not. Padding EVERY line was indistinguishable
       // from this on the single-line raw blocks the corpus used to hold, which
       // is how three engines gave three answers (carve#800).
-      return b.format === 'html' ? pad + b.text : null
+      return b.format === 'html' ? pad + rawPassthrough(b.text) : null
     case 'heading': {
       // a heading inside a container: no section wrapper (SS13 wraps
       // top-level headings only); the id lands on the <h*> itself

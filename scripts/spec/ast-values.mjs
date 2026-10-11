@@ -244,3 +244,15 @@ export function checkCodeContent(doc, expected) {
     ? []
     : [`code_block.content: expected ${JSON.stringify(wanted)}, received ${JSON.stringify(actual)}`]
 }
+
+/** Check literal raw payloads independently of agreement between engines. */
+export function checkRawContent(doc, expected) {
+  if (expected === undefined) return []
+  const actual = valueSignature(doc)
+    .filter((node) => node.type === 'raw_block')
+    .map((node) => node.fields.find((field) => field.startsWith('content=')))
+  const wanted = expected.map((content) => `content=${JSON.stringify(content)}`)
+  return JSON.stringify(actual) === JSON.stringify(wanted)
+    ? []
+    : [`raw_block.content: expected ${JSON.stringify(wanted)}, received ${JSON.stringify(actual)}`]
+}

@@ -16,7 +16,7 @@ for (const [head, column] of [['- - > a', 4], ['- - a', 4], ['- * a', 4], ['- 1.
         const nodes = payloads(document.blocks)
         assert.equal(nodes.length, 1)
         assert.equal(nodes[0].t, kind)
-        assert.equal(nodes[0].text, `  ${run}${'\n'.repeat(blanks + (kind === 'code' ? 1 : 0))}`)
+        assert.equal(nodes[0].text, `  ${run}${'\n'.repeat(blanks + 1)}`)
         assert.equal(document.blocks.at(-1).t, 'para')
       })
     }
@@ -24,9 +24,9 @@ for (const [head, column] of [['- - > a', 4], ['- - a', 4], ['- * a', 4], ['- 1.
 }
 
 for (const [name, source, expected] of [
-  ['container-base closer', '- - a\n\n      ```=html\n      x\n    ```\n\ntail\n', 'x'],
-  ['longer closer', '- - a\n\n    ```=html\n    x\n    ````\n\ntail\n', 'x'],
-  ['root overindent remains payload', '```=html\nx\n  ```\n\ntail\n', 'x\n  ```\n\ntail'],
+  ['container-base closer', '- - a\n\n      ```=html\n      x\n    ```\n\ntail\n', 'x\n'],
+  ['longer closer', '- - a\n\n    ```=html\n    x\n    ````\n\ntail\n', 'x\n'],
+  ['root overindent remains payload', '```=html\nx\n  ```\n\ntail\n', 'x\n  ```\n\ntail\n'],
 ]) {
   test(name, () => {
     const nodes = payloads(parse(source).blocks)
