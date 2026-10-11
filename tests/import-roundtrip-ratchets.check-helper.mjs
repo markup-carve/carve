@@ -255,9 +255,8 @@ const visibleText = (html) =>
 // move by the full four. Only the first three round-trip through HTML: `-10`
 // writes its link text with every URL character escaped, and the importer
 // escapes only the `]`, so the source is not recovered byte for byte. The
-// Markdown round trip does not move on any of the four: the Markdown importer
-// percent-encodes the `]` in the destination, so `http://u/]` returns as
-// `http://u/%5D`.
+// At the earlier pin, none of these four round-tripped through Markdown:
+// destination brackets were percent-encoded. Pin 3a4bce9a fixes that loss.
 
 // Pin 3a4bce9a preserves authored separator widths. Default HTML import
 // returns native table headers, so thirteen table source round trips change.
