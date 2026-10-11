@@ -200,3 +200,45 @@ test('a line-block comment span preserves payload until its actual closer', () =
   assert.deepEqual(document.blocks, [{t: 'line-block', lines: ['%%%', ':::', '  %%%', 'kept']}, {t: 'para', lines: ['[t][r]']}])
   assert.match(renderDoc(document), /href="\/url"/)
 })
+
+for (const depth of [1, 2]) for (const run of ['%%%', '```', '~~~']) {
+  const quote = '> '.repeat(depth)
+  test(`a paired ${run} span hides colon closers at quote depth ${depth}`, () => {
+    const source = `${quote}- ::: |\n${quote}  ${run}\n${quote}  :::\n${quote}  ${run}\n${quote}  :::\n${quote}  :::bad\n${quote}  :::\n- tail\n`
+    const document = parse(source)
+    assert.equal(document.blocks.length, 1)
+    let owner = document.blocks[0]
+    for (let n = 0; n < depth; n++) owner = owner.children[0]
+    assert.deepEqual(owner.items[0].blocks, [{t: 'line-block', lines: [run, ':::', run]}, {t: 'para', lines: [':::bad', ':::', '- tail']}])
+  })
+  test(`a paired ${run} span leaves no paragraph claim at quote depth ${depth}`, () => {
+    const source = `${quote}- ::: |\n${quote}  ${run}\n${quote}  :::\n${quote}  ${run}\n${quote}  x\ntail\n`
+    const document = parse(source)
+    assert.equal(document.blocks.length, 2)
+    let owner = document.blocks[0]
+    for (let n = 0; n < depth; n++) owner = owner.children[0]
+    assert.deepEqual(owner.items[0].blocks, [{t: 'line-block', lines: [run, ':::', run, 'x']}])
+    assert.deepEqual(document.blocks[1], parse('tail\n').blocks[0])
+  })
+}
+
+for (const depth of [1, 2]) for (const run of ['```', '~~~']) {
+  const quote = '> '.repeat(depth)
+  test(`an indented ${run} payload opens no opaque span at quote depth ${depth}`, () => {
+    const source = `${quote}- ::: |\n${quote}    ${run}\n${quote}  :::\n${quote}    ${run}\n${quote}  :::\n${quote}  :::bad\n${quote}  :::\n- tail\n`
+    const document = parse(source)
+    assert.equal(document.blocks.length, 2)
+    let owner = document.blocks[0]
+    for (let n = 0; n < depth; n++) owner = owner.children[0]
+    assert.deepEqual(owner.items[0].blocks, [{t: 'line-block', lines: [`  ${run}`]}, {t: 'code', lang: '', title: null, text: ':::\n:::bad\n:::\n'}])
+    assert.deepEqual(document.blocks[1], parse('- tail\n').blocks[0])
+  })
+  test(`an authored line-block base locates a paired ${run} span at quote depth ${depth}`, () => {
+    const source = `${quote}- a\n${quote}    ::: |\n${quote}    ${run}\n${quote}    :::\n${quote}    ${run}\n${quote}  :::\n${quote}  :::bad\n${quote}  :::\n- tail\n`
+    const document = parse(source)
+    assert.equal(document.blocks.length, 1)
+    let owner = document.blocks[0]
+    for (let n = 0; n < depth; n++) owner = owner.children[0]
+    assert.deepEqual(owner.items[0].blocks, [{t: 'para', lines: ['a']}, {t: 'line-block', lines: [run, ':::', run]}, {t: 'para', lines: [':::bad', ':::', '- tail']}])
+  })
+}
