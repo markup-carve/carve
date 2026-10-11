@@ -218,7 +218,9 @@ Author-choice fields preserve a spelling when it differs from the default.
 `list.delim` records `)` while absence means `.`,
 `thematic_break.marker` records `*` or `_` while absence means `-`, and
 `list_item.taskState` records the task marker character while absence means the
-default for the box (`x` when `checked` is true, a space when it is false). A
+default for the box (`x` when `checked` is true, a space when it is false), and
+`table.separatorWidths` records the dash runs of an authored separator row while
+absence means the header was spelled with `|=` cells instead. A
 writer reproduces the recorded character and uses the default when the field is
 absent, and a PARSE records nothing where the author wrote the default
 (carve#2828): one document has one spelling in the tree, so a consumer comparing
@@ -1115,7 +1117,7 @@ At a storage or process boundary, wrap it:
 
 ```json
 {
-  "astVersion": "1.0",
+  "astVersion": "1.1",
   "vocabulary": "https://markup-carve.org/ast/core",
   "extensions": [{ "id": "https://markup-carve.org/ext/citations", "version": "1" }],
   "document": { "type": "document", "children": [], "srcByteLength": 0 }
@@ -1130,18 +1132,24 @@ amend.
 **`astVersion` is the contract's version, not the language's.** It is
 `major.minor` and does not track the Carve version: the language is versioned for
 authors, this is versioned for readers of a tree. A major bump removes, renames
-or reinterprets something; a minor bump adds. The current contract is `1.0`, and a leading
+or reinterprets something; a minor bump adds. The current contract is `1.1`, and a leading
 zero is refused so the `0.x`-reads-as-major convention never applies here.
+
+A minor says what **upgrading** costs, not what an old reader tolerates: moving up
+means handling new fields and nothing else, and every reader of the same minor or
+higher reads the producer's trees. It does not say a lower reader copes.
 
 What a reader does:
 
 - **a higher major is refused**, with a typed error naming the version it got and
   the version it implements - not a schema failure, since the payload may be
   well-formed under a contract this build predates;
-- **a higher minor is accepted** only where every extension the payload marks
-  `required` is one the reader implements. A minor adds, so the tree is readable
-  except for what the additions carry, and `required` is the payload's own
-  statement of whether those additions are load-bearing;
+- **a higher minor is refused too**, with the same typed error naming both
+  versions. A minor adds a *field*, and the node schema below is closed, so a
+  `1.0` reader handed a `1.1` tree fails on the field itself - as a schema error
+  that names no version. Accepting the envelope and then refusing its payload is
+  the worse failure, not the gentler one. A reader accepts its own version or
+  lower;
 - **a required extension it does not implement is refused, named.** Rendering the
   understood parts and reporting success is what §9(b) forbids one level down;
 - **an absent `vocabulary` means the core one.** A profile that denies types does
@@ -1151,6 +1159,13 @@ What a reader does:
 A producer emits the version its own build implements rather than echoing what it
 read - re-emitting an ingested `astVersion` republishes a claim the producer
 cannot keep.
+
+A **bare** tree is the contract its producer implements. `carve --json` and an
+in-memory handoff carry no envelope and so no version, which is deliberate: inside
+one build there is nothing to negotiate. A bare tree that crosses a version
+boundary is the producer's problem, solved by wrapping it, and a reader handed one
+reads it against its own contract - which is where the closed schema reports the
+mismatch as an unnamed property rather than as a version.
 
 `additionalProperties: false` holds on the envelope and on every node inside it.
 Versioning solves evolution without weakening the ingest, and §11 already ruled

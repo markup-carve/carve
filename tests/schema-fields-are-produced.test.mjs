@@ -81,6 +81,8 @@ const ENGINE_ROLLOUT_PENDING = {
   'table.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
   'directive.title': 'no corpus case spells a titled directive yet, because carve-php and carve-rs do not render one (carve#2264)',
   'directive.label': 'no corpus case spells a labeled directive yet; it lands with the titled case (carve#2264)',
+  'table.separatorWidths':
+    'author-choice separator-row widths: the field lands with the engine half of carve#2894, and the corpus case that spells an aligned separator row comes with it',
   'table_cell.blocks': 'structural interchange field: Carve 0.1 source has no spelling for a block inside a cell; produced only by AST/Pandoc/HTML-import consumers (carve#2191)',
 }
 
