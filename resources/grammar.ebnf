@@ -3507,9 +3507,10 @@ continuation = newline, opt_ws ;         (* a single line break + indent; NOT a 
    NORMATIVE [CARVE-P4-008]. The `continuation` above is Carve's own, and it
    admits an unindented second line; a source language need not. Djot requires
    a block attribute's later lines to be indented past the run's opening
-   column, and that requirement covers EVERY brace run in the source, the
+   column, and that requirement covers every block-position brace run, the
    comment-only form `{% ... %}` included -- one construct, so one rule, not a
-   separate reading for comments. An importer that meets a brace run whose
+   separate reading for comments. Inline attribute and comment runs may span
+   unindented lines; this block-position requirement does not apply to them. An importer that meets a block-position brace run whose
    continuation sits at or below the opener's own column takes the whole run as
    ordinary text: `{% x` / `y %}` at column 0 imports as a paragraph carrying
    both lines, and a following `# b` is paragraph text in that same paragraph
