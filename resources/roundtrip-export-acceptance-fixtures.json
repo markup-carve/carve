@@ -742,7 +742,7 @@
         "semantic"
       ],
       "requiresDiagnostic": true,
-      "diagnosticControlHtml": "<p><span data-carve-raw=\"latex\">z</span></p>"
+      "diagnosticControlHtml": "<p><span>z</span></p>"
     },
     {
       "id": "invalid-width-whole-carrier",
