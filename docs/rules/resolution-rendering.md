@@ -64,6 +64,6 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P10-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L401) | 10 | AN ORDERED LIST'S DELIMITER NAMES ITSELF ON THE LIST |
 | [`CARVE-P10-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L435) | 10 | ROUNDTRIP EXPORT WRITES NAMED CARRIERS |
 | [`CARVE-P10-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L476) | 10 | THE HTML CARRIERS ARE THE NAMES IN THIS INVENTORY |
-| [`CARVE-P10-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L628) | 10 | A CARRIER WINS A COLLISION AND THE DROPPED ATTRIBUTE IS REPORTED |
+| [`CARVE-P10-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L642) | 10 | A CARRIER WINS A COLLISION AND THE DROPPED ATTRIBUTE IS REPORTED |
 | [`CARVE-P9-079`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L548) | 9 | A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT |
 | [`CARVE-P9-080`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L156) | 9 | A STRUCTURAL-ONLY LINE RESETS CAPTION SCOPE |

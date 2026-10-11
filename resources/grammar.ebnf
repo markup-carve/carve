@@ -8223,14 +8223,28 @@ EOF = (* end of file *) ;
       its name, §13c reads its deprecated spelling, and §13d consumes it in
       every import mode.
 
-      A WIDTH IS A POSITIVE INTEGER, AND A READER CLAMPS IT AT 1000. The
-      widths arrive as a comma-joined list in an attribute an importer reads
-      off UNTRUSTED HTML, and the writer spells one `-` per unit, so an
-      unbounded value is a document-size amplification rather than a wide
-      table. A reader clamps each entry into `[1, 1000]` and refuses the whole
-      carrier -- writing no field at all -- where an entry is not a run of
-      digits. THE BOUND IS STATED SO THE ENGINES AGREE ON THE BYTES: it is a
-      round number chosen for parity rather than derived from anything, and no
+      A WIDTH IS A POSITIVE INTEGER, AND 1000 IS THE BOUND ON BOTH SIDES OF
+      THE CARRIER. The widths arrive as a comma-joined list in an attribute an
+      importer reads off UNTRUSTED HTML, and the writer spells one `-` per
+      unit, so six characters of attribute buy a megabyte of separator row.
+      That is an amplification the SOURCE side does not have -- an author who
+      types a thousand dashes has already paid for them -- so the bound
+      belongs on the carrier rather than on the field.
+
+      A READER REFUSES THE WHOLE CARRIER -- writing no field at all, which
+      means the `|=` form -- where any entry is not a run of decimal digits, or
+      where any entry exceeds 1000. Not a partial read and not a clamp to the
+      bound: both put a separator row on the page whose widths nobody wrote,
+      and refusing leaves the table correct in its other spelling.
+
+      A WRITER WRITES NO CARRIER where the field holds an entry above 1000, for
+      the same reason read the other way: a carrier a conforming reader will
+      refuse is a round-trip promise the writer cannot keep. The FIELD itself
+      has no upper bound, because a parse records what the author typed and no
+      amplification happens there.
+
+      THE BOUND IS STATED SO THE ENGINES AGREE ON THE BYTES. 1000 is a round
+      number chosen for parity rather than derived from anything, and no
       separator row anyone writes approaches it.
 
       A VALUE ESCAPES AS §2 ESCAPES ANY ATTRIBUTE VALUE. §2's text-content
