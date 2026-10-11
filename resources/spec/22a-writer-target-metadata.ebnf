@@ -35,9 +35,10 @@
       NORMATIVE [CARVE-P11-063]. An ELEMENT-LESS CONTAINER is a container
       block this target writes as its children alone: no element, no marker
       and no attribute of its own reaches the output, so nothing there says a
-      container was present. Under the CARRIER MODE, which the host turns on
-      and which is OFF by default, the target brackets each one with an HTML
-      comment carrying the Carve opener and the Carve closer VERBATIM:
+      container was present. Under the CARRIER MODE, which is roundtrip export
+      (PART 10 §13) on this target and is OFF by default, the target brackets
+      each one with an HTML comment carrying the Carve opener and the Carve
+      closer VERBATIM:
 
         ::: note                 ->  <!-- carve: ::: note -->
         An admonition body.          An admonition body.

@@ -8128,10 +8128,9 @@ EOF = (* end of file *) ;
       attribute those sections write.
 
       THE TARGET DECIDES THE CARRIER. For HTML it is the names in §13a. For
-      Markdown it is the container carrier comments of PART 11, which that
-      target already writes under its own option; the shared flag SELECTS
-      them rather than redefining them. A Markdown export carries containers
-      and no more, and is not a claim to preserve what §13a lists.
+      Markdown it is the container carrier comments of PART 11 §10s. A
+      Markdown export carries containers and no more, and is not a claim to
+      preserve what §13a lists.
 
       WHAT IT GUARANTEES IS RECOVERY OF THE NAMED DISTINCTIONS, not
       byte-identical source. A distinction the AST already records --
@@ -8427,16 +8426,13 @@ EOF = (* end of file *) ;
       This is the value-validation ruling on carve#2918, applying this
       clause's trust boundary and §12's invalid-enumeration precedent.
 
-   13f. AN ALIAS NEVER TURNS PRESERVATION OFF -- NORMATIVE [CARVE-P10-018].
-      The Markdown carrier options that predate this one -- PHP
-      `setCarryMarkers(true)`, JavaScript `carryMarkers: true`, Rust
-      `with_carry_markers(true)`, CLI `--carry-markers` -- keep working with
-      their current Markdown-only scope. Where the canonical option and a
-      legacy alias can both be supplied, EITHER ENABLED OPTION ENABLES
-      PRESERVATION, in either order: a default never overrides an alias the
-      caller enabled. `carryMarkers` is not redefined as an HTML option. A
-      narrower control, if one is ever wanted, is a separate explicit setting
-      rather than a change to this rule.
+   13f. ONE OPTION SWITCHES EVERY TARGET'S CARRIERS -- NORMATIVE
+      [CARVE-P10-018]. Roundtrip export is the only switch for the carriers
+      of either target. An engine exposes no target-specific alias for it:
+      PART 11's carrier mode IS this option on the Markdown target, so one
+      setting cannot enable a target's carriers while another disables them.
+      A narrower control, if one is ever wanted, is a separate explicit
+      setting with a clause of its own.
 
    ============================================================================ *)
 (* ============================================================================
@@ -10697,9 +10693,10 @@ EOF = (* end of file *) ;
       NORMATIVE [CARVE-P11-063]. An ELEMENT-LESS CONTAINER is a container
       block this target writes as its children alone: no element, no marker
       and no attribute of its own reaches the output, so nothing there says a
-      container was present. Under the CARRIER MODE, which the host turns on
-      and which is OFF by default, the target brackets each one with an HTML
-      comment carrying the Carve opener and the Carve closer VERBATIM:
+      container was present. Under the CARRIER MODE, which is roundtrip export
+      (PART 10 §13) on this target and is OFF by default, the target brackets
+      each one with an HTML comment carrying the Carve opener and the Carve
+      closer VERBATIM:
 
         ::: note                 ->  <!-- carve: ::: note -->
         An admonition body.          An admonition body.
