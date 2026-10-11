@@ -1569,19 +1569,12 @@ test('table head and foot attributes use the ordinary closed attributes schema',
   }
 })
 
-test('raw payload termination is optional typed interchange metadata', () => {
+test('raw payload stores literal termination and rejects obsolete metadata', () => {
   const document = raw => ({ type: 'document', srcByteLength: 3, children: [raw] })
   const vectors = JSON.parse(readFileSync(resolve(root, 'tests/fixtures/raw-payload-termination.json'), 'utf8'))
   for (const vector of vectors) assert.equal(validate(document(vector.raw)), true, firstErrors())
-  const raw = { type: 'raw_block', format: 'html', content: 'x' }
-  for (const node of [raw, { ...raw, contentTerminated: true }, { ...raw, contentTerminated: false }]) {
-    assert.equal(validate(document(node)), true, firstErrors())
-  }
-  for (const value of [0, 1, '', 'false', null]) {
+  const raw = { type: 'raw_block', format: 'html', content: 'x\n' }
+  for (const value of [true, false, 0, '', null]) {
     assert.equal(validate(document({ ...raw, contentTerminated: value })), false)
   }
-  assert.equal(validate(document({ ...raw, unknownTermination: false })), false)
-  const code = { type: 'code_block', content: 'x' }
-  assert.equal(validate(document(code)), true, firstErrors())
-  assert.equal(validate(document({ ...code, contentTerminated: false })), false)
 })

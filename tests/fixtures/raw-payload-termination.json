@@ -1,6 +1,6 @@
 [
   {
-    "id": "empty-absent",
+    "id": "empty",
     "raw": {
       "type": "raw_block",
       "format": "html",
@@ -10,29 +10,7 @@
     "rawPassthrough": ""
   },
   {
-    "id": "empty-true",
-    "raw": {
-      "type": "raw_block",
-      "format": "html",
-      "content": "",
-      "contentTerminated": true
-    },
-    "codeContent": "",
-    "rawPassthrough": ""
-  },
-  {
-    "id": "empty-false",
-    "raw": {
-      "type": "raw_block",
-      "format": "html",
-      "content": "",
-      "contentTerminated": false
-    },
-    "codeContent": "",
-    "rawPassthrough": ""
-  },
-  {
-    "id": "blank-absent",
+    "id": "blank-one",
     "raw": {
       "type": "raw_block",
       "format": "html",
@@ -42,89 +20,103 @@
     "rawPassthrough": "\n"
   },
   {
-    "id": "blank-true",
+    "id": "blank-two",
     "raw": {
       "type": "raw_block",
       "format": "html",
-      "content": "\n",
-      "contentTerminated": true
+      "content": "\n\n"
     },
-    "codeContent": "\n",
-    "rawPassthrough": "\n"
+    "codeContent": "\n\n",
+    "rawPassthrough": "\n\n"
   },
   {
-    "id": "blank-false",
+    "id": "blank-three",
     "raw": {
       "type": "raw_block",
       "format": "html",
-      "content": "\n",
-      "contentTerminated": false
+      "content": "\n\n\n"
     },
-    "codeContent": "",
-    "rawPassthrough": "\n"
+    "codeContent": "\n\n\n",
+    "rawPassthrough": "\n\n\n"
   },
   {
-    "id": "nonblank-absent",
+    "id": "text-eof",
     "raw": {
       "type": "raw_block",
       "format": "html",
       "content": "x"
     },
-    "codeContent": "x\n",
-    "rawPassthrough": "x"
-  },
-  {
-    "id": "nonblank-true",
-    "raw": {
-      "type": "raw_block",
-      "format": "html",
-      "content": "x",
-      "contentTerminated": true
-    },
-    "codeContent": "x\n",
-    "rawPassthrough": "x"
-  },
-  {
-    "id": "nonblank-false",
-    "raw": {
-      "type": "raw_block",
-      "format": "html",
-      "content": "x",
-      "contentTerminated": false
-    },
     "codeContent": "x",
     "rawPassthrough": "x"
   },
   {
-    "id": "trailing-blank-absent",
+    "id": "text-terminated",
     "raw": {
       "type": "raw_block",
       "format": "html",
       "content": "x\n"
     },
-    "codeContent": "x\n\n",
-    "rawPassthrough": "x\n"
-  },
-  {
-    "id": "trailing-blank-true",
-    "raw": {
-      "type": "raw_block",
-      "format": "html",
-      "content": "x\n",
-      "contentTerminated": true
-    },
-    "codeContent": "x\n\n",
-    "rawPassthrough": "x\n"
-  },
-  {
-    "id": "trailing-blank-false",
-    "raw": {
-      "type": "raw_block",
-      "format": "html",
-      "content": "x\n",
-      "contentTerminated": false
-    },
     "codeContent": "x\n",
+    "rawPassthrough": "x"
+  },
+  {
+    "id": "text-blank-one",
+    "raw": {
+      "type": "raw_block",
+      "format": "html",
+      "content": "x\n\n"
+    },
+    "codeContent": "x\n\n",
     "rawPassthrough": "x\n"
+  },
+  {
+    "id": "text-blank-two",
+    "raw": {
+      "type": "raw_block",
+      "format": "html",
+      "content": "x\n\n\n"
+    },
+    "codeContent": "x\n\n\n",
+    "rawPassthrough": "x\n\n"
+  },
+  {
+    "id": "space-tab-eof",
+    "raw": {
+      "type": "raw_block",
+      "format": "html",
+      "content": " \t"
+    },
+    "codeContent": " \t",
+    "rawPassthrough": " \t"
+  },
+  {
+    "id": "space-tab-terminated",
+    "raw": {
+      "type": "raw_block",
+      "format": "html",
+      "content": " \t\n"
+    },
+    "codeContent": " \t\n",
+    "rawPassthrough": " \t"
+  },
+  {
+    "id": "nbsp-eof",
+    "raw": {
+      "type": "raw_block",
+      "format": "html",
+      "content": " "
+    },
+    "codeContent": " ",
+    "rawPassthrough": " "
+  },
+  {
+    "id": "nbsp-terminated",
+    "raw": {
+      "type": "raw_block",
+      "format": "html",
+      "content": " \n"
+    },
+    "codeContent": " \n",
+    "rawPassthrough": " "
   }
 ]

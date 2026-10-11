@@ -45,3 +45,31 @@ test('escaping is not a render loss', () => {
 test('raw HTML allowed still passes the payload through', () => {
   assert.equal(carveToHtml('```=html\n<p>raw</p>\n```\n', { allowRawHtml: true }), '<p>raw</p>')
 })
+
+test('literal raw payload vectors preserve EOF bytes through AST interchange', async () => {
+  const { parse, renderHtml, toAstJson, fromAstJson } = await import('@markup-carve/carve')
+  const vectors = JSON.parse(readFileSync(new URL('./fixtures/raw-payload-termination.json', import.meta.url), 'utf8'))
+  for (const { id, raw, codeContent, rawPassthrough } of vectors) {
+    const doc = { type: 'document', srcByteLength: 0, children: [raw] }
+    const back = fromAstJson(toAstJson(doc))
+    assert.deepEqual(toAstJson(back).children, [raw], id)
+    const code = { ...doc, children: [{ type: 'code_block', lang: 'html', content: codeContent }] }
+    assert.equal(renderHtml(back, SAFE), renderHtml(code), id)
+    assert.equal(renderHtml(back), rawPassthrough, id)
+  }
+  for (const format of ['html', 'latex', 'markdown']) {
+    for (const payload of ['', '\n', '\n\n', 'x', 'x\n', 'x\n\n', ' \t', '\u00a0']) {
+      assert.equal(parse('```=' + format + '\n' + payload).children[0].content, payload)
+    }
+  }
+})
+
+test('safe and profile raw fallback matches code across source boundaries', async () => {
+  const { Profile } = await import('@markup-carve/carve')
+  const vectors = JSON.parse(readFileSync(new URL('../resources/raw-payload-source-fixtures.json', import.meta.url), 'utf8'))
+  for (const { id, source, codeSource } of vectors) {
+    assert.equal(carveToHtml(source, SAFE), carveToHtml(codeSource), id)
+    const options = { profile: Profile.article() }
+    assert.equal(carveToHtml(source, options), carveToHtml(codeSource, options), id)
+  }
+})

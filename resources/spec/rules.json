@@ -1885,7 +1885,7 @@
     {
       "id": "CARVE-P12-065",
       "part": "12",
-      "title": "RAW BLOCKS RECORD FINAL PAYLOAD TERMINATION",
+      "title": "RAW BLOCK CONTENT IS LITERAL PAYLOAD TEXT",
       "scope": "ast-interchange"
     },
     {

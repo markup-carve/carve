@@ -2,205 +2,171 @@
   {
     "id": "root-''",
     "source": "```=html\n",
-    "codeSource": "```html\n",
-    "contentTerminated": null
+    "codeSource": "```html\n"
   },
   {
     "id": "root-'\\n'",
     "source": "```=html\n\n",
-    "codeSource": "```html\n\n",
-    "contentTerminated": null
+    "codeSource": "```html\n\n"
   },
   {
     "id": "root-'x'",
     "source": "```=html\nx",
-    "codeSource": "```html\nx",
-    "contentTerminated": false
+    "codeSource": "```html\nx"
   },
   {
     "id": "root-'x\\n'",
     "source": "```=html\nx\n",
-    "codeSource": "```html\nx\n",
-    "contentTerminated": null
+    "codeSource": "```html\nx\n"
   },
   {
     "id": "root-'x\\n\\n'",
     "source": "```=html\nx\n\n",
-    "codeSource": "```html\nx\n\n",
-    "contentTerminated": null
+    "codeSource": "```html\nx\n\n"
   },
   {
     "id": "root-' x\\t'",
     "source": "```=html\n x\t",
-    "codeSource": "```html\n x\t",
-    "contentTerminated": false
+    "codeSource": "```html\n x\t"
   },
   {
     "id": "quote-''",
     "source": "> ```=html\n",
-    "codeSource": "> ```html\n",
-    "contentTerminated": null
+    "codeSource": "> ```html\n"
   },
   {
     "id": "quote-'\\n'",
     "source": "> ```=html\n> \n",
-    "codeSource": "> ```html\n> \n",
-    "contentTerminated": null
+    "codeSource": "> ```html\n> \n"
   },
   {
     "id": "quote-'x'",
     "source": "> ```=html\n> x",
-    "codeSource": "> ```html\n> x",
-    "contentTerminated": false
+    "codeSource": "> ```html\n> x"
   },
   {
     "id": "quote-'x\\n'",
     "source": "> ```=html\n> x\n",
-    "codeSource": "> ```html\n> x\n",
-    "contentTerminated": null
+    "codeSource": "> ```html\n> x\n"
   },
   {
     "id": "quote-'x\\n\\n'",
     "source": "> ```=html\n> x\n> \n",
-    "codeSource": "> ```html\n> x\n> \n",
-    "contentTerminated": null
+    "codeSource": "> ```html\n> x\n> \n"
   },
   {
     "id": "quote-' x\\t'",
     "source": "> ```=html\n>  x\t",
-    "codeSource": "> ```html\n>  x\t",
-    "contentTerminated": false
+    "codeSource": "> ```html\n>  x\t"
   },
   {
     "id": "list-''",
     "source": "- ```=html\n",
-    "codeSource": "- ```html\n",
-    "contentTerminated": null
+    "codeSource": "- ```html\n"
   },
   {
     "id": "list-'\\n'",
     "source": "- ```=html\n  \n",
-    "codeSource": "- ```html\n  \n",
-    "contentTerminated": null
+    "codeSource": "- ```html\n  \n"
   },
   {
     "id": "list-'x'",
     "source": "- ```=html\n  x",
-    "codeSource": "- ```html\n  x",
-    "contentTerminated": false
+    "codeSource": "- ```html\n  x"
   },
   {
     "id": "list-'x\\n'",
     "source": "- ```=html\n  x\n",
-    "codeSource": "- ```html\n  x\n",
-    "contentTerminated": null
+    "codeSource": "- ```html\n  x\n"
   },
   {
     "id": "list-'x\\n\\n'",
     "source": "- ```=html\n  x\n  \n",
-    "codeSource": "- ```html\n  x\n  \n",
-    "contentTerminated": null
+    "codeSource": "- ```html\n  x\n  \n"
   },
   {
     "id": "list-' x\\t'",
     "source": "- ```=html\n   x\t",
-    "codeSource": "- ```html\n   x\t",
-    "contentTerminated": false
+    "codeSource": "- ```html\n   x\t"
   },
   {
     "id": "quoted-list-''",
     "source": "> - ```=html\n",
-    "codeSource": "> - ```html\n",
-    "contentTerminated": null
+    "codeSource": "> - ```html\n"
   },
   {
     "id": "quoted-list-'\\n'",
     "source": "> - ```=html\n>   \n",
-    "codeSource": "> - ```html\n>   \n",
-    "contentTerminated": null
+    "codeSource": "> - ```html\n>   \n"
   },
   {
     "id": "quoted-list-'x'",
     "source": "> - ```=html\n>   x",
-    "codeSource": "> - ```html\n>   x",
-    "contentTerminated": false
+    "codeSource": "> - ```html\n>   x"
   },
   {
     "id": "quoted-list-'x\\n'",
     "source": "> - ```=html\n>   x\n",
-    "codeSource": "> - ```html\n>   x\n",
-    "contentTerminated": null
+    "codeSource": "> - ```html\n>   x\n"
   },
   {
     "id": "quoted-list-'x\\n\\n'",
     "source": "> - ```=html\n>   x\n>   \n",
-    "codeSource": "> - ```html\n>   x\n>   \n",
-    "contentTerminated": null
+    "codeSource": "> - ```html\n>   x\n>   \n"
   },
   {
     "id": "quoted-list-' x\\t'",
     "source": "> - ```=html\n>    x\t",
-    "codeSource": "> - ```html\n>    x\t",
-    "contentTerminated": false
+    "codeSource": "> - ```html\n>    x\t"
   },
   {
     "id": "div-''",
     "source": "::: note\n```=html\n",
-    "codeSource": "::: note\n```html\n",
-    "contentTerminated": null
+    "codeSource": "::: note\n```html\n"
   },
   {
     "id": "div-'\\n'",
     "source": "::: note\n```=html\n\n",
-    "codeSource": "::: note\n```html\n\n",
-    "contentTerminated": null
+    "codeSource": "::: note\n```html\n\n"
   },
   {
     "id": "div-'x'",
     "source": "::: note\n```=html\nx",
-    "codeSource": "::: note\n```html\nx",
-    "contentTerminated": false
+    "codeSource": "::: note\n```html\nx"
   },
   {
     "id": "div-'x\\n'",
     "source": "::: note\n```=html\nx\n",
-    "codeSource": "::: note\n```html\nx\n",
-    "contentTerminated": null
+    "codeSource": "::: note\n```html\nx\n"
   },
   {
     "id": "div-'x\\n\\n'",
     "source": "::: note\n```=html\nx\n\n",
-    "codeSource": "::: note\n```html\nx\n\n",
-    "contentTerminated": null
+    "codeSource": "::: note\n```html\nx\n\n"
   },
   {
     "id": "div-' x\\t'",
     "source": "::: note\n```=html\n x\t",
-    "codeSource": "::: note\n```html\n x\t",
-    "contentTerminated": false
+    "codeSource": "::: note\n```html\n x\t"
   },
   {
     "id": "marker-only-eof-0",
     "source": "> ```=html\n> ",
-    "codeSource": "> ```html\n> ",
-    "contentTerminated": false
+    "codeSource": "> ```html\n> "
   },
   {
     "id": "marker-only-eof-1",
     "source": "> ```=html\n> \n> ",
-    "codeSource": "> ```html\n> \n> ",
-    "contentTerminated": false
+    "codeSource": "> ```html\n> \n> "
   },
   {
     "id": "marker-only-eof-2",
     "source": "> ```=html\n> x\n> \n> ",
-    "codeSource": "> ```html\n> x\n> \n> ",
-    "contentTerminated": false
+    "codeSource": "> ```html\n> x\n> \n> "
   },
   {
     "id": "marker-only-eof-3",
     "source": "- ```=html\n  \n  ",
-    "codeSource": "- ```html\n  \n  ",
-    "contentTerminated": false
+    "codeSource": "- ```html\n  \n  "
   }
 ]
