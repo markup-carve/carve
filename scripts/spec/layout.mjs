@@ -1858,7 +1858,9 @@ function hostAdvance(h, line, paraOpen) {
   const siblingItem = h.markerCols.some((col, k) => col === meas.col && h.kinds[k] === 'item')
   // Plain text at a parent item's column can lazily continue its sublist.
   // Keep that sublist for the next fence lookup; the lazy line did not close it.
-  const lazyItemLine = paraOpen && h.kinds.at(-1) === 'item' && matchMarkerAt(meas) === null &&
+  const lazyItemLine = paraOpen && h.kinds.at(-1) === 'item' &&
+    (h.columns.length === 2 || h.colons?.length ||
+      (h.kinds.at(-2) === 'item' && meas.col >= h.columns.at(-2))) && matchMarkerAt(meas) === null &&
     !FENCE.test(meas.rest) && !COLON_FENCE.test(meas.rest) &&
     !DEFLIST_TERM.test(meas.rest) && opensParagraph(meas.rest)
   while (!lazyItemLine && h.columns.length > 1 && h.columns.at(-1) > meas.col) {
