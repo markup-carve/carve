@@ -2089,6 +2089,17 @@
         ],
         "exit": 1,
         "engines": {
+          "js": {
+            "output": "{/outer {/inner/} outer/}",
+            "diagnostics": [
+              {
+                "code": "fidelity-unverified",
+                "severity": "warning",
+                "fidelity": "dropped",
+                "confidence": "fallback"
+              }
+            ]
+          },
           "rust": {
             "output": "/outer inner outer/\n"
           }
