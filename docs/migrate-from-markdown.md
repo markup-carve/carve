@@ -380,11 +380,14 @@ The writer ceiling in PART 11 §1c also applies to Markdown and Djot imports:
 an unspellable inner wrapper is unwrapped, its content stays in order, and an
 importer with a diagnostic channel reports `structure-unspellable`.
 
-For example, CommonMark `*(*foo*)*` contains nested emphasis. Its shared Carve
-fallback is `/(foo)/`, which renders as `<em>(foo)</em>`. Turning the outer
-emphasis into strong, or dropping the emphasis around `foo`, changes more than
-the unspellable nesting and does not meet this target. The equivalent HTML input
-uses the same fallback.
+For example, CommonMark `*(*foo*)*` contains nested emphasis. Since
+[nested braced emphasis](./nested-braced-emphasis.md), that relationship is
+spellable, so the contract is to preserve it as `{/({/foo/})/}` and to report no
+same-kind flattening. carve-js implements this; carve-php and carve-rust still
+take the older shared fallback `/(foo)/` and are behind the contract until they
+do. Turning the outer emphasis into strong, or dropping the emphasis around
+`foo`, changes more than the nesting and never met this target. The equivalent
+HTML input follows the same contract.
 
 Djot inline attributes belong to the element they annotate. Importers must parse
 that association before writing Carve. For `a *b{#id key="*"}*`, the target is a
