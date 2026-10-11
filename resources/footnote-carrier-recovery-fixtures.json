@@ -1,6 +1,6 @@
 [
   {
-    "name": "safe-carve-carve-label",
+    "name": "safe-carve-label",
     "mode": "safe",
     "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-carve-footnote-label=\"named\"><p>body</p></li></ol></section>",
     "expectedSource": "[^named]\n\n[^named]: body\n",
@@ -13,7 +13,7 @@
     ]
   },
   {
-    "name": "safe-carve-carve-inline",
+    "name": "safe-carve-inline",
     "mode": "safe",
     "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-carve-inline-footnote=\"1\"><p>body</p></li></ol></section>",
     "expectedSource": "^[body]\n",
@@ -35,8 +35,7 @@
         "code": "attribute-dropped",
         "severity": "warning",
         "fidelity": "dropped",
-        "confidence": "exact",
-        "path": "footnote"
+        "confidence": "exact"
       }
     ],
     "forbiddenAuthoredAttributes": [
@@ -47,20 +46,7 @@
     ]
   },
   {
-    "name": "safe-carve-djot-label",
-    "mode": "safe",
-    "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-carve-footnote-label=\"named\"><p>body</p></li></ol></section>",
-    "expectedSource": "[^named]\n\n[^named]: body\n",
-    "expectedDiagnostics": [],
-    "forbiddenAuthoredAttributes": [
-      "data-carve-footnote-label",
-      "data-carve-inline-footnote",
-      "data-djot-footnote-label",
-      "data-djot-inline-footnote"
-    ]
-  },
-  {
-    "name": "safe-carve-djot-inline",
+    "name": "safe-djot-inline",
     "mode": "safe",
     "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-djot-inline-footnote=\"1\"><p>body</p></li></ol></section>",
     "expectedSource": "^[body]\n",
@@ -82,8 +68,7 @@
         "code": "attribute-dropped",
         "severity": "warning",
         "fidelity": "dropped",
-        "confidence": "exact",
-        "path": "footnote"
+        "confidence": "exact"
       }
     ],
     "forbiddenAuthoredAttributes": [
@@ -94,23 +79,10 @@
     ]
   },
   {
-    "name": "safe-djot-carve-label",
+    "name": "safe-djot-label",
     "mode": "safe",
     "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-djot-footnote-label=\"named\"><p>body</p></li></ol></section>",
     "expectedSource": "[^named]\n\n[^named]: body\n",
-    "expectedDiagnostics": [],
-    "forbiddenAuthoredAttributes": [
-      "data-carve-footnote-label",
-      "data-carve-inline-footnote",
-      "data-djot-footnote-label",
-      "data-djot-inline-footnote"
-    ]
-  },
-  {
-    "name": "safe-djot-carve-inline",
-    "mode": "safe",
-    "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-carve-inline-footnote=\"1\"><p>body</p></li></ol></section>",
-    "expectedSource": "^[body]\n",
     "expectedDiagnostics": [],
     "forbiddenAuthoredAttributes": [
       "data-carve-footnote-label",
@@ -129,36 +101,9 @@
         "code": "attribute-dropped",
         "severity": "warning",
         "fidelity": "dropped",
-        "confidence": "exact",
-        "path": "footnote"
+        "confidence": "exact"
       }
     ],
-    "forbiddenAuthoredAttributes": [
-      "data-carve-footnote-label",
-      "data-carve-inline-footnote",
-      "data-djot-footnote-label",
-      "data-djot-inline-footnote"
-    ]
-  },
-  {
-    "name": "safe-djot-djot-label",
-    "mode": "safe",
-    "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-djot-footnote-label=\"named\"><p>body</p></li></ol></section>",
-    "expectedSource": "[^named]\n\n[^named]: body\n",
-    "expectedDiagnostics": [],
-    "forbiddenAuthoredAttributes": [
-      "data-carve-footnote-label",
-      "data-carve-inline-footnote",
-      "data-djot-footnote-label",
-      "data-djot-inline-footnote"
-    ]
-  },
-  {
-    "name": "safe-djot-djot-inline",
-    "mode": "safe",
-    "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-djot-inline-footnote=\"1\"><p>body</p></li></ol></section>",
-    "expectedSource": "^[body]\n",
-    "expectedDiagnostics": [],
     "forbiddenAuthoredAttributes": [
       "data-carve-footnote-label",
       "data-carve-inline-footnote",
@@ -176,8 +121,7 @@
         "code": "attribute-dropped",
         "severity": "warning",
         "fidelity": "dropped",
-        "confidence": "exact",
-        "path": "footnote"
+        "confidence": "exact"
       }
     ],
     "forbiddenAuthoredAttributes": [
@@ -188,7 +132,7 @@
     ]
   },
   {
-    "name": "semantic-carve-carve-label",
+    "name": "semantic-carve-label",
     "mode": "semantic",
     "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-carve-footnote-label=\"named\"><p>body</p></li></ol></section>",
     "expectedSource": "[^named]\n\n[^named]: body\n",
@@ -201,7 +145,7 @@
     ]
   },
   {
-    "name": "semantic-carve-carve-inline",
+    "name": "semantic-carve-inline",
     "mode": "semantic",
     "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-carve-inline-footnote=\"1\"><p>body</p></li></ol></section>",
     "expectedSource": "^[body]\n",
@@ -223,8 +167,7 @@
         "code": "attribute-dropped",
         "severity": "warning",
         "fidelity": "dropped",
-        "confidence": "exact",
-        "path": "footnote"
+        "confidence": "exact"
       }
     ],
     "forbiddenAuthoredAttributes": [
@@ -235,20 +178,7 @@
     ]
   },
   {
-    "name": "semantic-carve-djot-label",
-    "mode": "semantic",
-    "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-carve-footnote-label=\"named\"><p>body</p></li></ol></section>",
-    "expectedSource": "[^named]\n\n[^named]: body\n",
-    "expectedDiagnostics": [],
-    "forbiddenAuthoredAttributes": [
-      "data-carve-footnote-label",
-      "data-carve-inline-footnote",
-      "data-djot-footnote-label",
-      "data-djot-inline-footnote"
-    ]
-  },
-  {
-    "name": "semantic-carve-djot-inline",
+    "name": "semantic-djot-inline",
     "mode": "semantic",
     "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-djot-inline-footnote=\"1\"><p>body</p></li></ol></section>",
     "expectedSource": "^[body]\n",
@@ -270,8 +200,7 @@
         "code": "attribute-dropped",
         "severity": "warning",
         "fidelity": "dropped",
-        "confidence": "exact",
-        "path": "footnote"
+        "confidence": "exact"
       }
     ],
     "forbiddenAuthoredAttributes": [
@@ -282,23 +211,10 @@
     ]
   },
   {
-    "name": "semantic-djot-carve-label",
+    "name": "semantic-djot-label",
     "mode": "semantic",
     "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-djot-footnote-label=\"named\"><p>body</p></li></ol></section>",
     "expectedSource": "[^named]\n\n[^named]: body\n",
-    "expectedDiagnostics": [],
-    "forbiddenAuthoredAttributes": [
-      "data-carve-footnote-label",
-      "data-carve-inline-footnote",
-      "data-djot-footnote-label",
-      "data-djot-inline-footnote"
-    ]
-  },
-  {
-    "name": "semantic-djot-carve-inline",
-    "mode": "semantic",
-    "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-carve-inline-footnote=\"1\"><p>body</p></li></ol></section>",
-    "expectedSource": "^[body]\n",
     "expectedDiagnostics": [],
     "forbiddenAuthoredAttributes": [
       "data-carve-footnote-label",
@@ -317,36 +233,9 @@
         "code": "attribute-dropped",
         "severity": "warning",
         "fidelity": "dropped",
-        "confidence": "exact",
-        "path": "footnote"
+        "confidence": "exact"
       }
     ],
-    "forbiddenAuthoredAttributes": [
-      "data-carve-footnote-label",
-      "data-carve-inline-footnote",
-      "data-djot-footnote-label",
-      "data-djot-inline-footnote"
-    ]
-  },
-  {
-    "name": "semantic-djot-djot-label",
-    "mode": "semantic",
-    "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-djot-footnote-label=\"named\"><p>body</p></li></ol></section>",
-    "expectedSource": "[^named]\n\n[^named]: body\n",
-    "expectedDiagnostics": [],
-    "forbiddenAuthoredAttributes": [
-      "data-carve-footnote-label",
-      "data-carve-inline-footnote",
-      "data-djot-footnote-label",
-      "data-djot-inline-footnote"
-    ]
-  },
-  {
-    "name": "semantic-djot-djot-inline",
-    "mode": "semantic",
-    "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-djot-inline-footnote=\"1\"><p>body</p></li></ol></section>",
-    "expectedSource": "^[body]\n",
-    "expectedDiagnostics": [],
     "forbiddenAuthoredAttributes": [
       "data-carve-footnote-label",
       "data-carve-inline-footnote",
@@ -364,8 +253,7 @@
         "code": "attribute-dropped",
         "severity": "warning",
         "fidelity": "dropped",
-        "confidence": "exact",
-        "path": "footnote"
+        "confidence": "exact"
       }
     ],
     "forbiddenAuthoredAttributes": [
@@ -376,7 +264,7 @@
     ]
   },
   {
-    "name": "roundtrip-carve-carve-label",
+    "name": "roundtrip-carve-label",
     "mode": "roundtrip",
     "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-carve-footnote-label=\"named\"><p>body</p></li></ol></section>",
     "expectedSource": "[^named]\n\n[^named]: body\n",
@@ -389,7 +277,7 @@
     ]
   },
   {
-    "name": "roundtrip-carve-carve-inline",
+    "name": "roundtrip-carve-inline",
     "mode": "roundtrip",
     "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-carve-inline-footnote=\"1\"><p>body</p></li></ol></section>",
     "expectedSource": "^[body]\n",
@@ -411,8 +299,7 @@
         "code": "attribute-dropped",
         "severity": "warning",
         "fidelity": "dropped",
-        "confidence": "exact",
-        "path": "footnote"
+        "confidence": "exact"
       }
     ],
     "forbiddenAuthoredAttributes": [
@@ -423,20 +310,7 @@
     ]
   },
   {
-    "name": "roundtrip-carve-djot-label",
-    "mode": "roundtrip",
-    "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-carve-footnote-label=\"named\"><p>body</p></li></ol></section>",
-    "expectedSource": "[^named]\n\n[^named]: body\n",
-    "expectedDiagnostics": [],
-    "forbiddenAuthoredAttributes": [
-      "data-carve-footnote-label",
-      "data-carve-inline-footnote",
-      "data-djot-footnote-label",
-      "data-djot-inline-footnote"
-    ]
-  },
-  {
-    "name": "roundtrip-carve-djot-inline",
+    "name": "roundtrip-djot-inline",
     "mode": "roundtrip",
     "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-djot-inline-footnote=\"1\"><p>body</p></li></ol></section>",
     "expectedSource": "^[body]\n",
@@ -458,8 +332,7 @@
         "code": "attribute-dropped",
         "severity": "warning",
         "fidelity": "dropped",
-        "confidence": "exact",
-        "path": "footnote"
+        "confidence": "exact"
       }
     ],
     "forbiddenAuthoredAttributes": [
@@ -470,23 +343,10 @@
     ]
   },
   {
-    "name": "roundtrip-djot-carve-label",
+    "name": "roundtrip-djot-label",
     "mode": "roundtrip",
     "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-djot-footnote-label=\"named\"><p>body</p></li></ol></section>",
     "expectedSource": "[^named]\n\n[^named]: body\n",
-    "expectedDiagnostics": [],
-    "forbiddenAuthoredAttributes": [
-      "data-carve-footnote-label",
-      "data-carve-inline-footnote",
-      "data-djot-footnote-label",
-      "data-djot-inline-footnote"
-    ]
-  },
-  {
-    "name": "roundtrip-djot-carve-inline",
-    "mode": "roundtrip",
-    "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-carve-inline-footnote=\"1\"><p>body</p></li></ol></section>",
-    "expectedSource": "^[body]\n",
     "expectedDiagnostics": [],
     "forbiddenAuthoredAttributes": [
       "data-carve-footnote-label",
@@ -505,36 +365,9 @@
         "code": "attribute-dropped",
         "severity": "warning",
         "fidelity": "dropped",
-        "confidence": "exact",
-        "path": "footnote"
+        "confidence": "exact"
       }
     ],
-    "forbiddenAuthoredAttributes": [
-      "data-carve-footnote-label",
-      "data-carve-inline-footnote",
-      "data-djot-footnote-label",
-      "data-djot-inline-footnote"
-    ]
-  },
-  {
-    "name": "roundtrip-djot-djot-label",
-    "mode": "roundtrip",
-    "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-djot-footnote-label=\"named\"><p>body</p></li></ol></section>",
-    "expectedSource": "[^named]\n\n[^named]: body\n",
-    "expectedDiagnostics": [],
-    "forbiddenAuthoredAttributes": [
-      "data-carve-footnote-label",
-      "data-carve-inline-footnote",
-      "data-djot-footnote-label",
-      "data-djot-inline-footnote"
-    ]
-  },
-  {
-    "name": "roundtrip-djot-djot-inline",
-    "mode": "roundtrip",
-    "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" role=\"doc-endnote\" data-djot-inline-footnote=\"1\"><p>body</p></li></ol></section>",
-    "expectedSource": "^[body]\n",
-    "expectedDiagnostics": [],
     "forbiddenAuthoredAttributes": [
       "data-carve-footnote-label",
       "data-carve-inline-footnote",
@@ -552,8 +385,7 @@
         "code": "attribute-dropped",
         "severity": "warning",
         "fidelity": "dropped",
-        "confidence": "exact",
-        "path": "footnote"
+        "confidence": "exact"
       }
     ],
     "forbiddenAuthoredAttributes": [

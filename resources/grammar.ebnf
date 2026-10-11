@@ -8367,7 +8367,7 @@ EOF = (* end of file *) ;
 
       CONTRADICTORY FOOTNOTE CARRIERS RESTORE NEITHER AUTHORED FORM. An endnote
       carrying both `data-carve-footnote-label` and
-      `data-carve-inline-footnote` asks for a labelled note and an inline note,
+      `data-carve-inline-footnote` asks for a labeled note and an inline note,
       which has no authored label. The reader consumes neither carrier's
       meaning: it imports the ordinary numbered reference and endnote body,
       reports `attribute-dropped`, and excludes both reserved names from
