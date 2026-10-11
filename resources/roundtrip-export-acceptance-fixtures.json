@@ -303,7 +303,10 @@
           "attribute": "data-carve-escaped",
           "element": "span"
         }
-      ]
+      ],
+      "carrierText": {
+        "data-carve-escaped": "*"
+      }
     },
     {
       "id": "raw-latex-inline",
@@ -336,7 +339,10 @@
           "value": "a<b"
         }
       ],
-      "fallbackHtml": "<p>a&lt;b</p>"
+      "fallbackHtml": "<p>a&lt;b</p>",
+      "carrierText": {
+        "data-carve-raw": "a<b"
+      }
     },
     {
       "id": "raw-html-inline",
@@ -353,6 +359,8 @@
         }
       ],
       "importModes": [
+        "safe",
+        "semantic",
         "roundtrip"
       ],
       "carrierHosts": [
@@ -367,7 +375,10 @@
           "value": "<b>x</b>"
         }
       ],
-      "fallbackHtml": "<p>&lt;b&gt;x&lt;/b&gt;</p>"
+      "fallbackHtml": "<p>&lt;b&gt;x&lt;/b&gt;</p>",
+      "carrierText": {
+        "data-carve-raw": "<b>x</b>"
+      }
     },
     {
       "id": "abbreviation-definition",
@@ -393,7 +404,10 @@
           "attribute": "data-carve-abbreviations",
           "element": "template"
         }
-      ]
+      ],
+      "carrierText": {
+        "data-carve-abbreviations": "*[HTML]: Hyper Text"
+      }
     },
     {
       "id": "table-separator-widths",
@@ -571,6 +585,78 @@
         "semantic",
         "roundtrip"
       ]
+    },
+    {
+      "id": "raw-html-unclosed-inline",
+      "source": "`<b>unclosed`{=html}\n",
+      "carriers": {
+        "data-carve-raw": "html"
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "raw_inline",
+          "format": "html",
+          "content": "<b>unclosed"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-raw",
+          "element": "span"
+        }
+      ],
+      "fallbackNodes": [
+        {
+          "type": "text",
+          "value": "<b>unclosed"
+        }
+      ],
+      "fallbackHtml": "<p>&lt;b&gt;unclosed</p>",
+      "carrierText": {
+        "data-carve-raw": "<b>unclosed"
+      }
+    },
+    {
+      "id": "raw-html-closing-span-inline",
+      "source": "`</span><em>x</em>`{=html}\n",
+      "carriers": {
+        "data-carve-raw": "html"
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "raw_inline",
+          "format": "html",
+          "content": "</span><em>x</em>"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-raw",
+          "element": "span"
+        }
+      ],
+      "fallbackNodes": [
+        {
+          "type": "text",
+          "value": "</span><em>x</em>"
+        }
+      ],
+      "fallbackHtml": "<p>&lt;/span&gt;&lt;em&gt;x&lt;/em&gt;</p>",
+      "carrierText": {
+        "data-carve-raw": "</span><em>x</em>"
+      }
     }
   ],
   "importNegative": [
@@ -655,11 +741,12 @@
         "safe",
         "semantic"
       ],
-      "requiresDiagnostic": true
+      "requiresDiagnostic": true,
+      "diagnosticControlHtml": "<p><span data-carve-raw=\"latex\">z</span></p>"
     },
     {
       "id": "invalid-width-whole-carrier",
-      "html": "<table data-carve-col-widths=\"3,1001\"><tr><td>a</td><td>b</td></tr></table>",
+      "html": "<table data-carve-col-widths=\"3,1001\"><thead><tr><th>a</th><th>b</th></tr></thead></table>",
       "expectedNodes": [
         {
           "type": "table"
@@ -677,7 +764,8 @@
           "type": "table",
           "field": "separatorWidths"
         }
-      ]
+      ],
+      "diagnosticControlHtml": "<table data-carve-col-widths=\"3,4\"><thead><tr><th>a</th><th>b</th></tr></thead></table>"
     },
     {
       "id": "denied-carried-link",
@@ -706,6 +794,12 @@
       ],
       "forbiddenRenderedSubstrings": [
         "javascript:"
+      ],
+      "forbiddenSourceSubstrings": [
+        "javascript:"
+      ],
+      "forbiddenAstSubstrings": [
+        "javascript:"
       ]
     },
     {
@@ -728,12 +822,16 @@
     },
     {
       "id": "canonical-carrier-beats-deprecated",
-      "html": "<p><span data-carve-raw=\"latex\" data-djot-raw=\"html\">a&lt;b</span></p>",
+      "html": "<p><a href=\"/u\" data-carve-ref=\"r\" data-djot-ref=\"z\">t</a></p>",
       "expectedNodes": [
         {
-          "type": "raw_inline",
-          "format": "latex",
-          "content": "a<b"
+          "type": "link",
+          "ref": "r"
+        },
+        {
+          "type": "link_reference_definition",
+          "label": "r",
+          "href": "/u"
         }
       ],
       "forbiddenTypes": [],

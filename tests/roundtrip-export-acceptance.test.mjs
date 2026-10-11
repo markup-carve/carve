@@ -53,6 +53,22 @@ function assertNoReservedAttrs(tree) {
     for (const key of Object.keys(node.attrs?.keyValues ?? {})) assert.ok(!isReserved(key), key)
   }
 }
+function carrierElements(html, name) {
+  const found = []
+  function visit(node) {
+    if ((node.attrs ?? []).some((attr) => attr.name === name)) found.push(node)
+    for (const child of node.childNodes ?? []) visit(child)
+    if (node.content) visit(node.content)
+  }
+  visit(parseFragment(html))
+  return found
+}
+function carrierText(node) {
+  return (node.content?.childNodes ?? node.childNodes ?? []).map((child) => {
+    assert.equal(child.nodeName, '#text', 'carrier payload must contain only escaped text')
+    return child.value
+  }).join('')
+}
 const normalizedHtml = (html) => html.trim()
 
 for (const fixture of fixtures.exportImport) {
@@ -63,6 +79,13 @@ for (const fixture of fixtures.exportImport) {
     assert.ok(!htmlAttributes(ordinary).some((attr) => isReserved(attr.name)))
     const exported = carveToHtml(fixture.source, { roundtrip: true })
     const attrs = htmlAttributes(exported)
+    for (const [name, expected] of Object.entries(fixture.carrierText ?? {})) {
+      const hosts = carrierElements(exported, name)
+      assert.equal(hosts.length, 1, name)
+      assert.equal(carrierText(hosts[0]), expected, name)
+    }
+    assert.ok(!attrs.some((attr) => isReserved(attr.name) && attr.name.startsWith('data-djot-')))
+    assert.ok(attrs.filter((attr) => isReserved(attr.name)).every((attr) => Object.hasOwn(fixture.carriers, attr.name)))
     for (const [name, value] of Object.entries(fixture.carriers)) assert.ok(attrs.some((attr) => attr.name === name && (value === null || attr.value === value)), `${name}=${value}`)
     for (const host of fixture.carrierHosts) assert.ok(attrs.some((attr) => attr.name === host.attribute && attr.element === host.element), JSON.stringify(host))
     for (const [name, value] of Object.entries(fixture.ordinaryAttributes ?? {})) {
@@ -86,8 +109,13 @@ for (const fixture of fixtures.importNegative) {
   for (const mode of fixture.importModes) test(`shared carrier rejection: ${fixture.id}/${mode}`, () => {
     const result = htmlToAst(fixture.html, { mode })
     assertProjection(result.value, fixture.expectedNodes)
-    if (fixture.requiresDiagnostic) assert.ok(result.report.diagnostics.length > 0, fixture.id)
+    if (fixture.requiresDiagnostic) {
+      const controlCount = fixture.diagnosticControlHtml ? htmlToAst(fixture.diagnosticControlHtml, { mode }).report.diagnostics.length : 0
+      assert.ok(result.report.diagnostics.length > controlCount, fixture.id)
+    }
     assertNoReservedAttrs(result.value)
+    for (const fragment of fixture.forbiddenSourceSubstrings ?? []) assert.ok(!htmlToCarve(fixture.html, { mode }).value.includes(fragment), fragment)
+    for (const fragment of fixture.forbiddenAstSubstrings ?? []) assert.ok(!JSON.stringify(result.value).includes(fragment), fragment)
     for (const fragment of fixture.forbiddenRenderedSubstrings ?? []) assert.ok(!carveToHtml(htmlToCarve(fixture.html, { mode }).value).includes(fragment), fragment)
     for (const type of fixture.forbiddenTypes) assert.ok(!nodes(result.value).some((node) => node.type === type), type)
     for (const absent of fixture.expectedAbsentFields ?? []) assert.ok(nodes(result.value).filter((node) => node.type === absent.type).every((node) => field(node, absent.field) === undefined))
