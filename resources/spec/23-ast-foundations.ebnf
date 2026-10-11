@@ -97,6 +97,15 @@
                    recorded nowhere. Absent means `---`, so every
                    tree written before this field, and every tree a converter
                    assembles, decodes to the spelling Carve teaches
+        table      `rows`, and the AUTHOR-CHOICE field `separatorWidths` when
+                   the author wrote a separator row (PART 11 §6). It is an
+                   array of integers, one per separator cell, each the count of
+                   `-` characters that cell spelled, alignment colons excluded:
+                   `|:-----|---:|` records `[5, 3]`. Absent means the author
+                   wrote NO separator row and spelled the header with `|=`
+                   cells instead, which is a different source form for the same
+                   rows and alignments. Without the field both forms decode to
+                   the `|=` one
       An implementation MUST NOT invent a synonym, and MUST NOT expose an
       internal field the reference does not have. A consumer reading `href`
       must not have to know which engine produced the document.

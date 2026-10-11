@@ -8056,8 +8056,8 @@ EOF = (* end of file *) ;
       byte-identical source. A distinction the AST already records --
       `list.bulletChar`, `thematic_break.marker`, a link's or image's `ref`
       and `rawRef`, an `autolink` node, a `footnote_ref` label, an
-      `escaped_text` node, a `raw_inline` format, an authored `id` under
-      `attrs` -- is recoverable from the tree whether or not HTML carried it.
+      `escaped_text` node, a `raw_inline` format, `table.separatorWidths`, an
+      authored `id` under `attrs` -- is recoverable from the tree whether or not HTML carried it.
       These carriers exist because this serialization collapses those
       distinctions, not because the tree lost them. A DISTINCTION THE AST DOES
       NOT RECORD GETS NO CARRIER, and §13a says why.
@@ -8110,6 +8110,15 @@ EOF = (* end of file *) ;
                                                   holds the document's
                                                   abbreviation definitions, one
                                                   `*[ABBR]: expansion` per line
+        data-carve-col-widths       <table>       the authored separator-row
+                                                  dash widths, comma-joined,
+                                                  one per separator cell. The
+                                                  AST field it restores is
+                                                  `table.separatorWidths`
+                                                  ([CARVE-P11-066]), whose
+                                                  PRESENCE is the distinction:
+                                                  a table with no separator row
+                                                  writes no attribute
 
       AN ORDERED LIST'S DELIMITER IS `data-delim`, NOT A SECOND CARRIER. §12
       writes the authored delimiter on every render, and an ordered list's
@@ -8135,17 +8144,24 @@ EOF = (* end of file *) ;
       distinction the tree discards is to add the PART 12 field FIRST, and then
       this clause follows.
 
-      A TABLE'S SEPARATOR-ROW WIDTHS AND A CONSTRUCT'S VERBATIM SOURCE ARE WHAT
-      THE RULE EXCLUDES, which is why `data-carve-col-widths` and
-      `data-carve-src` are absent from the rows above. Carrying the widths was
-      measured, and the measurement is the argument FOR the rule rather than an
-      exception to it: an engine that added the carrier and a field to hold it
-      turned 37 tests red across 9 files, because the AST JSON writer does not
-      filter to the published field set, the reader refuses an unknown field,
-      and the "parses to the same tree" comparisons are deep equality that a
-      canonical `---` separator cannot satisfy. It is also why a PROMISE needs
-      the field first: without one there is nothing for a reader to check the
-      promise against.
+      THE SEPARATOR-ROW ROW IS WHAT THE RULE ADMITTING A CARRIER LOOKS LIKE.
+      `data-carve-col-widths` was absent from this inventory until
+      `table.separatorWidths` existed, and it is listed now because that field
+      does. The order was not a formality: an engine that wrote the carrier
+      WITHOUT the field turned 37 tests red across 9 files, because the AST JSON
+      writer does not filter to the published field set, the reader refuses an
+      unknown field, and the "parses to the same tree" comparisons are deep
+      equality that a canonical `---` separator cannot satisfy. The field
+      answers all three at once, which is why it comes first.
+
+      A CONSTRUCT'S VERBATIM SOURCE IS WHAT THE RULE STILL EXCLUDES, which is
+      why `data-carve-src` is absent from the rows above. It is not awaiting a
+      field: [CARVE-P11-013] rules the glued opener canonical and says the tree
+      records no padding, fence length or fence character, so the one
+      distinction such a carrier is observed to move -- the space in
+      ``` ``` php ``` -- is a spelling this specification has already ruled
+      against keeping. A field for it would reverse that clause rather than add
+      to it.
 
       AN EXTENSION WRITES ITS OWN CARRIERS, under the reserved prefix, for the
       distinctions ITS nodes record. They are scoped to that extension and
@@ -9112,6 +9128,32 @@ EOF = (* end of file *) ;
       THE RENDERING IS UNCHANGED. Every state but `x`/`X` still renders an
       unchecked box (PART 2 `task_state`), so no HTML moves with this clause.
       What moves is only what survives a format cycle.
+
+   6h. A TABLE'S SEPARATOR ROW IS WRITTEN WHERE THE AUTHOR WROTE ONE -- NORMATIVE
+      [CARVE-P11-066]. A header row has two spellings, `|= cell |` and a plain
+      row above a `|---|` separator, and they parse to the same rows and the
+      same alignments. The AST records which one the author wrote, in
+      `table.separatorWidths` (PART 12 §3), and the writer reproduces it: with
+      the field, a separator row; without it, `|=` header cells.
+
+      THE FIELD IS THE SPELLING, THE ROWS ARE THE MEANING. This is §6's rule
+      again, on the same terms as `bulletChar` and `thematic_break.marker`: a
+      spelling is the author's to keep BECAUSE THE AST RECORDS IT. Before the
+      field both forms came back as `|=` cells, which is why this clause can
+      exist at all.
+
+      THE WIDTHS ARE WRITTEN AS RECORDED, one entry per separator cell, each a
+      run of that many `-` characters. An alignment colon is NOT one of them:
+      it is written from the cell's own alignment, `:` leading for left, `:`
+      trailing for right, both for center, and `[5, 3]` on a left-and-right
+      table comes back as `|:-----|---:|`. A width below 1 is written as 1,
+      since a separator cell needs a character, and an entry count that
+      disagrees with the row's cell count is spelled for the cells that exist
+      and no further.
+
+      IT IS NOT A LAYOUT INSTRUCTION. The widths are the dash runs the author
+      typed, not column widths, and nothing downstream aligns a table to them.
+      §6e's cell padding is unchanged by this clause.
 
    7. NO WHITESPACE-ONLY LINE -- NORMATIVE [CARVE-P11-016]. `fmt` never emits a line whose only
       content is ASCII spaces or tabs. Such a line is emitted EMPTY.
@@ -10782,6 +10824,15 @@ EOF = (* end of file *) ;
                    recorded nowhere. Absent means `---`, so every
                    tree written before this field, and every tree a converter
                    assembles, decodes to the spelling Carve teaches
+        table      `rows`, and the AUTHOR-CHOICE field `separatorWidths` when
+                   the author wrote a separator row (PART 11 §6). It is an
+                   array of integers, one per separator cell, each the count of
+                   `-` characters that cell spelled, alignment colons excluded:
+                   `|:-----|---:|` records `[5, 3]`. Absent means the author
+                   wrote NO separator row and spelled the header with `|=`
+                   cells instead, which is a different source form for the same
+                   rows and alignments. Without the field both forms decode to
+                   the `|=` one
       An implementation MUST NOT invent a synonym, and MUST NOT expose an
       internal field the reference does not have. A consumer reading `href`
       must not have to know which engine produced the document.
@@ -12540,19 +12591,31 @@ EOF = (* end of file *) ;
       `major.minor` and it does not track the Carve version: the language is
       versioned for authors and this is versioned for readers of a tree. A
       MAJOR bump removes, renames or reinterprets a field or a meaning; a MINOR
-      bump adds a field or a node type. The current contract is 1.0. A leading zero is
+      bump adds a field or a node type. The current contract is 1.1. A leading zero is
       refused so the 0.x reading of a major never applies here.
+
+      A MINOR SAYS WHAT UPGRADING COSTS, NOT WHAT AN OLD READER TOLERATES. It
+      tells a reader's author that moving up means handling new fields and
+      nothing else, and it tells a producer that every reader of the same minor
+      or higher reads its trees. IT DOES NOT SAY A LOWER READER COPES, which
+      (b) below spells out.
 
       WHAT A READER DOES:
 
       (a) A HIGHER MAJOR IS REFUSED, with a typed error naming the version it
           got and the version it implements. Not a schema failure: the payload
           may be perfectly well-formed under a contract this build predates.
-      (b) A HIGHER MINOR IS ACCEPTED only where every extension the payload
-          marks `required` is one the reader implements. A minor adds, so the
-          tree is readable except for what the additions carry, and the
-          `required` flag is the payload's own statement of whether those
-          additions are load-bearing.
+      (b) A HIGHER MINOR IS REFUSED TOO, with the same typed error naming both
+          versions. A minor adds a FIELD, and THE SCHEMA STAYS CLOSED below --
+          `CARVE-P12-030` rejects any property the schema does not name -- so a
+          1.0 reader handed a 1.1 tree fails on the field itself, as a schema
+          error that names no version. Accepting the envelope and then refusing
+          its payload is the worse of the two failures, not the gentler one.
+          THE READER ACCEPTS ITS OWN VERSION OR LOWER. Weakening the ingest
+          instead is the answer §11 already ruled cannot be right
+          ([carve#2199](https://github.com/markup-carve/carve/issues/2199)),
+          and this clause's own reason for existing is that the reader need not
+          be weakened to evolve.
       (c) AN EXTENSION MARKED REQUIRED AND NOT IMPLEMENTED IS REFUSED, named.
           Rendering the understood parts and reporting success is what §9(b)
           forbids one level down, for the same reason.
@@ -12563,6 +12626,15 @@ EOF = (* end of file *) ;
       A PRODUCER EMITS ONE CANONICAL VERSION - the contract its build
       implements - rather than echoing what it read. Re-emitting an ingested
       `astVersion` would republish a claim the producer cannot keep.
+
+      A BARE TREE IS THE CONTRACT ITS PRODUCER IMPLEMENTS. `carve --json` and
+      an in-memory handoff carry no envelope and therefore no version, which is
+      deliberate: inside one build there is nothing to negotiate. A bare tree
+      that CROSSES a version boundary is the producer's problem to solve, by
+      wrapping it, and a reader handed one has no version to check and reads it
+      against its own contract. That is also where a closed schema reports the
+      mismatch as an unnamed property rather than as a version, which is the
+      cost of leaving the bare form versionless and is accepted.
 
       THE SCHEMA STAYS CLOSED. `additionalProperties: false` holds on the
       envelope and on every node inside it. Versioning solves evolution without

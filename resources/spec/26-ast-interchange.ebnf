@@ -141,19 +141,31 @@
       `major.minor` and it does not track the Carve version: the language is
       versioned for authors and this is versioned for readers of a tree. A
       MAJOR bump removes, renames or reinterprets a field or a meaning; a MINOR
-      bump adds a field or a node type. The current contract is 1.0. A leading zero is
+      bump adds a field or a node type. The current contract is 1.1. A leading zero is
       refused so the 0.x reading of a major never applies here.
+
+      A MINOR SAYS WHAT UPGRADING COSTS, NOT WHAT AN OLD READER TOLERATES. It
+      tells a reader's author that moving up means handling new fields and
+      nothing else, and it tells a producer that every reader of the same minor
+      or higher reads its trees. IT DOES NOT SAY A LOWER READER COPES, which
+      (b) below spells out.
 
       WHAT A READER DOES:
 
       (a) A HIGHER MAJOR IS REFUSED, with a typed error naming the version it
           got and the version it implements. Not a schema failure: the payload
           may be perfectly well-formed under a contract this build predates.
-      (b) A HIGHER MINOR IS ACCEPTED only where every extension the payload
-          marks `required` is one the reader implements. A minor adds, so the
-          tree is readable except for what the additions carry, and the
-          `required` flag is the payload's own statement of whether those
-          additions are load-bearing.
+      (b) A HIGHER MINOR IS REFUSED TOO, with the same typed error naming both
+          versions. A minor adds a FIELD, and THE SCHEMA STAYS CLOSED below --
+          `CARVE-P12-030` rejects any property the schema does not name -- so a
+          1.0 reader handed a 1.1 tree fails on the field itself, as a schema
+          error that names no version. Accepting the envelope and then refusing
+          its payload is the worse of the two failures, not the gentler one.
+          THE READER ACCEPTS ITS OWN VERSION OR LOWER. Weakening the ingest
+          instead is the answer §11 already ruled cannot be right
+          ([carve#2199](https://github.com/markup-carve/carve/issues/2199)),
+          and this clause's own reason for existing is that the reader need not
+          be weakened to evolve.
       (c) AN EXTENSION MARKED REQUIRED AND NOT IMPLEMENTED IS REFUSED, named.
           Rendering the understood parts and reporting success is what §9(b)
           forbids one level down, for the same reason.
@@ -164,6 +176,15 @@
       A PRODUCER EMITS ONE CANONICAL VERSION - the contract its build
       implements - rather than echoing what it read. Re-emitting an ingested
       `astVersion` would republish a claim the producer cannot keep.
+
+      A BARE TREE IS THE CONTRACT ITS PRODUCER IMPLEMENTS. `carve --json` and
+      an in-memory handoff carry no envelope and therefore no version, which is
+      deliberate: inside one build there is nothing to negotiate. A bare tree
+      that CROSSES a version boundary is the producer's problem to solve, by
+      wrapping it, and a reader handed one has no version to check and reads it
+      against its own contract. That is also where a closed schema reports the
+      mismatch as an unnamed property rather than as a version, which is the
+      cost of leaving the bare form versionless and is accepted.
 
       THE SCHEMA STAYS CLOSED. `additionalProperties: false` holds on the
       envelope and on every node inside it. Versioning solves evolution without

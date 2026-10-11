@@ -1433,6 +1433,12 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-066",
+      "part": "11",
+      "title": "A TABLE'S SEPARATOR ROW IS WRITTEN WHERE THE AUTHOR WROTE ONE",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P11-036",
       "part": "11",
       "title": "A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES",

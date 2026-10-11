@@ -184,6 +184,32 @@
       unchecked box (PART 2 `task_state`), so no HTML moves with this clause.
       What moves is only what survives a format cycle.
 
+   6h. A TABLE'S SEPARATOR ROW IS WRITTEN WHERE THE AUTHOR WROTE ONE -- NORMATIVE
+      [CARVE-P11-066]. A header row has two spellings, `|= cell |` and a plain
+      row above a `|---|` separator, and they parse to the same rows and the
+      same alignments. The AST records which one the author wrote, in
+      `table.separatorWidths` (PART 12 §3), and the writer reproduces it: with
+      the field, a separator row; without it, `|=` header cells.
+
+      THE FIELD IS THE SPELLING, THE ROWS ARE THE MEANING. This is §6's rule
+      again, on the same terms as `bulletChar` and `thematic_break.marker`: a
+      spelling is the author's to keep BECAUSE THE AST RECORDS IT. Before the
+      field both forms came back as `|=` cells, which is why this clause can
+      exist at all.
+
+      THE WIDTHS ARE WRITTEN AS RECORDED, one entry per separator cell, each a
+      run of that many `-` characters. An alignment colon is NOT one of them:
+      it is written from the cell's own alignment, `:` leading for left, `:`
+      trailing for right, both for center, and `[5, 3]` on a left-and-right
+      table comes back as `|:-----|---:|`. A width below 1 is written as 1,
+      since a separator cell needs a character, and an entry count that
+      disagrees with the row's cell count is spelled for the cells that exist
+      and no further.
+
+      IT IS NOT A LAYOUT INSTRUCTION. The widths are the dash runs the author
+      typed, not column widths, and nothing downstream aligns a table to them.
+      §6e's cell padding is unchanged by this clause.
+
    7. NO WHITESPACE-ONLY LINE -- NORMATIVE [CARVE-P11-016]. `fmt` never emits a line whose only
       content is ASCII spaces or tabs. Such a line is emitted EMPTY.
 
