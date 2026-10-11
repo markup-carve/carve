@@ -1,0 +1,197 @@
+[
+  {
+    "id": "comment-boundary-1",
+    "source": "{% x\ny %}\n",
+    "html": "<p>{% x\ny %}</p>\n"
+  },
+  {
+    "id": "comment-boundary-2",
+    "source": "# a\n{% x\ny %}\n# b\n",
+    "html": "<section id=\"a\">\n<h1>a</h1>\n<p>{% x\ny %}\n# b</p>\n</section>\n"
+  },
+  {
+    "id": "comment-boundary-3",
+    "source": "> {% x\n> y %}\n",
+    "html": "<blockquote>\n<p>{% x\n&gt; y %}</p>\n</blockquote>\n"
+  },
+  {
+    "id": "comment-boundary-4",
+    "source": "- {% x\n  y %}\n",
+    "html": "<ul>\n<li>\n{% x\ny %}\n</li>\n</ul>\n"
+  },
+  {
+    "id": "comment-boundary-5",
+    "source": "{% x %}\n",
+    "html": ""
+  },
+  {
+    "id": "comment-boundary-6",
+    "source": "{% x\n  y %}\n",
+    "html": ""
+  },
+  {
+    "id": "comment-boundary-7",
+    "source": "a {% x\ny %} z\n",
+    "html": "<p>a  z</p>\n"
+  },
+  {
+    "id": "comment-boundary-8",
+    "source": "- a\n{% 50% off %}\n",
+    "html": "<ul>\n<li>\na\n{% 50% off %}\n</li>\n</ul>\n"
+  },
+  {
+    "id": "comment-boundary-9",
+    "source": "# a\n{% 50% off %}\n",
+    "html": "<section id=\"a-50-off\">\n<h1>a\n{% 50% off %}</h1>\n</section>\n"
+  },
+  {
+    "id": "comment-boundary-10",
+    "source": "- a\n {% x\n y %}\n",
+    "html": "<ul>\n<li>\na\n\n</li>\n</ul>\n"
+  },
+  {
+    "id": "comment-boundary-11",
+    "source": "para\n# not a heading\n{% x\ny %}\n",
+    "html": "<p>para\n# not a heading\n</p>\n"
+  },
+  {
+    "id": "comment-boundary-12",
+    "source": "para\n- not an item\n{% x\ny %}\n",
+    "html": "<p>para\n- not an item\n</p>\n"
+  },
+  {
+    "id": "comment-boundary-13",
+    "source": "p\n\na\n{% x\ny %} z\n",
+    "html": "<p>p</p>\n<p>a\n z</p>\n"
+  },
+  {
+    "id": "comment-boundary-14",
+    "source": "- a\n\n  b\n  {% x\n  y %} z\n",
+    "html": "<ul>\n<li>\n<p>a</p>\n<p>b\n z</p>\n</li>\n</ul>\n"
+  },
+  {
+    "id": "comment-boundary-15",
+    "source": "> p\n>\n> a\n> {% x\n> y %} z\n",
+    "html": "<blockquote>\n<p>p</p>\n<p>a\n z</p>\n</blockquote>\n"
+  },
+  {
+    "id": "comment-boundary-16",
+    "source": "- a\n\n  b\n{% x\ny %}\n",
+    "html": "<ul>\n<li>\n<p>a</p>\n<p>b</p>\n</li>\n</ul>\n<p>{% x\ny %}</p>\n"
+  },
+  {
+    "id": "comment-boundary-17",
+    "source": "> a\nb\n{% x\ny %}\n",
+    "html": "<blockquote>\n<p>a\nb</p>\n</blockquote>\n<p>{% x\ny %}</p>\n"
+  },
+  {
+    "id": "comment-boundary-18",
+    "source": "{.c}\n{% x\ny %}\n",
+    "html": "<p class=\"c\">{% x\ny %}</p>\n"
+  },
+  {
+    "id": "comment-boundary-19",
+    "source": "# a\n{%50%off%}\n",
+    "html": "<section id=\"a-50-off\">\n<h1>a\n{%50%off%}</h1>\n</section>\n"
+  },
+  {
+    "id": "comment-boundary-20",
+    "source": "{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n{% x\n  y %}\n",
+    "html": ""
+  },
+  {
+    "id": "comment-boundary-21",
+    "source": "> {% x\n> b\n> c %}\n",
+    "html": "<blockquote>\n<p>{% x\n&gt; b\nc %}</p>\n</blockquote>\n"
+  },
+  {
+    "id": "comment-boundary-22",
+    "source": "> {% x\n> b\n> c\n> d %}\n",
+    "html": "<blockquote>\n<p>{% x\n&gt; b\nc\nd %}</p>\n</blockquote>\n"
+  },
+  {
+    "id": "comment-boundary-23",
+    "source": "> {% x\n> b\n> c {% d %} e\n",
+    "html": "<blockquote>\n<p>{% x\n&gt; b\nc  e</p>\n</blockquote>\n"
+  },
+  {
+    "id": "comment-boundary-24",
+    "source": "> a\n> {% x\n> b\n> c {% d %} e\n",
+    "html": "<blockquote>\n<p>a\n{% x\nb\nc {% d %} e</p>\n</blockquote>\n"
+  },
+  {
+    "id": "comment-boundary-25",
+    "source": "> - {% x\n> - %}\n",
+    "html": "<blockquote>\n<ul>\n<li>\n{% x\n</li>\n<li>\n%}\n</li>\n</ul>\n</blockquote>\n"
+  },
+  {
+    "id": "comment-boundary-26",
+    "source": "> - {% x\n  > y %}\n",
+    "html": "<blockquote>\n<ul>\n<li>\n{% x\n&gt; y %}\n</li>\n</ul>\n</blockquote>\n"
+  },
+  {
+    "id": "comment-boundary-27",
+    "source": ">> a\n{% x\n",
+    "html": "<p>&gt;&gt; a\n{% x</p>\n"
+  },
+  {
+    "id": "comment-boundary-28",
+    "source": ">> y %}\n  >   {% x\n",
+    "html": "<p>&gt;&gt; y %}\n&gt;   {% x</p>\n"
+  },
+  {
+    "id": "comment-boundary-29",
+    "source": "> {% x\n>  b\n> c %}\n",
+    "html": "<blockquote>\n<p>{% x\nb\n&gt; c %}</p>\n</blockquote>\n"
+  },
+  {
+    "id": "comment-boundary-30",
+    "source": "> > {% x\n> > y %}\n",
+    "html": "<blockquote>\n<blockquote>\n<p>{% x\n&gt; &gt; y %}</p>\n</blockquote>\n</blockquote>\n"
+  },
+  {
+    "id": "comment-boundary-31",
+    "source": "> {% x\n> y }\n",
+    "html": "<blockquote>\n<p>{% x\n&gt; y }</p>\n</blockquote>\n"
+  },
+  {
+    "id": "comment-boundary-32",
+    "source": "> - a\n> {% x\n> y %}\n",
+    "html": "<blockquote>\n<ul>\n<li>\na\n</li>\n</ul>\n<p>{% x\n&gt; y %}</p>\n</blockquote>\n"
+  },
+  {
+    "id": "comment-boundary-33",
+    "source": ": def\n{% x\ny %}\n",
+    "html": "<dl>\n<dt>def</dt>\n<dd>\n</dd>\n</dl>\n<p>{% x\ny %}</p>\n"
+  },
+  {
+    "id": "comment-boundary-34",
+    "source": "# a\n{% x\ny %} z\n{% p\nq %}\n",
+    "html": "<section id=\"a\">\n<h1>a</h1>\n<p>{% x\ny %} z\n</p>\n</section>\n"
+  },
+  {
+    "id": "comment-boundary-35",
+    "source": "> # a\n> {% x\n> y %}\n",
+    "html": "<blockquote>\n<h1 id=\"a\">a</h1>\n<p>{% x\n&gt; y %}</p>\n</blockquote>\n"
+  },
+  {
+    "id": "comment-boundary-36",
+    "source": "> > {% x\n> y %}\n",
+    "html": "<blockquote>\n<blockquote>\n<p>{% x</p>\n</blockquote>\n<p>y %}</p>\n</blockquote>\n"
+  },
+  {
+    "id": "comment-boundary-37",
+    "source": "- > {% x\n  > y %}\n",
+    "html": "<ul>\n<li>\n<blockquote>\n{% x\n&gt; y %}\n</blockquote>\n</li>\n</ul>\n"
+  },
+  {
+    "id": "comment-boundary-38",
+    "source": "> - {% x\n>   y %}\n",
+    "html": "<blockquote>\n<ul>\n<li>\n{% x\n&gt;   y %}\n</li>\n</ul>\n</blockquote>\n"
+  },
+  {
+    "id": "comment-boundary-39",
+    "source": "{% x\n> y %}\n",
+    "html": "<p>{% x\n&gt; y %}</p>\n"
+  }
+]
