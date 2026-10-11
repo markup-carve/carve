@@ -10879,6 +10879,19 @@ EOF = (* end of file *) ;
       after it, a definition marker with no term before it, or a list with no
       closing marker is a damaged set.
 
+      ONLY THE OUTERMOST DEFINITION LIST IS CARRIED. This target writes a
+      definition's blocks unindented (§10p), so a list nested inside a
+      definition would write the same `:` and closing markers as the list
+      around it and the import could not tell which list a marker closes. A
+      nested list therefore takes no markers and degrades as §10p writes it,
+      inside the outer definition that is carried.
+
+      A DEFINITION LIST'S OWN ATTRIBUTE LINE stands directly above its first
+      term marker, as that list's prelude, the way a container's attribute
+      line precedes its opener. That one adjacency is not "a marker followed
+      by another marker": an attribute marker directly above a list's first
+      term marker attaches to the list.
+
       A CAPTION ON ANY CAPTIONED BLOCK TAKES THE COMPOSITE FIGURE'S CAPTION
       MARKER. A block quote's attribution, a table's, an image's, a code
       listing's or an equation's `^ ...` line is written as a paragraph after
