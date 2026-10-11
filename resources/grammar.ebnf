@@ -8274,9 +8274,10 @@ EOF = (* end of file *) ;
       that document. Enabling export never enables a trusted import, never
       widens an importer's mode, and never relaxes a destination check. An
       importer that returns a stored-source payload verbatim does so on its
-      own trust setting, never on the exporter's -- and `data-carve-src` is not
-      a carrier at all (§13a), so a document holding one was not written by a
-      conforming export.
+      own trust setting, never on the exporter's. `data-carve-src` makes that
+      plainest: it is a reserved name this inventory does not promise (§13a),
+      so nothing obliges a reader to honor it and trust is the only thing that
+      ever did.
 
    13f. AN ALIAS NEVER TURNS PRESERVATION OFF -- NORMATIVE [CARVE-P10-018].
       The Markdown carrier options that predate this one -- PHP
