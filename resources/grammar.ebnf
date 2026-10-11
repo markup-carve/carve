@@ -8171,6 +8171,16 @@ EOF = (* end of file *) ;
       its name, §13c reads its deprecated spelling, and §13d consumes it in
       every import mode.
 
+      A WIDTH IS A POSITIVE INTEGER, AND A READER CLAMPS IT AT 1000. The
+      widths arrive as a comma-joined list in an attribute an importer reads
+      off UNTRUSTED HTML, and the writer spells one `-` per unit, so an
+      unbounded value is a document-size amplification rather than a wide
+      table. A reader clamps each entry into `[1, 1000]` and refuses the whole
+      carrier -- writing no field at all -- where an entry is not a run of
+      digits. THE BOUND IS STATED SO THE ENGINES AGREE ON THE BYTES: it is a
+      round number chosen for parity rather than derived from anything, and no
+      separator row anyone writes approaches it.
+
       A VALUE ESCAPES AS §2 ESCAPES ANY ATTRIBUTE VALUE. §2's text-content
       exception for U+00A0 is not an attribute rule, so a carrier value
       holding a no-break space keeps that character.
