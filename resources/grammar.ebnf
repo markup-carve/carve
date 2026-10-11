@@ -9223,9 +9223,16 @@ EOF = (* end of file *) ;
       it is written from the cell's own alignment, `:` leading for left, `:`
       trailing for right, both for center, and `[5, 3]` on a left-and-right
       table comes back as `|:-----|---:|`. A width below 1 is written as 1,
-      since a separator cell needs a character, and an entry count that
-      disagrees with the row's cell count is spelled for the cells that exist
-      and no further.
+      since a separator cell needs a character.
+
+      THE FIELD DECIDES THE CELL COUNT, AND THE WRITER NEVER PADS TO THE
+      HEADER'S WIDTH. An entry count that disagrees with the header row is
+      spelled for the entries that exist and no further, because a separator
+      cell the author did not write is a cell, and §1 breaks on it: the
+      document re-parses with a `separatorWidths` the source never had. One
+      engine padded, and three of four ragged-table cases failed
+      `parse(fmt(x)) == parse(x)` as a result, which is the shape of defect this
+      sentence exists to name.
 
       IT IS NOT A LAYOUT INSTRUCTION. The widths are the dash runs the author
       typed, not column widths, and nothing downstream aligns a table to them.
