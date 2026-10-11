@@ -700,7 +700,8 @@
       `data-carve-inline-footnote` asks for a labeled note and an inline note,
       which has no authored label. The reader consumes neither carrier's
       meaning: it imports the ordinary numbered reference and endnote body,
-      reports `attribute-dropped`, and excludes both reserved names from
+      reports one `attribute-dropped` warning for the contradictory pair,
+      and excludes both reserved names from
       authored attributes. This applies in every import mode and to the
       deprecated aliases in §13c. A valid label alone and an inline flag alone
       retain their respective reconstruction behavior; this rule chooses no
