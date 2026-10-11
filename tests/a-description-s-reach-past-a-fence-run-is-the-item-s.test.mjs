@@ -223,3 +223,11 @@ test('a nested heading or table also ends a description before lazy text', () =>
     assert.ok(html(source).endsWith('</dl>\n<p>tail</p>'), source)
   }
 })
+
+test('the block after a closed nested fence answers the lazy question', () => {
+  const prefix = ':: t\n: - ```\n    c\n    ```\n'
+  assert.ok(html(`${prefix}    p\nx\n`).endsWith('</dl>'))
+  for (const block of ['# H', '~~~']) {
+    assert.ok(html(`${prefix}    ${block}\nx\n`).endsWith('</dl>\n<p>x</p>'), block)
+  }
+})

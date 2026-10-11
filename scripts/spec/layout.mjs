@@ -1744,17 +1744,17 @@ function bodyLeavesNoParagraphAt(bodyLines, last) {
       continue
     }
     const { inner, blockStart } = hostAdvance(host, bodyLines[index], paragraphOpen)
-    if (blockStart) {
+    if (blockStart || !paragraphOpen) {
       const opener = hostFenceOpener(host, inner)
       if (opener) {
-        host.fence = { run: opener[1], host: host.columns.at(-1), column: inner.col }
+        host.fence = { run: opener[1], host: host.columns.at(-1), column: inner.col, markerLine: blockStart }
         paragraphOpen = false
         continue
       }
     }
     paragraphOpen = opensParagraph(inner.rest, blockStart)
   }
-  if (host.fence === null && host.kinds.at(-1) === 'item' && !paragraphOpen) return true
+  if ((!host.fence || !host.fence.markerLine) && host.kinds.at(-1) === 'item' && !paragraphOpen) return true
   let closedAt = -1
   let k = 0
   while (k <= last) {
