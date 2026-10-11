@@ -2016,8 +2016,8 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
 
 
    RENDER-LOSS REPORTING -- NORMATIVE [CARVE-P2-024]. Target routing may
-   intentionally omit a raw node or flatten a `ruby` node or an editorial
-   comment, but a checked
+   intentionally omit a raw node, flatten a `ruby` node or an editorial
+   comment, or displace an authored attribute, but a checked
    renderer MUST make that loss observable. Its
    result has `value`, `losses`, `totalLosses`, and `truncated`. Each omitted
    raw node contributes one loss in document order with the stable code
@@ -2051,6 +2051,14 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    the message is where the sink kind survives; `target` is already a field, so
    the message does not repeat it.
 
+   Each authored attribute a roundtrip carrier displaces under PART 10 §13b
+   contributes one loss in document order with the stable code
+   `carrier-collision`, the selected `target`, `nodeType` of `inline` or
+   `block`, its `pos` when recorded, and NO `format`. Such an entry MUST carry
+   `attribute`, the displaced attribute's name, because the name is the whole
+   content of the finding and a message is not compared. Only the HTML target
+   writes carriers, so only that target reports this code.
+
    The canonical Carve writer preserves authored destinations under PART 11
    and contributes no `destination-denied` row for them. PART 9 §25 binds the
    consumer that renders the emitted source, not its interchange serialization.
@@ -2073,8 +2081,9 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    rendered stdout pure, summarize losses on stderr, fail with
    `--strict-losses`, offer a machine-readable JSON report, and permit the
    explicit exceptions `--allow-loss raw-format-dropped`,
-   `--allow-loss ruby-flattened` and
-   `--allow-loss editorial-comment-flattened`. Import-loss reports
+   `--allow-loss ruby-flattened`,
+   `--allow-loss editorial-comment-flattened` and
+   `--allow-loss carrier-collision`. Import-loss reports
    are separate: they describe source-to-AST migration, while this report
    describes AST-to-target rendering. *)
 
@@ -8117,8 +8126,9 @@ EOF = (* end of file *) ;
       escaped character. A writer never collects a run of escapes onto one
       span and a reader never reassembles one, because a span holding `abc`
       would import as `\a\b\c`, which is not Carve. A span carrying more than
-      one character is malformed: the importer takes its content as text and
-      reports the carrier it could not use.
+      one character is MALFORMED and the importer takes its content as text.
+      Reporting it is permitted, not required: an importer that builds a tree
+      without a diagnostic channel still has to read the span.
 
       THE RESERVED SET IS THIS ENUMERATION, NOT A PREFIX PATTERN. These names
       are the serializer's protocol rather than an author's content, and each
@@ -8142,9 +8152,10 @@ EOF = (* end of file *) ;
       authored attributes by §1, and §12 already reads a value outside its
       own enumeration as an author attribute rather than as the spec's.
 
-      THE DROP IS A CONVERSION DIAGNOSTIC NAMING THE ATTRIBUTE, so the
-      document records the loss instead of taking it silently. The diagnostic
-      says which name was dropped and on which node.
+      THE DROP IS A RENDER-LOSS ROW NAMING THE ATTRIBUTE, so the document
+      records the loss instead of taking it silently. The code is
+      `carrier-collision` and the row carries `attribute`, the displaced name;
+      [CARVE-P2-024] states the rest of its shape.
 
       EMITTING BOTH IS NOT CONFORMING. Two attributes of one name is invalid
       HTML, and the precedence does not vary by carrier: the rule is the same
@@ -8516,8 +8527,9 @@ EOF = (* end of file *) ;
       this channel names none.
 
       THE FIELD IS WHY THIS IS NOT THAT REPORT. `CARVE-P2-024`'s `code` enum
-      holds `raw-format-dropped`, `ruby-flattened`, `destination-denied` and
-      `editorial-comment-flattened`, each naming a whole node or destination one selected renderer dropped,
+      holds `raw-format-dropped`, `ruby-flattened`, `destination-denied`,
+      `editorial-comment-flattened` and `carrier-collision`, each naming a whole
+      node, destination or attribute one selected renderer dropped,
       flattened or blanked. It answers what THIS
       RENDER dropped; this channel answers what the OUTPUT MODEL CANNOT SAY, on
       every target at once, and it is the only one of the two that can name a

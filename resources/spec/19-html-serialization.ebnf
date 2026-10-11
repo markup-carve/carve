@@ -527,8 +527,9 @@
       escaped character. A writer never collects a run of escapes onto one
       span and a reader never reassembles one, because a span holding `abc`
       would import as `\a\b\c`, which is not Carve. A span carrying more than
-      one character is malformed: the importer takes its content as text and
-      reports the carrier it could not use.
+      one character is MALFORMED and the importer takes its content as text.
+      Reporting it is permitted, not required: an importer that builds a tree
+      without a diagnostic channel still has to read the span.
 
       THE RESERVED SET IS THIS ENUMERATION, NOT A PREFIX PATTERN. These names
       are the serializer's protocol rather than an author's content, and each
@@ -552,9 +553,10 @@
       authored attributes by §1, and §12 already reads a value outside its
       own enumeration as an author attribute rather than as the spec's.
 
-      THE DROP IS A CONVERSION DIAGNOSTIC NAMING THE ATTRIBUTE, so the
-      document records the loss instead of taking it silently. The diagnostic
-      says which name was dropped and on which node.
+      THE DROP IS A RENDER-LOSS ROW NAMING THE ATTRIBUTE, so the document
+      records the loss instead of taking it silently. The code is
+      `carrier-collision` and the row carries `attribute`, the displaced name;
+      [CARVE-P2-024] states the rest of its shape.
 
       EMITTING BOTH IS NOT CONFORMING. Two attributes of one name is invalid
       HTML, and the precedence does not vary by carrier: the rule is the same
