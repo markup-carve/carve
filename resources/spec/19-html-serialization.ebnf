@@ -548,20 +548,13 @@
       the field first: without one there is nothing for a reader to check the
       promise against.
 
-      THE RESERVED SPACE IS WIDER THAN THE PROMISE. An engine MAY write a name
-      in it that this inventory does not list, and two kinds do: the two names
-      above, which an engine may keep emitting, and the carriers a Tier-2 or
-      Tier-3 EXTENSION writes for the distinctions its OWN nodes record, scoped
-      to that extension and enumerated in that extension's contract rather than
-      here. That is what the CORE qualifier above leaves room for.
-
-      SUCH A NAME CARRIES NO RECOVERY GUARANTEE. Nothing here promises a reader
-      can reconstruct anything from it, and an importer MAY ignore it. IT IS
-      STILL A RESERVED NAME for §13b, so a carrier displaces an authored
-      attribute of its name whether or not this inventory promises it, and
-      §13c reads its deprecated spelling either way. THE WAY TO TURN ONE INTO A
-      PROMISE is the way to add any carrier: add its PART 12 field first, then
-      add the row.
+      AN EXTENSION WRITES ITS OWN CARRIERS, under the reserved prefix, for the
+      distinctions ITS nodes record. They are scoped to that extension and
+      enumerated in that extension's own contract rather than here, which is
+      what the CORE qualifier above leaves room for. AN EXTENSION CARRIER IS A
+      CARRIER in every other respect: §13b displaces an authored attribute of
+      its name, §13c reads its deprecated spelling, and §13d consumes it in
+      every import mode.
 
       A VALUE ESCAPES AS §2 ESCAPES ANY ATTRIBUTE VALUE. §2's text-content
       exception for U+00A0 is not an attribute rule, so a carrier value
@@ -675,10 +668,7 @@
       that document. Enabling export never enables a trusted import, never
       widens an importer's mode, and never relaxes a destination check. An
       importer that returns a stored-source payload verbatim does so on its
-      own trust setting, never on the exporter's. `data-carve-src` makes that
-      plainest: it is a reserved name this inventory does not promise (§13a),
-      so nothing obliges a reader to honor it and trust is the only thing that
-      ever did.
+      own trust setting, never on the exporter's.
 
    13f. AN ALIAS NEVER TURNS PRESERVATION OFF -- NORMATIVE [CARVE-P10-018].
       The Markdown carrier options that predate this one -- PHP
