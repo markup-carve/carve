@@ -110,7 +110,10 @@
                    has zero cells: an empty array is a presence claim no writer
                    can spell. THE FIELD HAS NO UPPER BOUND, though: a parse
                    records what the author typed, and the 1000 bound in PART 10
-                   §13a is the HTML carrier's alone
+                   §13a is the HTML carrier's alone. Interchange may retain the
+                   field on a table without an all-header first row; the source
+                   writer cannot spell that combination without promoting cells
+                   and reports the field loss under PART 11 §§1d, 6h
       An implementation MUST NOT invent a synonym, and MUST NOT expose an
       internal field the reference does not have. A consumer reading `href`
       must not have to know which engine produced the document.

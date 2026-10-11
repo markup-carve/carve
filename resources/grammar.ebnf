@@ -9248,6 +9248,20 @@ EOF = (* end of file *) ;
       `table.separatorWidths` (PART 12 §3), and the writer reproduces it: with
       the field, a separator row; without it, `|=` header cells.
 
+      A SEPARATOR FORM REQUIRES AN ALL-HEADER FIRST ROW. An interchange
+      tree may carry the field beside a first row containing non-header cells,
+      but a separator would promote those cells under PART 9 T7.1. The source
+      writer therefore keeps their native form and omits `separatorWidths`,
+      reporting `field-unspellable`, node `table`, field `separatorWidths`,
+      through the conversion-diagnostics channel of §1d [CARVE-P11-046]. It
+      does not change a cell's meaning to preserve the field's spelling.
+
+      ALIGNMENT IS WRITTEN ONCE. In a separator form, a header cell with a
+      separator entry uses that entry's colon spelling and carries no native
+      alignment marker. A header cell past the last entry keeps its native
+      alignment marker, having no separator slot. This avoids the competing
+      native-marker and colon spellings PART 9 T7 leaves unspecified.
+
       THE FIELD IS THE SPELLING, THE ROWS ARE THE MEANING. This is §6's rule
       again, on the same terms as `bulletChar` and `thematic_break.marker`: a
       spelling is the author's to keep BECAUSE THE AST RECORDS IT. Before the
@@ -9258,8 +9272,8 @@ EOF = (* end of file *) ;
       run of that many `-` characters. An alignment colon is NOT one of them:
       it is written from the cell's own alignment, `:` leading for left, `:`
       trailing for right, both for center, and `[5, 3]` on a left-and-right
-      table comes back as `|:-----|---:|`. A width below 1 is written as 1,
-      since a separator cell needs a character.
+      table comes back as `|:-----|---:|`. On an unvalidated in-memory tree,
+      a width below 1 is written as 1, since a separator cell needs a character.
 
       THE FIELD DECIDES THE CELL COUNT, AND THE WRITER NEITHER PADS TO NOR
       TRUNCATES AT THE HEADER'S WIDTH. The count is the number of ENTRIES, and
@@ -10964,7 +10978,10 @@ EOF = (* end of file *) ;
                    has zero cells: an empty array is a presence claim no writer
                    can spell. THE FIELD HAS NO UPPER BOUND, though: a parse
                    records what the author typed, and the 1000 bound in PART 10
-                   §13a is the HTML carrier's alone
+                   §13a is the HTML carrier's alone. Interchange may retain the
+                   field on a table without an all-header first row; the source
+                   writer cannot spell that combination without promoting cells
+                   and reports the field loss under PART 11 §§1d, 6h
       An implementation MUST NOT invent a synonym, and MUST NOT expose an
       internal field the reference does not have. A consumer reading `href`
       must not have to know which engine produced the document.
