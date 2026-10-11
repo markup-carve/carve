@@ -158,7 +158,8 @@ marker and no attribute survives, so an import cannot tell a container was ever
 there. An admonition loses its kind, and a named div loses its attributes along
 with its name.
 
-An opt-in **carrier mode** closes that round trip. It leaves the visible
+The opt-in **carrier mode**, which is the roundtrip export option on this
+target, closes that round trip. It leaves the visible
 fallback exactly as it is and brackets each of those containers with an HTML
 comment holding the Carve opener and closer verbatim:
 

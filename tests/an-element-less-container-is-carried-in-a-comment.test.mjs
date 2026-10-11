@@ -23,7 +23,7 @@
  * CAPTION_LAG below for the detector and what retires it.
  *
  * THE OPTION SPELLING IS THE HOST'S, NOT THE CLAUSE'S. §10s says only that
- * the host turns the mode on and that it is off by default, so `carryMarkers`
+ * the host turns the mode on and that it is off by default, so `roundtrip`
  * below is the carve-js parameter and not a conformance requirement. An engine
  * that spells it otherwise is still conformant, and this file would need the
  * other spelling to measure it.
@@ -149,7 +149,7 @@ test('a document with no element-less container gains no comment either way', ()
 
 for (const { name, carve, carrier } of CARRIED) {
   test(`the carrier mode round-trips ${name}`, () => {
-    assert.equal(carveToMarkdown(carve, { carryMarkers: true }), carrier)
+    assert.equal(carveToMarkdown(carve, { roundtrip: true }), carrier)
     assert.equal(migrateMarkdown(carrier).value, carve)
   })
 }
@@ -173,7 +173,7 @@ for (const { name, carve, carrier, live } of CAPTIONS) {
       )
       return
     }
-    assert.equal(carveToMarkdown(carve, { carryMarkers: true }), carrier)
+    assert.equal(carveToMarkdown(carve, { roundtrip: true }), carrier)
     assert.equal(migrateMarkdown(carrier).value, carve)
   })
 
@@ -218,7 +218,7 @@ test('a caption line INSIDE the container is literal text and stays literal', ()
   // closing fence is the caption slot. One inside the container renders as a
   // paragraph, so it is not a caption and takes no marker.
   const carve = '::: figure\n:::: panel\n![a](x.png)\n::::\n^ Group caption\n:::\n'
-  const out = carveToMarkdown(carve, { carryMarkers: true })
+  const out = carveToMarkdown(carve, { roundtrip: true })
   assert.ok(!out.includes('<!-- carve: ^'), 'a literal caret line gained a caption marker')
   assert.ok(out.includes('^ Group caption'), `the literal caret line was rewritten: ${out}`)
 })
@@ -228,7 +228,7 @@ test('a table cell is the one host that carries nothing', () => {
   // flattens a cell to a single line, so there is no line for a marker to
   // stand on and the container's own body is flattened with it.
   const carve = '::: list-table\n- - cell one\n  - ::: note\n    Body.\n    :::\n:::\n'
-  const out = carveToMarkdown(carve, { carryMarkers: true })
+  const out = carveToMarkdown(carve, { roundtrip: true })
   assert.ok(!out.includes('<!-- carve:'), 'a table cell gained a marker')
   assert.ok(out.includes('| cell one | Body. |'), `a cell was not flattened to one line: ${out}`)
 })
