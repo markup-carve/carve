@@ -79,6 +79,18 @@ for (const depth of [1, 2]) {
       assert.deepEqual(parse(prefix + '- tail\n').blocks, [...parse(prefix).blocks, ...parse('- tail\n').blocks])
     })
   }
+  for (const [name, body] of [
+    ['closed', '\n    :::\n    t\n    :::\n'],
+    ['empty', '\n    :::\n'],
+    ['no blank', '    :::\n    t\n    :::\n'],
+    ['one-column overindent', '\n   :::\n   t\n   :::\n'],
+  ]) {
+    test(`a bare authored opener needs no existing colon host: ${name}, depth ${depth}`, () => {
+      const quote = '> '.repeat(depth)
+      const prefix = `${quote}- a\n` + body.split('\n').slice(0, -1).map(line => quote + line + '\n').join('')
+      assert.deepEqual(parse(prefix + '- tail\n').blocks, [...parse(prefix).blocks, ...parse('- tail\n').blocks])
+    })
+  }
 }
 
 for (const depth of [1, 2]) for (const marker of ['-', '*', '1.']) {

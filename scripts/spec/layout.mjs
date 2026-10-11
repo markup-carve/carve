@@ -1947,7 +1947,7 @@ function hostColonStep(h, inner, bodyFollows, commentCloses = () => false, marke
     return false
   }
   const base = h.columns.at(-1)
-  if (bare && inner.col !== (top?.base ?? base) && inner.col !== top?.column) return false
+  if (top && bare && inner.col !== top.base && inner.col !== top.column) return false
   if (stack.length >= remainingDepth) return false
   const opener = colon && parseColonOpener(colon[2])
   if (base > 0 && opener && (!markerLine || bodyFollows(base))) {
