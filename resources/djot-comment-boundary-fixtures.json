@@ -193,5 +193,10 @@
     "id": "comment-boundary-39",
     "source": "{% x\n> y %}\n",
     "html": "<p>{% x\n&gt; y %}</p>\n"
+  },
+  {
+    "id": "comment-boundary-40",
+    "source": "para\n{% see {x %}\n",
+    "html": "<p>para\n</p>\n"
   }
 ]
