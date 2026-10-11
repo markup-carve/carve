@@ -1445,6 +1445,12 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-067",
+      "part": "11",
+      "title": "THE CARRIER MODE ALSO CARRIES AN ATTRIBUTE LINE, A DEFINITION LIST AND A CAPTION",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P11-036",
       "part": "11",
       "title": "A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES",

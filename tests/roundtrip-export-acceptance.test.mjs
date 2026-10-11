@@ -5,7 +5,7 @@ import { parseFragment, serialize } from 'parse5'
 import { parse, carveToHtml, carveToHtmlWithReport, htmlToAst, htmlToCarve, carveToMarkdown, migrateMarkdown } from '@markup-carve/carve'
 
 const fixtures = JSON.parse(readFileSync(new URL('../resources/roundtrip-export-acceptance-fixtures.json', import.meta.url), 'utf8'))
-const inventory = ['explicit-id', 'ref', 'autolink', 'footnote-label', 'inline-footnote', 'raw', 'escaped', 'abbreviations', 'col-widths']
+const inventory = ['explicit-id', 'ref', 'autolink', 'footnote-label', 'inline-footnote', 'raw', 'escaped', 'abbreviations', 'col-widths', 'label']
 const reservedNames = new Set(['data-marker', 'data-char', ...inventory.flatMap((name) => [`data-carve-${name}`, `data-djot-${name}`])])
 const isReserved = (name) => reservedNames.has(name)
 const field = (node, path) => path.split('.').reduce((value, key) => value?.[key], node)
@@ -70,9 +70,14 @@ function carrierText(node) {
   }).join('')
 }
 const normalizedHtml = (html) => html.trim()
+// A row the pinned engine cannot pass yet is declared, and the declaration fires once the engine catches up.
+const aheadOfPin = (fixture, body) => () => {
+  if (!fixture.aheadOfPin) return body()
+  assert.throws(body, undefined, `${fixture.id} is declared aheadOfPin but the pinned engine passes it: drop the flag`)
+}
 
 for (const fixture of fixtures.exportImport) {
-  test(`shared roundtrip export: ${fixture.id}`, () => {
+  test(`shared roundtrip export: ${fixture.id}`, aheadOfPin(fixture, () => {
     assertProjection(parse(fixture.source), fixture.expectedNodes)
     const ordinary = carveToHtml(fixture.source)
     assert.equal(carveToHtml(fixture.source, { roundtrip: false }), ordinary)
@@ -104,7 +109,7 @@ for (const fixture of fixtures.exportImport) {
       const source = htmlToCarve(exported, { mode }).value
       assert.equal(normalizedHtml(carveToHtml(source)), normalizedHtml(declined ? fixture.fallbackHtml : ordinary), mode)
     }
-  })
+  }))
 }
 for (const fixture of fixtures.importNegative) {
   for (const mode of fixture.importModes) test(`shared carrier rejection: ${fixture.id}/${mode}`, () => {
@@ -150,7 +155,7 @@ test('task hooks remain ordinary output without preservation export', () => {
   for (const state of ['x', '-', '_', '>', '?']) assert.ok(htmlAttributes(html).some((attr) => attr.name === 'data-task-state' && attr.value === state), state)
 })
 
-for (const fixture of fixtures.markdownExportImport) test(`shared Markdown export: ${fixture.id}`, () => {
+for (const fixture of fixtures.markdownExportImport) test(`shared Markdown export: ${fixture.id}`, aheadOfPin(fixture, () => {
   assertProjection(parse(fixture.source), fixture.expectedNodes)
   const ordinary = carveToMarkdown(fixture.source)
   assert.equal(carveToMarkdown(fixture.source, { roundtrip: false }), ordinary)
@@ -160,7 +165,7 @@ for (const fixture of fixtures.markdownExportImport) test(`shared Markdown expor
   const imported = migrateMarkdown(exported)
   assertProjection(parse(imported.value), fixture.expectedNodes)
   assert.equal(carveToHtml(imported.value).trim(), carveToHtml(fixture.source).trim())
-})
+}))
 
 test('shared acceptance cases have distinct identities and explicit assertions', () => {
   const ids = new Set()

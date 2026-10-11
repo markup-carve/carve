@@ -519,6 +519,13 @@
                                                   PRESENCE is the distinction:
                                                   a table with no separator row
                                                   writes no attribute
+        data-carve-label            <pre>         the code block's authored
+                                                  label, the text between the
+                                                  fence label's brackets. The
+                                                  AST field it restores is
+                                                  `code_block.label`; a block
+                                                  with no label writes no
+                                                  attribute
 
       AN ORDERED LIST'S DELIMITER IS `data-delim`, NOT A SECOND CARRIER. §12
       writes the authored delimiter on every render, and an ordered list's
@@ -543,6 +550,17 @@
       the tree instead of trusting the list. THE WAY TO ADD A CARRIER for a
       distinction the tree discards is to add the PART 12 field FIRST, and then
       this clause follows.
+
+      A LABEL VALUE IS THE `label` PRODUCTION'S INTERIOR. `data-carve-label`
+      holds what PART 2 writes between `[` and `]`, so a reader validates it
+      against that production before rebuilding the fence label: a value that
+      holds `]`, a line break, or is empty is not a carrier, and §13e's rule
+      for an invalid value applies. A `<pre>` that is not a code block's -- an
+      extension's own `<pre>` -- carries no label of this row.
+
+        ```php [Example]     ->  <pre data-carve-label="Example"><code
+        echo 1;                  class="language-php">echo 1;
+        ```                      </code></pre>
 
       THE `data-carve-col-widths` ROW SATISFIES THE CARRIER RULE.
       `data-carve-col-widths` was absent from this inventory until

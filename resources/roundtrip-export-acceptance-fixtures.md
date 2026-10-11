@@ -9,3 +9,5 @@ Consumers export with preservation off and on, import the preserved output, comp
 Markdown rows sample container-kind recovery; existing §10s tests cover the wider container contract. Collision rows require the carrier to win and report the dropped authored attribute. The footnote recovery resource supplies the approved paired-carrier matrix.
 
 Invalid generic spans are tested in safe and semantic modes. Their trusted roundtrip raw-HTML fallback is excluded here; these fixtures do not settle that separate recovery question.
+
+A row marked `aheadOfPin` states behavior the pinned engine does not have yet. Its test passes while the pinned engine fails the row and fails once the engine passes it, so the flag is dropped in the pin bump that ships the behavior.

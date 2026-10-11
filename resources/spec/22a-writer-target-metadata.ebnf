@@ -47,8 +47,10 @@
       THE SET, measured on the released engines: a tab set and each of its
       panels (`tabs`, `code-group`), an admonition of any kind whether or not
       it carries a title, a named div and each div nested in one, a columns
-      container and each column, a disclosure, a spoiler, and a composite
-      figure's group wrapper. A container this target DOES spell is not one
+      container and each column, a disclosure, a spoiler, a composite
+      figure's group wrapper, and a line block (`::: |`) or a hard-break
+      block (`::: \`), whose lines this target writes as a paragraph with
+      hard breaks. A container this target DOES spell is not one
       and takes no comment: an attributes-only opener (`::: {.warning}`) is
       written verbatim, and a list table is written as a pipe table.
 
@@ -147,10 +149,76 @@
       carrier: `highlight`, `subscript`, `superscript` and a CriticMarkup
       insertion round-trip through `<mark>`, `<sub>`, `<sup>` and `<ins>`
       today. Where such an element does not read back (`<u>`, the
-      `critic-comment` span, `<abbr>`, `<del>`), and where this target drops
-      a construct's attributes, the emitted bytes are faithful and the defect
-      is on the import or in §8c, not here. `small_caps` and `ruby` have no
-      Carve opener to carry.
+      `critic-comment` span, `<abbr>`, `<del>`), the emitted bytes are
+      faithful and the defect is on the import or in §8c, not here.
+      `small_caps` and `ruby` have no Carve opener to carry. Attributes on a
+      list item's marker line and on an inline construct (a link, an image,
+      a span) are not carried: §10t carries an attribute LINE, and neither
+      of those is spelled with one.
+
+  10t. THE CARRIER MODE ALSO CARRIES AN ATTRIBUTE LINE, A DEFINITION LIST AND A
+      CAPTION -- NORMATIVE [CARVE-P11-067]. These are not containers, so §10s's
+      set does not name them, but each is a distinction this target writes
+      without a trace and the AST records. The marker, its escaping, the
+      structural read, the verbatim-content and table-cell narrowings and the
+      damaged-set rule are §10s's, unchanged; only what each marker stands for
+      is new.
+
+      AN ATTRIBUTE LINE THIS TARGET DROPS IS CARRIED DIRECTLY ABOVE ITS
+      BLOCK. A block whose authored attributes reach no element of this
+      target's output -- a heading's `#id`, a paragraph's class, a block
+      quote's, a list's or a table's attributes -- takes one marker on the
+      line directly above the block, holding the attribute line as the
+      canonical writer spells it. A generated heading id is not authored and
+      takes no marker. The import attaches the attributes to the block the
+      marker stands directly above and to no other; a marker followed by a
+      blank line, by another marker, or by nothing has lost its block and the
+      set is damaged.
+
+        {#start}                 ->  <!-- carve: {#start} -->
+        # Roundtrip Test             # Roundtrip Test
+
+      A container §10s brackets already carries its attribute line in the
+      opener's prelude and takes no second marker for it.
+
+      A DEFINITION LIST IS CARRIED TERM BY TERM. This target writes each term
+      as a paragraph and each definition's blocks after it (§10p), so a term
+      takes a marker holding its term line, written directly above the term's
+      rendered paragraph, and each definition takes a `:` marker directly
+      above its first block. One closing marker with an EMPTY payload follows
+      the list's last block:
+
+        :: Carve                 ->  <!-- carve: :: Carve -->
+        : A markup language.         **Carve**
+
+                                     <!-- carve: : -->
+                                     A markup language.
+
+                                     <!-- carve: -->
+
+      THE IMPORT REPLACES A TERM'S RENDERED PARAGRAPH, as §10s's caption rule
+      does, so the term does not appear twice. A definition holds the blocks
+      from its marker up to the next term or definition marker of the same
+      list, or up to the closing marker. A term with no definition marker
+      after it, a definition marker with no term before it, or a list with no
+      closing marker is a damaged set.
+
+      A CAPTION ON ANY CAPTIONED BLOCK TAKES THE COMPOSITE FIGURE'S CAPTION
+      MARKER. A block quote's attribution, a table's, an image's, a code
+      listing's or an equation's `^ ...` line is written as a paragraph after
+      the block (§10e); under the carrier mode a marker holding the caption
+      line verbatim stands directly above that paragraph, and the import
+      replaces the paragraph with the caption, exactly as §10s rules for a
+      composite figure:
+
+        > Stay hungry.           ->  > Stay hungry.
+        ^ Steve Jobs
+                                     <!-- carve: ^ Steve Jobs -->
+                                     Steve Jobs
+
+      A CAPTION MARKER BELONGS TO THE BLOCK DIRECTLY BEFORE IT. One with no
+      captionable block before it, or one whose block already holds a caption,
+      is a damaged set.
 
   11. THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG --
       NORMATIVE [CARVE-P11-038]. GFM has no heading-id syntax: a reader derives every

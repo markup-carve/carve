@@ -660,6 +660,36 @@
       "carrierText": {
         "data-carve-raw": "</span><em>x</em>"
       }
+    },
+    {
+      "id": "code-block-label",
+      "source": "```php [Example]\necho 1;\n```\n",
+      "carriers": {
+        "data-carve-label": "Example"
+      },
+      "forbiddenExportAttributes": [
+        "data-carve-src",
+        "data-djot-src"
+      ],
+      "expectedNodes": [
+        {
+          "type": "code_block",
+          "lang": "php",
+          "label": "Example"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-label",
+          "element": "pre"
+        }
+      ],
+      "aheadOfPin": true
     }
   ],
   "importNegative": [
@@ -895,6 +925,93 @@
           "kind": "note"
         }
       ]
+    },
+    {
+      "id": "heading-attribute-line",
+      "source": "{#start}\n# Roundtrip Test\n",
+      "carrierFragments": [
+        "<!-- carve: {#start} -->"
+      ],
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "attrs.id": "start"
+        }
+      ],
+      "aheadOfPin": true
+    },
+    {
+      "id": "paragraph-attribute-line",
+      "source": "{.note}\nThis paragraph gets the class.\n",
+      "carrierFragments": [
+        "<!-- carve: {.note} -->"
+      ],
+      "expectedNodes": [
+        {
+          "type": "paragraph",
+          "attrs.classes": [
+            "note"
+          ]
+        }
+      ],
+      "aheadOfPin": true
+    },
+    {
+      "id": "definition-list",
+      "source": ":: Carve\n: A markup language.\n",
+      "carrierFragments": [
+        "<!-- carve: :: Carve -->",
+        "<!-- carve: : -->",
+        "<!-- carve: -->"
+      ],
+      "expectedNodes": [
+        {
+          "type": "definition_list"
+        }
+      ],
+      "aheadOfPin": true
+    },
+    {
+      "id": "quote-caption",
+      "source": "> Stay hungry.\n^ Steve Jobs\n",
+      "carrierFragments": [
+        "<!-- carve: ^ Steve Jobs -->"
+      ],
+      "expectedNodes": [
+        {
+          "type": "figure",
+          "target.type": "block_quote"
+        }
+      ],
+      "aheadOfPin": true
+    },
+    {
+      "id": "table-caption",
+      "source": "|= Fruit |= Price |\n| Apple | $1 |\n^ Fruit prices\n",
+      "carrierFragments": [
+        "<!-- carve: ^ Fruit prices -->"
+      ],
+      "expectedNodes": [
+        {
+          "type": "table",
+          "caption.0.value": "Fruit prices"
+        }
+      ],
+      "aheadOfPin": true
+    },
+    {
+      "id": "line-block",
+      "source": "::: |\nline one\nline two\n:::\n",
+      "carrierFragments": [
+        "<!-- carve: ::: | -->",
+        "<!-- carve: ::: -->"
+      ],
+      "expectedNodes": [
+        {
+          "type": "line_block"
+        }
+      ],
+      "aheadOfPin": true
     }
   ]
 }
