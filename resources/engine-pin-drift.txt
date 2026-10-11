@@ -24,8 +24,3 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-471-braced-emphasis-can-nest-its-own-kind  CARVE-P9-043 nested braced emphasis; pinned parser retains the previous same-kind behavior (#2877).
-471-braced-emphasis-can-nest-its-own-kind-2  CARVE-P9-043 nested braced emphasis; pinned parser retains the previous same-kind behavior (#2877).
-471-braced-emphasis-can-nest-its-own-kind-4  CARVE-P9-043 nested braced emphasis; pinned parser retains the previous same-kind behavior (#2877).
-471-braced-emphasis-can-nest-its-own-kind-10  CARVE-P9-043 keeps an empty paired form literal as a whole including its closer; the pin closes the parent on it (#2900).
-471-braced-emphasis-can-nest-its-own-kind-13  CARVE-P9-043 nests a braced child inside a combined token; the pin keeps the child literal there (#2903).
