@@ -181,8 +181,8 @@
   },
   {
     "id": "comment-boundary-37",
-    "source": "- > {% x\n  > y %}\n",
-    "html": "<ul>\n<li>\n<blockquote>\n{% x\n&gt; y %}\n</blockquote>\n</li>\n</ul>\n"
+    "source": "- > {% x\n  > y %}\n\n- b\n",
+    "html": "<ul>\n<li>\n<blockquote>\n<p>{% x\n&gt; y %}</p>\n</blockquote>\n</li>\n<li>\n<p>b</p>\n</li>\n</ul>\n"
   },
   {
     "id": "comment-boundary-38",
