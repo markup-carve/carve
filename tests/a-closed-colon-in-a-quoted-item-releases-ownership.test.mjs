@@ -90,3 +90,10 @@ const shared = JSON.parse(readFileSync(new URL('../resources/quoted-item-colon-o
 for (const item of shared) {
   test(`shared HTML: ${item.name}`, () => assert.equal(renderDoc(parse(item.source)).trim(), item.html.trim()))
 }
+
+for (const body of ['lazy\n', '  body\n> lazy\n']) {
+  test(`a lazy quoted div keeps its host: ${JSON.stringify(body)}`, () => {
+    const prefix = `> - ::: box\n> ${body}>   :::\n`
+    assert.deepEqual(parse(prefix + '- tail\n').blocks, [...parse(prefix).blocks, ...parse('- tail\n').blocks])
+  })
+}
