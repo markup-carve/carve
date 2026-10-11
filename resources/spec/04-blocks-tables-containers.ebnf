@@ -180,7 +180,13 @@ caption_slot = [blank_line], caption ;
    CLOSING fence (§4c, §4). Image paragraphs and standalone display-math blocks
    follow the same allowance under §4 without a slot-carrying production.
    Any other `^ ` line is ordinary inline/paragraph content and, when a
-   paragraph is OPEN above it, folds into it (§10 I7). *)
+   paragraph is OPEN above it, folds into it (§10 I7).
+
+   The optional `blank_line` matches a TRULY blank line only. A
+   structural-only line -- a bare `>`, a bare list marker, a bare
+   continuation marker, a bare fence -- is not blank, and where it changes
+   the open container it ends the caption scope instead of being spent as
+   the allowance (PART 9 §4d). *)
 
 (* CAPTION NUMBER PLACEHOLDER -- NORMATIVE [CARVE-P2-022].
    The FIRST bare `#` in a caption's TOP-LEVEL inline_content is a number
@@ -547,8 +553,8 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
 
 
    RENDER-LOSS REPORTING -- NORMATIVE [CARVE-P2-024]. Target routing may
-   intentionally omit a raw node or flatten a `ruby` node or an editorial
-   comment, but a checked
+   intentionally omit a raw node, flatten a `ruby` node or an editorial
+   comment, or displace an authored attribute, but a checked
    renderer MUST make that loss observable. Its
    result has `value`, `losses`, `totalLosses`, and `truncated`. Each omitted
    raw node contributes one loss in document order with the stable code
@@ -582,6 +588,14 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    the message is where the sink kind survives; `target` is already a field, so
    the message does not repeat it.
 
+   Each authored attribute a roundtrip carrier displaces under PART 10 §13b
+   contributes one loss in document order with the stable code
+   `carrier-attribute-dropped`, the selected `target`, `nodeType` of `inline` or
+   `block`, its `pos` when recorded, and NO `format`. Such an entry MUST carry
+   `attribute`, the displaced attribute's name, because the name is the whole
+   content of the finding and a message is not compared. Only the HTML target
+   writes carriers, so only that target reports this code.
+
    The canonical Carve writer preserves authored destinations under PART 11
    and contributes no `destination-denied` row for them. PART 9 §25 binds the
    consumer that renders the emitted source, not its interchange serialization.
@@ -604,8 +618,9 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    rendered stdout pure, summarize losses on stderr, fail with
    `--strict-losses`, offer a machine-readable JSON report, and permit the
    explicit exceptions `--allow-loss raw-format-dropped`,
-   `--allow-loss ruby-flattened` and
-   `--allow-loss editorial-comment-flattened`. Import-loss reports
+   `--allow-loss ruby-flattened`,
+   `--allow-loss editorial-comment-flattened` and
+   `--allow-loss carrier-attribute-dropped`. Import-loss reports
    are separate: they describe source-to-AST migration, while this report
    describes AST-to-target rendering. *)
 

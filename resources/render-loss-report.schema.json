@@ -27,7 +27,8 @@
         "type": "object",
         "required": ["code", "target", "nodeType", "message"],
         "properties": {
-          "code": { "enum": ["raw-format-dropped", "ruby-flattened", "destination-denied", "editorial-comment-flattened"] },
+          "code": { "enum": ["raw-format-dropped", "ruby-flattened", "destination-denied", "editorial-comment-flattened", "carrier-attribute-dropped"] },
+          "attribute": { "type": "string" },
           "format": { "type": "string" },
           "target": { "enum": ["html", "markdown", "plain", "ansi", "carve"] },
           "nodeType": { "enum": ["inline", "block"] },

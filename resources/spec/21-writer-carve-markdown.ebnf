@@ -184,6 +184,63 @@
       unchecked box (PART 2 `task_state`), so no HTML moves with this clause.
       What moves is only what survives a format cycle.
 
+   6h. A TABLE'S SEPARATOR ROW IS WRITTEN WHERE THE AUTHOR WROTE ONE -- NORMATIVE
+      [CARVE-P11-066]. A header row has two spellings, `|= cell |` and a plain
+      row above a `|---|` separator, and they parse to the same rows and the
+      same alignments. The AST records which one the author wrote, in
+      `table.separatorWidths` (PART 12 §3), and the writer reproduces it: with
+      the field, a separator row; without it, `|=` header cells.
+
+      A SEPARATOR FORM REQUIRES AN ALL-HEADER FIRST ROW. An interchange
+      tree may carry the field beside a first row containing non-header cells,
+      but a separator would promote those cells under PART 9 T7.1. The source
+      writer does not change a cell's meaning to preserve the field's spelling.
+      A source-conversion API that refuses unspellable fields refuses this
+      combination with its typed source-unspellable error. A producer providing
+      a lossy fallback keeps the native form and omits `separatorWidths`,
+      reporting `field-unspellable`, node `table`, field `separatorWidths`,
+      through the conversion-diagnostics channel of §1d [CARVE-P11-046].
+
+      ALIGNMENT IS WRITTEN ONCE. In a separator form, a header cell with a
+      separator entry uses that entry's colon spelling and carries no native
+      alignment marker. A header cell past the last entry keeps its native
+      alignment marker, having no separator slot. This avoids the competing
+      native-marker and colon spellings PART 9 T7 leaves unspecified.
+
+      THE FIELD IS THE SPELLING, THE ROWS ARE THE MEANING. This is §6's rule
+      again, on the same terms as `bulletChar` and `thematic_break.marker`: a
+      spelling is the author's to keep BECAUSE THE AST RECORDS IT. Before the
+      field both forms came back as `|=` cells, which is why this clause can
+      exist at all.
+
+      THE WIDTHS ARE WRITTEN AS RECORDED, one entry per separator cell, each a
+      run of that many `-` characters. An alignment colon is NOT one of them:
+      it is written from the cell's own alignment, `:` leading for left, `:`
+      trailing for right, both for center, and `[5, 3]` on a left-and-right
+      table comes back as `|:-----|---:|`. On an unvalidated in-memory tree,
+      a width below 1 is written as 1, since a separator cell needs a character.
+
+      THE FIELD DECIDES THE CELL COUNT, AND THE WRITER NEITHER PADS TO NOR
+      TRUNCATES AT THE HEADER'S WIDTH. The count is the number of ENTRIES, and
+      the header row does not enter it. A separator cell the author did not
+      write is a cell, and one the author wrote and the writer dropped is a
+      cell lost, and §1 breaks either way: the document re-parses with a
+      `separatorWidths` the source never had.
+
+      BOTH DIRECTIONS WERE REAL. One engine padded to the header's width and
+      three of four ragged cases failed `parse(fmt(x)) == parse(x)`; another
+      counted over the header and TRUNCATED, failing two of four. In each the
+      surviving shape was the one its tests happened to carry, which is why
+      this sentence names the count rather than leaving it to be derived.
+
+      AN ENTRY PAST THE HEADER'S LAST CELL TAKES NO ALIGNMENT, having no cell
+      to take one from: `[3, 3]` over a one-cell centered header writes
+      `|:---:|---|`.
+
+      IT IS NOT A LAYOUT INSTRUCTION. The widths are the dash runs the author
+      typed, not column widths, and nothing downstream aligns a table to them.
+      §6e's cell padding is unchanged by this clause.
+
    7. NO WHITESPACE-ONLY LINE -- NORMATIVE [CARVE-P11-016]. `fmt` never emits a line whose only
       content is ASCII spaces or tabs. Such a line is emitted EMPTY.
 

@@ -48,18 +48,7 @@ const root = new URL('./html-import/', import.meta.url)
  * is declared as pin lag in the contract check, and the tree it returned is
  * held as a literal below so retiring these entries does not retire the proof.
  */
-const UNMET = new Map([
-  [
-    'same-kind-strong-nesting',
-    'the pinned parser still flattens a same-kind braced child, so it cannot ' +
-      'read expected.crv back as the tree the fixture records (CARVE-P9-043, carve#2877)',
-  ],
-  [
-    'same-kind-superscript-nesting',
-    'the pinned parser still flattens a same-kind braced child, so it cannot ' +
-      'read expected.crv back as the tree the fixture records (CARVE-P9-043, carve#2877)',
-  ],
-])
+const UNMET = new Map([])
 
 const LOCATION_FIELDS = new Set(['pos', 'srcByteLength'])
 

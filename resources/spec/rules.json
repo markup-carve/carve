@@ -509,6 +509,12 @@
       "scope": "parsing"
     },
     {
+      "id": "CARVE-P4-008",
+      "part": "4",
+      "title": "AN IMPORTER READS A BRACE RUN'S CONTINUATION ONLY WHERE IT IS INDENTED",
+      "scope": "imports-security-extensions"
+    },
+    {
       "id": "CARVE-P7-001",
       "part": "7",
       "title": "A TAB IS SYNTAX ONLY IN THE LEADING RUN",
@@ -1433,6 +1439,12 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-066",
+      "part": "11",
+      "title": "A TABLE'S SEPARATOR ROW IS WRITTEN WHERE THE AUTHOR WROTE ONE",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P11-036",
       "part": "11",
       "title": "A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES",
@@ -1937,6 +1949,24 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P10-019",
+      "part": "10",
+      "title": "A CARRIER WINS A COLLISION AND THE DROPPED ATTRIBUTE IS REPORTED",
+      "scope": "resolution-rendering"
+    },
+    {
+      "id": "CARVE-P10-020",
+      "part": "10",
+      "title": "AN IMPORTER READS THE DEPRECATED `data-djot-` SPELLING",
+      "scope": "imports-security-extensions"
+    },
+    {
+      "id": "CARVE-P10-021",
+      "part": "10",
+      "title": "EVERY IMPORT MODE CONSUMES THE INVENTORY AND WRITES NO RESERVED NAME BACK",
+      "scope": "imports-security-extensions"
+    },
+    {
       "id": "CARVE-P3-023",
       "part": "3",
       "title": "SMART QUOTE DIRECTION",
@@ -1946,6 +1976,12 @@
       "id": "CARVE-P9-079",
       "part": "9",
       "title": "A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT",
+      "scope": "resolution-rendering"
+    },
+    {
+      "id": "CARVE-P9-080",
+      "part": "9",
+      "title": "A STRUCTURAL-ONLY LINE RESETS CAPTION SCOPE",
       "scope": "resolution-rendering"
     }
   ],

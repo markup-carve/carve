@@ -121,8 +121,14 @@ const PINNED_UNIMPLEMENTED = {}
  * that starts matching fails as STALE until the entry is deleted in the commit
  * that moves the pin, and the meaning assertion still runs regardless.
  */
-const PINNED_DRIFT = {}
-const PINNED_SOURCE_DRIFT = {}
+const PINNED_DRIFT = {
+  '40-djot-a-brace-run-continuation-must-be-indented':
+    'CARVE-P4-008: the pinned build still reads an unindented comment continuation as a comment (carve#2910)',
+}
+const PINNED_SOURCE_DRIFT = {
+  '40-djot-a-brace-run-continuation-must-be-indented':
+    'CARVE-P4-008: same gap, measured on the imported Carve bytes (carve#2910)',
+}
 
 /**
  * The visible text of an HTML fragment.

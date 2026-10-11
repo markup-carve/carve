@@ -46311,9 +46311,9 @@ $$`y`
 
 ## An info string does not change how a flush-left fence folds into a description body
 
-A flush-left fence line below a closed nested fence in a description body is
-the body's content whether or not it carries a language, so the language text
-folds as content like any other run.
+A closed nested fence leaves no paragraph open. A flush-left fence line ends
+the description body and opens a document block, with or without a language
+(CARVE-P0-009; carve#2895).
 
 ::: compare
 
@@ -46333,14 +46333,14 @@ folds as content like any other run.
         <pre><code></code></pre>
       </li>
     </ul>
-    <p><code>rust</code></p>
   </dd>
 </dl>
+<pre><code class="language-rust"></code></pre>
 ````
 
 :::
 
-The bare run folds the same way:
+The bare run ends the body too:
 
 ::: compare
 
@@ -46360,15 +46360,14 @@ The bare run folds the same way:
         <pre><code></code></pre>
       </li>
     </ul>
-    <p><code></code></p>
   </dd>
 </dl>
+<pre><code></code></pre>
 ````
 
 :::
 
-A terminated fence at that column is a different line: it opens a block and
-ends the body, for a language-tagged run as for a bare one.
+A terminated fence at that column also opens outside the body.
 
 ::: compare
 
@@ -47224,6 +47223,401 @@ lazy
     </ul>
   </li>
 </ul>
+```
+
+A closed fence opened on nested markers leaves no paragraph for a below-column
+line. This applies to list items and description bodies (carve#2895).
+An unfinished opener keeps its first body line inside its fence.
+
+````carve
+- - ```
+    ```
+x
+````
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>x</p>
+```
+
+````carve
+- - ```
+    ```
+```
+````
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+<pre><code></code></pre>
+```
+
+````carve
+- - ```
+    x
+````
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code>x
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+````carve
+:: t
+: - - ```
+      ```
+x
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code></code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<p>x</p>
+```
+
+````carve
+:: t
+: - - ```
+      ```
+```
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code></code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<pre><code></code></pre>
+```
+
+````carve
+:: t
+: - - ```
+      x
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code>x
+</code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </dd>
+</dl>
+```
+
+Raw fences and deeper marker stacks answer the same question. A nested heading
+or table also leaves no paragraph open in a description body. The last control
+keeps an unfinished nested fence whose following run is below its own column.
+
+````carve
+- - ```=html
+    ```
+x
+````
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>x</p>
+```
+
+````carve
+- - ```=html
+    ```
+```rust
+````
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+  </li>
+</ul>
+<pre><code class="language-rust"></code></pre>
+```
+
+````carve
+- - - ```
+      ```
+x
+````
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code></code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>x</p>
+```
+
+````carve
+:: t
+: - # h
+x
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <h1 id="h">h</h1>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<p>x</p>
+```
+
+````carve
+:: t
+: - a
+    # H
+tail
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a
+        <h1 id="H">H</h1>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<p>tail</p>
+```
+
+````carve
+:: t
+: - a
+     # H
+tail
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a
+        <h1 id="H">H</h1>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<p>tail</p>
+```
+
+````carve
+:: t
+: - a
+      # H
+tail
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a
+        <h1 id="H">H</h1>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<p>tail</p>
+```
+
+````carve
+:: t
+: - | a |
+    | - |
+x
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <table>
+          <thead>
+            <tr><th scope="col">a</th></tr>
+          </thead>
+        </table>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<p>x</p>
+```
+
+````carve
+:: t
+: - ```
+```
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <pre><code>```
+</code></pre>
+      </li>
+    </ul>
+  </dd>
+</dl>
+```
+
+:::
+
+## A caption scope resets at a structural-only line
+
+A caption attaches to a host. A line that is empty once its block structural
+prefix is removed - a bare `>` - carries layout and no content, so it is not one
+of the blanks the one-blank caption allowance counts. Where it changes the open
+container it ends the scope above it, and the container it opens holds nothing a
+caption could be about (`CARVE-P9-080`, markup-carve/carve#2892).
+
+A bare `>` between a table and a `^ ` line used to count as blank, so the quote
+it opened became a captioned figure and the caption bound to a host nobody wrote
+it under. Neither the table nor the empty quote is captioned now; the `^ ` line
+has no captionable block above it and is ordinary paragraph text.
+
+::: compare
+
+````carve
+| a |
+
+>
+
+^ cap
+````
+
+```html
+<table>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
+<blockquote>
+
+</blockquote>
+<p>^ cap</p>
+```
+
+Adjacency does not change the answer: the quote is empty either way.
+
+````carve
+>
+^ cap
+````
+
+```html
+<blockquote>
+
+</blockquote>
+<p>^ cap</p>
+```
+
+The control. A quote with content still captions, and a bare `>` INSIDE it is
+not a container change, so a trailing one does not detach the caption.
+
+````carve
+> q
+>
+
+^ cap
+````
+
+```html
+<figure>
+  <blockquote><p>q</p></blockquote>
+  <figcaption>cap</figcaption>
+</figure>
 ```
 
 :::

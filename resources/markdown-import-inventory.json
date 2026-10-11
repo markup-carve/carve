@@ -215,10 +215,10 @@
     },
     {
       "construct": "nested-same-kind-emphasis",
-      "code": "structure-unspellable",
-      "fidelity": "dropped",
+      "code": "markdown-emphasis",
+      "fidelity": "preserved",
       "confidence": "exact",
-      "severity": "warning"
+      "severity": "info"
     },
     {
       "construct": "blank-table-row",

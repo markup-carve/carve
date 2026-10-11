@@ -9,7 +9,7 @@ description: "Document-wide resolution, core semantic behavior, and HTML seriali
 
 Document-wide resolution, core semantic behavior, and HTML serialization.
 
-This view contains 50 of 320 active rules. Every rule remains mandatory where applicable.
+This view contains 52 of 326 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -19,9 +19,9 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P3-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L374) | 3 | AN IMAGE REFERENCE RESOLVES THE SAME ENTRY |
 | [`CARVE-P3-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L453) | 3 | AN AUTOLINK DISPLAYS ITS RAW SOURCE BODY |
 | [`CARVE-P4-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L33) | 4 | AUTHORED ATTRIBUTES RENDER IN SOURCE ORDER |
-| [`CARVE-P9-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L78) | 9 | A COMPOSITE FIGURE GROUPS ITS PANELS UNDER ONE CAPTION |
-| [`CARVE-P9-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L287) | 9 | T9 A HEADER CELL STATES WHAT IT HEADS |
-| [`CARVE-P9-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L388) | 9 | SMART TYPOGRAPHY RUNS BY DEFAULT |
+| [`CARVE-P9-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L80) | 9 | A COMPOSITE FIGURE GROUPS ITS PANELS UNDER ONE CAPTION |
+| [`CARVE-P9-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L333) | 9 | T9 A HEADER CELL STATES WHAT IT HEADS |
+| [`CARVE-P9-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L434) | 9 | SMART TYPOGRAPHY RUNS BY DEFAULT |
 | [`CARVE-P9-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L299) | 9 | BLOCK RENDERING |
 | [`CARVE-P9-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L445) | 9 | AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME |
 | [`CARVE-P9-072`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L475) | 9 | A DIRECTIVE'S TITLE AND LABEL ACCOMPANY THE REGION IT PLACES |
@@ -63,5 +63,7 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P10-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L136) | 10 | A MATCHING RAW BLOCK KEEPS ITS PLACEMENT SLOT |
 | [`CARVE-P10-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L401) | 10 | AN ORDERED LIST'S DELIMITER NAMES ITSELF ON THE LIST |
 | [`CARVE-P10-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L435) | 10 | ROUNDTRIP EXPORT WRITES NAMED CARRIERS |
-| [`CARVE-P10-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L467) | 10 | THE HTML CARRIERS ARE THE NAMES IN THIS INVENTORY |
-| [`CARVE-P9-079`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L502) | 9 | A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT |
+| [`CARVE-P10-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L476) | 10 | THE HTML CARRIERS ARE THE NAMES IN THIS INVENTORY |
+| [`CARVE-P10-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L647) | 10 | A CARRIER WINS A COLLISION AND THE DROPPED ATTRIBUTE IS REPORTED |
+| [`CARVE-P9-079`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L548) | 9 | A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT |
+| [`CARVE-P9-080`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L156) | 9 | A STRUCTURAL-ONLY LINE RESETS CAPTION SCOPE |
