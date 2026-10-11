@@ -180,7 +180,13 @@ caption_slot = [blank_line], caption ;
    CLOSING fence (§4c, §4). Image paragraphs and standalone display-math blocks
    follow the same allowance under §4 without a slot-carrying production.
    Any other `^ ` line is ordinary inline/paragraph content and, when a
-   paragraph is OPEN above it, folds into it (§10 I7). *)
+   paragraph is OPEN above it, folds into it (§10 I7).
+
+   The optional `blank_line` matches a TRULY blank line only. A
+   structural-only line -- a bare `>`, a bare list marker, a bare
+   continuation marker, a bare fence -- is not blank, and where it changes
+   the open container it ends the caption scope instead of being spent as
+   the allowance (PART 9 §4d). *)
 
 (* CAPTION NUMBER PLACEHOLDER -- NORMATIVE [CARVE-P2-022].
    The FIRST bare `#` in a caption's TOP-LEVEL inline_content is a number

@@ -24,3 +24,5 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+554-a-caption-scope-resets-at-a-structural-only-line  CARVE-P9-080 a structural-only line resets caption scope; the pinned parser still captions an empty quote (#2892).
+554-a-caption-scope-resets-at-a-structural-only-line-2  CARVE-P9-080 a structural-only line resets caption scope; the pinned parser still captions an empty quote (#2892).

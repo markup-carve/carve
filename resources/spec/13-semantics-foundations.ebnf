@@ -51,6 +51,8 @@
       `quote_block`. The allowance is the same for all
       seven: adjacent OR exactly one blank line attaches, two blank lines
       detach and leave the `^ ` line an ordinary paragraph.
+      A STRUCTURAL-ONLY LINE between host and marker detaches too, and is
+      not one of the blanks that allowance counts -- see §4d.
 
       THE SEVENTH IS THE SECOND SPELLING OF THE SECOND. `quote_block` is a
       block quote and captions as a figure. Like `figure_group`, its caption
@@ -150,6 +152,50 @@
       Omit the trailing `<figcaption>` when the group has no caption. With zero
       panels, preserve content directly in the group. Select panels by their
       `carve-figure-panel` class, never by child position.
+
+   4d. A STRUCTURAL-ONLY LINE RESETS CAPTION SCOPE -- NORMATIVE [CARVE-P9-080]
+      (constrains `caption_slot` in PART 2). A STRUCTURAL-ONLY LINE is a
+      non-blank line that is empty once its block structural prefix is
+      removed: a bare `>`, a bare list marker, a bare continuation marker, a
+      bare container fence. It carries layout and no content. It is NOT a
+      blank line, and the `[blank_line]` of `caption_slot` never matches one.
+
+      WHERE IT CHANGES THE OPEN CONTAINER, IT ENDS ANY PENDING CAPTION SCOPE.
+      A structural-only line that opens or closes a container ends the scope
+      of a caption-eligible host above it, the way a blank line beyond the
+      one-blank allowance does.
+
+      AND THE CONTAINER IT OPENS TAKES NO CAPTION OF ITS OWN WHILE IT HAS NO
+      CONTENT. A host whose extent is delimited by its OWN structural prefix
+      -- a `>` blockquote -- and whose every line is structural-only holds
+      nothing a caption could be about, so it is not a captionable host. This
+      says nothing about hosts delimited by an explicit closing fence, whose
+      caption attaches at the closer: a zero-panel `::: figure` still carries
+      its group caption (§4c).
+
+      A STRUCTURAL-ONLY LINE INSIDE AN ALREADY-OPEN CONTAINER CHANGES NOTHING.
+      `> q` followed by a bare `>` is one quote with content, and it still
+      captions. The reset is about the container boundary, not the bare
+      marker.
+
+      THE SHAPE THIS PINS (corpus 554). In a table, a blank, a bare `>`, a
+      blank, then `^ cap`: the `>` line opens a quote
+      that the table's caption scope cannot survive, and that quote has no
+      content of its own, so the `^ ` line attaches to nothing and is an
+      ordinary paragraph (PART 2, `caption_slot`). Neither the table nor the
+      empty quote is captioned.
+
+      WHY RESET RATHER THAN CARRY. Carrying the scope would make the rule "a
+      caption attaches to the nearest host still in scope"; resetting keeps
+      the rule §4 actually states, "a caption attaches to its host". An empty
+      container between a host and its marker is a line the author wrote, not
+      whitespace, and a caption that survives it binds to a host it was not
+      written under.
+
+      WHAT THIS CLAUSE DOES NOT REACH. Only lines that are structural-only. A
+      further `^ ` line after a captioned host, and a `^ ` line with no
+      captionable host above it, are governed by §4 and by PART 2's caption
+      continuation rules, and are unchanged here.
 
    5. TABLE MODEL -- OPERATIONAL SEMANTICS (cell split, row validity,
       header cells, span walk, continuation rows, delimiter row, row

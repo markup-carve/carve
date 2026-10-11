@@ -4010,8 +4010,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       }
       const children = parseBlocks(inheritFinalBreak(lines, inner, i, state), state, false)
       const node = { t: 'quote', children }
-      // caption -> <figure><blockquote/><figcaption> (PART 9 SS4)
-      const cap = captionSlot(i)
+      // caption -> <figure><blockquote/><figcaption> (PART 9 SS4).
+      // A quote of nothing but structural-only `>` lines is not a captionable
+      // host: it holds nothing the caption could be about, and letting it take
+      // one binds the caption across the container change that opened it
+      // (PART 9 SS4d, markup-carve/carve#2892).
+      const cap = children.length > 0 ? captionSlot(i) : null
       if (cap) {
         node.caption = cap.text
         i = cap.next

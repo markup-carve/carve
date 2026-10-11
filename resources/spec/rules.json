@@ -1965,6 +1965,12 @@
       "part": "9",
       "title": "A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT",
       "scope": "resolution-rendering"
+    },
+    {
+      "id": "CARVE-P9-080",
+      "part": "9",
+      "title": "A STRUCTURAL-ONLY LINE RESETS CAPTION SCOPE",
+      "scope": "resolution-rendering"
     }
   ],
   "retired": [

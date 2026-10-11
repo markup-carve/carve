@@ -9,13 +9,13 @@ description: "The core serialized tree shape, source positions, and cross-implem
 
 The core serialized tree shape, source positions, and cross-implementation AST guarantees.
 
-This view contains 55 of 323 active rules. Every rule remains mandatory where applicable.
+This view contains 55 of 321 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
 | Rule | Part | Clause |
 |---|---:|---|
-| [`CARVE-P9-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L446) | 9 | SMART TYPOGRAPHY RECORDS SOURCE AND RESOLVED KIND |
+| [`CARVE-P9-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L492) | 9 | SMART TYPOGRAPHY RECORDS SOURCE AND RESOLVED KIND |
 | [`CARVE-P12-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L12) | 12 | AST TYPE NAMES FOLLOW THE PROFILE VOCABULARY |
 | [`CARVE-P12-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L17) | 12 | ADJACENT TEXT RUNS ARE COALESCED |
 | [`CARVE-P12-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L35) | 12 | TEXT COALESCING OCCURS DURING `parse(x)`, NOT SERIALIZATION |
