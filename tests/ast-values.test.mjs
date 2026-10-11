@@ -369,7 +369,7 @@ test('raw content checks reject absent, wrong and extra payloads', () => {
   assert.deepEqual(checkRawContent(doc([raw('x')]), undefined), [])
 })
 
-test('raw source samples retain independent literal payloads in every host', async () => {
+test('raw and code source samples retain independent literal payloads in every host', async () => {
   const { parse } = await import('../scripts/spec/layout.mjs')
   const samples = JSON.parse(readFileSync(resolve(root, 'resources/ast-raw-payload-samples.json'), 'utf8'))
   const payloads = (value, type) => {
@@ -378,9 +378,11 @@ test('raw source samples retain independent literal payloads in every host', asy
     return (value.t === type ? [value.text] : []).concat(Object.values(value).flatMap(entry => payloads(entry, type)))
   }
   for (const sample of samples) {
-    assert.deepEqual(payloads(parse(sample.source), 'raw'), [sample.content], sample.name)
+    assert.deepEqual(payloads(parse(sample.source), 'raw'), [sample.content], `${sample.name} (raw)`)
     const codeSource = sample.source.replace(/(`{3,}|~{3,})=/, '$1')
-    assert.deepEqual(payloads(parse(codeSource), 'code'), [sample.content], sample.name)
+    assert.notEqual(codeSource, sample.source, `${sample.name}: no raw opener rewritten`)
+    assert.deepEqual(payloads(parse(codeSource), 'raw'), [], `${sample.name} (code retains no raw)`)
+    assert.deepEqual(payloads(parse(codeSource), 'code'), [sample.content], `${sample.name} (code)`)
   }
 })
 
