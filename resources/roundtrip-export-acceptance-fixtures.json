@@ -1,0 +1,755 @@
+{
+  "exportImport": [
+    {
+      "id": "star-bullet",
+      "source": "* a\n",
+      "carriers": {
+        "data-marker": "*"
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "list",
+          "bulletChar": "*",
+          "ordered": false
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-marker",
+          "element": "ul"
+        }
+      ]
+    },
+    {
+      "id": "ordered-delimiter",
+      "source": "1) a\n",
+      "carriers": {},
+      "forbiddenExportAttributes": [
+        "data-marker"
+      ],
+      "expectedNodes": [
+        {
+          "type": "list",
+          "ordered": true,
+          "delim": ")"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "ordinaryAttributes": {
+        "data-delim": ")"
+      },
+      "carrierHosts": []
+    },
+    {
+      "id": "star-break",
+      "source": "***\n",
+      "carriers": {
+        "data-char": "*"
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "thematic_break",
+          "marker": "*"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-char",
+          "element": "hr"
+        }
+      ]
+    },
+    {
+      "id": "underscore-break",
+      "source": "___\n",
+      "carriers": {
+        "data-char": "_"
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "thematic_break",
+          "marker": "_"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-char",
+          "element": "hr"
+        }
+      ]
+    },
+    {
+      "id": "explicit-heading-id",
+      "source": "{#C}\n# C\n",
+      "carriers": {
+        "data-carve-explicit-id": null
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "attrs.id": "C"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-explicit-id",
+          "element": "section"
+        }
+      ]
+    },
+    {
+      "id": "reference-link",
+      "source": "[r]: /u\n\n[t][r]\n",
+      "carriers": {
+        "data-carve-ref": "r"
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "link",
+          "ref": "r",
+          "href": "/u"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-ref",
+          "element": "a"
+        }
+      ]
+    },
+    {
+      "id": "reference-image",
+      "source": "[r]: /a.png\n\n![alt][r]\n",
+      "carriers": {
+        "data-carve-ref": "r"
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "image",
+          "ref": "r",
+          "src": "/a.png"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-ref",
+          "element": "img"
+        }
+      ]
+    },
+    {
+      "id": "url-autolink",
+      "source": "<https://e.com>\n",
+      "carriers": {
+        "data-carve-autolink": null
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "autolink",
+          "href": "https://e.com"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-autolink",
+          "element": "a"
+        }
+      ]
+    },
+    {
+      "id": "mail-autolink",
+      "source": "<a@e.com>\n",
+      "carriers": {
+        "data-carve-autolink": null
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "autolink",
+          "href": "mailto:a@e.com"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-autolink",
+          "element": "a"
+        }
+      ]
+    },
+    {
+      "id": "named-footnote",
+      "source": "x[^lbl]\n\n[^lbl]: note\n",
+      "carriers": {
+        "data-carve-footnote-label": "lbl"
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "footnote_ref",
+          "label": "lbl"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-footnote-label",
+          "element": "a"
+        },
+        {
+          "attribute": "data-carve-footnote-label",
+          "element": "li"
+        }
+      ]
+    },
+    {
+      "id": "inline-footnote",
+      "source": "y^[inline]\n",
+      "carriers": {
+        "data-carve-inline-footnote": null
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "inline_footnote"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-inline-footnote",
+          "element": "li"
+        }
+      ]
+    },
+    {
+      "id": "escaped-character",
+      "source": "\\* esc\n",
+      "carriers": {
+        "data-carve-escaped": null
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "escaped_text",
+          "value": "*"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-escaped",
+          "element": "span"
+        }
+      ]
+    },
+    {
+      "id": "raw-latex-inline",
+      "source": "`a<b`{=latex}\n",
+      "carriers": {
+        "data-carve-raw": "latex"
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "raw_inline",
+          "format": "latex",
+          "content": "a<b"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-raw",
+          "element": "span"
+        }
+      ]
+    },
+    {
+      "id": "raw-html-inline",
+      "source": "`<b>x</b>`{=html}\n",
+      "carriers": {
+        "data-carve-raw": "html"
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "raw_inline",
+          "format": "html",
+          "content": "<b>x</b>"
+        }
+      ],
+      "importModes": [
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-raw",
+          "element": "span"
+        }
+      ]
+    },
+    {
+      "id": "abbreviation-definition",
+      "source": "*[HTML]: Hyper Text\n\nHTML\n",
+      "carriers": {
+        "data-carve-abbreviations": null
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "abbreviation_def",
+          "abbr": "HTML",
+          "expansion": "Hyper Text"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-abbreviations",
+          "element": "template"
+        }
+      ]
+    },
+    {
+      "id": "table-separator-widths",
+      "source": "| a | bb |\n|:-----|---:|\n| 1 | 2 |\n",
+      "carriers": {
+        "data-carve-col-widths": "5,3"
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "table",
+          "separatorWidths": [
+            5,
+            3
+          ]
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-col-widths",
+          "element": "table"
+        }
+      ]
+    },
+    {
+      "id": "nested-list-and-break",
+      "source": "> * star\n>\n> ***\n",
+      "carriers": {
+        "data-marker": "*",
+        "data-char": "*"
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "list",
+          "bulletChar": "*"
+        },
+        {
+          "type": "thematic_break",
+          "marker": "*"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-marker",
+          "element": "ul"
+        },
+        {
+          "attribute": "data-char",
+          "element": "hr"
+        }
+      ]
+    },
+    {
+      "id": "task-states",
+      "source": "- [ ] open\n- [x] done\n- [X] upper\n- [-] dropped\n- [_] held\n- [>] moved\n- [?] unsure\n",
+      "carriers": {},
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "list_item",
+          "checked": false,
+          "taskState": null
+        },
+        {
+          "type": "list_item",
+          "checked": true,
+          "taskState": null
+        },
+        {
+          "type": "list_item",
+          "checked": true,
+          "taskState": null
+        },
+        {
+          "type": "list_item",
+          "checked": false,
+          "taskState": "-"
+        },
+        {
+          "type": "list_item",
+          "checked": false,
+          "taskState": "_"
+        },
+        {
+          "type": "list_item",
+          "checked": false,
+          "taskState": ">"
+        },
+        {
+          "type": "list_item",
+          "checked": false,
+          "taskState": "?"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": []
+    },
+    {
+      "id": "generated-heading-id",
+      "source": "# C\n",
+      "carriers": {},
+      "forbiddenExportAttributes": [
+        "data-carve-explicit-id"
+      ],
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "level": 1
+        }
+      ],
+      "expectedAbsentFields": [
+        {
+          "type": "heading",
+          "field": "attrs.id"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": []
+    },
+    {
+      "id": "unlisted-prefixed-attributes",
+      "source": "{data-carve-zzz=a data-djot-zzz=b}\ntext\n",
+      "carriers": {},
+      "carrierHosts": [],
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "paragraph",
+          "attrs.keyValues.data-carve-zzz": "a",
+          "attrs.keyValues.data-djot-zzz": "b"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ]
+    }
+  ],
+  "importNegative": [
+    {
+      "id": "invalid-break-character",
+      "html": "<hr data-char=\"=\">",
+      "expectedNodes": [
+        {
+          "type": "thematic_break"
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": true,
+      "forbiddenFieldValues": [
+        {
+          "type": "thematic_break",
+          "field": "marker",
+          "value": "="
+        }
+      ]
+    },
+    {
+      "id": "invalid-bullet",
+      "html": "<ul data-marker=\"#\"><li>a</li></ul>",
+      "expectedNodes": [
+        {
+          "type": "list",
+          "ordered": false
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": true,
+      "forbiddenFieldValues": [
+        {
+          "type": "list",
+          "field": "bulletChar",
+          "value": "#"
+        }
+      ]
+    },
+    {
+      "id": "invalid-multichar-escape",
+      "html": "<p><span data-carve-escaped>ab</span></p>",
+      "expectedNodes": [
+        {
+          "type": "text",
+          "value": "ab"
+        }
+      ],
+      "forbiddenTypes": [
+        "escaped_text"
+      ],
+      "importModes": [
+        "safe",
+        "semantic"
+      ],
+      "requiresDiagnostic": false
+    },
+    {
+      "id": "invalid-raw-format",
+      "html": "<p><span data-carve-raw=\"x y\">z</span></p>",
+      "expectedNodes": [
+        {
+          "type": "text",
+          "value": "z"
+        }
+      ],
+      "forbiddenTypes": [
+        "raw_inline"
+      ],
+      "importModes": [
+        "safe",
+        "semantic"
+      ],
+      "requiresDiagnostic": true
+    },
+    {
+      "id": "invalid-width-whole-carrier",
+      "html": "<table data-carve-col-widths=\"3,1001\"><tr><td>a</td><td>b</td></tr></table>",
+      "expectedNodes": [
+        {
+          "type": "table"
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": true,
+      "expectedAbsentFields": [
+        {
+          "type": "table",
+          "field": "separatorWidths"
+        }
+      ]
+    },
+    {
+      "id": "denied-carried-link",
+      "html": "<p><a href=\"javascript:one\" data-carve-ref=\"r\">text</a></p>",
+      "expectedNodes": [
+        {
+          "type": "text",
+          "value": "text"
+        }
+      ],
+      "forbiddenTypes": [
+        "link",
+        "autolink"
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": true
+    },
+    {
+      "id": "raw-html-safe-exception",
+      "html": "<p><span data-carve-raw=\"html\">&lt;b&gt;x&lt;/b&gt;</span></p>",
+      "expectedNodes": [
+        {
+          "type": "text",
+          "value": "<b>x</b>"
+        }
+      ],
+      "forbiddenTypes": [
+        "raw_inline"
+      ],
+      "importModes": [
+        "safe",
+        "semantic"
+      ],
+      "requiresDiagnostic": false
+    },
+    {
+      "id": "canonical-carrier-beats-deprecated",
+      "html": "<p><span data-carve-raw=\"latex\" data-djot-raw=\"html\">a&lt;b</span></p>",
+      "expectedNodes": [
+        {
+          "type": "raw_inline",
+          "format": "latex",
+          "content": "a<b"
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": false
+    }
+  ],
+  "footnoteRecoveryResource": "footnote-carrier-recovery-fixtures.json",
+  "collisionExport": [
+    {
+      "id": "break-carrier-wins",
+      "source": "{data-char=Z}\n***\n",
+      "attribute": "data-char",
+      "value": "*"
+    },
+    {
+      "id": "bullet-carrier-wins",
+      "source": "{data-marker=Z}\n* a\n",
+      "attribute": "data-marker",
+      "value": "*"
+    },
+    {
+      "id": "reference-carrier-wins",
+      "source": "[r]: /u\n\n[t][r]{data-carve-ref=Z}\n",
+      "attribute": "data-carve-ref",
+      "value": "r"
+    }
+  ],
+  "markdownExportImport": [
+    {
+      "id": "named-container",
+      "source": "::: wrapper\nBody.\n:::\n",
+      "carrierFragments": [
+        "<!-- carve: ::: wrapper -->",
+        "<!-- carve: ::: -->"
+      ],
+      "expectedNodes": [
+        {
+          "type": "admonition",
+          "kind": "wrapper"
+        }
+      ]
+    },
+    {
+      "id": "admonition-kind",
+      "source": "::: note\nBody.\n:::\n",
+      "carrierFragments": [
+        "<!-- carve: ::: note -->",
+        "<!-- carve: ::: -->"
+      ],
+      "expectedNodes": [
+        {
+          "type": "admonition",
+          "kind": "note"
+        }
+      ]
+    }
+  ]
+}
