@@ -710,6 +710,23 @@
       importer that returns a stored-source payload verbatim does so on its
       own trust setting, never on the exporter's.
 
+      A CARRIER VALUE IS UNTRUSTED INPUT. Before reconstructing syntax, a
+      reader validates the value against the grammar of the construct it
+      rebuilds. Any normalization the writer applies is applied before the
+      reader makes a trust decision about that value.
+
+      A VALUE OUTSIDE ITS GRAMMAR OR CARRIER ENUMERATION IS NOT A CARRIER.
+      The reader drops the invalid value with a diagnostic and keeps the
+      reserved name out of the reconstructed document's authored attributes
+      (§13d). It does not rebuild syntax from an invalid value.
+
+      RAW HTML REMAINS MODE-GATED. A `data-carve-raw` value naming format
+      `html` reconstructs raw HTML only in `roundtrip` import mode. A carrier
+      must not restore markup the selected mode filtered out. Other raw-inline
+      formats, inert in HTML output, may reconstruct in every import mode.
+      This is the value-validation ruling on carve#2918, applying this
+      clause's trust boundary and §12's invalid-enumeration precedent.
+
    13f. AN ALIAS NEVER TURNS PRESERVATION OFF -- NORMATIVE [CARVE-P10-018].
       The Markdown carrier options that predate this one -- PHP
       `setCarryMarkers(true)`, JavaScript `carryMarkers: true`, Rust

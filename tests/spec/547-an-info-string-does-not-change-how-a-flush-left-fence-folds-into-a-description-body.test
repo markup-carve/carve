@@ -14,9 +14,9 @@ An info string does not change how a flush-left fence folds into a description b
         <pre><code></code></pre>
       </li>
     </ul>
-    <p><code>rust</code></p>
   </dd>
 </dl>
+<pre><code class="language-rust"></code></pre>
 ````
 
 ````
@@ -33,9 +33,9 @@ An info string does not change how a flush-left fence folds into a description b
         <pre><code></code></pre>
       </li>
     </ul>
-    <p><code></code></p>
   </dd>
 </dl>
+<pre><code></code></pre>
 ````
 
 ````

@@ -509,6 +509,12 @@
       "scope": "parsing"
     },
     {
+      "id": "CARVE-P4-008",
+      "part": "4",
+      "title": "AN IMPORTER READS A BRACE RUN'S CONTINUATION ONLY WHERE IT IS INDENTED",
+      "scope": "imports-security-extensions"
+    },
+    {
       "id": "CARVE-P7-001",
       "part": "7",
       "title": "A TAB IS SYNTAX ONLY IN THE LEADING RUN",

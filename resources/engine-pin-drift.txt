@@ -26,3 +26,12 @@
 # Format: <slug><space><space><reason>
 554-a-caption-scope-resets-at-a-structural-only-line  CARVE-P9-080 a structural-only line resets caption scope; the pinned parser still captions an empty quote (#2892).
 554-a-caption-scope-resets-at-a-structural-only-line-2  CARVE-P9-080 a structural-only line resets caption scope; the pinned parser still captions an empty quote (#2892).
+547-an-info-string-does-not-change-how-a-flush-left-fence-folds-into-a-description-body  CARVE-P0-009 the closed nested fence leaves no open paragraph; the pinned description collector still folds the following run (carve#2895).
+547-an-info-string-does-not-change-how-a-flush-left-fence-folds-into-a-description-body-2  CARVE-P0-009 the same closed-fence gap without an info string (carve#2895).
+553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-18  CARVE-P0-009 the pinned description collector still folds plain text below a closed marker-line fence (carve#2895).
+553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-19  CARVE-P0-009 the pinned description collector still folds a bare fence below a closed marker-line fence (carve#2895).
+553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-24  CARVE-P0-009 the pinned description collector still folds text below a nested heading or table with no open paragraph (carve#2895).
+553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-25  CARVE-P0-009 the pinned description collector still folds text below a nested heading or table with no open paragraph (carve#2895).
+553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-26  CARVE-P0-009 the pinned description collector still folds text below a nested heading or table with no open paragraph (carve#2895).
+553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-27  CARVE-P0-009 the pinned description collector still folds text below a nested heading or table with no open paragraph (carve#2895).
+553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-28  CARVE-P0-009 the pinned description collector still folds text below a nested heading or table with no open paragraph (carve#2895).

@@ -189,3 +189,45 @@ test('the inner-item row now takes the owner table', () => {
       '</code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<pre><code></code></pre>',
   )
 })
+
+test('a closed marker-line fence ends lazy reach in both hosts', () => {
+  for (const [prefix, padding] of [['- - ', '    '], [':: t\n: - - ', '      ']]) {
+    for (const tail of ['x', '```']) {
+      const out = html(`${prefix}\`\`\`\n${padding}\`\`\`\n${tail}\n`)
+      const close = prefix.startsWith('::') ? '</dl>' : '</ul>'
+      assert.ok(out.lastIndexOf(close) < out.lastIndexOf(tail === 'x' ? '<p>x</p>' : '<pre>'), out)
+    }
+  }
+})
+
+test('an unfinished marker-line fence keeps its first body line', () => {
+  for (const [prefix, padding] of [['- - ', '    '], [':: t\n: - - ', '      ']]) {
+    const out = html(`${prefix}\`\`\`\n${padding}x\n`)
+    assert.match(out, /<pre><code>x\n<\/code><\/pre>/)
+    assert.doesNotMatch(out, /<p>x<\/p>/)
+  }
+})
+
+test('raw fences and deeper marker stacks leave no paragraph open', () => {
+  for (const source of ['- - ```=html\n    ```\nx\n', '- - - ```\n      ```\nx\n']) {
+    assert.ok(html(source).endsWith('</ul>\n<p>x</p>'), source)
+  }
+})
+
+test('a nested heading or table also ends a description before lazy text', () => {
+  for (const source of [':: t\n: - # h\nx\n', ':: t\n: - | a |\n    | - |\nx\n']) {
+    assert.ok(html(source).endsWith('</dl>\n<p>x</p>'), source)
+  }
+  for (const column of [4, 5, 6]) {
+    const source = `:: t\n: - a\n${' '.repeat(column)}# H\ntail\n`
+    assert.ok(html(source).endsWith('</dl>\n<p>tail</p>'), source)
+  }
+})
+
+test('the block after a closed nested fence answers the lazy question', () => {
+  const prefix = ':: t\n: - ```\n    c\n    ```\n'
+  assert.ok(html(`${prefix}    p\nx\n`).endsWith('</dl>'))
+  for (const block of ['# H', '~~~']) {
+    assert.ok(html(`${prefix}    ${block}\nx\n`).endsWith('</dl>\n<p>x</p>'), block)
+  }
+})
