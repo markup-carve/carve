@@ -457,8 +457,8 @@
       byte-identical source. A distinction the AST already records --
       `list.bulletChar`, `thematic_break.marker`, a link's or image's `ref`
       and `rawRef`, an `autolink` node, a `footnote_ref` label, an
-      `escaped_text` node, a `raw_inline` format, an authored `id` under
-      `attrs` -- is recoverable from the tree whether or not HTML carried it.
+      `escaped_text` node, a `raw_inline` format, `table.separatorWidths`, an
+      authored `id` under `attrs` -- is recoverable from the tree whether or not HTML carried it.
       These carriers exist because this serialization collapses those
       distinctions, not because the tree lost them. A DISTINCTION THE AST DOES
       NOT RECORD GETS NO CARRIER, and §13a says why.
@@ -511,6 +511,15 @@
                                                   holds the document's
                                                   abbreviation definitions, one
                                                   `*[ABBR]: expansion` per line
+        data-carve-col-widths       <table>       the authored separator-row
+                                                  dash widths, comma-joined,
+                                                  one per separator cell. The
+                                                  AST field it restores is
+                                                  `table.separatorWidths`
+                                                  ([CARVE-P11-066]), whose
+                                                  PRESENCE is the distinction:
+                                                  a table with no separator row
+                                                  writes no attribute
 
       AN ORDERED LIST'S DELIMITER IS `data-delim`, NOT A SECOND CARRIER. §12
       writes the authored delimiter on every render, and an ordered list's
@@ -536,17 +545,24 @@
       distinction the tree discards is to add the PART 12 field FIRST, and then
       this clause follows.
 
-      A TABLE'S SEPARATOR-ROW WIDTHS AND A CONSTRUCT'S VERBATIM SOURCE ARE WHAT
-      THE RULE EXCLUDES, which is why `data-carve-col-widths` and
-      `data-carve-src` are absent from the rows above. Carrying the widths was
-      measured, and the measurement is the argument FOR the rule rather than an
-      exception to it: an engine that added the carrier and a field to hold it
-      turned 37 tests red across 9 files, because the AST JSON writer does not
-      filter to the published field set, the reader refuses an unknown field,
-      and the "parses to the same tree" comparisons are deep equality that a
-      canonical `---` separator cannot satisfy. It is also why a PROMISE needs
-      the field first: without one there is nothing for a reader to check the
-      promise against.
+      THE SEPARATOR-ROW ROW IS WHAT THE RULE ADMITTING A CARRIER LOOKS LIKE.
+      `data-carve-col-widths` was absent from this inventory until
+      `table.separatorWidths` existed, and it is listed now because that field
+      does. The order was not a formality: an engine that wrote the carrier
+      WITHOUT the field turned 37 tests red across 9 files, because the AST JSON
+      writer does not filter to the published field set, the reader refuses an
+      unknown field, and the "parses to the same tree" comparisons are deep
+      equality that a canonical `---` separator cannot satisfy. The field
+      answers all three at once, which is why it comes first.
+
+      A CONSTRUCT'S VERBATIM SOURCE IS WHAT THE RULE STILL EXCLUDES, which is
+      why `data-carve-src` is absent from the rows above. It is not awaiting a
+      field: [CARVE-P11-013] rules the glued opener canonical and says the tree
+      records no padding, fence length or fence character, so the one
+      distinction such a carrier is observed to move -- the space in
+      ``` ``` php ``` -- is a spelling this specification has already ruled
+      against keeping. A field for it would reverse that clause rather than add
+      to it.
 
       AN EXTENSION WRITES ITS OWN CARRIERS, under the reserved prefix, for the
       distinctions ITS nodes record. They are scoped to that extension and
