@@ -68,17 +68,27 @@ test('the channel is closed against an invented code and an invented key', () =>
 
 test('the render-loss enum holds the render-time codes and neither channel code', () => {
   /* carve#2245 split the two reports by WHEN the loss happens rather than by
-   * count, and carve#2679 added the third render-time code under that split. The
-   * channel's codes must still be absent from it. */
+   * count, carve#2679 added the third render-time code under that split, and
+   * carve#2902 added the fifth for a carrier that displaced an authored
+   * attribute. The channel's codes must still be absent from it. */
   assert.deepEqual(
     renderLoss.properties.losses.items.properties.code.enum,
-    ['raw-format-dropped', 'ruby-flattened', 'destination-denied', 'editorial-comment-flattened'],
+    [
+      'raw-format-dropped',
+      'ruby-flattened',
+      'destination-denied',
+      'editorial-comment-flattened',
+      'carrier-collision',
+    ],
   )
 })
 
-test('--allow-loss names the three render-loss codes and neither channel code', () => {
+test('--allow-loss names the offered render-loss codes and neither channel code', () => {
   const offered = [...grammar.matchAll(/`--allow-loss ([a-z-]+)`/g)].map((match) => match[1])
-  assert.deepEqual([...new Set(offered)].sort(), ['editorial-comment-flattened', 'raw-format-dropped', 'ruby-flattened'])
+  assert.deepEqual(
+    [...new Set(offered)].sort(),
+    ['carrier-collision', 'editorial-comment-flattened', 'raw-format-dropped', 'ruby-flattened'],
+  )
 })
 
 /*
