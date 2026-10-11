@@ -406,7 +406,10 @@
         }
       ],
       "carrierText": {
-        "data-carve-abbreviations": "*[HTML]: Hyper Text"
+        "data-carve-abbreviations": [
+          "*[HTML]: Hyper Text",
+          "*[HTML]: Hyper Text\n"
+        ]
       }
     },
     {

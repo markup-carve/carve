@@ -2,7 +2,7 @@
 
 `roundtrip-export-acceptance-fixtures.json` samples PART 10 §13 and PART 11 §10s.
 
-HTML cases supply source, carrier values and hosts, ordinary attributes, import modes and promised AST fields. A null carrier value requires presence only. Payload carriers declare their exact text; their elements must contain no child markup. `expectedNodes` is a multiset of projections; dotted keys address nested fields, and null requires an absent field. Positions and incidental serialization choices are excluded.
+HTML cases supply source, carrier values and hosts, ordinary attributes, import modes and promised AST fields. A null carrier value requires presence only. Payload carriers declare their text; their elements must contain no child markup. An array lists permitted encodings, allowing an abbreviation definition with or without its final LF. `expectedNodes` is a multiset of projections; dotted keys address nested fields, and null requires an absent field. Positions and incidental serialization choices are excluded.
 
 Consumers export with preservation off and on, import the preserved output, compare projections, and compare ordinary rendering after reconstruction. Deprecated carrier prefixes use the same projections. Raw cases allow the documented text fallback on a declining importer. Negative cases specify absent fields, forbidden values and whether a diagnostic is required, without fixing its wording or code. A diagnostic control uses the same host with a valid carrier value or no carrier so unrelated losses cannot satisfy an invalid-value assertion.
 

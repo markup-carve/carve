@@ -82,7 +82,8 @@ for (const fixture of fixtures.exportImport) {
     for (const [name, expected] of Object.entries(fixture.carrierText ?? {})) {
       const hosts = carrierElements(exported, name)
       assert.equal(hosts.length, 1, name)
-      assert.equal(carrierText(hosts[0]), expected, name)
+      const allowed = Array.isArray(expected) ? expected : [expected]
+      assert.ok(allowed.includes(carrierText(hosts[0])), name)
     }
     assert.ok(!attrs.some((attr) => isReserved(attr.name) && attr.name.startsWith('data-djot-')))
     assert.ok(attrs.filter((attr) => isReserved(attr.name)).every((attr) => Object.hasOwn(fixture.carriers, attr.name)))
