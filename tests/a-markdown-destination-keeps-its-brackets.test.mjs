@@ -17,8 +17,6 @@ const DESTINATIONS = [
 ]
 
 test('the writer is already right: a destination bracket is written literally', () => {
-  // NOT guarded by the declaration. The writer half holds on every build, and
-  // it is what makes the import the only place left to fix.
   for (const [carve] of DESTINATIONS) {
     assert.equal(carveToMarkdown(carve), carve, 'the Markdown target rewrote a destination')
   }
