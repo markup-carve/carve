@@ -78,7 +78,7 @@ test('the render-loss enum holds the render-time codes and neither channel code'
       'ruby-flattened',
       'destination-denied',
       'editorial-comment-flattened',
-      'carrier-collision',
+      'carrier-attribute-dropped',
     ],
   )
 })
@@ -87,7 +87,7 @@ test('--allow-loss names the offered render-loss codes and neither channel code'
   const offered = [...grammar.matchAll(/`--allow-loss ([a-z-]+)`/g)].map((match) => match[1])
   assert.deepEqual(
     [...new Set(offered)].sort(),
-    ['carrier-collision', 'editorial-comment-flattened', 'raw-format-dropped', 'ruby-flattened'],
+    ['carrier-attribute-dropped', 'editorial-comment-flattened', 'raw-format-dropped', 'ruby-flattened'],
   )
 })
 

@@ -479,11 +479,9 @@
       target writes these names and no other preservation name. Each row is
       the attribute, the node it rides on, and what the value holds:
 
-        data-marker                 <ul>, <ol>    the authored list marker,
-                                                  written only where it is
-                                                  not the default (`-` for a
-                                                  bullet list, `.` for an
-                                                  ordered one)
+        data-marker                 <ul>          the authored bullet marker,
+                                                  written only where it is not
+                                                  `-`
         data-char                   <hr>          the authored thematic-break
                                                   character, written only
                                                   where it is not `-`
@@ -499,7 +497,11 @@
                                                   authored as an autolink
         data-carve-footnote-label   <a>, <li>     the authored footnote label,
                                                   on the reference and on the
-                                                  endnote item
+                                                  endnote item. The AST field
+                                                  it restores is
+                                                  `footnote_ref.label`, which
+                                                  [CARVE-P12-047] names and
+                                                  spells, not `id`
         data-carve-inline-footnote  <li>          presence: the endnote came
                                                   from an inline footnote
         data-carve-col-widths       <table>       the authored separator-row
@@ -512,6 +514,39 @@
                                     container     verbatim
         data-carve-abbreviations    <template>    the document's abbreviation
                                                   definitions, one per line
+
+      AN ORDERED LIST'S DELIMITER IS `data-delim`, NOT A SECOND CARRIER. §12
+      writes the authored delimiter on every render, and an ordered list's
+      marker IS that delimiter: its style is `type` and its first number is
+      `start`, both structural and both already written. An `<ol>` carrying
+      both names says one thing twice, so `data-marker` rides a `<ul>` only.
+
+      A CARRIER LEADS THE AUTHORED ATTRIBUTES. A carrier is structural by §1 --
+      the element derives it from its own marker, destination or resolution --
+      so it sits after the element's other structural attributes (`type`,
+      `start`, `data-delim`, `href`, `src`, `alt`, `title`) and before the
+      first attribute the author wrote:
+        > {.c #i}
+        > ***            -> <hr data-char="*" class="c" id="i">
+      THE PLACEMENT DOES NOT VARY BY CARRIER. Trailing the authored attributes
+      for one name and leading them for another is not a choice this clause
+      leaves open.
+
+      `data-carve-col-widths` IS HTML-ONLY, AND AN AST HOP LOSES IT. §13 names
+      the separator-row widths as a distinction the AST does NOT record, and
+      this is the carrier that holds it; the two statements agree only while the
+      value stays out of the tree. It does: an engine carries it in
+      ENGINE-PRIVATE state between its importer and its Carve writer, and it is
+      not a published AST field.
+
+      AN ENGINE DOES NOT GROW A WIRE FIELD FOR IT. One was measured and turned
+      37 tests red across 9 files, because the AST JSON writer does not filter
+      to the published field set, the reader refuses an unknown field, and the
+      "parses to the same tree" comparisons are deep equality that a canonical
+      `---` separator cannot satisfy. So an HTML import routed out through AST
+      JSON drops the widths, and an engine with no private channel to its writer
+      drops them too. Both are conforming, and neither is a reason to widen the
+      wire schema under this clause.
 
       A VALUE ESCAPES AS §2 ESCAPES ANY ATTRIBUTE VALUE. §2's text-content
       exception for U+00A0 is not an attribute rule, so a carrier value
@@ -555,7 +590,7 @@
 
       THE DROP IS A RENDER-LOSS ROW NAMING THE ATTRIBUTE, so the document
       records the loss instead of taking it silently. The code is
-      `carrier-collision` and the row carries `attribute`, the displaced name;
+      `carrier-attribute-dropped` and the row carries `attribute`, the displaced name;
       [CARVE-P2-024] states the rest of its shape.
 
       EMITTING BOTH IS NOT CONFORMING. Two attributes of one name is invalid
