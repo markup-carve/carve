@@ -1,0 +1,19 @@
+Inline {%%} remains.
+
+\{% x
+y %}
+
+%%
+
+\{\#one
+key=1}
+alpha
+
+{#two key="2"}
+beta
+
+# a
+
+\{% x
+y %}
+\# b
