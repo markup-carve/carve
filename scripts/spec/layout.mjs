@@ -1956,6 +1956,7 @@ function hostColonStep(h, inner, bodyFollows, commentCloses = () => false, marke
     return false
   }
   const base = h.columns.at(-1)
+  if (top && base === top.base && inner.col > top.column) return false
   if (top && bare && inner.col !== top.base && inner.col !== top.column) return false
   if (stack.length >= remainingDepth) return false
   const opener = colon && parseColonOpener(colon[2])
@@ -2010,6 +2011,8 @@ function hostFenceStep(h, line) {
 // under the current paragraph still leaves a possible closer to account for.
 function hostFenceOpener(h, inner, canOpen = () => true) {
   const column = h.columns.at(-1)
+  const colon = h.colons?.at(-1)
+  if (colon && column === colon.base && inner.col > colon.column) return null
   if (h.unclaimed !== null && h.unclaimed.host > column) h.unclaimed = null
   const f = FENCE.exec(inner.rest)
   const opener = f && parseFenceInfo(f[2]) !== null ? f : null

@@ -265,3 +265,44 @@ for (const depth of [1, 2]) {
     })
   }
 }
+
+for (const depth of [1, 2]) {
+  const quote = '> '.repeat(depth)
+  for (const run of ['```', '~~~']) {
+    for (const type of [null, 'box']) {
+      test(`shifted colon and ${run} lines remain paragraph text inside ${type ?? 'anonymous'} div at depth ${depth}`, () => {
+        const source = `${quote}- b\n${quote.trimEnd()}\n${quote}  :::${type ? ' ' + type : ''}\n${quote}    ::: |\n${quote}    ${run}\n${quote}  :::\n${quote}  para\n${quote}  ${run}\nlazy\n`
+        const document = parse(source)
+        assert.equal(document.blocks.length, 1)
+        let owner = document.blocks[0]
+        for (let n = 0; n < depth; n++) owner = owner.children[0]
+        assert.deepEqual(owner.items[0].blocks, [{t: 'para', lines: ['b']}, {t: 'colon-div', type, title: null, label: null, children: [{t: 'para', lines: ['::: |', run]}]}, {t: 'para', lines: ['para', run, 'lazy']}])
+      })
+    }
+    test(`a descendant item still opens its ${run} code inside a div at depth ${depth}`, () => {
+      const source = `${quote}- ::: box\n${quote}  - ${run}\n${quote}    x\n${quote}    ${run}\n${quote}  :::\n- tail\n`
+      const document = parse(source)
+      assert.equal(document.blocks.length, 2)
+      let owner = document.blocks[0]
+      for (let n = 0; n < depth; n++) owner = owner.children[0]
+      assert.deepEqual(owner.items[0].blocks[0].children[0].items[0].blocks, [{t: 'code', lang: '', title: null, text: 'x\n'}])
+      assert.deepEqual(document.blocks[1], parse('- tail\n').blocks[0])
+    })
+    test(`a descendant item still opens a paired ${run} line-block span inside a div at depth ${depth}`, () => {
+      const source = `${quote}- ::: box\n${quote}  - ::: |\n${quote}    ${run}\n${quote}    :::\n${quote}    ${run}\n${quote}    :::\n${quote}    :::bad\n${quote}    :::\n- tail\n`
+      const document = parse(source)
+      assert.equal(document.blocks.length, 1)
+      let owner = document.blocks[0]
+      for (let n = 0; n < depth; n++) owner = owner.children[0]
+      assert.deepEqual(owner.items[0].blocks[0].children[0].items[0].blocks, [{t: 'line-block', lines: [run, ':::', run]}, {t: 'para', lines: [':::bad', ':::', '- tail']}])
+    })
+  }
+  test(`shifted line-block text needs no blank to remain a div paragraph at depth ${depth}`, () => {
+    const source = `${quote}- b\n${quote}  ::: box\n${quote}    ::: |\n${quote}    \`\`\`\n${quote}  :::\n${quote}  para\n${quote}  \`\`\`\nlazy\n`
+    const document = parse(source)
+    assert.equal(document.blocks.length, 1)
+    let owner = document.blocks[0]
+    for (let n = 0; n < depth; n++) owner = owner.children[0]
+    assert.deepEqual(owner.items[0].blocks.at(-1), {t: 'para', lines: ['para', '```', 'lazy']})
+  })
+}
