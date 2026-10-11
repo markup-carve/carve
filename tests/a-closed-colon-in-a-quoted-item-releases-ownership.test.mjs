@@ -242,3 +242,26 @@ for (const depth of [1, 2]) for (const run of ['```', '~~~']) {
     assert.deepEqual(owner.items[0].blocks, [{t: 'para', lines: ['a']}, {t: 'line-block', lines: [run, ':::', run]}, {t: 'para', lines: [':::bad', ':::', '- tail']}])
   })
 }
+
+for (const depth of [1, 2]) {
+  const quote = '> '.repeat(depth)
+  test(`a sibling comment fence cannot close a line-block payload span at depth ${depth}`, () => {
+    const source = `${quote}- ::: |\n${quote}  %%%\n${quote}  :::\n${quote}- b\n${quote}  %%%\n${quote}  para\nlazy\n`
+    const document = parse(source)
+    assert.equal(document.blocks.length, 1)
+    let owner = document.blocks[0]
+    for (let n = 0; n < depth; n++) owner = owner.children[0]
+    assert.deepEqual(owner.items[0].blocks, [{t: 'line-block', lines: ['%%%']}])
+    assert.deepEqual(owner.items[1].blocks, [{t: 'para', lines: ['b']}, {t: 'para', lines: ['para', 'lazy']}])
+  })
+  for (const run of ['```', '~~~']) {
+    test(`an authored line-block code span closes at its host column at depth ${depth}, ${run}`, () => {
+      const source = `${quote}- a\n${quote}    ::: |\n${quote}    ${run}\n${quote}    :::\n${quote}  ${run}\n${quote}  :::\n${quote}  para\nlazy\n`
+      const document = parse(source)
+      assert.equal(document.blocks.length, 1)
+      let owner = document.blocks[0]
+      for (let n = 0; n < depth; n++) owner = owner.children[0]
+      assert.deepEqual(owner.items[0].blocks, [{t: 'para', lines: ['a']}, {t: 'line-block', lines: [run, ':::', run]}, {t: 'para', lines: ['para', 'lazy']}])
+    })
+  }
+}

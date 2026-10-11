@@ -1938,9 +1938,9 @@ function hostColonStep(h, inner, bodyFollows, commentCloses = () => false, marke
   const colon = COLON_FENCE.exec(inner.rest)
   const top = stack.at(-1)
   if (top?.mode === 'line-block') {
-    if (comment && commentCloses(comment[1].length)) h.colonComment = comment[1].length
+    if (comment && commentCloses(comment[1].length, top.base)) h.colonComment = comment[1].length
     const fence = FENCE.exec(inner.rest)
-    if (inner.col === top.column && fence && parseFenceInfo(fence[2]) !== null && codeCloses(fence[1], inner.col)) {
+    if (inner.col === top.column && fence && parseFenceInfo(fence[2]) !== null && (codeCloses(fence[1], inner.col) || codeCloses(fence[1], top.base))) {
       h.fence = { run: fence[1], column: inner.col, host: top.base }
     }
   }
@@ -3819,7 +3819,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               // (its own depth-invariance row).
               const host = qNestedHost[depth - 1] ??= hostLadder()
               const { inner } = hostAdvance(host, tail, false)
-              if (state.blockDepth + depth + (host.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(host, inner, floor => colonBodyFollows(idx, depth + 1, floor), width => quotedCommentCloser(idx, depth + 1, width), true, [], MAX_NESTING_DEPTH - state.blockDepth - depth - (host.columns.length - 1), (run, column) => closerFollows(idx, depth + 1, run, column))) {
+              if (state.blockDepth + depth + (host.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(host, inner, floor => colonBodyFollows(idx, depth + 1, floor), (width, floor) => quotedCommentCloser(idx, depth + 1, width, floor), true, [], MAX_NESTING_DEPTH - state.blockDepth - depth - (host.columns.length - 1), (run, column) => closerFollows(idx, depth + 1, run, column))) {
                 qNestedTable[depth - 1] = false
                 return settle(false, depth)
               }
@@ -3849,7 +3849,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qNestedTable[depth] = tableRunStep(before, text)
           const { inner, blockStart } = hostAdvance(host, text, qNestedPara[depth] ?? false)
           if (blockStart) qNestedParaLines[depth] = []
-          if (state.blockDepth + depth + 1 + (host.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(host, inner, floor => colonBodyFollows(idx, depth + 2, floor), width => quotedCommentCloser(idx, depth + 2, width), blockStart, qNestedParaLines[depth] ?? [], MAX_NESTING_DEPTH - state.blockDepth - depth - 1 - (host.columns.length - 1), (run, column) => closerFollows(idx, depth + 2, run, column))) {
+          if (state.blockDepth + depth + 1 + (host.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(host, inner, floor => colonBodyFollows(idx, depth + 2, floor), (width, floor) => quotedCommentCloser(idx, depth + 2, width, floor), blockStart, qNestedParaLines[depth] ?? [], MAX_NESTING_DEPTH - state.blockDepth - depth - 1 - (host.columns.length - 1), (run, column) => closerFollows(idx, depth + 2, run, column))) {
             qNestedTable[depth] = false
             return settle(false, depth + 1)
           }
@@ -3904,10 +3904,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         qNestedColon.length = 0
       }
       let qCommentClosers
-      const quotedCommentCloser = (idx, markers, width) => {
+      const quotedCommentCloser = (idx, markers, width, floor) => {
         let indexed = qCommentClosers?.get(markers)
         if (!indexed || idx >= indexed.end) {
           const byWidth = new Map()
+          const columns = []
           let j = idx + 1
           for (; j < n; j++) {
             let text = lines[j]
@@ -3918,6 +3919,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               text = quoted[1] ?? ''
             }
             if (k < markers) break
+            columns.push(isBlank(text) || COMMENT_LINE.test(text) ? Infinity : indentCols(text).col)
             const comment = COMMENT_FENCE.exec(text)
             if (comment) {
               const run = comment[1].length
@@ -3926,7 +3928,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               rows.push(j)
             }
           }
-          indexed = { end: j, byWidth }
+          let size = 1
+          while (size < columns.length) size *= 2
+          const minimums = new Array(size * 2).fill(Infinity)
+          for (let k = 0; k < columns.length; k++) minimums[size + k] = columns[k]
+          for (let k = size - 1; k > 0; k--) minimums[k] = Math.min(minimums[k * 2], minimums[k * 2 + 1])
+          indexed = { end: j, byWidth, columnStart: idx + 1, size, minimums }
           qCommentClosers ??= new Map()
           qCommentClosers.set(markers, indexed)
         }
@@ -3938,7 +3945,18 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (rows[middle] <= idx) low = middle + 1
           else high = middle
         }
-        return low < rows.length
+        if (low >= rows.length) return false
+        if (floor === undefined) return true
+        let left = indexed.size + idx + 1 - indexed.columnStart
+        let right = indexed.size + rows[low] - indexed.columnStart
+        let minimum = Infinity
+        while (left < right) {
+          if (left % 2) minimum = Math.min(minimum, indexed.minimums[left++])
+          if (right % 2) minimum = Math.min(minimum, indexed.minimums[--right])
+          left = Math.floor(left / 2)
+          right = Math.floor(right / 2)
+        }
+        return minimum >= floor
       }
       const colonBodyFollows = (idx, markers, floor) => {
         let commentWidth = null
@@ -4006,7 +4024,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const { meas, inner: inner0, blockStart } = hostAdvance(qHost, l, qOpenPara)
         if (blockStart) qPara = []
         if (state.blockDepth + (qHost.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(qHost, inner0, floor => colonBodyFollows(idx, 1, floor),
-          width => openComment === null && quotedCommentCloser(idx, 1, width), blockStart, qPara, MAX_NESTING_DEPTH - state.blockDepth - (qHost.columns.length - 1), (run, column) => closerFollows(idx, 1, run, column))) {
+          (width, floor) => openComment === null && quotedCommentCloser(idx, 1, width, floor), blockStart, qPara, MAX_NESTING_DEPTH - state.blockDepth - (qHost.columns.length - 1), (run, column) => closerFollows(idx, 1, run, column))) {
           qOpenPara = false
           qTableOpen = false
           clearNested()
