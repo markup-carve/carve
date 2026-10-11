@@ -1935,7 +1935,9 @@ function hostColonStep(h, inner, bodyFollows, commentCloses = () => false, marke
   while (stack.length && inner.rest !== '' && inner.col < stack.at(-1).base) stack.pop()
   const colon = COLON_FENCE.exec(inner.rest)
   const top = stack.at(-1)
-  if (top && COLON_CLOSER.test(inner.rest) && colon?.[1].length === top.length && inner.col >= top.base) {
+  const bare = COLON_CLOSER.test(inner.rest)
+  if (top && bare && colon?.[1].length === top.length &&
+      (inner.col === top.base || inner.col === top.column)) {
     stack.pop()
     return true
   }
@@ -1945,6 +1947,7 @@ function hostColonStep(h, inner, bodyFollows, commentCloses = () => false, marke
     return false
   }
   const base = h.columns.at(-1)
+  if (bare && inner.col !== (top?.base ?? base) && inner.col !== top?.column) return false
   if (stack.length >= remainingDepth) return false
   const opener = colon && parseColonOpener(colon[2])
   if (base > 0 && opener && (!markerLine || bodyFollows(base))) {

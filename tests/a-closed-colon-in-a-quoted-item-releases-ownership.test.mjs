@@ -54,6 +54,33 @@ for (const depth of [1, 2]) for (const payload of ['%%%', '```', '- marker']) {
   })
 }
 
+for (const depth of [1, 2]) {
+  test(`an overindented bare run does not close a hosted paragraph at depth ${depth}`, () => {
+    const quote = '> '.repeat(depth)
+    const document = parse(`${quote}- ::: box\n${quote}  a\n${quote}    :::\n- tail\n`)
+    assert.equal(document.blocks.length, 1)
+    let owner = document.blocks[0]
+    for (let n = 0; n < depth; n++) owner = owner.children[0]
+    assert.deepEqual(owner.items[0].blocks[0].children, [{t: 'para', lines: ['a', ':::', '- tail']}])
+  })
+  test(`an overindented bare run stays line-block payload at depth ${depth}`, () => {
+    const quote = '> '.repeat(depth)
+    const document = parse(`${quote}- ::: |\n${quote}  a\n${quote}    :::\n${quote}  b\n- tail\n`)
+    assert.equal(document.blocks.length, 2)
+    let owner = document.blocks[0]
+    for (let n = 0; n < depth; n++) owner = owner.children[0]
+    assert.deepEqual(owner.items[0].blocks, [{t: 'line-block', lines: ['a', '  :::', 'b']}])
+    assert.deepEqual(document.blocks[1], parse('- tail\n').blocks[0])
+  })
+  for (const closer of [2, 4]) {
+    test(`an authored overindented opener closes at column ${closer}, depth ${depth}`, () => {
+      const quote = '> '.repeat(depth)
+      const prefix = `${quote}- a\n${quote}    ::: box\n${quote}    x\n${quote}${' '.repeat(closer)}:::\n`
+      assert.deepEqual(parse(prefix + '- tail\n').blocks, [...parse(prefix).blocks, ...parse('- tail\n').blocks])
+    })
+  }
+}
+
 for (const depth of [1, 2]) for (const marker of ['-', '*', '1.']) {
   for (const width of [3, 4, 5]) for (const body of ['', 'text']) for (const column of [0, 2]) {
     test(`depth ${depth}, ${marker}, ${width} colons, ${body || 'empty'}, tail ${column}`, () => {
