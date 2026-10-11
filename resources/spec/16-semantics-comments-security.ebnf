@@ -52,6 +52,11 @@
         inline passes `{%` through.
       - TRANSPARENT TO INLINE STRUCTURE. A comment inside an emphasis run does
         not break it: `*bo{% c %}ld*` is one `<strong>`.
+      - NO ATTRIBUTE ATTACHMENT. The comment takes no inline attribute slot
+        and never joins an attribute run (CARVE-P3-017). A following inline
+        attribute block is text: `*x*{% c %}{.k}` renders
+        `<strong>x</strong>{.k}`; the block attaches to neither comment nor
+        emphasis (carve#2929).
       - MULTI-LINE WITHIN A PARAGRAPH. The run may cross soft line breaks:
         `a {% one\ntwo %} b` renders `<p>a  b</p>`. It never joins two
         paragraphs across a blank line -- `%%%` is the block form (§28).

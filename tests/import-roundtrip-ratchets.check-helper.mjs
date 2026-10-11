@@ -263,6 +263,9 @@ const visibleText = (html) =>
 // Import, fixed-point and visible-text populations hold. Markdown gains eight
 // bracket destinations and loses three separator-bearing tables: net +5.
 
+// Category 321 rows 9–12 add four imports, fixed points and text matches.
+// Comments disappear on both output targets, so source round trips hold.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {

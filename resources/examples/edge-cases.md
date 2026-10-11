@@ -18653,6 +18653,46 @@ the spelling it was given rather than normalizing one into the other.
 
 :::
 
+A delimited comment takes no inline attributes and does not join an attribute
+run. An attribute block after it remains text, whether the comment is glued to
+the preceding content or separated by a space (CARVE-P3-017, carve#2929).
+
+::: compare
+
+```carve
+*x*{% c %}{.k}
+```
+
+```html
+<p><strong>x</strong>{.k}</p>
+```
+
+```carve
+[x]{% c %}{.k}
+```
+
+```html
+<p>[x]{.k}</p>
+```
+
+```carve
+a{% b %}{.c} d
+```
+
+```html
+<p>a{.c} d</p>
+```
+
+```carve
+[x] {% c %}{.k}
+```
+
+```html
+<p>[x] {.k}</p>
+```
+
+:::
+
 ## An attribute block reaches the nested list it precedes
 
 An attribute block attaches to the block that FOLLOWS it, and a nested list is a

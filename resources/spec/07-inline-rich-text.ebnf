@@ -319,13 +319,16 @@ comment_content = (* any text until the matching `#}`, preserved literally;
    exactly like a span, code span, link, or emphasis: `{+a+}{.a}` ->
    `<ins class="a">…</ins>`.
 
-   SUBSTITUTION AND EDITORIAL COMMENT TAKE NONE. Neither production has an
-   attribute slot, so a block after one matches nothing and is text:
+   SUBSTITUTION AND COMMENTS TAKE NONE. Substitution, editorial comment and
+   braced comment have no attribute slot, so an inline attribute block after
+   one matches nothing and is text:
    `{~a~>b~}{.k}` -> `<del>a</del><ins>b</ins>{.k}` and `{#c#}{.k}` ->
    `<span class="critic-comment">c</span>{.k}`. A substitution renders two
    elements and has no single one to carry attributes (attaching to both
-   would repeat an `id`), and a comment's content is inert (CARVE-P3-016)
-   (carve#2138). *)
+   would repeat an `id`), and an editorial comment's content is inert
+   (CARVE-P3-016, carve#2138). A braced comment never joins an attribute run or passes
+   attachment to the preceding element, with or without intervening spaces:
+   `*x*{% c %}{.k}` -> `<strong>x</strong>{.k}` (carve#2929). *)
 (* DISAMBIGUATION (PART 9 §22). `{~ … ~}` is editorial SUBSTITUTION when it
    contains a top-level `~>`, and forced STRIKETHROUGH otherwise. `{# … #}`
    stays editorial comment (`#` is not an emphasis delimiter, no collision). *)
