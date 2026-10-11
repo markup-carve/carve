@@ -3,15 +3,15 @@
     "id": "target/markdown-nested-emphasis",
     "format": "markdown",
     "source": "*(*foo*)*\n",
-    "expectedHtml": "<p><em>(foo)</em></p>",
-    "expectedCarve": "/(foo)/\n"
+    "expectedHtml": "<p><em>(<em>foo</em>)</em></p>",
+    "expectedCarve": "{/({/foo/})/}\n"
   },
   {
     "id": "target/html-nested-emphasis",
     "format": "html",
     "source": "<p><em>(<em>foo</em>)</em></p>\n",
-    "expectedHtml": "<p><em>(foo)</em></p>",
-    "expectedCarve": "/(foo)/\n"
+    "expectedHtml": "<p><em>(<em>foo</em>)</em></p>",
+    "expectedCarve": "{/({/foo/})/}\n"
   },
   {
     "id": "target/djot-inline-attribute",

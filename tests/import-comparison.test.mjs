@@ -101,7 +101,7 @@ test('shared import targets cover both source formats and the equivalent HTML in
   assert.equal(new Set(targets.map(item => item.id)).size, 4)
   assert.equal(targets[0].expectedHtml, targets[1].expectedHtml)
   assert.equal(targets[2].expectedHtml, targets[3].expectedHtml)
-  assert.equal(targets[0].expectedHtml, '<p><em>(foo)</em></p>')
+  assert.equal(targets[0].expectedHtml, '<p><em>(<em>foo</em>)</em></p>')
   assert.match(targets[2].expectedHtml, /<strong><span id="id" key="\*">b<\/span><\/strong>/)
 })
 

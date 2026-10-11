@@ -383,9 +383,7 @@ importer with a diagnostic channel reports `structure-unspellable`.
 For example, CommonMark `*(*foo*)*` contains nested emphasis. Since
 [nested braced emphasis](./nested-braced-emphasis.md), that relationship is
 spellable, so the contract is to preserve it as `{/({/foo/})/}` and to report no
-same-kind flattening. carve-js implements this; carve-php and carve-rust still
-take the older shared fallback `/(foo)/` and are behind the contract until they
-do. Turning the outer emphasis into strong, or dropping the emphasis around
+same-kind flattening. Turning the outer emphasis into strong, or dropping the emphasis around
 `foo`, changes more than the nesting and never met this target. The equivalent
 HTML input follows the same contract.
 
