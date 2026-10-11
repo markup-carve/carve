@@ -178,5 +178,29 @@
     "source": "::: note\n```=html\n x\t",
     "codeSource": "::: note\n```html\n x\t",
     "contentTerminated": false
+  },
+  {
+    "id": "marker-only-eof-0",
+    "source": "> ```=html\n> ",
+    "codeSource": "> ```html\n> ",
+    "contentTerminated": false
+  },
+  {
+    "id": "marker-only-eof-1",
+    "source": "> ```=html\n> \n> ",
+    "codeSource": "> ```html\n> \n> ",
+    "contentTerminated": false
+  },
+  {
+    "id": "marker-only-eof-2",
+    "source": "> ```=html\n> x\n> \n> ",
+    "codeSource": "> ```html\n> x\n> \n> ",
+    "contentTerminated": false
+  },
+  {
+    "id": "marker-only-eof-3",
+    "source": "- ```=html\n  \n  ",
+    "codeSource": "- ```html\n  \n  ",
+    "contentTerminated": false
   }
 ]

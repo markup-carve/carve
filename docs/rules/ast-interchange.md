@@ -70,4 +70,4 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-062`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L356) | 12 | AN ANNOTATION RANGE IS A SEPARATE OPT-IN SIDECAR |
 | [`CARVE-P12-063`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L420) | 12 | PROVENANCE IS A SEPARATE OPT-IN SIDECAR |
 | [`CARVE-P12-064`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L146) | 12 | CODE BLOCK CONTENT IS LITERAL PAYLOAD TEXT |
-| [`CARVE-P12-065`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L158) | 12 | RAW BLOCKS RECORD FINAL PAYLOAD TERMINATION |
+| [`CARVE-P12-065`](https://github.com/markup-carve/carve/blob/main/resources/spec/23-ast-foundations.ebnf#L181) | 12 | RAW BLOCKS RECORD FINAL PAYLOAD TERMINATION |

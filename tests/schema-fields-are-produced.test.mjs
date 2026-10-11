@@ -119,6 +119,10 @@ function declaredFields() {
     target.set(label, new Set([...(target.get(label) ?? []), ...own]))
   }
 
+  for (const fixture of JSON.parse(readFileSync(resolve(repo, 'resources/raw-payload-source-fixtures.json'), 'utf8'))) {
+    walk(toAstJson(parse(fixture.source, { positions: true })))
+  }
+
   return { byType, anywhere }
 }
 
@@ -183,7 +187,7 @@ function orphanedPromises() {
   return [...new Set(orphans)].sort()
 }
 
-test('every schema field is produced by a corpus document, or named as opt-in', () => {
+test('every schema field is produced by a corpus or source-boundary fixture, or named as opt-in', () => {
   const declared = declaredFields()
   assert.ok(
     declared.byType.size > 40,

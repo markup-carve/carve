@@ -11045,6 +11045,29 @@ EOF = (* end of file *) ;
       An unclosed fence with no payload lines also has content "".
       This rule does not change `raw_block.content`.
 
+      An imported or programmatically built code block MAY have content "a"
+      without a final break. It is distinct from "a\n". JSON encoding and
+      decoding MUST preserve that distinction without consulting positions,
+      source text or an out-of-band flag. A reader MUST NOT guess that a
+      missing final break was omitted by a producer and append one.
+
+      HTML emits the escaped content exactly between `<code>` and `</code>`;
+      it adds no payload newline. HTML import retains the code element's text,
+      including whether its final break is present. Markdown emits its ordinary fenced block, adding a break before the
+      closing fence only when nonempty content lacks one. The plain and ANSI
+      targets emit
+      the literal payload followed by their ordinary block separators. These
+      three targets report no conversion diagnostic for that separator and
+      MUST NOT alter the node's content.
+      A canonical Carve writer needs a break before a closing fence when
+      nonempty content has none. It inserts that break and reports
+      `field-unspellable` for `code_block.content` on the PART 11 §1d channel.
+      Empty content needs no inserted payload line and reports nothing.
+      This report belongs to an API exposing conversion diagnostics (§1d).
+      HTML import itself preserves the payload and reports no loss for a
+      missing final break. An API exposing only the HTML-import report adds
+      no diagnostic code for the later canonical writer's inserted break.
+
       RAW BLOCKS RECORD FINAL PAYLOAD TERMINATION -- NORMATIVE [CARVE-P12-065].
       `raw_block.content` keeps its existing encoding. The optional boolean
       `contentTerminated` records whether the last collected payload line had
@@ -11068,29 +11091,6 @@ EOF = (* end of file *) ;
       that adds a final payload LF MUST report `field-unspellable` for
       `raw_block.contentTerminated` on PART 11 section 1d's conversion channel.
       This is separate from the render-loss report.
-
-      An imported or programmatically built code block MAY have content "a"
-      without a final break. It is distinct from "a\n". JSON encoding and
-      decoding MUST preserve that distinction without consulting positions,
-      source text or an out-of-band flag. A reader MUST NOT guess that a
-      missing final break was omitted by a producer and append one.
-
-      HTML emits the escaped content exactly between `<code>` and `</code>`;
-      it adds no payload newline. HTML import retains the code element's text,
-      including whether its final break is present. Markdown emits its ordinary fenced block, adding a break before the
-      closing fence only when nonempty content lacks one. The plain and ANSI
-      targets emit
-      the literal payload followed by their ordinary block separators. These
-      three targets report no conversion diagnostic for that separator and
-      MUST NOT alter the node's content.
-      A canonical Carve writer needs a break before a closing fence when
-      nonempty content has none. It inserts that break and reports
-      `field-unspellable` for `code_block.content` on the PART 11 §1d channel.
-      Empty content needs no inserted payload line and reports nothing.
-      This report belongs to an API exposing conversion diagnostics (§1d).
-      HTML import itself preserves the payload and reports no loss for a
-      missing final break. An API exposing only the HTML-import report adds
-      no diagnostic code for the later canonical writer's inserted break.
 
    3a. THE SERIALIZED TREE IS PRE-RESOLVE -- NORMATIVE [CARVE-P12-005]. It records what the
       AUTHOR WROTE, not what the document resolves to. Reference resolution,

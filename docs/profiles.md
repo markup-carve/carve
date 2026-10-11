@@ -167,7 +167,7 @@ Deny always beats allow; an allowlist is a closed set.
   A disallowed `raw_block` becomes a `code_block` when the profile allows
   code blocks. It keeps the raw format as the code language, its attributes and
   source position, and its literal payload. Payload termination follows
-  `raw_block.contentTerminated` (CARVE-P12-065); a false value adds no final LF.
+  `raw_block.contentTerminated` (CARVE-P12-065); a false value adds no final LF and removes one LF from LF-only content.
   If code blocks are also disallowed, the raw payload becomes paragraph
   text; an empty payload becomes a `[raw_block]` marker and reports
   `to_text_yielded_nothing`. This fallback never emits passthrough HTML.
