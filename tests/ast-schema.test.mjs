@@ -1136,6 +1136,18 @@ test('the checked-render loss report has the shared closed shape', () => {
   const reportSchema = JSON.parse(readFileSync(resolve(root, 'resources/render-loss-report.schema.json'), 'utf8'))
   const validateReport = new Ajv2020({ strict: true }).compile(reportSchema)
   const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 12, startOffset: 0, endOffset: 11 }
+  const collision = {
+    code: 'carrier-attribute-dropped', attribute: 'data-carve-ref', target: 'html', nodeType: 'inline',
+    message: 'Dropped authored data-carve-ref during roundtrip export',
+  }
+  const collisionReport = { losses: [collision], totalLosses: 1, truncated: false }
+  assert.equal(validateReport(collisionReport), true, JSON.stringify(validateReport.errors))
+  assert.equal(validateReport({ ...collisionReport, losses: [{ ...collision, nodeType: 'block' }] }), true)
+  const { attribute: _attribute, ...missingAttribute } = collision
+  assert.equal(validateReport({ ...collisionReport, losses: [missingAttribute] }), false)
+  assert.equal(validateReport({ ...collisionReport, losses: [{ ...collision, format: 'latex' }] }), false)
+  assert.equal(validateReport({ ...collisionReport, losses: [{ ...collision, target: 'plain' }] }), false)
+  assert.equal(validateReport({ ...collisionReport, losses: [{ ...collision, code: 'roundtrip-attribute-dropped' }] }), false)
   const report = {
     losses: [{ code: 'raw-format-dropped', format: 'latex', target: 'html', nodeType: 'inline', message: 'Dropped inline raw format "latex" while rendering html', pos }],
     totalLosses: 1,

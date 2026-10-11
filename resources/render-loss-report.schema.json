@@ -38,6 +38,15 @@
         "oneOf": [
           {
             "properties": {
+              "code": { "const": "carrier-attribute-dropped" },
+              "attribute": { "type": "string" },
+              "target": { "const": "html" },
+              "format": false
+            },
+            "required": ["attribute"]
+          },
+          {
+            "properties": {
               "code": { "const": "raw-format-dropped" },
               "format": { "type": "string" }
             },
