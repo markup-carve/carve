@@ -372,12 +372,16 @@ test('raw content checks reject absent, wrong and extra payloads', () => {
 test('raw source samples retain independent literal payloads in every host', async () => {
   const { parse } = await import('../scripts/spec/layout.mjs')
   const samples = JSON.parse(readFileSync(resolve(root, 'resources/ast-raw-payload-samples.json'), 'utf8'))
-  const raws = value => {
+  const payloads = (value, type) => {
     if (!value || typeof value !== 'object') return []
-    if (Array.isArray(value)) return value.flatMap(raws)
-    return (value.t === 'raw' ? [value.text] : []).concat(Object.values(value).flatMap(raws))
+    if (Array.isArray(value)) return value.flatMap(entry => payloads(entry, type))
+    return (value.t === type ? [value.text] : []).concat(Object.values(value).flatMap(entry => payloads(entry, type)))
   }
-  for (const sample of samples) assert.deepEqual(raws(parse(sample.source)), [sample.content], sample.name)
+  for (const sample of samples) {
+    assert.deepEqual(payloads(parse(sample.source), 'raw'), [sample.content], sample.name)
+    const codeSource = sample.source.replace(/(`{3,}|~{3,})=/, '$1')
+    assert.deepEqual(payloads(parse(codeSource), 'code'), [sample.content], sample.name)
+  }
 })
 
 
