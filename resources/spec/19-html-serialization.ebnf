@@ -696,7 +696,7 @@
       passed through, with or without a diagnostic saying so.
 
       CONTRADICTORY FOOTNOTE CARRIERS RESTORE NEITHER AUTHORED FORM. An endnote
-      carrying both `data-carve-footnote-label` and
+      carrying both a valid `data-carve-footnote-label` carrier and
       `data-carve-inline-footnote` asks for a labeled note and an inline note,
       which has no authored label. The reader consumes neither carrier's
       meaning: it imports the ordinary numbered reference and endnote body,
@@ -704,7 +704,9 @@
       authored attributes. This applies in every import mode and to the
       deprecated aliases in §13c. A valid label alone and an inline flag alone
       retain their respective reconstruction behavior; this rule chooses no
-      precedence for any other carrier pair.
+      precedence for any other carrier pair. Value validation under §13e
+      comes first: an invalid label is not a carrier and does not suppress a
+      valid inline-footnote carrier.
 
       ONE CARRIER IS THE EXCEPTION, and §13e is why. `data-carve-raw` RETURNS
       ITS PAYLOAD VERBATIM as a raw inline, so consuming it is not
