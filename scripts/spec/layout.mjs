@@ -1805,7 +1805,9 @@ function bodyHasOpenCodeFence(lines, scan, end, measurement, hasFutureCommentClo
     if (opaque) {
       const close = opaque.kind === 'code' ? PURE_FENCE.exec(line) : COMMENT_FENCE_BODY.exec(line)
       if (close && close[1][0] === opaque.run[0] &&
-          (opaque.kind === 'code' ? close[1].length >= opaque.run.length : close[1].length === opaque.run.length)) opaque = null
+          (opaque.kind === 'code'
+            ? (measured.col === opaque.column || measured.col === opaque.base) && close[1].length >= opaque.run.length
+            : close[1].length === opaque.run.length)) opaque = null
       continue
     }
     if (line !== '' && !lines[k].startsWith(LAZY)) {
@@ -1819,7 +1821,7 @@ function bodyHasOpenCodeFence(lines, scan, end, measurement, hasFutureCommentClo
       }
     }
     const code = FENCE.exec(line)
-    if (code && parseFenceInfo(code[2]) !== null) opaque = { kind: 'code', run: code[1] }
+    if (code && parseFenceInfo(code[2]) !== null) opaque = { kind: 'code', run: code[1], column: measured.col, base: columns.at(-1) }
     else {
       const comment = COMMENT_FENCE_BODY.exec(line)
       if (comment && (commentFenceCloserAhead(lines, k, comment[1]) || hasFutureCommentCloser(comment[1], columns.at(-1)))) opaque = { kind: 'comment', run: comment[1] }
