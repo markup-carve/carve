@@ -939,14 +939,6 @@ function findColonCloser(lines, openIdx, len) {
   const stack = [{ length: len, mode: first ? parseColonOpener(first[2])?.mode : 'div' }]
   for (let j = openIdx + 1; j < lines.length; j++) {
     const top = stack.at(-1)
-    if (top.mode === 'line-block') {
-      const closer = COLON_CLOSER.exec(lines[j])
-      if (closer?.[1].length === top.length) {
-        stack.pop()
-        if (stack.length === 0) return j
-      }
-      continue
-    }
     // A code fence, a raw block and a comment block are OPAQUE: their contents
     // are content, not markup, so a colon fence written inside one closes
     // nothing and opens nothing (carve#450). The span is skipped from the line
@@ -955,6 +947,14 @@ function findColonCloser(lines, openIdx, len) {
     const span = opaqueSpanEnd(lines, j)
     if (span !== -1) {
       j = span
+      continue
+    }
+    if (top.mode === 'line-block') {
+      const closer = COLON_CLOSER.exec(lines[j])
+      if (closer?.[1].length === top.length) {
+        stack.pop()
+        if (stack.length === 0) return j
+      }
       continue
     }
     const c = COLON_CLOSER.exec(lines[j])

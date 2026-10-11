@@ -186,3 +186,17 @@ for (const body of ['lazy\n', '  body\n> lazy\n']) {
     assert.deepEqual(parse(prefix + '- tail\n').blocks, [...parse(prefix).blocks, ...parse('- tail\n').blocks])
   })
 }
+
+test('a line-block comment span hides its colon closer and definitions', () => {
+  const source = '::: |\n%%%\n:::\n[r]: /target\n%%%\n\n[t][r]\n'
+  const document = parse(source)
+  assert.deepEqual(document.blocks, [{t: 'line-block', lines: ['%%%', ':::', '[r]: /target', '%%%', '', '[t][r]']}])
+  assert.doesNotMatch(renderDoc(document), /href=/)
+})
+
+test('a line-block comment span preserves payload until its actual closer', () => {
+  const source = '::: |\n%%%\n:::\n  %%%\nkept\n:::\n\n[r]: /url\n\n[t][r]\n'
+  const document = parse(source)
+  assert.deepEqual(document.blocks, [{t: 'line-block', lines: ['%%%', ':::', '  %%%', 'kept']}, {t: 'para', lines: ['[t][r]']}])
+  assert.match(renderDoc(document), /href="\/url"/)
+})
