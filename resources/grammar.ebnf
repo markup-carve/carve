@@ -8252,8 +8252,8 @@ EOF = (* end of file *) ;
 
       A READER REFUSES THE WHOLE CARRIER -- writing no field at all, which
       means the `|=` form -- where any entry is not a run of decimal digits, or
-      where any entry exceeds 1000. Not a partial read and not a clamp to the
-      bound: both put a separator row on the page whose widths nobody wrote,
+      where any entry is below 1 or exceeds 1000. Not a partial read and not a
+      clamp to the bound: both put a separator row on the page whose widths nobody wrote,
       and refusing leaves the table correct in its other spelling.
 
       A WRITER WRITES NO CARRIER where the field holds an entry above 1000, for
