@@ -663,9 +663,11 @@
           >= 1 attribute -- so a default-attribute processor can target the
           span.
         - unrecognized non-empty content (`[text]{???}`, `[text]{=y=}`) -> NOT
-          an attribute block: the `]` and the `{...}` render literally. The
-          inner bracket content is still inline-parsed, so `[*x*]{???}` ->
-          `[<strong>x</strong>]{???}`.
+          an attribute block: the brackets remain literal, and the following
+          brace group is still inline-parsed. `[text]{=y=}` ->
+          `[text]<mark>y</mark>`, and `[x]{% c %}` -> `[x]`. The inner bracket
+          content is still inline-parsed, so `[*x*]{???}` ->
+          `[<strong>x</strong>]{???}` (carve#2929).
         - an id or class that is not an `explicit_identifier`, or a key that is not
           an `identifier`, is also unrecognized. A leading ASCII digit is valid
           only for the id/class forms (`{.123}`, `{#1}`), not `{2=v}`.
