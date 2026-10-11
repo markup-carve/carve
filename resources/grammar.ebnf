@@ -11045,6 +11045,30 @@ EOF = (* end of file *) ;
       An unclosed fence with no payload lines also has content "".
       This rule does not change `raw_block.content`.
 
+      RAW BLOCKS RECORD FINAL PAYLOAD TERMINATION -- NORMATIVE [CARVE-P12-065].
+      `raw_block.content` keeps its existing encoding. The optional boolean
+      `contentTerminated` records whether the last collected payload line had
+      its own LF. Omission retains the legacy implied final break. A parser
+      MUST record false if and only if at least one payload line was collected
+      and its last line reaches EOF without LF; otherwise it MUST omit the
+      field. JSON encoding and decoding MUST preserve a supplied value without
+      consulting positions or source text. Programmatically built trees MAY
+      carry either boolean. A consumer without support for this field MUST
+      reject false rather than silently treating it as absent. PART 2's outer
+      output trimming changes neither the collected lines nor this metadata.
+
+      Every conversion of a raw block to a code block, including the safe
+      escape in CARVE-P10-013 and profile `to_text`, uses this decoding.
+      Empty content remains empty. Content consisting
+      only of LFs retains those LFs when the flag is true or absent, and loses
+      one final LF when the flag is false. Other content gains one final LF
+      when the flag is true or absent, and remains unchanged when it is false.
+      This yields the literal `code_block.content` for the same payload lines.
+      A matching raw target still emits `content` unchanged. Native formatting
+      that adds a final payload LF MUST report `field-unspellable` for
+      `raw_block.contentTerminated` on PART 11 section 1d's conversion channel.
+      This is separate from the render-loss report.
+
       An imported or programmatically built code block MAY have content "a"
       without a final break. It is distinct from "a\n". JSON encoding and
       decoding MUST preserve that distinction without consulting positions,

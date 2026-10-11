@@ -1883,6 +1883,12 @@
       "scope": "ast-interchange"
     },
     {
+      "id": "CARVE-P12-065",
+      "part": "12",
+      "title": "RAW BLOCKS RECORD FINAL PAYLOAD TERMINATION",
+      "scope": "ast-interchange"
+    },
+    {
       "id": "CARVE-P9-076",
       "part": "9",
       "title": "A MARKER IN A TOC BODY RETAINS ITS CONTAINER SCOPE",

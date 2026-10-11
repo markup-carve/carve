@@ -2740,6 +2740,10 @@
           "type": "string",
           "description": "Verbatim passthrough to the named target, including private-use Unicode characters."
         },
+        "contentTerminated": {
+          "type": "boolean",
+          "description": "Whether the last collected payload line ended with LF. Omission retains the legacy implied final line break. Raw passthrough continues to use content unchanged."
+        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },

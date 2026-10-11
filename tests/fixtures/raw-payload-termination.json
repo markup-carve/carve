@@ -1,0 +1,130 @@
+[
+  {
+    "id": "empty-absent",
+    "raw": {
+      "type": "raw_block",
+      "format": "html",
+      "content": ""
+    },
+    "codeContent": "",
+    "rawPassthrough": ""
+  },
+  {
+    "id": "empty-true",
+    "raw": {
+      "type": "raw_block",
+      "format": "html",
+      "content": "",
+      "contentTerminated": true
+    },
+    "codeContent": "",
+    "rawPassthrough": ""
+  },
+  {
+    "id": "empty-false",
+    "raw": {
+      "type": "raw_block",
+      "format": "html",
+      "content": "",
+      "contentTerminated": false
+    },
+    "codeContent": "",
+    "rawPassthrough": ""
+  },
+  {
+    "id": "blank-absent",
+    "raw": {
+      "type": "raw_block",
+      "format": "html",
+      "content": "\n"
+    },
+    "codeContent": "\n",
+    "rawPassthrough": "\n"
+  },
+  {
+    "id": "blank-true",
+    "raw": {
+      "type": "raw_block",
+      "format": "html",
+      "content": "\n",
+      "contentTerminated": true
+    },
+    "codeContent": "\n",
+    "rawPassthrough": "\n"
+  },
+  {
+    "id": "blank-false",
+    "raw": {
+      "type": "raw_block",
+      "format": "html",
+      "content": "\n",
+      "contentTerminated": false
+    },
+    "codeContent": "",
+    "rawPassthrough": "\n"
+  },
+  {
+    "id": "nonblank-absent",
+    "raw": {
+      "type": "raw_block",
+      "format": "html",
+      "content": "x"
+    },
+    "codeContent": "x\n",
+    "rawPassthrough": "x"
+  },
+  {
+    "id": "nonblank-true",
+    "raw": {
+      "type": "raw_block",
+      "format": "html",
+      "content": "x",
+      "contentTerminated": true
+    },
+    "codeContent": "x\n",
+    "rawPassthrough": "x"
+  },
+  {
+    "id": "nonblank-false",
+    "raw": {
+      "type": "raw_block",
+      "format": "html",
+      "content": "x",
+      "contentTerminated": false
+    },
+    "codeContent": "x",
+    "rawPassthrough": "x"
+  },
+  {
+    "id": "trailing-blank-absent",
+    "raw": {
+      "type": "raw_block",
+      "format": "html",
+      "content": "x\n"
+    },
+    "codeContent": "x\n\n",
+    "rawPassthrough": "x\n"
+  },
+  {
+    "id": "trailing-blank-true",
+    "raw": {
+      "type": "raw_block",
+      "format": "html",
+      "content": "x\n",
+      "contentTerminated": true
+    },
+    "codeContent": "x\n\n",
+    "rawPassthrough": "x\n"
+  },
+  {
+    "id": "trailing-blank-false",
+    "raw": {
+      "type": "raw_block",
+      "format": "html",
+      "content": "x\n",
+      "contentTerminated": false
+    },
+    "codeContent": "x\n",
+    "rawPassthrough": "x\n"
+  }
+]
