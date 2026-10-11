@@ -1848,7 +1848,7 @@ function hostLadder() {
  */
 function hostAdvance(h, line, paraOpen) {
   const meas = indentCols(line)
-  if (meas.rest === '') return { meas, inner: meas, blockStart: false }
+  if (meas.rest === '' || h.colonComment || COMMENT_LINE.test(meas.rest)) return { meas, inner: meas, blockStart: false }
   // ONLY A LIST ITEM'S PARAGRAPH GIVES WAY. `- d` / `  - x` opens a sublist, so
   // the marker interrupts; the same marker at a DESCRIPTION or FOOTNOTE body's
   // column under its open paragraph is ordinary text, and both bodies take the
@@ -1863,7 +1863,10 @@ function hostAdvance(h, line, paraOpen) {
     !FENCE.test(meas.rest) && !COLON_FENCE.test(meas.rest) &&
     !DEFLIST_TERM.test(meas.rest) && opensParagraph(meas.rest)
   while (!lazyItemLine && h.columns.length > 1 && h.columns.at(-1) > meas.col) {
-    h.unrebased.delete(h.columns.pop())
+    const column = h.columns.pop()
+    h.unrebased.delete(column)
+    while (h.colons?.length && h.colons.at(-1).base >= column) h.colons.pop()
+    h.colonParagraph = null
     h.markerCols.pop()
     h.kinds.pop()
   }
@@ -1874,8 +1877,10 @@ function hostAdvance(h, line, paraOpen) {
     const marker = matchMarkerAt(inner)
     if (marker) {
       if (paraOpen && !insideItem && !siblingItem) break
+      const column = marker.indent + marker.markerWidth
+      while (h.colons?.length && h.colons.at(-1).base >= column) h.colons.pop()
       h.markerCols.push(marker.indent)
-      h.columns.push(marker.indent + marker.markerWidth)
+      h.columns.push(column)
       h.kinds.push('item')
       blockStart = true
       const next = indentCols(marker.text)
@@ -1902,6 +1907,52 @@ function hostAdvance(h, line, paraOpen) {
     break
   }
   return { meas, inner, blockStart }
+}
+
+function hostColonStep(h, inner, bodyFollows, commentCloses = () => false, markerLine = false, paragraph = [], remainingDepth = MAX_NESTING_DEPTH) {
+  if (!h.colonComment && !h.colons?.length && !inner.rest.startsWith(':::') && !inner.rest.startsWith('%%')) return false
+  const comment = COMMENT_FENCE_BODY.exec(inner.rest)
+  if (h.colonComment) {
+    if (comment && comment[1].length === h.colonComment) h.colonComment = null
+    return true
+  }
+  if (COMMENT_LINE.test(inner.rest)) {
+    if (comment && commentCloses(comment[1].length)) h.colonComment = comment[1].length
+    return false
+  }
+  const stack = h.colons ??= []
+  while (stack.length && inner.rest !== '' && inner.col < stack.at(-1).base) stack.pop()
+  const colon = COLON_FENCE.exec(inner.rest)
+  const top = stack.at(-1)
+  if (top && COLON_CLOSER.test(inner.rest) && colon?.[1].length === top.length &&
+      (inner.col === top.column || inner.col === top.base)) {
+    stack.pop()
+    return true
+  }
+  const base = h.columns.at(-1)
+  if (stack.length >= remainingDepth) return false
+  if (base > 0 && colon && parseColonOpener(colon[2]) !== null && (!markerLine || bodyFollows(base))) {
+    let absorbed = false
+    if (COLON_CLOSER.test(inner.rest)) {
+      let held = h.colonParagraph
+      if (!held || held.lines !== paragraph || held.index > paragraph.length) {
+        held = h.colonParagraph = { lines: paragraph, index: 0, invalid: false }
+      }
+      while (!held.invalid && held.index < paragraph.length) {
+        let measured = indentCols(paragraph[held.index++])
+        for (let marker = matchMarkerAt(measured); marker; marker = matchMarkerAt(measured)) measured = indentCols(marker.text)
+        const prior = COLON_FENCE.exec(measured.rest)
+        held.invalid = !!(prior && parseColonOpener(prior[2]) === null)
+      }
+      held.index = paragraph.length
+      absorbed = held.invalid
+    }
+    if (!absorbed) {
+      stack.push({ length: colon[1].length, column: inner.col, base })
+      return true
+    }
+  }
+  return false
 }
 
 /*
@@ -3740,6 +3791,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               // (its own depth-invariance row).
               const host = qNestedHost[depth - 1] ??= hostLadder()
               const { inner } = hostAdvance(host, tail, false)
+              if (state.blockDepth + depth + (host.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(host, inner, floor => colonBodyFollows(idx, depth + 1, floor), width => quotedCommentCloser(idx, depth + 1, width), true, [], MAX_NESTING_DEPTH - state.blockDepth - depth - (host.columns.length - 1))) {
+                qNestedTable[depth - 1] = false
+                return settle(false, depth)
+              }
               const opener = hostFenceOpener(host, inner)
               if (opener && state.blockDepth + depth + (host.columns.length - 1) < MAX_NESTING_DEPTH) {
                 host.fence = { run: opener[1], column: inner.col, host: host.columns.at(-1) }
@@ -3765,6 +3820,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const before = qNestedTable[depth] ?? false
           qNestedTable[depth] = tableRunStep(before, text)
           const { inner, blockStart } = hostAdvance(host, text, qNestedPara[depth] ?? false)
+          if (blockStart) qNestedParaLines[depth] = []
+          if (state.blockDepth + depth + 1 + (host.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(host, inner, floor => colonBodyFollows(idx, depth + 2, floor), width => quotedCommentCloser(idx, depth + 2, width), blockStart, qNestedParaLines[depth] ?? [], MAX_NESTING_DEPTH - state.blockDepth - depth - 1 - (host.columns.length - 1))) {
+            qNestedTable[depth] = false
+            return settle(false, depth + 1)
+          }
           const f = hostFenceOpener(host, inner, (opener) => blockStart || !qNestedPara[depth] ||
             (closerFollows(idx, depth + 2, opener[1], inner.col) ||
              closerFollows(idx, depth + 2, opener[1], host.columns.at(-1))))
@@ -3815,6 +3875,63 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         qNestedParaLines.length = 0
         qNestedColon.length = 0
       }
+      let qCommentClosers
+      const quotedCommentCloser = (idx, markers, width) => {
+        let indexed = qCommentClosers?.get(markers)
+        if (!indexed || idx >= indexed.end) {
+          const byWidth = new Map()
+          let j = idx + 1
+          for (; j < n; j++) {
+            let text = lines[j]
+            let k = 0
+            for (; k < markers; k++) {
+              const quoted = QUOTE.exec(text)
+              if (!quoted) break
+              text = quoted[1] ?? ''
+            }
+            if (k < markers) break
+            const comment = COMMENT_FENCE.exec(text)
+            if (comment) {
+              const run = comment[1].length
+              let rows = byWidth.get(run)
+              if (!rows) byWidth.set(run, rows = [])
+              rows.push(j)
+            }
+          }
+          indexed = { end: j, byWidth }
+          qCommentClosers ??= new Map()
+          qCommentClosers.set(markers, indexed)
+        }
+        const rows = indexed.byWidth.get(width)
+        if (!rows) return false
+        let low = 0, high = rows.length
+        while (low < high) {
+          const middle = (low + high) >>> 1
+          if (rows[middle] <= idx) low = middle + 1
+          else high = middle
+        }
+        return low < rows.length
+      }
+      const colonBodyFollows = (idx, markers, floor) => {
+        let commentWidth = null
+        for (let j = idx + 1; j < n; j++) {
+          let text = lines[j]
+          for (let k = 0; k < markers; k++) {
+            const quoted = QUOTE.exec(text)
+            if (!quoted) return false
+            text = quoted[1] ?? ''
+          }
+          const comment = COMMENT_FENCE.exec(text)
+          if (commentWidth !== null) {
+            if (comment && comment[1].length === commentWidth) commentWidth = null
+            continue
+          }
+          if (comment && quotedCommentCloser(j, markers, comment[1].length)) { commentWidth = comment[1].length; continue }
+          if (isBlank(text) || COMMENT_LINE.test(text)) continue
+          return indentCols(text).col >= floor
+        }
+        return false
+      }
       const trackFence = (l, idx) => {
         // The quote body is literal beyond the same limit used by parseBlocks.
         // Its apparent headings, fences, and tables cannot end a paragraph.
@@ -3859,6 +3976,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           }
         }
         const { meas, inner: inner0, blockStart } = hostAdvance(qHost, l, qOpenPara)
+        if (blockStart) qPara = []
+        if (state.blockDepth + (qHost.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(qHost, inner0, floor => colonBodyFollows(idx, 1, floor),
+          width => openComment === null && quotedCommentCloser(idx, 1, width), blockStart, qPara, MAX_NESTING_DEPTH - state.blockDepth - (qHost.columns.length - 1))) {
+          qOpenPara = false
+          qTableOpen = false
+          clearNested()
+          qPara = []
+          return
+        }
         const f = hostFenceOpener(qHost, inner0, (opener) => blockStart || !qOpenPara ||
           (closerFollows(idx, 1, opener[1], inner0.col) ||
            closerFollows(idx, 1, opener[1], qHost.columns.at(-1))))
