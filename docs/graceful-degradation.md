@@ -194,18 +194,19 @@ instead of adding a second copy of the caption. The paragraph replaced is the
 one the marker stands directly above and no other, so the same text appearing
 as ordinary body text elsewhere is untouched.
 
-A marker is read at a line's own start, so a host that prefixes its lines
-carries nothing: a container inside a list item or a block quote degrades there
-exactly as it does with the mode off. That is deliberate - a marker-shaped line
-in verbatim content records no container, and at a list item's content column
-the two are not distinguishable without the block structure around them, so a
-marker written where it cannot be read back would look carried while nothing
-restored it. A table cell is narrower still, because this target flattens a cell
-to one line and flattens the container's body with it.
+A marker is read off the block structure around it, so a host that prefixes its
+lines carries: a container inside a list item or a block quote is bracketed at
+the item's content column or behind the `>`, and the import restores it there.
+A marker-shaped line in verbatim content still records no container, which is
+the narrowing the structural read buys - at a list item's content column the two
+are not distinguishable without the block structure around them, and a flat scan
+of source lines had to choose between corrupting the verbatim run and refusing
+the nesting a document usually has. A table cell is the one host that carries
+nothing, and permanently, because this target flattens a cell to one line and
+flattens the container's body with it.
 
 `CARVE-P11-063` has the normative rule, including the escape for a payload that
-carries `-->`. carve-php and carve-js ship the mode; carve-rs does not have it
-yet.
+carries `-->`. carve-js, carve-php and carve-rs ship the mode.
 
 ## How the renderer chooses: the `mode` signal
 

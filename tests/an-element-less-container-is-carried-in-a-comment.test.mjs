@@ -234,10 +234,11 @@ test('a table cell is the one host that carries nothing', () => {
 })
 
 test('a marker-shaped line in verbatim content is not a marker', () => {
-  // LIVE, and it is why a LINE-PREFIXING HOST carries nothing: a marker is
-  // read at a line's own start and never inside verbatim content, and at a
-  // list item's content column those two are not distinguishable without the
-  // block structure around them (carve#2850).
+  // LIVE, and it is why the marker read had to move off a scan of source
+  // lines: at a list item's content column a marker and a verbatim line are
+  // not distinguishable without the block structure around them, so the scan
+  // had to choose between corrupting the run and refusing the nesting
+  // (carve#2850).
   for (
     const source of [
       'Prose.\n\n```markdown\n<!-- carve: ::: note -->\nBody.\n<!-- carve: ::: -->\n```\n',
