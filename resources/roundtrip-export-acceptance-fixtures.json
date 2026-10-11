@@ -329,7 +329,14 @@
           "attribute": "data-carve-raw",
           "element": "span"
         }
-      ]
+      ],
+      "fallbackNodes": [
+        {
+          "type": "text",
+          "value": "a<b"
+        }
+      ],
+      "fallbackHtml": "<p>a&lt;b</p>"
     },
     {
       "id": "raw-html-inline",
@@ -353,7 +360,14 @@
           "attribute": "data-carve-raw",
           "element": "span"
         }
-      ]
+      ],
+      "fallbackNodes": [
+        {
+          "type": "text",
+          "value": "<b>x</b>"
+        }
+      ],
+      "fallbackHtml": "<p>&lt;b&gt;x&lt;/b&gt;</p>"
     },
     {
       "id": "abbreviation-definition",
@@ -447,7 +461,9 @@
       "id": "task-states",
       "source": "- [ ] open\n- [x] done\n- [X] upper\n- [-] dropped\n- [_] held\n- [>] moved\n- [?] unsure\n",
       "carriers": {},
-      "forbiddenExportAttributes": [],
+      "forbiddenExportAttributes": [
+        "data-marker"
+      ],
       "expectedNodes": [
         {
           "type": "list_item",
@@ -529,6 +545,25 @@
           "type": "paragraph",
           "attrs.keyValues.data-carve-zzz": "a",
           "attrs.keyValues.data-djot-zzz": "b"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ]
+    },
+    {
+      "id": "default-break-no-carrier",
+      "source": "---\n",
+      "carriers": {},
+      "carrierHosts": [],
+      "forbiddenExportAttributes": [
+        "data-char"
+      ],
+      "expectedNodes": [
+        {
+          "type": "thematic_break"
         }
       ],
       "importModes": [
@@ -649,20 +684,29 @@
       "html": "<p><a href=\"javascript:one\" data-carve-ref=\"r\">text</a></p>",
       "expectedNodes": [
         {
-          "type": "text",
-          "value": "text"
+          "type": "paragraph"
         }
       ],
-      "forbiddenTypes": [
-        "link",
-        "autolink"
-      ],
+      "forbiddenTypes": [],
       "importModes": [
         "safe",
         "semantic",
         "roundtrip"
       ],
-      "requiresDiagnostic": true
+      "requiresDiagnostic": false,
+      "expectedAbsentFields": [
+        {
+          "type": "link",
+          "field": "ref"
+        },
+        {
+          "type": "image",
+          "field": "ref"
+        }
+      ],
+      "forbiddenRenderedSubstrings": [
+        "javascript:"
+      ]
     },
     {
       "id": "raw-html-safe-exception",

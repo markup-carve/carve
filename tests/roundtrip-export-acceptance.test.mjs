@@ -23,6 +23,13 @@ function assertProjection(tree, expected) {
     remaining.splice(index, 1)
   }
 }
+function assertImportProjection(tree, fixture) {
+  try { assertProjection(tree, fixture.expectedNodes); return false } catch (error) {
+    if (!fixture.fallbackNodes) throw error
+    assertProjection(tree, fixture.fallbackNodes)
+    return true
+  }
+}
 function htmlAttributes(html) {
   const out = []
   function visit(node) { out.push(...(node.attrs ?? []).map((attr) => ({ ...attr, element: node.tagName }))); for (const child of node.childNodes ?? []) visit(child); if (node.content) visit(node.content) }
@@ -65,13 +72,13 @@ for (const fixture of fixtures.exportImport) {
     for (const mode of fixture.importModes) {
       const imported = htmlToAst(exported, { mode })
       const legacy = htmlToAst(deprecatedHtml(exported), { mode })
-      assertProjection(legacy.value, fixture.expectedNodes)
+      assertImportProjection(legacy.value, fixture)
       assertNoReservedAttrs(legacy.value)
-      assertProjection(imported.value, fixture.expectedNodes)
+      const declined = assertImportProjection(imported.value, fixture)
       assertNoReservedAttrs(imported.value)
       for (const absent of fixture.expectedAbsentFields ?? []) assert.ok(nodes(imported.value).filter((node) => node.type === absent.type).every((node) => field(node, absent.field) === undefined))
       const source = htmlToCarve(exported, { mode }).value
-      assert.equal(normalizedHtml(carveToHtml(source)), normalizedHtml(ordinary), mode)
+      assert.equal(normalizedHtml(carveToHtml(source)), normalizedHtml(declined ? fixture.fallbackHtml : ordinary), mode)
     }
   })
 }
@@ -81,6 +88,7 @@ for (const fixture of fixtures.importNegative) {
     assertProjection(result.value, fixture.expectedNodes)
     if (fixture.requiresDiagnostic) assert.ok(result.report.diagnostics.length > 0, fixture.id)
     assertNoReservedAttrs(result.value)
+    for (const fragment of fixture.forbiddenRenderedSubstrings ?? []) assert.ok(!carveToHtml(htmlToCarve(fixture.html, { mode }).value).includes(fragment), fragment)
     for (const type of fixture.forbiddenTypes) assert.ok(!nodes(result.value).some((node) => node.type === type), type)
     for (const absent of fixture.expectedAbsentFields ?? []) assert.ok(nodes(result.value).filter((node) => node.type === absent.type).every((node) => field(node, absent.field) === undefined))
     for (const forbidden of fixture.forbiddenFieldValues ?? []) assert.ok(nodes(result.value).filter((node) => node.type === forbidden.type).every((node) => field(node, forbidden.field) !== forbidden.value))
