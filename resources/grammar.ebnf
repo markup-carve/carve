@@ -8377,7 +8377,8 @@ EOF = (* end of file *) ;
       retain their respective reconstruction behavior; this rule chooses no
       precedence for any other carrier pair. Value validation under §13e
       comes first: an invalid label is not a carrier and does not suppress a
-      valid inline-footnote carrier.
+      valid inline-footnote carrier. Shared mode and alias controls are in
+      `resources/footnote-carrier-recovery-fixtures.json`.
 
       ONE CARRIER IS THE EXCEPTION, and §13e is why. `data-carve-raw` RETURNS
       ITS PAYLOAD VERBATIM as a raw inline, so consuming it is not
