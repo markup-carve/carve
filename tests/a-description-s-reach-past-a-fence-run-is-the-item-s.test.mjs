@@ -207,3 +207,19 @@ test('an unfinished marker-line fence keeps its first body line', () => {
     assert.doesNotMatch(out, /<p>x<\/p>/)
   }
 })
+
+test('raw fences and deeper marker stacks leave no paragraph open', () => {
+  for (const source of ['- - ```=html\n    ```\nx\n', '- - - ```\n      ```\nx\n']) {
+    assert.ok(html(source).endsWith('</ul>\n<p>x</p>'), source)
+  }
+})
+
+test('a nested heading or table also ends a description before lazy text', () => {
+  for (const source of [':: t\n: - # h\nx\n', ':: t\n: - | a |\n    | - |\nx\n']) {
+    assert.ok(html(source).endsWith('</dl>\n<p>x</p>'), source)
+  }
+  for (const column of [4, 5, 6]) {
+    const source = `:: t\n: - a\n${' '.repeat(column)}# H\ntail\n`
+    assert.ok(html(source).endsWith('</dl>\n<p>tail</p>'), source)
+  }
+})

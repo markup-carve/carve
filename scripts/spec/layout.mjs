@@ -1378,6 +1378,32 @@ function markerCarriesContinuation(text, memo) {
   return result
 }
 
+function markerFenceSummary(text, memo) {
+  const path = []
+  let summary
+  for (;;) {
+    if (memo.has(text.length)) { summary = memo.get(text.length); break }
+    if (path.length >= MAX_NESTING_DEPTH) return null
+    const measured = text[0] === ' ' || text[0] === '\t'
+      ? indentCols(text) : { col: 0, rest: text }
+    const marker = matchMarkerAt(measured)
+    if (!marker) {
+      const fence = FENCE.exec(measured.rest)
+      summary = fence && parseFenceInfo(fence[2]) !== null
+        ? { run: fence[1], col: measured.col } : null
+      memo.set(text.length, summary)
+      break
+    }
+    path.push({ length: text.length, width: marker.indent + marker.markerWidth })
+    text = marker.text
+  }
+  for (let k = path.length - 1; k >= 0; k--) {
+    if (summary) summary = { ...summary, col: summary.col + path[k].width }
+    memo.set(path[k].length, summary)
+  }
+  return summary
+}
+
 function quotePrefixSummary(text, memo) {
   const path = []
   let summary
@@ -1629,7 +1655,7 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
   // An UNTERMINATED fence is the opposite answer and keeps the old one: it opens
   // no block, so the paragraph above it is still open (corpus
   // `367-an-unterminated-fence-at-a-content-column-opens-no-block-so-the-paragraph-stays-open`).
-  if (bodyClosesAFenceAt(bodyLines, last)) return false
+  if (bodyLeavesNoParagraphAt(bodyLines, last)) return false
 
   // A TRAILING BARE `:::` OPENS AN EMPTY CONTAINER. It is closer-shaped, so
   // `opensParagraph` cannot tell it from a closer - but the line above says it
@@ -1706,7 +1732,7 @@ function bodyEndsWrappedAttr(bodyLines, depth = 0) {
 // wholesale - a `:::` line inside one is content, and reading it as a colon
 // fence's closer would make the real closer look like an opener and fold the
 // line below back into the body.
-function bodyClosesAFenceAt(bodyLines, last) {
+function bodyLeavesNoParagraphAt(bodyLines, last) {
   // CARVE-P0-009 applies to a marker-line fence in a description body too.
   // Track its host column so an unfinished opener still leaves prose open.
   const host = hostLadder()
@@ -1728,6 +1754,7 @@ function bodyClosesAFenceAt(bodyLines, last) {
     }
     paragraphOpen = opensParagraph(inner.rest, blockStart)
   }
+  if (host.fence === null && host.kinds.at(-1) === 'item' && !paragraphOpen) return true
   let closedAt = -1
   let k = 0
   while (k <= last) {
@@ -4852,6 +4879,9 @@ function collectItems(lines, i, list, state, ind, meas) {
      * from this collector's own paragraph.
      */
     const descendantQ1 = { col: -1, open: false, para: [], absorbedFence: null }
+    let markerLineFence = headSubMarker
+      ? markerFenceSummary(head.text, prefixMemo(state, itemLines, 0).markerFence ??= new Map())
+      : null
     // Open colon containers and the table run inside the descendant, so its own
     // last block can be classified without rescanning this item's body.
     let descColon = 0
@@ -4909,6 +4939,15 @@ function collectItems(lines, i, list, state, ind, meas) {
       if (descendantQ1.col < 0) return
       const close = () => { descendantQ1.open = false; descendantQ1.para = [] }
       if (text.trim() === '') { close(); descTableOpen = false; return }
+      // A marker-line opener is not an absorbed opener when this is its closer.
+      const markerCloser = markerLineFence && PURE_FENCE.exec(text)
+      if (markerCloser && markerCloser[1][0] === markerLineFence.run[0] &&
+          markerCloser[1].length >= markerLineFence.run.length &&
+          idx >= 0 && indentCols(lines[idx]).col - contentCol === markerLineFence.col) {
+        markerLineFence = null
+        close()
+        return
+      }
       // An ABSORBED opener is paragraph text, so it extends the paragraph that
       // absorbed it rather than closing anything. With no paragraph open there
       // is nothing to absorb it: `- - ``` ` / `    ``` ` closes an empty code

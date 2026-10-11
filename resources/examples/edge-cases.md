@@ -47359,6 +47359,199 @@ x
 </dl>
 ```
 
+Raw fences and deeper marker stacks answer the same question. A nested heading
+or table also leaves no paragraph open in a description body. The last control
+keeps an unfinished nested fence whose following run is below its own column.
+
+````carve
+- - ```=html
+    ```
+x
+````
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>x</p>
+```
+
+````carve
+- - ```=html
+    ```
+```rust
+````
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+  </li>
+</ul>
+<pre><code class="language-rust"></code></pre>
+```
+
+````carve
+- - - ```
+      ```
+x
+````
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code></code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>x</p>
+```
+
+````carve
+:: t
+: - # h
+x
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <h1 id="h">h</h1>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<p>x</p>
+```
+
+````carve
+:: t
+: - a
+    # H
+tail
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a
+        <h1 id="H">H</h1>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<p>tail</p>
+```
+
+````carve
+:: t
+: - a
+     # H
+tail
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a
+        <h1 id="H">H</h1>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<p>tail</p>
+```
+
+````carve
+:: t
+: - a
+      # H
+tail
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>a
+        <h1 id="H">H</h1>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<p>tail</p>
+```
+
+````carve
+:: t
+: - | a |
+    | - |
+x
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <table>
+          <thead>
+            <tr><th scope="col">a</th></tr>
+          </thead>
+        </table>
+      </li>
+    </ul>
+  </dd>
+</dl>
+<p>x</p>
+```
+
+````carve
+:: t
+: - ```
+```
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>
+        <pre><code>```
+</code></pre>
+      </li>
+    </ul>
+  </dd>
+</dl>
+```
+
 :::
 
 ## A caption scope resets at a structural-only line
