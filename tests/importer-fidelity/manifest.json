@@ -2072,36 +2072,43 @@
       "repository": "markup-carve/carve",
       "input": "*outer *inner* outer*",
       "expected": {
-        "output": "/outer inner outer/",
+        "output": "{/outer {/inner/} outer/}",
         "diagnostics": [
           {
             "code": "fidelity-unverified",
             "severity": "warning",
             "fidelity": "dropped",
             "confidence": "fallback"
-          },
-          {
-            "code": "structure-unspellable",
-            "severity": "warning",
-            "fidelity": "dropped",
-            "confidence": "exact"
           }
         ],
         "exit": 1,
         "engines": {
-          "js": {
-            "output": "{/outer {/inner/} outer/}",
+          "rust": {
+            "output": "{/outer {/inner/} outer/}\n",
+            "exit": 0,
             "diagnostics": [
               {
-                "code": "fidelity-unverified",
-                "severity": "warning",
-                "fidelity": "dropped",
-                "confidence": "fallback"
+                "code": "markdown-paragraph",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-emphasis",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
+              },
+              {
+                "code": "markdown-emphasis",
+                "severity": "info",
+                "fidelity": "preserved",
+                "confidence": "exact",
+                "path": "line:1"
               }
             ]
-          },
-          "rust": {
-            "output": "/outer inner outer/\n"
           }
         }
       },

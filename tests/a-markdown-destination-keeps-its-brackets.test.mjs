@@ -1,35 +1,13 @@
 /*
- * carve#2865. A Carve link destination holds a square bracket literally:
- * docs/dismissed-syntax.md is normative that a destination has no escape
- * processing, and records as a security invariant that the angle form
- * guarantees display text equal to destination. carve#2854 ruled the
- * percent-encoding out of the DJOT importer on exactly that reading
- * (carve-js#2685, carve-php#3045, both merged). The MARKDOWN importer still
- * does it, so the same bracket comes back as `%5B` / `%5D`.
- *
- * WHY THIS IS A ROUND TRIP AND NOT A CORPUS ROW. Category 551 already pins
- * the parse and render halves, where every reader agrees. What is lost here is
- * only visible across the writer and the importer together: the Markdown this
- * target writes is already correct, and the bracket is destroyed on the way
- * back in. Five of category 551's six documents fail the render/import round
- * trip for this one reason, which is why `renderImportRoundTrips.markdown` in
- * resources/import-roundtrip-baseline.json did not move when 551 landed.
- *
- * THE SIXTH DOCUMENT IS NOT THIS DEFECT and is asserted separately below.
+ * carve#2865: destination brackets survive Markdown export and import.
+ * Category 551 pins parsing and rendering; these cases exercise the bridge.
  */
 
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { carveToMarkdown, migrateMarkdown, carveToCarve, carveToHtml } from '@markup-carve/carve'
 
-// Declared lag against the `@markup-carve/carve` build package.json pins.
-// EMPTY IS THE GOAL: it goes out in the commit that moves the pin past the
-// first engine to stop encoding a bracket on the Markdown side, and the five
-// documents then join `renderImportRoundTrips.markdown` (markup-carve/carve#2865).
-const PIN_LAG = 'carve#2865  the Markdown importer still percent-encodes a bracket in a destination'
-
-// Category 551's five documents whose Markdown round trip this breaks, with
-// the destination each one must come back with.
+// Category 551's five bracket destinations must survive the Markdown bridge.
 const DESTINATIONS = [
   ['[x](http://u/])\n', 'http://u/]'],
   ['[x](http://u/[)\n', 'http://u/['],
@@ -49,34 +27,17 @@ test('the writer is already right: a destination bracket is written literally', 
 for (const [carve, destination] of DESTINATIONS) {
   test(`the Markdown round trip keeps ${destination}`, () => {
     const markdown = carveToMarkdown(carve)
-    if (PIN_LAG) {
-      // THE LIVE DETECTOR IS THE ENCODING ITSELF, so this cannot pass forever.
-      // "The round trip does not return the document" would also be satisfied
-      // by an engine that broke it some other way; naming the `%5B` / `%5D`
-      // the encoding produces means the first engine to stop producing one
-      // fails here and takes the declaration with it.
-      const back = migrateMarkdown(markdown).value
-      assert.match(
-        back,
-        /%5B|%5D/,
-        `pin lag is declared and the bracket is no longer encoded - delete PIN_LAG: ${PIN_LAG}`,
-      )
-      return
-    }
     assert.equal(migrateMarkdown(markdown).value, carve)
   })
 }
 
-test('the encoded destination is a rendered loss, not a spelling', () => {
-  // WHY IT IS A BUG AND NOT A PREFERENCE, asserted rather than argued, and
-  // live on every build: the href a reader follows changes. This is what
-  // separates these five from the sixth document below.
+test('the Markdown round trip preserves destination rendering', () => {
   for (const [carve] of DESTINATIONS) {
     const back = migrateMarkdown(carveToMarkdown(carve)).value
-    assert.notEqual(
+    assert.equal(
       carveToHtml(back).trim(),
       carveToHtml(carve).trim(),
-      'the round trip is byte-unequal but renders the same, so it belongs with the sixth document',
+      'Markdown import changed the rendered destination',
     )
   }
 })

@@ -259,6 +259,11 @@ const visibleText = (html) =>
 // percent-encodes the `]` in the destination, so `http://u/]` returns as
 // `http://u/%5D`.
 
+// Pin 3a4bce9a preserves authored separator widths. Default HTML import
+// returns native table headers, so thirteen table source round trips change.
+// Import, fixed-point and visible-text populations hold. Markdown gains eight
+// bracket destinations and loses three separator-bearing tables: net +5.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {

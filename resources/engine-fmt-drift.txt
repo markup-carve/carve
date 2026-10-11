@@ -20,8 +20,3 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
-471-braced-emphasis-can-nest-its-own-kind-13  the pin READS the braced child inside a combined token (CARVE-P9-043, carve#2903) and WRITES it as {*/ ... /*}, which re-parses without boldItalic, so fmt(x) does not re-parse to parse(x) (markup-carve/carve-js#2719).
-284-a-ragged-table-keeps-each-row-s-cell-count-2  the approved AST1.1 separatorWidths contract preserves authored separator rows; the pinned writer still replaces them with |= header cells (carve#2919).
-284-a-ragged-table-keeps-each-row-s-cell-count-3  the approved AST1.1 separatorWidths contract preserves authored separator rows; the pinned writer still replaces them with |= header cells (carve#2919).
-285-adjacent-block-openers-in-an-attached-run-stay-separate-2  the approved AST1.1 separatorWidths contract preserves authored separator rows; the pinned writer still replaces them with |= header cells (carve#2919).
-99-table-cell-attributes  the approved AST1.1 separatorWidths contract preserves authored separator rows; the pinned writer still replaces them with |= header cells (carve#2919).
