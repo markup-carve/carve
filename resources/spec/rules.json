@@ -1937,6 +1937,24 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P10-019",
+      "part": "10",
+      "title": "A CARRIER WINS A COLLISION AND THE DROPPED ATTRIBUTE IS REPORTED",
+      "scope": "resolution-rendering"
+    },
+    {
+      "id": "CARVE-P10-020",
+      "part": "10",
+      "title": "AN IMPORTER READS THE DEPRECATED `data-djot-` SPELLING",
+      "scope": "imports-security-extensions"
+    },
+    {
+      "id": "CARVE-P10-021",
+      "part": "10",
+      "title": "EVERY IMPORT MODE CONSUMES THE INVENTORY AND WRITES NO RESERVED NAME BACK",
+      "scope": "imports-security-extensions"
+    },
+    {
       "id": "CARVE-P3-023",
       "part": "3",
       "title": "SMART QUOTE DIRECTION",

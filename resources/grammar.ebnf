@@ -8054,6 +8054,16 @@ EOF = (* end of file *) ;
       does NOT record, a table's separator-row widths among them, exists
       only where a carrier holds it.
 
+      WHAT IT DOES NOT PROMISE IS A RAW BLOCK. §13a names no carrier for one,
+      so a raw block whose format this target cannot write is dropped under
+      this option exactly as it is without it, and the render reports the
+      dropped format as a diagnostic in both cases. ENABLING THE OPTION NEVER
+      SUPPRESSES THAT DIAGNOSTIC: a preservation mode that loses a block
+      silently is worse than a default one that says so. Whether a raw block
+      should get a carrier at all is open, because carrying one means putting
+      arbitrary foreign content into an attribute or a comment, and that is a
+      security question this clause does not settle.
+
    13a. THE HTML CARRIERS ARE THE NAMES IN THIS INVENTORY -- NORMATIVE
       [CARVE-P10-016]. Under roundtrip export, and only under it, the HTML
       target writes these names and no other preservation name. Each row is
@@ -8067,30 +8077,30 @@ EOF = (* end of file *) ;
         data-char                   <hr>          the authored thematic-break
                                                   character, written only
                                                   where it is not `-`
-        data-djot-explicit-id       <section>,    presence: the id was
+        data-carve-explicit-id      <section>,    presence: the id was
                                     <h1>-<h6>     authored, not generated. It
                                                   rides the `<section>` where
                                                   PART 9 §13 wraps one, and
                                                   the heading where it does
                                                   not
-        data-djot-ref               <a>, <img>    the reference label the link
+        data-carve-ref              <a>, <img>    the reference label the link
                                                   or image resolved by
-        data-djot-autolink          <a>           presence: the link was
+        data-carve-autolink         <a>           presence: the link was
                                                   authored as an autolink
-        data-djot-footnote-label    <a>, <li>     the authored footnote label,
+        data-carve-footnote-label   <a>, <li>     the authored footnote label,
                                                   on the reference and on the
                                                   endnote item
-        data-djot-inline-footnote   <li>          presence: the endnote came
+        data-carve-inline-footnote  <li>          presence: the endnote came
                                                   from an inline footnote
-        data-djot-col-widths        <table>       the authored separator-row
+        data-carve-col-widths       <table>       the authored separator-row
                                                   widths, comma-joined
-        data-djot-raw               <span>        the raw inline's format; the
+        data-carve-raw              <span>        the raw inline's format; the
                                                   span holds its content
-        data-djot-escaped           <span>        presence; the span holds the
-                                                  escaped character
-        data-djot-src               <pre>, a      the construct's Carve source
+        data-carve-escaped          <span>        presence; the span holds the
+                                                  one escaped character
+        data-carve-src              <pre>, a      the construct's Carve source
                                     container     verbatim
-        data-djot-abbreviations     <template>    the document's abbreviation
+        data-carve-abbreviations    <template>    the document's abbreviation
                                                   definitions, one per line
 
       A VALUE ESCAPES AS §2 ESCAPES ANY ATTRIBUTE VALUE. §2's text-content
@@ -8098,17 +8108,26 @@ EOF = (* end of file *) ;
       holding a no-break space keeps that character.
 
       A PRESENCE CARRIER CARRIES NOTHING IN ITS VALUE.
-      `data-djot-explicit-id`, `data-djot-autolink`,
-      `data-djot-inline-footnote` and `data-djot-escaped` say what they say
+      `data-carve-explicit-id`, `data-carve-autolink`,
+      `data-carve-inline-footnote` and `data-carve-escaped` say what they say
       by being there. A writer writes the empty value or `1`; a reader reads
       presence and does not compare the value.
 
-      `data-djot-` IS THE SERIALIZER'S PROTOCOL, not an author's content. A
-      reader of these bytes consumes the names in this inventory rather than
-      writing one back out as an authored attribute. A name under that prefix
-      which this inventory does not list is reserved: an engine does not
-      invent one, and a listed name is not renamed without an import rule
-      that keeps reading the old spelling.
+      ONE ESCAPE PER ELEMENT. A `data-carve-escaped` span holds exactly ONE
+      escaped character. A writer never collects a run of escapes onto one
+      span and a reader never reassembles one, because a span holding `abc`
+      would import as `\a\b\c`, which is not Carve. A span carrying more than
+      one character is malformed: the importer takes its content as text and
+      reports the carrier it could not use.
+
+      THE RESERVED SET IS THIS ENUMERATION, NOT A PREFIX PATTERN. These names
+      are the serializer's protocol rather than an author's content, and each
+      one is reserved because this inventory lists it. So `data-marker` and
+      `data-char` keep their own spelling and are no less reserved for
+      carrying no prefix, and a `data-carve-` name this inventory does not
+      list is NOT a carrier and NOT reserved: an engine does not invent one,
+      and a reader treats it as an ordinary authored attribute. Adding a name
+      to this inventory is a change to this clause.
 
       THE SPEC'S OWN ATTRIBUTES ARE NOT CARRIERS. A task list's `task-list`
       class and its items' `data-task-state` (§11), and an ordered list's
@@ -8116,16 +8135,69 @@ EOF = (* end of file *) ;
       option, and each has its own clause. This option neither gates nor
       duplicates them.
 
-   13b. EXPORT DOES NOT SELECT AN IMPORT MODE -- NORMATIVE [CARVE-P10-017].
+   13b. A CARRIER WINS A COLLISION AND THE DROPPED ATTRIBUTE IS REPORTED --
+      NORMATIVE [CARVE-P10-019]. Where a node carries an authored attribute
+      whose name is a reserved name from §13a, THE CARRIER IS WRITTEN AND THE
+      AUTHORED ATTRIBUTE IS DROPPED. A carrier is structural and leads the
+      authored attributes by §1, and §12 already reads a value outside its
+      own enumeration as an author attribute rather than as the spec's.
+
+      THE DROP IS A CONVERSION DIAGNOSTIC NAMING THE ATTRIBUTE, so the
+      document records the loss instead of taking it silently. The diagnostic
+      says which name was dropped and on which node.
+
+      EMITTING BOTH IS NOT CONFORMING. Two attributes of one name is invalid
+      HTML, and the precedence does not vary by carrier: the rule is the same
+      for every name in the inventory. REFUSING THE EXPORT IS NOT CONFORMING
+      EITHER -- one authored attribute cannot veto a mode the caller asked
+      for.
+
+   13c. AN IMPORTER READS THE DEPRECATED `data-djot-` SPELLING -- NORMATIVE
+      [CARVE-P10-020]. The prefixed names in §13a were spelled `data-djot-`
+      before this clause, and documents exported by released engines carry
+      that spelling. So, for every prefixed name in the inventory:
+
+        A WRITER EMITS `data-carve-` ONLY. The `data-djot-` spelling is never
+        written, under this option or any other.
+
+        AN IMPORTER ACCEPTS EITHER SPELLING, and `data-carve-` wins where one
+        element carries both. `data-djot-` is DEPRECATED: it is read for
+        compatibility and consumed exactly as §13d consumes the canonical
+        spelling, so a document that arrives carrying it leaves without it.
+
+      THE ALIAS IS NOT A SECOND SET OF NAMES. A `data-djot-` name this
+      inventory does not list under its `data-carve-` spelling is not a
+      carrier and not reserved; it is an ordinary authored attribute.
+      `data-marker` and `data-char` have no alias, having never carried a
+      prefix.
+
+   13d. EVERY IMPORT MODE CONSUMES THE INVENTORY AND WRITES NO RESERVED NAME
+      BACK -- NORMATIVE [CARVE-P10-021]. Consuming a carrier reconstructs
+      syntax the AST can already express, so it is not a trust decision and
+      is not gated on an import mode. `safe` import consumes every name in
+      §13a, in either spelling, exactly as `roundtrip` import does.
+
+      A RESERVED NAME NEVER LEAVES AS AN AUTHORED ATTRIBUTE. An importer that
+      consumed a carrier does not then write its name into the reconstructed
+      document's attributes: `<hr data-char="_">` imports as `___`, not as
+      `---{data-char=_}`, and `<a href="/u" data-carve-ref="lbl">text</a>`
+      imports as `[text][lbl]`, not as `[text](/u){data-carve-ref=lbl}`. A
+      reserved name this importer has no use for is still consumed, and
+      reported, rather than passed through.
+
+      WHAT THE MODE DECIDES IS SOMETHING ELSE -- reconstruction of raw HTML,
+      and the trust of a carried payload, which is §13e.
+
+   13e. EXPORT DOES NOT SELECT AN IMPORT MODE -- NORMATIVE [CARVE-P10-017].
       Roundtrip export adds information to OUTPUT. HTML import's `roundtrip`
       mode decides reconstruction and raw-HTML preservation of INPUT, and
       finding one of these carriers in a document is not a reason to trust
       that document. Enabling export never enables a trusted import, never
       widens an importer's mode, and never relaxes a destination check. An
-      importer that returns a `data-djot-src` payload verbatim does so on its
-      own trust setting, never on the exporter's.
+      importer that returns a `data-carve-src` payload verbatim does so on
+      its own trust setting, never on the exporter's.
 
-   13c. AN ALIAS NEVER TURNS PRESERVATION OFF -- NORMATIVE [CARVE-P10-018].
+   13f. AN ALIAS NEVER TURNS PRESERVATION OFF -- NORMATIVE [CARVE-P10-018].
       The Markdown carrier options that predate this one -- PHP
       `setCarryMarkers(true)`, JavaScript `carryMarkers: true`, Rust
       `with_carry_markers(true)`, CLI `--carry-markers` -- keep working with
