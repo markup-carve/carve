@@ -22,11 +22,9 @@
  * declared while every other row here is live. The declaration fires - see
  * CAPTION_LAG below for the detector and what retires it.
  *
- * THE OPTION SPELLING IS THE HOST'S, NOT THE CLAUSE'S. §10s says only that
- * the host turns the mode on and that it is off by default, so `roundtrip`
- * below is the carve-js parameter and not a conformance requirement. An engine
- * that spells it otherwise is still conformant, and this file would need the
- * other spelling to measure it.
+ * PART 10 §13 names roundtrip export as the switch for either target.
+ * `roundtrip: true` below is its JavaScript spelling. PART 11 §10s uses
+ * that switch for Markdown container comments.
  */
 
 import { test } from 'node:test'
