@@ -616,22 +616,11 @@ those modes are - and the section below is where it is not.
 preserve the element as raw HTML with `raw-preserved` when none does, and never
 lose anything silently** (markup-carve/carve#1704).
 
-`semantic` is unaffected. Being lossy is what distinguishes the two modes, and
-`roundtrip` is the one whose whole job is fidelity: a mode that turns the figure
-above into a paragraph carrying a stray caret line is spending the only thing it
-has to offer, and spending it in silence.
+`semantic` is unaffected. The `roundtrip` rule applies to every element shape,
+including caption targets added later. An implementation may use a target table,
+but its tests must check whether the Carve spelling reproduces the element.
 
-THIS IS A PROPERTY AND NOT A LIST OF BLESSED TAG NAMES. An implementation may
-answer it with a target table - the set is small and stable - but what a test
-pins is the property, so a caption target added later inherits the rule instead
-of needing another sweep of every element name to discover it. A name list is
-the shape that drifted into the ticket this rule came from: it opened as a
-119-tag survey asking which engine's `<figure>` behavior was right, and the
-answer turned out not to be about tag names at all - each engine was right on
-one side of a predicate neither had written down.
-
-The predicate is one question asked of the whole family, and it points in both
-directions:
+The following shapes illustrate both outcomes:
 
 | shape | rebuild round trips? | `roundtrip` writes |
 | --- | --- | --- |
@@ -649,12 +638,10 @@ settled here rather than left to a later sweep: at document top level with no
 so rebuilding it as `# H` drops the element and its id. It is degenerate input -
 no Carve renderer emits it - and that is why it is stated rather than fixtured.
 
-The rule binds an importer whose parser HANDS THE ELEMENT OVER. Both reference
-engines' do, which is why the ticket could measure an `id` surviving into one
-engine's output and being dropped by the other's. Where a host parser discards it
-instead - HTML5's in-body insertion mode ignores a stray `<td>` outright, and a
-fragment parsed in that context never builds the node - there is nothing to
-preserve and nothing to report, and this section asks for neither.
+The rule applies when the host parser supplies the element to the importer.
+Where the host parser discards it instead, there is nothing to preserve or report.
+For example, HTML5's in-body insertion mode ignores a stray `<td>`, so a fragment
+parsed in that context never builds the node.
 
 **One carve-out, deliberate.** A figure around a TABLE has no spelling that
 reproduces it either: as the section above shows, the rebuild writes the caption
