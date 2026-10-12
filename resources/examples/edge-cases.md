@@ -48144,9 +48144,10 @@ its column (markup-carve/carve#2950).
 ## A line retained after a comment opens a paragraph
 
 After a comment, an item keeps a following line that falls below its content
-column (PART 9 §24 C3). That line opens a paragraph in the item, and a later
-below-column line folds into it like any other open paragraph, a list marker
-included (`CARVE-P0-023`, markup-carve/carve-js#2772).
+column, as the start of a paragraph (PART 9 §24 C3). That paragraph is open at
+the deepest frame, so a later below-column line continues it (`CARVE-P0-009`).
+In a quote the unprefixed line folds into the innermost open paragraph, and a
+list marker is no exclusion (`CARVE-P2-008`, markup-carve/carve-js#2772).
 
 The ruled source of markup-carve/carve-js#2772. The comment span sits at the
 child's content column and the fence run below it is one column short, so the

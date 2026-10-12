@@ -3,8 +3,10 @@ import assert from 'node:assert/strict'
 import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
-// CARVE-P0-023: a line an item retains below its content column after a
-// comment opens a paragraph there, and a later below-column line folds into it.
+// PART 9 §24 C3 lets an item retain a line below its content column after a
+// comment, as the start of a paragraph. That paragraph is then open at the
+// deepest frame, so a later below-column line folds into it (CARVE-P0-009),
+// a list marker included (CARVE-P2-008).
 const html = (source) => renderDoc(parse(source)).replace(/\s+/g, ' ').replace(/ ?(<[^>]+>) ?/g, '$1')
 const quoted = (depth, lines) => lines.map((line) => ('> '.repeat(depth) + line).trimEnd()).join('\n') + '\n'
 

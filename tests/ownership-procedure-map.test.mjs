@@ -12,7 +12,7 @@ const rules = new Set(JSON.parse(read('resources/spec/rules.json')).rules.map(ru
 
 test('the ownership map covers the complete Part 0 inventory and live qualifications', () => {
   const required = [...layout.matchAll(/NORMATIVE\s*\[(CARVE-P0-\d+)\]/g)].map(match => match[1])
-  assert.equal(miscount({ label: 'Part 0 rules', actual: required.length, expected: 23 }), null)
+  assert.equal(miscount({ label: 'Part 0 rules', actual: required.length, expected: 22 }), null)
   const mapped = map.phases.flatMap(phase => phase.rules)
   assert.equal(mapped.length, new Set(mapped).size, 'Each Part 0 rule needs one primary phase')
   assert.deepEqual([...new Set(mapped)].sort(), [...required].sort())

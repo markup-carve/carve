@@ -1995,12 +1995,6 @@
       "part": "9",
       "title": "A STRUCTURAL-ONLY LINE RESETS CAPTION SCOPE",
       "scope": "resolution-rendering"
-    },
-    {
-      "id": "CARVE-P0-023",
-      "part": "0",
-      "title": "A RETAINED LINE OPENS A PARAGRAPH",
-      "scope": "parsing"
     }
   ],
   "retired": [

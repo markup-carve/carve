@@ -6560,7 +6560,7 @@ function collectItems(lines, i, list, state, ind, meas) {
           pendingSeparation = false
         }
         // A line retained after a comment begins a paragraph in this item, and
-        // that paragraph is then the deepest one open (CARVE-P0-023).
+        // that paragraph is then the deepest one open (CARVE-P0-009, CARVE-P2-008).
         if (!deepestParagraphOpen()) {
           openParaWith(lm.rest)
           descLive = false
