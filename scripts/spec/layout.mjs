@@ -2333,14 +2333,16 @@ export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = fal
     flushedNote = false
 
     const base = establishesBase ? measured.col : 0
+    const candidateColumns = []
     const candidate = lines.slice(index).map((source) => {
-      if (isBlank(source)) return dedent(source, base)
       const sourceMeasured = indentCols(source)
+      candidateColumns.push(sourceMeasured.col - base)
+      if (isBlank(source)) return dedent(source, base)
       return sourceMeasured.col < base
         ? source
         : dedentMeasured(sourceMeasured, source, base).text
     })
-    const relativeEnd = Math.max(1, firstBlockEnd(candidate, 0, candidate.length, state))
+    const relativeEnd = Math.max(1, firstBlockEnd(candidate, 0, candidate.length, state, candidateColumns))
     // A definition inside a footnote-hosted colon container is consumed by
     // the shared symbol table, but it does not end the container. Keep a
     // closer at the rebased opener's column with that container; otherwise it
@@ -2966,6 +2968,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       if (info && info.lang.startsWith('=')) {
         const close = findCloser(fenceLines, i, run)
         if (close !== -1) {
+          markMeasuredOpaque(state, lines, i, close + 1)
           push({
             t: 'raw',
             format: info.lang.slice(1),
@@ -2977,6 +2980,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       }
       const close = info ? findCloser(fenceLines, i, run) : -1
       if (close !== -1) {
+        markMeasuredOpaque(state, lines, i, close + 1)
         const node = {
           t: 'code',
           lang: info.lang,
@@ -3002,6 +3006,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // marker still in the info string - `class="language-=html"`, which is
         // not a class any renderer emits, with the raw bytes escaped into it.
         // All three engines pass the content through in both cases (carve#1104).
+        markMeasuredOpaque(state, lines, i, boundary)
         if (info.lang.startsWith('=')) {
           push({
             t: 'raw',
@@ -3446,6 +3451,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // differed (carve#1382). A blank may still ride ALONGSIDE lazy
             // lines, which is what `isBlank` keeps covering.
           } else {
+            markMeasuredContainerText(state, lines, i + 1, end, ind)
             i = close === -1 ? n : close + 1
             inheritFinalBreak(lines, body, close === -1 ? n : close, state)
             if (opener.mode === 'line-block') {
@@ -4497,7 +4503,36 @@ function oneBlockEnd(lines, start, endsBlock) {
  * symbol table as it goes and the real parse of these lines happens afterwards,
  * so sharing the state would register every definition in the region twice.
  */
-function firstBlockEnd(lines, start, limit, state) {
+function markMeasuredOpaque(state, lines, from, to) {
+  const measurement = state.opaqueMeasurement
+  const origins = measurement?.origins.get(lines)
+  if (origins === undefined) return
+  // Direct fence rows are already covered by the extent scan below.
+  // Capture marker-line fences only after the reader admitted CODE or RAW.
+  const openerOrigin = typeof origins === 'number' ? origins + from : origins[from]
+  if (openerOrigin === undefined || matchMarkerAt(indentCols(measurement.sourceLines[openerOrigin])) === null) return
+  measurement.markerFenceEnd.set(lines, to)
+  for (let index = from; index < to; index++) {
+    const origin = typeof origins === 'number' ? origins + index : origins[index]
+    if (origin !== undefined && !isBlank(lines[index]) && measurement.sourceColumns?.[origin] < 0) break
+    if (origin !== undefined) measurement.rows.add(origin)
+    layoutWork.lineVisits++
+  }
+}
+
+function markMeasuredContainerText(state, lines, from, to, ind) {
+  const measurement = state.opaqueMeasurement
+  const origins = measurement?.origins.get(lines)
+  const markerEnd = measurement?.markerFenceEnd.get(lines)
+  if (!Array.isArray(origins) || markerEnd === undefined || markerEnd > from) return
+  // Retain literal text in an admitted child container after a marker fence.
+  for (let row = from; row < to; row++) {
+    if (ind(row).col > 0 && origins[row] !== undefined) measurement.rows.add(origins[row])
+    layoutWork.lineVisits++
+  }
+}
+
+function firstBlockEnd(lines, start, limit, state, sourceColumns) {
   if (limit - start <= 1) return limit
   const stop = { next: limit - start }
   const seen = {
@@ -4507,8 +4542,10 @@ function firstBlockEnd(lines, start, limit, state) {
     blockDepth: state.blockDepth ?? 0,
     measuringAuthoredBlock: state.measuringAuthoredBlock ?? false,
   }
+  const measuredLines = lines.slice(start, limit)
+  seen.opaqueMeasurement = { origins: new WeakMap([[measuredLines, start]]), sourceColumns, sourceLines: lines, markerFenceEnd: new WeakMap(), rows: new Set() }
   try {
-    parseBlocks(lines.slice(start, limit), seen, false, true, undefined, stop)
+    parseBlocks(measuredLines, seen, false, true, undefined, stop)
   } catch {
     // Outside the executable subset: the extent is the honest answer, and the
     // real parse of these lines raises the same refusal where it belongs.
@@ -4571,6 +4608,7 @@ function foldedDefinitionEnd(lines, start, end, seen) {
       if (!opaque) termCol = null
       continue
     }
+    if (seen.opaqueMeasurement.rows.has(k)) continue
     const { col, rest } = indentCols(line)
     if (opaque) {
       if (opaque.kind === 'code') {
@@ -4837,6 +4875,10 @@ function collectItems(lines, i, list, state, ind, meas) {
     // synthesized, or one whose run held a tab - and the inner parse walks it
     // once. Every push goes through `pushLine` so the two arrays cannot drift.
     const itemMeas = []
+    const measurement = state.opaqueMeasurement
+    const parentOrigins = measurement?.origins.get(lines)
+    const itemOrigins = parentOrigins === undefined ? undefined : []
+    if (itemOrigins) measurement.origins.set(itemLines, itemOrigins)
     // Is a TABLE open at the end of the body collected so far? The context a
     // `+ ...|` line needs before it can be a continuation row (§5 T6, see
     // `isContinuationRow`), advanced by `tableRunStep` on every line that joins
@@ -4846,6 +4888,8 @@ function collectItems(lines, i, list, state, ind, meas) {
     const pushLine = (text, m = null) => {
       itemLines.push(text)
       itemMeas.push(m)
+      if (itemOrigins) itemOrigins.push(text === '' ? undefined :
+        typeof parentOrigins === 'number' ? parentOrigins + i : parentOrigins[i])
       tableOpen = tableRunStep(tableOpen, text)
     }
     carryPrefixMemo(state, lines, i, itemLines, 0)
@@ -5421,6 +5465,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     if (trimWs(head.text) === '+') {
       itemLines.length = 0
       itemMeas.length = 0
+      if (itemOrigins) itemOrigins.length = 0
       attachNext = true
       closePara()
     }
