@@ -9,7 +9,7 @@ description: "Input normalization, layout, block and inline recognition, attribu
 
 Input normalization, layout, block and inline recognition, attributes, and lexical boundaries.
 
-This view contains 116 of 328 active rules. Every rule remains mandatory where applicable.
+This view contains 116 of 331 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -128,6 +128,6 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P9-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L490) | 9 | AN INVISIBLE LINE FOLDS LIKE ANY OTHER |
 | [`CARVE-P9-053`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L522) | 9 | A COMMENT IS THE ONE EXCEPTION |
 | [`CARVE-P9-060`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L72) | 9 | BLOCK COMMENT FENCES |
-| [`CARVE-P12-040`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L146) | 12 | TABLE ALIGNMENT RUNS CARRY TWO INDEPENDENT AXES |
+| [`CARVE-P12-040`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L143) | 12 | TABLE ALIGNMENT RUNS CARRY TWO INDEPENDENT AXES |
 | [`CARVE-P0-022`](https://github.com/markup-carve/carve/blob/main/resources/spec/01-layout.ebnf#L432) | 0 | AN OPAQUE MARKER-LINE QUOTE PRESERVES THE BAND AS TEXT |
 | [`CARVE-P3-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L482) | 3 | SMART QUOTE DIRECTION |

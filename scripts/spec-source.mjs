@@ -13,9 +13,30 @@ const sourceFiles = () => readdirSync(sourceDir)
   .filter((file) => file.endsWith('.ebnf'))
   .sort()
 
+// A clause id outside every comment means a stray `*)` turned clause prose into grammar.
+const proseOutsideComments = (file, source) => {
+  let depth = 0
+  let line = 1
+  for (let i = 0; i < source.length; i++) {
+    const c = source[i]
+    if (c === '\n') line++
+    else if (source.startsWith('(*', i)) { depth++; i++ }
+    else if (depth > 0 && source.startsWith('*)', i)) { depth--; i++ }
+    else if (depth === 0 && (c === '"' || c === "'")) {
+      const end = source.indexOf(c, i + 1)
+      const eol = source.indexOf('\n', i + 1)
+      if (end > 0 && (eol < 0 || end < eol)) i = end
+    } else if (depth === 0 && source.startsWith('[CARVE-', i)) {
+      throw new Error(`${file}:${line}: clause id outside a comment; look for a stray *) above it`)
+    }
+  }
+  if (depth !== 0) throw new Error(`${file} leaves ${depth} comment(s) open`)
+}
+
 const readSource = (file) => {
   const source = readFileSync(resolve(sourceDir, file), 'utf8')
   if (!source.endsWith('\n')) throw new Error(`${file} must end with a newline`)
+  proseOutsideComments(file, source)
   return source
 }
 

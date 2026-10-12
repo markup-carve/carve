@@ -1895,6 +1895,24 @@
       "scope": "ast-interchange"
     },
     {
+      "id": "CARVE-P12-066",
+      "part": "12",
+      "title": "A SHAPE NO CARVE SOURCE SPELLS IS CARRIED, NOT INVENTED",
+      "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-067",
+      "part": "12",
+      "title": "A SIDECAR TRAVELS BESIDE THE TREE AND NEVER IN IT",
+      "scope": "ast-interchange"
+    },
+    {
+      "id": "CARVE-P12-068",
+      "part": "12",
+      "title": "AN INGEST REFUSAL IS A TYPED ERROR NAMING WHAT AND WHERE",
+      "scope": "ast-interchange"
+    },
+    {
       "id": "CARVE-P9-076",
       "part": "9",
       "title": "A MARKER IN A TOC BODY RETAINS ITS CONTAINER SCOPE",

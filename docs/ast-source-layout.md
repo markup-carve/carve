@@ -35,10 +35,6 @@ omission as a default value.
 | `leadingPipe`, `trailingPipe` | §13 F8 | whether the row was authored with the optional pipes |
 | `attachment` | §13 F9 | how the node reached its host: `preceding`, `continuation`, `detached`, `none` |
 
-`paddingRaw` is declared by the schema and deliberately left undefined: one
-string cannot hold both of a table cell's whitespace runs, and which run it
-names has not been ruled (carve#1431). No producer emits it.
-
 All producers consume the shared cases in
 [`resources/ast-source-layout-fixtures.json`](https://github.com/markup-carve/carve/blob/main/resources/ast-source-layout-fixtures.json).
 `exact` compares complete sidecars; `sourceFacts` pins encoding facts while AST

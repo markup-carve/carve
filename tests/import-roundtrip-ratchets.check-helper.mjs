@@ -266,6 +266,12 @@ const visibleText = (html) =>
 // Category 321 rows 9 through 12 add four imports, fixed points and text matches.
 // Comments disappear on both output targets, so source round trips hold.
 
+// Pin bf458c52 gains two Markdown round trips and loses none: 01-emphasis-6
+// and 01-emphasis-13. The importer no longer escapes the slash inside a slash
+// pair, so `/usr/local/` and `/a/b/` come back as written (carve-js#2824 and
+// #2833). Membership was measured across the two pinned builds; the other
+// populations hold document for document.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {
