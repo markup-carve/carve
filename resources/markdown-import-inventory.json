@@ -144,6 +144,13 @@
       "severity": "info"
     },
     {
+      "construct": "bare-autolink",
+      "code": "markdown-bare-autolink",
+      "fidelity": "normalized",
+      "confidence": "exact",
+      "severity": "info"
+    },
+    {
       "construct": "hard-break",
       "code": "markdown-hard-break",
       "fidelity": "normalized",
