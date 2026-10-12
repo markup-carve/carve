@@ -616,9 +616,9 @@ those modes are - and the section below is where it is not.
 preserve the element as raw HTML with `raw-preserved` when none does, and never
 lose anything silently** (markup-carve/carve#1704).
 
-`semantic` is unaffected. The `roundtrip` rule applies to every element shape,
-including caption targets added later. An implementation may use a target table,
-but its tests must check whether the Carve spelling reproduces the element.
+`semantic` is unaffected. The predicate is whether a Carve spelling reproduces
+the captioned element. This property applies to caption targets added later.
+An implementation may use a target table, but its tests must check that property.
 
 The following shapes illustrate both outcomes:
 
@@ -639,9 +639,10 @@ so rebuilding it as `# H` drops the element and its id. It is degenerate input -
 no Carve renderer emits it - and that is why it is stated rather than fixtured.
 
 The rule applies when the host parser supplies the element to the importer.
-Where the host parser discards it instead, there is nothing to preserve or report.
-For example, HTML5's in-body insertion mode ignores a stray `<td>`, so a fragment
-parsed in that context never builds the node.
+Both reference parsers supply these elements. Where a host parser discards an
+element instead, there is nothing to preserve or report. For example, HTML5's
+in-body insertion mode ignores a stray `<td>`, so a fragment parsed in that
+context never builds the node.
 
 **One carve-out, deliberate.** A figure around a TABLE has no spelling that
 reproduces it either: as the section above shows, the rebuild writes the caption
