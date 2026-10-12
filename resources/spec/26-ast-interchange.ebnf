@@ -17,7 +17,7 @@
       a `section` is a container, so a heading inside one is not top-level: it
       emits no derived `<section>` and keeps its id on the `<h*>`, exactly as a
       heading in a blockquote or a div does. A reader sees ONE wrapper, the
-      authored one, whether §13's `sections` option is on or off, and a fragment
+      authored one, whether CARVE-P9-019's `sections` option is on or off, and a fragment
       URL resolves to the heading's id the way it does under `sections: false`.
 
       IT EXISTS BECAUSE THE FORMATS ON THE OTHER SIDE OF A BRIDGE HAVE IT:
@@ -110,8 +110,8 @@
       THE PAYLOAD IS NOT CARVE CONTENT. `format` names how `value` is
       encoded so a reader can tell whether it can parse it at all. No core
       target renders it, §9's ingest bound covers its nesting like any other,
-      and §25's trust rules cover it like any other content a renderer did not
-      produce.
+      and the security rules of CARVE-P9-054 cover it like any other content a
+      renderer did not produce.
 
       A NAME IS QUALIFIED so two extensions cannot collide. `diagram` is not a
       name; `org.example.diagram` is.
@@ -331,8 +331,8 @@
       [CARVE-P12-061]. A reader that meets a `table_cell` carrying `colspan` or
       `rowspan` with no continuation cell over the positions it covers DERIVES
       those positions from the count. Against a well-formed grid the covered
-      positions are a function of the counts, so inverting the walk of PART 9
-      §13 T5 is a derivation and not a guess. An HTML or Pandoc tree arrives
+      positions are a function of the counts, so inverting the span walk of
+      CARVE-P9-002 is a derivation and not a guess. An HTML or Pandoc tree arrives
       this way because neither format HAS a continuation cell for a bridge to
       have written.
 
@@ -405,7 +405,8 @@
 
       `kind` IS AN OPEN VOCABULARY, matched by equality, and core defines no
       member of it: a closed list would name kinds no clause renders. One core
-      did not define is globally qualified as an extension name is in §34.
+      did not define is globally qualified as an extension name is in
+      CARVE-P12-055.
 
       AN ANCHOR THE EDIT INVALIDATED IS ABSENT, not tombstoned, exactly as §38
       rules an id: the producer re-emits the whole sidecar against the new tree
@@ -428,9 +429,10 @@
       `version` is 1. `sources` names each input once - an `id`, an optional
       `uri`, an optional `format` and an optional `parent`, the id of the
       source that included or imported it. `nodes` binds a `path`, an RFC 6901
-      pointer as in §38, to a `source`, a `startByte` and an `endByte` in THAT
-      input, an `origin` of `authored` or `generated`, and an optional `step`,
-      the transformation that produced the node.
+      pointer as in §38, to a `source`, an `origin` of `authored` or
+      `generated`, an optional `step`, the transformation that produced the
+      node, and a `startByte` and an `endByte` in THAT input. The two bytes
+      come as a pair; a generated node has no range and omits both.
 
         {"version":1,"sources":[{"id":"s1","uri":"ch1.md","format":"markdown",
         "parent":"s0"}],"nodes":[{"path":"/children/3","source":"s1",
@@ -443,7 +445,7 @@
 
       A BYTE RANGE IS NOT AN OFFSET. The two bytes count the input they name,
       start-inclusive and end-exclusive as in §13; §4's codepoint rule governs
-      `pos`. When pos.file is present, every pos coordinate is measured in
+      `pos`. When `pos.file` is present, every `pos` coordinate is measured in
       that named input file; otherwise it is measured in the top-level input.
       There is no implicit assembled-document coordinate space. Byte ranges
       and pos can address the same input but use different units. Containment
@@ -451,7 +453,7 @@
       converting pos to bytes MUST use that input's text, never the parent's.
 
       THIS IS WHERE A FILESYSTEM PATH MAY APPEAR. `pos.file` stays the inline
-      minimum per §13, and a `uri` a caller did not ask for is one it never
+      minimum per §4, and a `uri` a caller did not ask for is one it never
       receives. An ABSENT `format` is unrecorded, not Carve, because §13 reads
       a missing fact as unknown and never as a guessed default.
 

@@ -11076,9 +11076,8 @@ EOF = (* end of file *) ;
       differ maps them on output; it does not export its internal shape.
 
       AST TYPE NAMES FOLLOW THE PROFILE VOCABULARY -- NORMATIVE [CARVE-P12-001].
-      This clause is about the SHAPE of a node: which fields it carries and
-      what they are called. Where an implementation's `type` string disagrees with the
-      vocabulary in profiles.md, the vocabulary wins.
+      A node's `type` string is the name profiles.md gives that node type.
+      Where an implementation's own name differs, the vocabulary wins.
 
    1a. ADJACENT TEXT RUNS ARE COALESCED -- NORMATIVE [CARVE-P12-002]. A serialized node's
       children contain NO two adjacent `text` nodes. Where a producer's internal
@@ -11117,16 +11116,15 @@ EOF = (* end of file *) ;
       is the exception: it spans its pieces from the file that holds the run,
       from the first one's start to the last one's end.
 
-      `escaped_text` is NOT `text` and does not merge with it: PART 12 §5 keeps
-      the two distinct on the wire because an escape is authored form, and
-      collapsing them would lose the distinction the type exists to carry.
+      `escaped_text` is NOT `text` and does not merge with it: §3 keeps the two
+      distinct on the wire because an escape is authored form, and collapsing
+      them would lose the distinction the type exists to carry.
 
       JSON Schema cannot forbid adjacent entries of the same shape, so the
       conformance check enforces this rule as a gate.
 
    2. EVERY NODE IS AN OBJECT with a `type` holding the node-type identifier
-      from profiles.md - the same snake_case strings PART 9 §8 already calls
-      spec surface for kind names. A document is
+      from profiles.md (CARVE-P12-001). A document is
       `{"type":"document","children":[...]}`.
 
       The root's own fields are fixed by §7: `type`, `children` and
@@ -11145,7 +11143,10 @@ EOF = (* end of file *) ;
         image      `src`, `alt`, `title`
         code       `value`, literal Unicode content
         text       `value`, literal Unicode content
-        heading    `level`, `children`
+        escaped_text
+                   `value`, the character of an `escaped_char` (PART 3)
+                   without its backslash; never merged into `text` (§1a)
+        heading   `level`, `children`
         list       `ordered`, `tight`, `start`, `items`, and the AUTHOR-CHOICE
                    fields `bulletChar`, `delim` and `bareMarker` (PART 11 §6)
                    when the author's spelling is not the default. `bareMarker`
@@ -11238,7 +11239,8 @@ EOF = (* end of file *) ;
       nonempty content has none. It inserts that break and reports
       `field-unspellable` for `code_block.content` on the PART 11 §1d channel.
       Empty content needs no inserted payload line and reports nothing.
-      This report belongs to an API exposing conversion diagnostics (§1d).
+      This report belongs to an API exposing conversion diagnostics
+      (CARVE-P11-046).
       HTML import itself preserves the payload and reports no loss for a
       missing final break. An API exposing only the HTML-import report adds
       no diagnostic code for the later canonical writer's inserted break.
@@ -11384,10 +11386,6 @@ EOF = (* end of file *) ;
       cannot be written back: the writer reconstructs `</#` + the id + `>`, so
       the document comes out of a wire round trip spelled `</#Intro>`.
 
-      `fromCrossref` on `link` is therefore not the crossref's serialization. A
-      LINK the author wrote as a link may still carry it as a rendering hint;
-      what it may not do is stand in place of the `heading_ref`.
-
       THE DISPLAY TEXT IS NOT SERIALIZED. A resolved crossref renders the target
       heading's text, and that text is NOT copied into the node: the heading is
       in the same document, so a consumer reads it from there. This is the one
@@ -11422,6 +11420,9 @@ EOF = (* end of file *) ;
 
       Lines are 1-based. Columns are 1-based and offsets 0-based, both counted
       in UNICODE CODEPOINTS. `endColumn` and `endOffset` are exclusive.
+      `pos.file`, when present, is the canonical id of the included input the
+      coordinates are measured in (PART 9 §19); absent means the top-level
+      input.
 
       Codepoint indices always land on character boundaries; bytes and UTF-16
       units can split encoded characters. Implementations convert once per
@@ -11519,7 +11520,7 @@ EOF = (* end of file *) ;
 
       A HOISTED SIBLING IS NOT A CHILD, AND A CLOSERLESS CONTAINER ENDS BEFORE
       IT -- NORMATIVE [CARVE-P12-015]. A definition written at a container's content column is
-      collected and hoisted to the DOCUMENT (§7), so it leaves the container
+      hoisted to the DOCUMENT (CARVE-P12-029), so it leaves the container
       and becomes its sibling while its `pos` still points inside the source the
       container encloses. Hoisting breaks the correspondence between tree
       nesting and source nesting, and a span follows the TREE:
@@ -11543,7 +11544,7 @@ EOF = (* end of file *) ;
       A HOISTED DEFINITION MAY CLAIM SOURCE INSIDE THE CONTAINER IT WAS
       AUTHORED IN -- NORMATIVE [CARVE-P12-016]. The one exception to the sibling-overlap rule
       stated further down this section, and it holds WHATEVER THAT CONTAINER'S
-      EXTENT. §7 makes the definition a child of the document while this section
+      EXTENT. CARVE-P12-029 makes the definition a child of the document while this section
       keeps its `pos` pointing back at the container it was written inside, so
       the two are siblings whose spans meet by construction; and the paragraph
       above ends an emptied closerless container at its own markup, which leaves
@@ -11554,7 +11555,7 @@ EOF = (* end of file *) ;
 
       spans the emptied `block_quote` as `> ` and the hoisted
       `link_reference_definition` over the whole line, and offsets 0 to 2 sit in
-      two document-level siblings at once. §7, the emptied-container paragraph
+      two document-level siblings at once. CARVE-P12-029, the emptied-container paragraph
       above and the sibling-overlap rule cannot all three hold on this document,
       and the exception is where it gives.
 
@@ -11599,7 +11600,7 @@ EOF = (* end of file *) ;
       A CONTAINER WITH NO PLACED CHILD AT ALL SPANS ITS OWN MARKUP AND STOPS
       THERE -- NORMATIVE [CARVE-P12-018]. "Ends at its last placed child" is silent when there
       is none, and a container can be emptied: a definition written as an item's
-      only content is collected out of it (§7) and the item keeps no trace.
+      only content is collected out of it (CARVE-P12-029) and the item keeps no trace.
 
           * * [d]: u
            :
@@ -11669,7 +11670,7 @@ EOF = (* end of file *) ;
 
       A REASSEMBLED NODE MUST OMIT `pos` -- NORMATIVE [CARVE-P12-022]. A node whose value is not
       a contiguous slice of the source, because the producer joined it from
-      pieces the source separates or synthesized it outright, MAY omit `pos`
+      pieces the source separates or synthesized it outright, MUST omit `pos`
       rather than invent one, and is CONFORMANT doing so. This is a permitted
       category, not a shortfall to be tracked.
 
@@ -11782,9 +11783,9 @@ EOF = (* end of file *) ;
 
       The criterion is §5's own: recomputability. A heading id is NOT a function
       of the heading. Dedup assigns the next free suffix in document order, so
-      two `# Notes` headings yield `Notes` and then `Notes-2` (PART 9 §13; the
-      slug and dedup rules are syntax.md §4.1, and PART 9 §13's namespace is
-      shared with every other generated id). A consumer holding only the tree
+      two `# Notes` headings yield `Notes` and then `Notes-2` (CARVE-P2-004
+      states the slug and dedup rules; CARVE-P9-019 shares that namespace with
+      every other generated id). A consumer holding only the tree
       cannot replicate that, and a table of contents, a go-to-definition jump
       and a cross-document index each need the exact id, not a plausible one.
 
@@ -11971,7 +11972,7 @@ EOF = (* end of file *) ;
         href    the destination; present and non-empty, since a definition with
                 an empty destination is not a definition but paragraph text
         title   the quoted title, unescaped, when the definition carries one
-        attrs   a trailing attribute block on the definition line (§15 A2b)
+        attrs   a trailing attribute block on the definition line (CARVE-P3-007)
 
       IT HOISTS TO THE DOCUMENT, exactly as §7 requires of the FOOTNOTE
       definition: a definition authored inside a block quote or a list item is
@@ -11992,7 +11993,7 @@ EOF = (* end of file *) ;
 
       A DEFINITION IS STILL INVISIBLE IN HTML. The node renders nothing on that
       target; it feeds the links and images that resolve its label (PART 9R R1).
-      The non-HTML targets emit it, as §10a requires.
+      The non-HTML targets emit it, as CARVE-P11-028 requires.
 
    11. A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST -- NORMATIVE [CARVE-P12-030].
       The wire shape is pinned by `resources/ast-schema.json` with
@@ -12020,8 +12021,7 @@ EOF = (* end of file *) ;
       it, not the absence of a check -- a namespace the schema names and every
       engine preserves. Until such a place exists, extension data on the wire
       is invalid for the same reason any other unnamed property is, and an
-      extension that relies on the pass-through relies on one engine's leak
-      (PART 10 §1: an extension may not change the core vocabulary).
+      extension that relies on the pass-through relies on one engine's leak.
 
 
    12. A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST -- NORMATIVE [CARVE-P12-031]. §7
@@ -12104,8 +12104,10 @@ EOF = (* end of file *) ;
       the canonical tree closed and unchanged.
 
       The sidecar validates against `resources/ast-source-layout-schema.json`.
-      Version is 1, encoding is UTF-8, and each RFC 6901 `path` addresses the
-      accompanying canonical AST. `startByte` is inclusive and `endByte`
+      Version is 1, encoding is UTF-8, `source` is the original input,
+      `lineEndings` names the terminators it uses (`none`, `lf`, `crlf`, `cr`
+      or `mixed`), `bom` says whether it begins with U+FEFF, and each RFC 6901
+      `path` addresses the accompanying canonical AST. `startByte` is inclusive and `endByte`
       exclusive in the ORIGINAL input, including BOM and CRLF bytes. Entries
       are sorted by path; a producer MUST NOT invent an unplaceable range.
 
@@ -12417,8 +12419,9 @@ EOF = (* end of file *) ;
       and the core corpus cannot reach it.
 
       WHERE A DEFINITION IS RECOGNIZED IS NOT DECIDED HERE: this clause rules
-      the node's shape, not recognition or hoisting from containers (§10's
-      link-reference hoisting and §7's container-local abbreviation refusal). An emitted
+      the node's shape, not recognition or hoisting from containers
+      (CARVE-P12-029's link-reference hoisting and CARVE-P12-026's
+      container-local abbreviation refusal). An emitted
       node satisfying this shape conforms whichever recognition policy applies.
 
    18a. A CITATION ITEM IS A POSITIONED INLINE NODE -- NORMATIVE [CARVE-P12-038].
@@ -12678,16 +12681,12 @@ EOF = (* end of file *) ;
       follows rather than the other way round. `id` is the worse of the two
       names here in any case, because every node ALSO carries `attrs.id`, a
       different value entirely: an authored `{#x}` rather than a lookup key,
-      so one name would stand for two things on the same object.
-
-      AN ENGINE MAY KEEP DECODING `id`. That is §11's narrow exception
-      unchanged -- a property an implementation once published, decoded onto a
-      field the schema does name -- and `footnote.id` is the case that clause
-      was written for. The exception covers READING a stored tree; a producer
-      emits `label`.
+      so one name would stand for two things on the same object. An `id` on a
+      `footnote_ref` is a property the schema does not name, refused under
+      CARVE-P12-030.
 
    26. A SPANNING CELL PUBLISHES ITS RESOLVED EXTENT -- NORMATIVE [CARVE-P12-048].
-      A `table_cell` that the span walk of PART 9 §13 T5 extended carries
+      A `table_cell` that the span walk of CARVE-P9-002 extended carries
       `colspan`, `rowspan`, or both: the number of columns and rows the cell
       occupies once every `<` and `^` marker that reached it has been consumed.
       They sit on the ORIGIN cell. Absent means 1, and an ingested 1 is
@@ -12699,7 +12698,7 @@ EOF = (* end of file *) ;
       a resolved reference keep `ref` and `rawRef` beside `href` and a resolved
       footnote reference keep its label beside its number (§5).
 
-      A MARKER THAT FOUND NO ORIGIN CONTRIBUTES NOTHING. T5 is a total
+      A MARKER THAT FOUND NO ORIGIN CONTRIBUTES NOTHING. The walk is a total
       function: a `^` in the first row, a `<` in the first column, or a marker
       every intermediate position of which is consumed renders as an empty
       cell and extends nobody, so no cell's count moves. The marker is still
@@ -12831,7 +12830,7 @@ EOF = (* end of file *) ;
       a `section` is a container, so a heading inside one is not top-level: it
       emits no derived `<section>` and keeps its id on the `<h*>`, exactly as a
       heading in a blockquote or a div does. A reader sees ONE wrapper, the
-      authored one, whether §13's `sections` option is on or off, and a fragment
+      authored one, whether CARVE-P9-019's `sections` option is on or off, and a fragment
       URL resolves to the heading's id the way it does under `sections: false`.
 
       IT EXISTS BECAUSE THE FORMATS ON THE OTHER SIDE OF A BRIDGE HAVE IT:
@@ -12924,8 +12923,8 @@ EOF = (* end of file *) ;
       THE PAYLOAD IS NOT CARVE CONTENT. `format` names how `value` is
       encoded so a reader can tell whether it can parse it at all. No core
       target renders it, §9's ingest bound covers its nesting like any other,
-      and §25's trust rules cover it like any other content a renderer did not
-      produce.
+      and the security rules of CARVE-P9-054 cover it like any other content a
+      renderer did not produce.
 
       A NAME IS QUALIFIED so two extensions cannot collide. `diagram` is not a
       name; `org.example.diagram` is.
@@ -13145,8 +13144,8 @@ EOF = (* end of file *) ;
       [CARVE-P12-061]. A reader that meets a `table_cell` carrying `colspan` or
       `rowspan` with no continuation cell over the positions it covers DERIVES
       those positions from the count. Against a well-formed grid the covered
-      positions are a function of the counts, so inverting the walk of PART 9
-      §13 T5 is a derivation and not a guess. An HTML or Pandoc tree arrives
+      positions are a function of the counts, so inverting the span walk of
+      CARVE-P9-002 is a derivation and not a guess. An HTML or Pandoc tree arrives
       this way because neither format HAS a continuation cell for a bridge to
       have written.
 
@@ -13219,7 +13218,8 @@ EOF = (* end of file *) ;
 
       `kind` IS AN OPEN VOCABULARY, matched by equality, and core defines no
       member of it: a closed list would name kinds no clause renders. One core
-      did not define is globally qualified as an extension name is in §34.
+      did not define is globally qualified as an extension name is in
+      CARVE-P12-055.
 
       AN ANCHOR THE EDIT INVALIDATED IS ABSENT, not tombstoned, exactly as §38
       rules an id: the producer re-emits the whole sidecar against the new tree
@@ -13242,9 +13242,10 @@ EOF = (* end of file *) ;
       `version` is 1. `sources` names each input once - an `id`, an optional
       `uri`, an optional `format` and an optional `parent`, the id of the
       source that included or imported it. `nodes` binds a `path`, an RFC 6901
-      pointer as in §38, to a `source`, a `startByte` and an `endByte` in THAT
-      input, an `origin` of `authored` or `generated`, and an optional `step`,
-      the transformation that produced the node.
+      pointer as in §38, to a `source`, an `origin` of `authored` or
+      `generated`, an optional `step`, the transformation that produced the
+      node, and a `startByte` and an `endByte` in THAT input. The two bytes
+      come as a pair; a generated node has no range and omits both.
 
         {"version":1,"sources":[{"id":"s1","uri":"ch1.md","format":"markdown",
         "parent":"s0"}],"nodes":[{"path":"/children/3","source":"s1",
@@ -13257,7 +13258,7 @@ EOF = (* end of file *) ;
 
       A BYTE RANGE IS NOT AN OFFSET. The two bytes count the input they name,
       start-inclusive and end-exclusive as in §13; §4's codepoint rule governs
-      `pos`. When pos.file is present, every pos coordinate is measured in
+      `pos`. When `pos.file` is present, every `pos` coordinate is measured in
       that named input file; otherwise it is measured in the top-level input.
       There is no implicit assembled-document coordinate space. Byte ranges
       and pos can address the same input but use different units. Containment
@@ -13265,7 +13266,7 @@ EOF = (* end of file *) ;
       converting pos to bytes MUST use that input's text, never the parent's.
 
       THIS IS WHERE A FILESYSTEM PATH MAY APPEAR. `pos.file` stays the inline
-      minimum per §13, and a `uri` a caller did not ask for is one it never
+      minimum per §4, and a `uri` a caller did not ask for is one it never
       receives. An ABSENT `format` is unrecorded, not Carve, because §13 reads
       a missing fact as unknown and never as a guessed default.
 

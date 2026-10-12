@@ -65,8 +65,9 @@
       and the core corpus cannot reach it.
 
       WHERE A DEFINITION IS RECOGNIZED IS NOT DECIDED HERE: this clause rules
-      the node's shape, not recognition or hoisting from containers (§10's
-      link-reference hoisting and §7's container-local abbreviation refusal). An emitted
+      the node's shape, not recognition or hoisting from containers
+      (CARVE-P12-029's link-reference hoisting and CARVE-P12-026's
+      container-local abbreviation refusal). An emitted
       node satisfying this shape conforms whichever recognition policy applies.
 
    18a. A CITATION ITEM IS A POSITIONED INLINE NODE -- NORMATIVE [CARVE-P12-038].
@@ -326,16 +327,12 @@
       follows rather than the other way round. `id` is the worse of the two
       names here in any case, because every node ALSO carries `attrs.id`, a
       different value entirely: an authored `{#x}` rather than a lookup key,
-      so one name would stand for two things on the same object.
-
-      AN ENGINE MAY KEEP DECODING `id`. That is §11's narrow exception
-      unchanged -- a property an implementation once published, decoded onto a
-      field the schema does name -- and `footnote.id` is the case that clause
-      was written for. The exception covers READING a stored tree; a producer
-      emits `label`.
+      so one name would stand for two things on the same object. An `id` on a
+      `footnote_ref` is a property the schema does not name, refused under
+      CARVE-P12-030.
 
    26. A SPANNING CELL PUBLISHES ITS RESOLVED EXTENT -- NORMATIVE [CARVE-P12-048].
-      A `table_cell` that the span walk of PART 9 §13 T5 extended carries
+      A `table_cell` that the span walk of CARVE-P9-002 extended carries
       `colspan`, `rowspan`, or both: the number of columns and rows the cell
       occupies once every `<` and `^` marker that reached it has been consumed.
       They sit on the ORIGIN cell. Absent means 1, and an ingested 1 is
@@ -347,7 +344,7 @@
       a resolved reference keep `ref` and `rawRef` beside `href` and a resolved
       footnote reference keep its label beside its number (§5).
 
-      A MARKER THAT FOUND NO ORIGIN CONTRIBUTES NOTHING. T5 is a total
+      A MARKER THAT FOUND NO ORIGIN CONTRIBUTES NOTHING. The walk is a total
       function: a `^` in the first row, a `<` in the first column, or a marker
       every intermediate position of which is consumed renders as an empty
       cell and extends nobody, so no cell's count moves. The marker is still

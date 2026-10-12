@@ -204,10 +204,11 @@ smearing column facts onto individual cells. A `table_cell` may likewise carry
 **The root carries exactly three fields** - `type`, `children`, `srcByteLength`
 (PART 12 §7). Frontmatter and definitions are **block nodes in the tree**, not
 root fields, because a root field cannot carry a position and both are source an
-editor navigates to. A definition is a child of the **document** even when it was
-authored inside a container - footnote, link reference and abbreviation alike -
-because its scope is the document wherever it was written. Its `pos` still says
-where that was.
+editor navigates to. A footnote or link reference definition is a child of the
+**document** even when it was authored inside a container, because its scope is
+the document wherever it was written. Its `pos` still says where that was. An
+abbreviation definition is never hoisted: inside a container the line is
+paragraph text (`CARVE-P12-026`).
 
 **Field names are spec surface** (§3). `href`, `src`, `value`, `level`,
 `children`. An implementation whose internals differ maps on the way out; it does
@@ -1059,11 +1060,8 @@ identical string. `label` is the settled half: §7 renamed `footnote.id` to it,
 and `link_reference_definition` spells it the same way, so the reference is what
 moves. `id` was the worse of the two names here anyway, because every node also
 carries `attrs.id` - an authored `{#x}`, not a lookup key - so one name stood for
-two unrelated values on the same object.
-
-An engine may keep decoding `id` on ingest. That is §11's narrow exception
-unchanged, and `footnote.id` is the case the clause was written for. It covers
-reading a stored tree; a producer emits `label`.
+two unrelated values on the same object. An `id` on a `footnote_ref` is a
+property the schema does not name, so ingest refuses it (`CARVE-P12-030`).
 
 ## A block extension declares a core fallback
 
@@ -1837,10 +1835,10 @@ Generated from [the checked summary table](https://github.com/markup-carve/carve
 
 | Shape | Rule | Carve | HTML | Markdown | Plain | ANSI | Diagnostic |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `figure.shortCaption,table.shortCaption` | [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L405) | `omit_field` | `ignore_field` | `unspecified` | `ignore_field` | `ignore_field` | `clause` |
+| `figure.shortCaption,table.shortCaption` | [`CARVE-P12-033`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L406) | `omit_field` | `ignore_field` | `unspecified` | `ignore_field` | `ignore_field` | `clause` |
 | `figure.target[table]` | [`CARVE-P12-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L2) | `table_caption` | `figure` | `unspecified` | `unspecified` | `unspecified` | `clause` |
-| `table_cell.blocks` | [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L365) | `unspecified` | `cell_blocks` | `flatten_blocks` | `flatten_blocks` | `flatten_blocks` | `field-unspellable (Carve,Markdown,Plain,ANSI)` |
-| `small_caps` | [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L414) | `unwrap` | `smallcaps_span` | `smallcaps_span` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
+| `table_cell.blocks` | [`CARVE-P12-049`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L362) | `unspecified` | `cell_blocks` | `flatten_blocks` | `flatten_blocks` | `flatten_blocks` | `field-unspellable (Carve,Markdown,Plain,ANSI)` |
+| `small_caps` | [`CARVE-P12-050`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L411) | `unwrap` | `smallcaps_span` | `smallcaps_span` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
 | `section` | [`CARVE-P12-052`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L2) | `unwrap` | `section` | `unwrap` | `unwrap` | `unwrap` | `structure-unspellable (Carve)` |
 | `ruby` | [`CARVE-P12-054`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L61) | `parenthesized_pairs` | `ruby` | `ruby` | `parenthesized_pairs` | `parenthesized_pairs` | `ruby-flattened (Carve,Plain,ANSI)` |
 | `block_extension[unknown name]` | [`CARVE-P12-055`](https://github.com/markup-carve/carve/blob/main/resources/spec/26-ast-interchange.ebnf#L99) | `fallback` | `fallback` | `fallback` | `fallback` | `fallback` | `clause` |

@@ -12,9 +12,9 @@
 
       The criterion is §5's own: recomputability. A heading id is NOT a function
       of the heading. Dedup assigns the next free suffix in document order, so
-      two `# Notes` headings yield `Notes` and then `Notes-2` (PART 9 §13; the
-      slug and dedup rules are syntax.md §4.1, and PART 9 §13's namespace is
-      shared with every other generated id). A consumer holding only the tree
+      two `# Notes` headings yield `Notes` and then `Notes-2` (CARVE-P2-004
+      states the slug and dedup rules; CARVE-P9-019 shares that namespace with
+      every other generated id). A consumer holding only the tree
       cannot replicate that, and a table of contents, a go-to-definition jump
       and a cross-document index each need the exact id, not a plausible one.
 
@@ -201,7 +201,7 @@
         href    the destination; present and non-empty, since a definition with
                 an empty destination is not a definition but paragraph text
         title   the quoted title, unescaped, when the definition carries one
-        attrs   a trailing attribute block on the definition line (§15 A2b)
+        attrs   a trailing attribute block on the definition line (CARVE-P3-007)
 
       IT HOISTS TO THE DOCUMENT, exactly as §7 requires of the FOOTNOTE
       definition: a definition authored inside a block quote or a list item is
@@ -222,7 +222,7 @@
 
       A DEFINITION IS STILL INVISIBLE IN HTML. The node renders nothing on that
       target; it feeds the links and images that resolve its label (PART 9R R1).
-      The non-HTML targets emit it, as §10a requires.
+      The non-HTML targets emit it, as CARVE-P11-028 requires.
 
    11. A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST -- NORMATIVE [CARVE-P12-030].
       The wire shape is pinned by `resources/ast-schema.json` with
@@ -250,8 +250,7 @@
       it, not the absence of a check -- a namespace the schema names and every
       engine preserves. Until such a place exists, extension data on the wire
       is invalid for the same reason any other unnamed property is, and an
-      extension that relies on the pass-through relies on one engine's leak
-      (PART 10 §1: an extension may not change the core vocabulary).
+      extension that relies on the pass-through relies on one engine's leak.
 
 
    12. A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST -- NORMATIVE [CARVE-P12-031]. §7
@@ -334,8 +333,10 @@
       the canonical tree closed and unchanged.
 
       The sidecar validates against `resources/ast-source-layout-schema.json`.
-      Version is 1, encoding is UTF-8, and each RFC 6901 `path` addresses the
-      accompanying canonical AST. `startByte` is inclusive and `endByte`
+      Version is 1, encoding is UTF-8, `source` is the original input,
+      `lineEndings` names the terminators it uses (`none`, `lf`, `crlf`, `cr`
+      or `mixed`), `bom` says whether it begins with U+FEFF, and each RFC 6901
+      `path` addresses the accompanying canonical AST. `startByte` is inclusive and `endByte`
       exclusive in the ORIGINAL input, including BOM and CRLF bytes. Entries
       are sorted by path; a producer MUST NOT invent an unplaceable range.
 

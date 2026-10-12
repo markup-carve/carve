@@ -10,9 +10,8 @@
       differ maps them on output; it does not export its internal shape.
 
       AST TYPE NAMES FOLLOW THE PROFILE VOCABULARY -- NORMATIVE [CARVE-P12-001].
-      This clause is about the SHAPE of a node: which fields it carries and
-      what they are called. Where an implementation's `type` string disagrees with the
-      vocabulary in profiles.md, the vocabulary wins.
+      A node's `type` string is the name profiles.md gives that node type.
+      Where an implementation's own name differs, the vocabulary wins.
 
    1a. ADJACENT TEXT RUNS ARE COALESCED -- NORMATIVE [CARVE-P12-002]. A serialized node's
       children contain NO two adjacent `text` nodes. Where a producer's internal
@@ -51,16 +50,15 @@
       is the exception: it spans its pieces from the file that holds the run,
       from the first one's start to the last one's end.
 
-      `escaped_text` is NOT `text` and does not merge with it: PART 12 §5 keeps
-      the two distinct on the wire because an escape is authored form, and
-      collapsing them would lose the distinction the type exists to carry.
+      `escaped_text` is NOT `text` and does not merge with it: §3 keeps the two
+      distinct on the wire because an escape is authored form, and collapsing
+      them would lose the distinction the type exists to carry.
 
       JSON Schema cannot forbid adjacent entries of the same shape, so the
       conformance check enforces this rule as a gate.
 
    2. EVERY NODE IS AN OBJECT with a `type` holding the node-type identifier
-      from profiles.md - the same snake_case strings PART 9 §8 already calls
-      spec surface for kind names. A document is
+      from profiles.md (CARVE-P12-001). A document is
       `{"type":"document","children":[...]}`.
 
       The root's own fields are fixed by §7: `type`, `children` and
@@ -79,7 +77,10 @@
         image      `src`, `alt`, `title`
         code       `value`, literal Unicode content
         text       `value`, literal Unicode content
-        heading    `level`, `children`
+        escaped_text
+                   `value`, the character of an `escaped_char` (PART 3)
+                   without its backslash; never merged into `text` (§1a)
+        heading   `level`, `children`
         list       `ordered`, `tight`, `start`, `items`, and the AUTHOR-CHOICE
                    fields `bulletChar`, `delim` and `bareMarker` (PART 11 §6)
                    when the author's spelling is not the default. `bareMarker`
@@ -172,7 +173,8 @@
       nonempty content has none. It inserts that break and reports
       `field-unspellable` for `code_block.content` on the PART 11 §1d channel.
       Empty content needs no inserted payload line and reports nothing.
-      This report belongs to an API exposing conversion diagnostics (§1d).
+      This report belongs to an API exposing conversion diagnostics
+      (CARVE-P11-046).
       HTML import itself preserves the payload and reports no loss for a
       missing final break. An API exposing only the HTML-import report adds
       no diagnostic code for the later canonical writer's inserted break.
@@ -318,10 +320,6 @@
       cannot be written back: the writer reconstructs `</#` + the id + `>`, so
       the document comes out of a wire round trip spelled `</#Intro>`.
 
-      `fromCrossref` on `link` is therefore not the crossref's serialization. A
-      LINK the author wrote as a link may still carry it as a rendering hint;
-      what it may not do is stand in place of the `heading_ref`.
-
       THE DISPLAY TEXT IS NOT SERIALIZED. A resolved crossref renders the target
       heading's text, and that text is NOT copied into the node: the heading is
       in the same document, so a consumer reads it from there. This is the one
@@ -356,6 +354,9 @@
 
       Lines are 1-based. Columns are 1-based and offsets 0-based, both counted
       in UNICODE CODEPOINTS. `endColumn` and `endOffset` are exclusive.
+      `pos.file`, when present, is the canonical id of the included input the
+      coordinates are measured in (PART 9 §19); absent means the top-level
+      input.
 
       Codepoint indices always land on character boundaries; bytes and UTF-16
       units can split encoded characters. Implementations convert once per
@@ -453,7 +454,7 @@
 
       A HOISTED SIBLING IS NOT A CHILD, AND A CLOSERLESS CONTAINER ENDS BEFORE
       IT -- NORMATIVE [CARVE-P12-015]. A definition written at a container's content column is
-      collected and hoisted to the DOCUMENT (§7), so it leaves the container
+      hoisted to the DOCUMENT (CARVE-P12-029), so it leaves the container
       and becomes its sibling while its `pos` still points inside the source the
       container encloses. Hoisting breaks the correspondence between tree
       nesting and source nesting, and a span follows the TREE:
@@ -477,7 +478,7 @@
       A HOISTED DEFINITION MAY CLAIM SOURCE INSIDE THE CONTAINER IT WAS
       AUTHORED IN -- NORMATIVE [CARVE-P12-016]. The one exception to the sibling-overlap rule
       stated further down this section, and it holds WHATEVER THAT CONTAINER'S
-      EXTENT. §7 makes the definition a child of the document while this section
+      EXTENT. CARVE-P12-029 makes the definition a child of the document while this section
       keeps its `pos` pointing back at the container it was written inside, so
       the two are siblings whose spans meet by construction; and the paragraph
       above ends an emptied closerless container at its own markup, which leaves
@@ -488,7 +489,7 @@
 
       spans the emptied `block_quote` as `> ` and the hoisted
       `link_reference_definition` over the whole line, and offsets 0 to 2 sit in
-      two document-level siblings at once. §7, the emptied-container paragraph
+      two document-level siblings at once. CARVE-P12-029, the emptied-container paragraph
       above and the sibling-overlap rule cannot all three hold on this document,
       and the exception is where it gives.
 
@@ -533,7 +534,7 @@
       A CONTAINER WITH NO PLACED CHILD AT ALL SPANS ITS OWN MARKUP AND STOPS
       THERE -- NORMATIVE [CARVE-P12-018]. "Ends at its last placed child" is silent when there
       is none, and a container can be emptied: a definition written as an item's
-      only content is collected out of it (§7) and the item keeps no trace.
+      only content is collected out of it (CARVE-P12-029) and the item keeps no trace.
 
           * * [d]: u
            :
@@ -603,7 +604,7 @@
 
       A REASSEMBLED NODE MUST OMIT `pos` -- NORMATIVE [CARVE-P12-022]. A node whose value is not
       a contiguous slice of the source, because the producer joined it from
-      pieces the source separates or synthesized it outright, MAY omit `pos`
+      pieces the source separates or synthesized it outright, MUST omit `pos`
       rather than invent one, and is CONFORMANT doing so. This is a permitted
       category, not a shortfall to be tracked.
 
