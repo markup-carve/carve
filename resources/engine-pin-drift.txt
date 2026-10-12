@@ -30,3 +30,6 @@
 556-a-closed-block-leaves-no-frame-for-the-line-below-10  a closed fence on a sublist's marker line leaves no paragraph (CARVE-P0-009); the pin still keeps the line in the outer item (carve-js#2838)
 556-a-closed-block-leaves-no-frame-for-the-line-below-12  a line after a nested marker note's code block leaves the list (CARVE-P0-009); the pin still keeps it in the item (carve-js#2806, carve-js#2831, carve-php#3182, carve-rs#2536)
 556-a-closed-block-leaves-no-frame-for-the-line-below-15  an unmatched comment fence is the line form for item ownership (CARVE-P9-053, carve#2950); the pin still keeps the item open (carve-js#2838)
+557-a-line-retained-after-a-comment-opens-a-paragraph  a line retained after a comment opens a paragraph that a later below-column line folds into (CARVE-P0-023); the pin ends the item instead (carve-js#2772, carve-php#3137, carve-rs#2511)
+557-a-line-retained-after-a-comment-opens-a-paragraph-2  a line retained after a comment opens a paragraph that a later below-column line folds into (CARVE-P0-023); the pin ends the item instead (carve-js#2772, carve-php#3137, carve-rs#2511)
+557-a-line-retained-after-a-comment-opens-a-paragraph-3  a line retained after a comment opens a paragraph that a later below-column line folds into (CARVE-P0-023); the pin ends the item instead (carve-js#2772, carve-php#3137, carve-rs#2511)

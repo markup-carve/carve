@@ -112,7 +112,7 @@ lines can store an ownership claim; blank, comment, definition, heading, table
 and closed-fence boundaries do not create one. For a quote, nested list or
 attachment, paragraph state comes from the deepest relevant leaf. A lazy fold
 keeps its container available for following lines. EOF closes both states.
-Rules: CARVE-P0-003, CARVE-P0-009 and CARVE-P0-015.
+Rules: CARVE-P0-003, CARVE-P0-009, CARVE-P0-015 and CARVE-P0-023.
 
 The list collector uses `afterCommentTransition` for its after-comment flag.
 The helper consumes classified line and span facts; it does not recognize

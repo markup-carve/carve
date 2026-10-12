@@ -104,7 +104,8 @@
       "rules": [
         "CARVE-P0-003",
         "CARVE-P0-015",
-        "CARVE-P0-009"
+        "CARVE-P0-009",
+        "CARVE-P0-023"
       ],
       "checkerHelpers": [
         "ownershipTransition",

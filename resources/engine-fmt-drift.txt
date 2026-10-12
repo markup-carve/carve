@@ -20,3 +20,4 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
+557-a-line-retained-after-a-comment-opens-a-paragraph-2  fmt(x) re-parses to a different tree on the pin, which does not read this source by CARVE-P0-023 yet; not attributed further (carve-js#2772)

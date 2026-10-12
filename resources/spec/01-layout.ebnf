@@ -303,6 +303,13 @@
         and continuation lines. `- {.a` / `  .b}` / `tail` leaves no paragraph
         open, and `tail` is reclassified outside the item.
 
+        A RETAINED LINE OPENS A PARAGRAPH -- NORMATIVE [CARVE-P0-023]. A line
+        an item retains below its content column after a comment (PART 9 §24
+        C3) opens a paragraph in that item. A following below-column line
+        folds into it, a list marker included, and an unclosed code span
+        carries on through the fold: in `> - a` / `>   %% c` / `>  ``x` /
+        `- tail` the span holds `x` and `- tail`.
+
         A DEFINITION AT THE CONTENT COLUMN ENDS THE PARAGRAPH, NOT THE
         CONTAINER -- NORMATIVE [CARVE-P0-010]. A link or footnote definition
         at a list item's or definition body's `content_column` interrupts the
