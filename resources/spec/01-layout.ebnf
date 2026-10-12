@@ -53,9 +53,10 @@
                                 code_fence | raw_fence | colon_fence | table |
                                 nested_list | continuation | end
 
-           `container_open` is NEVER inferred from `paragraph_open`.
-           `paragraph_open` describes an operation available inside a frame
-           that has already survived; it does not keep that frame alive. S1
+           `container_open` is inferred from `paragraph_open` only below the
+           content column (CARVE-P0-009). Elsewhere `paragraph_open` describes
+           an operation available inside a frame that has already survived;
+           it does not keep that frame alive. S1
            and the transition table below select the surviving frames and the
            owner first. Only then may S3/S4 continue a paragraph.
 
@@ -168,8 +169,8 @@
            A further qualification is a continuation claim already established
            by the PRECEDING ordinary line: an unblank-separated, noninterrupting
            line that misses a container prefix is assigned to the owner of that
-           ordinary line. This is stored ownership, not a search for any open
-           paragraph. After the owner is selected, `paragraph_open` decides
+           ordinary line. This is stored ownership, not a search up the stack
+           for an open paragraph. After the owner is selected, `paragraph_open` decides
            whether the operation is continuation or a new paragraph. A blank,
            heading, definition, comment, table or closed fence establishes no
            such claim.
