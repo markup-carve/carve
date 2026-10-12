@@ -38,6 +38,9 @@ const script = resolve(repo, 'scripts/fleet-spec-pin-check.mjs')
  * agreeing fleet pins; OLDER stands in for the engine left behind. */
 const NEWER = specCommit(repo)
 const OLDER = specCommit(repo, 4)
+// Counted, not assumed: four first parents back is more than four commits
+// behind when a merge commit lies in between.
+const DISTANCE = execFileSync('git', ['-C', repo, 'rev-list', '--count', `${OLDER}..${NEWER}`], { encoding: 'utf8' }).trim()
 
 /**
  * @param pins    one spec commit per engine
@@ -80,7 +83,7 @@ test('one engine behind the other two fails, and the output names it and the dis
   const { status, out } = run(DIVERGED, '')
   assert.equal(status, 1, out)
   assert.match(out, /do not implement the same spec/)
-  assert.match(out, /carve-php\s+\w{8}.*4 behind carve-/)
+  assert.match(out, new RegExp(`carve-php\\s+\\w{8}.*\\b${DISTANCE} behind carve-`))
   assert.match(out, /FLEET SPEC PIN CHECK FAILED/)
   // The one that is behind is named; the two that agree are not accused.
   assert.doesNotMatch(out, /carve-rs\s+\w{8}\s+\d{4}-\d{2}-\d{2}\s+\d+ behind carve-js/)
