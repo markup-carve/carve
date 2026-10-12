@@ -1,5 +1,5 @@
 /*
- * docs/ast-json-contract.md quotes MEASURED engine state, and measured state rots.
+ * docs/implementation-comparison.md quotes MEASURED engine state, and measured state rots.
  *
  * That page carries a per-engine table of what each implementation publishes.
  * Twice in two days it was found wrong, in opposite directions: the positions
@@ -75,10 +75,12 @@ import { RECONCILED_ENGINES, parseWaivers } from '../scripts/spec/ast-waivers.mj
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const page = readFileSync(resolve(root, 'docs/ast-json-contract.md'), 'utf8')
+// The measured engine table and its notes live on the comparison page; the contract guide keeps the rules.
+const measured = readFileSync(resolve(root, 'docs/implementation-comparison.md'), 'utf8')
 const waiverText = readFileSync(resolve(root, 'resources/ast-position-waivers.txt'), 'utf8')
 const valueText = readFileSync(resolve(root, 'resources/ast-value-divergence.txt'), 'utf8')
 
-const rows = parseConformanceTable(page)
+const rows = parseConformanceTable(measured)
 const rowFor = (engine) => rows.find((row) => row.engines.length === 1 && row.engines[0] === engine)
 const jsRow = rowFor('carve-js')?.shape
 
@@ -100,7 +102,7 @@ const nodesOfType = (doc, type) => {
 const treeOf = (source) => toAstJson(parse(source))
 
 test('the page has a carve-js row to check', () => {
-  assert.ok(jsRow, 'no `| carve-js |` row in docs/ast-json-contract.md; the table shape changed')
+  assert.ok(jsRow, 'no `| carve-js |` row in docs/implementation-comparison.md; the table shape changed')
 })
 
 /*
@@ -207,7 +209,7 @@ test('no row claims an abbreviation_def sits inside its container', () => {
   // and why, so scanning the whole page matches the explanation and fails on
   // the sentence that documents the fix - which is how a negative assertion
   // usually earns its bad reputation.
-  const rows = page.split('\n').filter((line) => line.startsWith('| carve-'))
+  const rows = measured.split('\n').filter((line) => line.startsWith('| carve-'))
   for (const row of rows) {
     assert.doesNotMatch(
       row,
@@ -383,7 +385,7 @@ test('a row names an issue only where a ledger still declares the debt', () => {
       for (const issue of citedIssues(cell)) {
         assert.ok(
           debt.has(issue),
-          `docs/ast-json-contract.md:${row.lineNo} (${row.engineCell}) cites ${issue}, which neither ` +
+          `docs/implementation-comparison.md:${row.lineNo} (${row.engineCell}) cites ${issue}, which neither ` +
             'resources/ast-position-waivers.txt nor resources/ast-value-divergence.txt still ' +
             'declares. A conformance row states measured state; the history goes in the prose below it.',
         )
@@ -405,7 +407,7 @@ test('a declared position gap is named in its own engine row', () => {
       assert.ok(
         cited.has(line.status),
         `resources/ast-position-waivers.txt owes ${line.status} for ${engine} ` +
-          `(${line.document}, ${line.type}) and docs/ast-json-contract.md:${row.lineNo} does not name it`,
+          `(${line.document}, ${line.type}) and docs/implementation-comparison.md:${row.lineNo} does not name it`,
       )
     }
   }
@@ -423,12 +425,12 @@ test('a positions cell names exactly the permitted categories its ledger records
         assert.ok(
           named,
           `resources/ast-position-waivers.txt permits ${type} for ${engine} and ` +
-            `docs/ast-json-contract.md:${row.lineNo} does not say so (expected the phrase "${phrase}")`,
+            `docs/implementation-comparison.md:${row.lineNo} does not say so (expected the phrase "${phrase}")`,
         )
       } else {
         assert.ok(
           !named,
-          `docs/ast-json-contract.md:${row.lineNo} tells a reader ${engine} omits a ${type} position, ` +
+          `docs/implementation-comparison.md:${row.lineNo} tells a reader ${engine} omits a ${type} position, ` +
             'and no line in resources/ast-position-waivers.txt records one',
         )
       }
@@ -449,10 +451,10 @@ test('an engine claiming §3a conformance has the measurement printed below the 
   for (const row of rows) {
     if (!/§3a conformant/.test(row.shape)) continue
     for (const engine of row.engines) {
-      const line = page
+      const line = measured
         .split('\n')
         .find((candidate) => candidate.trim().startsWith(`${engine}   `) || candidate.trim().startsWith(`${engine}  {`))
-      assert.ok(line, `docs/ast-json-contract.md:${row.lineNo} claims §3a conformance for ${engine} with no measured line`)
+      assert.ok(line, `docs/implementation-comparison.md:${row.lineNo} claims §3a conformance for ${engine} with no measured line`)
       for (const field of ['"href"', '"ref"', '"rawRef"']) {
         assert.ok(
           line.includes(field),
@@ -475,7 +477,7 @@ test('a paragraph citing the value ledger names only fields it still declares', 
       .filter((line) => line !== '' && !line.startsWith('#'))
       .map((line) => line.split(/\s+/)[0]),
   )
-  for (const paragraph of page.split('\n\n')) {
+  for (const paragraph of `${page}\n\n${measured}`.split('\n\n')) {
     if (!paragraph.includes('resources/ast-value-divergence.txt')) continue
     for (const m of paragraph.matchAll(/`([a-z_]+(?:\.[a-z_]+)+)`/gi)) {
       assert.ok(
