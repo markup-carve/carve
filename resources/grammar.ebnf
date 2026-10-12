@@ -8234,6 +8234,24 @@ EOF = (* end of file *) ;
                                                   keeps its `<p>`. The AST
                                                   field it restores is
                                                   `list.tight`
+        data-carve-xref             <a>           presence: the link is a
+                                                  resolved cross-reference
+                                                  (`</#id>`), its text
+                                                  generated from the target.
+                                                  It restores a `heading_ref`
+                                                  whose `target` is the
+                                                  `href` fragment
+        data-carve-caption-number   <span>        presence: the span holds the
+                                                  number a caption's `#`
+                                                  placeholder rendered. It
+                                                  restores `caption_number`
+        data-carve-inline           <span>, <img>, presence: the element is the
+                                    <a>           Markdown target's spelling of
+                                                  an inline construct with
+                                                  attributes (PART 11 §10u).
+                                                  The HTML target never writes
+                                                  it; it is reserved here so an
+                                                  import consumes it
 
       AN ORDERED LIST'S DELIMITER IS `data-delim`, NOT A SECOND CARRIER. §12
       writes the authored delimiter on every render, and an ordered list's
@@ -8288,6 +8306,27 @@ EOF = (* end of file *) ;
       and writes the carrier nowhere else. A reader takes either value over
       what the items' `<p>` elements imply; any other value is not a carrier
       (§13e).
+
+      A CROSS-REFERENCE'S TEXT IS GENERATED, SO THE IMPORT DISCARDS IT. The
+      `<a>` carries the resolved text the target supplied (a heading's text, a
+      `Figure 1`), and the import rebuilds `</#id>` from the `href` alone.
+      The `href` MUST be a fragment (`#` and an id the identifier grammar
+      admits); any other `href` is not this carrier, and §13e's rule for an
+      invalid value applies.
+
+        See </#fig-sun>.   ->  <p>See <a href="#fig-sun"
+                               data-carve-xref>Figure 1</a>.</p>
+
+      A CAPTION NUMBER IS WRAPPED ONLY UNDER ROUNDTRIP EXPORT. The default
+      render writes the number as bare text inside the caption; roundtrip
+      export wraps exactly that number in a `<span data-carve-caption-number>`
+      and nothing else, and the import replaces the span with
+      `caption_number`, whatever digits it holds. The span has no other
+      attribute and holds text only; a span that does not is not this carrier.
+
+        ^ Figure #: The sun  ->  <figcaption>Figure <span
+                                 data-carve-caption-number>1</span>: The
+                                 sun</figcaption>
 
       THE `data-carve-col-widths` ROW SATISFIES THE CARRIER RULE.
       `data-carve-col-widths` was absent from this inventory until
@@ -10969,6 +11008,39 @@ EOF = (* end of file *) ;
       A CAPTION MARKER BELONGS TO THE BLOCK DIRECTLY BEFORE IT. One with no
       captionable block before it, or one whose block already holds a caption,
       is a damaged set.
+
+  10u. THE CARRIER MODE WRITES AN INLINE CONSTRUCT MARKDOWN CANNOT SPELL AS
+      INLINE HTML -- NORMATIVE [CARVE-P11-068]. Markdown has no syntax for an
+      inline construct's attributes and none for a cross-reference, so this
+      target drops a span's, an image's and a link's attributes and writes a
+      resolved cross-reference as its text. Under the carrier mode those four
+      are written as the HTML element PART 10 renders for them, which every
+      Markdown renderer passes through, and the import reads them back:
+
+        [x]{.c}                 ->  <span class="c" data-carve-inline>x</span>
+        ![a](i.png){width=300}  ->  <img src="i.png" alt="a" width="300"
+                                    data-carve-inline>
+        [l](u){.k}              ->  <a href="u" class="k" data-carve-inline>l</a>
+        </#fig-sun>             ->  <a href="#fig-sun" data-carve-xref>Figure
+                                    1</a>
+
+      ONLY A CONSTRUCT THAT NEEDS IT IS WRITTEN THIS WAY. A span, image or link
+      without attributes keeps its Markdown spelling, so turning the mode on
+      does not rewrite every link in a document.
+
+      THE CONTENT STAYS MARKDOWN. A span's and a link's children are written
+      by this target between the tags, as CommonMark reads inline content
+      inside inline HTML; an image's `alt` is its plain text.
+
+      THE IMPORT CONVERTS ONLY A MARKED ELEMENT. An element carrying
+      `data-carve-inline` or `data-carve-xref` is read as the Carve construct;
+      any other inline HTML is foreign and imports exactly as before. A marked
+      element is untrusted input like any other carrier (PART 10 §13e): its
+      attributes go through the attribute grammar of PART 4 and an HTML
+      import's attribute rules, its `href` and `src` through the destination
+      checks of PART 9, and anything those refuse is dropped and reported, never
+      passed through. An unbalanced or unreadable marked element is a damaged
+      set.
 
   11. THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG --
       NORMATIVE [CARVE-P11-038]. GFM has no heading-id syntax: a reader derives every

@@ -851,6 +851,40 @@
           "element": "h1"
         }
       ]
+    },
+    {
+      "id": "cross-reference",
+      "source": "{#fig-sun}\n![Sun](sun.png)\n^ Figure #: The sun\n\nSee </#fig-sun>.\n",
+      "carriers": {
+        "data-carve-xref": null,
+        "data-carve-caption-number": null
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "heading_ref",
+          "target": "fig-sun"
+        },
+        {
+          "type": "caption_number"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-xref",
+          "element": "a"
+        },
+        {
+          "attribute": "data-carve-caption-number",
+          "element": "span"
+        }
+      ],
+      "aheadOfPin": true
     }
   ],
   "importNegative": [
@@ -1365,6 +1399,70 @@
           "type": "definition_list"
         }
       ]
+    },
+    {
+      "id": "inline-span-attributes",
+      "source": "[x]{.c} text\n",
+      "carrierFragments": [
+        "<span class=\"c\" data-carve-inline>x</span>"
+      ],
+      "expectedNodes": [
+        {
+          "type": "span",
+          "attrs.classes": [
+            "c"
+          ]
+        }
+      ],
+      "aheadOfPin": true
+    },
+    {
+      "id": "image-attributes",
+      "source": "![a](i.png){width=300}\n",
+      "carrierFragments": [
+        "data-carve-inline"
+      ],
+      "expectedNodes": [
+        {
+          "type": "image",
+          "src": "i.png",
+          "attrs.keyValues": {
+            "width": "300"
+          }
+        }
+      ],
+      "aheadOfPin": true
+    },
+    {
+      "id": "link-attributes",
+      "source": "[l](u){.k}\n",
+      "carrierFragments": [
+        "<a href=\"u\" class=\"k\" data-carve-inline>l</a>"
+      ],
+      "expectedNodes": [
+        {
+          "type": "link",
+          "href": "u",
+          "attrs.classes": [
+            "k"
+          ]
+        }
+      ],
+      "aheadOfPin": true
+    },
+    {
+      "id": "cross-reference-markdown",
+      "source": "{#fig-sun}\n![Sun](sun.png)\n^ Figure #: The sun\n\nSee </#fig-sun>.\n",
+      "carrierFragments": [
+        "<a href=\"#fig-sun\" data-carve-xref>"
+      ],
+      "expectedNodes": [
+        {
+          "type": "heading_ref",
+          "target": "fig-sun"
+        }
+      ],
+      "aheadOfPin": true
     }
   ]
 }

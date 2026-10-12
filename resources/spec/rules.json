@@ -1451,6 +1451,12 @@
       "scope": "canonical-writing"
     },
     {
+      "id": "CARVE-P11-068",
+      "part": "11",
+      "title": "THE CARRIER MODE WRITES AN INLINE CONSTRUCT MARKDOWN CANNOT SPELL AS INLINE HTML",
+      "scope": "canonical-writing"
+    },
+    {
       "id": "CARVE-P11-036",
       "part": "11",
       "title": "A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES",

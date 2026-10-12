@@ -236,6 +236,39 @@
       captionable block before it, or one whose block already holds a caption,
       is a damaged set.
 
+  10u. THE CARRIER MODE WRITES AN INLINE CONSTRUCT MARKDOWN CANNOT SPELL AS
+      INLINE HTML -- NORMATIVE [CARVE-P11-068]. Markdown has no syntax for an
+      inline construct's attributes and none for a cross-reference, so this
+      target drops a span's, an image's and a link's attributes and writes a
+      resolved cross-reference as its text. Under the carrier mode those four
+      are written as the HTML element PART 10 renders for them, which every
+      Markdown renderer passes through, and the import reads them back:
+
+        [x]{.c}                 ->  <span class="c" data-carve-inline>x</span>
+        ![a](i.png){width=300}  ->  <img src="i.png" alt="a" width="300"
+                                    data-carve-inline>
+        [l](u){.k}              ->  <a href="u" class="k" data-carve-inline>l</a>
+        </#fig-sun>             ->  <a href="#fig-sun" data-carve-xref>Figure
+                                    1</a>
+
+      ONLY A CONSTRUCT THAT NEEDS IT IS WRITTEN THIS WAY. A span, image or link
+      without attributes keeps its Markdown spelling, so turning the mode on
+      does not rewrite every link in a document.
+
+      THE CONTENT STAYS MARKDOWN. A span's and a link's children are written
+      by this target between the tags, as CommonMark reads inline content
+      inside inline HTML; an image's `alt` is its plain text.
+
+      THE IMPORT CONVERTS ONLY A MARKED ELEMENT. An element carrying
+      `data-carve-inline` or `data-carve-xref` is read as the Carve construct;
+      any other inline HTML is foreign and imports exactly as before. A marked
+      element is untrusted input like any other carrier (PART 10 §13e): its
+      attributes go through the attribute grammar of PART 4 and an HTML
+      import's attribute rules, its `href` and `src` through the destination
+      checks of PART 9, and anything those refuse is dropped and reported, never
+      passed through. An unbalanced or unreadable marked element is a damaged
+      set.
+
   11. THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG --
       NORMATIVE [CARVE-P11-038]. GFM has no heading-id syntax: a reader derives every
       heading's id from its text, and `## H {#h}` shows the suffix as text.

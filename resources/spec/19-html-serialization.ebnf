@@ -554,6 +554,24 @@
                                                   keeps its `<p>`. The AST
                                                   field it restores is
                                                   `list.tight`
+        data-carve-xref             <a>           presence: the link is a
+                                                  resolved cross-reference
+                                                  (`</#id>`), its text
+                                                  generated from the target.
+                                                  It restores a `heading_ref`
+                                                  whose `target` is the
+                                                  `href` fragment
+        data-carve-caption-number   <span>        presence: the span holds the
+                                                  number a caption's `#`
+                                                  placeholder rendered. It
+                                                  restores `caption_number`
+        data-carve-inline           <span>, <img>, presence: the element is the
+                                    <a>           Markdown target's spelling of
+                                                  an inline construct with
+                                                  attributes (PART 11 §10u).
+                                                  The HTML target never writes
+                                                  it; it is reserved here so an
+                                                  import consumes it
 
       AN ORDERED LIST'S DELIMITER IS `data-delim`, NOT A SECOND CARRIER. §12
       writes the authored delimiter on every render, and an ordered list's
@@ -608,6 +626,27 @@
       and writes the carrier nowhere else. A reader takes either value over
       what the items' `<p>` elements imply; any other value is not a carrier
       (§13e).
+
+      A CROSS-REFERENCE'S TEXT IS GENERATED, SO THE IMPORT DISCARDS IT. The
+      `<a>` carries the resolved text the target supplied (a heading's text, a
+      `Figure 1`), and the import rebuilds `</#id>` from the `href` alone.
+      The `href` MUST be a fragment (`#` and an id the identifier grammar
+      admits); any other `href` is not this carrier, and §13e's rule for an
+      invalid value applies.
+
+        See </#fig-sun>.   ->  <p>See <a href="#fig-sun"
+                               data-carve-xref>Figure 1</a>.</p>
+
+      A CAPTION NUMBER IS WRAPPED ONLY UNDER ROUNDTRIP EXPORT. The default
+      render writes the number as bare text inside the caption; roundtrip
+      export wraps exactly that number in a `<span data-carve-caption-number>`
+      and nothing else, and the import replaces the span with
+      `caption_number`, whatever digits it holds. The span has no other
+      attribute and holds text only; a span that does not is not this carrier.
+
+        ^ Figure #: The sun  ->  <figcaption>Figure <span
+                                 data-carve-caption-number>1</span>: The
+                                 sun</figcaption>
 
       THE `data-carve-col-widths` ROW SATISFIES THE CARRIER RULE.
       `data-carve-col-widths` was absent from this inventory until
