@@ -85,8 +85,9 @@ for (const fixture of fixtures.exportImport) {
     assert.equal(carveToHtml(fixture.source, { roundtrip: false }), ordinary)
     assert.ok(!htmlAttributes(ordinary).some((attr) => isReserved(attr.name)))
     const exported = carveToHtml(fixture.source, { roundtrip: true })
-    // Byte-exact where the row records the reference engine's output, so every engine ports to the same bytes.
-    if (fixture.exportedHtml !== undefined) assert.equal(exported, fixture.exportedHtml)
+    // Byte-exact where the row records the reference engine's output; a document-final line break is engine
+    // convention (the corpus compares trimmed output too), so it is not part of the bytes.
+    if (fixture.exportedHtml !== undefined) assert.equal(exported.replace(/\n+$/, ''), fixture.exportedHtml.replace(/\n+$/, ''))
     const attrs = htmlAttributes(exported)
     for (const [name, expected] of Object.entries(fixture.carrierText ?? {})) {
       const hosts = carrierElements(exported, name)
@@ -173,7 +174,7 @@ for (const fixture of fixtures.markdownExportImport) test(`shared Markdown expor
   assert.equal(carveToMarkdown(fixture.source, { roundtrip: false }), ordinary)
   assert.ok(!ordinary.includes('<!-- carve:'))
   const exported = carveToMarkdown(fixture.source, { roundtrip: true })
-  if (fixture.exportedMarkdown !== undefined) assert.equal(exported, fixture.exportedMarkdown)
+  if (fixture.exportedMarkdown !== undefined) assert.equal(exported.replace(/\n+$/, ''), fixture.exportedMarkdown.replace(/\n+$/, ''))
   for (const fragment of fixture.carrierFragments) assert.ok(exported.includes(fragment), fragment)
   const imported = migrateMarkdown(exported)
   assertProjection(parse(imported.value), fixture.expectedNodes)

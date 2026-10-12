@@ -14,4 +14,4 @@ Invalid generic spans are tested in safe and semantic modes. Their trusted round
 
 A row marked `aheadOfPin` states behavior the pinned engine does not have yet. A flagged negative case fails in every import mode it lists. Its test passes while the pinned engine fails the row and fails once the engine passes it, so the flag is dropped in the pin bump that ships the behavior.
 
-A row with `exportedHtml` or `exportedMarkdown` also records the exact export bytes of the reference engine that first implemented it; every engine must produce the same bytes.
+A row with `exportedHtml` or `exportedMarkdown` also records the exact export bytes of the reference engine that first implemented it; every engine must produce the same bytes, up to the line breaks that end the document (a document-final line break is engine convention, as in the corpus comparisons).
