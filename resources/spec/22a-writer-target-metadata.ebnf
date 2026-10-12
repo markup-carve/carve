@@ -211,7 +211,9 @@
       definition would write the same `:` and closing markers as the list
       around it and the import could not tell which list a marker closes. A
       nested list therefore takes no markers and degrades as §10p writes it,
-      inside the outer definition that is carried.
+      inside the outer definition that is carried. This is a LIMIT: the export
+      reports each nested definition list that took no markers with one
+      `definition-list-flattened` loss (CARVE-P2-024).
 
       A DEFINITION LIST'S OWN ATTRIBUTE LINE stands directly above its first
       term marker, as that list's prelude, the way a container's attribute

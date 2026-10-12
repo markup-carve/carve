@@ -1703,6 +1703,24 @@
           "type": "definition_list"
         }
       ]
+    },
+    {
+      "id": "nested-definition-list-flattened",
+      "source": ":: Outer\n: body\n\n  :: Inner\n  : inner body\n",
+      "carrierFragments": [
+        "<!-- carve: :: Outer -->",
+        "<!-- carve: : -->",
+        "<!-- carve: -->"
+      ],
+      "expectedNodes": [
+        {
+          "type": "definition_list"
+        }
+      ],
+      "lossCodes": [
+        "definition-list-flattened"
+      ],
+      "aheadOfPin": true
     }
   ]
 }

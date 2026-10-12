@@ -596,6 +596,12 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    content of the finding and a message is not compared. Only the HTML target
    writes carriers, so only that target reports this code.
 
+   Each definition list that PART 11 §10t leaves without carrier markers
+   under roundtrip export contributes one loss in document order with the
+   stable code `definition-list-flattened`, the selected `target`, `nodeType`
+   of `block`, its `pos` when recorded, and NO `format`. Only the Markdown
+   target reports this code.
+
    The canonical Carve writer preserves authored destinations under PART 11
    and contributes no `destination-denied` row for them. PART 9 §25 binds the
    consumer that renders the emitted source, not its interchange serialization.

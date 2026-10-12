@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import { parseFragment, serialize } from 'parse5'
-import { parse, carveToHtml, carveToHtmlWithReport, htmlToAst, htmlToCarve, carveToMarkdown, migrateMarkdown } from '@markup-carve/carve'
+import { parse, carveToHtml, carveToHtmlWithReport, htmlToAst, htmlToCarve, carveToMarkdown, carveToMarkdownWithReport, migrateMarkdown } from '@markup-carve/carve'
 
 const fixtures = JSON.parse(readFileSync(new URL('../resources/roundtrip-export-acceptance-fixtures.json', import.meta.url), 'utf8'))
 const inventory = ['explicit-id', 'generated-id', 'ref', 'autolink', 'footnote-label', 'inline-footnote', 'raw', 'escaped', 'abbreviations', 'col-widths', 'label', 'id-slot', 'tight']
@@ -175,6 +175,8 @@ for (const fixture of fixtures.markdownExportImport) test(`shared Markdown expor
   assert.ok(!ordinary.includes('<!-- carve:'))
   const exported = carveToMarkdown(fixture.source, { roundtrip: true })
   for (const fragment of fixture.carrierFragments) assert.ok(exported.includes(fragment), fragment)
+  const codes = carveToMarkdownWithReport(fixture.source, { roundtrip: true }).losses.map((row) => row.code)
+  for (const code of fixture.lossCodes ?? []) assert.ok(codes.includes(code), code)
   const imported = migrateMarkdown(exported)
   assertProjection(parse(imported.value), fixture.expectedNodes)
   assert.equal(carveToHtml(imported.value).trim(), carveToHtml(fixture.source).trim())

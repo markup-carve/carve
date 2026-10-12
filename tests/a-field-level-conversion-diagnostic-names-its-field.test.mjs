@@ -79,6 +79,7 @@ test('the render-loss enum holds the render-time codes and neither channel code'
       'destination-denied',
       'editorial-comment-flattened',
       'carrier-attribute-dropped',
+      'definition-list-flattened',
     ],
   )
 })
