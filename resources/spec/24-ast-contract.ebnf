@@ -157,43 +157,25 @@
 
    9. HOW DEEP AN INGESTED AST MAY NEST -- NORMATIVE [CARVE-P12-028]. Reading a serialized AST
       is a recursive descent over attacker-controlled structure, so it needs a
-      bound for the same reason the parser does (PART 9 §25, RESOURCE BOUNDS).
-      This states the PROPERTY rather than a number, because the number cannot
-      be shared -- see the trap below.
+      bound for the same reason the parser does (CARVE-P9-054, RESOURCE
+      BOUNDS).
 
       (a) An implementation MUST ACCEPT any AST ITS OWN PARSER CAN PRODUCE at
-          MAX_NESTING_DEPTH. Serialize-then-deserialize is an identity on
-          those documents, which is §6 restricted to the deepest input the
-          parser admits. `parse` piped into ingest MUST NOT fail on a document
-          the same build just parsed.
+          MAX_NESTING_DEPTH: `parse` piped into ingest MUST NOT fail on a
+          document the same build just parsed.
 
-      (b) It MUST REJECT deeper input with AN ERROR OF ITS OWN: a typed,
-          documented failure naming the depth bound. Not truncation, not a
-          crash, and not whatever its JSON library happened to raise. An
-          ingest that accepts a tree and then silently renders only part of it
-          is the worst of the three, because the caller is told nothing.
+      (b) It MUST REJECT deeper input with an ingest refusal (CARVE-P12-068)
+          naming the depth bound.
 
       (c) The bound MAY be counted in WHATEVER UNIT suits the implementation
-          -- JSON structural levels, AST node levels, recursion frames --
-          because (a) and (b) are the whole of what a caller can rely on. An
+          (JSON structural levels, AST node levels, recursion frames). An
           implementation MUST NOT publish its unit as a shared contract.
 
-      THE TRAP, stated once: an ingest bound is NOT measured in the same unit
-      as MAX_NESTING_DEPTH, and the conversion factor is NOT A CONSTANT. One
-      AST level costs two JSON structural levels for a blockquote or div (the
-      object plus its `children` array) and four for a list (list, items,
-      item, children); in node terms a list level costs two nodes and a div
-      level one. So neither MAX_NESTING_DEPTH nor "MAX_NESTING_DEPTH plus a
-      small margin" is a safe bound in either unit. An implementation MUST
-      DERIVE its bound from MAX_NESTING_DEPTH by the worst per-level cost of
-      its own encoding, and MUST NOT restate the parser's number as its ingest
-      number -- a bound written down twice diverges; one derived from the other
-      cannot.
-
-      The root type is not a leniency point: §7 fixes it at `document`, and
-      the schema pins it as a `const`. An ingest accepting some other root
-      (`doc`, say, which is ProseMirror's) will half-read a foreign format
-      rather than reject it.
+      The conversion from MAX_NESTING_DEPTH is NOT A CONSTANT: one AST level
+      costs two JSON structural levels for a blockquote or div and four for a
+      list (list, items, item, children). An implementation MUST DERIVE its
+      bound from MAX_NESTING_DEPTH by the worst per-level cost of its own
+      encoding, and MUST NOT restate the parser's number as its ingest number.
 
    10. A LINK REFERENCE DEFINITION IS A NODE -- NORMATIVE [CARVE-P12-029].
       `type: "link_reference_definition"`, carrying:
@@ -225,124 +207,88 @@
       The non-HTML targets emit it, as CARVE-P11-028 requires.
 
    11. A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST -- NORMATIVE [CARVE-P12-030].
-      The wire shape is pinned by `resources/ast-schema.json` with
-      `additionalProperties: false` at every node, so a payload carrying a
-      property no node type names is NOT a Carve AST. An ingest MUST REFUSE it
-      with AN ERROR OF ITS OWN -- a typed, documented failure naming the
-      offending property and the PATH it appeared at, so a caller can find it
-      in a tree it did not write. Not a silent drop, and not a pass-through.
+      `resources/ast-schema.json` closes every node with
+      `additionalProperties: false`, so a payload carrying a property no node
+      type names is NOT a Carve AST. An ingest MUST REFUSE it (CARVE-P12-068),
+      naming the property and the PATH it appeared at. It neither drops the
+      property nor passes it through: a reader that copies the record re-emits
+      the property, and its own output no longer validates.
 
-      THE PASS-THROUGH IS THE ONE ANSWER THAT CANNOT BE RIGHT. An
-      implementation that copies a wire record wholesale re-emits the unknown
-      property when it serializes again, so its OWN OUTPUT no longer validates,
-      and a consumer that reads a tree here and publishes it again emits
-      something the format rejects, having been told nothing.
-
-      REFUSE RATHER THAN DROP, for the reason §9(b) already gives about depth:
-      "an ingest that accepts a tree and then silently renders only part of it
-      is the worst of the three, because the caller is told nothing". If a later
-      version of this format gives that property a meaning, an engine that
-      dropped it rendered a document that says something else and reported
-      success; an engine that refused sent the caller to a version mismatch.
-
-      THIS DOES NOT CLOSE THE DOOR ON EXTENSION DATA. An extension that wants
-      to carry its own state across a round trip needs a DECLARED place to put
-      it, not the absence of a check -- a namespace the schema names and every
-      engine preserves. Until such a place exists, extension data on the wire
-      is invalid for the same reason any other unnamed property is, and an
-      extension that relies on the pass-through relies on one engine's leak.
-
+      Extension data crosses a round trip only in a DECLARED place, such as a
+      `block_extension` payload (§33); anywhere else it is an unnamed property.
 
    12. A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST -- NORMATIVE [CARVE-P12-031]. §7
-      fixes the root at `type`, `children` and `srcByteLength`, and
-      `resources/ast-schema.json` marks all three `required`. §9 states the
-      ingest contract for DEPTH and closes with the one non-depth rule it had:
-      the root TYPE is not a leniency point. This is the rest of that root
-      contract, and it says the same thing for the same reason -- a reader that
-      invents a missing field or ignores an unexpected one has silently
-      repaired attacker-controlled input, which is the opposite of what an
-      ingest boundary is for.
+      fixes the root at `type`, `children` and `srcByteLength`; the schema marks
+      all three `required` and pins `type` to `document`.
 
-      An ingest MUST REFUSE, with AN ERROR OF ITS OWN in the sense §9(b)
-      already means -- typed, documented, naming what was wrong:
+      AN INGEST REFUSAL IS A TYPED ERROR NAMING WHAT AND WHERE -- NORMATIVE
+      [CARVE-P12-068]. Where PART 12 says an ingest refuses, it fails with an
+      error of its own: typed, documented, and naming what was wrong and, for
+      a node, the path it appeared at. Not truncation, not a crash, not a
+      silent drop or repair, and not whatever a JSON library happened to raise.
+      An ingest that accepts a tree and then handles only part of it has told
+      the caller nothing.
 
-      (a) A ROOT MISSING ANY OF THE THREE FIELDS. Not defaulted, not inferred.
-          A reader that supplies `children: []` for a payload that carried no
-          `children` has turned a truncated document into an empty one and
-          reported success; a reader that leaves `srcByteLength` unset has
-          published a document whose source length nothing in the payload
-          stated. Both hand the caller a valid-looking Carve document and no
-          way to learn the input was not one -- the same objection §9 makes to
-          accepting `doc` as a root type.
+      An ingest MUST REFUSE:
 
-      (b) A ROOT CARRYING ANYTHING ELSE. §11 already rules this for a property
-          the schema does not name, and the root is not an exception to it:
-          `document` is closed with `additionalProperties: false` like every
-          other node. Stated here because §7's "Nothing else" is written about
-          what an implementation may EMIT, and a reader looking for what it
-          must ACCEPT found nothing.
-
-      (c) A NODE WHOSE `type` THE SCHEMA DOES NOT NAME, AT DECODE. Not in a
-          renderer, one step later. The renderer's error names a RENDERING
-          problem for what is really a payload problem, and it only ever
-          arrives for a caller who renders: a formatter, a linter, a language
-          server or an indexer may hold the tree and never reach a renderer at
-          all, so for those the unknown type is silently carried. §9(b)'s
-          objection to truncation applies unchanged -- an ingest that accepts a
-          tree and then handles only part of it tells the caller nothing.
-
-      THE `keyValues` TRAP, stated because a strict reading of (c) breaks
-      §9(a) on a document the engine's own parser produces. `attrs.keyValues`
-      is the schema's only free-form map: its keys are ordinary attribute
-      identifiers, and `type` is one of them. So
-
-          [x](/u){type=widget}
-
-      serializes an object literally shaped `{"type":"widget"}` inside the
-      tree, and an implementation that refuses "any object whose `type` I do
-      not know" refuses that document.
+      (a) A ROOT MISSING ANY OF THE THREE FIELDS. Not defaulted, not inferred:
+          a reader that supplies `children: []` has turned a truncated document
+          into an empty one.
+      (b) A ROOT CARRYING ANYTHING ELSE. The root is closed like every other
+          node (§11). A root whose `type` is not `document` (`doc`, say, which
+          is ProseMirror's) fails (d).
+      (c) A NODE WHOSE `type` THE SCHEMA DOES NOT NAME, AT DECODE, not in a
+          renderer one step later: a formatter, a linter or a language server
+          may never reach a renderer.
+      (d) A PAYLOAD THAT DOES NOT VALIDATE AGAINST `resources/ast-schema.json`,
+          at decode. The schema is the list of what is checked; (a) to (c) and
+          §11 keep their own statements.
 
       (c) IS ABOUT NODE POSITIONS: the root, and every field the schema fills
-      with a node. It is deliberately NOT a list of field names. Which fields
-      hold nodes depends on the TYPE that carries them -- `content` is a node
-      list on `inline_extension` and a verbatim string on `code_block`, and
-      `title` is a node list on `admonition` and a string on `link` -- so a
-      list of names is either wrong for some type or has to repeat the schema.
-      Read it off `resources/ast-schema.json`, which is where the answer
-      already is. The one position the check must NEVER reach is the interior
-      of `attrs.keyValues`: its values are strings and hold no nodes at all,
-      which is what the trap above turns on.
+      with a node. Which fields those are depends on the type that carries them
+      (`content` is a node list on `inline_extension` and a string on
+      `code_block`), so they are read off the schema. The check never reaches
+      inside `attrs.keyValues`, whose values are strings: `[x](/u){type=widget}`
+      puts `{"type":"widget"}` there, and refusing it would refuse a document
+      the engine's own parser produced.
 
-      (d) THE WHOLE PAYLOAD, VALIDATED AGAINST `resources/ast-schema.json`.
-          Types and required fields together, at DECODE, refused
-          with the same typed error (a), (b) and (c) already require. Not a
-          fourth list of leniency points -- the schema is the list, it already
-          describes every one of them. An unnamed property under §11 and a
-          missing or non-string `type` under (c) keep their own clauses and are
-          not reopened.
-
-      A `srcByteLength` THAT IS PRESENT BUT WRONG IS NOT THIS CLAUSE'S
-      BUSINESS. It is derivable from the payload and nothing in the tree
-      depends on it, so readers ignore its value. (a) is about its PRESENCE,
-      and (d) does not reach it either -- the schema constrains the field's
-      TYPE and sign, not whether the number is the right one.
+      A `srcByteLength` THAT IS PRESENT BUT WRONG is not refused. Nothing in the
+      tree depends on it, so readers ignore its value; (a) is about presence,
+      and the schema constrains only its type and sign.
 
    13. SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE [CARVE-P12-032]. A producer MAY
-      return source-fidelity metadata beside an AST only when the caller asks
-      for it. It MUST NOT insert that data into the AST: §§2, 7, 11 and 12 keep
-      the canonical tree closed and unchanged.
+      return source-fidelity metadata beside an AST, as a sidecar under
+      CARVE-P12-067.
 
-      The sidecar validates against `resources/ast-source-layout-schema.json`.
-      Version is 1, encoding is UTF-8, `source` is the original input,
-      `lineEndings` names the terminators it uses (`none`, `lf`, `crlf`, `cr`
-      or `mixed`), `bom` says whether it begins with U+FEFF, and each RFC 6901
-      `path` addresses the accompanying canonical AST. `startByte` is inclusive and `endByte`
-      exclusive in the ORIGINAL input, including BOM and CRLF bytes. Entries
-      are sorted by path; a producer MUST NOT invent an unplaceable range.
+      A SIDECAR TRAVELS BESIDE THE TREE AND NEVER IN IT -- NORMATIVE
+      [CARVE-P12-067]. The source-layout (§13), node-identity (§38),
+      annotation-range (§40) and provenance (§41) sidecars share these rules:
+
+      - A producer returns one only when the caller asks for it, and MUST NOT
+        put its data in the tree: §§2, 7, 11 and 12 keep the tree closed, and
+        two documents differing only in sidecar content are the same document
+        under §6.
+      - It carries `version` 1 and validates against its own schema. A reader
+        refuses a version it does not implement, and an AST decoder does not
+        accept a sidecar as an AST. Default parse, AST encoding, CLI JSON and
+        rendering do not move.
+      - A `path` is an RFC 6901 pointer into the accompanying canonical AST.
+      - A byte range counts the bytes of the ORIGINAL input it names, BOM and
+        CRLF bytes included: `startByte` inclusive, `endByte` exclusive. It is
+        not a §4 offset, which counts codepoints.
+      - SIDECAR DATA DOES NOT SURVIVE A CANONICAL WRITE: Carve source has no
+        spelling for it, and the write produces a new input.
+
+      The source-layout sidecar validates against
+      `resources/ast-source-layout-schema.json`. Its encoding is UTF-8,
+      `source` is the original input, `lineEndings` names the terminators it
+      uses (`none`, `lf`, `crlf`, `cr` or `mixed`), and `bom` says whether it
+      begins with U+FEFF. Entries are sorted by path; a producer MUST NOT
+      invent an unplaceable range.
 
       Original source and byte ranges are the portable minimum. Every OTHER
-      property the schema declares is an optional MEASURED FACT, and each one
-      is defined below. ABSENT MEANS UNKNOWN, per field: a producer that did
+      property the schema declares is an optional MEASURED FACT, defined
+      below. ABSENT MEANS UNKNOWN, per field: a producer that did
       not measure a fact omits it, a producer MUST NOT emit a fact it did not
       measure, and a consumer MUST NOT read an omission as a default value.
 
@@ -394,14 +340,6 @@
          host.
 
       A DECLARED FACT WITH NO DEFINITION IS A DEFECT, not a reserved slot.
-      `tests/ast-schema.test.mjs` fails when the schema declares an optional
-      property this clause does not define, unless the gap is named there with
-      its open question. That is what stops the sidecar from growing fields no
-      producer can implement.
-
-      DEFAULT OUTPUT DOES NOT MOVE. Ordinary parse, AST encoding, CLI JSON and
-      rendering retain their existing APIs and shapes. An AST decoder does not
-      accept this sidecar as an AST. A layout reader refuses an unknown version.
 
    14. A CAPTION MAY CARRY AN OPTIONAL STRUCTURED SHORT CAPTION -- NORMATIVE [CARVE-P12-033].
       A `figure` or `table` MAY carry `shortCaption`, an array of inline nodes.
@@ -410,21 +348,31 @@
       alternative text, an accessible description, or a replacement for the
       required `figure.caption` / optional `table.caption`.
 
-      CARVE 0.1 SOURCE HAS NO SPELLING FOR THIS FIELD (fallback matrix row
-      `figure.shortCaption,table.shortCaption`). A parser never synthesizes it;
-      AST consumers and format bridges supply it, and AST encode/decode preserves
-      it (§6). This structural capability is independent of future `^^` source
-      proposals.
+      `shortCaption` is interchange-only (CARVE-P12-066; fallback matrix row
+      `figure.shortCaption,table.shortCaption`).
       ORDINARY HTML, PLAIN AND ANSI OUTPUT IGNORE `shortCaption`, rendering the
       full caption exactly once. A structured exporter MAY map it to its
-      target's corresponding navigation-caption field. The canonical writer MUST omit it and MUST NOT substitute it for
-      the full caption or invent source syntax. A bridge/API exposing conversion
+      target's corresponding navigation-caption field. The canonical writer
+      MUST omit it and MUST NOT substitute it for the full caption. A
+      bridge/API exposing conversion
       diagnostics SHOULD report that structural loss.
 
       The field is optional rather than an empty array by default. Absent means
       no short caption was supplied. A processor MUST NOT derive one by
       truncating or taking the first sentence of the full caption: abbreviation
       is an editorial choice and may be language-dependent.
+
+      A SHAPE NO CARVE SOURCE SPELLS IS CARRIED, NOT INVENTED -- NORMATIVE
+      [CARVE-P12-066]. An INTERCHANGE-ONLY shape is a node type, field or
+      wrapper that Carve 0.1 source cannot spell: `shortCaption` (§14), a
+      `figure` wrapping a `table` (§17), `table_cell.blocks` (§27),
+      `small_caps` (§28), `math.label` and `math.number` (§29), `section`
+      (§30), `ruby` (§32) and `block_extension` (§33). A parser never
+      synthesizes one; AST consumers and format bridges supply it, and AST
+      encode/decode preserves it (§6). A canonical Carve writer MUST NOT invent
+      source syntax for it. The shape's own clause says what each target
+      renders and whether and how the loss is reported; this clause changes
+      neither.
 
    15. A TABLE MAY CARRY AN OPTIONAL ROW GROUPING -- NORMATIVE [CARVE-P12-034]. A `table` MAY
       carry `rowGroups`, an object which PARTITIONS the existing `rows` array

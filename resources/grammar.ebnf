@@ -11264,64 +11264,51 @@ EOF = (* end of file *) ;
       conversion channel. This is separate from the render-loss report.
 
    3a. THE SERIALIZED TREE IS PRE-RESOLVE -- NORMATIVE [CARVE-P12-005]. It records what the
-      AUTHOR WROTE, not what the document resolves to. Reference resolution,
-      like rendering, happens after; a producer MUST NOT fold its results into
-      the tree in place of the authored construct.
-
-      Concretely, for `[getting started][]` where NOTHING defines the label:
+      AUTHOR WROTE. Resolution results are ADDED ALONGSIDE the authored
+      construct (§5); a producer MUST NOT fold them into the tree in its
+      place. For `[getting started][]` where nothing defines the label:
 
         {"type":"link","href":"","ref":"getting started",
          "rawRef":"[getting started][]"}
 
       `ref` is present because the author wrote a reference link (§3), `href`
-      is empty because there is no destination, and `rawRef` carries the source
-      so the construct can be restored. A tree publishing
-      `{"type":"link","href":"#Getting-Started"}` for that source has serialized
-      a LATER STAGE: the reference is gone, and no consumer can tell it from a
-      document whose author typed the destination out.
+      is empty because there is no destination, and `rawRef` carries the
+      source. A tree publishing `{"type":"link","href":"#Getting-Started"}`
+      for that source has serialized a later stage.
 
       A RESOLVED REFERENCE KEEPS ITS DESTINATION -- NORMATIVE [CARVE-P12-006]. Where the
-      document DOES define the label, the same source publishes:
+      document defines the label, the same source publishes:
 
         {"type":"link","href":"/start","ref":"getting started",
          "rawRef":"[getting started][]"}
 
-      `href` is empty only where nothing resolved the reference. This is not a
-      retreat from pre-resolve: it is the ADDED-ALONGSIDE rule below, applied to
-      links exactly as §5 already applies it to footnote numbering. The authored
-      construct -- `ref` and `rawRef` -- survives, and the resolution result is
-      published rather than left to be recomputed. The distinction this clause
-      exists to protect, `[a][]` versus `[a](#a)`, is carried entirely by `ref`
-      and `rawRef`, so nothing is lost by keeping `href` too.
+      `href` is empty only where nothing resolved the reference; `ref` and
+      `rawRef` survive either way.
+
+      THE COLLAPSED FORM'S `ref` IS THE DERIVED LABEL. For `[getting started][]`
+      `ref` carries `"getting started"`, the label the reference resolves by;
+      `rawRef` holds the empty brackets. A published `ref: ""`, and a `ref`
+      dropped once resolved, are both non-conforming.
+
+      AN UNRESOLVED REFERENCE IS STILL A LINK NODE. Where nothing defines
+      `[a]`, `see [a][] here` publishes `text`, `link`, `text`, the link
+      carrying `ref` and an empty `href`, NOT one text node holding
+      `see [a][] here`. It is never reverted to literal source, so the
+      vocabulary has no `raw_text` type for one.
 
       A NESTED LINK AND AN AUTOLINK STAY NODES -- NORMATIVE [CARVE-P12-007].
-      "Links never nest" is a RENDERING rule: an anchor may not contain another
-      anchor. It binds the renderer, not the encoder. A link or an autolink
-      inside a link's label is serialized as the node the author wrote, and
-      every renderer unwraps it at the render seam.
-
-      Flattening it at the encoder is the fold this section exists to forbid,
-      and it is strictly lossier than the case the section opens with.
-      `[[x](y)](z)` published as a link to `z` whose only child is the text `x`
-      has lost `y` from the tree entirely, so `fmt` on the parsed document and
-      `fmt` on the same document taken through the AST write two different
-      spellings -- the §6 round trip failing. An autolink flattened the same way
-      returns as a bare URL, and that is a DIFFERENT document: a bare URL stays
-      literal where an autolink is a link.
-
-      THE NODE CARRIES NO NON-ANCHOR FLAG: consumers infer unwrapping from
-      context. §3 already allows `link` and `autolink` in a link's children.
-      Adding such a flag later would be additive; removing it would be a break.
-      RENDERED OUTPUT DOES NOT MOVE on HTML, Markdown, plain or ANSI; keeping
-      the nodes preserves §6's AST round trip on the examples above.
+      "Links never nest" binds the renderer, not the encoder. A link or an
+      autolink inside a link's label is serialized as the node the author
+      wrote, and every renderer unwraps it at the render seam. `[[x](y)](z)`
+      published as a link to `z` whose only child is the text `x` has lost
+      `y` and fails the §6 round trip. THE NODE CARRIES NO NON-ANCHOR FLAG:
+      consumers infer unwrapping from context.
 
       A DESTINATION IS THE AUTHOR'S TEXT, UNSANITIZED -- NORMATIVE [CARVE-P12-008]. `href`,
       `src`, and every other destination field carry what the author wrote,
-      including a URL whose scheme no rendered URL sink is allowed to emit.
-      A producer MUST NOT blank or rewrite a destination on the way into the
-      tree: that is the same folding of a later stage this clause forbids
-      everywhere else, it makes
-      the tree lossy, and it breaks the §6 round trip. So this document
+      including a URL whose scheme no rendered URL sink is allowed to emit. A
+      producer MUST NOT blank or rewrite a destination on the way into the
+      tree. So this document
 
         [click](javascript:alert(1))
 
@@ -11330,43 +11317,16 @@ EOF = (* end of file *) ;
       preserves it under PART 11's round-trip invariant.
 
       A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST -- NORMATIVE [CARVE-P12-009]. The
-      obligation is PART 9 section 25's URL-scheme denylist, and section 25 already says it
-      binds every target that emits a resolvable URL rather than the HTML
-      renderer alone -- a scheme blanked in one target and passed through in
-      another is not blocked, it is deferred by one step. Handing the tree to
-      another tool is the whole purpose of this PART, so the argument applies
-      here with more force: a consumer that wires a serialized `href` into an
-      anchor has published a live `javascript:` URL. Feeding the tree back
-      through a conforming engine applies the denylist at its presentation
-      targets' URL sinks; its canonical source writer preserves destinations.
-      Walking the tree and building output yourself does not apply the denylist
-      for you.
-
-        See [getting started][] here.
-
-        [getting started]: /start
-
-      THE COLLAPSED FORM'S `ref` IS THE DERIVED LABEL. For `[getting started][]`
-      the author wrote nothing between the second brackets, and `ref` carries
-      `"getting started"` -- the label the reference RESOLVES BY, which is the
-      only value a consumer can do anything with. An empty `ref` would say
-      "there is a reference here and I will not tell you to what". `rawRef`
-      holds the authored spelling, so the empty brackets are not lost by this.
-      A published `ref: ""`, and a `ref` dropped once resolved, are both
-      non-conforming.
-
-      AN UNRESOLVED REFERENCE IS STILL A LINK NODE. Where nothing defines
-      `[a]`, `see [a][] here` publishes `text`, `link`, `text` -- the link
-      carrying `ref` and no `href` -- NOT one text node holding `see [a][]
-      here`. Flattening it to text discards the fact that the author wrote a
-      reference at all, and it makes the same document have two node counts
-      depending on which engine produced it.
+      URL-scheme denylist of CARVE-P9-054 binds every target that emits a
+      resolvable URL. A consumer that wires a serialized `href` into an anchor
+      applies it itself; feeding the tree back through a conforming engine
+      applies it at that engine's presentation targets, and its canonical
+      source writer preserves destinations.
 
       A CROSSREF REMAINS A HEADING-REFERENCE NODE AFTER RESOLUTION -- NORMATIVE [CARVE-P12-010]. `</#id>` is
-      a reference like any other, so the same two halves apply: the authored
-      construct survives as a `heading_ref` carrying the raw id the author typed
-      between `</#` and `>`, and where it resolves the destination is published
-      BESIDE it as `href`.
+      serialized as a `heading_ref` whose `target` is the raw id the author
+      typed between `</#` and `>`; where it resolves, the destination is
+      published BESIDE it as `href`.
 
         See </#Intro>.
 
@@ -11378,39 +11338,14 @@ EOF = (* end of file *) ;
 
         {"type":"heading_ref","target":"Nope"}
 
-      `target` is the authored spelling, kept whether or not it resolves: a
-      `</#intro>` beside `# Intro` names no id (PART 9R R4) and publishes
-      `target` alone. A tree
-      publishing `{"type":"link","href":"#Intro","fromCrossref":true}` has
-      serialized a later stage by the rule at the top of this section, and it
-      cannot be written back: the writer reconstructs `</#` + the id + `>`, so
-      the document comes out of a wire round trip spelled `</#Intro>`.
+      `target` is kept whether or not it resolves: a `</#intro>` beside
+      `# Intro` names no id (PART 9R R4) and publishes `target` alone. A tree
+      publishing the crossref as a `link` has serialized a later stage, and a
+      writer cannot spell it back as `</#Intro>`.
 
-      THE DISPLAY TEXT IS NOT SERIALIZED. A resolved crossref renders the target
-      heading's text, and that text is NOT copied into the node: the heading is
-      in the same document, so a consumer reads it from there. This is the one
-      place this clause departs from §5's added-alongside rule, and it does so
-      because the alternative duplicates an arbitrary amount of inline content
-      per reference. `href` is a fixed-size result; the display text is not.
-
-      SO THERE IS NO `raw_text`. An engine that reverts an unresolved reference
-      to literal source needs a node type to carry text that must not be
-      escaped again, and no such type is in the vocabulary. Under this clause
-      the reversion does not happen, so the need does not arise: what the
-      author wrote is a link, and it stays one.
-
-      PRE-RESOLVE preserves authored form through a format cycle: `[a][]` and
-      `[a](#a)` remain distinct constructs, and `rawRef` remains usable.
-
-      WHAT IS STILL SERIALIZED. §5's rule is unchanged and is not in tension
-      with this one: resolution RESULTS a consumer would otherwise have to
-      recompute -- footnote numbering, caption numbers -- are serialized,
-      because recomputing them means reimplementing PART 9R. The difference is
-      that those are ADDED alongside the authored construct; they do not
-      REPLACE it. A resolved footnote reference keeps its label and gains its
-      number. A resolved link keeps its `ref` and `rawRef` and gains its `href`,
-      which is the same shape: the authored construct is still there to be read,
-      and the resolution result sits beside it.
+      THE DISPLAY TEXT IS NOT SERIALIZED. A resolved crossref renders the
+      target heading's text, and that text is not copied into the node; a
+      consumer reads it from the heading.
 
    4. POSITIONS ARE REQUIRED. Every node EXCEPT the document root carries
       `pos`:
@@ -11422,172 +11357,109 @@ EOF = (* end of file *) ;
       in UNICODE CODEPOINTS. `endColumn` and `endOffset` are exclusive.
       `pos.file`, when present, is the canonical id of the included input the
       coordinates are measured in (PART 9 §19); absent means the top-level
-      input.
+      input. The root is exempt because it spans the whole source.
 
-      Codepoint indices always land on character boundaries; bytes and UTF-16
-      units can split encoded characters. Implementations convert once per
-      document. The root is exempt because it spans the whole source.
+      An implementation MAY gate position tracking behind a parse option, and
+      MUST enable it when asked to serialize: serialized JSON carries
+      positions. One that cannot yet produce them MUST NOT emit `pos` with
+      invented values and MUST NOT omit it silently; it does not yet serialize
+      conformantly, and should say so.
 
-      This is the field that makes a serialized AST worth exchanging: an
-      editor, a language server or a tool grounding output back to source needs
-      to say WHERE. Making it optional would mean every consumer has to handle
-      its absence, which in practice means not using it.
+      The span rules are four statements: what a span contains, where it
+      starts, where it ends, and when a node has none.
 
-      A SPAN CONTAINS ITS CHILDREN'S SPANS -- NORMATIVE [CARVE-P12-011]. A node's span
-      covers every placed node inside it: a child's `startOffset` is not
-      before its parent's, and its `endOffset` is not past it, when both
-      positions name the same input file. A node that
-      omits `pos` (the reassembled-node clause below) is skipped rather than
-      breaking the chain -- the comparison is against the nearest ANCESTOR
-      that has one for the same input file.
+      (1) CONTAINMENT.
 
-      A node whose content is not a contiguous slice of its own source MUST
-      omit `pos` rather than publish a PARTIAL span. A `+` continuation cell
-      joined from three source lines has no offset pair that equals its value,
-      and a span covering only the first fragment leaves the cell's own text
-      children outside it -- which this rule reports. Omitting is already
-      permitted below; this says the partial span is not an alternative to it.
+      A SPAN CONTAINS ITS CHILDREN'S SPANS -- NORMATIVE [CARVE-P12-011]. A child's
+      `startOffset` is not before its parent's and its `endOffset` is not past
+      it, when both positions name the same input file. A child that omits
+      `pos` is skipped; the comparison is against the nearest ancestor with a
+      position in the same file. Containment is checked on its own, not derived
+      from CARVE-P12-013. Sibling spans do not overlap, except as a PAIR: two
+      breaks meeting at one line terminator share it, and a hoisted definition
+      may overlap the container it was authored in (CARVE-P12-016).
 
-      CONTAINMENT IS CHECKED ON ITS OWN, not derived from the opening-markup
-      clause below. The two point the same way, which is why
-      containment is asserted separately: were the convention ever revisited, a
-      check that derived containment from it would go quiet with nothing
-      failing.
+      A HOISTED DEFINITION MAY CLAIM SOURCE INSIDE THE CONTAINER IT WAS
+      AUTHORED IN -- NORMATIVE [CARVE-P12-016]. A definition hoisted to the
+      document (CARVE-P12-029) keeps the `pos` it was written at, so it and its
+      former host are siblings whose spans may overlap, whatever the host's
+      extent:
 
-      A SPAN COVERS THE MARKUP THE AUTHOR WROTE -- NORMATIVE [CARVE-P12-012]. Where a node
-      has markup of its own, its span covers that markup and not merely the
-      content inside it. The case that needed saying is the break, which has
-      no content to fall back on: `hard_break` is a backslash followed by a
-      newline, so its span is BOTH characters.
+          > [f]: ~
+          /
 
-      source: a backslash at the end of a line, then the next line
-      span: the backslash and the newline, not the newline alone
+      spans the emptied `block_quote` as `> ` and the definition over the whole
+      line. The exception covers that pair only: two definitions claiming the
+      same source, or a definition overlapping a sibling it was not authored
+      in, are findings. The host is the sibling whose span begins at or before
+      the definition's and which holds a child list; a
+      `link_reference_definition` or `abbreviation_def` hosts nothing, a
+      `footnote` does. The exception never extends a host's span over source
+      no child of it owns.
 
-      A TRAILING ATTRIBUTE BLOCK IS THE NODE'S OWN MARKUP, so the span covers
-      it. For
+      (2) WHERE A SPAN STARTS.
 
-          *x*{#i}
+      A SPAN COVERS THE MARKUP THE AUTHOR WROTE -- NORMATIVE [CARVE-P12-012]. A node's span
+      covers its own markup, not only its content. A `hard_break` spans its
+      backslash and its newline. A trailing attribute block is the node's own
+      markup: `*x*{#i}` gives `strong` offsets 0..7. A break the parser
+      synthesized (a line block's implied break, a hard-break fence's converted
+      newline) spans the bare newline, because the source holds no backslash.
 
-      the `strong` span is the whole run, offsets 0..7, not 0..3. The braces
-      are where the node's `attrs` came from; a span that stops at `*x*` says
-      the node begins and ends before the markup that gave it half its
-      content.
+      A SPAN BEGINS AT THE CONSTRUCT'S OPENING MARKUP -- NORMATIVE [CARVE-P12-013]. `startOffset`
+      selects the markup that opened the node: the `>` of a block quote, the
+      `#` of a heading, a list marker, the `:` of a colon fence, the `[` of a
+      link, the backtick run of a code block. Leading indentation on the
+      opening line is inside the span. Two exceptions: the inner node of the
+      combined `/*x*/` form spans its content, and a table cell spans the text
+      between its pipes, since the `|` opens the row.
 
+      A CONTAINER STARTS AT ITS OPENING MARKUP EVEN WHERE ITS FIRST CHILD IS
+      UNPLACED -- NORMATIVE [CARVE-P12-019]. A container whose first child
+      omits `pos` starts where its opening markup was written, not at its first
+      placed child.
 
-      A break the parser SYNTHESIZED is a different case and keeps the bare
-      newline: a line block's implied break and a hard-break fence's converted
-      newlines have no backslash, because the author wrote none. The
-      discriminator is what is in the SOURCE, not what type the node has --
-      which is also how the checker tests it, so a synthesized break needs no
-      exemption list.
+      A SPAN DOES NOT BEGIN AT A LINE TERMINATOR -- NORMATIVE [CARVE-P12-021]. Except on a
+      `soft_break` or a `hard_break`, whose content IS the terminator, a node's
+      `startOffset` MUST NOT select a newline.
 
-      A SPAN BEGINS AT THE CONSTRUCT'S OPENING MARKUP -- NORMATIVE [CARVE-P12-013]. Where a
-      node is opened by markup, its `startOffset` selects that markup and not
-      the content after it: the `>` of a block quote, the `#` of a heading, the
-      marker of a list item, the `:` of a colon fence, the `[` of a link, the
-      backtick run of a code block. `pos` therefore round-trips to the source
-      text that PRODUCED the node, which is what a formatter, a linter and an
-      editor selection each need; a span that starts at the content identifies
-      the rendered result instead, and no longer identifies the construct.
-
-      Leading indentation on the opening line is INSIDE the span. A nested
-      item's marker is placed by the whitespace before it, so a span that
-      started at the marker would leave the characters deciding the item's
-      column outside the item.
-
-      TWO EXCEPTIONS, both already stated elsewhere in this section and neither
-      an opt-out from the rule:
-
-      -- the combined form `/*x*/` materialises a `strong` > `emphasis` pair
-         from ONE run of delimiters. The outer node carries the run; the inner
-         span is derived by trimming the two-character delimiters, so the inner
-         node's span is the content. There is no second opening delimiter for
-         it to begin at.
-      -- a table cell's span runs BETWEEN the pipes, as the discontiguous-node
-         clause below shows for ` Fresh Fruits    `. The `|` opens the ROW, and
-         a cell claiming it would overlap the cell before it -- which the
-         sibling-overlap rule forbids.
+      (3) WHERE A SPAN ENDS.
 
       A SPAN ENDS IMMEDIATELY AFTER THE CONSTRUCT'S LAST OWNED SOURCE
-      CODEPOINT -- NORMATIVE [CARVE-P12-014]. Closing delimiters and trailing attribute blocks
-      belong to the construct and are included. A following line terminator,
-      blank line, or unattached attribute block does not and is excluded.
-      A container ends after its explicit closer when it has one, otherwise
-      after its last child -- its last PLACED child, which is what a container
-      whose closer is IMPLICIT has instead of one. A soft or hard break is the
-      exception: the line terminator is the source codepoint the break owns, so
-      its exclusive end is column 1 of the following line.
+      CODEPOINT -- NORMATIVE [CARVE-P12-014]. Closing delimiters and trailing
+      attribute blocks are included; a following line terminator, blank line or
+      unattached attribute block (PART 9 §15 A4) is not. A container ends after
+      its explicit closer when it has one, otherwise after its last PLACED
+      child. A soft or hard break owns its line terminator, so its exclusive end
+      is column 1 of the next line.
+
+      A CONTAINER ENDS AT THE MARKUP THAT CLOSES IT EVEN WHERE ITS LAST CHILD
+      IS UNPLACED -- NORMATIVE [CARVE-P12-020]. A container whose last child
+      omits `pos` ends at its closing markup. A closerless container whose last
+      child is unplaced ends where its content ends, which the block layer
+      knows even where that text has no source slice, as for the stanza here:
+
+          ::: |
+          %%
+          tab<TAB>gap
+          :::
 
       A HOISTED SIBLING IS NOT A CHILD, AND A CLOSERLESS CONTAINER ENDS BEFORE
-      IT -- NORMATIVE [CARVE-P12-015]. A definition written at a container's content column is
-      hoisted to the DOCUMENT (CARVE-P12-029), so it leaves the container
-      and becomes its sibling while its `pos` still points inside the source the
-      container encloses. Hoisting breaks the correspondence between tree
-      nesting and source nesting, and a span follows the TREE:
+      IT -- NORMATIVE [CARVE-P12-015]. A span follows the tree. A definition
+      hoisted out of a closerless container is its sibling, so the container
+      ends at its last placed child:
 
           - a
 
             [r]: /u
 
-      The `list` ends at offset 3, where its only `list_item` ends, and not at
-      14. The offsets between them belong to the `link_reference_definition`
-      alone, so the sibling-overlap rule below is satisfied here rather than
-      waived.
+      The `list` ends at offset 3, where its `list_item` ends, not at 14. A
+      container with a closer still ends at the closer; CARVE-P12-016 covers
+      the overlap that leaves.
 
-      A CONTAINER THAT HAS A CLOSER STILL ENDS AT THE CLOSER. A definition
-      hoisted out of a `:::` div is a document-level sibling whose span sits
-      inside the div's, and no reading of this clause makes that pair stop
-      overlapping -- which is why the clause below states an exception to the
-      sibling-overlap rule, and why the paragraph above is about the container
-      that has no closer to end at.
-
-      A HOISTED DEFINITION MAY CLAIM SOURCE INSIDE THE CONTAINER IT WAS
-      AUTHORED IN -- NORMATIVE [CARVE-P12-016]. The one exception to the sibling-overlap rule
-      stated further down this section, and it holds WHATEVER THAT CONTAINER'S
-      EXTENT. CARVE-P12-029 makes the definition a child of the document while this section
-      keeps its `pos` pointing back at the container it was written inside, so
-      the two are siblings whose spans meet by construction; and the paragraph
-      above ends an emptied closerless container at its own markup, which leaves
-      the definition reaching PAST its host rather than sitting inside it:
-
-          > [f]: ~
-          /
-
-      spans the emptied `block_quote` as `> ` and the hoisted
-      `link_reference_definition` over the whole line, and offsets 0 to 2 sit in
-      two document-level siblings at once. CARVE-P12-029, the emptied-container paragraph
-      above and the sibling-overlap rule cannot all three hold on this document,
-      and the exception is where it gives.
-
-      THE EXCEPTION IS ABOUT THE PAIR, NOT ABOUT A DEFINITION. It does not say a
-      hoisted definition overlaps nothing. Two definitions that claim the same
-      source overlap each other, and a definition that claims source inside a
-      sibling it was NOT authored in overlaps that sibling; both are findings.
-      What identifies the host, from the tree alone:
-
-      -- the host's span BEGINS AT OR BEFORE the definition's. A definition
-         cannot have been written inside a container that opens after it.
-      -- the host HOLDS A CHILD LIST. Nothing is authored inside a node that has
-         none, so a `link_reference_definition` and an `abbreviation_def` -- a
-         label and a destination, an abbreviation and its expansion, no children
-         -- host nothing. A `footnote` does hold one and is a host: a reference
-         definition written on a footnote body's continuation line is hoisted
-         out of it, and that pair is two definition kinds.
-
-      A HOST THAT REACHES PAST ITS OWN CONTENT IS STILL WRONG, under the
-      paragraphs above rather than under this one. The exception excuses an
-      overlap; it does not extend a container's span, and nothing here permits a
-      host to cover source no child of it owns.
-
-      An unattached attribute block is the same rule reached from the other
-      clause above rather than a second one. `{.x}` written below an item
-      attaches to no block (PART 9 §15 A4) and so yields no child, and a
-      container whose span covers it is covering source nothing in it owns.
-
-      A DEFINITION LIST ENDS AT ITS LAST PLACED CHILD -- NORMATIVE [CARVE-P12-017]. It has no closer,
-      so it ends at its last
-      placed `definition_term` or `definition_description` like every other
-      closerless container:
+      A DEFINITION LIST ENDS AT ITS LAST PLACED CHILD -- NORMATIVE [CARVE-P12-017]. It has no
+      closer, so it ends at its last placed `definition_term` or
+      `definition_description`:
 
           :: t
           : d
@@ -11598,137 +11470,37 @@ EOF = (* end of file *) ;
       attribute line below it.
 
       A CONTAINER WITH NO PLACED CHILD AT ALL SPANS ITS OWN MARKUP AND STOPS
-      THERE -- NORMATIVE [CARVE-P12-018]. "Ends at its last placed child" is silent when there
-      is none, and a container can be emptied: a definition written as an item's
-      only content is collected out of it (CARVE-P12-029) and the item keeps no trace.
+      THERE -- NORMATIVE [CARVE-P12-018]. A container emptied by hoisting
+      (CARVE-P12-029) spans the markup that opened it, on its first line. It is
+      not zero-width and does not reach to the extent the author typed:
 
           * * [d]: u
            :
 
-      The inner `list_item` spans `* ` and ends there. Zero width is not the
-      answer -- it is a shape every consumer has to special-case, and it
-      discards the marker the author typed -- and neither is the extent the
-      author typed, which is what the paragraph above rejects for a container
-      that DOES have children; permitting it only for an empty one would make
-      the rule depend on child count. Where the emptied container ran over
-      several lines, the markup it spans is the markup that OPENED it, on the
-      first of them.
+      The inner `list_item` spans `* ` and ends there.
 
-      A CONTAINER STARTS AT ITS OPENING MARKUP EVEN WHERE ITS FIRST CHILD IS
-      UNPLACED -- NORMATIVE [CARVE-P12-019]. A container whose first child omits `pos` starts
-      where the markup that opens it was written, not at the first child that
-      does carry one.
-
-      THE START AND END RULES ARE NOT SYMMETRIC, which is why this needs saying
-      next to the two above. The end rule asks where a container's CONTENT
-      stops, so its last placed child is the right boundary; this one asks where
-      the CONSTRUCT begins, and a construct begins at its own markup, which
-      exists whether or not any child was placed. Read symmetrically, a line
-      block stanza whose first child is the merged text `tab gap` from
-      `tab<TAB>gap` would start its paragraph on the line BELOW that one.
-      That text has no exact source slice; contiguous text beside a wider tab
-      expansion remains positioned under CARVE-P12-004.
-
-      A CONTAINER ENDS AT THE MARKUP THAT CLOSES IT EVEN WHERE ITS LAST CHILD
-      IS UNPLACED -- NORMATIVE [CARVE-P12-020]. A container whose last child omits `pos` ends
-      where the markup that closes it was written, not at the last child that
-      does carry one. The source between them is that unplaced child's, and an
-      unplaced child says nothing about where the author closed the construct.
-
-      THIS LOCATES THE END RULE RATHER THAN OVERTURNING IT. Read as two
-      statements about MARKUP the two halves of this clause are symmetric: a
-      container starts at the markup that opens it, and ends at the markup that
-      closes it. "Ends at its last placed child" is the case for a container
-      whose closer is IMPLICIT -- a list, an item, a definition list -- where
-      the last child's end is what the container has instead of a closer. It
-      does not narrow a container over source its own child covers.
-      A closerless container whose last child is unplaced therefore ends where
-      its content ends, which is line geometry the block layer knows even where
-      the text on that line cannot be sliced out of the source. A line block
-      stanza whose LAST child merges text around a one-column tab is the shape:
-
-          ::: |
-          %%
-          tab<TAB>gap
-          :::
-
-      A SPAN DOES NOT BEGIN AT A LINE TERMINATOR -- NORMATIVE [CARVE-P12-021]. Except on a
-      `soft_break` or a `hard_break`, whose content IS the terminator, a node's
-      `startOffset` MUST NOT select a newline. No construct begins with the
-      line ending the line before it.
-
-      POSITION TRACKING MAY BE OPT-IN, SERIALIZATION MAY NOT. An implementation
-      MAY gate position tracking behind a parse option, and MUST enable it when
-      asked to serialize. What is forbidden is a serialized document without
-      positions, not a parse without them.
-
-      This is a concession to where the cost falls. Recording a span for every
-      node is not free, and serialization is an operation most callers never
-      perform. The contract a consumer relies on is unchanged: JSON it is
-      handed carries positions. How the producer arranged that is the
-      producer's business.
+      (4) WHEN `pos` IS OMITTED.
 
       A REASSEMBLED NODE MUST OMIT `pos` -- NORMATIVE [CARVE-P12-022]. A node whose value is not
       a contiguous slice of the source, because the producer joined it from
       pieces the source separates or synthesized it outright, MUST omit `pos`
-      rather than invent one, and is CONFORMANT doing so. This is a permitted
-      category, not a shortfall to be tracked.
-
-      It covers the hard break a line block synthesizes from a soft one,
-      line-block content rebuilt around an indentation sentinel, a table row or
-      cell put back together from continuation lines, and -- because §1a merges
-      them -- a `text` run whose pieces are not adjacent in the source:
-
-          | x | A long description |
-          +     | that continues     |
-
-      The cell's text is `A long description that continues`, joined across a
-      newline, a `+` and an indent the value does not contain. §1a requires ONE
-      text node; no offset pair covers that value. Without this clause the two
-      rules left a producer no conformant answer at all: coalesce and carry a
-      span over characters the value drops, or coalesce and omit the span the
-      paragraph below appears to demand. §1a's own POSITIONS note already chose
-      the second; this is where §4 agrees to it. It is stated here rather than
-      left to each engine because §1a is normative: any implementation
-      following it faithfully arrives at the same fork.
-
-      A discontiguous node therefore has no span. A first-fragment span is not
-      an alternative: it locates the beginning but falsely describes `pos` as
-      the construct's extent.
+      rather than invent one, and is CONFORMANT doing so. A span over the first
+      fragment misdescribes the extent and one from first to last fragment
+      overlaps siblings; neither is an alternative. This covers a line block's
+      synthesized hard break, line-block content rebuilt around an indentation
+      sentinel, a table row or cell joined from continuation lines, and a merged
+      `text` run (§1a) whose pieces are not adjacent:
 
           |= Category       |= Item   |
           | Fresh Fruits    | Apple   |
           + from local      |         |
           + farms           |         |
 
-      FIRST-TO-LAST IS FORBIDDEN, and it is the tempting third answer. In the
-      table above that range runs from line 2 to line 4 and CONTAINS the
-      sibling cell `Apple` entirely, so two cells would claim overlapping
-      offsets and a consumer resolving a click to a node could not tell which
-      it hit. Sibling spans that overlap are checked for, and are a finding --
-      with two exceptions, each stated as a property of the PAIR: two breaks
-      meeting at one line terminator share the codepoint that anchors both, and
-      a hoisted definition against the container it was authored in, per the
-      clause of that name above.
-
-      THE EXEMPTION IS NARROW. The test is whether a true span EXISTS, not
-      whether one was computed. A node the producer has simply not placed yet
-      is still a gap, and a text run lifted whole out of the source has a span
-      whether or not anyone wrote it down. Nor does it license reassembling
-      more than the language requires, to manufacture the exemption: a producer
-      that joins where the source did not is publishing its bookkeeping, which
-      is what §1a exists to stop.
-
-      The conformance checker still REPORTS an absent `pos`, because it cannot
-      tell a reassembled node from an unplaced one from the tree alone. That is
-      why the position half of that check is a report and the §1a half is a
-      gate.
-
-      An implementation that cannot yet produce positions MUST NOT emit `pos`
-      with invented values, and MUST NOT omit it silently: it does not yet
-      serialize conformantly, and should say so. A reassembled node under the
-      clause above is not that case -- there the absence IS the conformant
-      answer, and nothing needs saying.
+      The test is whether a true span EXISTS. A node the producer has not
+      placed yet is a gap, not this case, and the exemption does not license
+      joining more than the language requires. The conformance checker reports
+      an absent `pos` because it cannot tell the two apart from the tree, so
+      the position half of that check is a report and the §1a half a gate.
 
    ============================================================================ *)
 
@@ -11928,43 +11700,25 @@ EOF = (* end of file *) ;
 
    9. HOW DEEP AN INGESTED AST MAY NEST -- NORMATIVE [CARVE-P12-028]. Reading a serialized AST
       is a recursive descent over attacker-controlled structure, so it needs a
-      bound for the same reason the parser does (PART 9 §25, RESOURCE BOUNDS).
-      This states the PROPERTY rather than a number, because the number cannot
-      be shared -- see the trap below.
+      bound for the same reason the parser does (CARVE-P9-054, RESOURCE
+      BOUNDS).
 
       (a) An implementation MUST ACCEPT any AST ITS OWN PARSER CAN PRODUCE at
-          MAX_NESTING_DEPTH. Serialize-then-deserialize is an identity on
-          those documents, which is §6 restricted to the deepest input the
-          parser admits. `parse` piped into ingest MUST NOT fail on a document
-          the same build just parsed.
+          MAX_NESTING_DEPTH: `parse` piped into ingest MUST NOT fail on a
+          document the same build just parsed.
 
-      (b) It MUST REJECT deeper input with AN ERROR OF ITS OWN: a typed,
-          documented failure naming the depth bound. Not truncation, not a
-          crash, and not whatever its JSON library happened to raise. An
-          ingest that accepts a tree and then silently renders only part of it
-          is the worst of the three, because the caller is told nothing.
+      (b) It MUST REJECT deeper input with an ingest refusal (CARVE-P12-068)
+          naming the depth bound.
 
       (c) The bound MAY be counted in WHATEVER UNIT suits the implementation
-          -- JSON structural levels, AST node levels, recursion frames --
-          because (a) and (b) are the whole of what a caller can rely on. An
+          (JSON structural levels, AST node levels, recursion frames). An
           implementation MUST NOT publish its unit as a shared contract.
 
-      THE TRAP, stated once: an ingest bound is NOT measured in the same unit
-      as MAX_NESTING_DEPTH, and the conversion factor is NOT A CONSTANT. One
-      AST level costs two JSON structural levels for a blockquote or div (the
-      object plus its `children` array) and four for a list (list, items,
-      item, children); in node terms a list level costs two nodes and a div
-      level one. So neither MAX_NESTING_DEPTH nor "MAX_NESTING_DEPTH plus a
-      small margin" is a safe bound in either unit. An implementation MUST
-      DERIVE its bound from MAX_NESTING_DEPTH by the worst per-level cost of
-      its own encoding, and MUST NOT restate the parser's number as its ingest
-      number -- a bound written down twice diverges; one derived from the other
-      cannot.
-
-      The root type is not a leniency point: §7 fixes it at `document`, and
-      the schema pins it as a `const`. An ingest accepting some other root
-      (`doc`, say, which is ProseMirror's) will half-read a foreign format
-      rather than reject it.
+      The conversion from MAX_NESTING_DEPTH is NOT A CONSTANT: one AST level
+      costs two JSON structural levels for a blockquote or div and four for a
+      list (list, items, item, children). An implementation MUST DERIVE its
+      bound from MAX_NESTING_DEPTH by the worst per-level cost of its own
+      encoding, and MUST NOT restate the parser's number as its ingest number.
 
    10. A LINK REFERENCE DEFINITION IS A NODE -- NORMATIVE [CARVE-P12-029].
       `type: "link_reference_definition"`, carrying:
@@ -11996,124 +11750,88 @@ EOF = (* end of file *) ;
       The non-HTML targets emit it, as CARVE-P11-028 requires.
 
    11. A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST -- NORMATIVE [CARVE-P12-030].
-      The wire shape is pinned by `resources/ast-schema.json` with
-      `additionalProperties: false` at every node, so a payload carrying a
-      property no node type names is NOT a Carve AST. An ingest MUST REFUSE it
-      with AN ERROR OF ITS OWN -- a typed, documented failure naming the
-      offending property and the PATH it appeared at, so a caller can find it
-      in a tree it did not write. Not a silent drop, and not a pass-through.
+      `resources/ast-schema.json` closes every node with
+      `additionalProperties: false`, so a payload carrying a property no node
+      type names is NOT a Carve AST. An ingest MUST REFUSE it (CARVE-P12-068),
+      naming the property and the PATH it appeared at. It neither drops the
+      property nor passes it through: a reader that copies the record re-emits
+      the property, and its own output no longer validates.
 
-      THE PASS-THROUGH IS THE ONE ANSWER THAT CANNOT BE RIGHT. An
-      implementation that copies a wire record wholesale re-emits the unknown
-      property when it serializes again, so its OWN OUTPUT no longer validates,
-      and a consumer that reads a tree here and publishes it again emits
-      something the format rejects, having been told nothing.
-
-      REFUSE RATHER THAN DROP, for the reason §9(b) already gives about depth:
-      "an ingest that accepts a tree and then silently renders only part of it
-      is the worst of the three, because the caller is told nothing". If a later
-      version of this format gives that property a meaning, an engine that
-      dropped it rendered a document that says something else and reported
-      success; an engine that refused sent the caller to a version mismatch.
-
-      THIS DOES NOT CLOSE THE DOOR ON EXTENSION DATA. An extension that wants
-      to carry its own state across a round trip needs a DECLARED place to put
-      it, not the absence of a check -- a namespace the schema names and every
-      engine preserves. Until such a place exists, extension data on the wire
-      is invalid for the same reason any other unnamed property is, and an
-      extension that relies on the pass-through relies on one engine's leak.
-
+      Extension data crosses a round trip only in a DECLARED place, such as a
+      `block_extension` payload (§33); anywhere else it is an unnamed property.
 
    12. A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST -- NORMATIVE [CARVE-P12-031]. §7
-      fixes the root at `type`, `children` and `srcByteLength`, and
-      `resources/ast-schema.json` marks all three `required`. §9 states the
-      ingest contract for DEPTH and closes with the one non-depth rule it had:
-      the root TYPE is not a leniency point. This is the rest of that root
-      contract, and it says the same thing for the same reason -- a reader that
-      invents a missing field or ignores an unexpected one has silently
-      repaired attacker-controlled input, which is the opposite of what an
-      ingest boundary is for.
+      fixes the root at `type`, `children` and `srcByteLength`; the schema marks
+      all three `required` and pins `type` to `document`.
 
-      An ingest MUST REFUSE, with AN ERROR OF ITS OWN in the sense §9(b)
-      already means -- typed, documented, naming what was wrong:
+      AN INGEST REFUSAL IS A TYPED ERROR NAMING WHAT AND WHERE -- NORMATIVE
+      [CARVE-P12-068]. Where PART 12 says an ingest refuses, it fails with an
+      error of its own: typed, documented, and naming what was wrong and, for
+      a node, the path it appeared at. Not truncation, not a crash, not a
+      silent drop or repair, and not whatever a JSON library happened to raise.
+      An ingest that accepts a tree and then handles only part of it has told
+      the caller nothing.
 
-      (a) A ROOT MISSING ANY OF THE THREE FIELDS. Not defaulted, not inferred.
-          A reader that supplies `children: []` for a payload that carried no
-          `children` has turned a truncated document into an empty one and
-          reported success; a reader that leaves `srcByteLength` unset has
-          published a document whose source length nothing in the payload
-          stated. Both hand the caller a valid-looking Carve document and no
-          way to learn the input was not one -- the same objection §9 makes to
-          accepting `doc` as a root type.
+      An ingest MUST REFUSE:
 
-      (b) A ROOT CARRYING ANYTHING ELSE. §11 already rules this for a property
-          the schema does not name, and the root is not an exception to it:
-          `document` is closed with `additionalProperties: false` like every
-          other node. Stated here because §7's "Nothing else" is written about
-          what an implementation may EMIT, and a reader looking for what it
-          must ACCEPT found nothing.
-
-      (c) A NODE WHOSE `type` THE SCHEMA DOES NOT NAME, AT DECODE. Not in a
-          renderer, one step later. The renderer's error names a RENDERING
-          problem for what is really a payload problem, and it only ever
-          arrives for a caller who renders: a formatter, a linter, a language
-          server or an indexer may hold the tree and never reach a renderer at
-          all, so for those the unknown type is silently carried. §9(b)'s
-          objection to truncation applies unchanged -- an ingest that accepts a
-          tree and then handles only part of it tells the caller nothing.
-
-      THE `keyValues` TRAP, stated because a strict reading of (c) breaks
-      §9(a) on a document the engine's own parser produces. `attrs.keyValues`
-      is the schema's only free-form map: its keys are ordinary attribute
-      identifiers, and `type` is one of them. So
-
-          [x](/u){type=widget}
-
-      serializes an object literally shaped `{"type":"widget"}` inside the
-      tree, and an implementation that refuses "any object whose `type` I do
-      not know" refuses that document.
+      (a) A ROOT MISSING ANY OF THE THREE FIELDS. Not defaulted, not inferred:
+          a reader that supplies `children: []` has turned a truncated document
+          into an empty one.
+      (b) A ROOT CARRYING ANYTHING ELSE. The root is closed like every other
+          node (§11). A root whose `type` is not `document` (`doc`, say, which
+          is ProseMirror's) fails (d).
+      (c) A NODE WHOSE `type` THE SCHEMA DOES NOT NAME, AT DECODE, not in a
+          renderer one step later: a formatter, a linter or a language server
+          may never reach a renderer.
+      (d) A PAYLOAD THAT DOES NOT VALIDATE AGAINST `resources/ast-schema.json`,
+          at decode. The schema is the list of what is checked; (a) to (c) and
+          §11 keep their own statements.
 
       (c) IS ABOUT NODE POSITIONS: the root, and every field the schema fills
-      with a node. It is deliberately NOT a list of field names. Which fields
-      hold nodes depends on the TYPE that carries them -- `content` is a node
-      list on `inline_extension` and a verbatim string on `code_block`, and
-      `title` is a node list on `admonition` and a string on `link` -- so a
-      list of names is either wrong for some type or has to repeat the schema.
-      Read it off `resources/ast-schema.json`, which is where the answer
-      already is. The one position the check must NEVER reach is the interior
-      of `attrs.keyValues`: its values are strings and hold no nodes at all,
-      which is what the trap above turns on.
+      with a node. Which fields those are depends on the type that carries them
+      (`content` is a node list on `inline_extension` and a string on
+      `code_block`), so they are read off the schema. The check never reaches
+      inside `attrs.keyValues`, whose values are strings: `[x](/u){type=widget}`
+      puts `{"type":"widget"}` there, and refusing it would refuse a document
+      the engine's own parser produced.
 
-      (d) THE WHOLE PAYLOAD, VALIDATED AGAINST `resources/ast-schema.json`.
-          Types and required fields together, at DECODE, refused
-          with the same typed error (a), (b) and (c) already require. Not a
-          fourth list of leniency points -- the schema is the list, it already
-          describes every one of them. An unnamed property under §11 and a
-          missing or non-string `type` under (c) keep their own clauses and are
-          not reopened.
-
-      A `srcByteLength` THAT IS PRESENT BUT WRONG IS NOT THIS CLAUSE'S
-      BUSINESS. It is derivable from the payload and nothing in the tree
-      depends on it, so readers ignore its value. (a) is about its PRESENCE,
-      and (d) does not reach it either -- the schema constrains the field's
-      TYPE and sign, not whether the number is the right one.
+      A `srcByteLength` THAT IS PRESENT BUT WRONG is not refused. Nothing in the
+      tree depends on it, so readers ignore its value; (a) is about presence,
+      and the schema constrains only its type and sign.
 
    13. SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE [CARVE-P12-032]. A producer MAY
-      return source-fidelity metadata beside an AST only when the caller asks
-      for it. It MUST NOT insert that data into the AST: §§2, 7, 11 and 12 keep
-      the canonical tree closed and unchanged.
+      return source-fidelity metadata beside an AST, as a sidecar under
+      CARVE-P12-067.
 
-      The sidecar validates against `resources/ast-source-layout-schema.json`.
-      Version is 1, encoding is UTF-8, `source` is the original input,
-      `lineEndings` names the terminators it uses (`none`, `lf`, `crlf`, `cr`
-      or `mixed`), `bom` says whether it begins with U+FEFF, and each RFC 6901
-      `path` addresses the accompanying canonical AST. `startByte` is inclusive and `endByte`
-      exclusive in the ORIGINAL input, including BOM and CRLF bytes. Entries
-      are sorted by path; a producer MUST NOT invent an unplaceable range.
+      A SIDECAR TRAVELS BESIDE THE TREE AND NEVER IN IT -- NORMATIVE
+      [CARVE-P12-067]. The source-layout (§13), node-identity (§38),
+      annotation-range (§40) and provenance (§41) sidecars share these rules:
+
+      - A producer returns one only when the caller asks for it, and MUST NOT
+        put its data in the tree: §§2, 7, 11 and 12 keep the tree closed, and
+        two documents differing only in sidecar content are the same document
+        under §6.
+      - It carries `version` 1 and validates against its own schema. A reader
+        refuses a version it does not implement, and an AST decoder does not
+        accept a sidecar as an AST. Default parse, AST encoding, CLI JSON and
+        rendering do not move.
+      - A `path` is an RFC 6901 pointer into the accompanying canonical AST.
+      - A byte range counts the bytes of the ORIGINAL input it names, BOM and
+        CRLF bytes included: `startByte` inclusive, `endByte` exclusive. It is
+        not a §4 offset, which counts codepoints.
+      - SIDECAR DATA DOES NOT SURVIVE A CANONICAL WRITE: Carve source has no
+        spelling for it, and the write produces a new input.
+
+      The source-layout sidecar validates against
+      `resources/ast-source-layout-schema.json`. Its encoding is UTF-8,
+      `source` is the original input, `lineEndings` names the terminators it
+      uses (`none`, `lf`, `crlf`, `cr` or `mixed`), and `bom` says whether it
+      begins with U+FEFF. Entries are sorted by path; a producer MUST NOT
+      invent an unplaceable range.
 
       Original source and byte ranges are the portable minimum. Every OTHER
-      property the schema declares is an optional MEASURED FACT, and each one
-      is defined below. ABSENT MEANS UNKNOWN, per field: a producer that did
+      property the schema declares is an optional MEASURED FACT, defined
+      below. ABSENT MEANS UNKNOWN, per field: a producer that did
       not measure a fact omits it, a producer MUST NOT emit a fact it did not
       measure, and a consumer MUST NOT read an omission as a default value.
 
@@ -12165,14 +11883,6 @@ EOF = (* end of file *) ;
          host.
 
       A DECLARED FACT WITH NO DEFINITION IS A DEFECT, not a reserved slot.
-      `tests/ast-schema.test.mjs` fails when the schema declares an optional
-      property this clause does not define, unless the gap is named there with
-      its open question. That is what stops the sidecar from growing fields no
-      producer can implement.
-
-      DEFAULT OUTPUT DOES NOT MOVE. Ordinary parse, AST encoding, CLI JSON and
-      rendering retain their existing APIs and shapes. An AST decoder does not
-      accept this sidecar as an AST. A layout reader refuses an unknown version.
 
    14. A CAPTION MAY CARRY AN OPTIONAL STRUCTURED SHORT CAPTION -- NORMATIVE [CARVE-P12-033].
       A `figure` or `table` MAY carry `shortCaption`, an array of inline nodes.
@@ -12181,21 +11891,31 @@ EOF = (* end of file *) ;
       alternative text, an accessible description, or a replacement for the
       required `figure.caption` / optional `table.caption`.
 
-      CARVE 0.1 SOURCE HAS NO SPELLING FOR THIS FIELD (fallback matrix row
-      `figure.shortCaption,table.shortCaption`). A parser never synthesizes it;
-      AST consumers and format bridges supply it, and AST encode/decode preserves
-      it (§6). This structural capability is independent of future `^^` source
-      proposals.
+      `shortCaption` is interchange-only (CARVE-P12-066; fallback matrix row
+      `figure.shortCaption,table.shortCaption`).
       ORDINARY HTML, PLAIN AND ANSI OUTPUT IGNORE `shortCaption`, rendering the
       full caption exactly once. A structured exporter MAY map it to its
-      target's corresponding navigation-caption field. The canonical writer MUST omit it and MUST NOT substitute it for
-      the full caption or invent source syntax. A bridge/API exposing conversion
+      target's corresponding navigation-caption field. The canonical writer
+      MUST omit it and MUST NOT substitute it for the full caption. A
+      bridge/API exposing conversion
       diagnostics SHOULD report that structural loss.
 
       The field is optional rather than an empty array by default. Absent means
       no short caption was supplied. A processor MUST NOT derive one by
       truncating or taking the first sentence of the full caption: abbreviation
       is an editorial choice and may be language-dependent.
+
+      A SHAPE NO CARVE SOURCE SPELLS IS CARRIED, NOT INVENTED -- NORMATIVE
+      [CARVE-P12-066]. An INTERCHANGE-ONLY shape is a node type, field or
+      wrapper that Carve 0.1 source cannot spell: `shortCaption` (§14), a
+      `figure` wrapping a `table` (§17), `table_cell.blocks` (§27),
+      `small_caps` (§28), `math.label` and `math.number` (§29), `section`
+      (§30), `ruby` (§32) and `block_extension` (§33). A parser never
+      synthesizes one; AST consumers and format bridges supply it, and AST
+      encode/decode preserves it (§6). A canonical Carve writer MUST NOT invent
+      source syntax for it. The shape's own clause says what each target
+      renders and whether and how the loss is reported; this clause changes
+      neither.
 
    15. A TABLE MAY CARRY AN OPTIONAL ROW GROUPING -- NORMATIVE [CARVE-P12-034]. A `table` MAY
       carry `rowGroups`, an object which PARTITIONS the existing `rows` array
@@ -12361,15 +12081,11 @@ EOF = (* end of file *) ;
         table{ caption }                -> <table><caption>...</caption>...</table>
 
       PART 9 §4's source spelling produces only the second: `^ ` after a table
-      attaches to that table. AST consumers and format bridges supply the wrapper,
-      e.g. an HTML importer reading
-      `<figure><table>…<figcaption>`.
-      CARVE 0.1 SOURCE HAS NO SPELLING FOR THE WRAPPER. Like `shortCaption`
-      (§14) and `rowGroups` (§15), it survives AST encode/decode (§6).
+      attaches to that table. The wrapper is interchange-only (CARVE-P12-066);
+      an HTML importer reading `<figure><table>…<figcaption>` supplies it.
 
-      A CANONICAL CARVE WRITER EMITS THE TARGET AND ITS CAPTION and MUST NOT
-      invent source syntax for the wrapper. It re-reads as `table{caption}`,
-      changing the HTML and losing the wrapper. A bridge/API exposing conversion
+      A CANONICAL CARVE WRITER EMITS THE TARGET AND ITS CAPTION. It re-reads
+      as `table{caption}`, changing the HTML and losing the wrapper. A bridge/API exposing conversion
       diagnostics SHOULD report that structural loss.
       THE TARGET'S OWN CAPTION SLOT MAY ALREADY BE FULL. In
       `figure{ target: table{ caption }, caption }`, the target's caption wins;
@@ -12645,15 +12361,9 @@ EOF = (* end of file *) ;
       array holding one is a tree no parser produces and no renderer has a
       case for.
 
-      THE UNION IS THE ENFORCEMENT. §12(d) refuses a payload by validating it
-      against the schema, so a union listing a type makes that type valid
-      wherever the union appears -- and the block union listed all five. A
-      document whose only child was a `table_row` therefore validated, and the
-      engines split on it: carve-js accepted it, carve-rs refused it with a
-      rule written in its decoder that the schema does not state, and no
-      ledger could declare the divergence because a schema check cannot see a
-      shape the schema permits. Narrowing the union is what makes §12(d) able
-      to answer, rather than adding a sixth leniency list beside it
+      THE UNION IS THE ENFORCEMENT. §12(d) validates a payload against the
+      schema, so the block union names content blocks only, and a `children`
+      array holding a container-internal type fails at decode
       ([carve#2189](https://github.com/markup-carve/carve/issues/2189)).
 
       A `list_item` REACHES ITS OWN CHILDREN THE SAME WAY. It holds content
@@ -12666,12 +12376,9 @@ EOF = (* end of file *) ;
       `image` requires `src`, `heading_ref` requires `target`, `footnote`
       requires `label`.
 
-      `footnote_ref` did not, so `{"type":"footnote_ref"}` validated: a
-      reference to nothing, which §3a cannot have produced -- a pre-resolve
-      tree records what the author wrote, and nobody writes a footnote
-      reference with no label. Resolution results stay optional, as §5 has
-      them: `number` arrives when the document resolves the reference and is
-      absent when nothing does
+      `footnote_ref` requires `label` likewise. Resolution results stay
+      optional, as §5 has them: `number` arrives when the document resolves
+      the reference and is absent when nothing does
       ([carve#2193](https://github.com/markup-carve/carve/issues/2193)).
 
       AND IT IS SPELLED `label`, THE NAME ITS DEFINITION USES. A `footnote`
@@ -12718,9 +12425,8 @@ EOF = (* end of file *) ;
       content every source-spelled cell has, OR `blocks`, a list of block
       nodes. Exactly one: never both, and never neither.
 
-      Carve 0.1 source spells no blocks inside a cell; a parser never produces
-      `blocks`. Format bridges can preserve HTML flow content or Pandoc blocks
-      in this field. The canonical writer loses the field and reports
+      `blocks` is interchange-only (CARVE-P12-066); format bridges use it for
+      HTML flow content or Pandoc blocks. The canonical writer loses the field and reports
       `field-unspellable` for `table_cell.blocks` on the PART 11 §1d channel,
       as it reports `shortCaption` and a `figure` wrapping a `table`.
       The fallback matrix row `table_cell.blocks` gives the target summary.
@@ -12767,16 +12473,15 @@ EOF = (* end of file *) ;
       `pos` under the ordinary inline-node rules. It records a semantic
       small-caps distinction supplied by an AST consumer or format bridge.
 
-      CARVE 0.1 SOURCE HAS NO SPELLING FOR THIS WRAPPER. A source parser never
-      synthesizes it; AST encode/decode preserves it (§6). Structured exporters
+      The wrapper is interchange-only (CARVE-P12-066). Structured exporters
       MAY map it to equivalent small caps. The fallback matrix row `small_caps`
       gives HTML, Markdown (PART 11 §8c), plain and ANSI output.
       HTML renders `<span class="smallcaps">`, merging `attrs` under ordinary
       span rules. Plain and ANSI render the children without changing letter
       case. The canonical writer MUST write the children without the small-caps
       wrapper. It MUST preserve any `attrs` on an ordinary attributed span
-      around those children. It MUST NOT discard children, change their case or
-      invent small-caps source syntax. It reports `structure-unspellable` for `small_caps` on
+      around those children. It MUST NOT discard children or change their
+      case. It reports `structure-unspellable` for `small_caps` on
       the PART 11 §1d channel.
       A source spelling can be specified separately without changing this node.
 
@@ -12803,9 +12508,7 @@ EOF = (* end of file *) ;
       cross-reference target. A number without a label is invalid: it has no
       counter bucket or visible prefix.
 
-      Carve 0.1 source has no direct spelling for either field. Parsers do not
-      synthesize `label`; the field enters through an AST consumer or format
-      bridge. A canonical source writer preserves the formula and reports one
+      Both fields are interchange-only (CARVE-P12-066). A canonical source writer preserves the formula and reports one
       `field-unspellable` entry per dropped field, `math.label` and
       `math.number`, on the PART 11 §1d channel. An exporter MAY map the pair
       to its target's equation label and numbering model.
@@ -12816,8 +12519,8 @@ EOF = (* end of file *) ;
       carries `children`, the blocks it encloses, and MAY carry `level`, the
       heading level the source format stated for it.
 
-      Carve source has implicit heading-level sectioning (PART 9) and produces
-      no `section`; no corpus document contains one. The canonical writer
+      `section` is interchange-only (CARVE-P12-066): Carve's own sectioning is
+      the implicit heading-level kind of CARVE-P9-019. The canonical writer
       flattens one back to its headings and reports `structure-unspellable`
       for `section` on the PART 11 §1d channel.
       The fallback matrix row `section` gives HTML, Markdown, plain and ANSI
@@ -12889,14 +12592,13 @@ EOF = (* end of file *) ;
       reproduce the node and every pair unchanged when it serializes that tree
       again.
 
-      CARVE 0.1 SOURCE HAS NO SPELLING FOR RUBY; parsers never synthesize it.
-      The fallback matrix row `ruby` gives target output. The canonical writer
+      Ruby is interchange-only (CARVE-P12-066). The fallback matrix row `ruby` gives target output. The canonical writer
       replaces each pair with base, text `(`, annotation, text `)`, then writes
       and escapes that sequence under PART 11 §1a and §2. Empty annotation stays
       visible as `()`. With `attrs`, the writer wraps the complete fallback in
       one ordinary attributed span. It reports `ruby-flattened` under PART 2. The source round-trip
       compares against this flattened sequence. The writer MUST NOT discard
-      either side or invent a source spelling.
+      either side.
       HTML emits pairs in order inside one `<ruby>`, with generated `<rp>(</rp>`
       and `<rp>)</rp>` around each `<rt>`; the outer element receives `attrs`.
       Plain and ANSI emit `base(annotation)` and report `ruby-flattened`.
@@ -12912,7 +12614,7 @@ EOF = (* end of file *) ;
    33. A BLOCK EXTENSION DECLARES A CORE FALLBACK -- NORMATIVE
       [CARVE-P12-055]. A `block_extension` carries a globally qualified
       `name`, a REQUIRED `fallback` block, and MAY carry `version` and
-      `payload`. Carve 0.1 source spells none, so a parser produces none.
+      `payload`. It is interchange-only (CARVE-P12-066).
 
       IT IS THE TWIN `inline_extension` NEVER HAD: Carve-content payloads can
       use a div or admonition; non-Carve payloads need this declared home (§11).
@@ -12980,8 +12682,8 @@ EOF = (* end of file *) ;
           and this clause's own reason for existing is that the reader need not
           be weakened to evolve.
       (c) AN EXTENSION MARKED REQUIRED AND NOT IMPLEMENTED IS REFUSED, named.
-          Rendering the understood parts and reporting success is what §9(b)
-          forbids one level down, for the same reason.
+          Rendering the understood parts and reporting success is what
+          CARVE-P12-068 forbids.
       (d) A MISSING `vocabulary` MEANS THE CORE ONE. A profile that denies
           types does not change it: a denied type is one the document does not
           use, not a different vocabulary.
@@ -13101,19 +12803,16 @@ EOF = (* end of file *) ;
       ([carve#2227](https://github.com/markup-carve/carve/issues/2227)).
 
    38. NODE IDENTITY IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE [CARVE-P12-060]. A
-      producer MAY return ephemeral node ids beside an AST only when the caller
-      asks for them, and MUST NOT put them in the tree: §§2, 7, 11 and 12
-      keep it closed, and two documents differing only in sidecar content are
-      the same document under §6.
+      producer MAY return ephemeral node ids beside an AST, as a sidecar under
+      CARVE-P12-067.
 
       THESE ARE NOT `attrs.id`. That id is what the author wrote and belongs to
       the document; this one is machinery and belongs to the session. A
       producer MUST NOT derive either from the other.
 
       The sidecar validates against `resources/ast-node-identity-schema.json`.
-      `version` is 1, and each entry of `nodes` binds an `id` to a `path`, an
-      RFC 6901 pointer into the accompanying canonical AST as in §13. Both are
-      unique within a sidecar.
+      Its `version` is 1, and each entry of `nodes` binds an `id` to a `path`.
+      Both are unique within a sidecar.
 
         {"version":1,"session":"s-7f3","nodes":[{"id":"n4","path":"/children/3"}]}
 
@@ -13128,17 +12827,12 @@ EOF = (* end of file *) ;
       is how a consumer learns its anchor is gone. An id is never reused for a
       different node within one `session`.
 
-      IDS DO NOT SURVIVE A CANONICAL WRITE. Carve source has no spelling for
-      them, so a re-parse mints fresh ones, and `session` is the opaque token
-      naming the minting a sidecar belongs to: a consumer MUST NOT match ids
-      across two sidecars whose `session` values differ.
+      A re-parse after a canonical write mints fresh ids, and `session` is the
+      opaque token naming the minting a sidecar belongs to: a consumer MUST NOT
+      match ids across two sidecars whose `session` values differ.
 
       NO SPAN IS RESTATED. A node's offsets are `pos` on the node the path
       addresses, in codepoints per §4; a second copy could disagree.
-
-      DEFAULT OUTPUT DOES NOT MOVE. An AST decoder does not accept this sidecar
-      as an AST, and an identity reader refuses a version it does not
-      implement.
 
    39. A COUNT WITH NO MARKERS IS INGESTED AS THE SPAN -- NORMATIVE
       [CARVE-P12-061]. A reader that meets a `table_cell` carrying `colspan` or
@@ -13158,7 +12852,7 @@ EOF = (* end of file *) ;
       REFUSAL IS FOR ARITHMETIC, NOT FOR A MISSING MARKER. A count reaching
       past the table's last row or column, or one whose positions another
       cell's count already occupies, has no derivation: that is a malformed
-      tree, refused with an error of its own in the sense §9(b) means. A count
+      tree, refused under CARVE-P12-068. A count
       with no markers is an interchange shape, and nothing refuses it.
 
       AN ORPHAN MARKER IS NOT EXPRESSIBLE THIS WAY. §26 publishes a marker that
@@ -13167,17 +12861,15 @@ EOF = (* end of file *) ;
       marker to orphan, and a tree that carries markers keeps them.
 
    40. AN ANNOTATION RANGE IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE
-      [CARVE-P12-062]. A producer MAY return annotation ranges beside an AST
-      only when the caller asks for them, and MUST NOT put them in the tree:
-      the inline tree nests and a range need not, and two documents differing
-      only in sidecar content are the same document under §6.
+      [CARVE-P12-062]. A producer MAY return annotation ranges beside an AST,
+      as a sidecar under CARVE-P12-067: the inline tree nests and a range need
+      not.
 
       The sidecar validates against
-      `resources/ast-annotation-range-schema.json`. `version` is 1, and each
+      `resources/ast-annotation-range-schema.json`. Its `version` is 1, and each
       entry of `ranges` carries an `id`, a `kind`, a `start` and an `end`, and
       MAY carry `data`, the holder's payload, which core never reads. An
-      anchor is a `path`, an RFC 6901 pointer into the accompanying canonical
-      AST as in §38, and an `offset` in codepoints per §4 from the start of
+      anchor is a `path` and an `offset` in codepoints per §4 from the start of
       that node's annotation text, defined below. An offset is a boundary from
       zero through the annotation text's codepoint length, inclusive. Readers
       MUST reject an out-of-range offset or a path that is not a node.
@@ -13226,23 +12918,19 @@ EOF = (* end of file *) ;
       and drops a range it can no longer place, and a consumer MUST NOT carry a
       path across an edit.
 
-      ANCHORS DO NOT SURVIVE A CANONICAL WRITE, because Carve source has no
-      spelling for them. `id` is the holder's, not `attrs.id` and not a §38
-      node id, and a holder keeps it across a write the anchors do not survive
+      `id` is the holder's, not `attrs.id` and not a §38 node id, and a holder
+      keeps it across a canonical write, which the anchors do not survive
       ([carve#2232](https://github.com/markup-carve/carve/issues/2232)).
 
    41. PROVENANCE IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE [CARVE-P12-063]. A
-      producer MAY return provenance beside an AST only when the caller asks
-      for it, and MUST NOT put it in the tree: §13 already returns
-      source-fidelity metadata beside the AST rather than inline, and two
-      documents differing only in sidecar content are the same document under
-      §6.
+      producer MAY return provenance beside an AST, as a sidecar under
+      CARVE-P12-067.
 
       The sidecar validates against `resources/ast-provenance-schema.json`.
-      `version` is 1. `sources` names each input once - an `id`, an optional
+      Its `version` is 1. `sources` names each input once - an `id`, an optional
       `uri`, an optional `format` and an optional `parent`, the id of the
-      source that included or imported it. `nodes` binds a `path`, an RFC 6901
-      pointer as in §38, to a `source`, an `origin` of `authored` or
+      source that included or imported it. `nodes` binds a `path` to a
+      `source`, an `origin` of `authored` or
       `generated`, an optional `step`, the transformation that produced the
       node, and a `startByte` and an `endByte` in THAT input. The two bytes
       come as a pair; a generated node has no range and omits both.
@@ -13256,9 +12944,8 @@ EOF = (* end of file *) ;
       every node that came from it. A root input has no `parent`, and PART 9
       §19 already refuses a cycle.
 
-      A BYTE RANGE IS NOT AN OFFSET. The two bytes count the input they name,
-      start-inclusive and end-exclusive as in §13; §4's codepoint rule governs
-      `pos`. When `pos.file` is present, every `pos` coordinate is measured in
+      A BYTE RANGE IS NOT AN OFFSET. The two bytes count the input they name
+      (CARVE-P12-067); §4's codepoint rule governs `pos`. When `pos.file` is present, every `pos` coordinate is measured in
       that named input file; otherwise it is measured in the top-level input.
       There is no implicit assembled-document coordinate space. Byte ranges
       and pos can address the same input but use different units. Containment
@@ -13271,10 +12958,7 @@ EOF = (* end of file *) ;
       a missing fact as unknown and never as a guessed default.
 
       PROVENANCE IS PER NODE. A range has no independent existence in the tree,
-      so §40's holder reads the nodes its anchors address.
-
-      IT DOES NOT SURVIVE A CANONICAL WRITE, which produces a new input, so
-      every byte range in the sidecar would then address text nothing emitted
+      so §40's holder reads the nodes its anchors address
       ([carve#2233](https://github.com/markup-carve/carve/issues/2233)).
 
    ============================================================================ *)

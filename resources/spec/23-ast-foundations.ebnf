@@ -198,64 +198,51 @@
       conversion channel. This is separate from the render-loss report.
 
    3a. THE SERIALIZED TREE IS PRE-RESOLVE -- NORMATIVE [CARVE-P12-005]. It records what the
-      AUTHOR WROTE, not what the document resolves to. Reference resolution,
-      like rendering, happens after; a producer MUST NOT fold its results into
-      the tree in place of the authored construct.
-
-      Concretely, for `[getting started][]` where NOTHING defines the label:
+      AUTHOR WROTE. Resolution results are ADDED ALONGSIDE the authored
+      construct (§5); a producer MUST NOT fold them into the tree in its
+      place. For `[getting started][]` where nothing defines the label:
 
         {"type":"link","href":"","ref":"getting started",
          "rawRef":"[getting started][]"}
 
       `ref` is present because the author wrote a reference link (§3), `href`
-      is empty because there is no destination, and `rawRef` carries the source
-      so the construct can be restored. A tree publishing
-      `{"type":"link","href":"#Getting-Started"}` for that source has serialized
-      a LATER STAGE: the reference is gone, and no consumer can tell it from a
-      document whose author typed the destination out.
+      is empty because there is no destination, and `rawRef` carries the
+      source. A tree publishing `{"type":"link","href":"#Getting-Started"}`
+      for that source has serialized a later stage.
 
       A RESOLVED REFERENCE KEEPS ITS DESTINATION -- NORMATIVE [CARVE-P12-006]. Where the
-      document DOES define the label, the same source publishes:
+      document defines the label, the same source publishes:
 
         {"type":"link","href":"/start","ref":"getting started",
          "rawRef":"[getting started][]"}
 
-      `href` is empty only where nothing resolved the reference. This is not a
-      retreat from pre-resolve: it is the ADDED-ALONGSIDE rule below, applied to
-      links exactly as §5 already applies it to footnote numbering. The authored
-      construct -- `ref` and `rawRef` -- survives, and the resolution result is
-      published rather than left to be recomputed. The distinction this clause
-      exists to protect, `[a][]` versus `[a](#a)`, is carried entirely by `ref`
-      and `rawRef`, so nothing is lost by keeping `href` too.
+      `href` is empty only where nothing resolved the reference; `ref` and
+      `rawRef` survive either way.
+
+      THE COLLAPSED FORM'S `ref` IS THE DERIVED LABEL. For `[getting started][]`
+      `ref` carries `"getting started"`, the label the reference resolves by;
+      `rawRef` holds the empty brackets. A published `ref: ""`, and a `ref`
+      dropped once resolved, are both non-conforming.
+
+      AN UNRESOLVED REFERENCE IS STILL A LINK NODE. Where nothing defines
+      `[a]`, `see [a][] here` publishes `text`, `link`, `text`, the link
+      carrying `ref` and an empty `href`, NOT one text node holding
+      `see [a][] here`. It is never reverted to literal source, so the
+      vocabulary has no `raw_text` type for one.
 
       A NESTED LINK AND AN AUTOLINK STAY NODES -- NORMATIVE [CARVE-P12-007].
-      "Links never nest" is a RENDERING rule: an anchor may not contain another
-      anchor. It binds the renderer, not the encoder. A link or an autolink
-      inside a link's label is serialized as the node the author wrote, and
-      every renderer unwraps it at the render seam.
-
-      Flattening it at the encoder is the fold this section exists to forbid,
-      and it is strictly lossier than the case the section opens with.
-      `[[x](y)](z)` published as a link to `z` whose only child is the text `x`
-      has lost `y` from the tree entirely, so `fmt` on the parsed document and
-      `fmt` on the same document taken through the AST write two different
-      spellings -- the §6 round trip failing. An autolink flattened the same way
-      returns as a bare URL, and that is a DIFFERENT document: a bare URL stays
-      literal where an autolink is a link.
-
-      THE NODE CARRIES NO NON-ANCHOR FLAG: consumers infer unwrapping from
-      context. §3 already allows `link` and `autolink` in a link's children.
-      Adding such a flag later would be additive; removing it would be a break.
-      RENDERED OUTPUT DOES NOT MOVE on HTML, Markdown, plain or ANSI; keeping
-      the nodes preserves §6's AST round trip on the examples above.
+      "Links never nest" binds the renderer, not the encoder. A link or an
+      autolink inside a link's label is serialized as the node the author
+      wrote, and every renderer unwraps it at the render seam. `[[x](y)](z)`
+      published as a link to `z` whose only child is the text `x` has lost
+      `y` and fails the §6 round trip. THE NODE CARRIES NO NON-ANCHOR FLAG:
+      consumers infer unwrapping from context.
 
       A DESTINATION IS THE AUTHOR'S TEXT, UNSANITIZED -- NORMATIVE [CARVE-P12-008]. `href`,
       `src`, and every other destination field carry what the author wrote,
-      including a URL whose scheme no rendered URL sink is allowed to emit.
-      A producer MUST NOT blank or rewrite a destination on the way into the
-      tree: that is the same folding of a later stage this clause forbids
-      everywhere else, it makes
-      the tree lossy, and it breaks the §6 round trip. So this document
+      including a URL whose scheme no rendered URL sink is allowed to emit. A
+      producer MUST NOT blank or rewrite a destination on the way into the
+      tree. So this document
 
         [click](javascript:alert(1))
 
@@ -264,43 +251,16 @@
       preserves it under PART 11's round-trip invariant.
 
       A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST -- NORMATIVE [CARVE-P12-009]. The
-      obligation is PART 9 section 25's URL-scheme denylist, and section 25 already says it
-      binds every target that emits a resolvable URL rather than the HTML
-      renderer alone -- a scheme blanked in one target and passed through in
-      another is not blocked, it is deferred by one step. Handing the tree to
-      another tool is the whole purpose of this PART, so the argument applies
-      here with more force: a consumer that wires a serialized `href` into an
-      anchor has published a live `javascript:` URL. Feeding the tree back
-      through a conforming engine applies the denylist at its presentation
-      targets' URL sinks; its canonical source writer preserves destinations.
-      Walking the tree and building output yourself does not apply the denylist
-      for you.
-
-        See [getting started][] here.
-
-        [getting started]: /start
-
-      THE COLLAPSED FORM'S `ref` IS THE DERIVED LABEL. For `[getting started][]`
-      the author wrote nothing between the second brackets, and `ref` carries
-      `"getting started"` -- the label the reference RESOLVES BY, which is the
-      only value a consumer can do anything with. An empty `ref` would say
-      "there is a reference here and I will not tell you to what". `rawRef`
-      holds the authored spelling, so the empty brackets are not lost by this.
-      A published `ref: ""`, and a `ref` dropped once resolved, are both
-      non-conforming.
-
-      AN UNRESOLVED REFERENCE IS STILL A LINK NODE. Where nothing defines
-      `[a]`, `see [a][] here` publishes `text`, `link`, `text` -- the link
-      carrying `ref` and no `href` -- NOT one text node holding `see [a][]
-      here`. Flattening it to text discards the fact that the author wrote a
-      reference at all, and it makes the same document have two node counts
-      depending on which engine produced it.
+      URL-scheme denylist of CARVE-P9-054 binds every target that emits a
+      resolvable URL. A consumer that wires a serialized `href` into an anchor
+      applies it itself; feeding the tree back through a conforming engine
+      applies it at that engine's presentation targets, and its canonical
+      source writer preserves destinations.
 
       A CROSSREF REMAINS A HEADING-REFERENCE NODE AFTER RESOLUTION -- NORMATIVE [CARVE-P12-010]. `</#id>` is
-      a reference like any other, so the same two halves apply: the authored
-      construct survives as a `heading_ref` carrying the raw id the author typed
-      between `</#` and `>`, and where it resolves the destination is published
-      BESIDE it as `href`.
+      serialized as a `heading_ref` whose `target` is the raw id the author
+      typed between `</#` and `>`; where it resolves, the destination is
+      published BESIDE it as `href`.
 
         See </#Intro>.
 
@@ -312,39 +272,14 @@
 
         {"type":"heading_ref","target":"Nope"}
 
-      `target` is the authored spelling, kept whether or not it resolves: a
-      `</#intro>` beside `# Intro` names no id (PART 9R R4) and publishes
-      `target` alone. A tree
-      publishing `{"type":"link","href":"#Intro","fromCrossref":true}` has
-      serialized a later stage by the rule at the top of this section, and it
-      cannot be written back: the writer reconstructs `</#` + the id + `>`, so
-      the document comes out of a wire round trip spelled `</#Intro>`.
+      `target` is kept whether or not it resolves: a `</#intro>` beside
+      `# Intro` names no id (PART 9R R4) and publishes `target` alone. A tree
+      publishing the crossref as a `link` has serialized a later stage, and a
+      writer cannot spell it back as `</#Intro>`.
 
-      THE DISPLAY TEXT IS NOT SERIALIZED. A resolved crossref renders the target
-      heading's text, and that text is NOT copied into the node: the heading is
-      in the same document, so a consumer reads it from there. This is the one
-      place this clause departs from §5's added-alongside rule, and it does so
-      because the alternative duplicates an arbitrary amount of inline content
-      per reference. `href` is a fixed-size result; the display text is not.
-
-      SO THERE IS NO `raw_text`. An engine that reverts an unresolved reference
-      to literal source needs a node type to carry text that must not be
-      escaped again, and no such type is in the vocabulary. Under this clause
-      the reversion does not happen, so the need does not arise: what the
-      author wrote is a link, and it stays one.
-
-      PRE-RESOLVE preserves authored form through a format cycle: `[a][]` and
-      `[a](#a)` remain distinct constructs, and `rawRef` remains usable.
-
-      WHAT IS STILL SERIALIZED. §5's rule is unchanged and is not in tension
-      with this one: resolution RESULTS a consumer would otherwise have to
-      recompute -- footnote numbering, caption numbers -- are serialized,
-      because recomputing them means reimplementing PART 9R. The difference is
-      that those are ADDED alongside the authored construct; they do not
-      REPLACE it. A resolved footnote reference keeps its label and gains its
-      number. A resolved link keeps its `ref` and `rawRef` and gains its `href`,
-      which is the same shape: the authored construct is still there to be read,
-      and the resolution result sits beside it.
+      THE DISPLAY TEXT IS NOT SERIALIZED. A resolved crossref renders the
+      target heading's text, and that text is not copied into the node; a
+      consumer reads it from the heading.
 
    4. POSITIONS ARE REQUIRED. Every node EXCEPT the document root carries
       `pos`:
@@ -356,172 +291,109 @@
       in UNICODE CODEPOINTS. `endColumn` and `endOffset` are exclusive.
       `pos.file`, when present, is the canonical id of the included input the
       coordinates are measured in (PART 9 §19); absent means the top-level
-      input.
+      input. The root is exempt because it spans the whole source.
 
-      Codepoint indices always land on character boundaries; bytes and UTF-16
-      units can split encoded characters. Implementations convert once per
-      document. The root is exempt because it spans the whole source.
+      An implementation MAY gate position tracking behind a parse option, and
+      MUST enable it when asked to serialize: serialized JSON carries
+      positions. One that cannot yet produce them MUST NOT emit `pos` with
+      invented values and MUST NOT omit it silently; it does not yet serialize
+      conformantly, and should say so.
 
-      This is the field that makes a serialized AST worth exchanging: an
-      editor, a language server or a tool grounding output back to source needs
-      to say WHERE. Making it optional would mean every consumer has to handle
-      its absence, which in practice means not using it.
+      The span rules are four statements: what a span contains, where it
+      starts, where it ends, and when a node has none.
 
-      A SPAN CONTAINS ITS CHILDREN'S SPANS -- NORMATIVE [CARVE-P12-011]. A node's span
-      covers every placed node inside it: a child's `startOffset` is not
-      before its parent's, and its `endOffset` is not past it, when both
-      positions name the same input file. A node that
-      omits `pos` (the reassembled-node clause below) is skipped rather than
-      breaking the chain -- the comparison is against the nearest ANCESTOR
-      that has one for the same input file.
+      (1) CONTAINMENT.
 
-      A node whose content is not a contiguous slice of its own source MUST
-      omit `pos` rather than publish a PARTIAL span. A `+` continuation cell
-      joined from three source lines has no offset pair that equals its value,
-      and a span covering only the first fragment leaves the cell's own text
-      children outside it -- which this rule reports. Omitting is already
-      permitted below; this says the partial span is not an alternative to it.
+      A SPAN CONTAINS ITS CHILDREN'S SPANS -- NORMATIVE [CARVE-P12-011]. A child's
+      `startOffset` is not before its parent's and its `endOffset` is not past
+      it, when both positions name the same input file. A child that omits
+      `pos` is skipped; the comparison is against the nearest ancestor with a
+      position in the same file. Containment is checked on its own, not derived
+      from CARVE-P12-013. Sibling spans do not overlap, except as a PAIR: two
+      breaks meeting at one line terminator share it, and a hoisted definition
+      may overlap the container it was authored in (CARVE-P12-016).
 
-      CONTAINMENT IS CHECKED ON ITS OWN, not derived from the opening-markup
-      clause below. The two point the same way, which is why
-      containment is asserted separately: were the convention ever revisited, a
-      check that derived containment from it would go quiet with nothing
-      failing.
+      A HOISTED DEFINITION MAY CLAIM SOURCE INSIDE THE CONTAINER IT WAS
+      AUTHORED IN -- NORMATIVE [CARVE-P12-016]. A definition hoisted to the
+      document (CARVE-P12-029) keeps the `pos` it was written at, so it and its
+      former host are siblings whose spans may overlap, whatever the host's
+      extent:
 
-      A SPAN COVERS THE MARKUP THE AUTHOR WROTE -- NORMATIVE [CARVE-P12-012]. Where a node
-      has markup of its own, its span covers that markup and not merely the
-      content inside it. The case that needed saying is the break, which has
-      no content to fall back on: `hard_break` is a backslash followed by a
-      newline, so its span is BOTH characters.
+          > [f]: ~
+          /
 
-      source: a backslash at the end of a line, then the next line
-      span: the backslash and the newline, not the newline alone
+      spans the emptied `block_quote` as `> ` and the definition over the whole
+      line. The exception covers that pair only: two definitions claiming the
+      same source, or a definition overlapping a sibling it was not authored
+      in, are findings. The host is the sibling whose span begins at or before
+      the definition's and which holds a child list; a
+      `link_reference_definition` or `abbreviation_def` hosts nothing, a
+      `footnote` does. The exception never extends a host's span over source
+      no child of it owns.
 
-      A TRAILING ATTRIBUTE BLOCK IS THE NODE'S OWN MARKUP, so the span covers
-      it. For
+      (2) WHERE A SPAN STARTS.
 
-          *x*{#i}
+      A SPAN COVERS THE MARKUP THE AUTHOR WROTE -- NORMATIVE [CARVE-P12-012]. A node's span
+      covers its own markup, not only its content. A `hard_break` spans its
+      backslash and its newline. A trailing attribute block is the node's own
+      markup: `*x*{#i}` gives `strong` offsets 0..7. A break the parser
+      synthesized (a line block's implied break, a hard-break fence's converted
+      newline) spans the bare newline, because the source holds no backslash.
 
-      the `strong` span is the whole run, offsets 0..7, not 0..3. The braces
-      are where the node's `attrs` came from; a span that stops at `*x*` says
-      the node begins and ends before the markup that gave it half its
-      content.
+      A SPAN BEGINS AT THE CONSTRUCT'S OPENING MARKUP -- NORMATIVE [CARVE-P12-013]. `startOffset`
+      selects the markup that opened the node: the `>` of a block quote, the
+      `#` of a heading, a list marker, the `:` of a colon fence, the `[` of a
+      link, the backtick run of a code block. Leading indentation on the
+      opening line is inside the span. Two exceptions: the inner node of the
+      combined `/*x*/` form spans its content, and a table cell spans the text
+      between its pipes, since the `|` opens the row.
 
+      A CONTAINER STARTS AT ITS OPENING MARKUP EVEN WHERE ITS FIRST CHILD IS
+      UNPLACED -- NORMATIVE [CARVE-P12-019]. A container whose first child
+      omits `pos` starts where its opening markup was written, not at its first
+      placed child.
 
-      A break the parser SYNTHESIZED is a different case and keeps the bare
-      newline: a line block's implied break and a hard-break fence's converted
-      newlines have no backslash, because the author wrote none. The
-      discriminator is what is in the SOURCE, not what type the node has --
-      which is also how the checker tests it, so a synthesized break needs no
-      exemption list.
+      A SPAN DOES NOT BEGIN AT A LINE TERMINATOR -- NORMATIVE [CARVE-P12-021]. Except on a
+      `soft_break` or a `hard_break`, whose content IS the terminator, a node's
+      `startOffset` MUST NOT select a newline.
 
-      A SPAN BEGINS AT THE CONSTRUCT'S OPENING MARKUP -- NORMATIVE [CARVE-P12-013]. Where a
-      node is opened by markup, its `startOffset` selects that markup and not
-      the content after it: the `>` of a block quote, the `#` of a heading, the
-      marker of a list item, the `:` of a colon fence, the `[` of a link, the
-      backtick run of a code block. `pos` therefore round-trips to the source
-      text that PRODUCED the node, which is what a formatter, a linter and an
-      editor selection each need; a span that starts at the content identifies
-      the rendered result instead, and no longer identifies the construct.
-
-      Leading indentation on the opening line is INSIDE the span. A nested
-      item's marker is placed by the whitespace before it, so a span that
-      started at the marker would leave the characters deciding the item's
-      column outside the item.
-
-      TWO EXCEPTIONS, both already stated elsewhere in this section and neither
-      an opt-out from the rule:
-
-      -- the combined form `/*x*/` materialises a `strong` > `emphasis` pair
-         from ONE run of delimiters. The outer node carries the run; the inner
-         span is derived by trimming the two-character delimiters, so the inner
-         node's span is the content. There is no second opening delimiter for
-         it to begin at.
-      -- a table cell's span runs BETWEEN the pipes, as the discontiguous-node
-         clause below shows for ` Fresh Fruits    `. The `|` opens the ROW, and
-         a cell claiming it would overlap the cell before it -- which the
-         sibling-overlap rule forbids.
+      (3) WHERE A SPAN ENDS.
 
       A SPAN ENDS IMMEDIATELY AFTER THE CONSTRUCT'S LAST OWNED SOURCE
-      CODEPOINT -- NORMATIVE [CARVE-P12-014]. Closing delimiters and trailing attribute blocks
-      belong to the construct and are included. A following line terminator,
-      blank line, or unattached attribute block does not and is excluded.
-      A container ends after its explicit closer when it has one, otherwise
-      after its last child -- its last PLACED child, which is what a container
-      whose closer is IMPLICIT has instead of one. A soft or hard break is the
-      exception: the line terminator is the source codepoint the break owns, so
-      its exclusive end is column 1 of the following line.
+      CODEPOINT -- NORMATIVE [CARVE-P12-014]. Closing delimiters and trailing
+      attribute blocks are included; a following line terminator, blank line or
+      unattached attribute block (PART 9 §15 A4) is not. A container ends after
+      its explicit closer when it has one, otherwise after its last PLACED
+      child. A soft or hard break owns its line terminator, so its exclusive end
+      is column 1 of the next line.
+
+      A CONTAINER ENDS AT THE MARKUP THAT CLOSES IT EVEN WHERE ITS LAST CHILD
+      IS UNPLACED -- NORMATIVE [CARVE-P12-020]. A container whose last child
+      omits `pos` ends at its closing markup. A closerless container whose last
+      child is unplaced ends where its content ends, which the block layer
+      knows even where that text has no source slice, as for the stanza here:
+
+          ::: |
+          %%
+          tab<TAB>gap
+          :::
 
       A HOISTED SIBLING IS NOT A CHILD, AND A CLOSERLESS CONTAINER ENDS BEFORE
-      IT -- NORMATIVE [CARVE-P12-015]. A definition written at a container's content column is
-      hoisted to the DOCUMENT (CARVE-P12-029), so it leaves the container
-      and becomes its sibling while its `pos` still points inside the source the
-      container encloses. Hoisting breaks the correspondence between tree
-      nesting and source nesting, and a span follows the TREE:
+      IT -- NORMATIVE [CARVE-P12-015]. A span follows the tree. A definition
+      hoisted out of a closerless container is its sibling, so the container
+      ends at its last placed child:
 
           - a
 
             [r]: /u
 
-      The `list` ends at offset 3, where its only `list_item` ends, and not at
-      14. The offsets between them belong to the `link_reference_definition`
-      alone, so the sibling-overlap rule below is satisfied here rather than
-      waived.
+      The `list` ends at offset 3, where its `list_item` ends, not at 14. A
+      container with a closer still ends at the closer; CARVE-P12-016 covers
+      the overlap that leaves.
 
-      A CONTAINER THAT HAS A CLOSER STILL ENDS AT THE CLOSER. A definition
-      hoisted out of a `:::` div is a document-level sibling whose span sits
-      inside the div's, and no reading of this clause makes that pair stop
-      overlapping -- which is why the clause below states an exception to the
-      sibling-overlap rule, and why the paragraph above is about the container
-      that has no closer to end at.
-
-      A HOISTED DEFINITION MAY CLAIM SOURCE INSIDE THE CONTAINER IT WAS
-      AUTHORED IN -- NORMATIVE [CARVE-P12-016]. The one exception to the sibling-overlap rule
-      stated further down this section, and it holds WHATEVER THAT CONTAINER'S
-      EXTENT. CARVE-P12-029 makes the definition a child of the document while this section
-      keeps its `pos` pointing back at the container it was written inside, so
-      the two are siblings whose spans meet by construction; and the paragraph
-      above ends an emptied closerless container at its own markup, which leaves
-      the definition reaching PAST its host rather than sitting inside it:
-
-          > [f]: ~
-          /
-
-      spans the emptied `block_quote` as `> ` and the hoisted
-      `link_reference_definition` over the whole line, and offsets 0 to 2 sit in
-      two document-level siblings at once. CARVE-P12-029, the emptied-container paragraph
-      above and the sibling-overlap rule cannot all three hold on this document,
-      and the exception is where it gives.
-
-      THE EXCEPTION IS ABOUT THE PAIR, NOT ABOUT A DEFINITION. It does not say a
-      hoisted definition overlaps nothing. Two definitions that claim the same
-      source overlap each other, and a definition that claims source inside a
-      sibling it was NOT authored in overlaps that sibling; both are findings.
-      What identifies the host, from the tree alone:
-
-      -- the host's span BEGINS AT OR BEFORE the definition's. A definition
-         cannot have been written inside a container that opens after it.
-      -- the host HOLDS A CHILD LIST. Nothing is authored inside a node that has
-         none, so a `link_reference_definition` and an `abbreviation_def` -- a
-         label and a destination, an abbreviation and its expansion, no children
-         -- host nothing. A `footnote` does hold one and is a host: a reference
-         definition written on a footnote body's continuation line is hoisted
-         out of it, and that pair is two definition kinds.
-
-      A HOST THAT REACHES PAST ITS OWN CONTENT IS STILL WRONG, under the
-      paragraphs above rather than under this one. The exception excuses an
-      overlap; it does not extend a container's span, and nothing here permits a
-      host to cover source no child of it owns.
-
-      An unattached attribute block is the same rule reached from the other
-      clause above rather than a second one. `{.x}` written below an item
-      attaches to no block (PART 9 §15 A4) and so yields no child, and a
-      container whose span covers it is covering source nothing in it owns.
-
-      A DEFINITION LIST ENDS AT ITS LAST PLACED CHILD -- NORMATIVE [CARVE-P12-017]. It has no closer,
-      so it ends at its last
-      placed `definition_term` or `definition_description` like every other
-      closerless container:
+      A DEFINITION LIST ENDS AT ITS LAST PLACED CHILD -- NORMATIVE [CARVE-P12-017]. It has no
+      closer, so it ends at its last placed `definition_term` or
+      `definition_description`:
 
           :: t
           : d
@@ -532,137 +404,37 @@
       attribute line below it.
 
       A CONTAINER WITH NO PLACED CHILD AT ALL SPANS ITS OWN MARKUP AND STOPS
-      THERE -- NORMATIVE [CARVE-P12-018]. "Ends at its last placed child" is silent when there
-      is none, and a container can be emptied: a definition written as an item's
-      only content is collected out of it (CARVE-P12-029) and the item keeps no trace.
+      THERE -- NORMATIVE [CARVE-P12-018]. A container emptied by hoisting
+      (CARVE-P12-029) spans the markup that opened it, on its first line. It is
+      not zero-width and does not reach to the extent the author typed:
 
           * * [d]: u
            :
 
-      The inner `list_item` spans `* ` and ends there. Zero width is not the
-      answer -- it is a shape every consumer has to special-case, and it
-      discards the marker the author typed -- and neither is the extent the
-      author typed, which is what the paragraph above rejects for a container
-      that DOES have children; permitting it only for an empty one would make
-      the rule depend on child count. Where the emptied container ran over
-      several lines, the markup it spans is the markup that OPENED it, on the
-      first of them.
+      The inner `list_item` spans `* ` and ends there.
 
-      A CONTAINER STARTS AT ITS OPENING MARKUP EVEN WHERE ITS FIRST CHILD IS
-      UNPLACED -- NORMATIVE [CARVE-P12-019]. A container whose first child omits `pos` starts
-      where the markup that opens it was written, not at the first child that
-      does carry one.
-
-      THE START AND END RULES ARE NOT SYMMETRIC, which is why this needs saying
-      next to the two above. The end rule asks where a container's CONTENT
-      stops, so its last placed child is the right boundary; this one asks where
-      the CONSTRUCT begins, and a construct begins at its own markup, which
-      exists whether or not any child was placed. Read symmetrically, a line
-      block stanza whose first child is the merged text `tab gap` from
-      `tab<TAB>gap` would start its paragraph on the line BELOW that one.
-      That text has no exact source slice; contiguous text beside a wider tab
-      expansion remains positioned under CARVE-P12-004.
-
-      A CONTAINER ENDS AT THE MARKUP THAT CLOSES IT EVEN WHERE ITS LAST CHILD
-      IS UNPLACED -- NORMATIVE [CARVE-P12-020]. A container whose last child omits `pos` ends
-      where the markup that closes it was written, not at the last child that
-      does carry one. The source between them is that unplaced child's, and an
-      unplaced child says nothing about where the author closed the construct.
-
-      THIS LOCATES THE END RULE RATHER THAN OVERTURNING IT. Read as two
-      statements about MARKUP the two halves of this clause are symmetric: a
-      container starts at the markup that opens it, and ends at the markup that
-      closes it. "Ends at its last placed child" is the case for a container
-      whose closer is IMPLICIT -- a list, an item, a definition list -- where
-      the last child's end is what the container has instead of a closer. It
-      does not narrow a container over source its own child covers.
-      A closerless container whose last child is unplaced therefore ends where
-      its content ends, which is line geometry the block layer knows even where
-      the text on that line cannot be sliced out of the source. A line block
-      stanza whose LAST child merges text around a one-column tab is the shape:
-
-          ::: |
-          %%
-          tab<TAB>gap
-          :::
-
-      A SPAN DOES NOT BEGIN AT A LINE TERMINATOR -- NORMATIVE [CARVE-P12-021]. Except on a
-      `soft_break` or a `hard_break`, whose content IS the terminator, a node's
-      `startOffset` MUST NOT select a newline. No construct begins with the
-      line ending the line before it.
-
-      POSITION TRACKING MAY BE OPT-IN, SERIALIZATION MAY NOT. An implementation
-      MAY gate position tracking behind a parse option, and MUST enable it when
-      asked to serialize. What is forbidden is a serialized document without
-      positions, not a parse without them.
-
-      This is a concession to where the cost falls. Recording a span for every
-      node is not free, and serialization is an operation most callers never
-      perform. The contract a consumer relies on is unchanged: JSON it is
-      handed carries positions. How the producer arranged that is the
-      producer's business.
+      (4) WHEN `pos` IS OMITTED.
 
       A REASSEMBLED NODE MUST OMIT `pos` -- NORMATIVE [CARVE-P12-022]. A node whose value is not
       a contiguous slice of the source, because the producer joined it from
       pieces the source separates or synthesized it outright, MUST omit `pos`
-      rather than invent one, and is CONFORMANT doing so. This is a permitted
-      category, not a shortfall to be tracked.
-
-      It covers the hard break a line block synthesizes from a soft one,
-      line-block content rebuilt around an indentation sentinel, a table row or
-      cell put back together from continuation lines, and -- because §1a merges
-      them -- a `text` run whose pieces are not adjacent in the source:
-
-          | x | A long description |
-          +     | that continues     |
-
-      The cell's text is `A long description that continues`, joined across a
-      newline, a `+` and an indent the value does not contain. §1a requires ONE
-      text node; no offset pair covers that value. Without this clause the two
-      rules left a producer no conformant answer at all: coalesce and carry a
-      span over characters the value drops, or coalesce and omit the span the
-      paragraph below appears to demand. §1a's own POSITIONS note already chose
-      the second; this is where §4 agrees to it. It is stated here rather than
-      left to each engine because §1a is normative: any implementation
-      following it faithfully arrives at the same fork.
-
-      A discontiguous node therefore has no span. A first-fragment span is not
-      an alternative: it locates the beginning but falsely describes `pos` as
-      the construct's extent.
+      rather than invent one, and is CONFORMANT doing so. A span over the first
+      fragment misdescribes the extent and one from first to last fragment
+      overlaps siblings; neither is an alternative. This covers a line block's
+      synthesized hard break, line-block content rebuilt around an indentation
+      sentinel, a table row or cell joined from continuation lines, and a merged
+      `text` run (§1a) whose pieces are not adjacent:
 
           |= Category       |= Item   |
           | Fresh Fruits    | Apple   |
           + from local      |         |
           + farms           |         |
 
-      FIRST-TO-LAST IS FORBIDDEN, and it is the tempting third answer. In the
-      table above that range runs from line 2 to line 4 and CONTAINS the
-      sibling cell `Apple` entirely, so two cells would claim overlapping
-      offsets and a consumer resolving a click to a node could not tell which
-      it hit. Sibling spans that overlap are checked for, and are a finding --
-      with two exceptions, each stated as a property of the PAIR: two breaks
-      meeting at one line terminator share the codepoint that anchors both, and
-      a hoisted definition against the container it was authored in, per the
-      clause of that name above.
-
-      THE EXEMPTION IS NARROW. The test is whether a true span EXISTS, not
-      whether one was computed. A node the producer has simply not placed yet
-      is still a gap, and a text run lifted whole out of the source has a span
-      whether or not anyone wrote it down. Nor does it license reassembling
-      more than the language requires, to manufacture the exemption: a producer
-      that joins where the source did not is publishing its bookkeeping, which
-      is what §1a exists to stop.
-
-      The conformance checker still REPORTS an absent `pos`, because it cannot
-      tell a reassembled node from an unplaced one from the tree alone. That is
-      why the position half of that check is a report and the §1a half is a
-      gate.
-
-      An implementation that cannot yet produce positions MUST NOT emit `pos`
-      with invented values, and MUST NOT omit it silently: it does not yet
-      serialize conformantly, and should say so. A reassembled node under the
-      clause above is not that case -- there the absence IS the conformant
-      answer, and nothing needs saying.
+      The test is whether a true span EXISTS. A node the producer has not
+      placed yet is a gap, not this case, and the exemption does not license
+      joining more than the language requires. The conformance checker reports
+      an absent `pos` because it cannot tell the two apart from the tree, so
+      the position half of that check is a report and the §1a half a gate.
 
    ============================================================================ *)
 
