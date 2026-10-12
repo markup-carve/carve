@@ -559,8 +559,7 @@
           "attribute": "data-carve-ext",
           "element": "section"
         }
-      ],
-      "aheadOfPin": true
+      ]
     },
     {
       "id": "unlisted-prefixed-attributes",
@@ -733,8 +732,7 @@
           "attribute": "data-carve-id-slot",
           "element": "section"
         }
-      ],
-      "aheadOfPin": true
+      ]
     },
     {
       "id": "leading-heading-id-writes-no-slot",
@@ -787,8 +785,7 @@
           "attribute": "data-carve-tight",
           "element": "ul"
         }
-      ],
-      "aheadOfPin": true
+      ]
     },
     {
       "id": "generated-heading-id-in-quote",
@@ -1127,8 +1124,7 @@
         "roundtrip"
       ],
       "requiresDiagnostic": true,
-      "diagnosticControlHtml": "<ul><li>a</li></ul>",
-      "aheadOfPin": true
+      "diagnosticControlHtml": "<ul><li>a</li></ul>"
     },
     {
       "id": "invalid-id-slot",
@@ -1150,8 +1146,7 @@
         "roundtrip"
       ],
       "requiresDiagnostic": true,
-      "diagnosticControlHtml": "<section id=\"mine\" data-carve-explicit-id data-carve-id-slot=\"1\"><h1 class=\"c\">H</h1></section>",
-      "aheadOfPin": true
+      "diagnosticControlHtml": "<section id=\"mine\" data-carve-explicit-id data-carve-id-slot=\"1\"><h1 class=\"c\">H</h1></section>"
     },
     {
       "id": "contradictory-autolink-reference",
@@ -1178,8 +1173,7 @@
           "field": "ref"
         }
       ],
-      "diagnosticControlHtml": "<p><a href=\"https://e.com\">https://e.com</a></p>",
-      "aheadOfPin": true
+      "diagnosticControlHtml": "<p><a href=\"https://e.com\">https://e.com</a></p>"
     },
     {
       "id": "retired-source-name-consumed",
@@ -1223,8 +1217,7 @@
       "source": "{data-carve-src=Z}\ntext\n",
       "attribute": "data-carve-src",
       "value": null,
-      "defaultValue": "Z",
-      "aheadOfPin": true
+      "defaultValue": "Z"
     }
   ],
   "markdownExportImport": [
@@ -1348,8 +1341,7 @@
         {
           "type": "definition_list"
         }
-      ],
-      "aheadOfPin": true
+      ]
     },
     {
       "id": "definition-list-two-terms-one-definition",

@@ -190,5 +190,17 @@
 # commit before, leaves it text. carve-php since 8d32ead9 imports
 # `<pre class="mermaid" role="img">` as a mermaid fence, which that change
 # intends, so which side moves is an open decision.
-rust/08-markdown-superscript-highlight-and-math-stay-text  `$x+y$` is imported as inline math (markup-carve/carve-rs#2550)
-php/html-import--derived-accessible-name  a mermaid pre is imported as a mermaid fence, not a classed code block (markup-carve/carve-php#3203)
+#
+# BOTH LANDED, and both moved the engine rather than the case: carve-rs keeps
+# dollar-delimited text as text again (markup-carve/carve-rs#2552) and carve-php
+# imports a mermaid class without the language carrier as a code block
+# (markup-carve/carve-php#3208). Measured in AST conformance run 38256869026 at
+# pins carve-rs ee85c4ca, carve-js bf458c52 and carve-php 29e42817:
+#
+#     rust: convert_pass=163/163 declared_drift=0 mismatch=0 error=0 skipped=0
+#     js:   convert_pass=163/163 declared_drift=0 mismatch=0 error=0 skipped=0
+#     php:  convert_pass=163/163 declared_drift=0 mismatch=0 error=0 skipped=0
+#     cross_convert_diffs=0
+#
+# The run named exactly these two lines as STALE and failed the converter gate
+# on nothing else. THIS FILE IS EMPTY OF DECLARATIONS AGAIN.
