@@ -3,8 +3,8 @@
       carries `children`, the blocks it encloses, and MAY carry `level`, the
       heading level the source format stated for it.
 
-      Carve source has implicit heading-level sectioning (PART 9) and produces
-      no `section`; no corpus document contains one. The canonical writer
+      `section` is interchange-only (CARVE-P12-066): Carve's own sectioning is
+      the implicit heading-level kind of CARVE-P9-019. The canonical writer
       flattens one back to its headings and reports `structure-unspellable`
       for `section` on the PART 11 §1d channel.
       The fallback matrix row `section` gives HTML, Markdown, plain and ANSI
@@ -17,7 +17,7 @@
       a `section` is a container, so a heading inside one is not top-level: it
       emits no derived `<section>` and keeps its id on the `<h*>`, exactly as a
       heading in a blockquote or a div does. A reader sees ONE wrapper, the
-      authored one, whether §13's `sections` option is on or off, and a fragment
+      authored one, whether CARVE-P9-019's `sections` option is on or off, and a fragment
       URL resolves to the heading's id the way it does under `sections: false`.
 
       IT EXISTS BECAUSE THE FORMATS ON THE OTHER SIDE OF A BRIDGE HAVE IT:
@@ -76,14 +76,13 @@
       reproduce the node and every pair unchanged when it serializes that tree
       again.
 
-      CARVE 0.1 SOURCE HAS NO SPELLING FOR RUBY; parsers never synthesize it.
-      The fallback matrix row `ruby` gives target output. The canonical writer
+      Ruby is interchange-only (CARVE-P12-066). The fallback matrix row `ruby` gives target output. The canonical writer
       replaces each pair with base, text `(`, annotation, text `)`, then writes
       and escapes that sequence under PART 11 §1a and §2. Empty annotation stays
       visible as `()`. With `attrs`, the writer wraps the complete fallback in
       one ordinary attributed span. It reports `ruby-flattened` under PART 2. The source round-trip
       compares against this flattened sequence. The writer MUST NOT discard
-      either side or invent a source spelling.
+      either side.
       HTML emits pairs in order inside one `<ruby>`, with generated `<rp>(</rp>`
       and `<rp>)</rp>` around each `<rt>`; the outer element receives `attrs`.
       Plain and ANSI emit `base(annotation)` and report `ruby-flattened`.
@@ -99,7 +98,7 @@
    33. A BLOCK EXTENSION DECLARES A CORE FALLBACK -- NORMATIVE
       [CARVE-P12-055]. A `block_extension` carries a globally qualified
       `name`, a REQUIRED `fallback` block, and MAY carry `version` and
-      `payload`. Carve 0.1 source spells none, so a parser produces none.
+      `payload`. It is interchange-only (CARVE-P12-066).
 
       IT IS THE TWIN `inline_extension` NEVER HAD: Carve-content payloads can
       use a div or admonition; non-Carve payloads need this declared home (§11).
@@ -110,8 +109,8 @@
       THE PAYLOAD IS NOT CARVE CONTENT. `format` names how `value` is
       encoded so a reader can tell whether it can parse it at all. No core
       target renders it, §9's ingest bound covers its nesting like any other,
-      and §25's trust rules cover it like any other content a renderer did not
-      produce.
+      and the security rules of CARVE-P9-054 cover it like any other content a
+      renderer did not produce.
 
       A NAME IS QUALIFIED so two extensions cannot collide. `diagram` is not a
       name; `org.example.diagram` is.
@@ -167,8 +166,8 @@
           and this clause's own reason for existing is that the reader need not
           be weakened to evolve.
       (c) AN EXTENSION MARKED REQUIRED AND NOT IMPLEMENTED IS REFUSED, named.
-          Rendering the understood parts and reporting success is what §9(b)
-          forbids one level down, for the same reason.
+          Rendering the understood parts and reporting success is what
+          CARVE-P12-068 forbids.
       (d) A MISSING `vocabulary` MEANS THE CORE ONE. A profile that denies
           types does not change it: a denied type is one the document does not
           use, not a different vocabulary.
@@ -288,19 +287,16 @@
       ([carve#2227](https://github.com/markup-carve/carve/issues/2227)).
 
    38. NODE IDENTITY IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE [CARVE-P12-060]. A
-      producer MAY return ephemeral node ids beside an AST only when the caller
-      asks for them, and MUST NOT put them in the tree: §§2, 7, 11 and 12
-      keep it closed, and two documents differing only in sidecar content are
-      the same document under §6.
+      producer MAY return ephemeral node ids beside an AST, as a sidecar under
+      CARVE-P12-067.
 
       THESE ARE NOT `attrs.id`. That id is what the author wrote and belongs to
       the document; this one is machinery and belongs to the session. A
       producer MUST NOT derive either from the other.
 
       The sidecar validates against `resources/ast-node-identity-schema.json`.
-      `version` is 1, and each entry of `nodes` binds an `id` to a `path`, an
-      RFC 6901 pointer into the accompanying canonical AST as in §13. Both are
-      unique within a sidecar.
+      Its `version` is 1, and each entry of `nodes` binds an `id` to a `path`.
+      Both are unique within a sidecar.
 
         {"version":1,"session":"s-7f3","nodes":[{"id":"n4","path":"/children/3"}]}
 
@@ -315,24 +311,19 @@
       is how a consumer learns its anchor is gone. An id is never reused for a
       different node within one `session`.
 
-      IDS DO NOT SURVIVE A CANONICAL WRITE. Carve source has no spelling for
-      them, so a re-parse mints fresh ones, and `session` is the opaque token
-      naming the minting a sidecar belongs to: a consumer MUST NOT match ids
-      across two sidecars whose `session` values differ.
+      A re-parse after a canonical write mints fresh ids, and `session` is the
+      opaque token naming the minting a sidecar belongs to: a consumer MUST NOT
+      match ids across two sidecars whose `session` values differ.
 
       NO SPAN IS RESTATED. A node's offsets are `pos` on the node the path
       addresses, in codepoints per §4; a second copy could disagree.
-
-      DEFAULT OUTPUT DOES NOT MOVE. An AST decoder does not accept this sidecar
-      as an AST, and an identity reader refuses a version it does not
-      implement.
 
    39. A COUNT WITH NO MARKERS IS INGESTED AS THE SPAN -- NORMATIVE
       [CARVE-P12-061]. A reader that meets a `table_cell` carrying `colspan` or
       `rowspan` with no continuation cell over the positions it covers DERIVES
       those positions from the count. Against a well-formed grid the covered
-      positions are a function of the counts, so inverting the walk of PART 9
-      §13 T5 is a derivation and not a guess. An HTML or Pandoc tree arrives
+      positions are a function of the counts, so inverting the span walk of
+      CARVE-P9-002 is a derivation and not a guess. An HTML or Pandoc tree arrives
       this way because neither format HAS a continuation cell for a bridge to
       have written.
 
@@ -345,7 +336,7 @@
       REFUSAL IS FOR ARITHMETIC, NOT FOR A MISSING MARKER. A count reaching
       past the table's last row or column, or one whose positions another
       cell's count already occupies, has no derivation: that is a malformed
-      tree, refused with an error of its own in the sense §9(b) means. A count
+      tree, refused under CARVE-P12-068. A count
       with no markers is an interchange shape, and nothing refuses it.
 
       AN ORPHAN MARKER IS NOT EXPRESSIBLE THIS WAY. §26 publishes a marker that
@@ -354,17 +345,15 @@
       marker to orphan, and a tree that carries markers keeps them.
 
    40. AN ANNOTATION RANGE IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE
-      [CARVE-P12-062]. A producer MAY return annotation ranges beside an AST
-      only when the caller asks for them, and MUST NOT put them in the tree:
-      the inline tree nests and a range need not, and two documents differing
-      only in sidecar content are the same document under §6.
+      [CARVE-P12-062]. A producer MAY return annotation ranges beside an AST,
+      as a sidecar under CARVE-P12-067: the inline tree nests and a range need
+      not.
 
       The sidecar validates against
-      `resources/ast-annotation-range-schema.json`. `version` is 1, and each
+      `resources/ast-annotation-range-schema.json`. Its `version` is 1, and each
       entry of `ranges` carries an `id`, a `kind`, a `start` and an `end`, and
       MAY carry `data`, the holder's payload, which core never reads. An
-      anchor is a `path`, an RFC 6901 pointer into the accompanying canonical
-      AST as in §38, and an `offset` in codepoints per §4 from the start of
+      anchor is a `path` and an `offset` in codepoints per §4 from the start of
       that node's annotation text, defined below. An offset is a boundary from
       zero through the annotation text's codepoint length, inclusive. Readers
       MUST reject an out-of-range offset or a path that is not a node.
@@ -405,32 +394,30 @@
 
       `kind` IS AN OPEN VOCABULARY, matched by equality, and core defines no
       member of it: a closed list would name kinds no clause renders. One core
-      did not define is globally qualified as an extension name is in §34.
+      did not define is globally qualified as an extension name is in
+      CARVE-P12-055.
 
       AN ANCHOR THE EDIT INVALIDATED IS ABSENT, not tombstoned, exactly as §38
       rules an id: the producer re-emits the whole sidecar against the new tree
       and drops a range it can no longer place, and a consumer MUST NOT carry a
       path across an edit.
 
-      ANCHORS DO NOT SURVIVE A CANONICAL WRITE, because Carve source has no
-      spelling for them. `id` is the holder's, not `attrs.id` and not a §38
-      node id, and a holder keeps it across a write the anchors do not survive
+      `id` is the holder's, not `attrs.id` and not a §38 node id, and a holder
+      keeps it across a canonical write, which the anchors do not survive
       ([carve#2232](https://github.com/markup-carve/carve/issues/2232)).
 
    41. PROVENANCE IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE [CARVE-P12-063]. A
-      producer MAY return provenance beside an AST only when the caller asks
-      for it, and MUST NOT put it in the tree: §13 already returns
-      source-fidelity metadata beside the AST rather than inline, and two
-      documents differing only in sidecar content are the same document under
-      §6.
+      producer MAY return provenance beside an AST, as a sidecar under
+      CARVE-P12-067.
 
       The sidecar validates against `resources/ast-provenance-schema.json`.
-      `version` is 1. `sources` names each input once - an `id`, an optional
+      Its `version` is 1. `sources` names each input once - an `id`, an optional
       `uri`, an optional `format` and an optional `parent`, the id of the
-      source that included or imported it. `nodes` binds a `path`, an RFC 6901
-      pointer as in §38, to a `source`, a `startByte` and an `endByte` in THAT
-      input, an `origin` of `authored` or `generated`, and an optional `step`,
-      the transformation that produced the node.
+      source that included or imported it. `nodes` binds a `path` to a
+      `source`, an `origin` of `authored` or
+      `generated`, an optional `step`, the transformation that produced the
+      node, and a `startByte` and an `endByte` in THAT input. The two bytes
+      come as a pair; a generated node has no range and omits both.
 
         {"version":1,"sources":[{"id":"s1","uri":"ch1.md","format":"markdown",
         "parent":"s0"}],"nodes":[{"path":"/children/3","source":"s1",
@@ -441,9 +428,8 @@
       every node that came from it. A root input has no `parent`, and PART 9
       §19 already refuses a cycle.
 
-      A BYTE RANGE IS NOT AN OFFSET. The two bytes count the input they name,
-      start-inclusive and end-exclusive as in §13; §4's codepoint rule governs
-      `pos`. When pos.file is present, every pos coordinate is measured in
+      A BYTE RANGE IS NOT AN OFFSET. The two bytes count the input they name
+      (CARVE-P12-067); §4's codepoint rule governs `pos`. When `pos.file` is present, every `pos` coordinate is measured in
       that named input file; otherwise it is measured in the top-level input.
       There is no implicit assembled-document coordinate space. Byte ranges
       and pos can address the same input but use different units. Containment
@@ -451,15 +437,12 @@
       converting pos to bytes MUST use that input's text, never the parent's.
 
       THIS IS WHERE A FILESYSTEM PATH MAY APPEAR. `pos.file` stays the inline
-      minimum per §13, and a `uri` a caller did not ask for is one it never
+      minimum per §4, and a `uri` a caller did not ask for is one it never
       receives. An ABSENT `format` is unrecorded, not Carve, because §13 reads
       a missing fact as unknown and never as a guessed default.
 
       PROVENANCE IS PER NODE. A range has no independent existence in the tree,
-      so §40's holder reads the nodes its anchors address.
-
-      IT DOES NOT SURVIVE A CANONICAL WRITE, which produces a new input, so
-      every byte range in the sidecar would then address text nothing emitted
+      so §40's holder reads the nodes its anchors address
       ([carve#2233](https://github.com/markup-carve/carve/issues/2233)).
 
    ============================================================================ *)

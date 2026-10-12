@@ -373,10 +373,7 @@ test('a table cell carries an optional vertical alignment', () => {
  * question, rather than being named in the clause with nothing behind it.
  * Emptying this map is the intended end state.
  */
-const UNDEFINED_FACT = {
-  paddingRaw:
-    "one string cannot hold both of a table cell's whitespace runs, and which run it names is unruled (carve#1431)",
-}
+const UNDEFINED_FACT = {}
 
 /** The text of PART 12 §13, the clause that defines the sidecar. */
 function sidecarClause() {
@@ -963,6 +960,14 @@ const REJECTED = [
     why: 'a heading level outside 1-6',
     doc: { type: 'document', srcByteLength: 0, children: [{ type: 'heading', level: 7, children: [] }] },
   },
+  {
+    why: 'a link reference definition with an empty destination (CARVE-P12-029)',
+    doc: {
+      type: 'document',
+      srcByteLength: 0,
+      children: [{ type: 'link_reference_definition', label: 'a', href: '' }],
+    },
+  },
 ]
 
 for (const { why, doc } of REJECTED) {
@@ -1449,13 +1454,23 @@ test('every property the annotation-range schema declares carries a description'
   )
 })
 
+/** CARVE-P12-067, the rules every sidecar shares; a point settled there is settled for §40 and §41. */
+function sharedSidecarClause() {
+  const grammar = readFileSync(resolve(root, 'resources/grammar.ebnf'), 'utf8')
+  const start = grammar.indexOf('A SIDECAR TRAVELS BESIDE THE TREE AND NEVER IN IT')
+  assert.notEqual(start, -1, 'CARVE-P12-067 is not where this test looks for it')
+  const end = grammar.indexOf('The source-layout sidecar validates', start)
+  assert.notEqual(end, -1, 'CARVE-P12-067 runs into no source-layout paragraph')
+  return grammar.slice(start, end)
+}
+
 test('PART 12 §40 settles the four points carve#2232 left open', () => {
-  const clause = rangeClause()
+  const clause = rangeClause() + sharedSidecarClause()
   const unsettled = [
     ['the anchor form', 'RFC 6901'],
     ['what an edit invalidates', 'not tombstoned'],
     ['the kind vocabulary', 'OPEN VOCABULARY'],
-    ['a canonical write', 'DO NOT SURVIVE A CANONICAL WRITE'],
+    ['a canonical write', 'NOT SURVIVE A CANONICAL WRITE'],
   ].filter(([, phrase]) => !clause.includes(phrase))
   assert.deepEqual(
     unsettled.map(([what]) => what),
@@ -1555,13 +1570,13 @@ test('every property the provenance schema declares carries a description', () =
 })
 
 test('PART 12 §41 settles the five points carve#2233 left open', () => {
-  const clause = provenanceClause()
+  const clause = provenanceClause() + sharedSidecarClause()
   const unsettled = [
     ['what ancestry hangs on', 'ANCESTRY IS ON THE SOURCE'],
     ['bytes against codepoints', 'A BYTE RANGE IS NOT AN OFFSET'],
     ['where a path may appear', 'FILESYSTEM PATH MAY APPEAR'],
     ['node or range', 'PROVENANCE IS PER NODE'],
-    ['a canonical write', 'DOES NOT SURVIVE A CANONICAL WRITE'],
+    ['a canonical write', 'NOT SURVIVE A CANONICAL WRITE'],
   ].filter(([, phrase]) => !clause.includes(phrase))
   assert.deepEqual(
     unsettled.map(([what]) => what),

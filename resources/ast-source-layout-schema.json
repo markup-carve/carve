@@ -32,7 +32,6 @@
         "metadataSeparatorRaw": { "type": "string", "description": "PART 12 §13 F7: the separator run between a label or term and its body, whitespace included." },
         "leadingPipe": { "type": "boolean", "description": "PART 12 §13 F8: whether the row was authored with the optional leading pipe." },
         "trailingPipe": { "type": "boolean", "description": "PART 12 §13 F8: whether the row was authored with the optional trailing pipe." },
-        "paddingRaw": { "type": "string" },
         "attachment": { "enum": ["none", "preceding", "continuation", "detached"], "description": "PART 12 §13 F9: how the node reached its host. detached records an attachable position the spelling separated (PART 9 §4)." }
       },
       "additionalProperties": false,
