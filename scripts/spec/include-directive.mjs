@@ -14,7 +14,7 @@
  * recognized the directive would stop leaving it literal.
  */
 
-const isWhitespace = (ch) => ch === ' ' || ch === '\t'
+const isSpace = (ch) => ch === ' '
 
 /*
  * The end of a quoted run that opens at `from`, or -1 when the quote is never
@@ -77,7 +77,7 @@ function readPath(inner, at) {
     return { value: unescapePath(inner.slice(at + 1, end)), quoted: true, next: end + 1 }
   }
   let i = at
-  while (i < inner.length && !'#@} \t'.includes(inner[i])) i += 1
+  while (i < inner.length && !'#@} '.includes(inner[i])) i += 1
   if (i === at) return null
   return { value: inner.slice(at, i), quoted: false, next: i }
 }
@@ -111,7 +111,7 @@ export function scanDirective(text, open) {
   const inner = text.slice(open + 2, closer)
 
   let i = 0
-  while (i < inner.length && isWhitespace(inner[i])) i += 1
+  while (i < inner.length && isSpace(inner[i])) i += 1
   if (i === 0) return null // padding is REQUIRED, and is a run
 
   const path = readPath(inner, i)
@@ -120,12 +120,12 @@ export function scanDirective(text, open) {
 
   let section = null
   // The production glues `[include_section]` to the path and `[include_options]`
-  // to whatever precedes it, and the separating whitespace is OPTIONAL in both
+  // to whatever precedes it, and the separating spaces are OPTIONAL in both
   // slots (carve#2773): `{{ c.crv#sec }}` and `{{ c.crv #Alpha@shift:1 }}` are
   // as well formed as the spaced spellings.
   {
     let j = i
-    while (j < inner.length && isWhitespace(inner[j])) j += 1
+    while (j < inner.length && isSpace(inner[j])) j += 1
     if (inner[j] === '#') {
       const m = EXPLICIT_IDENTIFIER.exec(inner.slice(j + 1))
       if (!m) return null
@@ -137,7 +137,7 @@ export function scanDirective(text, open) {
   const options = []
   for (;;) {
     let j = i
-    while (j < inner.length && isWhitespace(inner[j])) j += 1
+    while (j < inner.length && isSpace(inner[j])) j += 1
     if (inner[j] !== '@') break
     const key = IDENTIFIER.exec(inner.slice(j + 1))
     if (!key) return null
@@ -150,7 +150,7 @@ export function scanDirective(text, open) {
   }
 
   const tail = inner.slice(i)
-  if (tail === '' || !/^[ \t]+$/.test(tail)) return null // padding is REQUIRED on both sides
+  if (tail === '' || !/^ +$/.test(tail)) return null // padding is REQUIRED on both sides
 
   return {
     start: open,

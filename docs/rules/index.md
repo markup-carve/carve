@@ -11,13 +11,13 @@ Carve has one normative language contract. These views filter that contract by i
 
 | View | Rules | Responsibility |
 |---|---:|---|
-| [Parsing](./parsing) | 116 | Input normalization, layout, block and inline recognition, attributes, and lexical boundaries. |
-| [Resolution and rendering](./resolution-rendering) | 52 | Document-wide resolution, core semantic behavior, and HTML serialization. |
+| [Parsing](./parsing) | 117 | Input normalization, layout, block and inline recognition, attributes, and lexical boundaries. |
+| [Resolution and rendering](./resolution-rendering) | 51 | Document-wide resolution, core semantic behavior, and HTML serialization. |
 | [AST interchange](./ast-interchange) | 59 | The core serialized tree shape, source positions, and cross-implementation AST guarantees. |
 | [Canonical writing](./canonical-writing) | 69 | Canonical Carve source, Markdown and plain-text targets, round trips, and escaping. |
-| [Imports, security, and extensions](./imports-security-extensions) | 35 | Optional and host-facing behavior, importer contracts, security limits, diagnostics, and extension surfaces. |
+| [Imports, security, and extensions](./imports-security-extensions) | 36 | Optional and host-facing behavior, importer contracts, security limits, diagnostics, and extension surfaces. |
 
-Together the views cover all 331 active rules exactly once. The source metadata lives in `resources/spec/rules.json`.
+Together the views cover all 332 active rules exactly once. The source metadata lives in `resources/spec/rules.json`.
 
 ## Retired rule IDs
 
@@ -25,7 +25,8 @@ Retired IDs are never reused. Their replacement points to the document that now 
 
 | Rule | Last title | Replacement |
 |---|---|---|
-| `CARVE-P9-028` | THE ENGINE'S OWN WORDS ARE A RENDER OPTION | [`CARVE-P9-063`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L173) |
+| `CARVE-P9-028` | THE ENGINE'S OWN WORDS ARE A RENDER OPTION | [`CARVE-P9-063`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L169) |
 | `CARVE-PRE-001` | THE EXECUTABLE ARTIFACTS DECIDE NOTHING | [`.github/CONTRIBUTING.md#what-settles-a-question`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question) |
 | `CARVE-PRE-002` | A GOLDEN IS NORMATIVE ONCE COMMITTED, NOT ONCE GENERATED | [`.github/CONTRIBUTING.md#what-settles-a-question`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question) |
 | `CARVE-PRE-003` | A CHECKER THAT DISAGREES WITH A COMMITTED GOLDEN IS WRONG UNTIL A CLAUSE SAYS OTHERWISE | [`.github/CONTRIBUTING.md#what-settles-a-question`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question) |
+| `CARVE-P9-079` | A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT | [`CARVE-P3-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L484) |

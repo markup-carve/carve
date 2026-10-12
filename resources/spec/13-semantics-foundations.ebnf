@@ -4,18 +4,9 @@
    ============================================================================ *)
 
 (*
-   1. WORD BOUNDARIES FOR EMPHASIS -- FORMALIZED. Stated formally by the
-      bare_opener(d) / bare_closer(d) guard templates in PART 3, for all
-      five single-char bare delimiters `/ * _ ~ =` (sup/sub `^` `,` are
-      braced-only, `{^ ^}` / `{, ,}`, not bare); §9 holds the
-      run-resolution rules (nearest closer, delimiter stack). No bare
-      delimiter emphasizes intraword; the forced `{X … X}` family (§22) is
-      the deliberate-intraword escape hatch.
-      Canonical pinned examples: "/ not italic /" literal (ws after opener);
-      "a/b/c", "foo*bar*baz", "snake_case", "x = 5", "key=value" literal
-      (no left boundary / ws after opener); "/usr/local/" ->
-      <em>usr/local</em> (01-emphasis-6); "x{*y*}z" -> x<strong>y</strong>z
-      (forced, §22). STRICTER than Djot, whose rule is whitespace-only.
+   1. WORD BOUNDARIES FOR EMPHASIS -- the guard templates of CARVE-P3-013
+      and the delimiter note above them in PART 3; run resolution is §9, the
+      forced family §22.
 
    2. MATCHING FENCES -- FORMALIZED. Stated as `where` guards on the
       productions (GUARD NOTATION, header):
@@ -27,19 +18,8 @@
         `%` is compared -- trailing text on either fence line is insignificant,
         and an opener with no matching closer ahead opens nothing (§28).
 
-   3. NO BARE SAME-TYPE NESTING
-      - Bare /nested /italic/ here/ does not produce nested italic nodes.
-      - /nested *bold* here/ permits cross-type nesting.
-      - Explicit braced children MAY repeat an active kind (PART 9 §22):
-        {/outer {/inner/} tail/} has two italic nodes. The same exception
-        applies under a bare parent: *outer {*inner*} tail* has two strong nodes.
-        Bare openers remain literal while a same-kind span is reachable
-        under E2a; an intervening braced boundary can hide that ancestor.
-      - A consequence (§9 SAME-DELIMITER ADJACENCY): a doubled bare delimiter
-        never opens nested same-type emphasis -- it is literal text. So `**x**`
-        -> `**x**` and `~~x~~` -> `~~x~~`, uniform with the already-literal
-        `//x//` and `__x__` (corpus 76-doubled-emphasis-delimiters). The
-        braced-only `^`/`,` are not bare, so `^^x^^` is likewise literal.
+   3. NO BARE SAME-TYPE NESTING -- §9 (E3 and SAME-DELIMITER ADJACENCY);
+      braced same-type children are §22 (CARVE-P9-043).
 
    4. CAPTION PLACEMENT -- ONE RULE, TWO SPELLINGS (caption_slot in PART 2).
       A `^ ` caption attaches to exactly seven captionable hosts: an image
@@ -315,7 +295,7 @@
          dash). Native `|=` header cells and `<`/`>`/`~` alignment markers
          may COEXIST with a delimiter row; a single column carrying BOTH a
          native marker AND a delimiter colon has UNSPECIFIED alignment (do
-         not combine on one column). Corpus 09-tables-3 pins the result.
+         not combine on one column). Corpus 09-tables-3 pins effect 2.
       T8 ROW ATTRIBUTES -- NORMATIVE [CARVE-P9-005]. A `{…}` GLUED to a row's closing `|`
          (no intervening space) sets that row's `<tr>` attributes -- the
          row-level twin of a cell's attribute block, same syntax, same
@@ -410,10 +390,7 @@
          attribute block alike, and `fmt --migrate` repairs any of them by
          inserting the space. It supersedes `table-alignment-run-padding`.
 
-   6. REFERENCE RESOLUTION -- FORMAL STATEMENT MOVED TO PART 9R R1-R3; this
-      anchor remains for existing references. PART 8 collects all definitions
-      before resolution, including definitions after their uses. Link
-      definitions are LAST-wins while footnote definitions are FIRST-wins.
+   6. REFERENCE RESOLUTION -- PART 9R R1-R3.
 
    7. MENTION/TAG BOUNDARIES
       - @ and # only start mentions/tags at word boundaries
@@ -525,9 +502,10 @@
           Pinned in tests/corpus-optional (feature
           `markdown-typography-source`, target `markdown`).
         * KIND NAMES ARE SPEC SURFACE -- an implementation inventing its own
-          spelling breaks every AST consumer. The fourteen table-resolved
+          spelling breaks every AST consumer. The sixteen table-resolved
           kinds are `ellipsis`, `em_dash`, `en_dash`, `left_right_arrow`,
           `rightwards_arrow`, `leftwards_arrow`, `rightwards_double_arrow`,
+          `leftwards_double_arrow`, `left_right_double_arrow`,
           `less_than_or_equal`, `greater_than_or_equal`, `not_equal`,
           `plus_minus`, `copyright`, `registered`, `trademark`. The four
           quote kinds are `left_double_quote`, `right_double_quote`,
@@ -545,11 +523,5 @@
           separately nameable in a profile (profiles.md).
         See divergence-from-djot.md section 12 for how this compares to
         Djot's container-node model.
-      - A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT -- NORMATIVE [CARVE-P9-079].
-        The previous-character test in `smart_quote` reads the last emitted
-        character. A construct that emits nothing contributes no character,
-        including a braced comment with an empty body. `\{{%%}"q"` renders
-        `<p>{“q”</p>`, just as `\{"q"` does. Content bearing attributes still
-        contributes its text: `[x]{.c}"q"` closes on the `x`.
 
    ============================================================================ *)

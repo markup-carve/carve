@@ -35,8 +35,9 @@ math_display = "$$", code_span ;
    only the rare whole-word case. (b) `,` is the most frequent punctuation
    character in prose and `^` is claimed by captions, header rowspan, and
    inline footnotes; a single misplaced space (`typo ,oops, happens`)
-   would otherwise conjure a subscript. A bare `^` or `,` is ALWAYS
-   literal text.
+   would otherwise conjure a subscript. A bare `^` or `,` delimits no
+   span; `^` keeps only its other roles (caption marker, rowspan marker,
+   the `^[` inline footnote opener).
 
    FORCED INTRAWORD -- the brace-pair `{X … X}` family (PART 9 §22) is the
    explicit escape hatch: it opens a span regardless of word boundary, so
@@ -58,6 +59,10 @@ math_display = "$$", code_span ;
 
 bare_opener(d) = <!(alnum | '_' | d | slash_if(d)), d, !(ws | d) ;
 bare_closer(d) = <&(non_ws), d, !(alnum) ;
+(* The look-behind reads the character before d IN d's OWN INLINE RUN. A `_`
+   or `/` that opens a span is markup, not text: the content after it begins
+   at START, so `_*x*_` nests. An unmatched `_` or `/` stays text and blocks:
+   `_*x* q` is literal. *)
 
 (* slash_if(d) = '/' when d in { '/', '_' }, otherwise nothing: italic and
    underline additionally never open when the char immediately before d is `/`
@@ -72,9 +77,8 @@ bare_closer(d) = <&(non_ws), d, !(alnum) ;
      (same-delimiter adjacency, PART 9 §9: a doubled delimiter never
      opens), and -- for d in { '/', '_' } only -- NOT `/`
      (slash_if(d), path protection); d is NOT followed by whitespace and NOT
-     by another d. The one exemption: d opens directly after a `_` or `/`
-     when that `_` or `/` itself opens a span that closes (`_*x*_` nests,
-     `_*x* q` stays literal).
+     by another d. A `_` or `/` that itself opens a span that closes is not
+     the character before d (the note under the templates).
    - closer: d is NOT preceded by whitespace and NOT followed by an
      alphanumeric. (A following same-delimiter is allowed: in `/x//` the
      first `/` after `x` closes; the trailing `/` stays literal.)
@@ -92,15 +96,15 @@ bold_italic = bare_opener('/'), '*', bi_content, '*', bare_closer('/'), [attribu
 underline = bare_opener('_'), underline_content, bare_closer('_'), [attribute_run] ;
 strikethrough = bare_opener('~'), strike_content, bare_closer('~'), [attribute_run] ;
 highlight = bare_opener('='), highlight_content, bare_closer('='), [attribute_run] ;  (* single-char; was "==" *)
-(* there is NO bare superscript/subscript production -- `^` and `,` are
-   always literal outside the forced forms; see the rationale note above
-   and forced_super / forced_sub below *)
+(* there is NO bare superscript/subscript production -- `^` and `,` delimit
+   nothing outside the forced forms; see the rationale note above and
+   forced_super / forced_sub below *)
 
 (* --- Forced intraword emphasis (PART 9 §22). A brace-pair wrapping a bare
    emphasis delimiter forces a span with NO word-boundary condition, so it
-   emphasizes intraword. The closing brace bounds the span; the inner delimiter
-   characters are literal unless they open a nested forced span. Every mark has
-   a forced form: *)
+   emphasizes intraword. The closing `X}` bounds the span; a bare delimiter of
+   the span's own kind inside it is literal, and the rest of the content parses
+   as ordinary inline content (CARVE-P9-043). Every mark has a forced form: *)
 forced_emphasis   = "{/", forced_content, "/}", [attribute_run] ;   (* italic    *)
 forced_strong     = "{*", forced_content, "*}", [attribute_run] ;   (* bold      *)
 forced_underline  = "{_", forced_content, "_}", [attribute_run] ;   (* underline *)
@@ -128,9 +132,8 @@ forced_content    = inline_span_content ;
    slots are the same `+` repetition; the string `{--}` this frees is the
    braced en dash (PART 9 §8).
 
-   THE ONE FORM LEFT ALONE is a fully empty SUBSTITUTION, `{~~>~}`, which still
-   renders an empty del followed by an empty ins: substitution is an open
-   divergence (see Editorial Markup below) and needs its own decision. *)
+   THE ONE EXCEPTION is a fully empty SUBSTITUTION, `{~~>~}`, which renders an
+   empty del followed by an empty ins (CARVE-P3-016). *)
 
 (* TRAILING ATTRIBUTES -- each emphasis-family span MAY carry a trailing
    `[attribute_run]`: the generic inline-attribute carrier that attaches
@@ -157,17 +160,18 @@ highlight_content = inline_span_content ;
    `[^label]: body` definition, and the INLINE form `^[content]` (pandoc
    form; a deliberate carve extension over djot). Numbering (one shared
    document-order sequence), endnotes rendering, and the inline form's
-   balanced-bracket close are PART 9 §16. A bare `^` is always literal
-   (no bare superscript), so `^[` is unambiguous. These two are the only
+   balanced-bracket close are PART 9 §16. A bare `^` opens no superscript,
+   so `^[` is unambiguous. These two are the only
    note forms; the once-proposed sidenote `[>content]` was DISMISSED (a
    sidenote is footnote content placed by CSS, not a separate construct) --
    see docs/dismissed-syntax.md. *)
 footnote = reference_footnote | inline_footnote ;
 reference_footnote = "[^", footnote_label, ']', [attribute_run] ;
-(* A label is a physical-line identifier. It may contain spaces and tabs, but
-   never a source newline: a definition marker occupies one line, and admitting
-   a newline only on the reference side would create an identifier no valid
-   definition can bind. Matching is exact; whitespace is not normalized. *)
+(* A label is a physical-line identifier and never holds a source newline: a
+   definition marker occupies one line, and admitting a newline only on the
+   reference side would create an identifier no valid definition can bind. A
+   tab in a label is content. Matching uses PART 9R R2's key, which collapses
+   space runs only. *)
 footnote_label = {character - ']' - newline}+ ;
 inline_footnote = "^[", inline_content, ']', [attribute_run] ;
 (* the closing `]` is the balanced, escape- and LITERAL-SPAN-aware close
@@ -209,7 +213,7 @@ footnote_indent = whitespace, {whitespace} ;
    opener is therefore UNCLAIMED and `[>foo]` is literal text (pinned by the
    corpus). Rationale: docs/dismissed-syntax.md. *)
 
-(* --- Citations (PART 9 §22, Tier-2 extension) --- *)
+(* --- Citations (Tier-2 extension) --- *)
 (* TIER-2, OFF BY DEFAULT. A `[...]` whose content contains a `@key` and which
    has NO link/ref/span tail (`(url)` / `[ref]` / `{attrs}`) is a citation; a
    bare `@key` stays a mention (PART 19) and `\@` is literal. Items are
@@ -224,8 +228,7 @@ footnote_indent = whitespace, {whitespace} ;
 
    Undefined behavior (impls MAY differ, NOT corpus-pinned): same-author-year
    disambiguation letters (e.g. `2020a` / `2020b`) are out of scope for v1 -
-   the bare year is emitted. A `;` inside a locator is not supported (it splits
-   items); such a bracket falls back to literal text.
+   the bare year is emitted.
    Failure-mode handling IS pinned (tests/corpus-optional): a group with any
    undefined key renders the verbatim source; a `[@k]{...}` is a span, not a
    citation; a `[@k, a; b]` with a `;` in the locator is literal text. *)
@@ -444,8 +447,7 @@ ellipsis = "..." ;    (* → … *)
    NORMATIVE [CARVE-P3-021]. A run of hyphens PRECEDED by whitespace (or the
    start of the inline content) and FOLLOWED by a non-whitespace character
    does not convert. It is literal text. Every other position converts as
-   before. The case is a long CLI flag: `git log --oneline` rendered
-   `git log –oneline`, silently and in the output only.
+   before. The case is a long CLI flag: `git log --oneline`.
 
    THE RULE IS DELIBERATELY NARROW. Requiring whitespace on BOTH sides removes
    every canonical dash use, which is unspaced -- `pages 1--10`, `the Mon--Fri
@@ -467,7 +469,7 @@ ellipsis = "..." ;    (* → … *)
    NOT FIXED BY THIS: an HTML comment survives NEITHER half. `<!-- c -->`
    renders `&lt;!– c →`. The OPENING run is preceded by `!` rather than
    whitespace, so this clause does not reach it and it converts to a dash; the
-   CLOSING run is taken by the arrow set (§8 ARROWS), and an arrow
+   CLOSING run is taken by `arrow` (CARVE-P3-022), and an arrow
    is matched before a hyphen run is decomposed.
 
    Composes with the run decomposition below rather than replacing it: this
@@ -482,7 +484,7 @@ smart_quote = '"' | "'" ;
 (* SMART QUOTE DIRECTION -- NORMATIVE [CARVE-P3-023].
    The PREVIOUS character is the last EMITTED character. A construct that
    renders nothing, including an empty braced comment, contributes no
-   character: `\{{%%}"q"` renders `{“q”` (CARVE-P9-079). The end of a
+   character: `\{{%%}"q"` renders `{“q”`, just as `\{"q"` does. The end of a
    closed inline element (emphasis, span, link, code) counts as a word
    character whatever it ends in, so the quote after it CLOSES:
    `[—]{.c}"q"` renders `<span class="c">—</span>”q”`.

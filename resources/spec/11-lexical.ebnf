@@ -113,11 +113,10 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    not padding. `code_fence_info`'s and the admonition opener's metadata
    slots are spelled `space+` and take a run.
 
-   The four single-space slots are narrow by ruling. This decides
-   cardinality only. Character membership remains the space-only inline rule
-   of and, while marker separators use the cardinality
-   declared by their own productions. Attribute and table-cell
-   padding follow the same inline rule. *)
+   This decides cardinality only. Character membership is the space-only rule
+   of CARVE-P7-001 item 3, and each marker separator takes the cardinality its
+   own production declares. Attribute and table-cell padding follow the same
+   space-only rule. *)
 
 (* ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT -- NORMATIVE [CARVE-P7-003]. The three
    terminals below are the whole of it, and nothing in the language adds to
@@ -152,10 +151,8 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    AND IN THE CONSTRUCTS THAT SPELL NO RUN AT ALL, which is where this bites
    hardest, because there an implementation had to invent something. A
    definition term, a bullet item and an ordered item take `space` -- one,
-   exactly, not a class. A heading and a caption stood in that list and no
-   longer do: both spell `space+` now, a RUN of the same terminal, each for
-   the reason its own clause states rather than for anything here.
-   The CONTINUATION MARKER takes none:
+   exactly, not a class. A heading and a caption spell `space+`, a RUN of
+   the same terminal. The CONTINUATION MARKER takes none:
    `continuation_marker = '+', newline`, so any character between the
    `+` and the line end is content and the line is not a marker. The
    block-attribute line takes `opt_ws`, `attr_separator` and `continuation`,
@@ -176,6 +173,30 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
    Constructs use this definition rather than a host language's trim,
    regular-expression or locale-aware character class. *)
+(* ESCAPE CONTEXTS -- NORMATIVE [CARVE-P7-004]. What a backslash does depends
+   on where it stands, and this table is the one statement of it.
+
+     context                                escapes resolved
+     -------------------------------------  -------------------------------------
+     inline text                            `escaped_char`: `\` + any
+                                            `ascii_punctuation` yields that
+                                            character; `\` + newline is a
+                                            `hard_break`
+     image alt text                         `escaped_char`, decoded into the
+                                            scalar value
+     link and image title, quoted           `escaped_char`; a `\` before any
+     attribute value, quoted include path   other character is that backslash
+                                            (`literal_backslash`)
+     link and image destination             `destination_escape` only: `\(`,
+                                            `\)`, `\\`; any other `\` is a
+                                            destination character
+     code span, inline literal, math, raw   none: the content is verbatim
+     inline, code and raw blocks,
+     editorial comment `{# #}`
+     unquoted attribute value, include      none: `\` is excluded, so a value
+     unquoted option value, autolink body   that needs one takes the quoted form
+
+   How a table row splits into cells, `\|` included, is PART 9 §5 T1. *)
 whitespace = ' ' | '\t' ;
 space = ' ' ;
 newline = '\n' | '\r\n' | '\r' ;

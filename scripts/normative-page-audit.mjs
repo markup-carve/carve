@@ -90,7 +90,10 @@ export function absentWords(condition, clauseTexts) {
   return best
 }
 
-/** PART 9 sections, keyed by number, from the modules that carry CARVE-P9 ids. */
+/**
+ * PART 9 sections, keyed by number, from the modules that carry CARVE-P9 ids,
+ * plus PART 6's include semantics (CARVE-P6-001) under the key `P6`.
+ */
 export function part9Sections() {
   const sections = new Map()
   for (const file of readdirSync(resolve(repo, 'resources/spec')).filter((n) => n.endsWith('.ebnf'))) {
@@ -100,9 +103,14 @@ export function part9Sections() {
       const end = index + 1 < heads.length ? heads[index + 1].index : source.length
       sections.set(head[1], { file, text: source.slice(head.index, end) })
     })
+    const p6 = source.search(/\[CARVE-P6-001\]/)
+    if (p6 !== -1) sections.set('P6', { file, text: source.slice(p6) })
   }
   return sections
 }
+
+/** How a section key reads in a citation: `PART 6` or `PART 9 §N`. */
+export const sectionLabel = (key) => (key === 'P6' ? 'PART 6' : `PART 9 §${key}`)
 
 /** The `I<n>` clauses inside one PART 9 section. */
 export function clausesOf(sectionText) {
@@ -172,9 +180,9 @@ const readLedger = (path) =>
 
 /** The obligation tables a page marks, as { section, cited, conditions }. */
 export function obligationTables(pageText) {
-  return [...pageText.matchAll(/<!-- normative-obligations: PART 9 §(\d+) ((?:I\d+a?\s*)+)-->\s*\n(\|[\s\S]*?)\n\n/g)].map(
+  return [...pageText.matchAll(/<!-- normative-obligations: (?:PART 9 §(\d+)|PART 6) ((?:I\d+a?\s*)+)-->\s*\n(\|[\s\S]*?)\n\n/g)].map(
     ([, section, ids, table]) => ({
-      section,
+      section: section ?? 'P6',
       cited: ids.trim().split(/\s+/),
       conditions: table
         .split('\n')
@@ -221,13 +229,13 @@ export function audit() {
     for (const { section: sectionNumber, cited, conditions } of tables) {
       const section = sections.get(sectionNumber)
       if (!section) {
-        findings.push(`${page}: no PART 9 §${sectionNumber} in resources/spec/`)
+        findings.push(`${page}: no ${sectionLabel(sectionNumber)} in resources/spec/`)
         continue
       }
       const clauses = clausesOf(section.text)
       const missing = cited.filter((id) => !clauses.has(id))
       if (missing.length) {
-        findings.push(`${page}: PART 9 §${sectionNumber} has no clause ${missing.join(', ')}`)
+        findings.push(`${page}: ${sectionLabel(sectionNumber)} has no clause ${missing.join(', ')}`)
         continue
       }
       const texts = cited.map((id) => clauses.get(id))
@@ -235,13 +243,13 @@ export function audit() {
       for (const condition of conditions) {
         if (!conditionStated(condition, texts)) {
           const absent = absentWords(condition, texts)
-          findings.push(`${page}: "${condition}" is not stated in PART 9 §${sectionNumber} ${cited.join('/')} - absent: ${absent.join(' ')}`)
+          findings.push(`${page}: "${condition}" is not stated in ${sectionLabel(sectionNumber)} ${cited.join('/')} - absent: ${absent.join(' ')}`)
           continue
         }
         for (const id of cited) if (conditionStated(condition, [clauses.get(id)])) earned.add(id)
       }
       for (const id of cited) {
-        if (!earned.has(id)) findings.push(`${page}: cites PART 9 §${sectionNumber} ${id}, which covers no row of that table`)
+        if (!earned.has(id)) findings.push(`${page}: cites ${sectionLabel(sectionNumber)} ${id}, which covers no row of that table`)
       }
     }
 
@@ -276,7 +284,7 @@ export function audit() {
       if (!findings.includes(note)) findings.push(note)
       continue
     }
-    const cite = /^(?:WEAKER )?PART 9 §(\d+) (I\d+a?)$/.exec(row.clause)
+    const cite = /^(?:WEAKER )?(?:PART 9 §(\d+)|PART 6) (I\d+a?)$/.exec(row.clause)
     if (row.clause === 'UNSTATED') {
       if (row.anchor !== '-') findings.push(`resources/normative-page-obligations.txt: UNSTATED row carries an anchor - "${row.text.slice(0, 60)}"`)
       continue
@@ -285,10 +293,11 @@ export function audit() {
       findings.push(`resources/normative-page-obligations.txt: unreadable clause "${row.clause}"`)
       continue
     }
-    const section = sections.get(cite[1])
+    const key = cite[1] ?? 'P6'
+    const section = sections.get(key)
     const clause = section && clausesOf(section.text).get(cite[2])
     if (!clause) {
-      findings.push(`resources/normative-page-obligations.txt cites PART 9 §${cite[1]} ${cite[2]}, which resources/spec/ does not define`)
+      findings.push(`resources/normative-page-obligations.txt cites ${sectionLabel(key)} ${cite[2]}, which resources/spec/ does not define`)
       continue
     }
     if (row.anchor === '-') {
@@ -299,7 +308,7 @@ export function audit() {
     // clause id surviving says nothing about whether the sentence is still in
     // it. Whitespace collapsed and case folded, because the EBNF hard-wraps.
     if (!flatten(clause).includes(flatten(row.anchor))) {
-      findings.push(`${row.page}: PART 9 §${cite[1]} ${cite[2]} no longer carries "${row.anchor}" - "${row.text.slice(0, 60)}"`)
+      findings.push(`${row.page}: ${sectionLabel(key)} ${cite[2]} no longer carries "${row.anchor}" - "${row.text.slice(0, 60)}"`)
     }
   }
 

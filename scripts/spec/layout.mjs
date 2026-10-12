@@ -198,7 +198,7 @@ const QUOTE = /^>(?: (.*)|)$/
 // grammar rather than by a brace scan, so a quoted `}` in a value and a `{` or
 // quote inside the destination (`/u{x} {.c}`, `it's {.c}`) read correctly. With
 // no space the braces are destination (`[a]: /u{.c}`).
-const LINK_DEF = /^\[([^\]@][^\]]*)\]: \p{White_Space}*(\P{White_Space}+)(?: (?:"((?:\\"|[^"])*)"|'((?:\\'|[^'])*)'))?(?: (\{.*\}))?[ \t]*$/u
+const LINK_DEF = /^\[([^\]@][^\]]*)\]: +(\P{White_Space}+)(?: (?:"((?:\\"|[^"])*)"|'((?:\\'|[^'])*)'))?(?: (\{.*\}))?[ \t]*$/u
 
 /*
  * The production's own test, and the only spelling of it. Every place that

@@ -126,9 +126,9 @@ test('a quoted path takes an adjacent section name too', () => {
   assert.equal(slots('{{ "my plans.crv"#section }}').path, 'my plans.crv')
 })
 
-test('a tab separates the path from the name, as whitespace does everywhere', () => {
-  assert.deepEqual(slots('{{ plans.crv\t#section }}').section, 'section')
-  assert.deepEqual(slots('{{\tplans.crv\t#section\t}}').section, 'section')
+test('a tab is content, so it neither pads the directive nor separates the name', () => {
+  assert.equal(slots('{{\tplans.crv\t#section\t}}'), null)
+  assert.equal(slots('{{ plans.crv\t#section }}').path, 'plans.crv\t')
 })
 
 test('an option needs no space in front of it, after a path or after a name', () => {
@@ -180,7 +180,6 @@ test('an adjacent spelling selects the same fragment the spaced one does', () =>
     '{{ recipes.crv #dough }}',
     '{{ recipes.crv#dough }}',
     '{{ "recipes.crv"#dough }}',
-    '{{ recipes.crv\t#dough }}',
     '{{ recipes.crv#dough@shift:1 }}',
   ]) {
     const name = scanDirective(source, 0)?.section

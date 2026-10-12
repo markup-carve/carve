@@ -4,29 +4,15 @@
       INLINE form `^[content]` are implemented, and they are the only note
       forms: the proposed sidenote (`[>content]`) was dismissed as a
       presentation concern, so `[>` is unclaimed and `[>foo]` is literal
-      text (docs/dismissed-syntax.md). Numbering and resolution are formalized
-      as PART 9R rule R2; the rendering rules below stay normative here.
-      - A `[^label]` reference with a matching definition is NUMBERED by
-        document reference order (first referenced = 1); the same label
-        referenced again reuses its number.
-      - Definitions may appear anywhere (order-independent); the FIRST
-        definition for a label wins. A body is the def line plus any
-        following lines indented to column 2 or more (PART 9 §24 C1 column
-        arithmetic -- a tab reaching column 2 qualifies the same as two
-        spaces; single blank lines allowed between chunks), parsed as
-        blocks. A definition is
-        document-level metadata: it is COLLECTED and RESOLVED even when it
-        sits INSIDE A CONTAINER. The reference resolves to the one endnotes
-        section and the container that held the definition renders as
-        though the line were never written -- §17 L6 states the general
-        rule once, for every block-level container that can hold a
-        definition, rather than enumerating them per definition kind. The
-        corpus pins this (resources/examples/edge-cases.md "Footnote definition inside a
-        container is collected").
-      - A reference with NO matching definition renders as literal source
-        text `[^label]` (a trailing `{attrs}` on an unresolved ref is not
-        round-tripped -- a marginal mistyped-label edge). An UNREFERENCED
-        definition is dropped.
+      text (docs/dismissed-syntax.md). Numbering, which definition wins,
+      collection inside containers, unresolved references and unreferenced
+      definitions are PART 9R R2 and §17 L6; the rendering rules below stay
+      normative here.
+      - A body is the def line plus any following lines indented to column 2
+        or more (PART 9 §24 C1 column arithmetic -- a tab reaching column 2
+        qualifies the same as two spaces; single blank lines allowed between
+        chunks), parsed as blocks.
+      - An unresolved reference keeps no trailing `{attrs}` in round trips.
       - Rendering (djot-compatible roles):
           reference -> <a id="{refId}" href="#fn{n}" role="doc-noteref"><sup>{n}</sup></a>
           endnotes  -> ONE <section role="doc-endnotes"> appended AFTER
@@ -39,9 +25,9 @@
         repeat uses `fnref{n}-{k}` and adds another backlink. The
         backlink glyph is the plain return arrow `↩` (Carve's choice;
         djot appends a variation selector).
-        THE BACKLINK CARRIES AN ACCESSIBLE NAME -- NORMATIVE [CARVE-P9-026]. The `role` alone
-        was right and the NAME was the glyph, so a screen reader announced the
-        character's Unicode name or skipped the link outright. `{name}` is the
+        THE BACKLINK CARRIES AN ACCESSIBLE NAME -- NORMATIVE [CARVE-P9-026]. With the
+        `role` alone the NAME is the glyph, which a screen reader announces by
+        its Unicode name or skips. `{name}` is the
         `footnoteBacklink` label (PART 9 §16a) followed by WHAT THE LINK VISIBLY
         SAYS -- the label alone for a lone backlink (`↩`, so
         `aria-label="Back to reference"`), the label plus k for the k-th of
@@ -49,10 +35,9 @@
         Matching the visible text is WCAG 2.5.3, and it is why the number here
         is the REFERENCE ORDINAL and not the note number. The name is TEXT and
         is attribute-escaped.
-        THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME -- NORMATIVE [CARVE-P9-027]. The rule
-        above names the LINKS and left the REGION they sit in anonymous. The
-        section takes `aria-label` when it has no authored title. The string is
-        the `endnotes` label (SS16a), escaped the same way:
+        THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME -- NORMATIVE [CARVE-P9-027]. The
+        REGION the links sit in is named too. The section takes `aria-label` when it has no authored title. The string is
+        the `endnotes` label (CARVE-P9-063), escaped the same way:
             <section role="doc-endnotes" aria-label="Footnotes">
         A placed `::: footnotes` with a quoted title instead takes
         `aria-labelledby` at that title's id under §12 [CARVE-P9-072].
@@ -124,8 +109,8 @@
             reference note).
           * Empty or whitespace-only (`^[]`, `^[ ]`) is literal; an unclosed
             `^[…` is literal.
-        PRECEDENCE (PART 8): `^[` opens an inline note; a bare `^` anywhere
-        else is literal text (there is no bare superscript). Consequences:
+        PRECEDENCE (PART 8): `^[` opens an inline note, and a `^` not
+        immediately before `[` opens none. Consequences:
         `^[x]^` is a note then a literal `^`; `\^[x]` is literal; a `^` not
         immediately followed by `[` is plain text.
       - LIMITATION: a footnote (reference `[^1]` or inline `^[…]`) inside link
@@ -139,7 +124,7 @@
       L1 LOOSE(list) := some item is followed by a blank line before the
          next sibling marker, OR some item holds a blank-line-separated
          second PARAGRAPH; otherwise TIGHT. This is a statement about ONE
-         and TWO blank lines: a run of THREE OR MORE is SS11 N1a's hard
+         and TWO blank lines: a run of THREE OR MORE is CARVE-P9-014's hard
          boundary, so the marker below it is not a "next sibling marker" at
          all and there is no one list left to be loose. Tightness is a property of the
          WHOLE ITEM, not of an individual block: a tight item's paragraphs
@@ -239,10 +224,9 @@
          column names was never this marker: like the lone `+` outside any
          container above, it is ordinary text and reaches the output.
 
-         The single-level spelling is unaffected in practice, which is why this
-         went unnoticed: under `- +` a line at column 2 is the item's OWN
-         content column, so the ordinary rules put it in the item whether the
-         marker reached it or not.
+         Under a single level the reach rarely matters: below `- +` a line at
+         column 2 is the item's OWN content column, so the ordinary rules put it
+         in the item whether the marker reached it or not.
 
          ONE IS A COUNT AND THE BOUNDARY IS NOT -- NORMATIVE [CARVE-P9-032].
          The blank line, sibling marker or further `+` above is the EXTENT of
@@ -329,9 +313,7 @@
          line is the single paragraph `+ flush` inside the note.
 
          That is a DIFFERENT ANSWER from "place the payload by its column", not
-         a narrower one, which is why it is stated rather than left to the
-         reader of L3. Extending the first-block form to the other two
-         containers was the alternative, and it is not what this clause does.
+         a narrower one.
       L5 NOT CONTINUATION CONTAINERS (a lone `+` keeps its plain meaning):
          - fenced containers (admonition / generic div / line block) --
            their bodies already hold flush-left blocks; a lone `+` inside
