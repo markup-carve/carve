@@ -884,6 +884,63 @@
           "element": "span"
         }
       ],
+      "aheadOfPin": true,
+      "exportedHtml": "<figure id=\"fig-sun\">\n  <img src=\"sun.png\" alt=\"Sun\">\n  <figcaption>Figure <span data-carve-caption-number>1</span>: The sun</figcaption>\n</figure>\n<p>See <a href=\"#fig-sun\" data-carve-xref>Figure 1</a>.</p>"
+    },
+    {
+      "id": "cross-reference-unicode-heading",
+      "source": "# Café\n\nSee </#Café>.\n",
+      "carriers": {
+        "data-carve-xref": null,
+        "data-carve-ext": "section"
+      },
+      "expectedNodes": [
+        {
+          "type": "heading_ref",
+          "target": "Café"
+        }
+      ],
+      "forbiddenExportAttributes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-xref",
+          "element": "a"
+        }
+      ],
+      "exportedHtml": "<section id=\"Café\" data-carve-ext=\"section\">\n  <h1>Café</h1>\n  <p>See <a href=\"#Café\" data-carve-xref>Café</a>.</p>\n</section>",
+      "aheadOfPin": true
+    },
+    {
+      "id": "cross-reference-assigned-id",
+      "source": "{id=\"a.b\"}\n# Head\n\nSee </#a.b>.\n",
+      "carriers": {
+        "data-carve-xref": null,
+        "data-carve-explicit-id": "1"
+      },
+      "expectedNodes": [
+        {
+          "type": "heading_ref",
+          "target": "a.b"
+        }
+      ],
+      "forbiddenExportAttributes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-xref",
+          "element": "a"
+        }
+      ],
+      "exportedHtml": "<section id=\"a.b\" data-carve-explicit-id=\"1\">\n  <h1>Head</h1>\n  <p>See <a href=\"#a.b\" data-carve-xref>Head</a>.</p>\n</section>",
       "aheadOfPin": true
     }
   ],
@@ -1414,7 +1471,8 @@
           ]
         }
       ],
-      "aheadOfPin": true
+      "aheadOfPin": true,
+      "exportedMarkdown": "<span class=\"c\" data-carve-inline>x</span> text\n"
     },
     {
       "id": "image-attributes",
@@ -1431,7 +1489,8 @@
           }
         }
       ],
-      "aheadOfPin": true
+      "aheadOfPin": true,
+      "exportedMarkdown": "<img src=\"i.png\" alt=\"a\" width=\"300\" data-carve-inline>\n"
     },
     {
       "id": "link-attributes",
@@ -1448,7 +1507,8 @@
           ]
         }
       ],
-      "aheadOfPin": true
+      "aheadOfPin": true,
+      "exportedMarkdown": "<a href=\"u\" class=\"k\" data-carve-inline>l</a>\n"
     },
     {
       "id": "cross-reference-markdown",
@@ -1462,6 +1522,78 @@
           "target": "fig-sun"
         }
       ],
+      "aheadOfPin": true,
+      "exportedMarkdown": "<!-- carve: {#fig-sun} -->\n![Sun](sun.png)\n<!-- carve: ^ Figure #: The sun -->\nFigure 1: The sun\n\nSee <a href=\"#fig-sun\" data-carve-xref>Figure 1</a>.\n"
+    },
+    {
+      "id": "cross-reference-unicode-heading-markdown",
+      "source": "# Café\n\nSee </#Café>.\n",
+      "carrierFragments": [
+        "data-carve-xref"
+      ],
+      "expectedNodes": [
+        {
+          "type": "heading_ref",
+          "target": "Café"
+        }
+      ],
+      "exportedMarkdown": "# Café\n\nSee <a href=\"#Café\" data-carve-xref>Café</a>.\n",
+      "aheadOfPin": true
+    },
+    {
+      "id": "inline-span-literal-brackets",
+      "source": "[[x]()]{.c}\n",
+      "carrierFragments": [
+        "data-carve-inline"
+      ],
+      "expectedNodes": [
+        {
+          "type": "span",
+          "attrs.classes": [
+            "c"
+          ]
+        }
+      ],
+      "exportedMarkdown": "<span class=\"c\" data-carve-inline>[x\\]()</span>\n",
+      "aheadOfPin": true
+    },
+    {
+      "id": "inline-span-holding-a-link",
+      "source": "[[x](u)]{.c}\n",
+      "carrierFragments": [
+        "data-carve-inline"
+      ],
+      "expectedNodes": [
+        {
+          "type": "span",
+          "attrs.classes": [
+            "c"
+          ]
+        },
+        {
+          "type": "link",
+          "href": "u"
+        }
+      ],
+      "exportedMarkdown": "<span class=\"c\" data-carve-inline>[x](u)</span>\n",
+      "aheadOfPin": true
+    },
+    {
+      "id": "link-attributes-bracket-text",
+      "source": "[[x]](u){.k}\n",
+      "carrierFragments": [
+        "data-carve-inline"
+      ],
+      "expectedNodes": [
+        {
+          "type": "link",
+          "href": "u",
+          "attrs.classes": [
+            "k"
+          ]
+        }
+      ],
+      "exportedMarkdown": "<a href=\"u\" class=\"k\" data-carve-inline>\\[x\\]</a>\n",
       "aheadOfPin": true
     }
   ]
