@@ -1412,6 +1412,22 @@
       "requiresDiagnostic": true,
       "diagnosticControlHtml": "<section id=\"mine\" data-carve-explicit-id data-carve-id-slot=\"1\"><h1 class=\"c\">H</h1></section>",
       "aheadOfPin": true
+    },
+    {
+      "id": "retired-source-alias-consumed",
+      "html": "<p data-djot-src=\"Z\">text</p>",
+      "expectedNodes": [
+        {
+          "type": "paragraph"
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": false
     }
   ],
   "footnoteRecoveryResource": "footnote-carrier-recovery-fixtures.json",

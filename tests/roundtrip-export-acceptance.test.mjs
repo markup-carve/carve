@@ -7,7 +7,7 @@ import { parse, carveToHtml, carveToHtmlWithReport, htmlToAst, htmlToCarve, carv
 const fixtures = JSON.parse(readFileSync(new URL('../resources/roundtrip-export-acceptance-fixtures.json', import.meta.url), 'utf8'))
 const inventory = ['explicit-id', 'generated-id', 'ref', 'autolink', 'footnote-label', 'inline-footnote', 'raw', 'escaped', 'abbreviations', 'col-widths', 'label', 'id-slot', 'tight']
 // Reserved without an inventory row: no core writer emits it, every importer consumes it.
-const retiredNames = ['data-carve-src']
+const retiredNames = ['data-carve-src', 'data-djot-src']
 const reservedNames = new Set(['data-marker', 'data-char', ...retiredNames, ...inventory.flatMap((name) => [`data-carve-${name}`, `data-djot-${name}`])])
 const isReserved = (name) => reservedNames.has(name)
 const field = (node, path) => path.split('.').reduce((value, key) => value?.[key], node)

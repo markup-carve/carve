@@ -8426,6 +8426,10 @@ EOF = (* end of file *) ;
       `data-marker` and `data-char` have no alias, having never carried a
       prefix.
 
+      `data-djot-src` IS THE ONE ALIAS OF THE ROWLESS NAME. It is reserved and
+      consumed like `data-carve-src` (§13a), in every import mode, and nothing
+      is rebuilt from its value.
+
    13d. EVERY IMPORT MODE CONSUMES THE INVENTORY AND WRITES NO RESERVED NAME
       BACK -- NORMATIVE [CARVE-P10-021]. Consuming a carrier reconstructs
       syntax the AST can already express, so it is not a trust decision and
