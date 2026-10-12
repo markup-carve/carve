@@ -385,6 +385,8 @@ const INVENTORY = [
     crv: ['trailing-WS'],
     html: [],
   },
+  // The FORM FEED inside the label is the case: without it the label is `ab`.
+  { base: '559-a-tab-inside-a-line-is-content-in-a-label-and-after-a-definition-marker-2', crv: ['FF'], html: ['FF'] },
 ]
 
 function scan(text) {

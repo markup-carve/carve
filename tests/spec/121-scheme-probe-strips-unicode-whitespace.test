@@ -5,5 +5,6 @@ Scheme probe strips Unicode whitespace
 
 [a]:  javascript:alert(1)
 .
-<p><a href="">click</a></p>
+<p>[click][a]</p>
+<p>[a]:  javascript:alert(1)</p>
 ```

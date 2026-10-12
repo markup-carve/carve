@@ -1,0 +1,50 @@
+A tab inside a line is content in a label and after a definition marker
+
+```
+see [t][a	b]
+
+[a b]: /u
+.
+<p>see [t][a	b]</p>
+```
+
+```
+see [t][ab]
+
+[a b]: /u
+.
+<p>see [t][ab]</p>
+```
+
+```
+see [t][ a  b ]
+
+[a b]: /u
+.
+<p>see <a href="/u">t</a></p>
+```
+
+```
+see [^a	b]
+
+[^a b]: note
+.
+<p>see [^a	b]</p>
+```
+
+```
+see [t][a]
+
+[a]: 	/u
+.
+<p>see [t][a]</p>
+<p>[a]: 	/u</p>
+```
+
+```
+see [t][a]
+
+[a]:  /u
+.
+<p>see <a href="/u">t</a></p>
+```

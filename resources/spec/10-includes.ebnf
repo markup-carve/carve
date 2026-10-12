@@ -5,11 +5,12 @@
 (* PROCESSOR-LEVEL (PART 9 §19): includes are NOT part of the core parser
    and the directive is deliberately NOT reachable from `block`/`inline` --
    a conformant core may leave `{{ … }}` literal. *)
-include_directive = "{{", whitespace+, include_path, [include_section], [include_options], whitespace+, "}}" ;
-(* The padding is a RUN, not one space: at least one whitespace character
-   is required on EACH side, so `{{c.crv}}` and `{{ c.crv}}` are literal text.
-   Additional spaces or tabs are accepted. A bare path stops at the first
-   space; a quoted path carries its own delimiters. *)
+include_directive = "{{", space+, include_path, [[space+], include_section], [include_options], space+, "}}" ;
+(* The padding is a RUN of spaces, not one space: at least one is required on
+   EACH side, so `{{c.crv}}` and `{{ c.crv}}` are literal text. A tab is
+   content (CARVE-P7-001), so `{{<TAB>c.crv<TAB>}}` is literal text too. A
+   bare path stops at the first space; a quoted path carries its own
+   delimiters. *)
 (* THE CLOSER is the first "}}" that falls OUTSIDE any quoted run. A quoted run
    -- `quoted_include_path` here, or the `quoted_value` form of an option's
    `include_option_value` -- MAY contain the "}}" pair: both productions
@@ -42,14 +43,14 @@ include_section = id_attribute ;
    `{#...}` can spell is nameable, digit-leading
    ones such as `{#2024-plan}` included. No new ambiguity: the bare path already
    stops at `#`, and neither identifier class holds a space, `@` or `}`. *)
-include_options = {[whitespace+], '@', identifier, ':', include_option_value}+ ;
+include_options = {[space+], '@', identifier, ':', include_option_value}+ ;
 include_option_value = include_unquoted_value | quoted_value ;
 include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' - '\t' - newline )+ ;
 (* `unquoted_value` (PART 4) less the `@`. An unquoted value ends at the next
    option's marker, so `@shift:1@lines:1-8` is two options and never one shift
    whose value is `1@lines:1-8`. A value that needs an `@` takes the quoted
    form. *)
-(* The whitespace before an `@` is OPTIONAL, in EVERY position. `bare_include_path`
+(* The spaces before an `@` or a `#section` are OPTIONAL, in EVERY position. `bare_include_path`
    stops at `@` and `include_section` holds no `@` either, so both slots are
    already spelled to let an option butt straight up against them:
    `{{ c.crv@shift:1 }}` and `{{ c.crv #Alpha@shift:1 }}` are well formed, and so

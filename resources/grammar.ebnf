@@ -2388,10 +2388,11 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
    ends the destination at `https://e.com`, and `/path` is then left over. It
    is NOT ignored: the definition is anchored at end of line, so a
    leftover makes the production fail and the whole line is an ordinary
-   paragraph -- exactly as `[r]: https://e.com /path` behaves. Whitespace
-   between the mandatory separator space and the destination is leading
-   whitespace and is skipped. A definition whose destination is EMPTY once that
-   is done is NOT a definition: the line stays literal, as `[r]:` already does.
+   paragraph -- exactly as `[r]: https://e.com /path` behaves. The separator
+   before the destination is a run of spaces (CARVE-P3-009). Any other
+   whitespace after that run, a tab included, starts the destination slot,
+   which cannot hold it, so the destination is EMPTY and the line is NOT a
+   definition: it stays literal, as `[r]:` already does.
 
    There is no "trim the ends, keep the interior" variant: `link_destination`
    admits no whitespace at all. *)
@@ -2429,7 +2430,10 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
 link_title = space, ('"', {escaped_char | literal_backslash | (character - '"' - '\')}, '"')
            | space, ("'", {escaped_char | literal_backslash | (character - "'" - '\')}, "'") ;
 
-reference_label = (character - ']' - '@'), {character - ']'} ;
+reference_label = (character - ']' - '@' - newline), {character - ']' - newline} ;
+(* A LABEL SPANS NO LINE BREAK, like `footnote_label`. A collapsed
+   `[text][]` whose text crosses a soft wrap therefore has no label and is not
+   a reference. *)
 (* A LABEL THAT BEGINS WITH AN AT SIGN IS NOT A REFERENCE LABEL -- NORMATIVE [CARVE-P3-003].
    The production above SUBTRACTS `@` FROM THE FIRST POSITION, and that exclusion
    is what keeps `[@key]` free for the Tier-2 Citations extension. So a bracket
@@ -2465,12 +2469,12 @@ reference_label = (character - ']' - '@'), {character - ']'} ;
    is already complete at `[a]: /url` and the attribute block is optional
    trailing metadata. The role differs, the terminal does not, because A TAB IS
    SYNTAX ONLY IN THE LEADING RUN (PART 7).
-   Cardinality is exactly one space at BOTH. The two rejected runs are NOT the
-   same: a ZERO-space run glues the braces to the destination (`[a]: /u{.c}`
+   The separator is a RUN of one or more spaces; the padding slot is exactly
+   one space. The two rejected padding runs are NOT the same: a ZERO-space run glues the braces to the destination (`[a]: /u{.c}`
    gives href `/u{.c}`), while a TWO-space run cannot -- whitespace ends the
    destination -- so the line is left over at the end-of-line anchor and falls
    back to prose. *)
-reference_definition = '[', reference_label, ']', ':', space, link_destination,
+reference_definition = '[', reference_label, ']', ':', space+, link_destination,
                        [link_title], [space, attributes], newline ;
 (* ANCHORED AT END OF LINE -- NORMATIVE [CARVE-P3-005]. The production ends in `newline`.
    What follows the destination and the optional title is not
@@ -2561,20 +2565,21 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    mirrors the heading, list and task markers, which likewise require a
    literal space after the marker.
 
-   AND THE SEPARATOR IS A RUN. `footnote_definition` and
-   `abbreviation_definition` spell it `space+`: one or more ASCII spaces, all
-   of them separator.
+   AND THE SEPARATOR IS A RUN. All three markers spell it `space+`: one or
+   more ASCII spaces, all of them separator.
 
    WHAT THE RUN DOES NOT INCLUDE. It is ASCII spaces, so the first character
    that is not one ends the separator and BEGINS the content. A no-break space
    is content: `*[HTML]:<SP><NBSP>Hyper` expands to `<NBSP>Hyper`, and
    `[^f]:<SP><NBSP>note` is a footnote whose body starts with the character.
 
-   A TAB AFTER THE RUN is content too, by the same rule, and the two markers
+   A TAB AFTER THE RUN is content too, by the same rule, and the three markers
    then answer differently for a reason that is downstream of this clause
    rather than in it: an `abbreviation_expansion` is a raw string, so the tab
-   survives into the `title`, while a footnote's `inline_content` is parsed as
-   blocks and a leading tab is that body's own indentation run (PART 9 §24 C1).
+   survives into the `title`; a footnote's `inline_content` is parsed as
+   blocks and a leading tab is that body's own indentation run (PART 9 §24 C1);
+   and a `link_destination` cannot begin with a tab, so `[a]:<SP><TAB>/url` is
+   not a reference definition.
    MARKER REQUIRES CONTENT still applies after the run: `[^f]:` followed by
    spaces and nothing else is a paragraph, because a line of `whitespace` is
    blank (PART 1). *)
@@ -2589,7 +2594,7 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    `a"b"c`, emitted as `title="a&quot;b&quot;c"`). This matches the
    inline-link title. *)
 (* A reference definition requires a NON-EMPTY `link_destination` (one or
-   more characters after the `':' space`). A bare `[r]:` -- with nothing
+   more characters after the separator run). A bare `[r]:` -- with nothing
    after the colon, or only trailing whitespace -- does NOT form a
    definition; the line stays literal paragraph text. *)
 (* --- Inline Spans --- *)
@@ -2887,10 +2892,11 @@ highlight_content = inline_span_content ;
    see docs/dismissed-syntax.md. *)
 footnote = reference_footnote | inline_footnote ;
 reference_footnote = "[^", footnote_label, ']', [attribute_run] ;
-(* A label is a physical-line identifier. It may contain spaces and tabs, but
-   never a source newline: a definition marker occupies one line, and admitting
-   a newline only on the reference side would create an identifier no valid
-   definition can bind. Matching is exact; whitespace is not normalized. *)
+(* A label is a physical-line identifier and never holds a source newline: a
+   definition marker occupies one line, and admitting a newline only on the
+   reference side would create an identifier no valid definition can bind. A
+   tab in a label is content. Matching uses PART 9R R2's key, which collapses
+   space runs only. *)
 footnote_label = {character - ']' - newline}+ ;
 inline_footnote = "^[", inline_content, ']', [attribute_run] ;
 (* the closing `]` is the balanced, escape- and LITERAL-SPAN-aware close
@@ -3536,11 +3542,12 @@ abbreviation_expansion = {character - newline}+ ;
 (* PROCESSOR-LEVEL (PART 9 §19): includes are NOT part of the core parser
    and the directive is deliberately NOT reachable from `block`/`inline` --
    a conformant core may leave `{{ … }}` literal. *)
-include_directive = "{{", whitespace+, include_path, [include_section], [include_options], whitespace+, "}}" ;
-(* The padding is a RUN, not one space: at least one whitespace character
-   is required on EACH side, so `{{c.crv}}` and `{{ c.crv}}` are literal text.
-   Additional spaces or tabs are accepted. A bare path stops at the first
-   space; a quoted path carries its own delimiters. *)
+include_directive = "{{", space+, include_path, [[space+], include_section], [include_options], space+, "}}" ;
+(* The padding is a RUN of spaces, not one space: at least one is required on
+   EACH side, so `{{c.crv}}` and `{{ c.crv}}` are literal text. A tab is
+   content (CARVE-P7-001), so `{{<TAB>c.crv<TAB>}}` is literal text too. A
+   bare path stops at the first space; a quoted path carries its own
+   delimiters. *)
 (* THE CLOSER is the first "}}" that falls OUTSIDE any quoted run. A quoted run
    -- `quoted_include_path` here, or the `quoted_value` form of an option's
    `include_option_value` -- MAY contain the "}}" pair: both productions
@@ -3573,14 +3580,14 @@ include_section = id_attribute ;
    `{#...}` can spell is nameable, digit-leading
    ones such as `{#2024-plan}` included. No new ambiguity: the bare path already
    stops at `#`, and neither identifier class holds a space, `@` or `}`. *)
-include_options = {[whitespace+], '@', identifier, ':', include_option_value}+ ;
+include_options = {[space+], '@', identifier, ':', include_option_value}+ ;
 include_option_value = include_unquoted_value | quoted_value ;
 include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' - '\t' - newline )+ ;
 (* `unquoted_value` (PART 4) less the `@`. An unquoted value ends at the next
    option's marker, so `@shift:1@lines:1-8` is two options and never one shift
    whose value is `1@lines:1-8`. A value that needs an `@` takes the quoted
    form. *)
-(* The whitespace before an `@` is OPTIONAL, in EVERY position. `bare_include_path`
+(* The spaces before an `@` or a `#section` are OPTIONAL, in EVERY position. `bare_include_path`
    stops at `@` and `include_section` holds no `@` either, so both slots are
    already spelled to let an option butt straight up against them:
    `{{ c.crv@shift:1 }}` and `{{ c.crv #Alpha@shift:1 }}` are well formed, and so
@@ -7342,10 +7349,11 @@ EOF = (* end of file *) ;
 
    RULES (PASS 2):
    R1 LINK REFERENCES. [text][label] and [text][] (label := text) resolve
-      against linkDefs by a shared label key: trim leading and trailing ASCII
-      whitespace and collapse each internal run of U+0020, tab, line feed,
-      form feed or carriage return to one U+0020. Matching remains
-      case-sensitive and preserves every non-whitespace code point (corpus
+      against linkDefs by a shared label key: trim leading and trailing runs
+      of U+0020 and collapse each internal run of U+0020 to one U+0020. A
+      label spans no line break, and a tab, a form feed or any other
+      character in it is content. Matching remains case-sensitive and
+      preserves every other code point (corpus
       78-reference-labels-are-case-sensitive). Definition
       attributes transfer to the link OR IMAGE that resolves the label; the
       reference site's own attributes override per key.
@@ -7487,7 +7495,7 @@ EOF = (* end of file *) ;
       document, or on lines the array does not contain, is NOT CONFORMING.
 
    R2 FOOTNOTES (rendering in PART 9 §16). Footnote labels use the same
-      ASCII-whitespace-normalized, case-sensitive key as R1. A [^label] use
+      space-run-normalized, case-sensitive key as R1. A [^label] use
       with a matching footnoteDefs entry is numbered by FIRST-REFERENCE order from
       footnoteSeq; repeat references reuse the number (k-th repeat gets
       refId fnref{n}-{k} and an extra backlink). An inline ^[content] note
