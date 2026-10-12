@@ -532,7 +532,7 @@
       "id": "generated-heading-id",
       "source": "# C\n",
       "carriers": {
-        "data-carve-ext": "section"
+        "data-carve-generated-id": null
       },
       "forbiddenExportAttributes": [
         "data-carve-explicit-id"
@@ -556,7 +556,7 @@
       ],
       "carrierHosts": [
         {
-          "attribute": "data-carve-ext",
+          "attribute": "data-carve-generated-id",
           "element": "section"
         }
       ],

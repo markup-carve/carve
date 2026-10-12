@@ -499,11 +499,12 @@
                                                   PART 9 §13 wraps one, and
                                                   the heading where it does
                                                   not
-        data-carve-generated-id     <h1>-<h6>     presence: the id was
-                                                  generated, not authored. It
-                                                  rides a heading that keeps
-                                                  its own id, where PART 9 §13
-                                                  wraps no `<section>`
+        data-carve-generated-id     <section>,    presence: the id was
+                                    <h1>-<h6>     generated, not authored. It
+                                                  rides the `<section>` where
+                                                  PART 9 §13 wraps one, and
+                                                  the heading where it does
+                                                  not
         data-carve-ref              <a>, <img>    the reference label the link
                                                   or image resolved by
         data-carve-autolink         <a>           presence: the link was
@@ -541,10 +542,6 @@
                                                   `code_block.label`; a block
                                                   with no label writes no
                                                   attribute
-        data-carve-ext              <section>     `section`: the element is the
-                                                  wrapper PART 9 §13 generates
-                                                  for a heading whose id is
-                                                  generated
         data-carve-id-slot          <section>     the authored id's slot among
                                                   the heading's attributes, the
                                                   index of `#id` in its
@@ -590,11 +587,6 @@
         ```php [Example]     ->  <pre data-carve-label="Example"><code
         echo 1;                  class="language-php">echo 1;
         ```                      </code></pre>
-
-      `data-carve-ext` NAMES WHAT GENERATED THE ELEMENT. `section` is the only
-      value the core writes, on a wrapper that carries no
-      `data-carve-explicit-id`. Any other value is a carrier only where an
-      extension's contract names it (§13e).
 
       AN ID SLOT IS A RUN OF DECIMAL DIGITS. The slot counts from 0, and a
       writer omits the carrier at 0, where the id leads. A reader places the
