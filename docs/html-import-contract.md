@@ -617,7 +617,7 @@ preserve the element as raw HTML with `raw-preserved` when none does, and never
 lose anything silently** (markup-carve/carve#1704).
 
 `semantic` is unaffected. The predicate is whether a Carve spelling reproduces
-the captioned element. This property applies to caption targets added later.
+the element. This property applies to caption targets added later.
 An implementation may use a target table, but its tests must check that property.
 
 The following shapes illustrate both outcomes:
@@ -632,7 +632,7 @@ The following shapes illustrate both outcomes:
 | a figure around a paragraph | no | the `<figure>` preserved, with `raw-preserved` |
 | an orphan `<td>`, `<tr>`, `<thead>` and the rest of the table parts | no | the element preserved, with `raw-preserved` |
 
-An orphan table part is the same predicate pointing the other way, and it is
+An orphan table part falls under the same predicate, and it is
 settled here rather than left to a later sweep: at document top level with no
 `<table>` around it, `<td id="x"><h1>H</h1></td>` has no Carve spelling at all,
 so rebuilding it as `# H` drops the element and its id. It is degenerate input -
