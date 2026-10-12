@@ -13,7 +13,6 @@
  */
 import { readFileSync, readdirSync, existsSync, writeFileSync } from 'node:fs'
 import { spawn } from 'node:child_process'
-import { createInterface } from 'node:readline'
 import { fileURLToPath } from 'node:url'
 import { resolve, basename } from 'node:path'
 import { phpDir, rustBinary } from './lib/engine-locations.mjs'
@@ -57,6 +56,8 @@ function run(command, args, input) {
 }
 async function streamRows(command, args, request, consume) {
   const child = spawn(command, args, { stdio: ['pipe', 'pipe', 'pipe'] })
+  child.stdout.setEncoding('utf8')
+  child.stderr.setEncoding('utf8')
   let stderr = ''
   child.stderr.on('data', data => { stderr = (stderr + data).slice(-4000) })
   const done = new Promise((accept, reject) => {
@@ -67,8 +68,22 @@ async function streamRows(command, args, request, consume) {
   child.stdin.on('error', error => { if (error.code !== 'EPIPE') child.kill() })
   child.stdin.end(JSON.stringify(request))
   try {
-    for await (const line of createInterface({ input: child.stdout })) consume(JSON.parse(line))
+    const readRow = line => {
+      let row
+      try { row = JSON.parse(line) } catch (error) { throw new Error(`${command} driver emitted invalid JSON: ${error.message}; row starts ${line.slice(0, 160)}`) }
+      consume(row)
+    }
+    let pending = ''
+    for await (const chunk of child.stdout) {
+      pending += chunk
+      let end
+      while ((end = pending.indexOf('\n')) !== -1) {
+        readRow(pending.slice(0, end))
+        pending = pending.slice(end + 1)
+      }
+    }
     await done
+    if (pending) readRow(pending)
   } catch (error) { child.kill(); await done.catch(() => {}); throw error }
 }
 async function main() {

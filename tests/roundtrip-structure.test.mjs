@@ -187,11 +187,21 @@ test('batch CLI waits for driver close after stdout ends', t => {
   assert.match(output.stderr, /driver exit 7/)
 })
 
+test('batch CLI reports a driver crash after a truncated final row', t => {
+  const run = withBatchDriver(t, `if (request.files.length) {
+    process.stderr.write('driver panic')
+    process.stdout.write('{"file":"truncated', () => process.exit(101))
+  }`)
+  const output = run([])
+  assert.equal(output.status, 2, output.stderr)
+  assert.match(output.stderr, /driver exit 101: driver panic/)
+})
+
 test('batch CLI consumes large escaped rows split across pipe chunks', t => {
-  const run = withBatchDriver(t, `const value = 'quote " slash \\\\ newline \\n ☃'.repeat(4000)
+  const run = withBatchDriver(t, `const value = 'quote " slash \\\\ newline \\n ☃ 😀 \u0085 \u2028 \u2029'.repeat(4000)
   for (const [i, file] of request.files.entries()) for (const target of request.targets) {
     const tree = { type: 'code', value: i === 0 ? value : 'small' }
-    const row = JSON.stringify({ file: basename(file), target, before: tree, after: tree }) + '\\n'
+    const row = Buffer.from(JSON.stringify({ file: basename(file), target, before: tree, after: tree }) + '\\n')
     for (let offset = 0; offset < row.length; offset += 8191) process.stdout.write(row.slice(offset, offset + 8191))
   }`)
   const output = run([])
