@@ -8494,9 +8494,7 @@ EOF = (* end of file *) ;
       mode decides reconstruction and raw-HTML preservation of INPUT, and
       finding one of these carriers in a document is not a reason to trust
       that document. Enabling export never enables a trusted import, never
-      widens an importer's mode, and never relaxes a destination check. An
-      importer that returns a stored-source payload verbatim does so on its
-      own trust setting, never on the exporter's.
+      widens an importer's mode, and never relaxes a destination check.
 
       A CARRIER VALUE IS UNTRUSTED INPUT. Before reconstructing syntax, a
       reader validates the value against the grammar of the construct it
