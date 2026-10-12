@@ -8261,8 +8261,7 @@ EOF = (* end of file *) ;
       holds what PART 2 writes between `[` and `]`, so a reader validates it
       against that production before rebuilding the fence label: a value that
       holds `]`, a line break, or is empty is not a carrier, and §13e's rule
-      for an invalid value applies. A `<pre>` that is not a code block's -- an
-      extension's own `<pre>` -- carries no label of this row.
+      for an invalid value applies.
 
         ```php [Example]     ->  <pre data-carve-label="Example"><code
         echo 1;                  class="language-php">echo 1;
@@ -8299,7 +8298,9 @@ EOF = (* end of file *) ;
       AN EXTENSION WRITES ITS OWN CARRIERS, under the reserved prefix, for the
       distinctions ITS nodes record. They are scoped to that extension and
       enumerated in that extension's own contract rather than here, which is
-      what the CORE qualifier above leaves room for. AN EXTENSION CARRIER IS A
+      what the CORE qualifier above leaves room for. An extension's contract
+      MAY place a core carrier name on its own element, and defines its
+      meaning there. AN EXTENSION CARRIER IS A
       CARRIER in every other respect: §13b displaces an authored attribute of
       its name, §13c reads its deprecated spelling, and §13d consumes it in
       every import mode.
