@@ -588,11 +588,11 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    the message is where the sink kind survives; `target` is already a field, so
    the message does not repeat it.
 
-   Each authored attribute a roundtrip carrier displaces under PART 10 §13b
+   Each authored attribute roundtrip export drops under PART 10 §13b
    contributes one loss in document order with the stable code
    `carrier-attribute-dropped`, the selected `target`, `nodeType` of `inline` or
    `block`, its `pos` when recorded, and NO `format`. Such an entry MUST carry
-   `attribute`, the displaced attribute's name, because the name is the whole
+   `attribute`, the dropped attribute's name, because the name is the whole
    content of the finding and a message is not compared. Only the HTML target
    writes carriers, so only that target reports this code.
 

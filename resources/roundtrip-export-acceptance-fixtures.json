@@ -1260,6 +1260,37 @@
       "value": null,
       "defaultValue": "Z",
       "aheadOfPin": true
+    },
+    {
+      "id": "reference-name-dropped-on-inline-link",
+      "source": "[a](/u){data-carve-ref=x}\n",
+      "attribute": "data-carve-ref",
+      "value": null,
+      "defaultValue": "x",
+      "aheadOfPin": true
+    },
+    {
+      "id": "tight-name-dropped-on-heading",
+      "source": "{data-carve-tight=x}\n# T\n",
+      "attribute": "data-carve-tight",
+      "value": null,
+      "defaultValue": "x",
+      "aheadOfPin": true
+    },
+    {
+      "id": "marker-name-dropped-on-heading",
+      "source": "{data-marker=x}\n# T\n",
+      "attribute": "data-marker",
+      "value": null,
+      "defaultValue": "x",
+      "aheadOfPin": true
+    },
+    {
+      "id": "unreserved-name-kept-on-heading",
+      "source": "{data-keep=x}\n# T\n",
+      "attribute": "data-keep",
+      "value": "x",
+      "kept": true
     }
   ],
   "markdownExportImport": [

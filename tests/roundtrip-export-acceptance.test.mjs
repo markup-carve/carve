@@ -153,6 +153,7 @@ for (const fixture of fixtures.collisionExport) test(`shared export collision: $
   const named = (html) => htmlAttributes(html).filter((attr) => attr.name === fixture.attribute).map((attr) => attr.value)
   const result = carveToHtmlWithReport(fixture.source, { roundtrip: true })
   assert.deepEqual(named(result.value), fixture.value === null ? [] : [fixture.value])
+  if (fixture.kept) return assert.ok(!result.losses.some((row) => row.code === 'carrier-attribute-dropped'))
   assert.ok(result.losses.some((row) => row.code === 'carrier-attribute-dropped' && row.attribute === fixture.attribute))
   if (fixture.defaultValue === undefined) return
   const ordinary = carveToHtmlWithReport(fixture.source)

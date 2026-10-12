@@ -1963,7 +1963,7 @@
     {
       "id": "CARVE-P10-019",
       "part": "10",
-      "title": "A CARRIER WINS A COLLISION AND THE DROPPED ATTRIBUTE IS REPORTED",
+      "title": "ROUNDTRIP EXPORT DROPS AN AUTHORED RESERVED NAME AND REPORTS IT",
       "scope": "resolution-rendering"
     },
     {

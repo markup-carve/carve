@@ -716,16 +716,22 @@
       option, and each has its own clause. This option neither gates nor
       duplicates them.
 
-   13b. A CARRIER WINS A COLLISION AND THE DROPPED ATTRIBUTE IS REPORTED --
-      NORMATIVE [CARVE-P10-019]. Where a node carries an authored attribute
-      whose name is a reserved name from §13a, THE CARRIER IS WRITTEN AND THE
-      AUTHORED ATTRIBUTE IS DROPPED. A carrier is structural and leads the
-      authored attributes by §1, and §12 already reads a value outside its
-      own enumeration as an author attribute rather than as the spec's.
+   13b. ROUNDTRIP EXPORT DROPS AN AUTHORED RESERVED NAME AND REPORTS IT --
+      NORMATIVE [CARVE-P10-019]. Under roundtrip export an authored attribute
+      whose name is a reserved name from §13a IS DROPPED ON EVERY NODE,
+      whether or not that node writes a carrier of that name. A node that
+      writes a carrier of that name still writes it. Default export passes
+      the authored attribute through.
+
+        [a](/u){data-carve-ref=x}   ->  <a href="/u">a</a>
+
+      A carrier is structural and leads the authored attributes by §1, and
+      §12 already reads a value outside its own enumeration as an author
+      attribute rather than as the spec's.
 
       THE DROP IS A RENDER-LOSS ROW NAMING THE ATTRIBUTE, so the document
       records the loss instead of taking it silently. The code is
-      `carrier-attribute-dropped` and the row carries `attribute`, the displaced name;
+      `carrier-attribute-dropped` and the row carries `attribute`, the dropped name;
       [CARVE-P2-024] states the rest of its shape.
 
       EMITTING BOTH IS NOT CONFORMING. Two attributes of one name is invalid
