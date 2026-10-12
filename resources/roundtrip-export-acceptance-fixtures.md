@@ -6,8 +6,10 @@ HTML cases supply source, carrier values and hosts, ordinary attributes, import 
 
 Consumers export with preservation off and on, import the preserved output, compare projections, and compare ordinary rendering after reconstruction. Deprecated carrier prefixes use the same projections. Raw cases allow the documented text fallback on a declining importer. Negative cases specify absent fields, forbidden values and whether a diagnostic is required, without fixing its wording or code. A diagnostic control uses the same host with a valid carrier value or no carrier so unrelated losses cannot satisfy an invalid-value assertion.
 
-Markdown rows sample container-kind recovery; existing §10s tests cover the wider container contract. Collision rows require the carrier to win and report the dropped authored attribute. The footnote recovery resource supplies the approved paired-carrier matrix.
+Markdown rows sample container-kind recovery; existing §10s tests cover the wider container contract. Collision rows require the carrier to win and report the dropped authored attribute. A collision row whose `value` is null names a reserved name with no carrier: roundtrip export writes no attribute of that name and still reports the drop, and `defaultValue` is what default export keeps. The footnote recovery resource supplies the approved paired-carrier matrix.
+
+`lossCodes` lists render-loss codes an HTML case reports with preservation off and on.
 
 Invalid generic spans are tested in safe and semantic modes. Their trusted roundtrip raw-HTML fallback is excluded here; these fixtures do not settle that separate recovery question.
 
-A row marked `aheadOfPin` states behavior the pinned engine does not have yet. Its test passes while the pinned engine fails the row and fails once the engine passes it, so the flag is dropped in the pin bump that ships the behavior.
+A row marked `aheadOfPin` states behavior the pinned engine does not have yet. A flagged negative case fails in every import mode it lists. Its test passes while the pinned engine fails the row and fails once the engine passes it, so the flag is dropped in the pin bump that ships the behavior.

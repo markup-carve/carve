@@ -5,8 +5,10 @@ import { parseFragment, serialize } from 'parse5'
 import { parse, carveToHtml, carveToHtmlWithReport, htmlToAst, htmlToCarve, carveToMarkdown, migrateMarkdown } from '@markup-carve/carve'
 
 const fixtures = JSON.parse(readFileSync(new URL('../resources/roundtrip-export-acceptance-fixtures.json', import.meta.url), 'utf8'))
-const inventory = ['explicit-id', 'ref', 'autolink', 'footnote-label', 'inline-footnote', 'raw', 'escaped', 'abbreviations', 'col-widths', 'label']
-const reservedNames = new Set(['data-marker', 'data-char', ...inventory.flatMap((name) => [`data-carve-${name}`, `data-djot-${name}`])])
+const inventory = ['explicit-id', 'ref', 'autolink', 'footnote-label', 'inline-footnote', 'raw', 'escaped', 'abbreviations', 'col-widths', 'label', 'ext', 'id-slot', 'tight']
+// Reserved without an inventory row: no core writer emits it, every importer consumes it.
+const retiredNames = ['data-carve-src']
+const reservedNames = new Set(['data-marker', 'data-char', ...retiredNames, ...inventory.flatMap((name) => [`data-carve-${name}`, `data-djot-${name}`])])
 const isReserved = (name) => reservedNames.has(name)
 const field = (node, path) => path.split('.').reduce((value, key) => value?.[key], node)
 function nodes(value) {
@@ -98,6 +100,10 @@ for (const fixture of fixtures.exportImport) {
       for (const html of [ordinary, exported]) assert.ok(htmlAttributes(html).some((attr) => attr.name === name && attr.value === value))
     }
     for (const name of fixture.forbiddenExportAttributes) assert.ok(!attrs.some((attr) => attr.name === name), name)
+    for (const roundtrip of [false, true]) {
+      const codes = carveToHtmlWithReport(fixture.source, { roundtrip }).losses.map((row) => row.code)
+      for (const code of fixture.lossCodes ?? []) assert.ok(codes.includes(code), `${code} with roundtrip ${roundtrip}`)
+    }
     for (const mode of fixture.importModes) {
       const imported = htmlToAst(exported, { mode })
       const legacy = htmlToAst(deprecatedHtml(exported), { mode })
@@ -112,7 +118,7 @@ for (const fixture of fixtures.exportImport) {
   }))
 }
 for (const fixture of fixtures.importNegative) {
-  for (const mode of fixture.importModes) test(`shared carrier rejection: ${fixture.id}/${mode}`, () => {
+  for (const mode of fixture.importModes) test(`shared carrier rejection: ${fixture.id}/${mode}`, aheadOfPin(fixture, () => {
     const result = htmlToAst(fixture.html, { mode })
     assertProjection(result.value, fixture.expectedNodes)
     if (fixture.requiresDiagnostic) {
@@ -126,7 +132,7 @@ for (const fixture of fixtures.importNegative) {
     for (const type of fixture.forbiddenTypes) assert.ok(!nodes(result.value).some((node) => node.type === type), type)
     for (const absent of fixture.expectedAbsentFields ?? []) assert.ok(nodes(result.value).filter((node) => node.type === absent.type).every((node) => field(node, absent.field) === undefined))
     for (const forbidden of fixture.forbiddenFieldValues ?? []) assert.ok(nodes(result.value).filter((node) => node.type === forbidden.type).every((node) => field(node, forbidden.field) !== forbidden.value))
-  })
+  }))
 }
 test('export cannot enable a denied destination', () => {
   const result = carveToHtmlWithReport('[x](javascript:one)\n', { roundtrip: true })
@@ -142,12 +148,16 @@ test('shared paired-footnote controls remain a separate complete resource', () =
   }
 })
 
-for (const fixture of fixtures.collisionExport) test(`shared export collision: ${fixture.id}`, () => {
+for (const fixture of fixtures.collisionExport) test(`shared export collision: ${fixture.id}`, aheadOfPin(fixture, () => {
+  const named = (html) => htmlAttributes(html).filter((attr) => attr.name === fixture.attribute).map((attr) => attr.value)
   const result = carveToHtmlWithReport(fixture.source, { roundtrip: true })
-  const attrs = htmlAttributes(result.value).filter((attr) => attr.name === fixture.attribute)
-  assert.deepEqual(attrs.map((attr) => attr.value), [fixture.value])
+  assert.deepEqual(named(result.value), fixture.value === null ? [] : [fixture.value])
   assert.ok(result.losses.some((row) => row.code === 'carrier-attribute-dropped' && row.attribute === fixture.attribute))
-})
+  if (fixture.defaultValue === undefined) return
+  const ordinary = carveToHtmlWithReport(fixture.source)
+  assert.deepEqual(named(ordinary.value), [fixture.defaultValue])
+  assert.ok(!ordinary.losses.some((row) => row.code === 'carrier-attribute-dropped'))
+}))
 test('task hooks remain ordinary output without preservation export', () => {
   const fixture = fixtures.exportImport.find((row) => row.id === 'task-states')
   const html = carveToHtml(fixture.source)
