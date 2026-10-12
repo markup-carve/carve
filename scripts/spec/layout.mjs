@@ -987,6 +987,14 @@ function opaqueSpanEnd(lines, idx) {
   return -1
 }
 
+// A colon opener that names its container: `::: note`, not a bare run and not
+// the `::: |` line-block spelling.
+function namedColonOpener(line) {
+  const cf = COLON_FENCE.exec(line)
+  const opener = cf && parseColonOpener(cf[2])
+  return !!(opener && opener.type && opener.mode !== 'line-block')
+}
+
 function isColonBlockOpener(line) {
   const cf = COLON_FENCE.exec(line)
   return !!(cf && parseColonOpener(cf[2]) !== null)
@@ -2007,7 +2015,11 @@ function hostColonStep(h, inner, bodyFollows, commentCloses = () => false, marke
     return false
   }
   const base = h.columns.at(-1)
-  if (top && base === top.base && inner.col > top.column) return false
+  // Past the container's column a line is its text, except a named opener
+  // where no paragraph is in the way: that one opens at its authored column
+  // (CARVE-P0-004).
+  if (top && base === top.base && inner.col > top.column &&
+      !(paragraph.length === 0 && colon && !bare && namedColonOpener(inner.rest))) return false
   if (top && bare && inner.col !== top.base && inner.col !== top.column) return false
   if (stack.length >= remainingDepth) return false
   const opener = colon && parseColonOpener(colon[2])
@@ -4973,6 +4985,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       tableOpen = tableRunStep(tableOpen, text)
     }
     carryPrefixMemo(state, lines, i, itemLines, 0)
+    const headIndex = i
     pushLine(head.text)
     // Whether the marker line opens nested items whose innermost item is the
     // FIRST-BLOCK `+` form. An enclosing collector must carry a following
@@ -5391,9 +5404,10 @@ function collectItems(lines, i, list, state, ind, meas) {
       // lines an ancestor's break has already truncated, so at three levels the
       // classification was lost where two levels kept it.
       if (state.nestedFenceOpensAt?.get(lines)?.has(idx)) return true
+      let afterBlank = false
       for (let j = idx + 1; j < lines.length; j++) {
         const raw = lines[j] ?? ''
-        if (isBlank(raw)) continue
+        if (isBlank(raw)) { afterBlank = true; continue }
         const lm2 = indentCols(raw)
         const nm2 = matchMarkerAt(lm2)
         // The DESCENDANT's boundary, not this collector's: a marker below the
@@ -5401,6 +5415,10 @@ function collectItems(lines, i, list, state, ind, meas) {
         // and ends that item. Stopping at `baseIndent` here took a closer out of
         // the next sibling's body.
         if (nm2 && nm2.indent < sourceCol) break
+        // A blank followed by a line below the column ends the item (SS24 C3),
+        // and only closers inside the container count (CARVE-P0-014).
+        if (afterBlank && lm2.col < sourceCol) break
+        afterBlank = false
         if (lm2.col < sourceCol) continue
         const c = PURE_FENCE.exec(dedentMeasured(lm2, raw, sourceCol).text)
         if (c && c[1][0] === run[0] && c[1].length >= run.length) return true
@@ -5922,8 +5940,15 @@ function collectItems(lines, i, list, state, ind, meas) {
           pendingAuthoredBlock = null
         }
         const foldsIntoLeadTerm = leadTerm && col > contentCol && !nm
+        // A colon container is not opaque: an opener past the column inside one
+        // takes its authored base like any other, where no paragraph is in the
+        // way (CARVE-P0-004).
+        const colonHoldsNoParagraph = !paragraphIsOpen() ||
+          (para.length === 1 && i === headIndex + 1 && isColonBlockOpener(para[0]))
+        const inOpenColonOnly = fence.opaque === null && fence.colon.length !== 0 && colonHoldsNoParagraph &&
+          col > contentCol && namedColonOpener(lm.rest)
         const mayOpenAuthoredBlock = !foldsIntoLeadTerm && !descendantOwned &&
-          !insideFence() && opensAuthoredBase(lm.rest)
+          (!insideFence() || inOpenColonOnly) && opensAuthoredBase(lm.rest)
         if (pendingHeadQuote !== null && mayOpenAuthoredBlock) {
           const start = pendingHeadQuote
           const candidate = [head.text]
