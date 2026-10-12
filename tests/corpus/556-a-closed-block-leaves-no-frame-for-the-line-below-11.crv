@@ -1,0 +1,12 @@
+- [^a]: text
+    [^b]: inner
+      ~~~
+      one
+      ~~~
+
+      ~~~
+      two
+      ~~~
+below
+
+[^a] [^b]

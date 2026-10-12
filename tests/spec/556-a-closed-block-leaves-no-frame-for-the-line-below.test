@@ -1,0 +1,315 @@
+A closed block leaves no frame for the line below
+
+````
+- a
+    ```
+
+  ~~~
+  code
+  ~~~
+after
+.
+<ul>
+  <li>a
+<code></code>
+    <pre><code>code
+</code></pre>
+  </li>
+</ul>
+<p>after</p>
+````
+
+````
+- a
+    ```
+
+  ---
+  ~~~
+  code
+  ~~~
+after
+.
+<ul>
+  <li>a
+<code></code>
+    <hr>
+    <pre><code>code
+</code></pre>
+  </li>
+</ul>
+<p>after</p>
+````
+
+````
+- a
+    ```
+
+  ~~~
+  code
+  ~~~
+  more
+after
+.
+<ul>
+  <li>a
+<code></code>
+    <pre><code>code
+</code></pre>
+    more
+after
+  </li>
+</ul>
+````
+
+```
+>   - a
+> - b
+>     - c
+>       :::
+1. lazy
+.
+<blockquote>
+  <ul>
+    <li>a</li>
+  </ul>
+  <ul>
+    <li>b
+      <ul>
+        <li>c
+          <div>
+
+          </div>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</blockquote>
+<ol>
+  <li>lazy</li>
+</ol>
+```
+
+```
+>   - a
+> - b
+>     - c
+>   :::
+1. lazy
+.
+<blockquote>
+  <ul>
+    <li>a</li>
+  </ul>
+  <ul>
+    <li>b
+      <ul>
+        <li>c</li>
+      </ul>
+      <div>
+
+      </div>
+    </li>
+  </ul>
+</blockquote>
+<ol>
+  <li>lazy</li>
+</ol>
+```
+
+```
+> - ::: box
+>   :::
+- tail
+.
+<blockquote>
+  <ul>
+    <li>
+      <div class="box">
+
+      </div>
+    </li>
+  </ul>
+</blockquote>
+<ul>
+  <li>tail</li>
+</ul>
+```
+
+```
+> - ::: box
+>   :::
+  - tail
+.
+<blockquote>
+  <ul>
+    <li>
+      <div class="box">
+
+      </div>
+    </li>
+  </ul>
+</blockquote>
+<ul>
+  <li>tail</li>
+</ul>
+```
+
+```
+> - a
+>   # H
+tail
+.
+<blockquote>
+  <ul>
+    <li>a
+      <h1 id="H">H</h1>
+    </li>
+  </ul>
+</blockquote>
+<p>tail</p>
+```
+
+```
+- a
+  > # H
+tail
+.
+<ul>
+  <li>a
+    <blockquote>
+      <h1 id="H">H</h1>
+    </blockquote>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+````
+- a
+  - ```
+    x
+    ```
+tail
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <pre><code>x
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+````
+
+```
+- [^a]: text
+    [^b]: inner
+      ~~~
+      one
+      ~~~
+
+      ~~~
+      two
+      ~~~
+below
+
+[^a] [^b]
+.
+<ul>
+  <li></li>
+</ul>
+<p>below</p>
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> <a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>text<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>inner</p>
+      <pre><code>one
+</code></pre>
+      <pre><code>two
+</code></pre>
+      <p><a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+- [^a]: text
+    - child
+    [^b]: inner
+      ~~~
+      one
+      ~~~
+below
+
+[^a] [^b]
+.
+<ul>
+  <li></li>
+</ul>
+<p>below</p>
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> <a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>text
+- child<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>inner</p>
+      <pre><code>one
+</code></pre>
+      <p><a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+- ::: inner
+ %% c
+ text
+.
+<ul>
+  <li>::: inner
+    text
+  </li>
+</ul>
+```
+
+```
+- ::: box
+  %%%%
+%% j
+  x
+.
+<ul>
+  <li>
+    <div class="box">
+
+    </div>
+  </li>
+</ul>
+<p>x</p>
+```
+
+```
+- a
+  %%%%
+%%%
+  x
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>x</p>
+```

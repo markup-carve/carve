@@ -47709,3 +47709,434 @@ x
 ```
 
 :::
+
+## A closed block leaves no frame for the line below
+
+`CARVE-P0-009` asks one question of a line below an item's content column: is a
+paragraph open at the deepest frame? Where the last block there is closed, the
+line closes the list and begins a new block, and no surviving frame adopts it.
+These documents pin the answer in the shapes where a reader kept the line in a
+frame that had ended (markup-carve/carve#2925).
+
+A closed code block after a failed fence opener. The first run has no closer, so
+it is paragraph text (§10 I4) and the paragraph ends at the blank. The tilde
+block below it is closed, the item holds no paragraph, and `after` is a document
+paragraph (markup-carve/carve#2949). A thematic break between the two changes
+nothing.
+
+::: compare
+
+````carve
+- a
+    ```
+
+  ~~~
+  code
+  ~~~
+after
+````
+
+```html
+<ul>
+  <li>a
+<code></code>
+    <pre><code>code
+</code></pre>
+  </li>
+</ul>
+<p>after</p>
+```
+
+````carve
+- a
+    ```
+
+  ---
+  ~~~
+  code
+  ~~~
+after
+````
+
+```html
+<ul>
+  <li>a
+<code></code>
+    <hr>
+    <pre><code>code
+</code></pre>
+  </li>
+</ul>
+<p>after</p>
+```
+
+:::
+
+The control. With a line of prose after the closed block the item does hold an
+open paragraph, and `after` folds into it.
+
+::: compare
+
+````carve
+- a
+    ```
+
+  ~~~
+  code
+  ~~~
+  more
+after
+````
+
+```html
+<ul>
+  <li>a
+<code></code>
+    <pre><code>code
+</code></pre>
+    more
+after
+  </li>
+</ul>
+```
+
+:::
+
+An empty container in a quoted nested item. Its item holds no paragraph, so the
+unmarked line closes the quote and opens a document list, whether or not an
+unrelated list stands above. The second source puts the container in the outer
+item.
+
+::: compare
+
+````carve
+>   - a
+> - b
+>     - c
+>       :::
+1. lazy
+````
+
+```html
+<blockquote>
+  <ul>
+    <li>a</li>
+  </ul>
+  <ul>
+    <li>b
+      <ul>
+        <li>c
+          <div>
+
+          </div>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</blockquote>
+<ol>
+  <li>lazy</li>
+</ol>
+```
+
+````carve
+>   - a
+> - b
+>     - c
+>   :::
+1. lazy
+````
+
+```html
+<blockquote>
+  <ul>
+    <li>a</li>
+  </ul>
+  <ul>
+    <li>b
+      <ul>
+        <li>c</li>
+      </ul>
+      <div>
+
+      </div>
+    </li>
+  </ul>
+</blockquote>
+<ol>
+  <li>lazy</li>
+</ol>
+```
+
+:::
+
+The two controls of markup-carve/carve#2925. A closed container on a quoted
+marker line stores no claim, and a column cannot supply the quote prefix, so
+`tail` opens a document list at either column.
+
+::: compare
+
+````carve
+> - ::: box
+>   :::
+- tail
+````
+
+```html
+<blockquote>
+  <ul>
+    <li>
+      <div class="box">
+
+      </div>
+    </li>
+  </ul>
+</blockquote>
+<ul>
+  <li>tail</li>
+</ul>
+```
+
+````carve
+> - ::: box
+>   :::
+  - tail
+````
+
+```html
+<blockquote>
+  <ul>
+    <li>
+      <div class="box">
+
+      </div>
+    </li>
+  </ul>
+</blockquote>
+<ul>
+  <li>tail</li>
+</ul>
+```
+
+:::
+
+A block at a quoted item's content column is read by that item, and it leaves
+the quote no paragraph either.
+
+::: compare
+
+````carve
+> - a
+>   # H
+tail
+````
+
+```html
+<blockquote>
+  <ul>
+    <li>a
+      <h1 id="H">H</h1>
+    </li>
+  </ul>
+</blockquote>
+<p>tail</p>
+```
+
+:::
+
+A quote inside an item answers with its own last block on every line, not only
+on the marker line.
+
+::: compare
+
+````carve
+- a
+  > # H
+tail
+````
+
+```html
+<ul>
+  <li>a
+    <blockquote>
+      <h1 id="H">H</h1>
+    </blockquote>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
+A fence on a sublist's marker line is closed like any other, and the line below
+it is not the outer item's.
+
+::: compare
+
+````carve
+- a
+  - ```
+    x
+    ```
+tail
+````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <pre><code>x
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
+A code block in a footnote body on a marker line. Every line of the body is the
+definition's, so the item holds no paragraph after it and `below` leaves the
+list, with one code block or two and with or without a child line.
+
+::: compare
+
+````carve
+- [^a]: text
+    [^b]: inner
+      ~~~
+      one
+      ~~~
+
+      ~~~
+      two
+      ~~~
+below
+
+[^a] [^b]
+````
+
+```html
+<ul>
+  <li></li>
+</ul>
+<p>below</p>
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> <a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>text<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>inner</p>
+      <pre><code>one
+</code></pre>
+      <pre><code>two
+</code></pre>
+      <p><a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+````carve
+- [^a]: text
+    - child
+    [^b]: inner
+      ~~~
+      one
+      ~~~
+below
+
+[^a] [^b]
+````
+
+```html
+<ul>
+  <li></li>
+</ul>
+<p>below</p>
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> <a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>text
+- child<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>inner</p>
+      <pre><code>one
+</code></pre>
+      <p><a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+A comment below the content column is not the line that reaches it. The colon
+opener on the marker line acquires no body and stays item text, as it does
+without the comment.
+
+::: compare
+
+````carve
+- ::: inner
+ %% c
+ text
+````
+
+```html
+<ul>
+  <li>::: inner
+    text
+  </li>
+</ul>
+```
+
+:::
+
+An unmatched comment fence is the line form (`CARVE-P9-053`), so it grants and
+refuses ownership exactly as `%%` does. Neither item survives the comment below
+its column (markup-carve/carve#2950).
+
+::: compare
+
+````carve
+- ::: box
+  %%%%
+%% j
+  x
+````
+
+```html
+<ul>
+  <li>
+    <div class="box">
+
+    </div>
+  </li>
+</ul>
+<p>x</p>
+```
+
+````carve
+- a
+  %%%%
+%%%
+  x
+````
+
+```html
+<ul>
+  <li>a</li>
+</ul>
+<p>x</p>
+```
+
+:::
