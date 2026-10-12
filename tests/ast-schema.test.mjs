@@ -373,10 +373,7 @@ test('a table cell carries an optional vertical alignment', () => {
  * question, rather than being named in the clause with nothing behind it.
  * Emptying this map is the intended end state.
  */
-const UNDEFINED_FACT = {
-  paddingRaw:
-    "one string cannot hold both of a table cell's whitespace runs, and which run it names is unruled (carve#1431)",
-}
+const UNDEFINED_FACT = {}
 
 /** The text of PART 12 §13, the clause that defines the sidecar. */
 function sidecarClause() {
@@ -962,6 +959,14 @@ const REJECTED = [
   {
     why: 'a heading level outside 1-6',
     doc: { type: 'document', srcByteLength: 0, children: [{ type: 'heading', level: 7, children: [] }] },
+  },
+  {
+    why: 'a link reference definition with an empty destination (CARVE-P12-029)',
+    doc: {
+      type: 'document',
+      srcByteLength: 0,
+      children: [{ type: 'link_reference_definition', label: 'a', href: '' }],
+    },
   },
 ]
 

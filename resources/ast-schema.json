@@ -51,7 +51,8 @@
         },
         "href": {
           "type": "string",
-          "description": "The destination. Present and non-empty: a definition with an empty destination is not a definition, it is paragraph text."
+          "minLength": 1,
+          "description": "The destination. Present and non-empty: a definition with an empty destination is not a definition, it is paragraph text (CARVE-P12-029)."
         },
         "title": {
           "type": "string",
