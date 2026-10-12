@@ -8128,9 +8128,9 @@ EOF = (* end of file *) ;
       attribute those sections write.
 
       THE TARGET DECIDES THE CARRIER. For HTML it is the names in §13a. For
-      Markdown it is the container carrier comments of PART 11 §10s. A
-      Markdown export carries containers and no more, and is not a claim to
-      preserve what §13a lists.
+      Markdown it is the carrier comments of PART 11 §10s and §10t. A
+      Markdown export carries what those two sections name, and is not a
+      claim to preserve what §13a lists.
 
       WHAT IT GUARANTEES IS RECOVERY OF THE NAMED DISTINCTIONS, not
       byte-identical source. A distinction the AST already records --
