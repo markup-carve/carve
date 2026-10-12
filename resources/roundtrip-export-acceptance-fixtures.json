@@ -1012,6 +1012,36 @@
         }
       ],
       "aheadOfPin": true
+    },
+    {
+      "id": "definition-list-term-without-definition",
+      "source": ":: Carve\n",
+      "carrierFragments": [
+        "<!-- carve: :: Carve -->",
+        "<!-- carve: -->"
+      ],
+      "expectedNodes": [
+        {
+          "type": "definition_list"
+        }
+      ],
+      "aheadOfPin": true
+    },
+    {
+      "id": "definition-list-two-terms-one-definition",
+      "source": ":: Carve\n:: Djot\n: Markup languages.\n",
+      "carrierFragments": [
+        "<!-- carve: :: Carve -->",
+        "<!-- carve: :: Djot -->",
+        "<!-- carve: : -->",
+        "<!-- carve: -->"
+      ],
+      "expectedNodes": [
+        {
+          "type": "definition_list"
+        }
+      ],
+      "aheadOfPin": true
     }
   ]
 }
