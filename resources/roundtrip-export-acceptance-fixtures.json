@@ -913,6 +913,35 @@
         }
       ],
       "aheadOfPin": true
+    },
+    {
+      "id": "quoted-heading-id-writes-no-slot",
+      "source": "> {.c #Z}\n> # Q\n",
+      "carriers": {
+        "data-carve-explicit-id": null
+      },
+      "forbiddenExportAttributes": [
+        "data-carve-id-slot",
+        "data-carve-generated-id"
+      ],
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "level": 1,
+          "attrs.id": "Z"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-explicit-id",
+          "element": "h1"
+        }
+      ]
     }
   ],
   "importNegative": [
@@ -1360,6 +1389,29 @@
         }
       ],
       "diagnosticControlHtml": "<section id=\"mine\"><h1 class=\"c\">H</h1></section>"
+    },
+    {
+      "id": "oversized-id-slot",
+      "html": "<section id=\"mine\" data-carve-explicit-id data-carve-id-slot=\"5\"><h1 class=\"c\">H</h1></section>",
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "attrs.id": "mine",
+          "attrs.order": [
+            "#id",
+            ".class"
+          ]
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": true,
+      "diagnosticControlHtml": "<section id=\"mine\" data-carve-explicit-id data-carve-id-slot=\"1\"><h1 class=\"c\">H</h1></section>",
+      "aheadOfPin": true
     }
   ],
   "footnoteRecoveryResource": "footnote-carrier-recovery-fixtures.json",
