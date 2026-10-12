@@ -41,7 +41,7 @@ import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'n
 import { dirname, join, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { parseWaivers } from './spec/ast-waivers.mjs'
+import { parseExtentDeclarations, parseWaivers } from './spec/ast-waivers.mjs'
 import { duplicateKeys } from './lib/drift-ledger.mjs'
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -177,7 +177,7 @@ const MANIFEST = [
   // here cannot parse unless its status is `owner/repo#N`, and `permitted` is
   // refused outright, so a declaration is always tracked work with an owner
   // and it leaves when that issue closes.
-  { repo: 'spec', path: 'resources/ast-extent-findings.txt', kind: 'txt', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run ast:check' },
+  { repo: 'spec', path: 'resources/ast-extent-findings.txt', kind: 'txt', rows: 'extent', policy: 'owed', prPolicy: 'declared', guard: 'two-way', owner: 'npm run ast:check' },
   // ONE OF THE ENGINE-LAG ENTRIES: see the `prPolicy` note on the
   // engine-pin ledger below. Same window, described from the writer side.
   //
@@ -701,6 +701,13 @@ function undeclaredWaiverRows(rows) {
   })
 }
 
+function undeclaredExtentRows(rows) {
+  return parseExtentDeclarations(rows.join('\n')).errors.map((error) => {
+    const line = Number(error.match(/^line (\d+):/)?.[1])
+    return line ? `${error} [${rows[line - 1]}]` : error
+  })
+}
+
 /**
  * The rows of a drift ledger that are NOT declarations.
  *
@@ -931,7 +938,7 @@ function perPrPolicy(entry) {
   return entry.policy
 }
 
-export const __internals = { blankComments, perPrPolicy, collapseBetweenLiterals, declarationIndex, bracketedBlock, topLevelEntries, liveRows, classifyPinDistance, gitPinStatus, gitReferenceBuildStatus, isDeclarationName, undeclaredLedgerRows, undeclaredWaiverRows, spanRowKey, spanExemptions, MANIFEST }
+export const __internals = { blankComments, perPrPolicy, collapseBetweenLiterals, declarationIndex, bracketedBlock, topLevelEntries, liveRows, classifyPinDistance, gitPinStatus, gitReferenceBuildStatus, isDeclarationName, undeclaredLedgerRows, undeclaredWaiverRows, undeclaredExtentRows, spanRowKey, spanExemptions, MANIFEST }
 
 if (process.env.CARVE_DECL_AUDIT_LIB === '1') {
   // Imported for its helpers by the self-test; do not run the audit.
@@ -1077,7 +1084,9 @@ for (const entry of MANIFEST) {
   } else if (policy === 'manual') {
     owed = 0
   } else if (policy === 'declared' || policy === 'split-declared') {
-    detail = policy === 'split-declared' ? undeclaredWaiverRows(judgedRows) : undeclaredLedgerRows(judgedRows)
+    detail = policy === 'split-declared'
+      ? undeclaredWaiverRows(judgedRows)
+      : entry.rows === 'extent' ? undeclaredExtentRows(judgedRows) : undeclaredLedgerRows(judgedRows)
     owed = detail.length
     permitted = judgedRows.length - owed
   }

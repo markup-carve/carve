@@ -21,7 +21,7 @@
        wins: a `::: x` line is never a `:: ` definition term)
    11. Paragraphs (everything else)
    Recognition order is NOT interruption: which of these may interrupt an
-   open paragraph is PART 9 §10 (list markers -- bullet and ordered -- never do).
+   open paragraph is PART 9 §10.
 
    Inline parsing precedence (second pass):
    1. Escaped characters (\x)

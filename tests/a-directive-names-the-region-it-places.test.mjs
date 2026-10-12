@@ -63,9 +63,9 @@ test('a kind whose element cannot hold a paragraph keeps the tokens before it', 
   assert.match(body, /For `index`, authored body blocks follow those tokens and precede the\s+generated `<ul>`/)
 })
 
-test('the clause leaves an untitled marker byte-identical', () => {
+test('the clause gives an untitled, unlabeled marker neither paragraph', () => {
   assert.match(
     clause(),
-    /untitled, unlabeled marker renders EXACTLY as it did before this clause/,
+    /untitled, unlabeled marker emits neither paragraph/,
   )
 })

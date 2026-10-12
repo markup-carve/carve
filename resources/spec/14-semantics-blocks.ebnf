@@ -32,11 +32,11 @@
          In particular, a bracket inside an editorial comment opens no run,
          so `[{#a]#}`
          retains its comment and renders the outside `[`.
-      E3 NO BARE SAME-TYPE NESTING (§3). While a reachable d-span is open,
+      E3 NO BARE SAME-TYPE NESTING. While a reachable d-span is open,
          a further bare d that would open does NOT push -- it is literal.
          Hence /usr/local/ -> <em>usr/local</em> (01-emphasis-6);
          the/path/here is literal; unbalanced trailing runs stay literal:
-         /b// -> <em>b</em>/ and /x// -> <em>x</em>/ (edge-cases.md §1).
+         /b// -> <em>b</em>/ and /x// -> <em>x</em>/ (resources/examples/edge-cases.md).
          An explicit braced opener is exempt: it MAY push a child of the
          same kind under either a bare or a braced parent (§22). Each braced
          span creates the E2a boundary; its closer closes that span, never
@@ -106,9 +106,8 @@
          81-paragraph-interruption-19.
 
          A `:::` OPENER IS NOT GUARDED. It interrupts whether or not a closer
-         follows, and an unterminated one closes with its host -- the
-         enclosing container's boundary, or end of input at the top level
-         (§12). Pinned by corpus 81-paragraph-interruption-20: `Text` /
+         follows; where an unterminated one closes is PART 2's UNCLOSED rule
+         (`admonition`). Pinned by corpus 81-paragraph-interruption-20: `Text` /
          `:::` / `stuff` is a paragraph followed by a div holding `stuff`.
 
       I5 INVISIBLE CONSTRUCTS interrupt AND are consumed: a reference
@@ -144,15 +143,13 @@
          ARITHMETIC is not, and stays where it is.
 
          PROPERTY 3 DOES NOT SAY WHICH OWNER. It says the invisible line is not
-         what decides -- not that the decision is settled. What the next line
-         belongs to after a COMMENT is host-dependent and still open: the
-         list-item answer is pinned (A COMMENT IS THE ONE EXCEPTION at §24 --
-         a following line stays in the item; corpus
-         189-a-comment-under-a-nested-item-does-not-close-it and
-         192-a-comment-fence-under-a-nested-item-does-not-close-it-either), and
-         the definition-description host answers the same shape differently.
-         A comment's own COLUMN stays open for the same reason:
-         the exemption below decides which lines are invisible, not what the
+         what decides. After a COMMENT consumed below the content column the
+         answer is the same in a list item, a definition body and a footnote
+         body: a noninterrupting follower stays in that container and starts a
+         new paragraph (CARVE-P0-009, CARVE-P9-053; the list-item rows are
+         corpus 189-a-comment-under-a-nested-item-does-not-close-it and
+         192-a-comment-fence-under-a-nested-item-does-not-close-it-either).
+         The exemption below decides which lines are invisible, not what the
          line after one owns.
 
          THE CLASSIFICATION HAS EXACTLY TWO EXCEPTIONS, and both are about
@@ -165,8 +162,7 @@
              ordinary text there, and they fold into the container that holds
              the open paragraph, in every host (AN INVISIBLE LINE FOLDS LIKE ANY
              OTHER; WHICH CONTAINER, NOT ONLY THAT IT IS TEXT; corpus 430).
-           - AN ABBREVIATION DEFINITION IS DOCUMENT-LEVEL ONLY (§16, AN
-             ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL).
+           - AN ABBREVIATION DEFINITION IS DOCUMENT-LEVEL ONLY (CARVE-P12-026).
              Anywhere else it is not an invisible line at all: it is paragraph
              text, it is VISIBLE, and it folds like any other plain line. That
              is a line OUTSIDE the class, not a third band inside it.
@@ -206,14 +202,13 @@
          430-below-a-definition-body-s-column-an-invisible-line-folds-as-text.
 
          A DEFINITION COLLECTED AT content_column ENDS THE ITEM'S OPEN
-         PARAGRAPH. The next nonblank line therefore stays in the item only if
-         it reaches content_column and opens item prose, except that a footnote
-         line reaching content_column + 2 belongs to the definition body and
-         leaves no item paragraph open. A line one column short of that body is
-         item prose. The comment exception above does not extend to definitions.
-         The bare decimal-dot marker `. ` claims one marker column and one
-         separator column, so its content_column is the same as `- `. Pinned
-         by corpus 374.
+         PARAGRAPH (CARVE-P0-010). The next nonblank line therefore stays in
+         the item only if it reaches content_column and opens item prose. A
+         footnote definition's own extent is CARVE-P0-012; a line one column
+         short of its body is item prose. The comment exception above does not
+         extend to definitions. The bare decimal-dot marker `. ` claims one
+         marker column and one separator column, so its content_column is the
+         same as `- `. Pinned by corpus 374.
       I6 SCOPE + THE HEADING EXCEPTION. The relation applies to EVERY open
          paragraph, including a blockquote's lazy continuation: "> quoted
          \n - item" folds into ONE quote whose paragraph is
@@ -227,7 +222,7 @@
          is the deliberate divergence, not a restatement of it.
       I7 A CAPTION LINE DOES NOT INTERRUPT. A `^ ` line appears in neither
          I1 nor I5. What ends a paragraph at a caret is §4, and §4 reaches
-         only the five captionable hosts; for the two it spells in prose that
+         only the seven captionable hosts; for the two it spells in prose that
          is a paragraph whose WHOLE content is one image or one display-math
          span, and there the caret line ends the paragraph and ATTACHES.
          Anywhere else it folds in as ordinary paragraph text, caret and all:
@@ -262,7 +257,7 @@
          THREE OR MORE blank lines before an item marker ends the list: the
          marker after the run opens a NEW sibling list even when every N1
          axis matches. ONE blank line remains the ordinary loose separator,
-         and so does TWO (SS17 L1). In the common LF spelling the boundary is
+         and so does TWO (§17 L1). In the common LF spelling the boundary is
          four newline bytes between the two item lines (`item\n\n\n\nitem`)
          against two for the tight spelling and three for the loose one.
          Example:
@@ -276,7 +271,7 @@
          THE RUN CLOSES NOTHING ON ITS OWN. It denies a FOLLOWING SIBLING
          MARKER the right to join; it does not end the item. A run followed
          by a continuation at the item's content column continues that item,
-         at any run length -- which is SS17's content-column model unchanged,
+         at any run length -- which is §17's content-column model unchanged,
          and is why three blank lines before indented text still leave one
          loose item.
          Two blank lines remain ordinary decorative spacing; three establish
@@ -304,43 +299,16 @@
       generic container. An EMPTY one closes on the next line --
       `<div>` newline `</div>`, the exception PART 10 §4 states.
 
-      INLINE OPENER ATTRIBUTES -- STRICT (djot). The opener line carries NO
-      inline attributes: it is the colon fence, an optional type word, and
-      an optional quoted title, and NOTHING else. Any trailing `{...}` (or
-      other non-title text after the type) makes the line an ORDINARY
-      PARAGRAPH, not a fence -- so `::: note {.x}`, `::: {.x}`, and
-      `:::{k=v}` are all paragraphs. To attribute a div or admonition, use
-      a PRECEDING block-attribute line, which floats onto the block (§15):
-      `{.x #id}` then `::: note` yields `<aside class="admonition note x"
-      id="id">`. This matches canonical djot, which rejects any non-class
-      text on the fence line.
+      INLINE OPENER ATTRIBUTES. None. The opener's shape and the recovery of
+      a malformed one are PART 2's (STRICT, under `admonition_open`). To
+      attribute a div or admonition, use a PRECEDING block-attribute line,
+      which floats onto the block (§15): `{.x #id}` then `::: note` yields
+      `<aside class="admonition note x" id="id">`.
 
-      FENCE LENGTH & NESTING: a fence is a run of 3+ colons; the same rule
-      governs both admonitions and generic divs. A block is closed only by a
-      BARE fence of EXACTLY its opener's length -- the guard the formal
-      `colon_fence_close` states as `len(close) = len(open)` -- so a bare
-      `:::` inside a `::::` block is content rather than a closer, and a bare
-      `::::` inside a `:::` block is likewise not one. AN UNCLOSED OPENER STILL
-      OPENS, bare or labeled, and closes where its HOST ends by PART 2's rule:
-      the enclosing container's boundary, or end of input at the top level
-      (corpus 271-the-flush-left-line-after-a-container-a-quoted-line-opened).
-
-      EQUAL-LENGTH FENCES DO NEST, because a closer must be BARE: `::: note`
-      may hold `::: tip`, the inner line being an opener rather than a closer
-      on account of its label. Only a bare equal-length line closes.
-
-      THE CANONICAL WIDTH IS A FUNCTION OF DEPTH, AND THAT COSTS O(depth^2)
-      BYTES. The exact-length guard leaves the DIRECTION free --
-      longer-outer documents and longer-inner ones both parse -- and `carve
-      fmt` writes the inward one: the outermost container is `:::` and each
-      level inward adds one colon (PART 11; the `colon_fence` note in PART 2).
-      So the writer sizes each fence from the depth it is ALREADY CARRYING. It
-      needs no lookahead, and the widths it emits cannot collide, because along
-      any one chain they are STRICTLY INCREASING. (A fence-shaped line in TEXT
-      is a different problem, answered by PART 11 §5's escaping.)
-
-      A nest d containers deep spends d^2 + 5d bytes on opener and closer
-      markers -- the accepted canonical-size trade (docs/spec-history.md).
+      FENCE LENGTH, NESTING, DIRECTION AND AN UNCLOSED OPENER are stated once,
+      in PART 2 at `colon_fence_close` and under `admonition`, for admonitions
+      and generic divs alike (corpus
+      271-the-flush-left-line-after-a-container-a-quoted-line-opened).
 
       A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH
       EXPECTING A CLOSER -- NORMATIVE [CARVE-P9-016]. A `:::` line that is not a valid opener
@@ -376,7 +344,7 @@
       `:::note` has no separator, so it opens nothing and is absorbed, and the
       QUOTED `> :::` under it would be absorbed on the same terms. The `:::`
       above supplies no `>` prefix: it is a PARTIAL match, and it could reach
-      that paragraph only through PART 0 S4's lazy fold. The strict column-0
+      that paragraph only through PART 0 O3's lazy fold. The strict column-0
       rule decides it instead -- a flush-left fence-shaped line interrupts, the
       quote closes, and the line is re-classified at top level, where it opens
       a div of its own. Change one line to `> :::` and the answer inverts,
@@ -392,10 +360,7 @@
       between the opener and the nested list still opens the block, and an
       empty body (opener immediately followed by its closer) opens too. A
       MISSING closer changes none of this: PART 2's UNCLOSED rule governs
-      unqualified, the opener opens and the container closes with the ITEM
-      that holds it (corpus
-      270-a-real-div-in-a-container-and-the-flush-left-line-after-it), which is
-      end of input only when the item runs that far.
+      (corpus 270-a-real-div-in-a-container-and-the-flush-left-line-after-it).
       (resources/examples/edge-cases.md "Fence opener with a nested-list body
       inside a list item" pins these.)
 
@@ -455,14 +420,14 @@
               <p class="admonition-title" id="adm-1">Careful</p>
 
         UNTITLED: there is no visible name to point at, so the name is the TYPE
-        WORD, drawn from the `labels` map (SS16a) rather than fixed English:
+        WORD, drawn from the `labels` map (§16a) rather than fixed English:
             <aside class="admonition note" aria-label="Note">
 
         The minted id is `adm-{n}`, n counting Tier-1 titled blocks in document
         order from 1, allocated through the SAME slug registry as heading ids
         so it can never collide with one this document generates. (An id the
         author writes by hand does not register -- the pre-existing property of
-        SS13's registry, not a new hole here.)
+        §13's registry, not a new hole here.)
 
         THE AUTHOR'S OWN NAME WINS, MATCHED CASE-INSENSITIVELY. When the
         attribute line carries either `aria-label` or `aria-labelledby` under
@@ -500,8 +465,8 @@
       endnotes section; any OTHER `aria-*`
       the author writes leaves the naming alone.
       The label renders as `<p class="div-label">` when no group extension
-      consumes it. An untitled, unlabeled marker renders EXACTLY as it did before this clause.
-      Non-HTML targets follow PART 11 §10e T1 for both tokens.
+      consumes it. An untitled, unlabeled marker emits neither paragraph.
+      Non-HTML targets follow CARVE-P11-032 T1 for both tokens.
 
       A SIBLING TITLE WAS REFUSED FOR A NAMEABLE REGION. Put the visible title
       inside a region that admits it, and use it as that region's accessible
@@ -536,8 +501,7 @@
       same-or-shallower heading. The slug-derivation rule (ASCII
       transliteration etc., see syntax.md §4.1) computes
       the id; the id lives on the `<section>` element, NOT on the
-      `<h*>` element. This shifts the existing carve behavior
-      (id-on-h*, no section wrapper) to match djot's structural model.
+      `<h*>` element.
       Algorithm (one stateful pass over top-level blocks):
         let openSections : Stack of (level, sectionElement) = []
         for each top-level child node:
@@ -554,7 +518,7 @@
       - Adjacent same-level headings: produce sibling sections at the
         same level (`# A / # B` -> two <section>s).
       - Skipped levels: a `# H1 / ### H3` sequence nests H3's section
-        inside H1's, because the §11-style stack-close test (top.level
+        inside H1's, because the stack-close test above (top.level
         >= N) only closes sections at level >= 3 (none open at level 3
         or 5/6). The structure mirrors djot's behavior; carve does NOT
         synthesize intermediate <h2>/<section> nodes.
@@ -584,7 +548,7 @@
         top-level headings (`# abc` then `> # abc` gives `abc` then
         `abc-2`), and it is a valid `</#id>` crossref target. The one
         exception is the implicit `[Heading][]` reference index, which
-        declines headings under a blockquote (PART 11 R1).
+        declines headings under a blockquote (PART 9R R1).
         When the `sections` option below is off, the top-level shape becomes
         identical to this one, so id
         placement and attribute placement follow ONE rule everywhere in
@@ -657,8 +621,7 @@
           attributes.
         - empty or SPACE-only (`[text]{}`, `[text]{ }`) -> a valid EMPTY
           block: a bare `<span>text</span>`. A TAB inside it is not padding
-          and the block is unrecognized (the A7 position of THE INLINE
-          INTERIOR IS SPACE-ONLY in PART 4). The empty block is a blessed
+          and the block is unrecognized (CARVE-P4-001). The empty block is a blessed
           exception -- the bare `attribute_list` production nominally needs
           >= 1 attribute -- so a default-attribute processor can target the
           span.
@@ -685,17 +648,17 @@
       digit-first bare word is not a valid name (the block stays literal, as for
       any digit-first identifier). All impls support it (a carve extension
       beyond canonical djot, matching djot-php).
-      THE THREE NAMES OF PART 9 §9 ARE THE EXCEPTION TO `name=""`: on an
+      THE THREE NAMES OF CARVE-P10-003 ARE THE EXCEPTION TO `name=""`: on an
       ordinary span, `abbr`, `time` and `kbd` are consumed into an HTML
       element instead of reaching the output as an attribute, so `[Tab]{kbd}`
       is `<kbd>Tab</kbd>` and not `<span kbd="">Tab</span>`. The OTHER four
       semantic names -- `samp`, `var`, `cite` and `dfn` -- are NOT core: a
       conformant core leaves them as ordinary boolean attributes
       (`<span samp="">x</span>`), and only the Tier-2 SemanticSpan extension
-      consumes them (§10). All seven are boolean attributes everywhere else,
+      consumes them (CARVE-P10-008). All seven are boolean attributes everywhere else,
       including in the AST and in the canonical writer, which writes the span
       back as `[Tab]{kbd}` -- an empty-string attribute is spelled bare there
-      (PART 11 §6c).
+      (CARVE-P11-012).
       A COLON is not an `identifier` character, so a colon-bearing name is
       unrecognized in every form -- `{xml:lang="en"}`, `{.sm:hover}`, `{#a:b}`
       and a bare `{a:b}` all leave the run literal. It stays legal one position
@@ -744,8 +707,7 @@
       A4 DROP IF DANGLING -- NORMATIVE [CARVE-P9-024]. pending with no following block
          element produces no output.
 
-         THERE ARE TWO WAYS TO RUN OUT OF FOLLOWING BLOCKS, and this clause
-         named only the first:
+         THERE ARE TWO WAYS TO RUN OUT OF FOLLOWING BLOCKS:
 
            - END OF DOCUMENT; and
            - END OF THE CONTAINER that holds the attribute.
@@ -759,7 +721,7 @@
          `unattached-block-attribute` (docs/validation.md), while producing no
          output for the attribute.
 
-         S4 decides container closure: the attribute leaves no open paragraph,
+         CARVE-P0-009 decides container closure: the attribute leaves no open paragraph,
          so `> {.k}` / `tail` ends the quote and A4 drops the attribute.
          This clause does not decide how an empty container renders.
       A5 MULTI-LINE BLOCK. One block may wrap across lines ({#id\n .foo} is

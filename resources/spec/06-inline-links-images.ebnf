@@ -89,7 +89,7 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
    block, NOT a language tag -- EXCEPT the exact form `{=format}`, which is
    raw inline passthrough (raw_inline below, PART 9 §20). Any OTHER `{…}` is
    consumed AND applied -- `\`c\`{.x}` -> `<code class="x">c</code>`, and
-   `#id`/`key=value` likewise. The STRICT attribute rule (§14) applies here and
+   `#id`/`key=value` likewise. The STRICT attribute rule (CARVE-P9-020) applies here and
    to IMAGE trailing attrs exactly as to any other inline attribute. Explicit
    ids and classes admit a leading ASCII digit; a digit-leading key or any
    otherwise invalid payload makes the block literal. *)
@@ -103,11 +103,11 @@ raw_inline = backtick_run, code_span_content, backtick_run, '{=', format_name, '
 
 (* --- Literal Inline (PART 9 §27) --- *)
 (* A `!` PREFIX on a verbatim code span is an inline literal, mirroring
-   `math_inline = '$', code_span` (§18). The span content is HTML-ESCAPED and
+   `math_inline = '$', code_span` (CARVE-P9-036). The span content is HTML-ESCAPED and
    emitted by EVERY renderer (never dropped), but WITHOUT the `<code>` wrapper
    -- it is prose, not code. The trailing `[attribute_run]` is the ORDINARY
    code-span attribute block: with attributes an emitted `<span>` carries them,
-   with none bare escaped text is emitted. Unlike `{=format}` (raw_inline, §20)
+   with none bare escaped text is emitted. Unlike `{=format}` (raw_inline, CARVE-P9-040)
    the content is escaped and never target-routed. The `!` binds to a following
    backtick run only; `!` elsewhere (and `![` opening an image) is unaffected,
    so a literal `!` immediately before a backtick run is written `\!`. *)
@@ -165,7 +165,7 @@ link_text = inline_content ;
 
    This is a property of the DOCUMENT, and therefore binds EVERY target that
    can express a link -- HTML, Markdown and ANSI alike, exactly as the
-   smart-typography switch above applies to every target.
+   smart-typography switch (CARVE-P9-011) applies to every target.
 
    An implementation that resolves a construct into a link AFTER the pass
    that enforces this -- a cross-reference is the usual case, since `</#id>`
@@ -214,7 +214,7 @@ destination_char = (* any character except '(', ')' and Unicode whitespace *) ;
    closing `)` is not a link and stays literal (the `[t](url` / `more)`
    two-line case). *)
 unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
-(* WHITESPACE HERE IS UNICODE WHITESPACE -- NORMATIVE [CARVE-P3-002], and it always was:
+(* WHITESPACE HERE IS UNICODE WHITESPACE -- NORMATIVE [CARVE-P3-002]:
    `destination_char` excludes whitespace without qualifying it to ASCII.
    So a NARROW NO-BREAK SPACE, an IDEOGRAPHIC SPACE and a THIN SPACE end an
    inline destination exactly as a plain space does, and an unbracketed
@@ -233,21 +233,18 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
    ends the destination at `https://e.com`, and `/path` is then left over. It
    is NOT ignored: the definition is anchored at end of line, so a
    leftover makes the production fail and the whole line is an ordinary
-   paragraph -- exactly as `[r]: https://e.com /path` behaves. Whitespace
-   between the mandatory separator space and the destination is leading
-   whitespace and is skipped. A definition whose destination is EMPTY once that
-   is done is NOT a definition: the line stays literal, as `[r]:` already does.
+   paragraph -- exactly as `[r]: https://e.com /path` behaves. The separator
+   before the destination is a run of spaces (CARVE-P3-009). Any other
+   whitespace after that run, a tab included, starts the destination slot,
+   which cannot hold it, so the destination is EMPTY and the line is NOT a
+   definition: it stays literal, as `[r]:` and `[r]:` followed only by spaces
+   already do.
 
    There is no "trim the ends, keep the interior" variant: `link_destination`
    admits no whitespace at all. *)
 (* Titles accept double OR single quotes -- a deliberate enhancement
    over djot (which has no single-quote titles; it would fold `'...'`
    into the URL). The non-delimiting quote may appear inside the title. *)
-(* A backslash-escaped delimiter inside the title is a literal quote
-   (CommonMark-style): `\"` in a "-title and `\'` in a '-title are kept
-   as the literal quote character and do NOT end the title. This is
-   honored for the INLINE-link title (`[t](/url "ti\"tle")` -> title
-   `ti"tle`); see the note at `reference_definition` for the ref-def slot. *)
 (* The space before the quoted run is a PADDING SLOT, not a marker separator
    (PART 7): a link is already a link once its destination has been read, and a
    reference definition is already a definition, so the title is optional
@@ -268,13 +265,16 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
    rather than that production's closing `newline`: a wrapped title would
    satisfy the terminal with the line break after it. So
    `[r]: /u "t` + newline + `u"` is a paragraph and not a definition. *)
-(* Titles resolve `escaped_char`, the whole ASCII punctuation escape set.
-   A backslash before any other character remains literal, as in a quoted
-   attribute value. Only the title slot admits a newline. *)
+(* Escapes in a title: CARVE-P7-004. `\"` in a "-title is a literal quote and
+   does not end it (`[t](/url "ti\"tle")` -> title `ti"tle`), in every slot
+   that reads `link_title`. *)
 link_title = space, ('"', {escaped_char | literal_backslash | (character - '"' - '\')}, '"')
            | space, ("'", {escaped_char | literal_backslash | (character - "'" - '\')}, "'") ;
 
-reference_label = (character - ']' - '@'), {character - ']'} ;
+reference_label = (character - ']' - '@' - newline), {character - ']' - newline} ;
+(* A LABEL SPANS NO LINE BREAK, like `footnote_label`. A collapsed
+   `[text][]` whose text crosses a soft wrap therefore has no label and is not
+   a reference. *)
 (* A LABEL THAT BEGINS WITH AN AT SIGN IS NOT A REFERENCE LABEL -- NORMATIVE [CARVE-P3-003].
    The production above SUBTRACTS `@` FROM THE FIRST POSITION, and that exclusion
    is what keeps `[@key]` free for the Tier-2 Citations extension. So a bracket
@@ -300,7 +300,9 @@ reference_label = (character - ']' - '@'), {character - ']'} ;
    as a citation with the Tier-2 extension on.
 
    THE CONTROL CARRIES THE RULE. `[@a]` on its own IS a citation with the
-   extension on, and that is the REASON the label slot rejects it.
+   extension on, and that is the REASON the label slot rejects it. The same
+   exclusion makes `[@key]: …` a citation definition (`citation_definition`)
+   and never a link definition, whether or not the extension is enabled.
 
    THE TREE SHAPE for a declining `[t][@a]` is left open here; the rendering is
    the verbatim source run either way. *)
@@ -310,15 +312,15 @@ reference_label = (character - ']' - '@'), {character - ']'} ;
    is already complete at `[a]: /url` and the attribute block is optional
    trailing metadata. The role differs, the terminal does not, because A TAB IS
    SYNTAX ONLY IN THE LEADING RUN (PART 7).
-   Cardinality is exactly one space at BOTH. The two rejected runs are NOT the
-   same: a ZERO-space run glues the braces to the destination (`[a]: /u{.c}`
+   The separator is a RUN of one or more spaces; the padding slot is exactly
+   one space. The two rejected padding runs are NOT the same: a ZERO-space run glues the braces to the destination (`[a]: /u{.c}`
    gives href `/u{.c}`), while a TWO-space run cannot -- whitespace ends the
    destination -- so the line is left over at the end-of-line anchor and falls
    back to prose. *)
-reference_definition = '[', reference_label, ']', ':', space, link_destination,
+reference_definition = '[', reference_label, ']', ':', space+, link_destination,
                        [link_title], [space, attributes], newline ;
-(* ANCHORED AT END OF LINE -- NORMATIVE [CARVE-P3-005]. The production ends in `newline`, and
-   always did. What follows the destination and the optional title is not
+(* ANCHORED AT END OF LINE -- NORMATIVE [CARVE-P3-005]. The production ends in `newline`.
+   What follows the destination and the optional title is not
    ignored: it makes the production FAIL, and the line is then an ordinary
    paragraph.
 
@@ -326,8 +328,8 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
 
    is NOT a definition, and a `[a][]` below it does not resolve.
 
-   THE LINE ENDING is `whitespace` -- `' ' | '\t'` -- the same terminal
-   `blank_line = {whitespace}` takes (PART 1). So `[a]: /u<SP>` and
+   A LINE-FINAL RUN of spaces and tabs is dropped before the production reads
+   the line (CARVE-P7-001 item 5). So `[a]: /u<SP>` and
    `[a]: /u<TAB>` are still definitions, while `[a]: /u<NBSP>`,
    `[a]: /u<U+2000>` and `[a]: /u<FF>` are not: every one of those is CONTENT,
    and content after the production is exactly what the anchor rejects. An
@@ -361,9 +363,8 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
 
    A valid block still defines and transfers its attributes. *)
 (* TRAILING ATTRIBUTES ON A DEFINITION -- NORMATIVE [CARVE-P3-007]. A `{...}` block at the end
-   of the definition line attaches to the DEFINITION, and PART 9R R1 already
-   says what that means: the attributes transfer to every link OR IMAGE that
-   resolves the label, and the reference site's own attributes override per key.
+   of the definition line attaches to the DEFINITION, and PART 9R R1 transfers
+   it to every link OR IMAGE that resolves the label.
 
        [Example][ex]
 
@@ -374,12 +375,7 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    AN IMAGE REFERENCE RESOLVES THE SAME ENTRY -- NORMATIVE [CARVE-P3-008]. `![alt][ex]` looks
    the label up in the same `linkDefs` table and takes the same three fields, so
    `[ex]: /i.png {.wide}` gives `<img src="/i.png" alt="alt" class="wide">`.
-
-   THE MERGE IS §15 A3's, the one stacked attribute lists already use: the
-   definition's list first, the link's second, so a repeated `id` or key takes
-   the LAST value (the link's) and CLASSES ACCUMULATE in source order. So
-   `[ex]: /u {.external #a}` with `[Example][ex]{.internal #b}` renders
-   `class="external internal" id="b"`.
+   How the two attribute lists merge is PART 9R R1's.
 
    NOT THE SAME AS THE LINE ABOVE. The two forms are different constructs and
    both are now well-defined:
@@ -389,7 +385,7 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
 
        text
 
-   `.a` floats past the definition and lands on `<p class="a">text</p>` (A2a);
+   `.a` floats past the definition and lands on `<p class="a">text</p>` (PART 9 §15 A2a);
    `.b` attributes the definition and reaches every link resolving `ex`.
 
    THE DEFINITION IS A NODE, so these attributes are serialized ONCE on it
@@ -406,37 +402,24 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    mirrors the heading, list and task markers, which likewise require a
    literal space after the marker.
 
-   AND THE SEPARATOR IS A RUN. `footnote_definition` and
-   `abbreviation_definition` spell it `space+`: one or more ASCII spaces, all
-   of them separator.
+   AND THE SEPARATOR IS A RUN. All three markers spell it `space+`: one or
+   more ASCII spaces, all of them separator.
 
    WHAT THE RUN DOES NOT INCLUDE. It is ASCII spaces, so the first character
    that is not one ends the separator and BEGINS the content. A no-break space
    is content: `*[HTML]:<SP><NBSP>Hyper` expands to `<NBSP>Hyper`, and
    `[^f]:<SP><NBSP>note` is a footnote whose body starts with the character.
 
-   A TAB AFTER THE RUN is content too, by the same rule, and the two markers
+   A TAB AFTER THE RUN is content too, by the same rule, and the three markers
    then answer differently for a reason that is downstream of this clause
    rather than in it: an `abbreviation_expansion` is a raw string, so the tab
-   survives into the `title`, while a footnote's `inline_content` is parsed as
-   blocks and a leading tab is that body's own indentation run (PART 9 §24 C1).
+   survives into the `title`; a footnote's `inline_content` is parsed as
+   blocks and a leading tab is that body's own indentation run (PART 9 §24 C1);
+   and a `link_destination` cannot begin with a tab, so `[a]:<SP><TAB>/url` is
+   not a reference definition.
    MARKER REQUIRES CONTENT still applies after the run: `[^f]:` followed by
    spaces and nothing else is a paragraph, because a line of `whitespace` is
    blank (PART 1). *)
-(* A leading `@` is reserved: `[@key]: ...` is never a reference definition, it
-   is a citation definition (PART 9 §22, Tier-2). This parallels the `[^...]:`
-   footnote-definition precedence and holds in core whether or not the citation
-   extension is enabled, so a short entry like `[@a]: A.` is not mis-claimed as
-   a link definition. *)
-(* The reference-definition title reuses `link_title`, INCLUDING the
-   backslash-escape rule above: a `\"` inside the quoted run is a literal
-   quote and does not end the title (`[y]: /u "a\"b\"c"` -> title
-   `a"b"c`, emitted as `title="a&quot;b&quot;c"`). This matches the
-   inline-link title. *)
-(* A reference definition requires a NON-EMPTY `link_destination` (one or
-   more characters after the `':' space`). A bare `[r]:` -- with nothing
-   after the colon, or only trailing whitespace -- does NOT form a
-   definition; the line stays literal paragraph text. *)
 (* --- Inline Spans --- *)
 (* A bracketed inline run immediately followed by an attribute block
    attaches those attributes to a <span>. Distinguished from links by the
@@ -467,7 +450,10 @@ url_autolink = url ;  (* the same token the destination slot reads *)
 email_autolink = {email_char}+, '@', {email_char}+, '.', {letter}+ ;
 
 auto_text_link = "</#", crossref_id, '>' ;  (* cross-reference with auto text *)
-crossref_id = {character - ('>' | whitespace | newline)}+ ;
+crossref_id = {character - ('>' | space | newline)}+ ;
+(* A space ends the token and a tab does not (CARVE-P7-001): `</#a<TAB>b>` is
+   a cross-reference whose id holds the tab. No id does, so it names nothing
+   and stays literal. *)
 (* The crossref id token accepts NON-ASCII characters: automatic heading ids
    PRESERVE Unicode and case (`# Café Notes` -> `Café-Notes`), so `</#Café-Notes>`
    must be writable. Resolution is EXACT (PART 9R R4): no case fold and no
@@ -549,16 +535,9 @@ alt_text = {character} ;
    `link_text`; the value remains scalar. *)
 image_source = link_destination ;  (* absolute or relative, like links *)
 image_title = link_title ;
-(* A reference / collapsed-reference image resolves its label against the
-   document's reference definitions EXACTLY as the matching reference_link does
-   (case-sensitive), taking the definition's destination as `src` and its
-   optional title as the image title. A collapsed `![alt][]` uses alt_text as
-   the label, so alt_text must be non-empty; the full `![alt][ref]` form allows
-   an empty alt_text (the label is reference_label). An UNRESOLVED reference
-   image renders as literal source (the `!` plus the bracketed text) and --
-   unlike a reference link -- never matches heading text. There is NO shortcut
-   `![alt]` reference image, mirroring the absence of a shortcut reference
-   link. A trailing [attribute_run] attaches to the resolved <img>. *)
+(* A reference image resolves under PART 9R R1, taking the definition's
+   destination as `src` and its title as the image title. A trailing
+   [attribute_run] attaches to the resolved <img>. *)
 
 (* A caption (`^ ` line) may follow a standalone image paragraph on the
    next line, wrapping it in a <figure> -- caption placement is PART 9 §4;

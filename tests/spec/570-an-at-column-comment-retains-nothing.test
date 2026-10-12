@@ -1,0 +1,40 @@
+An at-column comment retains nothing
+
+```
+> - ::: box
+>   - ::: inner
+>     %% c
+>    text
+tail
+.
+<blockquote>
+  <ul>
+    <li>
+      <div class="box">
+        <ul>
+          <li>
+            <div class="inner">
+
+            </div>
+          </li>
+        </ul>
+        <p>text
+tail</p>
+      </div>
+    </li>
+  </ul>
+</blockquote>
+```
+
+```
+- inner
+  %% c
+ code
+- tail
+.
+<ul>
+  <li>inner</li>
+</ul>
+<p>code
+- tail</p>
+```

@@ -12,11 +12,12 @@ const plain = value => JSON.parse(JSON.stringify(value, (_, v) =>
 const transitions = [
   ['below-column closer inside an opaque span', { belowCloser: true, inCommentSpan: true }, true, true],
   ['below-column span closer', { belowCloser: true }, true, true],
-  ['ordinary span closer', { spanClosed: true }, true, true],
+  ['ordinary span closer preserves the opener decision', { spanClosed: true }, false, true],
   ['marker-line span closer', { spanClosed: true, markerLine: true }, false, true],
   ['opaque payload', { inCommentSpan: true }, false, true],
   ['delimiter inside an opaque span', { inCommentSpan: true, comment: true }, false, true],
-  ['line comment or unmatched fence', { comment: true }, true, true],
+  ['at-column comment clears retention', { comment: true }, false, false],
+  ['below-column line comment or unmatched fence', { comment: true, belowComment: true }, true, true],
   ['blank', { blank: true }, false, true],
   ['ordinary content', {}, false, false],
 ]

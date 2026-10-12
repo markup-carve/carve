@@ -54,3 +54,12 @@
 # undo. A check that cannot pass is the same defect as a check that cannot fail.
 #
 # <engine>  <rule>  <type>  <count>  <owner/repo#N>
+
+# A list written past its container's column inside a quote starts its span in
+# the indentation (corpus 556 rows 4 and 5). carve-js fixed it after the pin.
+carve-js  starts-past-opening-markup  list  4  markup-carve/carve-js#2839
+carve-js  starts-past-opening-markup  list_item  4  markup-carve/carve-js#2839
+carve-rs  starts-past-opening-markup  list  4  markup-carve/carve-rs#2578
+carve-rs  starts-past-opening-markup  list_item  4  markup-carve/carve-rs#2578
+carve-php  starts-past-opening-markup  list  4  markup-carve/carve-php#3238
+carve-php  starts-past-opening-markup  list_item  4  markup-carve/carve-php#3238

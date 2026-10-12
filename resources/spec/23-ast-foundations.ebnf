@@ -32,9 +32,9 @@
       one that never split.
 
       TEXT COALESCING OCCURS DURING `parse(x)`, NOT SERIALIZATION -- NORMATIVE [CARVE-P12-003].
-      §6 requires `parse(x)` serialized and deserialized to equal `parse(x)`.
+      PART 12 §6 requires `parse(x)` serialized and deserialized to equal `parse(x)`.
       An implementation that leaves the run split in the parsed tree and joins
-      it in the encoder satisfies §1a and BREAKS §6 on the same document: what
+      it in the encoder satisfies CARVE-P12-002 and BREAKS PART 12 §6 on the same document: what
       comes back holds one node where the tree held three, so the round trip is
       not an identity. The tree `parse(x)` returns is
       therefore already coalesced.
@@ -43,14 +43,14 @@
       in the source. Where they are not -- the `<` and `>` of an autolink
       unwrapped inside a link label, the delimiter and newline between two
       halves of a wrapped table cell -- the merged value is not a slice of the
-      source at any offset, and §4 rates a span that selects the wrong text
+      source at any offset, and PART 12 §4 rates a span that selects the wrong text
       worse than no span at all. So such a run publishes NONE.
 
-      A run an inline include (PART 9 §19) assembled from more than one file
+      A run an inline include (CARVE-P6-001) assembled from more than one file
       is the exception: it spans its pieces from the file that holds the run,
       from the first one's start to the last one's end.
 
-      `escaped_text` is NOT `text` and does not merge with it: §3 keeps the two
+      `escaped_text` is NOT `text` and does not merge with it: PART 12 §3 keeps the two
       distinct on the wire because an escape is authored form, and collapsing
       them would lose the distinction the type exists to carry.
 
@@ -61,7 +61,7 @@
       from profiles.md (CARVE-P12-001). A document is
       `{"type":"document","children":[...]}`.
 
-      The root's own fields are fixed by §7: `type`, `children` and
+      The root's own fields are fixed by CARVE-P12-024: `type`, `children` and
       `srcByteLength`, and nothing else.
 
         {"type":"document","children":[...],"srcByteLength":42}
@@ -79,7 +79,7 @@
         text       `value`, literal Unicode content
         escaped_text
                    `value`, the character of an `escaped_char` (PART 3)
-                   without its backslash; never merged into `text` (§1a)
+                   without its backslash; never merged into `text` (CARVE-P12-002)
         heading   `level`, `children`
         list       `ordered`, `tight`, `start`, `items`, and the AUTHOR-CHOICE
                    fields `bulletChar`, `delim` and `bareMarker` (PART 11 §6)
@@ -99,7 +99,7 @@
                    tree written before this field, and every tree a converter
                    assembles, decodes to the spelling Carve teaches
         table      `rows`, and the AUTHOR-CHOICE field `separatorWidths` when
-                   the author wrote a separator row (PART 11 §6h). It is an
+                   the author wrote a separator row (CARVE-P11-066). It is an
                    array of positive integers, one per separator cell, each the count of
                    `-` characters that cell spelled, alignment colons excluded:
                    `|:-----|---:|` records `[5, 3]`. Absent means the author
@@ -107,23 +107,23 @@
                    cells instead, which is a different source form for the same
                    rows and alignments. Without the field both forms decode to
                    the `|=` one. IT HOLDS AT LEAST ONE ENTRY, because the cell
-                   count is the entry count (PART 11 §6h) and no separator row
+                   count is the entry count (CARVE-P11-066) and no separator row
                    has zero cells: an empty array is a presence claim no writer
                    can spell. THE FIELD HAS NO UPPER BOUND, though: a parse
-                   records what the author typed, and the 1000 bound in PART 10
-                   §13a is the HTML carrier's alone. Interchange may retain the
+                   records what the author typed, and the 1000 bound in
+                   CARVE-P10-016 is the HTML carrier's alone. Interchange may retain the
                    field on a table without an all-header first row; the source
                    writer cannot spell that combination without promoting cells
-                   and reports the field loss under PART 11 §§1d, 6h
+                   and reports the field loss under CARVE-P11-046 and CARVE-P11-066
       An implementation MUST NOT invent a synonym, and MUST NOT expose an
       internal field the reference does not have. A consumer reading `href`
       must not have to know which engine produced the document.
 
       GENERATED NONBREAKING SPACES ARE NODES -- NORMATIVE [CARVE-P12-004].
       A `non_breaking_space` inline node represents one escaped space (`\ `)
-      or one preserved column of line-block whitespace (PART 9 section 23).
+      or one preserved column of line-block whitespace (CARVE-P9-044).
       It carries `type`, optional `attrs` and optional `pos`, with no value
-      field. Four preserved columns are four nodes. Positions follow section 4:
+      field. Four preserved columns are four nodes. Positions follow PART 12 §4:
       an escaped space owns its backslash and space; synthesized columns omit
       positions when expansion prevents an exact source range. This omission
       applies to the synthesized columns, not to the whole line or stanza.
@@ -171,7 +171,7 @@
       MUST NOT alter the node's content.
       A canonical Carve writer needs a break before a closing fence when
       nonempty content has none. It inserts that break and reports
-      `field-unspellable` for `code_block.content` on the PART 11 §1d channel.
+      `field-unspellable` for `code_block.content` on the CARVE-P11-046 channel.
       Empty content needs no inserted payload line and reports nothing.
       This report belongs to an API exposing conversion diagnostics
       (CARVE-P11-046).
@@ -194,18 +194,18 @@
       consisting only of LFs retains
       all of them. This rendering convention does not alter the stored payload.
       Native formatting that adds a final payload LF MUST report
-      `field-unspellable` for `raw_block.content` on PART 11 section 1d's
+      `field-unspellable` for `raw_block.content` on CARVE-P11-046's
       conversion channel. This is separate from the render-loss report.
 
    3a. THE SERIALIZED TREE IS PRE-RESOLVE -- NORMATIVE [CARVE-P12-005]. It records what the
       AUTHOR WROTE. Resolution results are ADDED ALONGSIDE the authored
-      construct (§5); a producer MUST NOT fold them into the tree in its
+      construct (PART 12 §5); a producer MUST NOT fold them into the tree in its
       place. For `[getting started][]` where nothing defines the label:
 
         {"type":"link","href":"","ref":"getting started",
          "rawRef":"[getting started][]"}
 
-      `ref` is present because the author wrote a reference link (§3), `href`
+      `ref` is present because the author wrote a reference link (PART 12 §3), `href`
       is empty because there is no destination, and `rawRef` carries the
       source. A tree publishing `{"type":"link","href":"#Getting-Started"}`
       for that source has serialized a later stage.
@@ -235,7 +235,7 @@
       autolink inside a link's label is serialized as the node the author
       wrote, and every renderer unwraps it at the render seam. `[[x](y)](z)`
       published as a link to `z` whose only child is the text `x` has lost
-      `y` and fails the §6 round trip. THE NODE CARRIES NO NON-ANCHOR FLAG:
+      `y` and fails the PART 12 §6 round trip. THE NODE CARRIES NO NON-ANCHOR FLAG:
       consumers infer unwrapping from context.
 
       A DESTINATION IS THE AUTHOR'S TEXT, UNSANITIZED -- NORMATIVE [CARVE-P12-008]. `href`,
@@ -290,7 +290,7 @@
       Lines are 1-based. Columns are 1-based and offsets 0-based, both counted
       in UNICODE CODEPOINTS. `endColumn` and `endOffset` are exclusive.
       `pos.file`, when present, is the canonical id of the included input the
-      coordinates are measured in (PART 9 §19); absent means the top-level
+      coordinates are measured in (CARVE-P6-001); absent means the top-level
       input. The root is exempt because it spans the whole source.
 
       An implementation MAY gate position tracking behind a parse option, and
@@ -423,7 +423,7 @@
       overlaps siblings; neither is an alternative. This covers a line block's
       synthesized hard break, line-block content rebuilt around an indentation
       sentinel, a table row or cell joined from continuation lines, and a merged
-      `text` run (§1a) whose pieces are not adjacent:
+      `text` run (CARVE-P12-002) whose pieces are not adjacent:
 
           |= Category       |= Item   |
           | Fresh Fruits    | Apple   |
@@ -434,7 +434,7 @@
       placed yet is a gap, not this case, and the exemption does not license
       joining more than the language requires. The conformance checker reports
       an absent `pos` because it cannot tell the two apart from the tree, so
-      the position half of that check is a report and the §1a half a gate.
+      the position half of that check is a report and the CARVE-P12-002 half a gate.
 
    ============================================================================ *)
 

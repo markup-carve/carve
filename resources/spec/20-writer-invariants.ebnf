@@ -12,10 +12,8 @@
 
       The first is about the AST, not the bytes: `fmt` MAY normalize the
       author's spelling (indentation, marker alignment, escape form) but MUST
-      NOT change what the document says. This includes authored destinations
-      whose schemes PART 9 §25 denies at rendered URL sinks: canonical source
-      preserves them and reports no `destination-denied` loss. A consumer
-      rendering that source applies the denylist at its own sinks. The second
+      NOT change what the document says. Authored destinations are preserved,
+      denied schemes included (CARVE-P9-054). The second
       forbids growth -- a value that gains an escape per pass violates it,
       which is how over-escaping is usually first noticed.
 
@@ -48,18 +46,18 @@
 
       THE INVARIANT IS §1's, WHICH IS THE PARSE FORM. `parse(fmt(x)) ==
       parse(x)` is the requirement. `to_html(fmt(x)) == to_html(x)` is a
-      consequence of it and is strictly weaker -- §2a already says that holding
+      consequence of it and is strictly weaker -- CARVE-P11-008 already says that holding
       is necessary, not sufficient -- so a writer satisfying only the HTML form
       still fails this section.
 
-      IT IS NOT A LICENSE TO RESPELL. §2a and §6 are unchanged. What this
+      IT IS NOT A LICENSE TO RESPELL. CARVE-P11-008 and §6 are unchanged. What this
       section permits is the SMALLEST departure that restores the invariant,
       and another spelling of the SAME construct is preferred over a different
       construct that happens to render alike. Dropping content, re-wrapping
       prose or swapping a construct for a synonym are not available here: each
       of them changes the document, which is the thing §1 forbids.
 
-   1b. A FLATTEN PRESERVES THE BOUNDARY IT DISSOLVES -- NORMATIVE [CARVE-P11-003]. §1a settles
+   1b. A FLATTEN PRESERVES THE BOUNDARY IT DISSOLVES -- NORMATIVE [CARVE-P11-003]. CARVE-P11-002 settles
       what a producer owes where §1's invariant CAN hold. This settles what it
       owes where the invariant cannot hold at all.
 
@@ -97,7 +95,7 @@
 
       THE UNIT IS THE TOKEN, NOT THE NODE: `onetwo` and `one two` each parse
       as one text node, but only the latter preserves the word boundary.
-      IT IS §23's TEST READ BACKWARDS: PART 9 §23 preserves a line boundary
+      IT IS CARVE-P9-044's TEST READ BACKWARDS: PART 9 §23 preserves a line boundary
       as a node; flattening preserves a block boundary in the emitted bytes.
 
       THE CANONICAL SEPARATOR IS ONE SPACE (U+0020), at every such boundary
@@ -106,7 +104,8 @@
       `one two`, `*a* *b*` and two code spans separated by one space.
 
       A TEXT character that becomes a live delimiter after the join is instead
-      an ESCAPING question governed by §2 through §1a. This clause supplies the
+      an ESCAPING question governed by CARVE-P11-002 and CARVE-P11-006. This clause
+      supplies the
       space and nothing else.
 
       The producer MUST flatten rather than omit the content. It MUST NOT write
@@ -129,7 +128,7 @@
       `structure-unspellable`.
 
    1c. A WRAPPER ITS OWN CONTENT SPELLS AWAY IS A DECLARED CEILING --
-      NORMATIVE [CARVE-P11-004]. §1b settles what a producer owes where an
+      NORMATIVE [CARVE-P11-004]. CARVE-P11-003 settles what a producer owes where an
       inline-only slot forces a flatten. This settles the other place §1's
       invariant cannot hold, and it is the mirror image: not a slot that
       cannot HOLD what it was handed, but a wrapper whose own content, written
@@ -139,7 +138,7 @@
       own spelling AT THE BLOCK'S OWN COLUMN is read back as a block opener of
       that node's kind, the writer emits that spelling and the wrapper is LOST.
       `parse(fmt(x)) == parse(x)` is unattainable for such a document, so §1 is
-      not the rule that applies and §1a's smallest-departure licence has
+      not the rule that applies and CARVE-P11-002's smallest-departure licence has
       nothing smaller to reach for -- every spelling of the content is the
       content's own. What the producer owes instead is that the loss is
       DECLARED and not silent:
@@ -159,7 +158,7 @@
           every reader of the first one is entitled to rely on it.
 
       STATED OVER WHAT THE SHAPE SPELLS, never over the node type, the same way
-      §10j is. Two shapes have the property, and they share no node type,
+      CARVE-P11-037 is. Two shapes have the property, and they share no node type,
       no vocabulary list and no reason beyond the spelling: a `paragraph` whose
       whole content is one `image`, which writes `![a](u)` and reads back as
       the standalone image; and a `paragraph` whose whole content is one
@@ -189,8 +188,8 @@
       An importer MUST NOT unwrap a representable same-kind child or report
       structure-unspellable merely for that relationship. Depth-limit
       recovery and other independently unspellable shapes retain their
-      diagnostics. Markdown and Djot export follow their own target
-      contracts; removing this native ceiling does not widen those syntaxes.
+      diagnostics. Markdown export follows its own target contract
+      (CARVE-P11-045); this clause does not widen that syntax.
 
       DECIDED ON THE SPELLING, NEVER ON RESOLUTION -- and PART 9R R7 does not
       change that. R7's promotion phase reads the RESOLVED tree; this clause
@@ -226,10 +225,7 @@
       WRAPPER LOSS IS THE ONLY EQUALITY CARVE-OUT -- NORMATIVE [CARVE-P11-005].
       The paragraph above says what this clause forgives. This
       says what it does NOT, because a checker asserting `parse(fmt(x)) ==
-      parse(x)` has to encode both halves, and stated only as a permission the
-      carve-out acquired one mechanism per engine that reached it -- three
-      engines, three exemptions, none of them written where the next reader
-      would look.
+      parse(x)` has to encode both halves.
 
       THE RULE. The two trees MUST agree once every wrapper this clause names
       is dissolved into its content, on BOTH sides. Nothing else is forgiven: a
@@ -241,11 +237,11 @@
 
       A RESOLUTION RESULT ABOUT THE WRAPPER IS NOT CONTENT OF IT -- NORMATIVE [CARVE-P11-039].
       `paragraph.blockImage` (PART 12 §23) is the ONE field a
-      wrapper may carry and still be BARE, and it is admitted BY NAME. §23
+      wrapper may carry and still be BARE, and it is admitted BY NAME. CARVE-P12-043
       bounds it to `true` and PART 9R R7's promotion phase is its only
       producer, so what it records is that this paragraph IS the block image --
       which is what the dissolved spelling states outright. The two spellings
-      §23 blesses for that one fact, an `image` in block position and a
+      CARVE-P12-043 blesses for that one fact, an `image` in block position and a
       `paragraph` carrying the field around one `image`, differ in no
       information, so dissolving either into the other takes nothing with it.
       This bounds the CHECKER's comparison and not the writer: `fmt` does not
@@ -313,15 +309,18 @@
       every target at once, and it is the only one of the two that can name a
       field.
 
+      ONE LOSS IS REPORTED ON BOTH. A `ruby` node the canonical writer
+      flattens is `ruby-flattened` on the render-loss report and
+      `structure-unspellable`, node `ruby`, on this channel. The two codes
+      name one loss, one per channel.
+
       THE RENDER-LOSS FLAGS DO NOT REACH IT. `--strict-losses` and `--allow-loss`
       gate the `CARVE-P2-024` report, and neither grows a name for a code here. A
       producer without a diagnostic channel still writes the output its clause
       requires: the channel is what a producer MAY expose, never a condition on
       writing.
 
-      A render-time refusal MUST NOT appear in conversion diagnostics or render
-      losses; only lint can report it, so a host reading only the JSON reports
-      cannot observe it.
+      A render-time refusal appears on neither channel (CARVE-P2-024).
 
    2. THE ESCAPING RULE -- NORMATIVE [CARVE-P11-006]. A character is escaped IF AND ONLY IF
       omitting the escape would change the re-parsed AST.
@@ -363,7 +362,7 @@
       opener alone: a `!` before a `[` the writer emits as a link, image or
       footnote opener, and a `!` or `$` before a code-span backtick run
       (PART 9 §27). The neighbour is whatever reaches that position, from
-      whichever node, exactly as above. PART 11 §8d states the reading in full
+      whichever node, exactly as above. CARVE-P11-050 states the reading in full
       for the Markdown target; it is the same reading here and is not restated.
 
         text `a !`, then a link to /u    ->  a \![x](/u)
@@ -371,7 +370,7 @@
       ESCAPE MINIMALITY STILL APPLIES INSIDE AN ESCALATED UNIT -- NORMATIVE [CARVE-P11-007].
       One occurrence needing the conservative form does not put
       the OTHER
-      occurrences in the unit with it. §2b bounds how far the fallback reaches;
+      occurrences in the unit with it. CARVE-P11-009 bounds how far the fallback reaches;
       the reach is not the only thing that was too wide. An indented paragraph
       whose text reads `{.note}` is written
 
@@ -384,8 +383,8 @@
       the `.` ending the second line, so by the test above they are emitted
       BARE -- in the same unit, in the same line, beside the escape that stayed.
 
-      A WRITER MAY STILL BE UNABLE TO DECIDE AN OCCURRENCE, and §2b's fallback
-      is what it falls back to -- per occurrence now rather than per unit. A
+      A WRITER MAY STILL BE UNABLE TO DECIDE AN OCCURRENCE, and CARVE-P11-009's fallback
+      is what it falls back to, per occurrence rather than per unit. A
       fallback that spends more escapes than this test asks for is wider than
       the minimum and never narrower, which is the only direction §1 tolerates.
 
@@ -400,8 +399,8 @@
 
         source     written as    what changed
         `* %%`     `* +`         a line comment became the CONTINUATION MARKER
-                                 (§17 L3), a different construct with a body
-        `| %%%`    `| %% %`      a comment-block fence (§28) split into a line
+                                 (PART 9 §17 L3), a different construct with a body
+        `| %%%`    `| %% %`      a comment-block fence (CARVE-P9-060) split into a line
                                  comment plus text
 
       The second also violates §2's THE UNIT IS THE OPENER: an opener run
@@ -443,7 +442,7 @@
       the occurrence is tried before the block that holds it. A failure that
       is not confined to the run widens to the block, which is the usual case
       for a block opener at column 0: what such a run opens is a property of
-      the LINE it begins, not of the run. Widening then re-runs §1a's test on
+      the LINE it begins, not of the run. Widening then re-runs CARVE-P11-002's test on
       the emitted bytes, because escalating a unit has changed them, and it
       terminates -- a document in which every block escalates is the
       conservative form, arrived at because every block needed it rather than
@@ -484,14 +483,14 @@
       W3 Otherwise parse BOTH and compare the resulting documents, ignoring
          source positions and key order.
       W4 Equal -> emit the minimal form. Different -> emit the conservative
-         form FOR THE SMALLEST UNIT THAT FAILS (§2b), and the minimal form
+         form FOR THE SMALLEST UNIT THAT FAILS (CARVE-P11-009), and the minimal form
          everywhere else, re-running W3 on the result.
       W5 Inside a unit that stayed conservative, offer each OPENER OCCURRENCE
          its bare form and keep the bare form wherever W3 still holds (§2).
          A unit is not one knob: the occurrences that survive escaped are the
          ones that failed, not the ones that shared a block with a failure.
 
-      A WRITER MAY STOP THE SEARCH SHORT, and §2b's fallback is what it returns
+      A WRITER MAY STOP THE SEARCH SHORT, and CARVE-P11-009's fallback is what it returns
       to when it does: the occurrences it did not get to stay escaped. That is
       WIDER than §2's minimum and never narrower, so a spent budget costs
       idle escapes and never correctness. It is also why the state a bounded
@@ -503,7 +502,7 @@
       so W1 and W3 render and parse whole documents.
 
       THAT IS NOT A REASON TO ESCALATE THE WHOLE DOCUMENT, and reading it as
-      one is what §2b now forbids. Where the two parses differ, they differ
+      one is what CARVE-P11-009 forbids. Where the two parses differ, they differ
       SOMEWHERE, and W4 takes the conservative spelling only for the smallest
       unit that fails.
 
@@ -524,21 +523,19 @@
         spelling.
 
         The CARET is also unconditional, for a different reason: it opens
-        nothing on its own, but its escape carries information the AST records
-        separately. A text node whose LEADING caret came from an escape is
-        marked as such, so an image followed by a caret line stays a paragraph
-        instead of being promoted to a figure. Comparing that mark in W3 would
-        escalate every document whose text begins with a caret; ignoring it
-        would silently turn the image case into a figure. Escaping the caret in
-        BOTH forms keeps the two renders identical on that point, at the cost
-        of one escape on a character that is rare in prose.
+        nothing on its own, but a LEADING caret decides whether the block
+        above it takes a caption. Escaped, an image followed by a caret line
+        stays a paragraph; bare, the two lines are a figure. The tree records
+        no field for the escape (CARVE-P11-010). Escaping the caret in BOTH
+        forms keeps the two renders identical on that point, at the cost of
+        one escape on a character that is rare in prose.
 
         SEARCH COST BELONGS TO THE STRATEGY, NOT THE OUTPUT -- NORMATIVE [CARVE-P11-010], and the
         difference is §4's own. This section names the sets W1 renders
         against, so a caret named here is escaped in BOTH forms and W3 never
         weighs the mark; it is not a license to EMIT an escape §2 does not
         ask for. §4 pins the output on §2 and yields to it wherever the two
-        differ, and §10g already restates the reach in those terms -- "§5's
+        differ, and CARVE-P11-034 already restates the reach in those terms -- "§5's
         unconditional set escapes a LEADING caret in TEXT". So "always escaped
         in a text node" is the set's membership rule, and §2 is the test the
         emitted byte answers to.
@@ -570,7 +567,7 @@
         `[` takes the construct's own `]` as its partner and leaves the
         construct's opener unmatched. What the membership changes is the
         SEARCH: a page with one such bracket per link, such as a wiki's
-        `[edit]` markers, otherwise drives §2b's halving to single units and
+        `[edit]` markers, otherwise drives CARVE-P11-009's halving to single units and
         spends its whole budget there.
 
         A span whose content is one `[`, beside a link and a span holding one
@@ -627,7 +624,7 @@
       CANDIDATE -- escaped only when W4 selects the conservative form:
         `* _ ~ / = ,`        emphasis and the braced pair delimiters
         `[ ]  { } <`      links, images, spans, attributes, autolinks
-        `@ #`                mentions and tags (§7 boundary rules); `#` also
+        `@ #`                mentions and tags (PART 9 §7 boundary rules); `#` also
                              opens a heading at column 0
         `> + - . ) : | % !`  block openers at column 0, plus the inline forms
                              `%%`, `::` and the symbol shortcode `:name:` (the

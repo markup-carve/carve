@@ -532,7 +532,7 @@
       "id": "generated-heading-id",
       "source": "# C\n",
       "carriers": {
-        "data-carve-ext": "section"
+        "data-carve-generated-id": null
       },
       "forbiddenExportAttributes": [
         "data-carve-explicit-id"
@@ -556,10 +556,11 @@
       ],
       "carrierHosts": [
         {
-          "attribute": "data-carve-ext",
+          "attribute": "data-carve-generated-id",
           "element": "section"
         }
-      ]
+      ],
+      "aheadOfPin": true
     },
     {
       "id": "unlisted-prefixed-attributes",
@@ -765,7 +766,7 @@
       "id": "tight-list-attributed-paragraph",
       "source": "- {.x}\n  a\n- b\n",
       "carriers": {
-        "data-carve-tight": "true"
+        "data-carve-tight": null
       },
       "forbiddenExportAttributes": [],
       "expectedNodes": [
@@ -828,6 +829,96 @@
         "data-carve-explicit-id": null
       },
       "forbiddenExportAttributes": [
+        "data-carve-generated-id"
+      ],
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "level": 1,
+          "attrs.id": "Z"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-explicit-id",
+          "element": "h1"
+        }
+      ]
+    },
+    {
+      "id": "reference-form-returns-collapsed",
+      "source": "[r]: /u\n\n[r][] and [r][r]\n",
+      "carriers": {
+        "data-carve-ref": "r"
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "link",
+          "ref": "r",
+          "href": "/u"
+        },
+        {
+          "type": "link",
+          "ref": "r",
+          "href": "/u"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-ref",
+          "element": "a"
+        }
+      ],
+      "returnedSourceFragments": [
+        "[r][] and [r][]"
+      ],
+      "aheadOfPin": true
+    },
+    {
+      "id": "tight-list-attributed-later-paragraph",
+      "source": "- a\n  {.c}\n  text\n",
+      "carriers": {
+        "data-carve-tight": null
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "list",
+          "ordered": false,
+          "tight": true
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-tight",
+          "element": "ul"
+        }
+      ]
+    },
+    {
+      "id": "quoted-heading-id-writes-no-slot",
+      "source": "> {.c #Z}\n> # Q\n",
+      "carriers": {
+        "data-carve-explicit-id": null
+      },
+      "forbiddenExportAttributes": [
+        "data-carve-id-slot",
         "data-carve-generated-id"
       ],
       "expectedNodes": [
@@ -1109,24 +1200,6 @@
       "diagnosticControlHtml": "<p><a href=\"/u\" data-carve-ref=\"r\">t</a></p>"
     },
     {
-      "id": "invalid-tight-value",
-      "html": "<ul data-carve-tight=\"yes\"><li>a</li></ul>",
-      "expectedNodes": [
-        {
-          "type": "list",
-          "tight": true
-        }
-      ],
-      "forbiddenTypes": [],
-      "importModes": [
-        "safe",
-        "semantic",
-        "roundtrip"
-      ],
-      "requiresDiagnostic": true,
-      "diagnosticControlHtml": "<ul><li>a</li></ul>"
-    },
-    {
       "id": "invalid-id-slot",
       "html": "<section id=\"mine\" data-carve-explicit-id data-carve-id-slot=\"x\"><h1 class=\"c\">H</h1></section>",
       "expectedNodes": [
@@ -1190,6 +1263,241 @@
         "roundtrip"
       ],
       "requiresDiagnostic": false
+    },
+    {
+      "id": "tight-any-value-is-presence",
+      "html": "<ul data-carve-tight=\"false\"><li><p>a</p></li></ul>",
+      "expectedNodes": [
+        {
+          "type": "list",
+          "tight": true
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": false,
+      "aheadOfPin": true
+    },
+    {
+      "id": "contradictory-footnote-pair",
+      "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" data-carve-footnote-label=\"named\" data-carve-inline-footnote><p>body</p></li></ol></section>",
+      "expectedNodes": [
+        {
+          "type": "footnote_ref",
+          "label": "1"
+        }
+      ],
+      "forbiddenTypes": [
+        "inline_footnote"
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": true,
+      "expectedDiagnostic": {
+        "code": "attribute-dropped",
+        "severity": "warning"
+      },
+      "forbiddenFieldValues": [
+        {
+          "type": "footnote_ref",
+          "field": "label",
+          "value": "named"
+        }
+      ],
+      "diagnosticControlHtml": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\"><p>body</p></li></ol></section>"
+    },
+    {
+      "id": "contradictory-explicit-generated-id",
+      "html": "<section id=\"mine\" data-carve-explicit-id data-carve-generated-id><h1>H</h1></section>",
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "level": 1
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": true,
+      "expectedDiagnostic": {
+        "code": "attribute-dropped",
+        "severity": "warning"
+      },
+      "diagnosticControlHtml": "<section id=\"mine\"><h1>H</h1></section>",
+      "aheadOfPin": true
+    },
+    {
+      "id": "contradictory-escaped-raw",
+      "html": "<p><span data-carve-escaped data-carve-raw=\"latex\">*</span></p>",
+      "expectedNodes": [
+        {
+          "type": "text",
+          "value": "*"
+        }
+      ],
+      "forbiddenTypes": [
+        "escaped_text",
+        "raw_inline"
+      ],
+      "importModes": [
+        "safe",
+        "semantic"
+      ],
+      "requiresDiagnostic": true,
+      "expectedDiagnostic": {
+        "code": "attribute-dropped",
+        "severity": "warning"
+      },
+      "diagnosticControlHtml": "<p><span>*</span></p>",
+      "aheadOfPin": true
+    },
+    {
+      "id": "id-slot-without-explicit-id",
+      "html": "<section id=\"mine\" data-carve-id-slot=\"1\"><h1 class=\"c\">H</h1></section>",
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "level": 1
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": true,
+      "expectedAbsentFields": [
+        {
+          "type": "heading",
+          "field": "attrs.order"
+        }
+      ],
+      "diagnosticControlHtml": "<section id=\"mine\"><h1 class=\"c\">H</h1></section>"
+    },
+    {
+      "id": "oversized-id-slot",
+      "html": "<section id=\"mine\" data-carve-explicit-id data-carve-id-slot=\"5\"><h1 class=\"c\">H</h1></section>",
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "attrs.id": "mine",
+          "attrs.order": [
+            "#id",
+            ".class"
+          ]
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": true,
+      "diagnosticControlHtml": "<section id=\"mine\" data-carve-explicit-id data-carve-id-slot=\"1\"><h1 class=\"c\">H</h1></section>",
+      "aheadOfPin": true
+    },
+    {
+      "id": "retired-source-alias-consumed",
+      "html": "<p data-djot-src=\"Z\">text</p>",
+      "expectedNodes": [
+        {
+          "type": "paragraph"
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": false
+    },
+    {
+      "id": "unmarked-section-slug-id-is-generated",
+      "html": "<section id=\"T\"><h1>T</h1></section>",
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "level": 1
+        }
+      ],
+      "expectedAbsentFields": [
+        {
+          "type": "heading",
+          "field": "attrs.id"
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": false
+    },
+    {
+      "id": "unmarked-section-other-id-is-authored",
+      "html": "<section id=\"S1\"><h1>T</h1></section>",
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "level": 1,
+          "attrs.id": "S1"
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": false
+    },
+    {
+      "id": "unmarked-heading-id-is-authored",
+      "html": "<h2 id=\"T\">T</h2>",
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "level": 2,
+          "attrs.id": "T"
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic"
+      ],
+      "requiresDiagnostic": false
+    },
+    {
+      "id": "unmarked-heading-id-is-authored-in-roundtrip-mode",
+      "html": "<h2 id=\"T\">T</h2>",
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "level": 2,
+          "attrs.id": "T"
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "roundtrip"
+      ],
+      "requiresDiagnostic": false,
+      "aheadOfPin": true
     }
   ],
   "footnoteRecoveryResource": "footnote-carrier-recovery-fixtures.json",
@@ -1218,6 +1526,45 @@
       "attribute": "data-carve-src",
       "value": null,
       "defaultValue": "Z"
+    },
+    {
+      "id": "reference-name-dropped-on-inline-link",
+      "source": "[a](/u){data-carve-ref=x}\n",
+      "attribute": "data-carve-ref",
+      "value": null,
+      "defaultValue": "x",
+      "aheadOfPin": true
+    },
+    {
+      "id": "tight-name-dropped-on-heading",
+      "source": "{data-carve-tight=x}\n# T\n",
+      "attribute": "data-carve-tight",
+      "value": null,
+      "defaultValue": "x",
+      "aheadOfPin": true
+    },
+    {
+      "id": "marker-name-dropped-on-heading",
+      "source": "{data-marker=x}\n# T\n",
+      "attribute": "data-marker",
+      "value": null,
+      "defaultValue": "x",
+      "aheadOfPin": true
+    },
+    {
+      "id": "deprecated-alias-name-dropped",
+      "source": "[a](/u){data-djot-ref=x}\n",
+      "attribute": "data-djot-ref",
+      "value": null,
+      "defaultValue": "x",
+      "aheadOfPin": true
+    },
+    {
+      "id": "unreserved-name-kept-on-heading",
+      "source": "{data-keep=x}\n# T\n",
+      "attribute": "data-keep",
+      "value": "x",
+      "kept": true
     }
   ],
   "markdownExportImport": [
@@ -1357,6 +1704,24 @@
           "type": "definition_list"
         }
       ]
+    },
+    {
+      "id": "nested-definition-list-flattened",
+      "source": ":: Outer\n: body\n\n  :: Inner\n  : inner body\n",
+      "carrierFragments": [
+        "<!-- carve: :: Outer -->",
+        "<!-- carve: : -->",
+        "<!-- carve: -->"
+      ],
+      "expectedNodes": [
+        {
+          "type": "definition_list"
+        }
+      ],
+      "lossCodes": [
+        "definition-list-flattened"
+      ],
+      "aheadOfPin": true
     }
   ]
 }

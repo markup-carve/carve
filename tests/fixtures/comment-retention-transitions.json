@@ -765,15 +765,15 @@
                   "lines": [
                     "head"
                   ]
-                },
-                {
-                  "t": "para",
-                  "lines": [
-                    "tail"
-                  ]
                 }
               ]
             }
+          ]
+        },
+        {
+          "t": "para",
+          "lines": [
+            "tail"
           ]
         }
       ],
@@ -807,15 +807,15 @@
                   "lines": [
                     "head"
                   ]
-                },
-                {
-                  "t": "para",
-                  "lines": [
-                    "tail"
-                  ]
                 }
               ]
             }
+          ]
+        },
+        {
+          "t": "para",
+          "lines": [
+            "tail"
           ]
         }
       ],

@@ -7,9 +7,25 @@ import { labelKey } from '../scripts/spec/label-key.mjs'
 const html = (src) => renderDoc(parse(src))
 const resolves = (src) => /href="\/u"|src="\/u"/.test(html(src))
 
-test('the shared key trims and collapses only ASCII whitespace', () => {
-  assert.equal(labelKey(' \ta\r\n\fb '), 'a b')
+test('the shared key trims and collapses space runs only', () => {
+  assert.equal(labelKey('  a   b  '), 'a b')
+  assert.equal(labelKey('a\tb'), 'a\tb')
+  assert.equal(labelKey('a\fb'), 'a\fb')
+  assert.equal(labelKey('\ta b\t'), '\ta b\t')
   assert.equal(labelKey('\u00a0a  b\u00a0'), '\u00a0a b\u00a0')
+})
+
+test('a tab or a form feed in a label is content (PART 9R R1)', () => {
+  assert.ok(!resolves('see [t][a\tb]\n\n[a b]: /u\n'))
+  assert.ok(!resolves('see [t][a\fb]\n\n[a b]: /u\n'))
+  assert.ok(resolves('see [t][a\tb]\n\n[a\tb]: /u\n'))
+  assert.doesNotMatch(html('see [^a\tb]\n\n[^a b]: note\n'), /role="doc-noteref"/)
+})
+
+test('a definition separator is a run of spaces and a tab after it is content', () => {
+  assert.ok(resolves('see [t][a]\n\n[a]:  /u\n'))
+  assert.ok(!resolves('see [t][a]\n\n[a]: \t/u\n'))
+  assert.ok(!resolves('see [t][a]\n\n[a]:\t/u\n'))
 })
 
 test('explicit and collapsed link labels normalize ASCII whitespace', () => {

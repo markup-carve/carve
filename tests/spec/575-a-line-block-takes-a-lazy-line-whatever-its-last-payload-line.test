@@ -1,0 +1,31 @@
+A line block takes a lazy line whatever its last payload line
+
+````
+> ::: |
+> ```
+> x
+after
+.
+<blockquote>
+  <div class="line-block">
+    <p><code>
+x
+after</code></p>
+  </div>
+</blockquote>
+````
+
+```
+> ::: |
+> # h
+> x
+after
+.
+<blockquote>
+  <div class="line-block">
+    <p># h<br>
+x<br>
+after</p>
+  </div>
+</blockquote>
+```

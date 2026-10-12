@@ -121,7 +121,7 @@
         },
         "fmt": {
           "type": "string",
-          "description": "The Carve serializer output of the PRE-EXPANSION document (pins I12/I14 -- the directive survives formatting)."
+          "description": "The Carve serializer output of the PRE-EXPANSION document (pins I12 -- the directive survives formatting)."
         },
         "flattened": {
           "type": "string",

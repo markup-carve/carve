@@ -312,7 +312,9 @@ CarveCore {
 
   // --- Cross-reference with auto text (PART 3 auto_text_link) -------------
   crossref   = "</#" xrefId ">"
-  xrefId     = (~">" ~space ~newline any)+
+  // A SPACE ends the id; a tab or a form feed is a character of it
+  // (CARVE-P7-001, CARVE-P7-003). Ohm's built-in `space` is wider than that.
+  xrefId     = (~">" ~" " ~newline any)+
 
   // --- Footnotes (PART 3; a bare `^` is literal, so `^[` is unambiguous) --
   footnoteRef = "[^" fnLabel "]" attrRun?
@@ -606,7 +608,7 @@ CarveCore {
   // edSub and edComment take no attribute block at all (CARVE-P3-017,
   // carve#2138): a block after one is not theirs, so it reads as text.
   attrRun    = attrs+
-  // SPACE ONLY, the A7 position of PART 4's THE INLINE INTERIOR IS SPACE-ONLY.
+  // SPACE ONLY, the A7 position of PART 4's ATTRIBUTE PADDING IS SPACE-ONLY.
   // This ran on `(" " | "\t")*` until carve#906, and it is a SECOND site rather
   // than a use of `attrSp`: narrowing `attrSp` alone leaves `[x]{<TAB>}` a valid
   // empty block, so the two have to move together or corpus 252-3 survives the
@@ -618,21 +620,21 @@ CarveCore {
   // tab is not syntax - PART 7's rule covers them with no exception to write.
   // This rule said `" " | "\t"` for one day, under the reading carve#901 then
   // corrected; before that it said `" " | "\n"`, which was wrong the other way.
-  // The block-attribute LINE below deliberately keeps the tab AND the newline.
+  // The block-attribute LINE below takes the same space and adds the newline.
   // NO NEWLINE EITHER, for a different reason. The line-spanning form is a
   // different production: `block_attributes` uses
-  // `attr_separator = (whitespace | continuation), opt_ws`, and `continuation`
+  // `attr_separator = (space | continuation), attr_pad`, and `continuation`
   // is where a newline is admitted. This file owns the INLINE layer, so a
   // newline here made `*x*{.a\n.b}` an attribute block in the oracle alone -
   // all three engines leave it literal text (carve#878).
   attrSp     = " "
   // The LINE-SPANNING form, `block_attributes` in grammar.ebnf: its separator
-  // is `attr_separator = (whitespace | continuation), opt_ws`, and
+  // is `attr_separator = (space | continuation), attr_pad`, and
   // `continuation` is a single line break. Only a standalone attribute LINE
   // takes this; an inline block uses `attrs` above and stops at the newline.
   // AT MOST ONE LINE BREAK PER SLOT, mirroring the three productions this
-  // rule implements: `opt_pad = opt_ws, [continuation]`,
-  // `attr_separator = (whitespace | continuation), opt_ws` and
+  // rule implements: `opt_pad = attr_pad, [continuation]`,
+  // `attr_separator = (space | continuation), attr_pad` and
   // `continuation = newline, opt_ws`. It ran on `battrSp*` with the newline
   // folded into `battrSp`, so `{.a` + blank line + `.b}` matched here while
   // grammar.ebnf says a BLANK line ends a block attribute and is never
@@ -645,11 +647,15 @@ CarveCore {
   // language, and at the time nothing said (it does now: the production). tests/block-attribute-line-breaks.test.mjs drives this
   // rule directly so the narrowing is observable rather than another
   // unevaluated edit (carve#755, carve#916).
+  //
+  // A TAB IS INDENTATION ONLY (CARVE-P4-001). Within a line every slot is a
+  // space run; the run after a continuation's line break is the next line's
+  // leading indentation and takes a tab too.
   blockAttrs = "{" battrPad attrItem (battrSep attrItem)* battrPad "}"
-  battrPad   = battrSp* battrCont?
-  battrSep   = (battrSp | battrCont) battrSp*
-  battrCont  = "\n" battrSp*
-  battrSp    = " " | "\t"
+  battrPad   = " "* battrCont?
+  battrSep   = (" " | battrCont) " "*
+  battrCont  = "\n" battrIndent*
+  battrIndent = " " | "\t"
   attrItem   = langAttr | idAttr | classAttr | kvAttr | boolAttr
   idAttr     = "#" explicitIdent
   classAttr  = "." explicitIdent

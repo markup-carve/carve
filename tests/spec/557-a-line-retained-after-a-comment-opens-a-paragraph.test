@@ -15,16 +15,17 @@ A line retained after a comment opens a paragraph
     <li>
       <div class="box">
         <ul>
-          <li>inner
-            <code>
-code
-- tail</code>
-          </li>
+          <li>inner</li>
         </ul>
+        <pre><code>code
+</code></pre>
       </div>
     </li>
   </ul>
 </blockquote>
+<ul>
+  <li>tail</li>
+</ul>
 ````
 
 ````
@@ -44,16 +45,19 @@ code
         <ul>
           <li>
             <div class="inner">
-              <p><code>
-code
-- tail</code></p>
+
             </div>
           </li>
         </ul>
+        <pre><code>code
+</code></pre>
       </div>
     </li>
   </ul>
 </blockquote>
+<ul>
+  <li>tail</li>
+</ul>
 ````
 
 ```
@@ -66,11 +70,10 @@ tail
 <ul>
   <li>a
     <ul>
-      <li>inner
-        code
-tail
-      </li>
+      <li>inner</li>
     </ul>
+    code
+tail
   </li>
 </ul>
 ```
@@ -82,11 +85,10 @@ tail
 - tail
 .
 <ul>
-  <li>inner
-    code
-  </li>
-  <li>tail</li>
+  <li>inner</li>
 </ul>
+<p>code
+- tail</p>
 ```
 
 ```

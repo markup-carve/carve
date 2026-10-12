@@ -7,7 +7,7 @@ a [t[^1]][r] b
 
 [^1]: n
 .
-<p>a <a href="/u">t<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></a> b</p>
+<p>a <a href="/u">t<sup id="fnref1">1</sup></a> b</p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
@@ -23,7 +23,7 @@ a [t^[n]][r] b
 
 [r]: /u
 .
-<p>a <a href="/u">t<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></a> b</p>
+<p>a <a href="/u">t<sup id="fnref1">1</sup></a> b</p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
@@ -41,7 +41,7 @@ a [t[^1]][r] c [^1] b
 
 [^1]: n
 .
-<p>a <a href="/u">t<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></a> c <a id="fnref1-2" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
+<p>a <a href="/u">t<sup id="fnref1">1</sup></a> c <a id="fnref1-2" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>

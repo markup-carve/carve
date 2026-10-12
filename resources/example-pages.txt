@@ -200,6 +200,7 @@ source: examples-tier3.md
 > Alignment, spans, multi-line cells, ragged rows and the pipe rules that decide whether a table exists at all.
 out: examples/edge-cases/tables.md
 index: examples/edge-cases/index.md
+  a-head-row-alignment-marker-sets-the-whole-column
   table-without-alignment
   table-alignment-with-colspan
   table-doubled-alignment-marker
@@ -329,6 +330,8 @@ index: examples/edge-cases/index.md
   a-colon-followed-by-only-whitespace-is-not-a-description
   a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text
   a-band-paragraph-after-an-invisible-line-leaves-the-item-loose
+  a-paragraph-in-a-held-container-does-not-loosen-the-item
+  a-description-marker-followed-by-a-no-break-space-has-content
 
 [edge-containers] Containers, quotes and fences
 > Divs, block quotes, code and comment fences: nesting, lazy continuation, absorption and what closes what.
@@ -392,6 +395,7 @@ index: examples/edge-cases/index.md
   26-comments-4
   26-comments-6
   an-unclosed-inline-run-in-a-line-block-reaches-the-end-of-the-block
+  a-line-block-takes-a-lazy-line-whatever-its-last-payload-line
   a-comment-only-line-in-a-line-block-is-removed-before-any-inline-run
   a-terminal-comment-in-a-quote-leaves-no-paragraph-open
   a-terminal-comment-line-still-leaves-an-empty-verse-line
@@ -407,6 +411,7 @@ index: examples/edge-cases/index.md
   a-container-whose-table-ends-on-a-joined-header-row
   a-quote-inside-a-quote-is-asked-what-it-ends-on
   a-nested-quoted-term-leaves-no-paragraph-for-a-lazy-line
+  a-quoted-term-takes-a-lazy-line
   a-fence-in-a-quote-stores-no-continuation-claim
   a-fence-a-container-inside-a-quote-holds-open-stores-no-claim
   a-shifted-fence-in-a-quoted-item-stores-no-continuation-claim
@@ -500,7 +505,15 @@ index: examples/edge-cases/index.md
   a-below-column-line-continues-a-paragraph-only-where-one-is-open
   a-closed-block-leaves-no-frame-for-the-line-below
   a-line-retained-after-a-comment-opens-a-paragraph
+  an-at-column-comment-retains-nothing
+  a-shifted-fence-in-a-quoted-container-s-body-stores-no-continuation-claim
   a-container-boundary-is-read-at-the-container-s-own-column
+  a-description-keeps-a-block-at-its-body-column-whatever-leads-the-item
+  a-line-block-payload-span-pairs-past-the-content-column
+  a-quoted-item-that-ends-on-a-block-past-its-column-holds-no-paragraph
+  an-opener-past-a-hosted-container-s-column-opens-there
+  an-opener-past-a-hosted-container-s-column-interrupts-its-open-paragraph
+  a-closed-fence-in-a-quoted-sub-item-after-a-lazy-line-leaves-no-paragraph
   a-caption-scope-resets-at-a-structural-only-line
   a-quote-after-an-escaped-quote-closes
   a-combined-bold-italic-span-may-cross-a-line
@@ -671,6 +684,7 @@ index: examples/edge-cases/index.md
   a-note-s-content-recognizes-no-note
   a-footnote-in-link-text-nests-the-anchors
   a-footnote-in-reference-link-text-nests-the-anchors-too
+  a-footnote-reference-in-link-text-keeps-its-id-on-the-sup
   a-note-body-s-own-references-resolve
   a-reference-link-s-text-survives-its-own-frame
   an-authored-base-carries-opaque-payload-captions-and-nested-metadata
@@ -822,6 +836,9 @@ index: examples/edge-cases/index.md
   paragraph-trailing-whitespace
   trailing-whitespace-boundaries
   a-marker-separator-is-a-space-never-a-tab
+  a-tab-inside-a-line-is-content-in-a-label-and-after-a-definition-marker
+  a-line-final-run-of-spaces-and-tabs-is-dropped-before-the-line-is-read
+  a-tab-is-content-in-a-heading-key-and-in-a-cross-reference-id
   an-invisible-line-does-not-cancel-a-blank-line-separation
   an-invisible-line-before-the-blank-does-not-cancel-the-separation
   a-tab-after-a-heading-quote-or-caption-marker-leaves-the-line-as-prose

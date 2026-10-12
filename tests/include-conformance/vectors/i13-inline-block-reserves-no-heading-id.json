@@ -2,7 +2,7 @@
   "name": "i13-inline-block-reserves-no-heading-id",
   "description": "A rejected inline block-include reserves no heading id; the later heading keeps \"dup\".",
   "rules": [
-    "I13"
+    "I7"
   ],
   "mode": "virtual",
   "resolver": "virtual",

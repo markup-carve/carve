@@ -1,0 +1,31 @@
+A description marker followed by a no-break space has content
+
+```
+:: t
+:  x
+.
+<dl>
+  <dt>t</dt>
+  <dd>&nbsp;x</dd>
+</dl>
+```
+
+```
+:: t
+:  
+.
+<dl>
+  <dt>t</dt>
+  <dd>&nbsp;</dd>
+</dl>
+```
+
+```
+:: t
+:   
+.
+<dl>
+  <dt>t
+:</dt>
+</dl>
+```

@@ -2,7 +2,7 @@
   "name": "i13-no-side-effect-both-selections",
   "description": "A both-selections directive reserves nothing.",
   "rules": [
-    "I13"
+    "I7"
   ],
   "mode": "virtual",
   "resolver": "virtual",

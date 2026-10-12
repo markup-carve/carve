@@ -23,6 +23,11 @@
  * not of the marker; closing the quoted paragraph with a bare `>` first takes
  * that out of the row, and then all three controls - blank, comment, marker -
  * agree.
+ *
+ * A FOOTNOTE BODY AND A DESCRIPTION NO LONGER TAKE THE COMMENT CONTROL. A line
+ * comment below their column now retains the follower (PART 0 X1), as in a list
+ * item, so those four rows pin the retained output and that the marker spelling
+ * differs from it.
  */
 
 import { test } from 'node:test'
@@ -42,18 +47,30 @@ const html = (src) => renderDoc(parse(src))
 const marker = (src) => src.replace('@', '+')
 const comment = (src) => src.replace('@', '%% c')
 
+const retainedNote =
+  '<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>' +
+  '<section role="doc-endnotes" aria-label="Footnotes"><hr><ol><li id="fn1">' +
+  '<p>intro</p><p>more<a href="#fnref1" role="doc-backlink" ' +
+  'aria-label="Back to reference">↩</a></p></li></ol></section>'
+const retainedDescription = '<dl><dt>term</dt><dd><p>intro</p><p>more</p></dd></dl>'
+
 const BAND = [
-  ['a footnote body, below its minimum column', '[^a]: intro\n@\n more\n\nsee[^a]\n'],
-  ['a footnote body, at its minimum column', '[^a]: intro\n@\n  more\n\nsee[^a]\n'],
-  ['a description, below its content column', ':: term\n:  intro\n@\n  more\n'],
-  ['a description, one column further below', ':: term\n:  intro\n@\n more\n'],
+  ['a footnote body, below its minimum column', '[^a]: intro\n@\n more\n\nsee[^a]\n', retainedNote],
+  ['a footnote body, at its minimum column', '[^a]: intro\n@\n  more\n\nsee[^a]\n', retainedNote],
+  ['a description, below its content column', ':: term\n:  intro\n@\n  more\n', retainedDescription],
+  ['a description, one column further below', ':: term\n:  intro\n@\n more\n', retainedDescription],
   ['a block quote, with the quoted paragraph closed', '> intro\n>\n@\n  more\n'],
   ['a list item, the container that always held the gate', '- intro\n@\n  more\n'],
 ]
 
-for (const [what, src] of BAND) {
-  test(`the marker reaches no further than a comment does in ${what}`, () => {
-    assert.equal(html(marker(src)), html(comment(src)))
+for (const [what, src, retained] of BAND) {
+  test(retained === undefined
+    ? `the marker reaches no further than a comment does in ${what}`
+    : `a low comment retains the follower beyond the marker gate in ${what}`, () => {
+    if (retained !== undefined) {
+      assert.equal(html(comment(src)), retained)
+      assert.notEqual(html(marker(src)), html(comment(src)))
+    } else assert.equal(html(marker(src)), html(comment(src)))
   })
 }
 

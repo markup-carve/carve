@@ -53,7 +53,7 @@ for (const id of ['CARVE-P12-049', 'CARVE-P12-052', 'CARVE-P12-064']) {
 test('CARVE-P12-049 flattens a block cell to one line under PART 11 section 1b', () => {
   const text = clauseText('CARVE-P12-049')
   assert.match(text, /ONE LINE/, 'the three line-oriented targets need the one-line premise stated')
-  assert.match(text, /PART 11 §1b/, 'the flatten must point at the rule that governs an inline-only slot')
+  assert.match(text, /CARVE-P11-003/, 'the flatten must point at the rule that governs an inline-only slot')
   assert.match(text, /field-unspellable/, 'the flatten is a conversion diagnostic, not a render loss')
 })
 

@@ -262,7 +262,7 @@ export function runVector(vector, carve) {
     // literal and would otherwise embed a machine-specific path in the golden.
     const html = foldTmpInText(renderHtml(resolve(result.doc)), baseReal)
     // fmt is the serializer output of the PRE-EXPANSION document: this is what
-    // pins I12/I14 (the directive must survive formatting). For the absolute-path
+    // pins I12 (the directive must survive formatting). For the absolute-path
     // filesystem case the entry embeds a real absolute path, so fold it too.
     const fmt = foldTmpInText(renderCarve(parse(entry, { positions: true })), baseReal)
 

@@ -2,12 +2,12 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import { parseFragment, serialize } from 'parse5'
-import { parse, carveToHtml, carveToHtmlWithReport, htmlToAst, htmlToCarve, carveToMarkdown, migrateMarkdown } from '@markup-carve/carve'
+import { parse, carveToHtml, carveToHtmlWithReport, htmlToAst, htmlToCarve, carveToMarkdown, carveToMarkdownWithReport, migrateMarkdown } from '@markup-carve/carve'
 
 const fixtures = JSON.parse(readFileSync(new URL('../resources/roundtrip-export-acceptance-fixtures.json', import.meta.url), 'utf8'))
-const inventory = ['explicit-id', 'generated-id', 'ref', 'autolink', 'footnote-label', 'inline-footnote', 'raw', 'escaped', 'abbreviations', 'col-widths', 'label', 'ext', 'id-slot', 'tight']
+const inventory = ['explicit-id', 'generated-id', 'ref', 'autolink', 'footnote-label', 'inline-footnote', 'raw', 'escaped', 'abbreviations', 'col-widths', 'label', 'id-slot', 'tight']
 // Reserved without an inventory row: no core writer emits it, every importer consumes it.
-const retiredNames = ['data-carve-src']
+const retiredNames = ['data-carve-src', 'data-djot-src']
 const reservedNames = new Set(['data-marker', 'data-char', ...retiredNames, ...inventory.flatMap((name) => [`data-carve-${name}`, `data-djot-${name}`])])
 const isReserved = (name) => reservedNames.has(name)
 const field = (node, path) => path.split('.').reduce((value, key) => value?.[key], node)
@@ -113,6 +113,7 @@ for (const fixture of fixtures.exportImport) {
       assertNoReservedAttrs(imported.value)
       for (const absent of fixture.expectedAbsentFields ?? []) assert.ok(nodes(imported.value).filter((node) => node.type === absent.type).every((node) => field(node, absent.field) === undefined))
       const source = htmlToCarve(exported, { mode }).value
+      for (const fragment of fixture.returnedSourceFragments ?? []) assert.ok(source.includes(fragment), fragment)
       assert.equal(normalizedHtml(carveToHtml(source)), normalizedHtml(declined ? fixture.fallbackHtml : ordinary), mode)
     }
   }))
@@ -125,6 +126,7 @@ for (const fixture of fixtures.importNegative) {
       const controlCount = fixture.diagnosticControlHtml ? htmlToAst(fixture.diagnosticControlHtml, { mode }).report.diagnostics.length : 0
       assert.ok(result.report.diagnostics.length > controlCount, fixture.id)
     }
+    if (fixture.expectedDiagnostic) assert.ok(result.report.diagnostics.some((row) => Object.entries(fixture.expectedDiagnostic).every(([key, value]) => row[key] === value)), JSON.stringify(fixture.expectedDiagnostic))
     assertNoReservedAttrs(result.value)
     for (const fragment of fixture.forbiddenSourceSubstrings ?? []) assert.ok(!htmlToCarve(fixture.html, { mode }).value.includes(fragment), fragment)
     for (const fragment of fixture.forbiddenAstSubstrings ?? []) assert.ok(!JSON.stringify(result.value).includes(fragment), fragment)
@@ -152,6 +154,7 @@ for (const fixture of fixtures.collisionExport) test(`shared export collision: $
   const named = (html) => htmlAttributes(html).filter((attr) => attr.name === fixture.attribute).map((attr) => attr.value)
   const result = carveToHtmlWithReport(fixture.source, { roundtrip: true })
   assert.deepEqual(named(result.value), fixture.value === null ? [] : [fixture.value])
+  if (fixture.kept) return assert.ok(!result.losses.some((row) => row.code === 'carrier-attribute-dropped'))
   assert.ok(result.losses.some((row) => row.code === 'carrier-attribute-dropped' && row.attribute === fixture.attribute))
   if (fixture.defaultValue === undefined) return
   const ordinary = carveToHtmlWithReport(fixture.source)
@@ -165,6 +168,13 @@ test('task hooks remain ordinary output without preservation export', () => {
   for (const state of ['x', '-', '_', '>', '?']) assert.ok(htmlAttributes(html).some((attr) => attr.name === 'data-task-state' && attr.value === state), state)
 })
 
+// A row that declares a loss says its return is degraded, so its HTML cannot
+// equal the source's; every other row must come back rendering the same.
+function assertMarkdownReturn(fixture, returned) {
+  assertProjection(parse(returned), fixture.expectedNodes)
+  if ((fixture.lossCodes ?? []).length) return
+  assert.equal(carveToHtml(returned).trim(), carveToHtml(fixture.source).trim())
+}
 for (const fixture of fixtures.markdownExportImport) test(`shared Markdown export: ${fixture.id}`, aheadOfPin(fixture, () => {
   assertProjection(parse(fixture.source), fixture.expectedNodes)
   const ordinary = carveToMarkdown(fixture.source)
@@ -172,10 +182,19 @@ for (const fixture of fixtures.markdownExportImport) test(`shared Markdown expor
   assert.ok(!ordinary.includes('<!-- carve:'))
   const exported = carveToMarkdown(fixture.source, { roundtrip: true })
   for (const fragment of fixture.carrierFragments) assert.ok(exported.includes(fragment), fragment)
-  const imported = migrateMarkdown(exported)
-  assertProjection(parse(imported.value), fixture.expectedNodes)
-  assert.equal(carveToHtml(imported.value).trim(), carveToHtml(fixture.source).trim())
+  const codes = carveToMarkdownWithReport(fixture.source, { roundtrip: true }).losses.map((row) => row.code)
+  for (const code of fixture.lossCodes ?? []) assert.ok(codes.includes(code), code)
+  assertMarkdownReturn(fixture, migrateMarkdown(exported).value)
 }))
+
+test('a Markdown row without a declared loss still fails when its HTML moves', () => {
+  const lossless = fixtures.markdownExportImport.filter((row) => !(row.lossCodes ?? []).length)
+  assert.ok(lossless.length > 0, 'no lossless Markdown row is left to compare')
+  for (const fixture of lossless) {
+    assertMarkdownReturn(fixture, fixture.source)
+    assert.throws(() => assertMarkdownReturn(fixture, `${fixture.source}\nmoved\n`), { code: 'ERR_ASSERTION' }, fixture.id)
+  }
+})
 
 test('shared acceptance cases have distinct identities and explicit assertions', () => {
   const ids = new Set()

@@ -40,7 +40,7 @@ continuation_row = '+', table_cell, {'|', table_cell}, '|', newline ;
    of a cell's attribute block (cell_attributes). The two are NOT in the same
    position: a row's block follows the row's LAST `|`, a cell's follows the
    cell's marker run (CELL ATTRIBUTES below). The whole
-   payload must be valid attribute syntax (§15); otherwise the `{` is ordinary
+   payload must be valid attribute syntax (PART 9 §15); otherwise the `{` is ordinary
    content and the line is not a row attribute (see PART 9 §5, ROW
    ATTRIBUTES). *)
 row_attributes = attributes ;
@@ -79,7 +79,7 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
    (`|{.x} …`). No whitespace may intervene. The rest of the cell, after
    optional whitespace, is the content. A space before the brace (`| {.x}`) is
    ordinary content, NOT attributes. The whole brace payload must be valid
-   attribute syntax (§15); otherwise the '{' is literal content. A cell
+   attribute syntax (PART 9 §15); otherwise the '{' is literal content. A cell
    carrying attributes is never a bare span_cell -- its content is literal even
    if it is just '^' or '<', AND THE ATTRIBUTES STAY ON IT. The
    block is what makes the cell ordinary content, so reading it back out as
@@ -99,7 +99,7 @@ colspan_marker = {space}, '<', {space} ;
 (* TABLE-CELL PADDING (NORMATIVE, PART 7). Every padding slot in the five
    productions above is spelled `space`. All of them sit after the row's
    opening `|`, so all of them are INLINE, and A TAB IS SYNTAX ONLY IN THE
-   LEADING RUN (PART 7). A tab written in one of these slots is not padding:
+   LEADING RUN (CARVE-P7-001). A tab written in one of these slots is not padding:
    it stays where it is and becomes ordinary cell content, so
    `|<TAB>a<TAB>|` is a cell whose text begins and ends with a tab, and
    `|<TAB>---<TAB>|` is not a delimiter_cell at all - the row is an ordinary
@@ -140,7 +140,7 @@ caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
    that is not one BEGINS the caption. `^<SP><SP><SP>cap` is the caption `cap`,
    not `<SP><SP>cap`.
 
-   TWO CLAUSES DECIDE IT. MARKER SEPARATORS AND PADDING SLOTS (PART 2) makes a
+   TWO CLAUSES DECIDE IT. CARVE-P7-002 makes a
    marker separator what stands between the marker and the content it
    introduces, and the four slots it narrows to exactly one space are PADDING
    slots -- a closed enumeration the caret is not in. And PART 11 §1 names
@@ -148,22 +148,21 @@ caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
    if the run is not content.
 
    A TAB IS NOT SEPARATOR. `space = ' '`, so `^<SP><TAB>cap` keeps the tab as
-   the caption's first character. MARKER REQUIRES CONTENT (PART 2) applies
+   the caption's first character. MARKER REQUIRES CONTENT (CARVE-P2-009) applies
    after the run as well: a caret, the separator and nothing but whitespace
    opens no caption, and the line is ordinary paragraph text.
 
    THE CONTINUATION LINE IS NOT TOUCHED BY THIS. A continuation line carries no
    marker, so its leading run is INDENTATION and it is kept as written. *)
 (* MULTI-LINE CAPTIONS -- NORMATIVE [CARVE-P2-021]. A caption is multi-line inline CONTENT, so
-   its text spills onto following lines exactly like a PARAGRAPH (§10), NOT like
+   its text spills onto following lines exactly like a PARAGRAPH (PART 9 §10), NOT like
    a heading. It ends the same way an open paragraph does:
      1. a blank line ends the caption;
      2. a line that INTERRUPTS a paragraph -- a heading, blockquote, table,
         fenced code, `:::` div, thematic break, or `%%%` comment -- ends the
         caption and starts that block;
-     3. a LIST MARKER does NOT end the caption: like a paragraph, a caption
-        folds a `- ` / `1.` line in as literal text (djot -- a list needs a
-        blank line to interrupt). `^ cap` + `- x` yields the caption `cap\n- x`;
+     3. a LIST MARKER does NOT end the caption (PART 9 §10 I2): `^ cap` + `- x`
+        yields the caption `cap\n- x`;
      4. a further `^ ` line does NOT continue the caption (there is no repeated
         marker); it ends the caption and, having no captionable block to attach
         to, is ordinary paragraph text.
@@ -177,16 +176,16 @@ caption_slot = [blank_line], caption ;
 
    FIVE OF THE SEVEN HOSTS REFERENCE THIS SLOT: `code_block`, `blockquote`,
    `table`, `figure_group` and `quote_block`; the last two attach it to their
-   CLOSING fence (§4c, §4). Image paragraphs and standalone display-math blocks
-   follow the same allowance under §4 without a slot-carrying production.
+   CLOSING fence (CARVE-P9-001, PART 9 §4). Image paragraphs and standalone display-math blocks
+   follow the same allowance under PART 9 §4 without a slot-carrying production.
    Any other `^ ` line is ordinary inline/paragraph content and, when a
-   paragraph is OPEN above it, folds into it (§10 I7).
+   paragraph is OPEN above it, folds into it (PART 9 §10 I7).
 
    The optional `blank_line` matches a TRULY blank line only. A
    structural-only line -- a bare `>`, a bare list marker, a bare
    continuation marker, a bare fence -- is not blank, and where it changes
    the open container it ends the caption scope instead of being spent as
-   the allowance (PART 9 §4d). *)
+   the allowance (CARVE-P9-080). *)
 
 (* CAPTION NUMBER PLACEHOLDER -- NORMATIVE [CARVE-P2-022].
    The FIRST bare `#` in a caption's TOP-LEVEL inline_content is a number
@@ -203,13 +202,12 @@ caption_slot = [blank_line], caption ;
    in the resolution pass. A caption with no bare `#` is unchanged. *)
 
 (* --- Admonitions --- *)
-(* A fence is a run of 3+ colons. The run length is a DEPTH count, not a
-   quoting device: a nested container's fence differs in length from its
-   parent's, and the canonical direction is +1 colon per level inward. *)
+(* A fence is a run of 3+ colons, for every colon container alike. The run
+   length is a DEPTH count, not a quoting device. *)
 colon_fence = ":::", {":"} ;
 (* The colon fence has ONE separator slot -- the whitespace immediately after
    the fence run -- and all four openers share it. It is a MARKER SEPARATOR
-   (PART 7): the token after it selects which of the four blocks the line
+   (CARVE-P7-002): the token after it selects which of the four blocks the line
    opens, so it is spelled `space` and a tab does not satisfy it. `div_open`
    makes the slot OPTIONAL because a bare `[label]` may sit flush against the
    fence (`:::[First]`); optional is a different property from a different
@@ -217,7 +215,7 @@ colon_fence = ":::", {":"} ;
    token follows it.  *)
 colon_fence_close = colon_fence:close
                     where len(close) = len(open) ;
-(* FORMAL (PART 9 §12, now a guard): `open` is the colon_fence captured by
+(* FORMAL (stated as a guard): `open` is the colon_fence captured by
    the INNERMOST open block's opener (admonition_open / div_open /
    line_block_open / local_hard_break_block_open). A block is closed only by
    a bare fence of EXACTLY its opener's length.
@@ -228,7 +226,11 @@ colon_fence_close = colon_fence:close
        not a closer at all -- it is an ordinary opener, and opens a block;
      - which direction the lengths run is therefore free. Longer-outer
        documents and longer-inner ones both parse. `carve fmt` emits the
-       inward-widening form (PART 11).
+       inward-widening form: the outermost container is `:::` and each level
+       inward adds one colon. The writer sizes each fence from the depth it
+       is already carrying, with no lookahead, and the widths along any one
+       chain are strictly increasing. A nest d containers deep spends
+       d^2 + 5d bytes on fence markers in that form.
 
    Code fences keep >= (PART 9 §2) because their length axis really is
    quoting: opaque content that never nests, which must be able to hold a
@@ -239,7 +241,7 @@ admonition = admonition_open, newline,
              [admonition_close, newline] ;
 (* the body may be EMPTY, like the generic div's (PART 9 §12).
 
-   UNCLOSED (PART 9 §12). The closer is OPTIONAL: an opener always opens, and
+   UNCLOSED. The closer is OPTIONAL: an opener always opens, bare or labeled, and
    a block still open when its HOST ends closes there, innermost first. The
    host is the ENCLOSING CONTAINER where there is one and the DOCUMENT
    otherwise, so "closes at end of input" is the top-level case rather than
@@ -247,22 +249,17 @@ admonition = admonition_open, newline,
    ends WITH THE QUOTE, and a flush-left line below is a sibling paragraph
    outside both. This is djot's behavior. An unclosed opener SHOULD be
    diagnosed by lint and by the language server; it is not an error for the
-   parser. Note this is NOT the `%%%` comment-block rule (§28), where an
+   parser. Note this is NOT the `%%%` comment-block rule (CARVE-P9-060), where an
    opener with no exact closer ahead opens nothing: a comment block is
    invisible either way, so failing closed costs nothing there.
 
-   ONLY LAZY FOLDING TAKES THE OPENER BACK. "An opener always opens" has one
-   exception and it is not a blank line. A `:::` opener written as the sole
-   content of a list item's MARKER LINE opens nothing when its whole body
-   arrived by LAZY FOLDING -- lines that sat below the item's content column
-   and folded into the paragraph the opener line left open, which never
-   belonged to the container in the first place:
+   A MARKER-LINE OPENER OPENS TOO. A `:::` opener written as the sole content
+   of a list item's marker line opens its container whatever the next line
+   is. In `- ::: d` / `tail` the item holds an empty `d` container, which
+   leaves no paragraph open, and `tail` is a document paragraph
+   (CARVE-P0-009, CARVE-P0-016).
 
-       - ::: d          - ::: d
-       tail
-                        tail
-
-   OPAQUE SPANS (PART 9 §12). `{block - admonition_close}` is a BLOCK
+   OPAQUE SPANS. `{block - admonition_close}` is a BLOCK
    sequence, so a fenced code block, a raw block and a comment block inside
    the body are single blocks and their lines are never examined for a
    closer. A colon fence written inside one is content: it neither closes the
@@ -273,7 +270,7 @@ admonition = admonition_open, newline,
    first ends the span on its own line and hands the span's contents back to
    the block parser.
 
-   TOOLING FOR NEAR MATCHES (PART 9 §12). Exact length remains a parse rule,
+   TOOLING FOR NEAR MATCHES. Exact length remains a parse rule,
    not a recoverable syntax error. A processor with diagnostics SHOULD report
    `colon-fence-length-mismatch` when a bare colon run does not close the
    innermost open container, would close it after resizing, and plausibly
@@ -306,21 +303,23 @@ admonition = admonition_open, newline,
 
    This does NOT change a fence with nothing to interrupt: `` ``` `` alone,
    or as the whole content of a blockquote, still opens a code block that
-   runs to the end. I4 and this clause both gate a fence that would take
+   runs to the end. PART 9 §10 I4 and this clause both gate a fence that would take
    structure away from something else, not a fence that is the content. *)
 
 (* STRICT (djot): the opener line carries NO inline `{...}` attributes -- it
    is colon_fence, type, an optional quoted "header", an optional [label],
-   and NOTHING else. Metadata outside that shape remains invalid. Recovery
+   and NOTHING else. Metadata outside that shape remains invalid. Without a
+   type word the line is paragraph text: `::: {.x}` and `:::{k=v}`. Recovery
    recognizes a colon fence followed by `space+` and an ASCII type word.
    The type word must end at the line end, Unicode White_Space or U+FEFF,
    a straight double quote, `{`, `[`, or a curly double quote. Recovery is
    confined to one source line. It reports fence-title-syntax, drops all opener metadata, and parses the children as
-   blocks through the matching-width closer (carve#2693). This recovery does
+   blocks through the matching-width closer (carve#2693): `::: note {.x}` opens
+   the `note` container with no metadata. This recovery does
    not admit a bare title as valid syntax. An unrecognized fence/type prefix
    remains paragraph text.
    Class/id/data-* attach via a PRECEDING block-attribute line, which floats
-   onto the admonition (§15).
+   onto the admonition (PART 9 §15).
    The "header" and [label] are the SAME two metadata tokens a code fence
    takes (PART 9 §2), in the same fixed order:
      - HEADER ("...") -- the visible admonition title (`<p
@@ -336,9 +335,9 @@ admonition = admonition_open, newline,
    separator is what makes this an admonition rather than a div, a line block
    or a local hard-break block, so it is a MARKER SEPARATOR; once
    `admonition_type` has been read the block is decided and the "title" and
-   [label] slots are ordinary inter-token padding (PART 7, MARKER SEPARATORS
-   AND PADDING SLOTS). The roles differ, the terminal does not, because A TAB
-   IS SYNTAX ONLY IN THE LEADING RUN (PART 7). `::: note<TAB>"T"` is not an
+   [label] slots are ordinary inter-token padding (CARVE-P7-002). The roles
+   differ, the terminal does not, because A TAB IS SYNTAX ONLY IN THE LEADING
+   RUN (CARVE-P7-001). `::: note<TAB>"T"` is not a
    valid admonition opener. It recovers as the named container with no
    metadata and a diagnostic. A tab in the marker-separator slot still leaves
    the prefix unrecognized and the line as prose. *)
@@ -358,7 +357,7 @@ quoted_title = '"', {character - '"'}, '"' ;
    container keeps its children (carve#2693). Unlike `quoted_value`, this
    token does not accept escapes *)
 
-(* --- Composite figures (PART 9 §4c) --- *)
+(* --- Composite figures (CARVE-P9-001) --- *)
 (* The kind word `figure` is RESERVED among the `:::` types: a BARE opener --
    fence, separator, the word `figure`, and NOTHING else -- opens a composite
    figure rather than an admonition. `figure_group_open` wins over
@@ -366,45 +365,45 @@ quoted_title = '"', {character - '"'}, '"' ;
    title or a `[label]` (`::: figure "T"`, `::: figure [g]`) does NOT match
    this production and stays an `admonition` of kind `figure` -- a generic
    Tier-2 container, metadata preserved losslessly -- which `carve lint`
-   reports (PART 9 §4c). `figure_group` carries no title and no label BY
+   reports (CARVE-P9-001). `figure_group` carries no title and no label BY
    DESIGN: the group's one piece of authored metadata is its caption, and the
-   caption sits after the closer, where §4's rule already lives.
+   caption sits after the closer, where PART 9 §4's rule already lives.
 
-   THE CLOSER CARRIES THE CAPTION SLOT. This is §4's sixth host, and the one
-   whose allowance is STRUCTURAL on a fence: the slot hangs on the CLOSING
-   fence, exactly the `[caption_slot]` that `code_block`, `blockquote` and
+   THE CLOSER CARRIES THE CAPTION SLOT. A figure group is one of PART 9 §4's
+   seven captionable hosts, and its allowance is STRUCTURAL on a fence: the
+   slot hangs on the CLOSING fence, exactly the `[caption_slot]` that `code_block`, `blockquote` and
    `table` end in, with the same one-optional-blank-line allowance. Two
    container kinds take it -- this one and `quote_block`, which captions like
-   the block quote it is (§4) -- and a `^ ` line after any OTHER `:::` closer
-   is ordinary paragraph content. A group left
-   open at END OF INPUT closes there like any container (PART 9 §12) and, its
-   closer line never having been written, has no caption position.
+   the block quote it is (PART 9 §4) -- and a `^ ` line after any OTHER `:::` closer
+   is ordinary paragraph content. A group with
+   no closer closes with its host like any container (UNCLOSED, under
+   `admonition`) and, its closer line never having been written, has no
+   caption position.
 
    Body, closer discipline, opaque spans, fence lengths and nesting are the
-   container rules, unchanged (PART 9 §12). What its direct children MEAN --
+   container rules, unchanged (`admonition`, above). What its direct children MEAN --
    which of them are panels, how the group numbers, how a nested bare
-   `::: figure` degrades -- is PART 9 §4c. *)
+   `::: figure` degrades -- is CARVE-P9-001. *)
 figure_group = figure_group_open, newline,
                {block - admonition_close},
                [admonition_close, newline, [caption_slot]] ;
 figure_group_open = colon_fence:open, space, "figure" ;
 (* the optional `caption_slot` begins on the line after the closer, at most
    one blank line below it -- caption_slot's own optional blank_line IS the
-   allowance (§4). Two blank lines detach, and the `^ ` line is an ordinary
+   allowance (PART 9 §4). Two blank lines detach, and the `^ ` line is an ordinary
    paragraph. *)
 
 (* --- Generic Divs (djot generic container; PART 9 §12) --- *)
 (* A BARE `:::` opener with NO type word is a generic div, NOT an
-   admonition (no class added). STRICT (djot): the opener carries NO inline
-   `{...}` attributes -- an inline `::: {…}` is a paragraph, not a div.
-   Class/id/data-* attach via a PRECEDING block-attribute line, which floats
-   onto the div (§15). A typeless div MAY still carry a [label] (e.g.
+   admonition (no class added). The opener carries NO inline `{...}`
+   attributes (STRICT, under `admonition_open`): `::: {…}` is a paragraph, not
+   a div. A typeless div MAY still carry a [label] (e.g.
    `::: [First]` for a tab member with no semantic type); a header without a
    type is not meaningful, so `::: "x"` is a paragraph. As the FIRST token after
    the fence the [label] may sit directly against it (`:::[First]`), exactly as
    a code fence admits a bare `[label]` (a label AFTER a type word still needs a
    space -- admonition_open). Shares the colon-fence closer and the fence-length
-   nesting rule (PART 9 §12). *)
+   nesting rule (`colon_fence_close`). *)
 div = div_open, newline, {block - admonition_close}, [admonition_close, newline] ;
 div_open = colon_fence:open, [[space], label] ;
 
@@ -415,10 +414,9 @@ div_open = colon_fence:open, [[space], label] ;
    break into a hard break. The type token is a bare pipe `|` on the opener --
    NOT a per-line prefix -- so it is free of the pipe/table ambiguity of the
    Pandoc/djot per-line `|` form, and uses no English keyword (jgm/djot#29).
-   The behavior keys off the `|` token. STRICT (djot): the opener carries no
-   inline attributes, so the inline `::: {.line-block}` form is a PARAGRAPH, not
-   a line block; extra attributes attach via a PRECEDING block-attribute line.
-   Normative rendering: PART 9 §23. *)
+   The behavior keys off the `|` token. The opener carries no inline
+   attributes (STRICT, under `admonition_open`): `::: {.line-block}` is a
+   PARAGRAPH, not a line block. Normative rendering: PART 9 §23. *)
 line_block = line_block_open, newline, line_block_body, [admonition_close, newline] ;
 line_block_open = colon_fence:open, space, "|" ;
 (* The body is a sequence of stanzas separated by blank lines; each stanza is
@@ -429,6 +427,11 @@ line_block_body = stanza, {blank_line, stanza} ;
 stanza = line_block_line, {line_block_line} ;
 line_block_line = {whitespace}, inline_content, newline ;
 (* the leading whitespace is PRESERVED in output -- PART 9 §23 *)
+(* A PAYLOAD LINE IS INLINE CONTENT WHATEVER IT LOOKS LIKE AND WHATEVER HOSTS
+   THE BLOCK. A line shaped like a fence run, a heading or a table row opens
+   nothing, so an unclosed line block takes a following lazy line after it
+   exactly as after a plain `x`, and two fence runs past the content column
+   pair as one inline span in every payload, not only on a marker line. *)
 
 (* --- Local hard-break block -- a RECOGNIZED `:::` type for authors who want
    Markdown-like visible line breaks locally without the full line-block verse
@@ -440,7 +443,7 @@ local_hard_break_block = local_hard_break_block_open, newline,
                          [admonition_close, newline] ;
 local_hard_break_block_open = colon_fence:open, space, backslash ;
 
-(* --- Fenced block quote (PART 9 section 12: the container rules govern it) --- *)
+(* --- Fenced block quote (CARVE-P9-015: the container rules govern it) --- *)
 (* A SECOND SPELLING of the block quote, not a second block: a colon fence
    whose type token is a bare `>` opens a quote whose body is ordinary block
    content, and the node is the one `blockquote_line` produces. The two forms
@@ -452,8 +455,7 @@ local_hard_break_block_open = colon_fence:open, space, backslash ;
    WHICH SPELLING AN AUTHOR USED is carried on the node as `fenced` (PART 12),
    because `carve fmt` must be able to write back what it read: normalizing
    one spelling to the other would rewrite documents no one asked to change.
-   The flag is ABSENT on a `>`-prefixed quote, so a document that predates
-   this clause serializes exactly as it did. *)
+   The flag is ABSENT on a `>`-prefixed quote. *)
 quote_block = quote_block_open, newline,
               {block - admonition_close},
               [admonition_close, newline, [caption_slot]] ;
@@ -496,7 +498,7 @@ inline_comment = "%%", {character - newline} ;
    rendered. Unlike `inline_comment` it has an explicit CLOSER, so it ends
    mid-run and may span the soft line breaks inside one paragraph. The same
    semantic constraints as the `%%` form -- never inside a code span or raw
-   inline, literal when the brace is escaped -- are stated in PART 9 §21a, and
+   inline, literal when the brace is escaped -- are stated in CARVE-P9-042, and
    so is the rule that an UNTERMINATED opener stays literal text. *)
 braced_comment = "{%", {character - "%}"}, "%}" ;
 
@@ -556,8 +558,8 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    intentionally omit a raw node, flatten a `ruby` node or an editorial
    comment, or displace an authored attribute, but a checked
    renderer MUST make that loss observable. Its
-   result has `value`, `losses`, `totalLosses`, and `truncated`. Each omitted
-   raw node contributes one loss in document order with the stable code
+   result has `value`, `losses`, `totalLosses`, and `truncated`. Each raw
+   node the selected target does not render contributes one loss in document order with the stable code
    `raw-format-dropped`, its verbatim `format`, the selected `target`, a
    `nodeType` of `inline` or `block`, its source `pos` when recorded, and a
    short human-readable `message`. `losses` is bounded (100 entries by default),
@@ -569,7 +571,10 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    `inline`, its `pos` when recorded, and a short message. It has NO `format`.
    Plain, ANSI and canonical Carve output keep both sides visibly as
    `base(annotation)` but lose their association. HTML and Markdown preserve
-   native ruby and report no loss.
+   native ruby and report no loss. On the canonical Carve target the same
+   flatten is also reported as `structure-unspellable`, node `ruby`, on the
+   conversion-diagnostics channel (CARVE-P11-046): one loss under two codes,
+   one per channel.
 
    Each editorial comment that Plain or ANSI writes as bare text contributes
    one loss in document order with the stable code
@@ -588,20 +593,30 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    the message is where the sink kind survives; `target` is already a field, so
    the message does not repeat it.
 
-   Each authored attribute a roundtrip carrier displaces under PART 10 §13b
+   Each authored attribute roundtrip export drops under CARVE-P10-019
    contributes one loss in document order with the stable code
    `carrier-attribute-dropped`, the selected `target`, `nodeType` of `inline` or
    `block`, its `pos` when recorded, and NO `format`. Such an entry MUST carry
-   `attribute`, the displaced attribute's name, because the name is the whole
+   `attribute`, the dropped attribute's name, because the name is the whole
    content of the finding and a message is not compared. Only the HTML target
    writes carriers, so only that target reports this code.
 
-   The canonical Carve writer preserves authored destinations under PART 11
-   and contributes no `destination-denied` row for them. PART 9 §25 binds the
-   consumer that renders the emitted source, not its interchange serialization.
+   Each definition list that CARVE-P11-067 leaves without carrier markers
+   under roundtrip export contributes one loss in document order with the
+   stable code `definition-list-flattened`, the selected `target`, `nodeType`
+   of `block`, its `pos` when recorded, and NO `format`. Only the Markdown
+   target reports this code.
 
-   A loss records WHAT THE SELECTED RENDERER ACTUALLY DROPS OR FLATTENS, not
-   every raw or ruby node in the tree. Matching HTML passes through (or is visibly escaped by a safe
+   The canonical Carve writer contributes no `destination-denied` row
+   (CARVE-P9-054).
+
+   A LOSS RECORDS WHAT THE SELECTED TARGET DOES NOT RENDER, not what its
+   output drops and not every raw or ruby node in the tree. A raw inline
+   whose format the target cannot write is not rendered, so it reports
+   `raw-format-dropped` whether or not roundtrip export carries its content
+   in a `data-carve-raw` span (CARVE-P10-015): the carrier keeps the content
+   for an import, and this output still does not render it.
+   Matching HTML passes through (or is visibly escaped by a safe
    policy, [CARVE-P10-013]) with no loss. Markdown visibly escapes HTML raw content with no loss.
    ANSI visibly degrades a raw BLOCK to `[raw:format] content` with no loss, but
    reports a raw INLINE it omits. Plain text reports every raw node it omits.
@@ -619,8 +634,12 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    `--strict-losses`, offer a machine-readable JSON report, and permit the
    explicit exceptions `--allow-loss raw-format-dropped`,
    `--allow-loss ruby-flattened`,
-   `--allow-loss editorial-comment-flattened` and
-   `--allow-loss carrier-attribute-dropped`. Import-loss reports
+   `--allow-loss editorial-comment-flattened`,
+   `--allow-loss carrier-attribute-dropped` and
+   `--allow-loss definition-list-flattened`. The list is closed:
+   `destination-denied` is not waivable, because a blanked destination is a
+   policy refusal that a different profile avoids, not a loss the target
+   cannot avoid (CARVE-P9-054). Import-loss reports
    are separate: they describe source-to-AST migration, while this report
    describes AST-to-target rendering. *)
 

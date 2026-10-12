@@ -8,7 +8,7 @@
    occurrence (PART 9 §25 RESOURCE BOUNDS). Definitions are collected even
    inside a block-level container, which then renders as though the
    definition line were never written (PART 9 §17 L6 states the general
-   rule once, for every container that can hold one; §16; corpus "Footnote
+   rule once, for every container that can hold one; CARVE-P9-025; corpus "Footnote
    definition inside a container is collected"). These rules are
    attribute-grammar / two-pass semantics --
    deliberately NOT grammar productions: symbol-table resolution is outside
@@ -18,7 +18,7 @@
      linkDefs     : label -> (url, title?, attrs?)   -- LAST definition wins
      footnoteDefs : label -> body                    -- FIRST definition wins
      abbrDefs     : term -> expansion                -- LAST definition wins;
-                                                       non-empty term (§25)
+                                                       non-empty term (CARVE-P9-054)
      headingIds   : slug -> heading node             -- case-preserving; the
                     PART 2 HEADING IDENTIFIERS rules: explicit {#id} ids are
                     reserved first in document order, then auto-slugs, with
@@ -30,35 +30,44 @@
 
    RULES (PASS 2):
    R1 LINK REFERENCES. [text][label] and [text][] (label := text) resolve
-      against linkDefs by a shared label key: trim leading and trailing ASCII
-      whitespace and collapse each internal run of U+0020, tab, line feed,
-      form feed or carriage return to one U+0020. Matching remains
-      case-sensitive and preserves every non-whitespace code point (corpus
+      against linkDefs by a shared label key: trim leading and trailing runs
+      of U+0020 and collapse each internal run of U+0020 to one U+0020. A
+      label spans no line break, and a tab, a form feed or any other
+      character in it is content. Matching remains case-sensitive and
+      preserves every other code point (corpus
       78-reference-labels-are-case-sensitive). Definition
-      attributes transfer to the link OR IMAGE that resolves the label; the
-      reference site's own attributes override per key.
+      attributes transfer to the link OR IMAGE that resolves the label and
+      merge as PART 9 §15 A3 merges stacked lists: the definition's list
+      first, the reference site's second, so a repeated `id` or key takes the
+      site's value and classes accumulate in source order.
+      `[ex]: /u {.external #a}` with `[Example][ex]{.internal #b}` renders
+      `class="external internal" id="b"`.
       If multiple definitions normalize to one key, the LAST link definition
       wins. A diagnostic on every later colliding definition names both raw
       spellings and the normalized key; raw spelling remains source metadata.
       Unresolved -> the bracketed run renders as literal source text. Carve
-      has NO shortcut reference: a bare [label] never resolves (PART 9 §14).
-      IMPLICIT HEADING FALLBACK: a [text][] whose label matches no
-      linkDefs entry falls back to the heading index -- the document's
+      has NO shortcut reference: a bare [label] or ![alt] never resolves
+      (PART 9 §14). A collapsed image `![alt][]` takes its alt text as the
+      label, so the alt text must be non-empty; the full `![alt][ref]` form
+      allows an empty one.
+      IMPLICIT HEADING FALLBACK: a link (never an image) [text][] whose
+      label matches no linkDefs entry falls back to the heading index -- the document's
       headings keyed by their rendered plain text -- and resolves to
       `#{slug}` of the FIRST heading with that text. linkDefs WINS on a
       tie, so an explicit `[label]: url` definition always beats a
       same-named heading. Against the heading index, the label and the
-      heading text are both trimmed, their internal whitespace runs
-      collapsed to one space, NFC-NORMALIZED, and then compared EXACTLY:
+      heading text both take the label key above (runs of U+0020 only, so a
+      tab in either is content), are NFC-NORMALIZED, and are then compared
+      EXACTLY:
       `[Café][]` finds `# Cafe` + U+0301, while `[getting started][]`
       does not find `# Getting Started` and stays literal (corpus
       173-implicit-heading-references-with-no-definition).
       NO NAME LOOKUP FOLDS CASE -- NORMATIVE [CARVE-P9R-010]. Every place
       Carve looks a name up compares case exactly: R1's linkDefs and
       heading index, R2's footnote labels, R4's crossrefs against
-      headingIds and captionIds, and an include's `#name` (PART 9 §19
+      headingIds and captionIds, and an include's `#name` (CARVE-P6-001
       I1a). One rule for every lookup needs no Unicode case-folding table
-      (§25 already refuses one for slugs: Greek final sigma, Turkish
+      (CARVE-P2-004 already refuses one for slugs: Greek final sigma, Turkish
       dotted I), agrees with an HTML fragment (`href="#Plan"` does not
       reach `id="plan"` in a browser) and with Djot, and keeps `{#Tip}`
       and `{#tip}` two ids. A reference that differs from its target
@@ -80,12 +89,13 @@
       above apply to that plain text.
       VISIBLE LEAVES STAY VISIBLE. An autolink contributes its display text
       and an image contributes its alternative text to both the slug and this
-      index. They are not among §25's named exclusions. A label's parsed inline
+      index. They are not among the inlines CARVE-P2-004 excludes. A label's parsed inline
       children survive resolution; an implementation's link-derived internal
       representation for a non-link mention or tag cannot make that node
       disappear inside the resolved outer link. If the normalized plain text is
       empty, no index entry is created and no collapsed label resolves through
-      the fallback slug `s`; the heading itself still receives `s` as §25 says.
+      the generated `s-N` slug; the heading itself still receives it as
+      CARVE-P2-004 says.
       THE STRIP IS SCOPED TO THE HEADING INDEX. The linkDefs matching
       above is unchanged and keys on the label AS WRITTEN: `[*bold*]: /x`
       is matched by `[*bold*][]` and NOT by `[bold][]`, and `[bold]: /x`
@@ -100,7 +110,7 @@
       NFC and NOT NFKC: canonical equivalence only, so `ﬁle` does not
       match `file` and `① one` does not match `1 one` -- compatibility
       folding would change which text an author is quoting. NFC belongs in the
-      list because the id side is ALREADY NFC (§25): without it a document
+      list because the id side is ALREADY NFC (CARVE-P2-004): without it a document
       publishes `id="Café"` and then declines `[Café][]` against the heading
       that produced it. The index holds
       headings at top level and
@@ -114,21 +124,21 @@
       target (R4), which addresses it by id rather than by wording.
    R1a A DEFINITION IS COLLECTED FROM A LINE THE BLOCK STRUCTURE KEEPS --
       NORMATIVE [CARVE-P9R-002]. A
-      definition line that PART 0's S4 folds into an OPEN PARAGRAPH yields no
+      definition line that PART 0's O3 folds into an OPEN PARAGRAPH yields no
       entry in ANY symbol table -- linkDefs, footnoteDefs or abbrDefs. It is
       paragraph text, it renders as the text the author typed, and nothing on it
       defines anything. The container makes no difference: the document level, a
-      quote and a div are one rule, because S4 asks only whether a paragraph is
+      quote and a div are one rule, because PART 0 O3 asks only whether a paragraph is
       open and which container holds it.
 
       THE ABBREVIATION KIND IS DECIDED BEFORE THIS CLAUSE REACHES IT, and it is
       named above for completeness rather than as a case that discriminates.
-      PART 12 section 7 already makes `*[TERM]: expansion` a definition ONLY as a
+      CARVE-P12-026 already makes `*[TERM]: expansion` a definition ONLY as a
       direct child of the document, so every marker-line and in-container
       spelling is ordinary text by that rule; and at the document level an
-      abbreviation definition INTERRUPTS an open paragraph (PART 9 section 10,
+      abbreviation definition INTERRUPTS an open paragraph (PART 9 §10 I5,
       invisible constructs interrupt), so it is never a lazy line there. No
-      document distinguishes this clause's answer from section 7's for that kind.
+      document distinguishes this clause's answer from CARVE-P12-026's for that kind.
       The link and footnote kinds are the ones this clause governs on its own.
 
       HOW AN ENGINE MAY DECIDE IT. Collection is a pre-pass over lines, so the
@@ -154,43 +164,17 @@
       and never in a matcher.
 
       AN UNANSWERABLE PROBE KEEPS THE CANDIDATE TEXT -- NORMATIVE [CARVE-P9R-008].
-      An implementation that cannot
-      answer -- no probe available, or a construct it does not recognize --
-      collects NOTHING from the candidate line.
+      An implementation that cannot answer -- no probe available, or a
+      construct it does not recognize -- collects NOTHING from the candidate
+      line, and the line stays exactly as the author typed it.
 
-      AN EXHAUSTED WORK BUDGET IS NOT ONE OF THOSE REASONS. It was
-      listed here and is removed. Exhaustion is a property of the METHOD an
-      implementation chose, not of the question it was asked: the double
-      re-parse above costs 4x per doubling -- 178ms at 50 marker-led
-      definitions, 40 seconds at 800 -- while an engine that answers the same
-      question from pre-pass state answers a 3200-line document correctly in
-      47ms, spending no budget at all. An engine that declines it spends about
-      the same wall clock to do so, so the escape bought nothing that choosing
-      another method would not have bought outright. A processor that CAN
+      AN EXHAUSTED WORK BUDGET IS NOT ONE OF THOSE REASONS. The answer is a
+      property of the document, not of the method, so a processor that can
       determine a candidate line's position collects the definition AT ANY
-      DOCUMENT SIZE. Ten definitions under a heading is an ordinary document,
-      and "past ten they stop resolving" is not graceful degradation -- a
-      reader cannot tell it from a typo in a label, and adding a definition at
-      the end of a list retroactively changes whether an unrelated reference
-      above it resolves.
-
-      BOUNDING THE PROBE IS STILL SOUND, and this clause does not forbid it.
-      What it forbids is spending the bound as an ANSWER. An implementation
-      that keeps the re-parse and its budget must reach the answer another way
-      once the budget is gone -- the position is derivable without the probe
-      wherever no extension matcher may have consumed the line above, which is
-      the one thing static reasoning cannot see and the case the probe was
-      written for.
-
-      THAT IS CONSERVATIVE, NOT IDENTICAL TO THE AFFORDABLE ANSWER, and the
-      difference is the point wherever the fallback still applies. Where the
-      probe would have said the line opens something, it would have been
-      collected, and this fallback declines it: the document loses a definition
-      it should have had. What it does not lose is the line, which stays exactly
-      as the author typed it. The two errors
-      available here are under-collecting and deleting text, and only the first
-      is one a reader can see -- a reference to the uncollected label renders as
-      its literal `[^f]`, on the page, where someone can report it.
+      DOCUMENT SIZE. Bounding the probe is sound only if the implementation
+      reaches the answer another way once the bound is spent: the position is
+      derivable without the probe wherever no extension matcher may have
+      consumed the line above.
 
    R1b A MATCHER'S COORDINATES ARE LOCAL, NOT ABSOLUTE -- NORMATIVE [CARVE-P9R-003].
       The `lines` array handed to a block matcher MAY begin at a
@@ -200,7 +184,7 @@
       document, or on lines the array does not contain, is NOT CONFORMING.
 
    R2 FOOTNOTES (rendering in PART 9 §16). Footnote labels use the same
-      ASCII-whitespace-normalized, case-sensitive key as R1. A [^label] use
+      space-run-normalized, case-sensitive key as R1. A [^label] use
       with a matching footnoteDefs entry is numbered by FIRST-REFERENCE order from
       footnoteSeq; repeat references reuse the number (k-th repeat gets
       refId fnref{n}-{k} and an extra backlink). An inline ^[content] note
@@ -237,8 +221,14 @@
       directly numbered display equations. The link text is LABEL + NUMBER,
       e.g. "Figure 1" or "Eq. 2"; caption markup is preserved, while a direct
       equation's label is a string.
-      Resolution is ONE LEVEL: cloned heading text is not re-expanded, so
-      self-references and cycles are safe. Unresolved -> literal.
+      Resolution is ONE LEVEL: cloned heading text is not re-expanded, so a
+      self-reference (`# A </#a>`) and a mutual cycle (`# A </#b>` +
+      `# B </#a>`) each resolve once (corpus "Cyclic cross-reference resolves
+      to one level"). Cloning keeps the heading's markup:
+      `# *Setup*` yields `<a href="#…"><strong>Setup</strong></a>`. A footnote
+      reference is not cloned: `# Head[^1]` yields `Head`. A `</#id>`
+      to an id that is neither a heading nor a numbered target is unresolved
+      and renders literally.
       WHAT IS CLONED IS THE HEADING'S INLINE NODES -- NORMATIVE [CARVE-P9R-005].
       "Cloned heading text" means the nodes, not a rendered string. A node
       carries its SOURCE RUN, and a string does not, so an implementation that
@@ -315,8 +305,8 @@
       question cannot be answered while the block layer is still reading lines.
 
       ONE PHASE, AFTER R1. A paragraph whose whole content resolves to a single
-      image becomes a BLOCK IMAGE (PART 9 §4's image-paragraph host, PART 11
-      §1c's writer-side collapse, PART 10's bare `<img>`). This is the ONLY
+      image becomes a BLOCK IMAGE (PART 9 §4's image-paragraph host,
+      CARVE-P11-004's writer-side collapse, PART 10's bare `<img>`). This is the ONLY
       place the question is asked. Nothing before it may treat an image
       paragraph as a block image, and nothing after it may re-derive the answer
       -- a renderer, a writer and an importer all READ it (PART 12 §23 names
@@ -335,7 +325,7 @@
       SHAPE would put a `<figure>` around a paragraph of literal `![a][r]` --
       output no engine writes and no clause asks for.
 
-      A DISPLAY-MATH HOST HAS NOTHING TO WAIT FOR. §4's other prose-spelled
+      A DISPLAY-MATH HOST HAS NOTHING TO WAIT FOR. PART 9 §4's other prose-spelled
       captionable host, a paragraph whose whole content is one display-math
       span, is captionable and is not a block image: it has no reference to
       resolve, so its slot binds outright. The syntactic filter that decides

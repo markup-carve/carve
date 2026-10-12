@@ -1,0 +1,67 @@
+A line-block payload span pairs past the content column
+
+````
+> - ::: |
+>     ```
+>   :::
+>     ```
+>   :::
+>   :::bad
+>   :::
+- tail
+.
+<blockquote>
+  <ul>
+    <li>
+      <div class="line-block">
+        <p>&nbsp;&nbsp;<code>
+:::
+&nbsp;&nbsp;</code></p>
+      </div>
+      :::bad
+:::
+- tail
+    </li>
+  </ul>
+</blockquote>
+````
+
+````
+- ::: |
+    ```
+  :::
+    ```
+  :::
+  para
+tail
+.
+<ul>
+  <li>
+    <div class="line-block">
+      <p>&nbsp;&nbsp;<code>
+:::
+&nbsp;&nbsp;</code></p>
+    </div>
+    para
+tail
+  </li>
+</ul>
+````
+
+````
+- ::: |
+    ```
+  :::
+  para
+tail
+.
+<ul>
+  <li>
+    <div class="line-block">
+      <p>&nbsp;&nbsp;<code></code></p>
+    </div>
+    para
+tail
+  </li>
+</ul>
+````

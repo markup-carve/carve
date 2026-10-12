@@ -2,7 +2,7 @@
   "name": "i14-fmt-not-shape-wellformed-escaped",
   "description": "A run with no closing braces is not a directive and is escaped normally.",
   "rules": [
-    "I14"
+    "I12"
   ],
   "mode": "virtual",
   "resolver": "none",

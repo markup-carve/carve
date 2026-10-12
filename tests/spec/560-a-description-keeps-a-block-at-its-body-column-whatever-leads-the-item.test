@@ -1,0 +1,160 @@
+A description keeps a block at its body column whatever leads the item
+
+````
+- :: term
+  : definition
+
+    ```
+    code
+    ```
+after
+.
+<ul>
+  <li>
+    <dl>
+      <dt>term</dt>
+      <dd>
+        <p>definition</p>
+        <pre><code>code
+</code></pre>
+      </dd>
+    </dl>
+  </li>
+</ul>
+<p>after</p>
+````
+
+````
+- :: term
+  : desc
+      ```
+      code
+      ```
+after
+.
+<ul>
+  <li>
+    <dl>
+      <dt>term</dt>
+      <dd>
+        <p>desc</p>
+        <pre><code>code
+</code></pre>
+      </dd>
+    </dl>
+  </li>
+</ul>
+<p>after</p>
+````
+
+````
+> - :: term
+>   : definition
+>
+>     ```
+>     code
+>     ```
+after
+.
+<blockquote>
+  <ul>
+    <li>
+      <dl>
+        <dt>term</dt>
+        <dd>
+          <p>definition</p>
+          <pre><code>code
+</code></pre>
+        </dd>
+      </dl>
+    </li>
+  </ul>
+</blockquote>
+<p>after</p>
+````
+
+````
+- intro
+  :: term
+  : definition
+
+    ```
+    code
+    ```
+after
+.
+<ul>
+  <li>intro
+    <dl>
+      <dt>term</dt>
+      <dd>
+        <p>definition</p>
+        <pre><code>code
+</code></pre>
+      </dd>
+    </dl>
+  </li>
+</ul>
+<p>after</p>
+````
+
+````
+- intro
+  > ```
+  > code
+  > ```
+after
+.
+<ul>
+  <li>intro
+    <blockquote>
+      <pre><code>code
+</code></pre>
+    </blockquote>
+  </li>
+</ul>
+<p>after</p>
+````
+
+```
+- :: term
+  : definition
+
+    para
+after
+.
+<ul>
+  <li>
+    <dl>
+      <dt>term</dt>
+      <dd>
+        <p>definition</p>
+        <p>para
+after</p>
+      </dd>
+    </dl>
+  </li>
+</ul>
+```
+
+````
+- :: term
+  : definition
+
+  ```
+  code
+  ```
+after
+.
+<ul>
+  <li>
+    <dl>
+      <dt>term</dt>
+      <dd>definition</dd>
+    </dl>
+    <pre><code>code
+</code></pre>
+  </li>
+</ul>
+<p>after</p>
+````

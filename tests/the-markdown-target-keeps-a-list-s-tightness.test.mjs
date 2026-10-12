@@ -62,7 +62,7 @@ test('CARVE-P11-035 hands the tight/loose licence to plain text only', () => {
     /LICENCE IS THIS TARGET'S/,
     'section 10h must say whose the licence is, or its silence reads as a general permission',
   )
-  assert.match(text, /§10l/, 'section 10h must point at the target that does keep tightness')
+  assert.match(text, /CARVE-P11-047/, 'section 10h must point at the target that does keep tightness')
 })
 
 /*

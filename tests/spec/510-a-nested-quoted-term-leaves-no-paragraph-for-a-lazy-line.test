@@ -7,9 +7,9 @@ tail
 <blockquote>
   <blockquote>
     <dl>
-      <dt>term</dt>
+      <dt>term
+tail</dt>
     </dl>
   </blockquote>
 </blockquote>
-<p>tail</p>
 ```

@@ -1,0 +1,45 @@
+A quoted term takes a lazy line
+
+```
+> :: t
+tail
+.
+<blockquote>
+  <dl>
+    <dt>t
+tail</dt>
+  </dl>
+</blockquote>
+```
+
+```
+> - :: t
+tail
+.
+<blockquote>
+  <ul>
+    <li>
+      <dl>
+        <dt>t
+tail</dt>
+      </dl>
+    </li>
+  </ul>
+</blockquote>
+```
+
+```
+- > :: term
+tail
+.
+<ul>
+  <li>
+    <blockquote>
+      <dl>
+        <dt>term
+tail</dt>
+      </dl>
+    </blockquote>
+  </li>
+</ul>
+```

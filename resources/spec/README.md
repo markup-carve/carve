@@ -4,6 +4,14 @@ This directory contains the editable normative specification. Do not edit
 `resources/grammar.ebnf` directly. It is the generated single-file distribution
 used by existing tools and citations.
 
+## Reading order
+
+Read `00-preamble.ebnf` first for the notation, the guards and the layers.
+Then the node vocabulary, the type names in `docs/profiles.md` that
+`CARVE-P12-001` binds. Then PART 0 in `01-layout.ebnf`, which decides which
+container owns each line before any production applies. The remaining
+modules follow in filename order, PART 1 through PART 12.
+
 ## Editing the language
 
 1. Edit the relevant `*.ebnf` module.
@@ -17,14 +25,17 @@ filename order, so their numeric prefixes are part of the build contract.
 
 ## Structured contracts
 
-- `layout-transitions.json` is consumed by the executable layout checker.
+- `layout-transitions.json` restates the transition table of `CARVE-P0-003`.
+  It is informative: the layout checker exposes it through
+  `ownershipTransition`, which no parse path calls.
 - `paragraph-interruption.json` is the closed classification defined by PART 9
   section 10.
 - The interchange fallback table in `23-ast-foundations.ebnf` summarizes
   existing PART 12 rules. `spec:write` derives its docs view; `spec:check`
   validates its node/field names, rule IDs, actions and diagnostic codes.
-- `target-capabilities.json` records the cross-target behavior defined by PART
-  11 sections 10a through 11.
+- `target-capabilities.json` restates a sample of the cross-target rules of
+  PART 11 sections 10a through 11, one row per named clause. The clause
+  governs; the file is not the complete set.
 - `rules.json` assigns one closed implementation scope to every clause carrying
   `-- NORMATIVE [CARVE-…]`; the source marker binds its stable ID directly.
 

@@ -353,6 +353,7 @@ function reportValueDisagreements(present) {
       console.log(`  ${String(new Set(docs).size).padStart(4)} doc(s)  ${key}`)
       console.log(`        ${who}`)
       console.log(`        e.g. ${docs.slice(0, 2).join(', ')}`)
+      if (new Set(docs).size > 2) console.log(`        in: ${[...new Set(docs)].sort().join(', ')}`)
     }
   }
 
@@ -501,6 +502,7 @@ function reportSpanDisagreements(present) {
       const who = Object.entries(engines).map(([e, v]) => `${e}=${v}`).join('  ')
       console.log(`  ${String(docs.size).padStart(4)} doc(s)  ${key}`)
       console.log(`        e.g. ${[...docs][0]}: ${who}`)
+      if (docs.size > 1) console.log(`        in: ${[...docs].sort().join(', ')}`)
     }
     console.log('  EXTENT rows are PART 12 §4, and WHICH END moved decides which engine owes it:')
     console.log('    startOffset differs - a span "begins at the markup that opens the construct",')

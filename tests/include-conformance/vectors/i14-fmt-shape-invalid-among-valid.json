@@ -2,7 +2,7 @@
   "name": "i14-fmt-shape-invalid-among-valid",
   "description": "A shape-invalid run is escaped without disturbing valid directives around it.",
   "rules": [
-    "I14"
+    "I12"
   ],
   "mode": "virtual",
   "resolver": "none",

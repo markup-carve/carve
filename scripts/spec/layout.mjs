@@ -198,7 +198,7 @@ const QUOTE = /^>(?: (.*)|)$/
 // grammar rather than by a brace scan, so a quoted `}` in a value and a `{` or
 // quote inside the destination (`/u{x} {.c}`, `it's {.c}`) read correctly. With
 // no space the braces are destination (`[a]: /u{.c}`).
-const LINK_DEF = /^\[([^\]@][^\]]*)\]: \p{White_Space}*(\P{White_Space}+)(?: (?:"((?:\\"|[^"])*)"|'((?:\\'|[^'])*)'))?(?: (\{.*\}))?[ \t]*$/u
+const LINK_DEF = /^\[([^\]@][^\]]*)\]: +(\P{White_Space}+)(?: (?:"((?:\\"|[^"])*)"|'((?:\\'|[^'])*)'))?(?: (\{.*\}))?[ \t]*$/u
 
 /*
  * The production's own test, and the only spelling of it. Every place that
@@ -934,7 +934,7 @@ function findColonCloser(lines, openIdx, len) {
     // nothing and opens nothing (carve#450). The span is skipped from the line
     // AFTER its opener, because an opener with no info string is closer-shaped
     // itself and would otherwise end the span where it began.
-    const span = opaqueSpanEnd(lines, j)
+    const span = top.mode === 'line-block' ? lineBlockSpanEnd(lines, j) : opaqueSpanEnd(lines, j)
     if (span !== -1) {
       j = span
       continue
@@ -987,12 +987,49 @@ function opaqueSpanEnd(lines, idx) {
   return -1
 }
 
-// A colon opener that names its container: `::: note`, not a bare run and not
-// the `::: |` line-block spelling.
-function namedColonOpener(line) {
-  const cf = COLON_FENCE.exec(line)
-  const opener = cf && parseColonOpener(cf[2])
-  return !!(opener && opener.type && opener.mode !== 'line-block')
+// A line-block payload is inline content, so a span in it pairs wherever its
+// lines start: indentation is payload, not a column (ruled on carve-php#3137).
+// The pure runs are indexed once per body, each row with the widest run at or
+// below it, so an opener with no closer ahead costs one lookup.
+const payloadRuns = new WeakMap()
+function lineBlockSpanEnd(lines, idx) {
+  const fence = FENCE.exec((lines[idx] ?? '').replace(/^[ \t]+/, ''))
+  if (fence && parseFenceInfo(fence[2]) !== null) {
+    let runs = payloadRuns.get(lines)
+    if (!runs) {
+      runs = { '`': [], '~': [] }
+      for (let j = 0; j < lines.length; j++) {
+        const c = PURE_FENCE.exec((lines[j] ?? '').replace(/^[ \t]+/, ''))
+        if (c) runs[c[1][0]].push({ j, width: c[1].length, widest: 0 })
+      }
+      for (const rows of Object.values(runs)) {
+        let widest = 0
+        for (let k = rows.length - 1; k >= 0; k--) widest = rows[k].widest = Math.max(widest, rows[k].width)
+      }
+      payloadRuns.set(lines, runs)
+    }
+    const rows = runs[fence[1][0]]
+    let lo = 0
+    let hi = rows.length
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1
+      if (rows[mid].j <= idx) lo = mid + 1
+      else hi = mid
+    }
+    if (lo < rows.length && rows[lo].widest >= fence[1].length) {
+      while (rows[lo].width < fence[1].length) lo++
+      return rows[lo].j
+    }
+    return -1
+  }
+  return opaqueSpanEnd(lines, idx)
+}
+
+// A comment closes the paragraph, so only the lines after the last one the
+// body kept can hold it open; scanning from there keeps collection linear.
+function paragraphOpenSince(bodyLines, from) {
+  const tail = from === 0 ? bodyLines : bodyLines.slice(from)
+  return tail.some((line) => line.trim() !== '') && bodyLeavesParagraphOpen(tail)
 }
 
 function isColonBlockOpener(line) {
@@ -1067,15 +1104,16 @@ export function commentFenceOpensSpan(lines, index) {
 /**
  * Advance a list collector's after-comment flag from classified line facts.
  * Paragraph closure, prefix availability and span tracking remain with the caller.
- * A marker-line span closer preserves the flag it arrived with.
+ * A span closer preserves its opener's retention decision (CARVE-P9-053).
+ * Only comments consumed below the content column grant retention (CARVE-P0-009 X1).
  */
 export function afterCommentTransition(previous, {
-  belowCloser = false, spanClosed = false, markerLine = false,
-  inCommentSpan = false, comment = false, blank = false,
+  belowCloser = false, spanClosed = false,
+  inCommentSpan = false, comment = false, belowComment = false, blank = false,
 }) {
-  if (belowCloser || (spanClosed && !markerLine)) return true
+  if (belowCloser) return true
   if (spanClosed || inCommentSpan) return previous
-  if (comment) return true
+  if (comment) return belowComment
   return blank ? previous : false
 }
 
@@ -1568,19 +1606,8 @@ function opensParagraph(text, atBlockPosition = false, tableOpen = false, memo =
     if (COMMENT_LINE.test(text) || COMMENT_FENCE_BODY.test(text)) return finish(false)
     if (isTableRow(text) || isContinuationRow(text, openTable)) return finish(false)
     if (isDefinitionOrAttributeLine(text)) return finish(false)
-    // AN EMPTY UNTERMINATED COLON CONTAINER HOLDS NO PARAGRAPH, so a flush-left
-    // plain line below it continues nothing and closes what is above it. The
-    // list host already answers that way; the description host folded the line
-    // INTO the container, three columns to the left of it, on no clause at all
-    // (carve#1938).
-    //
-    // NOT AT A BLOCK POSITION, and that flag is the whole of the narrowing. A
-    // colon opener written on a MARKER line reaches here as bare `::: d` with
-    // `atBlockPosition` true, and there it is demoted to literal text by lazy
-    // folding instead - which corpus 364 and 161 pin. Asking this question of
-    // that spelling opens a container where those rows say there is none, and
-    // retires both.
-    if (!atBlockPosition && isColonParagraphInterrupt(text)) return finish(false)
+    if (atBlockPosition && isColonBlockOpener(text)) return finish(false)
+    if (isColonParagraphInterrupt(text)) return finish(false)
 
     return finish(true)
   }
@@ -1796,41 +1823,6 @@ function bodyLeavesNoParagraphAt(bodyLines, last) {
   return closedAt === last
 }
 
-// Did a marker-line colon opener acquire nothing but lazily folded lines? A
-// comment kept from below the content column is transparent to the question,
-// its span's payload and closer with it (CARVE-P9-053).
-function onlyLazyBody(body, isBelowComment) {
-  let lastCloser = null
-  let lazy = false
-  let span = null
-  for (let k = 0; k < body.length; k++) {
-    const below = isBelowComment(k)
-    const run = below || span !== null || body[k].startsWith(LAZY) || COMMENT_LINE.test(body[k])
-      ? COMMENT_FENCE.exec(stripLazy(body[k])) : null
-    if (span !== null) {
-      if (run && run[1].length === span) span = null
-      continue
-    }
-    if (isBlank(body[k])) continue
-    if (below) {
-      if (run) {
-        if (lastCloser === null) {
-          lastCloser = new Map()
-          body.forEach((l, at) => {
-            const c = COMMENT_FENCE.exec(stripLazy(l))
-            if (c) lastCloser.set(c[1].length, at)
-          })
-        }
-        if ((lastCloser.get(run[1].length) ?? -1) > k) span = run[1].length
-      }
-      continue
-    }
-    if (!body[k].startsWith(LAZY)) return false
-    lazy = true
-  }
-  return lazy
-}
-
 // Is a VERBATIM payload open at `end`? CARVE-P11-016 keeps a whitespace-only
 // line inside one, so a container may not collapse a blank run that lands there.
 // `scan` carries the cursor and the open fence between calls, so each body line
@@ -1900,10 +1892,27 @@ function hostLadder() {
  */
 function hostAdvance(h, line, paraOpen) {
   const meas = indentCols(line)
+  if (meas.col === 0 && DEFLIST_TERM.test(meas.rest)) h.descriptionTerm = true
+  const description = h.descriptionTerm && meas.col === 0 && /^:( +)(.*)$/.exec(meas.rest)
+  if (description && matchMarkerAt(indentCols(description[2]))) {
+    const lead = markerFenceSummary(description[2], new Map())
+    if (lead) {
+      const column = 1 + description[1].length + lead.col
+      h.columns.push(column)
+      h.markerCols.push(1 + description[1].length)
+      h.kinds.push('item')
+      return { meas, inner: { col: column, rest: markerFreeContent(description[2]) }, blockStart: true, popped: false }
+    }
+  }
   if (h.colons?.at(-1)?.mode === 'line-block' && meas.col >= h.colons.at(-1).base) {
     return { meas, inner: meas, blockStart: false, popped: false }
   }
-  if (meas.rest === '' || h.colonComment || COMMENT_LINE.test(meas.rest)) return { meas, inner: meas, blockStart: false, popped: false }
+  if (meas.rest === '' || h.colonComment || COMMENT_LINE.test(meas.rest)) {
+    if (COMMENT_LINE.test(meas.rest) && !h.colonComment) {
+      h.retainedComment = meas.col > 0 && meas.col < h.columns.at(-1)
+    }
+    return { meas, inner: meas, blockStart: false, popped: false }
+  }
   // ONLY A LIST ITEM'S PARAGRAPH GIVES WAY. `- d` / `  - x` opens a sublist, so
   // the marker interrupts; the same marker at a DESCRIPTION or FOOTNOTE body's
   // column under its open paragraph is ordinary text, and both bodies take the
@@ -1911,11 +1920,14 @@ function hostAdvance(h, line, paraOpen) {
   // of its innermost KIND moved a quoted line out of a `dd` that keeps it
   // (raised by codex review).
   const siblingItem = h.markerCols.some((col, k) => col === meas.col && h.kinds[k] === 'item')
-  // Plain text at a parent item's column can lazily continue its sublist.
+  // Plain text below a nested item's column can lazily continue its paragraph.
   // Keep that sublist for the next fence lookup; the lazy line did not close it.
-  const lazyItemLine = paraOpen && h.kinds.at(-1) === 'item' &&
+  const retainedFenceText = h.retainedComment && h.kinds.at(-1) === 'item' &&
+    meas.col > h.markerCols.at(-1) && meas.col < h.columns.at(-1) && FENCE.test(meas.rest)
+  h.retainedComment = false
+  const lazyItemLine = retainedFenceText || paraOpen && h.kinds.at(-1) === 'item' &&
     (h.columns.length === 2 || h.colons?.length ||
-      (h.kinds.at(-2) === 'item' && meas.col >= h.columns.at(-2))) && matchMarkerAt(meas) === null &&
+      h.kinds.at(-2) === 'item') && matchMarkerAt(meas) === null &&
     !FENCE.test(meas.rest) && !COLON_FENCE.test(meas.rest) &&
     !DEFLIST_TERM.test(meas.rest) && opensParagraph(meas.rest)
   // A marker at or left of an item's own marker column ends that item and
@@ -1979,13 +1991,13 @@ function hostAdvance(h, line, paraOpen) {
 function hostedBlockAt(h, inner, popped) {
   if (h.columns.length < 2) return false
   const column = h.columns.at(-1)
-  if (inner.col !== column && !(popped && inner.col > column)) return false
+  if (inner.col < column) return false
   const text = inner.rest
-  return HEADING.test(text) || HR.test(text) || text[0] === '|' || DEFLIST_TERM.test(text) ||
+  return HEADING.test(text) || HR.test(text) || text[0] === '|' ||
     isDefinitionOrAttributeLine(text)
 }
 
-function hostColonStep(h, inner, bodyFollows, commentCloses = () => false, markerLine = false, paragraph = [], remainingDepth = MAX_NESTING_DEPTH, codeCloses = () => false) {
+function hostColonStep(h, inner, commentCloses = () => false, markerLine = false, paragraph = [], remainingDepth = MAX_NESTING_DEPTH, codeCloses = () => false) {
   if (!h.colonComment && !h.colons?.length && !inner.rest.startsWith(':::') && !inner.rest.startsWith('%%')) return false
   const comment = COMMENT_FENCE_BODY.exec(inner.rest)
   if (h.colonComment) {
@@ -1998,9 +2010,11 @@ function hostColonStep(h, inner, bodyFollows, commentCloses = () => false, marke
   const top = stack.at(-1)
   if (top?.mode === 'line-block') {
     if (comment && commentCloses(comment[1].length, top.base)) h.colonComment = comment[1].length
+    // Payload is inline, so its span pairs at any column past the host's
+    // (ruled on carve-php#3137).
     const fence = FENCE.exec(inner.rest)
-    if (inner.col === top.column && fence && parseFenceInfo(fence[2]) !== null && (codeCloses(fence[1], inner.col) || codeCloses(fence[1], top.base))) {
-      h.fence = { run: fence[1], column: inner.col, host: top.base }
+    if (inner.col >= top.column && fence && parseFenceInfo(fence[2]) !== null && codeCloses(fence[1], top.base, true)) {
+      h.payloadSpan = { run: fence[1], column: inner.col, host: top.base }
     }
   }
   const bare = COLON_CLOSER.test(inner.rest)
@@ -2015,15 +2029,14 @@ function hostColonStep(h, inner, bodyFollows, commentCloses = () => false, marke
     return false
   }
   const base = h.columns.at(-1)
-  // Past the container's column a line is its text, except a named opener
-  // where no paragraph is in the way: that one opens at its authored column
-  // (CARVE-P0-004).
+  // An opener past a hosted container establishes its own base and may
+  // interrupt its paragraph (CARVE-P0-004, CARVE-P2-017).
   if (top && base === top.base && inner.col > top.column &&
-      !(paragraph.length === 0 && colon && !bare && namedColonOpener(inner.rest))) return false
+      !(!bare && opensHostedColonBlock(inner.rest))) return false
   if (top && bare && inner.col !== top.base && inner.col !== top.column) return false
   if (stack.length >= remainingDepth) return false
   const opener = colon && parseColonOpener(colon[2])
-  if (base > 0 && opener && (!markerLine || bodyFollows(base))) {
+  if (opener && (base > 0 || opener.mode === 'line-block')) {
     let absorbed = false
     if (COLON_CLOSER.test(inner.rest)) {
       let held = h.colonParagraph
@@ -2057,15 +2070,18 @@ function hostColonStep(h, inner, bodyFollows, commentCloses = () => false, marke
  * the host's column ends the host and its fence; a blank ends neither.
  */
 function hostFenceStep(h, line) {
-  if (!h.fence) return false
+  // Inline spans shield delimiters without claiming code-fence ownership.
+  const slot = h.payloadSpan ? 'payloadSpan' : 'fence'
+  const span = h[slot]
+  if (!span) return false
   const meas = indentCols(line)
-  if (meas.rest !== '' && meas.col < h.fence.host) {
-    h.fence = null
+  if (meas.rest !== '' && meas.col < span.host) {
+    h[slot] = null
     return false
   }
   const c = PURE_FENCE.exec(meas.rest)
-  if (c && c[1][0] === h.fence.run[0] && c[1].length >= h.fence.run.length &&
-      (meas.col === h.fence.host || meas.col === h.fence.column)) h.fence = null
+  if (c && c[1][0] === span.run[0] && c[1].length >= span.run.length &&
+      (slot === 'payloadSpan' || meas.col === span.host || meas.col === span.column)) h[slot] = null
   return true
 }
 
@@ -2074,13 +2090,14 @@ function hostFenceStep(h, line) {
 // under the current paragraph still leaves a possible closer to account for.
 function hostFenceOpener(h, inner, canOpen = () => true) {
   const column = h.columns.at(-1)
-  const colon = h.colons?.at(-1)
-  if (colon && column === colon.base && inner.col > colon.column) return null
+  if (inner.col < column) return null
   if (h.unclaimed !== null && h.unclaimed.host > column) h.unclaimed = null
   const f = FENCE.exec(inner.rest)
   const opener = f && parseFenceInfo(f[2]) !== null ? f : null
   if (inner.col !== column) {
-    if (opener !== null && column > 0 && !h.unrebased.has(column) && h.unclaimed === null && canOpen(opener)) return opener
+    // An absorbed run of the other fence character is not waiting for this one.
+    const awaited = h.unclaimed !== null && (opener === null || opener[1][0] === h.unclaimed.run[0])
+    if (opener !== null && column > 0 && !h.unrebased.has(column) && !awaited && canOpen(opener)) return opener
     // AN OVER-INDENTED RUN INSIDE A CONTAINER DID OPEN SOMETHING. The host's
     // reader takes it (SS24 C3 reads "at or past"), and the run at the host's own
     // column below it is that fence's CLOSER. Untracked, that closer read as a
@@ -2264,10 +2281,6 @@ function descriptionCloserAhead(run, lines, from, bodyColumn, endsBodyAt) {
   return false
 }
 
-// An unterminated code fence on a nested item's lead owns the rest of a
-// description body just as it owns the rest of a list item. A closer belongs
-// to that nested item only when it reaches the item's content column; a
-// flush-left fence-shaped line is payload, not a closer.
 function descriptionLeadHasUnterminatedNestedFence(line, lines, start, bodyColumn, endsBodyAt) {
   let text = line
   let contentColumn = bodyColumn
@@ -2325,6 +2338,15 @@ function opensSubBlock(line) {
   return isColonBlockOpener(line)
 }
 
+function opensHostedColonBlock(line) {
+  if (QUOTE.test(line) || HEADING.test(line) || HR.test(line) || isTableRow(line)) return true
+  const fence = FENCE.exec(line)
+  if (fence) return parseFenceInfo(fence[2]) !== null
+  const colon = COLON_FENCE.exec(line)
+  const opener = colon && parseColonOpener(colon[2])
+  return !!(opener && (opener.type || opener.mode === 'line-block'))
+}
+
 const opensAuthoredBase = (line) => opensSubBlock(line) || isLinkDef(line) ||
   FOOTNOTE_DEF.test(line) || COMMENT_LINE.test(line) ||
   parseAttrList(line) !== null || isCaptionableParagraph([line])
@@ -2337,7 +2359,7 @@ const opensAuthoredBase = (line) => opensSubBlock(line) || isLinkDef(line) ||
  * returns left of it. This measures every leading run once and preserves any
  * payload indentation beyond the opener.
  */
-export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = false) {
+export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = false, hostedColonBody = false) {
   const out = []
   // Whether a nested note has been flushed to column 0 whose fixed body column
   // (2) a following plain paragraph could wrongly reach. It arms the paragraph
@@ -2391,7 +2413,7 @@ export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = fal
       index = last
       continue
     }
-    const establishesBase = measured.col > 0 && opensAuthoredBase(measured.rest)
+    const establishesBase = measured.col > 0 && (hostedColonBody ? opensHostedColonBlock(measured.rest) : opensAuthoredBase(measured.rest))
     // A LIST ITEM IS A CONTAINER TOO (carve#1781). `opensSubBlock` answers a
     // different question - whether a blank-separated sub-block leaves a list
     // TIGHT - and a list marker is deliberately absent from it there, because a
@@ -2455,7 +2477,15 @@ export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = fal
         }
       }
     }
-    out.push(...candidate.slice(0, relativeEnd))
+    const colon = COLON_FENCE.exec(candidate[0])
+    const opener = colon && !COLON_CLOSER.test(candidate[0]) && parseColonOpener(colon[2])
+    if (opener && opener.mode !== 'line-block') {
+      const close = findColonCloser(candidate, 0, colon[1].length)
+      const end = close === -1 ? relativeEnd : Math.min(close, relativeEnd)
+      out.push(candidate[0])
+      out.push(...normalizeAuthoredBodyBases(candidate.slice(1, end), state, false, true))
+      out.push(...candidate.slice(end, relativeEnd))
+    } else out.push(...candidate.slice(0, relativeEnd))
     index += relativeEnd - 1
   }
   return out
@@ -2896,13 +2926,19 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // pulled-in block (SS17 L4). It is a distinct signal from an empty body
       // line, so an empty note (`[^a]:`) never swallows the following block.
       let pullPending = false
+      let afterComment = false
+      let commentScanFrom = 0
       // Indented continuation: the line's leading run must reach COLUMN 2
       // (PART 9 SS24 C1 column arithmetic), not two literal space characters.
       // A tab from column 0 already reaches column 4, so a bare tab or a
       // space-then-tab both satisfy the floor; a single space (column 1) does
       // not. A blank RUN of any length is allowed between continuation lines.
       while (i < n) {
+        const measured = ind(i)
+        if (measured.col === 0 && FOOTNOTE_DEF.test(measured.rest)) break
+        if (isBlank(lines[i])) afterComment = false
         if (isFootnoteContinuationLine(lines[i])) {
+          afterComment = afterCommentTransition(false, {})
           bodyLines.push(dedent(lines[i], FOOTNOTE_BODY_COLUMN))
           pullPending = false
           i++
@@ -2962,7 +2998,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           for (let k = i; k < end; k++) bodyLines.push(lines[k])
           pullPending = false
           i = end
-        } else if (COMMENT_LINE.test(lines[i] ?? '') && bodyHoldsOpenCommentSpan(bodyLines)) {
+        } else if (COMMENT_LINE.test(lines[i] ?? '') && bodyHoldsOpenCommentSpan(commentScanFrom === 0 ? bodyLines : bodyLines.slice(commentScanFrom))) {
           // carve#2488, the same arm the `dd` carries. This body ends at a
           // comment below column 2, and a comment INSIDE a span the body already
           // holds is not one - see `bodyHoldsOpenCommentSpan`. carve#2488 reads
@@ -2971,6 +3007,25 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // band this covers.
           bodyLines.push(keptCommentDelimiter(lines[i]))
           pullPending = false
+          i++
+        } else if (measured.col < FOOTNOTE_BODY_COLUMN &&
+            (afterComment || paragraphOpenSince(bodyLines, commentScanFrom)) &&
+            COMMENT_LINE.test(measured.rest) &&
+            !(measured.col === 0 && commentFenceOpensSpan(lines, i))) {
+          const comment = classifyLayoutComment(lines, i)
+          bodyLines.push(keptCommentDelimiter(lines[i]))
+          if (comment?.kind === 'fenced_comment') {
+            for (let k = i + 1; k < comment.end; k++) bodyLines.push(lines[k])
+            i = comment.end
+          } else i++
+          commentScanFrom = bodyLines.length
+          afterComment = afterCommentTransition(afterComment, { comment: true, belowComment: measured.col < FOOTNOTE_BODY_COLUMN })
+        } else if (afterComment &&
+            !startsVisibleBlock(lines[i]) && !isTableRow(lines[i]) &&
+            !COLON_FENCE.test(lines[i]) && !(FENCE.test(lines[i]) && hasCloser(lines, i))) {
+          // A retained marker is paragraph text and opens no list (PART 0 X1).
+          bodyLines.push(BULLET.test(measured.rest) || isOrderedMarkerLine(measured.rest) ? LAZY + measured.rest : measured.rest)
+          afterComment = afterCommentTransition(afterComment, {})
           i++
         } else break
         // NO LAZY CONTINUATION. A branch here used to fold any flush-left
@@ -3139,7 +3194,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         !isOrderedMarkerLine(cur) &&
         !isCodeBlockOpener(cur) &&
         !CAPTION.test(cur)
-      const isEntry = (s) => /^::?[ ](?=[ \t]*\S)/.test(s) && !/^:::/.test(s)
+      const isEntry = (s) => /^::?[ ](?=[ \t]*[^ \t\n\r])/.test(s) && !/^:::/.test(s)
       // A definition/term line folded into an open item BELOW its content column
       // arrives LAZY-framed (the item-fold pass at C3). A `:  def` marker is a
       // LENIENT def-list entry: it attaches as a fresh <dd> to its open term even
@@ -3214,6 +3269,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // rest -- matching the real output the corpus pins for all engines.
           // (`:  \+` stays a literal `+`, never a marker.)
           const bodyLines = []
+          const measurement = state.opaqueMeasurement
+          const parentOrigins = measurement?.origins.get(lines)
+          const markerLead = matchMarkerAt(indentCols(dm[2])) && markerFenceSummary(dm[2], new Map())
+          const bodyOrigins = parentOrigins === undefined || !markerLead ? undefined : []
+          if (bodyOrigins) measurement.origins.set(bodyLines, bodyOrigins)
+          const pushBody = (text, row = i) => {
+            bodyLines.push(text)
+            if (bodyOrigins) bodyOrigins.push(typeof parentOrigins === 'number' ? parentOrigins + row : parentOrigins[row])
+          }
           // The fold question is asked of the body AS IT WILL BE READ (§10 I5,
           // carve#1911): a block opener past the body's column is rebased to
           // the body's own column 0 before the body is parsed, so asking the
@@ -3226,33 +3290,38 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // `:  ` never swallows the following flush-left block.
           let pullPending = CONT_MARKER.test(trimWs(dm[2]))
           if (!pullPending) {
-            bodyLines.push(stripIndent(dm[2]).replace(/[ \t]+$/, ''))
+            pushBody(stripIndent(dm[2]).replace(/[ \t]+$/, ''), i - 1)
           }
           const endsBodyAt = (at) => {
             const cur = lines[at] ?? ''
             return isEntry(cur) ||
               (isBlank(cur) && !isDefinitionContinuationLine(lines[at + 1], bodyColumn))
           }
+          let afterComment = false
+          // Lines before the last comment this arm kept cannot hold a paragraph or a
+          // span open, so the fold questions below read the tail only.
+          let ddScanFrom = 0
+          const sinceComment = () => (ddScanFrom === 0 ? bodyLines : bodyLines.slice(ddScanFrom))
           let openFence = -1
-          const nestedLeadOwnsBody = descriptionLeadHasUnterminatedNestedFence(
+          const nestedLeadFenceUnterminated = descriptionLeadHasUnterminatedNestedFence(
             bodyLines[0] ?? '', lines, i, bodyColumn, endsBodyAt,
           )
           while (i < n) {
             const cur = lines[i] ?? ''
-            if (nestedLeadOwnsBody) {
+            if (nestedLeadFenceUnterminated) {
               if (endsBodyAt(i)) break
               const measured = indentCols(cur)
-              bodyLines.push(measured.col >= bodyColumn
-                ? dedentMeasured(measured, cur, bodyColumn).text
-                : LAZY + measured.rest)
+              if (measured.rest !== '' && measured.col < bodyColumn) break
+              pushBody(dedentMeasured(measured, cur, bodyColumn).text)
               i++
               continue
             }
             if (isEntry(cur)) break
             if (isBlank(cur)) {
+              afterComment = false
               // a blank before an indented line is an internal paragraph break;
               // otherwise the blank ends this definition body.
-              if (isDefinitionContinuationLine(lines[i + 1], bodyColumn)) { bodyLines.push(dedent(cur, bodyColumn)); i++; continue }
+              if (isDefinitionContinuationLine(lines[i + 1], bodyColumn)) { pushBody(dedent(cur, bodyColumn)); i++; continue }
               break
             }
             if (CONT_MARKER.test(cur)) {
@@ -3272,16 +3341,17 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               // comment spelling of the same document left it outside.
               i++
               if (!attachesFlushLeft(ind(i))) break
-              bodyLines.push('')
+              pushBody('')
               pullPending = true
               continue
             }
             if (isDefinitionContinuationLine(cur, bodyColumn)) {
+              afterComment = afterCommentTransition(false, {})
               // indented continuation block, dedented by the content margin.
               // `dedent` carries a tab that STRADDLES the margin back as the
               // spaces it bought past column 3, so `<TAB>x` (column 4) arrives
               // one column in, exactly as ` x` after three spaces would.
-              bodyLines.push(dedent(cur, bodyColumn))
+              pushBody(dedent(cur, bodyColumn))
               pullPending = false
               i++
               continue
@@ -3315,7 +3385,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // first-block marker, or a lazy continuation of the open paragraph.
             if (pullPending) {
               const end = attachedBlockEnd(lines, i, state, attachmentBoundary(lines), ind(i))
-              for (let k = i; k < end; k++) bodyLines.push(lines[k])
+              for (let k = i; k < end; k++) pushBody(lines[k], k)
               pullPending = false
               i = end
               continue
@@ -3375,44 +3445,34 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // own columns still fold, which is why the test is made here and not
             // in `bodyLeavesParagraphOpen`.
             if (authoredCol === 0 && descriptionBodyEndsInAbsorbedNote(asRead(bodyLines))) break
-            /*
-             * A COMMENT BELOW THE BODY'S COLUMN ENDS IT (carve#1930). This arm
-             * is only reached for a line BELOW the body's content column, and
-             * §17's band sends such a line to the surviving context: the body
-             * ends and the document classifies it. A comment closes the
-             * paragraph above it wherever it is written, so once the body's
-             * paragraph is closed and the comment is not the body's own
-             * content, nothing is left open for the next line to fold into -
-             * S4's ordinary answer, reached the ordinary way.
-             *
-             * The `dd` had no such arm at all, so a comment here folded in as an
-             * invisible BODY line and the body went on collecting. Two things
-             * followed. A terminated `%%%` never opened a comment BLOCK, so both
-             * delimiters degraded to line comments and the text between them was
-             * PUBLISHED; and a following line at the body's own column stayed in
-             * the `dd` where every engine puts it outside.
-             *
-             * NEITHER THE KIND NOR THE COLUMN IS A PARAMETER. The `%%` line
-             * form, a `%%%` with no closer ahead and a terminated `%%%` answer
-             * alike, and so does a comment one or two columns in. Both narrower
-             * forms were written first and every document that told them apart
-             * sided with this one in all three engines.
-             *
-             * The ITEM collector states its half of the same rule further down,
-             * and corpus 214 pins it there. AT the body's own column nothing
-             * changes: that line is the body's own content and never reaches
-             * here, and neither does a comment under an EMPTY body - the
-             * first-block `+` branch above consumes it first, which is why
-             * there is no emptiness guard on this line to go stale.
-             */
             // carve#2488: a comment inside a span this body already holds is not
             // "a comment below the column" - see `bodyHoldsOpenCommentSpan`.
-            if (COMMENT_LINE.test(dedented) && bodyHoldsOpenCommentSpan(asRead(bodyLines))) {
-              bodyLines.push(keptCommentDelimiter(cur))
+            if (COMMENT_LINE.test(dedented) && bodyHoldsOpenCommentSpan(asRead(sinceComment()))) {
+              pushBody(keptCommentDelimiter(cur))
               i++
               continue
             }
-            if (classifyLayoutComment(lines, i) !== null) break
+            if (classifyLayoutComment(lines, i) !== null) {
+              if (authoredCol === 0 && commentFenceOpensSpan(lines, i)) break
+              if (!afterComment && !bodyLeavesParagraphOpen(asRead(sinceComment()))) break
+              const comment = classifyLayoutComment(lines, i)
+              pushBody(keptCommentDelimiter(cur))
+              if (comment.kind === 'fenced_comment') {
+                for (let k = i + 1; k < comment.end; k++) pushBody(lines[k], k)
+                i = comment.end
+              } else i++
+              ddScanFrom = bodyLines.length
+              afterComment = afterCommentTransition(afterComment, { comment: true, belowComment: authoredCol < bodyColumn })
+              continue
+            }
+            if (afterComment && !startsVisibleBlock(cur) &&
+                !isTableRow(cur) && !COLON_FENCE.test(cur) &&
+                !(FENCE.test(cur) && hasCloser(lines, i))) {
+              pushBody(BULLET.test(dedented) || isOrderedMarkerLine(dedented) ? LAZY + dedented : dedented)
+              afterComment = afterCommentTransition(afterComment, {})
+              i++
+              continue
+            }
             /*
              * AN INVISIBLE LINE FOLDS LIKE ANY OTHER -- NORMATIVE, and §10 I5's
              * own sentence for the same band: "at a nonzero column BELOW
@@ -3440,7 +3500,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
                 !startsVisibleBlock(dedented) &&
                 (isLinkDef(dedented) || FOOTNOTE_DEF.test(dedented) ||
                  ABBR_DEF.test(dedented) || tryAttrLine([dedented], 0) !== null)) {
-              bodyLines.push(LAZY + dedented)
+              pushBody(LAZY + dedented)
               i++
               continue
             }
@@ -3471,7 +3531,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             const lazyFence = !foldablePlain(dedented) && FENCE.test(dedented) &&
               !(FENCE.test(cur) && hasCloser(lines, i))
             if ((foldablePlain(dedented) || lazyFence || BULLET.test(dedented) || isOrderedMarkerLine(dedented)) && bodyLeavesParagraphOpen(asRead(bodyLines))) {
-              bodyLines.push(lazyFence ? LAZY + dedented : dedented)
+              pushBody(lazyFence ? LAZY + dedented : dedented)
               i++
               continue
             }
@@ -3480,6 +3540,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const normalizedBody = state.authoredBodyBases
             ? normalizeAuthoredBodyBases(bodyLines, state)
             : bodyLines
+          if (bodyOrigins && normalizedBody !== bodyLines) measurement.origins.set(normalizedBody, bodyOrigins)
           if (openFence !== -1) (state.fenceOpensAt ??= new WeakMap()).set(normalizedBody, new Set([openFence]))
           node.items.push({ ddBlocks: normalizedBody.length ? parseBlocks(inheritFinalBreak(lines, normalizedBody, i, state), state, false) : [] })
           continue
@@ -3517,103 +3578,78 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const close = findColonCloser(lines, i, cf[1].length)
           const end = close === -1 ? n : close
           const body = lines.slice(i + 1, end)
-          // A closer adds no body, so it does not stop the demotion either: what
-          // follows the demoted opener is read on its own, a bare run by §10 I4
-          // (carve#2147). Only a list item's marker-line opener is ever handed
-          // lazy lines, so nothing else reaches this test.
-          // A comment kept from below the content column is not the line that
-          // reaches it, so it is no body either (carve-js#2772).
-          if (onlyLazyBody(body, (k) => ind(i + 1 + k).belowComment === true)) {
-            // A marker-line opener whose only "body" came from below-content
-            // lazy folding did not actually acquire container body lines.
-            //
-            // LAZY FOLDING IS THE SUBJECT, so the guard asks whether any
-            // happened. It used to fire on `body.length > 0` alone, which a
-            // BLANK line satisfies - and the item collector pushes exactly one
-            // blank into the body while a colon fence is open, so `- ::: d`
-            // followed by a blank came in here with a one-blank body and was
-            // demoted to literal text. The same blank is the container's own
-            // content two functions over; reading it here as evidence that no
-            // body was acquired gives one line two contradictory roles inside
-            // a single parse. The neighbouring spellings were all already
-            // right - the opener at end of input, with its closer, with a body
-            // line, and the same opener inside a quote - so only the blank
-            // differed (carve#1382). A blank may still ride ALONGSIDE lazy
-            // lines, which is what `isBlank` keeps covering.
-          } else {
-            markMeasuredContainerText(state, lines, i + 1, end, ind)
-            i = close === -1 ? n : close + 1
-            inheritFinalBreak(lines, body, close === -1 ? n : close, state)
-            if (opener.mode === 'line-block') {
-              push({ t: 'line-block', lines: body.map(stripLazy) })
-            } else if (opener.mode === 'hardbreaks') {
-              push({ t: 'hardbreaks', children: parseBlocks(body, state, false) })
-            } else if (opener.mode === 'quote') {
-              // The node a `>`-prefixed quote produces; the spelling differs,
-              // the tree does not (markup-carve/carve#1718).
-              const node = { t: 'quote', children: parseBlocks(body, state, false) }
-              if (close !== -1) {
-                // SS4's seventh host: the slot hangs on the CLOSING fence, as
-                // the figure group's does. A quote closed by end of input has
-                // no closer line to host it.
-                const cap = captionSlot(i)
-                if (cap) {
-                  node.caption = cap.text
-                  i = cap.next
-                }
+          markMeasuredContainerText(state, lines, i + 1, end, ind)
+          i = close === -1 ? n : close + 1
+          inheritFinalBreak(lines, body, close === -1 ? n : close, state)
+          if (opener.mode === 'line-block') {
+            push({ t: 'line-block', lines: body.map(stripLazy) })
+          } else if (opener.mode === 'hardbreaks') {
+            push({ t: 'hardbreaks', children: parseBlocks(body, state, false) })
+          } else if (opener.mode === 'quote') {
+            // The node a `>`-prefixed quote produces; the spelling differs,
+            // the tree does not (markup-carve/carve#1718).
+            const node = { t: 'quote', children: parseBlocks(body, state, false) }
+            if (close !== -1) {
+              // SS4's seventh host: the slot hangs on the CLOSING fence, as
+              // the figure group's does. A quote closed by end of input has
+              // no closer line to host it.
+              const cap = captionSlot(i)
+              if (cap) {
+                node.caption = cap.text
+                i = cap.next
               }
-              push(node)
-            } else if (opener.type === 'footnotes') {
-              // placement directive: relocates the endnotes section
-              push({
-                t: 'footnotes-placement',
-                title: opener.title,
-                label: opener.label,
-                children: parseBlocks(body, state, false),
-              })
-            } else if (opener.type === 'toc') {
-              throw new Refuse('::: toc directive')
-            } else if (
-              !opener.invalidMetadata && opener.type === 'figure' && opener.title === null && opener.label === null &&
-              !state.inFigureGroup
-            ) {
-              // PART 9 SS4c: a BARE `::: figure` opener is a composite figure
-              // group. An opener carrying a quoted title or [label] does not
-              // match figure_group_open and falls to the generic colon-div arm
-              // below; a bare opener anywhere inside an open group's body is
-              // demoted the same way (groups do not nest), which is what the
-              // state flag carries through the recursion.
-              state.inFigureGroup = true
-              let children
-              try {
-                children = parseBlocks(body, state, false)
-              } finally {
-                state.inFigureGroup = false
-              }
-              const node = { t: 'figure-group', children }
-              if (close !== -1) {
-                // caption at the CLOSER (SS4's sixth host; one blank allowed).
-                // A group closed by end of input has no closer line to host
-                // the slot.
-                const cap = captionSlot(i)
-                if (cap) {
-                  node.caption = cap.text
-                  i = cap.next
-                }
-              }
-              push(node)
-            } else {
-              push({
-                t: 'colon-div',
-                type: opener.type,
-                title: opener.title,
-                label: opener.label,
-                children: parseBlocks(body, state, false),
-              })
             }
-            continue
+            push(node)
+          } else if (opener.type === 'footnotes') {
+            // placement directive: relocates the endnotes section
+            push({
+              t: 'footnotes-placement',
+              title: opener.title,
+              label: opener.label,
+              children: parseBlocks(body, state, false),
+            })
+          } else if (opener.type === 'toc') {
+            throw new Refuse('::: toc directive')
+          } else if (
+            !opener.invalidMetadata && opener.type === 'figure' && opener.title === null && opener.label === null &&
+            !state.inFigureGroup
+          ) {
+            // PART 9 SS4c: a BARE `::: figure` opener is a composite figure
+            // group. An opener carrying a quoted title or [label] does not
+            // match figure_group_open and falls to the generic colon-div arm
+            // below; a bare opener anywhere inside an open group's body is
+            // demoted the same way (groups do not nest), which is what the
+            // state flag carries through the recursion.
+            state.inFigureGroup = true
+            let children
+            try {
+              children = parseBlocks(body, state, false)
+            } finally {
+              state.inFigureGroup = false
+            }
+            const node = { t: 'figure-group', children }
+            if (close !== -1) {
+              // caption at the CLOSER (SS4's sixth host; one blank allowed).
+              // A group closed by end of input has no closer line to host
+              // the slot.
+              const cap = captionSlot(i)
+              if (cap) {
+                node.caption = cap.text
+                i = cap.next
+              }
+            }
+            push(node)
+          } else {
+            push({
+              t: 'colon-div',
+              type: opener.type,
+              title: opener.title,
+              label: opener.label,
+              children: parseBlocks(body, state, false),
+            })
           }
-        }
+          continue
+      }
         // invalid opener: ordinary paragraph text (falls through to the
         // paragraph collector)
       }
@@ -3699,7 +3735,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             const left = s.startsWith(':')
             const right = s.endsWith(':')
             const col = node.rows[0].cells[ci]
-            if (!col) return
+            // CARVE-P12-039: a head-row marker sets the column before delimiter colons.
+            if (!col || col.align !== null) return
             if (left && right) col.align = 'center'
             else if (left) col.align = 'left'
             else if (right) col.align = 'right'
@@ -3740,6 +3777,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const qHost = hostLadder()
       let openComment = null // exact-width comment fence opened inside the quote
       let qOpenPara = false // does the quote currently end in an open paragraph?
+      let qTermOpen = false
       let qPara = [] // its lines, for SS12's absorption test below
       /*
        * IS A TABLE OPEN INSIDE THE QUOTE? -- PART 9 SS5 T6 (carve#1348).
@@ -3791,7 +3829,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
        * carve#2509 ruled out.
        */
       const qPureFences = []
-      const closerFollows = (idx, markers, run, column) => {
+      const closerFollows = (idx, markers, run, column, past = false) => {
         // A level's container ends where a line stops supplying its marker, so
         // the index covers one RUN of lines that reach `markers` and is rebuilt
         // when a query lands past it: a pure fence in a LATER quote at the same
@@ -3835,8 +3873,18 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           layoutWork.fenceCloserLookahead += j - idx
           st = qPureFences[markers] = { chars, end: j }
         }
+        // `past`: a closer at the column or any column past it.
+        if (past) {
+          for (const [key, rows] of st.chars) {
+            if (key[0] === run[0] && Number(key.slice(1)) >= column && closerIn(rows, idx, run)) return true
+          }
+          return false
+        }
         const rows = st.chars.get(`${run[0]}${column}`)
         if (!rows) return false
+        return closerIn(rows, idx, run)
+      }
+      const closerIn = (rows, idx, run) => {
         // Queries arrive in line order, so the cursor only moves forward and its
         // total travel is the row count however many openers ask.
         while (rows.cursor < rows.at.length && rows.at[rows.cursor].j <= idx) {
@@ -3888,7 +3936,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }
         if (atStart && qNestedTable.length === 0) {
           const summary = quotePrefixSummary(line, prefixMemo(state, lines, idx).quote)
-          if (summary && !isColonBlockOpener(summary.tail) && !(FENCE.test(summary.tail) && parseFenceInfo(FENCE.exec(summary.tail)[2]) !== null)) {
+          if (summary && !QUOTE.test(matchMarkerAt(indentCols(summary.tail))?.text ?? '') && !isColonBlockOpener(summary.tail) && !(FENCE.test(summary.tail) && parseFenceInfo(FENCE.exec(summary.tail)[2]) !== null)) {
             const { depth, tail } = summary
             if (state.blockDepth + depth >= MAX_NESTING_DEPTH) {
               const remaining = MAX_NESTING_DEPTH - state.blockDepth
@@ -3908,7 +3956,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               // (its own depth-invariance row).
               const host = qNestedHost[depth - 1] ??= hostLadder()
               const { inner } = hostAdvance(host, tail, false)
-              if (state.blockDepth + depth + (host.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(host, inner, floor => colonBodyFollows(idx, depth + 1, floor), (width, floor) => quotedCommentCloser(idx, depth + 1, width, floor), true, [], MAX_NESTING_DEPTH - state.blockDepth - depth - (host.columns.length - 1), (run, column) => closerFollows(idx, depth + 1, run, column))) {
+              if (state.blockDepth + depth + (host.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(host, inner, (width, floor) => quotedCommentCloser(idx, depth + 1, width, floor), true, [], MAX_NESTING_DEPTH - state.blockDepth - depth - (host.columns.length - 1), (run, column, past) => closerFollows(idx, depth + 1, run, column, past))) {
                 qNestedTable[depth - 1] = false
                 return settle(false, depth)
               }
@@ -3919,8 +3967,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
                 return settle(false, depth)
               }
             }
-            return settle(!DEFLIST_TERM.test(tail) &&
-              !isColonBlockOpener(tail) && opensParagraph(tail, true, false, prefixMemo(state, lines, idx).paragraph), depth)
+            return settle(!isColonBlockOpener(tail) && opensParagraph(tail, true, false, prefixMemo(state, lines, idx).paragraph), depth)
           }
         }
         while (QUOTE.test(text)) {
@@ -3933,14 +3980,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // S2: an open payload makes this level's line verbatim, so a marker
           // on it is literal and A FENCED BODY IS NOT A PARAGRAPH.
           const host = qNestedHost[depth] ??= hostLadder()
-          if (hostFenceStep(host, text)) return settle(false, depth + 1)
+          if (hostFenceStep(host, text)) return settle(host.colons?.at(-1)?.mode === 'line-block', depth + 1)
           const before = qNestedTable[depth] ?? false
           qNestedTable[depth] = tableRunStep(before, text)
           const { inner, blockStart, popped } = hostAdvance(host, text, qNestedPara[depth] ?? false)
           if (blockStart) qNestedParaLines[depth] = []
-          if (state.blockDepth + depth + 1 + (host.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(host, inner, floor => colonBodyFollows(idx, depth + 2, floor), (width, floor) => quotedCommentCloser(idx, depth + 2, width, floor), blockStart, qNestedParaLines[depth] ?? [], MAX_NESTING_DEPTH - state.blockDepth - depth - 1 - (host.columns.length - 1), (run, column) => closerFollows(idx, depth + 2, run, column))) {
+          const inLineBlock = host.colons?.at(-1)?.mode === 'line-block'
+          if (state.blockDepth + depth + 1 + (host.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(host, inner, (width, floor) => quotedCommentCloser(idx, depth + 2, width, floor), blockStart, qNestedParaLines[depth] ?? [], MAX_NESTING_DEPTH - state.blockDepth - depth - 1 - (host.columns.length - 1), (run, column, past) => closerFollows(idx, depth + 2, run, column, past))) {
             qNestedTable[depth] = false
-            return settle(false, depth + 1)
+            return settle(inLineBlock && host.colons?.at(-1)?.mode === 'line-block' && !isBlank(text), depth + 1)
           }
           const f = hostFenceOpener(host, inner, (opener) => blockStart || !qNestedPara[depth] ||
             (closerFollows(idx, depth + 2, opener[1], inner.col) ||
@@ -3958,11 +4006,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             return settle(false, depth + 1)
           }
           depth++
+          if (QUOTE.test(inner.rest)) text = inner.rest
           if (!QUOTE.test(text)) {
-            // A term has inline content, but no paragraph for a lazy fold.
-            // Match the direct quote classifier below.
             if (state.blockDepth + depth >= MAX_NESTING_DEPTH) return settle(text.trim() !== '', depth)
-            if (hostedBlockAt(host, inner, popped)) return settle(false, depth)
+            if (hostedBlockAt(host, inner, popped) || isDefinitionOrAttributeLine(inner.rest)) return settle(false, depth)
             // A bare colon run closes the claim unless this level's own
             // paragraph absorbs it under CARVE-P9-016.
             const colon = COLON_FENCE.exec(text)
@@ -3975,7 +4022,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               stack.push(colon[1].length)
             }
             return settle(absorbedColon || (!COLON_CLOSER.test(text) &&
-              !DEFLIST_TERM.test(text) && !(atStart && isColonBlockOpener(text)) &&
+              !(atStart && isColonBlockOpener(text)) &&
               opensParagraph(text, atStart, before, prefixMemo(state, lines, idx).paragraph)), depth)
           }
         }
@@ -4048,26 +4095,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }
         return minimum >= floor
       }
-      const colonBodyFollows = (idx, markers, floor) => {
-        let commentWidth = null
-        for (let j = idx + 1; j < n; j++) {
-          let text = lines[j]
-          for (let k = 0; k < markers; k++) {
-            const quoted = QUOTE.exec(text)
-            if (!quoted) return false
-            text = quoted[1] ?? ''
-          }
-          const comment = COMMENT_FENCE.exec(text)
-          if (commentWidth !== null) {
-            if (comment && comment[1].length === commentWidth) commentWidth = null
-            continue
-          }
-          if (comment && quotedCommentCloser(j, markers, comment[1].length)) { commentWidth = comment[1].length; continue }
-          if (isBlank(text) || COMMENT_LINE.test(text)) continue
-          return indentCols(text).col >= floor
-        }
-        return false
-      }
       const trackFence = (l, idx) => {
         // The quote body is literal beyond the same limit used by parseBlocks.
         // Its apparent headings, fences, and tables cannot end a paragraph.
@@ -4082,6 +4109,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const c = COMMENT_FENCE_BODY.exec(l)
           if (c && c[1].length === openComment) openComment = null
           qOpenPara = false
+          qTermOpen = false
           qTableOpen = false
           clearNested()
           qPara = []
@@ -4093,7 +4121,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // the claim again (carve#2538). Only a closer used to clear this, so the
         // ordinary line read as payload.
         if (hostFenceStep(qHost, l)) {
-          qOpenPara = false
+          qOpenPara = qHost.colons?.at(-1)?.mode === 'line-block'
+          qTermOpen = false
           qTableOpen = false
           clearNested()
           qPara = []
@@ -4113,12 +4142,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }
         const { meas, inner: inner0, blockStart, popped } = hostAdvance(qHost, l, qOpenPara)
         if (blockStart) qPara = []
-        if (state.blockDepth + (qHost.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(qHost, inner0, floor => colonBodyFollows(idx, 1, floor),
-          (width, floor) => openComment === null && quotedCommentCloser(idx, 1, width, floor), blockStart, qPara, MAX_NESTING_DEPTH - state.blockDepth - (qHost.columns.length - 1), (run, column) => closerFollows(idx, 1, run, column))) {
-          qOpenPara = false
+        const inLineBlock = qHost.colons?.at(-1)?.mode === 'line-block'
+        if (state.blockDepth + (qHost.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(qHost, inner0, (width, floor) => openComment === null && quotedCommentCloser(idx, 1, width, floor), blockStart, qPara, MAX_NESTING_DEPTH - state.blockDepth - (qHost.columns.length - 1), (run, column, past) => closerFollows(idx, 1, run, column, past))) {
+          // Inline payload keeps the stanza open whatever block shape it has
+          // (carve-php#3237). The opener itself contains no payload yet.
+          qOpenPara = inLineBlock && qHost.colons?.at(-1)?.mode === 'line-block' && !isBlank(l)
+          qTermOpen = false
           qTableOpen = false
           clearNested()
-          qPara = []
+          qPara = qOpenPara ? [l] : []
           return
         }
         const f = hostFenceOpener(qHost, inner0, (opener) => blockStart || !qOpenPara ||
@@ -4194,14 +4226,20 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
          */
         // Every depth ends when a line stops supplying its marker, so a line
         // that is not a nested quote at all clears the whole ladder.
-        if (!QUOTE.test(l)) {
+        if (!QUOTE.test(l) && !QUOTE.test(inner0.rest)) {
           const continuesNested = qOpenPara && !isOpener && !COLON_CLOSER.test(l) &&
             opensParagraph(l, false, qTableOpen)
           if (continuesNested) {
             for (const para of qNestedParaLines) para?.push(l)
           } else clearNested()
         }
-        const nestedQuoteEnds = QUOTE.test(l) && !nestedQuoteOpensParagraph(l, !qOpenPara, idx)
+        const hostedQuote = QUOTE.exec(inner0.rest)
+        const hostedQuoteNeedsTracking = hostedQuote && (
+          qNestedHost.some(host => host?.fence) ||
+          isDefinitionOrAttributeLine((hostedQuote[1] ?? '').trimStart()) ||
+          !opensParagraph(inner0.rest, true, false, prefixMemo(state, lines, idx).paragraph))
+        const nestedQuoteText = QUOTE.test(l) ? l : hostedQuoteNeedsTracking ? inner0.rest : null
+        const nestedQuoteEnds = nestedQuoteText !== null && !nestedQuoteOpensParagraph(nestedQuoteText, blockStart || !qOpenPara, idx)
         const nestedItemEnds = !qOpenPara && !!matchMarkerAt(meas) &&
           !opensParagraph(l, true, false, prefixMemo(state, lines, idx).paragraph)
         const hostedBlock = hostedBlockAt(qHost, inner0, popped)
@@ -4209,15 +4247,26 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener || hostedBlock ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
              l[0] === '|' || l[0] === '{' || contRow || nestedQuoteEnds || nestedItemEnds ||
-             DEFLIST_TERM.test(l) || isLinkDef(l) || COMMENT_LINE.test(l) ||
+             isLinkDef(l) || COMMENT_LINE.test(l) ||
              FOOTNOTE_DEF.test(l))) {
           qOpenPara = false
+          qTermOpen = false
           qPara = []
         } else {
           if (!qOpenPara) qPara = []
           qOpenPara = true
           qPara.push(l)
         }
+        let leaf = l
+        for (let depth = 0; l.includes(':: ') && depth < MAX_NESTING_DEPTH; depth++) {
+          const quote = QUOTE.exec(leaf)
+          const marker = matchMarkerAt(indentCols(leaf))
+          if (quote) leaf = quote[1] ?? ''
+          else if (marker) leaf = marker.text
+          else break
+        }
+        // PART 0 T leaves a term open for plain lazy text.
+        qTermOpen = qOpenPara && (DEFLIST_TERM.test(leaf) || qTermOpen)
       }
       while (i < n) {
         // The MARKER is `>` plus a space, or `>` alone - the same rule the
@@ -4285,7 +4334,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // UNFRAMED for exactly this reason, so a comment reaching a nested quote
         // still arrives as itself.
         if (lines[i] !== undefined && qOpenPara && !bodyEndsWrappedAttr(inner) && !isBlank(lines[i]) &&
-            !COMMENT_LINE.test(lines[i]) &&
+            !COMMENT_LINE.test(lines[i]) && (!qTermOpen || foldablePlainLine(stripLazy(lines[i]).trimStart())) &&
             !peekInterrupts(i) && !COLON_CLOSER.test(lines[i]) && !CAPTION.test(lines[i])) {
           // lazy continuation folds into the open quoted paragraph (SS10 I6)
           //
@@ -4602,7 +4651,9 @@ function markMeasuredOpaque(state, lines, from, to) {
   // Direct fence rows are already covered by the extent scan below.
   // Capture marker-line fences only after the reader admitted CODE or RAW.
   const openerOrigin = typeof origins === 'number' ? origins + from : origins[from]
-  if (openerOrigin === undefined || matchMarkerAt(indentCols(measurement.sourceLines[openerOrigin])) === null) return
+  if (openerOrigin === undefined) return
+  const sourceLead = indentCols(measurement.sourceLines[openerOrigin]).rest.replace(/^: +/, '')
+  if (matchMarkerAt(indentCols(sourceLead)) === null) return
   measurement.markerFenceEnd.set(lines, to)
   for (let index = from; index < to; index++) {
     const origin = typeof origins === 'number' ? origins + index : origins[index]
@@ -4633,6 +4684,7 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns) {
     abbrDefs: new Map(),
     blockDepth: state.blockDepth ?? 0,
     measuringAuthoredBlock: state.measuringAuthoredBlock ?? false,
+    authoredBodyBases: state.authoredBodyBases,
   }
   const measuredLines = lines.slice(start, limit)
   seen.opaqueMeasurement = { origins: new WeakMap([[measuredLines, start]]), sourceColumns, sourceLines: lines, markerFenceEnd: new WeakMap(), rows: new Set() }
@@ -5223,6 +5275,9 @@ function collectItems(lines, i, list, state, ind, meas) {
      */
     const deepestParagraphOpen = () => {
       if (!paragraphIsOpen()) return false
+      // An authored block the block reader has already ended holds nothing
+      // open for the line below (a description ending on a code block).
+      if (!deepestIsDescendant && authoredContainer && authoredBlockLimit !== null && i >= authoredBlockLimit) return false
       if (!deepestIsDescendant) return true
       const d = descendantQ1At(descendantQ1.col)
       return d === null ? true : d.open
@@ -5311,6 +5366,9 @@ function collectItems(lines, i, list, state, ind, meas) {
     // `contentCol`; this is only the source collector's local zero.
     let authoredBlockBase = null
     let authoredBlockLimit = null
+    // Whether that block is a container (a quote or a definition list), whose
+    // own last block answers for the line below once the block has ended.
+    let authoredContainer = false
     // At the item's own column this base strips exactly what the item would.
     // Its end matters only when another opener could establish a different
     // scope. Defer the extent parse until then; a comment before a nested list
@@ -5320,11 +5378,29 @@ function collectItems(lines, i, list, state, ind, meas) {
     // A term on the marker line folds the lines past the content column that
     // follow it (carve#2411), so none of them opens an authored base.
     let leadTerm = DEFLIST_TERM.test(head.text.replace(/^[ \t]+/, ''))
+    let pendingHeadTerm = DEFLIST_TERM.test(head.text) ? i : null
+    const measureHeadTerm = () => {
+      const candidate = [head.text]
+      for (let at = headIndex + 1; at < lines.length; at++) {
+        const measured = ind(at)
+        if (measured.col <= baseIndent && matchMarkerAt(measured)) break
+        if (isBlank(lines[at]) && at + 1 < lines.length && !isBlank(lines[at + 1]) &&
+          ind(at + 1).col < contentCol) break
+        candidate.push(measured.col < contentCol
+          ? lines[at] : dedentMeasured(measured, lines[at], contentCol).text)
+      }
+      authoredBlockLimit = headIndex + authoredBlockEnd(candidate, 0, 0, state)
+      authoredContainer = true
+      pendingHeadTerm = null
+    }
     const insideFence = () => fence.opaque !== null || fence.colon.length !== 0
+    // Which open colon containers are line blocks: their payload is inline, so
+    // a span in it pairs wherever its lines start (ruled on carve-php#3137).
+    const colonLineBlock = []
     const trackFence = (line, opens, index) => {
       if (fence.opaque) {
         if (fence.opaque.kind === 'code') {
-          const c = PURE_FENCE.exec(line)
+          const c = PURE_FENCE.exec(fence.opaque.payload ? line.replace(/^[ \t]+/, '') : line)
           if (c && c[1][0] === fence.opaque.run[0] && c[1].length >= fence.opaque.run.length) {
             fence.opaque = null
           }
@@ -5344,17 +5420,19 @@ function collectItems(lines, i, list, state, ind, meas) {
         return
       }
 
-      const code = FENCE.exec(line)
+      const payload = fence.colon.length !== 0 && colonLineBlock.at(-1) === true
+      const unindented = payload ? line.replace(/^[ \t]+/, '') : line
+      const code = FENCE.exec(unindented)
       if (code && parseFenceInfo(code[2]) !== null) {
         // `opens` is §10 I4's answer for this line. The SPAN is tracked either
         // way, because the interior-blank rule (carve#1383) reads it and a
         // fence-shaped line the paragraph absorbed still runs to the same
         // place; what the flag records is whether a verbatim BODY exists for
         // §24 S2 to want.
-        fence.opaque = { kind: 'code', run: code[1], opens }
+        fence.opaque = { kind: 'code', run: code[1], opens, payload }
         return
       }
-      const comment = COMMENT_FENCE_BODY.exec(line)
+      const comment = COMMENT_FENCE_BODY.exec(unindented)
       if (comment) {
         // §28 AGAIN, AND THIS IS WHERE THE SPAN IS DECIDED (carve#1914). A
         // code fence records `opens` because §10 I4 can refuse to let it
@@ -5371,12 +5449,22 @@ function collectItems(lines, i, list, state, ind, meas) {
       const closer = COLON_CLOSER.exec(line)
       if (closer) {
         const len = closer[1].length
-        if (fence.colon.length !== 0 && len === fence.colon[fence.colon.length - 1]) fence.colon.pop()
-        else fence.colon.push(len)
+        if (fence.colon.length !== 0 && len === fence.colon[fence.colon.length - 1]) {
+          fence.colon.pop()
+          colonLineBlock.length = fence.colon.length
+        } else if (!payload) {
+          fence.colon.push(len)
+          colonLineBlock[fence.colon.length - 1] = false
+        }
         return
       }
+      if (payload) return
       const colon = COLON_FENCE.exec(line)
-      if (colon && parseColonOpener(colon[2]) !== null) fence.colon.push(colon[1].length)
+      const opener = colon && parseColonOpener(colon[2])
+      if (opener) {
+        fence.colon.push(colon[1].length)
+        colonLineBlock[fence.colon.length - 1] = opener.mode === 'line-block'
+      }
     }
     // A verbatim body a DESCENDANT container opened. `fence` tracks the item's
     // OWN column, because that is where its closer has to be written, so an
@@ -5394,6 +5482,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     // span sits at (carve#2526). One run is remembered and the first
     // matching-width run at any column clears it, which is O(1) per line.
     let belowSpan = null
+    let belowSpanClosed = false
     // §10 I4 for such a fence: at block start it runs to the end of its
     // container, after a paragraph only when a closer follows at its own
     // column. A run indented past that column is payload (CARVE-P2-006).
@@ -5541,14 +5630,40 @@ function collectItems(lines, i, list, state, ind, meas) {
       absorbedFenceSeen = { run: f[1], col: dmeas.col }
       return null
     }
-    // A comment closes the leaf paragraph but leaves the item frame available.
-    // This flag records that explicit transition for the next ownership step.
+    // Only a below-column comment grants a continuation claim after closure.
     let afterComment = false
     // The run of a code fence opened while an absorbed opener is still tracked.
     let fenceUnderAbsorbed = null
     // The quote run at this item's content column: its last line's index, and
     // whether that line left the quote a paragraph or a table open.
-    const bodyQuote = { at: -2, open: false, table: false }
+    const bodyQuote = { at: -2, open: false, table: false, hosts: [] }
+    const advanceBodyQuote = (text, idx) => {
+      const continues = bodyQuote.at === idx - 1
+      if (!continues) bodyQuote.hosts = []
+      let depth = 0
+      let opaque = false
+      while (QUOTE.test(text) && depth < MAX_NESTING_DEPTH) {
+        text = QUOTE.exec(text)[1] ?? ''
+        const host = bodyQuote.hosts[depth] ??= hostLadder()
+        if (hostFenceStep(host, text)) { opaque = true; break }
+        const { inner, blockStart, popped } = hostAdvance(host, text, continues && bodyQuote.open)
+        const opener = hostFenceOpener(host, inner, () => blockStart || !continues || !bodyQuote.open)
+        if (opener) {
+          host.fence = { run: opener[1], column: inner.col, host: host.columns.at(-1) }
+          opaque = true
+          break
+        }
+        if (hostedBlockAt(host, inner, popped) || isDefinitionOrAttributeLine(inner.rest)) { opaque = true; break }
+        depth++
+      }
+      bodyQuote.hosts.length = depth + Number(opaque)
+      const rowOpen = continues && bodyQuote.table
+      bodyQuote.open = !opaque && text.trim() !== '' && opensParagraph(text, !(continues && bodyQuote.open), rowOpen)
+      bodyQuote.table = !opaque && tableRunStep(rowOpen, text)
+      bodyQuote.at = idx
+      return bodyQuote.open
+    }
+    if (QUOTE.test(head.text) && !paragraphIsOpen()) advanceBodyQuote(head.text, i)
     {
       // A fence can open on the MARKER LINE (`- ``` `), where its opener is the
       // marker-line content, not a collected continuation line -- seed from it.
@@ -5558,7 +5673,11 @@ function collectItems(lines, i, list, state, ind, meas) {
       // ownership for a below-column follower - the marker-line `%%` spelling
       // already answers that way and the two spellings stay together.
       if (fence.opaque?.kind === 'comment') fence.opaque.markerLine = true
-      else nestedOpaque = markerComment(head.text.trimStart(), i)
+      else {
+        nestedOpaque = markerComment(head.text.trimStart(), i)
+        const lead = markerFenceSummary(head.text, prefixMemo(state, lines, i).markerFence ??= new Map())
+        if (!nestedOpaque && headSubMarker && lead) nestedOpaque = { kind: 'code', run: lead.run, col: lead.col }
+      }
     }
     i++
     // FIRST-BLOCK form (SS17 L4): a bare `+` as the sole marker-line content
@@ -5804,6 +5923,19 @@ function collectItems(lines, i, list, state, ind, meas) {
           break
         }
         if (col >= contentCol && !(nm && nm.indent >= contentCol)) {
+          if (pendingHeadTerm !== null) measureHeadTerm()
+          if (authoredContainer && pendingAuthoredBlock !== null) {
+            authoredBlockLimit = authoredBlockEnd(lines, pendingAuthoredBlock, contentCol, state)
+            pendingAuthoredBlock = null
+          }
+          // A paragraph inside a held container is not the item's own
+          // second paragraph (PART 9 section 17 L1, carve#2988).
+          if (authoredContainer && authoredBlockLimit !== null && j < authoredBlockLimit) {
+            if (!descendantFence) pushLine('', BLANK_MEAS)
+            closePara()
+            i = j
+            continue
+          }
           if ((subCol >= 0 && col >= subCol) || (headSubCol >= 0 && col >= headSubCol)) {
             // Content at or past the first sub-list's content column belongs to
             // the SUB-LIST, not this item -- a blank inside the sub-list must
@@ -5924,8 +6056,18 @@ function collectItems(lines, i, list, state, ind, meas) {
         break
       }
       const { col } = lm
-      const nm = matchMarkerAt(lm)
+      // A marker in a line-block payload is payload: it opens no sublist.
+      // A span closer remains payload after trackFence clears the span.
+      const inPayload = col >= contentCol && fence.colon.length !== 0 &&
+        colonLineBlock.at(-1) === true
+      const nm = inPayload ? null : matchMarkerAt(lm)
       if (col >= contentCol) {
+        // A completed span ends the paragraph for a new matched body line,
+        // while its below-column continuation claim remains available.
+        if (belowSpanClosed && !COMMENT_LINE.test(line)) {
+          closePara()
+          belowSpanClosed = false
+        }
         // A line at a known descendant item's column belongs to that item.
         // Leave its authored indentation intact here so the recursive list
         // parser, which knows the descendant's content column, rebases it.
@@ -5941,12 +6083,11 @@ function collectItems(lines, i, list, state, ind, meas) {
         }
         const foldsIntoLeadTerm = leadTerm && col > contentCol && !nm
         // A colon container is not opaque: an opener past the column inside one
-        // takes its authored base like any other, where no paragraph is in the
-        // way (CARVE-P0-004).
-        const colonHoldsNoParagraph = !paragraphIsOpen() ||
-          (para.length === 1 && i === headIndex + 1 && isColonBlockOpener(para[0]))
-        const inOpenColonOnly = fence.opaque === null && fence.colon.length !== 0 && colonHoldsNoParagraph &&
-          col > contentCol && namedColonOpener(lm.rest)
+        // takes its authored base and may interrupt a paragraph
+        // (CARVE-P0-004, CARVE-P2-017).
+        const retainedAfterComment = afterComment && subCol > col && !opensBlockAt(line, i)
+        const inOpenColonOnly = fence.opaque === null && fence.colon.length !== 0 &&
+          col > contentCol && !descendantOwned && !COLON_CLOSER.test(lm.rest) && !inPayload && !retainedAfterComment && opensHostedColonBlock(lm.rest)
         const mayOpenAuthoredBlock = !foldsIntoLeadTerm && !descendantOwned &&
           (!insideFence() || inOpenColonOnly) && opensAuthoredBase(lm.rest)
         if (pendingHeadQuote !== null && mayOpenAuthoredBlock) {
@@ -5960,7 +6101,14 @@ function collectItems(lines, i, list, state, ind, meas) {
             if (isBlank(lines[at]) || COMMENT_LINE.test(lines[at])) break
           }
           authoredBlockLimit = start + authoredBlockEnd(candidate, 0, 0, state)
+          authoredContainer = true
           pendingHeadQuote = null
+        }
+        // A definition list on the marker line is a block at the content
+        // column like one written below it, so its description keeps what
+        // reaches the body column (CARVE-P0-018, CARVE-P2-028).
+        if (pendingHeadTerm !== null && mayOpenAuthoredBlock) {
+          measureHeadTerm()
         }
         if (pendingAuthoredBlock !== null && mayOpenAuthoredBlock) {
           authoredBlockLimit = authoredBlockEnd(lines, pendingAuthoredBlock, contentCol, state)
@@ -5973,7 +6121,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         const insideAuthoredBlock = pendingAuthoredBlock !== null ||
           (authoredBlockLimit !== null && i < authoredBlockLimit)
         if (leadTerm && !foldsIntoLeadTerm && !insideFence() && !foldablePlainLine(lm.rest)) leadTerm = false
-        const openerBase = !insideAuthoredBlock && mayOpenAuthoredBlock
+        const openerBase = (!insideAuthoredBlock || inOpenColonOnly) && mayOpenAuthoredBlock
           ? col
           : null
         // A LINE THAT OPENS ITS OWN BASE IS MEASURED AT ITS OWN COLUMN. The
@@ -5990,7 +6138,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         // base at the item's content column then held it over a quote written
         // one column deeper, which arrived at body column 1 instead of 0 and
         // stopped being an opener at all (carve#1772, corpus 422-8).
-        const localBase = authoredBlockBase !== null && insideFence() && col < authoredBlockBase
+        const localBase = inOpenColonOnly ? openerBase : authoredBlockBase !== null && insideFence() && col < authoredBlockBase
           ? contentCol
           : authoredBlockBase ?? openerBase ?? contentCol
         const dd = dedentMeasured(lm, line, localBase)
@@ -6077,6 +6225,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         // above knows whether an interior blank is fence content.
         if (openerBase !== null) {
           authoredBlockBase = openerBase
+          authoredContainer = DEFLIST_TERM.test(dedented) || QUOTE.test(dedented)
           if (openerBase === contentCol) pendingAuthoredBlock = i
           else authoredBlockLimit = authoredBlockEnd(lines, i, openerBase, state)
         }
@@ -6095,7 +6244,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         // span would be reopened here and its own closer lost.
         const belowEnd = belowSpan !== null ? COMMENT_FENCE.exec(dedented) : null
         const belowCloser = belowEnd !== null && belowEnd[1].length === belowSpan.run.length
-        if (belowCloser) belowSpan = null
+        if (belowCloser) { belowSpan = null; belowSpanClosed = true }
         const inNestedComment = commentHoldsLine(nestedOpaque, dmeas)
         const inCommentSpan = fence.opaque?.kind === 'comment' || inNestedComment
         if (!belowCloser && !inNestedComment) trackFence(dedented, opens, i)
@@ -6109,7 +6258,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         // the base folds with it. `descendantOwned` is the collector's existing
         // spelling of "a known descendant item owns this column".
         absorbedFenceSeen = null
-        nestedOpaque = trackNestedFence(nestedOpaque, dmeas, lm.col, i, descendantOwned && !inDefBody)
+        if (!inPayload) nestedOpaque = trackNestedFence(nestedOpaque, dmeas, lm.col, i, descendantOwned && !inDefBody)
         // ADVANCE. One line the descendant takes, in the descendant's own
         // coordinates, which is what makes the state readable at its column.
         // A COMMENT SPAN WRITTEN BELOW THIS COLUMN IS NOT THE DESCENDANT'S. Its
@@ -6127,7 +6276,7 @@ function collectItems(lines, i, list, state, ind, meas) {
           }
           if (dmeas.rest !== '') {
             if (nm && nm.indent >= contentCol && !inDefBody) descLive = true
-            else if (!descendantOwned) descLive = false
+            else if (!descendantOwned && !COMMENT_LINE.test(dedented)) descLive = false
             deepestIsDescendant = descLive
           }
         }
@@ -6150,6 +6299,7 @@ function collectItems(lines, i, list, state, ind, meas) {
           belowCloser,
           inCommentSpan,
           comment: !belowCloser && !inCommentSpan && COMMENT_LINE.test(dedented),
+          belowComment: lm.col < contentCol,
           blank: dmeas.rest === '',
         })
         // record the first sub-list's content column (carve#322)
@@ -6165,6 +6315,10 @@ function collectItems(lines, i, list, state, ind, meas) {
         // span written at another one, which is the whole of carve#2526.
         if (belowCloser) { /* the span's own state, untouched */ }
         else if (inCommentSpan) { /* opaque: the opener already closed the paragraph */ }
+        else if (inPayload || fence.opaque?.payload) {
+          if (colonLineBlock.at(-1) === true) startPara()
+          else closePara()
+        }
         else if (i <= wrappedAttrEnd) closePara()
         // A line in a footnote definition's body is that definition's, whatever
         // its shape: a comment or a marker there ends neither the definition
@@ -6180,7 +6334,8 @@ function collectItems(lines, i, list, state, ind, meas) {
         // the colon fence. This branch tested the line's SHAPE, so an
         // unterminated fence the paragraph had ABSORBED closed it anyway.
         else if (FENCE.test(dedented)) {
-          if (fence.opaque && fence.opaque.kind === 'code' && fence.opaque.opens === false) {
+          if (inPayload || fence.opaque?.payload) openParaWith(dedented)
+          else if (fence.opaque && fence.opaque.kind === 'code' && fence.opaque.opens === false) {
             openParaWith(dedented)
           } else closePara()
         }
@@ -6226,6 +6381,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         // close it. Unconditional `startPara()` was the content-column twin of
         // the marker-line seed carve#1280 fixed, and it survived because that
         // fix reached only the marker line.
+        else if (inPayload && matchMarkerAt(dmeas)) openParaWith(dedented)
         else if (matchMarkerAt(dmeas)) {
           if (opensParagraph(dmeas.rest, true, false, prefixMemo(state, lines, i).paragraph)) startPara()
           else closePara()
@@ -6242,12 +6398,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         // (CARVE-P0-009). The run's own paragraph and table state ride along,
         // so a marker or a `+ ...|` row under quoted prose stays that prose.
         else if (QUOTE.test(dedented)) {
-          const quoted = QUOTE.exec(dedented)[1] ?? ''
-          const continues = bodyQuote.at === i - 1
-          const rowOpen = continues && bodyQuote.table
-          bodyQuote.open = quoted.trim() !== '' && opensParagraph(quoted, !(continues && bodyQuote.open), rowOpen)
-          bodyQuote.table = tableRunStep(rowOpen, quoted)
-          bodyQuote.at = i
+          advanceBodyQuote(dedented, i)
           if (bodyQuote.open) startPara()
           else closePara()
         }
@@ -6322,6 +6473,10 @@ function collectItems(lines, i, list, state, ind, meas) {
          * (markup-carve/carve#1376).
          */
         else if (dmeas.rest !== '') openParaWith(dedented)
+        // A block of this item below the sublist's column has ended the sublist,
+        // so a later line past this column is no descendant's (CARVE-P0-004).
+        if (subCol >= 0 && col < subCol && !nm && dmeas.rest !== '' && !belowCloser && !inCommentSpan &&
+            !inDefBody && !COMMENT_LINE.test(dedented) && !paragraphIsOpen()) subCol = -1
         // A FENCED BODY IS NOT A PARAGRAPH whichever container opened it
         // (CARVE-P0-013, CARVE-P0-014). The branches above classify the line in
         // THIS item's coordinates, where a descendant's fence and its payload
@@ -6412,7 +6567,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       // surviving ancestor the run's column reaches, and carries no depth term,
       // so a descendant's open body ends this container too and the run is
       // classified where the column puts it (carve#2490).
-      if (!commentTokenBelow && (nestedVerbatim() || fenceUnderAbsorbed !== null || (fence.opaque && fence.opaque.opens !== false))) break
+      if (!commentTokenBelow && (nestedVerbatim() || fenceUnderAbsorbed !== null || (fence.opaque && !fence.opaque.payload && fence.opaque.opens !== false))) break
       if (nm && columnOwner(nm.indent) === 'outer') {
         // §17 L1, first clause: the item WAS followed by a blank line before
         // this sibling marker - an invisible attachment in between does not
@@ -6426,6 +6581,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       if (nm && columnOwner(nm.indent) === 'below' && deepestParagraphOpen() && itemLines.length > 0) {
         // a marker BELOW the content column folds as lazy item text
         // (PART 9 SS24 C3; list markers never interrupt, SS10 I2)
+        belowSpanClosed = false
         pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
         i++
         continue
@@ -6433,6 +6589,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       // A retained item still requires its content column for a child list.
       if (nm && columnOwner(nm.indent) === 'below' && !deepestParagraphOpen() &&
           afterComment && itemLines.length > 0) {
+        belowSpanClosed = false
         pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
         startPara()
         i++
@@ -6494,7 +6651,6 @@ function collectItems(lines, i, list, state, ind, meas) {
         // Only the closing half is asked: an OPENER at this column opens no span
         // here, and the branch above owns that question.
         const spanBefore = fence.opaque?.kind === 'comment' || nestedOpaque?.kind === 'comment'
-        const spanFromMarkerLine = fence.opaque?.markerLine === true || nestedOpaque?.markerLine === true
         if (fence.opaque) trackFence(lm.rest, false, i)
         // The DESCENDANT span's closer arrives here too, below this column, so
         // the tracker above never sees it.
@@ -6514,7 +6670,6 @@ function collectItems(lines, i, list, state, ind, meas) {
           closePara()
           afterComment = afterCommentTransition(afterComment, {
             spanClosed: true,
-            markerLine: spanFromMarkerLine,
           })
         }
         // An opener written HERE locates the span below every content column,
@@ -6526,9 +6681,15 @@ function collectItems(lines, i, list, state, ind, meas) {
         // carve#2509 and carve#2527 each measured going quadratic here.
         if (!spanBefore) {
           const run = COMMENT_FENCE_BODY.exec(lm.rest)
-          if (run && belowSpan !== null && run[1].length === belowSpan.run.length) belowSpan = null
+          if (run && belowSpan !== null && run[1].length === belowSpan.run.length) { belowSpan = null; belowSpanClosed = true }
           else if (run && belowSpan === null) belowSpan = { run: run[1] }
         }
+        i++
+        continue
+      }
+      // A matched below-column span keeps its payload without a paragraph claim.
+      if (belowSpan !== null && lastCommentCloser(belowSpan.run) >= i) {
+        pushLine(line, lm)
         i++
         continue
       }
@@ -6591,6 +6752,7 @@ function collectItems(lines, i, list, state, ind, meas) {
           descLive = false
           deepestIsDescendant = false
         }
+        belowSpanClosed = false
         pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
         i++
         continue

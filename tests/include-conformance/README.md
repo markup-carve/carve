@@ -1,7 +1,7 @@
 # Include-conformance suite
 
 A cross-engine golden-vector corpus for Carve's file-inclusion feature
-(PART 9 §19, rules I1–I14). Each vector is a self-contained JSON file describing
+(CARVE-P6-001, rules I1 to I12 and I15). Each vector is a self-contained JSON file describing
 an in-memory (or on-disk) fixture plus four golden outputs. The vectors live
 here in the spec repo and are **vendored by each engine** the same way the HTML
 corpus (`tests/corpus/`) is, so carve-js, carve-php and carve-rs can all assert
@@ -42,7 +42,7 @@ goldens).
 |---|---|---|
 | `name` | all | Unique id; also the file basename. |
 | `description` | all | One-line summary of what the vector pins. |
-| `rules` | all | The §19 rule ids exercised (`I1`…`I14`, `I9a`, plus the pseudo-rules `multi-directive`, `quoted-path`, `slot-adjacency`). |
+| `rules` | all | The CARVE-P6-001 rule ids exercised (`I1`…`I12`, `I15`, `I9a`, plus the pseudo-rules `multi-directive`, `quoted-path`, `slot-adjacency`). |
 | `mode` | all | `virtual` (in-memory files map) or `filesystem` (a real tmp tree). |
 | `resolver` | all | `none` (no resolver → I3 literal), `virtual` (serve `files`), or `filesystem` (fileSystemResolver over the tree). |
 | `entry` | virtual | The top-level document source. |
@@ -73,7 +73,7 @@ resolver throws the given message, exercising the I7 no-leak path).
 | Field | What it is |
 |---|---|
 | `html` | The expanded-then-rendered HTML. |
-| `fmt` | The Carve serializer output of the **pre-expansion** document. This pins I12/I14: the directive must survive formatting. It is deliberately *not* the serialization of the expanded document. |
+| `fmt` | The Carve serializer output of the **pre-expansion** document. This pins I12: the directive must survive formatting. It is deliberately *not* the serialization of the expanded document. |
 | `flattened` | Optional. The Carve source of the **expanded** document - what `carve flatten` writes. Pins the shape of the assembled tree, which `html` cannot: footnotes are collected globally at render time, so a merged definition left interleaved between the parent's blocks renders identically to one collected at the end. |
 | `carveTarget` | Optional (I15). The Carve source the processor produces for this entry **with the resolver configured**, through whatever path it uses for a Carve-target render. It must equal `fmt`. This is a separate golden because `fmt` cannot pin it: `fmt` is computed from the pre-expansion document by construction, so an engine that expands before calling its writer satisfies `fmt` and still returns a different document - which one engine did, inlining every child on `render --carve` while passing all 94 vectors. |
 | `warnings` | Normalized warning list, in document order (see below). |
@@ -231,18 +231,20 @@ rules):
 
 | Rule | Vectors | Rule | Vectors |
 |---|---|---|---|
-| I1 syntax / path-required | 28 | I9 verbatim protection | 5 |
-| I2 block vs inline | 8 | I9a recognition run | 7 |
-| I3 resolution model | 2 | I10 containment (filesystem) | 7 |
-| I4 fragment containment / attribution | 8 | I11 dependency reporting | 14 |
-| I5 cross-file collisions | 16 | I12 formatter preservation | 16 |
-| I6 limits (cycle/depth/budget) | 5 | I13 no side effects | 7 |
-| I7 errors + no-leak | 6 | I14 one recognition set | 8 |
-| I8 heading shift + auto | 16 | I15 the Carve target does not expand | 2 |
-| heading-include | 3 | multi-directive / quoted-path | 1 / 3 |
-| slot-adjacency | 6 | | |
+| I1 syntax / path-required | 32 | I8 heading shift + auto | 16 |
+| I2 block vs inline | 8 | I9 verbatim protection | 5 |
+| I3 resolution model | 2 | I9a recognition run | 7 |
+| I4 fragment containment / attribution | 8 | I10 containment (filesystem) | 7 |
+| I5 cross-file collisions | 16 | I11 dependency reporting | 14 |
+| I6 limits (cycle/depth/budget) | 5 | I12 formatter preservation | 22 |
+| I7 errors, no-leak, no side effects | 13 | I15 the Carve target does not expand | 2 |
+| heading-include | 3 | multi-directive / quoted-path | 1 / 6 |
+| slot-adjacency | 7 | | |
 
-**128 vectors total.**
+I13 and I14 are unassigned. Vectors named `i13-*` and `i14-*` keep their file
+names and are tagged I7 and I12.
+
+**132 vectors total.**
 
 ### What the virtual model cannot express
 

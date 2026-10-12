@@ -27,3 +27,5 @@ citation_definition	Tier-2 citations extension: the definition line is a node th
 citation_item	Reached only from citation_group.
 citation_key	Reached only from citation_group and citation_definition.
 citation_key_char	Reached only from citation_key.
+typography_flank	A neighbor class smart typography reads (CARVE-P3-021, CARVE-P3-023), not a construct a document derives.
+no_break_space	Reached only from typography_flank.

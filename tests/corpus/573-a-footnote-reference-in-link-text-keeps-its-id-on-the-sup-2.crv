@@ -1,0 +1,5 @@
+a [t[^named]{data-carve-footnote-label="named"}][r] b
+
+[r]: /u
+
+[^named]: n

@@ -207,7 +207,10 @@ test('a declared row leaves the owed count and prints, and an undeclared one sta
   // pair used to read the shipped fenced-quote rows in both runs;
   // markup-carve/carve-js#2364 and markup-carve/carve-rs#2201 closed those, so
   // the same property is asserted over the rows that remain.
-  assert.doesNotMatch(declared.out, /resources\/ast-span-divergence\.txt.*<== OWED/, declared.out)
+  // The ledger may also hold rows an engine owes, so the declared run is read
+  // by its exempt count rather than by the absence of the OWED flag.
+  assert.match(declared.out, /resources\/ast-span-divergence\.txt\s+-\s+\d+ \+2 exempt/, declared.out)
+  assert.doesNotMatch(nothing.out, /resources\/ast-span-divergence\.txt.*exempt/, nothing.out)
   assert.match(nothing.out, /resources\/ast-span-divergence\.txt.*<== OWED/, nothing.out)
 })
 

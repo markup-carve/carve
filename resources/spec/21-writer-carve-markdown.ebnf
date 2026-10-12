@@ -5,24 +5,22 @@
       choices and the AST records them; changing one would satisfy §1 while
       still surprising the author.
 
-      FENCE LENGTH WAS A THIRD EXAMPLE HERE AND IS NOT ONE: `code_block`
-      records neither fence length nor character (PART 12 §3).
+      FENCE LENGTH IS NOT ONE OF THEM: `code_block` records neither fence
+      length nor character (PART 12 §3).
 
       THE WRITER COMPUTES THE WIDTH IT NEEDS. A fence is widened to clear the
       longest fence-character run in its content and narrowed when nothing
       requires the extra width, and §1 holds through both.
 
-      The AST therefore RECORDS the combined form -- a `strong` parsed from
-      `bold_italic` carries `boldItalic` (PART 12 §3) -- and the writer
-      reproduces it. `/*x*/` is also the spelling Carve teaches, so normalizing
+      THE COMBINED FORM IS RECORDED: a `strong` parsed from `bold_italic`
+      carries `boldItalic` (PART 12 §3), and the writer reproduces it. `/*x*/` is also the spelling Carve teaches, so normalizing
       it away would rewrite the documented form into one documented nowhere.
 
       THE THEMATIC BREAK JOINS IT ON THE SAME TERMS. `---`, `***` and `___` are
       three spellings of one construct, and the AST RECORDS the character --
       `marker` (PART 12 §3) -- so the writer reproduces it. THE MARKER IS THE
       CHARACTER, NOT THE RUN LENGTH: `***` and `*****` are ONE spelling here
-      and both come back as `***`. No construct's run length is recorded
-      anywhere.
+      and both come back as `***`. The break's run length is not recorded.
 
       EXCEPT WHERE `---` WOULD OPEN FRONTMATTER. A `---` line at byte 0 of the
       EMITTED document is the frontmatter opener, not a break. Spelling this
@@ -31,7 +29,7 @@
       document of `***`, a blank line and `---` renders two breaks, and written
       by the literal reading of this clause it renders NOTHING -- with any
       paragraph standing between them lost too. Where that would happen the
-      writer spells the break `***` instead, and that deviation is §1a's --
+      writer spells the break `***` instead, and that deviation is CARVE-P11-002's --
       §1's invariant outranks a per-construct rule. It is CONFORMANT and not a
       divergence from this section.
 
@@ -39,17 +37,17 @@
       opener needs a closer, so three hyphens at byte 0 open nothing unless a
       later line closes them -- `***` alone, and `***` above a paragraph, are
       both written `---` with no exception at all. What an implementation owes
-      is §1a's test: read the emitted bytes with its own parser.
+      is CARVE-P11-002's test: read the emitted bytes with its own parser.
 
       WHICH break moves is not pinned, because more than one departure
-      restores §1 and §1a already says to take the smallest. Usually it is the
+      restores §1 and CARVE-P11-002 already says to take the smallest. Usually it is the
       break at byte 0; where the writer itself PROMOTED something else there,
       the departure available is to respell the CLOSER instead. What IS pinned
       is the spelling a moved break takes: `***`.
 
       AN ABSENT MARKER IS `---`, which is what a tree assembled by hand or by a
-      converter carries and what every document written before the field means.
-      §1a still outranks this: a `---` the writer emits at byte 0 can gain a
+      converter carries.
+      CARVE-P11-002 still outranks this: a `---` the writer emits at byte 0 can gain a
       frontmatter closer from a later break, and respelling every break in the
       document is then the smallest departure that restores the invariant.
 
@@ -89,10 +87,10 @@
       rather than `{lang}` -- the more specific production wins where both
       apply.
 
-      THIS IS NOT §6b'S MIRROR: unlike bare frontmatter `---`, the grammar
+      THIS IS NOT CARVE-P11-011'S MIRROR: unlike bare frontmatter `---`, the grammar
       has a dedicated production for an empty-string boolean value.
-      A COMPACT SEMANTIC SPAN IS WHERE IT SHOWS: `[Tab]{kbd}` is PART 9 §10's
-      form; its value is discarded.
+      A COMPACT SEMANTIC SPAN IS WHERE IT SHOWS: `[Tab]{kbd}` is
+      CARVE-P10-003's form; its value is discarded.
 
    6d. A CODE FENCE OPENER IS WRITTEN GLUED TO ITS INFO STRING -- NORMATIVE [CARVE-P11-013].
       The canonical writer emits NO padding space between the fence run and
@@ -108,8 +106,9 @@
       ahead of it is glued the same way (```"src/app.js"), and so is the raw
       passthrough selector (```=html, PART 9 §20).
 
-      PART 2 ALREADY NAMES THE FORM: `fenced_code_block` calls the glued
-      spelling canonical; a reader accepts either spacing (§6b).
+      PART 2 ALREADY NAMES THE FORM: its `fenced_code_block` production
+      calls the glued spelling canonical, and a reader accepts either spacing
+      there.
       THE TREE RECORDS NO SLOT: `code_block` records no padding, fence length
       or fence character (PART 12 §3), so the writer chooses the canonical form.
 
@@ -133,14 +132,14 @@
       prefixed and unprefixed cells therefore share one padding rule, and the
       padded side is the one a reader can scan.
 
-      THE TREE RECORDS NO SLOT, the same reason §6d gives: `table_cell` records
+      THE TREE RECORDS NO SLOT, the same reason CARVE-P11-013 gives: `table_cell` records
       its padding no more than `code_block` records the space before its info
       string (PART 12 §3), so the writer has nothing to reproduce and must
       CHOOSE.
 
 
    6f. PADDING IS NOT AN ESCAPE WHERE THE PRODUCTION ADMITS PADDING --
-      NORMATIVE [CARVE-P11-015]. §6e's padding removes the need for
+      NORMATIVE [CARVE-P11-015]. CARVE-P11-014's padding removes the need for
       `<`/`>`/`~`/`{` guards because its three prefix slots are read GLUED to
       the opening pipe, so one space in front of the content puts it out of
       their reach. That argument holds only where the construct's OWN production
@@ -152,7 +151,7 @@
         colspan_marker = {space}, '<', {space} ;
 
       A cell whose whole payload is `^` or `<` therefore re-reads as a SPAN
-      however it is padded, and §6e's space does nothing for it. §2 is what
+      however it is padded, and CARVE-P11-014's space does nothing for it. §2 is what
       applies, by its own test: omitting the escape changes the re-parsed AST,
       so the payload is escaped and the writer emits `| \^ |` and `| \< |`.
 
@@ -172,10 +171,9 @@
       THE AST RECORDS IT, and the state is recorded exactly as `bulletChar`
       records `*`. An absent field is the default for the box -- `x` when
       `checked` is true, ` ` when it is false -- which is what a tree assembled
-      by hand or by a converter carries, and what every document written before
-      the field means.
+      by hand or by a converter carries.
 
-      `X` IS A CASE, NOT A STATE. `[X]` is written `[x]`, as it already was.
+      `X` IS A CASE, NOT A STATE. `[X]` is written `[x]`.
       The field admits six characters rather than seven for that reason: the
       two spell one state, nothing downstream can tell them apart, and §1 is
       satisfied because the AST they parse to is the same one.
@@ -199,19 +197,17 @@
       combination with its typed source-unspellable error. A producer providing
       a lossy fallback keeps the native form and omits `separatorWidths`,
       reporting `field-unspellable`, node `table`, field `separatorWidths`,
-      through the conversion-diagnostics channel of §1d [CARVE-P11-046].
+      through the conversion-diagnostics channel of CARVE-P11-046 [CARVE-P11-046].
 
       ALIGNMENT IS WRITTEN ONCE. In a separator form, a header cell with a
       separator entry uses that entry's colon spelling and carries no native
       alignment marker. A header cell past the last entry keeps its native
-      alignment marker, having no separator slot. This avoids the competing
-      native-marker and colon spellings PART 9 T7 leaves unspecified.
+      alignment marker, having no separator slot. No column is given both a
+      native marker and a separator colon.
 
       THE FIELD IS THE SPELLING, THE ROWS ARE THE MEANING. This is §6's rule
       again, on the same terms as `bulletChar` and `thematic_break.marker`: a
-      spelling is the author's to keep BECAUSE THE AST RECORDS IT. Before the
-      field both forms came back as `|=` cells, which is why this clause can
-      exist at all.
+      spelling is the author's to keep BECAUSE THE AST RECORDS IT.
 
       THE WIDTHS ARE WRITTEN AS RECORDED, one entry per separator cell, each a
       run of that many `-` characters. An alignment colon is NOT one of them:
@@ -227,19 +223,13 @@
       cell lost, and §1 breaks either way: the document re-parses with a
       `separatorWidths` the source never had.
 
-      BOTH DIRECTIONS WERE REAL. One engine padded to the header's width and
-      three of four ragged cases failed `parse(fmt(x)) == parse(x)`; another
-      counted over the header and TRUNCATED, failing two of four. In each the
-      surviving shape was the one its tests happened to carry, which is why
-      this sentence names the count rather than leaving it to be derived.
-
       AN ENTRY PAST THE HEADER'S LAST CELL TAKES NO ALIGNMENT, having no cell
       to take one from: `[3, 3]` over a one-cell centered header writes
       `|:---:|---|`.
 
       IT IS NOT A LAYOUT INSTRUCTION. The widths are the dash runs the author
       typed, not column widths, and nothing downstream aligns a table to them.
-      §6e's cell padding is unchanged by this clause.
+      CARVE-P11-014's cell padding is unchanged by this clause.
 
    7. NO WHITESPACE-ONLY LINE -- NORMATIVE [CARVE-P11-016]. `fmt` never emits a line whose only
       content is ASCII spaces or tabs. Such a line is emitted EMPTY.
@@ -291,6 +281,12 @@
       so a writer that strips it changes nothing about
       `to_html(fmt(x)) == to_html(x)`.
 
+      A DELIMITED COMMENT TAKES NO PAD AGAINST A LEADING LINE BREAK. The
+      writer separates `{%` from the comment's text with one space
+      (CARVE-P9-042), except where the text begins
+      with a line break: the break separates them already, and the space
+      would leave the opener's line ending in whitespace.
+
       A trailing NO-BREAK space is a different matter and IS content, not
       layout -- the author wrote it and it renders as `&nbsp;` -- so an
       implementation whose whitespace test treats U+00A0 as whitespace must
@@ -341,7 +337,7 @@
       same for a line block (`::: |`) and a local hard-break block
       (`::: \`). THERE IS NO EXCEPTION ON THIS TARGET: the shape does not vary
       by container kind, by type word, or by attribute. A body that renders
-      nothing is an empty body here as it is in PART 10 §4, so a container
+      nothing is an empty body here as it is in CARVE-P10-001, so a container
       holding only a comment takes this shape too. A comment-only line in a
       line block has already become the empty verse line defined by PART 9
       §23, so its paragraph remains body content.
@@ -351,16 +347,6 @@
       and the question does not arise; §7's rule governs that line, not this
       one.
 
-      THE SIBLING CLAUSE ALREADY DECIDED THIS QUESTION one layer out and chose
-      the blank line. PART 10 §4 asks what a container whose body renders
-      nothing serializes to, and this asks the same of the same document at
-      the other target, so one rule for "an empty body" serves both.
-
-      THE TWO TARGETS AGREE. PART 10 §4 gives the same blank body line to a
-      bare div, typed div, admonition and blockquote. This clause applies that
-      shape to every colon-fenced container the Carve writer emits, including
-      line blocks and local hard-break blocks.
-
    7b. A FOOTNOTE DEFINITION WITH NO BLOCKS IS WRITTEN WITH THE SENTINEL
       `{empty}` -- NORMATIVE [CARVE-P11-019]. A `footnote_definition` whose body holds NO
       blocks is written as the marker, its separator space, and the SENTINEL
@@ -368,42 +354,25 @@
 
         [^f]: {empty}
 
-      and NOT as `[^f]:`. The bare marker line is not a definition at all --
-      MARKER REQUIRES CONTENT (PART 2) says so in as many words, "`[^f]:`
-      followed by spaces and nothing else is a paragraph" -- so a writer
-      emitting it destroys the document: the definition degrades to a
-      paragraph, and every reference to it degrades to literal text with it.
+      and NOT as `[^f]:`, which is a paragraph (PART 2, MARKER REQUIRES
+      CONTENT): the definition and every reference to it would degrade to
+      text. This is CARVE-P11-002. The writer takes the smallest departure that
+      re-parses to the tree, and the parse rule is unchanged.
 
-      §1a IS THE RULE THIS SERVES. Spelling the construct by its own rule
-      emits bytes that do not re-parse to the tree they were written from, so
-      §1 wins and the writer takes the smallest departure that restores it.
-      THE PARSE RULE IS UNCHANGED HERE: `[^f]:` stays a paragraph. What this
-      clause governs is what the WRITER emits.
-
-      THE SENTINEL MUST BE A VALID ATTRIBUTE BLOCK, and this is the part a
-      later reader gets wrong, because the two spellings that LOOK like the
-      empty form are the two that do not work:
+      THE SENTINEL MUST BE A VALID ATTRIBUTE BLOCK. `block_attributes`
+      requires at least one attribute and has no blessed-empty form at block
+      level (PART 4), so `{}` and `{ }` on this line stay CONTENT:
 
         [^f]: {empty}   body EMPTY                            -- works
         [^f]: {#i}      body EMPTY                            -- works
         [^f]: { }       body holds the literal text `{ }`     -- does NOT
         [^f]: {}        body holds the literal text `{}`      -- does NOT
 
-      `block_attributes` requires AT LEAST ONE attribute and there is no
-      block-level blessed-empty form -- PART 4 says it of `{}` in as many
-      words, and `{ }` is blessed INLINE only -- so on this line neither run
-      is an attribute block. Both stay CONTENT, and §1 fails exactly as it does
-      for the bare marker.
-
-      SO EVERY AVAILABLE SPELLING CARRIES MEANING. `{empty}` is a BOOLEAN
-      ATTRIBUTE (PART 9 §14): a bare identifier with no value, rendered
-      `name=""` wherever attributes survive, so `{empty}` on an ordinary
-      paragraph's attribute line gives `<p empty="">`. It is inert HERE
-      because a footnote definition's body is its own container, and a
-      block-attribute line with no following block inside that container is
-      dropped (PART 9 §15 A4) -- the attribute reaches neither the endnote
-      `<li>`, nor the next block, nor the next definition. That is a PARSE RULE
-      and not a property of the word.
+      THE SENTINEL IS INERT. `{empty}` is a boolean attribute (PART 9 §14),
+      and a block-attribute line with no following block inside its own
+      container is dropped (PART 9 §15 A4), so it reaches neither the endnote
+      `<li>`, nor the next block, nor the next definition. CARVE-P11-040 writes an
+      empty description body the same way.
 
    7c. A LINE BLOCK'S HARD BREAK IS WRITTEN BARE ONLY WHERE THE BARE NEWLINE
       RE-DERIVES IT -- NORMATIVE [CARVE-P11-020]. A line block hardens every line boundary of
@@ -424,13 +393,13 @@
 
       §7 permits stripping a line's trailing whitespace on the ground that
       "where the PARSER discards trailing whitespace the writer may too". The
-      parser does NOT discard it when a backslash follows: PART 7 makes the
+      parser does NOT discard it when a backslash follows: CARVE-P2-025 makes the
       run before a line-break backslash INTERIOR, and PART 9 §23 gives that
       the visible consequence. So none of this is a new principle, it is §7
       applied where its condition does not hold.
 
       A BARE NEWLINE RE-DERIVES A `hard_break` AT A BOUNDARY BETWEEN TWO BODY
-      LINES, and nowhere else. §23 hardens the boundary BETWEEN lines, so a
+      LINES, and nowhere else. CARVE-P9-044 hardens the boundary BETWEEN lines, so a
       newline written between two lines comes back as the break it replaced,
       with the lines around it unchanged. That is the ordinary case and most
       of every stanza.
@@ -439,7 +408,7 @@
       not in this list is decided by the property above, not by the absence of
       a bullet:
 
-        - THE LAST BODY LINE, WHATEVER IT ENDS IN. §23 hardens the boundary
+        - THE LAST BODY LINE, WHATEVER IT ENDS IN. CARVE-P9-044 hardens the boundary
           BETWEEN lines, and the body's end is not one. So a `hard_break`
           there is the AUTHOR'S OWN (PART 3) and nothing else can produce it:
           the newline after it belongs to the closing fence, or to the blank
@@ -451,7 +420,7 @@
           stanza, so one stanza is written back as two.
         - CONTENT ENDING IN A LONE SPACE. The boundary comes back and the
           space does not: PART 2's NO TRAILING WHITESPACE clause takes it. A
-          run of TWO OR MORE columns is already NBSP CONTENT (§23 MEDIAL
+          run of TWO OR MORE columns is already NBSP CONTENT (CARVE-P9-044 MEDIAL
           GAPS) and survives on its own, so it needs no backslash INSIDE a
           stanza -- at the stanza's end the entry above governs it instead.
 
@@ -492,7 +461,7 @@
 
       AN EMPTY LINE INSIDE A VERBATIM RUN IS SPELLED `%%`, because there the
       backslash is not a break but content. A run left unclosed on an earlier
-      line swallows an emptied verse line as a NEWLINE in its value (§23), so
+      line swallows an emptied verse line as a NEWLINE in its value (CARVE-P9-044), so
       the tree holds no `hard_break` for this clause to spell and no `comment`
       node to put back -- what the writer has is a value containing an empty
       line, and a blank line would end the stanza. An empty verse line has
@@ -501,7 +470,25 @@
       it was written for and to nothing else. The author's own comment TEXT is
       not recoverable here and is not required to be.
 
-      THIS IS §1a, NOT AN EXEMPTION FROM IT. The per-construct spelling emits
+      IT REACHES AN INTERIOR LINE, because the run's own CLOSER takes the last
+      one. A tree records no closer for a verbatim run (PART 12 §3), so the
+      writer CLOSES what the author left open, and inside verse that closer
+      occupies a LINE. `%%` is written for every emptied line the run still
+      spans and not for the one the closer lands on, source over the form
+      the writer emits for it:
+
+        ::: |     ->     ::: |          the run spans past the emptied line
+        `                `              to `x`, so `%%` spells it and the
+        %%               %%             closer follows
+        x                x`
+        :::              :::
+
+        ::: |     ->     ::: |          the run spans ONE boundary, so the
+        `                `              closer takes the emptied line and
+        %%               `              no empty line is left to spell
+        :::              :::
+
+      THIS IS CARVE-P11-002, NOT AN EXEMPTION FROM IT. The per-construct spelling emits
       bytes that do not re-parse to the tree they were written from, so §1
       wins and the spelling yields to "another spelling of the SAME
       construct", which for a `hard_break` is its own PART 3 form: unguarded,
@@ -516,40 +503,20 @@
         :: t
         : {empty}
 
-      and NOT as the term alone, which drops the description and fails §1: the
-      bytes re-parse to a `<dl>` with no `<dd>` in it.
+      and NOT as the term alone, which re-parses to a `<dl>` with no `<dd>`.
+      The sentinel, the reason it must be a valid attribute block and the
+      reason it is inert are CARVE-P11-019's.
 
-      §7b SPELLS THE SAME SHAPE ONE CONSTRUCT OVER, an empty footnote
-      definition body, with the same sentinel. Everything it says about why the
-      bare word rather than an id, a class or a key/value holds here and is not
-      restated.
-
-      THE SENTINEL IS INERT, for §7b's reason: a block-attribute line with no
-      following block inside its own container is dropped (PART 9 §15 A4), so
-      the attribute reaches neither the `<dd>`, nor the next block, nor the next
-      entry. `: {#i}` reaches the same empty body by the same path and is
-      equally discarded, which is why the choice is among constructs that all
-      mean something and §7b's smallest-departure argument settles it.
-
-      TWO OTHER SPELLINGS REACH AN EMPTY `<dd>` AND NEITHER IS CANONICAL. Both
-      are properties of the language as it stands, not alternatives under
-      consideration:
+      TWO OTHER SPELLINGS REACH AN EMPTY `<dd>` AND NEITHER IS WRITTEN:
 
         : {empty}   claims no line below it at any column        -- CANONICAL
         : +         claims a following flush-left block          -- not written
         : %%        holds a `comment` child                      -- not written
 
-      `: +` IS THE FIRST-BLOCK FORM (PART 9 §17 L4) with nothing flush-left
-      under it. It ATTACHES a following column-0 block, so it spells an empty
-      body only when a blank line follows, and a writer emitting it must look
-      ahead at the next block to know whether that blank line is required. The
-      sentinel needs no lookahead.
-
-      `: %%` FAILS §1 RATHER THAN LAYOUT. An empty comment renders nothing and
-      the rendered HTML matches, so the failure is not visible at the HTML. Its
-      `definition_description` carries a `comment` CHILD the source does not
-      have, where the canonical spelling carries an empty children list, and §1
-      quantifies over `parse`, not over the render.
+      `: +` is the first-block form (PART 9 §17 L4): it attaches a following
+      column-0 block, so it spells an empty body only when a blank line
+      follows. `: %%` renders alike and fails §1: its description carries a
+      `comment` child the source does not have.
 
    7e. A BLOCK THAT OPENS A TIGHT ITEM IS WRITTEN ON THE MARKER LINE -- NORMATIVE [CARVE-P11-042].
       Where a tight list item's first block must be followed by a continuation
@@ -558,174 +525,110 @@
       column 0 below it.
 
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE [CARVE-P11-022]. The Markdown renderer is not
-      the canonical writer and does not follow §2. It has a different
-      re-parser to answer to, so it escapes on a different rule:
+      the canonical writer and does not follow §2. It answers to a Markdown
+      reader, and THIS TABLE IS ITS ESCAPING RULE FOR TEXT. Every condition is
+      read on the EMITTED LINE, across nodes (CARVE-P11-050). The first column is the
+      row's label, or the clause that states the row in full.
 
-      M1 Markdown metacharacters in text are escaped, unconditionally.
-      M2 An `escaped_text` node is emitted AS AN ESCAPE, whatever the
-         character. The author escaped it; the escape carries intent the
-         character alone does not.
-      M3 Nothing else is escaped. A character the author did not escape and
-         Markdown does not read as markup is emitted bare.
+        row   character      escaped when                             written
+        M1    `\` `` ` ``    always                                   `\` and the
+              `~` `]`                                                 character
+        M1a   `*`            always                                   `\*`
+        M1b   `_`            ADJACENT to an unescaped `_`, or where   `\_`
+                             another live `_` in the same inline
+                             content could close the emphasis it
+                             could open (CARVE-P11-023)
+        M1b   `[`            ADJACENT to an unescaped `[`, or inside  `\[`
+                             an emitted link label or image
+                             description (CARVE-P11-023)
+        M1c   `-` `+`        at a paragraph line's content position,  `\-` `\+`
+                             before a space or tab
+        M1c   `.` `)`        after one to nine ASCII digits at a      `\.` `\)`
+                             paragraph line's content position,
+                             before a space or tab
+        M1e   `<`            before an ASCII letter, `/`, `!` or `?`  `\<`
+        M1e   `>`            at a line's content position             `\>`
+        M1f   `#`            opening a run of one to six hashes at a  `\#`
+                             line's content position, closed by a
+                             space, a tab or the line's end; and a
+                             trailing run of any length after a
+                             space or tab on a line emitted as a
+                             heading
+        CARVE-P11-051   `&`            where the line after it completes a      `\&`
+                             character reference
+        CARVE-P11-052   `!`            before a `[` the writer emits as markup  `\!`
+        §8g   a line's       a paragraph line that would read as a    `\` on that
+              first or       thematic break, a setext underline or    character
+              marker         an empty list item (T1 to T3)
+              character
+        CARVE-P11-054   `|`            in a pipe-table cell                     `\|`
+        §8i   `:` `.`        in a URL form GFM would autolink (U1,    `\:` `\.`
+                             U2)
+        CARVE-P11-060   `@`            in an address GFM would autolink (E1)    `<!---->@`
+        M2    the character  M2a: it could be read as markup at the   `\` and the
+              of an          position the writer has reached, or it   character
+              `escaped_text` is `"`, `'`, `-` or `.`. M2b: a `#`
+              node           qualifies only at a line's content
+                             position (CARVE-P11-025)
+        M3    any other      never                                    bare
+              character
 
-      M2 is the rule that needs stating. `\-\-` was written precisely so a
-      processor with smart punctuation on (SmartyPants, markdown-it with
-      typographer, pandoc's default) would NOT read an en dash. Emitting `--`
-      bare loses the author's intent exactly where it was explicit, and the
-      characters this matters for -- `"` `'` `-` `.` -- are not Markdown
-      metacharacters, so M1 does not cover them. A document that
-      escapes nothing gains no backslashes from M2.
+      M2 EXISTS BECAUSE AN AUTHORED ESCAPE CARRIES INTENT. `\-\-` was written
+      so that a processor with smart punctuation on would not read an en
+      dash, and `"` `'` `-` `.` are not Markdown metacharacters, so no M1 row
+      covers them. A document that escapes nothing gains no backslashes from
+      M2. An implementation whose AST has no `escaped_text` node cannot honor
+      M2; that is a defect in the AST, not license to skip the row.
 
-      An implementation whose AST has no `escaped_text` node cannot honour M2:
-      it cannot tell an escaped character from a literal one. That is a defect
-      in the AST, not licence to skip the rule -- `escaped_text` is in the
-      inline vocabulary (docs/profiles.md).
+   8a. THE MARKDOWN TARGET'S ESCAPING NARROWS ON THE LINE -- NORMATIVE [CARVE-P11-023]. Rows
+      M1b to M1f of §8's table are conditional. These terms decide them.
 
-   8a. THE MARKDOWN TARGET'S ESCAPING NARROWS ON THE LINE -- NORMATIVE [CARVE-P11-023]. M1 is
-      not one rule across the metacharacter set. It splits three ways:
+      ADJACENT means the position immediately before or immediately after the
+      character, in the line the writer is building, holds that same
+      character, put there by the writer as MARKUP and not behind a
+      backslash.
 
-      M1a THE ASTERISK KEEPS M1 UNCONDITIONALLY. A literal `*` reaching this
-          target in a text node is escaped, whatever else stands on the line.
-      M1b `_` AND `[` ARE ESCAPED IF AND ONLY IF the character is
-          ADJACENT ON THE EMITTED LINE to an UNESCAPED DELIMITER OF THE SAME
-          CHARACTER, or the second condition below for that character holds.
-          Adjacency means the position immediately before it or
-          immediately after it in the line the writer is building holds that
-          same character, put there by the writer as MARKUP and not behind a
-          backslash. Otherwise emit it bare.
-          `[` IS ALSO ESCAPED INSIDE AN EMITTED LINK LABEL OR IMAGE
-          DESCRIPTION. This applies to literal opening brackets throughout
-          the label's inline text descendants and the image's alt text.
-          It does not change code spans, destinations, titles, or raw HTML.
-          `_` TAKES A SECOND CONDITION, OVER THE INLINE CONTENT IT IS EMITTED
-          IN (a paragraph, heading or table cell, across its line breaks): it
-          is also escaped when another live `_` there could close the emphasis
-          it could open, by CommonMark 6.2 read for the underscore. A run that
-          flanks on both sides can neither open nor close, so `company_id`
-          stays bare while `*x*_y_` is written `*x*\_y\_`.
-      M1c A PARAGRAPH LINE MUST NOT BECOME A LIST. When a text character at a
-          paragraph line's content position would begin a Markdown list marker,
-          the target escapes the marker character: `-` and `+` before a space
-          or tab become `\-` and `\+`; after one to nine ASCII digits, `.` and
-          `)` before a space or tab become `\.` and `\)`. Up to three leading
-          spaces are part of the same content position for Markdown readers.
-          The rule applies to paragraph text only: a marker the renderer emits
-          for an actual list remains live, and punctuation inside code remains
-          content. `*` needs no extra case because M1a already escapes it.
-      M1d NOTHING ELSE NARROWS. Every other Markdown metacharacter keeps M1
-          as written, and M2 and M3 are untouched by this clause.
+      `[` IS ALSO ESCAPED INSIDE AN EMITTED LINK LABEL OR IMAGE DESCRIPTION,
+      throughout the label's inline text descendants and the image's alt
+      text. Code spans, destinations, titles and raw HTML are unchanged. M1
+      escapes every `]`, so a bare `[` there would leave an unmatched opener
+      that CommonMark 6.3 reads as the link:
+
+        [a [b] c](/u)      ->  [a \[b\] c](/u)
+
+      `_` TAKES ITS SECOND CONDITION OVER THE INLINE CONTENT IT IS EMITTED IN
+      (a paragraph, heading or table cell, across its line breaks), by
+      CommonMark 6.2 read for the underscore. A run that flanks on both sides
+      can neither open nor close, so `company_id` stays bare while `*x*_y_`
+      is written `*x*\_y\_`.
+
+      A PARAGRAPH LINE'S CONTENT POSITION, for M1c, includes up to three
+      leading spaces. M1c applies to paragraph text only: a marker the
+      renderer emits for an actual list remains live, and punctuation inside
+      code remains content.
+
+      THE ASTERISK IS UNCONDITIONAL BECAUSE THIS WRITER EMITS `*` AS ITS OWN
+      DELIMITER. Emphasis holding two literal asterisks is written `*\*\**`;
+      written `****` it reads back as a thematic break.
+
+      THE TABLE IS THE BOUNDARY, NOT A FLOOR. Each conditional row is an
+      if-and-only-if. An engine neither drops an escape a row keeps nor keeps
+      one a row drops, narrows no further character and loosens no test.
 
       M1e `<` IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP --
-          NORMATIVE [CARVE-P11-024]. A `<` is escaped with a BACKSLASH when the next character
-          is an ASCII letter, `/`, `!` or `?`, and left alone otherwise. `>`
-          takes nothing here: mid-line it is inert in every flavour, and at the
-          start of a line it is a block quote marker, which M1 already covers.
-
-          THE HAZARD IS RAW HTML, and it is real. CommonMark and GFM both admit
-          it, so a document whose text contains `<b>` emits a line a reader
-          turns into a tag -- the author's text silently becomes markup, which
-          is the corruption §8 exists to prevent. An opening tag, a closing
-          tag, a comment and a processing instruction all open through a
-          CommonMark reader; those four next-characters are the whole hazard.
-          Everything else is inert: a bare `<` before a space renders `&lt;`,
-          and so does a mid-line `>`.
-
-          ESCAPING THE `<` ALONE IS SUFFICIENT. The closing `>` needs no escape
-          of its own, because a tag that cannot open cannot be closed:
+          NORMATIVE [CARVE-P11-024]. An opening tag, a closing tag, a comment
+          and a processing instruction open raw HTML through a CommonMark
+          reader, and those four next-characters are the whole hazard. The
+          escape is a BACKSLASH, not an entity, and the closing `>` needs
+          none: a tag that cannot open cannot be closed.
 
             a \<b> c       ->  a &lt;b&gt; c
 
-          A BACKSLASH, NOT AN ENTITY. Every engine wrote `&lt;` and `&gt;` here
-          and no clause said so. M2 and M3 are written in terms of
-          ESCAPING -- protecting a character so it survives as itself -- and
-          `&lt;` does not protect `<`, it replaces it with a different sequence
-          that happens to render alike. `\<` protects it, and a CommonMark
-          reader gives the character back.
-
-          CONDITIONAL, BECAUSE M1b ALREADY ARGUES FOR IT. `<` is the same shape
-          as `_` and `[`: significant before a tag name, inert before a
-          space, and the test belongs on the emitted line like every other one
-          here.
-
       M1f `#` IS ESCAPED WHERE THE EMITTED LINE WOULD OPEN OR CLOSE AN ATX
-          HEADING -- NORMATIVE [CARVE-P11-044]. A `#` is escaped when it stands at the line's content
-          position, as M2b measures it, and opens a run of one to six hashes
-          closed by a space, a tab or the line's end. The escape goes on the
-          `#` that opens the run; anywhere else on the line it is emitted bare,
-          except that on a line emitted as a heading a trailing run of any
-          length after a space or tab is escaped the same way.
+          HEADING -- NORMATIVE [CARVE-P11-044]. The content position is the
+          one CARVE-P11-025 defines, and the escape goes on the `#` that opens the run:
 
             a               ->  a
                # heading    ->  \# heading
-
-          THE READING IS POSITIONAL, WHICH IS WHY M1b DOES NOT REACH IT. `_`
-          and `[` collide with a delimiter of their own character; a `#` does
-          not, and M2b already gives it this test on the `escaped_text` side.
-
-      THE FINDING IS §3'S, ONE TARGET OUT: significance depends on the
-      EMITTED LINE, which the Markdown writer can inspect without a parser.
-
-      THE ASTERISK DIFFERS IN KIND, NOT IN DEGREE, which is what M1a is for.
-      This writer emits `*` as an emphasis delimiter, so the asterisk is not a
-      character that MIGHT meet markup on the line; it is the character the
-      line's markup is made of, and a collision with it is the ordinary case.
-
-      A document whose emphasis contains two literal asterisks is written
-      under M1 as `*\*\**`. A narrowing that weighs the delimiter runs in the
-      block sees one four-character run flanking nothing and drops both
-      escapes, giving `****` -- and through a CommonMark reader those are not
-      two spellings of one document:
-
-        *\*\**  ->  <p><em>**</em></p>
-        ****    ->  <hr />
-
-      The writer's own delimiters merged with the literal asterisks. M1a's
-      unconditional asterisk rule is PERMANENT even where M1b would preserve
-      that example.
-
-      ADJACENCY IS READER-INDEPENDENT: delimiter readers resolve by RUN LENGTH,
-      so an escape beside a live delimiter of the same character preserves the
-      run boundary for all of them.
-
-      THE BOUNDARY IS THE CLAUSE, NOT A FLOOR. M1b is written as an
-      if-and-only-if on purpose. An escape it drops is dropped and an escape
-      it keeps is kept; it is not a minimum an implementation may build a
-      wider narrowing on top of, and it is not a permission one engine may
-      take up before another.
-
-      SO A WIDER NARROWING IS NOT AUTHORIZED HERE. Not for a fourth
-      character, and not for a laxer test on these three. Anything further has
-      to be justified against the standard this clause was written to: state
-      it over the EMITTED LINE, and show it survives a case where the writer's
-      own output supplies the collision. Until that argument is made and
-      written down here, M1 stands unchanged for everything M1b does not name.
-
-      THE UNDERSCORE'S SECOND CONDITION IS THAT ARGUMENT, MADE. It is stated
-      over the emitted inline content, and the collision M1a guards against
-      cannot arise: this writer emits no `_` as markup, and a condition that
-      only ADDS an escape can never drop one that was holding a run boundary
-      apart. It binds every engine at once, like the rest of the clause.
-
-      THE LINK LABEL'S SECOND CONDITION HAS THE SAME OUTPUT ARGUMENT.
-      M1 escapes a literal `]` unconditionally. Leaving its matching `[` bare
-      inside a generated link label therefore leaves an unmatched opener.
-      For the Carve link `[a [b] c](/u)`, adjacency alone emits
-      `[a [b\] c](/u)`. CommonMark 6.3 reads the inner opener as the link:
-      `a ` falls outside the anchor and `b] c` becomes its label. Emitting
-      `[a \[b\] c](/u)` instead keeps `a [b] c` inside the `/u` anchor.
-      The writer's own closing bracket and destination supply the collision.
-      This condition adds the escape needed to preserve the complete label;
-      ordinary text outside a generated link label still uses adjacency.
-      It binds every engine at once.
-
-      M2 IS WHY A LINE-LEVEL TEST REACHES WHERE §2 NEEDS A PARSER. M1 governs
-      a character that reached the writer inside a TEXT node -- one the Carve
-      grammar did not read as an opener and the author did not mark. A
-      character the author DID escape is an `escaped_text` node, and M2 emits
-      it AS AN ESCAPE whatever the character, untouched by anything above. So
-      a document that MEANT `[a](b)` as text carries the author's escapes in
-      the tree and gets them back on this target under M2, and M1b never sees
-      it. That does not make the two grammars agree; it takes out of the
-      question every case where the author said which reading they meant.
 
    ============================================================================ *)

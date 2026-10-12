@@ -1,0 +1,19 @@
+A line-final run of spaces and tabs is dropped before the line is read
+
+```
+{.a 
+.b}
+
+paragraph
+.
+<p class="a b">paragraph</p>
+```
+
+```
+{.a	
+.b}
+
+paragraph
+.
+<p class="a b">paragraph</p>
+```

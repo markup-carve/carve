@@ -6,10 +6,9 @@ A degraded comment fence leaves a lazy follower where the line form does
  y
 .
 <ul>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ul>
+<p>y</p>
 ```
 
 ```
@@ -18,10 +17,9 @@ A degraded comment fence leaves a lazy follower where the line form does
  y
 .
 <ul>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ul>
+<p>y</p>
 ```
 
 ```
@@ -58,10 +56,9 @@ y
   y
 .
 <ol>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ol>
+<p>y</p>
 ```
 
 ```
@@ -70,10 +67,9 @@ y
    y
 .
 <ul>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ul>
+<p>y</p>
 ```
 
 ```
@@ -82,10 +78,9 @@ y
  y
 .
 <ul>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ul>
+<p>y</p>
 ```
 
 ```
@@ -95,10 +90,9 @@ y
  y
 .
 <ul>
-  <li>x
-    y
-  </li>
+  <li>x</li>
 </ul>
+<p>y</p>
 ```
 
 ```

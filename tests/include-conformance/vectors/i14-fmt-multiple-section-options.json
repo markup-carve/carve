@@ -2,7 +2,7 @@
   "name": "i14-fmt-multiple-section-options",
   "description": "Multiple directives carrying #section / options survive (recognition reassembles across nodes).",
   "rules": [
-    "I14",
+    "I12",
     "I9a"
   ],
   "mode": "virtual",

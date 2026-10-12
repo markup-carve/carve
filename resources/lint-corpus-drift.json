@@ -8,5 +8,109 @@
     "rust": "ea87db0ad129f963bcfe5cadf5b96304e40fe4a6",
     "documents": 2293
   },
-  "differences": []
+  "differences": [
+    {
+      "file": "tests/corpus/556-a-closed-block-leaves-no-frame-for-the-line-below-11.crv",
+      "reason": "carve-php reads the code blocks of a footnote definition nested in a marker-line footnote as blocks of the list item, so it reports them as overindented item blocks; carve-js and carve-rs keep them in the nested note.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3240",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            2,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            2,
+            5
+          ],
+          [
+            "list-item-block-overindented",
+            3,
+            7
+          ],
+          [
+            "list-item-block-overindented",
+            7,
+            7
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            2,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/556-a-closed-block-leaves-no-frame-for-the-line-below-12.crv",
+      "reason": "The pinned carve-js and carve-php read the marker line and the nested footnote definition in a marker-line footnote body as blocks of the list item and report them as overindented; carve-rs keeps them in the note. carve-js is fixed after the pin.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3240",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ],
+          [
+            "list-item-block-overindented",
+            4,
+            7
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            3,
+            5
+          ],
+          [
+            "list-item-block-overindented",
+            4,
+            7
+          ]
+        ],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/561-a-line-block-payload-span-pairs-past-the-content-column-2.crv",
+      "reason": "The pinned carve-js opens a container at the second over-indented fence run of a line-block payload and reports it unclosed; the two runs pair as one inline span.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2861",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            2,
+            5
+          ],
+          [
+            "unclosed-container-fence",
+            5,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            2,
+            5
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-block-overindented",
+            2,
+            5
+          ]
+        ]
+      }
+    }
+  ]
 }

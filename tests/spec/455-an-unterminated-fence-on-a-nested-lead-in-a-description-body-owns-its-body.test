@@ -11,13 +11,13 @@ code
   <dd>
     <ul>
       <li>
-        <pre><code class="language-x">code
-```
-</code></pre>
+        <pre><code class="language-x"></code></pre>
       </li>
     </ul>
   </dd>
 </dl>
+<p>code
+<code></code></p>
 ````
 
 ```
@@ -31,13 +31,13 @@ code
   <dd>
     <ul>
       <li>
-        <pre><code class="language-x">code
-~~~
-</code></pre>
+        <pre><code class="language-x"></code></pre>
       </li>
     </ul>
   </dd>
 </dl>
+<p>code
+~~~</p>
 ```
 
 ````
@@ -51,13 +51,13 @@ code
   <dd>
     <ul>
       <li>
-        <pre><code>code
-```
-</code></pre>
+        <pre><code></code></pre>
       </li>
     </ul>
   </dd>
 </dl>
+<p>code
+<code></code></p>
 ````
 
 ````
@@ -73,11 +73,13 @@ code
   <dd>
     <ul>
       <li>
-        <pre><code class="language-x">code
-</code></pre>
+        <pre><code class="language-x"></code></pre>
       </li>
     </ul>
   </dd>
+</dl>
+<p>code</p>
+<dl>
   <dt>t2</dt>
   <dd>plain</dd>
 </dl>

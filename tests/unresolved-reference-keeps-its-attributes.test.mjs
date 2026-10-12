@@ -51,8 +51,8 @@ test('a tab does not separate two attributes, and the reason is the position', (
   // tab separated; carve#901 corrected the reading - a tab is syntax only in a
   // line's leading indentation run, and every slot of an INLINE attribute block
   // sits after the first non-whitespace character of its line. carve#906 moved
-  // both normative files and the corpus to match (PART 4, THE INLINE INTERIOR
-  // IS SPACE-ONLY, THE BLOCK-ATTRIBUTE LINE IS NOT).
+  // both normative files and the corpus to match (PART 4, ATTRIBUTE PADDING
+  // IS SPACE-ONLY).
   //
   // So the block is unrecognized on BOTH lines below, and for two different
   // reasons: on the first the reference does not resolve either, and on the

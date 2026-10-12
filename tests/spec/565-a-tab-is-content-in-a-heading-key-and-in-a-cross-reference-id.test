@@ -1,0 +1,40 @@
+A tab is content in a heading key and in a cross-reference id
+
+```
+# A	B
+
+see [A B][]
+.
+<section id="A-B">
+  <h1>A	B</h1>
+  <p>see [A B][]</p>
+</section>
+```
+
+```
+# A	B
+
+see [A	B][]
+.
+<section id="A-B">
+  <h1>A	B</h1>
+  <p>see <a href="#A-B">A	B</a></p>
+</section>
+```
+
+```
+# A  B
+
+see [ A B ][]
+.
+<section id="A-B">
+  <h1>A  B</h1>
+  <p>see <a href="#A-B"> A B </a></p>
+</section>
+```
+
+```
+a </#no	pe> b
+.
+<p>a &lt;/#no	pe&gt; b</p>
+```

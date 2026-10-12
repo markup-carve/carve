@@ -7,10 +7,9 @@ A band paragraph after an invisible line leaves the item loose
  z
 .
 <ul>
-  <li><p>t</p>
-    <p>z</p>
-  </li>
+  <li>t</li>
 </ul>
+<p>z</p>
 ```
 
 ```
@@ -20,10 +19,9 @@ A band paragraph after an invisible line leaves the item loose
    z
 .
 <ol start="10">
-  <li><p>t</p>
-    <p>z</p>
-  </li>
+  <li>t</li>
 </ol>
+<p>z</p>
 ```
 
 ```
@@ -48,10 +46,9 @@ A band paragraph after an invisible line leaves the item loose
  z
 .
 <ul>
-  <li><p>t</p>
-    <p>z</p>
-  </li>
+  <li>t</li>
 </ul>
+<p>z</p>
 ```
 
 ```
@@ -62,9 +59,12 @@ A band paragraph after an invisible line leaves the item loose
 - s
 .
 <ul>
-  <li><p>t</p>
-    <p>- b</p>
-  </li>
-  <li><p>s</p></li>
+  <li>t</li>
+</ul>
+<ul>
+  <li>b</li>
+</ul>
+<ul>
+  <li>s</li>
 </ul>
 ```

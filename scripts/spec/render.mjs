@@ -811,8 +811,8 @@ const sem = g.createSemantics().addOperation('h', {
       const end = this.source.endIdx
       const prev = at > 0 ? src[at - 1] : ''
       const next = src[end] ?? ''
-      const prevIsSpace = prev === '' || FLANK_SPACE.test(prev)
-      const nextIsSpace = next === '' || FLANK_SPACE.test(next)
+      const prevIsSpace = prev === '' || isTypographyFlank(prev)
+      const nextIsSpace = next === '' || isTypographyFlank(next)
       if (prevIsSpace && !nextIsSpace) return escapeHtml(this.sourceString)
     }
     // PART 9 SS8: a run of n hyphens -> em/en dash mix (djot allocateDashes):
@@ -1486,13 +1486,14 @@ export function parseAttrList(text) {
 }
 
 // The same, for a standalone attribute LINE, which may span lines: PART 9's
-// `block_attributes` separates with `attr_separator = (whitespace |
-// continuation), opt_ws` where an inline block's `opt_ws` is "spaces/tabs only,
-// no line breaks". One rule served both for a while, so the oracle read
+// `block_attributes` separates with `attr_separator = (space | continuation),
+// attr_pad`, where an inline block's `attr_pad` admits no line break. One rule
+// served both for a while, so the oracle read
 // `*x*{.a<NEWLINE>.b}` as an attribute block where all three engines leave it
 // literal text (carve#878).
 export function parseBlockAttrList(text) {
-  const m = g.match(text, 'blockAttrs')
+  // CARVE-P7-001 item 5: a line-final run is dropped before the line is read.
+  const m = g.match(text.replace(/[ \t]+(?=\n)/g, ''), 'blockAttrs')
   if (m.failed()) return null
   return attrSem(m).parseAttrs()
 }
@@ -1562,11 +1563,10 @@ function quotePrevIdx(src, at) {
   return i
 }
 
-const QUOTE_OPEN_PREV = new Set([' ', '\t', '\n', '\r', '\u00a0', '=', ':', '-', '–', '—', '/', '(', '[', '{', '“', '‘'])
-// PART 7's whitespace plus the NO-BREAK SPACE, for the hyphen-run flanking
-// test (carve#1443). A vertical tab and a form feed are deliberately OUT:
-// Carve reads both as content, and `\s` takes them.
-const FLANK_SPACE = /[ \t\n\r\u00a0]/
+// CARVE-P3-021 and CARVE-P3-023: typography flanks include soft and hard breaks, represented here by \n.
+export const TYPOGRAPHY_FLANK = new Set([' ', '\t', '\n', '\r', '\u00a0'])
+export const isTypographyFlank = (ch) => TYPOGRAPHY_FLANK.has(ch)
+const QUOTE_OPEN_PREV = new Set(['=', ':', '-', '–', '—', '/', '(', '[', '{', '“', '‘'])
 const QUOTE_CHARS = new Set(['"', "'"])
 // A quote directly after a bare delimiter that OPENS a span stands at the
 // START of that span's content, which is an opening context (carve#348).
@@ -1578,7 +1578,6 @@ const EMPHASIS_DELIMS = new Set(['*', '_', '~'])
 const QUOTE_RULES = new Set(['dquote', 'squote'])
 const ELISION_WORDS = new Set(['tis', 'tisn', 'twas', 'twasn', 'twere', 'twill', 'twould', 'em', 'cause', 'til', 'n', 'bout'])
 const quoteAlnum = (c) => c !== '' && /[\p{L}\p{N}]/u.test(c)
-const quoteSpace = (c) => /[ \t\n\r\u00a0]/.test(c)
 const QUOTE_LETTER_RUN = /\p{L}+/uy
 let quoteRun = null
 function quoteOpaque(value) {
@@ -1637,10 +1636,10 @@ function settleQuotes(html, run, prevCtx) {
         const r = run.records[Number(quote[2])]
         if (r.initialContext !== undefined) prev = r.initialContext
         if (r.spanStart) prev = ''
-        const dashClose = '-–—'.includes(prev) && prev !== '' && (r.next === '' || quoteSpace(r.next) || '"\'.,;:!?)]'.includes(r.next))
-        const opening = (r.spanStart ?? (prev === '' || QUOTE_OPEN_PREV.has(prev))) && !dashClose
+        const dashClose = '-–—'.includes(prev) && prev !== '' && (r.next === '' || isTypographyFlank(r.next) || '"\'.,;:!?)]'.includes(r.next))
+        const opening = (r.spanStart ?? (prev === '' || isTypographyFlank(prev) || QUOTE_OPEN_PREV.has(prev))) && !dashClose
         let apostrophe = r.single && (/[0-9]/.test(r.next) || (!opening && quoteAlnum(r.next)))
-        if (r.single && !apostrophe && !opening && !quoteSpace(prev)) span = null
+        if (r.single && !apostrophe && !opening && !isTypographyFlank(prev)) span = null
         if (r.single && opening && !apostrophe) {
           if (quoteAlnum(r.next)) apostrophe = r.elision || span !== null
           if (!apostrophe && span === null) span = { record: r, demote: quoteAlnum(r.next) && !r.contentStart && prev !== '“' }

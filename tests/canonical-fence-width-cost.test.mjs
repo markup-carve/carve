@@ -1,8 +1,8 @@
 /*
  * The colon fence's canonical width costs bytes, and the number is a reading.
  *
- * PART 9 §12 records what widening a fence by one colon per level buys and the
- * `d^2 + 5d` invariant. The measurement and compatibility decision live in
+ * PART 2 records, at `colon_fence_close`, what widening a fence by one colon
+ * per level buys and the `d^2 + 5d` invariant. The measurement and compatibility decision live in
  * docs/spec-history.md, while docs/divergence-from-djot.md §13 quotes the same
  * figures for readers comparing languages.
  *
@@ -77,7 +77,7 @@ test('decision history quotes the canonical-form cost this corpus document measu
   const ratio = (canonicalBytes / sourceBytes).toFixed(1)
   const grouped = (n) => n.toLocaleString('en-US')
 
-  assert.ok(grammar.includes('d^2 + 5d'), 'PART 9 §12 states the invariant')
+  assert.ok(grammar.includes('d^2 + 5d'), 'PART 2 states the invariant at colon_fence_close')
 
   for (const [where, text] of [['decision history', history], ['divergence §13', page]]) {
     for (const claim of [grouped(sourceBytes), grouped(canonicalBytes), grouped(fenceBytes), `${share}%`, String(CAP), String(widest)]) {

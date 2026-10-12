@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "scope": "PART 11 sections 10a through 11",
+  "scope": "The clause each row names in PART 11 sections 10a through 11. The rows are a sample, not every cross-target rule of those sections.",
   "features": {
     "unused_definition": {
       "rule": "CARVE-P11-028",
@@ -34,10 +34,18 @@
       "ansi": "omit",
       "carve": "preserve"
     },
-    "resolved_cross_reference": {
+    "resolved_cross_reference_to_heading": {
       "rule": "CARVE-P11-038",
       "html": "link",
       "markdown": "link",
+      "plain": "display_text",
+      "ansi": "display_text",
+      "carve": "preserve"
+    },
+    "resolved_cross_reference_to_other_target": {
+      "rule": "CARVE-P11-038",
+      "html": "link",
+      "markdown": "display_text",
       "plain": "display_text",
       "ansi": "display_text",
       "carve": "preserve"

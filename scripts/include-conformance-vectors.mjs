@@ -157,7 +157,7 @@ export const vectors = [
   },
   {
     name: 'i01-section-after-a-tab',
-    description: 'A tab separates the path from the section name, as whitespace does everywhere else in the directive.',
+    description: 'A tab is content (CARVE-P7-001), not padding: a bare path keeps it, so the path is `child` plus a tab and does not resolve.',
     rules: ['I1', 'slot-adjacency'],
     mode: 'virtual',
     resolver: 'virtual',
@@ -698,7 +698,7 @@ export const vectors = [
     files: { child: 'Body.' },
   },
 
-  // --- I12 / I14 formatter preservation ------------------------------------
+  // --- I12 formatter preservation ------------------------------------------
   {
     name: 'i12-fmt-verbatim-wellformed',
     description: 'A well-formed directive formats verbatim, not escaped.',
@@ -810,7 +810,7 @@ export const vectors = [
   {
     name: 'i14-fmt-two-directives-prose',
     description: 'Two directives separated by prose both survive (guards a "first only" defect).',
-    rules: ['I14'],
+    rules: ['I12'],
     mode: 'virtual',
     resolver: 'none',
     entry: 'a {{ x.crv }} b {{ y.crv }} c',
@@ -819,7 +819,7 @@ export const vectors = [
   {
     name: 'i14-fmt-adjacent-directives',
     description: 'Adjacent directives with no prose between them both survive.',
-    rules: ['I14'],
+    rules: ['I12'],
     mode: 'virtual',
     resolver: 'none',
     entry: '{{ a.crv }}{{ b.crv }}',
@@ -828,7 +828,7 @@ export const vectors = [
   {
     name: 'i14-fmt-multiple-section-options',
     description: 'Multiple directives carrying #section / options survive (recognition reassembles across nodes).',
-    rules: ['I14', 'I9a'],
+    rules: ['I12', 'I9a'],
     mode: 'virtual',
     resolver: 'none',
     entry: 'a {{ x.crv #intro }} b {{ y.crv #outro }} c',
@@ -837,7 +837,7 @@ export const vectors = [
   {
     name: 'i14-fmt-shape-invalid-among-valid',
     description: 'A shape-invalid run is escaped without disturbing valid directives around it.',
-    rules: ['I14'],
+    rules: ['I12'],
     mode: 'virtual',
     resolver: 'none',
     entry: 'a {{ x.crv }} b {{ }} c {{ y.crv }} d',
@@ -846,7 +846,7 @@ export const vectors = [
   {
     name: 'i14-fmt-not-shape-wellformed-escaped',
     description: 'A run with no closing braces is not a directive and is escaped normally.',
-    rules: ['I14'],
+    rules: ['I12'],
     mode: 'virtual',
     resolver: 'none',
     entry: '{{ oops',
@@ -855,7 +855,7 @@ export const vectors = [
   {
     name: 'i14-fmt-empty-braces-escaped',
     description: 'Empty braces are escaped normally at format time (path-is-required agrees at both recognition points).',
-    rules: ['I14', 'I1'],
+    rules: ['I12', 'I1'],
     mode: 'virtual',
     resolver: 'none',
     entry: '{{ }}',
@@ -864,7 +864,7 @@ export const vectors = [
   {
     name: 'i12-fmt-expand-equivalence',
     description: 'Expanding the formatted document yields the same html + dependency set as expanding the original (I12 stronger invariant).',
-    rules: ['I12', 'I14'],
+    rules: ['I12'],
     mode: 'virtual',
     resolver: 'virtual',
     entry: '{{ a.crv }}\n\nSee {{ b.crv }} and here:\n\n{{ "c d.crv" @shift:auto }}',
@@ -872,11 +872,11 @@ export const vectors = [
     checkFmtExpandEquivalence: true,
   },
 
-  // --- I13 rejected directive has no side effects --------------------------
+  // --- I7 a rejected directive has no side effects -------------------------
   {
     name: 'i13-no-side-effect-unresolvable',
     description: 'An unresolvable directive reserves nothing; the later legitimate id stays "dup".',
-    rules: ['I13'],
+    rules: ['I7'],
     mode: 'virtual',
     resolver: 'virtual',
     entry: 'Text {{ missing }} text.\n\n{{ later }}',
@@ -885,7 +885,7 @@ export const vectors = [
   {
     name: 'i13-no-side-effect-binary',
     description: 'A binary include reserves nothing.',
-    rules: ['I13'],
+    rules: ['I7'],
     mode: 'virtual',
     resolver: 'virtual',
     entry: 'Text {{ bin }} text.\n\n{{ later }}',
@@ -894,7 +894,7 @@ export const vectors = [
   {
     name: 'i13-no-side-effect-both-selections',
     description: 'A both-selections directive reserves nothing.',
-    rules: ['I13'],
+    rules: ['I7'],
     mode: 'virtual',
     resolver: 'virtual',
     entry: 'Text {{ child #s @lines:1-2 }} text.\n\n{{ later }}',
@@ -903,7 +903,7 @@ export const vectors = [
   {
     name: 'i13-no-side-effect-missing-section',
     description: 'A missing-section directive reserves nothing.',
-    rules: ['I13'],
+    rules: ['I7'],
     mode: 'virtual',
     resolver: 'virtual',
     entry: 'Text {{ child #nope }} text.\n\n{{ later }}',
@@ -912,7 +912,7 @@ export const vectors = [
   {
     name: 'i13-no-side-effect-cycle',
     description: 'A cyclic include reserves nothing.',
-    rules: ['I13'],
+    rules: ['I7'],
     mode: 'virtual',
     resolver: 'virtual',
     entry: 'Text {{ a }} text.\n\n{{ later }}',
@@ -921,7 +921,7 @@ export const vectors = [
   {
     name: 'i13-inline-block-reserves-no-heading-id',
     description: 'A rejected inline block-include reserves no heading id; the later heading keeps "dup".',
-    rules: ['I13'],
+    rules: ['I7'],
     mode: 'virtual',
     resolver: 'virtual',
     entry: 'See {{ a }}.\n\n{{ later }}',
@@ -930,7 +930,7 @@ export const vectors = [
   {
     name: 'i13-inline-block-reserves-no-footnote',
     description: 'A rejected inline block-include reserves no footnote label; only the later note survives.',
-    rules: ['I13'],
+    rules: ['I7'],
     mode: 'virtual',
     resolver: 'virtual',
     entry: 'See {{ a }}.\n\n{{ later }}',
@@ -970,13 +970,13 @@ export const vectors = [
     files: { 'title.crv': 'My Title' },
   },
 
-  // --- I12/I14 multi-option directive round-trips verbatim -----------------
+  // --- I12 multi-option directive round-trips verbatim ---------------------
   // Pins that an author's option/section token ORDER is preserved byte-for-byte
   // under fmt (not reordered). carve-php was reordering here before its fix.
   {
     name: 'i12-fmt-multi-option-verbatim',
     description: 'A multi-option directive (unknown option + section) serializes byte-identically, author token order preserved.',
-    rules: ['I12', 'I14'],
+    rules: ['I12'],
     mode: 'virtual',
     resolver: 'virtual',
     entry: 'Here {{ x.crv @bogus:1 #intro }} now.',
@@ -1058,7 +1058,7 @@ export const vectors = [
   // --- I1 the directive's padding is a RUN ---------------------------------
   {
     name: 'i01-padding-is-a-run-of-whitespace',
-    description: 'Extra spaces and tabs around the path are padding, not a reason to leave the directive literal.',
+    description: 'Extra spaces around the path are padding; a tab is content (CARVE-P7-001), so a directive padded with tabs is literal text.',
     rules: ['I1'],
     mode: 'virtual',
     resolver: 'virtual',
@@ -1070,7 +1070,7 @@ export const vectors = [
   },
   {
     name: 'i01-padding-is-required-on-both-sides',
-    description: 'One whitespace character is required on each side: {{c.crv}} and {{ c.crv}} are literal text.',
+    description: 'One space is required on each side: {{c.crv}} and {{ c.crv}} are literal text.',
     rules: ['I1'],
     mode: 'virtual',
     resolver: 'virtual',

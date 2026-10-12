@@ -1,6 +1,6 @@
 {
   "name": "i01-padding-is-a-run-of-whitespace",
-  "description": "Extra spaces and tabs around the path are padding, not a reason to leave the directive literal.",
+  "description": "Extra spaces around the path are padding; a tab is content (CARVE-P7-001), so a directive padded with tabs is literal text.",
   "rules": [
     "I1"
   ],
@@ -11,7 +11,7 @@
     "c.crv": "body\n"
   },
   "expected": {
-    "html": "<p>body</p>\n<p>body</p>",
+    "html": "<p>body</p>\n<p>{{\tc.crv\t}}</p>",
     "fmt": "{{   c.crv   }}\n\n{{\tc.crv\t}}\n",
     "warnings": [],
     "dependencies": [

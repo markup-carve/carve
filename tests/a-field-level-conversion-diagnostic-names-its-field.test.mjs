@@ -79,6 +79,7 @@ test('the render-loss enum holds the render-time codes and neither channel code'
       'destination-denied',
       'editorial-comment-flattened',
       'carrier-attribute-dropped',
+      'definition-list-flattened',
     ],
   )
 })
@@ -87,7 +88,7 @@ test('--allow-loss names the offered render-loss codes and neither channel code'
   const offered = [...grammar.matchAll(/`--allow-loss ([a-z-]+)`/g)].map((match) => match[1])
   assert.deepEqual(
     [...new Set(offered)].sort(),
-    ['carrier-attribute-dropped', 'editorial-comment-flattened', 'raw-format-dropped', 'ruby-flattened'],
+    ['carrier-attribute-dropped', 'definition-list-flattened', 'editorial-comment-flattened', 'raw-format-dropped', 'ruby-flattened'],
   )
 })
 
@@ -114,7 +115,7 @@ const REPORTS = {
 for (const [id, expected] of Object.entries(REPORTS)) {
   test(`${id} names the channel and what it reports there`, () => {
     const text = clauseText(id).replace(/\n\s+/g, ' ')
-    assert.match(text, /PART 11 §1d channel/, `${id} must point its loss at the section 1d channel`)
+    assert.match(text, /CARVE-P11-046 channel/, `${id} must point its loss at the section 1d channel`)
     for (const token of expected) {
       assert.ok(text.includes(token), `${id} must name ${token}`)
     }

@@ -50,3 +50,19 @@
 
 list (extent)  1  carve-php opens at the parent content column, carve-js and carve-rs at the marker; both conformant under markup-carve/carve#1928
 list_item (extent)  1  carve-php opens at the parent content column, carve-js and carve-rs at the marker; both conformant under markup-carve/carve#1928
+
+# THE ROWS BELOW are not that case. On each the engines read the source into
+# different trees, because the corpus is ahead of one or more of them, and the
+# spans differ as a result. Every one closes with the parser fix its reference
+# names; none is a position defect of its own. Sections 556, 557, 560 and 566.
+#
+# The same parse differences also put seven more documents on the two rows
+# above. Those are NOT declared: .ast-span-exempt keys the conformant reading on
+# the count of one, so the rows read COUNT in `npm run ast:check` until
+# markup-carve/carve-rs#2533, markup-carve/carve-php#3240,
+# markup-carve/carve-js#2772 and the pin move past markup-carve/carve-js#2838.
+definition_list (extent)  2  carve-rs ends the description above a blank-separated code block at its body column; markup-carve/carve-rs#2582
+definition_description (extent)  2  the same two documents as the `definition_list` row; markup-carve/carve-rs#2582
+paragraph (extent)  2  carve-php moves a nested note's code blocks into the item, markup-carve/carve-php#3240; carve-js ends the item above a retained line, markup-carve/carve-js#2772
+footnote_ref (extent)  1  carve-php reads the nested footnote definition as item text, so its reference list differs; markup-carve/carve-php#3240
+text (extent)  1  carve-js and carve-rs read a heading past an item-hosted container's column as text; markup-carve/carve-js#2875

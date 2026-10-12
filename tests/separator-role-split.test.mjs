@@ -412,11 +412,10 @@ const SITES = [
   // That last one is the whole reason the ohm file needed two edits, and it
   // was measured: `attrSp = " "` on its own left corpus 252-3 green.
   //
-  // The BLOCK-attribute line is deliberately NOT here. It keeps `whitespace`
-  // at all three of its slots, and the ruling is that distinction - see PART
-  // 4's THE INLINE INTERIOR IS SPACE-ONLY, THE BLOCK-ATTRIBUTE LINE IS NOT.
-  // `tests/corpus/273-*` pins the block line's tab forms as still valid, so a
-  // change that narrowed both surfaces at once fails there rather than here.
+  // The BLOCK-attribute line is not here. It takes `space` within the line
+  // too (PART 4's ATTRIBUTE PADDING IS SPACE-ONLY); only a continuation's
+  // indentation takes a tab. `tests/corpus/273-*` and
+  // tests/block-attribute-line-breaks.test.mjs pin both halves.
   {
     role: 'padding',
     site: 'attributes, the slots inside the braces',

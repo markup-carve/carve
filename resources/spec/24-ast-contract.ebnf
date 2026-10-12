@@ -10,7 +10,7 @@
       `attrs.id`, the slot an authored `{#id}` occupies, and carries it in the
       resolved tree exactly as the two values above do.
 
-      The criterion is §5's own: recomputability. A heading id is NOT a function
+      The criterion is PART 12 §5's own: recomputability. A heading id is NOT a function
       of the heading. Dedup assigns the next free suffix in document order, so
       two `# Notes` headings yield `Notes` and then `Notes-2` (CARVE-P2-004
       states the slug and dedup rules; CARVE-P9-019 shares that namespace with
@@ -18,7 +18,7 @@
       cannot replicate that, and a table of contents, a go-to-definition jump
       and a cross-document index each need the exact id, not a plausible one.
 
-      §3a IS NOT IN TENSION WITH THIS. §3a forbids folding a resolution result
+      CARVE-P12-005 IS NOT IN TENSION WITH THIS. CARVE-P12-005 forbids folding a resolution result
       in place of the construct the author wrote; here nothing authored is
       replaced. The id is published beside the heading's other attributes, the
       same way a resolved crossref keeps `target` and gains `href`.
@@ -43,7 +43,7 @@
       parsing YAML or TOML is not the markup parser's job, the raw text plus
       `format` lets any consumer do it, and a parsed map cannot represent a
       document whose frontmatter is malformed. A parsed map held internally is
-      an internal choice, and §1 already requires mapping on the way out rather
+      an internal choice, and PART 12 §1 already requires mapping on the way out rather
       than exporting internals.
 
       A FOOTNOTE DEFINITION IS A BLOCK NODE, `type: "footnote"`, carrying:
@@ -97,13 +97,13 @@
       PART 11's writer emits the definition after the container the author
       wrote it in, which reads like a violation of PART 11 §6 ("fmt does not
       reorder ... those are the author's choices and the AST records them"). It
-      is not, because §6 governs what the writer may do with what the tree
+      is not, because PART 11 §6 governs what the writer may do with what the tree
       HOLDS, and this clause is what the tree holds. It is accepted for
       footnotes because a footnote definition renders as a footnote either way,
       so the move costs the author placement and nothing else.
 
       Definitions appear in DOCUMENT ORDER by source position. Numbering is a
-      resolution result and stays on the reference (§5).
+      resolution result and stays on the reference (PART 12 §5).
 
    8. A DEFINITION LIST'S ENTRIES ARE NODES -- NORMATIVE [CARVE-P12-027]. `definition_list`
       carries `items`: the `<dt>` / `<dd>` sequence in DOCUMENT ORDER, as
@@ -151,7 +151,7 @@
       THE NAME IS `loose` AND NOT `tight`, and the divergence from `list` is
       the point. An absent `tight` read as false would say LOOSE, the opposite
       of the default; `loose: true` absent means derived, which is the truth.
-      It matches L7's own key, and follows `list.bareMarker`, the other field
+      It matches PART 9 §17 L7's own key, and follows `list.bareMarker`, the other field
       here that records an authored distinction the default spelling cannot
       express.
 
@@ -185,14 +185,14 @@
         title   the quoted title, unescaped, when the definition carries one
         attrs   a trailing attribute block on the definition line (CARVE-P3-007)
 
-      IT HOISTS TO THE DOCUMENT, exactly as §7 requires of the FOOTNOTE
+      IT HOISTS TO THE DOCUMENT, exactly as CARVE-P12-024 requires of the FOOTNOTE
       definition: a definition authored inside a block quote or a list item is
       a child of the DOCUMENT, and its `pos` still says where it was written.
       The container is left as the author's remaining content, which is what
       corpus 117-footnote-definition-inside-a-container-is-collected already
       pins for the footnote case.
 
-      THE ABBREVIATION DEFINITION IS NOT THE THIRD KIND HERE. §7's clause AN
+      THE ABBREVIATION DEFINITION IS NOT THE THIRD KIND HERE. CARVE-P12-024's clause AN
       ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL says the
       opposite for that one: inside a container the line is not a definition
       at all, it is paragraph text, and nothing is hoisted because nothing was
@@ -215,9 +215,9 @@
       the property, and its own output no longer validates.
 
       Extension data crosses a round trip only in a DECLARED place, such as a
-      `block_extension` payload (§33); anywhere else it is an unnamed property.
+      `block_extension` payload (CARVE-P12-055); anywhere else it is an unnamed property.
 
-   12. A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST -- NORMATIVE [CARVE-P12-031]. §7
+   12. A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST -- NORMATIVE [CARVE-P12-031]. CARVE-P12-024
       fixes the root at `type`, `children` and `srcByteLength`; the schema marks
       all three `required` and pins `type` to `document`.
 
@@ -235,14 +235,14 @@
           a reader that supplies `children: []` has turned a truncated document
           into an empty one.
       (b) A ROOT CARRYING ANYTHING ELSE. The root is closed like every other
-          node (§11). A root whose `type` is not `document` (`doc`, say, which
+          node (CARVE-P12-030). A root whose `type` is not `document` (`doc`, say, which
           is ProseMirror's) fails (d).
       (c) A NODE WHOSE `type` THE SCHEMA DOES NOT NAME, AT DECODE, not in a
           renderer one step later: a formatter, a linter or a language server
           may never reach a renderer.
       (d) A PAYLOAD THAT DOES NOT VALIDATE AGAINST `resources/ast-schema.json`,
           at decode. The schema is the list of what is checked; (a) to (c) and
-          §11 keep their own statements.
+          CARVE-P12-030 keep their own statements.
 
       (c) IS ABOUT NODE POSITIONS: the root, and every field the schema fills
       with a node. Which fields those are depends on the type that carries them
@@ -261,13 +261,13 @@
       CARVE-P12-067.
 
       A SIDECAR TRAVELS BESIDE THE TREE AND NEVER IN IT -- NORMATIVE
-      [CARVE-P12-067]. The source-layout (§13), node-identity (§38),
-      annotation-range (§40) and provenance (§41) sidecars share these rules:
+      [CARVE-P12-067]. The source-layout (CARVE-P12-032), node-identity (CARVE-P12-060),
+      annotation-range (CARVE-P12-062) and provenance (CARVE-P12-063) sidecars share these rules:
 
       - A producer returns one only when the caller asks for it, and MUST NOT
-        put its data in the tree: §§2, 7, 11 and 12 keep the tree closed, and
+        put its data in the tree: PART 12 §2, CARVE-P12-024, CARVE-P12-030 and CARVE-P12-031 keep the tree closed, and
         two documents differing only in sidecar content are the same document
-        under §6.
+        under PART 12 §6.
       - It carries `version` 1 and validates against its own schema. A reader
         refuses a version it does not implement, and an AST decoder does not
         accept a sidecar as an AST. Default parse, AST encoding, CLI JSON and
@@ -275,7 +275,7 @@
       - A `path` is an RFC 6901 pointer into the accompanying canonical AST.
       - A byte range counts the bytes of the ORIGINAL input it names, BOM and
         CRLF bytes included: `startByte` inclusive, `endByte` exclusive. It is
-        not a §4 offset, which counts codepoints.
+        not a PART 12 §4 offset, which counts codepoints.
       - SIDECAR DATA DOES NOT SURVIVE A CANONICAL WRITE: Carve source has no
         spelling for it, and the write produces a new input.
 
@@ -336,7 +336,7 @@
          `preceding` for the host immediately above it (a caption slot under
          its host, PART 9 §4), `continuation` for a `+`-attached block,
          `detached` where an attachable position was written but the spelling
-         detached it (§4's two blank lines), `none` where the node has no
+         detached it (PART 9 §4's two blank lines), `none` where the node has no
          host.
 
       A DECLARED FACT WITH NO DEFINITION IS A DEFECT, not a reserved slot.
@@ -364,12 +364,12 @@
 
       A SHAPE NO CARVE SOURCE SPELLS IS CARRIED, NOT INVENTED -- NORMATIVE
       [CARVE-P12-066]. An INTERCHANGE-ONLY shape is a node type, field or
-      wrapper that Carve 0.1 source cannot spell: `shortCaption` (§14), a
-      `figure` wrapping a `table` (§17), `table_cell.blocks` (§27),
-      `small_caps` (§28), `math.label` and `math.number` (§29), `section`
-      (§30), `ruby` (§32) and `block_extension` (§33). A parser never
+      wrapper that Carve 0.1 source cannot spell: `shortCaption` (CARVE-P12-033), a
+      `figure` wrapping a `table` (CARVE-P12-036), `table_cell.blocks` (CARVE-P12-049),
+      `small_caps` (CARVE-P12-050), `math.label` and `math.number` (CARVE-P12-051), `section`
+      (CARVE-P12-052), `ruby` (CARVE-P12-054) and `block_extension` (CARVE-P12-055). A parser never
       synthesizes one; AST consumers and format bridges supply it, and AST
-      encode/decode preserves it (§6). A canonical Carve writer MUST NOT invent
+      encode/decode preserves it (PART 12 §6). A canonical Carve writer MUST NOT invent
       source syntax for it. The shape's own clause says what each target
       renders and whether and how the loss is reported; this clause changes
       neither.
@@ -482,7 +482,7 @@
       Carve source cannot spell section attributes, and neither can Markdown,
       plain or ANSI. A writer for one of those targets reports one
       `field-unspellable` entry per discarded nonempty attributes field on the
-      PART 11 §1d channel, with `node` `table` and `field` the path within the
+      CARVE-P11-046 channel, with `node` `table` and `field` the path within the
       node: `rowGroups.headAttrs`, `rowGroups.footAttrs` or
       `rowGroups.bodies[N].attrs`. An empty attributes object holds nothing to
       lose and is reported nowhere. It is NOT a render loss. `CARVE-P2-024`'s
@@ -499,7 +499,7 @@
       `field-unspellable` entry with `node` `table` and `field` `rowGroups`.
 
    16. A COMPOSITE FIGURE IS ITS OWN NODE TYPE -- NORMATIVE [CARVE-P12-035]
-      (PART 9 §4c). The type is `figure_group`, and the wire shape:
+      (CARVE-P9-001). The type is `figure_group`, and the wire shape:
 
         {"type":"figure_group","children":[...],
          "caption":[...],"attrs":{...},"pos":{...}}
@@ -508,13 +508,13 @@
       `figure` and `table` nodes among them, exactly the nodes the inner
       caption rules built, and non-panel stray content sits between them in
       place. There is NO `panels` array: repeating the children under a
-      second key would let the two disagree, the same contradiction §15's
+      second key would let the two disagree, the same contradiction CARVE-P12-034's
       counts-not-copies rule exists to make unrepresentable, and a consumer
       derives the panel list the way the renderer does -- by type, in order.
 
       `caption` is the GROUP caption, an array of inline nodes; absent means
       the group is uncaptioned (no empty-array placeholder). `type` and
-      `children` are required, `attrs` optional, `pos` per §4.
+      `children` are required, `attrs` optional, `pos` per PART 12 §4.
 
       DISCRIMINATED BY TYPE, NOT BY SHAPE. Every `figure` node carries a
       `target`; the group deliberately does not, and a consumer telling the
@@ -522,10 +522,10 @@
       either shape grows a field. The type string is the whole test, which is
       why this is a NEW type rather than a target-less `figure`.
 
-      NO `shortCaption`, NO legends, NO label fields. §14's `shortCaption`
+      NO `shortCaption`, NO legends, NO label fields. CARVE-P12-033's `shortCaption`
       stays on `figure` and `table`; whether it ever reaches the group, and
       whether repeated `^` blocks become legends, remains open and is not
       claimed here. The schema
       (`resources/ast-schema.json`) pins the shape; an unknown property on a
-      `figure_group` is rejected on ingest like any other (§11).
+      `figure_group` is rejected on ingest like any other (CARVE-P12-030).
    ============================================================================ *)

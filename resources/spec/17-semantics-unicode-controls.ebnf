@@ -17,7 +17,7 @@
         They are REMOVED, not escaped: in HTML, entity-encoding one would let
         it DECODE BACK to the raw control downstream; in the other presentation
         targets it would either remain live or change the author's visible
-        content. This target rule is independent of §25's C0-control split:
+        content. This target rule is independent of CARVE-P9-061's C0-control split:
         bidi override/isolate characters are Unicode format characters, not
         C0 controls.
       - The canonical `carve` target is a SOURCE SERIALIZER, not a presentation
@@ -58,9 +58,7 @@
         literal `!` in the inline order, so `!` before `[` still opens an image
         and `!` anywhere else stays literal text. A literal `!` immediately
         before a backtick run is therefore written `\!` -- the single case this
-        construct reinterprets. (Chosen over the earlier trailing-`{!}` sigil:
-        the `!` prefix matches the `$`-math / `!`-image family, keeps the
-        attribute block ordinary, and reads as "not code".)
+        construct reinterprets.
       - There is NO block form. A fenced code block already carries its content
         verbatim; the inline case is the one the notation problem needs, and a
         block spelling is deliberately left undefined rather than invented.
@@ -105,7 +103,7 @@
         level there is no container prefix to remove. This also applies to a
         comment folded into a definition term, whose marker establishes no
         body column. The closer's column does not change the payload value.
-      - TAIL DISPOSITION (serialization, PART 10): the OPENER's tail is kept as
+      - TAIL DISPOSITION (serialization, PART 11): the OPENER's tail is kept as
         the comment body's FIRST LINE, so `carve fmt` round-trips the words
         rather than deleting them; the CLOSER's tail is DISCARDED, as a code
         fence's closing info is. Neither is ever rendered.
@@ -160,12 +158,10 @@
            stripped on Markdown, plain text and ANSI alike, so §25's
            NON-HTML TARGETS requirement is met on those three.
            WHAT IS STILL OPEN is the CANONICAL WRITER: every one of those
-           characters passes through on the `carve` target. That may be right
-           -- a writer that drops content is lossy, and the round-trip
-           invariant is what that target answers to -- but §25 says "non-HTML
-           targets" without saying whether the canonical writer is one, and
-           the same question is open for §26's bidi overrides. Deciding it
-           once would settle both.
+           characters passes through on the `carve` target, and §25 says
+           "non-HTML targets" without saying whether the canonical writer is
+           one. §26 already answers the same question for bidi overrides: the
+           `carve` target is a source serializer and preserves them.
 *)
 
 
@@ -213,9 +209,10 @@
    contributes to it, and those keys are part of the same map a host passes
    once. So the list above is what CORE defines and not the whole map an engine
    honors -- `indexBackref`, `tabsGroup` and `codeGroup` are honored beside the
-   ten. A fourth, `tocNav` (Extensions SS8b.1), is STATED and not yet honored by
-   any engine: the table-of-contents nav is a navigation landmark and carries an
-   accessible name. A host translating a document therefore sets ONE map.
+   ten. `tocNav` (Extensions §8b.1) belongs to the same map: the
+   table-of-contents nav is a navigation landmark and carries an accessible
+   name. A host translating a
+   document therefore sets ONE map.
 
    AN EXTENSION MAY read the map for a string it shares with core; it MUST NOT
    require the host to configure the same text twice. Two extension-written

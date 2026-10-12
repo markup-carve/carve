@@ -6,8 +6,14 @@ Below-content-column div body in a list item stays literal
  :::
 .
 <ul>
-  <li>::: note
-- para text
+  <li>
+    <aside class="admonition note" aria-label="Note">
+
+    </aside>
+  </li>
+</ul>
+<ul>
+  <li>para text
 :::</li>
 </ul>
 ```

@@ -55,13 +55,18 @@
      specification is LAYERED: PART 0 (layout automaton)
      -> PARTS 1-8 (EBNF productions + the GUARD NOTATION above) -> PART 9
      (operational semantics for the non-context-free rules) -> PART 9R
-     (two-pass resolution semantics) -> PART 10 (serialization). PART 9 and
-     PART 9R are the authority for behavior the productions cannot encode.
+     (two-pass resolution semantics) -> PART 10 (HTML serialization) ->
+     PART 11 (the canonical writer and the other output targets) -> PART 12
+     (AST serialization). PART 9 and PART 9R are the authority for behavior
+     the productions cannot encode.
      `resources/spec/rules.json` gives every `-- NORMATIVE` clause a stable id.
-     The JSON transition and capability tables in that directory are normative
-     inputs consumed or checked by the executable artifacts.
-   - docs/case-study/syntax.md and docs/edge-cases.md are EXPLANATORY and
-     DERIVED — prose for humans, non-normative.
+     `target-capabilities.json` in that directory restates a sample of PART
+     11's cross-target rules, one row per named clause; the clause governs.
+     `layout-transitions.json` restates
+     CARVE-P0-003's transition table for tooling and is INFORMATIVE: no parse
+     path reads it, and the clause governs.
+   - docs/case-study/syntax.md is EXPLANATORY and DERIVED: prose for
+     humans, non-normative.
    - docs/spec-history.md records retired readings, implementation divergence,
      compatibility measurements and decision archaeology. Those facts may
      explain a current rule but do not belong inside its normative algorithm.

@@ -40,10 +40,6 @@
       - SPELLING. `{%` opens, the FIRST `%}` closes. One character per meaning,
         like the rest of the braced family ({^x^}, {,x,}, {+x+}, {-x-}), and the
         same spelling Djot uses, so a Djot document's comments keep working.
-      - NO PAD AGAINST A LEADING LINE BREAK. A canonical writer separates `{%`
-        from the comment's text with one space, except where the text begins
-        with a line break: the break separates them already, and the space
-        would leave the opener's line ending in whitespace.
       - NO NESTING. A `{%` inside the content is ordinary comment text; the run
         ends at the first `%}`.
       - UNTERMINATED STAYS LITERAL. `a {% oops` renders the braces (matching
@@ -175,9 +171,7 @@
         per {~ opener. At a matched frame's closer, a visible top-level ~>
         selects substitution; otherwise the frame is strike. A nested {~
         frame is resolved independently, including in either substitution
-        side. This boundary clarification changes {~a {*x~>y*} b~} from
-        substitution to strike containing strong text x~>y. It does not
-        change the meanings of editorial insertion or deletion.
+        side: {~a {*x~>y*} b~} is strike containing strong text x~>y.
       - `{= … =}` is forced highlight (<mark>), distinct from the raw-inline
         `{=format}` attribute on a code span (`` `x`{=html} ``), which has no
         trailing `=` before the `}`.
@@ -191,9 +185,8 @@
         any bare span: {*x*}{.c} -> <strong class="c">x</strong>. Child and
         parent attribute runs attach independently; neither inherits the
         other's attributes merely because they have the same kind.
-      Existing corpus 01-emphasis-12 and -13 cover earlier forced behavior.
-      New nesting expectations are specified in
-      resources/spec/nested-braced-emphasis-cases.json until corpus rollout.
+      (corpus 01-emphasis-12 and -13;
+      resources/spec/nested-braced-emphasis-cases.json.)
 
    23. LINE BLOCK (VERSE) -- NORMATIVE [CARVE-P9-044] (governs `line_block` in PART 2). A
       `::: |` fenced block preserves the author's per-line layout.
@@ -226,7 +219,7 @@
         how a stanza carries an EMPTY verse line, the blank line being the one
         spelling that would end the stanza instead. Both are observable in the
         tree and in the HTML, which is why the canonical writer may not drop
-        either (PART 11 §7c).
+        either (CARVE-P11-020).
 
         AN INLINE CONSTRUCT IS NOT A DEPTH THE RULE STOPS AT -- NORMATIVE [CARVE-P9-046].
         The subject is the SOFT break, so the only question at a boundary is
@@ -238,8 +231,8 @@
         same two lines get with no emphasis around them.
 
         THE CONVERSION IS IN THE TREE, NOT ONLY IN THE HTML. A stanza's bare
-        newline is a `hard_break` NODE (PART 12), which is what lets PART 11
-        §7c spell one as a bare newline at all - "re-reading that newline
+        newline is a `hard_break` NODE (PART 12), which is what lets
+        CARVE-P11-020 spell one as a bare newline at all - "re-reading that newline
         yields the SAME TREE" is a statement about nodes.
 
         THE TWO EXEMPTIONS ABOVE ARE DIFFERENT IN KIND, NOT IN DEPTH. A
@@ -320,7 +313,7 @@
         the empty verse line as a NEWLINE, like every other break it swallows.
 
         REMOVED FROM THE RENDER, NOT FROM THE TREE. The line is a `comment`
-        node like any other comment (§21a, PART 12), so the canonical writer
+        node like any other comment (CARVE-P9-042, PART 12), so the canonical writer
         emits it back UNCHANGED and at the SAME column. A writer that indents
         it by a space to stop the line re-reading as a comment publishes the
         very text the removal exists to hide, because in verse a leading run
@@ -338,33 +331,13 @@
         is no boundary left in the tree for a `comment` node to sit on and the
         run's value holds an EMPTY LINE instead. Appending the node anyway puts its
         span before the run that contains it and after the node that follows
-        it, which PART 12 containment refuses. The writer's answer for that
-        empty line is PART 11 §7c.
-
-        AND §7c REACHES AN INTERIOR LINE, because the run's own CLOSER takes
-        the last one. A tree records no closer for a verbatim run (PART 12 §3
-        gives `code` a value and nothing else), so PART 11 §6's second half
-        hands that spelling to the writer, which CLOSES what the author left
-        open. Inside verse the closer occupies a LINE, so §7c's `%%` is
-        written for every emptied line the run still spans and not for the one
-        the closer lands on -- source over the form the writer emits for it:
-
-          ::: |     ->     ::: |          the emptied line is INTERIOR: the
-          `                `              run spans past it to `x`, so §7c
-          %%               %%             spells it, and the closer follows
-          x                x`
-          :::              :::
-
-          ::: |     ->     ::: |          the run spans ONE boundary and its
-          `                `              value is a bare newline, so the
-          %%               `              closer takes the emptied line and
-          :::              :::            no empty line is left to spell
-
-        Both preserve the tree and the HTML.
+        it, which PART 12 containment refuses. The writer's spelling for that
+        empty line, and for every emptied line the run still spans, is
+        CARVE-P11-020.
 
         A TRAILING COMMENT IS A DIFFERENT CONSTRUCT and this clause does not
-        reach it. `x %% secret` is `inline_comment` (PART 3, §21), not
-        `comment_line`, and §21's third bullet governs it: inside a verbatim
+        reach it. `x %% secret` is `inline_comment` (PART 3, CARVE-P9-041), not
+        `comment_line`, and CARVE-P9-041's verbatim rule governs it: inside a verbatim
         run there is no comment there at all, only two percent characters in
         content. The asymmetry is deliberate: an engine may leave a `%%`
         standing inside a verbatim run, and may never delete author bytes out
@@ -454,38 +427,14 @@
              THE FOLD PRESUMES AN OPEN PARAGRAPH -- NORMATIVE [CARVE-P9-051].
              "Folds as lazy item text" names an OPERATION, and lazy
              continuation continues an open paragraph (§10 I2). Where none is
-             open the instruction cannot be carried out, so the branch does not
-             decide the line: it is classified in the context that SURVIVES.
-             Which context that is depends on what closed the paragraph, and
-             the two cases already settled here differ:
-
-               - after a line COMMENT consumed below the content column, the
-                 item remains available for a noninterrupting ordinary follower.
-                 A sibling marker is recognized before this retention rule;
-                 it opens the next item rather than becoming a child of this
-                 one. At the content column, a marker opens a sublist as usual.
-                 A retained marker strictly between the item's base and content
-                 columns is paragraph text, even when a comment closed the
-                 preceding paragraph. Retention never rebases that marker into
-                 a child opener. This applies to bullet, ordered, task and
-                 attributed markers after either comment form.
-               - after a BLANK LINE, the item is already ended by the clause
-                 above, so the branch is never reached at all.
-
-            A closed code fence still needs its own extent and prefix decision;
-            this paragraph does not decide which context survives that fence.
-            For line comments, the column distinction is preserved: a comment
-            consumed below the item's content column can retain a following
-            ordinary line, but one at or above that column does not retain a
-            later line which misses the item prefix. Corpus 506 records both
-            spellings and consecutive-comment controls. Retention concerns
-            the most recent boundary: a comment at the content column clears
-            retention from an earlier below-column comment. A subsequent
-            below-column comment has neither a prefix nor an ordinary-line claim
-            or retained ownership to admit it, so the item ends before that
-            comment. Repeated below-column comments retain ownership only while
-            an ordinary-line claim or previous below-column retention admits
-            them. Comments outside the item cannot reopen it.
+             open the branch does not decide the line: it is classified in the
+             context that SURVIVES. After a BLANK LINE the item is already
+             ended by the clause above. After a line COMMENT consumed below
+             the content column the item is retained for a noninterrupting
+             follower: that retention, its sibling-marker and column
+             qualifications and what clears it are PART 0's exception X1
+             (COMMENT RETENTION) and are not restated here. It holds for bullet, ordered, task
+             and attributed markers alike (corpus 506).
 
              AN INVISIBLE LINE FOLDS LIKE ANY OTHER -- NORMATIVE [CARVE-P9-052]. "Every other
              line" includes the ones that are not block-SHAPED. This is the
@@ -530,13 +479,8 @@
             VISIBLE, which is the one outcome a comment may never have, and an
             indented comment at the top level is already invisible for the same
             reason. Visibility at every column does not imply ownership at
-            every column. A line comment consumed below the content column
-            retains the item for a noninterrupting ordinary follower, subject
-            to the column and sibling-marker qualifications above. A comment
-            at or above the content column closes the paragraph without giving
-            a subsequent below-column line permission to remain in the item.
-            A retained ordinary follower starts a new paragraph; paragraph
-            continuation and item ownership remain separate decisions.
+            every column: which comment retains the item for the line after
+            it is PART 0's exception X1 (COMMENT RETENTION).
 
             AND THE OWNERSHIP HALF REACHES A DEGRADED FENCE.
             "The `%%%` fence form, whose body and closer travel with its
@@ -579,8 +523,7 @@
          This is intentionally SIMILAR TO DJOT'S LENIENCY inside list items:
          any authored column at or beyond Carve's minimum content_column may
          open the block. Top-level block openers remain column-strict, and a
-         line below content_column is unchanged (docs/divergence-from-djot,
-        ).
+         line below content_column is unchanged (docs/divergence-from-djot.md).
       C4 RULE B (TOP LEVEL, ANY INDENT). A bullet (`-`/`*` + space +
          content) opens a list at ANY indentation at the TOP LEVEL -- no
          column-0 restriction (unlike CommonMark, `    - x` is a list, not
@@ -687,87 +630,31 @@
         emit them raw.
 
         A URL-LIST ATTRIBUTE IS PROBED TOKEN-WISE, NOT AT ITS HEAD --
-        NORMATIVE [CARVE-P9-055]. The probe above reads the value's LEADING scheme, which
-        vouches for the whole value only where the whole value is ONE URL.
-        Four attributes carry a LIST of URLs: `srcset`, `imagesrcset`, `ping`
-        and `attributionsrc`, so a dangerous scheme in any position but the
-        first goes unread. The first two -- on `img`/`source` and on `link`
-        -- are comma-separated image candidate strings, each a URL plus an
-        optional `w`/`x` descriptor; `ping`, on `a` and `area`, is a
-        space-separated set of URLs the user agent POSTs to on activation;
-        `attributionsrc`, on `a`, `img` and `script`, is a space-separated
-        set the user agent sends an attribution request to. For THOSE FOUR
-        NAMES a renderer MUST split the value into tokens, apply to every
-        non-empty token THE SAME PROBE this clause already applies to the
-        value as a whole, and blank the ENTIRE value when ANY token matches.
-        This rule changes WHERE the probe runs, not WHAT it denies. Every
-        other attribute keeps the leading-scheme rule exactly as stated above.
+        NORMATIVE [CARVE-P9-055]. Four attributes carry a LIST of URLs: `srcset`,
+        `imagesrcset`, `ping` and `attributionsrc`. For those four names,
+        matched case-insensitively, a renderer MUST split the value into
+        tokens, apply to every non-empty token THE SAME PROBE this clause
+        applies to a value as a whole, and blank the ENTIRE value when ANY
+        token matches or when the whole value does. The `srcset` value
+        `safe.png 1x,javascript:alert(1) 2x` is blanked.
 
-        THE TOKEN PASS IS IN ADDITION TO THE VALUE-WIDE PROBE, NOT INSTEAD OF
-        IT. These four names keep the leading-scheme probe on the WHOLE value
-        as well, and the value is blanked when EITHER the whole value probes
-        dangerous OR any token does: the value-wide probe strips the ASCII
-        whitespace the SPLIT breaks on, so `ping="java script:alert(1)"` is
-        two harmless tokens and one denied value.
-        THE NAME MATCH IS CASE-INSENSITIVE, like the `on` prefix above: an
-        attribute block may spell the name in any case, so matching on the
-        exact bytes would leave `SRCSET` unprobed.
-
-        THE SEPARATORS ARE THE ONES THE ATTRIBUTE'S OWN GRAMMAR USES, and the
-        set splits in two on this. `ping` and `attributionsrc` split on ASCII
-        WHITESPACE ONLY: neither grammar has a comma in it, so treating one as
-        a separator would blank a single legitimate URL that merely contains a
-        comma in its path. `srcset` and `imagesrcset` split on COMMAS AND
-        ASCII WHITESPACE both, because there the comma really does end a
-        candidate, and a whitespace-only split misses
-        `safe.png 1x,javascript:alert(1) 2x` entirely -- one absent space
-        after the comma and the second candidate hides inside the first one's
-        descriptor.
-
-        THE COMMA SPLIT OVER-BLANKS ONE SHAPE AND THAT IS THE CHOSEN SIDE. A
-        srcset URL may itself contain a comma, so
-        `srcset="https://example.com/a,data:x 1x"` is ONE candidate to a
-        consumer and is blanked here anyway: erring toward blanking can only
-        reach a URL-list attribute and never prose.
-
-        THE STRIP IS PER TOKEN, NOT ONCE AT THE FRONT of the value: each token
-        is control-stripped and Unicode-whitespace-stripped on its own before
-        its scheme is read, and a `<U+202F>javascript:` candidate blanks
-        wherever it sits. The `Cf` decision composes unchanged -- a token
-        beginning `<U+200B>javascript:` is left alone at EVERY position, since
-        it fails WHATWG URL parsing and lands inert. The whitespace the STRIP
-        removes is wider than the whitespace the SPLIT breaks on, deliberately:
-        `a<U+202F>javascript:x` is ONE token to a consumer, because both
-        grammars put their boundaries at ASCII whitespace, and it resolves as
-        a relative URL rather than a navigation.
-
-        WHAT IS BLANKED IS THE WHOLE VALUE, NOT THE OFFENDING CANDIDATE.
-        Excising one candidate would make the rendered attribute differ from
-        the author's bytes, which this clause already declined to do for the
-        `Cf` case, and it would give one value a THIRD outcome -- kept,
-        blanked, or silently rewritten. A browser navigates neither, so what
-        this protects is the consumers of Carve's HTML that are not browsers.
-
-        THE SET IS CLOSED BY A CRITERION rather than by taste: an attribute
-        whose value grammar is a LIST of URLs that a consumer RESOLVES OR
-        FETCHES. THE CRITERION GOVERNS, NOT THE DOCUMENT AN ATTRIBUTE HAPPENS
-        TO LIVE IN -- `attributionsrc` comes from the Attribution Reporting
-        API rather than the HTML Standard's attribute index, and is in scope
-        because a consumer fetches every URL in the list.
-
-        The exclusions are named so the set is not widened by pattern-match.
-        `itemtype` and `itemprop` are space-separated absolute-URL token lists,
-        but the standard forbids dereferencing them, so they are identifiers
-        and not sinks; `itemid` is a single URL and the leading rule already
-        reaches it; `archive` on `object` is non-conforming and no longer
-        carries a URL-list value type; `for` on `output` and `headers` on
-        `td`/`th` list IDs, not URLs. A single URL embedded at a NON-LEADING
-        position inside a structured value is a neighboring class and not this
-        one: `style` is that class and already has its own named rule above.
-        PROSE ATTRIBUTES ARE NOT IN THE SET AND MUST NOT BE TOKENIZED --
-        `title`, `alt` and `aria-label` legitimately contain colons, and a
-        blanket "any token that looks like a scheme" test would refuse
-        ordinary text.
+        - THE SEPARATORS are the attribute's own: `srcset` and `imagesrcset`
+          split on commas and ASCII whitespace, `ping` and `attributionsrc`
+          on ASCII whitespace only. A srcset URL that itself contains a comma
+          is split too, so `https://example.com/a,data:x 1x` is blanked.
+        - THE STRIP IS PER TOKEN: each token is control-stripped and
+          Unicode-whitespace-stripped before its scheme is read. The strip
+          creates no boundary, so `a<U+202F>javascript:x` is one token and
+          is kept. A token beginning with a `Cf` character is left alone at
+          every position, as at the head of a single URL.
+        - THE VALUE-WIDE PROBE STILL RUNS, and it strips the ASCII whitespace
+          the split breaks on: `ping="java script:alert(1)"` is blanked.
+        - WHAT IS BLANKED IS THE WHOLE VALUE, never one candidate.
+        - THE SET IS CLOSED BY A CRITERION: an attribute whose value grammar
+          is a LIST of URLs that a consumer RESOLVES OR FETCHES. `itemtype`,
+          `itemprop`, `itemid`, `archive`, `for` and `headers` are outside
+          it, and `style` has its own rule above. PROSE ATTRIBUTES (`title`,
+          `alt`, `aria-label`) MUST NOT be tokenized.
       - RAW PASSTHROUGH OPT-OUT. Raw blocks (```=FORMAT, PART 2) and raw
         inline (`{=format}`, §20) emit verbatim UNESCAPED content. An
         implementation MUST provide a mode in which raw passthrough is NOT
@@ -824,8 +711,7 @@
           an unresolved reference likewise renders its literal source.
         - REFUSE the whole operation with a typed failure, as the render
           ceiling below requires.
-        A returned document MUST NOT lack text the author typed. PART 9R R1a
-        records the earlier violation of this rule.
+        A returned document MUST NOT lack text the author typed.
 
         A conformance run needs to know which arm the canonical writer takes
         past the cap, and the answer is "refuse".
@@ -840,45 +726,24 @@
         not read back as the document it was given. Every other target still
         renders the degraded tree.
 
-        Recursive RENDER / RESOLVE /
-        FILTER passes over a programmatically constructed tree MUST be
-        bounded too, not only the parse path -- but their ceiling MUST NOT
-        be reachable by a tree the SAME implementation's parser produces. A
-        parsed tree is deeper than the containers that produced it (the
-        paragraph inside the innermost container is one level further down),
-        so a render ceiling EQUAL to MAX_NESTING_DEPTH truncates a document
-        the parser has just accepted, and truncation on the render path
-        deletes content silently instead of degrading it to literal text.
-        The render ceiling MUST therefore EXCEED MAX_NESTING_DEPTH by enough
-        to cover the blocks a container subtree adds.
-
-        THE MARGIN IS DERIVED IN THE IMPLEMENTATION'S OWN UNIT, NOT
-        BORROWED FROM ANOTHER IMPLEMENTATION'S -- the same shape as
-        PART 12 §9(c)'s ingest-bound trap, at the other end of the same pipe.
-        A render pass MAY count depth in whatever unit its own recursion
-        uses, container depth (one step per nesting level) or AST node
-        levels among them, and the conversion factor between units is NOT 1:
-        a list level costs ONE container-depth step but TWO AST node levels
-        (`list`, then `list_item`). A margin sized for one unit does not carry
-        over to the other. This repo's reference counts container depth, where
-        MAX_NESTING_DEPTH + 32 = 232 covers the blocks a container subtree
-        adds. An implementation MUST THEREFORE DERIVE its margin from the worst
-        per-level cost of ITS OWN unit (as PART 12 §9(c) already requires for
-        the ingest bound), and MUST NOT adopt another implementation's number
-        without redoing that derivation.
-
-        HOW THE MARGIN IS SPELLED IS NOT THE REQUIREMENT. A multiple of
-        MAX_NESTING_DEPTH and an offset added to it are the same statement
-        once the offset has been shown to cover the worst per-level cost of
-        the unit in question. The FORM is not the requirement; the derivation
-        is.
+        Recursive RENDER / RESOLVE / FILTER passes over a programmatically
+        constructed tree MUST be bounded too, and their ceiling MUST NOT be
+        reachable by a tree the SAME implementation's parser produces: it
+        MUST EXCEED MAX_NESTING_DEPTH by enough to cover the blocks a
+        container subtree adds. An implementation MUST DERIVE that margin
+        from the worst per-level cost of ITS OWN depth unit, as PART 12
+        §9(c) requires of the ingest bound, and MUST NOT adopt another
+        implementation's number: a list level costs one container-depth step
+        and two AST node levels. A multiple of MAX_NESTING_DEPTH and an
+        offset added to it both conform. The reference counts container
+        depth and uses MAX_NESTING_DEPTH + 32 = 232.
 
         AT THE RENDER CEILING, A RENDERER REFUSES -- NORMATIVE [CARVE-P9-057]. Reaching it
         MUST produce a typed, documented failure naming the depth bound, never
         silent truncation, a partial document or the host's stack-overflow error.
         This applies PART 12 §9(b)'s ingest rule to rendering, including the
         canonical writer. The derived ceiling exceeds the parser's bound in
-        its own unit, so parsed trees cannot reach it; §9(b) already rejects
+        its own unit, so parsed trees cannot reach it; CARVE-P12-028(b) already rejects
         ingested trees deeper than the parser's limit. Trees built through the
         API can reach it and MUST receive that failure.
 
@@ -888,13 +753,13 @@
         total work stays O(n): in particular an empty abbreviation term is
         rejected, a reference is not resolved by rescanning the whole output
         per occurrence, and a crossref target is not cloned without bound.
-      I1 FILE INCLUSION. The `{{ … }}` directive (§19) does no I/O in the parser
-        and stays literal until a host configures a resolver (§19 I3). Enabling
+      I1 FILE INCLUSION. The `{{ … }}` directive (CARVE-P6-001) does no I/O in the
+        parser and stays literal until a host configures a resolver (PART 6 I3). Enabling
         it for UNTRUSTED input requires one explicit, absolute containment root
         that never defaults to the process working directory, containment
         decided on the canonical path after symlink resolution, no remote fetch
         without an explicit allowlist, and the cycle, depth, size and call
-        bounds (§19 I6, I10). Included content receives the same sanitization as
+        bounds (PART 6 I6, I10). Included content receives the same sanitization as
         its parent.
         Inclusion MUST remain disabled on server-side rendering paths for
         user-supplied content. If such a host offers inclusion, it MUST require

@@ -83,16 +83,29 @@ for (const depth of [0, 1, 2]) for (const child of [false, true]) for (const c2 
 }
 
 for (const depth of [0, 1, 2]) for (const opener of ['::: inner', ':::', ':::: w']) for (const comment of [[' %% c'], ['%% c'], [' %%% c'], [' %%%', ' hidden', ' %%%']]) {
-  test(`a below-column comment is no body line of a marker-line colon opener: depth ${depth}, ${opener}, ${comment[0]}`, () => {
-    const withComment = parse(quoted(depth, ['- ' + opener, ...comment, ' text']))
-    const without = parse(quoted(depth, ['- ' + opener, ' text']))
-    const texts = (doc) => JSON.stringify(doc.blocks, (key, value) => (value?.t === 'comment' ? undefined : value)).match(/"(?:div|admonition|para)"/g)
-    assert.ok(!JSON.stringify(withComment.blocks).includes('"t":"div"'))
-    assert.deepEqual(texts(withComment).filter((kind) => kind !== '"para"'), texts(without).filter((kind) => kind !== '"para"'))
-    assert.match(html(quoted(depth, ['- ' + opener, ...comment, ' text'])), /<li>:::[^<]*text<\/li>/)
+  const closer = '  ' + opener.match(/^:+/)[0]
+  test(`a marker-line opener before a below-column comment matches its closed twin: depth ${depth}, ${opener}, ${comment[0]}`, () => {
+    const source = quoted(depth, ['- ' + opener, ...comment, ' text'])
+    const twin = quoted(depth, ['- ' + opener, closer, ...comment, ' text'])
+    assert.deepEqual(parse(source).blocks, parse(twin).blocks)
+    assert.match(html(source), /<div[^>]*>/)
   })
-  test(`a line at the content column after that comment opens the container: depth ${depth}, ${opener}, ${comment[0]}`, () => {
-    assert.match(html(quoted(depth, ['- ' + opener, ...comment, '  text'])), /<div[^>]*><p>text<\/p><\/div>/)
+  test(`a content-column line after a comment enters the open marker-line container: depth ${depth}, ${opener}, ${comment[0]}`, () => {
+    const source = parse(quoted(depth, ['- ' + opener, ...comment, '  text']))
+    const twin = parse(quoted(depth, ['- ' + opener, closer, ...comment, '  text']))
+    const blocksAt = doc => {
+      let blocks = doc.blocks
+      for (let k = 0; k < depth; k++) blocks = blocks[0].children
+      return blocks[0].items[0].blocks
+    }
+    const openBlocks = blocksAt(source)
+    const closedBlocks = blocksAt(twin)
+    assert.deepEqual(openBlocks[0].children, closedBlocks.slice(1))
+    const moved = structuredClone(source.blocks)
+    const movedBlocks = blocksAt({ blocks: moved })
+    movedBlocks.push(...movedBlocks[0].children)
+    movedBlocks[0].children = []
+    assert.deepEqual(moved, twin.blocks)
   })
 }
 

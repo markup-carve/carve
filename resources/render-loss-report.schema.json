@@ -27,7 +27,7 @@
         "type": "object",
         "required": ["code", "target", "nodeType", "message"],
         "properties": {
-          "code": { "enum": ["raw-format-dropped", "ruby-flattened", "destination-denied", "editorial-comment-flattened", "carrier-attribute-dropped"] },
+          "code": { "enum": ["raw-format-dropped", "ruby-flattened", "destination-denied", "editorial-comment-flattened", "carrier-attribute-dropped", "definition-list-flattened"] },
           "attribute": { "type": "string" },
           "format": { "type": "string" },
           "target": { "enum": ["html", "markdown", "plain", "ansi", "carve"] },
@@ -75,6 +75,14 @@
               "nodeType": { "const": "inline" },
               "format": false,
               "message": { "const": "Flattened an editorial comment into the surrounding text" }
+            }
+          },
+          {
+            "properties": {
+              "code": { "const": "definition-list-flattened" },
+              "target": { "const": "markdown" },
+              "nodeType": { "const": "block" },
+              "format": false
             }
           }
         ],

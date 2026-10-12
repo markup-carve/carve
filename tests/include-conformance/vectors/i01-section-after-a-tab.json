@@ -1,6 +1,6 @@
 {
   "name": "i01-section-after-a-tab",
-  "description": "A tab separates the path from the section name, as whitespace does everywhere else in the directive.",
+  "description": "A tab is content (CARVE-P7-001), not padding: a bare path keeps it, so the path is `child` plus a tab and does not resolve.",
   "rules": [
     "I1",
     "slot-adjacency"
@@ -12,13 +12,17 @@
     "child": "# A\n\nskip\n\n{#pick}\n# B\n\nyes\n\n# D\n\nskip"
   },
   "expected": {
-    "html": "<section id=\"pick\">\n  <h1>B</h1>\n  <p>yes</p>\n</section>",
+    "html": "<p>{{ child\t<span class=\"tag\"><strong>#pick</strong></span> }}</p>",
     "fmt": "{{ child\t#pick }}\n",
-    "warnings": [],
+    "warnings": [
+      {
+        "rule": "include-unresolved"
+      }
+    ],
     "dependencies": [
       {
-        "id": "child",
-        "resolved": true
+        "id": "child\t",
+        "resolved": false
       }
     ]
   }

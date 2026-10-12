@@ -9,61 +9,60 @@ description: "Document-wide resolution, core semantic behavior, and HTML seriali
 
 Document-wide resolution, core semantic behavior, and HTML serialization.
 
-This view contains 52 of 331 active rules. Every rule remains mandatory where applicable.
+This view contains 51 of 332 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
 | Rule | Part | Clause |
 |---|---:|---|
-| [`CARVE-P2-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L519) | 2 | THE TASK BOX CARRIES AN ACCESSIBLE NAME |
-| [`CARVE-P3-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L374) | 3 | AN IMAGE REFERENCE RESOLVES THE SAME ENTRY |
-| [`CARVE-P3-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L453) | 3 | AN AUTOLINK DISPLAYS ITS RAW SOURCE BODY |
+| [`CARVE-P2-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/03-blocks-core.ebnf#L501) | 2 | THE TASK BOX CARRIES AN ACCESSIBLE NAME |
+| [`CARVE-P3-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L375) | 3 | AN IMAGE REFERENCE RESOLVES THE SAME ENTRY |
+| [`CARVE-P3-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/06-inline-links-images.ebnf#L436) | 3 | AN AUTOLINK DISPLAYS ITS RAW SOURCE BODY |
 | [`CARVE-P4-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/08-attributes.ebnf#L33) | 4 | AUTHORED ATTRIBUTES RENDER IN SOURCE ORDER |
-| [`CARVE-P9-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L80) | 9 | A COMPOSITE FIGURE GROUPS ITS PANELS UNDER ONE CAPTION |
-| [`CARVE-P9-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L333) | 9 | T9 A HEADER CELL STATES WHAT IT HEADS |
-| [`CARVE-P9-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L434) | 9 | SMART TYPOGRAPHY RUNS BY DEFAULT |
-| [`CARVE-P9-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L299) | 9 | BLOCK RENDERING |
-| [`CARVE-P9-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L445) | 9 | AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME |
-| [`CARVE-P9-072`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L475) | 9 | A DIRECTIVE'S TITLE AND LABEL ACCOMPANY THE REGION IT PLACES |
-| [`CARVE-P9-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L532) | 9 | HEADING SECTION WRAPPING |
+| [`CARVE-P9-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L60) | 9 | A COMPOSITE FIGURE GROUPS ITS PANELS UNDER ONE CAPTION |
+| [`CARVE-P9-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L316) | 9 | T9 A HEADER CELL STATES WHAT IT HEADS |
+| [`CARVE-P9-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L414) | 9 | SMART TYPOGRAPHY RUNS BY DEFAULT |
+| [`CARVE-P9-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L294) | 9 | BLOCK RENDERING |
+| [`CARVE-P9-018`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L410) | 9 | AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME |
+| [`CARVE-P9-072`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L440) | 9 | A DIRECTIVE'S TITLE AND LABEL ACCOMPANY THE REGION IT PLACES |
+| [`CARVE-P9-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/14-semantics-blocks.ebnf#L497) | 9 | HEADING SECTION WRAPPING |
 | [`CARVE-P9-025`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L2) | 9 | FOOTNOTES |
-| [`CARVE-P9-026`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L42) | 9 | THE BACKLINK CARRIES AN ACCESSIBLE NAME |
-| [`CARVE-P9-027`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L52) | 9 | THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME |
-| [`CARVE-P9-075`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L63) | 9 | A TOP-LEVEL `::: footnotes` THAT PLACES THE ENDNOTES SECTION |
-| [`CARVE-P9-073`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L77) | 9 | DOCUMENT-WIDE PLACEMENT MARKERS REQUIRE DOCUMENT TOP LEVEL |
-| [`CARVE-P9-067`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L308) | 9 | THE FIRST-BLOCK FORM IS THE ITEM AND THE DESCRIPTION |
-| [`CARVE-P9-068`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L818) | 9 | A RETURNED DOCUMENT NEVER SILENTLY LACKS AUTHORED TEXT |
-| [`CARVE-P9-078`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L833) | 9 | THE CANONICAL WRITER MAY TAKE THE REFUSE ARM PAST THE CAP |
+| [`CARVE-P9-026`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L33) | 9 | THE BACKLINK CARRIES AN ACCESSIBLE NAME |
+| [`CARVE-P9-027`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L43) | 9 | THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME |
+| [`CARVE-P9-075`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L53) | 9 | A TOP-LEVEL `::: footnotes` THAT PLACES THE ENDNOTES SECTION |
+| [`CARVE-P9-073`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L67) | 9 | DOCUMENT-WIDE PLACEMENT MARKERS REQUIRE DOCUMENT TOP LEVEL |
+| [`CARVE-P9-067`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L298) | 9 | THE FIRST-BLOCK FORM IS THE ITEM AND THE DESCRIPTION |
+| [`CARVE-P9-068`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L705) | 9 | A RETURNED DOCUMENT NEVER SILENTLY LACKS AUTHORED TEXT |
+| [`CARVE-P9-078`](https://github.com/markup-carve/carve/blob/main/resources/spec/16-semantics-comments-security.ebnf#L719) | 9 | THE CANONICAL WRITER MAY TAKE THE REFUSE ARM PAST THE CAP |
 | [`CARVE-P9-036`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L2) | 9 | MATH |
 | [`CARVE-P9-037`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L24) | 9 | A MATH SPAN CARRIES ROLE MATH |
-| [`CARVE-P9-040`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L459) | 9 | RAW PASSTHROUGH |
+| [`CARVE-P9-040`](https://github.com/markup-carve/carve/blob/main/resources/spec/15a-semantics-math-crossrefs.ebnf#L93) | 9 | RAW PASSTHROUGH |
 | [`CARVE-P9-059`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L36) | 9 | INLINE LITERAL |
-| [`CARVE-P9-061`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L117) | 9 | C0 CONTROLS ON THE RENDER TARGETS |
-| [`CARVE-P9-062`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L135) | 9 | U+0000 IS NOT ONE OF THOSE CONTROLS |
-| [`CARVE-P9R-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L69) | 9R | THE EXPLICIT FORM DOES NOT REACH THE INDEX |
-| [`CARVE-P9R-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L115) | 9R | R1a A DEFINITION IS COLLECTED FROM A LINE THE BLOCK STRUCTURE KEEPS |
-| [`CARVE-P9R-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L195) | 9R | R1b A MATCHER'S COORDINATES ARE LOCAL, NOT ABSOLUTE |
-| [`CARVE-P9R-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L213) | 9R | A NOTE INSIDE AN UNRESOLVED REFERENCE IS NOT A REFERENCE |
-| [`CARVE-P9R-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L242) | 9R | WHAT IS CLONED IS THE HEADING'S INLINE NODES |
-| [`CARVE-P9R-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L249) | 9R | DERIVED DISPLAY TEXT CLONES THE SAME NODES |
-| [`CARVE-P9R-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L311) | 9R | R7 BLOCK IMAGE PROMOTION |
-| [`CARVE-P9R-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L156) | 9R | AN UNANSWERABLE PROBE KEEPS THE CANDIDATE TEXT |
-| [`CARVE-P9R-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L279) | 9R | R5a LABELED DISPLAY EQUATIONS ARE NUMBERED |
-| [`CARVE-P9R-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L56) | 9R | NO NAME LOOKUP FOLDS CASE |
-| [`CARVE-P10-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L120) | 10 | AN EMPTY CONTAINER BODY |
-| [`CARVE-P10-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L208) | 10 | A ROW IS A ROW, IN EVERY SECTION |
-| [`CARVE-P10-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L226) | 10 | SEMANTIC SPAN ATTRIBUTES |
-| [`CARVE-P10-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L238) | 10 | A DERIVED ATTRIBUTE YIELDS TO AN AUTHORED ONE OF THE SAME NAME |
-| [`CARVE-P10-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L247) | 10 | LEFTOVER ATTRIBUTES RIDE THE OUTERMOST SEMANTIC ELEMENT |
-| [`CARVE-P10-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L269) | 10 | THE REGISTRY HOLDS NO ELEMENT CARVE ALREADY SPELLS INLINE |
-| [`CARVE-P10-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L291) | 10 | THE CORE SEMANTIC NAMES ARE CLOSED |
-| [`CARVE-P9-076`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L87) | 9 | A MARKER IN A TOC BODY RETAINS ITS CONTAINER SCOPE |
-| [`CARVE-P9-077`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L101) | 9 | A BODY WHOSE EVERY BLOCK RENDERS NOTHING IS AN EMPTY BODY |
-| [`CARVE-P10-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L37) | 10 | DIRECTIVE CLASSES FOLLOW ELEMENT OWNERSHIP |
-| [`CARVE-P10-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L136) | 10 | A MATCHING RAW BLOCK KEEPS ITS PLACEMENT SLOT |
-| [`CARVE-P10-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L401) | 10 | AN ORDERED LIST'S DELIMITER NAMES ITSELF ON THE LIST |
-| [`CARVE-P10-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L435) | 10 | ROUNDTRIP EXPORT WRITES NAMED CARRIERS |
-| [`CARVE-P10-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L484) | 10 | THE HTML CARRIERS ARE THE NAMES IN THIS INVENTORY |
-| [`CARVE-P10-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L718) | 10 | A CARRIER WINS A COLLISION AND THE DROPPED ATTRIBUTE IS REPORTED |
-| [`CARVE-P9-079`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L548) | 9 | A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT |
-| [`CARVE-P9-080`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L156) | 9 | A STRUCTURAL-ONLY LINE RESETS CAPTION SCOPE |
+| [`CARVE-P9-061`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L115) | 9 | C0 CONTROLS ON THE RENDER TARGETS |
+| [`CARVE-P9-062`](https://github.com/markup-carve/carve/blob/main/resources/spec/17-semantics-unicode-controls.ebnf#L133) | 9 | U+0000 IS NOT ONE OF THOSE CONTROLS |
+| [`CARVE-P9R-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L78) | 9R | THE EXPLICIT FORM DOES NOT REACH THE INDEX |
+| [`CARVE-P9R-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L125) | 9R | R1a A DEFINITION IS COLLECTED FROM A LINE THE BLOCK STRUCTURE KEEPS |
+| [`CARVE-P9R-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L179) | 9R | R1b A MATCHER'S COORDINATES ARE LOCAL, NOT ABSOLUTE |
+| [`CARVE-P9R-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L197) | 9R | A NOTE INSIDE AN UNRESOLVED REFERENCE IS NOT A REFERENCE |
+| [`CARVE-P9R-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L232) | 9R | WHAT IS CLONED IS THE HEADING'S INLINE NODES |
+| [`CARVE-P9R-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L239) | 9R | DERIVED DISPLAY TEXT CLONES THE SAME NODES |
+| [`CARVE-P9R-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L301) | 9R | R7 BLOCK IMAGE PROMOTION |
+| [`CARVE-P9R-008`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L166) | 9R | AN UNANSWERABLE PROBE KEEPS THE CANDIDATE TEXT |
+| [`CARVE-P9R-009`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L269) | 9R | R5a LABELED DISPLAY EQUATIONS ARE NUMBERED |
+| [`CARVE-P9R-010`](https://github.com/markup-carve/carve/blob/main/resources/spec/18-resolution.ebnf#L65) | 9R | NO NAME LOOKUP FOLDS CASE |
+| [`CARVE-P10-001`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L100) | 10 | AN EMPTY CONTAINER BODY |
+| [`CARVE-P10-002`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L188) | 10 | A ROW IS A ROW, IN EVERY SECTION |
+| [`CARVE-P10-003`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L206) | 10 | SEMANTIC SPAN ATTRIBUTES |
+| [`CARVE-P10-004`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L218) | 10 | A DERIVED ATTRIBUTE YIELDS TO AN AUTHORED ONE OF THE SAME NAME |
+| [`CARVE-P10-005`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L227) | 10 | LEFTOVER ATTRIBUTES RIDE THE OUTERMOST SEMANTIC ELEMENT |
+| [`CARVE-P10-006`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L244) | 10 | THE REGISTRY HOLDS NO ELEMENT CARVE ALREADY SPELLS INLINE |
+| [`CARVE-P10-007`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L251) | 10 | THE CORE SEMANTIC NAMES ARE CLOSED |
+| [`CARVE-P9-076`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L77) | 9 | A MARKER IN A TOC BODY RETAINS ITS CONTAINER SCOPE |
+| [`CARVE-P9-077`](https://github.com/markup-carve/carve/blob/main/resources/spec/15-semantics-resolution-rendering.ebnf#L91) | 9 | A BODY WHOSE EVERY BLOCK RENDERS NOTHING IS AN EMPTY BODY |
+| [`CARVE-P10-011`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L55) | 10 | DIRECTIVE CLASSES FOLLOW ELEMENT OWNERSHIP |
+| [`CARVE-P10-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L116) | 10 | A MATCHING RAW BLOCK KEEPS ITS PLACEMENT SLOT |
+| [`CARVE-P10-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L354) | 10 | AN ORDERED LIST'S DELIMITER NAMES ITSELF ON THE LIST |
+| [`CARVE-P10-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L384) | 10 | ROUNDTRIP EXPORT WRITES NAMED CARRIERS |
+| [`CARVE-P10-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L530) | 10 | THE HTML CARRIERS ARE THE NAMES IN THIS INVENTORY |
+| [`CARVE-P10-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L670) | 10 | ROUNDTRIP EXPORT DROPS AN AUTHORED RESERVED NAME AND REPORTS IT |
+| [`CARVE-P9-080`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L136) | 9 | A STRUCTURAL-ONLY LINE RESETS CAPTION SCOPE |

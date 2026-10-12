@@ -20,4 +20,5 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
-557-a-line-retained-after-a-comment-opens-a-paragraph-2  fmt(x) re-parses to a different tree on the pin, which does not fold into the retained paragraph yet (CARVE-P0-009, CARVE-P2-008); not attributed further (carve-js#2772)
+557-a-line-retained-after-a-comment-opens-a-paragraph-2  fmt(x) re-parses to a different tree on the pin, which still retains a below-column line after an at-column comment (CARVE-P0-009 X1, carve#2978 ruling 1); not attributed further (carve-js#2879)
+570-an-at-column-comment-retains-nothing  fmt(x) re-parses to a different tree on the pin, which still retains a below-column line after an at-column comment (CARVE-P0-009 X1, carve#2978 ruling 1); not attributed further (carve-js#2879)

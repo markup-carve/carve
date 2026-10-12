@@ -146,7 +146,12 @@ const shippedDeclaration = () =>
  *
  * Run 36552218597, on the next head, fails the same step again.
  */
-const LAST_MEASURED = new Map()
+const LAST_MEASURED = new Map([
+  ['list.tight', 3],
+  ['footnote_ref.label', 1],
+  ['footnote_ref.number', 1],
+  ['text.value', 1],
+])
 
 /** A measurement of `count` distinct documents - the reconciler counts them. */
 const documents = (count) =>

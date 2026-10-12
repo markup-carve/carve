@@ -1,63 +1,26 @@
 (* ============================================================================
-   8b. THE MARKDOWN TARGET'S AUTHORED ESCAPE NARROWS TOO -- NORMATIVE [CARVE-P11-025]. §8a
-      narrowed M1 and left M2 as written. M2 narrows on the same finding, and
-      on a test of the same shape:
-
-      M2a AN `escaped_text` NODE IS EMITTED AS AN ESCAPE WHEN ITS CHARACTER
-          COULD BE READ AS MARKUP AT THE POSITION THE WRITER HAS REACHED ON
-          THE EMITTED LINE, or when it is one of the smart-punctuation
-          triggers `"`, `'`, `-` and `.`. Otherwise the character is emitted
-          BARE.
-      M2b `#` IS READ AS MARKUP ONLY AT A LINE'S CONTENT POSITION, where it
-          opens an ATX heading. An `escaped_text` hash anywhere else on the
-          line is emitted bare. A LINE'S CONTENT POSITION IS AFTER ITS
-          CONTAINER PREFIX: the position is measured on the EMITTED LINE, so
-          every prefix the writer put in front of the content is passed over
-          before the test is decided -- a block quote marker, a list or task
-          marker, a definition marker, the alignment §10 gives a continuation
-          line -- in whatever combination and to whatever depth the writer
-          emitted them. Column 0 is the content position of a line NO
-          container encloses, and of no other line.
-      M2c NOTHING ELSE NARROWS. M1, M3 and §8a are untouched, and a character
-          Markdown reads as markup at that position keeps M2 as written.
+   8b. THE MARKDOWN TARGET'S AUTHORED ESCAPE NARROWS TOO -- NORMATIVE [CARVE-P11-025]. Row
+      M2 of §8's table keeps an `escaped_text` node's escape wherever its
+      character could be read as markup at the position the writer has
+      reached (M2a). `#` is its ONLY narrowing (M2b): a hash is read as markup
+      only at a line's content position, where it opens an ATX heading. A `[`
+      can open a link at any position, so its escape is kept everywhere.
 
         a -- b        ->  a – b
         a \-\- b      ->  a -- b
 
-      `"`, `'`, `-` and `.` are not Markdown metacharacters, so M1 never
-      reached them and M1's narrowing cannot either. M2a names them so the
-      clause that narrows M2 cannot be read as dropping the reason M2 exists.
+      A LINE'S CONTENT POSITION IS AFTER ITS CONTAINER PREFIX. It is measured
+      on the EMITTED LINE: every prefix the writer put in front of the
+      content is passed over first (a block quote marker, a list or task
+      marker, a definition marker, the alignment §10 gives a continuation
+      line), in whatever combination and to whatever depth. Column 0 is the
+      content position of a line NO container encloses, and of no other
+      line. A container this target flattens (a colon fence, a
+      definition-list body) contributes no prefix. This writer re-prefixes
+      every container line, so lazy continuation does not arise.
 
-      THE `[` CASE §8a LEANS ON IS UNTOUCHED, and M2a is written positionally
-      so that it is. A `[` can open a link at any position on a line, so M2a
-      keeps its escape everywhere. `#` is the character that differs, because
-      its reading is positional and every position but one is inert.
-
-      A CONTAINER PREFIX IS PART OF THE LINE, WHICH IS WHY M2b MEASURES ON IT.
-      M2b is this clause's ONLY narrowing; M2a otherwise keeps the escape
-      and M2c closes the set. The block content
-      alone omits the prefix a reader receives; §10 likewise fixes the emitted
-      continuation line before §2 decides which characters need escapes.
-
-      STATED OVER THE LINE, NOT AS A LIST OF CONTAINERS THAT COUNT:
-
-      - A container this target FLATTENS contributes no prefix and needs no
-        exemption. A colon fence emits no marker and a definition-list body
-        emits no indent, so a hash in either lands at column 0 and its escape
-        was already kept.
-      - A container this target DOES prefix is covered whatever its kind,
-        depth or mixture -- `> > `, `- > `, `- [ ] `, `[^a]: `, `   1. ` --
-        without naming any of them.
-
-      Lazy continuation is a parser concept; this writer re-prefixes every
-      container line, so M2b always sees the emitted prefix.
-
-      NARROWING BY POSITION IS UNCHANGED, WHICH IS THE HALF THAT IS EASY TO
-      LOSE. Moving the position does not widen M2b into "an escape behind a
-      prefix is kept". The narrowing holds inside a container exactly as it
-      does outside one, and so does a hash that stands AT the content position
-      but opens no heading, since M2b's reading is CommonMark's and a run
-      closed by a letter is not one:
+      THE NARROWING HOLDS BEHIND A PREFIX AS IT DOES AT COLUMN 0, and a hash
+      at the content position that opens no heading is bare too:
 
         > C\# is a language      ->  > C# is a language
         - issue \#123 fixed      ->  - issue #123 fixed
@@ -68,7 +31,7 @@
       `*`, `strong` with `**`, a `strong` node carrying `boldItalic: true`
       around one whole `emphasis` child with `***`, and `strike` with `~~`.
       A `***` read-back that commutes the two nesting levels is the same
-      construct under §10k N2.
+      construct under CARVE-P11-043 N2.
 
       The target MUST emit one of those four nodes as inline HTML (`<em>`,
       `<strong>` or `<del>`, nested where needed) where its delimiter spelling
@@ -101,7 +64,7 @@
       those HTML tags, and its outer attributes follow the ordinary HTML
       attribute rules.
 
-      THE TEST IS ON THE EMITTED BYTES, as in §1a. In the first document the
+      THE TEST IS ON THE EMITTED BYTES, as in CARVE-P11-002. In the first document the
       strong delimiter reads back as `strong`, so replacing it with `<strong>`
       is a wider departure than the rule permits. In the second, `~~ ~~` does
       not read back as `strike`, so the HTML fallback is required:
@@ -113,26 +76,17 @@
         Markdown    <del> </del>
 
    8d. A CONTEXTUAL ESCAPE READS THE EMITTED LINE ACROSS NODES --
-      NORMATIVE [CARVE-P11-050]. Every test above and below that decides an escape by a
-      NEIGHBORING character (M1b, M1c, M1e, M1f, M2b, §8e to §8i) reads the
-      character the writer emits at that position, whichever node emits it:
-      the rest of the same text node, the text of a following span, emphasis
-      or link label, or the writer's own markup. A node boundary is not a line
-      boundary, and a test that stops at the end of the text node passes
-      content through as markup.
+      NORMATIVE [CARVE-P11-050]. Every row of §8's table that decides an
+      escape by a NEIGHBORING character or by a position reads the character
+      the writer emits there, whichever node emits it: the rest of the same
+      text node, the text of a following span, emphasis or link label, or the
+      writer's own markup. A node boundary is not a line boundary.
 
         [<]{.p}[h1]{.nt}[>]{.p}Heading     ->  \<h1>Heading
         [-]{.p}[ x]{.x}                    ->  \- x
 
-      THE HAZARD IS RAW HTML FIRST. Syntax-highlighted code puts every token
-      in its own span, so `<`, the tag name and `>` arrive as three nodes, and
-      a `<` tested against its own node alone is emitted bare: the Markdown
-      carries a live tag the document only showed as text. That is the class
-      PART 9 §25 rules out on the other targets.
-
-      A `>` AT A LINE'S CONTENT POSITION is a block quote marker under M1
-      whatever follows it, so it is escaped whether the rest of its line comes
-      from its own node or another.
+      A `>` AT A LINE'S CONTENT POSITION is escaped whether the rest of its
+      line comes from its own node or another.
 
    8e. AN AMPERSAND THAT WOULD READ AS A CHARACTER REFERENCE IS ESCAPED --
       NORMATIVE [CARVE-P11-051]. Carve has no character references: `&amp;`
@@ -203,7 +157,7 @@
       whitespace, `*`, `_`, `~` or `(`. U1 and U2 escape wherever either one
       links.
 
-      READ ON THE EMITTED LINE, as §8d reads every contextual escape. The
+      READ ON THE EMITTED LINE, as CARVE-P11-050 reads every contextual escape. The
       escaped `:` or `.` is a text character; the scheme or `www` before it,
       the `//` after it and the character before the form are whatever the
       writer emits there, from any node, its own markup included, and a line
@@ -260,7 +214,7 @@
 
    9. THE MARKDOWN TARGET'S HARD BREAK -- NORMATIVE [CARVE-P11-026]. A `hard_break` is emitted
       as a BACKSLASH before the newline, never as two trailing spaces, except
-      where §9a or §9c requires inline HTML.
+      where CARVE-P11-048 or CARVE-P11-065 requires inline HTML.
 
       Both spellings mean the same thing to a CommonMark reader. The difference
       is what survives handling: trailing whitespace is removed by editors that
@@ -285,7 +239,7 @@
         Markdown row    | one<br>two | x |
 
       `<br>` is the spelling GFM readers render as a line break inside a cell,
-      and it is the same inline-HTML fallback §8c uses for a node that has no
+      and it is the same inline-HTML fallback CARVE-P11-045 uses for a node that has no
       Markdown spelling. §9 holds where its backslash and newline read back as a hard break.
 
       NO CARVE SOURCE SPELLS THIS TREE. A table row is one line, so a hard
@@ -297,7 +251,7 @@
 
   9b. A SOFT BREAK IN A TABLE CELL IS ONE SPACE -- NORMATIVE [CARVE-P11-061]. Inside
       a pipe-table cell the Markdown target emits a `soft_break` as a single
-      SPACE. §9a's reason is unchanged: a GFM table row is one line, so the
+      SPACE. CARVE-P11-048's reason is unchanged: a GFM table row is one line, so the
       newline §9 would write ends the row, and the rest of the cell and every
       later cell fall out of the table.
 
@@ -305,14 +259,14 @@
         Markdown row    | one two | x |
 
       EVERY CELL, not the list-table path alone. A `::: list-table` item becomes
-      a cell of the same table, and §10q's worked example already writes this
+      a cell of the same table, and CARVE-P11-059's worked example already writes this
       document as `| one two | x |`. A plain pipe-table cell takes the tree from
       an AST payload (PART 12) or an importer, since a row is one line and no
       Carve source spells a break inside one.
 
-      NOT `<br>`, which §9a writes for a hard break. A soft break is the break
+      NOT `<br>`, which CARVE-P11-048 writes for a hard break. A soft break is the break
       that does not render as a break, so `<br>` would show a line break the
-      document never had, which is the substitution §2a forbids.
+      document never had, which is the substitution CARVE-P11-008 forbids.
 
   9c. A HARD BREAK AT AN INLINE BOUNDARY SURVIVES -- NORMATIVE
       [CARVE-P11-065]. A backslash at the end of a paragraph reads as literal
@@ -355,16 +309,11 @@
       it, because HTML has nowhere to put a definition nobody used; the other
       three do not get to drop content the author wrote.
 
-      A LINK REFERENCE DEFINITION IS COVERED TOO. It was excluded while it was
-      the one definition kind with NO NODE IN THE TREE; PART 12 §10 gives it a
-      node, so all three kinds walk and all three emit.
-
-      THE GAP IS REAL AND IS NOT CLOSED BY NARROWING. An unused link reference
-      definition survives neither the tree nor a round trip
-      through the AST, and now explicitly not the non-HTML targets. So
-      `carve --markdown` on a document that is only `[lbl]: /u` emits nothing,
-      and the URL the author wrote is gone -- the same content loss §10a
-      exists to prevent, reached by a different route.
+      A LINK REFERENCE DEFINITION IS COVERED TOO: PART 12 §10 gives it a node,
+      so all three kinds walk and all three emit. A REFERENCED link definition
+      writes no line on Markdown, because the inlined `[it](/url)` already
+      carries its destination; that is CARVE-P11-033's test, one design for
+      both.
 
           [^n]: %         ->  markdown  [^n]: %
                               plain     [^n]: %
@@ -381,15 +330,13 @@
       of cells that exist, but MUST NOT append empty cells to make every row as
       wide as the widest row in the table. A missing trailing cell is not an
       empty cell: adding one changes both the re-parsed tree and the rendered
-      table, so §1a makes rectangular alignment yield.
+      table, so CARVE-P11-002 makes rectangular alignment yield.
 
-      Where a delimiter row is required to promote the first row to a header,
-      that delimiter carries exactly one cell for each cell in the HEADER ROW,
-      not one for each column reached by a wider body row. Its job is to mark
-      that row as a header; extending it to the table width both manufactures
-      header cells and can stop the delimiter from matching the row it belongs
-      to. Native `=` header markers remain preferred wherever they can express
-      the header, including when a later body row is wider.
+      A SEPARATOR ROW IS WRITTEN ONLY WHERE THE TREE RECORDS ONE. Its cell
+      count is the entry count of `table.separatorWidths` (CARVE-P11-066),
+      neither the header row's width nor the table's. Without the field the
+      header is written with native `=` markers, including when a later body
+      row is wider.
 
   10c. ADJACENT BLOCKS THAT WOULD MERGE KEEP THE CONTINUATION MARKER --
        NORMATIVE [CARVE-P11-030]. In a tight list item, deciding whether to retain `+` is a
@@ -427,9 +374,8 @@
       This clause decides only where the named text goes on the targets below.
       Unnamed construct/target pairs remain open, not allowed by omission.
 
-      T1 A FENCE'S TITLE AND LABEL RENDER THE WAY A DIV'S ALREADY DO. This
-         clause writes down an existing rule rather than a new one. A fenced
-         div already surfaces both tokens on every target, which is the
+      T1 A FENCE'S TITLE AND LABEL RENDER THE WAY A DIV'S ALREADY DO. A fenced
+         div surfaces both tokens on every target, which is the
          caption rule `docs/graceful-degradation.md` makes normative for an
          unconsumed label: `::: note "T" [L]` emits `**T**` then `**L**` in
          Markdown, a standalone line each in plain text, and a bold
@@ -485,13 +431,15 @@
           10's business rather than this section's.
 
   10f. A REFERENCED ABBREVIATION DEFINITION SPLITS BY TARGET -- NORMATIVE [CARVE-P11-033].
-      §10a rules the definition NOTHING references: the Markdown, plain-text
+      CARVE-P11-028 rules the definition NOTHING references: the Markdown, plain-text
       and terminal renderers all emit it, because those targets do not get to
       drop content the author wrote. It says nothing about the definition that
       IS referenced.
 
       This clause decides where the consumed definition line goes on those
-      three targets and what plain text emits. Unnamed pairs remain open.
+      three targets and what plain text emits. Unnamed pairs remain open. Its
+      test, below, is the one that drops a referenced link definition on
+      Markdown (CARVE-P11-028).
 
       T1 MARKDOWN KEEPS THE LINE, and keeps the expansion beside it.
          `*[TERM]: expansion` is the spelling PHP Markdown Extra uses
@@ -512,12 +460,12 @@
       where the same output carries the expansion that definition supplies,
       and kept otherwise. Three shapes fail the test, and in each the
       definition's text is carried by its own line and by nothing else, so
-      dropping it would be the content loss §10a exists to prevent:
+      dropping it would be the content loss CARVE-P11-028 exists to prevent:
 
-        - THE TERM NEVER APPEARS. That is §10a, which this clause leaves
+        - THE TERM NEVER APPEARS. That is CARVE-P11-028, which this clause leaves
           exactly as it stands.
 
-        - AN AUTHORED `abbr` OUTRANKS THE DEFINITION. PART 9 §9 makes
+        - AN AUTHORED `abbr` OUTRANKS THE DEFINITION. CARVE-P10-003 makes
           `[HTML]{abbr="Custom"}` authoritative and a resolved `abbreviation`
           child contributes only its visible text there, so the definition's
           own expansion reaches no target. `45-inline-extensions-11` pins
@@ -543,7 +491,7 @@
       trip intact on both of the targets that have one.
 
   10g. A COMPOSITE FIGURE SURVIVES EVERY TARGET -- NORMATIVE [CARVE-P11-034]
-      (PART 9 §4c). The floor is `docs/graceful-degradation.md`'s: panel
+      (CARVE-P9-001). The floor is `docs/graceful-degradation.md`'s: panel
       content, panel captions, preserved stray content and the group caption
       are all CONTENT, and no target may silently discard any of them. What
       this clause decides is the canonical writer's spelling and the three
@@ -554,7 +502,7 @@
       attributes exist, the bare `::: figure` opener (`figure_group` has no
       title or label to spell), the children with one blank line between
       them, the closer at the opener's width (the inward-widening discipline
-      of PART 9 §12 unchanged), and the group caption as a `^ ` line after
+      of PART 2 `colon_fence_close` unchanged), and the group caption as a `^ ` line after
       the closer, its `#` placeholder written back as authored.
 
       THE CARET AFTER A GROUP CLOSER IS A CAPTION POSITION. §5's
@@ -563,7 +511,7 @@
       the writer MUST NOT emit it as `\^ `, which would re-parse as a
       paragraph and break §1's `parse(fmt(x)) == parse(x)`. The other
       direction holds too: a PARAGRAPH whose text begins with a caret,
-      sitting where §4's allowance reaches a group closer above it, keeps its
+      sitting where PART 9 §4's allowance reaches a group closer above it, keeps its
       `\^ ` escape, because bare it would re-parse as the group caption
       (corpus 318-composite-figures-6 holds the detached shape).
 
@@ -590,15 +538,16 @@
       item is indented by TWO ASCII SPACES for each list ancestor. The target
       may discard marker style and tight/loose layout, but it MUST NOT flatten
       parent, child, and grandchild items into siblings: indentation is the
-      plain-text representation of that structure. ANSI and canonical Carve
-      use the same two-space depth step; plain text differs only by omitting
-      presentation styling, not by erasing hierarchy.
+      plain-text representation of that structure. ANSI uses the same
+      two-space depth step. Canonical Carve does not: it indents a nested
+      list to its parent marker's width (CARVE-P11-027, PART 9 §24 C3), two
+      columns under a bullet and three or more under an ordered marker.
 
       THE TIGHT/LOOSE LICENCE IS THIS TARGET'S, and its ground is this target's
       reach: plain text has no way to spell the distinction, so there is nothing
       to preserve. A target that CAN spell it does not have the licence, and
       this clause's silence about the others never granted one -- the MARKDOWN
-      target keeps tightness under §10l.
+      target keeps tightness under CARVE-P11-047.
 
   10i. A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES --
       NORMATIVE [CARVE-P11-036]. The writer normalizes a run of blank lines between two blocks
@@ -610,11 +559,11 @@
         (six blank lines)                         (three blank lines)
         - oranges                                 - oranges
 
-      One blank line would merge the lists, violating §1. N1a reads THREE
+      One blank line would merge the lists, violating §1. PART 9 §11 N1a reads THREE
       OR MORE, so three is the canonical form for every hard-boundary run.
 
       A RUN THAT IS NOT THE BOUNDARY NORMALIZES AS USUAL. Three blank lines
-      between two paragraphs, or between two lists that already differ on an N1
+      between two paragraphs, or between two lists that already differ on a PART 9 §11 N1
       axis (`- a` then `* b`), separate nothing that one blank line does not
       separate as well, so they come back as one. What earns the three is the
       boundary's job, not the run's length.
@@ -622,8 +571,8 @@
   10j. AN UNSPELLABLE BLOCK DOES NOT CANCEL THE ADJACENCY IT CANNOT SPELL --
       NORMATIVE [CARVE-P11-037]. Where EVERY block between two sibling lists is
       UNSPELLABLE -- it reaches the writer from the AST and leaves no character
-      on the page -- the two lists are ADJACENT for §10i's purposes, and
-      §10i decides the run between them as if nothing had stood there.
+      on the page -- the two lists are ADJACENT for CARVE-P11-036's purposes, and
+      CARVE-P11-036 decides the run between them as if nothing had stood there.
 
       A whitespace-only paragraph has no Carve spelling, so it cannot separate
       the emitted lists. Without this rule they return with one blank line and
@@ -638,9 +587,7 @@
       (§7) -- separates the two lists as it always did, and no boundary is
       written.
 
-      NO CARVE SOURCE REACHES THIS, so nothing in the parse-driven corpus can
-      pin it and the fixture is a hand-built payload entering through the AST
-      ingest (tests/an-unspellable-block-does-not-cancel-list-adjacency.test.mjs).
+      NO CARVE SOURCE REACHES THIS: the shape enters through the AST ingest.
 
   10k. THE ROUND-TRIP COMPARISON NORMALIZES A NAMED LIST -- NORMATIVE [CARVE-P11-043].
       A round trip preserves MEANING, not one serialization. Two renderings of
@@ -668,7 +615,7 @@
 
   10l. THE MARKDOWN TARGET KEEPS A LIST'S TIGHTNESS -- NORMATIVE [CARVE-P11-047].
       The emitted Markdown reads back with the tightness PART 9 §17 L1 gives the
-      source, wherever CommonMark can express it. §10h's licence to discard
+      source, wherever CommonMark can express it. CARVE-P11-035's licence to discard
       tight/loose is plain text's and does not reach this target.
 
       A BLANK LINE IS WRITTEN WHERE THE NEXT BLOCK NEEDS ONE AND NOWHERE ELSE.
@@ -710,7 +657,7 @@
       first: one empty cell for each cell of the widest row, and a delimiter
       row of the same width, whose alignment is the one the headerless table
       already takes from its first aligned row. A table with a header row
-      keeps §10d, which writes that row as the header.
+      keeps CARVE-P11-031, which writes that row as the header.
 
       ON MARKDOWN IMPORT, an all-empty header with no column alignment is
       omitted, together with its delimiter row. It is the scaffolding this
@@ -737,12 +684,12 @@
 
       THE HEADER IS AS WIDE AS THE WIDEST ROW because GFM drops every body
       cell past the header's width. Each body row still keeps its own cell
-      count (§10b).
+      count (CARVE-P11-029).
 
       A HEADER ROW NARROWER THAN THE TABLE IS PADDED for the same reason. When
-      the row §10d writes as the header has fewer cells than the widest row,
+      the row CARVE-P11-031 writes as the header has fewer cells than the widest row,
       it gains one empty cell per missing column, and so does the delimiter
-      row, whose added cells take the column's effective alignment under §10d
+      row, whose added cells take the column's effective alignment under CARVE-P11-031
       and are `---` where no header row sets one
       ([carve#2408](https://github.com/markup-carve/carve/issues/2408)).
 
@@ -799,21 +746,21 @@
 
       L1 a cell whose content is one paragraph holds that paragraph's inline
          content;
-      L2 a cell that is a span marker under §5.1 (a lone unescaped `^` or `<`,
+      L2 a cell that is a span marker under extension contract §5.1 (a lone unescaped `^` or `<`,
          no attributes on the item, the paragraph or the text) is the rowspan
          or colspan placeholder of that position, written as the pipe-table
          writer writes a placeholder;
       L3 any other cell holds its blocks as `table_cell.blocks`, flattened and
          reported as CARVE-P12-049 flattens and reports a block cell, with a
-         hard break written as `<br>` (§9a). A cell with no blocks is empty.
+         hard break written as `<br>` (CARVE-P11-048). A cell with no blocks is empty.
 
       Every list in a row gives cells, in order, and any other block in the
-      row belongs to the cell before it, as §5 renders them. A cell is a header cell when its row is inside
+      row belongs to the cell before it, as extension contract §5 renders them. A cell is a header cell when its row is inside
       `header-rows` or carries `{header-row}`, when its position is inside
-      `header-cols`, or when its item carries `{header}`, each read as §5.1
-      reads it. Its alignment is the item's `align` value, else the
+      `header-cols`, or when its item carries `{header}`, each read as extension
+      contract §5.1 reads it. Its alignment is the item's `align` value, else the
       `aligns` entry for its position. The opener's title is the table's
-      caption (§10e), and an unconsumed `[label]` keeps the bold line the
+      caption (CARVE-P11-032), and an unconsumed `[label]` keeps the bold line the
       admonition writing gives it, above the table. `valigns`, `widths`,
       `footer-rows` and every other attribute are not written, as a pipe
       table's attributes are not.
@@ -832,9 +779,8 @@
         :::
 
       ONLY A GRID IS A TABLE. The clause applies when the body is exactly one
-      list and each of its items begins with a list. Any other body keeps the
-      writing it had before this clause: the title as a bold line, then the
-      blocks.
+      list and each of its items begins with a list. Any other body is
+      written as an admonition: the title as a bold line, then the blocks.
 
       NO EXTENSION SET DECIDES IT. The target writes the table whether or not a
       processor enabled ListTable for HTML: this target takes no extension set,

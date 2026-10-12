@@ -1,0 +1,48 @@
+A shifted fence in a quoted container's body stores no continuation claim
+
+````
+> - ::: box
+>    ```
+>    code
+tail
+.
+<blockquote>
+  <ul>
+    <li>
+      <div class="box">
+        <pre><code>code
+</code></pre>
+      </div>
+    </li>
+  </ul>
+</blockquote>
+<p>tail</p>
+````
+
+````
+> > - ::: box
+> >   - inner
+> >     %% c
+> >    ```
+> >    code
+- tail
+.
+<blockquote>
+  <blockquote>
+    <ul>
+      <li>
+        <div class="box">
+          <ul>
+            <li>inner</li>
+          </ul>
+          <pre><code>code
+</code></pre>
+        </div>
+      </li>
+    </ul>
+  </blockquote>
+</blockquote>
+<ul>
+  <li>tail</li>
+</ul>
+````

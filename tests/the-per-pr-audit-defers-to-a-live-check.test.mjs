@@ -48,7 +48,7 @@ const repo = resolve(here, '..')
 
 process.env.CARVE_DECL_AUDIT_LIB = '1'
 const { __internals } = await import('../scripts/declaration-audit.mjs')
-const { undeclaredLedgerRows, MANIFEST, perPrPolicy } = __internals
+const { undeclaredLedgerRows, undeclaredExtentRows, MANIFEST, perPrPolicy } = __internals
 
 const workflow = readFileSync(join(repo, '.github/workflows/ci.yml'), 'utf8')
 const scheduledWorkflow = readFileSync(join(repo, '.github/workflows/ast-conformance.yml'), 'utf8')
@@ -229,6 +229,43 @@ test('a key listed twice is undeclared, because one of its two reasons is discar
     undeclaredLedgerRows(['430-a-slug  a reason', '430-a-slug-2  another reason']),
     [],
   )
+})
+
+test('extent declarations distinguish node types under the same engine and rule', () => {
+  const rows = [
+    'carve-js  starts-past-opening-markup  list  4  markup-carve/carve-js#2839',
+    'carve-js  starts-past-opening-markup  list_item  4  markup-carve/carve-js#2839',
+  ]
+  assert.deepEqual(undeclaredExtentRows(rows), [])
+  const generic = undeclaredLedgerRows(rows)
+  assert.equal(generic.length, 1)
+  assert.match(generic[0], /carve-js.*listed twice/)
+})
+
+test('extent declarations report a repeated engine, rule, and type with its row', () => {
+  const row = 'carve-js  starts-past-opening-markup  list  4  markup-carve/carve-js#2839'
+  const faults = undeclaredExtentRows([row, row])
+  assert.equal(faults.length, 1)
+  assert.equal(faults[0], `line 2: carve-js starts-past-opening-markup list is declared twice [${row}]`)
+})
+
+test('extent declarations require a fully qualified issue and retain the offending row', () => {
+  const row = 'carve-js  starts-past-opening-markup  list  4  #2839'
+  const faults = undeclaredExtentRows([row])
+  assert.equal(faults.length, 1)
+  assert.match(faults[0], /status must be a fully qualified owner\/repo#N/)
+  assert.ok(faults[0].endsWith(`[${row}]`))
+})
+
+test('the extent manifest entry selects its reader and the shipped rows are declared', () => {
+  const entry = MANIFEST.find((e) => e.repo === 'spec' && e.path === 'resources/ast-extent-findings.txt')
+  assert.ok(entry)
+  assert.equal(entry.rows, 'extent')
+  const rows = readFileSync(join(repo, entry.path), 'utf8').split('\n')
+    .filter((row) => row.trim() !== '' && !row.trimStart().startsWith('#'))
+  assert.ok(rows.length > 0)
+  const reader = entry.rows === 'extent' ? undeclaredExtentRows : undeclaredLedgerRows
+  assert.deepEqual(reader(rows), [])
 })
 
 /**

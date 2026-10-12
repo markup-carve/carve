@@ -2,8 +2,7 @@
   "name": "i12-fmt-expand-equivalence",
   "description": "Expanding the formatted document yields the same html + dependency set as expanding the original (I12 stronger invariant).",
   "rules": [
-    "I12",
-    "I14"
+    "I12"
   ],
   "mode": "virtual",
   "resolver": "virtual",

@@ -2,7 +2,7 @@
   "name": "i13-inline-block-reserves-no-footnote",
   "description": "A rejected inline block-include reserves no footnote label; only the later note survives.",
   "rules": [
-    "I13"
+    "I7"
   ],
   "mode": "virtual",
   "resolver": "virtual",

@@ -63,8 +63,8 @@ const QUOTED_VALUE = [
 ]
 
 // `block_attributes` admits a line break BETWEEN tokens and never inside one,
-// and admits AT MOST ONE per slot: `opt_pad = opt_ws, [continuation]`,
-// `attr_separator = (whitespace | continuation), opt_ws`, and
+// and admits AT MOST ONE per slot: `opt_pad = attr_pad, [continuation]`,
+// `attr_separator = (space | continuation), attr_pad`, and
 // `continuation = newline, opt_ws` - "a single line break + indent; NOT a blank
 // line". Every slot is listed, because they revert independently.
 const BLOCK_LINE_BREAKS = [
@@ -80,6 +80,18 @@ const BLOCK_LINE_BREAKS = [
   { src: '{.a\n.b\n.c}', accept: true, what: 'one break at each of two separators' },
 ]
 
+// CARVE-P4-001: within a line every slot is a space run. A tab is indentation
+// only, so it is admitted after a continuation's line break and nowhere else.
+const BLOCK_TABS = [
+  { src: '{.a\t.b}', accept: false, what: 'a tab as the separator' },
+  { src: '{\t.a}', accept: false, what: 'a tab as the opening padding' },
+  { src: '{.a\t}', accept: false, what: 'a tab as the closing padding' },
+  { src: '{.a \t.b}', accept: false, what: 'a tab after the separator space' },
+  { src: '{.a\n\t.b}', accept: true, what: 'a tab as the indentation of a continuation line' },
+  { src: '{\n \t.a\n\t}', accept: true, what: 'a mixed indentation run, both slots' },
+  { src: '{.a\n\t.b .c}', accept: true, what: 'a space separator after an indented continuation' },
+]
+
 for (const { rule, src, accept, what } of QUOTED_VALUE) {
   test(`${rule}: ${what}`, () => {
     assert.equal(
@@ -87,6 +99,18 @@ for (const { rule, src, accept, what } of QUOTED_VALUE) {
       accept,
       `resources/carve-core.ohm ${accept ? 'must accept' : 'must reject'} ${JSON.stringify(src)} ` +
         `as \`${rule}\`. A quoted value stops at the newline in both forms (carve#888).`,
+    )
+  })
+}
+
+for (const { src, accept, what } of BLOCK_TABS) {
+  test(`blockAttrs: ${what}`, () => {
+    assert.equal(
+      g.match(src, 'blockAttrs').succeeded(),
+      accept,
+      `resources/carve-core.ohm ${accept ? 'must accept' : 'must reject'} ${JSON.stringify(src)} ` +
+        'as `blockAttrs`. A tab inside the line is content; only the leading run of a ' +
+        'continuation line takes one (CARVE-P4-001).',
     )
   })
 }
@@ -109,7 +133,8 @@ test('both directions are covered at both slots, and the counts are asserted', (
   // a check rather than a list.
   assert.equal(QUOTED_VALUE.length, 5, 'the quoted-value table lost or gained rows')
   assert.equal(BLOCK_LINE_BREAKS.length, 10, 'the block-line-break table lost or gained rows')
-  for (const [name, table] of [['QUOTED_VALUE', QUOTED_VALUE], ['BLOCK_LINE_BREAKS', BLOCK_LINE_BREAKS]]) {
+  assert.equal(BLOCK_TABS.length, 7, 'the block-tab table lost or gained rows')
+  for (const [name, table] of [['QUOTED_VALUE', QUOTED_VALUE], ['BLOCK_LINE_BREAKS', BLOCK_LINE_BREAKS], ['BLOCK_TABS', BLOCK_TABS]]) {
     assert.ok(table.some((r) => r.accept), `${name} has no ACCEPT row; a rule matching nothing would pass`)
     assert.ok(table.some((r) => !r.accept), `${name} has no REJECT row; a rule widened to any* would pass`)
   }

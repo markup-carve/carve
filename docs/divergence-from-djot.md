@@ -673,7 +673,7 @@ rather than its typical one. It is the price of the paragraph above: a writer
 that instead chose the narrowest fence its content does not collide with would
 have to scan every subtree before writing its opener, which is the lookahead
 exact matching was adopted to remove. The trade was re-examined and kept
-(markup-carve/carve#1553); the normative statement of it is PART 9 §12.
+(markup-carve/carve#1553); the normative statement of it is PART 2, at `colon_fence_close`.
 
 ## 14. Headings are single-line
 

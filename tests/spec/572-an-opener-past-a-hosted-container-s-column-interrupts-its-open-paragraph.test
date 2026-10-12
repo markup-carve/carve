@@ -1,0 +1,38 @@
+An opener past a hosted container's column interrupts its open paragraph
+
+```
+- ::: box
+  text
+   # h
+  :::
+.
+<ul>
+  <li>
+    <div class="box">
+      <p>text</p>
+      <h1 id="h">h</h1>
+    </div>
+  </li>
+</ul>
+```
+
+````
+> - ::: box
+>   text
+>    ```
+>    x
+>    ```
+>   :::
+.
+<blockquote>
+  <ul>
+    <li>
+      <div class="box">
+        <p>text</p>
+        <pre><code>x
+</code></pre>
+      </div>
+    </li>
+  </ul>
+</blockquote>
+````

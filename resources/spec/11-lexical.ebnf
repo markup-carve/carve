@@ -36,13 +36,21 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
      4. INSIDE VERBATIM CONTENT -- fenced code and inline code spans -- a tab
         is PRESERVED verbatim and never expanded. Stated in full at TABS IN
         CODE (PART 2) and pinned by corpus tabs-in-code-preserved.
+     5. A LINE-FINAL RUN of spaces and tabs is INSIGNIFICANT. It is dropped
+        before anything reads the line, so no production sees it and 3 applies
+        to what precedes it: `{.a}<TAB>` is an attribute line and
+        `[a]: /u<TAB>` a definition. TWO EXCEPTIONS (CARVE-P2-025): a
+        verbatim payload line, and a line-block body line, where CARVE-P9-044
+        MEDIAL GAPS first turns a trailing run of two or more columns into
+        no-break-space content; a one-column run there is dropped as anywhere
+        else.
 
-   Every other mention of a tab in this grammar APPLIES one of those four
-   sentences to one construct; none of them restates it. Two of the four keep
+   Every other mention of a tab in this grammar APPLIES one of those five
+   sentences to one construct; none of them restates it. Three of the five keep
    an operational home this clause does not duplicate: the walk that turns a
    run into a column, the content column a marker establishes and the
-   straddling tab at a dedent boundary are PART 9 §24 (C1, C3, C5), and 4 is
-   PART 2. MARKER SEPARATORS AND PADDING SLOTS below is 3 applied to every
+   straddling tab at a dedent boundary are PART 9 §24 (C1, C3, C5), and 4 and
+   5 are PART 2. MARKER SEPARATORS AND PADDING SLOTS below is 3 applied to every
    whitespace slot in this grammar that sits inline.
 
    Computing indentation still requires a per-line tab-stop walk. Source
@@ -56,7 +64,8 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    FIRST, the leading run itself. `indent = whitespace, {whitespace}` is where
    a tab belongs, and `blank_line = {whitespace}` is the degenerate case of the
    same position -- no non-whitespace character precedes either one. A leading
-   run is tabs OR spaces, never both.
+   run may mix spaces and tabs; it is measured in columns (CARVE-P7-001 items
+   1 and 2).
 
    SECOND, everything after it. Whitespace past the first non-whitespace
    character of a line falls into one of two ROLES. The roles are still worth
@@ -113,11 +122,10 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    not padding. `code_fence_info`'s and the admonition opener's metadata
    slots are spelled `space+` and take a run.
 
-   The four single-space slots are narrow by ruling. This decides
-   cardinality only. Character membership remains the space-only inline rule
-   of and, while marker separators use the cardinality
-   declared by their own productions. Attribute and table-cell
-   padding follow the same inline rule. *)
+   This decides cardinality only. Character membership is the space-only rule
+   of CARVE-P7-001 item 3, and each marker separator takes the cardinality its
+   own production declares. Attribute and table-cell padding follow the same
+   space-only rule. *)
 
 (* ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT -- NORMATIVE [CARVE-P7-003]. The three
    terminals below are the whole of it, and nothing in the language adds to
@@ -152,14 +160,13 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    AND IN THE CONSTRUCTS THAT SPELL NO RUN AT ALL, which is where this bites
    hardest, because there an implementation had to invent something. A
    definition term, a bullet item and an ordered item take `space` -- one,
-   exactly, not a class. A heading and a caption stood in that list and no
-   longer do: both spell `space+` now, a RUN of the same terminal, each for
-   the reason its own clause states rather than for anything here.
-   The CONTINUATION MARKER takes none:
+   exactly, not a class. A heading and a caption spell `space+`, a RUN of
+   the same terminal. The CONTINUATION MARKER takes none:
    `continuation_marker = '+', newline`, so any character between the
    `+` and the line end is content and the line is not a marker. The
-   block-attribute line takes `opt_ws`, `attr_separator` and `continuation`,
-   all three built from `whitespace`. A VERTICAL TAB or a FORM FEED in any of
+   block-attribute line takes `attr_pad` and `attr_separator`, built from
+   `space`, and `continuation`, whose indentation is `whitespace`. A VERTICAL
+   TAB or a FORM FEED in any of
    those positions is therefore CONTENT, and each construct's own rule reads
    it as content: MARKER REQUIRES CONTENT (PART 2) is satisfied by it, an
    emptiness test is not satisfied by its absence, and a line holding one is
@@ -176,6 +183,30 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
    Constructs use this definition rather than a host language's trim,
    regular-expression or locale-aware character class. *)
+(* ESCAPE CONTEXTS -- NORMATIVE [CARVE-P7-004]. What a backslash does depends
+   on where it stands, and this table is the one statement of it.
+
+     context                                escapes resolved
+     -------------------------------------  -------------------------------------
+     inline text                            `escaped_char`: `\` + any
+                                            `ascii_punctuation` yields that
+                                            character; `\` + newline is a
+                                            `hard_break`
+     image alt text                         `escaped_char`, decoded into the
+                                            scalar value
+     link and image title, quoted           `escaped_char`; a `\` before any
+     attribute value, quoted include path   other character is that backslash
+                                            (`literal_backslash`)
+     link and image destination             `destination_escape` only: `\(`,
+                                            `\)`, `\\`; any other `\` is a
+                                            destination character
+     code span, inline literal, math, raw   none: the content is verbatim
+     inline, code and raw blocks,
+     editorial comment `{# #}`
+     unquoted attribute value, include      none: `\` is excluded, so a value
+     unquoted option value, autolink body   that needs one takes the quoted form
+
+   How a table row splits into cells, `\|` included, is PART 9 §5 T1. *)
 whitespace = ' ' | '\t' ;
 space = ' ' ;
 newline = '\n' | '\r\n' | '\r' ;

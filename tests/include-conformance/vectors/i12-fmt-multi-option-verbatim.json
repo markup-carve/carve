@@ -2,8 +2,7 @@
   "name": "i12-fmt-multi-option-verbatim",
   "description": "A multi-option directive (unknown option + section) serializes byte-identically, author token order preserved.",
   "rules": [
-    "I12",
-    "I14"
+    "I12"
   ],
   "mode": "virtual",
   "resolver": "virtual",

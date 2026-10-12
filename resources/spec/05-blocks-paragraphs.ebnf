@@ -1,14 +1,9 @@
 (* --- Paragraphs --- *)
-(* A VISIBLE block (heading, quote, table, fence, thematic break,
-   admonition/div) interrupts a paragraph with no blank line before it
-   (Markdown-like); invisible constructs (reference definitions, comments,
-   block-attribute lines) interrupt too. A LIST marker (bullet OR ordered) is
-   the exception: it does NOT interrupt -- a list needs a blank line before it
-   (symmetric, Djot-like; see §10). This is the semantic constraint
-   PART 9 §10, not a context-free one. A paragraph is terminated by a blank
-   line, an interrupting block (§10), or end of file -- the optional trailing
-   blank_line here is the paragraph's own terminator, not a precondition for
-   the NEXT block.
+(* Which lines interrupt a paragraph with no blank line before them is the
+   semantic constraint PART 9 §10 (I1 to I7), not a context-free one. A
+   paragraph is terminated by a blank line, an interrupting block (PART 9 §10), or
+   end of file -- the optional trailing blank_line here is the paragraph's own
+   terminator, not a precondition for the NEXT block.
    NO TRAILING WHITESPACE -- NORMATIVE [CARVE-P2-025]. A `whitespace` run at the END of a
    CONTENT LINE is DROPPED. It does not reach the output, and it is not
    content.
@@ -22,7 +17,7 @@
    `%%<SP><SP>x<SP>` has the text `<SP>x`.
 
    THE RUN IS `whitespace` -- `' ' | '\t'` -- the same two-character terminal
-   `blank_line = {whitespace}` and `indent` take (PART 1). Every
+   `blank_line = {whitespace}` (PART 1) and `indent` (PART 2) take. Every
    other character is CONTENT and survives, however invisible: a no-break
    space, a zero-width space, a BYTE ORDER MARK, an en quad, an ideographic
    space, a form feed and a vertical tab all reach the output. In

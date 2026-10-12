@@ -1,0 +1,49 @@
+A closed fence in a quoted sub-item after a lazy line leaves no paragraph
+
+````
+> - a
+>   - c
+> b
+>     ```
+>     y
+>     ```
+flush
+.
+<blockquote>
+  <ul>
+    <li>a
+      <ul>
+        <li>c
+b
+          <pre><code>y
+</code></pre>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</blockquote>
+<p>flush</p>
+````
+
+````
+- a
+  - c
+b
+    ```
+    y
+    ```
+flush
+.
+<ul>
+  <li>a
+    <ul>
+      <li>c
+b
+        <pre><code>y
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>flush</p>
+````

@@ -170,12 +170,15 @@ test('GUARD: an unterminated comment fence in a dd opens no span', () => {
   assert.ok(out.includes('<p>a</p>'), out)
 })
 
-test('GUARD: a colon container host is not the nested-item host', () => {
-  // CARVE-P0-014 answers this one the other way: a colon body CAN hold an open
-  // paragraph, so an indented fence folds into it and the run below the base
-  // folds with it. The nested-item change may not reach it.
-  const out = html('- a\n  ::: note\n    ```\n    p\nx\n')
-  assert.ok(out.includes('p\nx</code>'), out)
+test('GUARD: a colon container host folds a fence only under its open paragraph', () => {
+  // With a paragraph open in the note the indented run folds into it and the
+  // line below the base folds with it (CARVE-P0-014).
+  const folded = html('- a\n  ::: note\n  text\n    ```\n    p\nx\n')
+  assert.ok(folded.includes('p\nx</code>'), folded)
+  // With none open the run is an opener past the column and takes its
+  // authored base (CARVE-P0-004), so the line below leaves (CARVE-P0-013).
+  const opened = html('- a\n  ::: note\n    ```\n    p\nx\n')
+  assert.ok(opened.includes('<pre><code>p\n</code></pre>') && opened.endsWith('<p>x</p>'), opened)
 })
 
 test('the inner-item row now takes the owner table', () => {

@@ -14,19 +14,19 @@ attribute_list = attribute, {space+, attribute} ;
 attribute_run = attributes, {attributes} ;
 (* interior padding is accepted: `{ .a }` and `{.a  .b}` are valid inline
    attribute blocks. The terminal is `space`, NOT `whitespace`: see
-   THE INLINE INTERIOR IS SPACE-ONLY below. block_attributes pads and
-   separates differently, and deliberately. *)
-(* THE INLINE INTERIOR IS SPACE-ONLY, THE BLOCK-ATTRIBUTE LINE IS NOT --
-   NORMATIVE [CARVE-P4-001]. Every whitespace slot of the INLINE block takes
-   `space`: the run after `{`, the run between two attributes, the run
-   before `}`, the boundary after an unquoted value, and the blessed empty
-   block `{ }`. All five sit inline, so no exception has to be written. A TAB
-   IS SYNTAX ONLY IN THE LEADING RUN (PART 7).
+   ATTRIBUTE PADDING IS SPACE-ONLY below. block_attributes takes the same
+   terminal and also admits a line break. *)
+(* ATTRIBUTE PADDING IS SPACE-ONLY -- NORMATIVE [CARVE-P4-001]. Every slot
+   inside an attribute block that sits within a line takes `space`: the run
+   after `{`, the run between two attributes, the run before `}`, the boundary
+   after an unquoted value, and the blessed empty block `{ }`. That holds for
+   the inline block and for `block_attributes` alike, because A TAB IS SYNTAX
+   ONLY IN THE LEADING RUN (PART 7). `{.a<TAB>.b}` on a line of its own is
+   paragraph text.
 
-   `block_attributes` keeps `whitespace` in its three slots: after a
-   `continuation`, the next line's leading run IS indentation. The distinction
-   is POSITIONAL: inline padding is space-only; leading indentation retains
-   its ordinary whitespace definition.
+   `block_attributes` adds one position: after a `continuation`, the next
+   line's leading run IS indentation, measured in columns, and takes
+   `whitespace`.
 
    A newline inside a quoted value is governed by A QUOTED VALUE STOPS AT THE
    NEWLINE below. *)
@@ -83,8 +83,7 @@ attribute = language_attribute | id_attribute | class_attribute
    The deferred braced-symbol spelling `{:name:}` stays literal under this
    production, because a trailing `:` is not a subtag character -- see
    `docs/dismissed-syntax.md`, which reserves `{:` for that form. The two are
-   distinguishable (a symbol ends `:}` and a language tag cannot), and that
-   entry is amended in the same change rather than read around.
+   distinguishable (a symbol ends `:}` and a language tag cannot).
 
    THE SIGIL TAKES NO PADDING -- NORMATIVE [CARVE-P4-003]: the tag is optional, not the
    separator, so `{: fr}` is the empty language attribute followed by a
@@ -110,10 +109,6 @@ attribute = language_attribute | id_attribute | class_attribute
    `{:de}`. An empty value is `{:}`, which is therefore the canonical spelling
    of `{lang=""}` too. Both follow from PART 11's rule that the writer emits
    the canonical spelling of what the AST holds, and the AST holds one `lang`.
-   The `.fmt` byte fixture that pins this lands with the engine bump: those
-   fixtures are read THROUGH the pinned build, which does not know the
-   shorthand yet, and `tests/corpus-fmt-roundtrip.test.mjs` has no drift valve
-   for them.
 
    A BOOLEAN `lang` IS THE SAME KEY AS WELL: `{lang}` means `lang=""` under
    PART 4's boolean rule, so `{:fr lang}` ends at `lang=""` and `{lang :fr}` at
@@ -157,14 +152,10 @@ boolean_attribute = identifier - ('_', {character}) ;
    and each of these does too on a block that has nothing to consume it: the
    name is not reserved, it is read by the block below it. *)
 (* A BOOLEAN ATTRIBUTE DOES NOT START WITH AN UNDERSCORE -- NORMATIVE [CARVE-P4-005].
-   `identifier` admits a leading `_`, so `{_x_}` parsed BOTH as
-   the boolean attribute `_x_` and as a forced underline. Alone on a line the
-   attribute reading won and the underline was unreachable, and with no block
-   beneath it to attach to, the line rendered NOTHING - five characters kept
-   in the source and gone from the output.
-
-   The underline is what an author writing `{_x_}` means, so the BARE form
-   gives the collision up. There is no boolean attribute to lose: HTML's set
+   `identifier` admits a leading `_`, so without this rule `{_x_}` reads both
+   as the boolean attribute `_x_` and as a forced underline. The underline is
+   what an author writing `{_x_}` means, so the BARE form gives the collision
+   up. There is no boolean attribute to lose: HTML's set
    is `disabled`, `checked`, `readonly`, `required`, `hidden` and their kind,
    and not one of them starts with `_`.
 
@@ -173,29 +164,23 @@ boolean_attribute = identifier - ('_', {character}) ;
    because none of them ends `_}`. The one underscore attribute in the wild,
    hyperscript's `_="on click …"`, is a key/value and is unaffected.
 
-   The cost is `{_foo}`, which was a boolean attribute and is now text. It has
-   no underline reading either, so it renders literally rather than becoming
-   something else. *)
+   `{_foo}` is therefore text: it has no underline reading either, so it
+   renders literally. *)
 
 attribute_value = unquoted_value | quoted_value ;
 unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - ' ' - '\t' - newline )+ ;
 (* THE EXCLUSIONS ARE WHAT WOULD END OR RESTRUCTURE THE BLOCK, and quoting is
-   required for exactly those: `}` closes the block, a space or a tab is the
-   separator before the next attribute, a quote opens a quoted value, a bare `|`
-   would end a table cell, and `\` introduces an escape. Everything else needs
+   required for exactly those: `}` closes the block, a space is the separator
+   before the next attribute and a tab is no part of a block, a quote opens a
+   quoted value, a bare `|`
+   would end a table cell, and a `\` needs the quoted form, the only one that
+   resolves escapes. Everything else needs
    no quoting, so a version string (`v1.2`), a namespaced token (`xml:lang`) and
    an imported utility class (`w-1/2`) are all bare values. *)
-(* A backslash escapes ASCII punctuation inside a quoted value (same
-   `escaped_char` rule as inline text), so a value can contain a literal
-   quote: `"a\"b"` -> the value `a"b`.
-
-   THE SET IS THE WHOLE OF `ascii_punctuation`, not the closing quote alone:
-   `{k="a\}b"}` carries `a}b` and `{k="a\\b"}` carries `a\b`, in either quote
-   spelling. A backslash before a non-punctuation character is ordinary
-   content and is retained: `{k="a\zb"}` carries `a\zb`. Link titles take the
-   same escape set, but may contain a newline; quoted attributes may not.
-   The lookahead makes a backslash before punctuation an escape only. It
-   cannot also be ordinary content before a closing quote. *)
+(* Escapes in a quoted value: CARVE-P7-004. `{k="a\}b"}` carries `a}b` and
+   `{k="a\zb"}` carries `a\zb`. The lookahead makes a backslash before
+   punctuation an escape only; it cannot also be ordinary content before a
+   closing quote. *)
 literal_backslash = '\', !(ascii_punctuation) ;
 quoted_value = '"', { escaped_char | literal_backslash | (character - '"' - '\' - newline) }, '"'
              | "'", { escaped_char | literal_backslash | (character - "'" - '\' - newline) }, "'" ;
@@ -212,37 +197,28 @@ quoted_value = '"', { escaped_char | literal_backslash | (character - '"' - '\' 
    breaks) ends the block -- it is not interior padding; an attribute
    block interrupted by a blank line is not a block_attributes (both
    grammar treats it as literal text). Merge + reach semantics
-   (including float-across-blank-lines BETWEEN separate blocks): §15. *)
+   (including float-across-blank-lines BETWEEN separate blocks): PART 9 §15. *)
 block_attributes = '{', opt_pad, attribute, {attr_separator, attribute}, opt_pad, '}', newline ;
-(* THE PADDING ADMITS A LINE BREAK TOO, not only the separator. This used
-   `opt_ws` on both sides, which is spaces and tabs alone, so `{` + newline
-   + `.a}` and `{.a` + newline + `}` were outside the production while the
-   interior `{.a` + newline + `.b}` was inside it. The grammar accepts
-   every one of the three, and the paragraph below takes `class="a"` or
-   `class="a b"` accordingly. The prose above the production already said a
-   block "may span multiple physical lines (the `}` need not be on the
-   opening line)" - the padding spelling was narrower than the sentence
-   describing it. The INLINE `attributes` production does not
-   follow: it pads with `attr_pad = {space}`, which admits neither
-   a tab nor a line break, and an inline block does not span lines in any
-   engine. *)
+(* THE PADDING ADMITS A LINE BREAK TOO, not only the separator: `{` + newline
+   + `.a}`, `{.a` + newline + `}` and `{.a` + newline + `.b}` are all block
+   attributes, and the paragraph below takes `class="a"` or `class="a b"`
+   accordingly. The INLINE `attributes` production pads with
+   `attr_pad = {space}` alone, which admits no line break. *)
 (* block_attributes requires AT LEAST ONE attribute -- there is NO block-level
    blessed-empty form (unlike the inline `[text]{}` span, which is blessed).
    A bare `{}` line is therefore NOT a block-attribute block; it stays a
    literal paragraph (`<p>{}</p>`). *)
-attr_pad = {space} ;                     (* INLINE attribute-block padding:
-                                            spaces only, no tab and no line
-                                            break -- it sits inline *)
-opt_ws = {whitespace} ;                  (* spaces/tabs only, no line breaks.
-                                            BLOCK-LEVEL ONLY:
-                                            read by opt_pad, attr_separator
-                                            and continuation, never by the
-                                            inline `attributes` production *)
-opt_pad = opt_ws, [continuation] ;       (* block-attribute padding: spaces/tabs,
+attr_pad = {space} ;                     (* attribute-block padding within a
+                                            line: spaces only, no tab and no
+                                            line break *)
+opt_ws = {whitespace} ;                  (* a LEADING indentation run, spaces
+                                            and tabs. Read by continuation
+                                            only *)
+opt_pad = attr_pad, [continuation] ;     (* block-attribute padding: spaces,
                                             then AT MOST ONE line break plus its
                                             indentation -- a blank line ends the
                                             block and is never interior padding *)
-attr_separator = (whitespace | continuation), opt_ws ;  (* one ws OR one line break *)
+attr_separator = (space | continuation), attr_pad ;  (* one space OR one line break *)
 continuation = newline, opt_ws ;         (* a single line break + indent; NOT a blank line *)
 (* AN IMPORTER READS A BRACE RUN'S CONTINUATION ONLY WHERE IT IS INDENTED --
    NORMATIVE [CARVE-P4-008]. The `continuation` above is Carve's own, and it
@@ -260,5 +236,4 @@ continuation = newline, opt_ws ;         (* a single line break + indent; NOT a 
    comment whose text is dropped, exactly as `{#id` / `  key=1}` applies
    attributes where `{#id` / `key=1}` does not. Inside a container the column
    compared is the opener's, so a list item's content column governs there.
-   Measured on both spellings at both columns against djot.js 0.3.2
-   (carve#2910). *)
+   (carve#2910) *)

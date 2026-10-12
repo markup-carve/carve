@@ -79,21 +79,6 @@
       "i12-fmt-invalid-option-preserved",
       "i12-fmt-malformed-section-preserved",
       "i12-fmt-across-blocks",
-      "i12-fmt-expand-equivalence",
-      "i12-fmt-multi-option-verbatim",
-      "i15-carve-target-does-not-expand",
-      "i15-carve-target-keeps-a-selector-and-options"
-    ],
-    "I13": [
-      "i13-no-side-effect-unresolvable",
-      "i13-no-side-effect-binary",
-      "i13-no-side-effect-both-selections",
-      "i13-no-side-effect-missing-section",
-      "i13-no-side-effect-cycle",
-      "i13-inline-block-reserves-no-heading-id",
-      "i13-inline-block-reserves-no-footnote"
-    ],
-    "I14": [
       "i14-fmt-two-directives-prose",
       "i14-fmt-adjacent-directives",
       "i14-fmt-multiple-section-options",
@@ -101,7 +86,9 @@
       "i14-fmt-not-shape-wellformed-escaped",
       "i14-fmt-empty-braces-escaped",
       "i12-fmt-expand-equivalence",
-      "i12-fmt-multi-option-verbatim"
+      "i12-fmt-multi-option-verbatim",
+      "i15-carve-target-does-not-expand",
+      "i15-carve-target-keeps-a-selector-and-options"
     ],
     "I15": [
       "i15-carve-target-does-not-expand",
@@ -162,6 +149,13 @@
       "i07-selection-conflict",
       "i07-binary-content-non-text",
       "i07-resolver-throws-no-leak",
+      "i13-no-side-effect-unresolvable",
+      "i13-no-side-effect-binary",
+      "i13-no-side-effect-both-selections",
+      "i13-no-side-effect-missing-section",
+      "i13-no-side-effect-cycle",
+      "i13-inline-block-reserves-no-heading-id",
+      "i13-inline-block-reserves-no-footnote",
       "i01-section-name-matches-case-exactly"
     ],
     "I8": [

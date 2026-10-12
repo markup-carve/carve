@@ -6,13 +6,14 @@ A closer does not rescue a marker-line colon opener whose body folded in
   :::
 .
 <ul>
-  <li>:::
-y
+  <li>
     <div>
 
     </div>
   </li>
 </ul>
+<p>y
+:::</p>
 ```
 
 ```
@@ -21,13 +22,14 @@ y
   :::
 .
 <ul>
-  <li>::: note
-y
-    <div>
+  <li>
+    <aside class="admonition note" aria-label="Note">
 
-    </div>
+    </aside>
   </li>
 </ul>
+<p>y
+:::</p>
 ```
 
 ```
@@ -36,13 +38,14 @@ y
    :::
 .
 <ol>
-  <li>::: d
-y
-    <div>
+  <li>
+    <div class="d">
 
     </div>
   </li>
 </ol>
+<p>y
+:::</p>
 ```
 
 ```
@@ -52,14 +55,15 @@ y
   :::
 .
 <ul>
-  <li>::: d
-y
-z
-    <div>
+  <li>
+    <div class="d">
 
     </div>
   </li>
 </ul>
+<p>y
+z
+:::</p>
 ```
 
 ```
@@ -69,13 +73,14 @@ z
   :::
 .
 <ul>
-  <li>::: d
-y
-    <div>
+  <li>
+    <div class="d">
 
     </div>
   </li>
 </ul>
+<p>y</p>
+<p>:::</p>
 ```
 
 ```
@@ -87,13 +92,14 @@ y
 <ul>
   <li>x
     <ul>
-      <li>::: d
-y
-        <div>
+      <li>
+        <div class="d">
 
         </div>
       </li>
     </ul>
+    y
+:::
   </li>
 </ul>
 ```

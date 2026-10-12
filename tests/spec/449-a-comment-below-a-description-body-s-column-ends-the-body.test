@@ -55,10 +55,12 @@ z
 .
 <dl>
   <dt>t</dt>
-  <dd>x</dd>
-</dl>
-<p>y
+  <dd>
+    <p>x</p>
+    <p>y
 z</p>
+  </dd>
+</dl>
 ```
 
 ```
@@ -69,9 +71,11 @@ z
 .
 <dl>
   <dt>t</dt>
-  <dd>x</dd>
+  <dd>
+    <p>x</p>
+    <p>z</p>
+  </dd>
 </dl>
-<p>z</p>
 ```
 
 ```
@@ -111,9 +115,11 @@ b
 .
 <dl>
   <dt>t</dt>
-  <dd>x</dd>
+  <dd>
+    <p>x</p>
+    <p>more</p>
+  </dd>
 </dl>
-<p>more</p>
 ```
 
 ```
@@ -124,9 +130,11 @@ b
 .
 <dl>
   <dt>t</dt>
-  <dd>x</dd>
+  <dd>
+    <p>x</p>
+    <p>more</p>
+  </dd>
 </dl>
-<p>more</p>
 ```
 
 ```
@@ -154,9 +162,11 @@ z
 .
 <dl>
   <dt>t</dt>
-  <dd>x</dd>
+  <dd>
+    <p>x</p>
+    <p>z</p>
+  </dd>
 </dl>
-<p>z</p>
 ```
 
 ```
@@ -169,9 +179,11 @@ z
 .
 <dl>
   <dt>t</dt>
-  <dd>x</dd>
+  <dd>
+    <p>x</p>
+    <p>z</p>
+  </dd>
 </dl>
-<p>z</p>
 ```
 
 ```
@@ -182,7 +194,9 @@ z
 .
 <dl>
   <dt>t</dt>
-  <dd>x</dd>
+  <dd>
+    <p>x</p>
+    <p>more</p>
+  </dd>
 </dl>
-<p>more</p>
 ```

@@ -72,7 +72,7 @@ const CASES = [
   {
     name: 'form carrying a round-trip marker',
     html: '<form onclick="go()" data-carve-src="x">kept</form>\n',
-    subjects: [{ key: 'form.onclick' }, { key: 'form.data-carve-src' }],
+    subjects: [{ key: 'form.onclick' }, { key: 'form.data-carve-src', pending: 'markup-carve/carve-php#3222' }],
   },
   {
     name: 'form around a benign list-valued URL attribute',
@@ -87,7 +87,7 @@ const CASES = [
   {
     name: 'form retaining denied values on marker keys',
     html: '<form data-carve-src="javascript:x()"><cite cite="javascript:y()">t</cite></form>\n',
-    subjects: [{ key: 'form.data-carve-src' }, { key: 'cite.cite' }],
+    subjects: [{ key: 'form.data-carve-src', pending: 'markup-carve/carve-php#3222' }, { key: 'cite.cite' }],
   },
 ]
 
@@ -141,12 +141,18 @@ for (const attrs of ['align="right" style="text-align:left"', 'style="text-align
  * fails as an undeclared one. Every other row, and the order of all of them, is
  * still compared - a declaration excuses a row, never a case.
  *
- * Empty, and that is a measurement: carve-rs#1881 (the sink named
- * "active-content") and carve-php#2357 (a refusal reported inside RAWTEXT) both
- * closed, and the checker refused both entries as no longer describing their
- * engine. The machinery stays for the next one.
+ * carve-rs#1881 (the sink named "active-content") and carve-php#2357 (a refusal
+ * reported inside RAWTEXT) both closed, and the checker refused both entries as
+ * no longer describing their engine. A declared engine skips the case's
+ * `expectedRows` check, since the comparison below holds it to the others' rows.
  */
-const DECLARED = []
+const DECLARED = ['safe', 'semantic'].flatMap((mode) => ['data-carve-src', 'data-djot-src'].map((name) => ({
+  case: `${mode} ignored nested ${name}`,
+  engine: 'php',
+  absent: ['attribute-dropped|info|dropped|exact|/form[1]/p[1]'],
+  reason: 'drops the stored marker attribute without a row',
+  ticket: 'markup-carve/carve-php#3222',
+})))
 
 /*
  * A clause every engine is behind, with the ticket that moves each one.
@@ -281,7 +287,9 @@ for (const testCase of CASES) {
       failures.push(`${testCase.name}: ${engine.name} imported ${JSON.stringify(payload.importedValue)}, expected ${JSON.stringify(testCase.expectedValue)}`)
     }
     const all = payload.diagnostics ?? []
-    if (testCase.expectedRows && JSON.stringify(all.map(row)) !== JSON.stringify(testCase.expectedRows)) {
+    // A declared engine is judged against the others below, in both directions.
+    const declaredHere = DECLARED.some((entry) => entry.case === testCase.name && entry.engine === engine.name)
+    if (testCase.expectedRows && !declaredHere && JSON.stringify(all.map(row)) !== JSON.stringify(testCase.expectedRows)) {
       failures.push(`${testCase.name}: ${engine.name} expected ${JSON.stringify(testCase.expectedRows)}, got ${JSON.stringify(all.map(row))}`)
     }
     reported.set(engine.name, all)

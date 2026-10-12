@@ -2,7 +2,7 @@
   "name": "i13-no-side-effect-binary",
   "description": "A binary include reserves nothing.",
   "rules": [
-    "I13"
+    "I7"
   ],
   "mode": "virtual",
   "resolver": "virtual",

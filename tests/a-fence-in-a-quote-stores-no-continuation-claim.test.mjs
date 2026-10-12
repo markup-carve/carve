@@ -456,7 +456,7 @@ test('a lazy sublist line retains its host column for the next fence', () => {
 
 test('lazy host tracking preserves the surrounding host controls', () => {
   const cases = [
-    [`- a\n  - c\nb\n    ${F}\n    y\n    ${F}\n`, false],
+    [`- a\n  - c\nb\n    ${F}\n    y\n    ${F}\n`, true],
     // The blank-separated case already releases the line before this correction.
     [`- a\n  - c\n  b\n\n    ${T}\n    y\n    ${T}\n`, true],
     [`- a\n  - c\n::: \n    ${T}\n  ${T}\n`, false],

@@ -11,7 +11,7 @@
         (blank)                          (blank)
         x                                x
 
-      THE SPLIT IS §10a'S TEST, not a new one. HTML may drop an unused
+      THE SPLIT IS CARVE-P11-028'S TEST, not a new one. HTML may drop an unused
       definition "because HTML has nowhere to put a definition nobody used";
       Markdown has exactly somewhere to put frontmatter, so on this target the
       drop is content loss. Plain text and the terminal are on HTML's side of
@@ -36,15 +36,19 @@
       block this target writes as its children alone: no element, no marker
       and no attribute of its own reaches the output, so nothing there says a
       container was present. Under the CARRIER MODE, which is roundtrip export
-      (PART 10 §13) on this target and is OFF by default, the target brackets
-      each one with an HTML comment carrying the Carve opener and the Carve
-      closer VERBATIM:
+      on this target, the target brackets
+      each one with an HTML comment carrying the opener and the closer the
+      canonical writer spells, widened to the nesting depth, not the author's
+      lines: `::::: note   "T"` is carried as `::: note "T"` at the top level.
+      CARVE-P10-015 states the option, the table of both
+      targets' carriers and the rules they share; this clause and CARVE-P11-067 state
+      the marker syntax and what is particular to this target.
 
         ::: note                 ->  <!-- carve: ::: note -->
         An admonition body.          An admonition body.
         :::                          <!-- carve: ::: -->
 
-      THE SET, measured on the released engines: a tab set and each of its
+      THE SET: a tab set and each of its
       panels (`tabs`, `code-group`), an admonition of any kind whether or not
       it carries a title, a named div and each div nested in one, a columns
       container and each column, a disclosure, a spoiler, a composite
@@ -103,9 +107,7 @@
       A MARKER-SHAPED LINE IN VERBATIM CONTENT RECORDS NO CONTAINER and is
       never read. That narrowing is what the structural read buys: at a list
       item's content column a marker and a verbatim line are not
-      distinguishable without the block structure standing around them, and a
-      flat scan either corrupted the verbatim run or refused the nesting a
-      document most often has.
+      distinguishable without the block structure standing around them.
 
       A TABLE CELL is narrower still, and permanently: this target flattens a
       cell to a single line, so there is no line for a marker to stand on, and
@@ -113,36 +115,40 @@
       nothing to bracket. No read recovers that, so the cell narrowing is
       deliberate.
 
-      A COMMENT AND NOT A LINK REFERENCE DEFINITION is the one choice here
-      that is not obvious, and it was measured rather than argued.
-      `[meta]: # (payload)` collapses in commonmark.js's refmap, emits one
-      token for three in marked, makes pandoc warn `Duplicate link reference`
-      on each one after the first, and lets an author's `[text][Meta]`
-      resolve to the marker, because label matching ignores case. An HTML
-      comment survives as a node in all three, can interrupt a paragraph, and
-      is not entity-decoded. The mode is OPT-IN because a renderer with raw
-      HTML turned off shows the comment as text.
+      THE CARRIER IS A COMMENT, NOT A LINK REFERENCE DEFINITION. An HTML
+      comment survives as a node in a Markdown reader, can interrupt a
+      paragraph and is not entity-decoded; a `[meta]: # (payload)`
+      definition collapses with its duplicates and can capture an author's
+      reference. The mode is OPT-IN because a renderer with raw HTML turned
+      off shows the comment as text.
 
       THE ROUND TRIP IS WHAT THE MODE BUYS. A document this target writes
       with the mode on, imported back with `markdown` as the source format,
       returns every container the set names: its kind, its title, its
-      attributes, and the nesting its fence widths record. It promises no
+      attributes, and its nesting, which the import re-derives from the
+      block structure. It promises no
       more than that. A construct outside the set degrades exactly as it does
-      today, the mode off emits the bytes this target emits today, a document
+      with the mode off, a document
       holding no element-less container gains no comment under either
-      setting, and this is not the byte-identical source round trip §10k's
+      setting, and this is not the byte-identical source round trip CARVE-P11-043's
       comparison governs.
 
-      A DAMAGED MARKER SET IMPORTS AS PLAIN MARKDOWN, NEVER A GUESS. A
-      Markdown editor that deleted one marker, reordered two, left the set
-      unbalanced or moved a caption marker off the closer it belongs to has
+      AN INVALID PAYLOAD DROPS ONLY ITS OWN MARKER. A marker whose payload is
+      not an opener, closer or caption line it can stand for is not a carrier:
+      it stays an ordinary comment, the import reports it with a diagnostic as
+      an invalid HTML carrier is reported (CARVE-P10-017), and the rest of the
+      set restores unless its pairing breaks.
+
+      A DAMAGED SET, ONE WHOSE PAIRING BREAKS, IMPORTS AS PLAIN MARKDOWN,
+      NEVER A GUESS. A Markdown editor that deleted one marker, reordered two,
+      left the set unbalanced or moved a caption marker off the closer it belongs to has
       destroyed the structure the markers recorded, and a reconstruction that
       is wrong is worse than a fallback that is honest.
       The import reads the file as ordinary Markdown, comments and all, and
       reports one `carrier-markers-damaged` diagnostic on the migration
       report (`resources/migration-report-schema.json`) with `degraded`
-      fidelity and `fallback` confidence. There is no partial reconstruction
-      and no per-marker recovery.
+      fidelity and `fallback` confidence. Only a damaged set falls back as a
+      whole.
 
       WHAT THIS CLAUSE DOES NOT COVER, so a reader does not look for it here.
       A construct whose Markdown output already holds an element needs no
@@ -150,18 +156,18 @@
       insertion round-trip through `<mark>`, `<sub>`, `<sup>` and `<ins>`
       today. Where such an element does not read back (`<u>`, the
       `critic-comment` span, `<abbr>`, `<del>`), the emitted bytes are
-      faithful and the defect is on the import or in §8c, not here.
+      faithful and the defect is on the import or in CARVE-P11-045, not here.
       `small_caps` and `ruby` have no Carve opener to carry. Attributes on a
       list item's marker line and on an inline construct (a link, an image,
-      a span) are not carried: §10t carries an attribute LINE, and neither
+      a span) are not carried: CARVE-P11-067 carries an attribute LINE, and neither
       of those is spelled with one.
 
   10t. THE CARRIER MODE ALSO CARRIES AN ATTRIBUTE LINE, A DEFINITION LIST AND A
-      CAPTION -- NORMATIVE [CARVE-P11-067]. These are not containers, so §10s's
+      CAPTION -- NORMATIVE [CARVE-P11-067]. These are not containers, so CARVE-P11-063's
       set does not name them, but each is a distinction this target writes
       without a trace and the AST records. The marker, its escaping, the
       structural read, the verbatim-content and table-cell narrowings and the
-      damaged-set rule are §10s's, unchanged; only what each marker stands for
+      damaged-set rule are CARVE-P11-063's, unchanged; only what each marker stands for
       is new.
 
       AN ATTRIBUTE LINE THIS TARGET DROPS IS CARRIED DIRECTLY ABOVE ITS
@@ -178,11 +184,11 @@
         {#start}                 ->  <!-- carve: {#start} -->
         # Roundtrip Test             # Roundtrip Test
 
-      A container §10s brackets already carries its attribute line in the
+      A container CARVE-P11-063 brackets already carries its attribute line in the
       opener's prelude and takes no second marker for it.
 
       A DEFINITION LIST IS CARRIED TERM BY TERM. This target writes each term
-      as a paragraph and each definition's blocks after it (§10p), so a term
+      as a paragraph and each definition's blocks after it (CARVE-P11-058), so a term
       takes a marker holding its term line, written directly above the term's
       rendered paragraph, and each definition takes a `:` marker directly
       above its first block. One closing marker with an EMPTY payload follows
@@ -196,7 +202,7 @@
 
                                      <!-- carve: -->
 
-      THE IMPORT REPLACES A TERM'S RENDERED PARAGRAPH, as §10s's caption rule
+      THE IMPORT REPLACES A TERM'S RENDERED PARAGRAPH, as CARVE-P11-063's caption rule
       does, so the term does not appear twice. A definition holds the blocks
       from its marker up to the next term or definition marker of the same
       list, or up to the closing marker. An item's terms are the consecutive
@@ -207,11 +213,13 @@
       it, or a list with no closing marker, is a damaged set.
 
       ONLY THE OUTERMOST DEFINITION LIST IS CARRIED. This target writes a
-      definition's blocks unindented (§10p), so a list nested inside a
+      definition's blocks unindented (CARVE-P11-058), so a list nested inside a
       definition would write the same `:` and closing markers as the list
       around it and the import could not tell which list a marker closes. A
-      nested list therefore takes no markers and degrades as §10p writes it,
-      inside the outer definition that is carried.
+      nested list therefore takes no markers and degrades as CARVE-P11-058 writes it,
+      inside the outer definition that is carried. This is a LIMIT: the export
+      reports each nested definition list that took no markers with one
+      `definition-list-flattened` loss (CARVE-P2-024).
 
       A DEFINITION LIST'S OWN ATTRIBUTE LINE stands directly above its first
       term marker, as that list's prelude, the way a container's attribute
@@ -222,9 +230,9 @@
       A CAPTION ON ANY CAPTIONED BLOCK TAKES THE COMPOSITE FIGURE'S CAPTION
       MARKER. A block quote's attribution, a table's, an image's, a code
       listing's or an equation's `^ ...` line is written as a paragraph after
-      the block (§10e); under the carrier mode a marker holding the caption
+      the block (CARVE-P11-032); under the carrier mode a marker holding the caption
       line verbatim stands directly above that paragraph, and the import
-      replaces the paragraph with the caption, exactly as §10s rules for a
+      replaces the paragraph with the caption, exactly as CARVE-P11-063 rules for a
       composite figure:
 
         > Stay hungry.           ->  > Stay hungry.
@@ -255,7 +263,7 @@
          contribution rule, each character as this target writes it (a smart
          punctuation glyph as the glyph, its source under source typography),
          NFC-normalized, with leading and trailing whitespace removed. A hard
-         break contributes no text here: §9c writes `<br>`, whose text content
+         break contributes no text here: CARVE-P11-065 writes `<br>`, whose text content
          is empty. A soft break contributes the heading's folded SPACE. PART 2
          counts an image's alt text and GitHub does not, so a heading holding
          an image can get a slug GitHub does not assign; PART 2's rule is kept
@@ -274,13 +282,13 @@
       fragment names a heading when it equals that heading's id, explicit or
       derived under PART 2; only the WRITTEN destination is the slug. A
       heading the target does not write as a heading (one flattened into a
-      table cell) is not a target, and a fragment naming no heading is §11a's.
+      table cell) is not a target, and a fragment naming no heading is CARVE-P11-049's.
 
-      NO ANCHOR CAN DANGLE, which is carve#352's rule kept by other means. The
-      target writes no anchor at all, and the reader derives each slug from
-      text the target wrote, so every link to a heading resolves in a GFM
-      reader. A heading whose text removes to nothing has the empty slug, and
-      a link to it is written `#`, or `#-1` and so on for a repeat.
+      NO ANCHOR CAN DANGLE. The target writes no anchor at all, and the
+      reader derives each slug from text the target wrote, so every link to a
+      heading resolves in a GFM reader (carve#352). A heading whose text
+      removes to nothing has the empty slug, and a link to it is written `#`,
+      or `#-1` and so on for a repeat.
 
       A CROSS-REFERENCE CONTRIBUTES NOTHING TO THE TEXT, as PART 2 says: by the
       time this target runs, resolution has replaced `</#a>` with a link
