@@ -1325,10 +1325,16 @@ const DEFLIST_TERM = /^:: (?=[ \t]*[^ \t\n\r])/
 // Stands for a comment folded into a term; html.mjs splits the term on it.
 export const TERM_COMMENT = '\uE0FE'
 
+function isCodeBlockOpener(line) {
+  const fence = FENCE.exec(line)
+  return !!(fence && parseFenceInfo(fence[2]) !== null)
+}
+
 function foldablePlainLine(cur) {
   return !isBlank(cur) && !startsVisibleBlock(cur) && !isLinkDef(cur) &&
     !FOOTNOTE_DEF.test(cur) && !BULLET.test(cur) && !isOrderedMarkerLine(cur) &&
-    !FENCE.test(cur) && !CAPTION.test(cur) && !COMMENT_LINE.test(cur) &&
+    !isCodeBlockOpener(cur) && !isColonBlockOpener(cur) &&
+    !CAPTION.test(cur) && !COMMENT_LINE.test(cur) &&
     !/^::? /.test(cur)
 }
 
@@ -3049,7 +3055,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         !FOOTNOTE_DEF.test(cur) &&
         !BULLET.test(cur) &&
         !isOrderedMarkerLine(cur) &&
-        !FENCE.test(cur) &&
+        !isCodeBlockOpener(cur) &&
         !CAPTION.test(cur)
       const isEntry = (s) => /^::?[ ](?=[ \t]*\S)/.test(s) && !/^:::/.test(s)
       // A definition/term line folded into an open item BELOW its content column

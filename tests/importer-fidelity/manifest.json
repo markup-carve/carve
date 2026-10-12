@@ -1037,29 +1037,44 @@
       ]
     },
     {
-      "id": "markdown-unsupported-gfm-url",
+      "id": "markdown-bare-autolink",
       "sourceFormat": "markdown",
       "runner": "core",
       "repository": "markup-carve/carve",
       "input": "https://example.org",
       "expected": {
-        "output": "https://example.org",
+        "output": "[https://example.org](https://example.org)",
         "diagnostics": [
           {
-            "code": "fidelity-unverified",
-            "severity": "warning",
-            "fidelity": "dropped",
-            "confidence": "fallback"
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-bare-autolink",
+            "severity": "info",
+            "fidelity": "normalized",
+            "confidence": "exact",
+            "path": "line:1"
           }
         ],
-        "exit": 1,
+        "exit": 0,
         "engines": {
           "rust": {
-            "output": "https://example.org\n"
+            "output": "[https://example.org](https://example.org)\n"
           }
+        },
+        "html": {
+          "default": "<p><a href=\"https://example.org\">https://example.org</a></p>\n",
+          "safe": "<p><a href=\"https://example.org\">https://example.org</a></p>\n"
         }
       },
-      "constructs": []
+      "constructs": [
+        "paragraph",
+        "bare-autolink"
+      ]
     },
     {
       "id": "markdown-unsupported-footnote",
@@ -2231,9 +2246,9 @@
       "sourceFormat": "markdown",
       "runner": "core",
       "repository": "markup-carve/carve",
-      "input": "https://example.org\n\n1. [x] done\n",
+      "input": "[^note]\n\n[^note]: note\n\n1. [x] done\n",
       "expected": {
-        "output": "https://example.org\n\n1. [x] done\n",
+        "output": "[^note]\n\n1. [x] done\n\n[^note]: note\n",
         "diagnostics": [
           {
             "code": "fidelity-unverified",
@@ -2246,7 +2261,7 @@
             "severity": "warning",
             "fidelity": "dropped",
             "confidence": "exact",
-            "path": "line:3"
+            "path": "line:5"
           }
         ],
         "exit": 1

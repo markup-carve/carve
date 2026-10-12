@@ -688,8 +688,7 @@
           "attribute": "data-carve-label",
           "element": "pre"
         }
-      ],
-      "aheadOfPin": true
+      ]
     }
   ],
   "importNegative": [
@@ -937,8 +936,7 @@
           "type": "heading",
           "attrs.id": "start"
         }
-      ],
-      "aheadOfPin": true
+      ]
     },
     {
       "id": "paragraph-attribute-line",
@@ -953,8 +951,7 @@
             "note"
           ]
         }
-      ],
-      "aheadOfPin": true
+      ]
     },
     {
       "id": "definition-list",
@@ -968,8 +965,7 @@
         {
           "type": "definition_list"
         }
-      ],
-      "aheadOfPin": true
+      ]
     },
     {
       "id": "quote-caption",
@@ -982,8 +978,7 @@
           "type": "figure",
           "target.type": "block_quote"
         }
-      ],
-      "aheadOfPin": true
+      ]
     },
     {
       "id": "table-caption",
@@ -996,8 +991,7 @@
           "type": "table",
           "caption.0.value": "Fruit prices"
         }
-      ],
-      "aheadOfPin": true
+      ]
     },
     {
       "id": "line-block",
@@ -1010,8 +1004,7 @@
         {
           "type": "line_block"
         }
-      ],
-      "aheadOfPin": true
+      ]
     }
   ]
 }
