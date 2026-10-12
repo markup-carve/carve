@@ -25,7 +25,7 @@
       The renderer adds `role="math"` even without a typesetter.
       THE NAME STAYS THE AUTHOR'S: a trailing `aria-label` supplies the
       formula's spoken form; no §16a key is added. An authored `role` wins
-      under any ASCII casing (SS12). Generated `role` is written LAST, after
+      under any ASCII casing, as in CARVE-P9-018. Generated `role` is written LAST, after
       merged author attributes, without moving them (PART 10 §1).
 
       AN IMPORTER WRITES THE CORE FORM, NEVER THE EXTENSION FENCE --
@@ -157,7 +157,7 @@
            own attributes do not carry into the sentence; any other block is
            block-in-inline), I4 provenance, I5, I6, I8 (T is measured over the
            selected block; no headings in it makes `auto` a no-op), I11 (a
-           missing id leaves the dependency RESOLVED) and I13.
+           missing id leaves the dependency RESOLVED).
 
         I2 BLOCK vs INLINE. A directive ALONE on its own line is a BLOCK
            include: the resolved content merges as BLOCKS at the directive

@@ -2003,12 +2003,6 @@
       "scope": "parsing"
     },
     {
-      "id": "CARVE-P9-079",
-      "part": "9",
-      "title": "A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT",
-      "scope": "resolution-rendering"
-    },
-    {
       "id": "CARVE-P9-080",
       "part": "9",
       "title": "A STRUCTURAL-ONLY LINE RESETS CAPTION SCOPE",
@@ -2039,6 +2033,12 @@
       "part": "PRE",
       "title": "A CHECKER THAT DISAGREES WITH A COMMITTED GOLDEN IS WRONG UNTIL A CLAUSE SAYS OTHERWISE",
       "replacement": ".github/CONTRIBUTING.md#what-settles-a-question"
+    },
+    {
+      "id": "CARVE-P9-079",
+      "part": "9",
+      "title": "A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT",
+      "replacement": "CARVE-P3-023"
     }
   ]
 }
