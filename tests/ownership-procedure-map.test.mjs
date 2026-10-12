@@ -24,8 +24,14 @@ test('the ownership map covers the complete Part 0 inventory and live qualificat
 
 test('the map preserves decision order and points to existing collector helpers', () => {
   assert.deepEqual(map.phases.map(phase => phase.id), [
-    'normalize', 'prefix-payload', 'comments', 'owner', 'base', 'extent', 'transition',
+    'normalize', 'strip', 'owner', 'fold', 'classify', 'transition', 'exceptions',
   ])
+  // Every step PART 0 names is a phase of the map, in the order the clause gives.
+  assert.deepEqual(map.phases.map(phase => phase.step), ['INPUT', 'O1', 'O2', 'O3', 'O4', 'T', 'X1-X3'])
+  for (const step of ['O1', 'O2', 'O3', 'O4', 'X1', 'X2', 'X3']) {
+    assert.ok(new RegExp(`^ {5}${step} [A-Z]`, 'm').test(layout), `PART 0 no longer names step ${step}`)
+  }
+  assert.match(layout, /^ {11}T {2}TRANSITIONS\./m)
   let last = -1
   for (const phase of map.phases) {
     const heading = guide.indexOf(`## ${phase.title}`)
