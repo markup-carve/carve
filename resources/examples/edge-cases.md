@@ -48285,3 +48285,148 @@ tail</p>
 ```
 
 :::
+
+## A container boundary is read at the container's own column
+
+Two boundaries a reader placed by indentation instead of by the container that
+owns the line: an opener past the content column of a hosted container, and a
+fence closer written after its item had ended (markup-carve/carve#2925).
+
+A named colon opener written past the content column inside a container an item
+hosts. The box holds no paragraph, so the opener is recognized and takes its
+authored column as the base of that one block (`CARVE-P0-004`,
+markup-carve/carve-php#3137). The quoted spelling reads the same way, and with
+the box left unclosed the line below still leaves the quote.
+
+::: compare
+
+````carve
+- ::: box
+   ::: note
+   x
+   :::
+  :::
+tail
+````
+
+```html
+<ul>
+  <li>
+    <div class="box">
+      <aside class="admonition note" aria-label="Note">
+        <p>x</p>
+      </aside>
+    </div>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+````carve
+> - ::: box
+>    ::: note
+>    x
+>    :::
+tail
+````
+
+```html
+<blockquote>
+  <ul>
+    <li>
+      <div class="box">
+        <aside class="admonition note" aria-label="Note">
+          <p>x</p>
+        </aside>
+      </div>
+    </li>
+  </ul>
+</blockquote>
+<p>tail</p>
+```
+
+:::
+
+The control. Under a paragraph of the box the same line is over-indented text,
+which establishes no base.
+
+:::: compare
+
+````carve
+- ::: box
+  text
+   ::: note
+   x
+   :::
+  :::
+tail
+````
+
+```html
+<ul>
+  <li>
+    <div class="box">
+      <p>text
+::: note
+x
+:::</p>
+    </div>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+::::
+
+A fence run after a nested item has ended. The blank and the heading at the
+outer item's column end the child item, so the later run is not inside it and
+closes nothing: the first run has no closer and is paragraph text
+(`CARVE-P0-014`, markup-carve/carve#2961). The top-level spelling already read
+this way.
+
+::: compare
+
+````carve
+- outer
+  - para
+    ```
+    code
+
+  # h
+    ```
+````
+
+```html
+<ul>
+  <li>outer
+    <ul>
+      <li>para
+<code>
+code</code></li>
+    </ul>
+    <h1 id="h">h</h1>
+    <code></code>
+  </li>
+</ul>
+```
+
+````carve
+- a
+  ```
+  b
+
+y
+  ```
+````
+
+```html
+<ul>
+  <li>a
+<code>
+b</code></li>
+</ul>
+<p>y
+<code></code></p>
+```
+
+:::
