@@ -89,7 +89,7 @@ export function checkUrl(url) {
 // Inline semantics
 function codeText(content) {
   let text = content.sourceString
-  if (/^ .* $/.test(text) && trimWs(text) !== '') text = text.slice(1, -1)
+  if (/^ .* $/s.test(text) && trimWs(text) !== '') text = text.slice(1, -1)
   return text
 }
 function codeOp(_o, content, _c) {
