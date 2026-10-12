@@ -1428,6 +1428,81 @@
         "roundtrip"
       ],
       "requiresDiagnostic": false
+    },
+    {
+      "id": "unmarked-section-slug-id-is-generated",
+      "html": "<section id=\"T\"><h1>T</h1></section>",
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "level": 1
+        }
+      ],
+      "expectedAbsentFields": [
+        {
+          "type": "heading",
+          "field": "attrs.id"
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": false
+    },
+    {
+      "id": "unmarked-section-other-id-is-authored",
+      "html": "<section id=\"S1\"><h1>T</h1></section>",
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "level": 1,
+          "attrs.id": "S1"
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": false
+    },
+    {
+      "id": "unmarked-heading-id-is-authored",
+      "html": "<h2 id=\"T\">T</h2>",
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "level": 2,
+          "attrs.id": "T"
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic"
+      ],
+      "requiresDiagnostic": false
+    },
+    {
+      "id": "unmarked-heading-id-is-authored-in-roundtrip-mode",
+      "html": "<h2 id=\"T\">T</h2>",
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "level": 2,
+          "attrs.id": "T"
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "roundtrip"
+      ],
+      "requiresDiagnostic": false,
+      "aheadOfPin": true
     }
   ],
   "footnoteRecoveryResource": "footnote-carrier-recovery-fixtures.json",

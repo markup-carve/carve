@@ -8267,6 +8267,11 @@ EOF = (* end of file *) ;
         echo 1;                  class="language-php">echo 1;
         ```                      </code></pre>
 
+      AN UNMARKED ID ON A HEADING IS AUTHORED. Where an element carries
+      neither `data-carve-explicit-id` nor `data-carve-generated-id`, a reader
+      keeps a heading's id as `{#id}`. A `<section>` wrapper's id that equals
+      the heading's PART 2 slug is generated; any other wrapper id is authored.
+
       AN ID SLOT IS A RUN OF DECIMAL DIGITS. The slot indexes the heading's
       attributes in their authored order and counts from 0. A writer MUST omit
       the carrier at 0, where the id leads. A reader places the id at that
