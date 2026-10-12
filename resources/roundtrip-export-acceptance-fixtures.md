@@ -8,7 +8,7 @@ Consumers export with preservation off and on, import the preserved output, comp
 
 Markdown rows sample container-kind recovery; existing §10s tests cover the wider container contract. Collision rows require the carrier to win and report the dropped authored attribute. A collision row whose `value` is null names a reserved name with no carrier: roundtrip export writes no attribute of that name and still reports the drop, and `defaultValue` is what default export keeps. The footnote recovery resource supplies the approved paired-carrier matrix.
 
-`lossCodes` lists render-loss codes an HTML case reports with preservation off and on.
+`lossCodes` lists render-loss codes an HTML case reports with preservation off and on. `returnedSourceFragments` lists text the reconstructed source holds in every listed import mode.
 
 Invalid generic spans are tested in safe and semantic modes. Their trusted roundtrip raw-HTML fallback is excluded here; these fixtures do not settle that separate recovery question.
 

@@ -113,6 +113,7 @@ for (const fixture of fixtures.exportImport) {
       assertNoReservedAttrs(imported.value)
       for (const absent of fixture.expectedAbsentFields ?? []) assert.ok(nodes(imported.value).filter((node) => node.type === absent.type).every((node) => field(node, absent.field) === undefined))
       const source = htmlToCarve(exported, { mode }).value
+      for (const fragment of fixture.returnedSourceFragments ?? []) assert.ok(source.includes(fragment), fragment)
       assert.equal(normalizedHtml(carveToHtml(source)), normalizedHtml(declined ? fixture.fallbackHtml : ordinary), mode)
     }
   }))

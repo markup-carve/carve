@@ -151,6 +151,10 @@ const SOURCE_LAYOUT_FIELDS = new Set([
  * It stays in SOURCE_LAYOUT_FIELDS for the parse-versus-tree comparison below,
  * which is a different question: whether the two exits SPELL it alike. Only the
  * fixture check is relaxed, and only for this one field.
+ *
+ * A heading's `order` is published where its `data-carve-explicit-id` or
+ * `data-carve-id-slot` carrier supplies it (PART 10 §13d); no fixture here
+ * carries either, so the scan still refuses `order` everywhere.
  */
 const IMPORT_RECOVERABLE_FIELDS = new Set(['delim'])
 

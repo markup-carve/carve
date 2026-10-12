@@ -851,6 +851,41 @@
           "element": "h1"
         }
       ]
+    },
+    {
+      "id": "reference-form-returns-collapsed",
+      "source": "[r]: /u\n\n[r][] and [r][r]\n",
+      "carriers": {
+        "data-carve-ref": "r"
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "link",
+          "ref": "r",
+          "href": "/u"
+        },
+        {
+          "type": "link",
+          "ref": "r",
+          "href": "/u"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-ref",
+          "element": "a"
+        }
+      ],
+      "returnedSourceFragments": [
+        "[r][] and [r][]"
+      ],
+      "aheadOfPin": true
     }
   ],
   "importNegative": [
