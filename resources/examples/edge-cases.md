@@ -48140,3 +48140,148 @@ its column (markup-carve/carve#2950).
 ```
 
 :::
+
+## A line retained after a comment opens a paragraph
+
+After a comment, an item keeps a following line that falls below its content
+column, as the start of a paragraph (PART 9 §24 C3). That paragraph is open at
+the deepest frame, so a later below-column line continues it (`CARVE-P0-009`).
+In a quote the unprefixed line folds into the innermost open paragraph, and a
+list marker is no exclusion (`CARVE-P2-008`, markup-carve/carve-js#2772).
+
+The ruled source of markup-carve/carve-js#2772. The comment span sits at the
+child's content column and the fence run below it is one column short, so the
+item retains it as the start of a paragraph. The run has no closer and is an
+inline code span, and `- tail` folds into it. The second source spells the child
+with a container on its marker line and reads the same way.
+
+::: compare
+
+````carve
+> - ::: box
+>   - inner
+>     %%%
+>     hidden
+>     %%%
+>    ```
+>    code
+- tail
+````
+
+```html
+<blockquote>
+  <ul>
+    <li>
+      <div class="box">
+        <ul>
+          <li>inner
+            <code>
+code
+- tail</code>
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</blockquote>
+```
+
+````carve
+> - ::: box
+>   - ::: inner
+>     %%%
+>     hidden
+>     %%%
+>    ```
+>    code
+- tail
+````
+
+```html
+<blockquote>
+  <ul>
+    <li>
+      <div class="box">
+        <ul>
+          <li>
+            <div class="inner">
+              <p><code>
+code
+- tail</code></p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</blockquote>
+```
+
+:::
+
+The same fold without the code span and without the quote: the retained line is
+a paragraph of the inner item, and the flush-left line continues it.
+
+::: compare
+
+````carve
+- a
+  - inner
+    %% c
+   code
+tail
+````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>inner
+        code
+tail
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+Two controls. A marker at the list's own column is a sibling item before any
+fold is considered, and a line at document column 0 right after the comment is
+not retained at all.
+
+::: compare
+
+````carve
+- inner
+  %% c
+ code
+- tail
+````
+
+```html
+<ul>
+  <li>inner
+    code
+  </li>
+  <li>tail</li>
+</ul>
+```
+
+````carve
+- inner
+  %% c
+code
+tail
+````
+
+```html
+<ul>
+  <li>inner</li>
+</ul>
+<p>code
+tail</p>
+```
+
+:::

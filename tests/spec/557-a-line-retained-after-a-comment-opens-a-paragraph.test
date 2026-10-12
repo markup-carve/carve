@@ -1,0 +1,103 @@
+A line retained after a comment opens a paragraph
+
+````
+> - ::: box
+>   - inner
+>     %%%
+>     hidden
+>     %%%
+>    ```
+>    code
+- tail
+.
+<blockquote>
+  <ul>
+    <li>
+      <div class="box">
+        <ul>
+          <li>inner
+            <code>
+code
+- tail</code>
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</blockquote>
+````
+
+````
+> - ::: box
+>   - ::: inner
+>     %%%
+>     hidden
+>     %%%
+>    ```
+>    code
+- tail
+.
+<blockquote>
+  <ul>
+    <li>
+      <div class="box">
+        <ul>
+          <li>
+            <div class="inner">
+              <p><code>
+code
+- tail</code></p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</blockquote>
+````
+
+```
+- a
+  - inner
+    %% c
+   code
+tail
+.
+<ul>
+  <li>a
+    <ul>
+      <li>inner
+        code
+tail
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- inner
+  %% c
+ code
+- tail
+.
+<ul>
+  <li>inner
+    code
+  </li>
+  <li>tail</li>
+</ul>
+```
+
+```
+- inner
+  %% c
+code
+tail
+.
+<ul>
+  <li>inner</li>
+</ul>
+<p>code
+tail</p>
+```
