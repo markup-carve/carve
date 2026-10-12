@@ -43,6 +43,8 @@ function options(args) {
 function run(command, args, input) {
   return new Promise((accept, reject) => {
     const child = spawn(command, args, { cwd: root, stdio: ['pipe', 'pipe', 'pipe'] })
+    child.stdout.setEncoding('utf8')
+    child.stderr.setEncoding('utf8')
     let out = '', err = ''
     const timer = setTimeout(() => { child.kill(); reject(new Error(`${command}: timeout`)) }, 30000)
     child.stdout.on('data', data => { out += data })

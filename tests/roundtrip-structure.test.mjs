@@ -177,3 +177,44 @@ test('batch CLI consumes every worker and keeps partial errors separate from dif
     assert.equal(row.errorBuckets.ConversionError.count, report.total - 4)
   }
 })
+
+test('batch CLI waits for driver close after stdout ends', t => {
+  const run = withBatchDriver(t, `for (const file of request.files) for (const target of request.targets)
+    console.log(JSON.stringify({ file: basename(file), target, before: {}, after: {} }))
+  process.stdout.end(() => setTimeout(() => process.exit(request.files.length ? 7 : 0), 30))`)
+  const output = run([])
+  assert.equal(output.status, 2, output.stderr)
+  assert.match(output.stderr, /driver exit 7/)
+})
+
+test('batch CLI consumes large escaped rows split across pipe chunks', t => {
+  const run = withBatchDriver(t, `const value = 'quote " slash \\\\ newline \\n ☃'.repeat(4000)
+  for (const [i, file] of request.files.entries()) for (const target of request.targets) {
+    const tree = { type: 'code', value: i === 0 ? value : 'small' }
+    const row = JSON.stringify({ file: basename(file), target, before: tree, after: tree }) + '\\n'
+    for (let offset = 0; offset < row.length; offset += 8191) process.stdout.write(row.slice(offset, offset + 8191))
+  }`)
+  const output = run([])
+  assert.equal(output.status, 0, output.stderr)
+  for (const row of JSON.parse(output.stdout).results) assert.equal(row.identical, row.total)
+})
+
+test('Rust driver emits one compact object per document and target', { skip: !process.env.CARVE_RS_ROUNDTRIP_DRIVER }, t => {
+  const dir = mkdtempSync(join(tmpdir(), 'carve-test-driver-'))
+  t.after(() => rmSync(dir, { recursive: true, force: true }))
+  const file = join(dir, 'quotes-☃.crv')
+  writeFileSync(file, '```\nquote " slash \\ and ☃\nsecond line\n```\n')
+  const output = spawnSync(process.env.CARVE_RS_ROUNDTRIP_DRIVER, [], {
+    input: JSON.stringify({ files: [file], targets: ['html', 'md'] }), encoding: 'utf8',
+  })
+  assert.equal(output.status, 0, output.stderr)
+  const lines = output.stdout.trimEnd().split('\n')
+  assert.equal(lines.length, 2)
+  for (const line of lines) {
+    const row = JSON.parse(line)
+    assert.equal(row.file, 'quotes-☃.crv')
+    assert.equal(row.before.type, 'document')
+    assert.equal(firstDiff(normalize(row.before), normalize(row.after)), null)
+    assert.equal(row.before.children[0].content, 'quote " slash \\ and ☃\nsecond line\n')
+  }
+})

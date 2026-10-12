@@ -21,7 +21,8 @@ path = ${JSON.stringify(source)}
 
 [dependencies]
 carve = { package = "carve-lang", path = ${JSON.stringify(resolve(rustDir()))} }
-serde_json = "1"
+serde = "1"
+serde_json = { version = "1", features = ["preserve_order", "unbounded_depth"] }
 
 [profile.dev]
 debug = "line-tables-only"

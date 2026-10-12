@@ -1,13 +1,17 @@
+use serde::Deserialize;
 use serde_json::{json, Value};
 use std::io::{self, Read, Write};
 use std::path::Path;
 
-fn parse(source: &str) -> Result<String, String> {
-    carve::try_to_json_with_options(source, &carve::Options::default().with_positions(true))
-        .map_err(|error| error.to_string())
+fn parse(source: &str) -> Result<Value, String> {
+    let json = carve::try_to_json_with_options(source, &carve::Options::default().with_positions(true))
+        .map_err(|error| error.to_string())?;
+    let mut deserializer = serde_json::Deserializer::from_str(&json);
+    deserializer.disable_recursion_limit();
+    Value::deserialize(&mut deserializer).map_err(|error| error.to_string())
 }
 
-fn roundtrip(source: &str, target: &str) -> Result<String, String> {
+fn roundtrip(source: &str, target: &str) -> Result<Value, String> {
     let mut options = carve::Options::default();
     options.roundtrip = true;
     let back = if target == "html" {
@@ -58,14 +62,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .ok_or("invalid file name")?
                 .to_string_lossy();
             let row = match result {
-                // Preserve AST key order for the reference's first-difference traversal.
-                Ok(Ok((before, after))) => format!(
-                    r#"{{"file":{},"target":{},"before":{},"after":{}}}"#,
-                    serde_json::to_string(&filename)?,
-                    serde_json::to_string(target)?,
-                    before,
-                    after
-                ),
+                Ok(Ok((before, after))) => serde_json::to_string(
+                    &json!({ "file": filename, "target": target, "before": before, "after": after }),
+                )?,
                 Ok(Err(message)) => serde_json::to_string(
                     &json!({ "file": filename, "target": target, "error": "RustError", "message": message }),
                 )?,
