@@ -231,9 +231,13 @@
            is a line comment and follows the line-comment rule.
 
              column band                         selected owner
-             past base_column but below          this surviving frame; the
-               content_column                    residue is classified at its
-                                                 local column zero
+             past base_column but below          this surviving frame, only
+               content_column                    where a paragraph is open at
+                                                 its deepest frame or a comment
+                                                 retains the item
+                                                 (CARVE-P0-009); the residue is
+                                                 classified at its local column
+                                                 zero
              at or below base_column             nearest surviving ancestor
              at content_column                   this frame
              past content_column                 this frame, with the authored
@@ -305,8 +309,8 @@
         table above. If the line is owned by a surviving unmatched frame,
         NOTHING closes. Otherwise close unmatched frames through the selected
         owner and re-classify the residue there (S3). This decision reads
-        `container_open`, `last_boundary_kind`, and columns; it does not read
-        `paragraph_open`.
+        `container_open`, `last_boundary_kind`, columns and, below the content
+        column, `paragraph_open` at the deepest frame (CARVE-P0-009).
 
         LAZY CONTINUATION SECOND: only after ownership is fixed, if the
         selected frame holds an OPEN PARAGRAPH and the residue is NOT an
@@ -370,11 +374,15 @@
         at the deepest frame. Otherwise it closes the list and begins a new
         block, and no surviving frame adopts it: a line below an item's
         content column is not that item's content, so the owner table does
-        not select one for it. A heading at an item's content column leaves
+        not select one for it. THE ONE EXCEPTION is retention: after a line
+        comment consumed below the content column, a noninterrupting follower
+        remains in the item and starts a new paragraph (CARVE-P9-053). A
+        heading at an item's content column leaves
         no paragraph open, and neither does a thematic break, a fenced code
         block, a `:::` container, a table, or a nested list whose own leaf
-        holds none. A paragraph, a block quote and a definition body do hold
-        one, and the line folds into it as before. In corpus
+        holds none. A paragraph does hold one, and so does a block quote or
+        definition body whose own leaf holds one, and the line folds into it
+        as before. In corpus
         75-list-nesting-and-looseness-4 the inner item closes and `lazy` is a
         document paragraph.
 
