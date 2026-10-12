@@ -165,7 +165,7 @@ link_text = inline_content ;
 
    This is a property of the DOCUMENT, and therefore binds EVERY target that
    can express a link -- HTML, Markdown and ANSI alike, exactly as the
-   smart-typography switch above applies to every target.
+   smart-typography switch (CARVE-P9-011) applies to every target.
 
    An implementation that resolves a construct into a link AFTER the pass
    that enforces this -- a cross-reference is the usual case, since `</#id>`
@@ -214,7 +214,7 @@ destination_char = (* any character except '(', ')' and Unicode whitespace *) ;
    closing `)` is not a link and stays literal (the `[t](url` / `more)`
    two-line case). *)
 unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
-(* WHITESPACE HERE IS UNICODE WHITESPACE -- NORMATIVE [CARVE-P3-002], and it always was:
+(* WHITESPACE HERE IS UNICODE WHITESPACE -- NORMATIVE [CARVE-P3-002]:
    `destination_char` excludes whitespace without qualifying it to ASCII.
    So a NARROW NO-BREAK SPACE, an IDEOGRAPHIC SPACE and a THIN SPACE end an
    inline destination exactly as a plain space does, and an unbracketed
@@ -317,8 +317,8 @@ reference_label = (character - ']' - '@'), {character - ']'} ;
    back to prose. *)
 reference_definition = '[', reference_label, ']', ':', space, link_destination,
                        [link_title], [space, attributes], newline ;
-(* ANCHORED AT END OF LINE -- NORMATIVE [CARVE-P3-005]. The production ends in `newline`, and
-   always did. What follows the destination and the optional title is not
+(* ANCHORED AT END OF LINE -- NORMATIVE [CARVE-P3-005]. The production ends in `newline`.
+   What follows the destination and the optional title is not
    ignored: it makes the production FAIL, and the line is then an ordinary
    paragraph.
 
@@ -424,7 +424,7 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    spaces and nothing else is a paragraph, because a line of `whitespace` is
    blank (PART 1). *)
 (* A leading `@` is reserved: `[@key]: ...` is never a reference definition, it
-   is a citation definition (PART 9 §22, Tier-2). This parallels the `[^...]:`
+   is a citation definition (`citation_definition`, Tier-2). This parallels the `[^...]:`
    footnote-definition precedence and holds in core whether or not the citation
    extension is enabled, so a short entry like `[@a]: A.` is not mis-claimed as
    a link definition. *)

@@ -315,7 +315,7 @@
          dash). Native `|=` header cells and `<`/`>`/`~` alignment markers
          may COEXIST with a delimiter row; a single column carrying BOTH a
          native marker AND a delimiter colon has UNSPECIFIED alignment (do
-         not combine on one column). Corpus 09-tables-3 pins the result.
+         not combine on one column). Corpus 09-tables-3 pins effect 2.
       T8 ROW ATTRIBUTES -- NORMATIVE [CARVE-P9-005]. A `{…}` GLUED to a row's closing `|`
          (no intervening space) sets that row's `<tr>` attributes -- the
          row-level twin of a cell's attribute block, same syntax, same
@@ -525,9 +525,10 @@
           Pinned in tests/corpus-optional (feature
           `markdown-typography-source`, target `markdown`).
         * KIND NAMES ARE SPEC SURFACE -- an implementation inventing its own
-          spelling breaks every AST consumer. The fourteen table-resolved
+          spelling breaks every AST consumer. The sixteen table-resolved
           kinds are `ellipsis`, `em_dash`, `en_dash`, `left_right_arrow`,
           `rightwards_arrow`, `leftwards_arrow`, `rightwards_double_arrow`,
+          `leftwards_double_arrow`, `left_right_double_arrow`,
           `less_than_or_equal`, `greater_than_or_equal`, `not_equal`,
           `plus_minus`, `copyright`, `registered`, `trademark`. The four
           quote kinds are `left_double_quote`, `right_double_quote`,
@@ -545,11 +546,5 @@
           separately nameable in a profile (profiles.md).
         See divergence-from-djot.md section 12 for how this compares to
         Djot's container-node model.
-      - A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT -- NORMATIVE [CARVE-P9-079].
-        The previous-character test in `smart_quote` reads the last emitted
-        character. A construct that emits nothing contributes no character,
-        including a braced comment with an empty body. `\{{%%}"q"` renders
-        `<p>{“q”</p>`, just as `\{"q"` does. Content bearing attributes still
-        contributes its text: `[x]{.c}"q"` closes on the `x`.
 
    ============================================================================ *)

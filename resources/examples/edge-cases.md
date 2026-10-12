@@ -46808,7 +46808,7 @@ Which half of a pair a `"` or `'` resolves to follows the character that
 precedes it in the rendered text, so a construct contributing no character
 decides nothing. A braced comment renders nothing at all, which makes it the
 construct this is reachable through: inserting one must not flip an opening
-quote into a closing one (`CARVE-P9-079`, markup-carve/carve#2861).
+quote into a closing one (`CARVE-P3-023`, markup-carve/carve#2861).
 
 A quote after `{` opens, and an empty comment between the two changes neither
 the rendered text nor the direction.

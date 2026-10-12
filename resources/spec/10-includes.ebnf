@@ -35,7 +35,7 @@ bare_include_path = {character - ('#' | '@' | '}' | ' ' | newline)}+ ;
    character, so `\"` is a quote, `\\` a backslash and `"a\.crv"` names
    `a.crv`; before anything else it is path text, so `"notes\new.crv"` names
    `notes\new.crv`. *)
-quoted_include_path = '"', {('\\', character - newline) | (character - ('"' | '\\' | newline))}+, '"' ;
+quoted_include_path = '"', {('\', character - newline) | (character - ('"' | '\' | newline))}+, '"' ;
 include_section = id_attribute ;
 (* The same spelling as `id_attribute`, so `explicit_identifier`, not
    `identifier`: the name selects by explicit id (PART 9 §19 I1a), so every id
