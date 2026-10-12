@@ -767,7 +767,7 @@
       "id": "tight-list-attributed-paragraph",
       "source": "- {.x}\n  a\n- b\n",
       "carriers": {
-        "data-carve-tight": "true"
+        "data-carve-tight": null
       },
       "forbiddenExportAttributes": [],
       "expectedNodes": [
@@ -884,6 +884,33 @@
       ],
       "returnedSourceFragments": [
         "[r][] and [r][]"
+      ],
+      "aheadOfPin": true
+    },
+    {
+      "id": "tight-list-attributed-later-paragraph",
+      "source": "- a\n  {.c}\n  text\n",
+      "carriers": {
+        "data-carve-tight": null
+      },
+      "forbiddenExportAttributes": [],
+      "expectedNodes": [
+        {
+          "type": "list",
+          "ordered": false,
+          "tight": true
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-tight",
+          "element": "ul"
+        }
       ],
       "aheadOfPin": true
     }
@@ -1147,25 +1174,6 @@
       "diagnosticControlHtml": "<p><a href=\"/u\" data-carve-ref=\"r\">t</a></p>"
     },
     {
-      "id": "invalid-tight-value",
-      "html": "<ul data-carve-tight=\"yes\"><li>a</li></ul>",
-      "expectedNodes": [
-        {
-          "type": "list",
-          "tight": true
-        }
-      ],
-      "forbiddenTypes": [],
-      "importModes": [
-        "safe",
-        "semantic",
-        "roundtrip"
-      ],
-      "requiresDiagnostic": true,
-      "diagnosticControlHtml": "<ul><li>a</li></ul>",
-      "aheadOfPin": true
-    },
-    {
       "id": "invalid-id-slot",
       "html": "<section id=\"mine\" data-carve-explicit-id data-carve-id-slot=\"x\"><h1 class=\"c\">H</h1></section>",
       "expectedNodes": [
@@ -1231,6 +1239,24 @@
         "roundtrip"
       ],
       "requiresDiagnostic": false
+    },
+    {
+      "id": "tight-any-value-is-presence",
+      "html": "<ul data-carve-tight=\"false\"><li><p>a</p></li></ul>",
+      "expectedNodes": [
+        {
+          "type": "list",
+          "tight": true
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": false,
+      "aheadOfPin": true
     }
   ],
   "footnoteRecoveryResource": "footnote-carrier-recovery-fixtures.json",

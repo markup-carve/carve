@@ -8227,7 +8227,7 @@ EOF = (* end of file *) ;
                                                   index of `#id` in its
                                                   `attrs.order`. It rides
                                                   beside `data-carve-explicit-id`
-        data-carve-tight            <ul>, <ol>    `true`: the list is tight
+        data-carve-tight            <ul>, <ol>    presence: the list is tight
                                                   although an item's paragraph
                                                   keeps its `<p>`. The AST
                                                   field it restores is
@@ -8275,12 +8275,6 @@ EOF = (* end of file *) ;
 
         {.c #mine}      ->  <section id="mine" data-carve-explicit-id
         # H                 data-carve-id-slot="1">
-
-      A TIGHT VALUE IS `true` OR `false`. A writer writes `true` on a tight
-      list where an item's paragraph keeps its `<p>` for its own attributes,
-      and writes the carrier nowhere else. A reader takes either value over
-      what the items' `<p>` elements imply; any other value is not a carrier
-      (§13e).
 
       THE `data-carve-col-widths` ROW SATISFIES THE CARRIER RULE.
       `data-carve-col-widths` was absent from this inventory until
@@ -8354,8 +8348,8 @@ EOF = (* end of file *) ;
 
       A PRESENCE CARRIER CARRIES NOTHING IN ITS VALUE.
       `data-carve-explicit-id`, `data-carve-generated-id`,
-      `data-carve-autolink`, `data-carve-inline-footnote` and
-      `data-carve-escaped` say what they say
+      `data-carve-autolink`, `data-carve-inline-footnote`,
+      `data-carve-escaped` and `data-carve-tight` say what they say
       by being there. A writer writes the empty value or `1`; a reader reads
       presence and does not compare the value.
 
