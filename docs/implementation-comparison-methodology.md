@@ -675,3 +675,69 @@ entire latest corpus, so pending rulings remain visible there. Each engine is
 checked out at its latest published release, resolved once per run, so a merge
 to an engine's main cannot change the verdict on a spec PR. Engine regressions
 on main surface in the scheduled workflow instead.
+
+## Structural roundtrip baseline
+
+Run `npm run roundtrip:structure` to compare each engine's PART 12 AST before
+and after roundtrip export to HTML or Markdown and import back to Carve.
+`--engine js,php,rs` and `--target html,md` select subsets; `--json` includes
+all difference buckets and up to three example files with the first differing
+path. Conversion errors have separate `errors` counts and `errorBuckets`;
+`different` and `buckets` count only completed comparisons with different trees.
+Unavailable engines are reported as skipped. PHP uses one process for the
+corpus; JS uses the installed pinned package. Rust uses 16 workers by default;
+`--workers 1..64` sets concurrency. CI uses a batch driver with one process per
+worker across many documents. Without that driver, Rust falls back to the CLI.
+The sibling checkouts and `CARVE_PHP_DIR`, `CARVE_RS_DIR`, and
+`CARGO_TARGET_DIR` follow the other corpus runners. Set
+`CARVE_RS_ROUNDTRIP_BINARY` to select an explicit Rust CLI, including a frozen
+copy when other tasks build in the shared Cargo directory. To build and use
+the batch driver against an engine checkout:
+
+```bash
+CARVE_RS_DIR=/path/to/carve-rs node scripts/build-roundtrip-structure-rs.mjs
+CARVE_RS_ROUNDTRIP_DRIVER=/var/tmp/cargo-shared/carve-rs/debug/carve-structural-roundtrip \
+  npm run roundtrip:structure -- --check
+```
+
+The build uses `CARGO_TARGET_DIR`, defaulting to `/var/tmp/cargo-shared/carve-rs`.
+It creates a temporary Cargo manifest and preserves the engine lockfile's
+dependency versions; the engine checkout stays on its branch.
+
+Normalization matches the PHP structural measurement: remove `pos`, `position`,
+`srcByteLength`, `bulletChar`, `marker`, `delim`, `ref`, `rawRef`,
+`separatorWidths`, `tight`, `boldItalic`, and `order`. Drop empty or order-only
+`attrs` and comment nodes. Map `autolink` to `link` and `escaped_text` to
+`text`; turn soft breaks into spaces and merge adjacent text. Collapse Unicode
+whitespace in every string, including code and destinations. These exclusions
+make this a structural comparison with reduced whitespace fidelity.
+
+CI runs `npm run roundtrip:structure -- --check` against the pinned engines.
+Counts below `resources/roundtrip-structure-baseline.json` fail; improvements
+print a “raise the baseline” message. A changed corpus size requires review
+and a rewritten baseline. A selected engine that is skipped cannot pass the
+check. When every document errors for an engine and target, its status is
+`unsupported` and its error is reported. The baseline stores that row as
+`null`, excluding it from count comparisons. If a row with an existing count
+becomes unsupported, `--check` fails, including when the previous identical
+count was zero. Partial errors remain a measurement. Newly supported rows
+with a null baseline print a request to review and write their baseline.
+To refresh the baseline, provision all engines at
+`resources/engine-pins.json`, inspect the buckets, then run
+`npm run roundtrip:structure -- --write`. Commit the reviewed baseline with
+the corresponding engine pin or corpus change. Subset runs cannot rewrite it.
+
+The baseline was measured at carve-js `d122cc01`, carve-php `722f2153`, and
+carve-rs `286cc76d`, across 2,322 documents per target. All six rows are
+measurements; no row is unsupported.
+
+| Engine | HTML identical | Markdown identical | HTML errors | Markdown errors |
+| --- | ---: | ---: | ---: | ---: |
+| JS | 1,634 | 1,357 | 1 | 0 |
+| PHP | 1,685 | 1,350 | 1 | 0 |
+| Rust | 1,620 | 1,411 | 1 | 0 |
+
+On the measurement host, Rust took 45.9 seconds with four CLI workers and
+1.1 seconds with sixteen batch workers at the same pin and corpus. The full
+three-engine batch run took 22.1 seconds, excluding dependency installation
+and builds. The CLI and batch runs matched every difference bucket and count.
