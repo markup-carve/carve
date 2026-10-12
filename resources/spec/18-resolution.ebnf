@@ -30,10 +30,11 @@
 
    RULES (PASS 2):
    R1 LINK REFERENCES. [text][label] and [text][] (label := text) resolve
-      against linkDefs by a shared label key: trim leading and trailing ASCII
-      whitespace and collapse each internal run of U+0020, tab, line feed,
-      form feed or carriage return to one U+0020. Matching remains
-      case-sensitive and preserves every non-whitespace code point (corpus
+      against linkDefs by a shared label key: trim leading and trailing runs
+      of U+0020 and collapse each internal run of U+0020 to one U+0020. A
+      label spans no line break, and a tab, a form feed or any other
+      character in it is content. Matching remains case-sensitive and
+      preserves every other code point (corpus
       78-reference-labels-are-case-sensitive). Definition
       attributes transfer to the link OR IMAGE that resolves the label; the
       reference site's own attributes override per key.
@@ -175,7 +176,7 @@
       document, or on lines the array does not contain, is NOT CONFORMING.
 
    R2 FOOTNOTES (rendering in PART 9 §16). Footnote labels use the same
-      ASCII-whitespace-normalized, case-sensitive key as R1. A [^label] use
+      space-run-normalized, case-sensitive key as R1. A [^label] use
       with a matching footnoteDefs entry is numbered by FIRST-REFERENCE order from
       footnoteSeq; repeat references reuse the number (k-th repeat gets
       refId fnref{n}-{k} and an extra backlink). An inline ^[content] note

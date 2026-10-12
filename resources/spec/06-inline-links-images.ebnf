@@ -233,10 +233,11 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
    ends the destination at `https://e.com`, and `/path` is then left over. It
    is NOT ignored: the definition is anchored at end of line, so a
    leftover makes the production fail and the whole line is an ordinary
-   paragraph -- exactly as `[r]: https://e.com /path` behaves. Whitespace
-   between the mandatory separator space and the destination is leading
-   whitespace and is skipped. A definition whose destination is EMPTY once that
-   is done is NOT a definition: the line stays literal, as `[r]:` already does.
+   paragraph -- exactly as `[r]: https://e.com /path` behaves. The separator
+   before the destination is a run of spaces (CARVE-P3-009). Any other
+   whitespace after that run, a tab included, starts the destination slot,
+   which cannot hold it, so the destination is EMPTY and the line is NOT a
+   definition: it stays literal, as `[r]:` already does.
 
    There is no "trim the ends, keep the interior" variant: `link_destination`
    admits no whitespace at all. *)
@@ -274,7 +275,10 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
 link_title = space, ('"', {escaped_char | literal_backslash | (character - '"' - '\')}, '"')
            | space, ("'", {escaped_char | literal_backslash | (character - "'" - '\')}, "'") ;
 
-reference_label = (character - ']' - '@'), {character - ']'} ;
+reference_label = (character - ']' - '@' - newline), {character - ']' - newline} ;
+(* A LABEL SPANS NO LINE BREAK, like `footnote_label`. A collapsed
+   `[text][]` whose text crosses a soft wrap therefore has no label and is not
+   a reference. *)
 (* A LABEL THAT BEGINS WITH AN AT SIGN IS NOT A REFERENCE LABEL -- NORMATIVE [CARVE-P3-003].
    The production above SUBTRACTS `@` FROM THE FIRST POSITION, and that exclusion
    is what keeps `[@key]` free for the Tier-2 Citations extension. So a bracket
@@ -310,12 +314,12 @@ reference_label = (character - ']' - '@'), {character - ']'} ;
    is already complete at `[a]: /url` and the attribute block is optional
    trailing metadata. The role differs, the terminal does not, because A TAB IS
    SYNTAX ONLY IN THE LEADING RUN (PART 7).
-   Cardinality is exactly one space at BOTH. The two rejected runs are NOT the
-   same: a ZERO-space run glues the braces to the destination (`[a]: /u{.c}`
+   The separator is a RUN of one or more spaces; the padding slot is exactly
+   one space. The two rejected padding runs are NOT the same: a ZERO-space run glues the braces to the destination (`[a]: /u{.c}`
    gives href `/u{.c}`), while a TWO-space run cannot -- whitespace ends the
    destination -- so the line is left over at the end-of-line anchor and falls
    back to prose. *)
-reference_definition = '[', reference_label, ']', ':', space, link_destination,
+reference_definition = '[', reference_label, ']', ':', space+, link_destination,
                        [link_title], [space, attributes], newline ;
 (* ANCHORED AT END OF LINE -- NORMATIVE [CARVE-P3-005]. The production ends in `newline`.
    What follows the destination and the optional title is not
@@ -406,20 +410,21 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    mirrors the heading, list and task markers, which likewise require a
    literal space after the marker.
 
-   AND THE SEPARATOR IS A RUN. `footnote_definition` and
-   `abbreviation_definition` spell it `space+`: one or more ASCII spaces, all
-   of them separator.
+   AND THE SEPARATOR IS A RUN. All three markers spell it `space+`: one or
+   more ASCII spaces, all of them separator.
 
    WHAT THE RUN DOES NOT INCLUDE. It is ASCII spaces, so the first character
    that is not one ends the separator and BEGINS the content. A no-break space
    is content: `*[HTML]:<SP><NBSP>Hyper` expands to `<NBSP>Hyper`, and
    `[^f]:<SP><NBSP>note` is a footnote whose body starts with the character.
 
-   A TAB AFTER THE RUN is content too, by the same rule, and the two markers
+   A TAB AFTER THE RUN is content too, by the same rule, and the three markers
    then answer differently for a reason that is downstream of this clause
    rather than in it: an `abbreviation_expansion` is a raw string, so the tab
-   survives into the `title`, while a footnote's `inline_content` is parsed as
-   blocks and a leading tab is that body's own indentation run (PART 9 §24 C1).
+   survives into the `title`; a footnote's `inline_content` is parsed as
+   blocks and a leading tab is that body's own indentation run (PART 9 §24 C1);
+   and a `link_destination` cannot begin with a tab, so `[a]:<SP><TAB>/url` is
+   not a reference definition.
    MARKER REQUIRES CONTENT still applies after the run: `[^f]:` followed by
    spaces and nothing else is a paragraph, because a line of `whitespace` is
    blank (PART 1). *)
@@ -434,7 +439,7 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    `a"b"c`, emitted as `title="a&quot;b&quot;c"`). This matches the
    inline-link title. *)
 (* A reference definition requires a NON-EMPTY `link_destination` (one or
-   more characters after the `':' space`). A bare `[r]:` -- with nothing
+   more characters after the separator run). A bare `[r]:` -- with nothing
    after the colon, or only trailing whitespace -- does NOT form a
    definition; the line stays literal paragraph text. *)
 (* --- Inline Spans --- *)

@@ -167,10 +167,11 @@ highlight_content = inline_span_content ;
    see docs/dismissed-syntax.md. *)
 footnote = reference_footnote | inline_footnote ;
 reference_footnote = "[^", footnote_label, ']', [attribute_run] ;
-(* A label is a physical-line identifier. It may contain spaces and tabs, but
-   never a source newline: a definition marker occupies one line, and admitting
-   a newline only on the reference side would create an identifier no valid
-   definition can bind. Matching is exact; whitespace is not normalized. *)
+(* A label is a physical-line identifier and never holds a source newline: a
+   definition marker occupies one line, and admitting a newline only on the
+   reference side would create an identifier no valid definition can bind. A
+   tab in a label is content. Matching uses PART 9R R2's key, which collapses
+   space runs only. *)
 footnote_label = {character - ']' - newline}+ ;
 inline_footnote = "^[", inline_content, ']', [attribute_run] ;
 (* the closing `]` is the balanced, escape- and LITERAL-SPAN-aware close
