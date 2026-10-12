@@ -11964,7 +11964,6 @@ EOF = (* end of file *) ;
       the schema pins it as a `const`. An ingest accepting some other root
       (`doc`, say, which is ProseMirror's) will half-read a foreign format
       rather than reject it.
-*)
 
    10. A LINK REFERENCE DEFINITION IS A NODE -- NORMATIVE [CARVE-P12-029].
       `type: "link_reference_definition"`, carrying:
@@ -12350,6 +12349,7 @@ EOF = (* end of file *) ;
       claimed here. The schema
       (`resources/ast-schema.json`) pins the shape; an unknown property on a
       `figure_group` is rejected on ingest like any other (§11).
+   ============================================================================ *)
 (* ============================================================================
    17. A FIGURE MAY WRAP A TABLE, AND NO CARVE SOURCE SPELLS IT -- NORMATIVE [CARVE-P12-036].
       `figure.target` admits a `table`, whose own `caption` is optional.

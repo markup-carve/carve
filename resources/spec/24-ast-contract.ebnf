@@ -194,7 +194,6 @@
       the schema pins it as a `const`. An ingest accepting some other root
       (`doc`, say, which is ProseMirror's) will half-read a foreign format
       rather than reject it.
-*)
 
    10. A LINK REFERENCE DEFINITION IS A NODE -- NORMATIVE [CARVE-P12-029].
       `type: "link_reference_definition"`, carrying:
@@ -580,3 +579,4 @@
       claimed here. The schema
       (`resources/ast-schema.json`) pins the shape; an unknown property on a
       `figure_group` is rejected on ingest like any other (§11).
+   ============================================================================ *)

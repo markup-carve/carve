@@ -43,10 +43,10 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P12-026`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L73) | 12 | AN ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL |
 | [`CARVE-P12-027`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L108) | 12 | A DEFINITION LIST'S ENTRIES ARE NODES |
 | [`CARVE-P12-028`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L158) | 12 | HOW DEEP AN INGESTED AST MAY NEST |
-| [`CARVE-P12-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L199) | 12 | A LINK REFERENCE DEFINITION IS A NODE |
-| [`CARVE-P12-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L228) | 12 | A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST |
-| [`CARVE-P12-031`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L258) | 12 | A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST |
-| [`CARVE-P12-035`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L553) | 12 | A COMPOSITE FIGURE IS ITS OWN NODE TYPE |
+| [`CARVE-P12-029`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L198) | 12 | A LINK REFERENCE DEFINITION IS A NODE |
+| [`CARVE-P12-030`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L227) | 12 | A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST |
+| [`CARVE-P12-031`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L257) | 12 | A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST |
+| [`CARVE-P12-035`](https://github.com/markup-carve/carve/blob/main/resources/spec/24-ast-contract.ebnf#L552) | 12 | A COMPOSITE FIGURE IS ITS OWN NODE TYPE |
 | [`CARVE-P12-041`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L172) | 12 | U+0000 IS REPLACED ON INGEST |
 | [`CARVE-P12-042`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L205) | 12 | AN INGESTED VALUE THE SCHEMA CALLS ABSENT IS NORMALIZED AWAY |
 | [`CARVE-P12-043`](https://github.com/markup-carve/carve/blob/main/resources/spec/25-ast-extensions.ebnf#L228) | 12 | A BLOCK IMAGE IS A NAMED FIELD ON THE PARAGRAPH |
