@@ -173,6 +173,30 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
    Constructs use this definition rather than a host language's trim,
    regular-expression or locale-aware character class. *)
+(* ESCAPE CONTEXTS -- NORMATIVE [CARVE-P7-004]. What a backslash does depends
+   on where it stands, and this table is the one statement of it.
+
+     context                                escapes resolved
+     -------------------------------------  -------------------------------------
+     inline text                            `escaped_char`: `\` + any
+                                            `ascii_punctuation` yields that
+                                            character; `\` + newline is a
+                                            `hard_break`
+     image alt text                         `escaped_char`, decoded into the
+                                            scalar value
+     link and image title, quoted           `escaped_char`; a `\` before any
+     attribute value, quoted include path   other character is that backslash
+                                            (`literal_backslash`)
+     link and image destination             `destination_escape` only: `\(`,
+                                            `\)`, `\\`; any other `\` is a
+                                            destination character
+     code span, inline literal, math, raw   none: the content is verbatim
+     inline, code and raw blocks,
+     editorial comment `{# #}`
+     unquoted attribute value, include      none: `\` is excluded, so a value
+     unquoted option value, autolink body   that needs one takes the quoted form
+
+   How a table row splits into cells, `\|` included, is PART 9 §5 T1. *)
 whitespace = ' ' | '\t' ;
 space = ' ' ;
 newline = '\n' | '\r\n' | '\r' ;

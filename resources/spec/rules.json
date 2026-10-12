@@ -515,6 +515,12 @@
       "scope": "imports-security-extensions"
     },
     {
+      "id": "CARVE-P6-001",
+      "part": "6",
+      "title": "FILE INCLUSION SEMANTICS",
+      "scope": "imports-security-extensions"
+    },
+    {
       "id": "CARVE-P7-001",
       "part": "7",
       "title": "A TAB IS SYNTAX ONLY IN THE LEADING RUN",
@@ -530,6 +536,12 @@
       "id": "CARVE-P7-003",
       "part": "7",
       "title": "ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT",
+      "scope": "parsing"
+    },
+    {
+      "id": "CARVE-P7-004",
+      "part": "7",
+      "title": "ESCAPE CONTEXTS",
       "scope": "parsing"
     },
     {

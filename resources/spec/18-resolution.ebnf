@@ -36,15 +36,22 @@
       character in it is content. Matching remains case-sensitive and
       preserves every other code point (corpus
       78-reference-labels-are-case-sensitive). Definition
-      attributes transfer to the link OR IMAGE that resolves the label; the
-      reference site's own attributes override per key.
+      attributes transfer to the link OR IMAGE that resolves the label and
+      merge as PART 9 §15 A3 merges stacked lists: the definition's list
+      first, the reference site's second, so a repeated `id` or key takes the
+      site's value and classes accumulate in source order.
+      `[ex]: /u {.external #a}` with `[Example][ex]{.internal #b}` renders
+      `class="external internal" id="b"`.
       If multiple definitions normalize to one key, the LAST link definition
       wins. A diagnostic on every later colliding definition names both raw
       spellings and the normalized key; raw spelling remains source metadata.
       Unresolved -> the bracketed run renders as literal source text. Carve
-      has NO shortcut reference: a bare [label] never resolves (PART 9 §14).
-      IMPLICIT HEADING FALLBACK: a [text][] whose label matches no
-      linkDefs entry falls back to the heading index -- the document's
+      has NO shortcut reference: a bare [label] or ![alt] never resolves
+      (PART 9 §14). A collapsed image `![alt][]` takes its alt text as the
+      label, so the alt text must be non-empty; the full `![alt][ref]` form
+      allows an empty one.
+      IMPLICIT HEADING FALLBACK: a link (never an image) [text][] whose
+      label matches no linkDefs entry falls back to the heading index -- the document's
       headings keyed by their rendered plain text -- and resolves to
       `#{slug}` of the FIRST heading with that text. linkDefs WINS on a
       tie, so an explicit `[label]: url` definition always beats a
@@ -57,7 +64,7 @@
       NO NAME LOOKUP FOLDS CASE -- NORMATIVE [CARVE-P9R-010]. Every place
       Carve looks a name up compares case exactly: R1's linkDefs and
       heading index, R2's footnote labels, R4's crossrefs against
-      headingIds and captionIds, and an include's `#name` (PART 9 §19
+      headingIds and captionIds, and an include's `#name` (CARVE-P6-001
       I1a). One rule for every lookup needs no Unicode case-folding table
       (CARVE-P2-004 already refuses one for slugs: Greek final sigma, Turkish
       dotted I), agrees with an HTML fragment (`href="#Plan"` does not
@@ -213,8 +220,13 @@
       directly numbered display equations. The link text is LABEL + NUMBER,
       e.g. "Figure 1" or "Eq. 2"; caption markup is preserved, while a direct
       equation's label is a string.
-      Resolution is ONE LEVEL: cloned heading text is not re-expanded, so
-      self-references and cycles are safe. Unresolved -> literal.
+      Resolution is ONE LEVEL: cloned heading text is not re-expanded, so a
+      self-reference (`# A </#a>`) and a mutual cycle (`# A </#b>` +
+      `# B </#a>`) each resolve once (corpus "Cyclic cross-reference resolves
+      to one level"). Cloning keeps the heading's markup:
+      `# *Setup*` yields `<a href="#…"><strong>Setup</strong></a>`. A `</#id>`
+      to an id that is neither a heading nor a numbered target is unresolved
+      and renders literally.
       WHAT IS CLONED IS THE HEADING'S INLINE NODES -- NORMATIVE [CARVE-P9R-005].
       "Cloned heading text" means the nodes, not a rendered string. A node
       carries its SOURCE RUN, and a string does not, so an implementation that

@@ -2392,18 +2392,14 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
    before the destination is a run of spaces (CARVE-P3-009). Any other
    whitespace after that run, a tab included, starts the destination slot,
    which cannot hold it, so the destination is EMPTY and the line is NOT a
-   definition: it stays literal, as `[r]:` already does.
+   definition: it stays literal, as `[r]:` and `[r]:` followed only by spaces
+   already do.
 
    There is no "trim the ends, keep the interior" variant: `link_destination`
    admits no whitespace at all. *)
 (* Titles accept double OR single quotes -- a deliberate enhancement
    over djot (which has no single-quote titles; it would fold `'...'`
    into the URL). The non-delimiting quote may appear inside the title. *)
-(* A backslash-escaped delimiter inside the title is a literal quote
-   (CommonMark-style): `\"` in a "-title and `\'` in a '-title are kept
-   as the literal quote character and do NOT end the title. This is
-   honored for the INLINE-link title (`[t](/url "ti\"tle")` -> title
-   `ti"tle`); see the note at `reference_definition` for the ref-def slot. *)
 (* The space before the quoted run is a PADDING SLOT, not a marker separator
    (PART 7): a link is already a link once its destination has been read, and a
    reference definition is already a definition, so the title is optional
@@ -2424,9 +2420,9 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
    rather than that production's closing `newline`: a wrapped title would
    satisfy the terminal with the line break after it. So
    `[r]: /u "t` + newline + `u"` is a paragraph and not a definition. *)
-(* Titles resolve `escaped_char`, the whole ASCII punctuation escape set.
-   A backslash before any other character remains literal, as in a quoted
-   attribute value. Only the title slot admits a newline. *)
+(* Escapes in a title: CARVE-P7-004. `\"` in a "-title is a literal quote and
+   does not end it (`[t](/url "ti\"tle")` -> title `ti"tle`), in every slot
+   that reads `link_title`. *)
 link_title = space, ('"', {escaped_char | literal_backslash | (character - '"' - '\')}, '"')
            | space, ("'", {escaped_char | literal_backslash | (character - "'" - '\')}, "'") ;
 
@@ -2459,7 +2455,9 @@ reference_label = (character - ']' - '@' - newline), {character - ']' - newline}
    as a citation with the Tier-2 extension on.
 
    THE CONTROL CARRIES THE RULE. `[@a]` on its own IS a citation with the
-   extension on, and that is the REASON the label slot rejects it.
+   extension on, and that is the REASON the label slot rejects it. The same
+   exclusion makes `[@key]: …` a citation definition (`citation_definition`)
+   and never a link definition, whether or not the extension is enabled.
 
    THE TREE SHAPE for a declining `[t][@a]` is left open here; the rendering is
    the verbatim source run either way. *)
@@ -2520,9 +2518,8 @@ reference_definition = '[', reference_label, ']', ':', space+, link_destination,
 
    A valid block still defines and transfers its attributes. *)
 (* TRAILING ATTRIBUTES ON A DEFINITION -- NORMATIVE [CARVE-P3-007]. A `{...}` block at the end
-   of the definition line attaches to the DEFINITION, and PART 9R R1 already
-   says what that means: the attributes transfer to every link OR IMAGE that
-   resolves the label, and the reference site's own attributes override per key.
+   of the definition line attaches to the DEFINITION, and PART 9R R1 transfers
+   it to every link OR IMAGE that resolves the label.
 
        [Example][ex]
 
@@ -2533,12 +2530,7 @@ reference_definition = '[', reference_label, ']', ':', space+, link_destination,
    AN IMAGE REFERENCE RESOLVES THE SAME ENTRY -- NORMATIVE [CARVE-P3-008]. `![alt][ex]` looks
    the label up in the same `linkDefs` table and takes the same three fields, so
    `[ex]: /i.png {.wide}` gives `<img src="/i.png" alt="alt" class="wide">`.
-
-   THE MERGE IS §15 A3's, the one stacked attribute lists already use: the
-   definition's list first, the link's second, so a repeated `id` or key takes
-   the LAST value (the link's) and CLASSES ACCUMULATE in source order. So
-   `[ex]: /u {.external #a}` with `[Example][ex]{.internal #b}` renders
-   `class="external internal" id="b"`.
+   How the two attribute lists merge is PART 9R R1's.
 
    NOT THE SAME AS THE LINE ABOVE. The two forms are different constructs and
    both are now well-defined:
@@ -2583,20 +2575,6 @@ reference_definition = '[', reference_label, ']', ':', space+, link_destination,
    MARKER REQUIRES CONTENT still applies after the run: `[^f]:` followed by
    spaces and nothing else is a paragraph, because a line of `whitespace` is
    blank (PART 1). *)
-(* A leading `@` is reserved: `[@key]: ...` is never a reference definition, it
-   is a citation definition (`citation_definition`, Tier-2). This parallels the `[^...]:`
-   footnote-definition precedence and holds in core whether or not the citation
-   extension is enabled, so a short entry like `[@a]: A.` is not mis-claimed as
-   a link definition. *)
-(* The reference-definition title reuses `link_title`, INCLUDING the
-   backslash-escape rule above: a `\"` inside the quoted run is a literal
-   quote and does not end the title (`[y]: /u "a\"b\"c"` -> title
-   `a"b"c`, emitted as `title="a&quot;b&quot;c"`). This matches the
-   inline-link title. *)
-(* A reference definition requires a NON-EMPTY `link_destination` (one or
-   more characters after the separator run). A bare `[r]:` -- with nothing
-   after the colon, or only trailing whitespace -- does NOT form a
-   definition; the line stays literal paragraph text. *)
 (* --- Inline Spans --- *)
 (* A bracketed inline run immediately followed by an attribute block
    attaches those attributes to a <span>. Distinguished from links by the
@@ -2709,16 +2687,9 @@ alt_text = {character} ;
    `link_text`; the value remains scalar. *)
 image_source = link_destination ;  (* absolute or relative, like links *)
 image_title = link_title ;
-(* A reference / collapsed-reference image resolves its label against the
-   document's reference definitions EXACTLY as the matching reference_link does
-   (case-sensitive), taking the definition's destination as `src` and its
-   optional title as the image title. A collapsed `![alt][]` uses alt_text as
-   the label, so alt_text must be non-empty; the full `![alt][ref]` form allows
-   an empty alt_text (the label is reference_label). An UNRESOLVED reference
-   image renders as literal source (the `!` plus the bracketed text) and --
-   unlike a reference link -- never matches heading text. There is NO shortcut
-   `![alt]` reference image, mirroring the absence of a shortcut reference
-   link. A trailing [attribute_run] attaches to the resolved <img>. *)
+(* A reference image resolves under PART 9R R1, taking the definition's
+   destination as `src` and its title as the image title. A trailing
+   [attribute_run] attaches to the resolved <img>. *)
 
 (* A caption (`^ ` line) may follow a standalone image paragraph on the
    next line, wrapping it in a <figure> -- caption placement is PART 9 §4;
@@ -3455,17 +3426,10 @@ unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - ' ' - '\t' - newlin
    resolves escapes. Everything else needs
    no quoting, so a version string (`v1.2`), a namespaced token (`xml:lang`) and
    an imported utility class (`w-1/2`) are all bare values. *)
-(* A backslash escapes ASCII punctuation inside a quoted value (same
-   `escaped_char` rule as inline text), so a value can contain a literal
-   quote: `"a\"b"` -> the value `a"b`.
-
-   THE SET IS THE WHOLE OF `ascii_punctuation`, not the closing quote alone:
-   `{k="a\}b"}` carries `a}b` and `{k="a\\b"}` carries `a\b`, in either quote
-   spelling. A backslash before a non-punctuation character is ordinary
-   content and is retained: `{k="a\zb"}` carries `a\zb`. Link titles take the
-   same escape set, but may contain a newline; quoted attributes may not.
-   The lookahead makes a backslash before punctuation an escape only. It
-   cannot also be ordinary content before a closing quote. *)
+(* Escapes in a quoted value: CARVE-P7-004. `{k="a\}b"}` carries `a}b` and
+   `{k="a\zb"}` carries `a\zb`. The lookahead makes a backslash before
+   punctuation an escape only; it cannot also be ordinary content before a
+   closing quote. *)
 literal_backslash = '\', !(ascii_punctuation) ;
 quoted_value = '"', { escaped_char | literal_backslash | (character - '"' - '\' - newline) }, '"'
              | "'", { escaped_char | literal_backslash | (character - "'" - '\' - newline) }, "'" ;
@@ -3539,7 +3503,7 @@ abbreviation_expansion = {character - newline}+ ;
    PART 6: INCLUDES
    ============================================================================ *)
 
-(* PROCESSOR-LEVEL (PART 9 §19): includes are NOT part of the core parser
+(* PROCESSOR-LEVEL (CARVE-P6-001 below): includes are NOT part of the core parser
    and the directive is deliberately NOT reachable from `block`/`inline` --
    a conformant core may leave `{{ … }}` literal. *)
 include_directive = "{{", space+, include_path, [[space+], include_section], [include_options], space+, "}}" ;
@@ -3568,15 +3532,12 @@ bare_include_path = {character - ('#' | '@' | '}' | ' ' | newline)}+ ;
 (* A path carrying a space is DOUBLE-QUOTED, and only then: the bare form stops
    at the first space, so an unquoted `my chapter.crv` ends the path at `my`
    and the rest is read as the option slot it is not. Inside the quoted form a
-   backslash takes the next character with it and decodes as it does in a
-   quoted attribute value (PART 4): before ASCII punctuation it yields that
-   character, so `\"` is a quote, `\\` a backslash and `"a\.crv"` names
-   `a.crv`; before anything else it is path text, so `"notes\new.crv"` names
-   `notes\new.crv`. *)
+   backslash takes the next character with it and decodes per CARVE-P7-004:
+   `"a\.crv"` names `a.crv` and `"notes\new.crv"` names `notes\new.crv`. *)
 quoted_include_path = '"', {('\', character - newline) | (character - ('"' | '\' | newline))}+, '"' ;
 include_section = id_attribute ;
 (* The same spelling as `id_attribute`, so `explicit_identifier`, not
-   `identifier`: the name selects by explicit id (PART 9 §19 I1a), so every id
+   `identifier`: the name selects by explicit id (I1a below), so every id
    `{#...}` can spell is nameable, digit-leading
    ones such as `{#2024-plan}` included. No new ambiguity: the bare path already
    stops at `#`, and neither identifier class holds a space, `@` or `}`. *)
@@ -3595,6 +3556,359 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
    those two stop rules mean nothing, since nothing but an option can follow a
    path or a section name. *)
 
+(* FILE INCLUSION SEMANTICS -- NORMATIVE [CARVE-P6-001]. `{{ … }}` is a
+   PROCESSOR-LEVEL directive, NOT part of the core parser. Its normative
+   semantics are below and mirrored, with worked examples, in
+   docs/includes.md. A conformant CORE never recognizes the directive
+   (unreachable from `block`/`inline`) and leaves `{{ … }}` LITERAL -- it
+   parses the bytes under ordinary inline rules, so a bare-path directive
+   with no active inline markers emits verbatim (corpus "Include directive
+   with no resolver renders literal"). The rules a conforming PROCESSOR that
+   DOES expand includes MUST follow:
+
+   I1 SYNTAX. `{{ path }}`, `{{ path #section }}`, `{{ path @key:value }}`,
+      combinable `{{ path #section @key:value }}` (`include_directive`). `path` is bare
+      (stops at space / `#` / `@` / `}`) or double-quoted for spaces, and
+      is resolved RELATIVE TO THE INCLUDING FILE. Options split into two
+      disjoint kinds. SELECTION options choose WHICH content is pulled in:
+      `#section` (semantic -- a heading's section or one block, I1a) and
+      `@lines:N-M` (physical -- a 1-based
+      inclusive line range). The two SELECTION mechanisms are MUTUALLY
+      EXCLUSIVE: a directive MUST select by `#section` OR by a line-range,
+      NEVER both; a directive carrying both is an ERROR (Warning + literal,
+      per I7). TRANSFORM options reshape already-selected content and are
+      orthogonal to selection: `@shift:N` shifts every included heading's
+      level by the SIGNED integer N (I8). `@shift` MAY accompany `#section`,
+      a line-range, or neither. `@shift` takes EITHER a signed integer OR
+      the literal value `auto` (context-relative, computed by the processor
+      per I8), never both. Every other `@key` is RESERVED.
+
+   I1a FRAGMENT SELECTION (`#name`). `name` is an `explicit_identifier`
+      (`include_section`), so every explicit id is nameable, digit-leading ones such
+      as `{#2024-plan}` included. It is matched the way a `</#id>`
+      cross-reference matches (PART 9R R4), against the child's OWN parse, before
+      the child's nested includes expand. Two steps, the first that
+      matches wins:
+      (1) HEADING. A heading whose id (explicit `{#id}` or auto slug) is
+          `name` selects its SECTION: that heading and the sibling blocks
+          after it in the same block sequence, up to the next heading of
+          the same or higher level or the end of that sequence. A heading
+          nested in a container is bounded by its container.
+      (2) BLOCK. Otherwise a BLOCK carrying the EXPLICIT id `name`
+          selects exactly that block, with its own attributes. A block is
+          a `blockNode` (PART 12) standing in a block sequence of the
+          child's body, at any depth, other than a definition (footnote,
+          reference, abbreviation, citation), a comment or frontmatter.
+      Within a step, the FIRST match in document order wins (a container
+      precedes its descendants). An id carried only by something that is
+      not a block in the body -- an inline element, a list item, a table
+      row or cell, a definition term, a footnote definition or a block
+      inside one -- selects NOTHING: the directive is an ERROR (Warning +
+      literal, per I7), as for an id the child does not contain. Every
+      other rule treats a block selection as it treats a section: I2 in
+      inline position (a selected paragraph splices its inlines and its
+      own attributes do not carry into the sentence; any other block is
+      block-in-inline), I4 provenance, I5, I6, I8 (T is measured over the
+      selected block; no headings in it makes `auto` a no-op), I11 (a
+      missing id leaves the dependency RESOLVED).
+
+   I2 BLOCK vs INLINE. A directive ALONE on its own line is a BLOCK
+      include: the resolved content merges as BLOCKS at the directive
+      site. A directive within inline content is an INLINE include: the
+      resolved content MUST parse (as an I4 fragment) to INLINE-ONLY
+      content -- a single paragraph, or nothing -- and its inlines are
+      spliced into the surrounding inline sequence. Resolved content
+      with any other block structure in inline position is an ERROR
+      (Warning + literal, per I7). Mirrors the PART 9 §10 block/inline model.
+
+   I3 RESOLUTION MODEL. The CORE performs NO file I/O. The HOST supplies a
+      resolver with the contract: given (path, section?, options?,
+      includingFileContext) it returns resolved Carve source text OR an
+      error. If NO resolver is configured the directive is left LITERAL
+      (the processor emits the verbatim `{{ … }}`). This mirrors the
+      bibliography loader precedent (host resolves, parser stays pure;
+      docs/extensions.md §6.1) and preserves browser / WASM parity.
+      OPT-IN: no resolver is configured by default, and a host MUST leave
+      it off for untrusted input unless it has satisfied PART 9 §25 (File
+      inclusion).
+
+   I4 MECHANISM (normative on OUTCOME, permissive on mechanism). The
+      observable result MUST be AS IF the resolved content appeared inline
+      at the directive site, SUBJECT TO FRAGMENT CONTAINMENT: included
+      content is parsed as a SELF-CONTAINED FRAGMENT. A construct still
+      open at the end of the included content CLOSES at child EOF (an
+      unclosed fence or div terminates there, exactly as at the end of a
+      standalone document); included content NEVER captures or
+      reinterprets parent content that follows the directive. An
+      implementation MAY splice source pre-parse OR parse-and-merge
+      events / AST -- but ONLY where the result equals the fragment-
+      containment outcome. The two diverge exactly when the child ends
+      inside an unterminated construct (a naive textual splice would let
+      an unclosed child fence swallow the rest of the parent); that
+      result is NON-conformant. This matters doubly for `@lines:N-M`,
+      whose physical slice can cut a fence or div in half: the torn
+      construct is bounded to the fragment, never the parent. Source
+      positions SHOULD be remapped so source-mapped hosts can attribute
+      included spans to the child file (Carve's AST already distinguishes
+      snippet-local from document-space offsets; carve-js src/ast.ts
+      `Position`).
+
+   I5 CROSS-FILE COLLISIONS. An identifier that expansion brings together
+      is handled according to whether it is DOCUMENT-VISIBLE or FILE-LOCAL.
+
+      DOCUMENT-VISIBLE IDENTIFIERS -- DETERMINISTIC RENAME-ON-COLLISION.
+      Two namespaces are document-visible: they are exposed by the
+      assembled document and can be targeted across file boundaries.
+      (a) ELEMENT IDS. Every EXPLICIT id `{#id}` on ANY element -- a
+          heading, any other block (paragraph, list, table, figure, code
+          block, div, admonition, ...), a list item, a table row or cell,
+          an inline span, link, image or other inline element -- is ONE
+          namespace, because HTML has one `id` namespace per document: a
+          heading `{#tip}` and a paragraph `{#tip}` collide exactly as two
+          headings do.
+          Names are compared EXACTLY, case included, as HTML compares
+          ids: `{#Tip}` and `{#tip}` do not collide.
+      (b) FOOTNOTE LABELS (footnotes are collected and numbered globally
+          in the assembled document). This is a SEPARATE namespace: a
+          footnote `[^tip]` never collides with an element `{#tip}`.
+      ORDER is the fully expanded document read top to bottom: parent
+      before child, and an earlier include before a later include. An
+      occurrence is RENAMED when an EARLIER occurrence of the same name in
+      the same namespace came from a DIFFERENT file inclusion (another
+      file, or another inclusion of the same file); the first occurrence
+      keeps its name. Duplicates that one file already held on its own are
+      not created by expansion and are not this rule's business.
+      EVERY RENAMED OCCURRENCE TAKES ITS OWN SUFFIX: the least `-N`
+      (integer N >= 2) such that the result is used by NO explicit name of
+      that namespace anywhere in the fully assembled document -- the
+      parent, earlier and later includes, the child itself -- and by no
+      earlier rename. A child holding a colliding `{#d}` twice therefore
+      yields `d-2` and `d-3`, never two `d-2`s, and a `{#d-2}` written
+      after the include pushes the rename to `d-3`. A Warning MUST be
+      emitted per renamed occurrence.
+      REFERENCES FOLLOW THE RENAME. A reference written in the SAME file
+      inclusion as the renamed target, that resolves to that target when
+      the file is read on its own, resolves to the new name instead
+      (where that file held several renamed copies, to the FIRST, the
+      one the file reaches when read on its own):
+        - a `</#id>` cross-reference (PART 9R R4);
+        - a link or image destination that is exactly `#` followed by the
+          id, whether written inline (`[text](#tip)`) or reached through
+          that file's own reference definition (`[a]: #tip`, file-local,
+          below);
+        - a footnote reference `[^label]`, for a renamed footnote label.
+      A reference in ANY OTHER file inclusion keeps the name as written,
+      and therefore reaches the first occurrence: naming an id the parent
+      also defines is how a child links to the parent's target. A
+      fragment link to an id its own file does not define is never
+      rewritten.
+
+      FILE-LOCAL IDENTIFIERS -- SCOPED, NOT RENAMED. A REFERENCE-DEFINITION
+      label is file-local metadata: it is resolved WITHIN the document that
+      defines it, BEFORE that document is merged into its parent. Two files
+      MAY therefore use the same label with different destinations, and each
+      file's references resolve to its own definition -- a parent `[a][]`
+      resolves to the parent's `[a]: /PARENT` and a child `[a][]` to the
+      child's `[a]: /CHILD`. This is NOT a collision: it MUST NOT emit a
+      Warning and MUST NOT rename anything.
+
+      SCOPE: the include-time rename pass covers EXPLICIT element ids (on
+      any element, headings included) and footnote labels ONLY.
+      Auto-generated (slug) heading-id collisions are NOT part of it and
+      emit no Warning; they continue to dedup via the existing heading-id
+      tracker (PART 9 §13, which suffixes duplicate slugs once the files are
+      merged). ORDERING: the include-time explicit-id / footnote rename runs
+      BEFORE the PART 9 §13 slug dedup, so ids are deterministic (the explicit-id
+      namespace is settled first, then PART 9 §13 dedups auto-slug ids against the
+      final set).
+
+   I6 LIMITS. The processor MUST detect inclusion CYCLES (a file that
+      transitively includes itself): the offending directive is left
+      literal, not expanded, and a Warning is emitted. Cycle detection is
+      the PRIMARY guard. As a SECONDARY DoS bound, implementations MUST
+      enforce a FINITE include-depth limit; the RECOMMENDED default is at
+      least 16 (a small, human-scale nesting bound, far under the structural
+      MAX_NESTING = 200 of PART 9 §25) and the host MAY configure it. No exact hard
+      constant is pinned. A directive at greater depth is left literal with
+      a Warning. Total expanded output is charged against the same per-
+      render byte budget as other amplifying features -- `max(1 MB,
+      8 x input length)` (PART 9 §25); once exceeded, further expansion degrades
+      to the literal directive with a Warning. The byte budget bounds the
+      expanded OUTPUT; it does NOT bound the WORK done to produce it,
+      because a target is resolved before its size is known and a document
+      may carry one directive per dozen bytes. Implementations MUST
+      therefore enforce a FINITE bound on RESOLVER INVOCATIONS per render;
+      the RECOMMENDED default is at least 1000, and the host MAY configure
+      it. A directive past the bound is left literal with a Warning and
+      MUST NOT be passed to the resolver. The byte budget and the
+      resolver-call bound are whole-render TOTALS that only ever grow, so
+      once either is exhausted, later directives MUST be refused BEFORE
+      invoking their resolver -- not resolved and then refused -- and the
+      two bounds therefore limit reads as well as emitted output.
+
+   I7 ERRORS. Unreadable path, binary / non-text content, a `#name` that
+      selects nothing (I1a), BOTH selection
+      mechanisms present (`#section` + a line-range, I1), block-structured
+      content in INLINE position (I2), cycle, depth-exceeded,
+      size-exceeded, call-bound-exceeded, and a directive reached AFTER
+      byte-budget or call-bound exhaustion EACH emit a Warning and leave
+      the directive LITERAL (visible and debuggable). The last two are
+      never passed to the resolver at all (I6). Inclusion NEVER silently
+      drops a directive. See PART 9 §25 (File inclusion) for the security
+      model: parser stays pure, resolver is host-supplied and MUST enforce
+      canonical path containment after symlink resolution and MUST NOT
+      fetch remote URLs without an explicit allowlist. Included content
+      receives the same sanitization as its parent. The processor-neutral
+      vectors in `tests/include-security-conformance/` pin these security
+      requirements separately from the broader include-language suite.
+
+   I8 HEADING-LEVEL SHIFT (`@shift:N` | `@shift:auto`). A TRANSFORM option
+      (I1), orthogonal to selection. `@shift` takes EITHER a SIGNED integer
+      OR the literal value `auto`, NEVER both.
+      LITERAL FORM. N is a SIGNED integer; every heading in the included
+      content has its level increased by N (N=2: an h1 becomes an h3; a
+      NEGATIVE N raises levels, N=-1: an h2 becomes an h1). An omitted
+      `@shift` is `@shift:0` (no shift, the default; current behavior
+      unchanged). CLAMP: the resulting level is clamped to the valid range
+      [1, 6]; a shift that would push a heading below 1 or above 6 clamps to
+      the bound and emits a Warning -- the heading is KEPT, never dropped.
+      IDS/SLUGS UNCHANGED: `@shift` changes only the level, never a
+      heading's id / slug (ids are name-based), so `</#id>` cross-references
+      into shifted headings still resolve. AUTO-NUMBERING: if section
+      auto-numbering (HeadingNumbers, docs/extensions.md) is enabled,
+      shifted headings renumber at their NEW level as a consequence.
+
+      AUTO FORM (`@shift:auto`). CONTEXT-RELATIVE: the processor COMPUTES
+      the shift instead of taking it from the author.
+      CONTEXT LEVEL C: the level of the nearest PRECEDING heading, in
+      document order, that is in the directive's OWN block container or an
+      ENCLOSING (ancestor) container. A heading inside a SIBLING container
+      that has already CLOSED does NOT set the context. If no such heading
+      exists, C = 0.
+      TOP LEVEL T: the MINIMUM heading level present in the resolved
+      content, AFTER any `#section` or line-range selection has been
+      applied. The MINIMUM (not the first heading's level) is used so the
+      included document's internal relative structure is preserved.
+      COMPUTED SHIFT: N = (C + 1) - T. N is then applied EXACTLY as a
+      literal shift under the rules above -- clamp to [1, 6] with a Warning
+      on clamp, heading KEPT never dropped, ids / slugs unchanged so
+      cross-references still resolve, and auto-numbering renumbering at the
+      new level.
+      NO HEADINGS: if the resolved content contains NO headings, `auto` is a
+      NO-OP (N = 0) and emits NO Warning.
+      NESTED INCLUDES: `auto` resolves against the document AS ASSEMBLED at
+      that point, so a shift already applied by an ANCESTOR include is in
+      effect when a nested `auto` is computed. Expansion proceeds
+      OUTSIDE-IN, which makes the result DETERMINISTIC.
+      INLINE INCLUDES: inline content cannot contain headings, so `auto` on
+      an INLINE include (I2) is a no-op.
+      EXAMPLE: an including document with `## Chapters` before the directive
+      gives C = 2; a child starting at `# Chapter One` gives T = 1; so
+      N = (2 + 1) - 1 = 2 and the child's h1 renders as an h3.
+
+   I9 VERBATIM PROTECTION. An include directive is recognized ONLY where
+      inline and block constructs are recognized. Inside a code span, a
+      fenced or raw code block, or any other verbatim context, `{{ ... }}`
+      is ordinary LITERAL text and is NEVER resolved. This is a consequence
+      of Carve's general invariant that CODE IS VERBATIM -- no construct
+      transforms inside a code span or code block -- of which the include
+      directive is no exception. A literal `{{ ... }}` can therefore always
+      be written and displayed by placing it in code.
+
+   I9a RECOGNITION SHAPE -- RUN, NOT NODE. Grammar-level recognition does
+      NOT mean "one parsed text node matches the directive grammar". A
+      directive's own syntax overlaps constructs the core already parses:
+      `#section` is TAG syntax, `@key:value` is MENTION syntax, and a
+      double-quoted path is rewritten by smart quotes, so by the time the
+      include pass runs `{{ x #intro @shift:1 }}` is SEVERAL adjacent nodes.
+      A processor MUST recognize a directive over a CONTIGUOUS RUN of inline
+      nodes carrying only LITERAL TEXT content (text, tag, mention, and any
+      other node whose source form is recoverable verbatim): reassemble the
+      run's source and match the directive against it. Matching single nodes
+      would drop every directive carrying `#section` or an option, and every
+      directive appearing mid-sentence. The run STOPS at
+      any node that is not literal-text-shaped, so a directive interrupted
+      by emphasis, a link, or a code span is NOT recognized and stays
+      literal (same rule as a bare-path directive with active inline
+      markers).
+
+   I10 CONTAINMENT ROOT + CANONICAL CONTAINMENT CHECK. Every resolved path
+      is checked against a single CONTAINMENT ROOT.
+      DEFAULT ROOT (RECOMMENDED): for FILE-BASED entry points (a CLI
+      invocation on a document path, or a convert-from-file API) the root
+      SHOULD default to the DIRECTORY OF THE TOP-LEVEL DOCUMENT -- a
+      document path is already known, so requiring the host to name a root
+      explicitly is not necessary. The root MUST NOT default to the process
+      working directory (arbitrary with respect to the document, and
+      possibly `/` or a home directory).
+      NO PATH CONTEXT, NO DEFAULT: for STRING-INPUT APIs there is no
+      document path and therefore no inferable root; a host MUST supply the
+      root explicitly, otherwise inclusion stays DISABLED and directives
+      remain LITERAL (I3). This preserves the opt-in posture for embedders.
+      A CONFIGURED ROOT MUST BE ABSOLUTE: any other root spec is REFUSED,
+      leaving inclusion DISABLED and directives LITERAL as with no root.
+      The test is absoluteness, not emptiness: a whitespace-only spec is
+      refused as relative, and an absolute path to a directory named with
+      spaces is a valid root.
+      ONE ROOT PER EXPANSION: relative include paths resolve relative to the
+      INCLUDING file (I1), but containment is checked against the single
+      TOP-LEVEL root. The root MUST NOT re-base per included file; a
+      re-based root shrinks at every nesting level, so a nested document
+      could never reference a sibling directory of the project.
+      CANONICAL, NOT LEXICAL (MUST): a processor MUST canonicalize the
+      candidate path (resolving symbolic links) and then verify the
+      canonical result is contained within the canonical root. A `..`
+      segment is PERMITTED exactly when the canonical result stays inside
+      the root. A lexical `..` rejection is wrong on both sides: TOO STRICT
+      (it rejects legitimate sibling-directory layouts, e.g. a document in
+      `chapters/` including `../shared/glossary.crv` whose target is inside
+      the project root) and TOO WEAK (symbolic links and absolute paths
+      escape a root with no `..` present at all). Absolute paths remain
+      DENIED unless they canonicalize inside the root. Given the layout
+      `book/{main.crv, chapters/ch1.crv, shared/glossary.crv}` with root
+      `book/`: from `chapters/ch1.crv`, `../shared/glossary.crv` is ALLOWED
+      and `../../../etc/passwd` is DENIED. See PART 9 §25 (File inclusion)
+      and docs/security.md.
+      A containment refusal MUST NOT reveal whether the target exists.
+      For a missing path, canonicalize the longest existing prefix and
+      normalize the remaining path before checking containment. Present
+      and absent targets outside the root MUST both be refused as
+      containment denials, without reading or checking the existence of
+      the target itself first.
+
+   I11 DEPENDENCY REPORTING. A processor that expands includes MUST report,
+      alongside the expanded document and any Warnings, the SET OF INCLUDE
+      TARGETS it touched during the expansion.
+      SCOPE: the set covers the ENTIRE recursive expansion, including
+      nested children, DE-DUPLICATED, in a DETERMINISTIC order.
+      IDENTITY: each target is identified by the resolver's CANONICAL ID
+      where one is supplied -- the same identity the cycle guard uses in
+      I6 -- and otherwise by the RESOLVED PATH. Two spellings that name
+      the same document MUST return the same id (`a/b.crv`, `a/./b.crv`).
+      An unresolved target's id is resolved against the including file
+      like a resolved one, so it names where the file would appear; a
+      path that escapes the containment root (I10) keeps the directive's
+      spelling. So does a target that exists but the resolver refuses.
+      So does a request carrying a URI scheme, which names no place.
+      ATTEMPTED TARGETS ARE INCLUDED: the set MUST contain targets that
+      were ATTEMPTED but NOT resolved -- missing or unreadable, binary,
+      containment-denied (I10), cycle-broken (I6), and depth- or
+      size-exceeded (I6).
+      DISTINGUISHABILITY: each entry MUST be distinguishable as RESOLVED
+      versus ATTEMPTED-BUT-UNRESOLVED.
+      Hosts use this contract for invalidation and diagnostics; see
+      docs/includes.md (Reported dependencies, and Editor and IDE integration).
+
+   I12 THE WRITER PRESERVES A DIRECTIVE VERBATIM. A Carve writer MUST NOT
+      escape the braces of a well-formed directive; it writes the directive
+      as spelled, including one whose shape is well-formed but whose option
+      is unknown or whose `#section` is not a valid identifier. Inside a
+      verbatim context `{{ … }}` is not a directive (I9).
+
+   I15 A PROCESSOR TARGETING CARVE SOURCE DOES NOT EXPAND. When the output
+      target is Carve source (`fmt`, a `--carve` render, any pipeline whose
+      product is Carve), the expansion pass MUST NOT run, whether or not a
+      resolver is configured. Other targets expand as usual. *)
 (* ============================================================================
    PART 7: LEXICAL ELEMENTS
    ============================================================================ *)
@@ -3770,6 +4084,30 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
    Constructs use this definition rather than a host language's trim,
    regular-expression or locale-aware character class. *)
+(* ESCAPE CONTEXTS -- NORMATIVE [CARVE-P7-004]. What a backslash does depends
+   on where it stands, and this table is the one statement of it.
+
+     context                                escapes resolved
+     -------------------------------------  -------------------------------------
+     inline text                            `escaped_char`: `\` + any
+                                            `ascii_punctuation` yields that
+                                            character; `\` + newline is a
+                                            `hard_break`
+     image alt text                         `escaped_char`, decoded into the
+                                            scalar value
+     link and image title, quoted           `escaped_char`; a `\` before any
+     attribute value, quoted include path   other character is that backslash
+                                            (`literal_backslash`)
+     link and image destination             `destination_escape` only: `\(`,
+                                            `\)`, `\\`; any other `\` is a
+                                            destination character
+     code span, inline literal, math, raw   none: the content is verbatim
+     inline, code and raw blocks,
+     editorial comment `{# #}`
+     unquoted attribute value, include      none: `\` is excluded, so a value
+     unquoted option value, autolink body   that needs one takes the quoted form
+
+   How a table row splits into cells, `\|` included, is PART 9 §5 T1. *)
 whitespace = ' ' | '\t' ;
 space = ' ' ;
 newline = '\n' | '\r\n' | '\r' ;
@@ -3854,18 +4192,9 @@ EOF = (* end of file *) ;
    ============================================================================ *)
 
 (*
-   1. WORD BOUNDARIES FOR EMPHASIS -- FORMALIZED. Stated formally by the
-      bare_opener(d) / bare_closer(d) guard templates in PART 3, for all
-      five single-char bare delimiters `/ * _ ~ =` (sup/sub `^` `,` are
-      braced-only, `{^ ^}` / `{, ,}`, not bare); §9 holds the
-      run-resolution rules (nearest closer, delimiter stack). No bare
-      delimiter emphasizes intraword; the forced `{X … X}` family (§22) is
-      the deliberate-intraword escape hatch.
-      Canonical pinned examples: "/ not italic /" literal (ws after opener);
-      "a/b/c", "foo*bar*baz", "snake_case", "x = 5", "key=value" literal
-      (no left boundary / ws after opener); "/usr/local/" ->
-      <em>usr/local</em> (01-emphasis-6); "x{*y*}z" -> x<strong>y</strong>z
-      (forced, §22). STRICTER than Djot, whose rule is whitespace-only.
+   1. WORD BOUNDARIES FOR EMPHASIS -- the guard templates of CARVE-P3-013
+      and the delimiter note above them in PART 3; run resolution is §9, the
+      forced family §22.
 
    2. MATCHING FENCES -- FORMALIZED. Stated as `where` guards on the
       productions (GUARD NOTATION, header):
@@ -3877,19 +4206,8 @@ EOF = (* end of file *) ;
         `%` is compared -- trailing text on either fence line is insignificant,
         and an opener with no matching closer ahead opens nothing (§28).
 
-   3. NO BARE SAME-TYPE NESTING
-      - Bare /nested /italic/ here/ does not produce nested italic nodes.
-      - /nested *bold* here/ permits cross-type nesting.
-      - Explicit braced children MAY repeat an active kind (PART 9 §22):
-        {/outer {/inner/} tail/} has two italic nodes. The same exception
-        applies under a bare parent: *outer {*inner*} tail* has two strong nodes.
-        Bare openers remain literal while a same-kind span is reachable
-        under E2a; an intervening braced boundary can hide that ancestor.
-      - A consequence (§9 SAME-DELIMITER ADJACENCY): a doubled bare delimiter
-        never opens nested same-type emphasis -- it is literal text. So `**x**`
-        -> `**x**` and `~~x~~` -> `~~x~~`, uniform with the already-literal
-        `//x//` and `__x__` (corpus 76-doubled-emphasis-delimiters). The
-        braced-only `^`/`,` are not bare, so `^^x^^` is likewise literal.
+   3. NO BARE SAME-TYPE NESTING -- §9 (E3 and SAME-DELIMITER ADJACENCY);
+      braced same-type children are §22 (CARVE-P9-043).
 
    4. CAPTION PLACEMENT -- ONE RULE, TWO SPELLINGS (caption_slot in PART 2).
       A `^ ` caption attaches to exactly seven captionable hosts: an image
@@ -4260,10 +4578,7 @@ EOF = (* end of file *) ;
          attribute block alike, and `fmt --migrate` repairs any of them by
          inserting the space. It supersedes `table-alignment-run-padding`.
 
-   6. REFERENCE RESOLUTION -- FORMAL STATEMENT MOVED TO PART 9R R1-R3; this
-      anchor remains for existing references. PART 8 collects all definitions
-      before resolution, including definitions after their uses. Link
-      definitions are LAST-wins while footnote definitions are FIRST-wins.
+   6. REFERENCE RESOLUTION -- PART 9R R1-R3.
 
    7. MENTION/TAG BOUNDARIES
       - @ and # only start mentions/tags at word boundaries
@@ -5200,29 +5515,15 @@ EOF = (* end of file *) ;
       INLINE form `^[content]` are implemented, and they are the only note
       forms: the proposed sidenote (`[>content]`) was dismissed as a
       presentation concern, so `[>` is unclaimed and `[>foo]` is literal
-      text (docs/dismissed-syntax.md). Numbering and resolution are formalized
-      as PART 9R rule R2; the rendering rules below stay normative here.
-      - A `[^label]` reference with a matching definition is NUMBERED by
-        document reference order (first referenced = 1); the same label
-        referenced again reuses its number.
-      - Definitions may appear anywhere (order-independent); the FIRST
-        definition for a label wins. A body is the def line plus any
-        following lines indented to column 2 or more (PART 9 §24 C1 column
-        arithmetic -- a tab reaching column 2 qualifies the same as two
-        spaces; single blank lines allowed between chunks), parsed as
-        blocks. A definition is
-        document-level metadata: it is COLLECTED and RESOLVED even when it
-        sits INSIDE A CONTAINER. The reference resolves to the one endnotes
-        section and the container that held the definition renders as
-        though the line were never written -- §17 L6 states the general
-        rule once, for every block-level container that can hold a
-        definition, rather than enumerating them per definition kind. The
-        corpus pins this (resources/examples/edge-cases.md "Footnote definition inside a
-        container is collected").
-      - A reference with NO matching definition renders as literal source
-        text `[^label]` (a trailing `{attrs}` on an unresolved ref is not
-        round-tripped -- a marginal mistyped-label edge). An UNREFERENCED
-        definition is dropped.
+      text (docs/dismissed-syntax.md). Numbering, which definition wins,
+      collection inside containers, unresolved references and unreferenced
+      definitions are PART 9R R2 and §17 L6; the rendering rules below stay
+      normative here.
+      - A body is the def line plus any following lines indented to column 2
+        or more (PART 9 §24 C1 column arithmetic -- a tab reaching column 2
+        qualifies the same as two spaces; single blank lines allowed between
+        chunks), parsed as blocks.
+      - An unresolved reference keeps no trailing `{attrs}` in round trips.
       - Rendering (djot-compatible roles):
           reference -> <a id="{refId}" href="#fn{n}" role="doc-noteref"><sup>{n}</sup></a>
           endnotes  -> ONE <section role="doc-endnotes"> appended AFTER
@@ -5319,8 +5620,8 @@ EOF = (* end of file *) ;
             reference note).
           * Empty or whitespace-only (`^[]`, `^[ ]`) is literal; an unclosed
             `^[…` is literal.
-        PRECEDENCE (PART 8): `^[` opens an inline note; a bare `^` anywhere
-        else is literal text (there is no bare superscript). Consequences:
+        PRECEDENCE (PART 8): `^[` opens an inline note, and a `^` not
+        immediately before `[` opens none. Consequences:
         `^[x]^` is a note then a literal `^`; `\^[x]` is literal; a `^` not
         immediately followed by `[` is plain text.
       - LIMITATION: a footnote (reference `[^1]` or inline `^[…]`) inside link
@@ -5670,25 +5971,8 @@ EOF = (* end of file *) ;
       `$` or `$$` would be literal text.
 
    19. CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES -- NORMATIVE [CARVE-P9-039]
-      (resolution formalized as PART 9R rules R4/R5; behavior detail here).
-      - `</#id>` clones the target heading's full inline children, so a
-        heading with markup (`# *Setup*`) yields a link that KEEPS the
-        markup (`<a href="#…"><strong>Setup</strong> …</a>`).
-      - A `</#id>` cross-reference resolves to exactly ONE LEVEL: it links
-        to the target and adopts the target's text, FLATTENING any nested
-        cross-reference in that text (a `</#…>` in the cloned heading text is
-        not re-expanded). One-level resolution makes a self-reference
-        (`# A </#a>`) and a mutual cycle (`# A </#b>` + `# B </#a>`) SAFE --
-        each side resolves once, no infinite expansion. A normal, non-cyclic
-        crossref still resolves. The corpus pins this (resources/examples/edge-cases.md
-        "Cyclic cross-reference resolves to one level").
-      - `</#id>` to a NUMBERED CAPTION (a figure / table / listing / equation
-        whose caption carries a number placeholder and an `{#id}`) yields the
-        caption's LABEL + NUMBER ("Figure 1"), markup preserved, NOT the
-        caption prose. A directly numbered display equation resolves through
-        its `attrs.id` and yields its string LABEL + NUMBER ("Equation 1"). A
-        `</#id>` to an id that is neither a heading nor either numbered target
-        stays unresolved and renders literally.
+      - `</#id>` resolution, the heading nodes it clones, one-level expansion
+        and numbered-caption targets are PART 9R R4 and R5.
       - Mentions (`@user`), tags (`#tag`) and smart typography are ON by
         default in the conformant core; a processor MAY disable them. The
         corpus pins the default-on behavior.
@@ -5730,357 +6014,8 @@ EOF = (* end of file *) ;
         tenant containment. The processor invokes at most one configured
         social resolver per parsed node and MUST NOT rescan a returned value.
       - FILE INCLUSION / TRANSCLUSION (`{{ … }}`) is a PROCESSOR-LEVEL
-        directive, NOT part of the core parser. Its syntax is PART 6; its
-        normative semantics are below and mirrored, with worked examples, in
-        docs/includes.md. A conformant CORE never recognizes the directive
-        (unreachable from `block`/`inline`) and leaves `{{ … }}` LITERAL --
-        it parses the bytes under ordinary inline rules, so a bare-path
-        directive with no active inline markers emits verbatim (corpus
-        "Include directive with no resolver renders literal"). The rules a
-        conforming PROCESSOR that DOES expand includes MUST follow:
-
-        I1 SYNTAX. `{{ path }}`, `{{ path #section }}`, `{{ path @key:value }}`,
-           combinable `{{ path #section @key:value }}` (PART 6). `path` is bare
-           (stops at space / `#` / `@` / `}`) or double-quoted for spaces, and
-           is resolved RELATIVE TO THE INCLUDING FILE. Options split into two
-           disjoint kinds. SELECTION options choose WHICH content is pulled in:
-           `#section` (semantic -- a heading's section or one block, I1a) and
-           `@lines:N-M` (physical -- a 1-based
-           inclusive line range). The two SELECTION mechanisms are MUTUALLY
-           EXCLUSIVE: a directive MUST select by `#section` OR by a line-range,
-           NEVER both; a directive carrying both is an ERROR (Warning + literal,
-           per I7). TRANSFORM options reshape already-selected content and are
-           orthogonal to selection: `@shift:N` shifts every included heading's
-           level by the SIGNED integer N (I8). `@shift` MAY accompany `#section`,
-           a line-range, or neither. `@shift` takes EITHER a signed integer OR
-           the literal value `auto` (context-relative, computed by the processor
-           per I8), never both. Every other `@key` is RESERVED.
-
-        I1a FRAGMENT SELECTION (`#name`). `name` is an `explicit_identifier`
-           (PART 6), so every explicit id is nameable, digit-leading ones such
-           as `{#2024-plan}` included. It is matched the way a `</#id>`
-           cross-reference matches (R4), against the child's OWN parse, before
-           the child's nested includes expand. Two steps, the first that
-           matches wins:
-           (1) HEADING. A heading whose id (explicit `{#id}` or auto slug) is
-               `name` selects its SECTION: that heading and the sibling blocks
-               after it in the same block sequence, up to the next heading of
-               the same or higher level or the end of that sequence. A heading
-               nested in a container is bounded by its container.
-           (2) BLOCK. Otherwise a BLOCK carrying the EXPLICIT id `name`
-               selects exactly that block, with its own attributes. A block is
-               a `blockNode` (PART 12) standing in a block sequence of the
-               child's body, at any depth, other than a definition (footnote,
-               reference, abbreviation, citation), a comment or frontmatter.
-           Within a step, the FIRST match in document order wins (a container
-           precedes its descendants). An id carried only by something that is
-           not a block in the body -- an inline element, a list item, a table
-           row or cell, a definition term, a footnote definition or a block
-           inside one -- selects NOTHING: the directive is an ERROR (Warning +
-           literal, per I7), as for an id the child does not contain. Every
-           other rule treats a block selection as it treats a section: I2 in
-           inline position (a selected paragraph splices its inlines and its
-           own attributes do not carry into the sentence; any other block is
-           block-in-inline), I4 provenance, I5, I6, I8 (T is measured over the
-           selected block; no headings in it makes `auto` a no-op), I11 (a
-           missing id leaves the dependency RESOLVED).
-
-        I2 BLOCK vs INLINE. A directive ALONE on its own line is a BLOCK
-           include: the resolved content merges as BLOCKS at the directive
-           site. A directive within inline content is an INLINE include: the
-           resolved content MUST parse (as an I4 fragment) to INLINE-ONLY
-           content -- a single paragraph, or nothing -- and its inlines are
-           spliced into the surrounding inline sequence. Resolved content
-           with any other block structure in inline position is an ERROR
-           (Warning + literal, per I7). Mirrors the §10 block/inline model.
-
-        I3 RESOLUTION MODEL. The CORE performs NO file I/O. The HOST supplies a
-           resolver with the contract: given (path, section?, options?,
-           includingFileContext) it returns resolved Carve source text OR an
-           error. If NO resolver is configured the directive is left LITERAL
-           (the processor emits the verbatim `{{ … }}`). This mirrors the
-           bibliography loader precedent (host resolves, parser stays pure;
-           docs/extensions.md §6.1) and preserves browser / WASM parity.
-           OPT-IN: no resolver is configured by default, and a host MUST leave
-           it off for untrusted input unless it has satisfied PART 9 §25 (File
-           inclusion).
-
-        I4 MECHANISM (normative on OUTCOME, permissive on mechanism). The
-           observable result MUST be AS IF the resolved content appeared inline
-           at the directive site, SUBJECT TO FRAGMENT CONTAINMENT: included
-           content is parsed as a SELF-CONTAINED FRAGMENT. A construct still
-           open at the end of the included content CLOSES at child EOF (an
-           unclosed fence or div terminates there, exactly as at the end of a
-           standalone document); included content NEVER captures or
-           reinterprets parent content that follows the directive. An
-           implementation MAY splice source pre-parse OR parse-and-merge
-           events / AST -- but ONLY where the result equals the fragment-
-           containment outcome. The two diverge exactly when the child ends
-           inside an unterminated construct (a naive textual splice would let
-           an unclosed child fence swallow the rest of the parent); that
-           result is NON-conformant. This matters doubly for `@lines:N-M`,
-           whose physical slice can cut a fence or div in half: the torn
-           construct is bounded to the fragment, never the parent. Source
-           positions SHOULD be remapped so source-mapped hosts can attribute
-           included spans to the child file (Carve's AST already distinguishes
-           snippet-local from document-space offsets; carve-js src/ast.ts
-           `Position`).
-
-        I5 CROSS-FILE COLLISIONS. An identifier that expansion brings together
-           is handled according to whether it is DOCUMENT-VISIBLE or FILE-LOCAL.
-
-           DOCUMENT-VISIBLE IDENTIFIERS -- DETERMINISTIC RENAME-ON-COLLISION.
-           Two namespaces are document-visible: they are exposed by the
-           assembled document and can be targeted across file boundaries.
-           (a) ELEMENT IDS. Every EXPLICIT id `{#id}` on ANY element -- a
-               heading, any other block (paragraph, list, table, figure, code
-               block, div, admonition, ...), a list item, a table row or cell,
-               an inline span, link, image or other inline element -- is ONE
-               namespace, because HTML has one `id` namespace per document: a
-               heading `{#tip}` and a paragraph `{#tip}` collide exactly as two
-               headings do.
-               Names are compared EXACTLY, case included, as HTML compares
-               ids: `{#Tip}` and `{#tip}` do not collide.
-           (b) FOOTNOTE LABELS (footnotes are collected and numbered globally
-               in the assembled document). This is a SEPARATE namespace: a
-               footnote `[^tip]` never collides with an element `{#tip}`.
-           ORDER is the fully expanded document read top to bottom: parent
-           before child, and an earlier include before a later include. An
-           occurrence is RENAMED when an EARLIER occurrence of the same name in
-           the same namespace came from a DIFFERENT file inclusion (another
-           file, or another inclusion of the same file); the first occurrence
-           keeps its name. Duplicates that one file already held on its own are
-           not created by expansion and are not this rule's business.
-           EVERY RENAMED OCCURRENCE TAKES ITS OWN SUFFIX: the least `-N`
-           (integer N >= 2) such that the result is used by NO explicit name of
-           that namespace anywhere in the fully assembled document -- the
-           parent, earlier and later includes, the child itself -- and by no
-           earlier rename. A child holding a colliding `{#d}` twice therefore
-           yields `d-2` and `d-3`, never two `d-2`s, and a `{#d-2}` written
-           after the include pushes the rename to `d-3`. A Warning MUST be
-           emitted per renamed occurrence.
-           REFERENCES FOLLOW THE RENAME. A reference written in the SAME file
-           inclusion as the renamed target, that resolves to that target when
-           the file is read on its own, resolves to the new name instead
-           (where that file held several renamed copies, to the FIRST, the
-           one the file reaches when read on its own):
-             - a `</#id>` cross-reference (R4);
-             - a link or image destination that is exactly `#` followed by the
-               id, whether written inline (`[text](#tip)`) or reached through
-               that file's own reference definition (`[a]: #tip`, file-local,
-               below);
-             - a footnote reference `[^label]`, for a renamed footnote label.
-           A reference in ANY OTHER file inclusion keeps the name as written,
-           and therefore reaches the first occurrence: naming an id the parent
-           also defines is how a child links to the parent's target. A
-           fragment link to an id its own file does not define is never
-           rewritten.
-
-           FILE-LOCAL IDENTIFIERS -- SCOPED, NOT RENAMED. A REFERENCE-DEFINITION
-           label is file-local metadata: it is resolved WITHIN the document that
-           defines it, BEFORE that document is merged into its parent. Two files
-           MAY therefore use the same label with different destinations, and each
-           file's references resolve to its own definition -- a parent `[a][]`
-           resolves to the parent's `[a]: /PARENT` and a child `[a][]` to the
-           child's `[a]: /CHILD`. This is NOT a collision: it MUST NOT emit a
-           Warning and MUST NOT rename anything.
-
-           SCOPE: the include-time rename pass covers EXPLICIT element ids (on
-           any element, headings included) and footnote labels ONLY.
-           Auto-generated (slug) heading-id collisions are NOT part of it and
-           emit no Warning; they continue to dedup via the existing heading-id
-           tracker (§13, which suffixes duplicate slugs once the files are
-           merged). ORDERING: the include-time explicit-id / footnote rename runs
-           BEFORE the §13 slug dedup, so ids are deterministic (the explicit-id
-           namespace is settled first, then §13 dedups auto-slug ids against the
-           final set).
-
-        I6 LIMITS. The processor MUST detect inclusion CYCLES (a file that
-           transitively includes itself): the offending directive is left
-           literal, not expanded, and a Warning is emitted. Cycle detection is
-           the PRIMARY guard. As a SECONDARY DoS bound, implementations MUST
-           enforce a FINITE include-depth limit; the RECOMMENDED default is at
-           least 16 (a small, human-scale nesting bound, far under the structural
-           MAX_NESTING = 200 of §25) and the host MAY configure it. No exact hard
-           constant is pinned. A directive at greater depth is left literal with
-           a Warning. Total expanded output is charged against the same per-
-           render byte budget as other amplifying features -- `max(1 MB,
-           8 x input length)` (§25); once exceeded, further expansion degrades
-           to the literal directive with a Warning. The byte budget bounds the
-           expanded OUTPUT; it does NOT bound the WORK done to produce it,
-           because a target is resolved before its size is known and a document
-           may carry one directive per dozen bytes. Implementations MUST
-           therefore enforce a FINITE bound on RESOLVER INVOCATIONS per render;
-           the RECOMMENDED default is at least 1000, and the host MAY configure
-           it. A directive past the bound is left literal with a Warning and
-           MUST NOT be passed to the resolver. The byte budget and the
-           resolver-call bound are whole-render TOTALS that only ever grow, so
-           once either is exhausted, later directives MUST be refused BEFORE
-           invoking their resolver -- not resolved and then refused -- and the
-           two bounds therefore limit reads as well as emitted output.
-
-        I7 ERRORS. Unreadable path, binary / non-text content, a `#name` that
-           selects nothing (I1a), BOTH selection
-           mechanisms present (`#section` + a line-range, I1), block-structured
-           content in INLINE position (I2), cycle, depth-exceeded,
-           size-exceeded, call-bound-exceeded, and a directive reached AFTER
-           byte-budget or call-bound exhaustion EACH emit a Warning and leave
-           the directive LITERAL (visible and debuggable). The last two are
-           never passed to the resolver at all (I6). Inclusion NEVER silently
-           drops a directive. See PART 9 §25 (File inclusion) for the security
-           model: parser stays pure, resolver is host-supplied and MUST enforce
-           canonical path containment after symlink resolution and MUST NOT
-           fetch remote URLs without an explicit allowlist. Included content
-           receives the same sanitization as its parent. The processor-neutral
-           vectors in `tests/include-security-conformance/` pin these security
-           requirements separately from the broader include-language suite.
-
-        I8 HEADING-LEVEL SHIFT (`@shift:N` | `@shift:auto`). A TRANSFORM option
-           (I1), orthogonal to selection. `@shift` takes EITHER a SIGNED integer
-           OR the literal value `auto`, NEVER both.
-           LITERAL FORM. N is a SIGNED integer; every heading in the included
-           content has its level increased by N (N=2: an h1 becomes an h3; a
-           NEGATIVE N raises levels, N=-1: an h2 becomes an h1). An omitted
-           `@shift` is `@shift:0` (no shift, the default; current behavior
-           unchanged). CLAMP: the resulting level is clamped to the valid range
-           [1, 6]; a shift that would push a heading below 1 or above 6 clamps to
-           the bound and emits a Warning -- the heading is KEPT, never dropped.
-           IDS/SLUGS UNCHANGED: `@shift` changes only the level, never a
-           heading's id / slug (ids are name-based), so `</#id>` cross-references
-           into shifted headings still resolve. AUTO-NUMBERING: if section
-           auto-numbering (HeadingNumbers, docs/extensions.md) is enabled,
-           shifted headings renumber at their NEW level as a consequence.
-
-           AUTO FORM (`@shift:auto`). CONTEXT-RELATIVE: the processor COMPUTES
-           the shift instead of taking it from the author.
-           CONTEXT LEVEL C: the level of the nearest PRECEDING heading, in
-           document order, that is in the directive's OWN block container or an
-           ENCLOSING (ancestor) container. A heading inside a SIBLING container
-           that has already CLOSED does NOT set the context. If no such heading
-           exists, C = 0.
-           TOP LEVEL T: the MINIMUM heading level present in the resolved
-           content, AFTER any `#section` or line-range selection has been
-           applied. The MINIMUM (not the first heading's level) is used so the
-           included document's internal relative structure is preserved.
-           COMPUTED SHIFT: N = (C + 1) - T. N is then applied EXACTLY as a
-           literal shift under the rules above -- clamp to [1, 6] with a Warning
-           on clamp, heading KEPT never dropped, ids / slugs unchanged so
-           cross-references still resolve, and auto-numbering renumbering at the
-           new level.
-           NO HEADINGS: if the resolved content contains NO headings, `auto` is a
-           NO-OP (N = 0) and emits NO Warning.
-           NESTED INCLUDES: `auto` resolves against the document AS ASSEMBLED at
-           that point, so a shift already applied by an ANCESTOR include is in
-           effect when a nested `auto` is computed. Expansion proceeds
-           OUTSIDE-IN, which makes the result DETERMINISTIC.
-           INLINE INCLUDES: inline content cannot contain headings, so `auto` on
-           an INLINE include (I2) is a no-op.
-           EXAMPLE: an including document with `## Chapters` before the directive
-           gives C = 2; a child starting at `# Chapter One` gives T = 1; so
-           N = (2 + 1) - 1 = 2 and the child's h1 renders as an h3.
-
-        I9a RECOGNITION SHAPE -- RUN, NOT NODE. Grammar-level recognition does
-           NOT mean "one parsed text node matches the directive grammar". A
-           directive's own syntax overlaps constructs the core already parses:
-           `#section` is TAG syntax, `@key:value` is MENTION syntax, and a
-           double-quoted path is rewritten by smart quotes, so by the time the
-           include pass runs `{{ x #intro @shift:1 }}` is SEVERAL adjacent nodes.
-           A processor MUST recognize a directive over a CONTIGUOUS RUN of inline
-           nodes carrying only LITERAL TEXT content (text, tag, mention, and any
-           other node whose source form is recoverable verbatim): reassemble the
-           single nodes silently drops every directive carrying `#section` or an
-           option, and every directive appearing mid-sentence. The run STOPS at
-           any node that is not literal-text-shaped, so a directive interrupted
-           by emphasis, a link, or a code span is NOT recognized and stays
-           literal (same rule as a bare-path directive with active inline
-           markers).
-
-        I9 VERBATIM PROTECTION. An include directive is recognized ONLY where
-           inline and block constructs are recognized. Inside a code span, a
-           fenced or raw code block, or any other verbatim context, `{{ ... }}`
-           is ordinary LITERAL text and is NEVER resolved. This is a consequence
-           of Carve's general invariant that CODE IS VERBATIM -- no construct
-           transforms inside a code span or code block -- of which the include
-           directive is no exception. A literal `{{ ... }}` can therefore always
-           be written and displayed by placing it in code.
-
-        I10 CONTAINMENT ROOT + CANONICAL CONTAINMENT CHECK. Every resolved path
-           is checked against a single CONTAINMENT ROOT.
-           DEFAULT ROOT (RECOMMENDED): for FILE-BASED entry points (a CLI
-           invocation on a document path, or a convert-from-file API) the root
-           SHOULD default to the DIRECTORY OF THE TOP-LEVEL DOCUMENT -- a
-           document path is already known, so requiring the host to name a root
-           explicitly is not necessary. The root MUST NOT default to the process
-           working directory (arbitrary with respect to the document, and
-           possibly `/` or a home directory).
-           NO PATH CONTEXT, NO DEFAULT: for STRING-INPUT APIs there is no
-           document path and therefore no inferable root; a host MUST supply the
-           root explicitly, otherwise inclusion stays DISABLED and directives
-           remain LITERAL (I3). This preserves the opt-in posture for embedders.
-           A CONFIGURED ROOT MUST BE ABSOLUTE: any other root spec is REFUSED,
-           leaving inclusion DISABLED and directives LITERAL as with no root.
-           The test is absoluteness, not emptiness: a whitespace-only spec is
-           refused as relative, and an absolute path to a directory named with
-           spaces is a valid root.
-           ONE ROOT PER EXPANSION: relative include paths resolve relative to the
-           INCLUDING file (I1), but containment is checked against the single
-           TOP-LEVEL root. The root MUST NOT re-base per included file; a
-           re-based root shrinks at every nesting level, so a nested document
-           could never reference a sibling directory of the project.
-           CANONICAL, NOT LEXICAL (MUST): a processor MUST canonicalize the
-           candidate path (resolving symbolic links) and then verify the
-           canonical result is contained within the canonical root. A `..`
-           segment is PERMITTED exactly when the canonical result stays inside
-           the root. A lexical `..` rejection is wrong on both sides: TOO STRICT
-           (it rejects legitimate sibling-directory layouts, e.g. a document in
-           `chapters/` including `../shared/glossary.crv` whose target is inside
-           the project root) and TOO WEAK (symbolic links and absolute paths
-           escape a root with no `..` present at all). Absolute paths remain
-           DENIED unless they canonicalize inside the root. Given the layout
-           `book/{main.crv, chapters/ch1.crv, shared/glossary.crv}` with root
-           `book/`: from `chapters/ch1.crv`, `../shared/glossary.crv` is ALLOWED
-           and `../../../etc/passwd` is DENIED. See PART 9 §25 (File inclusion)
-           and docs/security.md.
-           A containment refusal MUST NOT reveal whether the target exists.
-           For a missing path, canonicalize the longest existing prefix and
-           normalize the remaining path before checking containment. Present
-           and absent targets outside the root MUST both be refused as
-           containment denials, without reading or checking the existence of
-           the target itself first.
-
-        I11 DEPENDENCY REPORTING. A processor that expands includes MUST report,
-           alongside the expanded document and any Warnings, the SET OF INCLUDE
-           TARGETS it touched during the expansion.
-           SCOPE: the set covers the ENTIRE recursive expansion, including
-           nested children, DE-DUPLICATED, in a DETERMINISTIC order.
-           IDENTITY: each target is identified by the resolver's CANONICAL ID
-           where one is supplied -- the same identity the cycle guard uses in
-           I6 -- and otherwise by the RESOLVED PATH. Two spellings that name
-           the same document MUST return the same id (`a/b.crv`, `a/./b.crv`).
-           An unresolved target's id is resolved against the including file
-           like a resolved one, so it names where the file would appear; a
-           path that escapes the containment root (I10) keeps the directive's
-           spelling. So does a target that exists but the resolver refuses.
-           So does a request carrying a URI scheme, which names no place.
-           ATTEMPTED TARGETS ARE INCLUDED: the set MUST contain targets that
-           were ATTEMPTED but NOT resolved -- missing or unreadable, binary,
-           containment-denied (I10), cycle-broken (I6), and depth- or
-           size-exceeded (I6).
-           DISTINGUISHABILITY: each entry MUST be distinguishable as RESOLVED
-           versus ATTEMPTED-BUT-UNRESOLVED.
-           Hosts use this contract for invalidation and diagnostics; see
-           docs/includes.md (Reported dependencies, and Editor and IDE integration).
-
-        I12 THE WRITER PRESERVES A DIRECTIVE VERBATIM. A Carve writer MUST NOT
-           escape the braces of a well-formed directive; it writes the directive
-           as spelled, including one whose shape is well-formed but whose option
-           is unknown or whose `#section` is not a valid identifier. Inside a
-           verbatim context `{{ … }}` is not a directive (I9).
-
-        I15 A PROCESSOR TARGETING CARVE SOURCE DOES NOT EXPAND. When the output
-           target is Carve source (`fmt`, a `--carve` render, any pipeline whose
-           product is Carve), the expansion pass MUST NOT run, whether or not a
-           resolver is configured. Other targets expand as usual.
+        directive, NOT part of the core parser: PART 6 states its syntax and
+        its semantics (CARVE-P6-001, I1 to I15).
 
    20. RAW PASSTHROUGH -- NORMATIVE [CARVE-P9-040] (governs `raw_inline` in PART 3 and the
       semantics of `raw_block` in PART 2). The BLOCK form (```=FORMAT
@@ -7355,15 +7290,22 @@ EOF = (* end of file *) ;
       character in it is content. Matching remains case-sensitive and
       preserves every other code point (corpus
       78-reference-labels-are-case-sensitive). Definition
-      attributes transfer to the link OR IMAGE that resolves the label; the
-      reference site's own attributes override per key.
+      attributes transfer to the link OR IMAGE that resolves the label and
+      merge as PART 9 §15 A3 merges stacked lists: the definition's list
+      first, the reference site's second, so a repeated `id` or key takes the
+      site's value and classes accumulate in source order.
+      `[ex]: /u {.external #a}` with `[Example][ex]{.internal #b}` renders
+      `class="external internal" id="b"`.
       If multiple definitions normalize to one key, the LAST link definition
       wins. A diagnostic on every later colliding definition names both raw
       spellings and the normalized key; raw spelling remains source metadata.
       Unresolved -> the bracketed run renders as literal source text. Carve
-      has NO shortcut reference: a bare [label] never resolves (PART 9 §14).
-      IMPLICIT HEADING FALLBACK: a [text][] whose label matches no
-      linkDefs entry falls back to the heading index -- the document's
+      has NO shortcut reference: a bare [label] or ![alt] never resolves
+      (PART 9 §14). A collapsed image `![alt][]` takes its alt text as the
+      label, so the alt text must be non-empty; the full `![alt][ref]` form
+      allows an empty one.
+      IMPLICIT HEADING FALLBACK: a link (never an image) [text][] whose
+      label matches no linkDefs entry falls back to the heading index -- the document's
       headings keyed by their rendered plain text -- and resolves to
       `#{slug}` of the FIRST heading with that text. linkDefs WINS on a
       tie, so an explicit `[label]: url` definition always beats a
@@ -7376,7 +7318,7 @@ EOF = (* end of file *) ;
       NO NAME LOOKUP FOLDS CASE -- NORMATIVE [CARVE-P9R-010]. Every place
       Carve looks a name up compares case exactly: R1's linkDefs and
       heading index, R2's footnote labels, R4's crossrefs against
-      headingIds and captionIds, and an include's `#name` (PART 9 §19
+      headingIds and captionIds, and an include's `#name` (CARVE-P6-001
       I1a). One rule for every lookup needs no Unicode case-folding table
       (CARVE-P2-004 already refuses one for slugs: Greek final sigma, Turkish
       dotted I), agrees with an HTML fragment (`href="#Plan"` does not
@@ -7532,8 +7474,13 @@ EOF = (* end of file *) ;
       directly numbered display equations. The link text is LABEL + NUMBER,
       e.g. "Figure 1" or "Eq. 2"; caption markup is preserved, while a direct
       equation's label is a string.
-      Resolution is ONE LEVEL: cloned heading text is not re-expanded, so
-      self-references and cycles are safe. Unresolved -> literal.
+      Resolution is ONE LEVEL: cloned heading text is not re-expanded, so a
+      self-reference (`# A </#a>`) and a mutual cycle (`# A </#b>` +
+      `# B </#a>`) each resolve once (corpus "Cyclic cross-reference resolves
+      to one level"). Cloning keeps the heading's markup:
+      `# *Setup*` yields `<a href="#…"><strong>Setup</strong></a>`. A `</#id>`
+      to an id that is neither a heading nor a numbered target is unresolved
+      and renders literally.
       WHAT IS CLONED IS THE HEADING'S INLINE NODES -- NORMATIVE [CARVE-P9R-005].
       "Cloned heading text" means the nodes, not a rendered string. A node
       carries its SOURCE RUN, and a string does not, so an implementation that

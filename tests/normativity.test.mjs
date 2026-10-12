@@ -18,7 +18,7 @@ import { execFileSync } from 'node:child_process'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { extractNormativeClauses, readInventory } from '../scripts/normative-clauses.mjs'
-import { audit, blankFences, clausesOf, conditionStated, obligationTables, part9Sections as specPart9Sections } from '../scripts/normative-page-audit.mjs'
+import { audit, blankFences, clausesOf, conditionStated, obligationTables, part9Sections as specPart9Sections, sectionLabel } from '../scripts/normative-page-audit.mjs'
 import { classifyLayoutComment, ownershipTransition } from '../scripts/spec/layout.mjs'
 import { bareCitation, eachClause, qualifiedCitation } from '../scripts/lib/citations.mjs'
 
@@ -667,13 +667,13 @@ test('every obligation the includes page states names the clause that now carrie
   // Asserted one by one, so a regression names the obligation that lost its home.
   const { ledger } = audit()
   const clauseFor = (opening) => ledger.find((row) => row.text.startsWith(opening))?.clause
-  assert.equal(clauseFor('I12: the writer preserves a directive verbatim'), 'PART 9 §19 I12')
-  assert.equal(clauseFor('I15: a processor targeting Carve source MUST NOT expand'), 'PART 9 §19 I15')
-  assert.equal(clauseFor('- The resolver is opt-in and MUST be off for untrusted input'), 'PART 9 §19 I3')
-  assert.equal(clauseFor('Two spellings that name the same document'), 'PART 9 §19 I11')
-  assert.equal(clauseFor('- A configured root MUST be absolute'), 'PART 9 §19 I10')
-  assert.equal(clauseFor('- A refusal MUST NOT reveal whether the target'), 'PART 9 §19 I10')
-  assert.equal(clauseFor('Both targets MUST be refused as containment denials'), 'PART 9 §19 I10')
+  assert.equal(clauseFor('I12: the writer preserves a directive verbatim'), 'PART 6 I12')
+  assert.equal(clauseFor('I15: a processor targeting Carve source MUST NOT expand'), 'PART 6 I15')
+  assert.equal(clauseFor('- The resolver is opt-in and MUST be off for untrusted input'), 'PART 6 I3')
+  assert.equal(clauseFor('Two spellings that name the same document'), 'PART 6 I11')
+  assert.equal(clauseFor('- A configured root MUST be absolute'), 'PART 6 I10')
+  assert.equal(clauseFor('- A refusal MUST NOT reveal whether the target'), 'PART 6 I10')
+  assert.equal(clauseFor('Both targets MUST be refused as containment denials'), 'PART 6 I10')
   assert.equal(clauseFor('- Inclusion MUST remain disabled on these paths'), 'PART 9 §25 I1')
   assert.equal(ledger.filter((row) => row.text.startsWith('- If such a host ever offers inclusion, it')).length, 2)
   assert.ok(ledger.filter((row) => row.text.startsWith('- If such a host ever offers inclusion, it')).every((row) => row.clause === 'PART 9 §25 I1'))
@@ -686,20 +686,20 @@ test('a clause that loses the sentence its row anchors on is reported', () => {
   const flat = (s) => s.replace(/\s+/g, ' ').trim().toLowerCase()
   // Selected by obligation text, not by clause: I10 has several distinct rows.
   const cases = [
-    ['19', 'I3', '- The resolver is opt-in and MUST be off for untrusted input'],
-    ['19', 'I10', '- A configured root MUST be absolute'],
-    ['19', 'I11', 'Two spellings that name the same document'],
-    ['19', 'I12', 'I12: the writer preserves a directive verbatim'],
-    ['19', 'I15', 'I15: a processor targeting Carve source MUST NOT expand'],
-    ['19', 'I10', '- A refusal MUST NOT reveal whether the target'],
-    ['19', 'I10', 'Both targets MUST be refused as containment denials'],
+    ['P6', 'I3', '- The resolver is opt-in and MUST be off for untrusted input'],
+    ['P6', 'I10', '- A configured root MUST be absolute'],
+    ['P6', 'I11', 'Two spellings that name the same document'],
+    ['P6', 'I12', 'I12: the writer preserves a directive verbatim'],
+    ['P6', 'I15', 'I15: a processor targeting Carve source MUST NOT expand'],
+    ['P6', 'I10', '- A refusal MUST NOT reveal whether the target'],
+    ['P6', 'I10', 'Both targets MUST be refused as containment denials'],
     ['25', 'I1', '- Inclusion MUST remain disabled on these paths'],
   ]
   for (const [section, id, opening] of cases) {
     const row = ledger.find((r) => r.text.startsWith(opening))
     const clauses = clausesOf(sections.get(section).text)
-    assert.equal(row?.clause, `PART 9 §${section} ${id}`)
-    assert.ok(clauses.has(id), `PART 9 §${section} ${id} exists`)
+    assert.equal(row?.clause, `${sectionLabel(section)} ${id}`)
+    assert.ok(clauses.has(id), `${sectionLabel(section)} ${id} exists`)
     assert.ok(flat(clauses.get(id)).includes(flat(row.anchor)), `§${section} ${id} carries "${row.anchor}"`)
     assert.equal(flat(clauses.get(id)).replace(flat(row.anchor), '').includes(flat(row.anchor)), false)
   }
@@ -735,7 +735,7 @@ test('the Errors-table check fails on exactly the rows carve#1995 found', () => 
 
 test('a cited clause that covers no row is reported', () => {
   // The bounded two-way half: a citation cannot be padded with clauses until it
-  // matches. I1 is a real §19 clause and states none of the Errors conditions.
+  // matches. I1 is a real PART 6 clause and states none of the Errors conditions.
   const page = readFileSync(resolve(repo, 'docs/includes.md'), 'utf8')
   const [table] = obligationTables(page)
   const clauses = clausesOf(specPart9Sections().get(table.section).text)
