@@ -24,3 +24,9 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+556-a-closed-block-leaves-no-frame-for-the-line-below  no paragraph resumes after a closed code block under a failed fence opener (CARVE-P0-009, carve#2949); the pin still keeps the line in the item (carve-js#2805, carve-php#3178, carve-rs#2533)
+556-a-closed-block-leaves-no-frame-for-the-line-below-5  an unmarked line after an empty container in a quoted nested item closes the quote (CARVE-P0-009); the pin still keeps it in the quote (carve-js#2772, carve-php#3137, carve-rs#2511)
+556-a-closed-block-leaves-no-frame-for-the-line-below-8  a heading at a quoted item's content column leaves the quote no paragraph (CARVE-P0-009); the pin still keeps the line in the quote (carve-js#2838)
+556-a-closed-block-leaves-no-frame-for-the-line-below-10  a closed fence on a sublist's marker line leaves no paragraph (CARVE-P0-009); the pin still keeps the line in the outer item (carve-js#2838)
+556-a-closed-block-leaves-no-frame-for-the-line-below-12  a line after a nested marker note's code block leaves the list (CARVE-P0-009); the pin still keeps it in the item (carve-js#2806, carve-js#2831, carve-php#3182, carve-rs#2536)
+556-a-closed-block-leaves-no-frame-for-the-line-below-15  an unmatched comment fence is the line form for item ownership (CARVE-P9-053, carve#2950); the pin still keeps the item open (carve-js#2838)
