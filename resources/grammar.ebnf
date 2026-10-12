@@ -8310,8 +8310,10 @@ EOF = (* end of file *) ;
       A CROSS-REFERENCE'S TEXT IS GENERATED, SO THE IMPORT DISCARDS IT. The
       `<a>` carries the resolved text the target supplied (a heading's text, a
       `Figure 1`), and the import rebuilds `</#id>` from the `href` alone.
-      The `href` MUST be a fragment (`#` and an id the identifier grammar
-      admits); any other `href` is not this carrier, and §13e's rule for an
+      The `href` MUST be a fragment: `#` followed by an id a cross-reference
+      can name, which is an authored identifier (the PART 4 grammar) or a
+      generated heading id (PART 9 §13, Unicode included, as `# Café` gives
+      `Café`). Any other `href` is not this carrier, and §13e's rule for an
       invalid value applies.
 
         See </#fig-sun>.   ->  <p>See <a href="#fig-sun"
