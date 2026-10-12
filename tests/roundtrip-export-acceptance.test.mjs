@@ -126,6 +126,7 @@ for (const fixture of fixtures.importNegative) {
       const controlCount = fixture.diagnosticControlHtml ? htmlToAst(fixture.diagnosticControlHtml, { mode }).report.diagnostics.length : 0
       assert.ok(result.report.diagnostics.length > controlCount, fixture.id)
     }
+    if (fixture.expectedDiagnostic) assert.ok(result.report.diagnostics.some((row) => Object.entries(fixture.expectedDiagnostic).every(([key, value]) => row[key] === value)), JSON.stringify(fixture.expectedDiagnostic))
     assertNoReservedAttrs(result.value)
     for (const fragment of fixture.forbiddenSourceSubstrings ?? []) assert.ok(!htmlToCarve(fixture.html, { mode }).value.includes(fragment), fragment)
     for (const fragment of fixture.forbiddenAstSubstrings ?? []) assert.ok(!JSON.stringify(result.value).includes(fragment), fragment)

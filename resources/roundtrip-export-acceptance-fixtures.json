@@ -1257,6 +1257,109 @@
       ],
       "requiresDiagnostic": false,
       "aheadOfPin": true
+    },
+    {
+      "id": "contradictory-footnote-pair",
+      "html": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\" data-carve-footnote-label=\"named\" data-carve-inline-footnote><p>body</p></li></ol></section>",
+      "expectedNodes": [
+        {
+          "type": "footnote_ref",
+          "label": "1"
+        }
+      ],
+      "forbiddenTypes": [
+        "inline_footnote"
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": true,
+      "expectedDiagnostic": {
+        "code": "attribute-dropped",
+        "severity": "warning"
+      },
+      "forbiddenFieldValues": [
+        {
+          "type": "footnote_ref",
+          "field": "label",
+          "value": "named"
+        }
+      ],
+      "diagnosticControlHtml": "<p><a href=\"#fn1\" role=\"doc-noteref\">1</a></p><section role=\"doc-endnotes\"><ol><li id=\"fn1\"><p>body</p></li></ol></section>"
+    },
+    {
+      "id": "contradictory-explicit-generated-id",
+      "html": "<section id=\"mine\" data-carve-explicit-id data-carve-generated-id><h1>H</h1></section>",
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "level": 1
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": true,
+      "expectedDiagnostic": {
+        "code": "attribute-dropped",
+        "severity": "warning"
+      },
+      "diagnosticControlHtml": "<section id=\"mine\"><h1>H</h1></section>",
+      "aheadOfPin": true
+    },
+    {
+      "id": "contradictory-escaped-raw",
+      "html": "<p><span data-carve-escaped data-carve-raw=\"latex\">*</span></p>",
+      "expectedNodes": [
+        {
+          "type": "text",
+          "value": "*"
+        }
+      ],
+      "forbiddenTypes": [
+        "escaped_text",
+        "raw_inline"
+      ],
+      "importModes": [
+        "safe",
+        "semantic"
+      ],
+      "requiresDiagnostic": true,
+      "expectedDiagnostic": {
+        "code": "attribute-dropped",
+        "severity": "warning"
+      },
+      "diagnosticControlHtml": "<p><span>*</span></p>",
+      "aheadOfPin": true
+    },
+    {
+      "id": "id-slot-without-explicit-id",
+      "html": "<section id=\"mine\" data-carve-id-slot=\"1\"><h1 class=\"c\">H</h1></section>",
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "level": 1
+        }
+      ],
+      "forbiddenTypes": [],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "requiresDiagnostic": true,
+      "expectedAbsentFields": [
+        {
+          "type": "heading",
+          "field": "attrs.order"
+        }
+      ],
+      "diagnosticControlHtml": "<section id=\"mine\"><h1 class=\"c\">H</h1></section>"
     }
   ],
   "footnoteRecoveryResource": "footnote-carrier-recovery-fixtures.json",

@@ -759,15 +759,25 @@
       reserved name an importer has no use for is still consumed rather than
       passed through, with or without a diagnostic saying so.
 
-      CONTRADICTORY CARRIERS RESTORE NEITHER MEANING. Where two carriers on
-      one element contradict each other, the reader consumes neither carrier's
-      meaning: it imports the ordinary element, reports one
-      `attribute-dropped` warning for the pair, and excludes both reserved
-      names from authored attributes. `data-carve-autolink` beside
-      `data-carve-ref` on one `<a>` imports as an inline link. This applies in
-      every import mode and to the deprecated aliases in §13c. Value
+      CONTRADICTORY CARRIERS RESTORE NEITHER MEANING. The contradictory
+      pairs are a CLOSED LIST, each pair on one element:
+
+        data-carve-footnote-label   with   data-carve-inline-footnote
+        data-carve-autolink         with   data-carve-ref
+        data-carve-explicit-id      with   data-carve-generated-id
+        data-carve-escaped          with   data-carve-raw
+
+      For a pair on the list the reader consumes neither carrier's meaning: it
+      imports the ordinary element, reports one `attribute-dropped` warning
+      for the pair, and excludes both reserved names from authored attributes.
+      `data-carve-autolink` beside `data-carve-ref` on one `<a>` imports as an
+      inline link. A PAIR NOT ON THE LIST IS NOT A CONTRADICTION. This applies
+      in every import mode and to the deprecated aliases in §13c. Value
       validation under §13e comes first: an invalid value is not a carrier
       and contradicts nothing.
+
+      A `data-carve-id-slot` WITHOUT `data-carve-explicit-id` on the same
+      element is not a carrier, and §13e applies.
 
       THE FOOTNOTE PAIR IS THE FIRST INSTANCE. An endnote carrying both a
       valid `data-carve-footnote-label` and `data-carve-inline-footnote` asks
