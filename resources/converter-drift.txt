@@ -181,3 +181,14 @@
 # `b12ebf89`, which predates #2605, so five cases were declared in PINNED_DRIFT
 # in tests/corpus-convert.test.mjs. When the pin reached carve-js `6c6f3988` all
 # five reported STALE against it, and their entries were deleted.
+
+# Pins carve-rs 286cc76d and carve-php 722f2153, measured in AST conformance
+# run 38232876170. Both pairs passed at the previous pins, so each is an engine
+# change rather than a new corpus rule, and each line goes when its ticket does.
+#
+# carve-rs since e1a68059 writes Markdown `$x+y$` as inline math; 55533b7e, the
+# commit before, leaves it text. carve-php since 8d32ead9 imports
+# `<pre class="mermaid" role="img">` as a mermaid fence, which that change
+# intends, so which side moves is an open decision.
+rust/08-markdown-superscript-highlight-and-math-stay-text  `$x+y$` is imported as inline math (markup-carve/carve-rs#2550)
+php/html-import--derived-accessible-name  a mermaid pre is imported as a mermaid fence, not a classed code block (markup-carve/carve-php#3203)
