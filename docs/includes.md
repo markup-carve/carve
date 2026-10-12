@@ -9,7 +9,7 @@ normative: true
 This page gives the normative rules for Carve's file-inclusion (transclusion) directive,
 <code v-pre>{{ … }}</code>. Inclusion is a processor feature. The core parser does not
 expand files and leaves the directive as text. The syntax is defined in
-`resources/grammar.ebnf` PART 6; the rules below state PART 9 §19 with examples.
+`resources/grammar.ebnf` PART 6, and so are its rules (`CARVE-P6-001`, I1 to I15); this page states them with examples.
 
 ## What inclusion is (and is not)
 
@@ -515,7 +515,7 @@ The specification is normative on the **outcome** and permissive on the
   affected.
 - Source positions **SHOULD** identify the file they are measured in, so that
   source-mapped hosts (editors, highlighters, error reporters) can attribute an
-  included span to the child file rather than to the directive (PART 9 §19 I4).
+  included span to the child file rather than to the directive (PART 6 I4).
   When a processor provides file attribution, every coordinate is measured
   in the file named by `pos.file` (PART 12 §41).
   A node from the document being parsed has no `pos.file`, so a document with
@@ -774,7 +774,7 @@ Inclusion is bounded to keep expansion linear and terminating:
 Every failure path is **visible**, never a silent drop. Each of these emits a
 **Warning** and leaves the directive **literal**:
 
-<!-- normative-obligations: PART 9 §19 I3 I6 I7 -->
+<!-- normative-obligations: PART 6 I3 I6 I7 -->
 | Condition | Result |
 |---|---|
 | Unreadable / missing path | Warning + literal directive |

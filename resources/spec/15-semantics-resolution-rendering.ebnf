@@ -4,29 +4,15 @@
       INLINE form `^[content]` are implemented, and they are the only note
       forms: the proposed sidenote (`[>content]`) was dismissed as a
       presentation concern, so `[>` is unclaimed and `[>foo]` is literal
-      text (docs/dismissed-syntax.md). Numbering and resolution are formalized
-      as PART 9R rule R2; the rendering rules below stay normative here.
-      - A `[^label]` reference with a matching definition is NUMBERED by
-        document reference order (first referenced = 1); the same label
-        referenced again reuses its number.
-      - Definitions may appear anywhere (order-independent); the FIRST
-        definition for a label wins. A body is the def line plus any
-        following lines indented to column 2 or more (PART 9 §24 C1 column
-        arithmetic -- a tab reaching column 2 qualifies the same as two
-        spaces; single blank lines allowed between chunks), parsed as
-        blocks. A definition is
-        document-level metadata: it is COLLECTED and RESOLVED even when it
-        sits INSIDE A CONTAINER. The reference resolves to the one endnotes
-        section and the container that held the definition renders as
-        though the line were never written -- §17 L6 states the general
-        rule once, for every block-level container that can hold a
-        definition, rather than enumerating them per definition kind. The
-        corpus pins this (resources/examples/edge-cases.md "Footnote definition inside a
-        container is collected").
-      - A reference with NO matching definition renders as literal source
-        text `[^label]` (a trailing `{attrs}` on an unresolved ref is not
-        round-tripped -- a marginal mistyped-label edge). An UNREFERENCED
-        definition is dropped.
+      text (docs/dismissed-syntax.md). Numbering, which definition wins,
+      collection inside containers, unresolved references and unreferenced
+      definitions are PART 9R R2 and §17 L6; the rendering rules below stay
+      normative here.
+      - A body is the def line plus any following lines indented to column 2
+        or more (PART 9 §24 C1 column arithmetic -- a tab reaching column 2
+        qualifies the same as two spaces; single blank lines allowed between
+        chunks), parsed as blocks.
+      - An unresolved reference keeps no trailing `{attrs}` in round trips.
       - Rendering (djot-compatible roles):
           reference -> <a id="{refId}" href="#fn{n}" role="doc-noteref"><sup>{n}</sup></a>
           endnotes  -> ONE <section role="doc-endnotes"> appended AFTER
@@ -123,8 +109,8 @@
             reference note).
           * Empty or whitespace-only (`^[]`, `^[ ]`) is literal; an unclosed
             `^[…` is literal.
-        PRECEDENCE (PART 8): `^[` opens an inline note; a bare `^` anywhere
-        else is literal text (there is no bare superscript). Consequences:
+        PRECEDENCE (PART 8): `^[` opens an inline note, and a `^` not
+        immediately before `[` opens none. Consequences:
         `^[x]^` is a note then a literal `^`; `\^[x]` is literal; a `^` not
         immediately followed by `[` is plain text.
       - LIMITATION: a footnote (reference `[^1]` or inline `^[…]`) inside link

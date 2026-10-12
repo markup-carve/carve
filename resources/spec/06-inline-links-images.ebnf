@@ -237,18 +237,14 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
    before the destination is a run of spaces (CARVE-P3-009). Any other
    whitespace after that run, a tab included, starts the destination slot,
    which cannot hold it, so the destination is EMPTY and the line is NOT a
-   definition: it stays literal, as `[r]:` already does.
+   definition: it stays literal, as `[r]:` and `[r]:` followed only by spaces
+   already do.
 
    There is no "trim the ends, keep the interior" variant: `link_destination`
    admits no whitespace at all. *)
 (* Titles accept double OR single quotes -- a deliberate enhancement
    over djot (which has no single-quote titles; it would fold `'...'`
    into the URL). The non-delimiting quote may appear inside the title. *)
-(* A backslash-escaped delimiter inside the title is a literal quote
-   (CommonMark-style): `\"` in a "-title and `\'` in a '-title are kept
-   as the literal quote character and do NOT end the title. This is
-   honored for the INLINE-link title (`[t](/url "ti\"tle")` -> title
-   `ti"tle`); see the note at `reference_definition` for the ref-def slot. *)
 (* The space before the quoted run is a PADDING SLOT, not a marker separator
    (PART 7): a link is already a link once its destination has been read, and a
    reference definition is already a definition, so the title is optional
@@ -269,9 +265,9 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
    rather than that production's closing `newline`: a wrapped title would
    satisfy the terminal with the line break after it. So
    `[r]: /u "t` + newline + `u"` is a paragraph and not a definition. *)
-(* Titles resolve `escaped_char`, the whole ASCII punctuation escape set.
-   A backslash before any other character remains literal, as in a quoted
-   attribute value. Only the title slot admits a newline. *)
+(* Escapes in a title: CARVE-P7-004. `\"` in a "-title is a literal quote and
+   does not end it (`[t](/url "ti\"tle")` -> title `ti"tle`), in every slot
+   that reads `link_title`. *)
 link_title = space, ('"', {escaped_char | literal_backslash | (character - '"' - '\')}, '"')
            | space, ("'", {escaped_char | literal_backslash | (character - "'" - '\')}, "'") ;
 
@@ -304,7 +300,9 @@ reference_label = (character - ']' - '@' - newline), {character - ']' - newline}
    as a citation with the Tier-2 extension on.
 
    THE CONTROL CARRIES THE RULE. `[@a]` on its own IS a citation with the
-   extension on, and that is the REASON the label slot rejects it.
+   extension on, and that is the REASON the label slot rejects it. The same
+   exclusion makes `[@key]: …` a citation definition (`citation_definition`)
+   and never a link definition, whether or not the extension is enabled.
 
    THE TREE SHAPE for a declining `[t][@a]` is left open here; the rendering is
    the verbatim source run either way. *)
@@ -365,9 +363,8 @@ reference_definition = '[', reference_label, ']', ':', space+, link_destination,
 
    A valid block still defines and transfers its attributes. *)
 (* TRAILING ATTRIBUTES ON A DEFINITION -- NORMATIVE [CARVE-P3-007]. A `{...}` block at the end
-   of the definition line attaches to the DEFINITION, and PART 9R R1 already
-   says what that means: the attributes transfer to every link OR IMAGE that
-   resolves the label, and the reference site's own attributes override per key.
+   of the definition line attaches to the DEFINITION, and PART 9R R1 transfers
+   it to every link OR IMAGE that resolves the label.
 
        [Example][ex]
 
@@ -378,12 +375,7 @@ reference_definition = '[', reference_label, ']', ':', space+, link_destination,
    AN IMAGE REFERENCE RESOLVES THE SAME ENTRY -- NORMATIVE [CARVE-P3-008]. `![alt][ex]` looks
    the label up in the same `linkDefs` table and takes the same three fields, so
    `[ex]: /i.png {.wide}` gives `<img src="/i.png" alt="alt" class="wide">`.
-
-   THE MERGE IS §15 A3's, the one stacked attribute lists already use: the
-   definition's list first, the link's second, so a repeated `id` or key takes
-   the LAST value (the link's) and CLASSES ACCUMULATE in source order. So
-   `[ex]: /u {.external #a}` with `[Example][ex]{.internal #b}` renders
-   `class="external internal" id="b"`.
+   How the two attribute lists merge is PART 9R R1's.
 
    NOT THE SAME AS THE LINE ABOVE. The two forms are different constructs and
    both are now well-defined:
@@ -428,20 +420,6 @@ reference_definition = '[', reference_label, ']', ':', space+, link_destination,
    MARKER REQUIRES CONTENT still applies after the run: `[^f]:` followed by
    spaces and nothing else is a paragraph, because a line of `whitespace` is
    blank (PART 1). *)
-(* A leading `@` is reserved: `[@key]: ...` is never a reference definition, it
-   is a citation definition (`citation_definition`, Tier-2). This parallels the `[^...]:`
-   footnote-definition precedence and holds in core whether or not the citation
-   extension is enabled, so a short entry like `[@a]: A.` is not mis-claimed as
-   a link definition. *)
-(* The reference-definition title reuses `link_title`, INCLUDING the
-   backslash-escape rule above: a `\"` inside the quoted run is a literal
-   quote and does not end the title (`[y]: /u "a\"b\"c"` -> title
-   `a"b"c`, emitted as `title="a&quot;b&quot;c"`). This matches the
-   inline-link title. *)
-(* A reference definition requires a NON-EMPTY `link_destination` (one or
-   more characters after the separator run). A bare `[r]:` -- with nothing
-   after the colon, or only trailing whitespace -- does NOT form a
-   definition; the line stays literal paragraph text. *)
 (* --- Inline Spans --- *)
 (* A bracketed inline run immediately followed by an attribute block
    attaches those attributes to a <span>. Distinguished from links by the
@@ -554,16 +532,9 @@ alt_text = {character} ;
    `link_text`; the value remains scalar. *)
 image_source = link_destination ;  (* absolute or relative, like links *)
 image_title = link_title ;
-(* A reference / collapsed-reference image resolves its label against the
-   document's reference definitions EXACTLY as the matching reference_link does
-   (case-sensitive), taking the definition's destination as `src` and its
-   optional title as the image title. A collapsed `![alt][]` uses alt_text as
-   the label, so alt_text must be non-empty; the full `![alt][ref]` form allows
-   an empty alt_text (the label is reference_label). An UNRESOLVED reference
-   image renders as literal source (the `!` plus the bracketed text) and --
-   unlike a reference link -- never matches heading text. There is NO shortcut
-   `![alt]` reference image, mirroring the absence of a shortcut reference
-   link. A trailing [attribute_run] attaches to the resolved <img>. *)
+(* A reference image resolves under PART 9R R1, taking the definition's
+   destination as `src` and its title as the image title. A trailing
+   [attribute_run] attaches to the resolved <img>. *)
 
 (* A caption (`^ ` line) may follow a standalone image paragraph on the
    next line, wrapping it in a <figure> -- caption placement is PART 9 §4;
