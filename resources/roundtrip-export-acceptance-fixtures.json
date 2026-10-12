@@ -789,6 +789,68 @@
         }
       ],
       "aheadOfPin": true
+    },
+    {
+      "id": "generated-heading-id-in-quote",
+      "source": "> # Q\n",
+      "carriers": {
+        "data-carve-generated-id": null
+      },
+      "forbiddenExportAttributes": [
+        "data-carve-explicit-id"
+      ],
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "level": 1
+        }
+      ],
+      "expectedAbsentFields": [
+        {
+          "type": "heading",
+          "field": "attrs.id"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-generated-id",
+          "element": "h1"
+        }
+      ],
+      "aheadOfPin": true
+    },
+    {
+      "id": "authored-heading-id-in-quote",
+      "source": "> {#Z}\n> # Q\n",
+      "carriers": {
+        "data-carve-explicit-id": null
+      },
+      "forbiddenExportAttributes": [
+        "data-carve-generated-id"
+      ],
+      "expectedNodes": [
+        {
+          "type": "heading",
+          "level": 1,
+          "attrs.id": "Z"
+        }
+      ],
+      "importModes": [
+        "safe",
+        "semantic",
+        "roundtrip"
+      ],
+      "carrierHosts": [
+        {
+          "attribute": "data-carve-explicit-id",
+          "element": "h1"
+        }
+      ]
     }
   ],
   "importNegative": [

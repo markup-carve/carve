@@ -8178,6 +8178,11 @@ EOF = (* end of file *) ;
                                                   PART 9 §13 wraps one, and
                                                   the heading where it does
                                                   not
+        data-carve-generated-id     <h1>-<h6>     presence: the id was
+                                                  generated, not authored. It
+                                                  rides a heading that keeps
+                                                  its own id, where PART 9 §13
+                                                  wraps no `<section>`
         data-carve-ref              <a>, <img>    the reference label the link
                                                   or image resolved by
         data-carve-autolink         <a>           presence: the link was
@@ -8355,8 +8360,9 @@ EOF = (* end of file *) ;
       holding `&` returns holding `&amp;`.
 
       A PRESENCE CARRIER CARRIES NOTHING IN ITS VALUE.
-      `data-carve-explicit-id`, `data-carve-autolink`,
-      `data-carve-inline-footnote` and `data-carve-escaped` say what they say
+      `data-carve-explicit-id`, `data-carve-generated-id`,
+      `data-carve-autolink`, `data-carve-inline-footnote` and
+      `data-carve-escaped` say what they say
       by being there. A writer writes the empty value or `1`; a reader reads
       presence and does not compare the value.
 
