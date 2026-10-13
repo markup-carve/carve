@@ -24,7 +24,7 @@ import {
   type ContinuationEdit,
 } from '@markup-carve/carve-lsp/browser'
 import { carveCompletion, carveDiagnostics, carveHover, carveLanguageTheme, carveTooltips } from '../editor/carve-language'
-import { formatTable, nextCell, previousCell } from '../editor/carve-tables'
+import { endTableAt, formatTable, isBlankRow, nextCell, previousCell } from '../editor/carve-tables'
 import { searchKeymap, highlightSelectionMatches } from '@codemirror/search'
 
 const props = defineProps<{
@@ -154,13 +154,11 @@ const continueOnEnter: Command = (v) => {
   if (sel.ranges.length !== 1 || !sel.main.empty) return false
   const pos = sel.main.head
   const line = v.state.doc.lineAt(pos)
+  // Enter on the bare `|` a table row's Enter wrote, or on a row of blank cells,
+  // ends the table, as an empty list marker ends a list.
+  const underTable = line.number > 1 && /^[ \t]*[|+]/.test(v.state.doc.line(line.number - 1).text)
+  if (underTable && (/^[ \t]*\|[ \t]*$/.test(line.text) || isBlankRow(line.text))) return endTableAt(v, line.number)
   if (pos !== line.to) return false
-  // Enter on the bare `|` a table row's Enter wrote ends the table, as an empty list marker ends a list.
-  if (/^[ \t]*\|[ \t]*$/.test(line.text) && line.number > 1 && /^[ \t]*[|+]/.test(v.state.doc.line(line.number - 1).text)) {
-    // A blank line closes the table, and the cursor goes below it.
-    v.dispatch({ changes: { from: line.from, to: line.to, insert: '\n' }, selection: { anchor: line.from + 1 }, scrollIntoView: true, userEvent: 'input' })
-    return true
-  }
   const base = { from: pos, insert: '\n' }
   const text = v.state.doc.sliceString(0, pos) + '\n' + v.state.doc.sliceString(pos)
   const position = { line: line.number, character: 0 }
@@ -205,6 +203,9 @@ function emitPreview(state: EditorState): void {
     const rest = line.text.slice(lead.length)
     if (sel.main.head === line.to && rest && BARE_MARKER.test(rest) && !inCodeBlock(state.doc.toString(), line.number)) {
       preview = state.doc.sliceString(0, line.from + lead.length).replace(/[ \t]+$/, '') + state.doc.sliceString(line.to)
+    } else if ((/^[ \t]*\|[ \t]*$/.test(line.text) || isBlankRow(line.text)) && line.number > 1 && /^[ \t]*[|+]/.test(state.doc.line(line.number - 1).text)) {
+      // A row being filled under a table renders as stray text until it has content.
+      preview = state.doc.sliceString(0, line.from) + state.doc.sliceString(line.to + 1)
     }
   }
   if (preview === lastPreview) return

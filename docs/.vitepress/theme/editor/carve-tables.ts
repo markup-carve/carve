@@ -69,6 +69,17 @@ function parseRow(line: string): Row | null {
   return { lead, cells, tail: tail.trimEnd(), separator }
 }
 
+/**
+ * A row whose cells are all plain and empty (`|   |   |`). Engines read it as
+ * text, not a table row (markup-carve/carve#1950), so the editor treats it as
+ * a row being filled: hidden from the preview, and Enter or Tab past its last
+ * cell drops it and ends the table.
+ */
+export function isBlankRow(line: string): boolean {
+  const row = parseRow(line)
+  return !!row && !row.separator && row.cells.every((cell) => cell.opener === '|' && cell.text === '')
+}
+
 function tableAt(doc: Text, lineNumber: number): { first: number; rows: Row[] } | null {
   if (!parseRow(doc.line(lineNumber).text)) return null
   let first = lineNumber
@@ -210,6 +221,8 @@ function moveCell(direction: 1 | -1): Command {
       targetRow += direction
       if (targetRow < 0) return true
       if (targetRow >= lines.length) {
+        // Past the last cell of a blank last row: drop it and leave the table.
+        if (isBlankRow(lines[lines.length - 1]) && lines.length > 1) return endTableAt(view, formatted.first + lines.length - 1)
         // Past the last cell: a new empty row with the widest row's column count.
         const lead = /^[ \t]*/.exec(lines[0])![0]
         lines = formatRows([...lines.map((l) => parseRow(l)!), { lead, cells: Array.from({ length: widest }, () => ({ opener: '|', text: '' })), tail: '', separator: false }])
@@ -233,6 +246,13 @@ function moveCell(direction: 1 | -1): Command {
     return true
   }
   return move
+}
+
+/** Replace the blank row at `lineNumber` with the blank line that closes the table, cursor below it. */
+export function endTableAt(view: EditorView, lineNumber: number): boolean {
+  const line = view.state.doc.line(lineNumber)
+  view.dispatch({ changes: { from: line.from, to: line.to, insert: '\n' }, selection: { anchor: line.from + 1 }, scrollIntoView: true, userEvent: 'input' })
+  return true
 }
 
 export const nextCell = moveCell(1)
