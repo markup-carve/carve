@@ -10,14 +10,119 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
+### Breaking
+
+- Roundtrip export is the one option that turns on carriers for both the HTML
+  and the Markdown target. Its HTML carriers are named `data-carve-*`; importers
+  still accept `data-djot-*` as a deprecated alias and prefer `data-carve-*`, and
+  the Markdown-only carrier options are gone (PART 10 §13) (#2898, #2906, #2937).
+- Markdown import reads an `*[TERM]: expansion` line as an abbreviation
+  definition and folds the matching `<abbr>`, where it used to keep the line as
+  text (CARVE-P11-033 T1) (#3120, #3128).
+- HTML import reads a line block only from its `data-carve-line-block` carrier,
+  never from `class="line-block"` alone, so the admonition `::: line-block`
+  stays an admonition (CARVE-P10-015) (#3121).
+- New loss codes: the render-loss report adds `carrier-attribute-dropped`,
+  `list-style-dropped` and `list-delimiter-changed`, and the migration report adds
+  `carrier-marker-dropped` and `carrier-markers-damaged`. Tools that match a
+  closed code list have to accept them (#2841, #2906, #2940, #3055, #3065, #3074,
+  #3075, #3102).
+- A conforming parse omits `delim` for an authored `.` and `bulletChar` for an
+  authored `-`, and the AST schema states it (#2834).
+- A block attribute or comment run that spans lines needs indented continuation
+  lines, comment-only runs included; inline runs may still continue unindented
+  (CARVE-P4-008) (#2917, #2923).
+- A row of blank cells between explicit pipes is a table row, replacing the
+  rule that rejected all-blank rows (CARVE-P9-082) (#3109).
+
 ### Fixes
+
+- Plain text blanks a denied destination in an unused link reference definition it writes, as `CARVE-P9-054` now binds that line (#3149).
+
+- PART 10 states that an authored `line-block` class on a line block is not recovered, and the import diagnostics list `raw-code-fallback` (#3153).
 
 - Define Markdown fallbacks that preserve inline code whitespace and hard breaks
   at paragraph ends, wrapper boundaries and inside headings (#2855).
 
 - Markdown import omits an empty, unaligned table header instead of emitting
   a paragraph of pipes. Headers with content or alignment remain table rows,
-  and the migration report identifies the omitted row (#2840).
+  and the migration report identifies the omitted row (#2840, #2844).
+
+- Smart quote direction looks past the previous character: a line break counts
+  as whitespace, a braced comment contributes nothing, and a single quote at the
+  start of content opens, so `'tis` takes a left quote (CARVE-P3-023) (#2827,
+  #2831, #2876).
+- A link destination is opaque to the bracket scan, so a `]` inside it no longer
+  ends the link label's run (CARVE-P3-001) (#2862, #2874).
+- A percent run longer than two still opens a comment; the escaper corpus now
+  expects the escaped spelling (#2867).
+- A caption no longer counts a structural-only line such as a bare `>` as one of
+  its blanks, so an empty quote does not become a captioned figure (#2914).
+- `raw_block.content` keeps the authored final line feed, and the exact code
+  fallback consumes the payload without adding one (#2916).
+- An attribute block after a braced comment stays literal, glued or spaced
+  (CARVE-P9-021) (#2932).
+- The Markdown target carries attributes on underline, highlight, subscript and
+  superscript, and writes a deletion as `<del>` with a class so a bare `<del>`
+  still reads back as a strike (CARVE-P11-045) (#2842, #2846).
+- Carrier values are untrusted: a value that fails the construct's grammar drops
+  with a diagnostic, contradictory footnote carriers are both ignored, and the
+  render-loss schema validates `carrier-attribute-dropped` rows (CARVE-P10-017)
+  (#2921, #2924, #2940).
+- A line below a closed nested block (fence, heading, table, line block) is
+  adopted by no surviving paragraph, and a closed fence below an open sublist
+  opens in the outer item (CARVE-P0-009, CARVE-P0-014) (#2890, #2922, #2957,
+  #2965, #3090, #3139).
+- A marker-line footnote body keeps a fence, quote or term written at or past its
+  body column, also after an absorbed marker line or a comment (CARVE-P2-017)
+  (#3020, #3036, #3050, #3056, #3080).
+- A recognized opener, link definition or attribute line past a colon
+  container's column inside a list item opens on its authored base, and a
+  quoted item releases ownership after a hosted colon fence (CARVE-P0-004)
+  (#2933, #2974, #2987, #3006, #3095).
+- Fence handling inside containers: a closer below the authored base is
+  measured as payload, a line-block payload line opens no fence, and invalid
+  fence metadata never interrupts a paragraph (CARVE-P0-004, CARVE-P2-006)
+  (#3038, #3061, #3073, #3126, #3142).
+- A table span never covers another cell, and a continuation row after a `^`
+  row joins the spanning cell (CARVE-P9-002) (#3051, #3101).
+- Tab and line-final rulings for the inline, attribute, include and resolution
+  parts, and a closed flank class for smart typography (CARVE-P7-001,
+  CARVE-P7-003) (#2982, #3000, #3011, #3012, #3146).
+- Corpus rows where the layout oracle disagreed with the clause text are
+  re-pinned to the clause (#3009, #3024, #3065).
+
+### Improvements
+
+- Smart typography can turn quote substitution off while keeping dashes,
+  ellipses and symbols, with optional rows for every target (#2888, #2896).
+- Task lists get styling hooks: `class="task-list"` on a list whose items are all
+  tasks and `data-task-state="x"` on a checked item, read back by HTML import
+  (#2897).
+- Same-kind braced emphasis nests, and the Markdown import inventory records it
+  as preserved (#2904, #2913).
+- A block quote and a footnote body take the `+` first-block form, as list items
+  and descriptions do (#3106).
+- AST contract 1.1: `table.separatorWidths` records the authored separator
+  row, and a strict reader refuses a newer contract version (#2919).
+- The AST keeps table continuation lines as `cell_wrap` markers, and as
+  `cellWraps` offsets inside code spans, raw inlines and math (CARVE-P12-069)
+  (#3096, #3130, #3140).
+- HTML roundtrip carriers for code block labels, attribute lines, definition
+  lists, captions, generated heading ids, tight lists, cross-references and
+  caption numbers, under one carrier table, with shared acceptance fixtures
+  (CARVE-P10-015) (#2938, #2941, #2951, #2953, #2964, #3005, #3016, #3041).
+- Markdown roundtrip markers carry element-less containers, composite figure
+  captions, inline attributes, spans, cross-references and alphabetic or roman
+  list styles, including inside line-prefixing hosts (CARVE-P11-063,
+  CARVE-P11-067, CARVE-P11-068) (#2841, #2856, #2872, #2908, #2948, #3019, #3074,
+  #3075, #3084, #3088).
+- Roundtrip Markdown export keeps reference links in full or collapsed form with
+  their definition line, and the raw-block drop is a stated limit
+  (CARVE-P11-028) (#3120).
+- PART 0 states container ownership as one procedure, and PART 10, PART 12 and
+  the layout and block parts are restated with clause-id citations. Rendered
+  output is unchanged (#2976, #2983, #2994, #2995, #3003, #3010, #3055, #3068).
 
 ## [0.1.9] - 2026-10-09
 

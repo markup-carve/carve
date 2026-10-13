@@ -65,3 +65,33 @@
 # direct push has no number, so there is nothing else to record it under.
 0512ccfd: 0.1.8 - pushed straight to main. Replaces the one-sentence description of Carve in the README, the site config, the grammar header and the preamble header. Marketing copy: no production, clause meaning, corpus row or oracle answer changes. Same class as carve#2667.
 2805: 0.1.9 - clears two post-cut gates and moves no shipped source: it cites three merges in the section that had already been written, and teaches scripts/check-external-links.mjs to skip the one compare range whose newer end is the version being prepared. Gate machinery, which is the class this file keeps.
+2825: Unreleased - splits one compare block in the example page so the population counters read one pair per block. The corpus rebuild moves no file; the ruling is the carve#2809 entry in 0.1.9.
+2832: Unreleased - converter comparison renders expected and actual HTML with the same selected engine build. Harness machinery: no clause, corpus row or oracle answer moved.
+2847: Unreleased - plants a multi-pair compare block in the example source to guard the population counters (carve#2833). No rendered expectation moved.
+2852: Unreleased - folds a per-engine expectation of the blank-table-row loss into the base expectation once carve-js reports the line. Fixture bookkeeping; the ruling lives in the engines.
+2868: Unreleased - records the carve-rs raw-span convergence in the importer-fidelity ledger. Measurement of an engine, not a rule.
+2885: Unreleased - pins every engine CI checks out and bumps the pins daily. CI machinery.
+2905: Unreleased - engine pin bump. Same ledger class as carve#2637.
+2926: Unreleased - engine pin refresh and re-measured baselines. Same ledger class as carve#2637.
+2934: Unreleased - engine pin refresh with unchanged baselines. Same ledger class as carve#2637.
+2936: Unreleased - engine pin refresh that retires resolved Djot drift rows. Same ledger class as carve#2637.
+2945: Unreleased - engine pin bump; the carrier rows it runs are cited under carve#2941. Same ledger class as carve#2637.
+2952: Unreleased - cross-engine structural roundtrip harness and CI gate. Gate machinery: no clause, corpus row or oracle answer moved.
+2956: Unreleased - engine pin bump carrying the carrier work cited under carve#2951. Same ledger class as carve#2637.
+3018: Unreleased - strict roundtrip count in the structural gate. Gate machinery.
+3069: Unreleased - lint ledger and audit guards after a pin bump. Measurement ledger.
+3089: Unreleased - declares corpus 586 AST ingest drift against carve-js. Measurement ledger.
+3093: Unreleased - re-measures the structural roundtrip baseline for three new corpus documents cited under carve#3090. Baseline only.
+3125: Unreleased - declares importer and ingest drift the carve-js pin brings. Measurement ledger.
+3147: Unreleased - moves the carve-js pin and re-measures the ledgers it satisfies. Pin bump.
+3001: Unreleased - moves the carve-js pin. Pin bump.
+3017: Unreleased - runs the formatter comparison in process. CI only.
+3021: Unreleased - highlights each docs code fence once per build. Docs site build only.
+3029: Unreleased - moves the three engine pins. Pin bump.
+3059: Unreleased - moves the carve-js and carve-php pins. Pin bump.
+3077: Unreleased - declares AST drift measured after spec wave 14. Measurement ledger.
+3081: Unreleased - declares corpus 585 AST and ingest drift against carve-js; the corpus change is cited under #3080. Measurement ledger.
+3082: Unreleased - moves the carve-rs pin. Pin bump.
+3085: Unreleased - moves the carve-js pin. Pin bump.
+3122: Unreleased - moves the carve-js pin to the blank-row rule. Pin bump.
+3134: Unreleased - makes the aheadOfPin harness accept a row only on its declared failure. Test harness.
