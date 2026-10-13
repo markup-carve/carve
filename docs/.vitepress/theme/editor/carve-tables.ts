@@ -144,8 +144,23 @@ function cellStarts(line: string): number[] {
   return out
 }
 
+// A row being typed under a table: it starts like a row but has no closing pipe yet.
+function openRowUnderTable(doc: Text, lineNumber: number): boolean {
+  const text = doc.line(lineNumber).text
+  return /^[ \t]*[|+]/.test(text) && !parseRow(text) && lineNumber > 1 && parseRow(doc.line(lineNumber - 1).text) !== null
+}
+
 function moveCell(direction: 1 | -1): Command {
-  return (view: EditorView) => {
+  const move: Command = (view: EditorView) => {
+    const here = view.state.doc.lineAt(view.state.selection.main.head)
+    // Close the row being typed, so it joins the table before the move.
+    if (direction === 1 && openRowUnderTable(view.state.doc, here.number)) {
+      const end = here.from + here.text.replace(/[ \t]+$/, '').length
+      view.dispatch({ changes: { from: end, to: here.to, insert: ' |' }, selection: { anchor: end }, userEvent: 'input' })
+    }
+    return moveWithin(view)
+  }
+  const moveWithin: Command = (view: EditorView) => {
     const state = view.state
     const sel = state.selection.main
     const line = state.doc.lineAt(sel.head)
@@ -162,6 +177,15 @@ function moveCell(direction: 1 | -1): Command {
 
     let targetRow = rowIndex
     let targetCell = cell + direction
+    // Past the end of a row that is shorter than the table: add the next cell.
+    const own = parseRow(lines[rowIndex])!
+    const widest = lines.reduce((best, l) => Math.max(best, cellStarts(l).length), 0)
+    if (direction === 1 && !own.separator && targetCell >= own.cells.length && own.cells.length < widest) {
+      const rows = lines.map((l) => parseRow(l)!)
+      rows[rowIndex] = { ...own, cells: [...own.cells, { opener: '|', text: '' }] }
+      lines = formatRows(rows)
+      targetCell = own.cells.length
+    }
     while (true) {
       const here = cellStarts(lines[targetRow] ?? '')
       if (targetCell >= 0 && targetCell < here.length) break
@@ -169,7 +193,6 @@ function moveCell(direction: 1 | -1): Command {
       if (targetRow < 0) return true
       if (targetRow >= lines.length) {
         // Past the last cell: a new empty row with the widest row's column count.
-        const widest = lines.reduce((best, l) => Math.max(best, cellStarts(l).length), 0)
         const lead = /^[ \t]*/.exec(lines[0])![0]
         lines = formatRows([...lines.map((l) => parseRow(l)!), { lead, cells: Array.from({ length: widest }, () => ({ opener: '|', text: '' })), tail: '', separator: false }])
         targetCell = 0
@@ -191,6 +214,7 @@ function moveCell(direction: 1 | -1): Command {
     })
     return true
   }
+  return move
 }
 
 export const nextCell = moveCell(1)

@@ -155,6 +155,11 @@ const continueOnEnter: Command = (v) => {
   const pos = sel.main.head
   const line = v.state.doc.lineAt(pos)
   if (pos !== line.to) return false
+  // Enter on the bare `|` a table row's Enter wrote ends the table, as an empty list marker ends a list.
+  if (/^[ \t]*\|[ \t]*$/.test(line.text) && line.number > 1 && /^[ \t]*[|+]/.test(v.state.doc.line(line.number - 1).text)) {
+    v.dispatch({ changes: { from: line.from, to: line.to, insert: '' }, userEvent: 'delete' })
+    return true
+  }
   const base = { from: pos, insert: '\n' }
   const text = v.state.doc.sliceString(0, pos) + '\n' + v.state.doc.sliceString(pos)
   const position = { line: line.number, character: 0 }
