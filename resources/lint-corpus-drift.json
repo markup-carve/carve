@@ -3,16 +3,16 @@
   "measured": {
     "date": "2026-10-13",
     "spec": "73f56f27637ce1de8acdaaa3031ab0e750ce7e94",
-    "js": "768b2b313ba248a7931f7d73bef462dfcc07d7a2",
-    "php": "29e428174d9c5c61fcb5649f156568152db159d4",
-    "rust": "ee85c4cae6976d220b34727fd68727649b5d4da0",
-    "documents": 2511
+    "js": "b8c309e43a0fdabb379727bebcb1d7b4f10c0bba",
+    "php": "be7dd4e720f5fecb75246ce313a6b548599ebaf7",
+    "rust": "e580eb3144f90163bea6f08fa97618984d2dd4aa",
+    "documents": 2528
   },
   "differences": [
     {
       "file": "tests/corpus/161-below-content-column-div-body-in-a-list-item-stays-literal.crv",
-      "reason": "carve-php renders this document differently from its corpus HTML at the pin (29e42817) and at main (2813194e); carve-js reads it as the corpus does since 672d0a0a.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/3255",
+      "reason": "carve-rs lints this document differently at the pin (e580eb31); carve-js (b8c309e4) and carve-php (be7dd4e7) agree, and carve-rs main (a1d74ca2) agrees too. The carve-rs pin waits on carve-rs#2627.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2627",
       "diagnostics": {
         "js": [
           [
@@ -23,7 +23,7 @@
         ],
         "php": [
           [
-            "block-marker-as-text",
+            "unclosed-container-fence",
             1,
             3
           ]
@@ -39,8 +39,8 @@
     },
     {
       "file": "tests/corpus/277-a-below-column-marker-after-a-comment-where-no-paragraph-is-open-3.crv",
-      "reason": "carve-php renders this document differently from its corpus HTML at the pin (29e42817) and at main (2813194e); carve-js reads it as the corpus does since 672d0a0a.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/3255",
+      "reason": "carve-rs lints this document differently at the pin (e580eb31); carve-js (b8c309e4) and carve-php (be7dd4e7) agree, and carve-rs main (a1d74ca2) agrees too. The carve-rs pin waits on carve-rs#2627.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2627",
       "diagnostics": {
         "js": [
           [
@@ -49,14 +49,20 @@
             2
           ]
         ],
-        "php": [],
+        "php": [
+          [
+            "list-item-body-detached",
+            5,
+            2
+          ]
+        ],
         "rust": []
       }
     },
     {
       "file": "tests/corpus/364-only-lazy-folding-demotes-a-marker-line-colon-opener-2.crv",
-      "reason": "carve-php renders this document differently from its corpus HTML at the pin (29e42817) and at main (2813194e); carve-js reads it as the corpus does since 672d0a0a.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/3255",
+      "reason": "carve-rs lints this document differently at the pin (e580eb31); carve-js (b8c309e4) and carve-php (be7dd4e7) agree, and carve-rs main (a1d74ca2) agrees too. The carve-rs pin waits on carve-rs#2627.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2627",
       "diagnostics": {
         "js": [
           [
@@ -67,7 +73,7 @@
         ],
         "php": [
           [
-            "block-marker-as-text",
+            "unclosed-container-fence",
             1,
             3
           ]
@@ -83,8 +89,8 @@
     },
     {
       "file": "tests/corpus/482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-2.crv",
-      "reason": "carve-php renders this document differently from its corpus HTML at the pin (29e42817) and at main (2813194e); carve-js reads it as the corpus does since 672d0a0a.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/3255",
+      "reason": "carve-rs lints this document differently at the pin (e580eb31); carve-js (b8c309e4) and carve-php (be7dd4e7) agree, and carve-rs main (a1d74ca2) agrees too. The carve-rs pin waits on carve-rs#2627.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2627",
       "diagnostics": {
         "js": [
           [
@@ -95,13 +101,8 @@
         ],
         "php": [
           [
-            "block-marker-as-text",
-            1,
-            3
-          ],
-          [
             "unclosed-container-fence",
-            3,
+            1,
             3
           ]
         ],
@@ -121,8 +122,8 @@
     },
     {
       "file": "tests/corpus/482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-3.crv",
-      "reason": "carve-php renders this document differently from its corpus HTML at the pin (29e42817) and at main (2813194e); carve-js reads it as the corpus does since 672d0a0a.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/3255",
+      "reason": "carve-rs lints this document differently at the pin (e580eb31); carve-js (b8c309e4) and carve-php (be7dd4e7) agree, and carve-rs main (a1d74ca2) agrees too. The carve-rs pin waits on carve-rs#2627.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2627",
       "diagnostics": {
         "js": [
           [
@@ -133,13 +134,8 @@
         ],
         "php": [
           [
-            "block-marker-as-text",
-            1,
-            4
-          ],
-          [
             "unclosed-container-fence",
-            3,
+            1,
             4
           ]
         ],
@@ -159,8 +155,8 @@
     },
     {
       "file": "tests/corpus/482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-4.crv",
-      "reason": "carve-php renders this document differently from its corpus HTML at the pin (29e42817) and at main (2813194e); carve-js reads it as the corpus does since 672d0a0a.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/3255",
+      "reason": "carve-rs lints this document differently at the pin (e580eb31); carve-js (b8c309e4) and carve-php (be7dd4e7) agree, and carve-rs main (a1d74ca2) agrees too. The carve-rs pin waits on carve-rs#2627.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2627",
       "diagnostics": {
         "js": [
           [
@@ -171,13 +167,8 @@
         ],
         "php": [
           [
-            "block-marker-as-text",
-            1,
-            3
-          ],
-          [
             "unclosed-container-fence",
-            4,
+            1,
             3
           ]
         ],
@@ -197,8 +188,8 @@
     },
     {
       "file": "tests/corpus/482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-5.crv",
-      "reason": "carve-php renders this document differently from its corpus HTML at the pin (29e42817) and at main (2813194e); carve-js reads it as the corpus does since 672d0a0a.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/3255",
+      "reason": "carve-rs lints this document differently at the pin (e580eb31); carve-js (b8c309e4) and carve-php (be7dd4e7) agree, and carve-rs main (a1d74ca2) agrees too. The carve-rs pin waits on carve-rs#2627.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2627",
       "diagnostics": {
         "js": [
           [
@@ -215,12 +206,12 @@
         "php": [
           [
             "block-marker-as-text",
-            1,
+            4,
             3
           ],
           [
             "unclosed-container-fence",
-            4,
+            1,
             3
           ]
         ],
@@ -240,8 +231,8 @@
     },
     {
       "file": "tests/corpus/482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in-6.crv",
-      "reason": "carve-php renders this document differently from its corpus HTML at the pin (29e42817) and at main (2813194e); carve-js reads it as the corpus does since 672d0a0a.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/3255",
+      "reason": "carve-rs lints this document differently at the pin (e580eb31); carve-js (b8c309e4) and carve-php (be7dd4e7) agree, and carve-rs main (a1d74ca2) agrees too. The carve-rs pin waits on carve-rs#2627.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2627",
       "diagnostics": {
         "js": [
           [
@@ -257,13 +248,13 @@
         ],
         "php": [
           [
-            "block-marker-as-text",
-            2,
+            "list-item-block-overindented",
+            4,
             5
           ],
           [
             "unclosed-container-fence",
-            4,
+            2,
             5
           ]
         ],
@@ -283,8 +274,8 @@
     },
     {
       "file": "tests/corpus/482-a-closer-does-not-rescue-a-marker-line-colon-opener-whose-body-folded-in.crv",
-      "reason": "carve-php renders this document differently from its corpus HTML at the pin (29e42817) and at main (2813194e); carve-js reads it as the corpus does since 672d0a0a.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/3255",
+      "reason": "carve-rs lints this document differently at the pin (e580eb31); carve-js (b8c309e4) and carve-php (be7dd4e7) agree, and carve-rs main (a1d74ca2) agrees too. The carve-rs pin waits on carve-rs#2627.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2627",
       "diagnostics": {
         "js": [
           [
@@ -295,13 +286,8 @@
         ],
         "php": [
           [
-            "block-marker-as-text",
-            1,
-            3
-          ],
-          [
             "unclosed-container-fence",
-            3,
+            1,
             3
           ]
         ],
@@ -321,8 +307,8 @@
     },
     {
       "file": "tests/corpus/556-a-closed-block-leaves-no-frame-for-the-line-below-13.crv",
-      "reason": "carve-php renders this document differently from its corpus HTML at the pin (29e42817) and at main (2813194e); carve-js reads it as the corpus does since 672d0a0a.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/3255",
+      "reason": "carve-rs lints this document differently at the pin (e580eb31); carve-js (b8c309e4) and carve-php (be7dd4e7) agree, and carve-rs main (a1d74ca2) agrees too. The carve-rs pin waits on carve-rs#2627.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2627",
       "diagnostics": {
         "js": [
           [
@@ -333,7 +319,7 @@
         ],
         "php": [
           [
-            "block-marker-as-text",
+            "unclosed-container-fence",
             1,
             3
           ]
@@ -349,8 +335,8 @@
     },
     {
       "file": "tests/corpus/557-a-line-retained-after-a-comment-opens-a-paragraph-2.crv",
-      "reason": "carve-php renders this document differently from its corpus HTML at the pin (29e42817) and at main (2813194e); carve-js reads it as the corpus does since 672d0a0a.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/3242",
+      "reason": "carve-rs lints this document differently at the pin (e580eb31); carve-js (b8c309e4) and carve-php (be7dd4e7) agree, and carve-rs main (a1d74ca2) agrees too. The carve-rs pin waits on carve-rs#2627.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2627",
       "diagnostics": {
         "js": [
           [
@@ -370,6 +356,11 @@
           ]
         ],
         "php": [
+          [
+            "list-item-block-overindented",
+            6,
+            6
+          ],
           [
             "unclosed-container-fence",
             1,
@@ -397,8 +388,8 @@
     },
     {
       "file": "tests/corpus/557-a-line-retained-after-a-comment-opens-a-paragraph.crv",
-      "reason": "carve-php renders this document differently from its corpus HTML at the pin (29e42817) and at main (2813194e); carve-js reads it as the corpus does since 672d0a0a.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/3242",
+      "reason": "carve-rs lints this document differently at the pin (e580eb31); carve-js (b8c309e4) and carve-php (be7dd4e7) agree, and carve-rs main (a1d74ca2) agrees too. The carve-rs pin waits on carve-rs#2627.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2627",
       "diagnostics": {
         "js": [
           [
@@ -413,6 +404,11 @@
           ]
         ],
         "php": [
+          [
+            "list-item-block-overindented",
+            6,
+            6
+          ],
           [
             "unclosed-container-fence",
             1,
@@ -430,8 +426,8 @@
     },
     {
       "file": "tests/corpus/571-a-shifted-fence-in-a-quoted-container-s-body-stores-no-continuation-claim-2.crv",
-      "reason": "carve-php renders this document differently from its corpus HTML at the pin (29e42817) and at main (2813194e); carve-js reads it as the corpus does since 672d0a0a.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/3255",
+      "reason": "carve-rs lints this document differently at the pin (e580eb31); carve-js (b8c309e4) and carve-php (be7dd4e7) agree, and carve-rs main (a1d74ca2) agrees too. The carve-rs pin waits on carve-rs#2627.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2627",
       "diagnostics": {
         "js": [
           [
@@ -447,6 +443,11 @@
         ],
         "php": [
           [
+            "list-item-block-overindented",
+            4,
+            8
+          ],
+          [
             "unclosed-container-fence",
             1,
             7
@@ -459,6 +460,164 @@
             7
           ]
         ]
+      }
+    },
+    {
+      "file": "tests/corpus/578-a-closed-fence-at-a-marker-line-note-s-body-column-opens-in-the-note-2.crv",
+      "reason": "carve-php reports the child list as over-indented at the pin (be7dd4e7) where carve-js and carve-rs report a detached item body: it still gives the column-5 fence to the list item, not the note.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3280",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-body-detached",
+            3,
+            6
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            3,
+            6
+          ]
+        ],
+        "rust": [
+          [
+            "list-item-body-detached",
+            3,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/579-a-span-never-covers-another-cell.crv",
+      "reason": "carve-js reports djot-superscript-caret on a rowspan marker cell at the pin (b8c309e4); carve-php and carve-rs report the table padding rows only.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2947",
+      "diagnostics": {
+        "js": [
+          [
+            "djot-superscript-caret",
+            3,
+            2
+          ],
+          [
+            "table-alignment-run-padding",
+            1,
+            17
+          ],
+          [
+            "table-alignment-run-padding",
+            3,
+            2
+          ],
+          [
+            "table-alignment-run-padding",
+            3,
+            18
+          ],
+          [
+            "table-alignment-run-padding",
+            4,
+            2
+          ],
+          [
+            "table-alignment-run-padding",
+            4,
+            4
+          ],
+          [
+            "table-alignment-run-padding",
+            4,
+            6
+          ]
+        ],
+        "php": [
+          [
+            "table-alignment-run-padding",
+            1,
+            17
+          ],
+          [
+            "table-alignment-run-padding",
+            3,
+            2
+          ],
+          [
+            "table-alignment-run-padding",
+            3,
+            18
+          ],
+          [
+            "table-alignment-run-padding",
+            4,
+            2
+          ],
+          [
+            "table-alignment-run-padding",
+            4,
+            4
+          ],
+          [
+            "table-alignment-run-padding",
+            4,
+            6
+          ]
+        ],
+        "rust": [
+          [
+            "table-alignment-run-padding",
+            1,
+            17
+          ],
+          [
+            "table-alignment-run-padding",
+            3,
+            2
+          ],
+          [
+            "table-alignment-run-padding",
+            3,
+            18
+          ],
+          [
+            "table-alignment-run-padding",
+            4,
+            2
+          ],
+          [
+            "table-alignment-run-padding",
+            4,
+            4
+          ],
+          [
+            "table-alignment-run-padding",
+            4,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-4.crv",
+      "reason": "carve-js and carve-php fold the two unclosed fences into paragraphs and report an over-indented block; carve-rs (e580eb31) reads them as code blocks, as the corpus does, and reports nothing.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2927",
+      "diagnostics": {
+        "js": [
+          [
+            "list-item-block-overindented",
+            5,
+            9
+          ]
+        ],
+        "php": [
+          [
+            "list-item-block-overindented",
+            5,
+            9
+          ]
+        ],
+        "rust": []
       }
     }
   ]
