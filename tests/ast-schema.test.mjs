@@ -788,8 +788,6 @@ const NOT_PRODUCIBLE = {
     'structural publishing node: sectioning is implicit in heading level, so Carve 0.1 source has no spelling; produced only by importers from a format that has explicit sections (carve#2207)',
   ruby:
     'structural publishing node: Carve 0.1 source has no spelling; produced only by AST and HTML-import consumers (carve#2208)',
-  cell_wrap:
-    'continuation-row marker (CARVE-P12-069): corpus 63 and 64 produce it once the pinned carve-js ships the rule; delete this entry in that pin bump (carve#3094)',
 }
 
 test('every node type the schema declares is produced by a corpus document, or named as unproducible', () => {

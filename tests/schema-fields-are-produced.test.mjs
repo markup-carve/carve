@@ -77,8 +77,6 @@ const ENGINE_ROLLOUT_PENDING = {
   'math.number': 'equation interchange field (CARVE-P12-066): Carve 0.1 source has no direct spelling; produced only by AST and format-bridge consumers',
   'table.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
   'table_cell.blocks': 'structural interchange field: Carve 0.1 source has no spelling for a block inside a cell; produced only by AST/Pandoc/HTML-import consumers',
-  'cell_wrap.*': 'continuation-row marker (CARVE-P12-069): corpus 63 and 64 produce it once the pinned carve-js ships the rule (carve#3094)',
-  'table_row.continuationLines': 'continuation-row count (CARVE-P12-069): corpus 63 and 64 produce it once the pinned carve-js ships the rule (carve#3094)',
 }
 
 /**
