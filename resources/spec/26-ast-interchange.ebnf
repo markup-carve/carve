@@ -482,6 +482,21 @@
           table_cell{ span: "rowspan" },
           table_cell[ "c", cell_wrap{line:1}, "d" ] ] }
 
+      AN ATOMIC INLINE NODE CARRIES THE JOIN AS AN OFFSET. When a join crosses
+      a `code`, `raw_inline`, or `math` payload, the node carries an optional
+      `cellWraps` array. Each entry is the codepoint offset (PART 12 §4) of
+      the single joining space in `value` for `code`, or `content` for
+      `raw_inline` and `math`. Entries are ascending and each names a space
+      inside the payload. A `cellWraps` entry stands for the join a
+      `cell_wrap` would otherwise mark; no `cell_wrap` is placed beside or
+      inside the atomic node for that join. Rendering is unchanged, and
+      `table_row.continuationLines` still counts every join.
+
+        | `a | z |
+        + b` | w |
+
+        table_cell[ code{ value: "a | z b", cellWraps: [5] } ]
+
       A MARKER IS NOT A SECOND TREE. The cell's `children` stay the one parsed
       inline tree; literal per-line child lists are refused because the parts
       are joined BEFORE inline parsing (CARVE-P2-019 item 2), so a span that
@@ -492,7 +507,8 @@
       one.
 
       THE CARVE WRITER WRITES THE LINES BACK. It cuts each cell at its
-      markers and writes `continuationLines` `+` lines after the row, each
+      markers and cuts atomic payloads at their `cellWraps` offsets. It writes
+      `continuationLines` `+` lines after the row, each
       holding the matching part of every column, empty where a cell has no
       part. A `+` line is spelled like a standard row with `+` for its first
       pipe, so an empty part is the single space of any empty cell:
@@ -504,7 +520,9 @@
       one, is written on one line. A `cell_wrap` outside a `table_cell`, a
       `line` above the `continuationLines` of the row it names, a `row` equal
       to or above the cell's `rowspan`, or two markers in one cell with the
-      same `line` and `row` is invalid in the sense of CARVE-P12-030
+      same `line` and `row`, or a `cellWraps` entry that is not ascending,
+      does not name a space inside the payload, or sits on a node outside a
+      `table_cell` is invalid in the sense of CARVE-P12-030
       ([carve#3094](https://github.com/markup-carve/carve/issues/3094)).
 
    ============================================================================ *)

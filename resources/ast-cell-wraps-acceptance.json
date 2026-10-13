@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "rows": [
+    {
+      "id": "code-span-crosses-a-join",
+      "source": "| `a | z |\n+ b` | w |\n",
+      "path": "/children/0/rows/0/cells/0/children/0",
+      "expected": { "type": "code", "value": "a | z b", "cellWraps": [5] },
+      "aheadOfPin": true
+    },
+    {
+      "id": "raw-inline-crosses-a-join",
+      "source": "| `<b | z |\n+ c>`{=html} | w |\n",
+      "path": "/children/0/rows/0/cells/0/children/0",
+      "expected": { "type": "raw_inline", "format": "html", "content": "<b | z c>", "cellWraps": [6] },
+      "aheadOfPin": true
+    },
+    {
+      "id": "inline-math-crosses-a-join",
+      "source": "| $`a | z |\n+ b` | w |\n",
+      "path": "/children/0/rows/0/cells/0/children/0",
+      "expected": { "type": "math", "display": false, "content": "a | z b", "cellWraps": [5] },
+      "aheadOfPin": true
+    },
+    {
+      "id": "join-between-nodes-takes-a-marker",
+      "source": "| `x`{=html} a | z |\n+ b | w |\n",
+      "path": "/children/0/rows/0/cells/0/children",
+      "expected": [
+        { "type": "raw_inline", "format": "html", "content": "x" },
+        { "type": "text", "value": " a" },
+        { "type": "cell_wrap", "line": 1 },
+        { "type": "text", "value": "b" }
+      ]
+    }
+  ]
+}

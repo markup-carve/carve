@@ -122,6 +122,8 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
   assert.deepEqual(
     specRelaxed.map((e) => [e.path, e.policy, perPrPolicy(e)]).sort(),
     [
+      // A spec PR adds a cellWraps row ahead of the pin; the pin bump drops the flag.
+      ['resources/ast-cell-wraps-acceptance.json', 'owed', 'declared'],
       ['resources/ast-extent-findings.txt', 'owed', 'declared'],
       ['resources/ast-position-waivers.txt', 'split', 'split-declared'],
       ['resources/ast-span-divergence.txt', 'owed', 'declared'],
