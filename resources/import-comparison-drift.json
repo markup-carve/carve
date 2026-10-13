@@ -2,10 +2,37 @@
   "version": 1,
   "measured": {
     "date": "2026-10-13",
-    "spec": "7047606d8b81a9bf84d37c8add1ea55a341259a6",
-    "js": "d5f14c8c64565bc629e48e87afe6d8162ccb92ab",
+    "spec": "eb2304de7cdaf501e1287aa9ea6f5d1e25bdc83c",
+    "js": "43dd609654c6b03e2c0068504f2a66dfd59eeb0a",
     "php": "be7dd4e720f5fecb75246ce313a6b548599ebaf7",
     "rust": "a0d6c79000e98e8a2cf7366ed701c4281b5f65d5"
   },
-  "differences": []
+  "differences": [
+    {
+      "key": "commonmark/html/191",
+      "reason": "carve-js (43dd6096) writes the cell-less row left after the `<pre>` is moved out of the table as `||`, a one-cell row; carve-php and carve-rs drop it.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2993",
+      "fingerprint": "508d3358c8fe7c37c44b3a21b463ea7faa3ad9a7b268181840bebe6ca16203c2",
+      "observation": {
+        "kind": "meaning",
+        "answers": {
+          "js": {
+            "status": 0,
+            "source": "```\n<td>\n  Hi\n</td>\n```\n\n||\n",
+            "html": "<pre><code>&lt;td&gt;\n  Hi\n&lt;/td&gt;\n</code></pre>\n<table>\n  <tbody>\n    <tr><td></td></tr>\n  </tbody>\n</table>"
+          },
+          "php": {
+            "status": 0,
+            "source": "```\n<td>\n  Hi\n</td>\n```\n",
+            "html": "<pre><code>&lt;td&gt;\n  Hi\n&lt;/td&gt;\n</code></pre>"
+          },
+          "rust": {
+            "status": 0,
+            "source": "```\n<td>\n  Hi\n</td>\n```\n",
+            "html": "<pre><code>&lt;td&gt;\n  Hi\n&lt;/td&gt;\n</code></pre>"
+          }
+        }
+      }
+    }
+  ]
 }
