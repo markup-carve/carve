@@ -27,7 +27,16 @@
         (PART 3): it renders `<sup id="{refId}">{n}</sup>`, keeps its ordinal
         and its backlink, and its trailing `{attrs}` and
         `data-carve-footnote-label` go on that `<sup>`. So `[t[^1]][r]` renders
-        `<a href="/u">t<sup id="fnref1">1</sup></a>`. The
+        `<a href="/u">t<sup id="fnref1">1</sup></a>`.
+        AN AUTHORED `{#id}` ON A REFERENCE REPLACES ITS GENERATED refId, on
+        the `<a>` or, inside link text, on the `<sup>`, and the backlink
+        targets it: two `id` attributes on one element are not valid HTML,
+        and a backlink to a replaced id points nowhere (CARVE-P9-006 T9
+        states the same for `scope`). A reference without one keeps
+        `fnref{n}` / `fnref{n}-{k}`, and the ordinals do not change. So
+        `a [t[^1]{#z}][r] [^1]{#y}` renders `<sup id="z">1</sup>` and
+        `<a id="y" href="#fn1" role="doc-noteref">`, and the note's
+        backlinks are `href="#z"` and `href="#y"`. The
         backlink glyph is the plain return arrow `↩` (Carve's choice;
         djot appends a variation selector).
         THE BACKLINK CARRIES AN ACCESSIBLE NAME -- NORMATIVE [CARVE-P9-026]. With the

@@ -31,9 +31,11 @@
    end, and the line-break backslash likewise leaves the run before it
    interior.
 
-   THE LINE BLOCK IS NOT AN EXCEPTION: PART 9 §23 MEDIAL GAPS converts an
-   INNER or TRAILING run of TWO OR MORE columns into N\P content first.
-   Its one-column case remains collapsible whitespace and is dropped at EOL.
+   THE LINE BLOCK IS THE ONE EXCEPTION OUTSIDE VERBATIM CONTENT
+   (CARVE-P7-001 item 5): PART 9 §23 MEDIAL GAPS converts an INNER or
+   TRAILING run of TWO OR MORE columns into N\P content first, so that run
+   is content, not a trailing run. Its one-column case remains collapsible
+   whitespace and is dropped at EOL.
 
    (Carve has no two-trailing-space hard break -- a hard break is the backslash
    form, `\` + newline; see PART 3. This rule is why: a document cannot carry

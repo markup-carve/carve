@@ -32,7 +32,9 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
         (CommonMark tab stops), so a leading tab indents to column 4.
      3. FROM THE FIRST NON-WHITESPACE CHARACTER of a line onward, a tab is
         CONTENT and never syntax. It satisfies no slot in any production, and
-        no construct is recognized by it.
+        no construct is recognized by it. A flank test that reads a tab as a
+        neighbor (`typography_flank`, PART 3) classifies that neighbor; it
+        recognizes nothing.
      4. INSIDE VERBATIM CONTENT -- fenced code and inline code spans -- a tab
         is PRESERVED verbatim and never expanded. Stated in full at TABS IN
         CODE (PART 2) and pinned by corpus tabs-in-code-preserved.
@@ -128,8 +130,8 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    space-only rule. *)
 
 (* ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT -- NORMATIVE [CARVE-P7-003]. The three
-   terminals below are the whole of it, and nothing in the language adds to
-   them. `whitespace` is a SPACE or a TAB. `newline` is a LINE FEED, a
+   terminals below are the whole of it, and no construct reads a wider class
+   except the three wider notions named at the end of this clause. `whitespace` is a SPACE or a TAB. `newline` is a LINE FEED, a
    CARRIAGE RETURN, or the pair. `space` is the narrower slot that admits the
    first of those and nothing else. PART 0's guard notation spells the same
    set once more and adds nothing -- `ws = space | tab | newline`.
@@ -172,8 +174,11 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    emptiness test is not satisfied by its absence, and a line holding one is
    not a `blank_line`.
 
-   THE TWO WIDER NOTIONS ARE MARKED AS SUCH, and a construct carrying no such
-   mark takes this definition. WHITESPACE HERE IS UNICODE WHITESPACE beside
+   THE THREE WIDER NOTIONS ARE MARKED AS SUCH, and a construct carrying no such
+   mark takes this definition. `typography_flank` (PART 3) is the class smart
+   typography reads a neighbor through: it adds the no-break space and a soft
+   or hard line break to these terminals, for that test only, and recognizes
+   no construct. WHITESPACE HERE IS UNICODE WHITESPACE beside
    `unicode_url_char` and `destination_char` (PART 3) means the Unicode White_Space property, for a
    destination only. PART 9 §25's scheme probe strips a wider class again --
    the C0 controls, which include both characters above, plus the Unicode

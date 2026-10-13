@@ -555,6 +555,9 @@ soft_break = newline ;        (* regular line ending within paragraph *)
 (* TYPOGRAPHY FLANK. The one class smart typography reads a neighbor
    character through, for dash runs (CARVE-P3-021) and quote direction
    (CARVE-P3-023): space, tab, line feed, carriage return, no-break space
-   U+00A0, and a soft or hard line break. *)
+   U+00A0, and a soft or hard line break. THE CLASS IS CLOSED: every other
+   Unicode space, U+2000 to U+200A, U+202F and U+3000 among them, is a word
+   character here. So a quote after U+202F closes, as French spacing inside
+   the marks needs, and a quote after U+3000 closes too. *)
 typography_flank = whitespace | newline | no_break_space | soft_break | hard_break ;
 no_break_space = (* U+00A0 NO-BREAK SPACE *) ;

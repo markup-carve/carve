@@ -653,8 +653,10 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    `--allow-loss list-style-dropped` and
    `--allow-loss list-delimiter-changed`. The list is closed:
    `destination-denied` is not waivable, because a blanked destination is a
-   policy refusal that a different profile avoids, not a loss the target
-   cannot avoid (CARVE-P9-054). Import-loss reports
+   policy refusal, not a loss the target cannot carry: CARVE-P9-054 applies
+   the denylist in both safe modes, and the path that keeps a denied
+   destination lies outside the checked render (the Carve and AST exits, or
+   an engine API option). Import-loss reports
    are separate: they describe source-to-AST migration, while this report
    describes AST-to-target rendering. *)
 

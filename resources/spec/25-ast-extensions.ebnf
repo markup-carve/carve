@@ -118,8 +118,8 @@
       diagnostic. Widths need not total 100; a total above it lints.
 
       PRECEDENCE IS LOCALITY, PER FIELD: a cell marker wins, then an in-table
-      column marker (native header or GFM delimiter), then the table attribute,
-      then unset. Supplying two column-level spellings for one field lints and
+      column marker (a native head-row marker over a GFM delimiter colon, as
+      CARVE-P9-004 T7 orders them), then the table attribute, then unset. Supplying two column-level spellings for one field lints and
       the in-table spelling wins. Existing header markers and delimiter colons
       keep their tree and output; attributes fill only facts they do not state.
 

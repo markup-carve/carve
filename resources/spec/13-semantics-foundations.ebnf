@@ -333,7 +333,12 @@
          MARKER WINS OVER THE DELIMITER COLON (CARVE-P12-039): a marker on a
          head-row cell sets the whole column, header and body cells, and a
          marker on a body cell sets that cell alone. So `|=> a |` over
-         `|:-- |` right-aligns column a in the header and the body. Corpus
+         `|:-- |` right-aligns column a in the header and the body. WITH
+         SEVERAL HEAD ROWS, THE LAST EXPLICIT MARKER IN A COLUMN SETS THE
+         COLUMN, and an omitted marker does not reset an earlier one, the
+         order CARVE-P11-031 reads for the Markdown delimiter; each head cell
+         keeps its own marker. So `|=> a |` over `|=< b |` over `| 1 |`
+         left-aligns the body cell. Corpus
          09-tables-3 pins effect 2.
       T8 ROW ATTRIBUTES -- NORMATIVE [CARVE-P9-005]. A `{…}` GLUED to a row's closing `|`
          (no intervening space) sets that row's `<tr>` attributes -- the

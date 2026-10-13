@@ -2126,8 +2126,10 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    `--allow-loss list-style-dropped` and
    `--allow-loss list-delimiter-changed`. The list is closed:
    `destination-denied` is not waivable, because a blanked destination is a
-   policy refusal that a different profile avoids, not a loss the target
-   cannot avoid (CARVE-P9-054). Import-loss reports
+   policy refusal, not a loss the target cannot carry: CARVE-P9-054 applies
+   the denylist in both safe modes, and the path that keeps a denied
+   destination lies outside the checked render (the Carve and AST exits, or
+   an engine API option). Import-loss reports
    are separate: they describe source-to-AST migration, while this report
    describes AST-to-target rendering. *)
 
@@ -2166,9 +2168,11 @@ raw_content = (* any content until closing fence *) ;
    end, and the line-break backslash likewise leaves the run before it
    interior.
 
-   THE LINE BLOCK IS NOT AN EXCEPTION: PART 9 §23 MEDIAL GAPS converts an
-   INNER or TRAILING run of TWO OR MORE columns into N\P content first.
-   Its one-column case remains collapsible whitespace and is dropped at EOL.
+   THE LINE BLOCK IS THE ONE EXCEPTION OUTSIDE VERBATIM CONTENT
+   (CARVE-P7-001 item 5): PART 9 §23 MEDIAL GAPS converts an INNER or
+   TRAILING run of TWO OR MORE columns into N\P content first, so that run
+   is content, not a trailing run. Its one-column case remains collapsible
+   whitespace and is dropped at EOL.
 
    (Carve has no two-trailing-space hard break -- a hard break is the backslash
    form, `\` + newline; see PART 3. This rule is why: a document cannot carry
@@ -3277,7 +3281,10 @@ soft_break = newline ;        (* regular line ending within paragraph *)
 (* TYPOGRAPHY FLANK. The one class smart typography reads a neighbor
    character through, for dash runs (CARVE-P3-021) and quote direction
    (CARVE-P3-023): space, tab, line feed, carriage return, no-break space
-   U+00A0, and a soft or hard line break. *)
+   U+00A0, and a soft or hard line break. THE CLASS IS CLOSED: every other
+   Unicode space, U+2000 to U+200A, U+202F and U+3000 among them, is a word
+   character here. So a quote after U+202F closes, as French spacing inside
+   the marks needs, and a quote after U+3000 closes too. *)
 typography_flank = whitespace | newline | no_break_space | soft_break | hard_break ;
 no_break_space = (* U+00A0 NO-BREAK SPACE *) ;
 (* ============================================================================
@@ -3977,7 +3984,9 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
         (CommonMark tab stops), so a leading tab indents to column 4.
      3. FROM THE FIRST NON-WHITESPACE CHARACTER of a line onward, a tab is
         CONTENT and never syntax. It satisfies no slot in any production, and
-        no construct is recognized by it.
+        no construct is recognized by it. A flank test that reads a tab as a
+        neighbor (`typography_flank`, PART 3) classifies that neighbor; it
+        recognizes nothing.
      4. INSIDE VERBATIM CONTENT -- fenced code and inline code spans -- a tab
         is PRESERVED verbatim and never expanded. Stated in full at TABS IN
         CODE (PART 2) and pinned by corpus tabs-in-code-preserved.
@@ -4073,8 +4082,8 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    space-only rule. *)
 
 (* ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT -- NORMATIVE [CARVE-P7-003]. The three
-   terminals below are the whole of it, and nothing in the language adds to
-   them. `whitespace` is a SPACE or a TAB. `newline` is a LINE FEED, a
+   terminals below are the whole of it, and no construct reads a wider class
+   except the three wider notions named at the end of this clause. `whitespace` is a SPACE or a TAB. `newline` is a LINE FEED, a
    CARRIAGE RETURN, or the pair. `space` is the narrower slot that admits the
    first of those and nothing else. PART 0's guard notation spells the same
    set once more and adds nothing -- `ws = space | tab | newline`.
@@ -4117,8 +4126,11 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    emptiness test is not satisfied by its absence, and a line holding one is
    not a `blank_line`.
 
-   THE TWO WIDER NOTIONS ARE MARKED AS SUCH, and a construct carrying no such
-   mark takes this definition. WHITESPACE HERE IS UNICODE WHITESPACE beside
+   THE THREE WIDER NOTIONS ARE MARKED AS SUCH, and a construct carrying no such
+   mark takes this definition. `typography_flank` (PART 3) is the class smart
+   typography reads a neighbor through: it adds the no-break space and a soft
+   or hard line break to these terminals, for that test only, and recognizes
+   no construct. WHITESPACE HERE IS UNICODE WHITESPACE beside
    `unicode_url_char` and `destination_char` (PART 3) means the Unicode White_Space property, for a
    destination only. PART 9 §25's scheme probe strips a wider class again --
    the C0 controls, which include both characters above, plus the Unicode
@@ -4565,7 +4577,12 @@ EOF = (* end of file *) ;
          MARKER WINS OVER THE DELIMITER COLON (CARVE-P12-039): a marker on a
          head-row cell sets the whole column, header and body cells, and a
          marker on a body cell sets that cell alone. So `|=> a |` over
-         `|:-- |` right-aligns column a in the header and the body. Corpus
+         `|:-- |` right-aligns column a in the header and the body. WITH
+         SEVERAL HEAD ROWS, THE LAST EXPLICIT MARKER IN A COLUMN SETS THE
+         COLUMN, and an omitted marker does not reset an earlier one, the
+         order CARVE-P11-031 reads for the Markdown delimiter; each head cell
+         keeps its own marker. So `|=> a |` over `|=< b |` over `| 1 |`
+         left-aligns the body cell. Corpus
          09-tables-3 pins effect 2.
       T8 ROW ATTRIBUTES -- NORMATIVE [CARVE-P9-005]. A `{…}` GLUED to a row's closing `|`
          (no intervening space) sets that row's `<tr>` attributes -- the
@@ -5585,7 +5602,16 @@ EOF = (* end of file *) ;
         (PART 3): it renders `<sup id="{refId}">{n}</sup>`, keeps its ordinal
         and its backlink, and its trailing `{attrs}` and
         `data-carve-footnote-label` go on that `<sup>`. So `[t[^1]][r]` renders
-        `<a href="/u">t<sup id="fnref1">1</sup></a>`. The
+        `<a href="/u">t<sup id="fnref1">1</sup></a>`.
+        AN AUTHORED `{#id}` ON A REFERENCE REPLACES ITS GENERATED refId, on
+        the `<a>` or, inside link text, on the `<sup>`, and the backlink
+        targets it: two `id` attributes on one element are not valid HTML,
+        and a backlink to a replaced id points nowhere (CARVE-P9-006 T9
+        states the same for `scope`). A reference without one keeps
+        `fnref{n}` / `fnref{n}-{k}`, and the ordinals do not change. So
+        `a [t[^1]{#z}][r] [^1]{#y}` renders `<sup id="z">1</sup>` and
+        `<a id="y" href="#fn1" role="doc-noteref">`, and the note's
+        backlinks are `href="#z"` and `href="#y"`. The
         backlink glyph is the plain return arrow `↩` (Carve's choice;
         djot appends a variation selector).
         THE BACKLINK CARRIES AN ACCESSIBLE NAME -- NORMATIVE [CARVE-P9-026]. With the
@@ -10593,7 +10619,8 @@ EOF = (* end of file *) ;
       after the closer's. The caption slot hangs BELOW the closing fence, so
       the pair bracketing the container cannot enclose it, and carrying it the
       way an attribute line above an opener is carried keeps one rule rather
-      than two. The payload is the caption line verbatim, `^` and all:
+      than two. The payload is the caption line as the canonical writer
+      spells it, `^` and all:
 
         ::: figure               ->  <!-- carve: ::: figure -->
         :::: panel                   <!-- carve: :::: panel -->
@@ -10780,7 +10807,7 @@ EOF = (* end of file *) ;
       MARKER. A block quote's attribution, a table's, an image's, a code
       listing's or an equation's `^ ...` line is written as a paragraph after
       the block (CARVE-P11-032); under the carrier mode a marker holding the caption
-      line verbatim stands directly above that paragraph, and the import
+      line as the canonical writer spells it stands directly above that paragraph, and the import
       replaces the paragraph with the caption, exactly as CARVE-P11-063 rules for a
       composite figure:
 
@@ -12107,8 +12134,8 @@ EOF = (* end of file *) ;
       diagnostic. Widths need not total 100; a total above it lints.
 
       PRECEDENCE IS LOCALITY, PER FIELD: a cell marker wins, then an in-table
-      column marker (native header or GFM delimiter), then the table attribute,
-      then unset. Supplying two column-level spellings for one field lints and
+      column marker (a native head-row marker over a GFM delimiter colon, as
+      CARVE-P9-004 T7 orders them), then the table attribute, then unset. Supplying two column-level spellings for one field lints and
       the in-table spelling wins. Existing header markers and delimiter colons
       keep their tree and output; attributes fill only facts they do not state.
 

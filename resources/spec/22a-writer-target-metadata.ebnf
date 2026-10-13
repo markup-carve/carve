@@ -84,7 +84,8 @@
       after the closer's. The caption slot hangs BELOW the closing fence, so
       the pair bracketing the container cannot enclose it, and carrying it the
       way an attribute line above an opener is carried keeps one rule rather
-      than two. The payload is the caption line verbatim, `^` and all:
+      than two. The payload is the caption line as the canonical writer
+      spells it, `^` and all:
 
         ::: figure               ->  <!-- carve: ::: figure -->
         :::: panel                   <!-- carve: :::: panel -->
@@ -271,7 +272,7 @@
       MARKER. A block quote's attribution, a table's, an image's, a code
       listing's or an equation's `^ ...` line is written as a paragraph after
       the block (CARVE-P11-032); under the carrier mode a marker holding the caption
-      line verbatim stands directly above that paragraph, and the import
+      line as the canonical writer spells it stands directly above that paragraph, and the import
       replaces the paragraph with the caption, exactly as CARVE-P11-063 rules for a
       composite figure:
 
