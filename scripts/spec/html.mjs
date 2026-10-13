@@ -1161,15 +1161,9 @@ function renderTable(node, depth, ctx) {
       rows[r].isHead = run
     }
   }
-  // column alignment: from the thead row's cells (native marker or GFM)
+  // column alignment: the last explicit marker in the head rows wins
   const colAlign = [...attrAlign]
   const colValign = [...attrValign]
-  if (rows[0]?.isHead) {
-    rows[0].cells.forEach((c, ci) => {
-      colAlign[ci] = c.align ?? colAlign[ci] ?? null
-      colValign[ci] = c.valign ?? colValign[ci] ?? null
-    })
-  }
   const rowCount = (key) => {
     if (!tableKeys.has(key)) return 0
     const value = String(tableKeys.get(key)).trim()
@@ -1183,6 +1177,12 @@ function renderTable(node, depth, ctx) {
   if (headCount + footCount > rows.length) throw new Refuse('table header and footer rows overlap')
   if (!explicitPartition && !groups) {
     while (headCount < rows.length && rows[headCount].isHead) headCount++
+  }
+  for (const row of rows.slice(0, headCount)) {
+    row.cells.forEach((cell, column) => {
+      if (cell.align) colAlign[column] = cell.align
+      if (cell.valign) colValign[column] = cell.valign
+    })
   }
   const footStart = rows.length - footCount
   const bodyRanges = []
@@ -1491,6 +1491,7 @@ function resolveFootnotes(html, ctx) {
   const placement = html.includes('\uE000fnplacementstart:')
   const order = [] // labels by first reference
   const counts = new Map()
+  const referenceIds = new Map()
   const inlineNotes = [] // rendered content per anonymous note, by number
   /*
    * TWO FRAMES, ONE SCAN -- PART 9R R2 (markup-carve/carve#1562).
@@ -1538,9 +1539,17 @@ function resolveFootnotes(html, ctx) {
         anchorDepth += anchors[anchorIndex][0].startsWith('</') ? -1 : 1
         anchorIndex++
       }
-      const carrier = (id, n, attributes) => anchorDepth > 0
-        ? `<sup id="${id}"${attributes}>${n}</sup>`
-        : `<a id="${id}" href="#fn${n}" role="doc-noteref"${attributes}><sup>${n}</sup></a>`
+      const carrier = (generatedId, n, attributes) => {
+        const authored = attributes.match(/ id="([^"]*)"/)
+        const id = authored ? authored[1] : generatedId
+        const remaining = authored ? attributes.replace(authored[0], '') : attributes
+        const ids = referenceIds.get(n) ?? []
+        ids.push(id)
+        referenceIds.set(n, ids)
+        return anchorDepth > 0
+          ? `<sup id="${id}"${remaining}>${n}</sup>`
+          : `<a id="${id}" href="#fn${n}" role="doc-noteref"${remaining}><sup>${n}</sup></a>`
+      }
       if (json !== undefined) {
         let parsed
         try {
@@ -1622,9 +1631,9 @@ function resolveFootnotes(html, ctx) {
     // the note number is nowhere in this link's text.
     const label_ = LABELS.footnoteBacklink
     const backlink = total === 1
-      ? `<a href="#fnref${n}" role="doc-backlink" aria-label="${escapeAttr(label_)}">↩</a>`
+      ? `<a href="#${referenceIds.get(n)?.[0] ?? `fnref${n}`}" role="doc-backlink" aria-label="${escapeAttr(label_)}">↩</a>`
       : Array.from({ length: total }, (_, kk) => {
-          const refId = kk === 0 ? `fnref${n}` : `fnref${n}-${kk + 1}`
+          const refId = referenceIds.get(n)?.[kk] ?? (kk === 0 ? `fnref${n}` : `fnref${n}-${kk + 1}`)
           const name = escapeAttr(`${label_} ${kk + 1}`)
           return `<a href="#${refId}" role="doc-backlink" aria-label="${name}">↩<sup>${kk + 1}</sup></a>`
         }).join(' ')
