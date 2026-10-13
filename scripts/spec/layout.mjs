@@ -5333,20 +5333,16 @@ function collectItems(lines, i, list, state, ind, meas) {
      * paragraph text, which is what the block reader below already does with
      * the same predicate (`hasCloser`).
      *
-     * The closer is searched over the item's own body, dedented to the content
+     * The closer is searched over the item's own body at this fence's base
      * column, because that is where this fence's closer has to be written. A
      * blank run is committed only when a later line reaches the content column
      * again: under carve#1379 an unterminated container does not extend the
      * item past a blank followed by a line below the column, so lines after
      * such a blank are not the item's and cannot close its fence.
      */
-    const bodyFenceOpens = (idx, dedented, blockBase = contentCol) => {
+    const fenceCloserFollows = (idx, dedented, blockBase = contentCol) => {
       const m = FENCE.exec(dedented)
       if (!m || parseFenceInfo(m[2]) === null) return false // INVALID-FENCE FALLBACK
-      if (!paragraphIsOpen()) return true // at block start it runs to the end of the container
-      // An ANCESTOR collector already answered §10 I4 for this source line, over
-      // lines its own break then removed from this body. One line, one answer.
-      if (state.nestedFenceOpensAt?.get(lines)?.has(idx)) return true
       const body = [dedented]
       let pendingBlanks = 0
       for (let j = idx + 1; j < lines.length; j++) {
@@ -5377,6 +5373,15 @@ function collectItems(lines, i, list, state, ind, meas) {
             : LAZY + lm2.rest)
       }
       return hasCloser(body, 0)
+    }
+    const bodyFenceOpens = (idx, dedented, blockBase = contentCol) => {
+      const m = FENCE.exec(dedented)
+      if (!m || parseFenceInfo(m[2]) === null) return false // INVALID-FENCE FALLBACK
+      if (!paragraphIsOpen()) return true // at block start it runs to the end of the container
+      // An ANCESTOR collector already answered §10 I4 for this source line, over
+      // lines its own break then removed from this body. One line, one answer.
+      if (state.nestedFenceOpensAt?.get(lines)?.has(idx)) return true
+      return fenceCloserFollows(idx, dedented, blockBase)
     }
     // A blank line was seen, and what followed it attached INVISIBLY (a comment,
     // a definition). §17 L1's second clause - an item followed by a blank line
@@ -6398,7 +6403,8 @@ function collectItems(lines, i, list, state, ind, meas) {
         }
         const inNoteBody = i <= noteFenceEnd || absorbedNoteFence
         const mayOpenAuthoredBlock = !inNoteBody && !foldsIntoLeadTerm && !descendantOwned &&
-          !(descLive && deepestParagraphOpen() && col < subCol && FENCE.test(lm.rest)) &&
+          !(descLive && deepestParagraphOpen() && col < subCol && FENCE.test(lm.rest) &&
+            !fenceCloserFollows(i, dedentMeasured(lm, lines[i], col).text, col)) &&
           (!insideFence() || inOpenColonOnly) && opensAuthoredBase(lm.rest)
         if (pendingHeadQuote !== null && mayOpenAuthoredBlock) {
           const start = pendingHeadQuote

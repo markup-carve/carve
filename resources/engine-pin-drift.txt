@@ -30,6 +30,7 @@
 581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-2  ahead of the pin: the column-0 fence is never matched, so the box holds a code block with `- x` (checker reading; carve-js reads a paragraph, carve-js#2927)
 581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-3  ahead of the pin: three over-indented `:::` lines are code text in the box, not its closer (checker reading; carve-js reads a paragraph, carve-js#2927)
 581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-4  ahead of the pin: both unclosed fences open code blocks and `after` leaves the quote (checker reading; carve-js folds them into paragraphs, carve-js#2927)
+581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-5  ahead of the pin: the closed fence below the sublist column opens in the outer item and `after` is a document paragraph (checker reading; carve-js folds `after` into the outer item, carve-js#2960)
 585-a-comment-in-a-marker-line-note-changes-nothing  ahead of the pin: a comment in a marker-line note changes nothing (checker reading, carve-js not yet)
 585-a-comment-in-a-marker-line-note-changes-nothing-2  ahead of the pin: a comment in a marker-line note changes nothing (checker reading, carve-js not yet)
 586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note  ahead of the pin: the comment closes the note paragraph, the unclosed fence opens in the note and the line below is a document paragraph (checker reading, carve-js not yet, carve-js#2948)

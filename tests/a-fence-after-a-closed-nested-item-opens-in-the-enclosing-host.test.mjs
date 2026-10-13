@@ -7,6 +7,23 @@ const html = (source) => renderDoc(parse(source)).replace(/\s+/g, ' ').replace(/
 
 const cases = [
   [
+    'a closed fence below an open sublist opens in the outer item',
+    '- a\n    - child\n    ```\n    code\n    ```\nafter\n',
+    '<ul><li>a<ul><li>child</li></ul><pre><code>code</code></pre></li></ul><p>after</p>',
+    'code\n',
+  ],
+  [
+    'a quoted closed fence below an open sublist opens in the outer item',
+    '> - a\n>     - child\n>     ```\n>     code\n>     ```\nafter\n',
+    '<blockquote><ul><li>a<ul><li>child</li></ul><pre><code>code</code></pre></li></ul></blockquote><p>after</p>',
+    'code\n',
+  ],
+  [
+    'an unclosed fence below an open sublist stays paragraph text',
+    '- a\n    - child\n    ```\n    code\nafter\n',
+    '<ul><li>a<ul><li>child<code>code after</code></li></ul></li></ul>',
+  ],
+  [
     'a fence after a closed nested line block opens in its box',
     '> - ::: box\n>   - ::: |\n>     ```\n>     :::\n>    ```\n>    :::bad\n>    :::\n- tail\n',
     '<blockquote><ul><li><div class="box"><ul><li><div class="line-block"><p><code></code></p></div></li></ul><pre><code>:::bad :::</code></pre></div></li></ul></blockquote><ul><li>tail</li></ul>',

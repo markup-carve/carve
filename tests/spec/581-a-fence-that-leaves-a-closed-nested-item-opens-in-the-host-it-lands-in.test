@@ -125,3 +125,64 @@ after
 </blockquote>
 <p>after</p>
 ````
+
+````
+- a
+    - child
+    ```
+    code
+    ```
+after
+.
+<ul>
+  <li>a
+    <ul>
+      <li>child</li>
+    </ul>
+    <pre><code>code
+</code></pre>
+  </li>
+</ul>
+<p>after</p>
+````
+
+````
+> - a
+>     - child
+>     ```
+>     code
+>     ```
+after
+.
+<blockquote>
+  <ul>
+    <li>a
+      <ul>
+        <li>child</li>
+      </ul>
+      <pre><code>code
+</code></pre>
+    </li>
+  </ul>
+</blockquote>
+<p>after</p>
+````
+
+````
+- a
+    - child
+    ```
+    code
+after
+.
+<ul>
+  <li>a
+    <ul>
+      <li>child
+<code>
+code
+after</code></li>
+    </ul>
+  </li>
+</ul>
+````

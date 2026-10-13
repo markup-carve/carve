@@ -50099,6 +50099,8 @@ column leaves that item and is read in the enclosing host (CARVE-P0-009). With
 nothing to interrupt and no closer to take, an unclosed fence opens a code block
 that runs to the end of that host, and a bare `:::` past a box's column is
 text, not the box's closer (PART 2 `admonition`, A CLOSER IS REQUIRED).
+A fence below the sublist's column interrupts its paragraph only when a closer
+follows (CARVE-P0-014); without one it stays sublist text.
 
 :::: compare
 
@@ -50246,6 +50248,85 @@ after
   </ul>
 </blockquote>
 <p>after</p>
+```
+
+::::
+
+:::: compare
+
+````carve
+- a
+    - child
+    ```
+    code
+    ```
+after
+````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>child</li>
+    </ul>
+    <pre><code>code
+</code></pre>
+  </li>
+</ul>
+<p>after</p>
+```
+
+::::
+
+:::: compare
+
+````carve
+> - a
+>     - child
+>     ```
+>     code
+>     ```
+after
+````
+
+```html
+<blockquote>
+  <ul>
+    <li>a
+      <ul>
+        <li>child</li>
+      </ul>
+      <pre><code>code
+</code></pre>
+    </li>
+  </ul>
+</blockquote>
+<p>after</p>
+```
+
+::::
+
+:::: compare
+
+````carve
+- a
+    - child
+    ```
+    code
+after
+````
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>child
+<code>
+code
+after</code></li>
+    </ul>
+  </li>
+</ul>
 ```
 
 ::::
