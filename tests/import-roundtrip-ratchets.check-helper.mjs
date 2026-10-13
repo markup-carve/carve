@@ -288,6 +288,15 @@ const visibleText = (html) =>
 // were paragraphs that round-tripped trivially under the old pin. Membership
 // was measured against both builds.
 
+// Pin dc90931a records table continuation lines (CARVE-P12-069), so the
+// canonical writer keeps each `+` row while an imported row, which has no
+// continuationLines, is written on one line. HTML loses 26 documents and
+// Markdown 18, all continuation-row tables in 63, 64, 237, 249, 256, 333, 349,
+// 354, 355, 356 and 589 rows 33 and 34. Markdown also gains 13 abbreviation
+// documents (43, 45-11, 58, 95, 177, 223, 267 rows 1, 3, 5, 10, 305 rows 4
+// and 5, 324-5), whose `*[TERM]:` line the import now reads back
+// (CARVE-P11-033). Membership was measured against both builds.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {
