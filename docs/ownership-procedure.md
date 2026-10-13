@@ -45,12 +45,12 @@ Rules: CARVE-P0-010 and CARVE-P0-020.
 
 ## O3 Fold into the open paragraph
 
-If a paragraph is open at the deepest frame and the line does not interrupt, it
-folds into that paragraph whatever prefixes it missed. The deepest frame is
-found by following the last child container to its leaf. A heading, a table, a
-thematic break, a closed fence, an empty or closed colon container, a comment
-and a definition leave no paragraph open, so no line folds after one. A fold
-closes nothing, and the same test holds for every host and every fence kind.
+Follow the last child container to its deepest leaf. If that leaf has an open
+paragraph and its continuation claim, a noninterrupting line folds into it
+whatever prefixes it missed. T supplies the paragraph state; an ancestor's
+earlier paragraph cannot supply a missing claim. Recognition uses O2's owner,
+coordinates and scope, including the fence's valid metadata and closer guard.
+A fold closes nothing. Definition-term continuation follows CARVE-P2-028.
 Rules: CARVE-P0-006, CARVE-P0-007, CARVE-P0-009, CARVE-P0-014, CARVE-P0-015,
 CARVE-P0-016, CARVE-P0-017 and CARVE-P0-018.
 
@@ -70,20 +70,27 @@ and CARVE-P0-012.
 
 Once the line has an owner, the boundary it formed sets two separate facts in
 every frame that contains it: whether the frame stays open, and whether a
-paragraph is open. Only an ordinary line leaves a paragraph open. Rule:
-CARVE-P0-003.
+paragraph is open. An ordinary line opens or continues a paragraph. Rows marked
+`deepest P` or `deepest attached P` forward the corresponding leaf's state; an
+empty or closed container supplies no open leaf. The rows that close a paragraph
+leave no continuation claim. A surviving container alone cannot admit a lazy
+line. Rule: CARVE-P0-003.
 
 ## X1 to X3 Named exceptions
 
-X1, comment retention: after a line comment consumed below the content column
-of a list item, a definition body or a footnote body, a following line that
-does not interrupt stays in the container and starts a new paragraph. The
-limits are in CARVE-P9-051 and CARVE-P9-053, and CARVE-P9-052 covers the other
-invisible lines, which fold as text.
+X1, comment retention: a line comment or matched comment span consumed below
+the content column can retain a list item, definition body or footnote body
+when a claim or earlier retention admits it. A blank or an at/above-column
+comment clears retention. A noninterrupting follower uses the retained owner
+to start a paragraph; retention itself supplies no paragraph claim. X1 defines
+the limits, including sibling markers and enclosing-context comment fences.
+CARVE-P9-053 links comment visibility to X1; CARVE-P9-051 and CARVE-P9-052
+cover the other invisible lines.
 
-X2, the quote band: under a quote holding an open paragraph, a list marker
-folds at every column, and a block opener folds at every column but the host's
-content column. Rule: CARVE-P0-021.
+X2, the quote band: under a quote holding an open paragraph, a line supplying
+no `>` folds if it is a list marker at any column, or a code/raw fence, heading,
+thematic break or table row away from the host's content column.
+Rule: CARVE-P0-021.
 
 X3, the opaque marker-line quote: when a code or raw fence opens in a quote on
 an item's marker line, an over-indented follower stays text while that fence is

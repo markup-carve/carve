@@ -30,7 +30,7 @@
   "scope": "every_open_paragraph",
   "headingAcceptsContinuation": false,
   "recognitionBoundary": {
-    "description": "Under a quote holding an open paragraph, an opener at any column other than the host’s content column folds into that paragraph.",
+    "description": "Under a quote holding an open paragraph, a line supplying no `>` whose residue is a code/raw fence, heading, thematic break or table row folds at every column except the host's content column.",
     "rule": "CARVE-P0-021"
   }
 }

@@ -6,7 +6,8 @@
     "CARVE-P9-052",
     "CARVE-P9-053",
     "CARVE-P9-033",
-    "CARVE-P9-067"
+    "CARVE-P9-067",
+    "CARVE-P2-028"
   ],
   "phases": [
     {
@@ -70,9 +71,11 @@
       ],
       "checkerHelpers": [
         "opensParagraph",
-        "bodyLeavesParagraphOpen"
+        "bodyLeavesParagraphOpen",
+        "startsParagraphBlock",
+        "hasCloser"
       ],
-      "constraint": "A noninterrupting line folds only into a paragraph open at the deepest frame. A fold closes nothing."
+      "constraint": "A noninterrupting line folds only into the deepest leaf’s open paragraph with its continuation claim. Recognition uses the selected owner’s coordinates and scope. A fold closes nothing."
     },
     {
       "id": "classify",

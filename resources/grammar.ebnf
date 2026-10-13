@@ -369,8 +369,8 @@
             below the content column remains paragraph text, and closing the
             preceding paragraph does not reduce the indentation a child list
             needs.
-          - Without a claim or earlier retention, O2 closes the missed
-            container and the comment belongs to the enclosing context.
+          - Without a claim or earlier retention, O2 selects the enclosing
+            owner and O4 closes the missed container.
           - Retention describes the most recent boundary, not a later
             visible line across arbitrary invisible boundaries. In
             `- inner` / `  %% c` / ` code`, the at-column comment clears

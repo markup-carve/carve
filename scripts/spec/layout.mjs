@@ -2945,8 +2945,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     if (startsParagraphBlock(line, top)) return true
     if (fenceOpens?.has(idx)) return true
     if (isColonParagraphInterrupt(line) || COLON_CLOSER.test(line)) return true
-    const fence = FENCE.exec(line)
-    if (fence && hasCloser(lines, idx)) return true // I4
+    if (hasCloser(lines, idx)) return true // I4: valid opener and matching closer
     // A BLOCK-ATTRIBUTE LINE is in I5's list too - "a reference definition, a
     // comment, and a block-attribute line" - and it was the one member missing
     // here. Inside a list item that meant `- a` / `{.c}` / `text` folded all
@@ -4655,8 +4654,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         {
           if (colonInterruptsParagraph(lines, i, para)) break // I1/I4
         }
-        const f = FENCE.exec(lines[i])
-        if (f && parseFenceInfo(f[2]) && hasCloser(lines, i)) break // I4: interrupts
+        if (hasCloser(lines, i)) break // I4: valid opener and matching closer
       }
       para.push(stripIndent(lines[i]).replace(/[ \t]+$/, ''))
       i++
@@ -4700,9 +4698,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
   return blocks
 }
 
+// A closer cannot turn invalid metadata into a block opener. Interruption
+// probes and paragraph collection use the same validation and body extent.
 function hasCloser(lines, idx) {
   const m = FENCE.exec(lines[idx])
-  if (!m) return false
+  if (!m || parseFenceInfo(m[2]) === null) return false
   return findCloser(lines, idx, m[1]) !== -1
 }
 
@@ -4732,24 +4732,28 @@ function parseFenceInfo(raw) {
   //
   // CARDINALITY IS EXACTLY ONE (carve#912). The opener slot is `[space]`, so
   // this strips at most one; it was `^ +` and stripped the whole run. The
-  // second space then reaches `language_info`, whose class holds no space, and
-  // the trailing-junk check below turns the line into an ordinary paragraph.
-  // The `"header"` and `[label]` slots keep their `^ *` runs on purpose: those
-  // are spelled `space+` in the production, and carve#912 ruled only the four
-  // slots spelled with a bare `space`.
+  // second space then reaches `code_fence_info`, which starts with a token,
+  // title or label. A later title or label needs a `space+` separator; an
+  // initial title or label follows only the opener's optional space.
   let s = raw.replace(/^ ?/, '').replace(/[ \t]+$/, '')
   const out = { lang: '', title: null, label: null }
-  const lm = /^([A-Za-z0-9\-_+#.=/]+)/.exec(s)
+  // raw_block has a format identifier and no title or label slots.
+  if (s.startsWith('=')) {
+    return /^=[A-Za-z_][A-Za-z0-9_-]*$/.test(s) ? { ...out, lang: s } : null
+  }
+  const lm = /^([A-Za-z0-9\-_+#./]+)/.exec(s)
   if (lm) {
     out.lang = lm[1]
     s = s.slice(lm[0].length)
   }
-  const tm = /^ *"([^"]*)"/.exec(s)
+  const tm = (out.lang ? /^ +"([^"]*)"/ : /^"([^"]*)"/).exec(s)
   if (tm) {
     out.title = tm[1]
     s = s.slice(tm[0].length)
   }
-  const lb = takeLabelSlot(s)
+  const needsLabelSeparator = out.lang !== '' || out.title !== null
+  const lb = (needsLabelSeparator ? s.startsWith(' ') : s.startsWith('['))
+    ? takeLabelSlot(s) : null
   if (lb) {
     out.label = lb.label
     s = lb.rest
