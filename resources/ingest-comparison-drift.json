@@ -387,6 +387,94 @@
         "status": 0,
         "actual": "<ul>\n  <li>after <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></li>\n</ul>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text</p>\n      <pre><code>code\n</code></pre>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
       }
+    },
+    {
+      "key": "tests/corpus/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note-2.crv/js->php",
+      "reason": "carve-js does not yet give the corpus reading at the pin (b8c309e4), where the comment closes the marker-line note paragraph and the unclosed fence below it opens in the note; carve-php and carve-rs agree with the corpus.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2948",
+      "fingerprint": "64c0d36aade1c29500ff8a30f005e325b1a21cfbe9c9018faf59ebdaa6454e01",
+      "observation": {
+        "expected": "<ul>\n  <li>\n    <pre><code>code\n</code></pre>\n  </li>\n</ul>\n<p>after <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text\nmore<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<ul>\n  <li>~~~\ncode\nafter <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></li>\n</ul>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text\nmore<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note-2.crv/js->rust",
+      "reason": "carve-js does not yet give the corpus reading at the pin (b8c309e4), where the comment closes the marker-line note paragraph and the unclosed fence below it opens in the note; carve-php and carve-rs agree with the corpus.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2948",
+      "fingerprint": "64c0d36aade1c29500ff8a30f005e325b1a21cfbe9c9018faf59ebdaa6454e01",
+      "observation": {
+        "expected": "<ul>\n  <li>\n    <pre><code>code\n</code></pre>\n  </li>\n</ul>\n<p>after <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text\nmore<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<ul>\n  <li>~~~\ncode\nafter <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></li>\n</ul>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text\nmore<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note-2.crv/php->js",
+      "reason": "carve-js does not yet give the corpus reading at the pin (b8c309e4), where the comment closes the marker-line note paragraph and the unclosed fence below it opens in the note; carve-php and carve-rs agree with the corpus.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2948",
+      "fingerprint": "fc1fad81dc8ba2dc3e1628c8d624da1e55c3352ae0b5435b5a97d24419cab11b",
+      "observation": {
+        "expected": "<ul>\n  <li>~~~\ncode\nafter <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></li>\n</ul>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text\nmore<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<ul>\n  <li>\n    <pre><code>code\n</code></pre>\n  </li>\n</ul>\n<p>after <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text\nmore<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note-2.crv/rust->js",
+      "reason": "carve-js does not yet give the corpus reading at the pin (b8c309e4), where the comment closes the marker-line note paragraph and the unclosed fence below it opens in the note; carve-php and carve-rs agree with the corpus.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2948",
+      "fingerprint": "fc1fad81dc8ba2dc3e1628c8d624da1e55c3352ae0b5435b5a97d24419cab11b",
+      "observation": {
+        "expected": "<ul>\n  <li>~~~\ncode\nafter <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></li>\n</ul>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text\nmore<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<ul>\n  <li>\n    <pre><code>code\n</code></pre>\n  </li>\n</ul>\n<p>after <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text\nmore<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note.crv/js->php",
+      "reason": "carve-js does not yet give the corpus reading at the pin (b8c309e4), where the comment closes the marker-line note paragraph and the unclosed fence below it opens in the note; carve-php and carve-rs agree with the corpus.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2948",
+      "fingerprint": "fb057baa160978aefef4cc6a75180c9f32fee11f3ac9041cf5a71240c3b4c39e",
+      "observation": {
+        "expected": "<ul>\n  <li>\n    <pre><code>code\n</code></pre>\n  </li>\n</ul>\n<p>after <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text\nmore<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<ul>\n  <li>after <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></li>\n</ul>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text\nmore</p>\n      <pre><code>code\n</code></pre>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note.crv/js->rust",
+      "reason": "carve-js does not yet give the corpus reading at the pin (b8c309e4), where the comment closes the marker-line note paragraph and the unclosed fence below it opens in the note; carve-php and carve-rs agree with the corpus.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2948",
+      "fingerprint": "fb057baa160978aefef4cc6a75180c9f32fee11f3ac9041cf5a71240c3b4c39e",
+      "observation": {
+        "expected": "<ul>\n  <li>\n    <pre><code>code\n</code></pre>\n  </li>\n</ul>\n<p>after <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text\nmore<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<ul>\n  <li>after <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></li>\n</ul>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text\nmore</p>\n      <pre><code>code\n</code></pre>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note.crv/php->js",
+      "reason": "carve-js does not yet give the corpus reading at the pin (b8c309e4), where the comment closes the marker-line note paragraph and the unclosed fence below it opens in the note; carve-php and carve-rs agree with the corpus.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2948",
+      "fingerprint": "36852985a2fcee7673288d33cd80a45ab6a9b1c04f73db5936519721df25521d",
+      "observation": {
+        "expected": "<ul>\n  <li>after <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></li>\n</ul>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text\nmore</p>\n      <pre><code>code\n</code></pre>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<ul>\n  <li>\n    <pre><code>code\n</code></pre>\n  </li>\n</ul>\n<p>after <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text\nmore<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note.crv/rust->js",
+      "reason": "carve-js does not yet give the corpus reading at the pin (b8c309e4), where the comment closes the marker-line note paragraph and the unclosed fence below it opens in the note; carve-php and carve-rs agree with the corpus.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2948",
+      "fingerprint": "36852985a2fcee7673288d33cd80a45ab6a9b1c04f73db5936519721df25521d",
+      "observation": {
+        "expected": "<ul>\n  <li>after <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></li>\n</ul>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text\nmore</p>\n      <pre><code>code\n</code></pre>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<ul>\n  <li>\n    <pre><code>code\n</code></pre>\n  </li>\n</ul>\n<p>after <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>text\nmore<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
     }
   ]
 }
