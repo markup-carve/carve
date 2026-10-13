@@ -10688,6 +10688,17 @@ EOF = (* end of file *) ;
         a. two                       1. one
                                      2. two
 
+      A list's attribute marker stands directly above its list-style
+      marker, as a block's does above its fence marker, and the import reads
+      the two as one stack: the style from the list-style marker, the
+      attributes from the attribute marker. A block between the two breaks
+      the stack, and each marker is read on its own.
+
+        {.steps}                 ->  <!-- carve: {.steps} -->
+        a. one                       <!-- carve: a. -->
+        b. two                       1. one
+                                     2. two
+
   10u. THE CARRIER MODE CARRIES AN INLINE CONSTRUCT'S ATTRIBUTES, A SPAN AND
       A CROSS-REFERENCE IN INLINE MARKERS -- NORMATIVE [CARVE-P11-068].
       Markdown has no spelling for a link's, an image's or a span's

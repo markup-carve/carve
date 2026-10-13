@@ -2090,6 +2090,27 @@
         "list-style-dropped"
       ],
       "aheadOfPin": true
+    },
+    {
+      "id": "list-style-marker-under-attribute-line",
+      "source": "{.steps}\na. one\nb. two\n",
+      "carrierFragments": [
+        "<!-- carve: {.steps} -->\n<!-- carve: a. -->\n1. one"
+      ],
+      "expectedNodes": [
+        {
+          "type": "list",
+          "ordered": true,
+          "olType": "a",
+          "attrs.classes": [
+            "steps"
+          ]
+        }
+      ],
+      "forbiddenLossCodes": [
+        "list-style-dropped"
+      ],
+      "aheadOfPin": true
     }
   ],
   "markdownImportNegative": [
@@ -2234,6 +2255,35 @@
       ],
       "expectedDiagnostics": {
         "carrier-markers-damaged": 1
+      },
+      "aheadOfPin": true
+    },
+    {
+      "id": "attribute-marker-over-a-block-between-it-and-the-list-style-marker",
+      "markdown": "<!-- carve: {.steps} -->\nIntro.\n\n<!-- carve: a. -->\n1. one\n2. two\n",
+      "expectedNodes": [
+        {
+          "type": "paragraph",
+          "attrs.classes": [
+            "steps"
+          ]
+        },
+        {
+          "type": "list",
+          "ordered": true,
+          "olType": "a"
+        }
+      ],
+      "forbiddenNodes": [
+        {
+          "type": "list",
+          "attrs.classes": [
+            "steps"
+          ]
+        }
+      ],
+      "expectedDiagnostics": {
+        "carrier-markers-damaged": 0
       },
       "aheadOfPin": true
     }
