@@ -1,5 +1,5 @@
-// Copied with format.ts and position.ts from markup-carve/carve-lsp src/ at 8f56a9e for the
-// playground editor. Local change: listDelim (markup-carve/carve-lsp#510). Re-copy, don't edit.
+// Copied with format.ts and position.ts from markup-carve/carve-lsp src/ at 51c8445 for the
+// playground editor. Re-copy, don't edit.
 import { parse, type Position } from '@markup-carve/carve'
 import { codepointColumnToUtf16, sourceLines } from './position.js'
 
@@ -32,8 +32,11 @@ function markerCharacter(line: string, column: number): number {
 }
 
 interface Node { type?: unknown; pos?: Position; ordered?: boolean; olType?: string; delim?: string }
-// carve-js omits `delim` when it is the default `.` (ast.ts: absent falls back to `.`).
-const delimOf = (list: Node): string | undefined => list.delim ?? (list.ordered ? '.' : undefined)
+
+/** A list's ordered delimiter. The engine may omit the default `.` (carve-js `List.delim`). */
+export function listDelim(list: { ordered?: boolean; delim?: string }): string | undefined {
+  return list.delim ?? (list.ordered ? '.' : undefined)
+}
 
 /**
  * The list items of a document and the paragraph lines they hold. Walks the
@@ -77,7 +80,7 @@ export function listItems(source: string): ListItems | null {
         starts.set(line, {
           character: markerCharacter(lines[line] ?? '', pos.startColumn),
           olType: list.olType,
-          delim: delimOf(list),
+          delim: listDelim(list),
           list: `${list.pos.startLine}:${list.pos.startColumn}`,
           continues,
         })
@@ -157,10 +160,10 @@ export function listTree(source: string): Map<number, TreeItem> | null {
       return
     }
     if (value === null || typeof value !== 'object') return
-    const node = value as Node & { ordered?: boolean; bulletChar?: string }
+    const node = value as Node & { bulletChar?: string }
     const pos = node.pos
     if (node.type === 'list' && pos) {
-      const next: TreeList = { key: key(pos), ordered: node.ordered === true, olType: node.olType, delim: delimOf(node), bulletChar: node.bulletChar, items: [] }
+      const next: TreeList = { key: key(pos), ordered: node.ordered === true, olType: node.olType, delim: listDelim(node), bulletChar: node.bulletChar, items: [] }
       // A list counts as an item's child only when nothing sits between them.
       if (direct && item) item.lists.push(next)
       for (const k of Object.keys(node)) if (k !== 'pos') visit((node as Record<string, unknown>)[k], container, direct ? item : undefined, next, false)
