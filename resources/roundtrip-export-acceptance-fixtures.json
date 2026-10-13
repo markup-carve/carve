@@ -1800,6 +1800,154 @@
       "lossCodes": [
         "definition-list-flattened"
       ]
+    },
+    {
+      "id": "inline-link-attributes",
+      "source": "[l](u){.k} and [m](v).\n",
+      "carrierFragments": [
+        "[l](u)<!-- carve: {.k} -->"
+      ],
+      "expectedNodes": [
+        {
+          "type": "link",
+          "href": "u",
+          "attrs.classes": [
+            "k"
+          ]
+        }
+      ],
+      "inlineMarkers": true,
+      "aheadOfPin": true
+    },
+    {
+      "id": "inline-image-attributes",
+      "source": "See ![a](i.png){width=300} here.\n",
+      "carrierFragments": [
+        "![a](i.png)<!-- carve: {width=300} -->"
+      ],
+      "expectedNodes": [
+        {
+          "type": "image",
+          "src": "i.png",
+          "attrs.keyValues": {
+            "width": "300"
+          }
+        }
+      ],
+      "inlineMarkers": true,
+      "aheadOfPin": true
+    },
+    {
+      "id": "inline-span",
+      "source": "[x]{.c} text\n",
+      "carrierFragments": [
+        "<!-- carve: [ -->x<!-- carve: ]{.c} -->"
+      ],
+      "expectedNodes": [
+        {
+          "type": "span",
+          "attrs.classes": [
+            "c"
+          ]
+        }
+      ],
+      "inlineMarkers": true,
+      "aheadOfPin": true
+    },
+    {
+      "id": "inline-span-nested",
+      "source": "[a [b]{.i} c]{.o}\n",
+      "carrierFragments": [
+        "<!-- carve: [ -->a <!-- carve: [ -->b<!-- carve: ]{.i} --> c<!-- carve: ]{.o} -->"
+      ],
+      "expectedNodes": [
+        {
+          "type": "span",
+          "attrs.classes": [
+            "o"
+          ]
+        },
+        {
+          "type": "span",
+          "attrs.classes": [
+            "i"
+          ]
+        }
+      ],
+      "inlineMarkers": true,
+      "aheadOfPin": true
+    },
+    {
+      "id": "inline-span-holding-a-link",
+      "source": "[[x](u){.k}]{.c}\n",
+      "carrierFragments": [
+        "<!-- carve: [ -->[x](u)<!-- carve: {.k} --><!-- carve: ]{.c} -->"
+      ],
+      "expectedNodes": [
+        {
+          "type": "span",
+          "attrs.classes": [
+            "c"
+          ]
+        },
+        {
+          "type": "link",
+          "href": "u",
+          "attrs.classes": [
+            "k"
+          ]
+        }
+      ],
+      "inlineMarkers": true,
+      "aheadOfPin": true
+    },
+    {
+      "id": "inline-attribute-payload-escape",
+      "source": "[l](u){data-x=\"a-->b\"}\n",
+      "carrierFragments": [
+        "[l](u)<!-- carve: {data-x=\"a--\\>b\"} -->"
+      ],
+      "expectedNodes": [
+        {
+          "type": "link",
+          "href": "u",
+          "attrs.keyValues": {
+            "data-x": "a-->b"
+          }
+        }
+      ],
+      "inlineMarkers": true,
+      "aheadOfPin": true
+    },
+    {
+      "id": "cross-reference-marker",
+      "source": "# Rise\n\nSee </#Rise>.\n",
+      "carrierFragments": [
+        "<!-- carve: </#Rise> -->[Rise](#rise)"
+      ],
+      "expectedNodes": [
+        {
+          "type": "heading_ref",
+          "target": "Rise"
+        }
+      ],
+      "inlineMarkers": true,
+      "aheadOfPin": true
+    },
+    {
+      "id": "cross-reference-marker-unicode",
+      "source": "# Café\n\nSee </#Café>.\n",
+      "carrierFragments": [
+        "<!-- carve: </#Café> -->[Café](#café)"
+      ],
+      "expectedNodes": [
+        {
+          "type": "heading_ref",
+          "target": "Café"
+        }
+      ],
+      "inlineMarkers": true,
+      "aheadOfPin": true
     }
   ]
 }

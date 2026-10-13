@@ -460,9 +460,15 @@
         `list.tight`, where    `data-carve-tight` on `<ul>` or  none
         an item's paragraph    `<ol>`, presence
         keeps its `<p>`
-        a resolved             `data-carve-xref` on `<a>`,      none
-        `heading_ref`          presence; the `href` fragment    (CARVE-P11-038)
-                               is its `target`
+        a resolved             `data-carve-xref` on `<a>`,      the
+        `heading_ref`          presence; the `href` fragment    cross-reference
+                               is its `target`                  marker
+                                                                (CARVE-P11-068)
+        a link's, an image's   none                             the attribute
+        or a span's                                             marker, or the
+        attributes, and a                                       span's opener
+        span                                                    and closer
+                                                                (CARVE-P11-068)
         a `caption_number`     `data-carve-caption-number` on   inside the
                                the `<span>` that wraps the      caption marker
                                number, presence                 (CARVE-P11-067)

@@ -9,7 +9,7 @@ description: "Document-wide resolution, core semantic behavior, and HTML seriali
 
 Document-wide resolution, core semantic behavior, and HTML serialization.
 
-This view contains 51 of 332 active rules. Every rule remains mandatory where applicable.
+This view contains 51 of 333 active rules. Every rule remains mandatory where applicable.
 
 Return to the [rule index](./) or read the complete [formal grammar](../grammar).
 
@@ -63,6 +63,6 @@ Return to the [rule index](./) or read the complete [formal grammar](../grammar)
 | [`CARVE-P10-012`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L116) | 10 | A MATCHING RAW BLOCK KEEPS ITS PLACEMENT SLOT |
 | [`CARVE-P10-014`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L354) | 10 | AN ORDERED LIST'S DELIMITER NAMES ITSELF ON THE LIST |
 | [`CARVE-P10-015`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L384) | 10 | ROUNDTRIP EXPORT WRITES NAMED CARRIERS |
-| [`CARVE-P10-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L536) | 10 | THE HTML CARRIERS ARE THE NAMES IN THIS INVENTORY |
-| [`CARVE-P10-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L696) | 10 | ROUNDTRIP EXPORT DROPS AN AUTHORED RESERVED NAME AND REPORTS IT |
+| [`CARVE-P10-016`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L542) | 10 | THE HTML CARRIERS ARE THE NAMES IN THIS INVENTORY |
+| [`CARVE-P10-019`](https://github.com/markup-carve/carve/blob/main/resources/spec/19-html-serialization.ebnf#L702) | 10 | ROUNDTRIP EXPORT DROPS AN AUTHORED RESERVED NAME AND REPORTS IT |
 | [`CARVE-P9-080`](https://github.com/markup-carve/carve/blob/main/resources/spec/13-semantics-foundations.ebnf#L136) | 9 | A STRUCTURAL-ONLY LINE RESETS CAPTION SCOPE |

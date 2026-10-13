@@ -184,6 +184,8 @@ for (const fixture of fixtures.markdownExportImport) test(`shared Markdown expor
   assert.ok(!ordinary.includes('<!-- carve:'))
   const exported = carveToMarkdown(fixture.source, { roundtrip: true })
   for (const fragment of fixture.carrierFragments) assert.ok(exported.includes(fragment), fragment)
+  // CARVE-P11-068: inline markers only add; stripping them gives the ordinary bytes.
+  if (fixture.inlineMarkers) assert.equal(exported.replace(/<!-- carve: [\s\S]*? -->/g, ''), ordinary)
   const codes = carveToMarkdownWithReport(fixture.source, { roundtrip: true }).losses.map((row) => row.code)
   for (const code of fixture.lossCodes ?? []) assert.ok(codes.includes(code), code)
   assertMarkdownReturn(fixture, migrateMarkdown(exported).value)

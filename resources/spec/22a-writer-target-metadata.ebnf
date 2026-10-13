@@ -158,9 +158,9 @@
       `critic-comment` span, `<abbr>`, `<del>`), the emitted bytes are
       faithful and the defect is on the import or in CARVE-P11-045, not here.
       `small_caps` and `ruby` have no Carve opener to carry. Attributes on a
-      list item's marker line and on an inline construct (a link, an image,
-      a span) are not carried: CARVE-P11-067 carries an attribute LINE, and neither
-      of those is spelled with one.
+      list item's marker line are not carried: CARVE-P11-067 carries an
+      attribute LINE, and that is not spelled with one. An inline construct's
+      attributes are CARVE-P11-068's.
 
   10t. THE CARRIER MODE ALSO CARRIES AN ATTRIBUTE LINE, A DEFINITION LIST AND A
       CAPTION -- NORMATIVE [CARVE-P11-067]. These are not containers, so CARVE-P11-063's
@@ -244,6 +244,41 @@
       captionable block before it, or one whose block already holds a caption,
       is a damaged set.
 
+  10u. THE CARRIER MODE CARRIES AN INLINE CONSTRUCT'S ATTRIBUTES, A SPAN AND
+      A CROSS-REFERENCE IN INLINE MARKERS -- NORMATIVE [CARVE-P11-068].
+      Markdown has no spelling for a link's, an image's or a span's
+      attributes, none for a span, and none for a cross-reference, which this
+      target writes as a link (CARVE-P11-038). Under the carrier mode the
+      output stays exactly what this target writes without it, and an inline
+      marker in CARVE-P11-063's syntax and escaping is added beside the
+      construct. Each payload is Carve source as the canonical writer spells
+      it:
+
+        [l](u){.k}         ->  [l](u)<!-- carve: {.k} -->
+        ![a](i.png){w=3}   ->  ![a](i.png)<!-- carve: {w=3} -->
+        [x]{.c}            ->  <!-- carve: [ -->x<!-- carve: ]{.c} -->
+        </#h>              ->  <!-- carve: </#h> -->[Head](#head)
+
+      AN ATTRIBUTE MARKER STANDS DIRECTLY AFTER ITS LINK OR IMAGE, however
+      the link is spelled, and the import attaches its attributes to that
+      construct. A SPAN TAKES AN OPENER `[` AND A CLOSER `]` FOLLOWED BY ITS
+      ATTRIBUTE BLOCK, around the content this target writes for it; the
+      pairs nest with the spans. A CROSS-REFERENCE MARKER STANDS DIRECTLY
+      BEFORE THE LINK this target writes for a resolved cross-reference, whose
+      fragment stays the GFM slug, and the import replaces that link with
+      the cross-reference it names. An unresolved one takes no marker.
+
+      AN INLINE MARKER IS TEXT TO NO READER. It contributes nothing to a GFM
+      slug (CARVE-P11-038) or to an image's description, and an image's
+      description holds no marker. A table cell and verbatim content take
+      none, as for CARVE-P11-063's markers.
+
+      AN INVALID MARKER DROPS ALONE (CARVE-P11-063): a payload outside these
+      shapes, an attribute marker not directly after a link or image, and a
+      cross-reference marker not directly before a link are ordinary comments
+      and are reported. A span closer without its opener, or an opener left
+      unclosed in its paragraph, breaks the pairing, and the set is damaged.
+
   11. THE MARKDOWN TARGET LINKS A HEADING BY ITS GFM SLUG --
       NORMATIVE [CARVE-P11-038]. GFM has no heading-id syntax: a reader derives every
       heading's id from its text, and `## H {#h}` shows the suffix as text.
@@ -255,6 +290,9 @@
         ## Rise and divergence     ->  ## Rise and divergence
 
         See </#h>.                 ->  See [Rise and divergence](#rise-and-divergence).
+
+      The carrier mode keeps this link and its slug, and adds CARVE-P11-068's
+      marker before it so the import restores `</#h>`.
 
       THE SLUG is the one GitHub assigns (github-slugger) and `pandoc -f gfm`
       reads:
