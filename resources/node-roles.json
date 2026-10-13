@@ -329,6 +329,11 @@
         ]
       }
     },
+    "code": {
+      "cellWraps": {
+        "role": "record-sequence"
+      }
+    },
     "definition_description": {
       "children": {
         "role": "node-sequence",
@@ -1196,6 +1201,11 @@
         ]
       }
     },
+    "math": {
+      "cellWraps": {
+        "role": "record-sequence"
+      }
+    },
     "paragraph": {
       "children": {
         "role": "node-sequence",
@@ -1240,6 +1250,11 @@
           "text",
           "underline"
         ]
+      }
+    },
+    "raw_inline": {
+      "cellWraps": {
+        "role": "record-sequence"
       }
     },
     "section": {
