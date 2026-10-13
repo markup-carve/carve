@@ -316,8 +316,8 @@ const MANIFEST = [
   // in the same direction as carve-php's KNOWN_KEYS and carve-rs's KNOWN_KINDS:
   // a corpus member or expected field the adapter does not name FAILS it, so
   // neither can excuse anything.
-  { repo: 'carve-js', path: 'test/include-security-conformance.test.ts', name: 'KNOWN_VECTOR_KEYS', kind: 'js', policy: 'permitted', guard: 'two-way', owner: 'adapter capability list, not an exemption' },
-  { repo: 'carve-js', path: 'test/include-security-conformance.test.ts', name: 'KNOWN_EXPECTED_KEYS', kind: 'js', policy: 'permitted', guard: 'two-way', owner: 'adapter capability list, not an exemption' },
+  { repo: 'carve-js', path: 'test/include-security-conformance.test.ts', name: 'KNOWN_VECTOR_KEYS', kind: 'js', policy: 'permitted', guard: 'two-way', staleness: 'delete stale KNOWN_VECTOR_KEYS entries', owner: 'adapter capability list, not an exemption' },
+  { repo: 'carve-js', path: 'test/include-security-conformance.test.ts', name: 'KNOWN_EXPECTED_KEYS', kind: 'js', policy: 'permitted', guard: 'two-way', staleness: 'delete stale KNOWN_EXPECTED_KEYS entries', owner: 'adapter capability list, not an exemption' },
 
   // -- carve-php -------------------------------------------------------------
   { repo: 'carve-php', path: 'tests/CarveCorpusTest.php', name: 'KNOWN_GAPS', kind: 'php', policy: 'owed', guard: 'two-way', staleness: 'now matches the pinned corpus: delete its KNOWN_GAPS entry', owner: 'tests/CarveCorpusTest.php' },
@@ -375,14 +375,14 @@ const MANIFEST = [
   // Not a waiver: the set of JSON Schema keywords this hand-written validator
   // implements. Meeting one that is NOT listed is the failure, which is the
   // opposite direction from every other row here.
-  { repo: 'carve-rs', path: 'tests/the_report_answers_to_the_published_schema.rs', name: 'KNOWN_KEYWORDS', kind: 'rust', policy: 'permitted', guard: 'two-way', owner: 'validator capability list, not an exemption' },
+  { repo: 'carve-rs', path: 'tests/the_report_answers_to_the_published_schema.rs', name: 'KNOWN_KEYWORDS', kind: 'rust', policy: 'permitted', guard: 'two-way', staleness: 'which html-import-schema.json no longer uses: delete the stale entry', owner: 'validator capability list, not an exemption' },
   // The include-security adapter carve-rs#1598 added. All three are capability
   // lists in the same direction as the row above: a corpus kind, requirement id
   // or denial class the adapter does not name is an assertion failure, so none
   // of them can excuse anything.
-  { repo: 'carve-rs', path: 'tests/include_security_conformance.rs', name: 'KNOWN_KINDS', kind: 'rust', policy: 'permitted', guard: 'two-way', owner: 'adapter capability list, not an exemption' },
-  { repo: 'carve-rs', path: 'tests/include_security_conformance.rs', name: 'KNOWN_REQUIREMENTS', kind: 'rust', policy: 'permitted', guard: 'two-way', owner: 'adapter capability list, not an exemption' },
-  { repo: 'carve-rs', path: 'tests/include_security_conformance.rs', name: 'KNOWN_DENIALS', kind: 'rust', policy: 'permitted', guard: 'two-way', owner: 'adapter capability list, not an exemption' },
+  { repo: 'carve-rs', path: 'tests/include_security_conformance.rs', name: 'KNOWN_KINDS', kind: 'rust', policy: 'permitted', guard: 'two-way', staleness: 'which no corpus vector uses any more: delete the stale entry', owner: 'adapter capability list, not an exemption' },
+  { repo: 'carve-rs', path: 'tests/include_security_conformance.rs', name: 'KNOWN_REQUIREMENTS', kind: 'rust', policy: 'permitted', guard: 'two-way', staleness: 'which no corpus vector uses any more: delete the stale entry', owner: 'adapter capability list, not an exemption' },
+  { repo: 'carve-rs', path: 'tests/include_security_conformance.rs', name: 'KNOWN_DENIALS', kind: 'rust', policy: 'permitted', guard: 'two-way', staleness: 'which no corpus vector uses any more: delete the stale entry', owner: 'adapter capability list, not an exemption' },
   // The carve-rs twin of carve-php's include KNOWN_DIFFERENCES. Two-way since
   // carve-rs#2010, which also asserts a row naming no vector.
   { repo: 'carve-rs', path: 'tests/include_conformance.rs', name: 'KNOWN_DIFFERENCES', kind: 'rust', policy: 'owed', guard: 'two-way', staleness: 'the difference is gone; delete its KNOWN_DIFFERENCES entry', owner: 'tests/include_conformance.rs' },
