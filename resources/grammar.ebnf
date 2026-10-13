@@ -1951,7 +1951,7 @@ comment_block_close = [whitespace], ("%%%", {'%'}):close, {character - newline}
                       where len(close) = len(open) ;  (* FORMAL (PART 9 §2): exact length match *)
 
 (* trailing (inline) line comment: from a %% marker to end of line, content
-   not rendered. The marker requires whitespace or start-of-run before it and
+   not rendered. The marker requires a space or start-of-run before it and
    is not formed inside code spans / inline-raw, nor when the first % is
    escaped -- a semantic constraint stated in PART 9, not context-free. *)
 inline_comment = "%%", {character - newline} ;
@@ -6026,7 +6026,7 @@ EOF = (* end of file *) ;
 (* ============================================================================
    21. TRAILING LINE COMMENTS -- NORMATIVE [CARVE-P9-041] (governs `inline_comment` in PART 3).
       - A `%%` token is a trailing comment marker only when the character
-        immediately before it is whitespace (space or tab) or it starts the
+        immediately before it is a space or it starts the
         inline run (its first content character after leading whitespace).
       - AN INLINE RUN IS A DELIMITED REGION PARSED AS `inline_content` IN ITS
         OWN RIGHT: a paragraph, a heading's text, a definition term, a table
@@ -6037,19 +6037,17 @@ EOF = (* end of file *) ;
         not a label matched verbatim as a key (a reference or footnote label).
         A paragraph's run starts at a line start, where PART 2's `%%` line
         reaches the case first.
-      - When recognized, the `%%`, the WHOLE run of whitespace separating it
+      - When recognized, the `%%`, the whole run of spaces separating it
         from the text before it, and ALL remaining characters to the END OF THE
         RUN are consumed and produce no output. The separating run goes in
-        full, because the run is what marks the comment off: keeping part of it
-        publishes whitespace the author wrote as a separator. `a` + two spaces
-        + `%% c` renders `<p>a</p>`.
+        full. A tab is content: `a⇥ %% c` renders `a⇥` (⇥ is a tab).
       - A RUN'S OWN CLOSER ENDS IT, and the line break ends a run that has
         none: `[a %% c](/u) t` renders `<p><a href="/u">a</a> t</p>`.
       - `%%` is NEVER recognized inside a code span or raw inline (PART 9 §20);
         those contexts pass both `%` characters through verbatim.
       - `\%%` (escaped first percent) is literal -- `%%` is literal text, not a
         comment marker.
-      - Without preceding whitespace (e.g. `50%%` or `a%%b`) the `%%` is
+      - Without a preceding space (e.g. `50%%` or `a%%b`) the `%%` is
         literal -- percentages and doubled-percent tokens in prose are safe.
       - The comment does NOT cross a line break; a soft-wrapped continuation on
         the next line of the same paragraph is unaffected (corpus 26-comments-6).

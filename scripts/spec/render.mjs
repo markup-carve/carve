@@ -1456,7 +1456,8 @@ const headingSem = g.createSemantics().addOperation('headingText', {
 })
 
 export function headingText(text) {
-  if (!text.includes('%%')) return text.replace(/[ \t]+$/, '')
+  text = text.replace(/[ \t]+$/, '')
+  if (!text.includes('%%')) return text
   // Match before the renderer's limit checks: discarded comments can contain
   // arbitrary brackets and backticks. Deep live input must still refuse safely.
   let match
@@ -1467,7 +1468,7 @@ export function headingText(text) {
     throw error
   }
   if (match.failed()) throw new Refuse(`heading inline: ${match.shortMessage}`)
-  return headingSem(match).headingText().replace(/[ \t]+$/, '')
+  return headingSem(match).headingText()
 }
 
 // parse a standalone `{...}` attribute block (table row/cell attrs);

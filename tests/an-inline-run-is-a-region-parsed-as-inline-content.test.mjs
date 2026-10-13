@@ -86,5 +86,5 @@ test('a footnote label is a key, not a run', () => {
  */
 test('a run closer ends the comment before the line break does', () => {
   assert.ok(html('[a %% h](/u) t\n').includes('<a href="/u">a</a> t'), html('[a %% h](/u) t\n'))
-  assert.ok(html('::: note [a\t%% h]\nbody\n:::\n').includes('<p class="div-label">a</p>'))
+  assert.ok(html('::: note [a\t %% h]\nbody\n:::\n').includes('<p class="div-label">a\t</p>'))
 })

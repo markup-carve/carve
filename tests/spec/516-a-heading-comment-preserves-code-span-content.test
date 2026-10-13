@@ -60,7 +60,7 @@ A heading comment preserves code-span content
 ```
 # a	%% hidden
 .
-<section id="a">
-  <h1>a</h1>
+<section id="a-hidden">
+  <h1>a	%% hidden</h1>
 </section>
 ```

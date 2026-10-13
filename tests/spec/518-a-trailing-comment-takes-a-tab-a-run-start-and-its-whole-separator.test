@@ -3,7 +3,7 @@ A trailing comment takes a tab, a run start and its whole separator
 ```
 a	%% hidden
 .
-<p>a</p>
+<p>a	%% hidden</p>
 ```
 
 ```
@@ -17,7 +17,7 @@ a  %% hidden
 : d
 .
 <dl>
-  <dt>a</dt>
+  <dt>a	%% hidden</dt>
   <dd>d</dd>
 </dl>
 ```
@@ -39,7 +39,7 @@ a  %% hidden
 .
 <table>
   <thead>
-    <tr><th scope="col">a</th><th scope="col">b</th></tr>
+    <tr><th scope="col">a	%% hidden</th><th scope="col">b</th></tr>
   </thead>
   <tbody>
     <tr><td>1</td><td>2</td></tr>
@@ -68,7 +68,7 @@ a  %% hidden
 .
 <figure>
   <img src="u" alt="alt">
-  <figcaption>cap</figcaption>
+  <figcaption>cap	%% hidden</figcaption>
 </figure>
 ```
 
@@ -88,7 +88,7 @@ body
 :::
 .
 <aside class="admonition note" aria-label="Note">
-  <p class="div-label">a</p>
+  <p class="div-label">a	%% hidden</p>
   <p>body</p>
 </aside>
 ```
@@ -113,7 +113,7 @@ a%%b and 50%% stay
 ```
 [a	%% hidden](/u)
 .
-<p><a href="/u">a</a></p>
+<p><a href="/u">a	%% hidden</a></p>
 ```
 
 ```

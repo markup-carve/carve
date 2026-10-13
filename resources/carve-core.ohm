@@ -749,29 +749,21 @@ CarveCore {
   wordChar   = alnumCh
   delim      = "/" | "*" | "_" | "~" | "^" | "=" | ","
 
-  // a whitespace-preceded %% consumes the rest of the LINE (SS21). A TAB
-  // separates as a space does, and the whole separating run is consumed, not
-  // one character of it: the run is what marks the comment off, so leaving
-  // part of it publishes whitespace the author wrote as a separator.
+  // A space-preceded %% consumes the whole separating space run and the rest of the line (SS21).
   spComment  = sepRun "%%" (~newline any)*
   // Bounded twins for the two constructs whose content is parsed inline
   // rather than cut first (PART 9 SS21a): a forced span's own closer, and
   // the combined token's `*/`, are boundaries the run does not cross either.
   fSpComment<d> = sepRun "%%" (~newline ~(d "}") any)*
   biSpComment = sepRun "%%" (~newline ~"*/" any)*
-  sepRun     = (" " | "\t")+
+  sepRun     = " "+
   // The run-start form: nothing precedes it, so it carries no separator.
   initialComment = "%%" (~newline any)*
   // {% ... %} consumes through the FIRST closer, including soft line breaks.
   // It has no leading-space requirement or consumption (SS21a).
   bracedComment = "{%" (~"%}" any)* "%}"
-  // The SAME run, so a whitespace run with no `%%` after it is consumed in ONE
-  // token: `spComment` scans the run and fails, then `inlineSpace` applies the
-  // memoized `sepRun` at that position and steps past the whole run. Spelling
-  // this `" "` while spComment takes a run makes the scan QUADRATIC - the run
-  // is re-scanned from one character further in at every retry - so the two
-  // rules have to share `sepRun`.
-  inlineSpace = sepRun
+  // Reuse the memoized space run after a failed comment scan to avoid quadratic rescans; tabs stay text.
+  inlineSpace = sepRun | "\t"+
 
   // A bare delimiter that opened nothing is literal text. The attribute block
   // rides on the delimiter because only a closer can carry one (PART 9 SS9);

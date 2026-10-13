@@ -489,7 +489,7 @@ comment_block_close = [whitespace], ("%%%", {'%'}):close, {character - newline}
                       where len(close) = len(open) ;  (* FORMAL (PART 9 §2): exact length match *)
 
 (* trailing (inline) line comment: from a %% marker to end of line, content
-   not rendered. The marker requires whitespace or start-of-run before it and
+   not rendered. The marker requires a space or start-of-run before it and
    is not formed inside code spans / inline-raw, nor when the first % is
    escaped -- a semantic constraint stated in PART 9, not context-free. *)
 inline_comment = "%%", {character - newline} ;

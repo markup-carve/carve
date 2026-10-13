@@ -42261,8 +42261,8 @@ recognition. The heading reads those spans before looking for an outside `%%`,
 so their content and the text after them survive. The heading id is derived
 from the preserved rendered text.
 
-The final two cases retain the heading host's existing comment behavior at the
-start of its text and after a tab.
+The final two cases recognize a comment at the start of the heading's text
+and keep a tab followed by `%%` as content (CARVE-P9-041, carve#3013).
 
 ::: compare
 
@@ -42370,8 +42370,8 @@ start of its text and after a tab.
 `````
 
 `````html
-<section id="a">
-  <h1>a</h1>
+<section id="a-hidden">
+  <h1>a	%% hidden</h1>
 </section>
 `````
 
@@ -42486,7 +42486,7 @@ the last row's below-column marker starts a separate list.
 :::
 ## A trailing comment takes a tab, a run start and its whole separator
 
-A `%%` marker is separated from the text before it by whitespace, and a tab does that as a space does. The whole separating run goes with the comment, so two spaces before `%%` leave no trailing space behind. A `%%` that starts the inline run needs no separator at all, which is only spellable in a host whose run begins mid-line: a definition term, a table cell, a figure caption, a div label. A paragraph is the one host where the run starts at a line start, so the block layer's comment line covers it (PART 9 §21).
+Only a run of spaces separates a trailing `%%` marker from the text before it. A tab is content. The whole space run goes with the comment, so two spaces before `%%` leave no trailing space behind (CARVE-P9-041, carve#3013). A `%%` that starts the inline run needs no separator at all, which is only spellable in a host whose run begins mid-line: a definition term, a table cell, a figure caption, a div label. A paragraph is the one host where the run starts at a line start, so the block layer's comment line covers it (PART 9 §21).
 
 ::: compare
 
@@ -42495,7 +42495,7 @@ a	%% hidden
 ```
 
 ```html
-<p>a</p>
+<p>a	%% hidden</p>
 ```
 
 :::
@@ -42521,7 +42521,7 @@ a  %% hidden
 
 ```html
 <dl>
-  <dt>a</dt>
+  <dt>a	%% hidden</dt>
   <dd>d</dd>
 </dl>
 ```
@@ -42555,7 +42555,7 @@ a  %% hidden
 ```html
 <table>
   <thead>
-    <tr><th scope="col">a</th><th scope="col">b</th></tr>
+    <tr><th scope="col">a	%% hidden</th><th scope="col">b</th></tr>
   </thead>
   <tbody>
     <tr><td>1</td><td>2</td></tr>
@@ -42596,7 +42596,7 @@ a  %% hidden
 ```html
 <figure>
   <img src="u" alt="alt">
-  <figcaption>cap</figcaption>
+  <figcaption>cap	%% hidden</figcaption>
 </figure>
 ```
 
@@ -42628,7 +42628,7 @@ body
 
 ```html
 <aside class="admonition note" aria-label="Note">
-  <p class="div-label">a</p>
+  <p class="div-label">a	%% hidden</p>
   <p>body</p>
 </aside>
 ```
@@ -42671,7 +42671,7 @@ a%%b and 50%% stay
 ```
 
 ```html
-<p><a href="/u">a</a></p>
+<p><a href="/u">a	%% hidden</a></p>
 ```
 
 :::

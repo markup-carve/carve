@@ -24,3 +24,10 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+516-a-heading-comment-preserves-code-span-content-8  a tab before %% is content; only a space run separates (CARVE-P9-041, carve#3013); the pin still consumes the tab (carve-js#2889)
+518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-12  a tab before %% is content; only a space run separates (CARVE-P9-041, carve#3013); the pin still consumes the tab (carve-js#2889)
+518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-3  a tab before %% is content; only a space run separates (CARVE-P9-041, carve#3013); the pin still consumes the tab (carve-js#2889)
+518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-5  a tab before %% is content; only a space run separates (CARVE-P9-041, carve#3013); the pin still consumes the tab (carve-js#2889)
+518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-7  a tab before %% is content; only a space run separates (CARVE-P9-041, carve#3013); the pin still consumes the tab (carve-js#2889)
+518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator-9  a tab before %% is content; only a space run separates (CARVE-P9-041, carve#3013); the pin still consumes the tab (carve-js#2889)
+518-a-trailing-comment-takes-a-tab-a-run-start-and-its-whole-separator  a tab before %% is content; only a space run separates (CARVE-P9-041, carve#3013); the pin still consumes the tab (carve-js#2889)

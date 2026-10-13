@@ -31,9 +31,10 @@ for (const [name, text, expected] of [
 }
 
 test('heading comments retain their host boundaries', () => {
-  for (const text of ['a %% hidden', 'a\t%% hidden']) {
+  for (const text of ['a %% hidden', 'a  %% hidden']) {
     assert.equal(html(`# ${text}\n`), '<section id="a">\n  <h1>a</h1>\n</section>')
   }
+  assert.equal(html('# a\t%% hidden\n'), '<section id="a-hidden">\n  <h1>a\t%% hidden</h1>\n</section>')
   assert.equal(html('# %% hidden\n'), '<section id="s">\n  <h1></h1>\n</section>')
   assert.match(html('# a \\%% b\n'), /<h1>a %% b<\/h1>/)
 })
@@ -57,7 +58,7 @@ for (const [host, source] of [
 
 test('discarded heading comments do not trigger inline parser limits', () => {
   for (const payload of ['`'.repeat(9), '['.repeat(201), '['.repeat(2000)]) {
-    for (const prefix of ['a %% ', 'a\t%% ']) {
+    for (const prefix of ['a %% ', 'a  %% ']) {
       assert.equal(html(`# ${prefix}${payload}\n`), '<section id="a">\n  <h1>a</h1>\n</section>')
     }
     assert.equal(html(`# %% ${payload}\n`), '<section id="s">\n  <h1></h1>\n</section>')
