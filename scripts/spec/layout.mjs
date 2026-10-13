@@ -3351,8 +3351,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             const cur = lines[i] ?? ''
             // A term has no content column, so no indentation ends it: a line
             // past the column folds whatever it would open (carve#2411).
+            // A lone `+` is no marker here: a term holds no blocks for it to
+            // attach, so it is a plain line and folds (CARVE-P2-028, carve#3145).
             if (isEntry(cur) || cur.startsWith(LAZY) && /^: /.test(unlazy(cur)) ||
-                isBlank(cur) || CONT_MARKER.test(cur)) break
+                isBlank(cur)) break
             // A comment at the container's column ends the term. Past it the
             // comment stays a comment, fence body included, and the term goes
             // on (carve#2411). Inline content never reaches across it, so it
@@ -3682,6 +3684,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
                 hasCloser([dedented, ...lines.slice(i + 1)], 0)) break
             const lazyFence = !foldablePlain(dedented) && FENCE.test(dedented) &&
               !(FENCE.test(cur) && hasCloser(lines, i))
+            // A table row interrupts the paragraph (PART 9 §10 I1), so below
+            // the body's column it ends the body rather than folding (carve#3145).
+            if (isTableRow(dedented)) break
             if ((foldablePlain(dedented) || lazyFence || BULLET.test(trimLineEnd(dedented)) || isOrderedMarkerLine(dedented)) && bodyLeavesParagraphOpen(asRead(bodyLines))) {
               pushBody(lazyFence ? LAZY + dedented : dedented)
               i++

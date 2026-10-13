@@ -1,0 +1,43 @@
+A table row ends a description body and a lone plus folds into a term
+
+```
+:: t
+: a
+| t |
+.
+<dl>
+  <dt>t</dt>
+  <dd>a</dd>
+</dl>
+<table>
+  <tbody>
+    <tr><td>t</td></tr>
+  </tbody>
+</table>
+```
+
+```
+:: term
++
+: d
+.
+<dl>
+  <dt>term
++</dt>
+  <dd>d</dd>
+</dl>
+```
+
+```
+:: A term that
+   wraps
++
+: d
+.
+<dl>
+  <dt>A term that
+   wraps
++</dt>
+  <dd>d</dd>
+</dl>
+```
