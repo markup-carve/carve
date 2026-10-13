@@ -146,13 +146,14 @@ const shippedDeclaration = () =>
  *
  * Run 36552218597, on the next head, fails the same step again.
  */
+// Re-measured 2026-10-13 from run 38442138189 at carve-js dc90931a.
 const LAST_MEASURED = new Map([
-  ['list.tight', 3],
-  ['text.value', 6],
-  ['admonition.label', 1],
+  ['text.value', 3],
   ['table_cell.rowspan', 1],
   ['table_cell.colspan', 1],
   ['table_cell.header', 2],
+  ['table_row.continuationLines', 5],
+  ['code_block.content', 1],
 ])
 
 /** A measurement of `count` distinct documents - the reconciler counts them. */

@@ -186,16 +186,8 @@ carve-rs   400-a-container-starts-at-its-opening-markup-even-where-its-first-chi
 carve-rs   402-a-container-ends-at-the-markup-that-closes-it-even-where-its-last-child-is-unplaced.crv  text        1  permitted
 carve-php  400-a-container-starts-at-its-opening-markup-even-where-its-first-child-is-unplaced.crv  text        1  permitted
 carve-php  402-a-container-ends-at-the-markup-that-closes-it-even-where-its-last-child-is-unplaced.crv  text        1  permitted
-carve-js   237-a-continuation-row-carries-no-trailing-text.crv    text  2  permitted
-carve-js   249-trailing-whitespace-after-a-block-marker-4.crv     text  2  permitted
-carve-js   256-table-cell-padding-must-be-a-space-15.crv          text  2  permitted
-carve-js   256-table-cell-padding-must-be-a-space-16.crv          text  2  permitted
-carve-js   256-table-cell-padding-must-be-a-space-17.crv          text  2  permitted
 carve-js   41-line-blocks-9.crv                                   text  1  permitted
-carve-js   63-table-multi-line-cell-continuation.crv              text  1  permitted
-carve-js   64-table-rowspan-with-multi-line-content.crv           text  1  permitted
-carve-js   64-table-rowspan-with-multi-line-content-2.crv     text  2  permitted
-carve-js   64-table-rowspan-with-multi-line-content-3.crv     text  2  permitted
+carve-js   64-table-rowspan-with-multi-line-content-2.crv     text  1  permitted
 
 carve-rs   237-a-continuation-row-carries-no-trailing-text.crv    text  2  permitted
 carve-rs   249-trailing-whitespace-after-a-block-marker-4.crv     text  2  permitted
@@ -205,6 +197,8 @@ carve-rs   256-table-cell-padding-must-be-a-space-17.crv          text  2  permi
 carve-rs   41-line-blocks-9.crv                                   text  1  permitted
 carve-rs   63-table-multi-line-cell-continuation.crv              text  1  permitted
 carve-rs   64-table-rowspan-with-multi-line-content.crv           text  1  permitted
+carve-rs   64-table-rowspan-with-multi-line-content-2.crv     text  1  permitted
+carve-rs   64-table-rowspan-with-multi-line-content-3.crv     text  2  permitted
 
 carve-php  237-a-continuation-row-carries-no-trailing-text.crv    text  2  permitted
 carve-php  249-trailing-whitespace-after-a-block-marker-4.crv     text  2  permitted
@@ -214,6 +208,8 @@ carve-php  256-table-cell-padding-must-be-a-space-17.crv          text  2  permi
 carve-php  41-line-blocks-9.crv                                   text  1  permitted
 carve-php  63-table-multi-line-cell-continuation.crv              text  1  permitted
 carve-php  64-table-rowspan-with-multi-line-content.crv           text  1  permitted
+carve-php  64-table-rowspan-with-multi-line-content-2.crv     text  2  permitted
+carve-php  64-table-rowspan-with-multi-line-content-3.crv     text  2  permitted
 
 # The `333` fixtures, added 2026-08-16 by markup-carve/carve#1306: an inline run
 # left open at a row's closing pipe and continued on the `+` row below. The run's
@@ -223,7 +219,6 @@ carve-php  64-table-rowspan-with-multi-line-content.crv           text  1  permi
 # (resources/engine-pin-drift.txt declares the carve-js half), not because the
 # clause reaches them differently.
 
-carve-js   333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv  text  1  permitted
 carve-rs   333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv  text  1  permitted
 carve-php  333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv  text  1  permitted
 
@@ -257,6 +252,10 @@ carve-php  256-table-cell-padding-must-be-a-space-16.crv          table_cell  2 
 carve-php  256-table-cell-padding-must-be-a-space-17.crv          table_cell  2  permitted
 carve-php  63-table-multi-line-cell-continuation.crv              table_cell  1  permitted
 carve-php  64-table-rowspan-with-multi-line-content.crv           table_cell  1  permitted
+carve-rs   64-table-rowspan-with-multi-line-content-2.crv     table_cell  2  permitted
+carve-rs   64-table-rowspan-with-multi-line-content-3.crv     table_cell  2  permitted
+carve-php  64-table-rowspan-with-multi-line-content-2.crv     table_cell  2  permitted
+carve-php  64-table-rowspan-with-multi-line-content-3.crv     table_cell  2  permitted
 
 # The same `333` fixtures. A cell whose content is split across the row and its
 # `+` continuation has no contiguous extent - covering both halves would sweep
@@ -365,25 +364,15 @@ carve-php  41-line-blocks-9.crv                                   non_breaking_s
 # and type, with the issue that tracks it - never `permitted`.
 
 carve-js   349-a-container-whose-table-ends-on-a-continuation-row-3.crv             table_cell  1  permitted
-carve-js   349-a-container-whose-table-ends-on-a-continuation-row-3.crv             text        1  permitted
 carve-js   349-a-container-whose-table-ends-on-a-continuation-row-5.crv             table_cell  1  permitted
-carve-js   349-a-container-whose-table-ends-on-a-continuation-row-5.crv             text        1  permitted
 carve-js   349-a-container-whose-table-ends-on-a-continuation-row-6.crv             table_cell  1  permitted
-carve-js   349-a-container-whose-table-ends-on-a-continuation-row-6.crv             text        1  permitted
 carve-js   349-a-container-whose-table-ends-on-a-continuation-row.crv               table_cell  1  permitted
-carve-js   349-a-container-whose-table-ends-on-a-continuation-row.crv               text        1  permitted
 carve-js   354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-2.crv table_cell  1  permitted
-carve-js   354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-2.crv text        1  permitted
 carve-js   354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold.crv table_cell  1  permitted
-carve-js   354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold.crv text        1  permitted
 carve-js   355-a-container-whose-table-ends-on-a-joined-header-row-3.crv            table_cell  1  permitted
-carve-js   355-a-container-whose-table-ends-on-a-joined-header-row-3.crv            text        1  permitted
 carve-js   355-a-container-whose-table-ends-on-a-joined-header-row.crv              table_cell  1  permitted
-carve-js   355-a-container-whose-table-ends-on-a-joined-header-row.crv              text        1  permitted
 carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv                table_cell  1  permitted
-carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv                text        1  permitted
 carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                table_cell  1  permitted
-carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                text        1  permitted
 carve-php  349-a-container-whose-table-ends-on-a-continuation-row-3.crv             table_cell  1  permitted
 carve-php  349-a-container-whose-table-ends-on-a-continuation-row-3.crv             text        1  permitted
 carve-php  349-a-container-whose-table-ends-on-a-continuation-row-5.crv             table_cell  1  permitted
@@ -424,3 +413,30 @@ carve-rs   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv            
 carve-rs   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv                text        1  permitted
 carve-rs   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                table_cell  1  permitted
 carve-rs   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                text        1  permitted
+
+# ---- OWED: a cell_wrap marker with no span -------------------------------------
+#
+# carve-js places the text on each side of a continuation join (CARVE-P12-069)
+# but gives the `cell_wrap` marker between them no `pos`. The marker stands for
+# the join at a `+` line, so it has a location and §4 does not exempt it.
+
+carve-js   237-a-continuation-row-carries-no-trailing-text.crv  cell_wrap  2  markup-carve/carve-js#3001
+carve-js   249-trailing-whitespace-after-a-block-marker-4.crv  cell_wrap  2  markup-carve/carve-js#3001
+carve-js   256-table-cell-padding-must-be-a-space-15.crv  cell_wrap  2  markup-carve/carve-js#3001
+carve-js   256-table-cell-padding-must-be-a-space-16.crv  cell_wrap  2  markup-carve/carve-js#3001
+carve-js   256-table-cell-padding-must-be-a-space-17.crv  cell_wrap  2  markup-carve/carve-js#3001
+carve-js   333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv  cell_wrap  1  markup-carve/carve-js#3001
+carve-js   349-a-container-whose-table-ends-on-a-continuation-row.crv  cell_wrap  1  markup-carve/carve-js#3001
+carve-js   349-a-container-whose-table-ends-on-a-continuation-row-3.crv  cell_wrap  1  markup-carve/carve-js#3001
+carve-js   349-a-container-whose-table-ends-on-a-continuation-row-5.crv  cell_wrap  1  markup-carve/carve-js#3001
+carve-js   349-a-container-whose-table-ends-on-a-continuation-row-6.crv  cell_wrap  1  markup-carve/carve-js#3001
+carve-js   354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold.crv  cell_wrap  1  markup-carve/carve-js#3001
+carve-js   354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-2.crv  cell_wrap  1  markup-carve/carve-js#3001
+carve-js   355-a-container-whose-table-ends-on-a-joined-header-row.crv  cell_wrap  1  markup-carve/carve-js#3001
+carve-js   355-a-container-whose-table-ends-on-a-joined-header-row-3.crv  cell_wrap  1  markup-carve/carve-js#3001
+carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv  cell_wrap  1  markup-carve/carve-js#3001
+carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv  cell_wrap  1  markup-carve/carve-js#3001
+carve-js   63-table-multi-line-cell-continuation.crv  cell_wrap  2  markup-carve/carve-js#3001
+carve-js   64-table-rowspan-with-multi-line-content.crv  cell_wrap  2  markup-carve/carve-js#3001
+carve-js   64-table-rowspan-with-multi-line-content-2.crv  cell_wrap  2  markup-carve/carve-js#3001
+carve-js   64-table-rowspan-with-multi-line-content-3.crv  cell_wrap  2  markup-carve/carve-js#3001
