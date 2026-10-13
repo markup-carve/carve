@@ -35,6 +35,8 @@ const emit = defineEmits<{
   'update:modelValue': [value: string]
   // The source to render: the document without the empty marker the cursor sits on, or null for the document itself.
   preview: [value: string | null]
+  // The 1-based line the cursor is on, after typing or moving it.
+  cursor: [line: number]
 }>()
 
 const host = ref<HTMLElement | null>(null)
@@ -296,7 +298,10 @@ onMounted(() => {
         theme,
         EditorView.updateListener.of((u) => {
           if (u.geometryChanged) syncGutterWidth(u.view)
-          if (u.docChanged || u.selectionSet) emitPreview(u.state)
+          if (u.docChanged || u.selectionSet) {
+            emitPreview(u.state)
+            emit('cursor', u.state.doc.lineAt(u.state.selection.main.head).number)
+          }
           if (!u.docChanged) return
           emit('update:modelValue', u.state.doc.toString())
           scheduleHighlight()
@@ -328,9 +333,32 @@ watch(
   (on) => view.value?.dispatch({ effects: wrapping.reconfigure(on ? EditorView.lineWrapping : []) }),
 )
 
+// Offset of the document's top inside the scroller's content, for line geometry.
+function documentOffset(v: EditorView): number {
+  return v.documentTop - v.scrollDOM.getBoundingClientRect().top + v.scrollDOM.scrollTop
+}
+
 defineExpose({
   focus: () => view.value?.focus(),
   scroller: () => view.value?.scrollDOM ?? null,
+  // Fractional 1-based source line at the top of the visible area.
+  topLine(): number {
+    const v = view.value
+    if (!v) return 1
+    const y = v.scrollDOM.scrollTop - documentOffset(v)
+    const block = v.lineBlockAtHeight(Math.max(0, y))
+    const line = v.state.doc.lineAt(block.from).number
+    return line + Math.min(1, Math.max(0, (y - block.top) / Math.max(1, block.height)))
+  },
+  // Scroll offset that puts fractional 1-based `line` at the top.
+  lineOffset(line: number): number {
+    const v = view.value
+    if (!v) return 0
+    const doc = v.state.doc
+    const whole = Math.min(Math.max(1, Math.floor(line)), doc.lines)
+    const block = v.lineBlockAt(doc.line(whole).from)
+    return documentOffset(v) + block.top + (line - whole) * block.height
+  },
 })
 </script>
 

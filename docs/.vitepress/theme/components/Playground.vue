@@ -219,7 +219,12 @@ const outputEl = ref<HTMLElement | null>(null)
 const CarveEditor = defineAsyncComponent(() => import('./CarveEditor.vue'))
 // What the editor wants rendered instead of `source` while the cursor sits on an empty list marker.
 const previewSource = ref<string | null>(null)
-const editorRef = ref<{ focus: () => void; scroller: () => HTMLElement | null } | null>(null)
+const editorRef = ref<{
+  focus: () => void
+  scroller: () => HTMLElement | null
+  topLine: () => number
+  lineOffset: (line: number) => number
+} | null>(null)
 // The editor's scroll container stands in for the old textarea in scroll sync.
 const sourceEl = computed<HTMLElement | null>(() => editorRef.value?.scroller() ?? null)
 
@@ -271,11 +276,69 @@ function syncScroll(from: HTMLElement, to: HTMLElement): void {
   const ratio = range > 0 ? from.scrollTop / range : 0
   setScrollTop(to, ratio * (to.scrollHeight - to.clientHeight))
 }
+
+// The preview's `data-source-line` blocks as (line, top) points in scroll
+// coordinates, increasing in both, closed by an end-of-document sentinel. Null
+// when the engine wrote no anchors, and the panes fall back to proportional sync.
+type Anchor = { line: number; top: number }
+function previewAnchors(output: HTMLElement): Anchor[] | null {
+  const base = output.getBoundingClientRect().top - output.scrollTop
+  const points: Anchor[] = []
+  for (const el of output.querySelectorAll<HTMLElement>('[data-source-line]')) {
+    const line = Number(el.dataset.sourceLine)
+    const top = el.getBoundingClientRect().top - base
+    const last = points[points.length - 1]
+    if (Number.isFinite(line) && (!last || (line > last.line && top >= last.top))) points.push({ line, top })
+  }
+  if (!points.length) return null
+  if (points[0].line > 1) points.unshift({ line: 1, top: 0 })
+  const lines = source.value.split('\n').length + 1
+  points.push({ line: Math.max(lines, points[points.length - 1].line + 1), top: Math.max(output.scrollHeight, points[points.length - 1].top) })
+  return points
+}
+// Piecewise-linear map between the two axes of the anchor list.
+function interpolate(points: Anchor[], value: number, from: 'line' | 'top', to: 'line' | 'top'): number {
+  let i = 0
+  while (i < points.length - 2 && points[i + 1][from] <= value) i++
+  const a = points[i]
+  const b = points[i + 1]
+  const span = b[from] - a[from]
+  const t = span > 0 ? Math.min(1, Math.max(0, (value - a[from]) / span)) : 0
+  return a[to] + t * (b[to] - a[to])
+}
+
 function onSourceScroll(): void {
   const source = sourceEl.value
   const output = outputEl.value
   if (!source || !output || !shouldSync(source)) return
-  syncScroll(source, output)
+  const anchors = previewAnchors(output)
+  const editor = editorRef.value
+  if (!anchors || !editor || atEnd(source)) return syncScroll(source, output)
+  setScrollTop(output, interpolate(anchors, editor.topLine(), 'line', 'top'))
+}
+// At either end of its range a pane maps to the other's end: the panes differ in
+// height, so the top line alone would leave the last blocks out of view.
+function atEnd(el: HTMLElement): boolean {
+  return el.scrollTop <= 0 || el.scrollTop >= el.scrollHeight - el.clientHeight - 1
+}
+
+// After typing or moving the cursor, bring the block it is in into view in the
+// preview, unless it is already visible. Kept apart from scroll sync so reading
+// the preview while the cursor rests does not pull it back.
+let followLine: number | null = null
+function onCursor(line: number): void {
+  followLine = line
+  void nextTick(followCursor)
+}
+function followCursor(): void {
+  const output = outputEl.value
+  if (followLine === null || !output) return
+  const anchors = previewAnchors(output)
+  if (!anchors) return
+  const y = interpolate(anchors, followLine, 'line', 'top')
+  const margin = Math.min(48, output.clientHeight / 4)
+  if (y >= output.scrollTop + margin && y <= output.scrollTop + output.clientHeight - margin) return
+  setScrollTop(output, y - output.clientHeight / 3)
 }
 function onOutputScroll(): void {
   const source = sourceEl.value
@@ -284,7 +347,11 @@ function onOutputScroll(): void {
   // A gesture in the preview supersedes a restore still pending from the last
   // re-render, so the reader is not pulled back to where they were before it.
   outputScrollRestorePending = false
-  syncScroll(output, source)
+  followLine = null
+  const anchors = previewAnchors(output)
+  const editor = editorRef.value
+  if (!anchors || !editor || atEnd(output)) return syncScroll(output, source)
+  setScrollTop(source, editor.lineOffset(interpolate(anchors, output.scrollTop, 'top', 'line')))
 }
 
 // `v-html` replaces the preview's children whenever the document changes, which
@@ -334,6 +401,8 @@ const rendered = computed<{ html: string; ms: number | null }>(() => {
           })
         : carveToHtml(previewSource.value ?? source.value, {
             extensions: JS_EXTENSIONS,
+            // Block anchors for scroll sync and cursor follow; the HTML pane strips them.
+            sourceLine: true,
             allowRawHtml: !fromSharedLink.value,
           })
     ) as string
@@ -349,6 +418,17 @@ const rendered = computed<{ html: string; ms: number | null }>(() => {
 })
 
 const html = computed<string>(() => rendered.value.html)
+// The HTML pane shows canonical output: the anchors are stripped, unless the
+// document spells the attribute itself, which then needs a render without them.
+const rawHtml = computed<string>(() => {
+  const text = previewSource.value ?? source.value
+  if (engine.value === 'rust' || !text.includes('data-source-line')) return html.value.replace(/ data-source-line="\d+"/g, '')
+  try {
+    return carveToHtml(text, { extensions: JS_EXTENSIONS, allowRawHtml: !fromSharedLink.value })
+  } catch {
+    return html.value
+  }
+})
 
 // One-line status for the toolbar: the active engine and its last render time.
 // Gate the render-time text behind mount: `performance.now()` differs between
@@ -530,6 +610,8 @@ async function highlightCode(): Promise<void> {
       const shikiPre = tmp.firstElementChild
       if (shikiPre instanceof HTMLElement) {
         shikiPre.dataset.lang = lang
+        // Keep the block's scroll anchor on the highlighted replacement.
+        if (pre.dataset.sourceLine) shikiPre.dataset.sourceLine = pre.dataset.sourceLine
         pre.replaceWith(shikiPre)
       }
     } catch {
@@ -614,6 +696,8 @@ async function postProcessOutput(): Promise<void> {
   // Last, because every step above changes the pane's height.
   restoreOutputScroll()
   outputScrollRestorePending = false
+  followCursor()
+  followLine = null
 }
 
 let debounce: ReturnType<typeof setTimeout> | undefined
@@ -630,7 +714,10 @@ watch(html, () => {
   renderGeneration++
   outputScrollBeforeRender = outputEl.value?.scrollTop ?? 0
   outputScrollRestorePending = true
-  void nextTick(restoreOutputScroll)
+  void nextTick(() => {
+    restoreOutputScroll()
+    followCursor()
+  })
 })
 watch(html, schedulePostProcess)
 onMounted(() => {
@@ -832,6 +919,7 @@ void mermaidInit
               v-model="source"
               :wrap="wrapLines"
               @preview="previewSource = $event"
+              @cursor="onCursor"
               :get-highlighter="getHighlighter"
             />
           </ClientOnly>
@@ -864,7 +952,7 @@ void mermaidInit
           <label>HTML source</label>
           <span class="pg-status" aria-live="polite">{{ renderStatus }}</span>
         </div>
-        <pre class="raw">{{ html }}</pre>
+        <pre class="raw">{{ rawHtml }}</pre>
       </div>
     </div>
 
