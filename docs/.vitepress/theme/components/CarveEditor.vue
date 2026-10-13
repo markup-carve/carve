@@ -31,7 +31,11 @@ const props = defineProps<{
   // one Shiki instance and the same Carve TextMate grammar.
   getHighlighter: () => Promise<unknown>
 }>()
-const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
+const emit = defineEmits<{
+  'update:modelValue': [value: string]
+  // The source to render: the document without the empty marker the cursor sits on, or null for the document itself.
+  preview: [value: string | null]
+}>()
 
 const host = ref<HTMLElement | null>(null)
 const view = shallowRef<EditorView | null>(null)
@@ -178,6 +182,25 @@ const deleteBareMarker: Command = (v) => {
   return true
 }
 
+// A continuation leaves `- ` on the new line, which Carve reads as text, so the
+// preview would show a stray marker until the item gets content. Render without it.
+let lastPreview: string | null = null
+function emitPreview(state: EditorState): void {
+  let preview: string | null = null
+  const sel = state.selection
+  if (sel.ranges.length === 1 && sel.main.empty) {
+    const line = state.doc.lineAt(sel.main.head)
+    const lead = /^(?:[ \t]*> ?)*[ \t]*/.exec(line.text)![0]
+    const rest = line.text.slice(lead.length)
+    if (sel.main.head === line.to && rest && BARE_MARKER.test(rest) && !inCodeBlock(state.doc.toString(), line.number)) {
+      preview = state.doc.sliceString(0, line.from + lead.length).replace(/[ \t]+$/, '') + state.doc.sliceString(line.to)
+    }
+  }
+  if (preview === lastPreview) return
+  lastPreview = preview
+  emit('preview', preview)
+}
+
 function listIndent(direction: 'indent' | 'outdent', fallback: Command): Command {
   return (v) => {
     const sel = v.state.selection
@@ -273,6 +296,7 @@ onMounted(() => {
         theme,
         EditorView.updateListener.of((u) => {
           if (u.geometryChanged) syncGutterWidth(u.view)
+          if (u.docChanged || u.selectionSet) emitPreview(u.state)
           if (!u.docChanged) return
           emit('update:modelValue', u.state.doc.toString())
           scheduleHighlight()
@@ -282,6 +306,7 @@ onMounted(() => {
   })
   scheduleHighlight(0)
   syncGutterWidth(view.value)
+  emitPreview(view.value.state)
 })
 
 onBeforeUnmount(() => {

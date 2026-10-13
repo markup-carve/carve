@@ -217,6 +217,8 @@ const outputEl = ref<HTMLElement | null>(null)
 // Async so CodeMirror (~100 KB gzip) loads only on the playground page, not with
 // the theme bundle every docs page shares.
 const CarveEditor = defineAsyncComponent(() => import('./CarveEditor.vue'))
+// What the editor wants rendered instead of `source` while the cursor sits on an empty list marker.
+const previewSource = ref<string | null>(null)
 const editorRef = ref<{ focus: () => void; scroller: () => HTMLElement | null } | null>(null)
 // The editor's scroll container stands in for the old textarea in scroll sync.
 const sourceEl = computed<HTMLElement | null>(() => editorRef.value?.scroller() ?? null)
@@ -325,12 +327,12 @@ const rendered = computed<{ html: string; ms: number | null }>(() => {
     const t0 = performance.now()
     let out = (
       useWasm
-        ? wasmRender!(source.value, {
+        ? wasmRender!(previewSource.value ?? source.value, {
             full: true,
             // A document that arrived in a URL is not this visitor's document.
             rawHtml: !fromSharedLink.value,
           })
-        : carveToHtml(source.value, {
+        : carveToHtml(previewSource.value ?? source.value, {
             extensions: JS_EXTENSIONS,
             allowRawHtml: !fromSharedLink.value,
           })
@@ -486,17 +488,13 @@ let highlighterPromise: Promise<any> | null = null
 function getHighlighter(): Promise<unknown> {
   if (!highlighterPromise) {
     highlighterPromise = (async () => {
-      const { createHighlighter, bundledThemes } = await import('shiki')
+      const { createHighlighter } = await import('shiki')
       // The repo's Carve TextMate grammar, so `language-carve` blocks highlight too.
       const carveGrammar = (await import('@markup-carve/carve-grammars/textmate/carve.tmLanguage.json')).default
-      // The GitHub themes color list markers only under the Markdown-specific
-      // `punctuation.definition.list.begin.markdown`; give Carve's list scopes the same color.
-      const withListMarkers = async (name: 'github-light' | 'github-dark', color: string) => {
-        const theme = (await bundledThemes[name]()).default
-        return { ...theme, tokenColors: [...(theme.tokenColors ?? []), { scope: ['punctuation.definition.list'], settings: { foreground: color } }] }
-      }
+      // The same Carve theme rules the docs code blocks get from carveMarkdown().
+      const { carveLightTheme, carveDarkTheme } = await import('@markup-carve/carve-grammars/shiki/themes')
       return createHighlighter({
-        themes: [await withListMarkers('github-light', '#e36209'), await withListMarkers('github-dark', '#ffab70')],
+        themes: [carveLightTheme, carveDarkTheme],
         langs: [...PLAYGROUND_CODE_LANGUAGES, carveGrammar as never],
       })
     })()
@@ -833,6 +831,7 @@ void mermaidInit
               ref="editorRef"
               v-model="source"
               :wrap="wrapLines"
+              @preview="previewSource = $event"
               :get-highlighter="getHighlighter"
             />
           </ClientOnly>
