@@ -165,39 +165,43 @@
         whatever prefixes it missed. The deepest frame is found by following
         the last child container to its leaf at every depth. Nothing closes.
         The fold changes the leaf operation, never which container survives.
-        Whether the residue interrupts is read in the owner O2 selected:
-        ` # H` under `- a` is no heading at document column 1, so it folds,
-        and `# H` at column 0 is one, so it does not.
+        Recognition uses the owner O2 selected, its coordinates, and the
+        construct's scope. PART 9 §10 applies the interruption policy to that
+        recognition result; it does not recognize a different spelling for
+        folding. ` # H` under `- a` is no heading at document column 1, so it
+        folds, and `# H` at column 0 is one, so it does not. Reuse a result only
+        within that owner and coordinate system. Fence guards still use the
+        owning body's extent; comments take O1 before visible recognition.
 
         NO STORED CONTINUATION CLAIM, NO LAZY LINE -- NORMATIVE [CARVE-P0-006].
-        An ordinary line stores a continuation claim for the frame it lands
-        in, and by T the same line leaves that frame's paragraph open. A
-        blank, heading, definition, comment, table or closed fence stores
-        none and leaves none open. O3 therefore has nothing to fold into after
-        one, even when the item's last block is a container. For `. >` / `X`
-        the empty quote stored no claim: the item closes and `X` starts a
-        document paragraph. `- > q` / `lazy` folds because the ordinary quoted
-        line stored a claim and its leaf is an open paragraph. The claim is
-        stored ownership, not a search up the stack for an open paragraph.
+        Apply T to the recognized boundary in its owner. An ordinary line
+        leaves a paragraph open and stores a continuation claim for that
+        frame. A boundary whose T row closes the paragraph stores no claim.
+        A container row with `deepest P` or `deepest attached P` takes
+        the state of its last-child leaf. An empty or closed container
+        supplies no open leaf (CARVE-P0-017).
+        Container survival, paragraph openness and stored ownership remain
+        separate: a surviving frame does not by itself admit a lazy line.
+        O3 needs both a claim for the leaf and an open paragraph there; it
+        never searches earlier blocks or ancestor paragraphs for a claim.
+        For `. >` / `X` the empty quote supplies neither, so `X` starts a
+        document paragraph. `- > q` / `lazy` folds because `q` stored a claim
+        and left the quoted paragraph open. Definition-term continuation
+        remains governed by CARVE-P2-028.
 
         A QUOTE'S LAST BLOCK MAY ITSELF BE A QUOTE -- NORMATIVE [CARVE-P0-009].
-        Follow the last child container to its leaf at every depth. A
-        below-column line continues a paragraph if and only if one is open
-        at the deepest frame. Otherwise it closes the list and begins a new
-        block, and no surviving frame adopts it: a line below an item's
-        content column is not that item's content. THE ONE EXCEPTION is
-        retention (X1). A frame holds an open paragraph after a paragraph
-        line, and through a block quote, a definition body or a nested list
-        whose own leaf holds one. A heading leaves none open, and neither does
-        a thematic break, a table, a fenced code block, or a `:::` container
-        that is empty or closed (CARVE-P0-017). An outer quote ending in an inner heading,
-        table or thematic break therefore takes no lazy line. In corpus
-        75-list-nesting-and-looseness-4 the inner item closes and `lazy` is a
-        document paragraph.
+        The last-child traversal in O3 applies at every depth, including a
+        quote whose last block is another quote. CARVE-P0-006 and T decide
+        whether its leaf can take a lazy line. If it cannot, a below-column
+        line closes the missed frames and starts a block in O2's owner; no
+        surviving frame adopts it merely because it once held a paragraph.
+        X1 is the retained-ownership exception. In corpus
+        75-list-nesting-and-looseness-4 the inner heading leaves no claim or
+        open paragraph, so `lazy` starts a document paragraph.
 
-        A wrapped attribute block is one interrupting block across its opener
-        and continuation lines. `- {.a` / `  .b}` / `tail` leaves no paragraph
-        open, and `tail` is reclassified outside the item.
+        A wrapped attribute block applies T once across its complete source
+        extent. In `- {.a` / `  .b}` / `tail`, the attribute_line transition
+        leaves no claim or open paragraph, so `tail` is outside the item.
 
         A LAZY FOLD KEEPS THE CONTAINER OPEN FOR FOLLOWING LINES -- NORMATIVE [CARVE-P0-015].
         A lazy fold closes no container. A later line returning to the
@@ -266,25 +270,27 @@
         same rule; their construct clauses only define the minimum column and
         attachment boundary.
 
-     X1 COMMENT RETENTION. Only a line comment consumed BELOW the content
-        column of a list item, a definition body or a footnote body retains:
-        after one, a noninterrupting follower below that column remains in
-        the container and starts a new paragraph (CARVE-P9-053). This is retained ownership,
-        not a fold and not a continuation claim: the comment closed the
-        paragraph (T). Its limits:
+     X1 COMMENT RETENTION. Use the same retained-ownership transition in
+        list items, definition bodies and footnote bodies. A line comment or
+        matched comment fence consumed BELOW the content column sets
+        retention only when a continuation claim or earlier retention admits
+        it. A blank or a comment at or above that column clears retention.
+        The admitted comment closes the paragraph through T and stores no
+        claim.
+        A noninterrupting follower below the column uses retained ownership
+        to stay in that container and START a paragraph (CARVE-P9-053).
+        Its ordinary-line transition then supplies the new paragraph's claim;
+        retaining the owner was not itself a lazy fold. Its limits:
           - A sibling marker is recognized first. A retained list marker
             below the content column remains paragraph text, and closing the
             preceding paragraph does not reduce the indentation a child list
             needs.
-          - The comment is consumed below the column only while a
-            continuation claim or earlier retention admits it. Without
-            either, the missing prefix closes the container before the
-            comment is classified in the enclosing context.
-          - Retention describes the most recent boundary, not the next
-            visible line across arbitrary invisible boundaries. A following
-            blank clears it. A comment at or above the content column retains
-            nothing and clears earlier retention, so in `- inner` / `  %% c` /
-            ` code` the line ` code` leaves the item.
+          - Without a claim or earlier retention, O2 closes the missed
+            container and the comment belongs to the enclosing context.
+          - Retention describes the most recent boundary, not a later
+            visible line across arbitrary invisible boundaries. In
+            `- inner` / `  %% c` / ` code`, the at-column comment clears
+            retention, so ` code` leaves the item.
           - An interrupting opener below the content column is classified
             outside the container.
           - An unmatched `%%%` fence is a line comment and follows this rule.

@@ -1404,6 +1404,14 @@ function startsVisibleBlock(line) {
   return HEADING.test(line) || HR.test(line) || QUOTE.test(line) || DEFLIST_TERM.test(line)
 }
 
+// PART 9 §10: fixed openers in the caller's selected owner coordinates.
+// Fence guards, colon absorption, attributes and comments need their own
+// body or paragraph context. List markers and captions have separate policy.
+function startsParagraphBlock(line, top) {
+  return startsVisibleBlock(line) || isTableRow(line) ||
+    isLinkDef(line) || FOOTNOTE_DEF.test(line) || (top && ABBR_DEF.test(line))
+}
+
 // Descendants share a source line's suffix offsets. Distinct source lines and
 // reconstructed lines have separate maps, even when their lengths match.
 function prefixMemo(state, lines, index) {
@@ -2934,15 +2942,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     // PART 9 SS10: does lines[idx] interrupt an open paragraph?
     const line = lines[idx]
     if (line === undefined) return false
-    if (startsVisibleBlock(line)) return true
-    if (isTableRow(line)) return true
+    if (startsParagraphBlock(line, top)) return true
     if (fenceOpens?.has(idx)) return true
     if (isColonParagraphInterrupt(line) || COLON_CLOSER.test(line)) return true
     const fence = FENCE.exec(line)
     if (fence && hasCloser(lines, idx)) return true // I4
-    // ABBR_DEF only at document level: elsewhere the line is paragraph text,
-    // so it neither opens a block nor interrupts one (PART 12 SS7).
-    if (isLinkDef(line) || FOOTNOTE_DEF.test(line) || (top && ABBR_DEF.test(line))) return true // I5
     // A BLOCK-ATTRIBUTE LINE is in I5's list too - "a reference definition, a
     // comment, and a block-attribute line" - and it was the one member missing
     // here. Inside a list item that meant `- a` / `{.c}` / `text` folded all
@@ -4646,10 +4650,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       if (ind(i).rest.startsWith('%%')) break // SS10 I5 (comment line or fence)
       if (inItem && para.length > 0 && matchMarkerAt(ind(i))) break // SS24 C3
       if (para.length > 0) {
-        // definitions interrupt and are consumed (SS10 I5)
-        if (isLinkDef(lines[i]) || FOOTNOTE_DEF.test(lines[i]) || (top && ABBR_DEF.test(lines[i]))) break
-        if (startsVisibleBlock(lines[i])) break // I1
-        if (isTableRow(lines[i])) break // I1: valid table row
+        if (startsParagraphBlock(lines[i], top)) break // I1/I5
         if (fenceOpens?.has(i)) break
         {
           if (colonInterruptsParagraph(lines, i, para)) break // I1/I4
