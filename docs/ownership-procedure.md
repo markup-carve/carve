@@ -12,9 +12,10 @@ names the clauses each step decides. It adds no rule. The source clauses in
 lists all 22 Part 0 rule IDs with the checker helpers that implement each step.
 Those helpers are implementation entry points, not a public parser API.
 
-Other parts of the grammar still cite the steps by their earlier names. S1 is
-O1, S2 is O1's opaque-body rule, S3 is O4 on a line that supplied every prefix,
-S4 is O2 to O4 on a line that did not, and S5 is O4's push.
+Some examples and historical material cite the earlier step names: S1 is O1,
+S2 is O1's opaque-body rule, S3 is O4 on a line that supplied every prefix,
+S4 is O2 to O4 on a line that did not, and S5 is O4's push. The layout grammar
+uses O1 to O4.
 
 ## Normalize source
 

@@ -263,24 +263,24 @@ See *[the docs](url) for more* info
 **Rule:** Bare same-type nesting is invalid. Explicit braced children may repeat an active kind; different-type nesting remains valid. See [explicit same-kind emphasis nesting](./nested-braced-emphasis) for the rule and implementation status.
 
 ```carve
-/This /does not/ nest/         # Invalid - ambiguous
+/This /does not/ nest/         # One italic span: This /does not
 /This *does* nest/             # Valid: italic with bold inside
 *Bold with /italic/ inside*    # Valid
 /*Bold italic*/                # Valid: combined
 ```
 
-**Parsing:** An opener matches a valid closer of the same type (a delimiter
-closes only when not preceded by whitespace, see §1). Bare same-type delimiters
+**Parsing:** A bare opener matches the nearest reachable valid closer of the
+same type, subject to the boundary rules in §1. Bare same-type delimiters
 *inside* the span are literal content (bare same-type spans do not nest), so
 `/usr/local/` is `<em>usr/local</em>`, not `<em>usr</em>local/`. Different-type
 spans nest fully (`*Bold with /italic/ inside*`). Resolution uses a delimiter
 stack in a single left-to-right pass: linear time, no backtracking.
 
-> This is *not* "shortest span / first match wins" — that rule would truncate
-> `/usr/local/` to `<em>usr</em>` and break nested emphasis. The ambiguous form
-> `/This /does not/ nest/` is discouraged (use code spans for paths, §1); its
-> exact output is intentionally unspecified. See grammar.ebnf PART 8
-> (Disambiguation rule) and PART 9 §9.
+For `/This /does not/ nest/`, the slash before `does` cannot close because it
+follows whitespace. The slash after `not` is the nearest reachable valid
+closer, so the output is `<em>This /does not</em> nest/` inside a paragraph.
+The rule also keeps the inner slashes of `/usr/local/` as text. See PART 8's
+disambiguation rule and PART 9 §9.
 
 ---
 
@@ -338,35 +338,9 @@ stack in a single left-to-right pass: linear time, no backtracking.
 - `carve fmt` keeps an opener's trailing text as the comment's first body line
   (nothing is lost); a closer's trailing text is dropped
 
-**The degraded fence IS the line form, not "no longer a comment".** The fallback
-above is a substitution: PART 0 spells it "an opener without an exact-width
-closer is one `%%` line comment; later lines are classified normally", so the
-two spellings answer identically at a given column. That is visible inside a
-list item from the item's content column upward, where a comment ends the
-paragraph under it and a following flush-left line lands outside the item:
-
-```text
-- x
-  %%%
-y
-```
-
-`- x` has content column 2, so the comment sits at the item body's own column 0.
-The item holds `x` alone and `y` is a document paragraph:
-
-```html
-<ul>
-  <li>x</li>
-</ul>
-<p>y</p>
-```
-
-The `%% c` line form gives that answer at the same column, and so does a `%%%`
-fence WITH a closer there - the degraded spelling is not a third case.
-
-Column 0 is the same rule, and it answers the other way. There the comment is
-below the item's content column, where §24 C3's exception says a comment ends
-the paragraph but "does not close the ITEM either", so the follower stays:
+**Container ownership:** An unmatched `%%%` opener is a line comment for both
+visibility and ownership. In this example it is below the item's content
+column, so the following plain line stays in the item:
 
 ```text
 - x
@@ -382,12 +356,12 @@ y
 </ul>
 ```
 
-`%% z` in the fence's place gives that. A `%%%` WITH a closer does not - a
-terminated fence at column 0 is a comment BLOCK at the document's own opener
-column and it ends the item. Current implementations also end the item for the
-unterminated, column-zero `%%%` spelling, rather than producing the illustrated
-grammar result. Until [that gap](https://github.com/markup-carve/carve/issues/1903)
-closes, use the `%% z` line form when the follower must stay in the item.
+Replacing `%%%` with `%% z` gives the same result. At the item's content
+column, a comment clears retention, so a following unindented line starts a
+document paragraph. A matched comment fence at the enclosing context's opener
+column also ends the item. Comment visibility alone does not decide ownership;
+see [X1 in the ownership procedure](./ownership-procedure#x1-to-x3-named-exceptions)
+for the claim, column and follower conditions.
 
 **Provenance marker (tool-written):**
 - Tooling such as `carve fmt --stamp` writes a trailing comment recording the

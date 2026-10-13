@@ -241,12 +241,16 @@ literal. A Djot document's comments therefore keep working as written.
 block marker - a `-`/`*` bullet, `>` quote, `#` heading, a `|` table row, or a
 fence - stays part of the paragraph; the block needs a blank line before it.
 
-**Carve:** a **visible** block interrupts an open paragraph with no blank line
-before it - the Markdown / CommonMark rule. The exception is **list markers**:
-neither a bullet (`-`/`*`, task) nor an ordered marker interrupts a paragraph -
-a list still needs a blank line before it (matching Djot). Both list-marker
-classes behave identically here; fence and `:::` closers and bare images are
-also excluded (PART 9 §10).
+**Carve:** recognized interrupting blocks can start without a blank line
+before them. This is Markdown-like, with Carve-specific recognition and
+context rules (PART 9 §10). Ordinary **list markers**, including bullets
+(`-`/`*`, task) and ordered markers, stay paragraph text; use a blank line to
+start a list. Both list-marker classes behave identically here. Fence and
+`:::` closers and bare images are also excluded. Code and raw fences interrupt
+only with valid metadata and a matching closer in the same context. Container
+ownership can change how a marker is read; the
+[ownership procedure](./ownership-procedure) covers nested lists and unmarked
+quote continuations.
 
 ```
 intro

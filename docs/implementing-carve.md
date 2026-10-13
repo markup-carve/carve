@@ -4,9 +4,10 @@ description: What it takes to write a new Carve implementation, and which docume
 
 # Build Your Own Implementation
 
-Carve is designed to be re-implementable. The parsing is linear-time with no
-backtracking and no forward references, the rules are unambiguous, and there is
-a shared conformance corpus you can test against. This page is the starting
+Carve is designed to be re-implementable. The parsing rules specify linear-time
+processing without backtracking. Document-wide references resolve in a later
+pass, so a use can precede its definition. A shared conformance corpus provides
+reviewed inputs and expected output. This page is the starting
 point for writing a new parser, an editor integration, or a framework plugin -
 and for getting it adopted into the [markup-carve](https://github.com/markup-carve)
 organization.
@@ -20,7 +21,9 @@ repository. In rough order of usefulness when implementing:
   example pairs in the repo. This is the executable contract: your output for a
   given input must match. It is the same corpus every reference parser runs
   against.
-- **[Formal Grammar](./grammar)** - the block and inline grammar.
+- **[Formal Grammar](./grammar)** - the layered specification, including
+  layout, syntax, resolution and output contracts. Start block parsing with the
+  [container ownership procedure](./ownership-procedure).
 - **[Case Study](./case-study/)** - the design rationale behind the rules
   (historical, not normative), including [Parsing & AST](./case-study/parsing-ast)
   and [Implementation & Reflection](./case-study/implementation).

@@ -517,10 +517,12 @@ attributes on any element, generic `:::` containers, and the rule that content
 means the same thing inside a container as outside it. The parser contract
 above is Djot's model, kept.
 
-**From Markdown** - paragraph interruption. A block opener on a new line
-starts a block with no blank line required (PART 9 §10). Djot requires the
-blank line; Carve follows Markdown here because writers expect a list or
-heading to start where they wrote it.
+**From Markdown** - paragraph interruption. Recognized interrupting blocks
+can start below prose without a blank line (PART 9 §10). Ordinary list markers
+stay paragraph text; code and raw fences need valid metadata and a matching
+closer in the same context to interrupt. See the
+[interruption overview](./divergence-from-djot#_7-block-openers-interrupt-paragraphs-markdown-like)
+and [ownership procedure](./ownership-procedure) for the context rules.
 
 **From Creole** - `|=` for table headers. The wiki markup got this right:
 marking the header cells themselves needs no separator row under the first row,

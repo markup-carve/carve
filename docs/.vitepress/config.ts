@@ -253,6 +253,7 @@ export default defineConfig({
             { text: 'Format Conversion', link: '/format-bridges' },
             { text: 'Development', link: '/development' },
             { text: 'Formal Grammar', link: '/grammar' },
+            { text: 'Container Ownership', link: '/ownership-procedure' },
             {
               text: 'Specification Rules',
               collapsed: true,
