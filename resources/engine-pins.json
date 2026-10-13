@@ -1,9 +1,9 @@
 {
   "comment": "The engine revision every CI job in this repo checks out. Written by scripts/set-engine-pin.mjs and bumped daily by .github/workflows/bump-engine-pin.yml, so an engine merge arrives as a reviewable pull request instead of reddening every open one (carve#2869).",
   "engines": {
-    "js": "05faee2c81f2daf514f925c3721b47c293eb93b5",
-    "php": "be7dd4e720f5fecb75246ce313a6b548599ebaf7",
+    "js": "2ebe329554492a58ac8eb42ae80441109c7bd828",
+    "php": "8d2f18a48ab884e8371a52875933b0ebacdf283f",
     "rb": "30f8568d03d480adde038c14694d65f54c2638a5",
-    "rs": "a0d6c79000e98e8a2cf7366ed701c4281b5f65d5"
+    "rs": "02bd1873629ae9edf02f23d5e08415de6f091f7d"
   }
 }
