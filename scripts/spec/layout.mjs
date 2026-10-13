@@ -2014,11 +2014,15 @@ function hostAdvance(h, line, paraOpen) {
 // paragraph of the survivor is in the way (CARVE-P0-004). Either leaves the
 // level no paragraph (CARVE-P0-009, CARVE-P0-017).
 function hostedBlockAt(h, inner, popped) {
-  if (h.columns.length < 2) return false
+  if (h.columns.length < 2) { h.tableColumn = null; h.tableOpen = false; return false }
   const column = h.columns.at(-1)
   if (inner.col < column) return false
   const text = inner.rest
-  return HEADING.test(text) || HR.test(text) || text[0] === '|' ||
+  // Track table rows at the deepest host's content column.
+  const continuation = isContinuationRow(text, h.tableColumn === column && h.tableOpen)
+  h.tableColumn = column
+  h.tableOpen = isTableRow(text) || continuation
+  return continuation || HEADING.test(text) || HR.test(text) || text[0] === '|' ||
     isDefinitionOrAttributeLine(text)
 }
 
