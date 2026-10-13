@@ -24,6 +24,7 @@ import {
   type ContinuationEdit,
 } from '@markup-carve/carve-lsp/browser'
 import { carveCompletion, carveDiagnostics, carveHover, carveLanguageTheme, carveTooltips } from '../editor/carve-language'
+import { formatTable, nextCell, previousCell } from '../editor/carve-tables'
 import { searchKeymap, highlightSelectionMatches } from '@codemirror/search'
 
 const props = defineProps<{
@@ -288,8 +289,10 @@ onMounted(() => {
         keymap.of([
           { key: 'Enter', run: continueOnEnter },
           { key: 'Backspace', run: deleteBareMarker },
-          { key: 'Tab', run: listIndent('indent', indentMore) },
-          { key: 'Shift-Tab', run: listIndent('outdent', indentLess) },
+          // In a table, Tab and Shift+Tab align it and move between cells.
+          { key: 'Tab', run: (v) => nextCell(v) || listIndent('indent', indentMore)(v) },
+          { key: 'Shift-Tab', run: (v) => previousCell(v) || listIndent('outdent', indentLess)(v) },
+          { key: 'Mod-Alt-f', run: formatTable },
           ...defaultKeymap,
           ...historyKeymap,
           ...searchKeymap,
