@@ -122,3 +122,35 @@ Tables
   </tbody>
 </table>
 ```
+
+```
+|=> a |
+|=< b |
+| 1 |
+.
+<table>
+  <thead>
+    <tr><th scope="col" style="text-align: right;">a</th></tr>
+    <tr><th scope="col" style="text-align: left;">b</th></tr>
+  </thead>
+  <tbody>
+    <tr><td style="text-align: left;">1</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|=> a |
+|= b |
+| 1 |
+.
+<table>
+  <thead>
+    <tr><th scope="col" style="text-align: right;">a</th></tr>
+    <tr><th scope="col" style="text-align: right;">b</th></tr>
+  </thead>
+  <tbody>
+    <tr><td style="text-align: right;">1</td></tr>
+  </tbody>
+</table>
+```

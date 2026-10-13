@@ -1593,6 +1593,50 @@ With no leading header row, every first cell can still be a row header — the t
 
 :::
 
+::: compare
+
+```carve
+|=> a |
+|=< b |
+| 1 |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col" style="text-align: right;">a</th></tr>
+    <tr><th scope="col" style="text-align: left;">b</th></tr>
+  </thead>
+  <tbody>
+    <tr><td style="text-align: left;">1</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+::: compare
+
+```carve
+|=> a |
+|= b |
+| 1 |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col" style="text-align: right;">a</th></tr>
+    <tr><th scope="col" style="text-align: right;">b</th></tr>
+  </thead>
+  <tbody>
+    <tr><td style="text-align: right;">1</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
 ## Tables with rowspan and colspan
 
 ::: compare
@@ -3227,6 +3271,30 @@ A quote after a curly opening quote opens too.
 
 :::
 
+::: compare
+
+```carve
+Il dit " oui " hier.
+```
+
+```html
+<p>Il dit “ oui ” hier.</p>
+```
+
+:::
+
+::: compare
+
+```carve
+a　"q"
+```
+
+```html
+<p>a　”q”</p>
+```
+
+:::
+
 ## Smart typography arrows and symbols
 
 Arrows, comparisons, plus/minus and symbols are converted. Fractions are
@@ -4673,6 +4741,48 @@ space, and escaping a hyphen changes the smart punctuation.
 <div class="line-block">
   <p>—</p>
 </div>
+```
+
+::::
+
+:::: compare
+
+```carve
+::: |
+ab\	
+cd
+:::
+```
+
+```html
+<div class="line-block">
+  <p>ab<br>
+cd</p>
+</div>
+```
+
+::::
+
+:::: compare
+
+```carve
+- x
+
+  ::: |
+  ab\	
+  cd
+  :::
+```
+
+```html
+<ul>
+  <li>x
+    <div class="line-block">
+      <p>ab<br>
+cd</p>
+    </div>
+  </li>
+</ul>
 ```
 
 ::::

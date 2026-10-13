@@ -279,3 +279,15 @@ say ^['note] 'two'
 .
 <p>“‘word’” and ‘“word”’</p>
 ```
+
+```
+Il dit " oui " hier.
+.
+<p>Il dit “ oui ” hier.</p>
+```
+
+```
+a　"q"
+.
+<p>a　”q”</p>
+```

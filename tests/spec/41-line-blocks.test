@@ -131,3 +131,33 @@ wide&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gap<br>
   <p>—</p>
 </div>
 ```
+
+```
+::: |
+ab\	
+cd
+:::
+.
+<div class="line-block">
+  <p>ab<br>
+cd</p>
+</div>
+```
+
+```
+- x
+
+  ::: |
+  ab\	
+  cd
+  :::
+.
+<ul>
+  <li>x
+    <div class="line-block">
+      <p>ab<br>
+cd</p>
+    </div>
+  </li>
+</ul>
+```
