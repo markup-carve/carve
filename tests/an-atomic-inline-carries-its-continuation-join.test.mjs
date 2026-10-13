@@ -64,6 +64,7 @@ for (const fixture of fixtures.rows) {
     `${fixture.id}: aheadOfPin flag must name the missing fields`)
     const fields = flag.missingFields
     for (const field of fields) assert.ok(hasField(expected, field), `${fixture.id}: expected does not contain declared missing field ${field}`)
+    for (const field of fields) assert.ok(!hasField(actual, field), `${fixture.id}: the pinned engine emits ${field}, so it is not missing; compare it in full and drop the flag`)
     const omitted = new Set(['pos', ...fields])
     assert.deepEqual(withoutFields(actual, omitted), withoutFields(expected, omitted),
       `${fixture.id}: the pinned engine differs beyond the declared missing fields (${fields})`)
