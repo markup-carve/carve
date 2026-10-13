@@ -4020,6 +4020,26 @@ the safe destination is kept and the override is ignored:
 
 :::
 
+An unused link definition is written on the plain-text target, and a denied
+destination in it is blanked there too (CARVE-P9-054); the allowed `[x]: /u`
+is kept. HTML drops an unused definition:
+
+::: compare no-render
+
+```carve
+Text.
+
+[x]: /u
+
+[y]: javascript:alert(3)
+```
+
+```html
+<p>Text.</p>
+```
+
+:::
+
 ## Link destination parentheses balance
 
 A `(` inside a `(...)` destination is matched against a later `)`, so the

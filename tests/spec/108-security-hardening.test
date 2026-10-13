@@ -71,3 +71,13 @@ A [danger]{srcdoc="<script>"} span.
 .
 <p><a href="https://example.com">safe</a></p>
 ```
+
+```
+Text.
+
+[x]: /u
+
+[y]: javascript:alert(3)
+.
+<p>Text.</p>
+```

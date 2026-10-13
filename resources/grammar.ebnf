@@ -6712,7 +6712,10 @@ EOF = (* end of file *) ;
         resolved by whatever renders that Markdown, so a scheme blanked here
         and passed through there is not blocked -- it is deferred by one step.
         A target that emits no URL, such as plain text, has nothing to blank
-        and is unaffected.
+        and is unaffected. THE ONE URL PLAIN TEXT EMITS is the destination of
+        an unused link reference definition it writes (CARVE-P11-028), so that
+        line is bound: a denied destination there is blanked, `[y]:`, and takes
+        a `destination-denied` row. Corpus 108-security-hardening-12 pins it.
 
         "EMITS A RESOLVABLE URL" IS ABOUT THE URL REACHING A READER THAT
         RESOLVES IT, not about the target emitting a hyperlink construct. The
