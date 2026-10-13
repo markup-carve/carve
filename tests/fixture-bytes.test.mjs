@@ -395,6 +395,10 @@ const INVENTORY = [
   { base: '567-a-description-marker-followed-by-a-no-break-space-has-content-2', crv: ['NBSP'], html: [] },
   { base: '567-a-description-marker-followed-by-a-no-break-space-has-content-3', crv: ['trailing-WS'], html: [] },
   { base: '589-an-explicitly-delimited-row-of-blank-cells-is-a-table-23', crv: ['trailing-WS'], html: [] },
+  { base: '19-smart-typography-dashes-and-quotes-33', crv: ['NNBSP'], html: ['NNBSP'] }, // silent-decay shape: raw in both sides
+  { base: '19-smart-typography-dashes-and-quotes-34', crv: ['IDEO-SP'], html: ['IDEO-SP'] }, // silent-decay shape: raw in both sides
+  { base: '41-line-blocks-11', crv: ['trailing-WS', 'trailing-TAB'], html: [] },
+  { base: '41-line-blocks-12', crv: ['trailing-WS', 'trailing-TAB'], html: [] },
 ]
 
 function scan(text) {
