@@ -150,6 +150,8 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
       // class and the done state before the pin does, on two authored
       // documents and on one placement fixture, each naming the issue.
       ['resources/oracle-divergence.txt', 'owed', 'declared'],
+      // The unspellable-cell refusal waits on the carve-js pin (carve-js#2996).
+      ['scripts/parity-check.mjs', 'owed', 'manual'],
       ['tests/empty-raw-list-placement.test.mjs', 'owed', 'declared'],
     ].sort(),
     'a spec ledger other than the engine-lag ones now reads differently per-PR',
