@@ -1,0 +1,4 @@
+- [^n]: text
+    :: t
+    : d
+after [^n]

@@ -689,6 +689,7 @@ index: examples/edge-cases/index.md
   a-footnote-reference-in-link-text-keeps-its-id-on-the-sup
   a-titled-footnotes-marker-names-the-endnotes-section
   a-closed-fence-at-a-marker-line-note-s-body-column-opens-in-the-note
+  a-quote-or-a-term-at-a-marker-line-note-s-body-column-opens-in-the-note
   a-note-body-s-own-references-resolve
   a-reference-link-s-text-survives-its-own-frame
   an-authored-base-carries-opaque-payload-captions-and-nested-metadata

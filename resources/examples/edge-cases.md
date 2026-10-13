@@ -50000,3 +50000,94 @@ row in `<thead>` (CARVE-P9-006).
 ```
 
 :::
+
+## A quote or a term at a marker-line note's body column opens in the note
+
+A quote or a definition term at the note's body column opens inside the note,
+and no lazy line continues it. One below that column belongs to the outer item
+(PART 0 DEFINITION EXTENT, CARVE-P2-017).
+
+:::: compare
+
+````carve
+- [^n]: text
+    > q
+after [^n]
+````
+
+```html
+<ul>
+  <li></li>
+</ul>
+<p>after <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>text</p>
+      <blockquote><p>q</p></blockquote>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+::::
+
+:::: compare
+
+````carve
+- [^n]: text
+    :: t
+    : d
+after [^n]
+````
+
+```html
+<ul>
+  <li></li>
+</ul>
+<p>after <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>text</p>
+      <dl>
+        <dt>t</dt>
+        <dd>d</dd>
+      </dl>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+::::
+
+:::: compare
+
+````carve
+- [^n]: text
+   > q
+after [^n]
+````
+
+```html
+<ul>
+  <li>
+    <blockquote><p>q
+after <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p></blockquote>
+  </li>
+</ul>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>text<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+::::

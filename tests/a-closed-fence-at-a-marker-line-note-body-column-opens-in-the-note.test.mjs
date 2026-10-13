@@ -84,9 +84,9 @@ test('item prose below the note body column ends the note extent', () => {
   }
 })
 
-test('an item term at the note body column keeps a later fence in the item', () => {
-  const expectedItem = '<ul><li><dl><dt>t</dt></dl><pre><code>code </code></pre></li></ul><p>after ' + ref + '</p>'
-  const expectedNote = notes('<p>text more' + back + '</p>')
+test('a term at the note body column opens in the note, and a later fence follows it', () => {
+  const expectedItem = '<ul><li></li></ul><p>after ' + ref + '</p>'
+  const expectedNote = notes('<p>text more</p><dl><dt>t</dt></dl><pre><code>code </code></pre><p>' + back + '</p>')
   for (const run of ['```', '~~~']) for (const depth of [0, 1]) {
     const lines = ['- [^n]: text', '    more', '    :: t', `    ${run}`, '    code', `    ${run}`, 'after [^n]']
     const src = lines.map(line => '> '.repeat(depth) + line).join('\n') + '\n'

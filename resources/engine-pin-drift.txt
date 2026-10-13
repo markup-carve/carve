@@ -29,3 +29,5 @@
 107-colspan-marker-scans-left-past-a-consumed-cell  carve#3047: a `<` beside a cell from an earlier row is BLOCKED; carve-js still widens past it
 579-a-span-never-covers-another-cell  carve#3047: a `^` under a two-column cell takes the strip marker beside it; carve-js renders it as an empty cell
 579-a-span-never-covers-another-cell-2  carve#3047: a `^` whose strip holds a cell is BLOCKED; carve-js extends the rowspan over it
+580-a-quote-or-a-term-at-a-marker-line-note-s-body-column-opens-in-the-note  ahead of the pin: a quote at a marker-line note's body column opens in the note (checker reading, carve-js not yet)
+580-a-quote-or-a-term-at-a-marker-line-note-s-body-column-opens-in-the-note-2  ahead of the pin: a definition term at a marker-line note's body column opens in the note (checker reading, carve-js not yet)
