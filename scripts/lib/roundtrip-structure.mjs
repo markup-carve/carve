@@ -57,7 +57,7 @@ export function acceptHtmlLosses(tree) {
   return out
 }
 
-const cosmetic = new Set(['pos', 'position', 'srcByteLength', 'bulletChar', 'marker', 'delim', 'ref', 'rawRef', 'separatorWidths', 'tight', 'boldItalic', 'order', 'continuationLines'])
+const cosmetic = new Set(['pos', 'position', 'srcByteLength', 'bulletChar', 'marker', 'delim', 'ref', 'rawRef', 'separatorWidths', 'tight', 'boldItalic', 'order', 'continuationLines', 'cellWraps'])
 // Strict keeps what PART 10 §13 carries; rawRef stays out because §13 does not recover a reference's form.
 const strictCosmetic = new Set(['pos', 'position', 'srcByteLength', 'rawRef', 'boldItalic', 'order'])
 // PCRE's Unicode \s includes NEL but excludes JavaScript's BOM whitespace.

@@ -69,7 +69,6 @@ const OPT_IN_ONLY = {
 
 /** Fields permitted by the schema before the corresponding engine rollout. */
 const ENGINE_ROLLOUT_PENDING = {
-  'code.cellWraps': 'continuation join inside an atomic inline (CARVE-P12-069): produced once the pinned carve-js ships markup-carve/carve-js#2998',
   'raw_inline.cellWraps': 'continuation join inside an atomic inline (CARVE-P12-069): produced once the pinned carve-js ships markup-carve/carve-js#2998',
   'math.cellWraps': 'continuation join inside an atomic inline (CARVE-P12-069): produced once the pinned carve-js ships markup-carve/carve-js#2998',
   'figure.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
