@@ -24,20 +24,3 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in  ahead of the pin: a fence after a closed line block leaves the inner item and opens a code block in the box (checker reading; carve-js reads a paragraph, carve-js#2927)
-581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-3  ahead of the pin: three over-indented `:::` lines are code text in the box, not its closer (checker reading; carve-js reads a paragraph, carve-js#2927)
-581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-5  ahead of the pin: the closed fence below the sublist column opens in the outer item and `after` is a document paragraph (checker reading; carve-js folds `after` into the outer item, carve-js#2960)
-585-a-comment-in-a-marker-line-note-changes-nothing  ahead of the pin: a comment in a marker-line note changes nothing (checker reading, carve-js not yet)
-585-a-comment-in-a-marker-line-note-changes-nothing-2  ahead of the pin: a comment in a marker-line note changes nothing (checker reading, carve-js not yet)
-586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note  ahead of the pin: the comment closes the note paragraph, the unclosed fence opens in the note and the line below is a document paragraph (checker reading, carve-js not yet, carve-js#2948)
-586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note-2  ahead of the pin: the same shape after a blank (checker reading, carve-js not yet, carve-js#2948)
-451-a-container-in-a-host-body-owns-a-line-past-its-own-content-column  ahead of the pin: a link definition past the note's column in a list item registers (checker reading, carve-js not yet, carve-js#2964)
-587-a-link-definition-or-an-attribute-line-past-a-box-s-column-opens-on-its-authored-base  ahead of the pin: a link definition past the box's column in a list item registers (checker reading, carve-js not yet, carve-js#2964)
-587-a-link-definition-or-an-attribute-line-past-a-box-s-column-opens-on-its-authored-base-2  ahead of the pin: an attribute line past the box's column in a list item applies to the next block (checker reading, carve-js not yet, carve-js#2964)
-64-table-rowspan-with-multi-line-content-2  ahead of the pin: a continuation row after the `^` row joins the spanning cell (checker reading; carve-js drops the text, carve-js#2965; carve-rs#2641, carve-php#3306)
-437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text  ahead of the pin: the note takes `flush` as its first block (checker reading, carve-js not yet, carve-js#2972)
-437-a-leading-continuation-marker-in-a-footnote-body-or-a-quote-is-text-4  ahead of the pin: the quote takes `flush` as its first block (checker reading, carve-js not yet, carve-js#2972)
-588-a-block-quote-and-a-footnote-body-take-the-first-block-form  ahead of the pin: the quote takes the table as its first block (checker reading, carve-js not yet, carve-js#2972)
-588-a-block-quote-and-a-footnote-body-take-the-first-block-form-2  ahead of the pin: the quote takes `flush` as its first block (checker reading, carve-js not yet, carve-js#2972)
-588-a-block-quote-and-a-footnote-body-take-the-first-block-form-5  ahead of the pin: the inner quote takes the fence as its first block (checker reading, carve-js not yet, carve-js#2972)
-588-a-block-quote-and-a-footnote-body-take-the-first-block-form-6  ahead of the pin: the note takes the fence as its first block (checker reading, carve-js not yet, carve-js#2972)

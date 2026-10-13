@@ -194,6 +194,8 @@ carve-js   256-table-cell-padding-must-be-a-space-17.crv          text  2  permi
 carve-js   41-line-blocks-9.crv                                   text  1  permitted
 carve-js   63-table-multi-line-cell-continuation.crv              text  1  permitted
 carve-js   64-table-rowspan-with-multi-line-content.crv           text  1  permitted
+carve-js   64-table-rowspan-with-multi-line-content-2.crv     text  2  permitted
+carve-js   64-table-rowspan-with-multi-line-content-3.crv     text  2  permitted
 
 carve-rs   237-a-continuation-row-carries-no-trailing-text.crv    text  2  permitted
 carve-rs   249-trailing-whitespace-after-a-block-marker-4.crv     text  2  permitted
@@ -238,6 +240,8 @@ carve-js   256-table-cell-padding-must-be-a-space-16.crv          table_cell  2 
 carve-js   256-table-cell-padding-must-be-a-space-17.crv          table_cell  2  permitted
 carve-js   63-table-multi-line-cell-continuation.crv              table_cell  1  permitted
 carve-js   64-table-rowspan-with-multi-line-content.crv           table_cell  1  permitted
+carve-js   64-table-rowspan-with-multi-line-content-2.crv     table_cell  2  permitted
+carve-js   64-table-rowspan-with-multi-line-content-3.crv     table_cell  2  permitted
 carve-rs   237-a-continuation-row-carries-no-trailing-text.crv    table_cell  2  permitted
 carve-rs   249-trailing-whitespace-after-a-block-marker-4.crv     table_cell  2  permitted
 carve-rs   256-table-cell-padding-must-be-a-space-15.crv          table_cell  2  permitted
