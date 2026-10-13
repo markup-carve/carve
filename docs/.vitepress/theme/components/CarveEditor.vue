@@ -212,6 +212,22 @@ function emitPreview(state: EditorState): void {
   emit('preview', preview)
 }
 
+// Outside lists and tables, indenting a line's start can turn a heading, quote
+// or table row into text, so only code blocks indent; elsewhere Tab inserts
+// two spaces mid-line and does nothing at the start of the line's text.
+const plainTab: Command = (v) => {
+  const head = v.state.selection.main.head
+  const line = v.state.doc.lineAt(head)
+  if (inCodeBlock(v.state.doc.toString(), line.number)) return indentMore(v)
+  if (!v.state.selection.main.empty || /^[ \t]*$/.test(line.text.slice(0, head - line.from))) return true
+  v.dispatch(v.state.replaceSelection('  '), { userEvent: 'input' })
+  return true
+}
+const plainShiftTab: Command = (v) => {
+  const line = v.state.doc.lineAt(v.state.selection.main.head)
+  return inCodeBlock(v.state.doc.toString(), line.number) ? indentLess(v) : true
+}
+
 function listIndent(direction: 'indent' | 'outdent', fallback: Command): Command {
   return (v) => {
     const sel = v.state.selection
@@ -296,8 +312,8 @@ onMounted(() => {
           { key: 'Enter', run: continueOnEnter },
           { key: 'Backspace', run: deleteBareMarker },
           // In a table, Tab and Shift+Tab align it and move between cells.
-          { key: 'Tab', run: (v) => nextCell(v) || listIndent('indent', indentMore)(v) },
-          { key: 'Shift-Tab', run: (v) => previousCell(v) || listIndent('outdent', indentLess)(v) },
+          { key: 'Tab', run: (v) => nextCell(v) || listIndent('indent', plainTab)(v) },
+          { key: 'Shift-Tab', run: (v) => previousCell(v) || listIndent('outdent', plainShiftTab)(v) },
           { key: 'Mod-Alt-f', run: formatTable },
           ...defaultKeymap,
           ...historyKeymap,

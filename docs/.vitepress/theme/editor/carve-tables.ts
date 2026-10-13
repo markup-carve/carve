@@ -106,9 +106,12 @@ function formatRows(rows: Row[]): string[] {
   })
 }
 
+// Padding only moves whitespace, which HTML text collapses; structure and
+// content must match. A row of only blank cells is text, so it differs here.
 function renderSame(before: string, after: string): boolean {
+  const html = (text: string) => carveToHtml(text).replace(/\s+/g, ' ')
   try {
-    return carveToHtml(before) === carveToHtml(after)
+    return html(before) === html(after)
   } catch {
     return false
   }
@@ -127,6 +130,21 @@ function formattedTable(doc: Text, lineNumber: number): { from: number; to: numb
   const dedent = (text: string) => text.split('\n').map((l) => l.slice(indent)).join('\n')
   if (lines.join('\n') !== before && !renderSame(dedent(before), dedent(lines.join('\n')))) return null
   return { from, to, first: table.first, lines }
+}
+
+// Where each cell's text sits in any row, formatted or not: [start, end) per cell.
+function cellTextSpans(line: string): Array<[number, number]> {
+  const row = parseRow(line)
+  if (!row || row.separator) return []
+  const body = line.slice(row.lead.length)
+  const at = pipes(body)
+  const marks = body.startsWith('+') ? [0, ...at.slice(0, -1)] : at.slice(0, -1)
+  const ends = [...marks.slice(1), at[at.length - 1]]
+  return row.cells.map((cell, i) => {
+    const segment = body.slice(marks[i] + cell.opener.length, ends[i])
+    const start = row.lead.length + marks[i] + cell.opener.length + (segment.length - segment.trimStart().length)
+    return [start, start + cell.text.length] as [number, number]
+  })
 }
 
 // Offset of each cell's text start in a formatted row.
@@ -232,9 +250,16 @@ export const formatTable: Command = (view) => {
   const row = line.number - formatted.first
   let offset = formatted.from
   for (let i = 0; i < row; i++) offset += formatted.lines[i].length + 1
+  // Keep the cursor at the same place in the same cell.
+  const before = cellTextSpans(line.text)
+  const after = cellTextSpans(formatted.lines[row])
+  let target = Math.min(column, formatted.lines[row].length)
+  const cell = before.findLastIndex(([start]) => column >= start - 1)
+  if (column >= line.text.trimEnd().length) target = formatted.lines[row].length
+  else if (cell >= 0 && after[cell]) target = after[cell][0] + Math.max(0, Math.min(column - before[cell][0], after[cell][1] - after[cell][0]))
   view.dispatch({
     changes: { from: formatted.from, to: formatted.to, insert: text },
-    selection: { anchor: offset + Math.min(column, formatted.lines[row].length) },
+    selection: { anchor: offset + target },
     userEvent: 'input',
   })
   return true
