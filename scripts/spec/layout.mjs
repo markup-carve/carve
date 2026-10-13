@@ -1291,6 +1291,19 @@ const trimLineEnd = (line) => line.replace(/[ \t]+$/, '')
 // PART 9 SS15: try to read one-or-more attribute blocks starting at
 // lines[i] (adjacent blocks on one line merge; one block may wrap lines; a
 // blank line inside the braces invalidates). Returns { lists, next } or null.
+// Lines from `start` dedented on read, so a scan touches only the lines it reaches.
+function dedentedWindow(lines, start, column) {
+  return new Proxy([], {
+    get(_, key) {
+      if (key === 'length') return Math.max(0, lines.length - start)
+      const index = typeof key === 'string' && /^\d+$/.test(key) ? Number(key) : null
+      if (index === null) return undefined
+      const line = lines[start + index]
+      return line === undefined ? undefined : dedentMeasured(indentCols(line), line, column).text
+    },
+  })
+}
+
 function tryAttrLine(lines, i) {
   let text = lines[i]
   if (text === undefined || text[0] !== '{') return null
@@ -6181,6 +6194,17 @@ function collectItems(lines, i, list, state, ind, meas) {
           authoredBlockLimit = null
           pendingAuthoredBlock = null
         }
+        // Block attributes end term ownership before the next authored opener.
+        const termAttributes = !insideFence() && col === contentCol && lm.rest.startsWith('{') &&
+          (leadTerm || pendingHeadTerm !== null || pendingAuthoredBlock !== null || authoredBlockBase !== null) &&
+          tryAttrLine(dedentedWindow(lines, i, contentCol), 0)
+        if (termAttributes) {
+          leadTerm = false
+          pendingHeadTerm = null
+          pendingAuthoredBlock = null
+          authoredBlockBase = null
+          authoredBlockLimit = null
+        }
         const foldsIntoLeadTerm = leadTerm && col > contentCol && !nm
         // A colon container is not opaque: an opener past the column inside one
         // takes its authored base and may interrupt a paragraph
@@ -6336,7 +6360,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         pushLine(dedented, dmeas)
         // Advance the incremental three-kind tracker so the blank-line branch
         // above knows whether an interior blank is fence content.
-        if (openerBase !== null) {
+        if (openerBase !== null && !termAttributes) {
           authoredBlockBase = openerBase
           authoredContainer = DEFLIST_TERM.test(dedented) || QUOTE.test(dedented)
           if (openerBase === contentCol) pendingAuthoredBlock = i
