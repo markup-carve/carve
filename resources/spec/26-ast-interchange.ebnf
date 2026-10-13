@@ -488,7 +488,12 @@
       `offset` is the codepoint offset (PART 12 §4) of the single joining
       space in `value` for `code`, or `content` for `raw_inline` and `math`,
       and `line` and `row` mean exactly what they mean on a `cell_wrap`.
-      Offsets are ascending and each names a space inside the payload. A
+      Offsets are ascending and each names a space inside the payload,
+      except where code-span padding stripping removed the joining space:
+      that entry sits at the padding boundary, offset 0 for a join right
+      after the opening backtick run and the value's length for one right
+      before the closing run
+      ([carve#3138](https://github.com/markup-carve/carve/issues/3138)). A
       `cellWraps` entry stands for the join a `cell_wrap` would otherwise
       mark; no `cell_wrap` is placed beside or inside the atomic node for
       that join. Rendering is unchanged, and `table_row.continuationLines`
@@ -537,7 +542,7 @@
       to or above the cell's `rowspan`, or two markers in one cell with the
       same `line` and `row` (a `cellWraps` entry counts as a marker here), or
       a `cellWraps` entry whose offset is not ascending, does not name a space
-      inside the payload, or sits on a node outside a `table_cell` is invalid in the sense of CARVE-P12-030
+      inside the payload and is not a padding-boundary entry, or sits on a node outside a `table_cell` is invalid in the sense of CARVE-P12-030
       ([carve#3094](https://github.com/markup-carve/carve/issues/3094)).
 
    ============================================================================ *)

@@ -38,7 +38,10 @@ function validateExpected(value) {
     assert.equal(validate(node), true, JSON.stringify(validate.errors))
     const wraps = node.cellWraps ?? []
     const payload = node.type === 'code' ? node.value : node.content
-    for (const { offset } of wraps) assert.equal([...payload][offset], ' ', `${node.type}.cellWraps offset ${offset}`)
+    for (const { offset } of wraps) {
+      if (offset === 0 || offset === [...payload].length) continue
+      assert.equal([...payload][offset], ' ', `${node.type}.cellWraps offset ${offset}`)
+    }
     const offsets = wraps.map(({ offset }) => offset)
     assert.deepEqual(offsets, [...offsets].sort((a, b) => a - b), `${node.type}.cellWraps offsets ascend`)
   }

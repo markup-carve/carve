@@ -217,7 +217,9 @@ offset of the joining space in `value` or `content`, plus the `line` and
 ``+ b` | w |``, the code node has `value: "a | z b"` and
 `cellWraps: [{ offset: 5, line: 1 }]`. The writer puts the part after each
 offset on the `+` line the entry names, and `continuationLines` still counts
-the join.
+the join. When code-span padding stripping removed the joining space, the entry sits at
+the padding boundary: offset 0 after the opening backtick run, or the value's
+length before the closing run.
 
 **The root carries exactly three fields** - `type`, `children`, `srcByteLength`
 ([`CARVE-P12-024`](./rules/ast-interchange)). Frontmatter and definitions are **block nodes in the tree**, not
