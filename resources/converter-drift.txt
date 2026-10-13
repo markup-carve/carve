@@ -205,3 +205,9 @@
 #
 # The run named exactly these two lines as STALE and failed the converter gate
 # on nothing else. THIS FILE IS EMPTY OF DECLARATIONS AGAIN.
+
+# CARVE-P11-033 T1 (carve#3120): the Markdown import reads a `*[TERM]:` line
+# back as a definition. carve-js ships it at the pin; the pinned carve-php
+# (be7dd4e7) and carve-rs (a0d6c790) still keep the line as text.
+php/02-markdown-an-abbreviation-definition-is-read  markup-carve/carve-php#3320
+rust/02-markdown-an-abbreviation-definition-is-read  markup-carve/carve-rs#2655
