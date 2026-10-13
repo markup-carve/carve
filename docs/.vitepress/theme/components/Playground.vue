@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, defineAsyncComponent } from 'vue'
 import { withBase } from 'vitepress'
 import { carveToHtml, markdownToCarve } from '@markup-carve/carve'
 import { diffCodeTransformer } from '@markup-carve/carve-grammars/shiki/diff'
@@ -151,7 +151,7 @@ function cancelImport(): void {
 function confirmImport(): void {
   source.value = markdownToCarve(importText.value)
   showImport.value = false
-  void nextTick(() => sourceEl.value?.focus())
+  void nextTick(() => editorRef.value?.focus())
 }
 
 // --- Engine selection: JS (default, in-page) or Rust/WASM (in-page, lazy). ---
@@ -214,7 +214,12 @@ watch(engine, (e) => {
 })
 
 const outputEl = ref<HTMLElement | null>(null)
-const sourceEl = ref<HTMLTextAreaElement | null>(null)
+// Async so CodeMirror (~100 KB gzip) loads only on the playground page, not with
+// the theme bundle every docs page shares.
+const CarveEditor = defineAsyncComponent(() => import('./CarveEditor.vue'))
+const editorRef = ref<{ focus: () => void; scroller: () => HTMLElement | null } | null>(null)
+// The editor's scroll container stands in for the old textarea in scroll sync.
+const sourceEl = computed<HTMLElement | null>(() => editorRef.value?.scroller() ?? null)
 
 // Proportional scroll sync between the source and rendered panes.
 //
@@ -481,11 +486,17 @@ let highlighterPromise: Promise<any> | null = null
 function getHighlighter(): Promise<unknown> {
   if (!highlighterPromise) {
     highlighterPromise = (async () => {
-      const { createHighlighter } = await import('shiki')
+      const { createHighlighter, bundledThemes } = await import('shiki')
       // The repo's Carve TextMate grammar, so `language-carve` blocks highlight too.
       const carveGrammar = (await import('@markup-carve/carve-grammars/textmate/carve.tmLanguage.json')).default
+      // The GitHub themes color list markers only under the Markdown-specific
+      // `punctuation.definition.list.begin.markdown`; give Carve's list scopes the same color.
+      const withListMarkers = async (name: 'github-light' | 'github-dark', color: string) => {
+        const theme = (await bundledThemes[name]()).default
+        return { ...theme, tokenColors: [...(theme.tokenColors ?? []), { scope: ['punctuation.definition.list'], settings: { foreground: color } }] }
+      }
       return createHighlighter({
-        themes: ['github-light', 'github-dark'],
+        themes: [await withListMarkers('github-light', '#e36209'), await withListMarkers('github-dark', '#ffab70')],
         langs: [...PLAYGROUND_CODE_LANGUAGES, carveGrammar as never],
       })
     })()
@@ -808,18 +819,24 @@ void mermaidInit
     <div class="pg-grid">
       <div class="pane">
         <label>Carve source</label>
-        <textarea
-          ref="sourceEl"
-          v-model="source"
-          spellcheck="false"
-          :wrap="wrapLines ? 'soft' : 'off'"
+        <div
+          class="carve-editor-wrap"
           @pointerenter="claimScroll(sourceEl)"
           @wheel.passive="claimScroll(sourceEl)"
           @touchstart.passive="claimScroll(sourceEl)"
-          @focus="claimScroll(sourceEl)"
+          @focusin="claimScroll(sourceEl)"
           @keydown="claimScroll(sourceEl)"
-          @scroll="onSourceScroll"
-        />
+          @scroll.capture="onSourceScroll"
+        >
+          <ClientOnly>
+            <CarveEditor
+              ref="editorRef"
+              v-model="source"
+              :wrap="wrapLines"
+              :get-highlighter="getHighlighter"
+            />
+          </ClientOnly>
+        </div>
       </div>
       <div class="pane">
         <div class="pane-label-row">
@@ -961,6 +978,12 @@ void mermaidInit
   justify-content: center;
   width: 2rem;
   padding: 0.35rem 0;
+}
+.carve-editor-wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 .pg-icon-btn.active {
   border-color: var(--vp-c-brand-1);
@@ -1143,6 +1166,10 @@ textarea:focus {
   background: var(--vp-c-bg);
   display: flex;
   flex-direction: column;
+}
+/* No page margin to pull the line numbers into at the viewport edge. */
+.carve-playground.fullscreen .carve-editor-wrap :deep(.carve-editor) {
+  margin-left: 0;
 }
 .carve-playground.fullscreen .pg-grid {
   flex: 1;

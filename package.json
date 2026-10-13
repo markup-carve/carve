@@ -79,6 +79,10 @@
     "vitepress": "^1.5.0"
   },
   "dependencies": {
+    "@codemirror/commands": "^6.11.1",
+    "@codemirror/search": "^6.7.2",
+    "@codemirror/state": "^6.7.6",
+    "@codemirror/view": "^6.43.14",
     "chart.js": "^4.5.1",
     "mermaid": "^11.15.0"
   },
