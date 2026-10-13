@@ -33,7 +33,9 @@ function validateExpected(value) {
     assert.equal(validate(node), true, JSON.stringify(validate.errors))
     const wraps = node.cellWraps ?? []
     const payload = node.type === 'code' ? node.value : node.content
-    for (const offset of wraps) assert.equal([...payload][offset], ' ', `${node.type}.cellWraps[${offset}]`)
+    for (const { offset } of wraps) assert.equal([...payload][offset], ' ', `${node.type}.cellWraps offset ${offset}`)
+    const offsets = wraps.map(({ offset }) => offset)
+    assert.deepEqual(offsets, [...offsets].sort((a, b) => a - b), `${node.type}.cellWraps offsets ascend`)
   }
 }
 
@@ -43,7 +45,7 @@ for (const fixture of fixtures.rows) {
     validateExpected(fixture.expected)
     const tree = parse(fixture.source)
     const row = atPointer(tree, '/children/0/rows/0')
-    assert.equal(row.continuationLines, 1)
+    assert.equal(row.continuationLines, fixture.continuationLines ?? 1)
     if (fixture.id === 'join-between-nodes-takes-a-marker') {
       assert.ok(nodes(row).every((node) => !Object.hasOwn(node, 'cellWraps')))
     }

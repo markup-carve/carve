@@ -211,10 +211,13 @@ row. `table_row.continuationLines` counts the row's `+` lines. Renderers output
 lines back.
 
 When a join crosses a `code`, `raw_inline`, or `math` node, its `cellWraps`
-array instead records the codepoint offset of the joining space in `value`
-or `content`. For ``| `a | z |`` followed by ``+ b` | w |``, the code node has
-`value: "a | z b"` and `cellWraps: [5]`. The writer splits the payload at
-that offset, and `continuationLines` still counts the join.
+array instead records each join as `{ offset, line, row? }`: the codepoint
+offset of the joining space in `value` or `content`, plus the `line` and
+`row` a `cell_wrap` would carry. For ``| `a | z |`` followed by
+``+ b` | w |``, the code node has `value: "a | z b"` and
+`cellWraps: [{ offset: 5, line: 1 }]`. The writer puts the part after each
+offset on the `+` line the entry names, and `continuationLines` still counts
+the join.
 
 **The root carries exactly three fields** - `type`, `children`, `srcByteLength`
 ([`CARVE-P12-024`](./rules/ast-interchange)). Frontmatter and definitions are **block nodes in the tree**, not
