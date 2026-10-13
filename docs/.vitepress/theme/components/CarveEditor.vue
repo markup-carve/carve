@@ -24,7 +24,7 @@ import {
   type ContinuationEdit,
 } from '@markup-carve/carve-lsp/browser'
 import { carveCompletion, carveDiagnostics, carveHover, carveLanguageTheme, carveTooltips } from '../editor/carve-language'
-import { endTableAt, formatTable, isBlankRow, nextCell, previousCell } from '../editor/carve-tables'
+import { endTableAt, formatTable, isBlankRow, isTableRow, nextCell, previousCell } from '../editor/carve-tables'
 import { searchKeymap, highlightSelectionMatches } from '@codemirror/search'
 
 const props = defineProps<{
@@ -156,8 +156,7 @@ const continueOnEnter: Command = (v) => {
   const line = v.state.doc.lineAt(pos)
   // Enter on the bare `|` a table row's Enter wrote, or on a row of blank cells,
   // ends the table, as an empty list marker ends a list.
-  const underTable = line.number > 1 && /^[ \t]*[|+]/.test(v.state.doc.line(line.number - 1).text)
-  if (underTable && (/^[ \t]*\|[ \t]*$/.test(line.text) || isBlankRow(line.text))) return endTableAt(v, line.number)
+  if ((/^[ \t]*\|[ \t]*$/.test(line.text) || isBlankRow(line.text)) && rowBelowTable(v.state, line.number)) return endTableAt(v, line.number)
   if (pos !== line.to) return false
   const base = { from: pos, insert: '\n' }
   const text = v.state.doc.sliceString(0, pos) + '\n' + v.state.doc.sliceString(pos)
@@ -172,6 +171,19 @@ const continueOnEnter: Command = (v) => {
   // A container closer (`\n:::`) goes below the cursor; a quote or table prefix goes before it.
   applyEdits(v, [{ range: { start: position, end: position }, newText: prefix }], base, prefix.startsWith('\n') ? -1 : 1)
   return true
+}
+
+// The line above is a table row or a line-block line, and neither is code.
+function rowBelowTable(state: EditorState, lineNumber: number): boolean {
+  if (lineNumber < 2) return false
+  const above = state.doc.line(lineNumber - 1).text
+  if (!isTableRow(above) && !/^[ \t]*\| /.test(above)) return false
+  return !inCodeBlock(state.doc.toString(), lineNumber)
+}
+
+// Table keys act on tables, never on pipe-led lines inside code.
+function outsideCode(command: Command): Command {
+  return (v) => !inCodeBlock(v.state.doc.toString(), v.state.doc.lineAt(v.state.selection.main.head).number) && command(v)
 }
 
 // A content-less marker as the continuation writes it: `- `, `- [ ] `, `2. `, `b) `.
@@ -203,7 +215,7 @@ function emitPreview(state: EditorState): void {
     const rest = line.text.slice(lead.length)
     if (sel.main.head === line.to && rest && BARE_MARKER.test(rest) && !inCodeBlock(state.doc.toString(), line.number)) {
       preview = state.doc.sliceString(0, line.from + lead.length).replace(/[ \t]+$/, '') + state.doc.sliceString(line.to)
-    } else if ((/^[ \t]*\|[ \t]*$/.test(line.text) || isBlankRow(line.text)) && line.number > 1 && /^[ \t]*[|+]/.test(state.doc.line(line.number - 1).text)) {
+    } else if ((/^[ \t]*\|[ \t]*$/.test(line.text) || isBlankRow(line.text)) && rowBelowTable(state, line.number)) {
       // A row being filled under a table renders as stray text until it has content.
       preview = state.doc.sliceString(0, line.from) + state.doc.sliceString(line.to + 1)
     }
@@ -313,9 +325,9 @@ onMounted(() => {
           { key: 'Enter', run: continueOnEnter },
           { key: 'Backspace', run: deleteBareMarker },
           // In a table, Tab and Shift+Tab align it and move between cells.
-          { key: 'Tab', run: (v) => nextCell(v) || listIndent('indent', plainTab)(v) },
-          { key: 'Shift-Tab', run: (v) => previousCell(v) || listIndent('outdent', plainShiftTab)(v) },
-          { key: 'Mod-Alt-f', run: formatTable },
+          { key: 'Tab', run: (v) => outsideCode(nextCell)(v) || listIndent('indent', plainTab)(v) },
+          { key: 'Shift-Tab', run: (v) => outsideCode(previousCell)(v) || listIndent('outdent', plainShiftTab)(v) },
+          { key: 'Mod-Alt-f', run: outsideCode(formatTable) },
           ...defaultKeymap,
           ...historyKeymap,
           ...searchKeymap,

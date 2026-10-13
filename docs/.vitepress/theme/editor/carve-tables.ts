@@ -75,6 +75,11 @@ function parseRow(line: string): Row | null {
  * a row being filled: hidden from the preview, and Enter or Tab past its last
  * cell drops it and ends the table.
  */
+/** A complete table row (opening and closing pipe). */
+export function isTableRow(line: string): boolean {
+  return parseRow(line) !== null
+}
+
 export function isBlankRow(line: string): boolean {
   const row = parseRow(line)
   return !!row && !row.separator && row.cells.every((cell) => cell.opener === '|' && cell.text === '')
