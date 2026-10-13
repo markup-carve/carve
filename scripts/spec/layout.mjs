@@ -2001,6 +2001,7 @@ function hostAdvance(h, line, paraOpen) {
   }
   if (h.kinds.at(-1) === 'description') {
     // A list-shaped line folds into the description's paragraph under section 10 I2.
+    h.descriptionMarker = !blockStart && paraOpen && (h.descriptionMarker || matchMarkerAt(inner) !== null)
     h.descriptionParagraph = FENCE.test(inner.rest) && !blockStart
       ? paraOpen : opensParagraph(inner.rest, blockStart)
   }
@@ -2119,8 +2120,8 @@ function hostFenceOpener(h, inner, canOpen = () => true) {
   const f = FENCE.exec(inner.rest)
   const opener = f && parseFenceInfo(f[2]) !== null ? f : null
   if (inner.col !== column) {
-    // A shifted run in an open description paragraph is inline text, not a fence.
-    if (h.kinds.at(-1) === 'description' && h.descriptionParagraph) return null
+    if (h.kinds.at(-1) === 'description' && h.descriptionParagraph &&
+        !(h.descriptionMarker && opener && canOpen(opener))) return null
     // An absorbed run of the other fence character is not waiting for this one.
     const awaited = h.unclaimed !== null && (opener === null || opener[1][0] === h.unclaimed.run[0])
     if (opener !== null && column > 0 && !h.unrebased.has(column) && !awaited && canOpen(opener)) return opener
@@ -2377,6 +2378,21 @@ const opensAuthoredBase = (line) => opensSubBlock(line) || isLinkDef(line) ||
   FOOTNOTE_DEF.test(line) || COMMENT_LINE.test(line) ||
   parseAttrList(trimLineEnd(line)) !== null || isCaptionableParagraph([line])
 
+// Reuse forward searches while their starting point remains inside the searched range.
+function cachedForwardSearch(cache, key, from, length, visit) {
+  const prior = cache.get(key)
+  if (prior && from >= prior.from && from <= prior.end) return prior.result
+  let end = from
+  let result = -1
+  for (; end < length; end++) {
+    const outcome = visit(end)
+    if (outcome === null) break
+    if (outcome) { result = end; break }
+  }
+  cache.set(key, { from, end, result })
+  return result
+}
+
 /**
  * Rebase an authored block opener inside a definition or footnote body.
  * `lines` have already been stripped to the body's minimum column. A
@@ -2385,13 +2401,16 @@ const opensAuthoredBase = (line) => opensSubBlock(line) || isLinkDef(line) ||
  * returns left of it. This measures every leading run once and preserves any
  * payload indentation beyond the opener.
  */
-export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = false, hostedColonBody = false) {
+export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = false, hostedColonBody = false, absorbedNoteMarker = false) {
   const out = []
   // Whether a nested note has been flushed to column 0 whose fixed body column
   // (2) a following plain paragraph could wrongly reach. It arms the paragraph
   // dedent below and is disarmed by the next structural block, whose own
   // continuations must keep their indent (raised by codex review).
   let flushedNote = false
+  let paragraphOpen = false
+  const descriptionSearches = new Map()
+  const descriptionClosers = new Map()
   for (let index = 0; index < lines.length; index++) {
     const line = lines[index]
     const measured = indentCols(line)
@@ -2454,8 +2473,24 @@ export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = fal
     // a nested item's content column was rebased to the outer body's column and
     // lifted out of the item it was written into, which is the same defect this
     // clause fixed one container kind over.
+    let absorbedDescriptionMarker = false
+    if (!footnoteBody && paragraphOpen && measured.col === 0 && matchMarkerAt(measured)) {
+      absorbedDescriptionMarker = cachedForwardSearch(descriptionSearches, 'marker', index + 1, lines.length, (at) => {
+        const next = indentCols(lines[at])
+        if (next.rest === '' || next.col === 0 && opensSubBlock(next.rest)) return null
+        const run = FENCE.exec(next.rest)
+        if (next.col <= 0 || !run) return false
+        const key = `${next.col}:${run[1]}`
+        return cachedForwardSearch(descriptionClosers, key, at + 1, lines.length, (close) => {
+          const measured = indentCols(lines[close])
+          if (measured.col < next.col) return false
+          const closer = PURE_FENCE.exec(dedentMeasured(measured, lines[close], next.col).text)
+          return !!(closer && closer[1][0] === run[1][0] && closer[1].length >= run[1].length)
+        }) >= 0
+      }) >= 0
+    }
     const protectsInnermostContainer = measured.col === 0 &&
-      (opensSubBlock(measured.rest) || matchMarkerAt(measured) !== null)
+      (opensSubBlock(measured.rest) || !((absorbedNoteMarker || absorbedDescriptionMarker) && paragraphOpen) && matchMarkerAt(measured) !== null)
     if (!establishesBase && !protectsInnermostContainer) {
       // A plain PARAGRAPH sibling of a note just flushed to column 0 keeps a
       // leading indent that is not structural: the note's body column is now the
@@ -2467,11 +2502,13 @@ export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = fal
       const noteSiblingParagraph = footnoteBody && flushedNote && measured.col > 0 &&
         matchMarkerAt(measured) === null && !opensSubBlock(measured.rest)
       out.push(noteSiblingParagraph ? dedent(line, measured.col) : line)
+      paragraphOpen = measured.rest !== '' && (paragraphOpen || opensParagraph(measured.rest, true))
       continue
     }
     // A structural block (a container, a list marker) ends the note-sibling run:
     // its own indented continuations are its content, not an over-reach.
     flushedNote = false
+    paragraphOpen = false
 
     const base = establishesBase ? measured.col : 0
     const candidateColumns = []
@@ -2951,6 +2988,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     let m
     if ((m = FOOTNOTE_DEF.exec(line))) {
       const label = m[1]
+      const absorbedNoteMarker = i === 0 && state.absorbedMarkerNotes?.has(lines)
       const bodyLines = [m[2]]
       i++
       // `pullPending` is set by a `+` marker: the NEXT flush-left line begins a
@@ -3075,7 +3113,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       if (!state.footnoteDefs.has(key)) {
         // FIRST definition wins (PART 9R state)
         const normalizedBody = state.authoredBodyBases
-          ? normalizeAuthoredBodyBases(bodyLines, state, true)
+          ? normalizeAuthoredBodyBases(bodyLines, state, true, false, absorbedNoteMarker)
           : bodyLines
         // A `holdsAnInvisibleBlock` flag used to be set here, so that a body
         // whose only content was a comment could be told apart from an empty
@@ -5122,6 +5160,11 @@ function collectItems(lines, i, list, state, ind, meas) {
      * indented line is not that definition's body.
      */
     let defBodyIndent = null
+    let markerNoteEligible = FOOTNOTE_DEF.test(head.text)
+    const markerNoteBodyColumn = markerNoteEligible ? indentCols(lines[i].slice(0, lines[i].indexOf('[^')).replace(/[^\t]/g, ' ')).col + FOOTNOTE_BODY_COLUMN : null
+    let noteMarkerSeen = false
+    let noteFenceEnd = -1
+    const noteCloserSearches = new Map()
     const closePara = () => { openPara = false; para = []; defBodyIndent = null }
     const startPara = () => { openPara = true; para = []; defBodyIndent = null }
     const openParaWith = (line) => { if (!openPara) para = []; openPara = true; para.push(line); defBodyIndent = null }
@@ -5821,6 +5864,10 @@ function collectItems(lines, i, list, state, ind, meas) {
       // `+` at the item's MARKER column attaches ONE following flush-left
       // block to this item (SS17 L3/L4)
       const lm = ind(i)
+      if (i > noteFenceEnd && (lm.rest === '' || FOOTNOTE_DEF.test(lm.rest))) {
+        markerNoteEligible = false
+        noteMarkerSeen = false
+      }
       const commentLine = fence.opaque?.kind === 'comment' || nestedOpaque?.kind === 'comment' ||
         (belowSpan !== null && lastCommentCloser(belowSpan.run) >= i) || lm.rest.startsWith('%%')
       captureParagraphState = !commentLine
@@ -6137,7 +6184,20 @@ function collectItems(lines, i, list, state, ind, meas) {
         const retainedAfterComment = afterComment && subCol > col && !opensBlockAt(line, i)
         const inOpenColonOnly = fence.opaque === null && fence.colon.length !== 0 &&
           col > contentCol && !descendantOwned && !COLON_CLOSER.test(lm.rest) && !inPayload && !retainedAfterComment && opensHostedColonBlock(lm.rest)
-        const mayOpenAuthoredBlock = !foldsIntoLeadTerm && !descendantOwned &&
+        if (markerNoteEligible && defBodyIndent !== null && nm && col >= contentCol + defBodyIndent + FOOTNOTE_BODY_COLUMN) noteMarkerSeen = true
+        const noteFence = FENCE.exec(lm.rest)
+        if (noteMarkerSeen && defBodyIndent !== null &&
+            col > markerNoteBodyColumn && noteFence && i > noteFenceEnd) {
+          const closer = cachedForwardSearch(noteCloserSearches, `${col}:${noteFence[1]}`, i + 1, lines.length, (at) => {
+            const measured = ind(at)
+            if (measured.rest !== '' && measured.col < markerNoteBodyColumn) return null
+            const run = measured.col === col && PURE_FENCE.exec(measured.rest)
+            return !!(run && run[1][0] === noteFence[1][0] && run[1].length >= noteFence[1].length)
+          })
+          if (closer >= 0) noteFenceEnd = closer
+        }
+        const inNoteBody = i <= noteFenceEnd
+        const mayOpenAuthoredBlock = !inNoteBody && !foldsIntoLeadTerm && !descendantOwned &&
           (!insideFence() || inOpenColonOnly) && opensAuthoredBase(lm.rest)
         if (pendingHeadQuote !== null && mayOpenAuthoredBlock) {
           const start = pendingHeadQuote
@@ -6812,6 +6872,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       }
       break
     }
+    if (noteFenceEnd >= 0) (state.absorbedMarkerNotes ??= new WeakSet()).add(itemLines)
     if (fenceOpensAt.size) (state.fenceOpensAt ??= new WeakMap()).set(itemLines, fenceOpensAt)
     if (nestedFenceOpensAt.size) (state.nestedFenceOpensAt ??= new WeakMap()).set(itemLines, nestedFenceOpensAt)
     /*

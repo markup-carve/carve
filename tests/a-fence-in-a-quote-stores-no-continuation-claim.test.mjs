@@ -315,12 +315,23 @@ test('a description body hosts a fence only while its term survives', () => {
     `quote[deflist, list[item[p(a|: d)]], p(${F}|flush)]`)
 })
 
-test('a description paragraph absorbs shifted fence runs at every quote depth', () => {
+test('a closed fence past a description body\'s column opens a code block at every quote depth', () => {
   for (const depth of [1, 2, 3]) {
     const q = '> '.repeat(depth)
     const source = `${q}:: t\n${q}:  d\n${q}   - a\n${q}    ${F}\n${q}    x\n${q}    ${F}\nflush\n`
+    assert.equal(host(source), 'quote['.repeat(depth) + 'deflist' + ']'.repeat(depth) + ', p(flush)', source)
+    assert.match(renderDoc(parse(source)).replace(/\s+/g, ' '), /<dd> <p>d - a<\/p> <pre><code>x <\/code><\/pre> <\/dd>/, source)
+  }
+})
+
+test('an unclosed fence past a description body stays paragraph text at every quote depth', () => {
+  for (const depth of [1, 2, 3]) {
+    const q = '> '.repeat(depth)
+    const source = `${q}:: t\n${q}:  d\n${q}   - a\n${q}    ${F}\n${q}    x\nflush\n`
+    const html = renderDoc(parse(source)).replace(/\s+/g, ' ')
     assert.equal(host(source), 'quote['.repeat(depth) + 'deflist' + ']'.repeat(depth), source)
-    assert.match(renderDoc(parse(source)).replace(/\s+/g, ' '), /<dd>d - a <code> x <\/code> flush<\/dd>/, source)
+    assert.match(html, /<dd>d - a <code> x flush<\/code><\/dd>/, source)
+    assert.doesNotMatch(html, /<pre>/, source)
   }
 })
 
