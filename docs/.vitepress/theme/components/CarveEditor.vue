@@ -157,7 +157,8 @@ const continueOnEnter: Command = (v) => {
   if (pos !== line.to) return false
   // Enter on the bare `|` a table row's Enter wrote ends the table, as an empty list marker ends a list.
   if (/^[ \t]*\|[ \t]*$/.test(line.text) && line.number > 1 && /^[ \t]*[|+]/.test(v.state.doc.line(line.number - 1).text)) {
-    v.dispatch({ changes: { from: line.from, to: line.to, insert: '' }, userEvent: 'delete' })
+    // A blank line closes the table, and the cursor goes below it.
+    v.dispatch({ changes: { from: line.from, to: line.to, insert: '\n' }, selection: { anchor: line.from + 1 }, scrollIntoView: true, userEvent: 'input' })
     return true
   }
   const base = { from: pos, insert: '\n' }
@@ -313,6 +314,7 @@ onMounted(() => {
         carveTooltips,
         EditorView.updateListener.of((u) => {
           if (u.geometryChanged) syncGutterWidth(u.view)
+          if (u.selectionSet) revealLineStart(u.view)
           if (u.docChanged || u.selectionSet) {
             emitPreview(u.state)
             emit('cursor', u.state.doc.lineAt(u.state.selection.main.head).number)
@@ -347,6 +349,28 @@ watch(
   () => props.wrap,
   (on) => view.value?.dispatch({ effects: wrapping.reconfigure(on ? EditorView.lineWrapping : []) }),
 )
+
+// With wrapping off, a cursor near the start of its line scrolls fully left
+// instead of stopping where it is just visible, so the line's marker or `|`
+// stays in view after Enter on a long row.
+function revealLineStart(v: EditorView): void {
+  v.requestMeasure({
+    read(view) {
+      const scroller = view.scrollDOM
+      if (scroller.scrollLeft === 0) return null
+      const head = view.state.selection.main.head
+      const cursor = view.coordsAtPos(head)
+      const start = view.coordsAtPos(view.state.doc.lineAt(head).from)
+      if (!cursor || !start) return null
+      const gutter = (view.dom.querySelector('.cm-gutters') as HTMLElement | null)?.offsetWidth ?? 0
+      const visible = scroller.clientWidth - gutter - 24
+      return cursor.left - start.left <= visible ? 0 : null
+    },
+    write(left, view) {
+      if (left !== null) view.scrollDOM.scrollLeft = left
+    },
+  })
+}
 
 // Offset of the document's top inside the scroller's content, for line geometry.
 function documentOffset(v: EditorView): number {
