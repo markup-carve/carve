@@ -2161,6 +2161,46 @@
         "list-style-dropped"
       ],
       "aheadOfPin": true
+    },
+    {
+      "id": "list-delimiter-changed-between-adjacent-lists",
+      "source": "a. one\n\n1. two\n",
+      "carrierFragments": [
+        "<!-- carve: a. -->\n1. one",
+        "1) two"
+      ],
+      "expectedNodes": [
+        {
+          "type": "list",
+          "ordered": true,
+          "olType": "a"
+        },
+        {
+          "type": "list",
+          "ordered": true
+        }
+      ],
+      "lossCodes": [
+        "list-delimiter-changed"
+      ],
+      "forbiddenLossCodes": [
+        "list-style-dropped"
+      ],
+      "aheadOfPin": true
+    },
+    {
+      "id": "list-delimiter-kept-when-lists-are-apart",
+      "source": "1. one\n\npara\n\n1. two\n",
+      "carrierFragments": [],
+      "expectedNodes": [
+        {
+          "type": "list",
+          "ordered": true
+        }
+      ],
+      "forbiddenLossCodes": [
+        "list-delimiter-changed"
+      ]
     }
   ],
   "markdownImportNegative": [

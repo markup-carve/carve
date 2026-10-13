@@ -27,9 +27,11 @@
         "type": "object",
         "required": ["code", "target", "nodeType", "message"],
         "properties": {
-          "code": { "enum": ["raw-format-dropped", "ruby-flattened", "destination-denied", "editorial-comment-flattened", "carrier-attribute-dropped", "list-style-dropped"] },
+          "code": { "enum": ["raw-format-dropped", "ruby-flattened", "destination-denied", "editorial-comment-flattened", "carrier-attribute-dropped", "list-style-dropped", "list-delimiter-changed"] },
           "attribute": { "type": "string" },
           "style": { "enum": ["lower-alpha", "upper-alpha", "lower-roman", "upper-roman"] },
+          "delim": { "enum": [".", ")"] },
+          "emittedDelim": { "enum": [".", ")"] },
           "format": { "type": "string" },
           "target": { "enum": ["html", "markdown", "plain", "ansi", "carve"] },
           "nodeType": { "enum": ["inline", "block"] },
@@ -87,6 +89,17 @@
               "format": false
             },
             "required": ["style"]
+          },
+          {
+            "properties": {
+              "code": { "const": "list-delimiter-changed" },
+              "delim": { "enum": [".", ")"] },
+              "emittedDelim": { "enum": [".", ")"] },
+              "target": { "const": "markdown" },
+              "nodeType": { "const": "block" },
+              "format": false
+            },
+            "required": ["delim", "emittedDelim"]
           }
         ],
         "additionalProperties": false

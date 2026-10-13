@@ -719,6 +719,19 @@
       line the target does write between them (a title, a label, a term) ends
       one.
 
+      AN ORDERED LIST WRITTEN WITH ANOTHER DELIMITER REPORTS IT. When the
+      alternation writes an ordered list with a delimiter other than its
+      authored `delim`, the list contributes one render loss with the stable
+      code `list-delimiter-changed`, the selected `target`, `nodeType` of
+      `block`, its `pos` when recorded, NO `format`, `delim`, the authored
+      delimiter, and `emittedDelim`, the one written. No marker carries the
+      delimiter, so the loss is reported with roundtrip export on or off.
+      Only the Markdown target reports this code.
+
+        a. one                     ->  1. one
+
+        1. two                         1) two
+
   10p. A DEFINITION LIST IS WRITTEN AS ITS TERMS AND BLOCKS --
       NORMATIVE [CARVE-P11-058]. GFM has no definition list, and a `: ` marker is
       literal there: it joins the line it opens to the term's paragraph, and a
