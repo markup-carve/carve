@@ -24,7 +24,5 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-591-a-code-line-left-of-an-authored-base-fence-opener-is-measured-from-that-base  ahead of the pin: CARVE-P0-004 strips code payload from the authored fence base (checker reading, carve-js not yet, carve-js#3004)
-591-a-code-line-left-of-an-authored-base-fence-opener-is-measured-from-that-base-4  ahead of the pin: CARVE-P0-004 strips definition code payload from the authored fence base (checker reading, carve-js not yet, carve-js#3004)
 592-a-fence-closer-below-the-authored-base-is-measured-as-its-payload  ahead of the pin: CARVE-P0-004 a matching run below the authored base closes the fence once its prefix is gone (carve#3141); carve-js keeps it as payload
 592-a-fence-closer-below-the-authored-base-is-measured-as-its-payload-3  ahead of the pin: CARVE-P0-004 the shorter run below the base is payload with its whole available prefix gone (carve#3133); carve-js keeps one column of it
