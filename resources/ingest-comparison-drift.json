@@ -3,13 +3,13 @@
   "measured": {
     "date": "2026-10-13",
     "spec": "eb2304de7cdaf501e1287aa9ea6f5d1e25bdc83c",
-    "js": "43dd609654c6b03e2c0068504f2a66dfd59eeb0a",
+    "js": "dc90931ab816a69ddbed2c08d53644f4cc85eb7f",
     "php": "be7dd4e720f5fecb75246ce313a6b548599ebaf7",
     "rust": "a0d6c79000e98e8a2cf7366ed701c4281b5f65d5",
     "coverage": {
       "full": {
-        "documents": 2588,
-        "pairs": 23292
+        "documents": 2591,
+        "pairs": 23319
       }
     }
   },
@@ -56,6 +56,510 @@
         "expected": "<table>\n  <tbody>\n    <tr><td></td></tr>\n  </tbody>\n</table>",
         "status": 0,
         "actual": "<p>||</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/237-a-continuation-row-carries-no-trailing-text.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "88f1e2c73f450133bfce4e0f435af8880334c91678fd1e165910f909e8dfda91",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a c</td><td>b d</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].rows[0].cells[0].children[1].type is the string \"cell_wrap\", which the schema does not list. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
+      }
+    },
+    {
+      "key": "tests/corpus/237-a-continuation-row-carries-no-trailing-text.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "507b2f71175f2867f6dce5d287d2e710c3c7b9c2e08926f1e0ce3b2fcb816d8a",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a c</td><td>b d</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/249-trailing-whitespace-after-a-block-marker-4.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "88f1e2c73f450133bfce4e0f435af8880334c91678fd1e165910f909e8dfda91",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a c</td><td>b d</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].rows[0].cells[0].children[1].type is the string \"cell_wrap\", which the schema does not list. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
+      }
+    },
+    {
+      "key": "tests/corpus/249-trailing-whitespace-after-a-block-marker-4.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "507b2f71175f2867f6dce5d287d2e710c3c7b9c2e08926f1e0ce3b2fcb816d8a",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a c</td><td>b d</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/256-table-cell-padding-must-be-a-space-15.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "b89a4869e3348bf4bcddc60507de7520f1e7969508e96c9027c72a78ff287e60",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a \tx</td><td>b y</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].rows[0].cells[0].children[1].type is the string \"cell_wrap\", which the schema does not list. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
+      }
+    },
+    {
+      "key": "tests/corpus/256-table-cell-padding-must-be-a-space-15.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "393a552c012535cbbfe0cd08754e730d7a315aa4ec4b8eea6a5b42015f056b0c",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a \tx</td><td>b y</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/256-table-cell-padding-must-be-a-space-16.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "e9b8b231081fc130af0ee56604dd87748da6bf547d08adfd4dfd99a3b8d498d5",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a x\t</td><td>b y\t</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].rows[0].cells[0].children[1].type is the string \"cell_wrap\", which the schema does not list. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
+      }
+    },
+    {
+      "key": "tests/corpus/256-table-cell-padding-must-be-a-space-16.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "98c0a30d73f878afc8c6c92952c316081a2ae0ed89abb7a222847ace5917bc62",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a x\t</td><td>b y\t</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/256-table-cell-padding-must-be-a-space-17.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "f63a84e7688df42cd283821c39b289faeb515b9e3feb7cca3d41952fb7b54e5f",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a x</td><td>b y</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].rows[0].cells[0].children[1].type is the string \"cell_wrap\", which the schema does not list. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
+      }
+    },
+    {
+      "key": "tests/corpus/256-table-cell-padding-must-be-a-space-17.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "64e8b0b70fe16a16039aab0fa422dd3bfc8bd4b8cc6f5219b92601ba018c941e",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a x</td><td>b y</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-4.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "efd584d202c8f4a78d4fcbcab27f300261a27c2ad9f480096252ad62ed77015f",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a <code>b c | d</code></td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].rows[0] carries `continuationLines`, which the schema does not name. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it.\n"
+      }
+    },
+    {
+      "key": "tests/corpus/333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-4.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "ec92ae6ce07e3f2dbddf52d885cb22e36d0c6dd7aa85b2006c9a121bb9675668",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a <code>b c | d</code></td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "01f7ba78dac5e48da62c6add4edc70e02a90185a9f2c61643746737d346143c4",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>x y</td><td>a <code>b c</code></td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].rows[0].cells[0].children[1].type is the string \"cell_wrap\", which the schema does not list. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
+      }
+    },
+    {
+      "key": "tests/corpus/333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "2c740f27553e6a520bf0fbcb81a2d7ba896fd9c1364e46a30b60c8c38c0ec828",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>x y</td><td>a <code>b c</code></td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "af81b588b2e880cac762611e679f7a9b7f6e3fa98147f7c3acbda158caceaa4d",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a <code>b c</code></td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].rows[0] carries `continuationLines`, which the schema does not name. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it.\n"
+      }
+    },
+    {
+      "key": "tests/corpus/333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "fd6395a2b85930963cf4fe84528f40095708b759a823506f43cec341560a2c2d",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a <code>b c</code></td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/349-a-container-whose-table-ends-on-a-continuation-row-3.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "4bb01362f78c56b81b2d45817f7c783d23b255a80a154f42b944ca3a44cd6f22",
+      "observation": {
+        "expected": "<blockquote>\n  <table>\n    <tbody>\n      <tr><td>a b</td></tr>\n    </tbody>\n  </table>\n</blockquote>\n<p>tail</p>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].children[0].rows[0].cells[0].children[1].type is the string \"cell_wrap\", which the schema does not list. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
+      }
+    },
+    {
+      "key": "tests/corpus/349-a-container-whose-table-ends-on-a-continuation-row-3.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "8a1c420efc91c53adb4f32c8559dc5ef3ce010cd0e020bc3eb9335eb0f58d845",
+      "observation": {
+        "expected": "<blockquote>\n  <table>\n    <tbody>\n      <tr><td>a b</td></tr>\n    </tbody>\n  </table>\n</blockquote>\n<p>tail</p>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/349-a-container-whose-table-ends-on-a-continuation-row-5.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "2edd8b64621cc886f93c500b92e79b561445faac1e4215ca7df7b6e8a7817850",
+      "observation": {
+        "expected": "<dl>\n  <dt>t</dt>\n  <dd>\n    <blockquote>\n      <table>\n        <tbody>\n          <tr><td>a b</td></tr>\n        </tbody>\n      </table>\n    </blockquote>\n  </dd>\n</dl>\n<p>tail</p>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].items[1].type is the string \"definition_description\" where the schema requires the string \"definition_term\". PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
+      }
+    },
+    {
+      "key": "tests/corpus/349-a-container-whose-table-ends-on-a-continuation-row-5.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "99ad0c546b68ca1fc092d01bbfec734fb65d3a91df8f767d80277a7458382b67",
+      "observation": {
+        "expected": "<dl>\n  <dt>t</dt>\n  <dd>\n    <blockquote>\n      <table>\n        <tbody>\n          <tr><td>a b</td></tr>\n        </tbody>\n      </table>\n    </blockquote>\n  </dd>\n</dl>\n<p>tail</p>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].items[1].children[0].children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/349-a-container-whose-table-ends-on-a-continuation-row-6.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "48b91ab9251418f31cb94be0b600434934cba392ce5174e5c9b224492c87cb4a",
+      "observation": {
+        "expected": "<dl>\n  <dt>t</dt>\n  <dd>\n    <table>\n      <tbody>\n        <tr><td>a b</td></tr>\n      </tbody>\n    </table>\n  </dd>\n</dl>\n<p>tail</p>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].items[1].type is the string \"definition_description\" where the schema requires the string \"definition_term\". PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
+      }
+    },
+    {
+      "key": "tests/corpus/349-a-container-whose-table-ends-on-a-continuation-row-6.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "5791580fd161ee6f0f1b8c056e8bd6a5cfb885d22943cc9d31833e137540a89c",
+      "observation": {
+        "expected": "<dl>\n  <dt>t</dt>\n  <dd>\n    <table>\n      <tbody>\n        <tr><td>a b</td></tr>\n      </tbody>\n    </table>\n  </dd>\n</dl>\n<p>tail</p>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].items[1].children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/349-a-container-whose-table-ends-on-a-continuation-row.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "bca28080f56d01178fa37b2c7442d16988027149c674726880bc8a6a973c9178",
+      "observation": {
+        "expected": "<ul>\n  <li>\n    <table>\n      <tbody>\n        <tr><td>a b</td></tr>\n      </tbody>\n    </table>\n  </li>\n</ul>\n<p>tail</p>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].items[0].children[0].rows[0].cells[0].children[1].type is the string \"cell_wrap\", which the schema does not list. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
+      }
+    },
+    {
+      "key": "tests/corpus/349-a-container-whose-table-ends-on-a-continuation-row.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "1fcba177b3a3a4987c14f4df9eba3fddd6aaa8e777d147880af514765c132a96",
+      "observation": {
+        "expected": "<ul>\n  <li>\n    <table>\n      <tbody>\n        <tr><td>a b</td></tr>\n      </tbody>\n    </table>\n  </li>\n</ul>\n<p>tail</p>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].items[0].children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-2.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "39e745e0008eecd4ab28d448ebd80cfbab61bf3dbc470b27716812c85225adac",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n    <tr><th scope=\"row\">b c</th></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].rows[1].cells[0].children[1].type is the string \"cell_wrap\", which the schema does not list. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
+      }
+    },
+    {
+      "key": "tests/corpus/354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-2.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "67abe29aa1a37dbdcc700c0f58ea41874c8f5a78e66488d4dd16c39b871cdfc6",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n    <tr><th scope=\"row\">b c</th></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].rows[1] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-4.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "1440f9c5e48171a3c407d4d69f07d9677156c0b4a2f2504293c190407824e4e3",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].rows[0] carries `continuationLines`, which the schema does not name. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it.\n"
+      }
+    },
+    {
+      "key": "tests/corpus/354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-4.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "0bac2fe11e7be3c9a1a98e06068767489e47cdbc0464b5ce4566cec796db3d5c",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-5.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "fb52adf33e09132399fbaf45e6d2334743907f770cdfae294e6ebc5659040336",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].rows[0] carries `continuationLines`, which the schema does not name. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it.\n"
+      }
+    },
+    {
+      "key": "tests/corpus/354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-5.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "5b1c07f3ec9362c69d0c15b2800f76544d600db690278bd744256ecde53eadfc",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "748e8669c17eeb1c6975a843d67f120dfd8e28944c18c59769b37d7640fd7d80",
+      "observation": {
+        "expected": "<table>\n  <thead>\n    <tr><th scope=\"col\">a cont</th><th scope=\"col\">b</th></tr>\n  </thead>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].rows[0].cells[0].children[1].type is the string \"cell_wrap\", which the schema does not list. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
+      }
+    },
+    {
+      "key": "tests/corpus/354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "447c03be2c0ce53c0a3a134fca5f1b4374feea49e113be11936461e0cdc04873",
+      "observation": {
+        "expected": "<table>\n  <thead>\n    <tr><th scope=\"col\">a cont</th><th scope=\"col\">b</th></tr>\n  </thead>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/355-a-container-whose-table-ends-on-a-joined-header-row-2.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "2c511fede656e1ac363d540aa1c0c2285f669b85f674c69f30a324798d3fbf9a",
+      "observation": {
+        "expected": "<ul>\n  <li>\n    <table>\n      <tbody>\n        <tr><td>a</td></tr>\n      </tbody>\n    </table>\n  </li>\n</ul>\n<p>tail</p>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].items[0].children[0].rows[0] carries `continuationLines`, which the schema does not name. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it.\n"
+      }
+    },
+    {
+      "key": "tests/corpus/355-a-container-whose-table-ends-on-a-joined-header-row-2.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "1cad075de0892daa213dc9042173cbfe741b73b15bcb7c94a5c09a7a5c58f925",
+      "observation": {
+        "expected": "<ul>\n  <li>\n    <table>\n      <tbody>\n        <tr><td>a</td></tr>\n      </tbody>\n    </table>\n  </li>\n</ul>\n<p>tail</p>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].items[0].children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/355-a-container-whose-table-ends-on-a-joined-header-row-3.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "8113e504a7e453b569dad3b7a538c82531d3fe6bb9ca57ca66ac9697c5db60ea",
+      "observation": {
+        "expected": "<blockquote>\n  <table>\n    <thead>\n      <tr><th scope=\"col\">a b</th></tr>\n    </thead>\n  </table>\n</blockquote>\n<p>tail</p>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].children[0].rows[0].cells[0].children[1].type is the string \"cell_wrap\", which the schema does not list. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
+      }
+    },
+    {
+      "key": "tests/corpus/355-a-container-whose-table-ends-on-a-joined-header-row-3.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "e4795930673898eaaf09746185a1213552213c787a6692a728a8edda9e2e9f0a",
+      "observation": {
+        "expected": "<blockquote>\n  <table>\n    <thead>\n      <tr><th scope=\"col\">a b</th></tr>\n    </thead>\n  </table>\n</blockquote>\n<p>tail</p>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/355-a-container-whose-table-ends-on-a-joined-header-row.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "97d313e3200b52830dd9f4639332d87463d2ad0be068f10defb9eb294b0d5fc0",
+      "observation": {
+        "expected": "<ul>\n  <li>\n    <table>\n      <thead>\n        <tr><th scope=\"col\">a b</th></tr>\n      </thead>\n    </table>\n  </li>\n</ul>\n<p>tail</p>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].items[0].children[0].rows[0].cells[0].children[1].type is the string \"cell_wrap\", which the schema does not list. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
+      }
+    },
+    {
+      "key": "tests/corpus/355-a-container-whose-table-ends-on-a-joined-header-row.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "8a90ceeb03fc99be2f8fb8aa6f67c15b7eec912939328b047d53f643d09d5a66",
+      "observation": {
+        "expected": "<ul>\n  <li>\n    <table>\n      <thead>\n        <tr><th scope=\"col\">a b</th></tr>\n      </thead>\n    </table>\n  </li>\n</ul>\n<p>tail</p>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].items[0].children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "5b944dcbb38200b0171eb57d2b6fbd87e86379d7f3f866d1b7729161c576ce24",
+      "observation": {
+        "expected": "<blockquote>\n  <blockquote>\n    <table>\n      <tbody>\n        <tr><td>a b</td></tr>\n      </tbody>\n    </table>\n  </blockquote>\n</blockquote>\n<p>tail</p>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].children[0].children[0].rows[0].cells[0].children[1].type is the string \"cell_wrap\", which the schema does not list. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
+      }
+    },
+    {
+      "key": "tests/corpus/356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "15aa02cae430eb6b89705b30bcb7ecd6728c39c043de30fd66b6f9c36d332d63",
+      "observation": {
+        "expected": "<blockquote>\n  <blockquote>\n    <table>\n      <tbody>\n        <tr><td>a b</td></tr>\n      </tbody>\n    </table>\n  </blockquote>\n</blockquote>\n<p>tail</p>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].children[0].children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "5ec9398263825e3a908356d67df38ecfe53b321aa235d0aa1ab184bafbdf1403",
+      "observation": {
+        "expected": "<blockquote>\n  <blockquote>\n    <blockquote>\n      <table>\n        <tbody>\n          <tr><td>a b</td></tr>\n        </tbody>\n      </table>\n    </blockquote>\n  </blockquote>\n</blockquote>\n<p>tail</p>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].children[0].children[0].children[0].rows[0].cells[0].children[1].type is the string \"cell_wrap\", which the schema does not list. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
+      }
+    },
+    {
+      "key": "tests/corpus/356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "be534aca54be5f0030207248014c95f9d2024ef690981f17dc1985f6d0ab4656",
+      "observation": {
+        "expected": "<blockquote>\n  <blockquote>\n    <blockquote>\n      <table>\n        <tbody>\n          <tr><td>a b</td></tr>\n        </tbody>\n      </table>\n    </blockquote>\n  </blockquote>\n</blockquote>\n<p>tail</p>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].children[0].children[0].children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
       }
     },
     {
@@ -499,6 +1003,50 @@
       }
     },
     {
+      "key": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-10.crv/js->php",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3307",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet open a fence that leaves a closed nested item in the host it lands in; carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "fingerprint": "3c113ffbc7d11fc30a816182dacbb81e60963bc926422d8b0023b06501ae21ee",
+      "observation": {
+        "expected": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <pre><code>:::bad\n</code></pre>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>",
+        "status": 0,
+        "actual": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <pre><code>:::bad\n:::\n</code></pre>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-10.crv/js->rust",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2636",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet open a fence that leaves a closed nested item in the host it lands in; carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "fingerprint": "3c113ffbc7d11fc30a816182dacbb81e60963bc926422d8b0023b06501ae21ee",
+      "observation": {
+        "expected": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <pre><code>:::bad\n</code></pre>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>",
+        "status": 0,
+        "actual": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <pre><code>:::bad\n:::\n</code></pre>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-10.crv/php->js",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3307",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet open a fence that leaves a closed nested item in the host it lands in; carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "fingerprint": "bc22293224c67a7ede606b515f1e617e8d4be7caed0a45bcbaaa577e4143cb9c",
+      "observation": {
+        "expected": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <pre><code>:::bad\n:::\n</code></pre>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>",
+        "status": 0,
+        "actual": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <pre><code>:::bad\n</code></pre>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-10.crv/rust->js",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2636",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet open a fence that leaves a closed nested item in the host it lands in; carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "fingerprint": "bc22293224c67a7ede606b515f1e617e8d4be7caed0a45bcbaaa577e4143cb9c",
+      "observation": {
+        "expected": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <pre><code>:::bad\n:::\n</code></pre>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>",
+        "status": 0,
+        "actual": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <pre><code>:::bad\n</code></pre>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>"
+      }
+    },
+    {
       "key": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-2.crv/js->php",
       "reason": "carve-php at its pin (be7dd4e7) does not yet open a fence that leaves a closed nested item in the host it lands in; carve-js (43dd6096) does, and the pins of carve-php and carve-rs do not move until the release cut.",
       "issue": "https://github.com/markup-carve/carve-php/issues/3307",
@@ -716,6 +1264,138 @@
         "expected": "<blockquote>\n  <ul>\n    <li>a\n      <ul>\n        <li>child</li>\n      </ul>\n      <pre><code>code\n</code></pre>\n    </li>\n  </ul>\n</blockquote>\n<p>after</p>",
         "status": 0,
         "actual": "<blockquote>\n  <ul>\n    <li>a\n      <ul>\n        <li>child\n<code>\ncode\n</code>\nafter</li>\n      </ul>\n    </li>\n  </ul>\n</blockquote>"
+      }
+    },
+    {
+      "key": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-8.crv/js->php",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3307",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet open a fence that leaves a closed nested item in the host it lands in; carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "fingerprint": "57d28f4f497d533fa4896e81322284ec5c7a0ac275147ba2f515eeaa48d589e9",
+      "observation": {
+        "expected": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <p><code>\n:::bad\n:::\n- tail</code></p>\n      </div>\n    </li>\n  </ul>\n</blockquote>",
+        "status": 0,
+        "actual": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <pre><code>:::bad\n:::\n</code></pre>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-8.crv/js->rust",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2636",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet open a fence that leaves a closed nested item in the host it lands in; carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "fingerprint": "89bd91b46789ed18838e6267bd5531058f0fe8c0fba08f72c88ac035c147286a",
+      "observation": {
+        "expected": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <p><code>\n:::bad\n:::</code></p>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>",
+        "status": 0,
+        "actual": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <pre><code>:::bad\n:::\n</code></pre>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-8.crv/php->js",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3307",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet open a fence that leaves a closed nested item in the host it lands in; carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "fingerprint": "01322743d545ceb5385cb4287082a5037ba5cc8d2a19a71ee3370415dbb749f9",
+      "observation": {
+        "expected": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <pre><code>:::bad\n:::\n</code></pre>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>",
+        "status": 0,
+        "actual": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <p><code>\n:::bad\n:::\n- tail</code></p>\n      </div>\n    </li>\n  </ul>\n</blockquote>"
+      }
+    },
+    {
+      "key": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-8.crv/php->rust",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2927",
+      "reason": "The engines read a fence that leaves a closed nested item differently at their pins; carve-php and carve-rs both lag the corpus and disagree with each other until their pins move.",
+      "fingerprint": "93ed0a3e9e6e7e8afea5fca39680da2208c07d7b9c3acff420d151be445fcaa8",
+      "observation": {
+        "expected": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <p><code>\n:::bad\n:::</code></p>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>",
+        "status": 0,
+        "actual": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <p><code>\n:::bad\n:::\n- tail</code></p>\n      </div>\n    </li>\n  </ul>\n</blockquote>"
+      }
+    },
+    {
+      "key": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-8.crv/rust->js",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2636",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet open a fence that leaves a closed nested item in the host it lands in; carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "fingerprint": "235b1dd5d23f248059c346c9716696ce014c39368ec9459140997a65facf43b8",
+      "observation": {
+        "expected": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <pre><code>:::bad\n:::\n</code></pre>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>",
+        "status": 0,
+        "actual": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <p><code>\n:::bad\n:::</code></p>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-8.crv/rust->php",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2927",
+      "reason": "The engines read a fence that leaves a closed nested item differently at their pins; carve-php and carve-rs both lag the corpus and disagree with each other until their pins move.",
+      "fingerprint": "e7fa3e06aa4f5b4009514ba3c7a1b46a0e24c17ce12aa3437072284c8fffcf22",
+      "observation": {
+        "expected": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <p><code>\n:::bad\n:::\n- tail</code></p>\n      </div>\n    </li>\n  </ul>\n</blockquote>",
+        "status": 0,
+        "actual": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <p><code>\n:::bad\n:::</code></p>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-9.crv/js->php",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3307",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet open a fence that leaves a closed nested item in the host it lands in; carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "fingerprint": "82191c2b66df42dc227b91f2f373b1051834a26990b24abf123e762a81b117d8",
+      "observation": {
+        "expected": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <p><code>\n:::\n:::bad\n:::\n- tail</code></p>\n      </div>\n    </li>\n  </ul>\n</blockquote>",
+        "status": 0,
+        "actual": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <pre><code>:::\n:::bad\n:::\n</code></pre>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-9.crv/js->rust",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2636",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet open a fence that leaves a closed nested item in the host it lands in; carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "fingerprint": "e2fd8ca631d3e230539b29b83b1aeb2cd62b89e90eaf25dd9d45288e4d43427d",
+      "observation": {
+        "expected": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <p><code>\n:::\n:::bad\n:::</code></p>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>",
+        "status": 0,
+        "actual": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <pre><code>:::\n:::bad\n:::\n</code></pre>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-9.crv/php->js",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3307",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet open a fence that leaves a closed nested item in the host it lands in; carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "fingerprint": "12b817ece09bd5dee3be4b02f3dc0d5df3c2dd5aa2a93924cf28fd41eb39ed12",
+      "observation": {
+        "expected": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <pre><code>:::\n:::bad\n:::\n</code></pre>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>",
+        "status": 0,
+        "actual": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <p><code>\n:::\n:::bad\n:::\n- tail</code></p>\n      </div>\n    </li>\n  </ul>\n</blockquote>"
+      }
+    },
+    {
+      "key": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-9.crv/php->rust",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2927",
+      "reason": "The engines read a fence that leaves a closed nested item differently at their pins; carve-php and carve-rs both lag the corpus and disagree with each other until their pins move.",
+      "fingerprint": "271660028edb3ab5ce7d0d7c37a5026d34612488da05e8ebe4e0f7e6fcf7a8fc",
+      "observation": {
+        "expected": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <p><code>\n:::\n:::bad\n:::</code></p>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>",
+        "status": 0,
+        "actual": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <p><code>\n:::\n:::bad\n:::\n- tail</code></p>\n      </div>\n    </li>\n  </ul>\n</blockquote>"
+      }
+    },
+    {
+      "key": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-9.crv/rust->js",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2636",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet open a fence that leaves a closed nested item in the host it lands in; carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "fingerprint": "0c16bd5aae153cc5984a79194671042b1bf1a2c5dd9a1fea6c91c0b98d615b0c",
+      "observation": {
+        "expected": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <pre><code>:::\n:::bad\n:::\n</code></pre>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>",
+        "status": 0,
+        "actual": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <p><code>\n:::\n:::bad\n:::</code></p>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>"
+      }
+    },
+    {
+      "key": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-9.crv/rust->php",
+      "issue": "https://github.com/markup-carve/carve-js/issues/2927",
+      "reason": "The engines read a fence that leaves a closed nested item differently at their pins; carve-php and carve-rs both lag the corpus and disagree with each other until their pins move.",
+      "fingerprint": "176b7e52ab612addfebe561c35db2fe148dde84b52d09084301dc7e25d112fa6",
+      "observation": {
+        "expected": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <p><code>\n:::\n:::bad\n:::\n- tail</code></p>\n      </div>\n    </li>\n  </ul>\n</blockquote>",
+        "status": 0,
+        "actual": "<blockquote>\n  <ul>\n    <li>\n      <div class=\"box\">\n        <ul>\n          <li>\n            <div class=\"line-block\">\n              <p>x</p>\n            </div>\n          </li>\n        </ul>\n        <p><code>\n:::\n:::bad\n:::</code></p>\n      </div>\n    </li>\n  </ul>\n</blockquote>\n<ul>\n  <li>tail</li>\n</ul>"
       }
     },
     {
@@ -1908,24 +2588,26 @@
     },
     {
       "key": "tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-33.crv/js->php",
-      "reason": "carve-php at its pin (be7dd4e7) does not yet read an explicitly delimited row of blank cells as a table row; carve-js (43dd6096) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet read an explicitly delimited row of blank cells as a table row; carve-js (43dd6096) does, and the pins of carve-php and carve-rs do not move until the release cut. It also lags table continuation lines (CARVE-P12-069), https://github.com/markup-carve/carve-php/issues/3331.",
       "issue": "https://github.com/markup-carve/carve-php/issues/3319",
-      "fingerprint": "568d074b3455d86784312c26ee92c44dc1dd3f531534194a3226abdff6dbaf45",
+      "fingerprint": "5eacbd93fe11b82ed5da5b10621e22cdac2fff8c596e5d63eb8469cc0b289bd6",
       "observation": {
         "expected": "<p>| | |\n+ x | y |</p>",
-        "status": 0,
-        "actual": "<table>\n  <tbody>\n    <tr><td>x</td><td>y</td></tr>\n  </tbody>\n</table>"
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].rows[0] carries `continuationLines`, which the schema does not name. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it.\n"
       }
     },
     {
       "key": "tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-33.crv/js->rust",
-      "reason": "carve-rs at its pin (a0d6c790) does not yet read an explicitly delimited row of blank cells as a table row; carve-js (43dd6096) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet read an explicitly delimited row of blank cells as a table row; carve-js (43dd6096) does, and the pins of carve-php and carve-rs do not move until the release cut. It also lags table continuation lines (CARVE-P12-069), https://github.com/markup-carve/carve-rs/issues/2666.",
       "issue": "https://github.com/markup-carve/carve-rs/issues/2653",
-      "fingerprint": "568d074b3455d86784312c26ee92c44dc1dd3f531534194a3226abdff6dbaf45",
+      "fingerprint": "229ac3d7169eaf84ff20b3c65e08e1078c5be3234b19ea9e15e8fbc31d759f23",
       "observation": {
         "expected": "<p>| | |\n+ x | y |</p>",
-        "status": 0,
-        "actual": "<table>\n  <tbody>\n    <tr><td>x</td><td>y</td></tr>\n  </tbody>\n</table>"
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
       }
     },
     {
@@ -1952,24 +2634,26 @@
     },
     {
       "key": "tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-34.crv/js->php",
-      "reason": "carve-php at its pin (be7dd4e7) does not yet read an explicitly delimited row of blank cells as a table row; carve-js (43dd6096) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet read an explicitly delimited row of blank cells as a table row; carve-js (43dd6096) does, and the pins of carve-php and carve-rs do not move until the release cut. It also lags table continuation lines (CARVE-P12-069), https://github.com/markup-carve/carve-php/issues/3331.",
       "issue": "https://github.com/markup-carve/carve-php/issues/3319",
-      "fingerprint": "80c78ecd4dbb07e105c19be680161152145443b3b5c6e6183506493a6e94b065",
+      "fingerprint": "e2cdaba9be8b4ac443138410b0102962180ad4b170d8dee8fef6ccd9bcfbfa8f",
       "observation": {
         "expected": "<p>| |\n+ |\n| |</p>",
-        "status": 0,
-        "actual": "<table>\n  <tbody>\n    <tr><td></td></tr>\n    <tr><td></td></tr>\n  </tbody>\n</table>"
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].rows[0] carries `continuationLines`, which the schema does not name. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it.\n"
       }
     },
     {
       "key": "tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-34.crv/js->rust",
-      "reason": "carve-rs at its pin (a0d6c790) does not yet read an explicitly delimited row of blank cells as a table row; carve-js (43dd6096) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet read an explicitly delimited row of blank cells as a table row; carve-js (43dd6096) does, and the pins of carve-php and carve-rs do not move until the release cut. It also lags table continuation lines (CARVE-P12-069), https://github.com/markup-carve/carve-rs/issues/2666.",
       "issue": "https://github.com/markup-carve/carve-rs/issues/2653",
-      "fingerprint": "80c78ecd4dbb07e105c19be680161152145443b3b5c6e6183506493a6e94b065",
+      "fingerprint": "75f1f54647b0b06a296d4fd81ab2f942eaa259835067a2d2ab0d2c867d11d157",
       "observation": {
         "expected": "<p>| |\n+ |\n| |</p>",
-        "status": 0,
-        "actual": "<table>\n  <tbody>\n    <tr><td></td></tr>\n    <tr><td></td></tr>\n  </tbody>\n</table>"
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
       }
     },
     {
@@ -2171,25 +2855,51 @@
       }
     },
     {
+      "key": "tests/corpus/63-table-multi-line-cell-continuation.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "f69612aae67bb0c28bad735e3d2344ce1dec693c0f0ce9a148687e38d3d283dc",
+      "observation": {
+        "expected": "<table>\n  <thead>\n    <tr><th scope=\"col\">Feature</th><th scope=\"col\">Description</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>Complex</td><td>A long description that continues across lines.</td></tr>\n    <tr><td>Simple</td><td>Single line.</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].rows[1].cells[1].children[1].type is the string \"cell_wrap\", which the schema does not list. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
+      }
+    },
+    {
+      "key": "tests/corpus/63-table-multi-line-cell-continuation.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "4ce029feee5b2dede75b2e5ed622b3304869482d00b941d8ca318b6fbfc4411b",
+      "observation": {
+        "expected": "<table>\n  <thead>\n    <tr><th scope=\"col\">Feature</th><th scope=\"col\">Description</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>Complex</td><td>A long description that continues across lines.</td></tr>\n    <tr><td>Simple</td><td>Single line.</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].rows[1] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
       "key": "tests/corpus/64-table-rowspan-with-multi-line-content-2.crv/js->php",
-      "reason": "carve-php at its pin (be7dd4e7) does not yet join a continuation row after a `^` row into the spanning cell; carve-js (43dd6096) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet join a continuation row after a `^` row into the spanning cell; carve-js (43dd6096) does, and the pins of carve-php and carve-rs do not move until the release cut. It also lags table continuation lines (CARVE-P12-069), https://github.com/markup-carve/carve-php/issues/3331.",
       "issue": "https://github.com/markup-carve/carve-php/issues/3306",
-      "fingerprint": "162fd7c19386c07cc78cdd551520b532e358de0abc719e3917ce92ebf5e8f0d2",
+      "fingerprint": "72ac8e66601af795681c871b29c849bf5a8ffaa31bed38e2833b25e37321932a",
       "observation": {
         "expected": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n    <tr><td>^ more</td><td>c d</td></tr>\n  </tbody>\n</table>",
-        "status": 0,
-        "actual": "<table>\n  <tbody>\n    <tr><td rowspan=\"2\">a more</td><td>b</td></tr>\n    <tr><td>c d</td></tr>\n  </tbody>\n</table>"
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].rows[0].cells[0].children[1].type is the string \"cell_wrap\", which the schema does not list. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
       }
     },
     {
       "key": "tests/corpus/64-table-rowspan-with-multi-line-content-2.crv/js->rust",
-      "reason": "carve-rs at its pin (a0d6c790) does not yet join a continuation row after a `^` row into the spanning cell; carve-js (43dd6096) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet join a continuation row after a `^` row into the spanning cell; carve-js (43dd6096) does, and the pins of carve-php and carve-rs do not move until the release cut. It also lags table continuation lines (CARVE-P12-069), https://github.com/markup-carve/carve-rs/issues/2666.",
       "issue": "https://github.com/markup-carve/carve-rs/issues/2641",
-      "fingerprint": "252987b28290ea24a9ab8c27498599eacd9a783404da58a0d0d8c2ab5dff88fe",
+      "fingerprint": "8048772029812f6dbff44e1ac0c50d409e8e62e2b8e12f80de018efaa676990e",
       "observation": {
         "expected": "<table>\n  <tbody>\n    <tr><td rowspan=\"2\">a</td><td>b</td></tr>\n    <tr><td>c d</td></tr>\n  </tbody>\n</table>",
-        "status": 0,
-        "actual": "<table>\n  <tbody>\n    <tr><td rowspan=\"2\">a more</td><td>b</td></tr>\n    <tr><td>c d</td></tr>\n  </tbody>\n</table>"
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].rows[1] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
       }
     },
     {
@@ -2234,6 +2944,54 @@
         "expected": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n    <tr><td>^ more</td><td>c d</td></tr>\n  </tbody>\n</table>",
         "status": 0,
         "actual": "<table>\n  <tbody>\n    <tr><td rowspan=\"2\">a</td><td>b</td></tr>\n    <tr><td>c d</td></tr>\n  </tbody>\n</table>"
+      }
+    },
+    {
+      "key": "tests/corpus/64-table-rowspan-with-multi-line-content-3.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "96fe89c4639b1c16bf2cae54c57849e3271b6d80cb7f3469e20d165756db6d3d",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td rowspan=\"2\">a more</td><td>b d</td></tr>\n    <tr><td>c</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].rows[0].cells[0].children[1].type is the string \"cell_wrap\", which the schema does not list. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
+      }
+    },
+    {
+      "key": "tests/corpus/64-table-rowspan-with-multi-line-content-3.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "b1975d5103320935aa2ef40172b90310bb4058d3ea218b8bad4437bf8cff713c",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td rowspan=\"2\">a more</td><td>b d</td></tr>\n    <tr><td>c</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].rows[0] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/64-table-rowspan-with-multi-line-content.crv/js->php",
+      "reason": "carve-php at its pin (be7dd4e7) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/3331",
+      "fingerprint": "430df30fe951436c2334296ea2e863eafff150ea9777051ac3328c51037144b6",
+      "observation": {
+        "expected": "<table>\n  <thead>\n    <tr><th scope=\"col\">Category</th><th scope=\"col\">Item</th></tr>\n  </thead>\n  <tbody>\n    <tr><td rowspan=\"2\">Fresh Fruits from local farms</td><td>Apple</td></tr>\n    <tr><td>Banana</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "Error: The payload does not satisfy the AST schema: $.children[0].rows[1].cells[0].children[1].type is the string \"cell_wrap\", which the schema does not list. PART 12 §12(d) validates the whole payload against `resources/ast-schema.json` - types and required fields together - at decode, because a reader that supplies a default has silently repaired the payload and one that reads a wrong type has silently reinterpreted it. Application node types must be registered with MarkupCarve\\Carve\\Ast\\AstCodec::register().\n"
+      }
+    },
+    {
+      "key": "tests/corpus/64-table-rowspan-with-multi-line-content.crv/js->rust",
+      "reason": "carve-rs at its pin (a0d6c790) does not yet record table continuation lines as cell_wrap markers (CARVE-P12-069); carve-js (dc90931a) does, and the pins of carve-php and carve-rs do not move until the release cut.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2666",
+      "fingerprint": "29ec57f79a8c5d55d96d08d8103fea8138b1397d0e5a19253d67ccf891166e2b",
+      "observation": {
+        "expected": "<table>\n  <thead>\n    <tr><th scope=\"col\">Category</th><th scope=\"col\">Item</th></tr>\n  </thead>\n  <tbody>\n    <tr><td rowspan=\"2\">Fresh Fruits from local farms</td><td>Apple</td></tr>\n    <tr><td>Banana</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: table_row at children[0].rows[1] carries \"continuationLines\", which the schema does not name (PART 12 §11)\n"
       }
     }
   ]
