@@ -21,6 +21,16 @@ test('normalization matches the PHP measurement, including non-text strings', ()
   for (const type of ['comment_block', 'block_comment', 'inline_comment']) assert.deepEqual(normalize([{ type }]), [])
 })
 
+test('strict normalization keeps the carrier fields and drops only bookkeeping and rawRef', () => {
+  const node = { type: 'autolink', pos: {}, srcByteLength: 3, ref: 'r', rawRef: 'R', bulletChar: '*', marker: '*', delim: ')', separatorWidths: [3], tight: true, boldItalic: true, attrs: { order: ['id'] } }
+  assert.deepEqual(normalize(node, true), { type: 'autolink', ref: 'r', bulletChar: '*', marker: '*', delim: ')', separatorWidths: [3], tight: true })
+  assert.deepEqual(normalize([{ type: 'escaped_text', value: '*' }], true), [{ type: 'escaped_text', value: '*' }])
+  assert.deepEqual(normalize([{ type: 'text', value: 'a' }, { type: 'soft_break' }, { type: 'comment' }], true), [{ type: 'text', value: 'a ' }])
+  const before = { type: 'list', bulletChar: '*', children: [] }
+  assert.equal(firstDiff(normalize(before), normalize({ ...before, bulletChar: '-' })), null)
+  assert.equal(firstDiff(normalize(before, true), normalize({ ...before, bulletChar: '-' }, true)).kind, 'value list.bulletChar')
+})
+
 test('first difference follows reference traversal and sequence attribution', () => {
   assert.deepEqual(firstDiff({ type: 'text' }, { type: 'link' }), { path: '', kind: 'type doc>text => link' })
   assert.equal(firstDiff({ type: 'link', destination: 'a' }, { type: 'link' }).kind, 'lost link.destination')
@@ -42,23 +52,42 @@ test('buckets count each document once and keep the first three examples', () =>
   assert.equal(stats.errors, 1)
   assert.equal(stats.different, 5)
   assert.equal(stats.errorBuckets.Exception.count, 1)
+  assert.equal(stats.strict, 1)
   assert.equal(Object.keys(stats.buckets).some(kind => kind.startsWith('ERROR')), false)
   assert.equal(stats.buckets['value text.value'].count, 5)
   assert.deepEqual(stats.buckets['value text.value'].examples.map(e => e.file), ['0.crv', '1.crv', '2.crv'])
 })
 
+test('a strict difference stays identical and lands in its own bucket', () => {
+  const stats = { total: 0, identical: 0, errors: 0, buckets: {} }
+  record(stats, 'kept.crv', null)
+  record(stats, 'lost.crv', null, undefined, undefined, { path: '.bulletChar', kind: 'value list.bulletChar' })
+  assert.equal(stats.identical, 2)
+  assert.equal(stats.strict, 1)
+  assert.equal(stats.different, undefined)
+  assert.deepEqual(stats.buckets, {})
+  assert.deepEqual(stats.strictBuckets['value list.bulletChar'].examples.map(e => e.file), ['lost.crv'])
+})
+
 test('baseline has a count for every engine and target', () => {
   const baseline = JSON.parse(readFileSync(new URL('../resources/roundtrip-structure-baseline.json', import.meta.url)))
   assert.equal(validateBaseline(baseline), baseline)
-  assert.throws(() => validateBaseline({ version: 1, engines: {} }), /Invalid baseline/)
+  assert.throws(() => validateBaseline({ version: 2, engines: {} }), /Invalid baseline/)
+  assert.throws(() => validateBaseline({ ...baseline, version: 1 }), /Unsupported baseline version/)
   const invalid = structuredClone(baseline)
   invalid.engines.php.md.identical = invalid.engines.php.md.total + 1
   assert.throws(() => validateBaseline(invalid), /Invalid baseline/)
+  const strictAboveIdentical = structuredClone(baseline)
+  strictAboveIdentical.engines.js.html.strict = strictAboveIdentical.engines.js.html.identical + 1
+  assert.throws(() => validateBaseline(strictAboveIdentical), /Invalid baseline js\/html/)
+  const missingStrict = structuredClone(baseline)
+  delete missingStrict.engines.rs.md.strict
+  assert.throws(() => validateBaseline(missingStrict), /Invalid baseline rs\/md/)
 })
 
 test('baseline gate rejects regressions and skips, and requests a raise for improvements', () => {
-  const baseline = { engines: { js: { html: { identical: 5, total: 10 } } } }
-  const row = { engine: 'js', target: 'html', status: 'measured', identical: 5, total: 10 }
+  const baseline = { engines: { js: { html: { identical: 5, strict: 3, total: 10 } } } }
+  const row = { engine: 'js', target: 'html', status: 'measured', identical: 5, strict: 3, total: 10 }
   assert.deepEqual(checkCounts([row], baseline), { failed: false, notices: [] })
   assert.equal(checkCounts([{ ...row, identical: 4 }], baseline).failed, true)
   const improvement = checkCounts([{ ...row, identical: 6 }], baseline)
@@ -66,6 +95,12 @@ test('baseline gate rejects regressions and skips, and requests a raise for impr
   assert.match(improvement.notices[0], /raise the baseline/)
   assert.equal(checkCounts([{ ...row, status: 'skipped' }], baseline).failed, true)
   assert.equal(checkCounts([{ ...row, total: 11 }], baseline).failed, true)
+  const strictLoss = checkCounts([{ ...row, strict: 2 }], baseline)
+  assert.equal(strictLoss.failed, true)
+  assert.match(strictLoss.notices[0], /strict regression 2 < 3/)
+  const strictGain = checkCounts([{ ...row, strict: 4 }], baseline)
+  assert.equal(strictGain.failed, false)
+  assert.match(strictGain.notices[0], /raise the strict baseline 3 -> 4/)
 })
 
 test('JS roundtrips use the importer source value and the PART 12 export', async () => {
@@ -76,7 +111,7 @@ test('JS roundtrips use the importer source value and the PART 12 export', async
   }
 })
 
-const measurement = () => ({ engine: 'php', target: 'md', status: 'measured', total: 0, identical: 0, different: 0, errors: 0, buckets: {}, errorBuckets: {} })
+const measurement = () => ({ engine: 'php', target: 'md', status: 'measured', total: 0, identical: 0, strict: 0, different: 0, errors: 0, buckets: {}, errorBuckets: {}, strictBuckets: {} })
 
 test('every document error is unsupported and has a null baseline', () => {
   const row = measurement()
@@ -89,7 +124,7 @@ test('every document error is unsupported and has a null baseline', () => {
   assert.deepEqual(row.buckets, {})
   assert.equal(row.errorBuckets.Error.count, 2)
   assert.equal(baselineCounts([row]).engines.php.md, null)
-  const previous = { engines: { php: { md: { identical: 0, total: 2 } } } }
+  const previous = { engines: { php: { md: { identical: 0, strict: 0, total: 2 } } } }
   assert.equal(checkCounts([row], previous).failed, true)
   assert.equal(checkCounts([row], { engines: { php: { md: null } } }).failed, false)
 })
@@ -104,7 +139,7 @@ test('partial errors stay measured and separate from different trees', () => {
   assert.equal(row.total, row.identical + row.different + row.errors)
   assert.equal(row.errors, 1)
   assert.equal(row.different, 1)
-  assert.deepEqual(baselineCounts([row]).engines.php.md, { identical: 1, total: 3 })
+  assert.deepEqual(baselineCounts([row]).engines.php.md, { identical: 1, strict: 1, total: 3 })
 })
 
 test('explicit null baseline is valid but missing entries are invalid', () => {

@@ -1,12 +1,14 @@
 const cosmetic = new Set(['pos', 'position', 'srcByteLength', 'bulletChar', 'marker', 'delim', 'ref', 'rawRef', 'separatorWidths', 'tight', 'boldItalic', 'order'])
+// Strict keeps what PART 10 §13 carries; rawRef stays out because §13 does not recover a reference's form.
+const strictCosmetic = new Set(['pos', 'position', 'srcByteLength', 'rawRef', 'boldItalic', 'order'])
 // PCRE's Unicode \s includes NEL but excludes JavaScript's BOM whitespace.
 const collapse = value => value.replace(/[\p{Z}\t\n\v\f\r\u0085]+/gu, ' ')
-export function normalize(value) {
+export function normalize(value, strict = false) {
   if (typeof value === 'string') return collapse(value)
   if (!value || typeof value !== 'object') return value
   if (Array.isArray(value)) {
     const merged = []
-    for (let node of value.map(normalize)) {
+    for (let node of value.map(item => normalize(item, strict))) {
       if (['comment', 'comment_block', 'block_comment', 'inline_comment'].includes(node?.type)) continue
       if (node?.type === 'soft_break') node = { type: 'text', value: ' ' }
       const last = merged.at(-1)
@@ -15,12 +17,13 @@ export function normalize(value) {
     }
     return merged
   }
-  if (value.type === 'escaped_text') value = { type: 'text', value: value.value ?? '' }
+  if (!strict && value.type === 'escaped_text') value = { type: 'text', value: value.value ?? '' }
+  const dropped = strict ? strictCosmetic : cosmetic
   const out = {}
   for (const [key, item] of Object.entries(value)) {
-    if (cosmetic.has(key)) continue
+    if (dropped.has(key)) continue
     if (key === 'attrs' && item && typeof item === 'object' && Object.keys(item).every(k => k === 'order')) continue
-    out[key] = normalize(key === 'type' && item === 'autolink' ? 'link' : item)
+    out[key] = normalize(!strict && key === 'type' && item === 'autolink' ? 'link' : item, strict)
   }
   // PHP decodes empty JSON objects as empty arrays.
   return Object.keys(out).length ? out : []
@@ -52,9 +55,18 @@ export function firstDiff(a, b, path = '', context = 'doc') {
   }
   return a === b ? null : { path, kind: `value ${context}` }
 }
-export function record(stats, file, diff, error, message) {
+export function record(stats, file, diff, error, message, strictDiff = null) {
   stats.total++
-  if (!diff && !error) { stats.identical++; return }
+  if (!diff && !error) {
+    stats.identical++
+    if (!strictDiff) { stats.strict = (stats.strict ?? 0) + 1; return }
+    const bucket = (stats.strictBuckets ??= {})[strictDiff.kind] ??= { count: 0, examples: [] }
+    bucket.count++
+    bucket.examples.push({ file, ...strictDiff })
+    bucket.examples.sort((a, b) => a.file < b.file ? -1 : a.file > b.file ? 1 : 0)
+    bucket.examples.length = Math.min(bucket.examples.length, 3)
+    return
+  }
   if (error) stats.errors++
   else stats.different = (stats.different ?? 0) + 1
   const kind = error ? error : diff.kind
@@ -66,11 +78,11 @@ export function record(stats, file, diff, error, message) {
   bucket.examples.length = Math.min(bucket.examples.length, 3)
 }
 export function validateBaseline(value) {
-  if (value?.version !== 1) throw new Error('Unsupported baseline version')
+  if (value?.version !== 2) throw new Error('Unsupported baseline version')
   for (const engine of ['js', 'php', 'rs']) for (const target of ['html', 'md']) {
     const row = value.engines?.[engine]?.[target]
     if (row === null) continue
-    if (!row || !Number.isInteger(row.identical) || !Number.isInteger(row.total) || row.identical < 0 || row.total < row.identical) throw new Error(`Invalid baseline ${engine}/${target}`)
+    if (!row || ![row.identical, row.strict, row.total].every(Number.isInteger) || row.strict < 0 || row.identical < row.strict || row.total < row.identical) throw new Error(`Invalid baseline ${engine}/${target}`)
   }
   return value
 }
@@ -91,6 +103,8 @@ export function checkCounts(rows, baseline) {
     if (row.total !== previous.total) { failed = true; notices.push(`${name}: corpus total changed (${previous.total} -> ${row.total}); review and rewrite baseline`) }
     if (row.identical < previous.identical) { failed = true; notices.push(`${name}: regression ${row.identical} < ${previous.identical}`) }
     if (row.identical > previous.identical) notices.push(`${name}: raise the baseline ${previous.identical} -> ${row.identical}`)
+    if (row.strict < previous.strict) { failed = true; notices.push(`${name}: strict regression ${row.strict} < ${previous.strict}`) }
+    if (row.strict > previous.strict) notices.push(`${name}: raise the strict baseline ${previous.strict} -> ${row.strict}`)
   }
   return { failed, notices }
 }
@@ -107,6 +121,8 @@ export function finishMeasurement(row) {
   const sort = buckets => Object.fromEntries(Object.entries(buckets).sort((a, b) => b[1].count - a[1].count || a[0].localeCompare(b[0])))
   row.buckets = sort(row.buckets)
   row.errorBuckets = sort(row.errorBuckets ?? {})
+  row.strictBuckets = sort(row.strictBuckets ?? {})
+  row.strict ??= 0
   if (row.status === 'measured' && row.total > 0 && row.errors === row.total) {
     row.status = 'unsupported'
     const [kind, bucket] = Object.entries(row.errorBuckets)[0]
@@ -120,7 +136,7 @@ export function baselineCounts(rows) {
   for (const row of rows) {
     if (row.status === 'skipped') throw new Error(`${row.engine}/${row.target}: skipped, cannot write baseline`)
     const targets = engines[row.engine] ??= {}
-    targets[row.target] = row.status === 'unsupported' ? null : { identical: row.identical, total: row.total }
+    targets[row.target] = row.status === 'unsupported' ? null : { identical: row.identical, strict: row.strict, total: row.total }
   }
-  return { version: 1, engines }
+  return { version: 2, engines }
 }

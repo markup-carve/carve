@@ -712,9 +712,19 @@ Normalization matches the PHP structural measurement: remove `pos`, `position`,
 whitespace in every string, including code and destinations. These exclusions
 make this a structural comparison with reduced whitespace fidelity.
 
+The structural count cannot see a lost carrier, because it removes the fields
+the PART 10 §13 carriers restore. A second, strict count covers them. Among
+the identical documents it counts those whose trees still match with
+`bulletChar`, `marker`, `delim`, `ref`, `separatorWidths` and `tight` kept,
+and with `autolink` and `escaped_text` left as their own node types. It still
+removes `pos`, `position`, `srcByteLength`, `boldItalic` and `order`, and
+`rawRef`, because §13 does not recover whether a reference was written in
+collapsed or full form. Whitespace and comments are normalized as above.
+Strict differences are reported as `strictBuckets`, separate from `buckets`.
+
 CI runs `npm run roundtrip:structure -- --check` against the pinned engines.
-Counts below `resources/roundtrip-structure-baseline.json` fail; improvements
-print a “raise the baseline” message. A changed corpus size requires review
+Identical or strict counts below `resources/roundtrip-structure-baseline.json`
+fail; improvements print a “raise the baseline” message. A changed corpus size requires review
 and a rewritten baseline. A selected engine that is skipped cannot pass the
 check. When every document errors for an engine and target, its status is
 `unsupported` and its error is reported. The baseline stores that row as
@@ -727,15 +737,15 @@ To refresh the baseline, provision all engines at
 `npm run roundtrip:structure -- --write`. Commit the reviewed baseline with
 the corresponding engine pin or corpus change. Subset runs cannot rewrite it.
 
-The baseline was measured at carve-js `d122cc01`, carve-php `722f2153`, and
-carve-rs `286cc76d`, across 2,322 documents per target. All six rows are
+The baseline was measured at carve-js `672d0a0a`, carve-php `29e42817`, and
+carve-rs `ee85c4ca`, across 2,401 documents per target. All six rows are
 measurements; no row is unsupported.
 
-| Engine | HTML identical | Markdown identical | HTML errors | Markdown errors |
-| --- | ---: | ---: | ---: | ---: |
-| JS | 1,634 | 1,357 | 1 | 0 |
-| PHP | 1,685 | 1,350 | 1 | 0 |
-| Rust | 1,620 | 1,411 | 1 | 0 |
+| Engine | HTML identical | HTML strict | Markdown identical | Markdown strict | HTML errors | Markdown errors |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| JS | 1,712 | 1,654 | 1,462 | 1,109 | 1 | 0 |
+| PHP | 1,745 | 1,684 | 1,389 | 1,027 | 1 | 0 |
+| Rust | 1,677 | 1,616 | 1,461 | 1,261 | 1 | 0 |
 
 On the measurement host, Rust took 45.9 seconds with four CLI workers and
 1.1 seconds with sixteen batch workers at the same pin and corpus. The full

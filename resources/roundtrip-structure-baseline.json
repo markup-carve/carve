@@ -1,33 +1,39 @@
 {
-  "version": 1,
+  "version": 2,
   "engines": {
     "js": {
       "html": {
         "identical": 1712,
+        "strict": 1654,
         "total": 2401
       },
       "md": {
         "identical": 1462,
+        "strict": 1109,
         "total": 2401
       }
     },
     "php": {
       "html": {
         "identical": 1745,
+        "strict": 1684,
         "total": 2401
       },
       "md": {
         "identical": 1389,
+        "strict": 1027,
         "total": 2401
       }
     },
     "rs": {
       "html": {
         "identical": 1677,
+        "strict": 1616,
         "total": 2401
       },
       "md": {
         "identical": 1461,
+        "strict": 1261,
         "total": 2401
       }
     }

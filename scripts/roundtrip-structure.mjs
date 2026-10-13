@@ -7,7 +7,8 @@
  * escaped_text becomes text. Soft breaks become spaces, adjacent text merges,
  * and Unicode whitespace collapses in every string, including code and URLs.
  * Keep the first difference per document and at most three examples per bucket.
- * --check gates identical counts against resources/roundtrip-structure-baseline.json.
+ * A strict count keeps the PART 10 §13 carrier fields among the identical trees.
+ * --check gates identical and strict counts against resources/roundtrip-structure-baseline.json.
  * Inspect improvements, then --write with all pinned engines to raise the baseline.
  * Missing engines are skipped; --check and --write fail if a selected engine is missing.
  */
@@ -103,9 +104,13 @@ async function main() {
       if (!binary || !existsSync(binary)) unavailable = 'Rust binary missing'
       else try { await run(binary, driver ? [] : ['--version'], driver ? JSON.stringify({ files: [], targets: [] }) : '') } catch (error) { unavailable = error.message }
     }
-    const rows = Object.fromEntries(opt.targets.map(target => [target, { engine, target, status: unavailable ? 'skipped' : 'measured', ...(unavailable ? { reason: unavailable } : {}), total: 0, identical: 0, different: 0, errors: 0, buckets: {}, errorBuckets: {} }]))
+    const rows = Object.fromEntries(opt.targets.map(target => [target, { engine, target, status: unavailable ? 'skipped' : 'measured', ...(unavailable ? { reason: unavailable } : {}), total: 0, identical: 0, strict: 0, different: 0, errors: 0, buckets: {}, errorBuckets: {}, strictBuckets: {} }]))
     const tick = performance.now()
-    const consume = row => record(rows[row.target], row.file, row.error ? null : firstDiff(normalize(row.before), normalize(row.after)), row.error, row.message)
+    const consume = row => {
+      const diff = row.error ? null : firstDiff(normalize(row.before), normalize(row.after))
+      const strictDiff = row.error || diff ? null : firstDiff(normalize(row.before, true), normalize(row.after, true))
+      record(rows[row.target], row.file, diff, row.error, row.message, strictDiff)
+    }
     if (!unavailable && engine === 'php') {
       await streamRows('php', [resolve(root, 'scripts/roundtrip-structure.php'), phpDir()], { files, targets: opt.targets }, consume)
     } else if (!unavailable && driver) {
@@ -162,11 +167,12 @@ async function main() {
   report.seconds = +((performance.now() - started) / 1000).toFixed(3)
   if (opt.json) console.log(JSON.stringify(report, null, 2))
   else {
-    console.log('Engine  Target  Identical / total  Different  Errors  Status')
+    console.log('Engine  Target  Identical / total  Strict  Different  Errors  Status')
     for (const row of report.results) {
-      console.log(`${row.engine.padEnd(8)}${row.target.padEnd(8)}${`${row.identical} / ${row.total}`.padEnd(19)}${String(row.different).padEnd(11)}${String(row.errors).padEnd(8)}${row.status}${row.reason ? ': ' + row.reason : ''}`)
+      console.log(`${row.engine.padEnd(8)}${row.target.padEnd(8)}${`${row.identical} / ${row.total}`.padEnd(19)}${String(row.strict).padEnd(8)}${String(row.different).padEnd(11)}${String(row.errors).padEnd(8)}${row.status}${row.reason ? ': ' + row.reason : ''}`)
       for (const [kind, bucket] of Object.entries(row.errorBuckets)) console.log(`  ${bucket.count} ERROR ${kind}: ${bucket.examples.map(e => `${e.file}: ${e.message ?? kind}`).join(', ')}`)
       for (const [kind, bucket] of Object.entries(row.buckets).slice(0, 10)) console.log(`  ${bucket.count} ${kind}: ${bucket.examples.map(e => e.file).join(', ')}`)
+      for (const [kind, bucket] of Object.entries(row.strictBuckets).slice(0, 5)) console.log(`  ${bucket.count} STRICT ${kind}: ${bucket.examples.map(e => e.file).join(', ')}`)
     }
     for (const notice of report.notices) console.log(notice)
     console.log(`Runtime: ${report.seconds}s`)
