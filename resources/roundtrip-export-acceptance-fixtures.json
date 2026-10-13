@@ -1077,8 +1077,7 @@
           "element": "div"
         }
       ],
-      "exportedHtml": "<div data-carve-div>\n  <p>inside</p>\n</div>",
-      "aheadOfPin": true
+      "exportedHtml": "<div data-carve-div>\n  <p>inside</p>\n</div>"
     },
     {
       "id": "line-block-carrier",
@@ -1106,8 +1105,7 @@
       "returnedSourceFragments": [
         "::: |"
       ],
-      "exportedHtml": "<div data-carve-line-block class=\"line-block\">\n  <p>first<br>\nsecond</p>\n</div>",
-      "aheadOfPin": true
+      "exportedHtml": "<div data-carve-line-block class=\"line-block\">\n  <p>first<br>\nsecond</p>\n</div>"
     },
     {
       "id": "line-block-admonition-writes-no-carrier",
@@ -1159,8 +1157,7 @@
       "returnedSourceFragments": [
         "{~old~>new~}"
       ],
-      "exportedHtml": "<p>a <span data-carve-substitution><del>old</del><ins>new</ins></span> b</p>",
-      "aheadOfPin": true
+      "exportedHtml": "<p>a <span data-carve-substitution><del>old</del><ins>new</ins></span> b</p>"
     }
   ],
   "importNegative": [
@@ -2305,7 +2302,6 @@
     },
     {
       "id": "bare-div",
-      "aheadOfPin": true,
       "source": ":::\ninside\n:::\n",
       "carrierFragments": [
         "<!-- carve: ::: -->\ninside"
@@ -2318,7 +2314,6 @@
     },
     {
       "id": "definition-list-wrapped-term",
-      "aheadOfPin": true,
       "source": ":: A term that\nwraps onto the next line\n: its definition\n",
       "carrierFragments": [
         "<!-- carve: :: A term that\nwraps onto the next line -->"
@@ -2331,7 +2326,6 @@
     },
     {
       "id": "reference-link-full",
-      "aheadOfPin": true,
       "source": "[a][r]\n\n[r]: /u\n",
       "carrierFragments": [
         "[a][r]",
@@ -2350,7 +2344,6 @@
     },
     {
       "id": "reference-link-collapsed",
-      "aheadOfPin": true,
       "source": "[r][]\n\n[r]: /u\n",
       "carrierFragments": [
         "[r][]",
@@ -2401,7 +2394,6 @@
     },
     {
       "id": "markdown-abbreviation-definition",
-      "aheadOfPin": true,
       "source": "*[HTML]: Hyper Text\n\nHTML here\n",
       "carrierFragments": [
         "*[HTML]: Hyper Text"

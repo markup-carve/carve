@@ -66,7 +66,9 @@ const FORMATS = {
     convert: (source) => markdownToCarve(source),
     // GFM is the dialect carve#1130 ruled the contract on, and cmark-gfm is
     // the reader the importers follow where Markdown parsers disagree.
-    oracle: cmarkGfmToHtml,
+    // CARVE-P11-033 T1: the import reads a `*[TERM]: expansion` line as an
+    // abbreviation definition, which cmark-gfm does not know, so it says no text.
+    oracle: (source) => cmarkGfmToHtml(source.replace(/^\*\[[^\]\n]+\]:[^\n]*\n?/gm, '')),
   },
   html: {
     // The importer returns a document plus a diagnostic report; the corpus
