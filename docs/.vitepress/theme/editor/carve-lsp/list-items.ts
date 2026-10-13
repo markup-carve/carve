@@ -1,3 +1,5 @@
+// Copied with format.ts and position.ts from markup-carve/carve-lsp src/ at 8f56a9e for the
+// playground editor. Local change: listDelim (markup-carve/carve-lsp#510). Re-copy, don't edit.
 import { parse, type Position } from '@markup-carve/carve'
 import { codepointColumnToUtf16, sourceLines } from './position.js'
 
