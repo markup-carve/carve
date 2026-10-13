@@ -32,7 +32,7 @@ test('a declared example the pinned build has caught up on fails, and demands th
   const finding = tier3Verdict({ section: CodeGroup, rendered: spec, expected: spec, entry })
   assert.notEqual(finding, null, 'an entry the pin reproduces must not pass - that is how a ledger empties')
   assert.match(finding, /reproduces this example now/)
-  assert.match(finding, /Delete the entry in the commit that moves the pin/)
+  assert.match(finding, /Drop the flag: delete the entry in the commit that moves the pin/)
   // The reason travels with the finding: whoever deletes the entry is the one
   // who has to know which ruling it claimed, and re-reading the source for it
   // is exactly the step the optional corpus lost track of once already.

@@ -18,6 +18,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { basename, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { expectedFileFor, targetOf } from '../scripts/lib/corpus-targets.mjs'
+import { tier3Verdict } from '../scripts/lib/tier3-ledger.mjs'
 import { miscount, shortfall } from '../scripts/spec/participants.mjs'
 import * as lib from '@markup-carve/carve'
 import {
@@ -178,6 +179,8 @@ const DECLARED_UNIMPLEMENTED = {
  *
  * An entry is deleted in the commit that moves the pin past it; the check below
  * fails an entry whose case already matches, so a stale one cannot sit here.
+ * Each entry is `{ reason, pinned: [[fixtureFragment, pinnedFragment], ...] }`, the same shape as
+ * the Tier-3 ledger: any output other than the declared substitution fails.
  */
 const AHEAD_OF_PIN = {
 }
@@ -285,11 +288,15 @@ for (const entry of manifest.cases) {
     test(`${slug} (${entry.feature}, ${targetName}) - ahead of the pinned build`, () => {
       const source = readFileSync(crvPath, 'utf8')
       const expected = readFileSync(expectedPath, 'utf8')
+      const rendered = runner(source, target.render).trim()
       assert.notEqual(
-        runner(source, target.render).trim(),
+        rendered,
         expected.trim(),
-        `${slug}: the pinned build reproduces this now - delete its AHEAD_OF_PIN entry (${ahead})`,
+        `${slug}: the pinned build reproduces this now - delete its AHEAD_OF_PIN entry, drop the flag (${ahead.reason})`,
       )
+      // The entry spells the pinned output as substitutions on the fixture, so the rest stays an exact comparison.
+      const finding = tier3Verdict({ section: slug, rendered, expected: expected.trim(), entry: ahead })
+      assert.equal(finding, null, finding ?? '')
     })
     continue
   }

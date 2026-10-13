@@ -115,7 +115,7 @@ export function tier3Verdict({ section, rendered, expected, entry }) {
   if (rendered === expected) {
     return (
       `${section}: the pinned build reproduces this example now, so its AHEAD_OF_PIN ` +
-      `entry is a statement about an engine that has caught up. Delete the entry in ` +
+      `entry is a statement about an engine that has caught up. Drop the flag: delete the entry in ` +
       `the commit that moves the pin.\n` +
       `  declared: ${entry.reason}`
     )
