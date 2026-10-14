@@ -288,6 +288,22 @@
           ]
         ]
       }
+    },
+    {
+      "file": "tests/corpus/64-table-rowspan-with-multi-line-content-2.crv",
+      "reason": "carve-js (05faee2c) reports djot-plus-bullet on the + continuation row; carve-php (be7dd4e7) and carve-rs (a0d6c790) report nothing, which is correct (carve-js#3017).",
+      "issue": "https://github.com/markup-carve/carve-js/issues/3017",
+      "diagnostics": {
+        "js": [
+          [
+            "djot-plus-bullet",
+            3,
+            1
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
     }
   ]
 }
