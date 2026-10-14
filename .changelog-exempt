@@ -101,4 +101,6 @@
 3178: 0.1.9 - release-cut engine pins and re-measured ledgers. Pin bump.
 3179: 0.1.9 - moves the engine pins to each engine main for the release cut. Pin bump.
 3181: 0.1.9 - engine pin bump. Same ledger class as carve#2637.
-3186: 0.1.9 - declares the carve-php and carve-rs drift on the blocked span marker lint; the rule itself is cited under carve#3185. Measurement ledger.
+3185: 0.1.9 - moves the engine pins to each engine main for the release cut and documents the lint rule the carve-js pin brings, which the section cites under carve#3183. Pin bump.
+3186: 0.1.9 - declares the carve-php and carve-rs drift on the blocked span marker lint; the rule itself is cited under carve#3183. Measurement ledger.
+3187: 0.1.9 - final release-cut engine pins; drops the lint declarations carve#3186 added once all three engines emit the rule. Pin bump.
