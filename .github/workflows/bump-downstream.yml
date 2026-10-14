@@ -73,7 +73,7 @@ jobs:
           - repo: markup-carve/carve-rs
             submodule: tests/spec
             lang: rust
-            test: cargo test --test suite corpus::
+            test: 'cargo test --test suite corpus::'
             allowlist: the `IMPLEMENTED` slice in `tests/corpus.rs` (compiled into the `suite` target)
           # The grammar satellites. They do not render, so "conformance" for
           # them is their coverage matrix: a new corpus category has to be
