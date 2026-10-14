@@ -38,6 +38,15 @@ runs:
         path: node_modules
         key: node-modules-${{ runner.os }}-${{ runner.arch }}-node${{ steps.node.outputs.major }}-${{ hashFiles('package-lock.json') }}-${{ steps.node.outputs.manifest }}
 
+    # On a miss, npm's own download cache still spares most of a cold install,
+    # which took about 150s without it.
+    - if: steps.modules.outputs.cache-hit != 'true'
+      uses: actions/cache@v4
+      with:
+        path: ~/.npm
+        key: npm-download-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+        restore-keys: npm-download-${{ runner.os }}-
+
     - if: steps.modules.outputs.cache-hit != 'true'
       shell: bash
       run: npm ci
