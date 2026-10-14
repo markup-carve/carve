@@ -215,7 +215,8 @@
    8k. THE MARKDOWN TARGET KEEPS AN AUTOLINK'S ANGLE SPELLING -- NORMATIVE
       [CARVE-P11-069]. For this rule, `body` is the node's `text` after the
       target strips controls. An `autolink` node MUST use `<body>` exactly when
-      its attributes contain no `title` and one of these forms applies:
+      it is not inside a link label (CARVE-P12-007), its attributes contain
+      no `title`, and one of these forms applies:
 
       - A URI body starts with an ASCII letter, then one to 31 ASCII letters,
         digits, `+`, `.` or `-`, then `:` and content with no Unicode
@@ -227,7 +228,7 @@
         `href` is `mailto:` followed by the body, and the emitted destination
         equals `href`.
 
-      For the URI comparison, the target's destination step strips controls,
+      For both comparisons, the target's destination step strips controls,
       blanks denied schemes, percent-encodes spaces, `(`, `)`, `<`, `>` and
       `|`, and neutralizes character references. It leaves other non-ASCII
       characters unchanged. A changed destination or an ineligible body uses

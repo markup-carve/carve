@@ -997,6 +997,18 @@
     "markdown": "<user@example.com>\n"
   },
   {
+    "name": "autolink-title-falls-back",
+    "rule": "CARVE-P11-069",
+    "carve": "<https://x>{title=\"t\"}\n",
+    "markdown": "[https://x](https://x \"t\")\n"
+  },
+  {
+    "name": "nested-autolink-flattens-in-link-label",
+    "rule": "CARVE-P11-069",
+    "carve": "[see <https://x.io>](/u)\n",
+    "markdown": "[see https://x.io](/u)\n"
+  },
+  {
     "name": "autolink-encoded-destination-fallback",
     "rule": "CARVE-P11-069",
     "carve": "<https://example.com/a(b)>\n",
