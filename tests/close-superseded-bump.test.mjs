@@ -54,10 +54,14 @@ esac
   assert.match(await readFile(log, 'utf8'), /pr close 7 .*--delete-branch/)
 })
 
-test('the workflow schedules cleanup without scheduling the full bump', async () => {
+test('the scheduled run cleans up first and then bumps, and a push does not trigger it', async () => {
   const workflow = await readFile(resolve(repo, '.github/workflows/bump-downstream.yml'), 'utf8')
-  assert.match(workflow, /schedule:\n(?:.|\n)*cron: '17 \*\/6 \* \* \*'/)
-  assert.match(workflow, /bump:\n    if: github\.event_name != 'schedule'/)
+  const triggers = workflow.slice(workflow.indexOf('\non:\n'), workflow.indexOf('\nconcurrency:'))
+  assert.match(triggers, /schedule:\n(?:.|\n)*cron: '17 \*\/6 \* \* \*'/)
+  assert.match(triggers, /^ {2}workflow_dispatch:/m)
+  assert.doesNotMatch(triggers, /^ {2}push:/m,
+    'a push trigger re-bumps every downstream repo on each corpus merge')
+  assert.match(workflow, /bump:\n(?: {4}#.*\n)* {4}needs: close-superseded-drafts\n {4}if: \$\{\{ !cancelled\(\) \}\}/)
   assert.match(workflow, /close-superseded-drafts:\n    if: github\.event_name == 'schedule'/)
 
   const beforeCleanup = workflow.slice(0, workflow.indexOf('  close-superseded-drafts:'))

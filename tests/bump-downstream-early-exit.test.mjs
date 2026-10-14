@@ -179,7 +179,7 @@ function buildDownstream(root, carve, { humanCommit, branchAfterBump = false, bo
 }
 
 /** A `gh` that answers only what this path asks, and logs every call. */
-function writeGhStub(dir, { downstreamBare, log, prState }) {
+function writeGhStub(dir, { downstreamBare, log, prState, branchPin = '', behindBy = '0' }) {
   mkdirSync(dir, { recursive: true })
   const stub = join(dir, 'gh')
   writeFileSync(
@@ -198,8 +198,17 @@ case "$1 $2" in
 esac
 if [ "$1" = "api" ]; then
   case "$2" in
+    */contents/*)
+      # The gitlink the open bump branch pins.
+      [ -n ${JSON.stringify(branchPin)} ] || exit 1
+      printf '%s\\n' ${JSON.stringify(branchPin)}
+      exit 0
+      ;;
     */compare/*)
       case "$*" in
+        *behind_by*)
+          printf '%s\\n' ${JSON.stringify(behindBy)}
+          ;;
         # ".files[].filename" -> what the branch changes. Computed by real git
         # against the fixture, three-dot like the API's own compare.
         *files*)
@@ -503,4 +512,141 @@ test('the Pygments lexer is covered by both downstream matrices', () => {
   )
   assert.ok(staleRow, 'pygments-carve is absent from the stale-draft matrix')
   assert.match(staleRow.groups.body, /submodule: spec/)
+})
+
+/*
+ * The relevance gate. The workflow runs on a schedule, and carve main moves for
+ * reasons no downstream repo consumes. A run whose diff touches none of
+ * BUMP_PATHS since the pin already under review must not push: each push
+ * re-runs that repo's CI on a draft that is usually red anyway.
+ *
+ * carve: BASE, then CORPUS (changes tests/corpus), then DOCS (changes only a
+ * file outside BUMP_PATHS). The workflow always targets DOCS, carve main.
+ */
+function buildGateCarve(root) {
+  const work = join(root, 'carve-work')
+  mkdirSync(join(work, 'tests/corpus'), { recursive: true })
+  git(work, 'init', '-q', '-b', 'main')
+  writeFileSync(join(work, 'tests/corpus/case.txt'), 'base\n')
+  writeFileSync(join(work, 'README.md'), 'readme\n')
+  git(work, 'add', '-A')
+  git(work, 'commit', '-q', '-m', 'base')
+  const BASE = git(work, 'rev-parse', 'HEAD').trim()
+  writeFileSync(join(work, 'tests/corpus/case.txt'), 'corpus moved\n')
+  git(work, 'commit', '-q', '-am', 'corpus')
+  const CORPUS = git(work, 'rev-parse', 'HEAD').trim()
+  writeFileSync(join(work, 'README.md'), 'readme moved\n')
+  git(work, 'commit', '-q', '-am', 'docs only')
+  const bare = join(root, 'carve.git')
+  git(root, 'clone', '-q', '--bare', work, bare)
+  return { bare, BASE, CORPUS }
+}
+
+/** Downstream main pins `mainPin`; with `branchPin`, a bot-only bump branch pins that. */
+function buildGateDownstream(root, carve, { mainPin, branchPin }) {
+  const work = join(root, 'down-work')
+  mkdirSync(work, { recursive: true })
+  git(work, 'init', '-q', '-b', 'main')
+  writeFileSync(join(work, 'README.md'), 'downstream\n')
+  git(work, 'add', '-A')
+  git(work, 'commit', '-q', '-m', 'init')
+  git(work, '-c', 'protocol.file.allow=always', 'submodule', 'add', '-q', `file://${carve.bare}`, 'spec')
+  git(work, '-C', 'spec', 'checkout', '-q', mainPin)
+  git(work, 'add', '-A')
+  git(work, 'commit', '-q', '-m', 'pin spec')
+  if (branchPin) {
+    git(work, 'checkout', '-q', '-b', 'automation/bump-spec')
+    git(work, '-C', 'spec', 'checkout', '-q', branchPin)
+    git(work, 'add', '-A')
+    git(work, 'commit', '-q', '-m', 'chore: bump')
+    git(work, 'checkout', '-q', 'main')
+  }
+  const bare = join(root, 'downstream.git')
+  git(root, 'clone', '-q', '--bare', work, bare)
+  git(bare, 'symbolic-ref', 'HEAD', 'refs/heads/main')
+  return bare
+}
+
+function runGateScenario({ mainPin, branchPin, behindBy = '0' }) {
+  const root = mkdtempSync(join(fixtureRoot(), 'carve-bump-gate-'))
+  const carve = buildGateCarve(root)
+  const pick = (name) => (name ? carve[name] : '')
+  const downstreamBare = buildGateDownstream(root, carve, { mainPin: pick(mainPin), branchPin: pick(branchPin) })
+
+  const binDir = join(root, 'bin')
+  const log = join(root, 'gh.log')
+  const prState = join(root, 'pr-open.txt')
+  writeFileSync(log, '')
+  writeFileSync(prState, branchPin ? '9\n' : '')
+  writeGhStub(binDir, { downstreamBare, log, prState, branchPin: pick(branchPin), behindBy })
+  writeFileSync(join(binDir, 'compare.txt'), `${BOT_EMAIL}|${BOT_EMAIL}\n`)
+
+  const scriptPath = join(root, 'bump.sh')
+  writeFileSync(scriptPath, extractBumpScript())
+  const cwd = join(root, 'run')
+  mkdirSync(cwd, { recursive: true })
+
+  let status = 0
+  let output = ''
+  try {
+    output = execFileSync('bash', [scriptPath], {
+      cwd,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: {
+        ...process.env,
+        PATH: `${binDir}:${process.env.PATH}`,
+        GH_TOKEN: 'stub',
+        REPO: 'markup-carve/carve-grammars',
+        SUB: 'spec',
+        TEST_CMD: 'echo "conformance ran"; exit 1',
+        ALLOWLIST: 'none',
+        CARVE_REMOTE: `file://${carve.bare}`,
+        BUMP_PATHS: 'tests/corpus tests/spec',
+        CODEX_API_KEY: '',
+        GITHUB_STEP_SUMMARY: join(root, 'summary.md'),
+        GIT_CONFIG_COUNT: '1',
+        GIT_CONFIG_KEY_0: 'protocol.file.allow',
+        GIT_CONFIG_VALUE_0: 'always',
+      },
+    })
+  } catch (err) {
+    status = err.status ?? 1
+    output = `${err.stdout ?? ''}${err.stderr ?? ''}`
+  }
+  const branchHead = (() => {
+    try {
+      return git(downstreamBare, 'rev-parse', 'refs/heads/automation/bump-spec').trim()
+    } catch {
+      return ''
+    }
+  })()
+  rmSync(root, { recursive: true, force: true })
+  return { status, output, branchHead }
+}
+
+test('no open PR and no consumed path changed since main\'s pin: nothing is pushed', () => {
+  const { status, output, branchHead } = runGateScenario({ mainPin: 'CORPUS' })
+  assert.equal(status, 0, output)
+  assert.match(output, /nothing under tests\/corpus tests\/spec changed between/, output)
+  assert.doesNotMatch(output, /conformance ran/)
+  assert.equal(branchHead, '', 'a bump branch was pushed for a change outside BUMP_PATHS')
+})
+
+test('no open PR and a consumed path changed: the bump goes ahead', () => {
+  const { output, branchHead } = runGateScenario({ mainPin: 'BASE' })
+  assert.match(output, /conformance ran/, output)
+  assert.notEqual(branchHead, '', 'the bump branch was not pushed')
+})
+
+test('an open bump PR that already carries every consumed change is left alone', () => {
+  const { status, output } = runGateScenario({ mainPin: 'BASE', branchPin: 'CORPUS' })
+  assert.equal(status, 0, output)
+  assert.match(output, /nothing under tests\/corpus tests\/spec changed between/, output)
+  assert.doesNotMatch(output, /conformance ran/)
+})
+
+test('an open bump PR behind its main is refreshed even with no consumed change', () => {
+  const { output } = runGateScenario({ mainPin: 'BASE', branchPin: 'CORPUS', behindBy: '2' })
+  assert.match(output, /conformance ran/, output)
 })

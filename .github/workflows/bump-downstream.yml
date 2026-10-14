@@ -1,8 +1,8 @@
 name: Bump downstream corpora
 
 # When carve's corpus moves, bump the spec submodule in each implementation
-# repo to this exact commit and open (or update) a single automation/bump-spec
-# PR there. The PR is created with a fine-grained PAT (secret BUMP_TOKEN), so
+# repo to carve main and open (or update) a single automation/bump-spec PR
+# there. The PR is created with a fine-grained PAT (secret BUMP_TOKEN), so
 # it is NOT subject to the "Allow Actions to create PRs" setting and it DOES
 # trigger the downstream repo's own CI — which validates conformance on the PR.
 #
@@ -23,24 +23,16 @@ name: Bump downstream corpora
 # run against a stale corpus is the failure mode this workflow exists to prevent,
 # and which repo the corpus belongs to makes no difference to it.
 
+# Scheduled, not on push. A push trigger force-pushed every downstream bump
+# branch on each corpus merge, around eleven times a day and 39 at the peak,
+# and each push re-ran that repo's CI against a draft that was red anyway. A
+# corpus change now reaches downstream within six hours; dispatch the workflow
+# when it has to be sooner.
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'tests/corpus/**'
-      - 'tests/spec/**'
-      - 'resources/examples/**'
-      # carve-skill's spec-review record is generated FROM this document
-      # (scripts/record-spec-review.mjs reads spec/docs/divergence-from-djot.md),
-      # so a change here has to reach it the same way a corpus change does.
-      # carve#455 rewrote its container sections and no bump fired, leaving the
-      # satellite on a stale copy with every check green (carve#823).
-      - 'docs/divergence-from-djot.md'
-      - 'resources/grammar.ebnf'
   workflow_dispatch:
   schedule:
-    # A bump PR's only payload is a moving target. Remove drafts whose target
-    # has already arrived on downstream main before they waste review time.
+    # Each run first closes drafts whose target already arrived on downstream
+    # main, then bumps.
     - cron: '17 */6 * * *'
 
 concurrency:
@@ -53,7 +45,10 @@ concurrency:
 # this repo takes 4 minutes, so 20 leaves plenty of room to grow.
 jobs:
   bump:
-    if: github.event_name != 'schedule'
+    # After the cleanup on a scheduled run; that job is skipped on dispatch,
+    # and a failed cleanup must not hold the bumps back.
+    needs: close-superseded-drafts
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
@@ -171,6 +166,11 @@ jobs:
           # templating at all and can be executed verbatim by
           # tests/bump-downstream-early-exit.test.mjs against local fixtures.
           CARVE_REMOTE: https://github.com/${{ github.repository }}.git
+          # The carve paths a downstream repo consumes. A run whose diff
+          # touches none of them since the last bump skips that repo.
+          # docs/divergence-from-djot.md is here because carve-skill's
+          # spec-review record is generated from it (carve#823).
+          BUMP_PATHS: tests/corpus tests/spec resources/examples docs/divergence-from-djot.md resources/grammar.ebnf
           # Optional: set the CODEX_API_KEY secret to let codex attempt the
           # implementation when a bump fails conformance. Dormant if unset.
           CODEX_API_KEY: ${{ secrets.CODEX_API_KEY }}
@@ -350,6 +350,30 @@ jobs:
             else
               echo "$REPO already pins carve $short; nothing to do."
             fi
+            exit 0
+          fi
+
+          # Carve main moves for many reasons a downstream repo does not care
+          # about. Compare the paths it consumes against the pin it already has
+          # under review: the open bump PR's, else its main's. No change there,
+          # and a PR branch not behind its main, means a new push would only
+          # re-run the same red or green CI.
+          base_pin=""
+          behind=0
+          if [ -n "$open_pr" ]; then
+            base_pin="$(gh api "repos/$REPO/contents/$SUB?ref=automation/bump-spec" --jq '.sha' 2>/dev/null || true)"
+            behind="$(gh api "repos/$REPO/compare/main...automation/bump-spec" --jq '.behind_by' 2>/dev/null || true)"
+          else
+            base_pin="$(git rev-parse "HEAD:$SUB" 2>/dev/null || true)"
+          fi
+          # Unquoted on purpose: BUMP_PATHS is a space-separated pathspec list.
+          # shellcheck disable=SC2086
+          if printf '%s' "$base_pin" | grep -Eq '^[0-9a-f]{40}$' \
+             && [ "$behind" = 0 ] \
+             && { git -C "$SUB" cat-file -e "$base_pin^{commit}" 2>/dev/null \
+                  || git -C "$SUB" fetch -q origin "$base_pin" 2>/dev/null; } \
+             && git -C "$SUB" diff --quiet "$base_pin" "$CARVE_SHA" -- $BUMP_PATHS; then
+            echo "$REPO: nothing under $BUMP_PATHS changed between ${base_pin:0:7} and carve $short; skipping."
             exit 0
           fi
 
@@ -581,7 +605,6 @@ jobs:
   # tree-sitter-carve#46) - a check that cannot fail, because nothing compared
   # the two lists.
   matrix-coverage:
-    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
