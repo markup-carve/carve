@@ -153,7 +153,8 @@ Releases before 0.1.6 are archived in
   with their definition line, and the raw-block drop is a stated limit
   (CARVE-P11-028) (#3120).
 - New default-on lint rule `table-span-marker-blocked` reports a `^` or `<`
-  span marker the span walk cannot resolve; carve-js emits it first (#3185).
+  span marker the span walk cannot resolve; all three engines emit it (#3183,
+  #3186).
 - The playground has a CodeMirror source editor with highlighting,
   diagnostics, completion, hover, list editing and table formatting, and its
   preview follows the cursor (#3064, #3070, #3071, #3091, #3099, #3104, #3107,
