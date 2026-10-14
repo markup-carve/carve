@@ -921,6 +921,16 @@ function findColonCloser(lines, openIdx, len) {
       }
       continue
     }
+    // An unclosed fence is code up to the innermost container's own closer;
+    // every other colon line before it is content (A CLOSER IS REQUIRED).
+    const unclosed = FENCE.exec(lines[j])
+    if (unclosed && parseFenceInfo(unclosed[2]) !== null) {
+      let k = j + 1
+      while (k < lines.length && COLON_CLOSER.exec(lines[k])?.[1].length !== top.length) k++
+      if (k === lines.length) return -1
+      j = k - 1
+      continue
+    }
     const c = COLON_CLOSER.exec(lines[j])
     if (c) {
       const closeLen = c[1].length
@@ -943,7 +953,7 @@ function findColonCloser(lines, openIdx, len) {
  *  there. A code fence needs a valid info string and a closer ahead to open at
  *  all (PART 9 SS10 I4); a comment block needs an EXACT-length closer ahead
  *  (SS28), and without one it opens nothing and is a line comment instead. An
- *  unterminated span is not a span, so the caller keeps scanning its lines. */
+ *  unterminated span is not a span; the caller decides what its lines are. */
 function opaqueSpanEnd(lines, idx) {
   const line = lines[idx] ?? ''
   const fence = FENCE.exec(line)

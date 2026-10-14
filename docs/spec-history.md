@@ -27,6 +27,15 @@ lines as an ordinary nested list. The host-closing rule has no such exception:
 the nested list remains the container body, with or without an explicit closer.
 That correction is pinned by carve#1722.
 
+The A CLOSER IS REQUIRED clause said an unclosed code fence opens no span and
+the container's own closer stays structural, but not what the colon lines
+between the two are. carve-php and carve-rs read a colon line of another width
+there as a nested container opener, so the fence ran to the end of a host that
+never closed. carve-js read it as fence content in a single container. The
+maintainer ruled that reading on 2026-10-15: inside an unclosed fence only the
+innermost container's own closer is structural, and every other colon line, of
+any width, is code. Corpus category 597 pins it.
+
 ## Container columns
 
 Carve originally described list items, definition bodies and footnote bodies

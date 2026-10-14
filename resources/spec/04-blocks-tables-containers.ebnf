@@ -291,11 +291,12 @@ admonition = admonition_open, newline,
    nested fence.
 
    A CLOSER IS REQUIRED. Only a fence that closes is opaque. A ``` or ~~~
-   opener with no closer ahead opens NO span: the container's own closer
-   stays structural, and the lines after it are parsed normally. This is the
-   same test PART 9 §10 I4 applies one level up -- an opener with no closer
-   is not a fence -- and the same test the `%%%` rule above already states
-   ("an opener with no exact closer ahead opens nothing"). In
+   opener with no closer ahead opens NO span: the INNERMOST container's own
+   closer stays structural and ends it, and the lines after that closer are
+   parsed normally. Any other colon line before it, of any width, is fence
+   content: it neither closes an ancestor nor opens a child. This is the test
+   PART 9 §10 I4 applies one level up, and the one the `%%%` rule above
+   states ("an opener with no exact closer ahead opens nothing"). In
 
        ::: note
        ```
@@ -303,8 +304,7 @@ admonition = admonition_open, newline,
        :::
        after
 
-   the fence is not a span, the `:::` closes the admonition, and `after` is a
-   top-level paragraph.
+   the `:::` closes the admonition and `after` is a top-level paragraph.
 
    This does NOT change a fence with nothing to interrupt: `` ``` `` alone,
    or as the whole content of a blockquote, still opens a code block that
