@@ -41,12 +41,10 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - name: Install contract checks
+        uses: ./.github/actions/npm-ci
         with:
           node-version: 24
-          cache: npm
-      - name: Install contract checks
-        run: npm ci
       - uses: actions/checkout@v6
         with:
           repository: markup-carve/carve-js
@@ -62,7 +60,15 @@ jobs:
           ref: ${{ needs.engine-pins.outputs.rs }}
           path: engines/carve-rs
           submodules: recursive
+      # Keyed on the pin, like formatter-pr.yml's release binaries.
+      - name: Restore Rust importer
+        id: rs-cache
+        uses: actions/cache@v4
+        with:
+          path: engines/carve-rs/target/debug/carve
+          key: carve-rs-debug-bin-${{ runner.os }}-${{ needs.engine-pins.outputs.rs }}
       - name: Build Rust importer
+        if: steps.rs-cache.outputs.cache-hit != 'true'
         working-directory: engines/carve-rs
         run: cargo build --bin carve
       - uses: actions/checkout@v6
@@ -91,22 +97,29 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - name: Install contract checks
+        uses: ./.github/actions/npm-ci
         with:
           node-version: 24
-          cache: npm
-      - name: Install contract checks
-        run: npm ci
       - uses: actions/checkout@v6
         with:
           repository: markup-carve/carve-rs
           ref: ${{ needs.engine-pins.outputs.rs }}
           path: engines/carve-rs
           submodules: recursive
+      # The driver links the pinned carve-rs and is compiled from this repo's
+      # roundtrip-structure.rs, so both are in the key.
+      - name: Restore Rust roundtrip driver
+        id: driver-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/cargo-target/debug/carve-structural-roundtrip
+          key: carve-rs-roundtrip-driver-${{ runner.os }}-${{ needs.engine-pins.outputs.rs }}-${{ hashFiles('scripts/roundtrip-structure.rs', 'scripts/build-roundtrip-structure-rs.mjs') }}
       - name: Build Rust roundtrip driver
+        if: steps.driver-cache.outputs.cache-hit != 'true'
         env:
           CARVE_RS_DIR: ${{ github.workspace }}/engines/carve-rs
-          CARGO_TARGET_DIR: /var/tmp/cargo-shared/carve-rs
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target
         run: node scripts/build-roundtrip-structure-rs.mjs
       - uses: actions/checkout@v6
         with:
@@ -123,9 +136,9 @@ jobs:
       - name: Check structural roundtrip counts
         env:
           CARVE_RS_DIR: ${{ github.workspace }}/engines/carve-rs
-          CARVE_RS_ROUNDTRIP_DRIVER: /var/tmp/cargo-shared/carve-rs/debug/carve-structural-roundtrip
+          CARVE_RS_ROUNDTRIP_DRIVER: ${{ runner.temp }}/cargo-target/debug/carve-structural-roundtrip
           CARVE_PHP_DIR: ${{ github.workspace }}/engines/carve-php
-          CARGO_TARGET_DIR: /var/tmp/cargo-shared/carve-rs
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target
         run: npm run roundtrip:structure -- --check
 
   declarations:
@@ -167,11 +180,6 @@ jobs:
           path: engines/carve-rs
           fetch-depth: 0
 
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: npm
-
       # Use HTTPS for Git dependencies on runners without SSH credentials.
       - name: Prefer HTTPS for Git dependencies
         run: |
@@ -181,7 +189,9 @@ jobs:
       # Bound installation separately from the declaration audit.
       - name: Install
         timeout-minutes: 5
-        run: npm ci
+        uses: ./.github/actions/npm-ci
+        with:
+          node-version: 24
 
       # Gate declaration coverage here; engine:report checks live pin drift below.
       - name: Every declaration is visible (per-PR verdict)
@@ -190,6 +200,17 @@ jobs:
           CARVE_PHP_DIR: ${{ github.workspace }}/engines/carve-php
           CARVE_RS_DIR: ${{ github.workspace }}/engines/carve-rs
         run: npm run declarations:pr -- --no-fetch
+
+      # Here rather than in conformance: it is mostly GitHub API reads, and
+      # this job finishes well before the conformance critical path.
+      - name: HTML import contract
+        run: npm run html-import:check
+        # The binding-contract half reads four repositories' trees through the
+        # GitHub API. Unauthenticated from a runner that is one of 60 requests an
+        # hour per address, and the check fails rather than skipping when it is
+        # refused, so the token is what keeps a real red distinguishable.
+        env:
+          GH_TOKEN: ${{ github.token }}
 
   conformance:
     name: spec-corpus conformance
@@ -202,6 +223,8 @@ jobs:
         # Match this repository's Node minimum and test the current release too.
         # Published engine runtime support belongs in each engine repository.
         # Node 26 gates normally; demote it only for recorded toolchain breakage.
+        # It runs `npm test` only: the audits after it read committed files and
+        # give the same answer on any Node, so Node 24 runs them once.
         node-version: [24, 26]
 
     steps:
@@ -209,17 +232,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node ${{ matrix.node-version }}
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: npm
-
       # Installs ohm-js (the executable spec) and the pinned
       # `@markup-carve/carve` reference build the conformance steps render
       # through. The pin is an exact carve-js commit in package.json.
-      - name: Install
-        run: npm ci
+      - name: Install on Node ${{ matrix.node-version }}
+        uses: ./.github/actions/npm-ci
+        with:
+          node-version: ${{ matrix.node-version }}
 
       # Regenerate the corpus from resources/examples/*.md and fail if it
       # drifted from what is committed — keeps examples and fixtures
@@ -227,6 +246,7 @@ jobs:
       # `git diff` compares tracked files, so a generated file a pull request
       # never added is untracked and produces no diff (carve#2037).
       - name: Corpus is in sync with examples
+        if: matrix.node-version == 24
         run: |
           npm run corpus:build
           git diff --exit-code -- tests/corpus tests/spec
@@ -246,6 +266,7 @@ jobs:
 
       # Audit normative pages on each PR; inputs come from this repository.
       - name: Normative pages state nothing the spec source does not
+        if: matrix.node-version == 24
         run: npm run normative:check
 
       # Three committed artifacts are assembled from sources: grammar.ebnf from
@@ -254,41 +275,40 @@ jobs:
       # ARTIFACT, so a source-only edit is invisible to all of them - it does not
       # fail, it silently does not apply.
       - name: Grammar aggregate matches its spec sources
+        if: matrix.node-version == 24
         run: npm run spec:check
 
       - name: Rule ids and the rule index match the grammar
+        if: matrix.node-version == 24
         run: npm run spec:rules:check
 
       - name: node-roles.json matches the AST contract
+        if: matrix.node-version == 24
         run: npm run roles:check
 
       # A production off the `document` root derives nothing, so an edit to it
       # changes no document and no test notices. quote_block sat that way from
       # the modularization refactor until carve#2670.
       - name: Every production is reachable or declared unreachable
+        if: matrix.node-version == 24
         run: npm run grammar:productions
 
       # A rule COPIED instead of referenced drifts: widening one copy leaves the
       # others behind. Seven productions spelled one alternation before carve#2671.
       - name: No production copies another's right-hand side undeclared
+        if: matrix.node-version == 24
         run: npm run grammar:duplicates
 
-      - name: HTML import contract
-        run: npm run html-import:check
-        # The binding-contract half reads four repositories' trees through the
-        # GitHub API. Unauthenticated from a runner that is one of 60 requests an
-        # hour per address, and the check fails rather than skipping when it is
-        # refused, so the token is what keeps a real red distinguishable.
-        env:
-          GH_TOKEN: ${{ github.token }}
-
       - name: Escaper corpus
+        if: matrix.node-version == 24
         run: npm run escape:check
 
       - name: Executable-spec gate (formal Core grammar vs corpus)
+        if: matrix.node-version == 24
         run: npm run core:check
 
       - name: Grammar reachability (corpus vs formal Core grammar)
+        if: matrix.node-version == 24
         run: npm run grammar:reach
 
       # Check writer invariants on 2,000 generated documents with a fixed seed.
@@ -297,12 +317,14 @@ jobs:
       # which is currently unwired. The 2,000-case set detects the
       # table-alignment regression verified by reverting carve-js#903.
       - name: PART 11 canonical-writer invariants (generated documents)
+        if: matrix.node-version == 24
         run: npm run property:check -- --count=2000
 
       # Fail on undeclared drift and on declarations the pin has caught up on.
       # Add spec-ahead fixtures to resources/engine-pin-drift.txt and remove them
       # once the pinned engine reproduces them.
       - name: Pinned reference build matches its declared drift
+        if: matrix.node-version == 24
         run: npm run engine:report -- --check
 
   docs-build:
@@ -315,17 +337,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: npm
-
       - name: Prefer HTTPS for Git dependencies
         run: |
           git config --global url."https://github.com/".insteadOf ssh://git@github.com/
           git config --global url."https://github.com/".insteadOf git@github.com:
 
-      - run: npm ci
+      - name: Install
+        uses: ./.github/actions/npm-ci
+        with:
+          node-version: 24
 
       # Build the VitePress site so a broken doc (e.g. unescaped Vue
       # interpolation) fails the PR instead of only the Pages deploy.
@@ -339,17 +359,15 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: npm
-
       - name: Prefer HTTPS for Git dependencies
         run: |
           git config --global url."https://github.com/".insteadOf ssh://git@github.com/
           git config --global url."https://github.com/".insteadOf git@github.com:
 
-      - run: npm ci
+      - name: Install
+        uses: ./.github/actions/npm-ci
+        with:
+          node-version: 24
 
       # Validate every Mermaid diagram embedded in tracked docs, including the
       # ```mermaid blocks inside .crv sources, so a broken diagram fails the PR

@@ -1,0 +1,31 @@
+name: actionlint
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+      - '.github/actions/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  actionlint:
+    name: workflow files lint clean
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install actionlint
+        run: bash <(curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/v1.7.12/scripts/download-actionlint.bash) 1.7.12
+      # shellcheck's info level flags intended literals such as backticks in
+      # single-quoted jq programs; warnings and errors still fail.
+      - name: Lint workflows
+        env:
+          SHELLCHECK_OPTS: --severity=warning
+        run: ./actionlint -color

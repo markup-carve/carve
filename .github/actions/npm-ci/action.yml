@@ -1,0 +1,43 @@
+name: npm ci (cached node_modules)
+description: >-
+  Set up Node and restore node_modules from a cache keyed on the lockfile,
+  the Node major and the runner; run npm ci only on a miss.
+
+inputs:
+  node-version:
+    description: Node version for actions/setup-node
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    # The dependency fields of package.json join the key, so a manifest edited
+    # without its lockfile still misses and npm ci still refuses it. The whole
+    # file would miss on every edit to the test script list.
+    - id: node
+      shell: bash
+      run: |
+        echo "major=$(node -p 'process.versions.node.split(".")[0]')" >> "$GITHUB_OUTPUT"
+        echo "manifest=$(node -e '
+          const p = require("./package.json")
+          const keys = ["dependencies", "devDependencies", "optionalDependencies", "peerDependencies", "overrides"]
+          const picked = JSON.stringify(keys.map((k) => p[k] ?? null))
+          process.stdout.write(require("node:crypto").createHash("sha256").update(picked).digest("hex"))
+        ')" >> "$GITHUB_OUTPUT"
+
+    # node_modules holds the git dependencies already built by their prepare
+    # scripts, which is most of what npm ci spends its time on. An exact key
+    # only: a partial restore would be wiped by npm ci anyway.
+    - id: modules
+      uses: actions/cache@v4
+      with:
+        path: node_modules
+        key: node-modules-${{ runner.os }}-${{ runner.arch }}-node${{ steps.node.outputs.major }}-${{ hashFiles('package-lock.json') }}-${{ steps.node.outputs.manifest }}
+
+    - if: steps.modules.outputs.cache-hit != 'true'
+      shell: bash
+      run: npm ci

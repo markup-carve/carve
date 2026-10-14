@@ -3,6 +3,11 @@ name: Formatter PR conformance
 on:
   pull_request:
   workflow_dispatch:
+  # Warms the carve-rs binary cache on main (warm-rs-cache below). A cache saved
+  # by a pull request is scoped to that pull request, so without this every PR's
+  # first run built carve-rs again in all four shards.
+  schedule:
+    - cron: '23 */6 * * *'
 
 permissions:
   contents: read
@@ -17,6 +22,7 @@ concurrency:
 # given deliberately.
 jobs:
   formatter:
+    if: github.event_name != 'schedule'
     needs: engine-revisions
     name: formatter (shard ${{ matrix.shard }})
     runs-on: ubuntu-latest
@@ -35,11 +41,10 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - name: Install
+        uses: ./.github/actions/npm-ci
         with:
           node-version: 24
-          cache: npm
-      - run: npm ci
       - uses: actions/checkout@v4
         with:
           repository: markup-carve/carve-js
@@ -117,6 +122,43 @@ jobs:
           path: |
             /tmp/formatter-corpus.json
             /tmp/compare-impls.json
+
+  # Builds and saves the formatter's carve-rs binaries under main, where every
+  # pull request can restore them. Path list and key must match the formatter
+  # job's "Restore carve-rs binaries" step exactly.
+  warm-rs-cache:
+    if: github.event_name == 'schedule'
+    needs: engine-revisions
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Look up carve-rs binaries
+        id: lookup
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            carve-rs/target/release/carve
+            carve-rs/target/release/examples/social_resolvers
+          key: carve-rs-bin-${{ runner.os }}-${{ needs.engine-revisions.outputs.rs }}
+          lookup-only: true
+      - if: steps.lookup.outputs.cache-hit != 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: markup-carve/carve-rs
+          ref: ${{ needs.engine-revisions.outputs.rs }}
+          path: carve-rs
+          submodules: recursive
+      - name: Build carve-rs
+        if: steps.lookup.outputs.cache-hit != 'true'
+        working-directory: carve-rs
+        run: cargo build --release --bin carve --example social_resolvers
+      - if: steps.lookup.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            carve-rs/target/release/carve
+            carve-rs/target/release/examples/social_resolvers
+          key: carve-rs-bin-${{ runner.os }}-${{ needs.engine-revisions.outputs.rs }}
 
   engine-revisions:
     runs-on: ubuntu-latest

@@ -8,6 +8,11 @@ on:
 permissions:
   contents: read
 
+# `edited` fires on every body edit; only the latest body matters.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 # Each job below declares timeout-minutes. A job without one inherits GitHub's
 # 360-minute default, so a stalled package mirror or a fallback source build can
 # hold a runner for hours before anything stops it. The slowest job measured in
@@ -22,9 +27,15 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: npm
-      - name: Install dependencies
-        run: npm ci
+      # The check imports only commonmark, so install that one package at the
+      # version the lockfile pins instead of the whole tree. Installed outside
+      # the checkout because `npm install` inside it would reify package.json.
+      - name: Install commonmark
+        run: |
+          version="$(node -p "require('./package-lock.json').packages['node_modules/commonmark'].version")"
+          npm install --prefix "$RUNNER_TEMP/deps" --no-save --no-audit --no-fund "commonmark@$version"
+          mkdir -p node_modules
+          ln -s "$RUNNER_TEMP/deps/node_modules/commonmark" node_modules/commonmark
       - name: Check pull request body
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
