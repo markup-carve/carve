@@ -1212,7 +1212,7 @@
         "exit": 1,
         "engines": {
           "rust": {
-            "output": "A [link](https://x.org \"Title\") and ![img](a.png \"Pic\").\n\nLine with hard break\\\nnext line, and `<span class=\"k\">`{=html}inline html`</span>`{=html} © ~gone~.\n\n```\nindented code\n```\n\nSee [ref](https://ref.example \"Ref title\") and [https://auto.example](https://auto.example).\n"
+            "output": "A [link](https://x.org \"Title\") and ![img](a.png \"Pic\").\n\nLine with hard break\\\nnext line, and `<span class=\"k\">`{=html}inline html`</span>`{=html} © ~gone~.\n\n```\nindented code\n```\n\nSee [ref](https://ref.example \"Ref title\") and <https://auto.example>.\n"
           }
         },
         "html": {
