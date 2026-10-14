@@ -1,0 +1,78 @@
+Inside an unclosed fence only the innermost container's closer is structural
+
+````
+::: outer
+:::: inner
+```
+code
+:::
+::::
+:::
+after *b*
+.
+<div class="outer">
+  <div class="inner">
+    <pre><code>code
+:::
+</code></pre>
+  </div>
+</div>
+<p>after <strong>b</strong></p>
+````
+
+````
+:::: outer
+::: inner
+```
+code
+::::
+:::
+::::
+after *b*
+.
+<div class="outer">
+  <div class="inner">
+    <pre><code>code
+::::
+</code></pre>
+  </div>
+</div>
+<p>after <strong>b</strong></p>
+````
+
+````
+::: note
+```
+code
+::::
+:::
+after *b*
+.
+<aside class="admonition note" aria-label="Note">
+  <pre><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+````
+
+````
+::: outer
+:::: inner
+```
+code
+:::
+```
+::::
+:::
+after *b*
+.
+<div class="outer">
+  <div class="inner">
+    <pre><code>code
+:::
+</code></pre>
+  </div>
+</div>
+<p>after <strong>b</strong></p>
+````

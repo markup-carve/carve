@@ -52285,3 +52285,112 @@ cross-reference cannot close a forced span opened before it (PART 9 §9 E2a).
 ```
 
 :::
+
+## Inside an unclosed fence only the innermost container's closer is structural
+
+A code fence with no closer ahead opens no span, and it ends at the closer of
+the container it sits in. Every other colon line before that closer is fence
+content, whatever its width: an ancestor's closer closes nothing there and a
+wider or narrower run opens nothing. A fence that closes stays opaque to every
+colon line inside it (PART 2, A CLOSER IS REQUIRED).
+
+:::::: compare
+
+````carve
+::: outer
+:::: inner
+```
+code
+:::
+::::
+:::
+after *b*
+````
+
+```html
+<div class="outer">
+  <div class="inner">
+    <pre><code>code
+:::
+</code></pre>
+  </div>
+</div>
+<p>after <strong>b</strong></p>
+```
+
+::::::
+
+:::::: compare
+
+````carve
+:::: outer
+::: inner
+```
+code
+::::
+:::
+::::
+after *b*
+````
+
+```html
+<div class="outer">
+  <div class="inner">
+    <pre><code>code
+::::
+</code></pre>
+  </div>
+</div>
+<p>after <strong>b</strong></p>
+```
+
+::::::
+
+:::::: compare
+
+````carve
+::: note
+```
+code
+::::
+:::
+after *b*
+````
+
+```html
+<aside class="admonition note" aria-label="Note">
+  <pre><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+```
+
+::::::
+
+:::::: compare
+
+````carve
+::: outer
+:::: inner
+```
+code
+:::
+```
+::::
+:::
+after *b*
+````
+
+```html
+<div class="outer">
+  <div class="inner">
+    <pre><code>code
+:::
+</code></pre>
+  </div>
+</div>
+<p>after <strong>b</strong></p>
+```
+
+::::::
