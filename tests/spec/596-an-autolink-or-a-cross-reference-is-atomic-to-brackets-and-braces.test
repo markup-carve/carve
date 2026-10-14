@@ -1,0 +1,19 @@
+An autolink or a cross-reference is atomic to brackets and braces
+
+```
+<https://a[> *q](u*) z
+.
+<p><a href="https://a[">https://a[</a> <strong>q](u</strong>) z</p>
+```
+
+```
+</#a[> *q](u*) z
+.
+<p>&lt;/#a[&gt; <strong>q](u</strong>) z</p>
+```
+
+```
+{*a </#x*}> b*}
+.
+<p><strong>a &lt;/#x*}&gt; b</strong></p>
+```
