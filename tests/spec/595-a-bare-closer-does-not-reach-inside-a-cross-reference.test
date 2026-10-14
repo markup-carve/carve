@@ -1,0 +1,19 @@
+A bare closer does not reach inside a cross-reference
+
+```
+{#intro}
+# Intro
+
+x /a </#intro> y
+.
+<section id="intro">
+  <h1>Intro</h1>
+  <p>x /a <a href="#intro">Intro</a> y</p>
+</section>
+```
+
+```
+x /a </#nothing> y
+.
+<p>x /a &lt;/#nothing&gt; y</p>
+```

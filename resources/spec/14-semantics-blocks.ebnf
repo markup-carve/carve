@@ -17,9 +17,9 @@
          of a CODE SPAN (with raw inline and inline math), a BRACED INLINE
          (the forced spans of §22, `{+ +}`, `{- -}`, `{~ ~> ~}`, `{# #}`,
          `{% %}`), a LINK DESTINATION (the `(…)` of an inline link or image,
-         title included) or an AUTOLINK, in either direction: inside a braced
-         inline only entries pushed there are reachable, and those still open
-         at its closer demote to literal.
+         title included), an AUTOLINK or a CROSS-REFERENCE (`</#id>`), in either
+         direction: inside a braced inline only entries pushed there are
+         reachable, and those still open at its closer demote to literal.
          `~{/x/}{/y~/}` -> ~<em>x</em><em>y~</em>.
       E2b BRACKET-RUN BOUND. PART 8 resolves a BRACKET RUN before bare
          emphasis, forced spans and non-opaque editorial markup. Every delimiter pair,
