@@ -854,11 +854,12 @@ that carries a title is named by that title instead
 (`aria-labelledby` pointing at the `<p class="admonition-title">`), so the
 visible name and the spoken one are a single string. See PART 9 §12.
 
-## 21. Footnote labels normalize ASCII whitespace
+## 21. Footnote labels normalize spaces only
 
 Djot and Carve both trim the ends of a label and collapse internal whitespace
-runs for lookup. Carve defines that operation over ASCII whitespace and keeps
-matching case-sensitive. The authored spelling remains available in source
+runs for lookup. Carve trims and collapses space runs only: a tab in a label
+is content, so a label holding one matches no definition spelled with a space.
+Matching stays case-sensitive. The authored spelling remains available in source
 layout data, and colliding definitions are diagnosed.
 
 Definition:
@@ -872,7 +873,7 @@ References, measured against djot.js 0.3.2:
 ```
 [^a b]      Djot: binds    Carve: binds
 [^a  b]     Djot: binds    Carve: binds
-[^a<TAB>b]  Djot: binds    Carve: binds
+[^a<TAB>b]  Djot: binds    Carve: literal
 [^ a b ]    Djot: binds    Carve: binds
 ```
 
@@ -892,10 +893,10 @@ renders
 words].</p>
 ```
 
-Carve still requires a reference label to stay on one physical line. A source
-newline is not ASCII whitespace inside a matched label because it ends the
-inline construct first. This is the remaining portability difference from a
-Djot implementation that accepts wrapped references.
+Carve still requires a reference label to stay on one physical line: a source
+newline ends the inline construct before the label is matched. Wrapped
+references and tabs in labels are the two portability differences from a Djot
+implementation that accepts both.
 
 Normalization makes lookup resilient to harmless spacing changes. When two
 definitions normalize to the same key, the existing first-wins footnote rule
