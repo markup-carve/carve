@@ -50,9 +50,3 @@
 
 list (extent)  1  carve-php opens the section 503 list at its parent content column; all three spans conform under markup-carve/carve#1928
 list_item (extent)  1  the section 503 list item has the same conformant column difference as its list; markup-carve/carve#1928
-
-# The three rows below are section 573. carve-php gives the note, its
-# paragraph, and its text different extents from carve-js and carve-rs.
-paragraph (extent)  1  section 573: carve-php places the note-body paragraph earlier than carve-js and carve-rs; markup-carve/carve-php#3407
-text (extent)  1  section 573: carve-php places the text inside that paragraph earlier than carve-js and carve-rs; markup-carve/carve-php#3407
-footnote (extent)  1  carve-php ends a note referenced from link text early, section 573; markup-carve/carve-php#3407

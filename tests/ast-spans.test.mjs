@@ -330,9 +330,6 @@ test('a row with a count but no reference is malformed, not declared', () => {
 const LAST_MEASURED = new Map([
   ['list (extent)', 1],
   ['list_item (extent)', 1],
-  ['paragraph (extent)', 1],
-  ['text (extent)', 1],
-  ['footnote (extent)', 1],
 ])
 
 const asMeasured = (counts) =>
