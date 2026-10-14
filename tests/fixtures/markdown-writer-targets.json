@@ -983,5 +983,68 @@
     "rule": "CARVE-P11-023",
     "carve": "before ![a [b] c](/u)\n",
     "markdown": "before ![a \\[b\\] c](/u)\n"
+  },
+  {
+    "name": "autolink-url-angle",
+    "rule": "CARVE-P11-069",
+    "carve": "<https://github.com/markup-carve>\n",
+    "markdown": "<https://github.com/markup-carve>\n"
+  },
+  {
+    "name": "autolink-email-angle",
+    "rule": "CARVE-P11-069",
+    "carve": "<user@example.com>\n",
+    "markdown": "<user@example.com>\n"
+  },
+  {
+    "name": "autolink-encoded-destination-fallback",
+    "rule": "CARVE-P11-069",
+    "carve": "<https://example.com/a(b)>\n",
+    "markdown": "[https://example.com/a(b)](https://example.com/a%28b%29)\n"
+  },
+  {
+    "name": "explicit-equal-label-stays-explicit",
+    "rule": "CARVE-P11-069",
+    "carve": "[https://example.com](https://example.com)\n",
+    "markdown": "[https://example.com](https://example.com)\n"
+  },
+  {
+    "name": "autolink-non-ascii-angle",
+    "rule": "CARVE-P11-069",
+    "carve": "<https://example.com/café>\n",
+    "markdown": "<https://example.com/café>\n"
+  },
+  {
+    "name": "autolink-denied-destination-fallback",
+    "rule": "CARVE-P11-069",
+    "carve": "<javascript:alert1>\n",
+    "markdown": "[javascript:alert1]()\n"
+  },
+  {
+    "name": "autolink-attributes-do-not-change-spelling",
+    "rule": "CARVE-P11-069",
+    "carve": "<https://x>{.k}\n",
+    "markdown": "<https://x>\n"
+  },
+  {
+    "name": "autolink-ast-text-and-href-differ",
+    "rule": "CARVE-P11-069",
+    "ast": {
+      "type": "document",
+      "srcByteLength": 0,
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "autolink",
+              "text": "https://a.com",
+              "href": "https://b.com"
+            }
+          ]
+        }
+      ]
+    },
+    "markdown": "[https://a.com](https://b.com)\n"
   }
 ]
