@@ -24,3 +24,5 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+595-a-bare-closer-does-not-reach-inside-a-cross-reference  ahead of the pin: PART 9 E2a a cross-reference is opaque to a bare delimiter (PART 8 ranks it with autolinks); carve-js pairs the slash inside it (markup-carve/carve-js#3100)
+595-a-bare-closer-does-not-reach-inside-a-cross-reference-2  ahead of the pin: PART 9 E2a a cross-reference is opaque to a bare delimiter (PART 8 ranks it with autolinks); carve-js pairs the slash inside it (markup-carve/carve-js#3100)

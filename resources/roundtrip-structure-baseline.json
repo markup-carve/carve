@@ -5,36 +5,36 @@
       "html": {
         "identical": 2005,
         "strict": 1874,
-        "total": 2508
+        "total": 2510
       },
       "md": {
-        "identical": 1809,
-        "strict": 1406,
-        "total": 2508
+        "identical": 1820,
+        "strict": 1416,
+        "total": 2510
       }
     },
     "php": {
       "html": {
-        "identical": 2036,
-        "strict": 1902,
-        "total": 2508
+        "identical": 2038,
+        "strict": 1904,
+        "total": 2510
       },
       "md": {
-        "identical": 1804,
-        "strict": 1365,
-        "total": 2508
+        "identical": 1817,
+        "strict": 1375,
+        "total": 2510
       }
     },
     "rs": {
       "html": {
         "identical": 1994,
         "strict": 1863,
-        "total": 2508
+        "total": 2510
       },
       "md": {
-        "identical": 1831,
-        "strict": 1609,
-        "total": 2508
+        "identical": 1842,
+        "strict": 1620,
+        "total": 2510
       }
     }
   }
