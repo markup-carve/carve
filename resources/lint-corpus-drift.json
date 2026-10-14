@@ -2,11 +2,156 @@
   "version": 1,
   "measured": {
     "date": "2026-10-14",
-    "spec": "0dc05afe7c8188ffa372a7a544044f62c388a715",
-    "js": "bbd58b59364659e96f46db7b54896417ebff7c0b",
-    "php": "e206cedc4e3f41cc92297b43bacca4c102a84cec",
-    "rust": "6a474d0b31ab020dade6daefa5fe3f8a73c3bdd0",
+    "spec": "21879d7d6507175529f099ae753f5d5fb193ed64",
+    "js": "1aa17c57cbf687081cd029b9794733d8a8495dc0",
+    "php": "9b06baf83df4614559837aceee291952382d99a9",
+    "rust": "d19a636cc22151788076afd5e085257bfd6f280f",
     "documents": 2618
   },
-  "differences": []
+  "differences": [
+    {
+      "file": "tests/corpus/106-blocked-span-marker-renders-as-empty-cell.crv",
+      "reason": "carve-js (1aa17c57) reports the blocked span marker under the default-on table-span-marker-blocked rule from carve-js#3078; carve-php (9b06baf8) and carve-rs (d19a636c) have not ported the rule yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3183",
+      "diagnostics": {
+        "js": [
+          [
+            "table-span-marker-blocked",
+            4,
+            7
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/107-colspan-marker-scans-left-past-a-consumed-cell.crv",
+      "reason": "carve-js (1aa17c57) reports the blocked span marker under the default-on table-span-marker-blocked rule from carve-js#3078; carve-php (9b06baf8) and carve-rs (d19a636c) have not ported the rule yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3183",
+      "diagnostics": {
+        "js": [
+          [
+            "table-span-marker-blocked",
+            4,
+            11
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/579-a-span-never-covers-another-cell-2.crv",
+      "reason": "carve-js (1aa17c57) reports the blocked span marker under the default-on table-span-marker-blocked rule from carve-js#3078; carve-php (9b06baf8) and carve-rs (d19a636c) have not ported the rule yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3183",
+      "diagnostics": {
+        "js": [
+          [
+            "table-span-marker-blocked",
+            2,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/594-a-continuation-on-a-span-marker-joins-the-cell-the-marker-resolves-into-2.crv",
+      "reason": "carve-js (1aa17c57) reports the blocked span marker under the default-on table-span-marker-blocked rule from carve-js#3078; carve-php (9b06baf8) and carve-rs (d19a636c) have not ported the rule yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3183",
+      "diagnostics": {
+        "js": [
+          [
+            "table-span-marker-blocked",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/594-a-continuation-on-a-span-marker-joins-the-cell-the-marker-resolves-into-3.crv",
+      "reason": "carve-js (1aa17c57) reports the blocked span marker under the default-on table-span-marker-blocked rule from carve-js#3078; carve-php (9b06baf8) and carve-rs (d19a636c) have not ported the rule yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3183",
+      "diagnostics": {
+        "js": [
+          [
+            "table-span-marker-blocked",
+            2,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/594-a-continuation-on-a-span-marker-joins-the-cell-the-marker-resolves-into-4.crv",
+      "reason": "carve-js (1aa17c57) reports the blocked span marker under the default-on table-span-marker-blocked rule from carve-js#3078; carve-php (9b06baf8) and carve-rs (d19a636c) have not ported the rule yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3183",
+      "diagnostics": {
+        "js": [
+          [
+            "table-span-marker-blocked",
+            3,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/594-a-continuation-on-a-span-marker-joins-the-cell-the-marker-resolves-into-5.crv",
+      "reason": "carve-js (1aa17c57) reports the blocked span marker under the default-on table-span-marker-blocked rule from carve-js#3078; carve-php (9b06baf8) and carve-rs (d19a636c) have not ported the rule yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3183",
+      "diagnostics": {
+        "js": [
+          [
+            "table-span-marker-blocked",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/594-a-continuation-on-a-span-marker-joins-the-cell-the-marker-resolves-into.crv",
+      "reason": "carve-js (1aa17c57) reports the blocked span marker under the default-on table-span-marker-blocked rule from carve-js#3078; carve-php (9b06baf8) and carve-rs (d19a636c) have not ported the rule yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3183",
+      "diagnostics": {
+        "js": [
+          [
+            "table-span-marker-blocked",
+            2,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/98-table-span-marker-in-first-column.crv",
+      "reason": "carve-js (1aa17c57) reports the blocked span marker under the default-on table-span-marker-blocked rule from carve-js#3078; carve-php (9b06baf8) and carve-rs (d19a636c) have not ported the rule yet.",
+      "issue": "https://github.com/markup-carve/carve/issues/3183",
+      "diagnostics": {
+        "js": [
+          [
+            "table-span-marker-blocked",
+            1,
+            3
+          ]
+        ],
+        "php": [],
+        "rust": []
+      }
+    }
+  ]
 }
