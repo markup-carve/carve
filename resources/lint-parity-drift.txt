@@ -1,12 +1,8 @@
 # Default lint triggers not yet reported by each engine.
 # The parity gate rejects new missing rules and declarations that now pass.
-# Measured at carve-js 1aa17c57, carve-rs 61b673ce and carve-php cb3dec89:
-# every engine emitted every shared trigger except table-span-marker-blocked
-# (carve#3183), which carve-php and carve-rs are declared below for until
-# they port it.
+# Measured at carve-js 26ccd5a5, carve-rs 204af9cd and carve-php 8b006142:
+# every engine emits all 40 shared triggers, so this file is EMPTY.
 #
 # An empty file is a real state and not a missing one. It says the last
 # measurement found no engine short of a default trigger; it does not say the
 # trigger population is complete, which `parity:check` asserts separately.
-php/table-span-marker-blocked  carve-js reports it since 1aa17c57 (carve#3183); port pending in carve-php#3419
-rust/table-span-marker-blocked  carve-js reports it since 1aa17c57 (carve#3183); port pending in carve-rs#2758
