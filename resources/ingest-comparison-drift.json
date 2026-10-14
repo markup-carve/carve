@@ -13,5 +13,30 @@
       }
     }
   },
-  "differences": []
+  "differences": [
+    {
+      "key": "tests/corpus/594-a-continuation-on-a-span-marker-joins-the-cell-the-marker-resolves-into-5.crv/js->rust",
+      "reason": "The Rust reader rejects cell_wrap.col in the JS and PHP ASTs for corpus 594-5.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2730",
+      "fingerprint": "0b71100c91b9d2a7f424da0f55971b305288a4ddb9ef7feef7f5d583a6ea7409",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td colspan=\"2\">x y</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: cell_wrap at children[0].rows[0].cells[0].children[1] carries \"col\", which the schema does not name (PART 12 §11)\n"
+      }
+    },
+    {
+      "key": "tests/corpus/594-a-continuation-on-a-span-marker-joins-the-cell-the-marker-resolves-into-5.crv/php->rust",
+      "reason": "The Rust reader rejects cell_wrap.col in the JS and PHP ASTs for corpus 594-5.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/2730",
+      "fingerprint": "0b71100c91b9d2a7f424da0f55971b305288a4ddb9ef7feef7f5d583a6ea7409",
+      "observation": {
+        "expected": "<table>\n  <tbody>\n    <tr><td colspan=\"2\">x y</td></tr>\n  </tbody>\n</table>",
+        "status": 1,
+        "actual": "",
+        "stderr": "carve: cannot decode JSON AST: cell_wrap at children[0].rows[0].cells[0].children[1] carries \"col\", which the schema does not name (PART 12 §11)\n"
+      }
+    }
+  ]
 }

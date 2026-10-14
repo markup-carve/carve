@@ -56,3 +56,7 @@ list_item (extent)  1  the section 503 list item has the same conformant column 
 paragraph (extent)  1  section 573: carve-php places the note-body paragraph earlier than carve-js and carve-rs; markup-carve/carve-js#2882
 text (extent)  1  section 573: carve-php places the text inside that paragraph earlier than carve-js and carve-rs; markup-carve/carve-js#2882
 footnote (extent)  1  carve-php ends a note referenced from link text early, section 573; markup-carve/carve-js#2882
+cell_wrap (presence)  25  carve-rs writes cell_wrap without pos; markup-carve/carve-rs#2695
+hard_break (extent)  1  carve-php starts the line block's hard break two lines early, corpus 41-line-blocks-12; markup-carve/carve-php#3391
+table_row (presence)  1  corpus 64-2: a continuation under a span marker joins the cell in the row above and PART 12 §4 does not yet say what spans the rows get; markup-carve/carve#3172
+text (presence)  1  corpus 64-2: a continuation under a span marker joins the cell in the row above and PART 12 §4 does not yet say what spans the rows get; markup-carve/carve#3172
