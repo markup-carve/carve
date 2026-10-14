@@ -147,7 +147,7 @@ const shippedDeclaration = () =>
  * Run 36552218597, on the next head, fails the same step again.
  */
 // Re-measured 2026-10-14 at the pinned JS, PHP and Rust revisions.
-const LAST_MEASURED = new Map([['cell_wrap.col', 1]])
+const LAST_MEASURED = new Map([])
 
 /** A measurement of `count` distinct documents - the reconciler counts them. */
 const documents = (count) =>

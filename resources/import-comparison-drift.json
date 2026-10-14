@@ -2,63 +2,10 @@
   "version": 1,
   "measured": {
     "date": "2026-10-14",
-    "spec": "b1ecc8fd75c0bd7954eb299da7c4f848135c892b",
-    "js": "11da4d29f5dffbc57c52711c43b06422ce13d364",
-    "php": "9e7800c7ef299f3efc56e7aefc8cd2adc2d2c6de",
-    "rust": "bdfdf52f5eb63d276bb20859d94a9ecf782de0ed"
+    "spec": "0dc05afe7c8188ffa372a7a544044f62c388a715",
+    "js": "bbd58b59364659e96f46db7b54896417ebff7c0b",
+    "php": "e206cedc4e3f41cc92297b43bacca4c102a84cec",
+    "rust": "6a474d0b31ab020dade6daefa5fe3f8a73c3bdd0"
   },
-  "differences": [
-    {
-      "key": "commonmark/markdown/301",
-      "reason": "carve-rs writes + baz for a second Markdown list; the pinned renderer reads it as a paragraph.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/2725",
-      "fingerprint": "52c770adb5f1bba970f649ea46ef8ffe324c12df78724e1ee9079f1b51f893cf",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "- foo\n- bar\n\n* baz\n",
-            "html": "<ul>\n  <li>foo</li>\n  <li>bar</li>\n</ul>\n<ul>\n  <li>baz</li>\n</ul>"
-          },
-          "php": {
-            "status": 0,
-            "source": "- foo\n- bar\n\n* baz\n",
-            "html": "<ul>\n  <li>foo</li>\n  <li>bar</li>\n</ul>\n<ul>\n  <li>baz</li>\n</ul>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "- foo\n- bar\n\n+ baz\n",
-            "html": "<ul>\n  <li>foo</li>\n  <li>bar</li>\n</ul>\n<p>+ baz</p>"
-          }
-        }
-      }
-    },
-    {
-      "key": "djot/attributes.test:319",
-      "reason": "carve-rs escapes the blockquote marker as \\> a, changing the imported meaning.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/2726",
-      "fingerprint": "27102bab20c2425db6ad1300688811e07055648476f378cad3ab67e46c6b8331",
-      "observation": {
-        "kind": "meaning",
-        "answers": {
-          "js": {
-            "status": 0,
-            "source": "{attr=\"long value spanning multiple lines\"}\n> a\n",
-            "html": "<blockquote attr=\"long value spanning multiple lines\"><p>a</p></blockquote>"
-          },
-          "php": {
-            "status": 0,
-            "source": "{attr=\"long value spanning multiple lines\"}\n> a\n",
-            "html": "<blockquote attr=\"long value spanning multiple lines\"><p>a</p></blockquote>"
-          },
-          "rust": {
-            "status": 0,
-            "source": "{attr=\"long value spanning multiple lines\"}\n\\> a\n",
-            "html": "<p attr=\"long value spanning multiple lines\">&gt; a</p>"
-          }
-        }
-      }
-    }
-  ]
+  "differences": []
 }

@@ -69,8 +69,6 @@ const OPT_IN_ONLY = {
 
 /** Fields permitted by the schema before the corresponding engine rollout. */
 const ENGINE_ROLLOUT_PENDING = {
-  'raw_inline.cellWraps': 'continuation join inside an atomic inline (CARVE-P12-069): produced once the pinned carve-js ships markup-carve/carve-js#2998',
-  'math.cellWraps': 'continuation join inside an atomic inline (CARVE-P12-069): produced once the pinned carve-js ships markup-carve/carve-js#2998',
   'figure.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
   'small_caps.*': 'structural publishing node: Carve 0.1 source has no spelling; produced only by AST and format-bridge consumers',
   'ruby.*': 'structural publishing node: Carve 0.1 source has no spelling; produced only by AST and HTML-import consumers',
@@ -120,7 +118,7 @@ function declaredFields() {
 }
 
 /**
- * What the corpus produces, at BOTH stages.
+ * What the corpus and atomic inline acceptance fixtures produce, at BOTH stages.
  *
  * PART 12 §3a describes the pre-resolve tree and a consumer receives the
  * resolved one, so a field produced at either stage has a producer. Resolution
@@ -152,6 +150,10 @@ function producedFields() {
     const parsed = parse(source, { positions: true })
     walk(toAstJson(parsed))
     walk(toAstJson(resolveDoc(parse(source, { positions: true }))))
+  }
+  const wraps = JSON.parse(readFileSync(resolve(repo, 'resources/ast-cell-wraps-acceptance.json'), 'utf8'))
+  for (const { source } of wraps.rows) {
+    walk(toAstJson(parse(source, { positions: true })))
   }
 
   return { byType, anywhere }

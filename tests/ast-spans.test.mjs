@@ -333,10 +333,6 @@ const LAST_MEASURED = new Map([
   ['paragraph (extent)', 1],
   ['text (extent)', 1],
   ['footnote (extent)', 1],
-  ['cell_wrap (presence)', 25],
-  ['hard_break (extent)', 1],
-  ['table_row (presence)', 1],
-  ['text (presence)', 1],
 ])
 
 const asMeasured = (counts) =>

@@ -205,5 +205,3 @@
 #
 # The run named exactly these two lines as STALE and failed the converter gate
 # on nothing else. Both declarations were removed.
-
-rust/53-markdown-a-bullet-change-starts-a-second-list  carve-rs writes + y for the second Markdown list, which the pinned renderer reads as a paragraph; markup-carve/carve-rs#2725

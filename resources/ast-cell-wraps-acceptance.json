@@ -73,8 +73,7 @@
       "source": "| ^ | b |\n+   | u |\n+ t | v |\n",
       "path": "/children/0/rows/0/cells/0",
       "continuationLines": 2,
-      "expected": { "type": "table_cell", "header": false, "span": "rowspan", "children": [{ "type": "cell_wrap", "line": 2 }, { "type": "text", "value": "t" }] },
-      "aheadOfPin": { "pinned": { "type": "table_cell", "header": false, "children": [{ "type": "text", "value": "t" }], "span": "rowspan" }, "reason": "CARVE-P12-069 the cell_wrap names the second + line t came from (carve#3166); the pinned carve-js keeps t without it (carve-js#3058)" }
+      "expected": { "type": "table_cell", "header": false, "span": "rowspan", "children": [{ "type": "cell_wrap", "line": 2 }, { "type": "text", "value": "t" }] }
     }
   ]
 }
