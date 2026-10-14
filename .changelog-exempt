@@ -105,3 +105,4 @@
 3186: 0.1.9 - declares the carve-php and carve-rs drift on the blocked span marker lint; the rule itself is cited under carve#3183. Measurement ledger.
 3187: 0.1.9 - final release-cut engine pins; drops the lint declarations carve#3186 added once all three engines emit the rule. Pin bump.
 3193: 0.1.9 - final release-cut engine pins after the lint changelog follow-ups. Pin bump.
+3195: 0.1.9 - moves the carve-rs pin to the release-gate CI fix. Pin bump.
