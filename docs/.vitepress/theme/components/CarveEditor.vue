@@ -114,7 +114,7 @@ async function highlight(): Promise<void> {
 
 // List and container editing, from the language server's own on-type rules, so the
 // playground and the editor integrations agree on what Enter and Tab do.
-function applyEdits(v: EditorView, edits: ContinuationEdit[], base?: { from: number; insert: string }, assoc: 1 | -1 = 1): void {
+function applyEdits(v: EditorView, edits: ContinuationEdit[], base?: { from: number; insert: string }, assoc: 1 | -1 = 1, shift = 0): void {
   const mid = base ? v.state.update({ changes: base }) : null
   const state = mid ? mid.state : v.state
   const at = (p: { line: number; character: number }) => state.doc.line(p.line + 1).from + p.character
@@ -122,7 +122,7 @@ function applyEdits(v: EditorView, edits: ContinuationEdit[], base?: { from: num
   const cursor = base ? base.from + base.insert.length : v.state.selection.main.head
   v.dispatch({
     changes: mid ? mid.changes.compose(changes) : changes,
-    selection: { anchor: changes.mapPos(cursor, assoc) },
+    selection: { anchor: changes.mapPos(cursor, assoc) + shift },
     scrollIntoView: true,
     userEvent: 'input',
   })
@@ -168,12 +168,13 @@ const continueOnEnter: Command = (v) => {
     return true
   }
   const prefix = continuationPrefix(text, line.number)
+  // Text before the first newline goes before the cursor, a closer (`\n:::`, `> \n> :::`) after it.
+  const lead = prefix.split('\n', 1)[0]!
   // The server checks closers against code itself, and a new fence opener reads as inside its own block.
-  if (!prefix || (!prefix.startsWith('\n') && inCodeBlock(text, line.number))) return false
+  if (!prefix || (lead === prefix && inCodeBlock(text, line.number))) return false
   // A pipe-led line that is neither a table row nor a line-block line is text.
   if (/^[ \t]*\| $/.test(prefix) && !isTableRow(line.text) && !/^[ \t]*\| /.test(line.text)) return false
-  // A container closer (`\n:::`) goes below the cursor; a quote or table prefix goes before it.
-  applyEdits(v, [{ range: { start: position, end: position }, newText: prefix }], base, prefix.startsWith('\n') ? -1 : 1)
+  applyEdits(v, [{ range: { start: position, end: position }, newText: prefix }], base, -1, lead.length)
   return true
 }
 
