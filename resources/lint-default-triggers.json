@@ -34,6 +34,7 @@
   "table-column-arity": "{aligns=\"left\"}\n| a | b |\n",
   "table-column-overlap": "{aligns=\"left\"}\n|=> H |\n",
   "table-width-total": "{widths=\"60,50\"}\n| a | b |\n",
+  "table-span-marker-blocked": "| a | b |\n| < | c |\n",
   "semantic-attribute-value-ignored": "[x]{kbd=\"https://example.org/dune\"}\n",
   "semantic-attribute-outside-span": "`c`{kbd}\n",
   "braced-comment-in-a-template-source": "{% if user %}\n",
