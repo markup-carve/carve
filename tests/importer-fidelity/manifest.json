@@ -629,7 +629,7 @@
         "exit": 0,
         "engines": {
           "rust": {
-            "output": "[https://example.org](https://example.org)\n"
+            "output": "<https://example.org>\n"
           }
         },
         "html": {
