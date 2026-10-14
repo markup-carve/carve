@@ -1046,5 +1046,26 @@
       ]
     },
     "markdown": "[https://a.com](https://b.com)\n"
+  },
+  {
+    "name": "autolink-email-encoded-destination-fallback",
+    "rule": "CARVE-P11-069",
+    "ast": {
+      "type": "document",
+      "srcByteLength": 0,
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "autolink",
+              "text": "a|b@example.com",
+              "href": "mailto:a|b@example.com"
+            }
+          ]
+        }
+      ]
+    },
+    "markdown": "[a|b@example.com](mailto:a%7Cb@example.com)\n"
   }
 ]
