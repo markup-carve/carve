@@ -43,6 +43,7 @@ The table below covers the constructs you use most often. Items marked **same** 
 | Headings | `# H1` through `###### H6` | same | Single-line, as in Markdown. A trailing `{#id}` is **not** an attribute (see below) |
 | Links | `[text](url)` | same | |
 | Reference links | `[text][ref]` / `[ref]: url` | same | |
+| Shortcut reference links | `[ref]` / `[ref]: url` | `[ref][]` / `[ref]: url` | Carve has no shortcut form, so a bare `[ref]` stays literal. The importer writes the collapsed reference and keeps the definition; link text that cannot serve as the label, such as text crossing a line break, becomes an inline link |
 | Images | `![alt](src)` | same | |
 | Inline code | `` `code` `` | same | |
 | Fenced code | `` `code fence` `` with a language | same | Write the language next to the fence; a space is also accepted |
