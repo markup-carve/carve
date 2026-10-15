@@ -10,7 +10,7 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
-## [0.1.10] - 2026-10-15
+## [0.1.10] - 2026-10-16
 
 ### Breaking
 
@@ -52,9 +52,12 @@ Releases before 0.1.6 are archived in
   598 and 599 pin the cases (#3204).
 - Inside an unclosed code fence only the innermost container's closer is
   structural, and an unclosed fence under an open paragraph in a container
-  opens nothing (corpus 597, 604) (#3201, #3246).
+  opens nothing; the clause now says it does not reach that paragraph case
+  (corpus 597, 604) (#3201, #3246, #3251).
 - Markdown import keeps a resolved shortcut reference `[ref]` as the
   collapsed reference `[ref][]` with its definition (#3241, #3245).
+- The executable spec's bracket scan skips autolinks and cross-references
+  in a fence label and an image alt, as CARVE-P3-001 states (#3252, #3254).
 
 ### Improvements
 

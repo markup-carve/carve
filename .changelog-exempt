@@ -116,3 +116,5 @@
 3237: 0.1.10 - moves the carve-js and carve-php pins to their empty destination fixes; the rule is cited under #2878. Pin bump.
 3238: 0.1.10 - moves the carve-rs pin past the table header losses. Pin bump.
 3243: 0.1.10 - moves the carve-php pin past the header losses and guard tests. Pin bump.
+3250: 0.1.10 - moves the carve-rs pin past the atomic autolink, cross-reference and comment port. Pin bump.
+3253: 0.1.10 - moves the carve-js and carve-php pins to their mains and re-measures the ledgers. Pin bump.
