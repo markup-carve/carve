@@ -19,6 +19,20 @@ const g = ohm.grammar(readFileSync(presolve(here, '../../resources/carve-core.oh
 // CARVE-P3-025 names general categories Mn, Mc and Me, which Ohm's grammar
 // syntax cannot spell, so the placeholder rule is given them here.
 g.rules.markChar.body = new ohm.pexprs.Alt(['Mn', 'Mc', 'Me'].map((c) => new ohm.pexprs.UnicodeChar(c)))
+// The close of a bracketed run, for the layout pass: the index just past the
+// `]` that `brContent*` (or `altContent*` in an image alt) stops at, or -1.
+const bracketScan = ohm.grammar(`CarveBracketScan <: ${g.name} {
+  labelHead = "[" brContent* "]" any*
+  altHead = "[" altContent* "]" any*
+}`, { [g.name]: g })
+const bracketScanSemantics = bracketScan.createSemantics().addOperation('closeEnd', {
+  labelHead: (_open, _content, close, _rest) => close.source.endIdx,
+  altHead: (_open, _content, close, _rest) => close.source.endIdx,
+})
+export function bracketScanEnd(text, slot) {
+  const match = bracketScan.match(text, slot === 'alt' ? 'altHead' : 'labelHead')
+  return match.succeeded() ? bracketScanSemantics(match).closeEnd() : -1
+}
 const GRAPHEME_EXTENDER = /^[\p{Mn}\p{Mc}\p{Me}\u{FE00}-\u{FE0F}\u{200D}]/u
 // A delimiter followed by one of these is part of a larger character (CARVE-P3-025).
 const extendsGrapheme = (src, at) => GRAPHEME_EXTENDER.test(src.slice(at, at + 2))

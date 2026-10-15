@@ -804,7 +804,7 @@ function standaloneImage(line, ctx) {
   // falls through to the inline pass either way. Tightening it here changed no
   // document and would have read as a guard doing work it never does. The
   // reachable half of the same rule IS guarded, in `isCaptionableParagraph`.
-  const altEnd = line.startsWith('![') ? bracketRunEnd(line, 1) : -1
+  const altEnd = line.startsWith('![') ? bracketRunEnd(line, 1, 'alt') : -1
   const ref = altEnd === -1 ? null : /^\[([^\]]*)\](\{[^}]*\})?$/.exec(line.slice(altEnd))
   if (ref) {
     const attrSrc = ref[2] ?? ''

@@ -63,3 +63,14 @@ test('a label with no nesting is untouched', () => {
   assert.equal(label('::: note []\nx\n:::\n'), '')
   assert.equal(label('::: figure [g]\nx\n:::\n'), 'g')
 })
+
+// carve#3252: the run skips what `brContent` skips, autolinks and cross-references included.
+test('a `]` inside an autolink or a cross-reference does not close the slot', () => {
+  assert.equal(label('::: note [a <https://x]> b]\nx\n:::\n'), 'a <a href="https://x]">https://x]</a> b')
+  assert.equal(html('``` js [a </#x]> b]\nc\n```\n'), '<pre><code class="language-js">c\n</code></pre>')
+})
+
+test('an image alt closes past an autolink, so the reference image stays a block image', () => {
+  assert.equal(html('![a <https://x]> b][r]\n\n[r]: /i\n'), '<img src="/i" alt="a &lt;https://x]&gt; b">')
+  assert.match(html('![a </#x]> b](/i)\n^ cap\n'), /^<figure>\n  <img src="\/i" alt="a &lt;\/#x\]&gt; b">/)
+})

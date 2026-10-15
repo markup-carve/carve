@@ -17,7 +17,7 @@
  * disagreement before (carve#646).
  */
 
-import { parseAttrList, parseBlockAttrList, parseAttrBlock, matchDestination, isImageSource, headingText } from './render.mjs'
+import { parseAttrList, parseBlockAttrList, parseAttrBlock, matchDestination, isImageSource, headingText, bracketScanEnd } from './render.mjs'
 import { labelKey } from './label-key.mjs'
 import layoutTransitions from '../../resources/spec/layout-transitions.json' with { type: 'json' }
 
@@ -262,7 +262,7 @@ const ABBR_DEF = /^\*\[([A-Za-z0-9]+)\]: +(?![ \t]*$)([^ ].*)$/
 // nothing but whitespace opens no block. The lookahead is the same one `HEADING`
 // carries, for the same clause.
 const CAPTION = /^\^ +(?=.*[^ \t\n\r\f])(.*?)[ \t]*$/
-// THE §16 BRACKETED-RUN CLOSE, SCANNED RATHER THAN MATCHED (carve#1197).
+// THE §16 BRACKETED-RUN CLOSE (carve#1197).
 //
 // `line[open]` is a `[`; the return value is the index just past the `]` that
 // closes it, or -1 if the line holds no close. grammar.ebnf states the rule
@@ -271,67 +271,27 @@ const CAPTION = /^\^ +(?=.*[^ \t\n\r\f])(.*?)[ \t]*$/
 // Not expressible context-free"), and PART 3's Images note binds an image to
 // the same run: "only the leading `!` and the `<img src>` output differ".
 //
-// A REGEX CANNOT STATE THIS, which is why it kept being written as one. The
-// close is BALANCED, so `[^\]]*` answers a different question - it stops at the
-// first `]` at any depth - and it is right on exactly the inputs that have no
-// nesting, which is every image in the corpus. Three copies of that spelling
-// were live in this pipeline and all three agreed with each other and with
-// nothing else. So this is a scanner: the depth counter is the part a pattern
-// cannot carry.
-//
-// The three literal spans (inline code, the `!`-prefixed literal, an editorial
-// comment) are skipped whole, because a `]` inside them is content and cannot
-// be escaped. An UNCLOSED backtick run opens a verbatim span to the end of the
-// block (PART 3 code_span), so the run has no close on this line: -1.
+// A REGEX CANNOT STATE THIS: the close is BALANCED, so `[^\]]*` stops at the
+// first `]` at any depth (carve#1197). An UNCLOSED backtick run opens a
+// verbatim span to the end of the block (PART 3 code_span), so the run has no
+// close on this line: -1.
 // The longest run `codeClosed` in resources/carve-core.ohm pairs; the inline
-// pass refuses a longer one, and this scanner stops at the same bound.
+// pass refuses a longer one, and so does the bracket scan.
 export const MAX_CODE_RUN = 8
 // PART 7's four whitespace characters (CARVE-P7-003). JS `trim()` and `\s`
 // also take a form feed, a vertical tab and the Unicode spaces, all content.
 export const trimWs = (s) => s.replace(/^[ \t\n\r]+|[ \t\n\r]+$/g, '')
 
-const GRAPHEME_EXTENDER_AT = /^[\p{Mn}\p{Mc}\p{Me}\u{FE00}-\u{FE0F}\u{200D}]/u
-
-export function bracketRunEnd(line, open) {
+// What the run skips is `brContent` in resources/carve-core.ohm (`altContent`
+// for an image alt), read through the grammar rather than copied here: a copy
+// missed the autolink and cross-reference skips of CARVE-P3-001 (carve#3252).
+export function bracketRunEnd(line, open, slot = 'label') {
   if (line[open] !== '[') return -1
-  let depth = 0
-  let i = open
-  while (i < line.length) {
-    const c = line[i]
-    if (c === '\\') {
-      i += 2
-      continue
-    }
-    if (c === '`') {
-      const run = /^`+/.exec(line.slice(i))[0]
-      // THE SAME TIERS the inline layer pairs: a scanner that paired a run the
-      // inline pass does not would hand this pass a close it does not believe
-      // in, and the two answers meeting produced a `<figure>` wrapped around a
-      // paragraph - a shape neither layer would have emitted alone.
-      if (run.length > MAX_CODE_RUN) return -1
-      const closer = new RegExp('(?<!`)`{' + run.length + '}(?!`)', 'g')
-      closer.lastIndex = i + run.length
-      const hit = closer.exec(line)
-      if (hit === null) return -1
-      i = hit.index + run.length
-      continue
-    }
-    // `{#` before a grapheme extender opens no comment (CARVE-P3-025).
-    if (c === '{' && line[i + 1] === '#' && !GRAPHEME_EXTENDER_AT.test(line.slice(i + 2, i + 4))) {
-      const close = line.indexOf('#}', i + 2)
-      if (close !== -1) {
-        i = close + 2
-        continue
-      }
-    }
-    if (c === '[') depth++
-    if (c === ']') {
-      depth--
-      if (depth === 0) return i + 1
-    }
-    i++
-  }
-  return -1
+  const rel = bracketScanEnd(line.slice(open), slot)
+  if (rel === -1) return -1
+  // The inline pass refuses a run past the tiers wherever it sits; so does this.
+  if (line.slice(open, open + rel).includes('`'.repeat(MAX_CODE_RUN + 1))) throw new Refuse('backtick run past the code span tiers')
+  return open + rel
 }
 // THE `[label]` SLOT, read from the two openers that carry it: a colon fence and
 // a code fence. Both spelled it `/^ *\[([^\]]*)\]/`, which is the fourth and
@@ -392,7 +352,7 @@ function isCaptionableParagraph(para) {
   const line = para.map(trimLineEnd).join('\n')
   if (CAPTIONABLE_MATH.test(line)) return 'math'
   if (!line.startsWith('![')) return null
-  const altEnd = bracketRunEnd(line, 1)
+  const altEnd = bracketRunEnd(line, 1, 'alt')
   if (altEnd === -1) return null
   // The image itself is matched by the grammar, so a balanced `(...)` in the
   // destination, a `)` in the title and a quoted `}` in the block all count
