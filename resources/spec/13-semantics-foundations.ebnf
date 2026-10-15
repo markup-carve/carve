@@ -201,7 +201,10 @@
          empty cell. Fields are LITERAL text: no Carve inline parsing, smart
          typography, span markers, or per-cell attributes are recognized.
          The first row is a header unless `header-rows=0` is supplied; an
-         explicit positive `header-rows` marks that many leading rows.
+         explicit positive `header-rows` marks that many leading rows. The
+         implicit header uses zero rows when the table is empty or the footer
+         consumes every row; an explicit overlapping header and footer is
+         invalid under the ordinary table partition rule.
          Short records gain empty cells to the width of the widest record;
          longer records are retained and linted, never truncated. An empty
          fence has zero rows. A malformed quoted field leaves the fence as

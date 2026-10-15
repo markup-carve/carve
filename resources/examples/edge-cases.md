@@ -55792,3 +55792,20 @@ Total,2
 ```
 
 :::
+
+An empty delimited fence makes an empty table.
+
+::: compare
+
+````carve
+{table}
+```csv
+```
+````
+
+```html
+<table>
+</table>
+```
+
+:::

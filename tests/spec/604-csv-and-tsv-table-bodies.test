@@ -84,3 +84,12 @@ Total,2
   </tfoot>
 </table>
 ````
+
+````
+{table}
+```csv
+```
+.
+<table>
+</table>
+````

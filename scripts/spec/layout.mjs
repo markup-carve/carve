@@ -2981,7 +2981,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       if (rows !== null) {
         const width = Math.max(0, ...rows.map((row) => row.length))
         const headerAttr = attrs.find((a) => a[1] === 'header-rows' && (a[0] === 'kv' || a[0] === 'bool'))
-        const headerRows = headerAttr ? Number(headerAttr[0] === 'bool' || headerAttr[2] === '' ? 1 : headerAttr[2]) : 1
+        const footerAttr = attrs.find((a) => a[1] === 'footer-rows' && (a[0] === 'kv' || a[0] === 'bool'))
+        const footerRows = footerAttr ? Number(footerAttr[0] === 'bool' || footerAttr[2] === '' ? 1 : footerAttr[2]) : 0
+        const headerRows = headerAttr ? Number(headerAttr[0] === 'bool' || headerAttr[2] === '' ? 1 : headerAttr[2])
+          : Math.min(1, Math.max(0, rows.length - footerRows))
         node = {
           t: 'table', sourceFormat: node.lang, caption: node.caption,
           rows: rows.map((row, index) => ({

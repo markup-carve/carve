@@ -1071,7 +1071,11 @@ function renderTable(node, depth, ctx) {
     }
     if (keep.length) ordinaryAttrs.push(keep)
   }
-  if (node.sourceFormat && !tableKeys.has('header-rows')) tableKeys.set('header-rows', '1')
+  if (node.sourceFormat && !tableKeys.has('header-rows')) {
+    const rawFoot = tableKeys.get('footer-rows')
+    const foot = rawFoot === undefined ? 0 : String(rawFoot).trim() === '' ? 1 : Number(rawFoot)
+    tableKeys.set('header-rows', String(Math.min(1, Math.max(0, node.rows.length - foot))))
+  }
   const rows = node.rows
   const hasBody = ['body-rows', 'body-header-rows', 'body-header-cols'].some(key => tableKeys.has(key))
   const groups = hasBody ? tableBodyGroups(tableKeys, rows.length) : null
