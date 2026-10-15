@@ -1,40 +1,40 @@
 {
   "version": 2,
-  "note": "Corpus 602 adds four documents (carve#3226). Every engine gains four HTML identical round trips and three strict ones; Markdown holds. All counts were measured with the pinned engines.",
+  "note": "Pins js 10aae21f (carve-js#3139 through #3159), php d551607a (carve-php#3466, #3467) and rs 7d2fd546 (carve-rs#2816 and five earlier merges); the corpus did not change. Every count rose except js Markdown strict, 1435 -> 1430. Corpus 600 rows 10 through 15 leave the strict set: their braced openers now parse as text before a grapheme extender (carve-js#3141 for rows 10 and 11, #3153 for rows 12 through 15), and the js Markdown importer reads that text back with a backslash on the opener, so the tree holds escaped_text where the source holds text. The trees are still identical after normalization and render the same HTML. Row 16 joins the strict set, which nets -5. The js gains are corpus 130 row 4, corpus 601 and corpus 602, which close once the combined bold-italic token takes its word-boundary guards (carve-js#3151, #3154). Measured locally with all three pinned engines.",
   "engines": {
     "js": {
       "html": {
-        "identical": 2051,
-        "strict": 1910,
+        "identical": 2052,
+        "strict": 1912,
         "total": 2553
       },
       "md": {
-        "identical": 1846,
-        "strict": 1435,
+        "identical": 1855,
+        "strict": 1430,
         "total": 2553
       }
     },
     "php": {
       "html": {
-        "identical": 2082,
-        "strict": 1938,
+        "identical": 2083,
+        "strict": 1941,
         "total": 2553
       },
       "md": {
-        "identical": 1842,
-        "strict": 1390,
+        "identical": 1851,
+        "strict": 1395,
         "total": 2553
       }
     },
     "rs": {
       "html": {
-        "identical": 2040,
-        "strict": 1899,
+        "identical": 2041,
+        "strict": 1901,
         "total": 2553
       },
       "md": {
-        "identical": 1864,
-        "strict": 1642,
+        "identical": 1873,
+        "strict": 1652,
         "total": 2553
       }
     }
