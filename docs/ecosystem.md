@@ -69,7 +69,9 @@ Syntax highlighting, structural editing, and diagnostics inside editors.
 ### Copying a Carve document
 
 An integration that puts Carve source on the clipboard carries it as
-`text/x-carve` ([`CARVE-P9-071`](/rules/imports-security-extensions)), next to a
+`text/x-carve`, the name of the media type a Carve document has on every
+transport, written without its `charset=utf-8` parameter on a clipboard
+([`CARVE-P9-071`](/rules/imports-security-extensions)), next to a
 `text/plain` flavor for targets that know no Carve. Browser and Electron hosts
 must write it as `web text/x-carve`: the unprefixed type fails only when the
 write runs, so await `navigator.clipboard.write` and report its rejection, or a

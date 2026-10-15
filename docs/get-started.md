@@ -101,3 +101,5 @@ Start with [Build Your Own Implementation](/implementing-carve) and the [Formal
 Grammar](/grammar).
 
 **File extension:** `.crv`
+
+**Media type:** `text/x-carve; charset=utf-8`, on every transport ([`CARVE-P9-071`](/rules/imports-security-extensions))
