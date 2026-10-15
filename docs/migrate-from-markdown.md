@@ -36,26 +36,26 @@ The converter handles most mechanical substitutions, but review the output for e
 
 ## Convert a directory
 
-The directory tool keeps subfolders, copies other regular files such as images,
-and writes a `migration-report.json` beside the converted `.crv` files. Use a
-new output directory; the tool refuses to overwrite one. Run this from the
-Carve repository root:
+The JavaScript, Rust, and PHP CLIs accept the same folder command. It keeps
+subfolders, copies other regular files such as images, and writes a
+`migration-report.json` beside the converted `.crv` files. Use a new output
+directory; the command refuses to overwrite one:
 
 ```sh
-node tools/migrate-markdown-directory.mjs path/to/markdown path/to/carve
+carve migrate --from markdown --directory path/to/markdown --output path/to/carve --check-loss
 jq -r '.review[]' path/to/carve/migration-report.json
 ```
 
-The command uses `carve` on `PATH`. Pass `--carve path/to/carve` after the
-output directory to select another executable. On Windows, npm's `.cmd`
-launcher needs `--carve-node path/to/node_modules/@markup-carve/carve/dist/cli.js`;
-a native `carve.exe` works with `--carve`. The report lists copied assets and
-skipped entries, including symlinks. Check skipped entries before publishing.
+This requires a JavaScript, Rust, or PHP CLI build with `--directory` support;
+check `carve --help` before running it. The report lists
+copied assets and skipped entries, including symlinks. Check skipped entries
+before publishing.
 
-Exit code `0` means every file has only preserved or normalized findings. Exit
-code `2` means a file needs review or an entry was skipped; the converted files
-and report are still written. Exit code `1` means the converter or report failed;
-the tool removes its staging directory for these errors. A
+With `--check-loss`, exit code `0` means no file needs review and no entry was
+skipped. Exit code `1` means review is needed; the converted files and report
+are still written. Exit code `2` means the command failed without replacing
+or committing an output directory. Without `--check-loss`, a completed conversion exits
+`0` and records review items in the report. A
 `fidelity-unverified` finding
 also requires review: it means the converter could not verify that the source
 construct survived. Older CLIs may report every nontrivial file this way;
