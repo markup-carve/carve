@@ -10642,9 +10642,10 @@ EOF = (* end of file *) ;
       delimiter row, so rows written without them are a paragraph of pipes.
       A table whose first row is not entirely headers gets an EMPTY header row
       first: one empty cell for each cell of the widest row, and a delimiter
-      row of the same width, whose alignment is the one the headerless table
-      already takes from its first aligned row. A table with a leading header row
-      keeps CARVE-P11-031, which writes that row as the header.
+      row of the same width. A later all-header row supplies the delimiter's
+      alignment under CARVE-P11-031; when no row is entirely headers, the first
+      aligned row supplies it. A table with a leading header row keeps
+      CARVE-P11-031, which writes that row as the header.
 
       ON MARKDOWN IMPORT, an all-empty header with no column alignment is
       omitted, together with its delimiter row. It is the scaffolding this
