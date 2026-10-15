@@ -27,7 +27,7 @@
         "type": "object",
         "required": ["code", "target", "nodeType", "message"],
         "properties": {
-          "code": { "enum": ["raw-format-dropped", "ruby-flattened", "destination-denied", "editorial-comment-flattened", "carrier-attribute-dropped", "list-style-dropped", "list-delimiter-changed", "table-span-flattened", "table-header-row-demoted", "table-header-cell-demoted"] },
+          "code": { "enum": ["raw-format-dropped", "ruby-flattened", "destination-denied", "editorial-comment-flattened", "carrier-attribute-dropped", "list-style-dropped", "list-delimiter-changed", "table-span-flattened", "table-header-row-demoted"] },
           "attribute": { "type": "string" },
           "style": { "enum": ["lower-alpha", "upper-alpha", "lower-roman", "upper-roman"] },
           "delim": { "enum": [".", ")"] },
@@ -137,21 +137,6 @@
               "colspan": false,
               "rowspan": false,
               "message": { "const": "Wrote a later header row as a body row" }
-            }
-          },
-          {
-            "properties": {
-              "code": { "const": "table-header-cell-demoted" },
-              "attribute": false,
-              "style": false,
-              "delim": false,
-              "emittedDelim": false,
-              "target": { "const": "markdown" },
-              "nodeType": { "const": "block" },
-              "format": false,
-              "colspan": false,
-              "rowspan": false,
-              "message": { "const": "Wrote header cells as body cells" }
             }
           }
         ],

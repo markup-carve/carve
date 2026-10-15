@@ -19,11 +19,9 @@ const validate = new Ajv2020({ strict: true }).compile(schema)
 
 const SPAN = 'Flattened a spanning table cell into separate cells'
 const HEADER = 'Wrote a later header row as a body row'
-const HEADER_CELL = 'Wrote header cells as body cells'
 const pos = { startLine: 1, endLine: 1, startColumn: 12, endColumn: 19, startOffset: 11, endOffset: 18 }
 const span = { code: 'table-span-flattened', target: 'markdown', nodeType: 'block', message: SPAN, colspan: 2, pos }
 const header = { code: 'table-header-row-demoted', target: 'markdown', nodeType: 'block', message: HEADER, pos }
-const headerCell = { code: 'table-header-cell-demoted', target: 'markdown', nodeType: 'block', message: HEADER_CELL, pos }
 const report = (...losses) => ({ losses, totalLosses: losses.length, truncated: false })
 const without = (row, key) => Object.fromEntries(Object.entries(row).filter(([name]) => name !== key))
 
@@ -69,14 +67,12 @@ test('no other code carries a span count', () => {
 test('a message other than the named one is refused', () => {
   assert.equal(validate(report({ ...span, message: 'Flattened a table span' })), false)
   assert.equal(validate(report({ ...header, message: 'Demoted a header row' })), false)
-  assert.equal(validate(report(headerCell)), true)
-  assert.equal(validate(report({ ...headerCell, message: HEADER })), false)
 })
 
 test('the clause names both codes, both messages and both CLI exceptions', () => {
   const clause = readFileSync(resolve(repo, 'resources/spec/04-blocks-tables-containers.ebnf'), 'utf8')
     .replace(/\n\s+/g, ' ')
-  for (const text of [SPAN, HEADER, HEADER_CELL, '--allow-loss table-span-flattened', '--allow-loss table-header-row-demoted', '--allow-loss table-header-cell-demoted']) {
+  for (const text of [SPAN, HEADER, '--allow-loss table-span-flattened', '--allow-loss table-header-row-demoted']) {
     assert.ok(clause.includes(`\`${text}\``), `CARVE-P2-024 no longer names ${text}`)
   }
 })

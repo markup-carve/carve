@@ -397,18 +397,16 @@
 
   10d. MULTIPLE CARVE HEADER ROWS SURVIVE THE MARKDOWN TARGET -- NORMATIVE [CARVE-P11-031].
        Markdown pipe tables can identify only one header row. The first Carve
-       table row becomes that row only when every cell is a header. Otherwise
-       the target writes an empty Markdown header and keeps every Carve row in
-       source order. Any all-header row after the first is emitted as an
-       ordinary Markdown body row and reports `table-header-row-demoted`.
-       Each header cell in a mixed row that becomes a body cell reports
-       `table-header-cell-demoted` (CARVE-P2-024). No authored cell content is dropped.
+       header row therefore becomes that row, and every later Carve header row
+       is emitted as an ordinary Markdown body row. Their header semantics are
+       lost, but no authored cell content is dropped. Each such row reports
+       `table-header-row-demoted` (CARVE-P2-024).
 
        The Markdown delimiter uses the final effective column alignment from
        the Carve header rows: a later explicit header marker wins, while an
        omitted marker does not reset an earlier one. A body-cell alignment is
        local to that cell and MUST NOT become the Markdown column alignment,
-       including when that body row precedes a later header row.
+       including when that body row precedes the first header row.
 
   10e. A PRESENTATION TARGET KEEPS A CAPTION, A FENCE TITLE AND A FENCE
       LABEL -- NORMATIVE [CARVE-P11-032]. `docs/graceful-degradation.md` states the floor for
@@ -700,15 +698,14 @@
 
                                                        x
 
-  10n. A TABLE WITHOUT A LEADING HEADER ROW GETS AN EMPTY ONE --
+  10n. A TABLE WITHOUT A HEADER ROW GETS AN EMPTY ONE --
       NORMATIVE [CARVE-P11-056]. GFM reads a pipe table only below a header row and its
       delimiter row, so rows written without them are a paragraph of pipes.
-      A table whose first row is not entirely headers gets an EMPTY header row
+      A table with no header row anywhere is written with an EMPTY header row
       first: one empty cell for each cell of the widest row, and a delimiter
-      row of the same width. A later all-header row supplies the delimiter's
-      alignment under CARVE-P11-031; when no row is entirely headers, the first
-      aligned row supplies it. A table with a leading header row keeps
-      CARVE-P11-031, which writes that row as the header.
+      row of the same width, whose alignment is the one the headerless table
+      already takes from its first aligned row. A table with a header row
+      keeps CARVE-P11-031, which writes that row as the header.
 
       ON MARKDOWN IMPORT, an all-empty header with no column alignment is
       omitted, together with its delimiter row. It is the scaffolding this
@@ -722,9 +719,7 @@
       scaffolding: it is imported as a row of empty cells, one `| |` slot
       per cell, and reads back as a row (PART 9 §5 CARVE-P9-082).
 
-      A ROW IS A HEADER ROW WHEN IT OWNS AT LEAST ONE HEADER CELL AND EVERY
-      CELL IT OWNS IS A HEADER CELL. A row made only of span placeholders is
-      therefore not a header row. A span
+      A ROW IS A HEADER ROW WHEN EVERY CELL IT OWNS IS A HEADER CELL. A span
       placeholder (a cell carrying `span`) is not a cell of its own: it
       belongs to the cell whose `colspan` or `rowspan` covers it, so
       `|= A | < |` is a header row even though its placeholder carries
