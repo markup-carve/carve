@@ -4944,10 +4944,10 @@ With real content, the full bold-italic collapse still applies.
 
 :::
 
-The bold-italic pair `/*...*/` has no word-boundary condition on its outer `/`:
-the combined two-character opener wins over the bare `/`-then-`*` parse even when
-a word character sits directly before `/*` or directly after the closing `*/`, so
-it opens and closes intraword.
+The outer `/` of the pair takes the same word-boundary guards as a bare `/`: it
+does not open after a letter or digit and does not close before one. Once the
+combined token fails, each delimiter is read on its own, so the slashes stay text
+and the inner `*` pair still makes a bold span.
 
 ::: compare
 
@@ -4956,7 +4956,7 @@ a/*y*/b
 ```
 
 ```html
-<p>a<strong><em>y</em></strong>b</p>
+<p>a/<strong>y</strong>/b</p>
 ```
 
 :::
@@ -52624,6 +52624,64 @@ _︎x _y_
 
 ```html
 <p>*ाx <strong>y</strong></p>
+
+## The combined bold-italic token does not open or close inside a word
+
+`bold_italic` opens with `bare_opener('/')` and closes with `bare_closer('/')`, so
+a letter or digit against its outer `/` stops the combined token exactly as it
+stops a plain `/`. The opener fails after a letter:
+
+::: compare
+
+```carve
+a/*y*/ b
+```
+
+```html
+<p>a/<strong>y</strong>/ b</p>
+```
+
+:::
+
+and the closer fails before one:
+
+::: compare
+
+```carve
+a /*y*/b
+```
+
+```html
+<p>a /<strong>y</strong>/b</p>
+```
+
+:::
+
+A digit counts the same way on either side:
+
+::: compare
+
+```carve
+2/*a*/ and /*b*/3
+```
+
+```html
+<p>2/<strong>a</strong>/ and /<strong>b</strong>/3</p>
+```
+
+:::
+
+Paths and globs keep every character. The inner `*` pair is an ordinary bold
+span, and a second `*` opener while bold is open is text (PART 9 §9 E3):
+
+::: compare
+
+```carve
+Run src/*test*/fixtures now
+```
+
+```html
+<p>Run src/<strong>test</strong>/fixtures now</p>
 ```
 
 :::
@@ -52636,6 +52694,12 @@ _︎x _y_
 
 ```html
 <p>{^⃣x^}</p>
+
+see lib/*.js and src/*foo*/bar
+```
+
+```html
+<p>see lib/<strong>.js and src/*foo</strong>/bar</p>
 ```
 
 :::
@@ -52648,6 +52712,46 @@ _︎x _y_
 
 ```html
 <p>{,︎x,}</p>
+
+A `*/` before a letter is not a closer, so the nearest valid one closes the token
+and the rejected pair is content:
+
+::: compare
+
+```carve
+/*a*/b c*/
+```
+
+```html
+<p><strong><em>a*/b c</em></strong></p>
+```
+
+:::
+
+Intraword emphasis takes the forced form, which has no word boundary (PART 9 §22):
+
+::: compare
+
+```carve
+a{/*y*/}b
+```
+
+```html
+<p>a<em><strong>y</strong></em>b</p>
+```
+
+:::
+
+At a word boundary the combined token forms as before:
+
+::: compare
+
+```carve
+/*a*/ b
+```
+
+```html
+<p><strong><em>a</em></strong> b</p>
 ```
 
 :::

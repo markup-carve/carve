@@ -531,6 +531,7 @@ index: examples/edge-cases/index.md
   a-caption-scope-resets-at-a-structural-only-line
   a-quote-after-an-escaped-quote-closes
   a-combined-bold-italic-span-may-cross-a-line
+  the-combined-bold-italic-token-does-not-open-or-close-inside-a-word
   a-bare-closer-does-not-reach-inside-a-braced-inline
   a-bare-closer-does-not-reach-inside-a-link-destination
   a-bare-closer-does-not-reach-inside-a-cross-reference

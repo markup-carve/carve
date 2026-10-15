@@ -1,0 +1,49 @@
+The combined bold-italic token does not open or close inside a word
+
+```
+a/*y*/ b
+.
+<p>a/<strong>y</strong>/ b</p>
+```
+
+```
+a /*y*/b
+.
+<p>a /<strong>y</strong>/b</p>
+```
+
+```
+2/*a*/ and /*b*/3
+.
+<p>2/<strong>a</strong>/ and /<strong>b</strong>/3</p>
+```
+
+```
+Run src/*test*/fixtures now
+.
+<p>Run src/<strong>test</strong>/fixtures now</p>
+```
+
+```
+see lib/*.js and src/*foo*/bar
+.
+<p>see lib/<strong>.js and src/*foo</strong>/bar</p>
+```
+
+```
+/*a*/b c*/
+.
+<p><strong><em>a*/b c</em></strong></p>
+```
+
+```
+a{/*y*/}b
+.
+<p>a<em><strong>y</strong></em>b</p>
+```
+
+```
+/*a*/ b
+.
+<p><strong><em>a</em></strong> b</p>
+```

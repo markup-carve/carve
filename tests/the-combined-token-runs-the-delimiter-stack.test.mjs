@@ -70,3 +70,15 @@ test('a forced span outside a combined token still resolves', () => {
     '<p><strong>a <em>b <strong>c</strong> d</em> e</strong> x</p>',
   )
 })
+
+// carve#3217: the outer `/` takes bare_opener and bare_closer. `wordSlash`
+// stands in for the look-behind a PEG lacks, so its `/` must stay a candidate.
+test('a name before the combined token keeps it from opening', () => {
+  assert.equal(html('@me/*y*/ x\n'), '<p><span class="mention"><strong>@me</strong></span>/<strong>y</strong>/ x</p>')
+  assert.equal(html('#t/*y*/ x\n'), '<p><span class="tag"><strong>#t</strong></span>/<strong>y</strong>/ x</p>')
+})
+
+test('a slash glued after a word still closes an open italic', () => {
+  assert.equal(html('/x a/*y*/\n'), '<p><em>x a</em><strong>y</strong>/</p>')
+  assert.equal(html('{_a/*y*/b_}\n'), '<p><u>a/<strong>y</strong>/b</u></p>')
+})

@@ -1082,6 +1082,16 @@ function buildToks(children, literalDelims = '') {
       })
       continue
     }
+    if (name === 'wordSlash') {
+      // The word, mention or tag goes through this same loop on its own.
+      const head = alt.child(0)
+      toks.push(...buildToks([{ child: () => head, h: () => head.h() }], literalDelims))
+      const slash = alt.child(1)
+      toks.push(literalDelims.includes('/')
+        ? { k: 't', h: '/' }
+        : { k: 'd', ch: '/', at: slash.source.startIdx })
+      continue
+    }
     if (name === 'litDelim') {
       const ch = alt.child(0).sourceString
       // Only / * _ ~ = are stack candidates; ^ and , have no bare span.
@@ -1860,9 +1870,12 @@ const capSem = g.createSemantics().addOperation('capIdx', {
       items.children.map((c) => {
         const alt = c.child(0)
         const at = alt.source.startIdx
+        if (alt.ctorName === 'wordSlash') {
+          return [{ k: 'word', at }, { k: 'd', ch: '/', at: alt.child(1).source.startIdx }]
+        }
         const ch = alt.ctorName === 'litDelim' ? alt.child(0).sourceString : ''
         return STACK_DELIMS.has(ch) ? { k: 'd', ch, at } : { k: alt.ctorName, at }
-      })
+      }).flat()
     const { toks, openMap } = pairGuarded(build, this.source.sourceString)
     for (let i = 0; i < toks.length; i++) {
       if (openMap.has(i)) {

@@ -175,7 +175,7 @@ CarveCore {
   // `=` before `>` does not pair as a highlight - measured). This keeps the
   // tokenizer's per-character work
   // near-constant, so the inline pass (with the SS9 delimiter stack) is O(n).
-  inline     = word | spComment | bracedComment | inlineSpace
+  inline     = wordSlash | word | spComment | bracedComment | inlineSpace
              | arrow | span | inlineNote | litDelim
              | symbol | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
              | editorial | bracedDash | emptyForced | overlapForced | forcedSpan
@@ -201,7 +201,15 @@ CarveCore {
 
   // Combined form /*x*/ -> <strong><em> (grammar.ebnf bold_italic); matched
   // before emph so the two-char token wins over nested /-then-* parsing.
-  boldItalic = "/*" ~spaceOrEnd ~graphemeExt biInner+ "*/" ~graphemeExt attrRun?
+  // The outer `/` takes bare_opener and bare_closer (carve#3217). A PEG has no
+  // look-behind, so `wordSlash` takes a `/` glued after a word before `span`
+  // can see it; a `*/` before a letter or digit is content, not the closer.
+  boldItalic = "/*" ~spaceOrEnd ~graphemeExt biInner+ biCloser attrRun?
+  biCloser   = "*/" ~wordChar ~graphemeExt
+  // The `/` stays a §9 candidate: it cannot open after the word, but it can
+  // close an open italic (render.mjs). A mention or tag ends on a name
+  // character too, so it guards the token the same way.
+  wordSlash  = (word | mention | tag) "/" &"*"
   // `nl` belongs here: a paragraph folds across lines, so a combined
   // /*...*/ span may too. Without it the production failed on any
   // multi-line span and the delimiter stack paired the two characters
@@ -215,7 +223,7 @@ CarveCore {
   // stops the run.
   // Any other character is content, as `bi_content` says (carve#2159); a
   // space or tab only where no closer follows it.
-  biInner    = ~("*/") (~dRun<"*"> rich | word | biSpComment | spaceChar ~("*/") | nl | nbspEsc | hardBreak
+  biInner    = ~biCloser (~dRun<"*"> rich | word | biSpComment | spaceChar ~("*/") | nl | nbspEsc | hardBreak
              | litDelim | other | bracedComment | ~spaceChar anyChar)
 
   // constructs allowed inside any span (everything except spans themselves,
@@ -344,7 +352,7 @@ CarveCore {
   // (CARVE-P3-025).
   forced<d>  = ~("{" d graphemeExt) "{" d fInner<d>+ d "}" attrRun?
   fInner<d>  = ~(d "}") (fCodeU<d> | fPrefixU<d> | editorial | bracedDash | ~dRun<d> rich
-             | span | word | fSpComment<d> | bracedComment | inlineSpace | litDelim
+             | span | wordSlash | word | fSpComment<d> | bracedComment | inlineSpace | litDelim
              | bang | dollar | ellipsis | dashRun | dot | dash | plus | pct
              | lt | gt | dquote | squote | hash | nl | other | "{" | "}" | anyChar)
   // An unclosed run inside a forced span ends at the span's `X}` (PART 3

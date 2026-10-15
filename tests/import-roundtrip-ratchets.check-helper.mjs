@@ -305,6 +305,11 @@ const visibleText = (html) =>
 // all three import and keep their text, and HTML round-trips all three.
 // Markdown misses -9, where the writer escapes the inner `*`.
 
+// Corpus 601 adds eight documents (carve#3217); all eight import, are fixed
+// points and preserve their text under the pinned build. Both round trips
+// keep only -7, the forced `a{/*y*/}b`: the pinned build still reads the other
+// seven as combined tokens, which come back braced or as `*/.../*`.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {
