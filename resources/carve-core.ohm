@@ -340,9 +340,9 @@ CarveCore {
   // one-or-more repetition and docs/parsing-ambiguities.md ss16 says `{^^}` is
   // not a superscript. An empty pair is not the construct, so its characters
   // are text (carve#1447).
-  // A forced opener of the five bare delimiters needs a whole delimiter
-  // (CARVE-P3-025); `{^` and `{,` carry no such guard.
-  forced<d>  = ~("{" ("/" | "*" | "_" | "~" | "=") graphemeExt) "{" d fInner<d>+ d "}" attrRun?
+  // Every forced opener needs a whole delimiter, `{^` and `{,` included
+  // (CARVE-P3-025).
+  forced<d>  = ~("{" d graphemeExt) "{" d fInner<d>+ d "}" attrRun?
   fInner<d>  = ~(d "}") (fCodeU<d> | fPrefixU<d> | editorial | bracedDash | ~dRun<d> rich
              | span | word | fSpComment<d> | bracedComment | inlineSpace | litDelim
              | bang | dollar | ellipsis | dashRun | dot | dash | plus | pct
@@ -870,7 +870,7 @@ CarveCore {
   lineEnd    = newline | end
   spaceOrEnd = " " | "\t" | newline | end
   // CARVE-P3-025 grapheme_extender. Ohm cannot spell a general category, so
-  // scripts/spec/render.mjs replaces `markChar` with Mn | Me after loading;
+  // scripts/spec/render.mjs replaces `markChar` with Mn | Mc | Me after loading;
   // the range below is only what a reader without that step still matches.
   graphemeExt = "\u200D" | "\uFE00".."\uFE0F" | markChar
   markChar   = "\u0300".."\u036F"

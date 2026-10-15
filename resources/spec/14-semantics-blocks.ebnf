@@ -9,8 +9,9 @@
          raw inline, evaluate bare_opener(d) and bare_closer(d). Neither
          holds -> literal text. A d followed by a grapheme_extender is a
          part of a larger character and satisfies neither (CARVE-P3-025):
-         `*a*` + U+20DD is literal, and `*a*` + U+0301 + ` b*` pairs the
-         first `*` with the last.
+         `*a*` + U+20DD is literal, `*a*` + U+0301 + ` b*` pairs the
+         first `*` with the last, and a spacing mark counts the same:
+         `*` + U+093E + `x *y*` leaves the first `*` text.
       E2 CLOSE FIRST. A d satisfying bare_closer(d) with a REACHABLE open
          d-entry on the stack (E2a) closes the NEAREST such entry. Spans NEST,
          never overlap: entries pushed above the closed one are popped and

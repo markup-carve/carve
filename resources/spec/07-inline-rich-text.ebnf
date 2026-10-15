@@ -67,11 +67,13 @@ bare_closer(d) = <&(non_ws), d, !(alnum | grapheme_extender) ;
    reader, and its `*` opens or closes nothing, before a word or after one
    (carve#3209; corpus 600-a-delimiter-that-is-part-of-a-larger-character-is-text).
    The character is skipped, not a barrier: a later delimiter still pairs
-   across it. The same guard sits on the delimiter of a forced opener and on
-   the `*` of the combined `/*` token below; a closer `X}` or `*/` is followed
-   by its own brace or slash, so the guard cannot apply there. Only the
-   character AFTER d is read: what precedes d is judged as before. *)
-grapheme_extender = (* a character of Unicode general category Mn or Me *)
+   across it. The same guard sits on the delimiter of every forced opener,
+   `{^` and `{,` included, and on the `*` of the combined `/*` token below; a
+   closer `X}` or `*/` is followed by its own brace or slash, so the guard
+   cannot apply there. Only the character AFTER d is read: what precedes d is
+   judged as before. A spacing mark (Mc, such as U+093E) extends a grapheme
+   like a nonspacing one: Unicode's extended grapheme clusters include both. *)
+grapheme_extender = (* a character of Unicode general category Mn, Mc or Me *)
                   | (* U+FE00 .. U+FE0F, VARIATION SELECTOR-1 to -16 *)
                   | (* U+200D ZERO WIDTH JOINER *) ;
 (* The look-behind reads the character before d IN d's OWN INLINE RUN. A `_`
@@ -96,14 +98,15 @@ grapheme_extender = (* a character of Unicode general category Mn or Me *)
      the character before d (the note under the templates).
    - closer: d is NOT preceded by whitespace and NOT followed by an
      alphanumeric.
-   - either: d is NOT followed by a grapheme_extender (CARVE-P3-025). (A following same-delimiter is allowed: in `/x//` the
-     first `/` after `x` closes; the trailing `/` stays literal.)
+   - either: d is NOT followed by a grapheme_extender (CARVE-P3-025). (A
+     following same-delimiter is allowed: in `/x//` the first `/` after `x`
+     closes; the trailing `/` stays literal.)
    Run disambiguation (nearest valid closer, delimiter stack, no bare same-type
    nesting; explicit braced children may repeat a kind) is PART 9 §9.
    Existing `01-emphasis` cases pin bare behavior; new explicit nesting is
    specified in resources/spec/nested-braced-emphasis-cases.json.
    Forced `{X … X}` spans bypass BOTH word-boundary guards (PART 9 §22);
-   only the CARVE-P3-025 guard on their opener remains. *)
+   only the CARVE-P3-025 guard on their opener remains, for all seven. *)
 
 emphasis = bare_opener('/'), emphasis_content, bare_closer('/'), [attribute_run] ;  (* italic *)
 strong = bare_opener('*'), strong_content, bare_closer('*'), [attribute_run] ;       (* bold *)
@@ -126,8 +129,8 @@ highlight = bare_opener('='), highlight_content, bare_closer('='), [attribute_ru
 forced_emphasis   = "{/", !(grapheme_extender), forced_content, "/}", [attribute_run] ;   (* italic    *)
 forced_strong     = "{*", !(grapheme_extender), forced_content, "*}", [attribute_run] ;   (* bold      *)
 forced_underline  = "{_", !(grapheme_extender), forced_content, "_}", [attribute_run] ;   (* underline *)
-forced_super      = "{^", forced_content, "^}", [attribute_run] ;   (* sup       *)
-forced_sub        = "{,", forced_content, ",}", [attribute_run] ;   (* sub       *)
+forced_super      = "{^", !(grapheme_extender), forced_content, "^}", [attribute_run] ;   (* sup       *)
+forced_sub        = "{,", !(grapheme_extender), forced_content, ",}", [attribute_run] ;   (* sub       *)
 (* `{~ … ~}` is forced strikethrough UNLESS it contains a top-level `~>`, in
    which case it is editorial substitution (PART 9 §22 disambiguation). *)
 forced_strike     = "{~", !(grapheme_extender), forced_content, "~}", [attribute_run] ;

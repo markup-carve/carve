@@ -301,6 +301,9 @@ const visibleText = (html) =>
 // points and preserve their text under the pinned build. HTML misses only -8,
 // whose combined `/*` token comes back as `*/.../*`. Markdown misses -3, -5
 // and -6, where the writer escapes the final delimiter, and -8.
+// Rows 9 to 11 add three more (an Mc mark, `{^` and `{,` before an extender);
+// all three import and keep their text, and HTML round-trips all three.
+// Markdown misses -9, where the writer escapes the inner `*`.
 
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()

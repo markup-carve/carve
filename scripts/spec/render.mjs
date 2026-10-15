@@ -16,10 +16,10 @@ import { MAX_CODE_RUN, Refuse, trimWs } from './layout.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const g = ohm.grammar(readFileSync(presolve(here, '../../resources/carve-core.ohm'), 'utf8'))
-// CARVE-P3-025 names general categories Mn and Me, which Ohm's grammar syntax
-// cannot spell, so the placeholder rule is given them here.
-g.rules.markChar.body = new ohm.pexprs.Alt([new ohm.pexprs.UnicodeChar('Mn'), new ohm.pexprs.UnicodeChar('Me')])
-const GRAPHEME_EXTENDER = /^[\p{Mn}\p{Me}\u{FE00}-\u{FE0F}\u{200D}]/u
+// CARVE-P3-025 names general categories Mn, Mc and Me, which Ohm's grammar
+// syntax cannot spell, so the placeholder rule is given them here.
+g.rules.markChar.body = new ohm.pexprs.Alt(['Mn', 'Mc', 'Me'].map((c) => new ohm.pexprs.UnicodeChar(c)))
+const GRAPHEME_EXTENDER = /^[\p{Mn}\p{Mc}\p{Me}\u{FE00}-\u{FE0F}\u{200D}]/u
 // A delimiter followed by one of these is part of a larger character (CARVE-P3-025).
 const extendsGrapheme = (src, at) => GRAPHEME_EXTENDER.test(src.slice(at, at + 2))
 
