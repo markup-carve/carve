@@ -649,6 +649,8 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    the cell's `pos` when recorded, and NO `format`. Its `message` is NAMED HERE
    and emitted verbatim: `Wrote header cells as body cells`. Only the Markdown
    target reports this code.
+   When the same cell also flattens a span, its `table-header-cell-demoted`
+   loss precedes its `table-span-flattened` loss.
 
    The canonical Carve writer contributes no `destination-denied` row
    (CARVE-P9-054).

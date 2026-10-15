@@ -722,7 +722,9 @@
       scaffolding: it is imported as a row of empty cells, one `| |` slot
       per cell, and reads back as a row (PART 9 §5 CARVE-P9-082).
 
-      A ROW IS A HEADER ROW WHEN EVERY CELL IT OWNS IS A HEADER CELL. A span
+      A ROW IS A HEADER ROW WHEN IT OWNS AT LEAST ONE HEADER CELL AND EVERY
+      CELL IT OWNS IS A HEADER CELL. A row made only of span placeholders is
+      therefore not a header row. A span
       placeholder (a cell carrying `span`) is not a cell of its own: it
       belongs to the cell whose `colspan` or `rowspan` covers it, so
       `|= A | < |` is a header row even though its placeholder carries

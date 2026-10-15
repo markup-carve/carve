@@ -2139,6 +2139,8 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    the cell's `pos` when recorded, and NO `format`. Its `message` is NAMED HERE
    and emitted verbatim: `Wrote header cells as body cells`. Only the Markdown
    target reports this code.
+   When the same cell also flattens a span, its `table-header-cell-demoted`
+   loss precedes its `table-span-flattened` loss.
 
    The canonical Carve writer contributes no `destination-denied` row
    (CARVE-P9-054).
@@ -10659,7 +10661,9 @@ EOF = (* end of file *) ;
       scaffolding: it is imported as a row of empty cells, one `| |` slot
       per cell, and reads back as a row (PART 9 §5 CARVE-P9-082).
 
-      A ROW IS A HEADER ROW WHEN EVERY CELL IT OWNS IS A HEADER CELL. A span
+      A ROW IS A HEADER ROW WHEN IT OWNS AT LEAST ONE HEADER CELL AND EVERY
+      CELL IT OWNS IS A HEADER CELL. A row made only of span placeholders is
+      therefore not a header row. A span
       placeholder (a cell carrying `span`) is not a cell of its own: it
       belongs to the cell whose `colspan` or `rowspan` covers it, so
       `|= A | < |` is a header row even though its placeholder carries
