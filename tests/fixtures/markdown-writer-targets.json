@@ -961,6 +961,12 @@
     "markdown": "a <span class=\"critic-comment\"> \\*b\\* \\<c> </span> e\n"
   },
   {
+    "name": "strong-around-italic-before-a-letter",
+    "rule": "CARVE-P11-045",
+    "carve": "x */a/*é y */b/*中 z\n",
+    "markdown": "x ***a***é y ***b***中 z\n"
+  },
+  {
     "name": "literal-bracket-link-label-0",
     "rule": "CARVE-P11-023",
     "carve": "[a [b] c](/u)\n",
