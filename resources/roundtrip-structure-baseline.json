@@ -1,41 +1,41 @@
 {
   "version": 2,
-  "note": "At pins js f51a0ce9, php 19a6bf4c, and rs 31202ddd, HTML identical falls by one in each engine. JS HTML strict falls by one, Markdown identical rises by one, and Markdown strict falls by four. PHP HTML strict falls by two and Markdown strict falls by six. Rust Markdown identical and strict each rise by one. All counts were measured locally across 2,544 documents per target with the pinned engines.",
+  "note": "Corpus 600 rows 12 to 16 add five documents (CARVE-P3-025: the editorial frames `{+`, `{-`, `{~`, `{#` and the braced comment `{%` before an extender). HTML rises by three identical and three strict on every engine; Markdown by four and four on js and php, three and three on rs. Measured with the pinned engines (js locally, php and rs by CI).",
   "engines": {
     "js": {
       "html": {
-        "identical": 2044,
-        "strict": 1904,
-        "total": 2544
+        "identical": 2047,
+        "strict": 1907,
+        "total": 2549
       },
       "md": {
-        "identical": 1842,
-        "strict": 1431,
-        "total": 2544
+        "identical": 1846,
+        "strict": 1435,
+        "total": 2549
       }
     },
     "php": {
       "html": {
-        "identical": 2075,
-        "strict": 1932,
-        "total": 2544
+        "identical": 2078,
+        "strict": 1935,
+        "total": 2549
       },
       "md": {
-        "identical": 1838,
-        "strict": 1388,
-        "total": 2544
+        "identical": 1842,
+        "strict": 1392,
+        "total": 2549
       }
     },
     "rs": {
       "html": {
-        "identical": 2033,
-        "strict": 1893,
-        "total": 2544
+        "identical": 2036,
+        "strict": 1896,
+        "total": 2549
       },
       "md": {
-        "identical": 1861,
-        "strict": 1639,
-        "total": 2544
+        "identical": 1864,
+        "strict": 1642,
+        "total": 2549
       }
     }
   }
