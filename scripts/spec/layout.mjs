@@ -2695,6 +2695,10 @@ function normalizeSource(src) {
   // and scripts/formal-core-check.mjs can go on treating a U+0000 in the
   // OUTPUT as a framing leak, since that is now the only way one gets there.
   src = replaceNulls(src)
+  // A lone surrogate becomes U+FFFD too (CARVE-P0-023), one code unit for
+  // one, so no offset moves. A file's invalid bytes never reach here: the
+  // UTF-8 decode that produced this string already replaced them.
+  src = src.toWellFormed()
   // `newline = '\n' | '\r\n' | '\r'` - all three end a line, and splitting on
   // '\n' alone left the carriage return as ordinary text at the end of every
   // line, which the inline grammar then refused outright. So the oracle could

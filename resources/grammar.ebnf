@@ -109,6 +109,20 @@
            one U+0000 to one U+FFFD, so the transform does not change source
            offsets.
 
+           ILL-FORMED INPUT IS REPLACED BEFORE THE FIRST LINE IS READ -- NORMATIVE [CARVE-P0-023].
+           A document is a sequence of Unicode scalar values. Every ill-formed
+           sequence in the input becomes U+FFFD REPLACEMENT CHARACTER before
+           the first line is read, the same way U+0000 is replaced under
+           CARVE-P0-002. Two shapes are ill-formed: an invalid UTF-8 byte
+           sequence in a file or stream, which takes one U+FFFD per maximal
+           subpart (the count the WHATWG UTF-8 decoder gives), and a lone
+           surrogate in a string handed to an API, which takes one U+FFFD per
+           unpaired code unit. Ill-formed input is replaced, never rejected,
+           so every HTML and AST string a processor emits is well-formed. A
+           paired surrogate is a well-formed astral character and is left
+           alone, and a noncharacter (U+FFFE, U+FDD0) is a scalar value and
+           therefore content.
+
            Column arithmetic is PART 9 §24 C1. A TAB IS SYNTAX ONLY IN THE
            LEADING RUN (CARVE-P7-001).
    STATE.  open := stack of open containers, bottom-up (document ->

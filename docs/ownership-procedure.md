@@ -19,8 +19,9 @@ uses O1 to O4.
 
 ## Normalize source
 
-Strip a leading byte order mark and replace every NUL before the first line is
-read. Columns are measured on the result. Rules: CARVE-P0-001 and CARVE-P0-002.
+Strip a leading byte order mark, and replace every NUL and every ill-formed
+sequence with U+FFFD, before the first line is read. Columns are measured on the
+result. Rules: CARVE-P0-001, CARVE-P0-002 and CARVE-P0-023.
 
 ## O1 Strip prefixes
 

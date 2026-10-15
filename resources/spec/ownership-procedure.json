@@ -16,7 +16,8 @@
       "title": "Normalize source",
       "rules": [
         "CARVE-P0-001",
-        "CARVE-P0-002"
+        "CARVE-P0-002",
+        "CARVE-P0-023"
       ],
       "checkerHelpers": [
         "normalizeSource"

@@ -41,6 +41,12 @@
       "scope": "parsing"
     },
     {
+      "id": "CARVE-P0-023",
+      "part": "0",
+      "title": "ILL-FORMED INPUT IS REPLACED BEFORE THE FIRST LINE IS READ",
+      "scope": "parsing"
+    },
+    {
       "id": "CARVE-P0-003",
       "part": "0",
       "title": "EVERY FRAME CARRIES OWNERSHIP AND PARAGRAPH STATE SEPARATELY",
