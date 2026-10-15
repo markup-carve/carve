@@ -1,41 +1,41 @@
 {
   "version": 2,
-  "note": "At the PHP pin, corpus 595, 596, and 598 now parse unresolved cross-references as heading_ref nodes. Their earlier parser shapes counted as identical; the heading_ref nodes lose identity through HTML import. Corpus 469 gains an identical round trip, leaving PHP/HTML two lower overall. All counts were remeasured with the pinned engines.",
+  "note": "Corpus 600 adds eight documents (CARVE-P3-025). HTML rises by eight identical and eight strict on every engine; Markdown by seven identical and four strict on js and php, six and six on rs. Measured by CI with the pinned engines.",
   "engines": {
     "js": {
       "html": {
-        "identical": 2017,
-        "strict": 1887,
-        "total": 2525
+        "identical": 2025,
+        "strict": 1895,
+        "total": 2533
       },
       "md": {
-        "identical": 1829,
-        "strict": 1428,
-        "total": 2525
+        "identical": 1836,
+        "strict": 1432,
+        "total": 2533
       }
     },
     "php": {
       "html": {
-        "identical": 2049,
-        "strict": 1916,
-        "total": 2525
+        "identical": 2057,
+        "strict": 1924,
+        "total": 2533
       },
       "md": {
-        "identical": 1826,
-        "strict": 1387,
-        "total": 2525
+        "identical": 1833,
+        "strict": 1391,
+        "total": 2533
       }
     },
     "rs": {
       "html": {
-        "identical": 2006,
-        "strict": 1875,
-        "total": 2525
+        "identical": 2014,
+        "strict": 1883,
+        "total": 2533
       },
       "md": {
-        "identical": 1849,
-        "strict": 1628,
-        "total": 2525
+        "identical": 1855,
+        "strict": 1634,
+        "total": 2533
       }
     }
   }
