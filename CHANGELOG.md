@@ -62,8 +62,8 @@ Releases before 0.1.6 are archived in
 ### Improvements
 
 - CARVE-P9-071 names `text/x-carve; charset=utf-8` as the media type on every
-  transport, not only the clipboard, and `.crv` as the file extension (#3213,
-  #3218).
+  transport, not only the clipboard, where the flavor stays the bare
+  `text/x-carve`, and `.crv` as the file extension (#3213, #3218).
 - Optional aligned table formatting is defined, with Unicode 18 grapheme and
   East Asian Width rules and shared byte fixtures; canonical formatting is
   unchanged (#3184, #3200).
