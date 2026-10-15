@@ -168,10 +168,10 @@
         it contains a top-level `~>` ({~old~>new~} -> <del>old</del><ins>new
         </ins>), and forced STRIKETHROUGH otherwise ({~old~} ->
         <s>old</s>). The `~>` test is the discriminator. TOP-LEVEL means the
-        search skips nested braced spans and verbatim content -- code, math,
-        an inline literal, a comment -- and an escaped `\~>`, so {~`a~>b~} is
-        <s><code>a~>b</code></s>. Only MATCHED nested braced spans are skipped;
-        an unmatched opener hides no separator. Track separators by their
+        search skips nested braced spans, verbatim content (code, math, an
+        inline literal, a comment), a bracket run, an autolink, a cross-reference
+        and an escaped `\~>` (E2a), so {~`a~>b~} is <s><code>a~>b</code></s>.
+        Only MATCHED braced spans hide one. Track separators by their
         braced frame during the linear token pass, not with a suffix scan
         per {~ opener. At a matched frame's closer, a visible top-level ~>
         selects substitution; otherwise the frame is strike. A nested {~

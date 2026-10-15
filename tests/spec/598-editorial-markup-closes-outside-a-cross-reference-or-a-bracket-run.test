@@ -27,5 +27,5 @@ Editorial markup closes outside a cross-reference or a bracket run
 ```
 {~a </#x~>y> b~}
 .
-<p><del>a &lt;/<span class="tag"><strong>#x</strong></span></del><ins>y&gt; b</ins></p>
+<p><s>a &lt;/#x~&gt;y&gt; b</s></p>
 ```

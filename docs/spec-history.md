@@ -329,3 +329,20 @@ autolink: a `]` inside `<https://x]>` cannot close a label opened before it, so
 `[a <https://x]> b](u)` is one link, as a destination slot already was. An
 autolink body resolves no escapes, so the `]` had no other spelling. Corpus
 category 599 pins it.
+
+Later on 2026-10-15 the maintainer ruled three more splits under one
+principle: an autolink, a cross-reference and a comment are atomic, so no
+delimiter, closer, substitution arrow or bracket outside one reads inside it
+(PART 9 E2a). In `{~a <https://x~>y> b~}` the autolink stays whole and the
+`~>` that ends it is no arrow, so the pair is a strikethrough, where carve-js
+and the executable spec had split there. That supersedes the cross-reference
+reading recorded above: `{~a </#x~>y> b~}` is a strikethrough too, and corpus
+row 598-5 carries the new expectation. In `{+a {#x+}#} b+}` the comment hides
+the `+}`, so the insertion runs to the final closer, where carve-rs and the
+executable spec had closed inside the comment. In `[a </#x]> b](u)` the
+bracket scan skips the cross-reference (CARVE-P3-001), so the label holds it
+and the line is one link, where carve-php and the executable spec had closed
+inside it. A delimited comment `{% %}` is the same kind of opaque span: it
+hides an insertion closer, and the bracket scan skips it everywhere except an
+image alt, which is a literal slot where `{%` opens nothing. Corpus category
+605 pins the three inputs and their siblings.

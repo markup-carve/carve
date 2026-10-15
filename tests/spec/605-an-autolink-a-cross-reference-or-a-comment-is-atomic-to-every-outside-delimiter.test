@@ -1,0 +1,93 @@
+An autolink, a cross-reference or a comment is atomic to every outside delimiter
+
+```
+{~a <https://x~>y> b~}
+.
+<p><s>a <a href="https://x~">https://x~</a>y&gt; b</s></p>
+```
+
+```
+{~a <https://x~>y~>z b~}
+.
+<p><del>a <a href="https://x~">https://x~</a>y</del><ins>z b</ins></p>
+```
+
+```
+{~a </#x~> b~}
+.
+<p><s>a &lt;/#x~&gt; b</s></p>
+```
+
+```
+{~a <me@x.org~>y> b~}
+.
+<p><del>a &lt;me@x.org</del><ins>y&gt; b</ins></p>
+```
+
+```
+{+a {#x+}#} b+}
+.
+<p><ins>a <span class="critic-comment">x+}</span> b</ins></p>
+```
+
+```
+{-a {#x-}#} b-}
+.
+<p><del>a <span class="critic-comment">x-}</span> b</del></p>
+```
+
+```
+{+a {%x+}%} b+}
+.
+<p><ins>a  b</ins></p>
+```
+
+```
+{#a </#x#}> b#}
+.
+<p><span class="critic-comment">a &lt;/#x</span>&gt; b#}</p>
+```
+
+```
+[a </#x]> b](u)
+.
+<p><a href="u">a &lt;/#x]&gt; b</a></p>
+```
+
+```
+[a </#x]> b]{.c}
+.
+<p><span class="c">a &lt;/#x]&gt; b</span></p>
+```
+
+```
+![a </#x]> b](u)
+.
+<img src="u" alt="a &lt;/#x]&gt; b">
+```
+
+```
+[a </#x](u)> b](v)
+.
+<p><a href="v">a &lt;/#x](u)&gt; b</a></p>
+```
+
+```
+[a {%x]%} b](u)
+.
+<p><a href="u">a  b</a></p>
+```
+
+```
+^[a </#x]> b]
+.
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>a &lt;/#x]&gt; b<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```

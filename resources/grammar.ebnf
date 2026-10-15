@@ -2381,9 +2381,9 @@ link_text = {inline_element | text_run | literal_special} ;
 
      `code`            inline code
      !`literal`        inline literal (PART 9 §27)
-     {# comment #}     editorial comment
+     {# #}  {% %}      an editorial or a delimited comment ({% %} not in alt)
      (dest "title")    a link or image destination slot
-     <url>  <email>    an autolink, through its `>` (ruled 2026-10-15)
+     <url> <a@b> </#id> an autolink or a cross-reference, through its `>`
 
    A `]` inside any of them is content, not the close.
 
@@ -2391,8 +2391,8 @@ link_text = {inline_element | text_run | literal_special} ;
    joins this set. `{+ +}`, `{- -}` and `{~ ~> ~}` take `inline_content`, so
    `[{+a\]b+}](u)` works and those constructs are NOT skipped.
 
-   THE DESTINATION SLOT and THE AUTOLINK joined this set by that criterion:
-   neither resolves an escape (`docs/dismissed-syntax.md`, normative), so a `]`
+   THE DESTINATION SLOT, THE AUTOLINK and THE CROSS-REFERENCE joined by it:
+   none resolves an escape (`docs/dismissed-syntax.md`, normative), so a `]`
    there has no second spelling. The slot is skipped through its closing
    parenthesis, title included, and NOT a trailing attribute block -- an
    attribute value does resolve escapes, so `[t[x](/u){title="]"}y](/z)`
@@ -4967,13 +4967,13 @@ EOF = (* end of file *) ;
          never overlap: entries pushed above the closed one are popped and
          their delimiters demoted to literal (the djot model -- an opener that
          gets closed demotes the still-open candidates between).
-      E2a OPAQUE CONSTRUCTS. A bare delimiter never pairs across the boundary
-         of a CODE SPAN (with raw inline and inline math), a BRACED INLINE
-         (the forced spans of §22, `{+ +}`, `{- -}`, `{~ ~> ~}`, `{# #}`,
-         `{% %}`), a LINK DESTINATION (the `(…)` of an inline link or image,
-         title included), an AUTOLINK or a CROSS-REFERENCE (`</#id>`), in either
-         direction: inside a braced inline only entries pushed there are
-         reachable, and those still open at its closer demote to literal.
+      E2a OPAQUE CONSTRUCTS. No delimiter -- bare, a braced closer or the
+         substitution arrow `~>` -- pairs across the boundary of a CODE SPAN
+         (with raw inline and math), a BRACED INLINE (§22's forced spans,
+         `{+ +}`, `{- -}`, `{~ ~> ~}`, `{# #}`, `{% %}`), a LINK DESTINATION (title
+         included), an AUTOLINK or a CROSS-REFERENCE (`</#id>`), in either
+         direction; they are atomic (ruled 2026-10-15). Inside a braced inline
+         only its own entries are reachable, and open ones demote at its closer.
          `~{/x/}{/y~/}` -> ~<em>x</em><em>y~</em>.
       E2b BRACKET-RUN BOUND. PART 8 resolves a BRACKET RUN before bare
          emphasis, forced spans and non-opaque editorial markup. Every delimiter pair,
@@ -6431,10 +6431,10 @@ EOF = (* end of file *) ;
         it contains a top-level `~>` ({~old~>new~} -> <del>old</del><ins>new
         </ins>), and forced STRIKETHROUGH otherwise ({~old~} ->
         <s>old</s>). The `~>` test is the discriminator. TOP-LEVEL means the
-        search skips nested braced spans and verbatim content -- code, math,
-        an inline literal, a comment -- and an escaped `\~>`, so {~`a~>b~} is
-        <s><code>a~>b</code></s>. Only MATCHED nested braced spans are skipped;
-        an unmatched opener hides no separator. Track separators by their
+        search skips nested braced spans, verbatim content (code, math, an
+        inline literal, a comment), a bracket run, an autolink, a cross-reference
+        and an escaped `\~>` (E2a), so {~`a~>b~} is <s><code>a~>b</code></s>.
+        Only MATCHED braced spans hide one. Track separators by their
         braced frame during the linear token pass, not with a suffix scan
         per {~ opener. At a matched frame's closer, a visible top-level ~>
         selects substitution; otherwise the frame is strike. A nested {~

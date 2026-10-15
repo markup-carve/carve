@@ -377,15 +377,13 @@ CarveCore {
   // verbatim content, so a pair whose only `~>` sits in code is a forced
   // strikethrough (PART 9 SS22, carve#2083). An unclosed run ends at `~}`.
   // PART 8 ranks a bracket run, an autolink and a cross-reference above
-  // editorial markup (PART 9 E2b), so the `~}` search steps over all three.
-  // The ARROW search steps over the bracket run only: an autolink or a
-  // cross-reference whose body ends in `~` still supplies the arrow, so
-  // `{~a </#x~>y> b~}` substitutes at it, as carve-js does (ruled 2026-10-15).
+  // editorial markup (PART 9 E2a, E2b), so the `~>` and the `~}` search both
+  // step over all three: an autolink or a cross-reference whose body ends in
+  // `~` supplies no arrow, and `{~a <https://x~>y> b~}` is a forced
+  // strikethrough (ruled 2026-10-15).
   edSub      = "{~" ~graphemeExt edSubOld* "~>" edSubNew* "~}"
-  edSubOld   = ~"~>" (~edAngleArrow (crossref | autolink) | ~"~}" edSubAtom)
+  edSubOld   = ~"~>" (crossref | autolink | ~"~}" edSubAtom)
   edSubNew   = ~"~}" (crossref | autolink | edSubAtom)
-  // Neither body holds a `>`, so the only arrow one can carry is at its end.
-  edAngleArrow = "<" (~"~>" ~">" any)* "~>"
   // A `$` or `!` prefix needs no alternative of its own: the backtick run
   // behind it is what carries the arrow, and this rule skips that run.
   edSubAtom  = escape | edSubCode | bracedComment | edCommentBody | emptyForced | overlapForced | forcedSpan | nested | edChar
@@ -399,10 +397,11 @@ CarveCore {
   // run whose closer sits later in the block stays one span (PART 3 UNCLOSED
   // RUN). A run with no closer is consumed as itself and ends at the closer.
   // A cross-reference, an autolink and a bracket run (its destination slot
-  // included) resolve before editorial markup (PART 8, PART 9 E2b), so a
-  // `+}` or `-}` inside one is their content (ruled 2026-10-15). Bodies only,
-  // as in `brContent`: an attribute block after either is still scanned.
-  edScan     = escape | codeClosed | backtickRun | crossref | autolinkBody | nested | any
+  // included) resolve before editorial markup (PART 8, PART 9 E2b), and an
+  // editorial comment is opaque (E2a), so a `+}` or `-}` inside one is its
+  // content (ruled 2026-10-15). Bodies only, as in `brContent`: an attribute
+  // block after any of them is still scanned.
+  edScan     = escape | codeClosed | backtickRun | crossref | autolinkBody | edCommentBody | bracedComment | nested | any
   backtickRun = "\u0060"+
 
   // raw inline passthrough: a code span whose trailing block is EXACTLY
@@ -464,9 +463,9 @@ CarveCore {
   // the link. The SLOT and not `linkTail`: `attrRun` is outside it for the
   // reason stated above, since an attribute value does resolve escapes.
   //
-  // An AUTOLINK BODY joins by the same criterion (CARVE-P3-001, ruled
-  // 2026-10-15): `[a <https://x]> b](u)` is one link.
-  brContent  = escape | litInlineBody | code | edCommentBody | autolinkBody | nested | (~"]" any)
+  // An AUTOLINK BODY joins by the same criterion, and a CROSS-REFERENCE with
+  // it (CARVE-P3-001, both ruled 2026-10-15): `[a </#x]> b](u)` is one link.
+  brContent  = escape | litInlineBody | code | edCommentBody | bracedComment | autolinkBody | crossref | nested | (~"]" any)
   nested     = "[" brContent* "]" destSlot?
   brTail     = linkTail | refTail | attrRun | emptyAttrs
   linkTail   = destSlot attrRun?
@@ -572,7 +571,12 @@ CarveCore {
   // attribute, so nothing inside it is inline-parsed: `![x /b/ y](/u)` gives
   // `alt="x /b/ y"` and `![x \] y](/u)` keeps the backslash. Only the CLOSE
   // changed; `image` / `imageRef` still read `alt.sourceString`.
-  altText    = brContent*
+  //
+  // ONE DIFFERENCE from `brContent`: an alt is a literal slot, so a `{%` in it
+  // opens no delimited comment and a `]` after it still closes (CARVE-P3-001).
+  altText    = altContent*
+  altContent = escape | litInlineBody | code | edCommentBody | autolinkBody | crossref | altNested | (~"]" any)
+  altNested  = "[" altContent* "]" destSlot?
 
   // --- Autolinks (PART 3): URL or email in angle brackets ------------------
   autolink   = autolinkBody attrRun?
