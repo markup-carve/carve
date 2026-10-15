@@ -24,16 +24,3 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural-5  ahead of the pin: PART 2 A CLOSER IS REQUIRED a comment line leaves no paragraph open, so the unclosed fence below it ends at the container's closer; carve-js runs it to the end (markup-carve/carve-js#3167)
-597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural-6  ahead of the pin: PART 2 A CLOSER IS REQUIRED a comment line leaves no paragraph open, so the unclosed fence below it ends at the container's closer; carve-js runs it to the end (markup-carve/carve-js#3167)
-604-an-unclosed-fence-under-an-open-paragraph-in-a-container-opens-nothing-2  ahead of the pin: PART 9 §10 I4 an unclosed fence under an open quote or item paragraph in a container is text; carve-js opens it (markup-carve/carve-js#3167)
-604-an-unclosed-fence-under-an-open-paragraph-in-a-container-opens-nothing-3  ahead of the pin: PART 9 §10 I4 an unclosed fence under an open quote or item paragraph in a container is text; carve-js opens it (markup-carve/carve-js#3167)
-598-editorial-markup-closes-outside-a-cross-reference-or-a-bracket-run-5  ahead of the pin: PART 9 E2a an autolink or a cross-reference supplies no substitution arrow; carve-js splits at the `~>` that ends one (markup-carve/carve-js#3168)
-605-an-autolink-a-cross-reference-or-a-comment-is-atomic-to-every-outside-delimiter  ahead of the pin: PART 9 E2a an autolink or a cross-reference supplies no substitution arrow; carve-js splits at the `~>` that ends one (markup-carve/carve-js#3168)
-605-an-autolink-a-cross-reference-or-a-comment-is-atomic-to-every-outside-delimiter-2  ahead of the pin: PART 9 E2a an autolink or a cross-reference supplies no substitution arrow; carve-js splits at the `~>` that ends one (markup-carve/carve-js#3168)
-605-an-autolink-a-cross-reference-or-a-comment-is-atomic-to-every-outside-delimiter-3  ahead of the pin: PART 9 E2a an autolink or a cross-reference supplies no substitution arrow; carve-js splits at the `~>` that ends one (markup-carve/carve-js#3168)
-605-an-autolink-a-cross-reference-or-a-comment-is-atomic-to-every-outside-delimiter-9  ahead of the pin: CARVE-P3-001 the bracket scan skips a cross-reference; carve-js closes the label at the `]` inside it (markup-carve/carve-js#3168)
-605-an-autolink-a-cross-reference-or-a-comment-is-atomic-to-every-outside-delimiter-10  ahead of the pin: CARVE-P3-001 the bracket scan skips a cross-reference; carve-js closes the label at the `]` inside it (markup-carve/carve-js#3168)
-605-an-autolink-a-cross-reference-or-a-comment-is-atomic-to-every-outside-delimiter-11  ahead of the pin: CARVE-P3-001 the bracket scan skips a cross-reference; carve-js closes the label at the `]` inside it (markup-carve/carve-js#3168)
-605-an-autolink-a-cross-reference-or-a-comment-is-atomic-to-every-outside-delimiter-12  ahead of the pin: CARVE-P3-001 the bracket scan skips a cross-reference; carve-js closes the label at the `]` inside it (markup-carve/carve-js#3168)
-605-an-autolink-a-cross-reference-or-a-comment-is-atomic-to-every-outside-delimiter-14  ahead of the pin: CARVE-P3-001 the bracket scan skips a cross-reference; carve-js closes the label at the `]` inside it (markup-carve/carve-js#3168)
