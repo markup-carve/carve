@@ -1,41 +1,41 @@
 {
   "version": 2,
-  "note": "Pins js 10aae21f (carve-js#3139 through #3159), php d551607a (carve-php#3466, #3467) and rs 7d2fd546 (carve-rs#2816 and five earlier merges); the corpus did not change. Every count rose except js Markdown strict, 1435 -> 1430. Corpus 600 rows 10 through 15 leave the strict set: their braced openers now parse as text before a grapheme extender (carve-js#3141 for rows 10 and 11, #3153 for rows 12 through 15), and the js Markdown importer reads that text back with a backslash on the opener, so the tree holds escaped_text where the source holds text. The trees are still identical after normalization and render the same HTML. Row 16 joins the strict set, which nets -5. The js gains are corpus 130 row 4, corpus 601 and corpus 602, which close once the combined bold-italic token takes its word-boundary guards (carve-js#3151, #3154). Measured locally with all three pinned engines.",
+  "note": "Pins js 10aae21f (carve-js#3139 through #3159), php d551607a (carve-php#3466, #3467) and rs 7d2fd546 (carve-rs#2816 and five earlier merges); the corpus did not change. Every count rose except js Markdown strict, 1435 -> 1430. Corpus 600 rows 10 through 15 leave the strict set: their braced openers now parse as text before a grapheme extender (carve-js#3141 for rows 10 and 11, #3153 for rows 12 through 15), and the js Markdown importer reads that text back with a backslash on the opener, so the tree holds escaped_text where the source holds text. The trees are still identical after normalization and render the same HTML. Row 16 joins the strict set, which nets -5. The js gains are corpus 130 row 4, corpus 601 and corpus 602, which close once the combined bold-italic token takes its word-boundary guards (carve-js#3151, #3154). Measured locally with all three pinned engines. Corpus 603 adds four documents (carve#3234). HTML identical and strict rise by four for every engine. Markdown identical rises by three for every engine: row 3 is written as `***x***`, which reads back as an italic around a bold. Markdown strict rises by one for js and php and by three for rs; the js importer returns the base row and row 2 with escaped delimiters around the same tree. Counts from the PR CI run against the pinned engines.",
   "engines": {
     "js": {
       "html": {
-        "identical": 2052,
-        "strict": 1912,
-        "total": 2553
+        "identical": 2056,
+        "strict": 1916,
+        "total": 2557
       },
       "md": {
-        "identical": 1855,
-        "strict": 1430,
-        "total": 2553
+        "identical": 1858,
+        "strict": 1431,
+        "total": 2557
       }
     },
     "php": {
       "html": {
-        "identical": 2083,
-        "strict": 1941,
-        "total": 2553
+        "identical": 2087,
+        "strict": 1945,
+        "total": 2557
       },
       "md": {
-        "identical": 1851,
-        "strict": 1395,
-        "total": 2553
+        "identical": 1854,
+        "strict": 1396,
+        "total": 2557
       }
     },
     "rs": {
       "html": {
-        "identical": 2041,
-        "strict": 1901,
-        "total": 2553
+        "identical": 2045,
+        "strict": 1905,
+        "total": 2557
       },
       "md": {
-        "identical": 1873,
-        "strict": 1652,
-        "total": 2553
+        "identical": 1876,
+        "strict": 1655,
+        "total": 2557
       }
     }
   }
