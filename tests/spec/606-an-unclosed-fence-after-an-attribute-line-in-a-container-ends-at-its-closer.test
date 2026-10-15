@@ -1,0 +1,79 @@
+An unclosed fence after an attribute line in a container ends at its closer
+
+````
+::: note
+{#x}
+```
+code
+::::
+:::
+after *b*
+.
+<aside class="admonition note" aria-label="Note">
+  <pre id="x"><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+````
+
+````
+::: outer
+:::: inner
+{.c}
+```
+code
+:::
+::::
+:::
+after *b*
+.
+<div class="outer">
+  <div class="inner">
+    <pre class="c"><code>code
+:::
+</code></pre>
+  </div>
+</div>
+<p>after <strong>b</strong></p>
+````
+
+````
+::: note
+> {#x}
+```
+code
+::::
+:::
+after *b*
+.
+<aside class="admonition note" aria-label="Note">
+  <blockquote>
+
+  </blockquote>
+  <pre><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+````
+
+````
+::: note
+- {#x}
+```
+code
+::::
+:::
+after *b*
+.
+<aside class="admonition note" aria-label="Note">
+  <ul>
+    <li></li>
+  </ul>
+  <pre><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+````

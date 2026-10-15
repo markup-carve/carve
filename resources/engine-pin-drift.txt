@@ -24,3 +24,7 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+606-an-unclosed-fence-after-an-attribute-line-in-a-container-ends-at-its-closer  ahead of the pin: PART 2 A CLOSER IS REQUIRED a block-attribute line leaves no paragraph open, so the unclosed fence below it ends at the container's closer; carve-js runs it to the end
+606-an-unclosed-fence-after-an-attribute-line-in-a-container-ends-at-its-closer-2  ahead of the pin: PART 2 A CLOSER IS REQUIRED a block-attribute line leaves no paragraph open, so the unclosed fence below it ends at the container's closer; carve-js runs it to the end
+606-an-unclosed-fence-after-an-attribute-line-in-a-container-ends-at-its-closer-3  ahead of the pin: PART 2 A CLOSER IS REQUIRED a block-attribute line leaves no paragraph open, so the unclosed fence below it ends at the container's closer; carve-js runs it to the end
+606-an-unclosed-fence-after-an-attribute-line-in-a-container-ends-at-its-closer-4  ahead of the pin: PART 2 A CLOSER IS REQUIRED a block-attribute line leaves no paragraph open, so the unclosed fence below it ends at the container's closer; carve-js runs it to the end

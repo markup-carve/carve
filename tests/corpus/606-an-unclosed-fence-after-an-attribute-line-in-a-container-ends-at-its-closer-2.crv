@@ -1,0 +1,9 @@
+::: outer
+:::: inner
+{.c}
+```
+code
+:::
+::::
+:::
+after *b*
