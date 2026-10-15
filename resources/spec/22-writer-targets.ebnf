@@ -402,6 +402,12 @@
        lost, but no authored cell content is dropped. Each such row reports
        `table-header-row-demoted` (CARVE-P2-024).
 
+       The first Carve header row becomes the Markdown header even when body
+       rows precede it, so it is written above them; that move reports
+       `table-header-row-hoisted` (CARVE-P2-024). A header cell in a row that
+       is not a header row is written as an ordinary body cell and reports
+       `table-header-cell-demoted` (CARVE-P2-024).
+
        The Markdown delimiter uses the final effective column alignment from
        the Carve header rows: a later explicit header marker wins, while an
        omitted marker does not reset an earlier one. A body-cell alignment is

@@ -643,6 +643,26 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    cells and loses its header semantics. Only the Markdown target reports
    this code.
 
+   A first Carve header row that body rows precede, and that the Markdown
+   target therefore writes as the pipe table's header above them
+   (CARVE-P11-031), contributes one loss with the stable code
+   `table-header-row-hoisted`, the selected `target`, `nodeType` of `block`,
+   the row's `pos` when recorded, and NO `format`. Its `message` is NAMED
+   HERE and emitted verbatim: `Moved a header row above earlier body rows`.
+   The row keeps its cells and its header semantics, and the rows lose their
+   authored order. Only the Markdown target reports this code.
+
+   Each header cell in a row that is not a header row (CARVE-P11-056 defines
+   one), which the Markdown target writes as an ordinary body cell,
+   contributes one loss in document order with the stable code
+   `table-header-cell-demoted`, the selected `target`, `nodeType` of `block`,
+   the cell's `pos` when recorded, and NO `format`. Its `message` is NAMED
+   HERE and emitted verbatim: `Wrote a header cell as a body cell`. A pipe
+   table marks headers only by row, so the cell keeps its content and loses
+   its header semantics. Only the Markdown target reports this code. A row's
+   own loss precedes its cells' losses, and a cell's
+   `table-header-cell-demoted` loss precedes its `table-span-flattened` loss.
+
    The canonical Carve writer contributes no `destination-denied` row
    (CARVE-P9-054).
 
@@ -674,8 +694,10 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    `--allow-loss carrier-attribute-dropped`,
    `--allow-loss list-style-dropped`,
    `--allow-loss list-delimiter-changed`,
-   `--allow-loss table-span-flattened` and
-   `--allow-loss table-header-row-demoted`. The list is closed:
+   `--allow-loss table-span-flattened`,
+   `--allow-loss table-header-row-demoted`,
+   `--allow-loss table-header-row-hoisted` and
+   `--allow-loss table-header-cell-demoted`. The list is closed:
    `destination-denied` is not waivable, because a blanked destination is a
    policy refusal, not a loss the target cannot carry: CARVE-P9-054 applies
    the denylist in both safe modes, and the path that keeps a denied
