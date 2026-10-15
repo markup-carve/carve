@@ -488,7 +488,7 @@ const sem = g.createSemantics().addOperation('h', {
     // Build a flat token stream (leaf HTML fragments + bare-delimiter
     // candidates) and run the PART 9 SS9 delimiter-stack pass over it.
     return resolveEmphasis(
-      () => buildToks(items.children),
+      (blocked) => buildToks(items.children, '', blocked),
       this.source.sourceString,
       '',
       this.source.startIdx,
@@ -689,7 +689,7 @@ const sem = g.createSemantics().addOperation('h', {
     // delimiters resolve normally, but the forced delimiter X itself stays
     // literal inside (PART 9 SS22). Run the same SS9 stack, holding X literal.
     const body = resolveEmphasis(
-      () => buildToks(inner.children, dch),
+      (blocked) => buildToks(inner.children, dch, blocked),
       this.source.sourceString,
       dch,
       inner.source.startIdx,
@@ -1048,6 +1048,18 @@ function forcedUnder(alt) {
   return n.ctorName === 'forced' ? n : null
 }
 
+// A blocked combined token as the delimiters it is made of. Its content keeps
+// the reading `biInner` gave it.
+function splitCombined(bi, literalDelims, blocked) {
+  const delim = (ch, at) => literalDelims.includes(ch) ? { k: 't', h: escapeHtml(ch) } : { k: 'd', ch, at }
+  const open = bi.child(0).source.startIdx
+  const close = bi.child(2).source.startIdx
+  const toks = [delim('/', open), delim('*', open + 1), ...buildToks(bi.child(1).children, literalDelims, blocked), delim('*', close), delim('/', close + 1)]
+  const attrs = bi.child(3).children[0]
+  if (attrs) toks.push({ k: 'attrs', node: attrs, at: attrs.source.startIdx, h: attrs.h(), heldMarker: literalDelims.includes('/'), markerAt: close + 1, markerChar: '/' })
+  return toks
+}
+
 // E1 CLASSIFY for one candidate.
 function classify(t, src, blocked) {
   if (t.k !== 'd') return
@@ -1066,7 +1078,7 @@ function classify(t, src, blocked) {
 // alternative renders to an HTML fragment now. `literalDelims` (the enclosing
 // span's own delimiters, if any) are held literal rather than made candidates:
 // one character for a forced span, both of `/*` for the combined token.
-function buildToks(children, literalDelims = '') {
+function buildToks(children, literalDelims = '', blocked) {
   const toks = []
   for (let ci = 0; ci < children.length; ci++) {
     const c = children[ci]
@@ -1082,10 +1094,23 @@ function buildToks(children, literalDelims = '') {
       })
       continue
     }
+    if (name === 'span') {
+      // A `_` or `/` before the combined token blocks its opener unless it
+      // opens a span that closes, which only pairing decides (carve#3226).
+      // `pairGuarded` blocks it, and the rebuild reads its delimiters singly.
+      const bi = alt.child(0)
+      const at = alt.source.startIdx
+      if (blocked?.has(at)) {
+        toks.push(...splitCombined(bi, literalDelims, blocked))
+      } else {
+        toks.push({ k: 't', h: c.h(), combinedAt: at })
+      }
+      continue
+    }
     if (name === 'wordSlash') {
       // The word, mention or tag goes through this same loop on its own.
       const head = alt.child(0)
-      toks.push(...buildToks([{ child: () => head, h: () => head.h() }], literalDelims))
+      toks.push(...buildToks([{ child: () => head, h: () => head.h() }], literalDelims, blocked))
       const slash = alt.child(1)
       toks.push(literalDelims.includes('/')
         ? { k: 't', h: '/' }
@@ -1318,10 +1343,17 @@ function pairDelims(toks, src, literalDelims = '', blocked) {
 function pairGuarded(build, src, literalDelims = '', contentAt = 0) {
   const blocked = new Set()
   for (;;) {
-    const toks = build()
+    const toks = build(blocked)
     const openMap = pairDelims(toks, src, literalDelims, blocked)
     const opens = new Set([...openMap.keys()].map((i) => toks[i].at))
     let grew = false
+    for (const t of toks) {
+      const at = t.combinedAt
+      if (at > contentAt && guardedBy('/', src[at - 1]) && !opens.has(at - 1)) {
+        blocked.add(at)
+        grew = true
+      }
+    }
     for (const i of openMap.keys()) {
       const t = toks[i]
       if (t.at > contentAt && guardedBy(t.ch, src[t.at - 1]) && !opens.has(t.at - 1)) {

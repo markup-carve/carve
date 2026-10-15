@@ -1,0 +1,25 @@
+The combined bold-italic token does not open after an underscore or a slash
+
+```
+a_/*y*/ x
+.
+<p>a_/<strong>y</strong>/ x</p>
+```
+
+```
+//*y*/ x
+.
+<p>//<strong>y</strong>/ x</p>
+```
+
+```
+see snake_/*glob*/ now
+.
+<p>see snake_/<strong>glob</strong>/ now</p>
+```
+
+```
+_/*x*/_
+.
+<p><u><strong><em>x</em></strong></u></p>
+```

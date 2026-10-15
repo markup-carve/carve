@@ -82,3 +82,14 @@ test('a slash glued after a word still closes an open italic', () => {
   assert.equal(html('/x a/*y*/\n'), '<p><em>x a</em><strong>y</strong>/</p>')
   assert.equal(html('{_a/*y*/b_}\n'), '<p><u>a/<strong>y</strong>/b</u></p>')
 })
+
+// carve#3226: a `_` or `/` before the token blocks it unless that character
+// opens a span that closes, so only the stack can decide it (`pairGuarded`).
+test('a closing underscore or slash before the combined token blocks it', () => {
+  assert.equal(html('_a_/*y*/\n'), '<p><u>a</u>/<strong>y</strong>/</p>')
+  assert.equal(html('/a//*y*/ b/\n'), '<p><em>a</em>/<strong>y</strong>/ b/</p>')
+  // The rejected token's attribute block rides on its closing `/`, which closes nothing.
+  assert.equal(html('a_/*y*/{.c} x\n'), '<p>a_/<strong>y</strong>/{.c} x</p>')
+  // A forced span holds its own delimiter literal through the split.
+  assert.equal(html('{*a_/*y*/ b*}\n'), '<p><strong>a_/*y*/ b</strong></p>')
+})

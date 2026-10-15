@@ -314,6 +314,10 @@ const visibleText = (html) =>
 // keep only -7, the forced `a{/*y*/}b`: the pinned build still reads the other
 // seven as combined tokens, which come back braced or as `*/.../*`.
 
+// Corpus 602 adds four documents (carve#3226); all four import, are fixed
+// points and preserve their text under the pinned build. None round trips on
+// either target: the combined token comes back as the nested spelling.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {
