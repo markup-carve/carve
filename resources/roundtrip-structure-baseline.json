@@ -1,41 +1,41 @@
 {
   "version": 2,
-  "note": "Corpus 600 rows 12 to 16 add five documents (CARVE-P3-025: the editorial frames `{+`, `{-`, `{~`, `{#` and the braced comment `{%` before an extender). HTML rises by three identical and three strict on every engine. Markdown identical rises by four on js and php and three on rs; Markdown strict by four on js, two on php and three on rs. Measured with the pinned engines (js locally, php and rs by CI).",
+  "note": "Corpus 602 adds four documents (carve#3226). Every engine gains four HTML identical round trips and three strict ones; Markdown holds. All counts were measured with the pinned engines.",
   "engines": {
     "js": {
       "html": {
-        "identical": 2047,
-        "strict": 1907,
-        "total": 2549
+        "identical": 2051,
+        "strict": 1910,
+        "total": 2553
       },
       "md": {
         "identical": 1846,
         "strict": 1435,
-        "total": 2549
+        "total": 2553
       }
     },
     "php": {
       "html": {
-        "identical": 2078,
-        "strict": 1935,
-        "total": 2549
+        "identical": 2082,
+        "strict": 1938,
+        "total": 2553
       },
       "md": {
         "identical": 1842,
         "strict": 1390,
-        "total": 2549
+        "total": 2553
       }
     },
     "rs": {
       "html": {
-        "identical": 2036,
-        "strict": 1896,
-        "total": 2549
+        "identical": 2040,
+        "strict": 1899,
+        "total": 2553
       },
       "md": {
         "identical": 1864,
         "strict": 1642,
-        "total": 2549
+        "total": 2553
       }
     }
   }
