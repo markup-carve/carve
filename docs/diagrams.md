@@ -113,6 +113,11 @@ For text-based formats, the source remains in that labeled element until the
 drawing library replaces it. To leave otherwise-unnamed fences without an image
 role or default label, configure the extension with `label: ''`.
 
+Markdown, plain-text, and ANSI output keep the diagram source but have no
+`aria-label` field. Put a description in nearby visible prose when those targets
+must explain the drawing. The same applies to an `aria-label` on math: HTML
+keeps the name, while text targets show the formula.
+
 ## Rendering without a browser
 
 For PDF, email, or another output without browser JavaScript, select static mode

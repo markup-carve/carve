@@ -156,6 +156,10 @@ The pair also fails LOUDLY under the old reading - two assertions each, the §1
 invariant and the fixture's own self-check - so the object being compared cannot
 quietly revert.
 
+`15` pins a backslash hard break at the end of the document. Its HTML is
+invisible there, so byte-for-byte writer output and the AST round trip keep the
+break from silently disappearing.
+
 ## Regenerating
 
 Do **not** regenerate expected files from an implementation's current output -

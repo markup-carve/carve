@@ -8,7 +8,23 @@
         {"path": "/children/0", "startByte": 0, "endByte": 5},
         {"path": "/children/0/children/0", "startByte": 0, "endByte": 5}
       ]}
-  }],
+  },
+    {"name": "loose list excludes separator blank from item ranges", "source": "- a\n\n- b\n", "layout": {"version": 1, "encoding": "utf-8", "source": "- a\n\n- b\n", "lineEndings": "lf", "bom": false,
+      "nodes": [
+        {"path":"/children/0","startByte":0,"endByte":8},
+        {"path":"/children/0/items/0","startByte":0,"endByte":3},
+        {"path":"/children/0/items/0/children/0","startByte":2,"endByte":3},
+        {"path":"/children/0/items/0/children/0/children/0","startByte":2,"endByte":3},
+        {"path":"/children/0/items/1","startByte":5,"endByte":8},
+        {"path":"/children/0/items/1/children/0","startByte":7,"endByte":8},
+        {"path":"/children/0/items/1/children/0/children/0","startByte":7,"endByte":8}
+      ]}},
+    {"name": "inline code range includes delimiters but excludes line ending", "source": "A `x`\n", "layout": {"version": 1, "encoding": "utf-8", "source": "A `x`\n", "lineEndings": "lf", "bom": false,
+      "nodes": [
+        {"path":"/children/0","startByte":0,"endByte":5},
+        {"path":"/children/0/children/0","startByte":0,"endByte":2},
+        {"path":"/children/0/children/1","startByte":2,"endByte":5}
+      ]}}],
   "sourceFacts": [
     {"name": "utf8 bom and crlf", "source": "﻿- 😀\r\n", "lineEndings": "crlf", "bom": true},
     {"name": "mixed endings", "source": "a\r\nb\nc\r", "lineEndings": "mixed", "bom": false},
