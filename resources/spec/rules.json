@@ -1399,7 +1399,7 @@
     {
       "id": "CARVE-P11-056",
       "part": "11",
-      "title": "A TABLE WITHOUT A HEADER ROW GETS AN EMPTY ONE",
+      "title": "A TABLE WITHOUT A LEADING HEADER ROW GETS AN EMPTY ONE",
       "scope": "canonical-writing"
     },
     {
