@@ -52518,7 +52518,11 @@ pairs across the skipped one. Ordinary spans next to a keycap still form. The
 guard also covers the opener of a forced span and the `*` of the combined `/*`
 token. The last three rows pin a spacing mark (U+093E, category Mc) after an
 opener, and `{^` before U+20E3 and `{,` before U+FE0E: every forced opener
-takes the guard, superscript and subscript included.
+takes the guard, superscript and subscript included. The editorial and comment
+frames take it too, one row each: `{+` before U+20E3, `{-` before U+FE0E, a
+substitution `{~` before U+0301, an editorial comment opened by the keycap
+`#` U+FE0F U+20E3, and a braced comment `{%` before U+093E. Each row holds a
+later frame of the same kind that still forms.
 
 ::: compare
 
@@ -52648,6 +52652,66 @@ _︎x _y_
 
 ```html
 <p>{,︎x,}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+{+⃣x+} {+y+}
+```
+
+```html
+<p>{+⃣x+} <ins>y</ins></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{-︎x-} {-y-}
+```
+
+```html
+<p>{-︎x-} <del>y</del></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{~́a~>b~} {~c~>d~}
+```
+
+```html
+<p>{~́a~&gt;b~} <del>c</del><ins>d</ins></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{#️⃣ x#} {#y#}
+```
+
+```html
+<p>{#️⃣ x#} <span class="critic-comment">y</span></p>
+```
+
+:::
+
+::: compare
+
+```carve
+a{% y %}b {%ाx%}
+```
+
+```html
+<p>ab {%ाx%}</p>
 ```
 
 :::

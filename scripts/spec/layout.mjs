@@ -290,6 +290,8 @@ export const MAX_CODE_RUN = 8
 // also take a form feed, a vertical tab and the Unicode spaces, all content.
 export const trimWs = (s) => s.replace(/^[ \t\n\r]+|[ \t\n\r]+$/g, '')
 
+const GRAPHEME_EXTENDER_AT = /^[\p{Mn}\p{Mc}\p{Me}\u{FE00}-\u{FE0F}\u{200D}]/u
+
 export function bracketRunEnd(line, open) {
   if (line[open] !== '[') return -1
   let depth = 0
@@ -314,7 +316,8 @@ export function bracketRunEnd(line, open) {
       i = hit.index + run.length
       continue
     }
-    if (c === '{' && line[i + 1] === '#') {
+    // `{#` before a grapheme extender opens no comment (CARVE-P3-025).
+    if (c === '{' && line[i + 1] === '#' && !GRAPHEME_EXTENDER_AT.test(line.slice(i + 2, i + 4))) {
       const close = line.indexOf('#}', i + 2)
       if (close !== -1) {
         i = close + 2

@@ -1587,7 +1587,7 @@ function quotePrevIdx(src, at) {
   let i = at
   while (i >= 4 && src[i - 1] === '}' && src[i - 2] === '%') {
     const open = src.lastIndexOf('{%', i - 3)
-    if (open < 0 || src[open - 1] === '\\' || src.slice(open + 2, i - 2).includes('%}')) break
+    if (open < 0 || src[open - 1] === '\\' || extendsGrapheme(src, open + 2) || src.slice(open + 2, i - 2).includes('%}')) break
     i = open
   }
   return i
@@ -1840,7 +1840,7 @@ function renderInlineInner(text) {
     const first = offsets.reduce((left, right) => left.at <= right.at ? left : right)
     // A literal delimiter cannot carry attributes. Preserve a following
     // editorial comment by escaping that delimiter instead of its brace.
-    const comment = first.literalMarker && source[first.at - 1] === first.markerChar && source.startsWith('{#', first.at) && source.indexOf('#}', first.at + 2) >= 0
+    const comment = first.literalMarker && source[first.at - 1] === first.markerChar && source.startsWith('{#', first.at) && !extendsGrapheme(source, first.at + 2) && source.indexOf('#}', first.at + 2) >= 0
     const escapeAt = comment ? first.at - 1 : first.at
     source = source.slice(0, escapeAt) + '\\' + source.slice(escapeAt)
   }

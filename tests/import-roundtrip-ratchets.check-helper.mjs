@@ -304,6 +304,10 @@ const visibleText = (html) =>
 // Rows 9 to 11 add three more (an Mc mark, `{^` and `{,` before an extender);
 // all three import and keep their text, and HTML round-trips all three.
 // Markdown misses -9, where the writer escapes the inner `*`.
+// Rows 12 to 16 add five more, one per editorial or comment frame. All five
+// import and keep their text. HTML round-trips -12 and -13 only: -14's
+// substitution returns as a deletion and an insertion, -15's comment as a
+// classed span, and -16's braced comment renders nothing. Markdown misses -16.
 
 // Corpus 601 adds eight documents (carve#3217); all eight import, are fixed
 // points and preserve their text under the pinned build. Both round trips

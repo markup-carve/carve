@@ -364,13 +364,15 @@ CarveCore {
   // editorial: {+ins+} {-del-} {~old~>new~} {# comment #} (+ the doubled
   // {++...++} / {--...--} forms whose extra marker chars stay literal)
   editorial  = edSub | edIns | edDel | edComment
-  edIns      = "{+" (~"+}" edScan)+ "+}" attrRun?
+  // Like a forced opener, an editorial or comment opener needs a whole
+  // delimiter (CARVE-P3-025): `{+` before a grapheme extender is text.
+  edIns      = "{+" ~graphemeExt (~"+}" edScan)+ "+}" attrRun?
   // Every editorial form needs CONTENT (`+`, not `*`), like the forced spans
   // above: an opener meeting its own closer is not the construct (carve#1447).
   // The one string the empty deletion spelled is `{--}`, and that is the braced
   // en dash below. `edSub` is deliberately NOT widened: a half-empty
   // substitution is a real edit (`{~a~>~}` deletes `a`).
-  edDel      = "{-" (~"-}" edScan)+ "-}" attrRun?
+  edDel      = "{-" ~graphemeExt (~"-}" edScan)+ "-}" attrRun?
   // The `~>` and `~}` a substitution needs are TOP-LEVEL: the search skips
   // verbatim content, so a pair whose only `~>` sits in code is a forced
   // strikethrough (PART 9 SS22, carve#2083). An unclosed run ends at `~}`.
@@ -379,7 +381,7 @@ CarveCore {
   // The ARROW search steps over the bracket run only: an autolink or a
   // cross-reference whose body ends in `~` still supplies the arrow, so
   // `{~a </#x~>y> b~}` substitutes at it, as carve-js does (ruled 2026-10-15).
-  edSub      = "{~" edSubOld* "~>" edSubNew* "~}"
+  edSub      = "{~" ~graphemeExt edSubOld* "~>" edSubNew* "~}"
   edSubOld   = ~"~>" (~edAngleArrow (crossref | autolink) | ~"~}" edSubAtom)
   edSubNew   = ~"~}" (crossref | autolink | edSubAtom)
   // Neither body holds a `>`, so the only arrow one can carry is at its end.
@@ -391,7 +393,7 @@ CarveCore {
   edSubCodeU = "\u0060" "\u0060"* (~"~}" any)*
   edComment  = edCommentBody
   // The body, without the attribute block - see `litInlineBody`.
-  edCommentBody = "{#" (~"#}" edChar)+ "#}"
+  edCommentBody = "{#" ~graphemeExt (~"#}" edChar)+ "#}"
   edChar     = any
   // A closed code span is skipped whole while scanning for the closer, so a
   // run whose closer sits later in the block stays one span (PART 3 UNCLOSED
@@ -791,7 +793,7 @@ CarveCore {
   initialComment = "%%" (~newline any)*
   // {% ... %} consumes through the FIRST closer, including soft line breaks.
   // It has no leading-space requirement or consumption (SS21a).
-  bracedComment = "{%" (~"%}" any)* "%}"
+  bracedComment = "{%" ~graphemeExt (~"%}" any)* "%}"
   // Reuse the memoized space run after a failed comment scan to avoid quadratic rescans; tabs stay text.
   inlineSpace = sepRun | "\t"+
 

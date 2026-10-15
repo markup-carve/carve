@@ -40,6 +40,8 @@
         same spelling Djot uses, so a Djot document's comments keep working.
       - NO NESTING. A `{%` inside the content is ordinary comment text; the run
         ends at the first `%}`.
+      - A WHOLE OPENER (CARVE-P3-025). `{%` followed by a grapheme_extender
+        opens nothing and is text, like every braced opener.
       - UNTERMINATED STAYS LITERAL. `a {% oops` renders the braces (matching
         Djot, and the same visible-failure principle as `- {.notattr} Milk`).
       - VERBATIM CONTEXTS ARE OPAQUE, as for `%%` (§21): a code span or raw
@@ -84,8 +86,9 @@
         is the ONLY way to emphasize intraword. The opener still needs a whole
         delimiter (CARVE-P3-025): in `{*` followed by a combining mark, a
         variation selector or U+200D the `*` is part of that character, and
-        the braces are text. The guard covers all seven openers: `{^` and
-        `{,` followed by a grapheme_extender are text like `{*`.
+        the braces are text. The guard covers every braced opener: `{^` and
+        `{,` followed by a grapheme_extender are text like `{*`, and so are
+        the editorial openers `{+`, `{-`, `{~` and `{#` and the comment `{%`.
       - BOUNDS = THE BRACES. The closing `X}` ends the span; a bare delimiter
         of the same kind INSIDE is literal content, like the bare-span rule
         (§9): {/a/b/} -> <em>a/b</em>. Inner content otherwise parses normally,

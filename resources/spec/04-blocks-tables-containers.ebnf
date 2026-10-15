@@ -505,7 +505,9 @@ inline_comment = "%%", {character - newline} ;
    semantic constraints as the `%%` form -- never inside a code span or raw
    inline, literal when the brace is escaped -- are stated in CARVE-P9-042, and
    so is the rule that an UNTERMINATED opener stays literal text. *)
-braced_comment = "{%", {character - "%}"}, "%}" ;
+braced_comment = "{%", !(grapheme_extender), {character - "%}"}, "%}" ;
+(* `{%` followed by a grapheme_extender is text, like every braced opener
+   (CARVE-P3-025). *)
 
 (* PROVENANCE MARKER (convention, not a distinct production): tooling such as
    `carve fmt --stamp` may write a trailing comment recording the spec version a

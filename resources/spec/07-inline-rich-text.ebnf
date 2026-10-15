@@ -67,10 +67,13 @@ bare_closer(d) = <&(non_ws), d, !(alnum | grapheme_extender) ;
    reader, and its `*` opens or closes nothing, before a word or after one
    (carve#3209; corpus 600-a-delimiter-that-is-part-of-a-larger-character-is-text).
    The character is skipped, not a barrier: a later delimiter still pairs
-   across it. The same guard sits on the delimiter of every forced opener,
-   `{^` and `{,` included, and on the `*` of the combined `/*` token below; a
-   closer `X}` or `*/` is followed by its own brace or slash, so the guard
-   cannot apply there. Only the character AFTER d is read: what precedes d is
+   across it. The same guard sits on the delimiter of every braced opener:
+   the seven forced openers, `{^` and `{,` included, the editorial openers
+   `{+`, `{-`, `{~` (substitution) and `{#`, and the braced comment `{%`
+   (each production below and `braced_comment` carry it). It also sits on
+   the `*` of the combined `/*` token below. A closer `X}` or `*/` is
+   followed by its own brace or slash, so the guard cannot apply there.
+   An include `{{` needs a space next, so no extender can follow it. Only the character AFTER d is read: what precedes d is
    judged as before. A spacing mark (Mc, such as U+093E) extends a grapheme
    like a nonspacing one: Unicode's extended grapheme clusters include both. *)
 grapheme_extender = (* a character of Unicode general category Mn, Mc or Me *)
@@ -312,10 +315,10 @@ extension_content = {character - ']'} ;
 (* --- Editorial Markup (CriticMarkup-inspired) --- *)
 editorial_markup = addition | deletion | substitution | editorial_comment ;
 
-addition = "{+", inline_content, "+}", [attribute_run] ;
-deletion = "{-", inline_content, "-}", [attribute_run] ;
-substitution = "{~", inline_content, "~>", inline_content, "~}" ;
-editorial_comment = "{#", comment_content, "#}" ;
+addition = "{+", !(grapheme_extender), inline_content, "+}", [attribute_run] ;
+deletion = "{-", !(grapheme_extender), inline_content, "-}", [attribute_run] ;
+substitution = "{~", !(grapheme_extender), inline_content, "~>", inline_content, "~}" ;
+editorial_comment = "{#", !(grapheme_extender), comment_content, "#}" ;
 comment_content = (* any text until the matching `#}`, preserved literally;
                      at least one character -- see the empty-brace clause under
                      Forced Intraword Emphasis *) ;
