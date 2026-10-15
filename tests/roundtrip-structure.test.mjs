@@ -299,6 +299,18 @@ test('HTML unresolved images, collapsed references and shortcuts preserve their 
   assert.deepEqual(acceptHtmlLosses(tree), doc([{ type: 'paragraph', children: [text('!['), text('t'), text('][]'), text('['), text('u'), text(']')] }]))
 })
 
+test('HTML unresolved cross-references become their source text and resolved ones stay', () => {
+  const resolved = { type: 'heading_ref', target: 'Intro', href: '#Intro' }
+  const tree = doc([{ type: 'paragraph', children: [
+    { type: 'strong', children: [text('a '), { type: 'heading_ref', target: 'x*}' }, text(' b')] },
+    resolved, { type: 'heading_ref', target: 'Intro|Alt' },
+  ] }])
+  assert.deepEqual(acceptHtmlLosses(tree), doc([{ type: 'paragraph', children: [
+    { type: 'strong', children: [text('a '), text('</#x*}>'), text(' b')] },
+    resolved, text('</#Intro|Alt>'),
+  ] }]))
+})
+
 test('HTML losses match footnote labels exactly and preserve abbreviation definitions', () => {
   const used = { type: 'footnote', label: 'a b', children: [text('used')] }
   const unused = { type: 'footnote', label: ' a b ', children: [text('unused')] }

@@ -20,6 +20,10 @@ export function acceptHtmlLosses(tree) {
         return [{ type: 'text', value: child.type === 'image' ? '![' : '[' },
           ...(child.children ?? []), { type: 'text', value: child.rawRef?.match(/\][^\]]*\]$/)?.[0] ?? ']' }]
       }
+      // Engines publish a resolved cross-reference's destination as href; without one it renders as its source.
+      if (child.type === 'heading_ref' && typeof child.target === 'string' && child.href === undefined) {
+        return [{ type: 'text', value: `</#${child.target}>` }]
+      }
       return [child]
     })
   }

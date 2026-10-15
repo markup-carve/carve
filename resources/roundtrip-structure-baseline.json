@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "note": "Corpus 600 adds eight documents (CARVE-P3-025). HTML rises by eight identical and eight strict on every engine; Markdown by seven identical and four strict on js and php, six and six on rs. Measured by CI with the pinned engines.",
+  "note": "HTML acceptance now literalizes an unresolved heading_ref (no href) to its rendered source, as it already did for unresolved reference links. Nine HTML rows per engine gain an identical round trip (eight for PHP, where 313 still differs elsewhere); strict counts are unchanged. All counts were remeasured with the pinned engines.",
   "engines": {
     "js": {
       "html": {
-        "identical": 2025,
+        "identical": 2034,
         "strict": 1895,
         "total": 2533
       },
@@ -16,7 +16,7 @@
     },
     "php": {
       "html": {
-        "identical": 2057,
+        "identical": 2065,
         "strict": 1924,
         "total": 2533
       },
@@ -28,7 +28,7 @@
     },
     "rs": {
       "html": {
-        "identical": 2014,
+        "identical": 2023,
         "strict": 1883,
         "total": 2533
       },
