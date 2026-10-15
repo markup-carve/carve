@@ -106,3 +106,13 @@
 3187: 0.1.9 - final release-cut engine pins; drops the lint declarations carve#3186 added once all three engines emit the rule. Pin bump.
 3193: 0.1.9 - final release-cut engine pins after the lint changelog follow-ups. Pin bump.
 3195: 0.1.9 - moves the carve-rs pin to the release-gate CI fix. Pin bump.
+3205: 0.1.10 - moves the carve-js pin to the render-loss merge and drops the drift rows it reproduces. Pin bump.
+3208: 0.1.10 - moves the carve-php and carve-rs pins after converter parity fixes and re-measures the structural baseline. Pin bump.
+3214: 0.1.10 - the structural roundtrip harness accepts an unresolved cross-reference as an HTML loss. Gate machinery.
+3224: 0.1.10 - moves the three engine pins past the AST conformance fixes and prunes the ledgers. Pin bump.
+3227: 0.1.10 - moves the carve-php and carve-rs pins to their ANSI empty-destination fixes. Pin bump.
+3232: 0.1.10 - moves the three engine pins past the guard fixes and prunes the drift ledger. Pin bump.
+3236: 0.1.10 - moves the carve-php and carve-rs pins to their formatter parity fixes; the rules are cited under #3209 and #3217. Pin bump.
+3237: 0.1.10 - moves the carve-js and carve-php pins to their empty destination fixes; the rule is cited under #2878. Pin bump.
+3238: 0.1.10 - moves the carve-rs pin past the table header losses. Pin bump.
+3243: 0.1.10 - moves the carve-php pin past the header losses and guard tests. Pin bump.

@@ -10,6 +10,67 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
+## [0.1.10] - 2026-10-15
+
+### Breaking
+
+- An empty destination is explicit: `[t]()` and `![t]()` are a link and an
+  image with `href=""` / `src=""`, and a bare `[label]:` is a definition with
+  an empty destination instead of paragraph text. The AST schema drops
+  `minLength` on a definition's `href`; a reference to an empty definition
+  resolves to `""` (CARVE-P3-024, CARVE-P12-029) (#2878, #3199).
+- An emphasis delimiter counts only when it is a whole grapheme. A delimiter
+  followed by a combining or spacing mark (Mn, Me, Mc), a variation selector
+  or U+200D is text, and every braced opener takes the same guard, editorial
+  frames and `{%` comments included (CARVE-P3-025) (#3209, #3210, #3216,
+  #3225).
+- Autolinks, cross-references and comments are atomic: no delimiter, closer,
+  substitution arrow or bracket outside one reads inside it. The bracket scan
+  of CARVE-P3-001 now skips `</#id>` and `{% %}` too (#3244).
+- Ill-formed input is replaced, never rejected: each invalid UTF-8 sequence
+  takes one U+FFFD per maximal subpart and each lone surrogate one U+FFFD,
+  before the first line is read (CARVE-P0-023). An included file that is not
+  well-formed UTF-8 is refused instead (#3212, #3215, #3221).
+- New render-loss codes for tables: `table-span-flattened` (Markdown, plain,
+  ANSI) and `table-header-row-demoted`, `table-header-row-hoisted` and
+  `table-header-cell-demoted` (Markdown). All four join the closed
+  `--allow-loss` list, so tools matching a closed code list have to accept
+  them (#3202, #3203, #3229, #3230).
+
+### Fixes
+
+- The combined bold-italic token `/*...*/` follows the guards of its own
+  production: it does not open after a letter, digit, `_` or `/`, does not
+  close before a letter or digit, and does not open inside an open bare
+  italic or bold (#3217, #3223, #3226, #3228, #3234, #3235).
+- PART 9 E2a lists cross-references among the constructs a bare delimiter
+  cannot pair across, as PART 8 already ranked them; corpus 595 and 596 pin
+  that an autolink or cross-reference is atomic to brackets and braces
+  (#3197, #3198).
+- Insertion, deletion and substitution close outside a cross-reference, an
+  autolink and a link label, and the bracket scan skips an autolink; corpus
+  598 and 599 pin the cases (#3204).
+- Inside an unclosed code fence only the innermost container's closer is
+  structural, and an unclosed fence under an open paragraph in a container
+  opens nothing (corpus 597, 604) (#3201, #3246).
+- Markdown import keeps a resolved shortcut reference `[ref]` as the
+  collapsed reference `[ref][]` with its definition (#3241, #3245).
+
+### Improvements
+
+- CARVE-P9-071 names `text/x-carve; charset=utf-8` as the media type on every
+  transport, not only the clipboard, and `.crv` as the file extension (#3213,
+  #3218).
+- Optional aligned table formatting is defined, with Unicode 18 grapheme and
+  East Asian Width rules and shared byte fixtures; canonical formatting is
+  unchanged (#3184, #3200).
+- The Markdown target keeps a Carve autolink in angle brackets only when its
+  body is a representable URL or email with the same destination and no
+  title, and writes an explicit link otherwise (#3196).
+- Shared fixtures pin source ranges for a loose list and inline code, a
+  terminal hard break through the canonical writer, and a strong around a
+  single italic before a letter on the Markdown target (#3219, #3247).
+
 ## [0.1.9] - 2026-10-14
 
 ### Breaking
@@ -633,6 +694,7 @@ references and external fragment links need manual review. See the
   inside the cell** (carve#2113), the §1b case the engines diverged on while
   the fixture reported them conformant.
 
+[0.1.10]: https://github.com/markup-carve/carve/compare/0.1.9...0.1.10
 [0.1.9]: https://github.com/markup-carve/carve/compare/0.1.8...0.1.9
 [0.1.8]: https://github.com/markup-carve/carve/compare/0.1.7...0.1.8
 [0.1.7]: https://github.com/markup-carve/carve/compare/0.1.6...0.1.7
