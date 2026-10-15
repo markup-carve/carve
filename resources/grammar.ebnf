@@ -1799,7 +1799,10 @@ admonition = admonition_open, newline,
    This does NOT change a fence with nothing to interrupt: `` ``` `` alone,
    or as the whole content of a blockquote, still opens a code block that
    runs to the end. PART 9 §10 I4 and this clause both gate a fence that would take
-   structure away from something else, not a fence that is the content. *)
+   structure away from something else, not a fence that is the content.
+   Nor does it reach a ``` or ~~~ line that continues an open paragraph:
+   under PART 9 §10 I4 that line is paragraph text, not an opener, so the
+   colon lines after it are read under PART 2 as usual. *)
 
 (* STRICT (djot): the opener line carries NO inline `{...}` attributes -- it
    is colon_fence, type, an optional quoted "header", an optional [label],
