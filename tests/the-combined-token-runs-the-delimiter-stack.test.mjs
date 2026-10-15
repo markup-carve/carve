@@ -93,3 +93,17 @@ test('a closing underscore or slash before the combined token blocks it', () => 
   // A forced span holds its own delimiter literal through the split.
   assert.equal(html('{*a_/*y*/ b*}\n'), '<p><strong>a_/*y*/ b</strong></p>')
 })
+
+// carve#3234: the token holds an italic and a bold, so §9 E3 keeps it from
+// opening while a bare `/` or `*` is on the stack, closed later or not.
+test('the combined token does not open inside an open bare italic or bold', () => {
+  assert.equal(html('/a /*x*/ b/\n'), '<p><em>a /<strong>x</strong></em> b/</p>')
+  assert.equal(html('/a /*x*/ b\n'), '<p><em>a /<strong>x</strong></em> b</p>')
+  assert.equal(html('*a /*x*/ b*\n'), '<p><strong>a /*x</strong>/ b*</p>')
+  assert.equal(html('/a *b /*x*/ c* d/\n'), '<p><em>a <strong>b /*x</strong></em> c* d/</p>')
+  assert.equal(html('/a /*x*/{.c} b/\n'), '<p><em class="c">a /<strong>x</strong></em> b/</p>')
+  // Other open kinds, a closed italic and a braced italic leave it alone.
+  assert.equal(html('_a /*x*/ b_\n'), '<p><u>a <strong><em>x</em></strong> b</u></p>')
+  assert.equal(html('/a/ b /*x*/ /c/\n'), '<p><em>a</em> b <strong><em>x</em></strong> <em>c</em></p>')
+  assert.equal(html('{/a /*x*/ b/}\n'), '<p><em>a <strong><em>x</em></strong> b</em></p>')
+})

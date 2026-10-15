@@ -1,0 +1,25 @@
+The combined bold-italic token does not open inside an open bare italic or bold
+
+```
+/a /*x*/ b/
+.
+<p><em>a /<strong>x</strong></em> b/</p>
+```
+
+```
+*a /*x*/ b*
+.
+<p><strong>a /*x</strong>/ b*</p>
+```
+
+```
+/*x*/ and /b/
+.
+<p><strong><em>x</em></strong> and <em>b</em></p>
+```
+
+```
+/a {/*x*/} b/
+.
+<p><em>a <em><strong>x</strong></em> b</em></p>
+```

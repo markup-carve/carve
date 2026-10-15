@@ -1308,6 +1308,12 @@ function pairDelims(toks, src, literalDelims = '', blocked) {
       t.h = t.node.h()
       continue
     }
+    // The combined token holds an italic and a bold, so §9 E3 keeps it from
+    // opening while either is open (carve#3234); `pairGuarded` splits it.
+    if (t.combinedAt !== undefined) {
+      t.nested = openers.some((oi) => toks[oi].ch === '/' || toks[oi].ch === '*')
+      continue
+    }
     if (t.k !== 'd') continue
     const d = t.ch
     // E2 CLOSE FIRST: a valid closer closes the NEAREST matching open entry;
@@ -1349,7 +1355,7 @@ function pairGuarded(build, src, literalDelims = '', contentAt = 0) {
     let grew = false
     for (const t of toks) {
       const at = t.combinedAt
-      if (at > contentAt && guardedBy('/', src[at - 1]) && !opens.has(at - 1)) {
+      if (t.nested || (at > contentAt && guardedBy('/', src[at - 1]) && !opens.has(at - 1))) {
         blocked.add(at)
         grew = true
       }
