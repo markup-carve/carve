@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "note": "Corpus 600 rows 12 to 16 add five documents (CARVE-P3-025: the editorial frames `{+`, `{-`, `{~`, `{#` and the braced comment `{%` before an extender). HTML rises by three identical and three strict on every engine; Markdown by four and four on js and php, three and three on rs. Measured with the pinned engines (js locally, php and rs by CI).",
+  "note": "Corpus 600 rows 12 to 16 add five documents (CARVE-P3-025: the editorial frames `{+`, `{-`, `{~`, `{#` and the braced comment `{%` before an extender). HTML rises by three identical and three strict on every engine. Markdown identical rises by four on js and php and three on rs; Markdown strict by four on js, two on php and three on rs. Measured with the pinned engines (js locally, php and rs by CI).",
   "engines": {
     "js": {
       "html": {
@@ -22,7 +22,7 @@
       },
       "md": {
         "identical": 1842,
-        "strict": 1392,
+        "strict": 1390,
         "total": 2549
       }
     },
