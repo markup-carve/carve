@@ -96,13 +96,19 @@ test('the public suites retain their pinned population and unique case ids', () 
 
 test('shared import targets cover both source formats and the equivalent HTML inputs', () => {
   const targets = read('targets')
-  assert.equal(targets.length, 4)
+  assert.ok(targets.length >= 4)
   for (const target of targets) assert.equal(htmlBytes(carveToHtml(target.expectedCarve)), target.expectedHtml)
-  assert.equal(new Set(targets.map(item => item.id)).size, 4)
+  assert.equal(new Set(targets.map(item => item.id)).size, targets.length)
   assert.equal(targets[0].expectedHtml, targets[1].expectedHtml)
   assert.equal(targets[2].expectedHtml, targets[3].expectedHtml)
   assert.equal(targets[0].expectedHtml, '<p><em>(<em>foo</em>)</em></p>')
   assert.match(targets[2].expectedHtml, /<strong><span id="id" key="\*">b<\/span><\/strong>/)
+  const crossrefLiterals = targets.filter(item => item.id.endsWith('crossref-literal'))
+  assert.equal(crossrefLiterals.length, 4)
+  for (const target of crossrefLiterals) {
+    assert.equal(target.format, 'markdown')
+    assert.match(target.expectedHtml, /<p>&lt;\/#id&gt;<\/p>/)
+  }
 })
 
 test('an unavailable engine replaces an old report with an incomplete verdict', () => {

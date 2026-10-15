@@ -26,5 +26,33 @@
     "source": "<p>a <strong><span id=\"id\" key=\"*\">b</span></strong></p>\n",
     "expectedHtml": "<p>a <strong><span id=\"id\" key=\"*\">b</span></strong></p>",
     "expectedCarve": "a {*[b]{#id key=\"*\"}*}\n"
+  },
+  {
+    "id": "target/markdown-entity-crossref-literal",
+    "format": "markdown",
+    "source": "# id\n\n&lt;/#id>\n",
+    "expectedHtml": "<section id=\"id\">\n  <h1>id</h1>\n  <p>&lt;/#id&gt;</p>\n</section>",
+    "expectedCarve": "# id\n\n\\</\\#id>\n"
+  },
+  {
+    "id": "target/markdown-numeric-entity-crossref-literal",
+    "format": "markdown",
+    "source": "# id\n\n&#60;/#id>\n",
+    "expectedHtml": "<section id=\"id\">\n  <h1>id</h1>\n  <p>&lt;/#id&gt;</p>\n</section>",
+    "expectedCarve": "# id\n\n\\</\\#id>\n"
+  },
+  {
+    "id": "target/markdown-encoded-slash-crossref-literal",
+    "format": "markdown",
+    "source": "# id\n\n&lt;&#47;#id>\n",
+    "expectedHtml": "<section id=\"id\">\n  <h1>id</h1>\n  <p>&lt;/#id&gt;</p>\n</section>",
+    "expectedCarve": "# id\n\n\\</\\#id>\n"
+  },
+  {
+    "id": "target/markdown-encoded-hash-crossref-literal",
+    "format": "markdown",
+    "source": "# id\n\n&lt;/&#35;id>\n",
+    "expectedHtml": "<section id=\"id\">\n  <h1>id</h1>\n  <p>&lt;/#id&gt;</p>\n</section>",
+    "expectedCarve": "# id\n\n\\</\\#id>\n"
   }
 ]

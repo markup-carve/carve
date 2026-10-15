@@ -14,7 +14,7 @@ expected output are retained; the MIT license is in `DJOT-LICENSE`.
 The comparison imports source only. It does not apply the three Lua filters or
 compare against upstream HTML or AST snapshots.
 
-`targets.json` records shared Carve output meanings for the two cases in
-[carve#2493](https://github.com/markup-carve/carve/issues/2493), including their
-HTML equivalents. Public-suite comparisons measure agreement between importers;
-these four targets also catch engines agreeing on the same incorrect output.
+`targets.json` records expected HTML for cases where importer agreement alone
+cannot establish the right result. It covers nested emphasis, inline attributes,
+and Markdown entities that resemble Carve cross-references. Each target runs
+through all three importers.
