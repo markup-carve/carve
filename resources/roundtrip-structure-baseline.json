@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "note": "HTML acceptance now literalizes an unresolved heading_ref (no href) to its rendered source, as it already did for unresolved reference links. Nine HTML rows per engine gain an identical round trip (eight for PHP, where 313 still differs elsewhere); strict counts are unchanged. All counts were remeasured with the pinned engines.",
+  "note": "Corpus 600 rows 9 to 11 add three documents (CARVE-P3-025: an Mc mark, `{^` and `{,` before an extender). HTML rises by three identical and three strict on every engine; Markdown by three identical on every engine and two strict on js and php, three on rs. Measured with the pinned engines (js locally, php and rs by CI).",
   "engines": {
     "js": {
       "html": {
@@ -16,25 +16,25 @@
     },
     "php": {
       "html": {
-        "identical": 2065,
-        "strict": 1924,
+        "identical": 2068,
+        "strict": 1927,
         "total": 2536
       },
       "md": {
-        "identical": 1833,
-        "strict": 1391,
+        "identical": 1836,
+        "strict": 1393,
         "total": 2536
       }
     },
     "rs": {
       "html": {
-        "identical": 2023,
-        "strict": 1883,
+        "identical": 2026,
+        "strict": 1886,
         "total": 2536
       },
       "md": {
-        "identical": 1855,
-        "strict": 1634,
+        "identical": 1858,
+        "strict": 1637,
         "total": 2536
       }
     }
