@@ -1,11 +1,7 @@
 # Default lint triggers not yet reported by each engine.
 # The parity gate rejects new missing rules and declarations that now pass.
-# At the earlier engine pins, all 40 shared triggers were emitted. The new
-# empty-definition trigger below is specified ahead of the three engines.
+# All shared default triggers are emitted at the pinned engines.
 #
 # An empty file is a real state and not a missing one. It says the last
 # measurement found no engine short of a default trigger; it does not say the
 # trigger population is complete, which `parity:check` asserts separately.
-js/empty-reference-definition  ahead of the pinned JavaScript engine: CARVE-P3-024 (carve#2878)
-php/empty-reference-definition  ahead of the pinned PHP engine: CARVE-P3-024 (carve#2878)
-rust/empty-reference-definition  ahead of the pinned Rust engine: CARVE-P3-024 (carve#2878)
