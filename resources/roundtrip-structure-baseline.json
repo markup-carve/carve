@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "note": "Pins js 10aae21f (carve-js#3139 through #3159), php d551607a (carve-php#3466, #3467) and rs 7d2fd546 (carve-rs#2816 and five earlier merges); the corpus did not change. Every count rose except js Markdown strict, 1435 -> 1430. Corpus 600 rows 10 through 15 leave the strict set: their braced openers now parse as text before a grapheme extender (carve-js#3141 for rows 10 and 11, #3153 for rows 12 through 15), and the js Markdown importer reads that text back with a backslash on the opener, so the tree holds escaped_text where the source holds text. The trees are still identical after normalization and render the same HTML. Row 16 joins the strict set, which nets -5. The js gains are corpus 130 row 4, corpus 601 and corpus 602, which close once the combined bold-italic token takes its word-boundary guards (carve-js#3151, #3154). Measured locally with all three pinned engines. Corpus 603 adds four documents (carve#3234). HTML identical and strict rise by four for every engine. Markdown identical rises by three for every engine: row 3 is written as `***x***`, which reads back as an italic around a bold. Markdown strict rises by one for js and php and by three for rs; the js importer returns the base row and row 2 with escaped delimiters around the same tree. Counts from the PR CI run against the pinned engines. Corpus 597 rows 5 through 8 and corpus 604 add seven documents (carve#3246). HTML identical and strict rise by seven for every engine; Markdown identical and strict rise by five for js, four for php and six for rs. Counts from the PR CI run against the pinned engines. Corpus 605 adds fourteen documents and corpus 598 row 5 changes expectation (carve#3244): HTML identical rises by eight for js and rs and eleven for php; strict by five, eleven and four. Markdown identical rises by five, nine and four; strict by three, four and three. Counts from the PR CI run against the pinned engines. The js pin moves to carve-js f215deac (carve-js#3167, #3168 and later): HTML identical 2071 -> 2074 and strict 1928 -> 1929, Markdown identical 1868 -> 1869 and strict 1439 -> 1442, measured locally.",
+  "note": "Pins js 10aae21f (carve-js#3139 through #3159), php d551607a (carve-php#3466, #3467) and rs 7d2fd546 (carve-rs#2816 and five earlier merges); the corpus did not change. Every count rose except js Markdown strict, 1435 -> 1430. Corpus 600 rows 10 through 15 leave the strict set: their braced openers now parse as text before a grapheme extender (carve-js#3141 for rows 10 and 11, #3153 for rows 12 through 15), and the js Markdown importer reads that text back with a backslash on the opener, so the tree holds escaped_text where the source holds text. The trees are still identical after normalization and render the same HTML. Row 16 joins the strict set, which nets -5. The js gains are corpus 130 row 4, corpus 601 and corpus 602, which close once the combined bold-italic token takes its word-boundary guards (carve-js#3151, #3154). Measured locally with all three pinned engines. Corpus 603 adds four documents (carve#3234). HTML identical and strict rise by four for every engine. Markdown identical rises by three for every engine: row 3 is written as `***x***`, which reads back as an italic around a bold. Markdown strict rises by one for js and php and by three for rs; the js importer returns the base row and row 2 with escaped delimiters around the same tree. Counts from the PR CI run against the pinned engines. Corpus 597 rows 5 through 8 and corpus 604 add seven documents (carve#3246). HTML identical and strict rise by seven for every engine; Markdown identical and strict rise by five for js, four for php and six for rs. Counts from the PR CI run against the pinned engines. Corpus 605 adds fourteen documents and corpus 598 row 5 changes expectation (carve#3244): HTML identical rises by eight for js and rs and eleven for php; strict by five, eleven and four. Markdown identical rises by five, nine and four; strict by three, four and three. Counts from the PR CI run against the pinned engines. The js pin moves to carve-js f215deac (carve-js#3167, #3168 and later): HTML identical 2071 -> 2074 and strict 1928 -> 1929, Markdown identical 1868 -> 1869 and strict 1439 -> 1442, measured locally. The php pin moves to d1105044 and the rs pin to 08d65a58 (#3250), both carrying the carve#3244 rulings: rs html 2060 -> 2063 identical and 1916 -> 1918 strict, md 1886 -> 1887 and 1664 -> 1666. php falls: html 2105 -> 2104 identical and 1963 -> 1957 strict, md 1867 -> 1862 identical while strict rises 1404 -> 1405. The old php pin read corpus 598-5 and 605-3, -9, -10, -12 and -14 by the superseded reading, and those trees round-tripped; carve-php#3481 parses them by the ruling, and its writers do not round-trip the new shapes yet (a strike holding an autolink returns as a substitution from Markdown, a cross-reference in an inline note is lost, carve-php#3492). Counts from the PR CI run against the pinned engines.",
   "engines": {
     "js": {
       "html": {
@@ -16,25 +16,25 @@
     },
     "php": {
       "html": {
-        "identical": 2105,
-        "strict": 1963,
+        "identical": 2104,
+        "strict": 1957,
         "total": 2578
       },
       "md": {
-        "identical": 1867,
-        "strict": 1404,
+        "identical": 1862,
+        "strict": 1405,
         "total": 2578
       }
     },
     "rs": {
       "html": {
-        "identical": 2060,
-        "strict": 1916,
+        "identical": 2063,
+        "strict": 1918,
         "total": 2578
       },
       "md": {
-        "identical": 1886,
-        "strict": 1664,
+        "identical": 1887,
+        "strict": 1666,
         "total": 2578
       }
     }
