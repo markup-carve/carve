@@ -37,7 +37,10 @@
            so every HTML and AST string a processor emits is well-formed. A
            paired surrogate is a well-formed astral character and is left
            alone, and a noncharacter (U+FFFE, U+FDD0) is a scalar value and
-           therefore content.
+           therefore content. The rule covers the document handed to the
+           processor, not an included file: an include whose bytes are not
+           well-formed UTF-8 is refused as non-text under PART 6 I7, not
+           replaced.
 
            Column arithmetic is PART 9 §24 C1. A TAB IS SYNTAX ONLY IN THE
            LEADING RUN (CARVE-P7-001).

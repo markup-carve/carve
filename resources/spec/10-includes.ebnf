@@ -260,6 +260,10 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       receives the same sanitization as its parent. The processor-neutral
       vectors in `tests/include-security-conformance/` pin these security
       requirements separately from the broader include-language suite.
+      An included file whose bytes are not well-formed UTF-8 is non-text
+      content and is refused, not replaced: the replacement rule of
+      CARVE-P0-023 covers the document handed to the processor, not an
+      included file.
 
    I8 HEADING-LEVEL SHIFT (`@shift:N` | `@shift:auto`). A TRANSFORM option
       (I1), orthogonal to selection. `@shift` takes EITHER a SIGNED integer

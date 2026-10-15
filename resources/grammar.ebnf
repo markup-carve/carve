@@ -121,7 +121,10 @@
            so every HTML and AST string a processor emits is well-formed. A
            paired surrogate is a well-formed astral character and is left
            alone, and a noncharacter (U+FFFE, U+FDD0) is a scalar value and
-           therefore content.
+           therefore content. The rule covers the document handed to the
+           processor, not an included file: an include whose bytes are not
+           well-formed UTF-8 is refused as non-text under PART 6 I7, not
+           replaced.
 
            Column arithmetic is PART 9 §24 C1. A TAB IS SYNTAX ONLY IN THE
            LEADING RUN (CARVE-P7-001).
@@ -3892,6 +3895,10 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       receives the same sanitization as its parent. The processor-neutral
       vectors in `tests/include-security-conformance/` pin these security
       requirements separately from the broader include-language suite.
+      An included file whose bytes are not well-formed UTF-8 is non-text
+      content and is refused, not replaced: the replacement rule of
+      CARVE-P0-023 covers the document handed to the processor, not an
+      included file.
 
    I8 HEADING-LEVEL SHIFT (`@shift:N` | `@shift:auto`). A TRANSFORM option
       (I1), orthogonal to selection. `@shift` takes EITHER a SIGNED integer
