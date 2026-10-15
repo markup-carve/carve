@@ -27,17 +27,21 @@
         "type": "object",
         "required": ["code", "target", "nodeType", "message"],
         "properties": {
-          "code": { "enum": ["raw-format-dropped", "ruby-flattened", "destination-denied", "editorial-comment-flattened", "carrier-attribute-dropped", "list-style-dropped", "list-delimiter-changed"] },
+          "code": { "enum": ["raw-format-dropped", "ruby-flattened", "destination-denied", "editorial-comment-flattened", "carrier-attribute-dropped", "list-style-dropped", "list-delimiter-changed", "table-span-flattened", "table-header-row-demoted"] },
           "attribute": { "type": "string" },
           "style": { "enum": ["lower-alpha", "upper-alpha", "lower-roman", "upper-roman"] },
           "delim": { "enum": [".", ")"] },
           "emittedDelim": { "enum": [".", ")"] },
+          "colspan": { "type": "integer", "minimum": 2 },
+          "rowspan": { "type": "integer", "minimum": 2 },
           "format": { "type": "string" },
           "target": { "enum": ["html", "markdown", "plain", "ansi", "carve"] },
           "nodeType": { "enum": ["inline", "block"] },
           "message": { "type": "string" },
           "pos": { "$ref": "#/$defs/pos" }
         },
+        "if": { "properties": { "code": { "const": "table-span-flattened" } }, "required": ["code"] },
+        "else": { "properties": { "colspan": false, "rowspan": false } },
         "oneOf": [
           {
             "properties": {
@@ -100,6 +104,40 @@
               "format": false
             },
             "required": ["delim", "emittedDelim"]
+          },
+          {
+            "properties": {
+              "code": { "const": "table-span-flattened" },
+              "attribute": false,
+              "style": false,
+              "delim": false,
+              "emittedDelim": false,
+              "target": { "enum": ["markdown", "plain", "ansi"] },
+              "nodeType": { "const": "block" },
+              "format": false,
+              "colspan": { "type": "integer", "minimum": 2 },
+              "rowspan": { "type": "integer", "minimum": 2 },
+              "message": { "const": "Flattened a spanning table cell into separate cells" }
+            },
+            "anyOf": [
+              { "properties": { "colspan": { "type": "integer" } }, "required": ["colspan"] },
+              { "properties": { "rowspan": { "type": "integer" } }, "required": ["rowspan"] }
+            ]
+          },
+          {
+            "properties": {
+              "code": { "const": "table-header-row-demoted" },
+              "attribute": false,
+              "style": false,
+              "delim": false,
+              "emittedDelim": false,
+              "target": { "const": "markdown" },
+              "nodeType": { "const": "block" },
+              "format": false,
+              "colspan": false,
+              "rowspan": false,
+              "message": { "const": "Wrote a later header row as a body row" }
+            }
           }
         ],
         "additionalProperties": false

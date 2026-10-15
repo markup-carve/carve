@@ -1,0 +1,78 @@
+/*
+ * A flattened table span and a demoted header row have render-loss codes.
+ *
+ * Markdown, plain and ANSI have no span syntax, and a pipe table has one
+ * header row. CARVE-P2-024 reports both losses with named messages, so the
+ * schema holds them as consts and three engines emit identical rows.
+ */
+
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { Ajv2020 } from 'ajv/dist/2020.js'
+
+const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+const schema = JSON.parse(readFileSync(resolve(repo, 'resources/render-loss-report.schema.json'), 'utf8'))
+const validate = new Ajv2020({ strict: true }).compile(schema)
+
+const SPAN = 'Flattened a spanning table cell into separate cells'
+const HEADER = 'Wrote a later header row as a body row'
+const pos = { startLine: 1, endLine: 1, startColumn: 12, endColumn: 19, startOffset: 11, endOffset: 18 }
+const span = { code: 'table-span-flattened', target: 'markdown', nodeType: 'block', message: SPAN, colspan: 2, pos }
+const header = { code: 'table-header-row-demoted', target: 'markdown', nodeType: 'block', message: HEADER, pos }
+const report = (...losses) => ({ losses, totalLosses: losses.length, truncated: false })
+const without = (row, key) => Object.fromEntries(Object.entries(row).filter(([name]) => name !== key))
+
+test('a span row is accepted on markdown, plain and ansi with colspan, rowspan or both', () => {
+  const rows = [
+    span,
+    { ...without(span, 'colspan'), rowspan: 3, target: 'plain' },
+    { ...span, rowspan: 2, target: 'ansi' },
+  ]
+  assert.equal(validate(report(...rows)), true, JSON.stringify(validate.errors))
+})
+
+test('a span row needs a count of at least 2 and no other target', () => {
+  assert.equal(validate(report(without(span, 'colspan'))), false)
+  assert.equal(validate(report({ ...span, colspan: 1 })), false)
+  for (const target of ['html', 'carve']) {
+    assert.equal(validate(report({ ...span, target })), false, `accepted target ${target}`)
+  }
+  assert.equal(validate(report({ ...span, nodeType: 'inline' })), false)
+  assert.equal(validate(report({ ...span, format: 'html' })), false)
+})
+
+test('a demoted header row is Markdown only and carries no span count', () => {
+  assert.equal(validate(report(header)), true, JSON.stringify(validate.errors))
+  assert.equal(validate(report({ ...header, target: 'plain' })), false)
+  assert.equal(validate(report({ ...header, colspan: 2 })), false)
+})
+
+test('neither row carries another code\'s field', () => {
+  for (const extra of [{ attribute: 'x' }, { style: 'lower-alpha' }, { delim: '.' }, { emittedDelim: ')' }]) {
+    assert.equal(validate(report({ ...span, ...extra })), false, `span accepted ${JSON.stringify(extra)}`)
+    assert.equal(validate(report({ ...header, ...extra })), false, `header accepted ${JSON.stringify(extra)}`)
+  }
+})
+
+test('no other code carries a span count', () => {
+  const ruby = { code: 'ruby-flattened', target: 'plain', nodeType: 'inline', message: 'Flattened ruby annotations while rendering plain' }
+  assert.equal(validate(report(ruby)), true, JSON.stringify(validate.errors))
+  assert.equal(validate(report({ ...ruby, colspan: 2 })), false)
+  assert.equal(validate(report({ ...ruby, rowspan: 3 })), false)
+})
+
+test('a message other than the named one is refused', () => {
+  assert.equal(validate(report({ ...span, message: 'Flattened a table span' })), false)
+  assert.equal(validate(report({ ...header, message: 'Demoted a header row' })), false)
+})
+
+test('the clause names both codes, both messages and both CLI exceptions', () => {
+  const clause = readFileSync(resolve(repo, 'resources/spec/04-blocks-tables-containers.ebnf'), 'utf8')
+    .replace(/\n\s+/g, ' ')
+  for (const text of [SPAN, HEADER, '--allow-loss table-span-flattened', '--allow-loss table-header-row-demoted']) {
+    assert.ok(clause.includes(`\`${text}\``), `CARVE-P2-024 no longer names ${text}`)
+  }
+})

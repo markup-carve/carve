@@ -621,6 +621,26 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    one loss with the stable code `list-delimiter-changed`; CARVE-P11-057
    names its fields.
 
+   Each table cell with a `colspan` or `rowspan` greater than 1 that the
+   Markdown, Plain or ANSI target writes contributes one loss in document
+   order with the stable code `table-span-flattened`, the selected `target`,
+   `nodeType` of `block`, the cell's `pos` when recorded, NO `format`, and
+   `colspan`, `rowspan` or both: each present exactly when the cell's count is
+   greater than 1, holding that count. Its `message` is NAMED HERE and emitted
+   verbatim: `Flattened a spanning table cell into separate cells`. These
+   targets have no span syntax, so the cell's content stays at its origin and
+   every position it covers is written as an empty cell. HTML and canonical
+   Carve keep the span and report no loss.
+
+   Each Carve header row after the first that the Markdown target writes as
+   an ordinary body row (CARVE-P11-031) contributes one loss in document order
+   with the stable code `table-header-row-demoted`, the selected `target`,
+   `nodeType` of `block`, the row's `pos` when recorded, and NO `format`. Its
+   `message` is NAMED HERE and emitted verbatim: `Wrote a later header row as
+   a body row`. A pipe table identifies one header row, so the row keeps its
+   cells and loses its header semantics. Only the Markdown target reports
+   this code.
+
    The canonical Carve writer contributes no `destination-denied` row
    (CARVE-P9-054).
 
@@ -650,8 +670,10 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    `--allow-loss ruby-flattened`,
    `--allow-loss editorial-comment-flattened`,
    `--allow-loss carrier-attribute-dropped`,
-   `--allow-loss list-style-dropped` and
-   `--allow-loss list-delimiter-changed`. The list is closed:
+   `--allow-loss list-style-dropped`,
+   `--allow-loss list-delimiter-changed`,
+   `--allow-loss table-span-flattened` and
+   `--allow-loss table-header-row-demoted`. The list is closed:
    `destination-denied` is not waivable, because a blanked destination is a
    policy refusal, not a loss the target cannot carry: CARVE-P9-054 applies
    the denylist in both safe modes, and the path that keeps a denied
