@@ -46,8 +46,10 @@ uFormatBmp     LOOKAHEAD  reached only through `uFormat`, which is lookahead-onl
 uFormatAstral  LOOKAHEAD  reached only through `uFormat`, which is lookahead-only
 structural     LOOKAHEAD  only in `paraLine = ~blankLine ~structural inline+ lineEnd`
 headingStart   LOOKAHEAD  reached only through `structural`
+graphemeExt    LOOKAHEAD  only in the `boldItalic` and `forced` guards (CARVE-P3-025)
+markChar       LOOKAHEAD  reached only through `graphemeExt`
 hashes         LOOKAHEAD  reached only through `headingStart`, itself lookahead-only
 colonFence     LOOKAHEAD  reached only through `structural`
 ordMarker      LOOKAHEAD  reached only through `structural`
-spaceOrEnd     LOOKAHEAD  only in `boldItalic = "/*" ~spaceOrEnd biInner+ "*/" attrs?`
+spaceOrEnd     LOOKAHEAD  only in `boldItalic = "/*" ~spaceOrEnd ~graphemeExt biInner+ "*/" ~graphemeExt attrRun?`
 edAngleArrow   LOOKAHEAD  only in `edSubOld`, guarding the atomic cross-reference or autolink

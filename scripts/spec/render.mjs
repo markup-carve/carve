@@ -16,6 +16,12 @@ import { MAX_CODE_RUN, Refuse, trimWs } from './layout.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const g = ohm.grammar(readFileSync(presolve(here, '../../resources/carve-core.ohm'), 'utf8'))
+// CARVE-P3-025 names general categories Mn and Me, which Ohm's grammar syntax
+// cannot spell, so the placeholder rule is given them here.
+g.rules.markChar.body = new ohm.pexprs.Alt([new ohm.pexprs.UnicodeChar('Mn'), new ohm.pexprs.UnicodeChar('Me')])
+const GRAPHEME_EXTENDER = /^[\p{Mn}\p{Me}\u{FE00}-\u{FE0F}\u{200D}]/u
+// A delimiter followed by one of these is part of a larger character (CARVE-P3-025).
+const extendsGrapheme = (src, at) => GRAPHEME_EXTENDER.test(src.slice(at, at + 2))
 
 // Bidi override controls PLUS the pipeline's own PART 9R sentinels
 // (U+E000 open, U+E001 close, U+0002 STX field separator). Literal document
@@ -1047,6 +1053,10 @@ function classify(t, src, blocked) {
   if (t.k !== 'd') return
   const prev = t.at > 0 ? src[t.at - 1] : undefined
   const next = src[t.at + 1]
+  if (extendsGrapheme(src, t.at + 1)) {
+    t.canOpen = t.canClose = false
+    return
+  }
   t.canOpen = !t.closeOnly && !blocked?.has(t.at) && bareOpener(t.ch, prev, next)
   t.canClose = bareCloser(t.ch, prev, next)
 }

@@ -2051,6 +2051,12 @@
       "scope": "parsing"
     },
     {
+      "id": "CARVE-P3-025",
+      "part": "3",
+      "title": "A DELIMITER IS A WHOLE GRAPHEME",
+      "scope": "parsing"
+    },
+    {
       "id": "CARVE-P9-080",
       "part": "9",
       "title": "A STRUCTURAL-ONLY LINE RESETS CAPTION SCOPE",

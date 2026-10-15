@@ -1,0 +1,49 @@
+A delimiter that is part of a larger character is text
+
+```
+*️⃣abc*
+.
+<p>*️⃣abc*</p>
+```
+
+```
+*a*️⃣
+.
+<p>*a*️⃣</p>
+```
+
+```
+*a*́ b*
+.
+<p><strong>a*́ b</strong></p>
+```
+
+```
+_︎x _y_
+.
+<p>_︎x <u>y</u></p>
+```
+
+```
+~a~‍b~
+.
+<p><s>a~‍b</s></p>
+```
+
+```
+*x* *️⃣ *y*
+.
+<p><strong>x</strong> *️⃣ <strong>y</strong></p>
+```
+
+```
+{*️⃣abc*}
+.
+<p>{*️⃣abc*}</p>
+```
+
+```
+/*️a*/
+.
+<p><em>*️a*</em></p>
+```

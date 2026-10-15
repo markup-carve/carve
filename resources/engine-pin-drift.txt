@@ -25,3 +25,11 @@
 #
 # Format: <slug><space><space><reason>
 599-an-autolink-is-opaque-to-the-bracket-scan  ahead of the pin: CARVE-P3-001 the bracket scan skips an autolink; carve-js closes the label at the `]` inside it (markup-carve/carve-js#3120)
+600-a-delimiter-that-is-part-of-a-larger-character-is-text  ahead of the pin: CARVE-P3-025 a delimiter followed by a combining mark, a variation selector or a ZWJ is text; carve-js still opens and closes on it (markup-carve/carve#3209)
+600-a-delimiter-that-is-part-of-a-larger-character-is-text-2  ahead of the pin: CARVE-P3-025 a delimiter followed by a combining mark, a variation selector or a ZWJ is text; carve-js still opens and closes on it (markup-carve/carve#3209)
+600-a-delimiter-that-is-part-of-a-larger-character-is-text-3  ahead of the pin: CARVE-P3-025 a delimiter followed by a combining mark, a variation selector or a ZWJ is text; carve-js still opens and closes on it (markup-carve/carve#3209)
+600-a-delimiter-that-is-part-of-a-larger-character-is-text-4  ahead of the pin: CARVE-P3-025 a delimiter followed by a combining mark, a variation selector or a ZWJ is text; carve-js still opens and closes on it (markup-carve/carve#3209)
+600-a-delimiter-that-is-part-of-a-larger-character-is-text-5  ahead of the pin: CARVE-P3-025 a delimiter followed by a combining mark, a variation selector or a ZWJ is text; carve-js still opens and closes on it (markup-carve/carve#3209)
+600-a-delimiter-that-is-part-of-a-larger-character-is-text-6  ahead of the pin: CARVE-P3-025 a delimiter followed by a combining mark, a variation selector or a ZWJ is text; carve-js still opens and closes on it (markup-carve/carve#3209)
+600-a-delimiter-that-is-part-of-a-larger-character-is-text-7  ahead of the pin: CARVE-P3-025 a delimiter followed by a combining mark, a variation selector or a ZWJ is text; carve-js still opens and closes on it (markup-carve/carve#3209)
+600-a-delimiter-that-is-part-of-a-larger-character-is-text-8  ahead of the pin: CARVE-P3-025 a delimiter followed by a combining mark, a variation selector or a ZWJ is text; carve-js still opens and closes on it (markup-carve/carve#3209)

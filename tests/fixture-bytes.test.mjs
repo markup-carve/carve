@@ -399,6 +399,7 @@ const INVENTORY = [
   { base: '19-smart-typography-dashes-and-quotes-34', crv: ['IDEO-SP'], html: ['IDEO-SP'] }, // silent-decay shape: raw in both sides
   { base: '41-line-blocks-11', crv: ['trailing-WS', 'trailing-TAB'], html: [] },
   { base: '41-line-blocks-12', crv: ['trailing-WS', 'trailing-TAB'], html: [] },
+  { base: '600-a-delimiter-that-is-part-of-a-larger-character-is-text-5', crv: ['ZWJ'], html: ['ZWJ'] }, // silent-decay shape: raw in both sides
 ]
 
 function scan(text) {

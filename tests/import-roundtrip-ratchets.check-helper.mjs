@@ -297,6 +297,11 @@ const visibleText = (html) =>
 // and 5, 324-5), whose `*[TERM]:` line the import now reads back
 // (CARVE-P11-033). Membership was measured against both builds.
 
+// Corpus 600 adds eight documents (CARVE-P3-025); all eight import, are fixed
+// points and preserve their text under the pinned build. HTML misses only -8,
+// whose combined `/*` token comes back as `*/.../*`. Markdown misses -3, -5
+// and -6, where the writer escapes the final delimiter, and -8.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {

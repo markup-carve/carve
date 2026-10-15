@@ -11,13 +11,13 @@ Carve has one normative language contract. These views filter that contract by i
 
 | View | Rules | Responsibility |
 |---|---:|---|
-| [Parsing](./parsing) | 119 | Input normalization, layout, block and inline recognition, attributes, and lexical boundaries. |
+| [Parsing](./parsing) | 120 | Input normalization, layout, block and inline recognition, attributes, and lexical boundaries. |
 | [Resolution and rendering](./resolution-rendering) | 52 | Document-wide resolution, core semantic behavior, and HTML serialization. |
 | [AST interchange](./ast-interchange) | 60 | The core serialized tree shape, source positions, and cross-implementation AST guarantees. |
 | [Canonical writing](./canonical-writing) | 73 | Canonical Carve source, Markdown and plain-text targets, round trips, and escaping. |
 | [Imports, security, and extensions](./imports-security-extensions) | 36 | Optional and host-facing behavior, importer contracts, security limits, diagnostics, and extension surfaces. |
 
-Together the views cover all 340 active rules exactly once. The source metadata lives in `resources/spec/rules.json`.
+Together the views cover all 341 active rules exactly once. The source metadata lives in `resources/spec/rules.json`.
 
 ## Retired rule IDs
 
@@ -29,4 +29,4 @@ Retired IDs are never reused. Their replacement points to the document that now 
 | `CARVE-PRE-001` | THE EXECUTABLE ARTIFACTS DECIDE NOTHING | [`.github/CONTRIBUTING.md#what-settles-a-question`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question) |
 | `CARVE-PRE-002` | A GOLDEN IS NORMATIVE ONCE COMMITTED, NOT ONCE GENERATED | [`.github/CONTRIBUTING.md#what-settles-a-question`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question) |
 | `CARVE-PRE-003` | A CHECKER THAT DISAGREES WITH A COMMITTED GOLDEN IS WRONG UNTIL A CLAUSE SAYS OTHERWISE | [`.github/CONTRIBUTING.md#what-settles-a-question`](https://github.com/markup-carve/carve/blob/main/.github/CONTRIBUTING.md#what-settles-a-question) |
-| `CARVE-P9-079` | A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT | [`CARVE-P3-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L483) |
+| `CARVE-P9-079` | A QUOTE'S DIRECTION IS DECIDED ON THE RENDERED TEXT | [`CARVE-P3-023`](https://github.com/markup-carve/carve/blob/main/resources/spec/07-inline-rich-text.ebnf#L501) |

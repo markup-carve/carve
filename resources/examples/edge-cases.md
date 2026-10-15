@@ -52504,3 +52504,112 @@ opens no autolink is no boundary, and its `]` closes the label.
 ```
 
 :::
+
+## A delimiter that is part of a larger character is text
+
+A delimiter counts only when it is a whole grapheme (CARVE-P3-025). Followed by
+a combining mark (general category Mn or Me), a variation selector (U+FE00 to
+U+FE0F) or U+200D ZERO WIDTH JOINER, it is part of a larger character and
+neither opens nor closes. The keycap emoji `*` U+FE0F U+20E3 is the case that
+raised it: the rows show it as an opener and as a closer. A combining acute
+(U+0301) after a closer, a text-style variation selector (U+FE0E) after an
+opener and a ZWJ after a closer follow, each with a later delimiter that still
+pairs across the skipped one. Ordinary spans next to a keycap still form. The
+guard also covers the opener of a forced span and the `*` of the combined `/*`
+token.
+
+::: compare
+
+```carve
+*️⃣abc*
+```
+
+```html
+<p>*️⃣abc*</p>
+```
+
+:::
+
+::: compare
+
+```carve
+*a*️⃣
+```
+
+```html
+<p>*a*️⃣</p>
+```
+
+:::
+
+::: compare
+
+```carve
+*a*́ b*
+```
+
+```html
+<p><strong>a*́ b</strong></p>
+```
+
+:::
+
+::: compare
+
+```carve
+_︎x _y_
+```
+
+```html
+<p>_︎x <u>y</u></p>
+```
+
+:::
+
+::: compare
+
+```carve
+~a~‍b~
+```
+
+```html
+<p><s>a~‍b</s></p>
+```
+
+:::
+
+::: compare
+
+```carve
+*x* *️⃣ *y*
+```
+
+```html
+<p><strong>x</strong> *️⃣ <strong>y</strong></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{*️⃣abc*}
+```
+
+```html
+<p>{*️⃣abc*}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+/*️a*/
+```
+
+```html
+<p><em>*️a*</em></p>
+```
+
+:::

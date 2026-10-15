@@ -81,7 +81,11 @@
       - NO WORD BOUNDARY. A forced span opens and closes regardless of the
         surrounding characters, so it emphasizes intraword: foo{*bar*}baz ->
         foo<strong>bar</strong>baz; my{_path_}name -> my<u>path</u>name. This
-        is the ONLY way to emphasize intraword.
+        is the ONLY way to emphasize intraword. The opener still needs a whole
+        delimiter (CARVE-P3-025): in `{*` followed by a combining mark, a
+        variation selector or U+200D the `*` is part of that character, and
+        the braces are text. `{^` and `{,` carry no such guard; the ruling
+        names the five bare delimiters only.
       - BOUNDS = THE BRACES. The closing `X}` ends the span; a bare delimiter
         of the same kind INSIDE is literal content, like the bare-span rule
         (§9): {/a/b/} -> <em>a/b</em>. Inner content otherwise parses normally,
