@@ -1,0 +1,6 @@
+{table footer-rows=1}
+```csv
+Item,Qty
+Apple,2
+Total,2
+```

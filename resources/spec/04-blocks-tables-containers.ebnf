@@ -1,5 +1,12 @@
 (* --- Tables --- *)
-table = standard_row, [delimiter_row], {table_row}, [caption_slot] ;
+table = pipe_table | delimited_table ;
+pipe_table = standard_row, [delimiter_row], {table_row}, [caption_slot] ;
+delimited_table = fenced_code_block, [caption_slot] ;
+(* `delimited_table` is selected ONLY when a preceding block-attribute run
+   carries the boolean `table` key and the fence info language is exactly
+   `csv` or `tsv`. Without that key the same fence is a `code_block`; with a
+   different language it remains a `code_block`. The attribute is a parser
+   directive, consumed rather than emitted on the table. See PART 9 §5. *)
 (* a table BEGINS with a standard row; a continuation row only ever follows
    an existing row (its cells append to the row above -- PART 9 §5). An optional
    GFM delimiter row may appear as the SECOND line; it promotes the first row to

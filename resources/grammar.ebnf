@@ -1489,7 +1489,14 @@ definition_indent = whitespace, {whitespace} ;
    an indented continuation ends the body: the single-blank entry separator
    before the next `:: term` is preserved. *)
 (* --- Tables --- *)
-table = standard_row, [delimiter_row], {table_row}, [caption_slot] ;
+table = pipe_table | delimited_table ;
+pipe_table = standard_row, [delimiter_row], {table_row}, [caption_slot] ;
+delimited_table = fenced_code_block, [caption_slot] ;
+(* `delimited_table` is selected ONLY when a preceding block-attribute run
+   carries the boolean `table` key and the fence info language is exactly
+   `csv` or `tsv`. Without that key the same fence is a `code_block`; with a
+   different language it remains a `code_block`. The attribute is a parser
+   directive, consumed rather than emitted on the table. See PART 9 §5. *)
 (* a table BEGINS with a standard row; a continuation row only ever follows
    an existing row (its cells append to the row above -- PART 9 §5). An optional
    GFM delimiter row may appear as the SECOND line; it promotes the first row to
@@ -4577,6 +4584,34 @@ EOF = (* end of file *) ;
       consumed(r,c) marks a position absorbed by a span originating at
       another cell; avail(r,c) := a cell was emitted at (r,c) and NOT
       consumed(r,c).
+      DELIMITED BODY (carve#2726). A preceding boolean `{table}` attribute
+         makes a fence whose language is exactly `csv` or `tsv` an ordinary
+         `table` node rather than a `code_block`. The flag is consumed; other
+         table attributes, including `header-rows`, `footer-rows`, `aligns`,
+         `valigns` and `widths`, apply to that table. An unmarked fence stays
+         code. A caption after the fence belongs to the table and takes a
+         TABLE number, not a listing number. An empty-valued `table=""` is
+         equivalent to the boolean flag under the attribute rules.
+
+         `csv` reads comma-separated records with RFC 4180 double-quote
+         escaping, including a quoted field containing a newline. `tsv`
+         substitutes TAB for comma and uses the same quoted-field rule.
+         Record separators are LF after Carve's source ingestion; the final
+         separator is optional. A trailing separator does not add an empty
+         record. An empty field is an empty text cell; a blank record is one
+         empty cell. Fields are LITERAL text: no Carve inline parsing, smart
+         typography, span markers, or per-cell attributes are recognized.
+         The first row is a header unless `header-rows=0` is supplied; an
+         explicit positive `header-rows` marks that many leading rows.
+         Short records gain empty cells to the width of the widest record;
+         longer records are retained and linted, never truncated. An empty
+         fence has zero rows. A malformed quoted field leaves the fence as
+         code, with its ordinary attributes (including `table`), and is
+         linted. The table AST
+         records `sourceFormat` as `csv` or `tsv`, so the canonical Carve
+         writer keeps the delimited form. It may normalize quotes and record
+         separators. External files, spans and per-cell attributes have no
+         delimited-body spelling.
       T1 CELL SPLIT (escape scan, cell-splitting-aware). Scanning a row
          left to right OUTSIDE code spans: an unescaped `|` separates
          cells; `\|` and a `|` inside a code span are content. (The

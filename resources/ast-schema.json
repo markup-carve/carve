@@ -3274,6 +3274,10 @@
             "minimum": 1
           }
         },
+        "sourceFormat": {
+          "enum": ["csv", "tsv"],
+          "description": "Author chose a delimited table fence. The canonical Carve writer keeps this form; absent means a pipe table. Quoting and record separators may be normalized."
+        },
         "caption": {
           "type": "array",
           "items": {

@@ -1,0 +1,7 @@
+{table aligns=left,right,right}
+```csv
+Item,Qty,Price
+Apple,12,0.40
+"Pear, green",3,0.55
+```
+^ Stock on hand

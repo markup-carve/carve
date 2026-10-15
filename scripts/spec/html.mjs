@@ -1071,6 +1071,7 @@ function renderTable(node, depth, ctx) {
     }
     if (keep.length) ordinaryAttrs.push(keep)
   }
+  if (node.sourceFormat && !tableKeys.has('header-rows')) tableKeys.set('header-rows', '1')
   const rows = node.rows
   const hasBody = ['body-rows', 'body-header-rows', 'body-header-cols'].some(key => tableKeys.has(key))
   const groups = hasBody ? tableBodyGroups(tableKeys, rows.length) : null
@@ -1102,7 +1103,7 @@ function renderTable(node, depth, ctx) {
   // carve#1463). The attribute block is what makes the cell ordinary
   // content, so the `<` is the literal character and the attributes stay on
   // the cell that carries them.
-  const bareMarker = (cell) => (cell.content === '<' || cell.content === '^') && cell.align === null && cell.attrs == null
+  const bareMarker = (cell) => !cell.literal && (cell.content === '<' || cell.content === '^') && cell.align === null && cell.attrs == null
   const absorb = (origin, cell, r, c) => {
     consumed.add(key(r, c))
     cover.set(key(r, c), origin)
@@ -1239,7 +1240,7 @@ function renderTable(node, depth, ctx) {
       if (valign) declarations.push(`vertical-align: ${valign};`)
       a += ` style="${declarations.join(' ')}"`
     }
-    const content = cell.content === '' ? '' : renderInline(cell.content)
+    const content = cell.content === '' ? '' : cell.literal ? escapeHtml(cell.content) : renderInline(cell.content)
     return `<${tag}${a}>${content}</${tag}>`
   }
   const renderRow = (row, r) => {
