@@ -52624,6 +52624,33 @@ _︎x _y_
 
 ```html
 <p>*ाx <strong>y</strong></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{^⃣x^}
+```
+
+```html
+<p>{^⃣x^}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+{,︎x,}
+```
+
+```html
+<p>{,︎x,}</p>
+```
+
+:::
 
 ## The combined bold-italic token does not open or close inside a word
 
@@ -52689,12 +52716,6 @@ Run src/*test*/fixtures now
 ::: compare
 
 ```carve
-{^⃣x^}
-```
-
-```html
-<p>{^⃣x^}</p>
-
 see lib/*.js and src/*foo*/bar
 ```
 
@@ -52703,15 +52724,6 @@ see lib/*.js and src/*foo*/bar
 ```
 
 :::
-
-::: compare
-
-```carve
-{,︎x,}
-```
-
-```html
-<p>{,︎x,}</p>
 
 A `*/` before a letter is not a closer, so the nearest valid one closes the token
 and the rejected pair is content:
