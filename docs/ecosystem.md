@@ -111,8 +111,11 @@ Render Carve documents to formats beyond HTML.
 | [carve-pdf](https://github.com/markup-carve/carve-pdf) | PDF | Render `.crv` documents to clean, paginated PDFs. |
 | [carve-hexapdf](https://github.com/markup-carve/carve-hexapdf) | PDF | Carve to PDF via the pure-Ruby HexaPDF engine (over carve-lang / carve-rb). |
 | [pandoc-carve](https://github.com/markup-carve/pandoc-carve) | LaTeX, Typst, DOCX, PDF, ... | Carve AST to Pandoc JSON bridge; reaches every pandoc writer and makes `{=latex}`-style raw spans fire. |
+| [carve-latex](https://github.com/markup-carve/carve-latex) | LaTeX, PDF | `@markup-carve/carve-latex`: publishing templates, bibliography, indexing, and project assembly. |
+| [reveal-carve](https://github.com/markup-carve/reveal-carve) | Presentations | `@markup-carve/reveal-carve`: runtime plugin and static build step for reveal.js slides. Its peer dependencies include Carve and reveal.js. |
 | [carve-sile](https://github.com/markup-carve/carve-sile) | PDF | SILE input support for typesetting Carve documents. |
 | [pdf-to-carve](https://github.com/markup-carve/pdf-to-carve) | Carve source | Extract PDF text and layout into validated `.crv` documents. |
+| [docling-carve](https://github.com/markup-carve/docling-carve) | Carve source | Export Docling documents with provenance, assets, and conversion diagnostics. Its first package release is being prepared; build from source for now. |
 
 ## Format bridges
 
@@ -164,7 +167,7 @@ Skills and servers that let AI coding agents author, validate and convert Carve.
 | Project | Target | Status |
 |---|---|---|
 | [carve-skill](https://github.com/markup-carve/carve-skill) | Claude Code / agents | Authoring skill - a syntax card, the Markdown/Djot trap list, and a `carve lint` validation loop so agents write valid `.crv` the first time. |
-| [carve-mcp](https://github.com/markup-carve/carve-mcp) | MCP clients | Local stdio server exposing the carve-js linter, formatter, renderers, AST, HTML/Markdown/Djot import and concise authoring resources. No filesystem or network access by default. *Not yet published - run from source.* |
+| [carve-mcp](https://github.com/markup-carve/carve-mcp) | MCP clients | Published on npm as `@markup-carve/carve-mcp`. Run with `npx -y @markup-carve/carve-mcp`; Node.js 20 or newer is required. Filesystem access needs an explicit workspace root. |
 
 ## Resources
 

@@ -8,6 +8,20 @@ description: Try Carve in the playground, then render it in your own project.
 Use the [Playground](/playground) without installing anything. The [Cheat
 Sheet](/cheatsheet) lists the syntax.
 
+## Choose a workflow
+
+| What you want to do | Start here | Boundary to check |
+|---|---|---|
+| Write a documentation site | [MkDocs plugin](https://github.com/markup-carve/mkdocs-carve): `pip install mkdocs-carve` | Add `carve` under `plugins` in `mkdocs.yml` and list `.crv` source paths in `nav`. |
+| Edit content in WordPress | [Carve Markup on WordPress.org](https://wordpress.org/plugins/carve-markup/) | Test the editor and theme on your site before migrating existing posts. |
+| Extract a PDF to editable Carve | [PDF to Carve](https://github.com/markup-carve/pdf-to-carve): `pip install pdf-to-carve` | Review extracted text, tables, and reading order against the PDF. |
+| Export a report to DOCX, EPUB, or Typst | [Pandoc bridge](https://github.com/markup-carve/pandoc-carve): `npm install @markup-carve/pandoc-carve`, then `npx pandoc-carve` | Install Pandoc 3.x separately. Use `--diagnostics report.json` to inspect conversion losses. |
+| Add Carve tools to an MCP client | [Carve MCP](https://github.com/markup-carve/carve-mcp): `npx -y @markup-carve/carve-mcp` | Node.js 20 or newer is required. Filesystem access needs an explicit workspace root. |
+
+See the [Ecosystem](/ecosystem) for other editors, site generators, and output
+paths. The packages above solve different tasks; they do not need to be installed
+together.
+
 ## Install a renderer
 
 The JavaScript, PHP, and Rust implementations are tested with the same Carve
@@ -64,7 +78,7 @@ These bindings use `carve-rs`:
 
 | Language | Project | Install |
 |---|---|---|
-| Python | [carve-py](https://github.com/markup-carve/carve-py) | from Git (PyPI pending) |
+| Python | [carve-py](https://github.com/markup-carve/carve-py) | `pip install carve-lang` ([PyPI](https://pypi.org/project/carve-lang/)) |
 | Ruby | [carve-rb](https://github.com/markup-carve/carve-rb) | `gem install carve-lang` |
 | Go | [carve-go](https://github.com/markup-carve/carve-go) | `go get github.com/markup-carve/carve-go` |
 
