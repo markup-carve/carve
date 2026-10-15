@@ -746,9 +746,10 @@ To refresh the baseline, provision all engines at
 `npm run roundtrip:structure -- --write`. Commit the reviewed baseline with
 the corresponding engine pin or corpus change. Subset runs cannot rewrite it.
 
-The baseline was measured at carve-js `672d0a0a`, carve-php `29e42817`, and
-carve-rs `ee85c4ca`, across 2,401 documents per target. All six rows are
-measurements; no row is unsupported.
+The current counts are in `resources/roundtrip-structure-baseline.json` and
+use the revisions in `resources/engine-pins.json`. The table below records an
+earlier measurement at carve-js `672d0a0a`, carve-php `29e42817`, and carve-rs
+`ee85c4ca`, across 2,401 documents per target. All six rows were measured.
 
 | Engine | HTML identical | HTML strict | Markdown identical | Markdown strict | HTML errors | Markdown errors |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
