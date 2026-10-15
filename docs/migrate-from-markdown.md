@@ -51,6 +51,22 @@ check `carve --help` before running it. The report lists
 copied assets and skipped entries, including symlinks. Check skipped entries
 before publishing.
 
+Folder migration also checks local links and image paths. It rewrites a
+`.md` or `.markdown` link to `.crv` only when the converted target exists and
+any fragment matches an id in that target's rendered HTML. Each file's `links`
+array records `valid`, `rewritten`, or `unresolved` targets. Missing files,
+missing fragments, paths outside the source tree, site-root routes, and asset
+fragments go on the review list. External URLs are left alone. Reference links
+that need a new destination are reported for manual review. Common raw HTML
+URL attributes, including `href`, `src`, `srcset`, and `poster`, are checked
+but left for manual rewrite. URLs in CSS or scripts and host-specific routes
+still need a site check.
+
+Carve heading ids are case-sensitive. A Markdown link to `#intro` is reported
+for review after a `# Intro` heading converts unless that heading has an
+explicit `{#intro}` id. The command does not guess an anchor replacement;
+see [Attributes](#attributes).
+
 With `--check-loss`, exit code `0` means no file needs review and no entry was
 skipped. Exit code `1` means review is needed; the converted files and report
 are still written. Exit code `2` means the command failed without replacing
@@ -62,9 +78,9 @@ construct survived. Older CLIs may report every nontrivial file this way;
 use a current CLI for a more specific report.
 
 The [sample directory](https://github.com/markup-carve/carve/tree/main/examples/markdown-migration/source)
-covers links, a local image, a GFM table, a footnote, and raw HTML. Run it before
-migrating a site to see the report format. Review links and assets in the
-destination site after conversion, since routes depend on the publishing host.
+covers cross-file links, a local image, a GFM table, a footnote, and raw HTML.
+Run it before migrating a site to see the report format. Review routes in the
+destination site after conversion, since they depend on the publishing host.
 
 ## Syntax map
 
