@@ -401,7 +401,7 @@
        the target writes an empty Markdown header and keeps every Carve row in
        source order. Any all-header row after the first is emitted as an
        ordinary Markdown body row and reports `table-header-row-demoted`.
-       Each mixed row whose header cells become body cells reports
+       Each header cell in a mixed row that becomes a body cell reports
        `table-header-cell-demoted` (CARVE-P2-024). No authored cell content is dropped.
 
        The Markdown delimiter uses the final effective column alignment from

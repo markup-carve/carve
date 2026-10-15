@@ -2133,10 +2133,10 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    cells and loses its header semantics. Only the Markdown target reports
    this code.
 
-   Each mixed row whose header cells the Markdown target writes as body cells
+   Each header cell in a mixed row that the Markdown target writes as a body cell
    contributes one loss in document order with the stable code
    `table-header-cell-demoted`, the selected `target`, `nodeType` of `block`,
-   the row's `pos` when recorded, and NO `format`. Its `message` is NAMED HERE
+   the cell's `pos` when recorded, and NO `format`. Its `message` is NAMED HERE
    and emitted verbatim: `Wrote header cells as body cells`. Only the Markdown
    target reports this code.
 
@@ -10338,7 +10338,7 @@ EOF = (* end of file *) ;
        the target writes an empty Markdown header and keeps every Carve row in
        source order. Any all-header row after the first is emitted as an
        ordinary Markdown body row and reports `table-header-row-demoted`.
-       Each mixed row whose header cells become body cells reports
+       Each header cell in a mixed row that becomes a body cell reports
        `table-header-cell-demoted` (CARVE-P2-024). No authored cell content is dropped.
 
        The Markdown delimiter uses the final effective column alignment from

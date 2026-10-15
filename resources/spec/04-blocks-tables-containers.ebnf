@@ -643,10 +643,10 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    cells and loses its header semantics. Only the Markdown target reports
    this code.
 
-   Each mixed row whose header cells the Markdown target writes as body cells
+   Each header cell in a mixed row that the Markdown target writes as a body cell
    contributes one loss in document order with the stable code
    `table-header-cell-demoted`, the selected `target`, `nodeType` of `block`,
-   the row's `pos` when recorded, and NO `format`. Its `message` is NAMED HERE
+   the cell's `pos` when recorded, and NO `format`. Its `message` is NAMED HERE
    and emitted verbatim: `Wrote header cells as body cells`. Only the Markdown
    target reports this code.
 
