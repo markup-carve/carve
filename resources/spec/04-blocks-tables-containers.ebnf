@@ -634,14 +634,21 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    every position it covers is written as an empty cell. HTML and canonical
    Carve keep the span and report no loss.
 
-   Each Carve header row after the first that the Markdown target writes as
-   an ordinary body row (CARVE-P11-031) contributes one loss in document order
+   Each Carve header row after the first table row that the Markdown target
+   writes as an ordinary body row (CARVE-P11-031) contributes one loss in document order
    with the stable code `table-header-row-demoted`, the selected `target`,
    `nodeType` of `block`, the row's `pos` when recorded, and NO `format`. Its
    `message` is NAMED HERE and emitted verbatim: `Wrote a later header row as
    a body row`. A pipe table identifies one header row, so the row keeps its
    cells and loses its header semantics. Only the Markdown target reports
    this code.
+
+   Each mixed row whose header cells the Markdown target writes as body cells
+   contributes one loss in document order with the stable code
+   `table-header-cell-demoted`, the selected `target`, `nodeType` of `block`,
+   the row's `pos` when recorded, and NO `format`. Its `message` is NAMED HERE
+   and emitted verbatim: `Wrote header cells as body cells`. Only the Markdown
+   target reports this code.
 
    The canonical Carve writer contributes no `destination-denied` row
    (CARVE-P9-054).
@@ -675,7 +682,8 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    `--allow-loss list-style-dropped`,
    `--allow-loss list-delimiter-changed`,
    `--allow-loss table-span-flattened` and
-   `--allow-loss table-header-row-demoted`. The list is closed:
+   `--allow-loss table-header-row-demoted` and
+   `--allow-loss table-header-cell-demoted`. The list is closed:
    `destination-denied` is not waivable, because a blanked destination is a
    policy refusal, not a loss the target cannot carry: CARVE-P9-054 applies
    the denylist in both safe modes, and the path that keeps a denied
