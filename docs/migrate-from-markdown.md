@@ -34,6 +34,38 @@ const carve = markdownToCarve(markdownSource)
 The converter handles most mechanical substitutions, but review the output for emphasis and table syntax.
 :::
 
+## Convert a directory
+
+The directory tool keeps subfolders, copies other regular files such as images,
+and writes a `migration-report.json` beside the converted `.crv` files. Use a
+new output directory; the tool refuses to overwrite one. Run this from the
+Carve repository root:
+
+```sh
+node tools/migrate-markdown-directory.mjs path/to/markdown path/to/carve
+jq -r '.review[]' path/to/carve/migration-report.json
+```
+
+The command uses `carve` on `PATH`. Pass `--carve path/to/carve` after the
+output directory to select another executable. On Windows, npm's `.cmd`
+launcher needs `--carve-node path/to/node_modules/@markup-carve/carve/dist/cli.js`;
+a native `carve.exe` works with `--carve`. The report lists copied assets and
+skipped entries, including symlinks. Check skipped entries before publishing.
+
+Exit code `0` means every file has only preserved or normalized findings. Exit
+code `2` means a file needs review or an entry was skipped; the converted files
+and report are still written. Exit code `1` means the converter or report failed;
+the tool removes its staging directory for these errors. A
+`fidelity-unverified` finding
+also requires review: it means the converter could not verify that the source
+construct survived. Older CLIs may report every nontrivial file this way;
+use a current CLI for a more specific report.
+
+The [sample directory](https://github.com/markup-carve/carve/tree/main/examples/markdown-migration/source)
+covers links, a local image, a GFM table, a footnote, and raw HTML. Run it before
+migrating a site to see the report format. Review links and assets in the
+destination site after conversion, since routes depend on the publishing host.
+
 ## Syntax map
 
 The table below covers the constructs you use most often. Items marked **same** work identically; items marked **changed** need attention.
