@@ -1,40 +1,40 @@
 {
   "version": 2,
-  "note": "Corpus 602 adds four documents (carve#3226). Every engine gains four HTML identical round trips and three strict ones; Markdown holds. All counts were measured with the pinned engines.",
+  "note": "At 2,553 corpus documents, the JS pin 0d02bfba and the PHP and Rust delimiter ports change measured structural round trips. HTML identical/strict: JS 2051/1910 -> 2052/1912, PHP 2082/1938 -> 2083/1941, Rust 2040/1899 -> 2041/1901. Markdown identical/strict: JS 1846/1435 -> 1855/1430, PHP 1842/1390 -> 1851/1395, Rust 1864/1642 -> 1873/1652. The spec corpus size is unchanged; these are engine-reading and writer changes.",
   "engines": {
     "js": {
       "html": {
-        "identical": 2051,
-        "strict": 1910,
+        "identical": 2052,
+        "strict": 1912,
         "total": 2553
       },
       "md": {
-        "identical": 1846,
-        "strict": 1435,
+        "identical": 1855,
+        "strict": 1430,
         "total": 2553
       }
     },
     "php": {
       "html": {
-        "identical": 2082,
-        "strict": 1938,
+        "identical": 2083,
+        "strict": 1941,
         "total": 2553
       },
       "md": {
-        "identical": 1842,
-        "strict": 1390,
+        "identical": 1851,
+        "strict": 1395,
         "total": 2553
       }
     },
     "rs": {
       "html": {
-        "identical": 2040,
-        "strict": 1899,
+        "identical": 2041,
+        "strict": 1901,
         "total": 2553
       },
       "md": {
-        "identical": 1864,
-        "strict": 1642,
+        "identical": 1873,
+        "strict": 1652,
         "total": 2553
       }
     }
