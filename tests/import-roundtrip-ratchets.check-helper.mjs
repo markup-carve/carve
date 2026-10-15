@@ -297,26 +297,16 @@ const visibleText = (html) =>
 // and 5, 324-5), whose `*[TERM]:` line the import now reads back
 // (CARVE-P11-033). Membership was measured against both builds.
 
-// Corpus 600 adds eight documents (CARVE-P3-025); all eight import, are fixed
-// points and preserve their text under the pinned build. HTML misses only -8,
-// whose combined `/*` token comes back as `*/.../*`. Markdown misses -3, -5
-// and -6, where the writer escapes the final delimiter, and -8.
-// Rows 9 to 11 add three more (an Mc mark, `{^` and `{,` before an extender);
-// all three import and keep their text, and HTML round-trips all three.
-// Markdown misses -9, where the writer escapes the inner `*`.
-// Rows 12 to 16 add five more, one per editorial or comment frame. All five
-// import and keep their text. HTML round-trips -12 and -13 only: -14's
-// substitution returns as a deletion and an insertion, -15's comment as a
-// classed span, and -16's braced comment renders nothing. Markdown misses -16.
+// At pin 0d02bfba, corpus 600's 16 documents all import. HTML round-trips
+// the base case and rows 2 through 13; rows 14 through 16 lose editorial or
+// comment structure. Markdown round-trips none of the 16.
 
-// Corpus 601 adds eight documents (carve#3217); all eight import, are fixed
-// points and preserve their text under the pinned build. Both round trips
-// keep only -7, the forced `a{/*y*/}b`: the pinned build still reads the other
-// seven as combined tokens, which come back braced or as `*/.../*`.
+// At the same pin, HTML round-trips corpus 601's base case and rows 2 through
+// 5 and 7. Markdown keeps only row 7, the forced `a{/*y*/}b` spelling.
 
-// Corpus 602 adds four documents (carve#3226); all four import, are fixed
-// points and preserve their text under the pinned build. None round trips on
-// either target: the combined token comes back as the nested spelling.
+// Corpus 602 adds four documents (carve#3226). HTML round-trips the base
+// case and rows 2 and 3. Row 4 and all four Markdown cases lose their source
+// spelling on import.
 
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
