@@ -1,0 +1,66 @@
+An unclosed fence under an open paragraph in a container opens nothing
+
+````
+::: note
+para
+```
+code
+::::
+:::
+after *b*
+.
+<aside class="admonition note" aria-label="Note">
+  <p>para
+<code>
+code</code></p>
+  <div>
+    <div>
+      <p>after <strong>b</strong></p>
+    </div>
+  </div>
+</aside>
+````
+
+````
+::: note
+> quote
+```
+code
+::::
+:::
+after *b*
+.
+<aside class="admonition note" aria-label="Note">
+  <blockquote><p>quote
+<code>
+code</code></p></blockquote>
+  <div>
+    <div>
+      <p>after <strong>b</strong></p>
+    </div>
+  </div>
+</aside>
+````
+
+````
+::: note
+- item
+```
+code
+::::
+:::
+after *b*
+.
+<aside class="admonition note" aria-label="Note">
+  <ul>
+    <li>item
+<code>
+code</code></li>
+  </ul>
+  <div>
+    <div>
+      <p>after <strong>b</strong></p>
+    </div>
+  </div>
+</aside>
+````

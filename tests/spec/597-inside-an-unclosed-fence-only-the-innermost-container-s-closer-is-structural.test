@@ -76,3 +76,81 @@ after *b*
 </div>
 <p>after <strong>b</strong></p>
 ````
+
+````
+::: note
+%% c
+```
+code
+::::
+:::
+after *b*
+.
+<aside class="admonition note" aria-label="Note">
+  <pre><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+````
+
+````
+::: outer
+:::: inner
+%% c
+```
+code
+:::
+::::
+:::
+after *b*
+.
+<div class="outer">
+  <div class="inner">
+    <pre><code>code
+:::
+</code></pre>
+  </div>
+</div>
+<p>after <strong>b</strong></p>
+````
+
+````
+::: note
+> %% c
+```
+code
+::::
+:::
+after *b*
+.
+<aside class="admonition note" aria-label="Note">
+  <blockquote>
+
+  </blockquote>
+  <pre><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+````
+
+````
+::: note
+- %% c
+```
+code
+::::
+:::
+after *b*
+.
+<aside class="admonition note" aria-label="Note">
+  <ul>
+    <li></li>
+  </ul>
+  <pre><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+````

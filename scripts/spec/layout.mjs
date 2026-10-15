@@ -904,8 +904,13 @@ function parseValidColonOpener(tail) {
 function findColonCloser(lines, openIdx, len) {
   const first = COLON_FENCE.exec(lines[openIdx] ?? '')
   const stack = [{ length: len, mode: first ? parseColonOpener(first[2])?.mode : 'div' }]
+  // An unclosed fence under an open paragraph opens nothing (§10 I4), so the
+  // skip below needs to know whether the line above left one open.
+  let paragraphOpen = false
   for (let j = openIdx + 1; j < lines.length; j++) {
     const top = stack.at(-1)
+    const wasOpen = paragraphOpen
+    paragraphOpen = false
     // A code fence, a raw block and a comment block are OPAQUE: their contents
     // are content, not markup, so a colon fence written inside one closes
     // nothing and opens nothing (carve#450). The span is skipped from the line
@@ -926,7 +931,7 @@ function findColonCloser(lines, openIdx, len) {
     }
     // An unclosed fence is code up to the innermost container's own closer;
     // every other colon line before it is content (A CLOSER IS REQUIRED).
-    const unclosed = FENCE.exec(lines[j])
+    const unclosed = wasOpen ? null : FENCE.exec(lines[j])
     if (unclosed && parseFenceInfo(unclosed[2]) !== null) {
       let k = j + 1
       while (k < lines.length && COLON_CLOSER.exec(lines[k])?.[1].length !== top.length) k++
@@ -948,8 +953,24 @@ function findColonCloser(lines, openIdx, len) {
     const o = COLON_FENCE.exec(lines[j])
     const opener = o && parseColonOpener(o[2])
     if (opener) stack.push({ length: o[1].length, mode: opener.mode })
+    else paragraphOpen = leavesParagraphOpen(lines, j, wasOpen)
   }
   return -1
+}
+
+/** Whether lines[idx] leaves a paragraph open for the line below: paragraph
+ *  text, or a quote, item or note line carrying it. */
+function leavesParagraphOpen(lines, idx, wasOpen) {
+  const line = lines[idx]
+  if (/^[ \t]*$/.test(line) || COMMENT_LINE.test(line) || CONT_MARKER.test(line)) return false
+  if (HEADING.test(line) || HR.test(line) || LINK_DEF.test(line) || EMPTY_LINK_DEF.test(line) ||
+    (line[0] === '{' && tryAttrLine(lines, idx))) return false
+  if (wasOpen) return true
+  if (isTableRow(line)) return false
+  const quote = QUOTE.exec(line)
+  if (quote) return quote[1] !== undefined && leavesParagraphOpen([quote[1]], 0, false)
+  const item = BULLET.exec(line)?.[6] ?? ORDERED.exec(line)?.[6]
+  return item === undefined || leavesParagraphOpen([item], 0, false)
 }
 
 /** The last line of the opaque span opening at `idx`, or -1 if none opens

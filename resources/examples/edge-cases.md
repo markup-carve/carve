@@ -52394,6 +52394,116 @@ after *b*
 ```
 
 ::::::
+
+A comment line above the fence leaves no paragraph open, so the fence still
+has nothing to interrupt and the same closer ends it, in one container or
+nested.
+
+:::::: compare
+
+````carve
+::: note
+%% c
+```
+code
+::::
+:::
+after *b*
+````
+
+```html
+<aside class="admonition note" aria-label="Note">
+  <pre><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+```
+
+::::::
+
+:::::: compare
+
+````carve
+::: outer
+:::: inner
+%% c
+```
+code
+:::
+::::
+:::
+after *b*
+````
+
+```html
+<div class="outer">
+  <div class="inner">
+    <pre><code>code
+:::
+</code></pre>
+  </div>
+</div>
+<p>after <strong>b</strong></p>
+```
+
+::::::
+
+A quote or an item whose only content is a comment leaves no paragraph open
+either:
+
+:::::: compare
+
+````carve
+::: note
+> %% c
+```
+code
+::::
+:::
+after *b*
+````
+
+```html
+<aside class="admonition note" aria-label="Note">
+  <blockquote>
+
+  </blockquote>
+  <pre><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+```
+
+::::::
+
+:::::: compare
+
+````carve
+::: note
+- %% c
+```
+code
+::::
+:::
+after *b*
+````
+
+```html
+<aside class="admonition note" aria-label="Note">
+  <ul>
+    <li></li>
+  </ul>
+  <pre><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+```
+
+::::::
+
 ## Editorial markup closes outside a cross-reference or a bracket run
 
 PART 8 resolves a cross-reference and a bracket run before editorial markup,
@@ -52951,3 +53061,100 @@ A braced span nests inside a bare span of its own kind:
 ```
 
 :::
+
+## An unclosed fence under an open paragraph in a container opens nothing
+
+A code fence with no closer ahead cannot interrupt an open paragraph (PART 9
+§10 I4), and that holds inside a container too: the fence line and the lines
+after it continue the paragraph, lazily where it is a quote's or an item's.
+With no fence open, A CLOSER IS REQUIRED does not apply and every colon line
+below is read normally. A bare run that does not match the innermost
+container's width opens a block (PART 2), so `::::` opens a child, `:::`
+opens a child of that, and the paragraph after them stays inside the note.
+
+:::::: compare
+
+````carve
+::: note
+para
+```
+code
+::::
+:::
+after *b*
+````
+
+```html
+<aside class="admonition note" aria-label="Note">
+  <p>para
+<code>
+code</code></p>
+  <div>
+    <div>
+      <p>after <strong>b</strong></p>
+    </div>
+  </div>
+</aside>
+```
+
+::::::
+
+The paragraph can be a quote's, continued lazily:
+
+:::::: compare
+
+````carve
+::: note
+> quote
+```
+code
+::::
+:::
+after *b*
+````
+
+```html
+<aside class="admonition note" aria-label="Note">
+  <blockquote><p>quote
+<code>
+code</code></p></blockquote>
+  <div>
+    <div>
+      <p>after <strong>b</strong></p>
+    </div>
+  </div>
+</aside>
+```
+
+::::::
+
+or a list item's:
+
+:::::: compare
+
+````carve
+::: note
+- item
+```
+code
+::::
+:::
+after *b*
+````
+
+```html
+<aside class="admonition note" aria-label="Note">
+  <ul>
+    <li>item
+<code>
+code</code></li>
+  </ul>
+  <div>
+    <div>
+      <p>after <strong>b</strong></p>
+    </div>
+  </div>
+</aside>
+```
+
+::::::

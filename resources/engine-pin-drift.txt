@@ -24,3 +24,7 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural-5  ahead of the pin: PART 2 A CLOSER IS REQUIRED a comment line leaves no paragraph open, so the unclosed fence below it ends at the container's closer; carve-js runs it to the end (markup-carve/carve-js#3167)
+597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural-6  ahead of the pin: PART 2 A CLOSER IS REQUIRED a comment line leaves no paragraph open, so the unclosed fence below it ends at the container's closer; carve-js runs it to the end (markup-carve/carve-js#3167)
+604-an-unclosed-fence-under-an-open-paragraph-in-a-container-opens-nothing-2  ahead of the pin: PART 9 §10 I4 an unclosed fence under an open quote or item paragraph in a container is text; carve-js opens it (markup-carve/carve-js#3167)
+604-an-unclosed-fence-under-an-open-paragraph-in-a-container-opens-nothing-3  ahead of the pin: PART 9 §10 I4 an unclosed fence under an open quote or item paragraph in a container is text; carve-js opens it (markup-carve/carve-js#3167)
