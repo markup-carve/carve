@@ -76,3 +76,22 @@ test('the clause names both codes, both messages and both CLI exceptions', () =>
     assert.ok(clause.includes(`\`${text}\``), `CARVE-P2-024 no longer names ${text}`)
   }
 })
+
+test('the pinned engine reports both spans on markdown, plain and ansi and the header row on markdown', async () => {
+  const { carveToAnsiWithReport, carveToHtmlWithReport, carveToMarkdownWithReport, carveToPlainTextWithReport } = await import('@markup-carve/carve')
+  const spans = '|= System |= Limit | < |\n| A | Cold | 20 |\n| ^ | Hot | 10 |\n'
+  for (const [render, target] of [[carveToMarkdownWithReport, 'markdown'], [carveToPlainTextWithReport, 'plain'], [carveToAnsiWithReport, 'ansi']]) {
+    const { value: _value, ...result } = render(spans)
+    assert.equal(validate(result), true, JSON.stringify(validate.errors))
+    assert.deepEqual(result.losses.map(({ pos: _pos, ...loss }) => loss), [
+      { code: 'table-span-flattened', target, nodeType: 'block', message: SPAN, colspan: 2 },
+      { code: 'table-span-flattened', target, nodeType: 'block', message: SPAN, rowspan: 2 },
+    ])
+  }
+  assert.equal(carveToHtmlWithReport(spans).totalLosses, 0)
+  const headers = carveToMarkdownWithReport('|= A |= B |\n|= C |= D |\n| 1 | 2 |\n')
+  assert.deepEqual(headers.losses.map(({ pos: _pos, ...loss }) => loss), [
+    { code: 'table-header-row-demoted', target: 'markdown', nodeType: 'block', message: HEADER },
+  ])
+  assert.equal(carveToPlainTextWithReport('|= A |= B |\n|= C |= D |\n| 1 | 2 |\n').totalLosses, 0)
+})
