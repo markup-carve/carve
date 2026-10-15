@@ -28,13 +28,13 @@
     },
     "rs": {
       "html": {
-        "identical": 2005,
-        "strict": 1871,
+        "identical": 2004,
+        "strict": 1870,
         "total": 2525
       },
       "md": {
-        "identical": 1850,
-        "strict": 1627,
+        "identical": 1849,
+        "strict": 1626,
         "total": 2525
       }
     }
