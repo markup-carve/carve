@@ -138,6 +138,7 @@ link_text = {inline_element | text_run | literal_special} ;
      !`literal`        inline literal (PART 9 §27)
      {# comment #}     editorial comment
      (dest "title")    a link or image destination slot
+     <url>  <email>    an autolink, through its `>` (ruled 2026-10-15)
 
    A `]` inside any of them is content, not the close.
 
@@ -145,10 +146,9 @@ link_text = {inline_element | text_run | literal_special} ;
    joins this set. `{+ +}`, `{- -}` and `{~ ~> ~}` take `inline_content`, so
    `[{+a\]b+}](u)` works and those constructs are NOT skipped.
 
-   THE DESTINATION SLOT joined this set by that criterion, not by a separate
-   rule: a destination has no escape processing (`docs/dismissed-syntax.md`,
-   normative), so a `]` there is an ordinary URL character with no second
-   spelling. What is skipped is the parenthesized slot through its closing
+   THE DESTINATION SLOT and THE AUTOLINK joined this set by that criterion:
+   neither resolves an escape (`docs/dismissed-syntax.md`, normative), so a `]`
+   there has no second spelling. The slot is skipped through its closing
    parenthesis, title included, and NOT a trailing attribute block -- an
    attribute value does resolve escapes, so `[t[x](/u){title="]"}y](/z)`
    closes at the `]` in the value for the same reason `[t{# c #}{title="]"}x]`

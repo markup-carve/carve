@@ -535,6 +535,8 @@ index: examples/edge-cases/index.md
   a-bare-closer-does-not-reach-inside-a-link-destination
   a-bare-closer-does-not-reach-inside-a-cross-reference
   an-autolink-or-a-cross-reference-is-atomic-to-brackets-and-braces
+  editorial-markup-closes-outside-a-cross-reference-or-a-bracket-run
+  an-autolink-is-opaque-to-the-bracket-scan
   a-tag-inside-a-literal-brace-run-is-still-a-tag
   a-math-span-s-base-class-keeps-the-class-slot-in-place
   a-marker-glued-to-a-name-opens-nothing

@@ -52394,3 +52394,113 @@ after *b*
 ```
 
 ::::::
+## Editorial markup closes outside a cross-reference or a bracket run
+
+PART 8 resolves a cross-reference and a bracket run before editorial markup,
+so an insertion or deletion closer inside one is content, and the editorial
+span closes at the next closer outside it (PART 9 §9 E2b). A substitution's
+closer is found the same way, and an arrow inside a bracket run is content too;
+an arrow at the end of a cross-reference still splits the substitution.
+
+::: compare
+
+```carve
+{+a </#x+}> b+}
+```
+
+```html
+<p><ins>a &lt;/#x+}&gt; b</ins></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{+a [x+}](u) b+}
+```
+
+```html
+<p><ins>a <a href="u">x+}</a> b</ins></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{-a [x](u-}) b-}
+```
+
+```html
+<p><del>a <a href="u-}">x</a> b</del></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{~a [x~>y](u) b~}
+```
+
+```html
+<p><s>a <a href="u">x~&gt;y</a> b</s></p>
+```
+
+:::
+
+::: compare
+
+```carve
+{~a </#x~>y> b~}
+```
+
+```html
+<p><del>a &lt;/<span class="tag"><strong>#x</strong></span></del><ins>y&gt; b</ins></p>
+```
+
+:::
+
+## An autolink is opaque to the bracket scan
+
+The bracket scan skips an autolink whole (CARVE-P3-001), so a `]` inside one
+cannot close a label opened before it: the link keeps the autolink as text. An
+email address cannot hold a `]`, so its row pins the plain case. A `<` that
+opens no autolink is no boundary, and its `]` closes the label.
+
+::: compare
+
+```carve
+[a <https://x]> b](u)
+```
+
+```html
+<p><a href="u">a https://x] b</a></p>
+```
+
+:::
+
+::: compare
+
+```carve
+[a <me@x.org> b](u)
+```
+
+```html
+<p><a href="u">a me@x.org b</a></p>
+```
+
+:::
+
+::: compare
+
+```carve
+[a <x]> b](u)
+```
+
+```html
+<p>[a &lt;x]&gt; b](u)</p>
+```
+
+:::

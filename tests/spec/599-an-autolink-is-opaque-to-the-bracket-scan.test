@@ -1,0 +1,19 @@
+An autolink is opaque to the bracket scan
+
+```
+[a <https://x]> b](u)
+.
+<p><a href="u">a https://x] b</a></p>
+```
+
+```
+[a <me@x.org> b](u)
+.
+<p><a href="u">a me@x.org b</a></p>
+```
+
+```
+[a <x]> b](u)
+.
+<p>[a &lt;x]&gt; b](u)</p>
+```

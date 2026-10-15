@@ -38,3 +38,5 @@
 379-a-reference-definition-cannot-take-its-destination-from-the-next-line-2  ahead of the pin: CARVE-P3-024 treats the bare marker in a list item as an empty definition (carve#2878)
 597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural  ahead of the pin: PART 2 A CLOSER IS REQUIRED only the innermost container's closer ends an unclosed fence; carve-js also stops on an ancestor's closer (markup-carve/carve-js#3116)
 597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural-2  ahead of the pin: PART 2 A CLOSER IS REQUIRED only the innermost container's closer ends an unclosed fence; carve-js also stops on an ancestor's closer (markup-carve/carve-js#3116)
+598-editorial-markup-closes-outside-a-cross-reference-or-a-bracket-run  ahead of the pin: PART 8 / PART 9 E2b a cross-reference resolves before editorial markup; the pinned carve-js closes the insertion inside it (carve-js main reproduces)
+599-an-autolink-is-opaque-to-the-bracket-scan  ahead of the pin: CARVE-P3-001 the bracket scan skips an autolink; carve-js closes the label at the `]` inside it (fix in review in carve-js)

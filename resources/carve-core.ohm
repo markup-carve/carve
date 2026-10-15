@@ -364,11 +364,19 @@ CarveCore {
   // The `~>` and `~}` a substitution needs are TOP-LEVEL: the search skips
   // verbatim content, so a pair whose only `~>` sits in code is a forced
   // strikethrough (PART 9 SS22, carve#2083). An unclosed run ends at `~}`.
-  edSub      = "{~" edSubItem<"~>">* "~>" edSubItem<"~}">* "~}"
-  edSubItem<stop> = ~stop ~"~}" edSubAtom
+  // PART 8 ranks a bracket run, an autolink and a cross-reference above
+  // editorial markup (PART 9 E2b), so the `~}` search steps over all three.
+  // The ARROW search steps over the bracket run only: an autolink or a
+  // cross-reference whose body ends in `~` still supplies the arrow, so
+  // `{~a </#x~>y> b~}` substitutes at it, as carve-js does (ruled 2026-10-15).
+  edSub      = "{~" edSubOld* "~>" edSubNew* "~}"
+  edSubOld   = ~"~>" (~edAngleArrow (crossref | autolink) | ~"~}" edSubAtom)
+  edSubNew   = ~"~}" (crossref | autolink | edSubAtom)
+  // Neither body holds a `>`, so the only arrow one can carry is at its end.
+  edAngleArrow = "<" (~"~>" ~">" any)* "~>"
   // A `$` or `!` prefix needs no alternative of its own: the backtick run
   // behind it is what carries the arrow, and this rule skips that run.
-  edSubAtom  = escape | edSubCode | bracedComment | edCommentBody | emptyForced | overlapForced | forcedSpan | edChar
+  edSubAtom  = escape | edSubCode | bracedComment | edCommentBody | emptyForced | overlapForced | forcedSpan | nested | edChar
   edSubCode  = codeClosed | edSubCodeU
   edSubCodeU = "\u0060" "\u0060"* (~"~}" any)*
   edComment  = edCommentBody
@@ -378,7 +386,11 @@ CarveCore {
   // A closed code span is skipped whole while scanning for the closer, so a
   // run whose closer sits later in the block stays one span (PART 3 UNCLOSED
   // RUN). A run with no closer is consumed as itself and ends at the closer.
-  edScan     = escape | codeClosed | backtickRun | any
+  // A cross-reference, an autolink and a bracket run (its destination slot
+  // included) resolve before editorial markup (PART 8, PART 9 E2b), so a
+  // `+}` or `-}` inside one is their content (ruled 2026-10-15). Bodies only,
+  // as in `brContent`: an attribute block after either is still scanned.
+  edScan     = escape | codeClosed | backtickRun | crossref | autolinkBody | nested | any
   backtickRun = "\u0060"+
 
   // raw inline passthrough: a code span whose trailing block is EXACTLY
@@ -439,7 +451,10 @@ CarveCore {
   // the outstanding `[` and the line went literal, where every engine keeps
   // the link. The SLOT and not `linkTail`: `attrRun` is outside it for the
   // reason stated above, since an attribute value does resolve escapes.
-  brContent  = escape | litInlineBody | code | edCommentBody | nested | (~"]" any)
+  //
+  // An AUTOLINK BODY joins by the same criterion (CARVE-P3-001, ruled
+  // 2026-10-15): `[a <https://x]> b](u)` is one link.
+  brContent  = escape | litInlineBody | code | edCommentBody | autolinkBody | nested | (~"]" any)
   nested     = "[" brContent* "]" destSlot?
   brTail     = linkTail | refTail | attrRun | emptyAttrs
   linkTail   = destSlot attrRun?
@@ -548,7 +563,9 @@ CarveCore {
   altText    = brContent*
 
   // --- Autolinks (PART 3): URL or email in angle brackets ------------------
-  autolink   = "<" (urlBody | emailBody) ">" attrRun?
+  autolink   = autolinkBody attrRun?
+  // The body, without the attribute block - see `litInlineBody`.
+  autolinkBody = "<" (urlBody | emailBody) ">"
   urlBody    = scheme ":" urlChar+
   // ASCII, per `scheme = letter, {letter | digit | '+' | '-' | '.'}` in
   // grammar.ebnf, where `letter` is the enumerated ASCII alphabet. ohm's

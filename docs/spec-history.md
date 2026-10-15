@@ -311,3 +311,21 @@ between explicit delimiters and never weighs their content (CARVE-P9-082).
 Source that was paragraph text may now open a table or interrupt a paragraph;
 an escaped delimiter keeps it literal. Corpus sections 113 and 453 keep their
 names because corpus numbering is append-only, and carry the new expectations.
+
+## Editorial markup and atomic inlines
+
+PART 8 ranks cross-references and autolinks above emphasis and editorial
+markup, and PART 9 E2b resolves a bracket run first, but the executable spec
+closed an insertion at a `+}` inside a cross-reference or a link label while
+all three engines kept the closer as content. The maintainer ruled on
+2026-10-15 that the spec text stands: `{+a </#x+}> b+}` is one insertion
+around the cross-reference, and a link inside an insertion keeps its own text.
+A substitution whose arrow ends a cross-reference, `{~a </#x~>y> b~}`, still
+splits there, the reading carve-js and the executable spec already shared.
+Corpus category 598 pins it.
+
+The same day the maintainer ruled that CARVE-P3-001's bracket scan skips an
+autolink: a `]` inside `<https://x]>` cannot close a label opened before it, so
+`[a <https://x]> b](u)` is one link, as a destination slot already was. An
+autolink body resolves no escapes, so the `]` had no other spelling. Corpus
+category 599 pins it.

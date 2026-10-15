@@ -1,0 +1,31 @@
+Editorial markup closes outside a cross-reference or a bracket run
+
+```
+{+a </#x+}> b+}
+.
+<p><ins>a &lt;/#x+}&gt; b</ins></p>
+```
+
+```
+{+a [x+}](u) b+}
+.
+<p><ins>a <a href="u">x+}</a> b</ins></p>
+```
+
+```
+{-a [x](u-}) b-}
+.
+<p><del>a <a href="u-}">x</a> b</del></p>
+```
+
+```
+{~a [x~>y](u) b~}
+.
+<p><s>a <a href="u">x~&gt;y</a> b</s></p>
+```
+
+```
+{~a </#x~>y> b~}
+.
+<p><del>a &lt;/<span class="tag"><strong>#x</strong></span></del><ins>y&gt; b</ins></p>
+```

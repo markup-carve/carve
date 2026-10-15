@@ -612,8 +612,8 @@ const sem = g.createSemantics().addOperation('h', {
     const lbl = label.numChildren ? label.child(0).sourceString : null
     return refFrame({ label: lbl, alt: alt.sourceString, img: true, attrList: attrsOf(attrs), attrSrc: attrs.sourceString })
   },
-  autolink(_o, body, _c, attrs) {
-    const raw = body.sourceString
+  autolink(body, attrs) {
+    const raw = body.child(1).sourceString
     const href = /@/.test(raw) && !/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw) ? `mailto:${raw}` : raw
     const a = renderAttrs(attrsOf(attrs))
     return `<a href="${escapeAttr(checkUrl(href))}"${a}>${escapeHtml(raw)}</a>`

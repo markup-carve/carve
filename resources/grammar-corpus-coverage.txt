@@ -50,3 +50,4 @@ hashes         LOOKAHEAD  reached only through `headingStart`, itself lookahead-
 colonFence     LOOKAHEAD  reached only through `structural`
 ordMarker      LOOKAHEAD  reached only through `structural`
 spaceOrEnd     LOOKAHEAD  only in `boldItalic = "/*" ~spaceOrEnd biInner+ "*/" attrs?`
+edAngleArrow   LOOKAHEAD  only in `edSubOld`, guarding the atomic cross-reference or autolink
