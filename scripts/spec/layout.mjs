@@ -927,7 +927,7 @@ function leavesParagraphOpen(lines, idx, wasOpen) {
   const line = lines[idx]
   if (/^[ \t]*$/.test(line) || COMMENT_LINE.test(line) || CONT_MARKER.test(line)) return false
   if (HEADING.test(line) || HR.test(line) || LINK_DEF.test(line) || EMPTY_LINK_DEF.test(line) ||
-    (line[0] === '{' && tryAttrLine(lines, idx))) return false
+    isTableRow(line) || (line[0] === '{' && tryAttrLine(lines, idx))) return false
   const quote = QUOTE.exec(line)
   if (quote) {
     const inner = quote[1] !== undefined &&
@@ -936,7 +936,7 @@ function leavesParagraphOpen(lines, idx, wasOpen) {
   }
   const item = BULLET.exec(line)?.[6] ?? ORDERED.exec(line)?.[6]
   if (wasOpen && (item === undefined || wasOpen[0] !== '-')) return wasOpen
-  if (item === undefined) return isTableRow(line) ? false : 'p'
+  if (item === undefined) return 'p'
   const inner = leavesParagraphOpen([item], 0, false)
   return inner && '-' + inner
 }
@@ -4416,7 +4416,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         if (!absorbedColon &&
             (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener || hostedBlock ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
-             l[0] === '|' || l[0] === '{' || contRow || nestedQuoteEnds || nestedItemEnds ||
+             isTableRow(l) || l[0] === '{' || contRow || nestedQuoteEnds || nestedItemEnds ||
              isLinkDef(l) || COMMENT_LINE.test(l) ||
              FOOTNOTE_DEF.test(l))) {
           qOpenPara = false

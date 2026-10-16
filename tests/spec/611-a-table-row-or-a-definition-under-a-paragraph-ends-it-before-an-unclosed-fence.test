@@ -1,0 +1,93 @@
+A table row or a definition under a paragraph ends it before an unclosed fence
+
+````
+::: note
+para
+| t |
+```
+code
+::::
+:::
+after *b*
+.
+<aside class="admonition note" aria-label="Note">
+  <p>para</p>
+  <table>
+    <tbody>
+      <tr><td>t</td></tr>
+    </tbody>
+  </table>
+  <pre><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+````
+
+````
+::: note
+> para
+> | t |
+```
+code
+::::
+:::
+after *b*
+.
+<aside class="admonition note" aria-label="Note">
+  <blockquote>
+    <p>para</p>
+    <table>
+      <tbody>
+        <tr><td>t</td></tr>
+      </tbody>
+    </table>
+  </blockquote>
+  <pre><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+````
+
+````
+::: note
+> para
+> [r]: /u
+```
+code
+::::
+:::
+after *b*
+.
+<aside class="admonition note" aria-label="Note">
+  <blockquote><p>para</p></blockquote>
+  <pre><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+````
+
+````
+::: note
+> para
+> | t
+```
+code
+::::
+:::
+after *b*
+.
+<aside class="admonition note" aria-label="Note">
+  <blockquote><p>para
+| t
+<code>
+code</code></p></blockquote>
+  <div>
+    <div>
+      <p>after <strong>b</strong></p>
+    </div>
+  </div>
+</aside>
+````
