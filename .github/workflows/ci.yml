@@ -43,10 +43,12 @@ jobs:
       - uses: ./.github/actions/npm-ci
         with:
           node-version: 24
+      - id: include-reference-pin
+        run: echo "sha=$(cat resources/include-reference-pin.txt)" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v6
         with:
           repository: markup-carve/carve-js
-          ref: 75c89799d4565067ca68931c826d4e8fa47134dc
+          ref: ${{ steps.include-reference-pin.outputs.sha }}
           path: engines/carve-js-include-reference
           submodules: recursive
       - name: Build include reference engine

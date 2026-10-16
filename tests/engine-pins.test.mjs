@@ -45,6 +45,14 @@ test('the carve-js pin is spelled the same in both places it has to live', () =>
   assert.equal(npmEnginePin(), enginePins().js)
 })
 
+test('the include reference pin is a reviewed JS commit', () => {
+  const sha = readFileSync(join(repo, 'resources/include-reference-pin.txt'), 'utf8').trim()
+  assert.match(sha, /^[0-9a-f]{40}$/)
+  const workflow = readFileSync(join(workflowDir, 'ci.yml'), 'utf8')
+  assert.match(workflow, /sha=\$\(cat resources\/include-reference-pin\.txt\)/)
+  assert.match(workflow, /ref: \${{ steps\.include-reference-pin\.outputs\.sha }}/)
+})
+
 test('no workflow checks an engine out at a branch, or resolves one itself', () => {
   const offenders = []
   for (const name of readdirSync(workflowDir).filter((file) => /\.ya?ml$/.test(file))) {
