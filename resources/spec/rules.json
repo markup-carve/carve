@@ -1687,7 +1687,7 @@
     {
       "id": "CARVE-P12-024",
       "part": "12",
-      "title": "THE DOCUMENT ROOT CARRIES EXACTLY THREE FIELDS",
+      "title": "THE DOCUMENT ROOT CARRIES THREE FIELDS AND AN OPTIONAL VERSION",
       "scope": "ast-interchange"
     },
     {

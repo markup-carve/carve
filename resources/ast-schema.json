@@ -999,6 +999,10 @@
           "type": "boolean",
           "description": "True for the braced `{% … %}` inline form (PART 9 §21a). Absent means the trailing `%%` form. An author-choice field: the two spell different documents, since `%%` runs to the end of its inline run and the braced form ends at its closer, so a writer has to reproduce the one that was written."
         },
+        "form": {
+          "enum": ["block", "line", "braced"],
+          "description": "Which comment spelling produced the node: `block` for the fenced `%%%` form, `line` for the trailing `%%` form, `braced` for `{% … %}` (PART 9 §21a). Added in contract 1.2 beside `block` and `delimited`, which stay: a writer emits all three, and a reader refuses a node where `form` disagrees with them (`block` is true exactly when `form` is `block`; `delimited` is true exactly when `form` is `braced`)."
+        },
         "content": {
           "type": "string"
         },
@@ -1237,7 +1241,7 @@
     "document": {
       "type": "object",
       "title": "document (root)",
-      "description": "The root carries EXACTLY three fields (PART 12 section 7). Frontmatter and definitions - footnote AND abbreviation alike (PART 12 section 7) - are block nodes in `children`, not root fields, because a root field cannot carry the `pos` section 4 requires of everything else - and both are source an editor navigates to.\n\nThe root is the one node with no `pos`: it spans the whole source by definition.",
+      "description": "The root carries three required fields (PART 12 section 7), plus an optional `astVersion` on a bare tree (CARVE-P12-056). Frontmatter and definitions - footnote AND abbreviation alike (PART 12 section 7) - are block nodes in `children`, not root fields, because a root field cannot carry the `pos` section 4 requires of everything else - and both are source an editor navigates to.\n\nThe root is the one node with no `pos`: it spans the whole source by definition.",
       "required": [
         "type",
         "children",
@@ -1257,6 +1261,11 @@
           "type": "integer",
           "minimum": 0,
           "description": "BYTE length of the source - the one field here counted in bytes rather than codepoints. It answers 'how much source was this', not 'where in it'."
+        },
+        "astVersion": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*\\.(0|[1-9][0-9]*)$",
+          "description": "The interchange contract version this bare tree was written under, `major.minor` (CARVE-P12-056). `carve --json` writes it; a reader accepts its absence and refuses a higher major or minor than it implements. Current: 1.2."
         }
       },
       "additionalProperties": false
@@ -1609,7 +1618,7 @@
         },
         "src": {
           "type": "string",
-          "description": "Source. Carries the resolved destination for a reference, including the empty string when its matching hoisted definition has an empty destination. An empty string with no reference fields is an explicit empty inline destination. An empty string with reference fields and no matching definition is unresolved. Inspect the whole document to distinguish the two reference states (CARVE-P12-005 and CARVE-P12-006)."
+          "description": "Source. Carries the RESOLVED destination when the document defines the reference. An empty string with no reference fields is an explicit empty inline destination. An empty string on a reference use means unresolved, unless `resolved` is true: then the reference resolved to a definition whose destination is empty (CARVE-P12-005 and CARVE-P12-006). `ref`/`rawRef` sit alongside it and record what the author wrote."
         },
         "alt": {
           "type": "string"
@@ -1620,6 +1629,10 @@
         "ref": {
           "type": "string",
           "description": "Reference label of `![alt][ref]`, as the reference resolves by - the DERIVED label for the collapsed form `![alt][]`, where the author wrote nothing between the second brackets. Present whenever the author wrote a reference image - resolved or not - because the serialized tree is PRE-RESOLVE (PART 12 section 3a). It is not a transient between parse and resolve."
+        },
+        "resolved": {
+          "const": true,
+          "description": "Present, and true, only on a reference use whose matching definition has an EMPTY destination, so its `src` is `\"\"` and yet the reference resolved (CARVE-P12-006). Absent everywhere else: an empty `src` on a reference use without it is unresolved, exactly as in contract 1.1."
         },
         "rawRef": {
           "type": "string",
@@ -2415,7 +2428,7 @@
         },
         "href": {
           "type": "string",
-          "description": "Destination. Carries the resolved destination for a reference, including the empty string when its matching hoisted definition has an empty destination. An empty string with no reference fields is an explicit empty inline destination. An empty string with reference fields and no matching definition is unresolved. Inspect the whole document to distinguish the two reference states (CARVE-P12-005 and CARVE-P12-006)."
+          "description": "Destination. Carries the RESOLVED destination when the document defines the reference. An empty string with no reference fields is an explicit empty inline destination. An empty string on a reference use means unresolved, unless `resolved` is true: then the reference resolved to a definition whose destination is empty (CARVE-P12-005 and CARVE-P12-006). `ref`/`rawRef` sit alongside it and record what the author wrote."
         },
         "title": {
           "type": "string"
@@ -2429,6 +2442,10 @@
         "ref": {
           "type": "string",
           "description": "Reference label of `[text][ref]`, as the reference resolves by - the DERIVED label for the collapsed form `[label][]`, where the author wrote nothing between the second brackets. Present whenever the author wrote a reference link - resolved or not - because the serialized tree is PRE-RESOLVE (PART 12 section 3a). It is not a transient between parse and resolve."
+        },
+        "resolved": {
+          "const": true,
+          "description": "Present, and true, only on a reference use whose matching definition has an EMPTY destination, so its `href` is `\"\"` and yet the reference resolved (CARVE-P12-006). Absent everywhere else: an empty `href` on a reference use without it is unresolved, exactly as in contract 1.1."
         },
         "rawRef": {
           "type": "string",
