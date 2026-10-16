@@ -735,7 +735,7 @@ test('the Errors-table check fails on exactly the rows carve#1995 found', () => 
 
 test('a cited clause that covers no row is reported', () => {
   // The bounded two-way half: a citation cannot be padded with clauses until it
-  // matches. I1 is a real PART 6 clause and states none of the Errors conditions.
+  // matches. I12 is a real PART 6 clause and states none of the Errors conditions.
   const page = readFileSync(resolve(repo, 'docs/includes.md'), 'utf8')
   const [table] = obligationTables(page)
   const clauses = clausesOf(specPart9Sections().get(table.section).text)
