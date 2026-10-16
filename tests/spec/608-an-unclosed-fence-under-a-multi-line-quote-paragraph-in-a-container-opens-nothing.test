@@ -1,0 +1,51 @@
+An unclosed fence under a multi-line quote paragraph in a container opens nothing
+
+````
+::: note
+> para
+> more
+```
+code
+::::
+:::
+after *b*
+.
+<aside class="admonition note" aria-label="Note">
+  <blockquote><p>para
+more
+<code>
+code</code></p></blockquote>
+  <div>
+    <div>
+      <p>after <strong>b</strong></p>
+    </div>
+  </div>
+</aside>
+````
+
+````
+::: note
+> a
+> b
+> c
+> d
+```
+code
+::::
+:::
+after *b*
+.
+<aside class="admonition note" aria-label="Note">
+  <blockquote><p>a
+b
+c
+d
+<code>
+code</code></p></blockquote>
+  <div>
+    <div>
+      <p>after <strong>b</strong></p>
+    </div>
+  </div>
+</aside>
+````
