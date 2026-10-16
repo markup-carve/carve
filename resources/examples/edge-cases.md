@@ -55345,3 +55345,31 @@ tail[^f]
 ```
 
 ::::::
+
+A retained code block leaves no paragraph, so the next column-0 line reaches the document (CARVE-P0-013).
+:::::: compare
+
+````carve
+1. :: t
+   : para
+%% c
+```
+x
+````
+
+```html
+<ol>
+  <li>
+    <dl>
+      <dt>t</dt>
+      <dd>
+        <p>para</p>
+        <pre><code></code></pre>
+      </dd>
+    </dl>
+  </li>
+</ol>
+<p>x</p>
+```
+
+::::::

@@ -209,3 +209,24 @@ tail[^f]
   </ol>
 </section>
 ```
+
+````
+1. :: t
+   : para
+%% c
+```
+x
+.
+<ol>
+  <li>
+    <dl>
+      <dt>t</dt>
+      <dd>
+        <p>para</p>
+        <pre><code></code></pre>
+      </dd>
+    </dl>
+  </li>
+</ol>
+<p>x</p>
+````

@@ -40,3 +40,4 @@
 616-a-line-is-read-in-the-container-whose-column-it-reaches-9  ahead of the pin: an unmarked unclosed fence line folds into a quoted term (CARVE-P2-028, carve#3284); the pinned carve-js opens a code block
 616-a-line-is-read-in-the-container-whose-column-it-reaches-10  ahead of the pin: an unclosed fence after a below-column comment opens a code block in the retained description (PART 0 X1, carve#3285); the pinned carve-js ends the item and opens the code block at document level
 616-a-line-is-read-in-the-container-whose-column-it-reaches-12  ahead of the pin: a footnote body in a quote takes no lazy line (DEFINITION EXTENT), so `tail` leaves the item; the pinned carve-js keeps `tail` in the item
+616-a-line-is-read-in-the-container-whose-column-it-reaches-13  ahead of the pin: a retained code block in an item-nested description leaves no paragraph, so a column-0 line reaches the document (CARVE-P0-013, carve#3285); the pinned carve-js keeps it in the item

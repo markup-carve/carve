@@ -7181,6 +7181,18 @@ function collectItems(lines, i, list, state, ind, meas) {
           list.tight = false
           pendingSeparation = false
         }
+        // The retained description reads this as a new code block. A lazy
+        // sentinel would turn the unclosed fence into inline code (carve#3285),
+        // and a verbatim body leaves no paragraph for the next line (CARVE-P0-013).
+        if (FENCE.test(lm.rest) && DEFLIST_TERM.test(head.text) &&
+            itemMeas.at(-1)?.belowComment === true &&
+            COMMENT_LINE.test(indentCols(itemLines.at(-1) ?? '').rest)) {
+          belowSpanClosed = false
+          pushLine(lm.rest, lm)
+          closePara()
+          i++
+          continue
+        }
         // A line retained after a comment begins a paragraph in this item, and
         // that paragraph is then the deepest one open (CARVE-P0-009, CARVE-P2-008).
         if (!deepestParagraphOpen()) {
@@ -7189,13 +7201,7 @@ function collectItems(lines, i, list, state, ind, meas) {
           deepestIsDescendant = false
         }
         belowSpanClosed = false
-        // The retained description reads this as a new code block. A lazy
-        // sentinel would turn the unclosed fence into inline code (carve#3285).
-        if (FENCE.test(lm.rest) && DEFLIST_TERM.test(head.text) &&
-            itemMeas.at(-1)?.belowComment === true &&
-            COMMENT_LINE.test(indentCols(itemLines.at(-1) ?? '').rest)) {
-          pushLine(lm.rest, lm)
-        } else pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
+        pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
         if (bodyQuote.at === i - 1 && bodyQuote.open) bodyQuote.at = i
         i++
         continue

@@ -6,6 +6,11 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const normalize = (h) => h.split('\n').map(line => line.trim()).filter(Boolean).join('\n')
 const cases = [
   [
+    "a retained code block leaves no paragraph for a column-0 line",
+    "1. :: t\n   : para\n%% c\n```\nx\n",
+    "<ol>\n<li>\n<dl>\n<dt>t</dt>\n<dd>\n<p>para</p>\n<pre><code></code></pre>\n</dd>\n</dl>\n</li>\n</ol>\n<p>x</p>"
+  ],
+  [
     "a marker at the item column opens a list under a nested description",
     "- :: t\n  : para\n  - li\n",
     "<ul>\n<li>\n<dl>\n<dt>t</dt>\n<dd>para</dd>\n</dl>\n<ul>\n<li>li</li>\n</ul>\n</li>\n</ul>"
