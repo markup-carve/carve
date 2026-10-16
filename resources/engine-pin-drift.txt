@@ -24,9 +24,5 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-606-an-unclosed-fence-after-an-attribute-line-in-a-container-ends-at-its-closer  ahead of the pin: PART 2 A CLOSER IS REQUIRED a block-attribute line leaves no paragraph open, so the unclosed fence below it ends at the container's closer; carve-js runs it to the end
-606-an-unclosed-fence-after-an-attribute-line-in-a-container-ends-at-its-closer-2  ahead of the pin: PART 2 A CLOSER IS REQUIRED a block-attribute line leaves no paragraph open, so the unclosed fence below it ends at the container's closer; carve-js runs it to the end
-606-an-unclosed-fence-after-an-attribute-line-in-a-container-ends-at-its-closer-3  ahead of the pin: PART 2 A CLOSER IS REQUIRED a block-attribute line leaves no paragraph open, so the unclosed fence below it ends at the container's closer; carve-js runs it to the end
-606-an-unclosed-fence-after-an-attribute-line-in-a-container-ends-at-its-closer-4  ahead of the pin: PART 2 A CLOSER IS REQUIRED a block-attribute line leaves no paragraph open, so the unclosed fence below it ends at the container's closer; carve-js runs it to the end
 608-an-unclosed-fence-under-a-multi-line-quote-paragraph-in-a-container-opens-nothing  ahead of the pin: PART 9 §10 I4 a quote paragraph over several quoted lines is still open, so an unclosed fence below it in a container is text; carve-js opens it (markup-carve/carve-js#3186)
 608-an-unclosed-fence-under-a-multi-line-quote-paragraph-in-a-container-opens-nothing-2  ahead of the pin: PART 9 §10 I4 a quote paragraph over several quoted lines is still open, so an unclosed fence below it in a container is text; carve-js opens it (markup-carve/carve-js#3186)
