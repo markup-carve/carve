@@ -55563,3 +55563,52 @@ A note in a comment-retained list item reads an unclosed fence as a code block t
 ```
 
 ::::::
+
+After a quoted paragraph, the retained code block still leaves no paragraph, so `x` reaches the document (carve#3285).
+:::::: compare
+
+````carve
+- > para
+  > more
+%% c
+```
+x
+````
+
+```html
+<ul>
+  <li>
+    <blockquote><p>para
+more</p></blockquote>
+    <pre><code></code></pre>
+  </li>
+</ul>
+<p>x</p>
+```
+
+::::::
+
+A blank line inside a retained code block does not loosen the item (carve#3285).
+:::::: compare
+
+````carve
+- para
+%% c
+```
+  x
+
+  y
+````
+
+```html
+<ul>
+  <li>para
+    <pre><code>x
+
+y
+</code></pre>
+  </li>
+</ul>
+```
+
+::::::

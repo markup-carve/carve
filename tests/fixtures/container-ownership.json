@@ -607,7 +607,7 @@
   {
     "id": "list/low-comment/1/fence",
     "source": "- intro\n%% c\n ```\n tail\n ```\n",
-    "html": "<ul>\n  <li>intro\n    <code>\ntail\n</code>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li>intro\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>tail\n<code></code></p>"
   },
   {
     "id": "list/low-comment/2/text",
@@ -1107,7 +1107,7 @@
   {
     "id": "quote-list/low-comment/1/fence",
     "source": "> - intro\n> %% c\n>  ```\n>  tail\n>  ```\n",
-    "html": "<blockquote>\n  <ul>\n    <li>intro\n      <code>\ntail\n</code>\n    </li>\n  </ul>\n</blockquote>"
+    "html": "<blockquote>\n  <ul>\n    <li>intro\n      <pre><code></code></pre>\n    </li>\n  </ul>\n  <p>tail\n<code></code></p>\n</blockquote>"
   },
   {
     "id": "quote-list/low-comment/2/text",
@@ -1607,7 +1607,7 @@
   {
     "id": "list-quote/low-comment/1/fence",
     "source": "- > intro\n%% c\n ```\n tail\n ```\n",
-    "html": "<ul>\n  <li>\n    <blockquote><p>intro</p></blockquote>\n    <code>\ntail\n</code>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li>\n    <blockquote><p>intro</p></blockquote>\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>tail\n<code></code></p>"
   },
   {
     "id": "list-quote/low-comment/2/text",
@@ -2107,7 +2107,7 @@
   {
     "id": "list-list/low-comment/1/fence",
     "source": "- - intro\n%% c\n ```\n tail\n ```\n",
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>intro\n        <code>\ntail\n</code>\n      </li>\n    </ul>\n  </li>\n</ul>"
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>intro\n        <pre><code></code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<p>tail\n<code></code></p>"
   },
   {
     "id": "list-list/low-comment/2/text",

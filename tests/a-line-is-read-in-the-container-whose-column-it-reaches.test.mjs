@@ -6,6 +6,16 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const normalize = (h) => h.split('\n').map(line => line.trim()).filter(Boolean).join('\n')
 const cases = [
   [
+    "a blank line inside a retained code block does not loosen the item",
+    "- para\n%% c\n```\n  x\n\n  y\n",
+    "<ul>\n<li>para\n<pre><code>x\ny\n</code></pre>\n</li>\n</ul>"
+  ],
+  [
+    "after a quoted paragraph, the retained code block still leaves no paragraph, so x reaches the document",
+    "- > para\n  > more\n%% c\n```\nx\n",
+    "<ul>\n<li>\n<blockquote><p>para\nmore</p></blockquote>\n<pre><code></code></pre>\n</li>\n</ul>\n<p>x</p>"
+  ],
+  [
     "a note in a comment-retained list item reads an unclosed fence as a code block too",
     "- ::: note\n  more\n %% c\n```\n",
     "<ul>\n<li>\n<aside class=\"admonition note\" aria-label=\"Note\">\n<p>more</p>\n<pre><code></code></pre>\n</aside>\n</li>\n</ul>"

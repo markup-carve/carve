@@ -7204,7 +7204,10 @@ function collectItems(lines, i, list, state, ind, meas) {
             COMMENT_LINE.test(indentCols(itemLines.at(-1) ?? '').rest)) {
           belowSpanClosed = false
           pushLine(lm.rest, lm)
+          trackFence(lm.rest, true, i)
           closePara()
+          afterComment = false
+          markedQuoteCommentClaim = false
           i++
           continue
         }

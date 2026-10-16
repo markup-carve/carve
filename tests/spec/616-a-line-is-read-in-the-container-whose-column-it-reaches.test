@@ -355,3 +355,38 @@ x
   </li>
 </ul>
 ````
+
+````
+- > para
+  > more
+%% c
+```
+x
+.
+<ul>
+  <li>
+    <blockquote><p>para
+more</p></blockquote>
+    <pre><code></code></pre>
+  </li>
+</ul>
+<p>x</p>
+````
+
+````
+- para
+%% c
+```
+  x
+
+  y
+.
+<ul>
+  <li>para
+    <pre><code>x
+
+y
+</code></pre>
+  </li>
+</ul>
+````
