@@ -2577,6 +2577,16 @@ export function normalizeAuthoredBodyBases(lines, state = {}, footnoteBody = fal
       return text
     })
     let relativeEnd = Math.max(1, firstBlockEnd(candidate, 0, candidate.length, state, candidateColumns))
+    const firstItem = footnoteBody && measured.col === 0 ? matchMarkerAt(measured) : null
+    if (firstItem) {
+      for (let at = index + 1; at < index + relativeEnd; at++) {
+        const next = indentCols(lines[at])
+        if (next.col > 0 && next.col < firstItem.markerWidth && opensAuthoredBase(next.rest)) {
+          relativeEnd = at - index
+          break
+        }
+      }
+    }
     const noteChild = footnoteBody && noteListOpens && matchMarkerAt(measured)
     if (noteChild) {
       let childColumn = measured.col + noteChild.markerWidth
