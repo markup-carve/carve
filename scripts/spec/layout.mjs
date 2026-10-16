@@ -3648,8 +3648,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
              * §7 recognizes one only as a direct child of the DOCUMENT, and a
              * `dd` is not the document however its columns line up.
              */
+            // The item owns an attribute below the description body column;
+            // it ends the paragraph there and cannot fold into the description.
+            if (inItem && authoredCol > 0 && tryAttrLine([dedented], 0)) break
             if (authoredCol === 0 &&
-                isDefinitionOrAttributeLine(dedented)) break
+                (isDefinitionOrAttributeLine(dedented) || (inItem && matchMarkerAt(indentCols(dedented))))) break
             if (COMMENT_LINE.test(dedented) && !bodyHoldsOpenCommentSpan(asRead(sinceComment()))) {
               openFence = bodyHasFenceCandidate
                 ? descriptionOpenFenceAt(asRead(bodyLines), lines, i, bodyColumn, endsBodyAt)
@@ -7010,6 +7013,12 @@ function collectItems(lines, i, list, state, ind, meas) {
         belowSpanClosed = false
         pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
         startPara()
+        i++
+        continue
+      }
+      if (!nm && DEFLIST_TERM.test(head.text) && authoredContainer && lm.col > baseIndent && lm.col < contentCol &&
+          tryAttrLine([lm.rest], 0)) {
+        closePara()
         i++
         continue
       }
