@@ -641,6 +641,9 @@ const sem = g.createSemantics().addOperation('h', {
   escape(_bs, ch) {
     return escapeHtml(ch.sourceString)
   },
+  escapedCrossref(_bs, _lt, _prefix, id, _close) {
+    return escapeHtml(`</#${id.sourceString}>`)
+  },
   nbspEsc(_bs, _sp) {
     return '&nbsp;'
   },

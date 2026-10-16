@@ -1,0 +1,10 @@
+An escaped cross-reference spelling stays literal
+
+```
+\</#id>
+
+x \</#x~>y> y
+.
+<p>&lt;/#id&gt;</p>
+<p>x &lt;/#x~&gt;y&gt; y</p>
+```

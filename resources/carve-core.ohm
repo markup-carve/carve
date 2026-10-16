@@ -179,7 +179,7 @@ CarveCore {
              | arrow | span | inlineNote | litDelim
              | symbol | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
              | editorial | bracedDash | emptyForced | overlapForced | forcedSpan
-             | mathD | mathI | litInline | codeA | nbspEsc | hardBreak | escape | imageRef | image | bracketed
+             | mathD | mathI | litInline | codeA | nbspEsc | hardBreak | escapedCrossref | escape | imageRef | image | bracketed
              | autolink | bang | dollar
              | ellipsis | dashRun | dot | dash | plus | pct | lt | gt
              | dquote | squote | hash | nl | other | anyChar
@@ -263,6 +263,7 @@ CarveCore {
   codeRun<r> = r ~"`" codeBody<r> r
   codeBody<r> = (~(r ~"`") (backtickRun | ~"`" any))+
 
+  escapedCrossref = "\\" "<" "/#" xrefId ">"
   escape     = "\\" punctChar
   // escaped SPACE is a non-breaking space; a backslash at END OF LINE is a
   // hard break (PART 3)
