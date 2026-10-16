@@ -1097,7 +1097,11 @@ for (const { name, source } of samples) {
   }
   checkDocument(name, doc, source, jsFindings)
   referenceShapes.set(name, shapeOf(doc))
-  recordShape('carve-js', name, doc)
+  // The panels compare what each engine's `carve --json` writes; carve-js's CLI adds
+  // the contract version to the library tree, as the rs and php CLIs do (contract 1.2).
+  recordShape('carve-js', name, typeof lib.AST_CONTRACT_VERSION === 'string' && doc.astVersion === undefined
+    ? { ...doc, astVersion: lib.AST_CONTRACT_VERSION }
+    : doc)
 
   // PART 12 §6: serialize then DESERIALIZE must equal the parse. Through the
   // engine's own reader - `fromAstJson` - which is the half the clause is about.
