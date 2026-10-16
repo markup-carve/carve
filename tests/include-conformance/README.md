@@ -55,7 +55,7 @@ goldens).
 | `checkFmtExpandEquivalence` | optional | When true, the runner also asserts that expanding the **formatted** entry yields the same html + dependency set (I12 stronger invariant). |
 | `checkCarveTarget` | optional | When true, the vector carries `expected.carveTarget` (I15). |
 | `checkFlattened` | optional | When true, the vector carries `expected.flattened`. |
-| `checkWarningLocations` | optional | When true, the proof runner checks `expected.warningLocations` as `{ rule, file, line }` for warnings in this fixture. |
+| `checkWarningLocations` | optional | When true, the proof runner checks `expected.warningLocations` as `{ rule, file?, line }` for this fixture. This is outside the portable §19 warning contract. |
 
 `options` keys: `sourcePath` (warning attribution, I4), `maxDepth` /
 `maxBytes` (I6 limit overrides), `allowAbsolute` (filesystem), `resolverIds`
@@ -119,9 +119,10 @@ dependency `id`/order, that is a divergence the suite is meant to surface.
   through `file`, which is stable.
 
 The `i04-included-warning-source-line` vector additionally checks the raw
-warning's 1-based line. This narrow source-site assertion catches a host that
+warning's 1-based line. This optional source-site assertion catches a host that
 reports the parent directive's line instead of the included directive's line;
-the ordinary normalized warning list still omits offsets.
+the ordinary normalized warning list still omits offsets. It is a regression
+fixture, not a new §19 requirement for all warning positions.
 
 The I7 **no-leak** requirement is pinned directly by `forbiddenSubstrings`:
 the runner asserts the raw messages contain none of them, so a processor that
@@ -240,7 +241,7 @@ rules):
 | I1 syntax / path-required | 32 | I8 heading shift + auto | 16 |
 | I2 block vs inline | 8 | I9 verbatim protection | 5 |
 | I3 resolution model | 2 | I9a recognition run | 7 |
-| I4 fragment containment / attribution | 8 | I10 containment (filesystem) | 7 |
+| I4 fragment containment / attribution | 9 | I10 containment (filesystem) | 7 |
 | I5 cross-file collisions | 16 | I11 dependency reporting | 14 |
 | I6 limits (cycle/depth/budget) | 5 | I12 formatter preservation | 22 |
 | I7 errors, no-leak, no side effects | 13 | I15 the Carve target does not expand | 2 |

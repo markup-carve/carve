@@ -137,7 +137,7 @@
         },
         "warnings": {
           "type": "array",
-          "description": "Normalized warnings in document order. Each is { rule, file? }; message/detail/positions are deliberately excluded (see README normalization).",
+          "description": "Normalized warnings in document order. Each is { rule, file? }; message/detail/positions are excluded here. A vector can separately opt into warningLocations (see README normalization).",
           "items": {
             "type": "object",
             "required": ["rule"],
@@ -150,10 +150,10 @@
         },
         "warningLocations": {
           "type": "array",
-          "description": "Optional source-site regression check for vectors that set checkWarningLocations.",
+          "description": "Optional fixture-specific source-site check outside the portable §19 warning contract, for vectors that set checkWarningLocations.",
           "items": {
             "type": "object",
-            "required": ["rule", "file", "line"],
+            "required": ["rule", "line"],
             "additionalProperties": false,
             "properties": {
               "rule": { "type": "string" },
