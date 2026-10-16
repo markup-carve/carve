@@ -3957,6 +3957,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const qHost = hostLadder()
       let openComment = null // exact-width comment fence opened inside the quote
       let qOpenPara = false // does the quote currently end in an open paragraph?
+      let qItemPara = false // and is that paragraph an item's?
       let qTermOpen = false
       let qPara = [] // its lines, for SS12's absorption test below
       /*
@@ -4285,6 +4286,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qTableOpen = false
           clearNested()
           qPara = qOpenPara ? [l] : []
+          qItemPara = false
           return
         }
         if (openComment !== null) {
@@ -4295,6 +4297,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qTableOpen = false
           clearNested()
           qPara = []
+          qItemPara = false
           return
         }
         // A HOST THAT ENDED ENDS ITS FENCE, and the line is then classified
@@ -4308,6 +4311,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qTableOpen = false
           clearNested()
           qPara = []
+          qItemPara = false
           return
         }
         const comment = COMMENT_FENCE_BODY.exec(l)
@@ -4336,6 +4340,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qTableOpen = false
           clearNested()
           qPara = qOpenPara ? [l] : []
+          qItemPara = false
           return
         }
         const f = hostFenceOpener(qHost, inner0, (opener) => blockStart || !qOpenPara ||
@@ -4428,22 +4433,31 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const nestedItemEnds = !qOpenPara && !!matchMarkerAt(meas) &&
           !opensParagraph(l, true, false, prefixMemo(state, lines, idx).paragraph)
         const hostedBlock = hostedBlockAt(qHost, inner0, popped)
+        // An item line under an item's paragraph starts the next item, so a
+        // comment or attribute item closes that paragraph (corpus 610, carve#3268).
+        // Only an item line is read, so a deep quote costs nothing extra per line.
+        const itemContent = QUOTE.test(l) ? undefined : BULLET.exec(l)?.[6] ?? ORDERED.exec(l)?.[6]
+        const itemClosesPara = qOpenPara && qItemPara && itemContent !== undefined &&
+          leavesParagraphOpen([itemContent], 0, false) === false
         if (!absorbedColon &&
-            (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener || hostedBlock ||
+            (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener || hostedBlock || itemClosesPara ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
              isTableRow(l) || l[0] === '{' || contRow || nestedQuoteEnds || nestedItemEnds ||
              isLinkDef(l) || COMMENT_LINE.test(l) ||
              FOOTNOTE_DEF.test(l))) {
           qOpenPara = false
+          qItemPara = false
           qTermOpen = false
           qPara = []
         } else if (qHost.kinds.includes('note')) {
           // A footnote's extent takes no lazy line (CARVE-P0-012 DEFINITION EXTENT).
           qOpenPara = false
+          qItemPara = false
           qTermOpen = false
           qPara = []
         } else {
           if (!qOpenPara) qPara = []
+          if (!qOpenPara) qItemPara = itemContent !== undefined
           qOpenPara = true
           qPara.push(l)
         }

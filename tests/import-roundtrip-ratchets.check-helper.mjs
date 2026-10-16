@@ -326,6 +326,12 @@ const visibleText = (html) =>
 // points and preserve their text. HTML round-trips two of them and Markdown
 // none: the Markdown target drops the note.
 
+// Corpus 614 adds three documents (carve#3268); all three import, are fixed
+// points and preserve their text. HTML round-trips the attribute item only:
+// the base row's comment item returns empty, and the control folds its soft
+// breaks and loses its empty nested divs. Markdown drops the note. Markdown
+// rises by one anyway: the carve-js pin moves to 2199e58e in the same change.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {

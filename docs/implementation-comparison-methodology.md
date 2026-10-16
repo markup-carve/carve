@@ -16,8 +16,8 @@ implementation exposes.
 
 ## Core fixture counts (2026-10-07 CEST)
 
-The count-only run covers 2,225 core documents and their 161 target sidecars.
-The run scores 2,386 fixtures per engine. It checks expected output on
+The count-only run covers 2,228 core documents and their 161 target sidecars.
+The run scores 2,389 fixtures per engine. It checks expected output on
 scored targets; it makes no claim about unscored targets or formatter agreement.
 
 Corpus added since this run: `549-an-ordered-list-carries-its-authored-delimiter`, `19-smart-typography-dashes-and-quotes-10`, `19-smart-typography-dashes-and-quotes-11`, `550-a-dash-run-opens-frontmatter-only-at-the-start-and-only-a-dash-run`, `551-a-link-destination-is-opaque-to-the-bracket-scan`, `552-a-braced-comment-does-not-decide-a-quote`, `19-smart-typography-dashes-and-quotes-12`, `19-smart-typography-dashes-and-quotes-13`, `19-smart-typography-dashes-and-quotes-14`, `19-smart-typography-dashes-and-quotes-15`, `19-smart-typography-dashes-and-quotes-16`, `19-smart-typography-dashes-and-quotes-17`, `19-smart-typography-dashes-and-quotes-18`, `19-smart-typography-dashes-and-quotes-19`, `19-smart-typography-dashes-and-quotes-20`, `19-smart-typography-dashes-and-quotes-21`, `19-smart-typography-dashes-and-quotes-22`, `19-smart-typography-dashes-and-quotes-23`, `19-smart-typography-dashes-and-quotes-24`, `19-smart-typography-dashes-and-quotes-25`, `19-smart-typography-dashes-and-quotes-26`, `19-smart-typography-dashes-and-quotes-27`, `19-smart-typography-dashes-and-quotes-28`, `19-smart-typography-dashes-and-quotes-29`, `19-smart-typography-dashes-and-quotes-30`, `19-smart-typography-dashes-and-quotes-31`, `19-smart-typography-dashes-and-quotes-32`, `553-a-below-column-line-continues-a-paragraph-only-where-one-is-open`, `06-task-lists-3`, `06-task-lists-4`, `06-task-lists-5`, `06-task-lists-6`, `471-braced-emphasis-can-nest-its-own-kind-9`, `471-braced-emphasis-can-nest-its-own-kind-10`, `471-braced-emphasis-can-nest-its-own-kind-11`, `471-braced-emphasis-can-nest-its-own-kind-12`, `471-braced-emphasis-can-nest-its-own-kind-13`, `554-a-caption-scope-resets-at-a-structural-only-line`, `321-delimited-comments-9`, `321-delimited-comments-10`, `321-delimited-comments-11`, `321-delimited-comments-12`, `555-an-unterminated-raw-fence-keeps-literal-payload-termination`, `556-a-closed-block-leaves-no-frame-for-the-line-below`, `557-a-line-retained-after-a-comment-opens-a-paragraph`, `558-a-container-boundary-is-read-at-the-container-s-own-column`, `559-a-tab-inside-a-line-is-content-in-a-label-and-after-a-definition-marker`, `560-a-description-keeps-a-block-at-its-body-column-whatever-leads-the-item`, `561-a-line-block-payload-span-pairs-past-the-content-column`, `562-a-quoted-item-that-ends-on-a-block-past-its-column-holds-no-paragraph`, `563-a-paragraph-in-a-held-container-does-not-loosen-the-item`, `564-a-line-final-run-of-spaces-and-tabs-is-dropped-before-the-line-is-read`, `565-a-tab-is-content-in-a-heading-key-and-in-a-cross-reference-id`, `566-an-opener-past-a-hosted-container-s-column-opens-there`, `567-a-description-marker-followed-by-a-no-break-space-has-content`, `568-a-closed-fence-in-a-quoted-sub-item-after-a-lazy-line-leaves-no-paragraph`, `569-a-quoted-term-takes-a-lazy-line`, `570-an-at-column-comment-retains-nothing`, `571-a-shifted-fence-in-a-quoted-container-s-body-stores-no-continuation-claim`, `572-an-opener-past-a-hosted-container-s-column-interrupts-its-open-paragraph`, `573-a-footnote-reference-in-link-text-keeps-its-id-on-the-sup`, `574-a-head-row-alignment-marker-sets-the-whole-column`, `575-a-line-block-takes-a-lazy-line-whatever-its-last-payload-line`, `576-an-at-sign-before-a-space-and-a-doubled-delimiter-inside-bold-italic-are-text`, `577-a-titled-footnotes-marker-names-the-endnotes-section`, `578-a-closed-fence-at-a-marker-line-note-s-body-column-opens-in-the-note`, `579-a-span-never-covers-another-cell`, `580-a-quote-or-a-term-at-a-marker-line-note-s-body-column-opens-in-the-note`, `581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in`, `582-a-footnote-definition-past-a-box-s-column-is-hoisted`, `583-a-comment-between-a-heading-and-a-colon-fence-leaves-the-fence-an-opener`, `584-a-fence-past-the-column-after-an-attribute-line-opens-on-its-authored-base`, `585-a-comment-in-a-marker-line-note-changes-nothing`, `586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed-fence-below-it-opens-in-the-note`, `587-a-link-definition-or-an-attribute-line-past-a-box-s-column-opens-on-its-authored-base`, `64-table-rowspan-with-multi-line-content-2`, `64-table-rowspan-with-multi-line-content-3`, `588-a-block-quote-and-a-footnote-body-take-the-first-block-form`, `589-an-explicitly-delimited-row-of-blank-cells-is-a-table`, `590-a-closed-fence-in-a-nested-child-leaves-no-paragraph-open`, `591-a-code-line-left-of-an-authored-base-fence-opener-is-measured-from-that-base`, `592-a-fence-closer-below-the-authored-base-is-measured-as-its-payload`, `108-security-hardening-12`, `09-tables-9`, `09-tables-10`, `19-smart-typography-dashes-and-quotes-33`, `19-smart-typography-dashes-and-quotes-34`, `41-line-blocks-11`, `41-line-blocks-12`, `311-a-footnote-in-reference-link-text-nests-the-anchors-too-4`, `593-a-table-row-ends-a-description-body-and-a-lone-plus-folds-into-a-term`, `594-a-continuation-on-a-span-marker-joins-the-cell-the-marker-resolves-into`, `595-a-bare-closer-does-not-reach-inside-a-cross-reference`, `596-an-autolink-or-a-cross-reference-is-atomic-to-brackets-and-braces`, `597-inside-an-unclosed-fence-only-the-innermost-container-s-closer-is-structural`, `598-editorial-markup-closes-outside-a-cross-reference-or-a-bracket-run`, `599-an-autolink-is-opaque-to-the-bracket-scan`, `600-a-delimiter-that-is-part-of-a-larger-character-is-text`, `601-the-combined-bold-italic-token-does-not-open-or-close-inside-a-word`, `602-the-combined-bold-italic-token-does-not-open-after-an-underscore-or-a-slash`, `603-the-combined-bold-italic-token-does-not-open-inside-an-open-bare-italic-or-bold`, `604-an-unclosed-fence-under-an-open-paragraph-in-a-container-opens-nothing`, `605-an-autolink-a-cross-reference-or-a-comment-is-atomic-to-every-outside-delimiter`, `606-an-unclosed-fence-after-an-attribute-line-in-a-container-ends-at-its-closer`, `607-a-quoted-comment-or-attribute-line-closes-the-quote-s-paragraph`, `608-an-unclosed-fence-under-a-multi-line-quote-paragraph-in-a-container-opens-nothing`, `609-an-escaped-cross-reference-spelling-stays-literal`, `610-an-item-comment-or-attribute-line-closes-the-item-s-paragraph`, `611-a-table-row-or-a-definition-under-a-paragraph-ends-it-before-an-unclosed-fence`, `612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence`, `613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line`.
@@ -61,15 +61,15 @@ including the
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>2225 / 2225</strong>
+    <strong>2228 / 2228</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>2225 / 2225</strong>
+    <strong>2228 / 2228</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>2225 / 2225</strong>
+    <strong>2228 / 2228</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -80,9 +80,9 @@ including the
 
 | Implementation | Commit | Corpus | Scored fixtures | Mismatches | Errors |
 |----------------|--------|--------|-----------------|------------|--------|
-| Rust | `2530cad55` | `2225 / 2225` | `2386 / 2386` | `0` | `0` |
-| JS | `c8d619190` | `2225 / 2225` | `2386 / 2386` | `0` | `0` |
-| PHP | `b193a1265` | `2225 / 2225` | `2386 / 2386` | `0` | `0` |
+| Rust | `2530cad55` | `2228 / 2228` | `2389 / 2389` | `0` | `0` |
+| JS | `c8d619190` | `2228 / 2228` | `2389 / 2389` | `0` | `0` |
+| PHP | `b193a1265` | `2228 / 2228` | `2389 / 2389` | `0` | `0` |
 
 The command was `npm run compare:counts`, with `CARVE_RS_DIR`, `CARVE_JS_DIR`
 and `CARVE_PHP_DIR` pointing at the isolated engine checkouts. No case was
@@ -237,7 +237,7 @@ the corpus population. It makes no timing assertions.
 
 It renders every document on the default target plus each target that document
 carries an expected-output file for. Those sidecars count toward `pass=N/M`,
-which is why the current core run scores 2,386 fixtures for 2,225 documents.
+which is why the current core run scores 2,389 fixtures for 2,228 documents.
 
 Use this mode to refresh scored-fixture counts. Use `compare:impls` to render
 every document on every target and compare unscored output between engines.
@@ -480,12 +480,12 @@ Core count-only summary:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=2225 shard=0/1 targets=html,markdown,plain,carve,ansi
-rust: pass=2386/2386 mismatch=0 error=0 skipped=0 runs=2386
+profile=default/no-opt-in corpus=core selected_corpus=none corpus_pairs=2228 shard=0/1 targets=html,markdown,plain,carve,ansi
+rust: pass=2389/2389 mismatch=0 error=0 skipped=0 runs=2389
   mismatching documents: 0
-js: pass=2386/2386 mismatch=0 error=0 skipped=0 runs=2386
+js: pass=2389/2389 mismatch=0 error=0 skipped=0 runs=2389
   mismatching documents: 0
-php: pass=2386/2386 mismatch=0 error=0 skipped=0 runs=2386
+php: pass=2389/2389 mismatch=0 error=0 skipped=0 runs=2389
   mismatching documents: 0
 cross_impl_diffs=0
 

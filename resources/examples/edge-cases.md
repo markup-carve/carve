@@ -54598,3 +54598,105 @@ tail</li>
 ```
 
 ::::::
+
+## A quoted item comment ends the quote before an unclosed fence
+
+An item line under an item's paragraph starts the next item, so a comment or
+attribute item closes that paragraph inside a quote too. No paragraph is then
+open for the unquoted fence line to continue, so the quote ends, the fence
+opens in the note's body, and A CLOSER IS REQUIRED ends it at the note's own
+closer:
+
+:::::: compare
+
+````carve
+::: note
+> - para
+> - %% c
+```
+code
+::::
+:::
+after *b*
+````
+
+```html
+<aside class="admonition note" aria-label="Note">
+  <blockquote>
+    <ul>
+      <li>para</li>
+      <li></li>
+    </ul>
+  </blockquote>
+  <pre><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+```
+
+::::::
+
+and for an attribute item:
+
+:::::: compare
+
+````carve
+::: note
+> - para
+> - {#x}
+```
+code
+::::
+:::
+after *b*
+````
+
+```html
+<aside class="admonition note" aria-label="Note">
+  <blockquote>
+    <ul>
+      <li>para</li>
+      <li></li>
+    </ul>
+  </blockquote>
+  <pre><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+```
+
+::::::
+
+Under a quoted plain paragraph the item line is lazy text, so the paragraph
+stays open and the fence line folds into it:
+
+:::::: compare
+
+````carve
+::: note
+> para
+> - %% c
+```
+code
+::::
+:::
+after *b*
+````
+
+```html
+<aside class="admonition note" aria-label="Note">
+  <blockquote><p>para
+-
+<code>
+code</code></p></blockquote>
+  <div>
+    <div>
+      <p>after <strong>b</strong></p>
+    </div>
+  </div>
+</aside>
+```
+
+::::::
