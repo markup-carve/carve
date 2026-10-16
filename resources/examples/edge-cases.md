@@ -53461,3 +53461,86 @@ after *b*
 ```
 
 ::::::
+
+## A quoted comment or attribute line closes the quote's paragraph
+
+A comment or a block-attribute line inside a quote closes the quoted paragraph,
+as it does outside one. An unclosed fence on the next line then has nothing to
+interrupt, so A CLOSER IS REQUIRED ends it at the note's own closer:
+
+:::::: compare
+
+````carve
+::: note
+> para
+> %% c
+```
+code
+::::
+:::
+after *b*
+````
+
+```html
+<aside class="admonition note" aria-label="Note">
+  <blockquote><p>para</p></blockquote>
+  <pre><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+```
+
+::::::
+
+:::::: compare
+
+````carve
+::: note
+> para
+> {#x}
+```
+code
+::::
+:::
+after *b*
+````
+
+```html
+<aside class="admonition note" aria-label="Note">
+  <blockquote><p>para</p></blockquote>
+  <pre><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+```
+
+::::::
+
+Quoted text keeps the paragraph open, so the fence line folds into it and opens
+nothing:
+
+:::::: compare
+
+````carve
+::: note
+> para
+> more text
+```
+code
+:::
+after *b*
+````
+
+```html
+<aside class="admonition note" aria-label="Note">
+  <blockquote><p>para
+more text
+<code>
+code</code></p></blockquote>
+</aside>
+<p>after <strong>b</strong></p>
+```
+
+::::::

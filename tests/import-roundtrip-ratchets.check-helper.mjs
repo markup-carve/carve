@@ -318,6 +318,10 @@ const visibleText = (html) =>
 // points and preserve their text under the pinned build. None round trips on
 // either target: the combined token comes back as the nested spelling.
 
+// Corpus 607 adds three documents (carve#3258); all three import, are fixed
+// points and preserve their text. HTML round-trips row 2 only: the base row
+// keeps a comment and row 3 folds soft breaks. Markdown drops the note.
+
 test('HTML import and render/import round trips cannot drift silently', async () => {
   const names = (await readdir(root)).filter((name) => name.endsWith('.crv')).sort()
   const measured = {

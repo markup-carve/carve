@@ -918,19 +918,27 @@ function findColonCloser(lines, openIdx, len) {
   return -1
 }
 
-/** Whether lines[idx] leaves a paragraph open for the line below: paragraph
- *  text, or a quote, item or note line carrying it. */
+/** Whether lines[idx] leaves a paragraph open for the line below: false, or
+ *  the prefixes carrying it ('>' quote, '-' item) ahead of 'p'. A quote line
+ *  always reads its content (a quote interrupts a paragraph, and a quoted
+ *  comment or attribute line closes the quoted one); an item line does after
+ *  an item's paragraph, where it starts the next item instead of folding in. */
 function leavesParagraphOpen(lines, idx, wasOpen) {
   const line = lines[idx]
   if (/^[ \t]*$/.test(line) || COMMENT_LINE.test(line) || CONT_MARKER.test(line)) return false
   if (HEADING.test(line) || HR.test(line) || LINK_DEF.test(line) || EMPTY_LINK_DEF.test(line) ||
     (line[0] === '{' && tryAttrLine(lines, idx))) return false
-  if (wasOpen) return true
-  if (isTableRow(line)) return false
   const quote = QUOTE.exec(line)
-  if (quote) return quote[1] !== undefined && leavesParagraphOpen([quote[1]], 0, false)
+  if (quote) {
+    const inner = quote[1] !== undefined &&
+      leavesParagraphOpen([quote[1]], 0, wasOpen?.[0] === '>' && wasOpen.slice(1))
+    return inner && '>' + inner
+  }
   const item = BULLET.exec(line)?.[6] ?? ORDERED.exec(line)?.[6]
-  return item === undefined || leavesParagraphOpen([item], 0, false)
+  if (wasOpen && (item === undefined || wasOpen[0] !== '-')) return wasOpen
+  if (item === undefined) return isTableRow(line) ? false : 'p'
+  const inner = leavesParagraphOpen([item], 0, false)
+  return inner && '-' + inner
 }
 
 /** The last line of the opaque span opening at `idx`, or -1 if none opens

@@ -1,0 +1,57 @@
+A quoted comment or attribute line closes the quote's paragraph
+
+````
+::: note
+> para
+> %% c
+```
+code
+::::
+:::
+after *b*
+.
+<aside class="admonition note" aria-label="Note">
+  <blockquote><p>para</p></blockquote>
+  <pre><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+````
+
+````
+::: note
+> para
+> {#x}
+```
+code
+::::
+:::
+after *b*
+.
+<aside class="admonition note" aria-label="Note">
+  <blockquote><p>para</p></blockquote>
+  <pre><code>code
+::::
+</code></pre>
+</aside>
+<p>after <strong>b</strong></p>
+````
+
+````
+::: note
+> para
+> more text
+```
+code
+:::
+after *b*
+.
+<aside class="admonition note" aria-label="Note">
+  <blockquote><p>para
+more text
+<code>
+code</code></p></blockquote>
+</aside>
+<p>after <strong>b</strong></p>
+````
