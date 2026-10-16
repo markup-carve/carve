@@ -7,8 +7,8 @@
 // reference engine. It also re-checks the per-vector I7 no-leak guard and the
 // I12 expand-of-formatted equivalence property.
 //
-// This test is NOT part of the default `npm test` (which pins the HTML corpus
-// and must stay engine-independent). Run it with a built carve-js available:
+// This test uses a built carve-js with named-region support. CI checks out
+// that revision separately from the corpus engine pin. Run it locally with:
 //
 //   CARVE_JS=/path/to/carve-js npm run test:includes
 //

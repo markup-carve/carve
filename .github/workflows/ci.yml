@@ -34,6 +34,29 @@ jobs:
       - id: pins
         run: node scripts/set-engine-pin.mjs --github-output >> "$GITHUB_OUTPUT"
 
+  include-conformance:
+    name: Include conformance reference
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/npm-ci
+        with:
+          node-version: 24
+      - uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-js
+          ref: 75c89799d4565067ca68931c826d4e8fa47134dc
+          path: engines/carve-js-include-reference
+          submodules: recursive
+      - name: Build include reference engine
+        working-directory: engines/carve-js-include-reference
+        run: npm ci && npm run build
+      - name: Check include conformance
+        env:
+          CARVE_JS: ${{ github.workspace }}/engines/carve-js-include-reference
+        run: npm run test:includes
+
   markdown-migration:
     name: Markdown migration fidelity
     needs: engine-pins

@@ -33,7 +33,7 @@ const SPEC_ROOT = path.resolve(HERE, '..')
  *   1. CARVE_JS env var  -> a carve-js checkout root (expects dist/index.js) or
  *      a direct path to an index.js.
  *   2. a sibling ../carve-js/dist/index.js next to the spec repo.
- *   3. the installed @markup-carve/carve package (once includes land on main).
+ *   3. the installed @markup-carve/carve package (for the pinned corpus engine).
  */
 /**
  * The filesystem resolver is NOT on the main entry.
