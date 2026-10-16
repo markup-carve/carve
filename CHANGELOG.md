@@ -18,7 +18,8 @@ Releases before 0.1.6 are archived in
   image with `href=""` / `src=""`, and a bare `[label]:` is a definition with
   an empty destination instead of paragraph text. The AST schema drops
   `minLength` on a definition's `href`; a reference to an empty definition
-  resolves to `""` (CARVE-P3-024, CARVE-P12-029) (#2878, #3199).
+  resolves to `""` and carries `resolved: true` (AST contract 1.2)
+  (CARVE-P3-024, CARVE-P12-029) (#2878, #3199, #3263).
 - An emphasis delimiter counts only when it is a whole grapheme. A delimiter
   followed by a combining or spacing mark (Mn, Me, Mc), a variation selector
   or U+200D is text, and every braced opener takes the same guard, editorial
@@ -58,9 +59,51 @@ Releases before 0.1.6 are archived in
   collapsed reference `[ref][]` with its definition (#3241, #3245).
 - The executable spec's bracket scan skips autolinks and cross-references
   in a fence label and an image alt, as CARVE-P3-001 states (#3252, #3254).
+- In the executable spec, an escaped cross-reference `\</#id>` is literal
+  text (corpus 609) (#3259).
+- In the executable spec, a line that leaves no paragraph open also closes
+  the paragraph above an unclosed fence in a container: a quoted comment or
+  attribute line, a table row, and a definition, table row, heading or
+  attribute line at a list item's content column (CARVE-P0-010,
+  CARVE-P0-011; corpus 607, 611, 612) (#3260, #3269, #3275).
+- In the executable spec, a footnote definition in a nested container takes
+  no lazy line, so an unmarked line after it does not fold into the quote or
+  item (CARVE-P0-012; corpus 613) (#3278).
+- In the executable spec, a quoted item comment or attribute line ends the
+  quote before an unclosed fence, so the fence opens in the container that
+  survives (corpus 614) (#3268, #3272).
+- The block-family rulings are settled in the executable spec: a line past a
+  description or footnote body's column is read in the body and a quote
+  does not rebase; a marked quote line keeps its continuation claim through
+  a lazy fold and a matched comment fence and stops at a quoted note; a
+  block that leaves no open paragraph releases the next line to the
+  container that survives (CARVE-P0-004, CARVE-P0-008, CARVE-P0-010,
+  CARVE-P0-011, CARVE-P0-015, CARVE-P0-020, CARVE-P9-053; corpus 615, 616)
+  (#3279, #3280, #3283, #3284, #3285, #3288, #3289, #3303).
+- Below a description body's column an opener folds into the body's open
+  paragraph or the quote it holds, as it does in a list item, and a caption
+  line folds as paragraph text; a refused continuation marker keeps the
+  authored base of the line after it (CARVE-P0-021, CARVE-P2-017,
+  CARVE-P9-031; corpus 426, 616) (#3294, #3295, #3298, #3299).
+- A comment-retained list item or nested description reads an unclosed
+  fence as a code block and leaves no paragraph behind, and a quote in a
+  description marker-line note takes no lazy line (CARVE-P0-013; corpus 616)
+  (#3292, #3300, #3307).
 
 ### Improvements
 
+- An include can select a named source region with `@region:name`, marked by
+  `#region name` / `#endregion [name]` lines behind an optional comment
+  marker. A missing, unclosed or duplicate region, or combining `@region`
+  with `#section` or `@lines`, is the `include-region-invalid` warning, and
+  selected content keeps its source positions (CARVE-P6-001 I1b) (#3291,
+  #3293, #3297).
+- The AST contract is 1.2, additively: a link or image reference whose
+  definition has an empty destination carries `resolved: true`; a bare
+  tree's root may carry `astVersion`, which `carve --json` writes and
+  readers accept or do without (CARVE-P12-024); and `comment` gains `form`
+  (`"block"`, `"line"` or `"braced"`) beside `block` and `delimited`, with
+  readers refusing a disagreement (#3263).
 - CARVE-P9-071 names `text/x-carve; charset=utf-8` as the media type on every
   transport, not only the clipboard, where the flavor stays the bare
   `text/x-carve`, and `.crv` as the file extension (#3213, #3218).

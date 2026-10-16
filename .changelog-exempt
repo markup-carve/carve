@@ -119,3 +119,11 @@
 3250: 0.1.10 - moves the carve-rs pin past the atomic autolink, cross-reference and comment port. Pin bump.
 3253: 0.1.10 - moves the carve-js and carve-php pins to their mains and re-measures the ledgers. Pin bump.
 3256: 0.1.10 - moves all three engine pins to their mains for the release cut. Pin bump.
+3257: 0.1.10 - corpus rows pin an unclosed fence after an attribute line in a container; the rule is cited under #3201 and #3246. Corpus only.
+3264: 0.1.10 - corpus rows pin an unclosed fence under a multi-line quote paragraph in a container; the rule is cited under #3246. Corpus only.
+3265: 0.1.10 - corpus 610 pins an item comment or attribute line closing the item's paragraph; the executable spec change is cited under #3260. Corpus only.
+3270: 0.1.10 - moves the engine pins to AST contract 1.2; the contract is cited under #3263. Pin bump.
+3273: 0.1.10 - moves the carve-js pin to 188dafa0. Pin bump.
+3296: 0.1.10 - gates include conformance against its own reference pin without moving the corpus engine pin. Gate machinery.
+3302: 0.1.10 - moves the engine pins to the block-family engine mains; the rulings are cited under #3279, #3295 and #3268. Pin bump.
+3308: 0.1.10 - moves the engine pins to the block-family zero-divergence mains; the rulings are cited under #3279 and #3295. Pin bump.
