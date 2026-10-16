@@ -3588,6 +3588,32 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // `more`.
             const dedented = stripIndent(cur).replace(/[ \t]+$/, '')
             const authoredCol = indentCols(cur).col
+            // A block closed inside a nested description, item or marked quote
+            // leaves no paragraph for a column-zero continuation (CARVE-P0-011).
+            // An unmarked quote follower stays paragraph text under X2.
+            if (authoredCol === 0 && bodyLines.length > 1) {
+              const lead = bodyLines[0]
+              const lastLine = indentCols(bodyLines.at(-1))
+              const nestedDefinition = DEFLIST_TERM.test(lead)
+                ? /^:( +)/.exec(bodyLines.find((line) => /^: +/.test(line)) ?? '')
+                : null
+              const nestedDescriptionClosed = DEFLIST_TERM.test(lead) &&
+                nestedDefinition && lastLine.col >= 1 + nestedDefinition[1].length &&
+                (HEADING.test(lastLine.rest) || HR.test(lastLine.rest) ||
+                  isTableRow(lastLine.rest) || isDefinitionOrAttributeLine(lastLine.rest))
+              const nestedItemClosed = matchMarkerAt(indentCols(lead)) &&
+                lastLine.col >= matchMarkerAt(indentCols(lead)).markerWidth &&
+                isDefinitionOrAttributeLine(lastLine.rest)
+              const quotedLead = QUOTE.exec(lead)?.[1] ?? null
+              const quotedLast = QUOTE.exec(lastLine.rest)?.[1] ?? null
+              const quotedLeadItem = quotedLead === null ? null : matchMarkerAt(indentCols(quotedLead))
+              const nestedQuoteClosed = quotedLast !== null &&
+                ((quotedLead !== null && FOOTNOTE_DEF.test(quotedLead) &&
+                  indentCols(quotedLast).col >= FOOTNOTE_BODY_COLUMN) ||
+                 (quotedLeadItem && indentCols(quotedLast).col >= quotedLeadItem.markerWidth &&
+                  isDefinitionOrAttributeLine(indentCols(quotedLast).rest)))
+              if (nestedDescriptionClosed || nestedItemClosed || nestedQuoteClosed) break
+            }
             /*
              * AN INVISIBLE CONSTRUCT AT DOCUMENT COLUMN 0 IS NOT LAZY TEXT --
              * the same test the item fold makes at §24 C3, for the same reason
@@ -5903,6 +5929,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         const host = bodyQuote.hosts[depth] ??= hostLadder()
         if (hostFenceStep(host, text)) { opaque = true; break }
         const { inner, blockStart, popped } = hostAdvance(host, text, continues && bodyQuote.open)
+        if (host.kinds.at(-1) === 'note') { opaque = true; break }
         const opener = hostFenceOpener(host, inner, () => blockStart || !continues || !bodyQuote.open)
         if (opener) {
           host.fence = { run: opener[1], column: inner.col, host: host.columns.at(-1) }
