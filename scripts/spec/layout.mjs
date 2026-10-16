@@ -4619,7 +4619,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // UNFRAMED for exactly this reason, so a comment reaching a nested quote
         // still arrives as itself.
         if (lines[i] !== undefined && qOpenPara && !bodyEndsWrappedAttr(inner) && !isBlank(lines[i]) &&
-            !COMMENT_LINE.test(lines[i]) && (!qTermOpen || foldablePlainLine(stripLazy(lines[i]))) &&
+            !COMMENT_LINE.test(lines[i]) && (!qTermOpen || foldablePlainLine(stripLazy(lines[i])) ||
+              (FENCE.test(lines[i]) && !hasCloser(lines, i))) &&
             !peekInterrupts(i) && !COLON_CLOSER.test(lines[i]) && !CAPTION.test(lines[i])) {
           // lazy continuation folds into the open quoted paragraph (SS10 I6)
           //
