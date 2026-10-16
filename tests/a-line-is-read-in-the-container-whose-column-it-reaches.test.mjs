@@ -6,6 +6,11 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const normalize = (h) => h.split('\n').map(line => line.trim()).filter(Boolean).join('\n')
 const cases = [
   [
+    "an opener below a description column folds into its quote",
+    ":: t\n: > para\n # H\n",
+    "<dl>\n<dt>t</dt>\n<dd>\n<blockquote><p>para\n# H</p></blockquote>\n</dd>\n</dl>"
+  ],
+  [
     "a retained code block leaves no paragraph for a column-0 line",
     "1. :: t\n   : para\n%% c\n```\nx\n",
     "<ol>\n<li>\n<dl>\n<dt>t</dt>\n<dd>\n<p>para</p>\n<pre><code></code></pre>\n</dd>\n</dl>\n</li>\n</ol>\n<p>x</p>"

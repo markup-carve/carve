@@ -3715,6 +3715,16 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
              * `dd` recognizes it; it is framed here too so all four kinds reach
              * the body by one path rather than by two that agree today.
              */
+            // CARVE-P0-021: under a quote holding an open paragraph, an opener
+            // below the body's column folds into it; only that column opens.
+            const lastBlock = stripIndent([...bodyLines].reverse().find((l) => !l.startsWith(LAZY)) ?? '')
+            if (authoredCol > 0 && authoredCol < bodyColumn && QUOTE.test(lastBlock) &&
+                bodyLeavesParagraphOpen(asRead(bodyLines)) &&
+                (HEADING.test(dedented) || HR.test(dedented) || isTableRow(dedented) || isCodeBlockOpener(dedented))) {
+              pushBody(LAZY + dedented)
+              i++
+              continue
+            }
             openFence = descriptionOpenFenceAt(asRead(bodyLines), lines, i, bodyColumn, endsBodyAt)
             if (openFence !== -1) break
             if (authoredCol > 0 && bodyLeavesParagraphOpen(asRead(bodyLines)) &&

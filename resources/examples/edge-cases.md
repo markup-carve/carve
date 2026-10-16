@@ -55373,3 +55373,24 @@ x
 ```
 
 ::::::
+
+An opener below a description body's column folds into a quote held there; only the body column opens (CARVE-P0-021).
+:::::: compare
+
+````carve
+:: t
+: > para
+ # H
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote><p>para
+# H</p></blockquote>
+  </dd>
+</dl>
+```
+
+::::::
