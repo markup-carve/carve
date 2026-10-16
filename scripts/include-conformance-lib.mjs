@@ -11,7 +11,6 @@
 // and reimplement only the thin per-engine driver, reproducing the
 // normalization contract documented below.
 
-import { createRequire } from 'node:module'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import {
   mkdtempSync,
@@ -84,8 +83,9 @@ export async function loadCarve() {
     // sibling checkout not present -> try the package
   }
   try {
-    const resolved = createRequire(import.meta.url).resolve('@markup-carve/carve')
-    const mod = await import(pathToFileURL(resolved).href)
+    const url = import.meta.resolve('@markup-carve/carve')
+    const resolved = fileURLToPath(url)
+    const mod = await import(url)
     return { mod: await withNodeEntry(mod, resolved), from: resolved }
   } catch {
     // fall through to the explicit error

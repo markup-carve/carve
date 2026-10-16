@@ -739,7 +739,7 @@ test('a cited clause that covers no row is reported', () => {
   const page = readFileSync(resolve(repo, 'docs/includes.md'), 'utf8')
   const [table] = obligationTables(page)
   const clauses = clausesOf(specPart9Sections().get(table.section).text)
-  const earned = table.conditions.some((c) => conditionStated(c, [clauses.get('I1')]))
+  const earned = table.conditions.some((c) => conditionStated(c, [clauses.get('I12')]))
   assert.equal(earned, false)
 })
 

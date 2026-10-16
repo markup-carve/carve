@@ -123,7 +123,7 @@ Directive options fall into two disjoint kinds:
   `@shift:N` (heading-level shift). Future transform options join this kind.
 
 The three **selection** mechanisms are **mutually exclusive**: a single
-directive may use at most one of `#section`, `@lines`, and `@region`.
+directive MUST use at most one of `#section`, `@lines`, and `@region`.
 Combining them is an **error**: the processor emits a Warning and leaves
 the directive **literal**, exactly like the other error cases (see
 [Errors](#errors)).
@@ -797,8 +797,8 @@ Every failure path is **visible**, never a silent drop. Each of these emits a
 | Unreadable / missing path | Warning + literal directive |
 | Binary / non-text content | Warning + literal directive |
 | A `#section` that selects nothing | Warning + literal directive; a case-only mismatch names the exact id |
-| More than one of `#section`, `@lines` and `@region` present | Warning + literal directive |
-| Invalid or missing named source region | `include-region-invalid` Warning + literal directive |
+| More than one of `#section`, `@lines` and `@region` | Warning + literal directive |
+| Invalid or missing named region | `include-region-invalid` Warning + literal directive |
 | Block-structured content in inline position (inline include) | Warning + literal directive |
 | Inclusion cycle | Warning + literal directive |
 | Depth exceeds the include-depth limit | Warning + literal directive |

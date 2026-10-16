@@ -115,7 +115,7 @@ export const sectionLabel = (key) => (key === 'P6' ? 'PART 6' : `PART 9 §${key}
 /** The `I<n>` clauses inside one PART 9 section. */
 export function clausesOf(sectionText) {
   const clauses = new Map()
-  const marks = [...sectionText.matchAll(/^[ \t]*(I\d+a?) [A-Z(]/gm)]
+  const marks = [...sectionText.matchAll(/^[ \t]*(I\d+[ab]?) [A-Z(]/gm)]
   marks.forEach((mark, index) => {
     const end = index + 1 < marks.length ? marks[index + 1].index : sectionText.length
     clauses.set(mark[1], sectionText.slice(mark.index, end))
@@ -180,7 +180,7 @@ const readLedger = (path) =>
 
 /** The obligation tables a page marks, as { section, cited, conditions }. */
 export function obligationTables(pageText) {
-  return [...pageText.matchAll(/<!-- normative-obligations: (?:PART 9 §(\d+)|PART 6) ((?:I\d+a?\s*)+)-->\s*\n(\|[\s\S]*?)\n\n/g)].map(
+  return [...pageText.matchAll(/<!-- normative-obligations: (?:PART 9 §(\d+)|PART 6) ((?:I\d+[ab]?\s*)+)-->\s*\n(\|[\s\S]*?)\n\n/g)].map(
     ([, section, ids, table]) => ({
       section: section ?? 'P6',
       cited: ids.trim().split(/\s+/),
@@ -284,7 +284,7 @@ export function audit() {
       if (!findings.includes(note)) findings.push(note)
       continue
     }
-    const cite = /^(?:WEAKER )?(?:PART 9 §(\d+)|PART 6) (I\d+a?)$/.exec(row.clause)
+    const cite = /^(?:WEAKER )?(?:PART 9 §(\d+)|PART 6) (I\d+[ab]?)$/.exec(row.clause)
     if (row.clause === 'UNSTATED') {
       if (row.anchor !== '-') findings.push(`resources/normative-page-obligations.txt: UNSTATED row carries an anchor - "${row.text.slice(0, 60)}"`)
       continue
