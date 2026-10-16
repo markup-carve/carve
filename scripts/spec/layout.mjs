@@ -5683,6 +5683,10 @@ function collectItems(lines, i, list, state, ind, meas) {
       for (let at = headIndex + 1; at < lines.length; at++) {
         const measured = ind(at)
         if (measured.col <= baseIndent && matchMarkerAt(measured)) break
+        // A refused `+` ends the term's authored block at its source column.
+        // Rebasing it into `candidate` would make the next line look flush-left.
+        if (measured.col === contentCol && CONT_MARKER.test(measured.rest) &&
+            !attachesFlushLeft(ind(at + 1))) break
         if (isBlank(lines[at]) && at + 1 < lines.length && !isBlank(lines[at + 1]) &&
           ind(at + 1).col < contentCol) break
         candidate.push(measured.col < contentCol
