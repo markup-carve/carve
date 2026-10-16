@@ -55291,7 +55291,9 @@ A retained description reads the next unclosed fence as a code block (CARVE-P0-0
 </ul>
 ```
 
-A lazy line keeps the quoted paragraph open for the next line (PART 1 S4).
+::::::
+
+A lazy line keeps the quoted paragraph open for the next line (CARVE-P0-015).
 :::::: compare
 
 ````carve
@@ -55341,7 +55343,5 @@ tail[^f]
   </ol>
 </section>
 ```
-
-::::::
 
 ::::::
