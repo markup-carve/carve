@@ -85,6 +85,8 @@ nothing to do.
   options. A value that needs an `@` is quoted.
   - **`@lines:N-M`** includes the 1-based, inclusive physical-line range `N`
     through `M` of the resolved source.
+  - **`@region:name`** includes the physical lines between matching named
+    source comment markers. The name uses Carve's `identifier` spelling.
   - **`@shift:N`** shifts the level of every included heading by the signed
     integer `N` (see [Heading-level shift](#heading-level-shift-shift)).
   - Every other `@key` is **reserved**. A processor that does not recognize an
@@ -115,22 +117,37 @@ directive as the literal text the [Errors](#errors) rules describe.
 Directive options fall into two disjoint kinds:
 
 - **Selection options** choose *which* content is pulled in: `#section`
-  (semantic - a heading's section or one block) and a line-range `@lines:N-M` (physical - raw
-  source lines).
+  (semantic - a heading's section or one block), a line-range `@lines:N-M`,
+  or a named region `@region:name` (both physical source lines).
 - **Transform options** reshape content that has already been selected:
   `@shift:N` (heading-level shift). Future transform options join this kind.
 
-The two **selection** mechanisms are **mutually exclusive**: a single directive
-MUST select content by `#section` **or** by a line-range, never both. Combining
-them is ambiguous, and neither use case - reusing a chapter by heading, or
-quoting a code snippet by line - needs both. A directive that specifies both
-`#section` and `@lines` is an **error**: the processor emits a Warning and leaves
+The three **selection** mechanisms are **mutually exclusive**: a single
+directive may use at most one of `#section`, `@lines`, and `@region`.
+Combining them is an **error**: the processor emits a Warning and leaves
 the directive **literal**, exactly like the other error cases (see
 [Errors](#errors)).
 
 **Transform** options are orthogonal to selection. `@shift` is **not** a
-selection option: it MAY accompany `#section`, a line-range, or neither, and it
+selection option: it MAY accompany `#section`, a line-range, a region, or neither, and it
 composes with whichever selection (if any) the directive uses.
+
+### Selecting a named source region (`@region:name`)
+
+`@region:demo` selects the physical lines between a pair of complete source
+comment lines. Markers may use `// #region demo` and `// #endregion demo`, or
+`#region demo` and `#endregion demo`. Either spelling works in any included
+file. An end marker may omit the name. Leading spaces or tabs and spaces or
+tabs after the comment marker are allowed. Marker lines themselves are not included. A nested region with a
+different name is allowed; its marker lines remain inside the outer region's
+source. Names compare exactly and may occur only once per file.
+
+A missing name, duplicate opening name, malformed marker, unmatched end,
+mismatched nested end or unclosed start emits `include-region-invalid` and
+leaves the directive literal. The dependency still records the file as read.
+The selected lines retain their original source positions. Insertions before
+the opening marker change line numbers but leave the selected content intact.
+This selector reads from source; it does not write changes back to it.
 
 ### Selecting by id (`#section`)
 
@@ -780,7 +797,8 @@ Every failure path is **visible**, never a silent drop. Each of these emits a
 | Unreadable / missing path | Warning + literal directive |
 | Binary / non-text content | Warning + literal directive |
 | A `#section` that selects nothing | Warning + literal directive; a case-only mismatch names the exact id |
-| Both `#section` and a line-range (`@lines`) present | Warning + literal directive |
+| More than one of `#section`, `@lines` and `@region` present | Warning + literal directive |
+| Invalid or missing named source region | `include-region-invalid` Warning + literal directive |
 | Block-structured content in inline position (inline include) | Warning + literal directive |
 | Inclusion cycle | Warning + literal directive |
 | Depth exceeds the include-depth limit | Warning + literal directive |

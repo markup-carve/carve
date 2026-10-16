@@ -1,0 +1,29 @@
+{
+  "name": "i01b-region-missing",
+  "description": "A missing named region warns, stays literal, and keeps the resolved dependency.",
+  "rules": [
+    "I1b",
+    "I11"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @region:demo }}",
+  "files": {
+    "child": "// #region other\nBody.\n// #endregion other"
+  },
+  "expected": {
+    "html": "<p>{{ child <span class=\"mention\"><strong>@region</strong></span>:demo }}</p>",
+    "fmt": "{{ child @region:demo }}\n",
+    "warnings": [
+      {
+        "rule": "include-region-invalid"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

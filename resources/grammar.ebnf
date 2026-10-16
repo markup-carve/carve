@@ -3739,16 +3739,33 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       is resolved RELATIVE TO THE INCLUDING FILE. Options split into two
       disjoint kinds. SELECTION options choose WHICH content is pulled in:
       `#section` (semantic -- a heading's section or one block, I1a) and
-      `@lines:N-M` (physical -- a 1-based
-      inclusive line range). The two SELECTION mechanisms are MUTUALLY
-      EXCLUSIVE: a directive MUST select by `#section` OR by a line-range,
-      NEVER both; a directive carrying both is an ERROR (Warning + literal,
+      `@lines:N-M` (physical -- a 1-based inclusive line range), and
+      `@region:name` (physical -- a named source region, I1b). The three
+      SELECTION mechanisms are MUTUALLY EXCLUSIVE: a directive MUST use at
+      most one; a directive carrying two is an ERROR (Warning + literal,
       per I7). TRANSFORM options reshape already-selected content and are
       orthogonal to selection: `@shift:N` shifts every included heading's
       level by the SIGNED integer N (I8). `@shift` MAY accompany `#section`,
-      a line-range, or neither. `@shift` takes EITHER a signed integer OR
+      a line-range, a region, or neither. `@shift` takes EITHER a signed integer OR
       the literal value `auto` (context-relative, computed by the processor
       per I8), never both. Every other `@key` is RESERVED.
+
+   I1b NAMED SOURCE REGION (`@region:name`). `name` is an `identifier` and is
+      matched exactly. Recognized marker lines, after optional ASCII spaces or
+      tabs, are `// #region name`, `// #endregion [name]`, `#region name`,
+      and `#endregion [name]`; spaces or tabs may separate the comment marker
+      from `#region`. No non-whitespace content may follow the name. The
+      opening marker MUST name a region; a closing marker MAY omit the name.
+      Distinct names MAY nest. A named closer MUST match the innermost open
+      name. The same name MUST NOT open twice in one file, even sequentially.
+      An unmatched, mismatched, unclosed, duplicate or malformed marker makes
+      region selection an ERROR (`include-region-invalid`, Warning + literal).
+      A missing selected name has the same result. The selected source is the
+      physical lines strictly between its matching markers. Those two marker
+      lines are excluded; nested marker lines remain source content. An empty
+      region selects an empty source. Positions in selected content retain
+      their original source-file coordinates, as with `@lines`. A resolved
+      file stays a resolved dependency even if its region is invalid.
 
    I1a FRAGMENT SELECTION (`#name`). `name` is an `explicit_identifier`
       (`include_section`), so every explicit id is nameable, digit-leading ones such
@@ -3914,8 +3931,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       two bounds therefore limit reads as well as emitted output.
 
    I7 ERRORS. Unreadable path, binary / non-text content, a `#name` that
-      selects nothing (I1a), BOTH selection
-      mechanisms present (`#section` + a line-range, I1), block-structured
+      selects nothing (I1a), an invalid or missing named region (I1b),
+      more than one of `#section`, `@lines` and `@region` (I1), block-structured
       content in INLINE position (I2), cycle, depth-exceeded,
       size-exceeded, call-bound-exceeded, and a directive reached AFTER
       byte-budget or call-bound exhaustion EACH emit a Warning and leave

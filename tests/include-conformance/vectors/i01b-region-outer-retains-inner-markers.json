@@ -1,0 +1,24 @@
+{
+  "name": "i01b-region-outer-retains-inner-markers",
+  "description": "Selecting an outer region retains nested marker lines as source content.",
+  "rules": [
+    "I1b"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @region:outer }}",
+  "files": {
+    "child": "// #region outer\nBefore.\n// #region inner\nInside.\n// #endregion inner\nAfter.\n// #endregion outer"
+  },
+  "expected": {
+    "html": "<p>Before.\n// <span class=\"tag\"><strong>#region</strong></span> inner\nInside.\n// <span class=\"tag\"><strong>#endregion</strong></span> inner\nAfter.</p>",
+    "fmt": "{{ child @region:outer }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

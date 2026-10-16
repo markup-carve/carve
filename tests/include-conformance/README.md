@@ -42,7 +42,7 @@ goldens).
 |---|---|---|
 | `name` | all | Unique id; also the file basename. |
 | `description` | all | One-line summary of what the vector pins. |
-| `rules` | all | The CARVE-P6-001 rule ids exercised (`I1`…`I12`, `I15`, `I9a`, plus the pseudo-rules `multi-directive`, `quoted-path`, `slot-adjacency`). |
+| `rules` | all | The CARVE-P6-001 rule ids exercised (`I1`…`I12`, `I15`, `I1b`, `I9a`, plus the pseudo-rules `multi-directive`, `quoted-path`, `slot-adjacency`). |
 | `mode` | all | `virtual` (in-memory files map) or `filesystem` (a real tmp tree). |
 | `resolver` | all | `none` (no resolver → I3 literal), `virtual` (serve `files`), or `filesystem` (fileSystemResolver over the tree). |
 | `entry` | virtual | The top-level document source. |
@@ -91,7 +91,8 @@ dependency `id`/order, that is a divergence the suite is meant to surface.
 
 - **`rule`** — the stable rule id, the cross-engine contract. The canonical set:
   `include-unresolved`, `include-non-text`, `include-cycle`, `include-depth`,
-  `include-budget`, `include-selection-conflict`, `include-block-in-inline`,
+  `include-budget`, `include-selection-conflict`, `include-region-invalid`,
+  `include-block-in-inline`,
   `include-section`, `include-heading-clamp`, `include-id-rename`,
   `include-footnote-rename`, `include-unknown-option`.
   `include-id-rename` was `include-heading-id-rename` through 0.1.8. The rename
@@ -239,10 +240,11 @@ rules):
 | Rule | Vectors | Rule | Vectors |
 |---|---|---|---|
 | I1 syntax / path-required | 32 | I8 heading shift + auto | 16 |
+| I1b named source region | 7 | I11 dependency reporting | 15 |
 | I2 block vs inline | 8 | I9 verbatim protection | 5 |
 | I3 resolution model | 2 | I9a recognition run | 7 |
 | I4 fragment containment / attribution | 9 | I10 containment (filesystem) | 7 |
-| I5 cross-file collisions | 16 | I11 dependency reporting | 14 |
+| I5 cross-file collisions | 16 | | |
 | I6 limits (cycle/depth/budget) | 5 | I12 formatter preservation | 22 |
 | I7 errors, no-leak, no side effects | 13 | I15 the Carve target does not expand | 2 |
 | heading-include | 3 | multi-directive / quoted-path | 1 / 6 |
@@ -251,7 +253,7 @@ rules):
 I13 and I14 are unassigned. Vectors named `i13-*` and `i14-*` keep their file
 names and are tagged I7 and I12.
 
-**132 vectors total.**
+**140 vectors total.**
 
 ### What the virtual model cannot express
 

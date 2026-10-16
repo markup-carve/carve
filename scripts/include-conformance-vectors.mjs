@@ -16,6 +16,71 @@ const laterFile = '{#dup}\n# Later\n\nSee [^note].\n\n[^note]: Later note.'
 
 /** @type {Array<object>} */
 export const vectors = [
+  // --- I1b named source regions --------------------------------------------
+  {
+    name: 'i01b-region-stable',
+    description: 'A named region selects physical lines while ignoring surrounding source.',
+    rules: ['I1b'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{ child @region:demo }}',
+    files: { child: 'Before.\n// #region demo\n## Pick\n\nBody.\n// #endregion demo\nAfter.' },
+  },
+  {
+    name: 'i01b-region-nested-shell',
+    description: 'Distinct shell-style regions may nest and the inner content can be selected.',
+    rules: ['I1b'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{ child @region:inner }}',
+    files: { child: '#region outer\nBefore.\n#region inner\nInside.\n#endregion inner\nAfter.\n#endregion outer' },
+  },
+  {
+    name: 'i01b-region-outer-retains-inner-markers',
+    description: 'Selecting an outer region retains nested marker lines as source content.',
+    rules: ['I1b'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{ child @region:outer }}',
+    files: { child: '// #region outer\nBefore.\n// #region inner\nInside.\n// #endregion inner\nAfter.\n// #endregion outer' },
+  },
+  {
+    name: 'i01b-region-missing',
+    description: 'A missing named region warns, stays literal, and keeps the resolved dependency.',
+    rules: ['I1b', 'I11'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{ child @region:demo }}',
+    files: { child: '// #region other\nBody.\n// #endregion other' },
+  },
+  {
+    name: 'i01b-region-mismatch',
+    description: 'A mismatched closer makes region selection invalid.',
+    rules: ['I1b'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{ child @region:demo }}',
+    files: { child: '// #region demo\nBody.\n// #endregion other' },
+  },
+  {
+    name: 'i01b-region-duplicate',
+    description: 'A repeated name makes region selection invalid.',
+    rules: ['I1b'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{ child @region:demo }}',
+    files: { child: '// #region demo\nOne.\n// #endregion demo\n// #region demo\nTwo.\n// #endregion demo' },
+  },
+  {
+    name: 'i01b-region-selector-conflict',
+    description: 'A named region cannot be combined with a line range.',
+    rules: ['I1b'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{ child @region:demo @lines:1-2 }}',
+    files: { child: '// #region demo\nBody.\n// #endregion demo' },
+  },
+
   // --- I3 resolution model -------------------------------------------------
   {
     name: 'i03-no-resolver-literal',

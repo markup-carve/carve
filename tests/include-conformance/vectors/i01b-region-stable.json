@@ -1,0 +1,24 @@
+{
+  "name": "i01b-region-stable",
+  "description": "A named region selects physical lines while ignoring surrounding source.",
+  "rules": [
+    "I1b"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @region:demo }}",
+  "files": {
+    "child": "Before.\n// #region demo\n## Pick\n\nBody.\n// #endregion demo\nAfter."
+  },
+  "expected": {
+    "html": "<section id=\"Pick\">\n  <h2>Pick</h2>\n  <p>Body.</p>\n</section>",
+    "fmt": "{{ child @region:demo }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

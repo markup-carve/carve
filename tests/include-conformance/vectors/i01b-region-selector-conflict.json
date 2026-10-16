@@ -1,0 +1,23 @@
+{
+  "name": "i01b-region-selector-conflict",
+  "description": "A named region cannot be combined with a line range.",
+  "rules": [
+    "I1b"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @region:demo @lines:1-2 }}",
+  "files": {
+    "child": "// #region demo\nBody.\n// #endregion demo"
+  },
+  "expected": {
+    "html": "<p>{{ child <span class=\"mention\"><strong>@region</strong></span>:demo <span class=\"mention\"><strong>@lines</strong></span>:1-2 }}</p>",
+    "fmt": "{{ child @region:demo @lines:1-2 }}\n",
+    "warnings": [
+      {
+        "rule": "include-selection-conflict"
+      }
+    ],
+    "dependencies": []
+  }
+}
