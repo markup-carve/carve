@@ -919,26 +919,41 @@ function findColonCloser(lines, openIdx, len) {
 }
 
 /** Whether lines[idx] leaves a paragraph open for the line below: false, or
- *  the prefixes carrying it ('>' quote, '-' item) ahead of 'p'. A quote line
- *  always reads its content (a quote interrupts a paragraph, and a quoted
- *  comment or attribute line closes the quoted one); an item line does after
- *  an item's paragraph, where it starts the next item instead of folding in. */
-function leavesParagraphOpen(lines, idx, wasOpen) {
+ *  the prefixes carrying it ('>' quote, '-<content column>;' item) ahead of
+ *  'p'. A quote line always reads its content (a quote interrupts a
+ *  paragraph, and a quoted comment or attribute line closes the quoted one);
+ *  an item line does after an item's paragraph, where it starts the next item
+ *  instead of folding in. A line reaching the open item's content column is
+ *  read there (`inItem`, where a marker opens a sublist), so a block at that
+ *  column closes the item's paragraph (CARVE-P0-010, CARVE-P0-011). */
+const ITEM_PREFIX = /^-(\d+);/
+function leavesParagraphOpen(lines, idx, wasOpen, inItem = false) {
   const line = lines[idx]
-  if (/^[ \t]*$/.test(line) || COMMENT_LINE.test(line) || CONT_MARKER.test(line)) return false
-  if (HEADING.test(line) || HR.test(line) || LINK_DEF.test(line) || EMPTY_LINK_DEF.test(line) ||
-    isTableRow(line) || (line[0] === '{' && tryAttrLine(lines, idx))) return false
-  const quote = QUOTE.exec(line)
+  // Past an item's content column the authored block base is erased (C3).
+  const block = inItem ? line.trimStart() : line
+  if (/^[ \t]*$/.test(line) || COMMENT_LINE.test(line) || CONT_MARKER.test(block)) return false
+  if (HEADING.test(block) || HR.test(block) || LINK_DEF.test(block) || EMPTY_LINK_DEF.test(block) ||
+    isTableRow(block) || (block[0] === '{' && (inItem ? tryAttrLine([block], 0) : tryAttrLine(lines, idx)))) return false
+  const quote = QUOTE.exec(block)
   if (quote) {
     const inner = quote[1] !== undefined &&
       leavesParagraphOpen([quote[1]], 0, wasOpen?.[0] === '>' && wasOpen.slice(1))
     return inner && '>' + inner
   }
-  const item = BULLET.exec(line)?.[6] ?? ORDERED.exec(line)?.[6]
-  if (wasOpen && (item === undefined || wasOpen[0] !== '-')) return wasOpen
-  if (item === undefined) return 'p'
-  const inner = leavesParagraphOpen([item], 0, false)
-  return inner && '-' + inner
+  const item = wasOpen && ITEM_PREFIX.exec(wasOpen)
+  if (item && /^ */.exec(line)[0].length >= Number(item[1])) {
+    const inner = leavesParagraphOpen([line.slice(Number(item[1]))], 0, wasOpen.slice(item[0].length), true)
+    return inner && item[0] + inner
+  }
+  const bullet = BULLET.exec(line)
+  const marker = bullet ?? ORDERED.exec(line)
+  if (wasOpen && (!marker || !(item || inItem))) return wasOpen
+  if (!marker) return 'p'
+  const text = marker[6]
+  const inner = leavesParagraphOpen([text], 0, false)
+  // A glued marker attribute and a task box are not columns of the marker (C3).
+  const attr = (bullet ? bullet[3] : marker[4]) ?? ''
+  return inner && `-${line.length - text.length - attr.length - (bullet?.[5] !== undefined ? 4 : 0)};` + inner
 }
 
 /** The last line of the opaque span opening at `idx`, or -1 if none opens

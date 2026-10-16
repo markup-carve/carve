@@ -24,3 +24,7 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence-4  ahead of the pin: PART 2 A CLOSER IS REQUIRED a table row at the item content column ends the item paragraph (CARVE-P0-011, PART 9 §10 I1), so the unclosed fence below ends at the container closer; the pinned carve-js runs it to the end (fixed by markup-carve/carve-js#3200)
+612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence-5  ahead of the pin: PART 2 A CLOSER IS REQUIRED a table row at a quoted item content column ends the item paragraph (CARVE-P0-011, PART 9 §10 I1), so the unclosed fence below ends at the container closer; the pinned carve-js runs it to the end (fixed by markup-carve/carve-js#3200)
+612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence-6  ahead of the pin: PART 2 A CLOSER IS REQUIRED an attribute line at the item content column ends the item paragraph (CARVE-P0-011), so the unclosed fence below ends at the container closer; the pinned carve-js runs it to the end (fixed by markup-carve/carve-js#3200)
+612-a-block-at-an-item-content-column-ends-its-paragraph-before-an-unclosed-fence-7  ahead of the pin: PART 2 A CLOSER IS REQUIRED a heading at the item content column ends the item paragraph (CARVE-P0-012), so the unclosed fence below ends at the container closer; the pinned carve-js runs it to the end (fixed by markup-carve/carve-js#3200)
