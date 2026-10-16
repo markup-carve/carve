@@ -160,6 +160,10 @@ export function blockFamilyCases({ seed = 3279, nested = 3200 } = {}) {
 const SEEDS = [
   // Found outside the product by the carve-js round-4 lane.
   '- :: term\n  : body\n  +\n  before\n   > nested\n',
+  '- a\n\n  before\n   > nested\n',
+  '- a\n  %% c\n  before\n   > nested\n',
+  '- :: term\n  : body\n  {.x}\n  before\n   > nested\n',
+  '- :: term\n  : body\n  # H\n  before\n   > nested\n',
   ':: t\n: ::: note\n  para\n^ cap\n',
   '[^c]: - para\n   [^p]: n\n\n[^c] [^p]\n',
   // A wider description separator moves the body column (carve#3295).

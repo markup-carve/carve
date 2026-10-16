@@ -5,7 +5,7 @@ import { blockFamilyCases, PROBES, FOLLOWERS } from '../scripts/lib/block-family
 test('the block-family generator is deterministic and bounded', () => {
   const cases = blockFamilyCases()
   assert.deepEqual(cases, blockFamilyCases())
-  assert.equal(cases.length, 6033)
+  assert.equal(cases.length, 6037)
   assert.equal(new Set(cases.map(c => c.name)).size, cases.length)
   assert.equal(new Set(cases.map(c => c.source)).size, cases.length)
 })
