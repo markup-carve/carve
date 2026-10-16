@@ -55049,3 +55049,246 @@ tail
 ```
 
 ::::::
+
+## A line is read in the container whose column it reaches
+
+A marker at the item column opens a list (PART 0 O2).
+:::::: compare
+
+````carve
+- :: t
+  : para
+  - li
+````
+
+```html
+<ul>
+  <li>
+    <dl>
+      <dt>t</dt>
+      <dd>para</dd>
+    </dl>
+    <ul>
+      <li>li</li>
+    </ul>
+  </li>
+</ul>
+```
+
+::::::
+
+A marked quoted continuation keeps its claim (PART 0 X1).
+:::::: compare
+
+````carve
+- > para
+  > more
+%% c
+x
+````
+
+```html
+<ul>
+  <li>
+    <blockquote><p>para
+more</p></blockquote>
+    x
+  </li>
+</ul>
+```
+
+::::::
+
+A note on a description marker line keeps its body column, two past where it is written (DEFINITION EXTENT).
+:::::: compare
+
+````carve
+x[^c]
+
+:: t
+: [^c]: para
+    # H
+````
+
+```html
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>para</p>
+      <h1 id="H">H</h1>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+::::::
+
+A closed nested block leaves no paragraph to keep the column-zero line (CARVE-P0-011).
+:::::: compare
+
+````carve
+:: t
+: - para
+    [^p]: n
+x
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>para</li>
+    </ul>
+  </dd>
+</dl>
+<p>x</p>
+```
+
+::::::
+
+A marker below every content column folds into the item (PART 9 §24 C3).
+:::::: compare
+
+````carve
+:: t
+: - para
+ - li
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ul>
+      <li>para
+- li</li>
+    </ul>
+  </dd>
+</dl>
+```
+
+::::::
+
+An opener past the note body and below the item opens in the note (CARVE-P0-004).
+:::::: compare
+
+````carve
+[r][] [^p] [^c]
+[^c]: - para
+   # H
+````
+
+```html
+<p>[r][] [^p] <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <ul>
+        <li>para</li>
+      </ul>
+      <h1 id="H">H</h1>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+::::::
+
+A marker between the item and description body columns stays text (PART 9 §10 I2).
+:::::: compare
+
+````carve
+- :: t
+  : para
+   - li
+````
+
+```html
+<ul>
+  <li>
+    <dl>
+      <dt>t</dt>
+      <dd>para
+- li</dd>
+    </dl>
+  </li>
+</ul>
+```
+
+::::::
+
+A lazy quoted continuation keeps its existing claim (CARVE-P0-010).
+:::::: compare
+
+````carve
+- > a
+  b
+ [r]: /u
+````
+
+```html
+<ul>
+  <li>
+    <blockquote><p>a
+b
+[r]: /u</p></blockquote>
+  </li>
+</ul>
+```
+
+::::::
+
+A quoted term folds an unmarked, unclosed fence line (CARVE-P2-028).
+:::::: compare
+
+````carve
+> :: t
+```
+````
+
+```html
+<blockquote>
+  <dl>
+    <dt>t
+<code></code></dt>
+  </dl>
+</blockquote>
+```
+
+::::::
+
+A retained description reads the next unclosed fence as a code block (CARVE-P0-011).
+:::::: compare
+
+````carve
+- :: t
+  : para
+ %% c
+```
+````
+
+```html
+<ul>
+  <li>
+    <dl>
+      <dt>t</dt>
+      <dd>
+        <p>para</p>
+        <pre><code></code></pre>
+      </dd>
+    </dl>
+  </li>
+</ul>
+```
+
+::::::

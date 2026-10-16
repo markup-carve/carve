@@ -359,6 +359,7 @@ index: examples/edge-cases/index.md
   a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line
   a-quoted-item-comment-ends-the-quote-before-an-unclosed-fence
   a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase
+  a-line-is-read-in-the-container-whose-column-it-reaches
   an-item-comment-or-attribute-line-closes-the-item-s-paragraph
   blockquote-lazy-continuation
   fenced-code-language-with-punctuation
