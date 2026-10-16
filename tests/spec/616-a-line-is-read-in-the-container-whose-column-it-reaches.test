@@ -325,3 +325,33 @@ x
   </dd>
 </dl>
 ```
+
+````
+- para
+%% c
+```
+x
+.
+<ul>
+  <li>para
+    <pre><code></code></pre>
+  </li>
+</ul>
+<p>x</p>
+````
+
+````
+- ::: note
+  more
+ %% c
+```
+.
+<ul>
+  <li>
+    <aside class="admonition note" aria-label="Note">
+      <p>more</p>
+      <pre><code></code></pre>
+    </aside>
+  </li>
+</ul>
+````

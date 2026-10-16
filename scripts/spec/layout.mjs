@@ -7196,10 +7196,10 @@ function collectItems(lines, i, list, state, ind, meas) {
           list.tight = false
           pendingSeparation = false
         }
-        // The retained description reads this as a new code block. A lazy
+        // The retained item or description reads this as a new code block. A lazy
         // sentinel would turn the unclosed fence into inline code (carve#3285),
         // and a verbatim body leaves no paragraph for the next line (CARVE-P0-013).
-        if (FENCE.test(lm.rest) && DEFLIST_TERM.test(head.text) &&
+        if (isCodeBlockOpener(lm.rest) &&
             itemMeas.at(-1)?.belowComment === true &&
             COMMENT_LINE.test(indentCols(itemLines.at(-1) ?? '').rest)) {
           belowSpanClosed = false

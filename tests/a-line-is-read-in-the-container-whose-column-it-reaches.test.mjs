@@ -6,6 +6,16 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const normalize = (h) => h.split('\n').map(line => line.trim()).filter(Boolean).join('\n')
 const cases = [
   [
+    "a note in a comment-retained list item reads an unclosed fence as a code block too",
+    "- ::: note\n  more\n %% c\n```\n",
+    "<ul>\n<li>\n<aside class=\"admonition note\" aria-label=\"Note\">\n<p>more</p>\n<pre><code></code></pre>\n</aside>\n</li>\n</ul>"
+  ],
+  [
+    "a comment-retained list item reads an unclosed fence as a code block, and its unprefixed payload leaves the item",
+    "- para\n%% c\n```\nx\n",
+    "<ul>\n<li>para\n<pre><code></code></pre>\n</li>\n</ul>\n<p>x</p>"
+  ],
+  [
     "a caption line below a description body's column folds into a quoted paragraph there as text, as under a list item",
     ":: t\n: > para\n^ cap\n",
     "<dl>\n<dt>t</dt>\n<dd>\n<blockquote><p>para\n^ cap</p></blockquote>\n</dd>\n</dl>"

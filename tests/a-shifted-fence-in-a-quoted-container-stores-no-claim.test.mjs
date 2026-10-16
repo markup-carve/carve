@@ -31,14 +31,16 @@ for (const depth of [1, 2]) for (const nested of [false, true]) {
 }
 
 for (const depth of [1, 2]) {
-  test(`a below-column comment retains an unopened fence run: depth ${depth}`, () => {
+  // Retention decides the owner only: the fence opens a code block in the
+  // retained item (carve#3285), and its unprefixed payload leaves that item.
+  test(`a below-column comment retains a fence run as a code block: depth ${depth}`, () => {
     const prefix = '> '.repeat(depth)
     const source = ['- ::: box', '  - inner', '  %% c', '   ```', '   code']
       .map(line => prefix + line).join('\n') + '\n- tail\n'
     const doc = parse(source)
     const out = renderDoc(doc)
     assert.equal(doc.blocks.length, 1, out)
-    assert.ok(!out.includes('<pre>'), out)
+    assert.ok(out.includes('<li>inner\n') && out.includes('<pre><code></code></pre>'), out)
     assert.ok(out.includes('code\n- tail'), out)
   })
 }
