@@ -292,6 +292,13 @@ export function runVector(vector, carve) {
       ...(vector.checkFlattened ? { flattened } : {}),
       ...(vector.checkCarveTarget ? { carveTarget } : {}),
       warnings: normalizeWarnings(result.warnings, baseReal),
+      ...(vector.checkWarningLocations
+        ? { warningLocations: result.warnings.map((w) => ({
+            rule: w.rule,
+            file: baseReal ? normalizeFsPath(w.file, baseReal) : w.file,
+            line: w.line,
+          })) }
+        : {}),
       dependencies: normalizeDependencies(result.dependencies, baseReal),
       rawWarningMessages: result.warnings.map((w) => w.message),
     }

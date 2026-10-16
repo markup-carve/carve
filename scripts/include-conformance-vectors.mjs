@@ -386,6 +386,17 @@ export const vectors = [
     options: { sourcePath: 'book.crv' },
   },
   {
+    name: 'i04-included-warning-source-line',
+    description: 'An unresolved directive on child line 3 names the child and that line, not the parent include site.',
+    rules: ['I4'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{ child.crv }}',
+    files: { 'child.crv': 'First.\n\n{{ missing.crv }}' },
+    options: { sourcePath: 'book.crv' },
+    checkWarningLocations: true,
+  },
+  {
     name: 'i04-attribution-omitted-without-sourcepath',
     description: 'With no sourcePath the top-level document has no identity, so no file is attributed.',
     rules: ['I4'],

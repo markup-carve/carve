@@ -48,6 +48,7 @@ const INPUT_FIELDS = [
   'checkFmtExpandEquivalence',
   'checkCarveTarget',
   'checkFlattened',
+  'checkWarningLocations',
 ]
 
 function inputOf(vector) {
@@ -144,6 +145,7 @@ async function main() {
         ...(vector.checkFlattened ? { flattened: result.flattened } : {}),
         ...(vector.checkCarveTarget ? { carveTarget: result.carveTarget } : {}),
         warnings: result.warnings,
+        ...(vector.checkWarningLocations ? { warningLocations: result.warningLocations } : {}),
         dependencies: result.dependencies,
       },
     }

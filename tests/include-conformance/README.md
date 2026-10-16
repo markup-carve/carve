@@ -55,6 +55,7 @@ goldens).
 | `checkFmtExpandEquivalence` | optional | When true, the runner also asserts that expanding the **formatted** entry yields the same html + dependency set (I12 stronger invariant). |
 | `checkCarveTarget` | optional | When true, the vector carries `expected.carveTarget` (I15). |
 | `checkFlattened` | optional | When true, the vector carries `expected.flattened`. |
+| `checkWarningLocations` | optional | When true, the proof runner checks `expected.warningLocations` as `{ rule, file, line }` for warnings in this fixture. |
 
 `options` keys: `sourcePath` (warning attribution, I4), `maxDepth` /
 `maxBytes` (I6 limit overrides), `allowAbsolute` (filesystem), `resolverIds`
@@ -116,6 +117,11 @@ dependency `id`/order, that is a divergence the suite is meant to surface.
   are **not** pinned as a §19 contract and are the field most likely to diverge;
   including them would manufacture false divergences. Attribution travels
   through `file`, which is stable.
+
+The `i04-included-warning-source-line` vector additionally checks the raw
+warning's 1-based line. This narrow source-site assertion catches a host that
+reports the parent directive's line instead of the included directive's line;
+the ordinary normalized warning list still omits offsets.
 
 The I7 **no-leak** requirement is pinned directly by `forbiddenSubstrings`:
 the runner asserts the raw messages contain none of them, so a processor that

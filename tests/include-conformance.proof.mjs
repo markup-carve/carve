@@ -44,6 +44,13 @@ for (const file of files) {
         `${vector.name}: ${field} mismatch`,
       )
     }
+    if (vector.checkWarningLocations) {
+      assert.deepEqual(
+        result.warningLocations,
+        vector.expected.warningLocations,
+        `${vector.name}: warning source location mismatch`,
+      )
+    }
 
     // I7: no forbidden substring (a raw resolver error, an absolute path) may
     // reach any warning message.
