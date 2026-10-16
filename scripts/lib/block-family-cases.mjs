@@ -27,6 +27,9 @@ export const PROBES = {
   item: '- li',
 }
 
+// The matched `%%%` spelling of the comment probe, written at the same column.
+const FENCED = { commentFence: ['%%%', 'c', '%%%'] }
+
 export const FOLLOWERS = {
   col0: 'tail',
   blank: '\ntail',
@@ -114,7 +117,7 @@ function build(stack, hostLine, probe, column, marked, follower) {
   const { lines, quotes, deepest } = layout(stack)
   const body = [...lines]
   if (hostLine) body.push(lineAt(quotes, deepest, marked, 'more'))
-  body.push(lineAt(quotes, column, marked, PROBES[probe]))
+  for (const text of FENCED[probe] ?? [PROBES[probe]]) body.push(lineAt(quotes, column, marked, text))
   const tail = FOLLOWERS[follower] ?? lineAt(quotes, deepest, marked, 'tail')
   body.push(tail)
   // The use line comes first so an unclosed fence below cannot swallow it.
@@ -130,17 +133,18 @@ export function blockFamilyCases({ seed = 3279, nested = 3200 } = {}) {
     seen.add(source)
     cases.push({ name: `${tag}-${cases.length}`, source, meta })
   }
-  const expand = (stack, emit) => {
+  const expand = (stack, emit, probes = Object.keys(PROBES)) => {
     const { columns, quotes } = layout(stack)
     for (const hostLine of [false, true])
-      for (const probe of Object.keys(PROBES))
+      for (const probe of probes)
         for (const column of probeColumns(columns))
           for (const marked of quotes.length ? [true, false] : [true])
             for (const follower of Object.keys(FOLLOWERS))
               emit(hostLine, probe, column, marked, follower, { stack: stack.join('/'), hostLine, probe, at: relation(column, columns), marked, follower })
   }
   for (const stack of [[], ...KINDS.map(k => [k])])
-    expand(stack, (h, p, c, m, f, meta) => add(`s:${stack.join('/') || 'none'}`, build(stack, h, p, c, m, f), meta))
+    expand(stack, (h, p, c, m, f, meta) => add(`s:${stack.join('/') || 'none'}`, build(stack, h, p, c, m, f), meta),
+      [...Object.keys(PROBES), ...Object.keys(FENCED)])
 
   const pool = []
   for (const outer of KINDS) for (const inner of KINDS)
@@ -150,7 +154,11 @@ export function blockFamilyCases({ seed = 3279, nested = 3200 } = {}) {
     const j = Math.floor(random() * (i + 1))
     ;[pool[i], pool[j]] = [pool[j], pool[i]]
   }
-  for (const [stack, [h, p, c, m, f, meta]] of pool.slice(0, nested)) add(`n:${stack.join('/')}`, build(stack, h, p, c, m, f), meta)
+  for (const [stack, [h, p, c, m, f, meta]] of pool.slice(0, nested)) {
+    add(`n:${stack.join('/')}`, build(stack, h, p, c, m, f), meta)
+    // Every sampled line comment also runs as a matched comment fence.
+    if (p === 'comment') add(`n:${stack.join('/')}`, build(stack, h, 'commentFence', c, m, f), { ...meta, probe: 'commentFence' })
+  }
 
   for (const source of SEEDS) add('seed', source)
   return cases
