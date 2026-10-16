@@ -7185,7 +7185,13 @@ function collectItems(lines, i, list, state, ind, meas) {
           deepestIsDescendant = false
         }
         belowSpanClosed = false
-        pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
+        // The retained description reads this as a new code block. A lazy
+        // sentinel would turn the unclosed fence into inline code (carve#3285).
+        if (FENCE.test(lm.rest) && DEFLIST_TERM.test(head.text) &&
+            itemMeas.at(-1)?.belowComment === true &&
+            COMMENT_LINE.test(indentCols(itemLines.at(-1) ?? '').rest)) {
+          pushLine(lm.rest, lm)
+        } else pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
         i++
         continue
       }
