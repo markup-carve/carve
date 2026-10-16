@@ -86,7 +86,10 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       matched exactly. Recognized marker lines, after optional ASCII spaces or
       tabs, are `// #region name`, `// #endregion [name]`, `#region name`,
       and `#endregion [name]`; spaces or tabs may separate the comment marker
-      from `#region`. No non-whitespace content may follow the name. The
+      from `#region`. No non-whitespace content may follow the name.
+      A keyword run on by an ASCII letter, digit or `_` (`#regional`) is
+      not a marker; run on by any other character (`#region-x`) it is a
+      malformed marker. The
       opening marker MUST name a region; a closing marker MAY omit the name.
       Distinct names MAY nest. A named closer MUST match the innermost open
       name. The same name MUST NOT open twice in one file, even sequentially.

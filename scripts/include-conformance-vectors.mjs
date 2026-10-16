@@ -154,6 +154,25 @@ export const vectors = [
     files: { child: '// #region\n// #region demo\nBody.\n// #endregion demo\n// #endregion' },
   },
 
+  {
+    name: 'i01b-region-keyword-run-on',
+    description: 'A marker keyword followed by punctuation is a malformed marker.',
+    rules: ['I1b'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{ child @region:demo }}',
+    files: { child: '// #regional note\n// #region-x\n// #region demo\nBody.\n// #endregion demo' },
+  },
+  {
+    name: 'i01b-region-keyword-word-run-on',
+    description: 'A marker keyword followed by a word character is ordinary content.',
+    rules: ['I1b'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{{ child @region:demo }}',
+    files: { child: '// #regional note\n// #endregions\n// #region demo\nBody.\n// #endregion demo' },
+  },
+
   // --- I3 resolution model -------------------------------------------------
   {
     name: 'i03-no-resolver-literal',

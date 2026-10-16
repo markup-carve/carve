@@ -140,7 +140,8 @@ comment lines. Markers may use `// #region demo` and `// #endregion demo`, or
 file. An end marker may omit the name. Leading spaces or tabs and spaces or
 tabs after the comment marker are allowed. Marker lines themselves are not included. A nested region with a
 different name is allowed; its marker lines remain inside the outer region's
-source. Names compare exactly and may occur only once per file.
+source. A keyword run on by a word character, such as `#regional`, is ordinary
+text, while `#region-x` is a malformed marker. Names compare exactly and may occur only once per file.
 
 A missing name, duplicate opening name, malformed marker, unmatched end,
 mismatched nested end or unclosed start emits `include-region-invalid` and

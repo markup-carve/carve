@@ -240,7 +240,7 @@ rules):
 | Rule | Vectors | Rule | Vectors |
 |---|---|---|---|
 | I1 syntax / path-required | 32 | I8 heading shift + auto | 16 |
-| I1b named source region | 15 | I11 dependency reporting | 15 |
+| I1b named source region | 17 | I11 dependency reporting | 15 |
 | I2 block vs inline | 8 | I9 verbatim protection | 5 |
 | I3 resolution model | 2 | I9a recognition run | 7 |
 | I4 fragment containment / attribution | 9 | I10 containment (filesystem) | 7 |
@@ -253,7 +253,7 @@ rules):
 I13 and I14 are unassigned. Vectors named `i13-*` and `i14-*` keep their file
 names and are tagged I7 and I12.
 
-**148 vectors total.**
+**150 vectors total.**
 
 ### What the virtual model cannot express
 
